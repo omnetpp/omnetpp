@@ -821,34 +821,41 @@ if test "$WITH_QTENV" != "yes"; then
     QTENV_IF_POSSIBLE=missing-dependency
 else
     # Check for qmake.
-    AC_CHECK_PROGS(QMAKE, $QMAKE qmake-qt5 qmake, nope)
+    AC_PATH_PROGS(QMAKE, qmake-qt5 qmake, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
+
     if test "$QMAKE" = nope; then
-        AC_MSG_WARN([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv])
+        AC_MSG_WARN([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location.]) # XXX maybe we should ask the user the QMAKE binary including name, not just path?
         QTENV_IF_POSSIBLE=missing-dependency
     else
-        OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL, qt_ok, QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL")
+        OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE, -lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL, qt_ok, QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL")
+
         # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
         # we have to link with those libraries when we are linking the Qtenv shared libs.
         # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
         # detect Qt5 on mingw32
         if test $qt_ok = no; then
-          OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE -I/mingw32/include/qt5, -lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5, qt_ok, QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5" QT_CFLAGS="-I/mingw32/include/qt5")
+          OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE, -I/mingw32/include/qt5, -lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5, qt_ok, QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5" QT_CFLAGS="-I/mingw32/include/qt5")
         fi
         # Test on Mac OS X using the local QT framework
         if test $qt_ok = no; then
-            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL -framework QtWidgets -framework QtPrintSupport")
+            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL -framework QtWidgets -framework QtPrintSupport")
         fi
         # finally fall back to use pkg-config (if available)
         if test $qt_ok = no; then
-            QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL --cflags`
-            QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL --libs`
-            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
+            QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
+            QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL"
+
+            QT_CFLAGS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`
+            QT_LIBS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs`
+            QT_LIBS_PKG_CONFIG+=" -Wl,-rpath=$QT_INSTALL_LIBS"
+            
+            # WHY ARE THE CFLAGS INCLUDED TWICE?!?!?! AND NOT EVEN ONCE IF I LEAVE THEM OUT!?
+            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
         fi
         if test $qt_ok = no; then
-            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user])
+            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user.])
         fi
         ALL_ENV_LIBS+=' $(QTENV_LIBS)'
-        # QT_CFLAGS+=' -I/usr/include/QtOpenGL' # we need this because of a bug in qmake that prevents correctly detecting the include directory of the QtOpenGL library (on MinGW-64 and on Fedora 23)
         QTENV_IF_POSSIBLE=qtenv
         # models can detect whether Qtenv is present based on the presence of WITH_QTENV macro
         DEFINES="$DEFINES -DWITH_QTENV"

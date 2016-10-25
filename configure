@@ -4707,26 +4707,28 @@ if test "$WITH_QTENV" != "yes"; then
     QTENV_IF_POSSIBLE=missing-dependency
 else
     # Check for qmake.
-    for ac_prog in $QMAKE qmake-qt5 qmake
+    for ac_prog in qmake-qt5 qmake
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_QMAKE+:} false; then :
+if ${ac_cv_path_QMAKE+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$QMAKE"; then
-  ac_cv_prog_QMAKE="$QMAKE" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+  case $QMAKE in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_QMAKE="$QMAKE" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_QMAKE="$ac_prog"
+    ac_cv_path_QMAKE="$as_dir/$ac_word$ac_exec_ext"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4734,9 +4736,10 @@ done
   done
 IFS=$as_save_IFS
 
+  ;;
+esac
 fi
-fi
-QMAKE=$ac_cv_prog_QMAKE
+QMAKE=$ac_cv_path_QMAKE
 if test -n "$QMAKE"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $QMAKE" >&5
 $as_echo "$QMAKE" >&6; }
@@ -4750,20 +4753,21 @@ fi
 done
 test -n "$QMAKE" || QMAKE="nope"
 
+
     if test "$QMAKE" = nope; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv" >&5
-$as_echo "$as_me: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv" >&2;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&5
+$as_echo "$as_me: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&2;} # XXX maybe we should ask the user the QMAKE binary including name, not just path?
         QTENV_IF_POSSIBLE=missing-dependency
     else
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE"
+   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE"
    LIBS="-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4789,6 +4793,7 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+
         # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
         # we have to link with those libraries when we are linking the Qtenv shared libs.
         # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
@@ -4798,11 +4803,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE -I/mingw32/include/qt5"
-   LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5"
+   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE"
+   LIBS="-I/mingw32/include/qt5"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE -I/mingw32/include/qt5\" LIBS=\"-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE -I/mingw32/include/qt5\" LIBS=\"-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-I/mingw32/include/qt5\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-I/mingw32/include/qt5\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4817,10 +4822,10 @@ qVersion();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5" QT_CFLAGS="-I/mingw32/include/qt5"
+$as_echo "yes" >&6; }; -lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5=yes; qt_ok
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; qt_ok=no;
+$as_echo "no" >&6; }; -lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5=no; QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5" QT_CFLAGS="-I/mingw32/include/qt5"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
@@ -4835,11 +4840,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE"
+   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE"
    LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4868,17 +4873,23 @@ rm -f core conftest.err conftest.$ac_objext \
         fi
         # finally fall back to use pkg-config (if available)
         if test $qt_ok = no; then
-            QT_CFLAGS_PKG_CONFIG=`pkg-config --silence-errors Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL --cflags`
-            QT_LIBS_PKG_CONFIG=`pkg-config --silence-errors Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL --libs`
+            QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
+            QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL"
+
+            QT_CFLAGS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`
+            QT_LIBS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs`
+            QT_LIBS_PKG_CONFIG+=" -Wl,-rpath=$QT_INSTALL_LIBS"
+
+            # WHY ARE THE CFLAGS INCLUDED TWICE?!?!?! AND NOT EVEN ONCE IF I LEAVE THEM OUT!?
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG"
+   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG"
    LIBS="$QT_LIBS_PKG_CONFIG"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG\" LIBS=\"$QT_LIBS_PKG_CONFIG\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG\" LIBS=\"$QT_LIBS_PKG_CONFIG\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG\" LIBS=\"$QT_LIBS_PKG_CONFIG\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG\" LIBS=\"$QT_LIBS_PKG_CONFIG\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4906,10 +4917,9 @@ rm -f core conftest.err conftest.$ac_objext \
 
         fi
         if test $qt_ok = no; then
-            as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by specifying empty value for QT_VERSION in configure.user" "$LINENO" 5
+            as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user." "$LINENO" 5
         fi
         ALL_ENV_LIBS+=' $(QTENV_LIBS)'
-        # QT_CFLAGS+=' -I/usr/include/QtOpenGL' # we need this because of a bug in qmake that prevents correctly detecting the include directory of the QtOpenGL library (on MinGW-64 and on Fedora 23)
         QTENV_IF_POSSIBLE=qtenv
         # models can detect whether Qtenv is present based on the presence of WITH_QTENV macro
         DEFINES="$DEFINES -DWITH_QTENV"

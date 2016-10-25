@@ -39,7 +39,7 @@ qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 qmake:
-	@echo Invoking $(QMAKE) and building qtenv using qt$(QT_VERSION)
+	@echo Invoking $(QMAKE) and building Qtenv
 	@mkdir -p $O
 	OPP_CFLAGS="$(CXXFLAGS) $(CFLAGS)" OPP_DEFINES="$(DEFINES)" $(QMAKE) "QMAKE_CXX=$(Q)echo $$<; $(CXX)" "QMAKE_CC=$(Q)echo $$<; $(CC)" "QMAKE_AR=$(AR)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
 
