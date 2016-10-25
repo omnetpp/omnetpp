@@ -1,0 +1,14 @@
+%description:
+Test that quoting really protects the # in file names from being interpreted
+as comment, and the filenames are unquted before used
+
+%activity:
+recordScalar("foo", 42);
+
+%inifile: test.ini
+[General]
+network = Test
+output-scalar-file = "results/General-#0.sca"
+
+%contains: results/General-#0.sca
+foo

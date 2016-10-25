@@ -52,7 +52,7 @@ void Node::finish()
 %inifile: test.ini
 [General]
 network = Test
-output-scalar-file = results/General-#0.sca
+output-scalar-file = "results/General-#0.sca"
 output-scalar-precision = 10
 
 # Test.defaults: left at default

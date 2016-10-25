@@ -75,13 +75,25 @@ std::string cConfiguration::parseString(const char *s, const char *defaultValue,
         return s;
 }
 
+inline std::string unquote(const std::string& txt)
+{
+    if (txt.find('"') == std::string::npos)
+        return txt;
+    try {
+        return opp_parsequotedstr(txt.c_str());
+    }
+    catch (std::exception& e) {
+        return txt;
+    }
+}
+
 std::string cConfiguration::parseFilename(const char *s, const char *baseDir, const char *defaultValue)
 {
     if (!s)
         s = defaultValue;
     if (!s || !s[0])
         return "";
-    return tidyFilename(concatDirAndFile(baseDir, s).c_str());
+    return tidyFilename(concatDirAndFile(baseDir, unquote(s).c_str()).c_str());
 }
 
 std::vector<std::string> cConfiguration::parseFilenames(const char *s, const char *baseDir, const char *defaultValue)
@@ -91,7 +103,7 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
     if (!s)
         s = "";
     std::vector<std::string> result;
-    FilenamesListTokenizer tokenizer(s);
+    FilenamesListTokenizer tokenizer(s); // note: this observes quotation marks, although ignores backslashes (khmmm...)
     const char *fname;
     while ((fname = tokenizer.nextToken()) != nullptr) {
         if (fname[0] == '@' && fname[1] == '@')
