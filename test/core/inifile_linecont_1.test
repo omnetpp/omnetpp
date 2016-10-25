@@ -38,8 +38,13 @@ void Simple::activity()
 
 %inifile: test.ini
 [General]
-network = Simple
-cmdenv-express-mode = false
+net\
+work = Sim\
+ple
+
+\
+cmdenv-express-mode = false\
+
 
 *.str = "one \
 two  \

@@ -15,12 +15,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cstring>
-#include <cstdio>
-#include <cerrno>
 #include <set>
-#include <vector>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 #include "common/opp_ctype.h"
 #include "common/fileutil.h"  // directoryOf
 #include "omnetpp/cexception.h"
@@ -129,23 +127,22 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
     const std::string *basedirRef = &(*basedirs.find(tmpdir));
 
     // open and read this file
-    FILE *file = fopen(filename, "r");
-    if (!file)
+    std::ifstream in(filename, std::ios::in);
+    if (!in.is_open())
         throw cRuntimeError("Cannot open ini file `%s'", filename);
 
     int lineNumber = 0;
     std::set<std::string> sectionsInFile;  // we'll check for uniqueness
 
     std::string rawLine;
-    while (readLineInto(rawLine, file)) {
+    while (std::getline(in, rawLine)) {
         ASSERT(rawLine.empty() || (*(rawLine.end()-1) != '\r' && *(rawLine.end()-1) != '\n'));
 
         // join continued lines
         lineNumber++;
         std::string lineBuf = rawLine;
         if (!rawLine.empty() && *(rawLine.end()-1) == '\\') {
-            while (true) {
-                readLineInto(rawLine, file);
+            while (std::getline(in, rawLine)) {
                 lineNumber++;
                 lineBuf.resize(lineBuf.size()-1);  // cut off backslash from previous line
                 lineBuf += rawLine;
@@ -220,32 +217,10 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
         }
     }
 
-    fclose(file);
-}
+    if (in.bad())
+        throw cRuntimeError("Cannot read ini file `%s'", filename);
 
-bool InifileReader::readLineInto(std::string& line, FILE *file)
-{
-    line = "";
-    if (feof(file))
-        return false;
-
-    char buffer[512+1];
-    while (fgets(buffer, 512, file) != nullptr) {
-        const char *endBuffer = buffer + strlen(buffer);
-        if (buffer == endBuffer)
-            break;  // should not happen
-        bool eolReached = *(endBuffer-1) == '\n' || *(endBuffer-1) == '\r';
-        if (eolReached)
-            while (endBuffer > buffer && opp_isspace(*(endBuffer-1)))
-                endBuffer--;
-
-        line.append(buffer, endBuffer - buffer);
-        if (eolReached)
-            break;
-    }
-    if (ferror(file))
-        throw cRuntimeError("Cannot read ini file: %s", strerror(errno));
-    return true;
+    in.close();
 }
 
 /**
