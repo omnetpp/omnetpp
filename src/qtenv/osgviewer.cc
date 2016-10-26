@@ -21,6 +21,7 @@
 #include <QMenu>
 #include <QResizeEvent>
 #include <QOffscreenSurface>
+#include <QOpenGLFunctions>
 
 #ifdef WITH_OSGEARTH
 #include <osgEarth/Version>
@@ -142,6 +143,18 @@ public:
     }
 
     bool releaseContextImplementation() override {
+        if (v) {
+            QOpenGLFunctions funcs(v->context());
+            funcs.initializeOpenGLFunctions();
+
+            // ensuring that only alpha will be affected by the clear
+            funcs.glColorMask(0, 0, 0, 1);
+            // setting the alpha clear color it to fully opaque
+            funcs.glClearColor(0, 0, 0, 1);
+            // and doing the clear, it's sufficient to do it on the color buffer only
+            funcs.glClear(GL_COLOR_BUFFER_BIT);
+        }
+
         c ? c->doneCurrent() : v->doneCurrent();
         return true;
     }
