@@ -821,10 +821,10 @@ if test "$WITH_QTENV" != "yes"; then
     QTENV_IF_POSSIBLE=missing-dependency
 else
     # Check for qmake.
-    AC_PATH_PROGS(QMAKE, qmake-qt5 qmake, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
+    AC_PATH_PROGS(QMAKE, qmake qmake-qt5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
 
     if test "$QMAKE" = nope; then
-        AC_MSG_WARN([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location.]) # XXX maybe we should ask the user the QMAKE binary including name, not just path?
+        AC_MSG_WARN([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location.]) # XXX maybe we should ask the user the QMAKE binary including name, not just path?
         QTENV_IF_POSSIBLE=missing-dependency
     else
         OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE, -lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL, qt_ok, QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL")

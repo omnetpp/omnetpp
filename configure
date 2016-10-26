@@ -4707,7 +4707,7 @@ if test "$WITH_QTENV" != "yes"; then
     QTENV_IF_POSSIBLE=missing-dependency
 else
     # Check for qmake.
-    for ac_prog in qmake-qt5 qmake
+    for ac_prog in qmake qmake-qt5
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -4755,8 +4755,8 @@ test -n "$QMAKE" || QMAKE="nope"
 
 
     if test "$QMAKE" = nope; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&5
-$as_echo "$as_me: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake-qt5 qmake) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&2;} # XXX maybe we should ask the user the QMAKE binary including name, not just path?
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&5
+$as_echo "$as_me: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&2;} # XXX maybe we should ask the user the QMAKE binary including name, not just path?
         QTENV_IF_POSSIBLE=missing-dependency
     else
 

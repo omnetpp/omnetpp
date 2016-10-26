@@ -138,7 +138,7 @@ EMBED_TCL_CODE=yes
 # this variable to the 'bin' directory of that bundle, where qmake is.
 # Leave it empty or commented out to use the default Qt installation.
 #
-#QT_PATH="/home/user/Qt/5.7/gcc_64/bin/"
+#QT_PATH="/home/user/Qt/5.7/gcc_64/bin"
 #
 # You can also explicitly tell 'configure' what compiler options (QT_CFLAGS)
 # and linker switches (QT_LIBS) are needed to build an application with Qt
