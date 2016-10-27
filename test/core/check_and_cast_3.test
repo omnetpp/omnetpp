@@ -12,7 +12,7 @@ EV << "fell through\n" << endl;
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 cannot cast
 
 %not-contains: stdout

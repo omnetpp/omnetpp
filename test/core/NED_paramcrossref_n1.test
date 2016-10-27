@@ -11,6 +11,6 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 While evaluating parameter `a': unknown parameter `foo'
 

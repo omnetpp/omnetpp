@@ -25,5 +25,5 @@ debug-statistics-recording = true
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 error in source=foo-foo: cannot use a signal more than once in a statistics source expression

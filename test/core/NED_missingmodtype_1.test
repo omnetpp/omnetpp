@@ -23,6 +23,6 @@ network Test
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 NotImplemented.* not found
 

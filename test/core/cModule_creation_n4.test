@@ -11,6 +11,6 @@ sink->buildInside(); // ==> error
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 buildInside() already called for this module
 

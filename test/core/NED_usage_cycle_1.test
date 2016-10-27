@@ -23,5 +23,5 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Submodule nesting too deep

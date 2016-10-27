@@ -21,5 +21,5 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 type of gate `out' must be output, as required by interface `IModule'

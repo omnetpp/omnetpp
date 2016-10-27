@@ -30,5 +30,5 @@ EV << node->getXML();
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Validation error:.*(extraElem|foo)

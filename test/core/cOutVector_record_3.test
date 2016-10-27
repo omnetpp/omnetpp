@@ -9,5 +9,5 @@ vec.setName("vec");
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 changing name of an output vector after record() calls is not allowed.

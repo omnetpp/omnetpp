@@ -35,5 +35,5 @@ cmdenv-express-mode = false
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Submodule a: more than one module types named `App' found that implement module interface IApp (use fully qualified name to disambiguate)

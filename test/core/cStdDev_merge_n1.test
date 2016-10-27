@@ -10,6 +10,6 @@ a.merge(&b);
 %exitcode: 1
 
 %subst: /omnetpp:://
-%contains: stdout
+%contains: stderr
 (cStdDev)a: Cannot merge weighted statistics (cWeightedStdDev)Test.b into unweighted
 

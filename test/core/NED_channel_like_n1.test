@@ -19,5 +19,5 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 channel type has no parameter `p1', required by interface `IChannel'

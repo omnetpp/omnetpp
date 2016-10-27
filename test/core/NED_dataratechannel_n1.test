@@ -34,7 +34,7 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 More than one channel with data rate found in the connection path between gates Test.c2.node.g$o and Test.c1.node.g$i
 
 

@@ -60,6 +60,6 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 is not connected
 

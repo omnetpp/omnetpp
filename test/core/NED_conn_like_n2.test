@@ -20,5 +20,5 @@ network Test
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 `IFoo' is not a channel interface

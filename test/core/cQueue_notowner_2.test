@@ -12,5 +12,5 @@ q.insert(msg);
 %exitcode: 1
 
 %subst: /omnetpp:://
-%contains-regex: stdout
+%contains-regex: stderr
 Error in module .*: \(cMessage\)one is currently in .*scheduled-events, it cannot be inserted into \(cQueue\).*q

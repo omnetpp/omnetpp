@@ -20,7 +20,7 @@ EV << "fell through" << endl;
 %contains: stdout
 p1:1
 
-%contains: stdout
+%contains: stderr
 cannot cast
 
 %not-contains: stdout

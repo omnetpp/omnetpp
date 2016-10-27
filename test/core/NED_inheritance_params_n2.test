@@ -23,5 +23,5 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Cannot overwrite non-default value of parameter `p1'

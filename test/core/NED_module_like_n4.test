@@ -19,5 +19,5 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 module type has no gate `out', required by interface `IModule'

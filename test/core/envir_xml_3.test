@@ -19,5 +19,5 @@ else
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Parse error

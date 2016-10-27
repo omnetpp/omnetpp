@@ -42,6 +42,6 @@ void Test::activity()
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Error parsing XML string:
 

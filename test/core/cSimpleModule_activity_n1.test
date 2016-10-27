@@ -45,7 +45,7 @@ total-stack = 5MiB  # ensure that we receive the error
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Error in module .*: Cannot create coroutine
 
 

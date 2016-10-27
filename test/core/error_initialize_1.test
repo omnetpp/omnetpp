@@ -16,8 +16,9 @@ Define_Module(Foo);
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 <!> Error in .*: std::range_error: oops.
-*
-End\.$
+
+%contains: stdout
+End.
 

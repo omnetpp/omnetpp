@@ -13,7 +13,7 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Evaluation nesting too deep (circular parameter references?)
 
 

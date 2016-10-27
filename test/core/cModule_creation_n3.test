@@ -10,6 +10,6 @@ sink->finalizeParameters(); // ==> error
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 finalizeParameters() already called for this module
 

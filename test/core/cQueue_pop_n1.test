@@ -7,6 +7,6 @@ q.pop();
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Error .*pop\(\): queue empty
 

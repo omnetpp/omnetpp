@@ -9,7 +9,7 @@ import testlib.Dump;
 module Node
 {
     @signal(foo);
-      
+
 }
 
 network Test
@@ -29,5 +29,5 @@ debug-statistics-recording = true
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Error adding statistic 'src0' to module Test (NED type: Test): error in source=node[999].foo: no module 'node[999]' under 'Test'

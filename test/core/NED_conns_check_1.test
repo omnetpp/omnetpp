@@ -42,5 +42,5 @@ void Simple::activity()
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Error.*is not connected to sibling or parent module

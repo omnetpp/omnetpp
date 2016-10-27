@@ -7,5 +7,5 @@ const char *str = " 34 42 13 46bubu 72 41 ";
 std::vector<int> v = cStringTokenizer(str).asIntVector();
 
 %exitcode: 1
-%contains: stdout
+%contains: stderr
 Converting string to a vector of ints: error at token '46bubu'

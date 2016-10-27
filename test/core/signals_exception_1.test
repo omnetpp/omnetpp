@@ -51,6 +51,6 @@ void Test::activity()
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Error.* std::runtime_error: problem!
 

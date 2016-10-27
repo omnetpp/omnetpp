@@ -11,5 +11,5 @@ else
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Error reading `@TESTNAME@qwerty.xml'

@@ -60,6 +60,6 @@ void Simple::activity()
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 element not found.
 

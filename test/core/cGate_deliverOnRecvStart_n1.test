@@ -7,6 +7,6 @@ gate("out")->setDeliverOnReceptionStart(true);
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 setDeliverOnReceptionStart() may only be invoked on an input gate
 

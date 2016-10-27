@@ -19,5 +19,5 @@ cmdenv-express-mode = false
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Network `TestNet' not found

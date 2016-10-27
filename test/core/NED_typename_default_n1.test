@@ -19,5 +19,5 @@ network Test
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Submodule app: no module type named `Blah' found that implements module interface IApp

@@ -12,6 +12,6 @@ scheduleAt(3,msg);
 %exitcode: 1
 
 %subst: /omnetpp:://
-%contains-regex: stdout
+%contains-regex: stderr
 Error in module .*: scheduleAt\(\): message \(cMessage\)one is currently scheduled
 

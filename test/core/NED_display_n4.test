@@ -13,5 +13,5 @@ network Test {
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 tag name "i**" contains invalid character in  "i**=foo".

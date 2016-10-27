@@ -34,5 +34,5 @@ network Test
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 [Mm]ore than one channel types named `FooChannel'

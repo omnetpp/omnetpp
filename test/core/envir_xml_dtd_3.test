@@ -17,5 +17,5 @@ EV << node->getXML();
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Validation error

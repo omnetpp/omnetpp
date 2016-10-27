@@ -10,6 +10,6 @@ sink->callInitialize(); // ==> error
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 initialize() already called for this module
 

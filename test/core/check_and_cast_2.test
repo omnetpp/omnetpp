@@ -13,7 +13,7 @@ EV << p << endl;
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 cannot cast
 
 %not-contains: stdout

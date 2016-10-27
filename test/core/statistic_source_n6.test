@@ -27,5 +27,5 @@ debug-statistics-recording = true
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Error adding statistic 'src0' to module Test (NED type: Test): error in source=node.foobar999: signal 'foobar999' is not declared on type 'Node'

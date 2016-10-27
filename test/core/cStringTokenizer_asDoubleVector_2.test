@@ -7,6 +7,6 @@ const char *str = " 34.13 -0.11bubu 3.1415 ";
 std::vector<double> v = cStringTokenizer(str).asDoubleVector();
 
 %exitcode: 1
-%contains: stdout
+%contains: stderr
 Converting string to a vector of doubles: error at token '-0.11bubu'
 

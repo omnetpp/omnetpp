@@ -18,5 +18,5 @@ network Test
 }
 
 %exitcode: 1
-%contains: stdout
+%contains: stderr
 The following NED types could not be fully resolved, due to a missing base type or interface: Simple1, Simple2

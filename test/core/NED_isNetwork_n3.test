@@ -11,5 +11,5 @@ module Test
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Module type `Test' is not a network

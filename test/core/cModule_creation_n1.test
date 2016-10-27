@@ -9,6 +9,6 @@ sendDirect(new cMessage("hello"), 1, 0, sink->gate("in"));
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Test.sink.*: Module not initialized
 

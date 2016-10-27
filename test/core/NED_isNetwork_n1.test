@@ -15,5 +15,5 @@ module Test extends Base
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains-regex: stderr
 Module type `Test' is not a network

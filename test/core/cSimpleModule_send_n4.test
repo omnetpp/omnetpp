@@ -6,6 +6,6 @@ send(new cMessage(), 12345);
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 send()/sendDelayed(): Invalid gate Id 12345
 
