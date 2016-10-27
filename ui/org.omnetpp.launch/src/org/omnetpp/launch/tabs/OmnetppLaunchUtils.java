@@ -318,6 +318,8 @@ public class OmnetppLaunchUtils {
         ILaunchConfigurationWorkingCopy newCfg = config.copy(config.getName());
         newCfg.setAttributes(CollectionUtils.getDeepCopyOf(newCfg.getAttributes())); // otherwise attrs that are Collections themselves are not copied
 
+        boolean isDebugLaunch = mode.equals(ILaunchManager.DEBUG_MODE);
+
         // working directory (converted from path to location)
         String workingdirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "");
         if (StringUtils.isEmpty(workingdirStr))
@@ -340,7 +342,7 @@ public class OmnetppLaunchUtils {
             // A CDT project is required for the launcher in debug mode to start the application (using gdb).
             project = findFirstRelatedCDTProject(workingdirStr);
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, project != null ? project.getName() : null);
-            if (mode.equals(ILaunchManager.DEBUG_MODE) && project == null)
+            if (isDebugLaunch && project == null)
                 throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: no related open C++ project"));
         }
         else {
@@ -348,7 +350,7 @@ public class OmnetppLaunchUtils {
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
             exeName = new Path(exeName).removeFirstSegments(1).toString(); // project-relative path
             project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-            if (mode.equals(ILaunchManager.DEBUG_MODE) && (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID)))
+            if (isDebugLaunch && (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID)))
                 throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: the executable's project ("+projectName+") is not an open C++ project"));
         }
 
@@ -358,14 +360,10 @@ public class OmnetppLaunchUtils {
 
         String args = "";
 
-        String envirStr = StringUtils.defaultIfEmpty(config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
-        if (envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL))
-            /*nothing*/;
-        else if (envirStr.equals(IOmnetppLaunchConstants.UI_CMDENV))
-            args += " -u Cmdenv";
-        else if (envirStr.equals(IOmnetppLaunchConstants.UI_TKENV))
-            args += " -u Tkenv";
-        else
+        args += " -m ";  // report errors on stdout, because Console does not guarantee correct ordering of stdout and stderr output
+
+        String envirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim();
+        if (StringUtils.isNotEmpty(envirStr) && !envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL))
             args += " -u " + envirStr;
 
         int portNumber = config.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
@@ -376,10 +374,10 @@ public class OmnetppLaunchUtils {
         if (StringUtils.isNotEmpty(configStr))
             args += " -c "+configStr;
 
-        if (mode.equals(ILaunchManager.DEBUG_MODE)) {
-            String runStr = config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, "").trim();
-            if (StringUtils.isNotEmpty(runStr))
-                args += " -r "+runStr;
+        if (isDebugLaunch) {
+            String runFilter = config.getAttribute(IOmnetppLaunchConstants.OPP_RUNFILTER, "").trim();
+            if (!runFilter.isEmpty())
+                args += " -r " + runFilter;
             // expand the GDB init file path so we can use also variables there (if needed)
             String expandedGdbInitFile = StringUtils.substituteVariables(config.getAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, ""));
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_GDB_INIT, expandedGdbInitFile);
@@ -424,15 +422,23 @@ public class OmnetppLaunchUtils {
             args += " -l " + StringUtils.join(libs," -l ")+" ";
         }
 
-        String recEventlog = config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "").trim();
-        if (StringUtils.isNotEmpty(recEventlog))
-            args += " --"+ConfigRegistry.CFGID_RECORD_EVENTLOG.getName()+"="+recEventlog+" ";
+        // debug-on-errors: use setting in DEBUG mode, disable in RUN mode
+        boolean value = isDebugLaunch ? config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, true) : false;
+        args += " --" + ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getName() + "=" + value + " ";
 
-        String dbgOnErr = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "auto").trim();
-        if (dbgOnErr.equals("auto"))
-            dbgOnErr = mode.equals(ILaunchManager.DEBUG_MODE) ? "true" : "false";
-        if (StringUtils.isNotEmpty(dbgOnErr))
-            args += " --"+ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getName()+"="+dbgOnErr+" ";
+        if (config.getAttribute(IOmnetppLaunchConstants.OPP_SILENT, false))
+            args += " -s ";
+
+        // time limits
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_SIM_TIME_LIMIT.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, ""));
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CPU_TIME_LIMIT.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, ""));
+
+        // other options
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CMDENV_REDIRECT_OUTPUT.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_REDIRECT_STDOUT, ""));
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_RECORD_EVENTLOG.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, ""));
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_SCALAR_RECORDING.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, ""));
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_VECTOR_RECORDING.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, ""));
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, ""));
 
         // ini files
         String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();
@@ -446,8 +452,8 @@ public class OmnetppLaunchUtils {
         }
 
         // set the program arguments
-        newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS,
-                config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "")+args);
+        String additionalArgs = config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
+        newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, args + additionalArgs); // note: "additionalArgs" comes last, to allow the user override settings in "args"
 
         // handle environment: add OMNETPP_BIN and (DY)LD_LIBRARY_PATH
         Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
@@ -492,6 +498,12 @@ public class OmnetppLaunchUtils {
         // do we need this ??? : configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);
 
         return newCfg;
+    }
+
+    private static String getOptionalConfigOptionArg(String configOptionName, String value) {
+        if (value.isEmpty())
+            return "";
+        return " --" + configOptionName + "=" + value + " ";
     }
 
     /**
@@ -725,7 +737,11 @@ public class OmnetppLaunchUtils {
      */
     public static List<Integer> queryRunNumbers(ILaunchConfiguration configuration, String runFilter) throws CoreException, InterruptedException {
         try {
-            String additionalArgs = StringUtils.isNotBlank(runFilter) ? " -r " + StringUtils.quoteStringIfNeeded(runFilter) : "";
+            String additionalArgs = "";
+            if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").isEmpty())
+                additionalArgs += " -c General";
+            if (!runFilter.isEmpty())
+                additionalArgs += " -r " + StringUtils.quoteStringIfNeeded(runFilter);
             additionalArgs += " -s -q runnumbers";
             ProcessResult result = getSimulationOutput(configuration, additionalArgs);
             if (result.exitCode != 0)
@@ -745,18 +761,35 @@ public class OmnetppLaunchUtils {
     }
 
     /**
-     * Returns a string describing all runs in the scenario, or "" if an error occurred
+     * Returns a HTML string describing all runs in the scenario, or "" if an error occurred
      */
     public static String getSimulationRunInfo(ILaunchConfiguration configuration, String runFilter) {
         try {
-            String additionalArgs = StringUtils.isNotBlank(runFilter) ? " -r " + StringUtils.quoteStringIfNeeded(runFilter) : "";
+            String additionalArgs = "";
+            if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").isEmpty())
+                additionalArgs += " -c General";
+            if (!runFilter.isEmpty())
+                additionalArgs += " -r " + StringUtils.quoteStringIfNeeded(runFilter);
             additionalArgs += " -s -q runs ";
+
             ProcessResult result = getSimulationOutput(configuration, additionalArgs);
-            String info = result.stdout + result.stderr;
+            String info;
+            String allOutput = StringUtils.join(result.stdout.trim(), "\n", result.stderr.trim());
+            allOutput = StringUtils.quoteForHtml(allOutput).replace("\n", "<br>\n");
+            if (result.exitCode != 0) {
+                // error case: show both stdout and stderr
+                info = "Error retrieving list of runs from the simulation.<br>\n" + allOutput;
+            }
+            else {
+                // normal case: show run count and run descriptions
+                int numRuns = StringUtils.countMatches("\n" + result.stdout, "\nRun ");
+                if (runFilter.isEmpty())
+                    info = "Configuration contains " + numRuns + " " + (numRuns < 2 ? "run" : "runs") + ".";
+                else
+                    info = "Run filter matches " + numRuns + " " + (numRuns < 2 ? "run" : "runs") + ".";
+                info += "<br>\n" + allOutput;
+            }
             return info;
-            //return result.stdout; //TODO also stderr; and check exitcode!
-            //FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc --Andras
-            //return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simulationInfo, "Number of runs:", "\n\n"));
         }
         catch (CoreException e) {
             // do not litter the log with the error: this method often fails because it is often

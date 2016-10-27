@@ -82,18 +82,15 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
     /**
      * Generate help text for the given config entry, to be displayed by the content assistant.
      */
-    protected static String getConfigHelpText(ConfigOption entry, String section, IReadonlyInifileDocument doc) {
-        String key = entry.getName();
-        String text = "";
-
+    protected static String getConfigHelpText(ConfigOption option, String section, IReadonlyInifileDocument doc) {
         // generate "standard" documentation for it
-        text += "<object-fullpath-pattern>." + key + " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
-        if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
-            text += ", default: " + entry.getDefaultValue();
-        if (entry.getUnit()!=null)
-            text += ", unit: "+entry.getUnit();
+        String text = "<object-fullpath-pattern>." + option.getName() + " = <" + option.getDataType().name().replaceFirst("CFG_", "");
+        if (option.getDefaultValue()!=null && !option.getDefaultValue().equals(""))
+            text += ", default: " + option.getDefaultValue();
+        if (option.getUnit()!=null)
+            text += ", unit: "+option.getUnit();
         text += ">\n\n";
-        text += StringUtils.breakLines(entry.getDescription(), 50) + "\n";  // default tooltip is ~55 chars wide (text is not wrapped: longer lines simply not fully visible!)
+        text += StringUtils.breakLines(option.getDescription(), 50) + "\n";  // default tooltip is ~55 chars wide (text is not wrapped: longer lines simply not fully visible!)
 
         return text;
     }
@@ -110,6 +107,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
         case KIND_SCALAR: return InifileUtils.ICON_PROPOSAL_SCALARCONFIG;
         case KIND_VECTOR: return InifileUtils.ICON_PROPOSAL_VECTORCONFIG;
         case KIND_OTHER: //TODO
+        case KIND_NONE: return null;
         }
         return null;
     }

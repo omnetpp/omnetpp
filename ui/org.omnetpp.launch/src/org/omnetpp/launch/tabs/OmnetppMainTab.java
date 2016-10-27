@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -29,10 +30,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.internal.ui.SWTFactory;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
@@ -47,29 +49,43 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.model.ConfigOption;
+import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
 /**
- * A launch configuration tab that displays and edits omnetpp project
+ * A launch configuration tab that displays and edits OMNeT++ launch configuration
  *
- * @author rhornig
+ * @author rhornig, andras
  */
+//FIXME in RUN mode, stderr is not shown in Console!!!! (error msg cannot be seen)
+//FIXME RUN mode + all option checkboxes cleared + invalid option as extra arg --> order of output in console is wong, error message is uninformative (not the error message but "Finished with error")
+//FIXME Levy's bug: remove quotes from value in ${iterationvarsf}
+//TODO restore ${iterationvars2} that contains "repetition=.." in the right position (nesting order)
+//TODO for batches: make it optional to save capture output in Console pages!
+//TODO allow at least sim-time-limit and cpu-time-limit to be specified in this page...
+//TODO content assist for the Additional Arguments editfield
 public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
     protected static final int MAX_TOOLTIP_CHARS = 50000;
@@ -78,7 +94,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     protected Button fProgOppRunButton;
     protected Button fProgOtherButton;
     protected Text fProgText;
-    protected Button fShowDebugViewButton;
 
     // working dir
     private Button fWorkspaceButton;
@@ -90,31 +105,31 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     protected Text fRunText;
     protected Text fNedPathText;
     protected Text fImagePathText;
+    protected Button fBatchingCheckbox;
     protected Spinner fParallelismSpinner;
     protected Spinner fBatchSizeSpinner;
-    protected Button fDefaultExternalEnvButton;
-    protected Button fCmdenvButton;
-    protected Button fTkenvButton;
-    protected Button fQtenvButton;
-    protected Button fOtherEnvButton;
-    protected Text fOtherEnvText;
+    protected Combo fEnvirCombo;
+    protected Text fSimTimeLimitText;
+    protected Text fCpuTimeLimitText;
     protected Text fLibraryText;
     protected Text fAdditionalText;
 
-    protected Button fEventLogDefaultButton;
-    protected Button fEventLogYesButton;
-    protected Button fEventLogNoButton;
+    protected Button fDebugOnErrorCheckbox;
 
-    protected Button fDebugOnErrorDefaultButton;
-    protected Button fDebugOnErrorYesButton;
-    protected Button fDebugOnErrorNoButton;
-    protected Button fDebugOnErrorAutoButton;
+    protected Button fRedirectStdoutCheckbox;
+    protected Button fRecordEventlogCheckbox;
+    protected Button fRecordScalarsCheckbox;
+    protected Button fRecordVectorsCheckbox;
+    protected Button fCmdenvExpressModeCheckbox;
+    protected Button fSilentCheckbox;
 
     private ILaunchConfiguration config;
     private boolean updateDialogStateInProgress = false;
     private boolean isDebugLaunch = false;
     private String infoText = null;
     private Button fBrowseForBinaryButton;
+
+    private static final String CMDENV = "Cmdenv", QTENV = "Qtenv", TKENV = "Tkenv";
 
     private SelectionAdapter defaultSelectionAdapter = new SelectionAdapter() {
         @Override
@@ -131,10 +146,49 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         }
     };
 
+    public static class ConfigOptionsContentProposalProvider extends ContentProposalProvider {
+        protected List<IContentProposal> proposals = null;
+
+        public ConfigOptionsContentProposalProvider() {
+            super(false, true);
+        }
+
+        @Override
+        protected List<IContentProposal> getProposalCandidates(String prefix) {
+            if (proposals == null) {
+                proposals = new ArrayList<>();
+                for (ConfigOption option : ConfigRegistry.getOptions())
+                    proposals.add(new ContentProposal("--" + option.getName()+"=", "--" + option.getName()+"=", getDescription(option)));
+                for (ConfigOption option : ConfigRegistry.getPerObjectOptions())
+                    proposals.add(new ContentProposal("--" + option.getName()+"=", "--" + option.getName()+"= (*)", getDescription(option)));
+                proposals.sort(null);
+            }
+            return proposals;
+        }
+
+        @Override
+        protected String getCompletionPrefix(String text) {
+            return text.replaceFirst("^.* ", "");  // keep only the last argument
+        }
+
+        protected static String getDescription(ConfigOption option) {
+            String text = "--" + option.getName() + " = <" + option.getDataType().name().replaceFirst("CFG_", "") + ">";
+            if (option.getDefaultValue() != null && !option.getDefaultValue().equals(""))
+                text += ", default: " + option.getDefaultValue();
+            if (option.getUnit() != null)
+                text += ", unit: "+option.getUnit();
+            text += "\n\n";
+            text += option.getDescription();
+            return text;
+        }
+
+    }
+
     public OmnetppMainTab() {
         super();
     }
 
+    @Override
     public void createControl(Composite parent) {
         isDebugLaunch = getLaunchConfigurationDialog().getMode().equals(ILaunchManager.DEBUG_MODE);
 
@@ -143,8 +197,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         scolledComposite.setExpandVertical(true);
 
         final Composite composite = SWTFactory.createComposite(scolledComposite, 1, 1, GridData.FILL_HORIZONTAL);
-        createWorkingDirGroup(composite, 1);
         createSimulationGroup(composite, 1);
+        createExecutionGroup(composite, 1);
         createOptionsGroup(composite, 1);
 
         Composite advancedGroup = createAdvancedGroup(composite, 1);
@@ -161,40 +215,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         scolledComposite.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
         scolledComposite.setContent(composite);
         setControl(scolledComposite);
+
+        addModifyListeners(composite);
     }
-
-    protected Group createWorkingDirGroup(Composite parent, int colSpan) {
-        Group group = SWTFactory.createGroup(parent, "Working directory", 3, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout innerLd = (GridLayout)group.getLayout();
-        innerLd.marginWidth = 0;
-
-        setControl(group);
-        workingDirText = SWTFactory.createSingleText(group, 1);
-        workingDirText.addModifyListener(modifyListener);
-        workingDirText.addModifyListener(new ModifyListener() {
-            public void modifyText(ModifyEvent e) {
-                updateMacros();
-            }
-        });
-        fWorkspaceButton = createPushButton(group, "Browse...", null);
-        fWorkspaceButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                handleWorkingDirBrowseButtonSelected();
-            }
-        });
-        return group;
-    }
-
 
     protected Composite createSimulationGroup(Composite parent, int colSpan) {
-        Composite composite = SWTFactory.createGroup(parent, "Simulation", 4, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)composite.getLayout();
-        ld.marginHeight = 1;
+        Composite composite = SWTFactory.createGroup(parent, "Simulation", 3, colSpan, GridData.FILL_HORIZONTAL);
 
         SWTFactory.createLabel(composite, "Executable:",1);
-
-        Composite innerComposite = SWTFactory.createComposite(composite, 3, 2, GridData.FILL_HORIZONTAL);
+        Composite innerComposite = SWTFactory.createComposite(composite, 3, 1, GridData.FILL_HORIZONTAL);
         GridLayout innerLd = (GridLayout)innerComposite.getLayout();
         innerLd.marginHeight = 0;
         innerLd.marginWidth = 0;
@@ -203,7 +232,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fProgOppRunButton.setSelection(true);
         fProgOtherButton = createRadioButton(innerComposite, "Other:");
         fProgText = SWTFactory.createSingleText(innerComposite, 1);
-        fProgText.addModifyListener(modifyListener);
 
         fBrowseForBinaryButton = SWTFactory.createPushButton(composite, "Browse...", null);
         fBrowseForBinaryButton.addSelectionListener(new SelectionAdapter() {
@@ -213,11 +241,25 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             }
         });
 
-        SWTFactory.createLabel(composite, "Ini file(s):", 1);
+        SWTFactory.createLabel(composite, "Working dir:", 1);
+        workingDirText = SWTFactory.createSingleText(composite, 1);
+        workingDirText.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                updateMacros();
+            }
+        });
+        fWorkspaceButton = createPushButton(composite, "Browse...", null);
+        fWorkspaceButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handleWorkingDirBrowseButtonSelected();
+            }
+        });
 
-        fInifileText = SWTFactory.createSingleText(composite, 2);
+        SWTFactory.createLabel(composite, "Ini file(s):", 1);
+        fInifileText = SWTFactory.createSingleText(composite, 1);
         fInifileText.setToolTipText("Ini file (or files), relative to the working directory");
-        fInifileText.addModifyListener(modifyListener);
 
         Button browseInifileButton = SWTFactory.createPushButton(composite, "Browse...", null);
         browseInifileButton.addSelectionListener(new SelectionAdapter() {
@@ -228,21 +270,14 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         });
 
         SWTFactory.createLabel(composite, "Config name:",1);
-
-        fConfigCombo = SWTFactory.createCombo(composite, SWT.BORDER | SWT.READ_ONLY, 3, new String[] {});
-        fConfigCombo.setToolTipText("The configuration from the ini file");
+        fConfigCombo = SWTFactory.createCombo(composite, SWT.BORDER | SWT.READ_ONLY, 2, new String[] {});
+        fConfigCombo.setToolTipText("Name of a configuration section in the ini file");
         fConfigCombo.setVisibleItemCount(10);
-        fConfigCombo.addModifyListener(modifyListener);
 
         SWTFactory.createLabel(composite, "Run(s):", 1);
+        fRunText = SWTFactory.createSingleText(composite, 2);
 
-        int runSpan = isDebugLaunch ? 3 : 1;
-        fRunText = SWTFactory.createSingleText(composite, runSpan);
-        fRunText.addModifyListener(modifyListener);
-
-        String runTooltip = isDebugLaunch ?
-                "The run number that should be executed (default: 0)" :
-                "Filter expression or list of run numbers. Examples: $numHosts > 10; 1,5,8..13"; // TODO default=?
+        String runTooltip = "Filter expression (e.g. $numHosts > 10) or list of run numbers (e.g. 1,5,8..13)";
 
         HoverSupport hover = new HoverSupport();
         hover.adapt(fRunText, new IHoverInfoProvider() {
@@ -250,7 +285,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 if (infoText == null)
                     infoText = truncateHoverText(OmnetppLaunchUtils.getSimulationRunInfo(config, fRunText.getText()), MAX_TOOLTIP_CHARS);
-                return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(runTooltip+"<pre>"+infoText+"</pre>"));
+                return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(runTooltip + "<p/>" + infoText));
             }
         });
 
@@ -267,51 +302,91 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         return text;
     }
 
-    protected Composite createOptionsGroup(Composite parent, int colSpan) {
-        Composite composite = SWTFactory.createGroup(parent, "Options", 5, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)composite.getLayout();
-        ld.marginHeight = 1;
+    protected void createExecutionGroup(Composite parent, int colSpan) {
+        Composite composite = SWTFactory.createGroup(parent, "Execution", 2, colSpan, GridData.FILL_HORIZONTAL);
 
-        createUIRadioButtons(composite, 5);
+        SWTFactory.createLabel(composite, "User interface:", 1);
+        fEnvirCombo = SWTFactory.createCombo(composite, SWT.BORDER, 1, GridData.FILL_HORIZONTAL, new String[] {QTENV, TKENV, CMDENV});
+        fEnvirCombo.setToolTipText("User interface for the simulation. Leave empty to use ini file setting or the default.");
+        fEnvirCombo.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                if (fBatchingCheckbox != null) {
+                    fBatchingCheckbox.setSelection(fEnvirCombo.getText().trim().equals(CMDENV));
+                    updateDialogState();  // must be AFTER the previous line
+                }
+            }
+        });
 
-        if (!isDebugLaunch) { // parallel execution is not possible under CDT
-            SWTFactory.createLabel(composite, "Number of CPUs to use:", 1);
-            fParallelismSpinner = new Spinner(composite, SWT.BORDER);
+        if (!isDebugLaunch) { // launching multiple processes is not desirable under CDT
+            fBatchingCheckbox = SWTFactory.createCheckButton(composite, "Allow multiple processes", null, false, 2);
+            fBatchingCheckbox.setToolTipText("Execute simulation runs in batches, each batch in a separate process. Useful with Cmdenv.");
+
+            Composite group = SWTFactory.setMargin(SWTFactory.createComposite(composite, 4, 2, GridData.FILL_HORIZONTAL), 0);
+
+            SWTFactory.setIndent(SWTFactory.createLabel(group, "Number of CPUs to use:", 1), 20);
+            fParallelismSpinner = new Spinner(group, SWT.BORDER);
+            fParallelismSpinner.setToolTipText("Number of simulation processes that are able to run in parallel");
             fParallelismSpinner.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
             fParallelismSpinner.setMinimum(1);
-            fParallelismSpinner.addModifyListener(modifyListener);
             setSpinnerWidthHint(fParallelismSpinner);
 
-            SWTFactory.createLabel(composite, "  ", 1);  // spacer
-
-            SWTFactory.createLabel(composite, "Batch size:", 1);
-            fBatchSizeSpinner = new Spinner(composite, SWT.BORDER);
+            SWTFactory.setIndent(SWTFactory.createLabel(group, "Runs per process:", 1), 20);
+            fBatchSizeSpinner = new Spinner(group, SWT.BORDER);
+            fBatchSizeSpinner.setToolTipText("Number of simulation runs to be assigned to a single simulation process (Cmdenv instance)");
             fBatchSizeSpinner.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
             fBatchSizeSpinner.setMinimum(1);
-            fBatchSizeSpinner.addModifyListener(modifyListener);
             setSpinnerWidthHint(fBatchSizeSpinner);
         }
 
-        createRecordEventlogRadioButtons(composite, 5);
-        createDbgOnErrRadioButtons(composite, 5);
-        return composite;
+        if (isDebugLaunch) {
+            fDebugOnErrorCheckbox = SWTFactory.createCheckButton(composite, "Debug on errors", null, false, 2);
+            fDebugOnErrorCheckbox.setToolTipText("Trigger debugger interrupt when simulation encounters runtime error. Overrides similar ini file setting.");
+        }
+
+        SWTFactory.createLabel(composite, "Simulation time limit:", 1);
+        fSimTimeLimitText = SWTFactory.createSingleText(composite, 1);
+        fSimTimeLimitText.setToolTipText("Simulation time to stop the simulation at. Overrides similar ini file setting.");
+
+        SWTFactory.createLabel(composite, "CPU time limit:", 1);
+        fCpuTimeLimitText = SWTFactory.createSingleText(composite, 1);
+        fCpuTimeLimitText.setToolTipText("Maximum CPU time allowed for the simulation. Overrides similar ini file setting.");
     }
 
-    protected void setSpinnerWidthHint(Spinner spinner) {
+    protected static void setSpinnerWidthHint(Spinner spinner) {
         Point size = spinner.computeSize(SWT.DEFAULT, SWT.DEFAULT);
         ((GridData)spinner.getLayoutData()).widthHint = size.x + 16; // TODO needed on some platforms
     }
 
+    protected void createOptionsGroup(Composite parent, int colSpan) {
+        Composite composite = SWTFactory.createGroup(parent, "Output", 3, colSpan, GridData.FILL_HORIZONTAL);
+        SWTFactory.setEqualColumnWidth(composite, true);
+
+        // ordering is so that related controls are in one column in the 3-column layout
+        fRedirectStdoutCheckbox = SWTFactory.createTristateCheckButton(composite, "Save stdout to per-run files (Cmdenv)", null, false, false, 1);
+        fRecordScalarsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record scalar results", null, false, false, 1);
+        fSilentCheckbox = SWTFactory.createCheckButton(composite, "Suppress logo", null, false, 1);
+        fRecordEventlogCheckbox = SWTFactory.createTristateCheckButton(composite, "Record eventlog", null, false, false, 1);
+        fRecordVectorsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record vector results", null, false, false, 1);
+        fCmdenvExpressModeCheckbox = SWTFactory.createTristateCheckButton(composite, "Express mode (Cmdenv)", null, false, false, 1);
+
+        //These tooltips are not very useful
+        //fRedirectStdoutCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_CMDENV_REDIRECT_OUTPUT.getName() + "\" configuration option");
+        //fRecordScalarsCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_SCALAR_RECORDING.getName() + "\" option");
+        //fRecordEventlogCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_RECORD_EVENTLOG.getName() + "\" configuration option");
+        //fRecordVectorsCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_VECTOR_RECORDING.getName() + "\" configuration option");
+        //fCmdenvExpressModeCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE.getName() + "\" configuration option");
+        //fSilentCheckbox.setToolTipText("Corresponds to the -s command-line option");
+
+        //TODO sim-time-limit, cpu-time-limit (In an Options group)
+    }
+
     protected Composite createAdvancedGroup(Composite parent, int colSpan) {
         Composite composite = SWTFactory.createGroup(parent, "Advanced", 3, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)composite.getLayout();
-        ld.marginHeight = 1;
 
         SWTFactory.createLabel(composite, "Dynamic libraries:", 1);
-
         fLibraryText = SWTFactory.createSingleText(composite, 1);
         fLibraryText.setToolTipText("DLLs or shared libraries to load (without extension, relative to the working directory. Use ${opp_shared_libs:/workingdir} for automatic setting.)");
-        fLibraryText.addModifyListener(modifyListener);
 
         Button browseLibrariesButton = SWTFactory.createPushButton(composite, "Browse...", null);
         browseLibrariesButton.addSelectionListener(new SelectionAdapter() {
@@ -325,93 +400,47 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fNedPathText = SWTFactory.createSingleText(composite, 2);
         fNedPathText.setToolTipText("Directories where NED files are read from (relative to the first selected ini file). " +
         "Use ${opp_ned_path:/workingdir} for automatic setting.");
-        fNedPathText.addModifyListener(modifyListener);
 
         SWTFactory.createLabel(composite, "Image Path:", 1);
         fImagePathText = SWTFactory.createSingleText(composite, 2);
-        fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file). " +
-        "Use ${opp_image_path:/workingdir} for automatic setting.");
-        fImagePathText.addModifyListener(modifyListener);
+        fImagePathText.setToolTipText("Directories where image files are read from (relative to the first selected ini file). Use ${opp_image_path:/workingdir} for automatic setting.");
 
         SWTFactory.createLabel(composite, "Additional arguments:", 1);
         fAdditionalText = SWTFactory.createSingleText(composite, 2);
         fAdditionalText.setToolTipText("Specify additional command line arguments");
-        fAdditionalText.addModifyListener(modifyListener);
-
-        fShowDebugViewButton = SWTFactory.createCheckButton(composite, "Show Debug View on Launch", null, false, 3);
-        fShowDebugViewButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent evt) {
-                updateLaunchConfigurationDialog();
-            }
-        });
+        new ContentAssistCommandAdapter(fAdditionalText, new TextContentAdapter(),
+                new ConfigOptionsContentProposalProvider(),
+                IWorkbenchCommandConstants.EDIT_CONTENT_ASSIST, "-".toCharArray(), true);
 
         return composite;
     }
 
-    protected void createUIRadioButtons(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createComposite(parent, 7, colSpan, GridData.FILL_HORIZONTAL);
-        ((GridLayout)comp.getLayout()).marginWidth = 0;
-        ((GridLayout)comp.getLayout()).marginHeight = 0;
-
-        SWTFactory.createLabel(comp, "User interface:", 1);
-        fDefaultExternalEnvButton = createRadioButton(comp, "Default");
-        fCmdenvButton = createRadioButton(comp, "Cmdenv");
-        fTkenvButton = createRadioButton(comp, "Tkenv");
-        fQtenvButton = createRadioButton(comp, "Qtenv");
-        fOtherEnvButton = createRadioButton(comp, "Other:");
-        fOtherEnvText = SWTFactory.createSingleText(comp, 1);
-        fOtherEnvText.addModifyListener(modifyListener);
-
-        fDefaultExternalEnvButton.setToolTipText("Let the ini file setting or the default take effect");
-        fCmdenvButton.setToolTipText("Launch the simulation with the -u Cmdenv option");
-        fTkenvButton.setToolTipText("Launch the simulation with the -u Tkenv option");
-        fQtenvButton.setToolTipText("Launch the simulation with the -u Qtenv option");
-        fOtherEnvButton.setToolTipText("Launch the simulation with the -u <custom> option");
+    protected void addModifyListeners(Control control) {
+        if (control instanceof Text)
+            ((Text)control).addModifyListener(modifyListener);
+        else if (control instanceof Button)
+            ((Button)control).addSelectionListener(defaultSelectionAdapter);
+        else if (control instanceof Combo) { // note: this is a Composite!
+            ((Combo)control).addSelectionListener(defaultSelectionAdapter);
+            ((Combo)control).addModifyListener(modifyListener);
+        }
+        else if (control instanceof Spinner) { // note: this is a Composite!
+            ((Spinner)control).addSelectionListener(defaultSelectionAdapter);
+            ((Spinner)control).addModifyListener(modifyListener);
+        } else if (control instanceof Composite) {
+            for (Control child : ((Composite)control).getChildren())
+                addModifyListeners(child);
+        }
     }
 
-    protected void createRecordEventlogRadioButtons(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
-        ((GridLayout)comp.getLayout()).marginWidth = 0;
-        ((GridLayout)comp.getLayout()).marginHeight = 0;
-
-        SWTFactory.createLabel(comp, "Record eventlog:", 1);
-
-        fEventLogDefaultButton = createRadioButton(comp, "Default");
-        fEventLogYesButton = createRadioButton(comp, "Yes");
-        fEventLogNoButton = createRadioButton(comp, "No");
-
-        fEventLogDefaultButton.setToolTipText("Let the ini file setting take effect");
-        fEventLogYesButton.setToolTipText("Override ini file setting");
-        fEventLogNoButton.setToolTipText("Override ini file setting");
-    }
-
-    protected void createDbgOnErrRadioButtons(Composite parent, int colSpan) {
-
-        Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
-        ((GridLayout)comp.getLayout()).marginWidth = 0;
-        ((GridLayout)comp.getLayout()).marginHeight = 0;
-
-        SWTFactory.createLabel(comp, "Debug on errors:", 1);
-
-        fDebugOnErrorDefaultButton = createRadioButton(comp, "Default");
-        fDebugOnErrorYesButton = createRadioButton(comp, "Yes");
-        fDebugOnErrorNoButton = createRadioButton(comp, "No");
-        fDebugOnErrorAutoButton = createRadioButton(comp, "Auto");
-
-        fDebugOnErrorDefaultButton.setToolTipText("Let the ini file setting take effect");
-        fDebugOnErrorYesButton.setToolTipText("Override ini file setting");
-        fDebugOnErrorNoButton.setToolTipText("Override ini file setting");
-        fDebugOnErrorAutoButton.setToolTipText("Only for Debug launches");
-    }
-
+    @Override
     protected Button createRadioButton(Composite comp, String label) {
         Button button = SWTFactory.createRadioButton(comp, label);
         button.setLayoutData(new GridData());
-        button.addSelectionListener(defaultSelectionAdapter);
         return button;
     }
 
+    @Override
     public void initializeFrom(ILaunchConfiguration config) {
         this.config = config;
         try {
@@ -429,48 +458,33 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
             setConfigName(config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim());
 
-            if (isDebugLaunch)
-                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, ""));
-            else
-                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""));
+            fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_RUNFILTER, ""));
 
-            if (fParallelismSpinner != null)
-                fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1));
-            if (fBatchSizeSpinner != null)
-                fBatchSizeSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1));
+            fEnvirCombo.setText(envirToComboString(config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, QTENV)));
 
-            // update UI radio buttons
-            String uiArg = StringUtils.defaultIfEmpty(config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
-            fDefaultExternalEnvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL));
-            fCmdenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_CMDENV));
-            fTkenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_TKENV));
-            fQtenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_QTENV));
-            boolean isOther = !fDefaultExternalEnvButton.getSelection() && !fCmdenvButton.getSelection() && !fTkenvButton.getSelection() && !fQtenvButton.getSelection();
-            fOtherEnvButton.setSelection(isOther);
-            fOtherEnvText.setText(isOther ? uiArg.trim() : "");
+            if (fBatchingCheckbox != null) {
+                fBatchingCheckbox.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_USE_BATCHING, false));
+                fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 2));
+                fBatchSizeSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 5));
+            }
 
-            // update eventlog radio buttons  (anything that's not "false" will count as "true")
-            String recordEventlogArg = config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "");
-            fEventLogDefaultButton.setSelection(recordEventlogArg.equals(""));
-            fEventLogNoButton.setSelection(recordEventlogArg.equals("false"));
-            fEventLogYesButton.setSelection(recordEventlogArg.equals("true"));
-            if (!fEventLogDefaultButton.getSelection() && !fEventLogNoButton.getSelection() && !fEventLogYesButton.getSelection())
-                fEventLogDefaultButton.setSelection(true);
+            if (fDebugOnErrorCheckbox != null)
+                fDebugOnErrorCheckbox.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, true));
 
-            // update debug on error radio buttons
-            String dbgOnErrArg = config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "auto");
-            fDebugOnErrorDefaultButton.setSelection(dbgOnErrArg.equals(""));
-            fDebugOnErrorNoButton.setSelection(dbgOnErrArg.equals("false"));
-            fDebugOnErrorYesButton.setSelection(dbgOnErrArg.equals("true"));
-            fDebugOnErrorAutoButton.setSelection(dbgOnErrArg.equals("auto"));
-            if (!fDebugOnErrorDefaultButton.getSelection() && !fDebugOnErrorNoButton.getSelection() && !fDebugOnErrorYesButton.getSelection() && !fDebugOnErrorAutoButton.getSelection())
-                fDebugOnErrorAutoButton.setSelection(true);
+            fSimTimeLimitText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, "").trim());
+            fCpuTimeLimitText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, "").trim());
+
+            setTristateCheckbox(fRedirectStdoutCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_REDIRECT_STDOUT, ""));
+            setTristateCheckbox(fRecordEventlogCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, ""));
+            setTristateCheckbox(fRecordScalarsCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, ""));
+            setTristateCheckbox(fRecordVectorsCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, ""));
+            setTristateCheckbox(fCmdenvExpressModeCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, ""));
+            fSilentCheckbox.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_SILENT, false));
 
             fLibraryText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim());
             fNedPathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim());
             fImagePathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim());
             fAdditionalText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "").trim());
-            fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false));
 
             // bring dialog to consistent state
             updateDialogStateInProgress = false;
@@ -481,61 +495,60 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         }
     }
 
+    private static void setTristateCheckbox(Button c, String value) {
+        if (value == null || value.isEmpty()) {
+            c.setGrayed(true);
+            c.setSelection(true);
+        }
+        else {
+            Assert.isTrue(value.equals("true") || value.equals("false"));
+            c.setGrayed(false);
+            c.setSelection(value.equals("true"));
+        }
+    }
+
+    private static String getTristateCheckboxValue(Button c) {
+        if (!c.getSelection())
+            return "false";
+        else if (!c.getGrayed())
+            return "true";
+        else
+            return "";
+    }
+
+    @Override
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, getWorkingDirectoryText());
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, fProgText.getText());
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, fInifileText.getText());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, fProgText.getText().trim());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, fInifileText.getText().trim());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, getConfigName());
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNFILTER, fRunText.getText().trim());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, envirFromComboString(fEnvirCombo.getText().trim()));
 
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText());
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, fImagePathText.getText());
-
-        // if we are in debug mode, we should store the run parameter into the command line too
-        String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
-        if (isDebugLaunch)
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, strippedRun);
-        else
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, strippedRun);
-
-        if (fDefaultExternalEnvButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL);
-        else if (fCmdenvButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_CMDENV);
-        else if (fTkenvButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_TKENV);
-        else if (fQtenvButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_QTENV);
-        else if (fOtherEnvButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, fOtherEnvText.getText());
-        else
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "");
-
-        // this MUST be filled only after the environment buttons are set otherwise
-        // the UpdateDialogState method will set the value to 1 (the default if Tkenv is used)
-        if (fParallelismSpinner != null)
+        if (fBatchingCheckbox != null) {
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USE_BATCHING, fBatchingCheckbox.getSelection());
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());
-        if (fBatchSizeSpinner != null)
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, fBatchSizeSpinner.getSelection());
+        }
 
-        if (fEventLogYesButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "true");
-        else if (fEventLogNoButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "false");
-        else
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "");
+        if (fDebugOnErrorCheckbox != null)
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, fDebugOnErrorCheckbox.getSelection());
 
-        if (fDebugOnErrorYesButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "true");
-        else if (fDebugOnErrorNoButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "false");
-        else if (fDebugOnErrorAutoButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "auto");
-        else
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUG_ON_ERRORS, "");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, fSimTimeLimitText.getText().trim());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, fCpuTimeLimitText.getText().trim());
 
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, fAdditionalText.getText());
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_CMDENV_REDIRECT_STDOUT, getTristateCheckboxValue(fRedirectStdoutCheckbox));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, getTristateCheckboxValue(fRecordEventlogCheckbox));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, getTristateCheckboxValue(fRecordScalarsCheckbox));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, getTristateCheckboxValue(fRecordVectorsCheckbox));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, getTristateCheckboxValue(fCmdenvExpressModeCheckbox));
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SILENT, fSilentCheckbox.getSelection());
+
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText().trim());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText().trim());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, fImagePathText.getText().trim());
+
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, fAdditionalText.getText().trim());
 
         try {
             Set<IResource> assocRes = new HashSet<>();
@@ -547,10 +560,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         } catch (CoreException e) {
             LaunchPlugin.logError(e);
         }
+
         // clear the run info text, so next time it will be re-requested
         infoText = null;
     }
 
+    @Override
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
         IResource selectedResource = DebugUITools.getSelectedResource();
         OmnetppLaunchUtils.setLaunchConfigDefaults(configuration, selectedResource);
@@ -584,21 +599,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             }
         }
 
-        // update the UI (env) state
-        if (!fOtherEnvButton.getSelection())
-            fOtherEnvText.setText("");
-        fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
-
-        if (fParallelismSpinner != null) {
-            fParallelismSpinner.setEnabled(fCmdenvButton.getSelection());
-            if (!fCmdenvButton.getSelection())
-                fParallelismSpinner.setSelection(1);
-        }
-
-        if (fBatchSizeSpinner != null) {
-            fBatchSizeSpinner.setEnabled(fCmdenvButton.getSelection());
-            if (!fCmdenvButton.getSelection())
-                fBatchSizeSpinner.setSelection(1);
+        if (fBatchingCheckbox != null) {
+            boolean useBatching = fBatchingCheckbox.getSelection();
+            fParallelismSpinner.setEnabled(useBatching);
+            fBatchSizeSpinner.setEnabled(useBatching);
         }
 
         // update the state of apply and other system buttons
@@ -715,6 +719,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             }
     }
 
+    private static String envirToComboString(String value) {
+        if (value == null || value.equals("") || value.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL)) return "";
+        return value;
+    }
+
+    private static String envirFromComboString(String value) {
+        return value;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -779,23 +792,32 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             }
         }
 
-        boolean isMultipleRuns = true;  //FIXME
-//TODO something better!!!
-//        boolean isMultipleRuns;
-//        try {
-//            isMultipleRuns = OmnetppLaunchUtils.containsMultipleRuns(StringUtils.deleteWhitespace(fRunText.getText()));
-//        } catch (CoreException e) {
-//            setErrorMessage(e.getMessage());
-//            return false;
-//        }
-
-        if (fOtherEnvButton.getSelection() && StringUtils.isEmpty(fOtherEnvText.getText())) {
-            setErrorMessage("Environment type must be specified");
-            return false;
+        String simTimeLimit = fSimTimeLimitText.getText();
+        if (!StringUtils.isBlank(simTimeLimit)) {
+            try {
+                double d = UnitConversion.parseQuantity(simTimeLimit, "s");
+                if (d < 0) {
+                    setErrorMessage("Simulation time limit cannot be negative");
+                    return false;
+                }
+            } catch (Exception e) {
+                setErrorMessage("Wrong simulation time limit (missing measurement unit?)");
+                return false;
+            }
         }
-        if (!fCmdenvButton.getSelection() && !fOtherEnvButton.getSelection() && isMultipleRuns) {
-            setErrorMessage("Multiple runs are only supported with Cmdenv, the command-line interface");
-            return false;
+
+        String cpuTimeLimit = fCpuTimeLimitText.getText();
+        if (!StringUtils.isBlank(cpuTimeLimit)) {
+            try {
+                double d = UnitConversion.parseQuantity(cpuTimeLimit, "s");
+                if (d < 0) {
+                    setErrorMessage("CPU time limit cannot be negative");
+                    return false;
+                }
+            } catch (Exception e) {
+                setErrorMessage("Wrong CPU time limit (missing measurement unit?)");
+                return false;
+            }
         }
 
         return super.isValid(configuration);
@@ -806,6 +828,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         return LaunchPlugin.getImage("/icons/full/ctool16/omnetsim.gif");
     }
 
+    @Override
     public String getName() {
         return "Main";
     }

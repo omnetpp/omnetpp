@@ -60,10 +60,12 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             });
         }
 
+        @Override
         public boolean canCancel() {
             return !isTerminated();
         }
 
+        @Override
         public void cancel() {
             job.cancel();
         }
@@ -79,6 +81,7 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
         }
     };
 
+    @Override
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 
         configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode);
@@ -87,48 +90,30 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
         monitor.beginTask("Launching Simulation", 1);
 
         final int portNumber = configuration.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
-        int numConcurrentProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         boolean reportProgress = StringUtils.contains(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
 
-        String runFilter = configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, "");
-        int batchSize = configuration.getAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
+        String runFilter = configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNFILTER, "");
 
-        // show the debug view if option is checked
-        if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false)) {
-            Display.getDefault().asyncExec(new Runnable() {
-                public void run() {
-                    IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                    try {
-                        workbenchPage.showView(IDebugUIConstants.ID_DEBUG_VIEW, null, IWorkbenchPage.VIEW_VISIBLE);
-                    } catch (PartInitException e) {
-                        LaunchPlugin.logError("Cannot initialize the Debug View", e);
-                    }
-                }
-            });
-        }
+        boolean useBatching = configuration.getAttribute(IOmnetppLaunchConstants.OPP_USE_BATCHING, false);
 
-        List<Integer> runNumbers;
-
-        try {
-            runNumbers = OmnetppLaunchUtils.queryRunNumbers(configuration, runFilter);
-        } catch (InterruptedException e1) {
-            return; // abandon job
-        }
-
-        System.out.println(runNumbers.toString());
-
-        List<List<Integer>> batches = splitIntoBatches(runNumbers, batchSize);
-
-        System.out.println(batches);
-
-        if (batches.size() == 1) {
+        if (!useBatching) {
             Job job = new SimulationLauncherJob(configuration, launch, runFilter, reportProgress, portNumber);
             job.schedule();
         }
         else {
-            // List<String> batchRunFilters = new ArrayList<>();
-            // for (List<Integer> batch : batches)
-            //     batchRunFilters.add(StringUtils.join(batch, ","));
+            List<Integer> runNumbers;
+            try {
+                runNumbers = OmnetppLaunchUtils.queryRunNumbers(configuration, runFilter);
+            } catch (InterruptedException e1) {
+                return; // abandon job
+            }
+
+            int numConcurrentProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
+            int batchSize = configuration.getAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
+
+            List<List<Integer>> batches = splitIntoBatches(runNumbers, batchSize);
+            System.out.println(batches);
+
             String[] batchRunFilters = batches.stream().map(batch -> StringUtils.join(batch, ",")).collect(Collectors.toList()).toArray(new String[]{});
             Job job = new BatchedSimulationLauncherJob(configuration, launch, batchRunFilters, numConcurrentProcesses);
             job.schedule();
@@ -168,8 +153,8 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
         }
     }
 
-    private List<List<Integer>> splitIntoBatches(List<Integer> runNumbers, int batchSize) {
-        // try to evenly distribute runs across batches)
+    protected List<List<Integer>> splitIntoBatches(List<Integer> runNumbers, int batchSize) {
+        // note: this algorithm prefers creating equal-size batches to strictly sticking to batchSize, e.g. creates 3+3 instead of 4+2
         List<List<Integer>> result = new ArrayList<>();
         int numBatches = (runNumbers.size() + batchSize - 1) / batchSize;
         int cursor = 0; // for drawing from runNumbers[]

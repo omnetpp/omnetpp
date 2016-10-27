@@ -82,8 +82,9 @@ public class SimulationLauncherJob extends Job {
         subMonitor.subTask("Initializing...");
 
         try {
-            String additionalArgs = " -r " + runFilter;
-
+            String additionalArgs = "";
+            if (runFilter != "")
+                additionalArgs += " -r " + runFilter;
             if (port != -1)
                 additionalArgs += " -p  " + port;
 
@@ -109,8 +110,9 @@ public class SimulationLauncherJob extends Job {
 
             // setup a stream monitor on the process output, so we can track the progress
             if (reportProgress && monitor != null)
-                iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
+                iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () { //TODO this is null if "Allocate console" is off
                     int prevPercentComplete = 0;
+                    @Override
                     public void streamAppended(String text, IStreamMonitor ismon) {
                         int percentComplete = OmnetppLaunchUtils.getProgressInPercent(text);
                         if (percentComplete >= 0) {
@@ -196,6 +198,7 @@ public class SimulationLauncherJob extends Job {
                     stream.setActivateOnWrite(true);
                     // we have to set the color in the UI thread otherwise SWT will throw an error
                     Display.getDefault().syncExec(new Runnable() {
+                        @Override
                         public void run() {
                             stream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
                         }

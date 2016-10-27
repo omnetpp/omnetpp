@@ -81,15 +81,14 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_CONFIG_NAME = OMNETPP_LAUNCH_ID + ".CONFIG_NAME";
 
     /**
-     * Launch configuration attribute key. The value specifies the run command line parameter is
-     * a standalone launcher was used. (-r)
+     * Launch configuration attribute key. The value specifies the run filter (-r command line option)
      */
-    public static final String OPP_RUNNUMBER = OMNETPP_LAUNCH_ID + ".RUN";
+    public static final String OPP_RUNFILTER = OMNETPP_LAUNCH_ID + ".RUN";
 
     /**
-     * Attribute used to store the run number when debugging is used. (-r)
+     * Whether multiple processes should be launched as opp_run does (true), or a single simulation process (false)
      */
-    public static final String OPP_RUNNUMBER_FOR_DEBUG = OMNETPP_LAUNCH_ID + ".RUN.FOR_DEBUG";
+    public static final String OPP_USE_BATCHING = OMNETPP_LAUNCH_ID + ".USE_BATCHING";
 
     /**
      * How many processes may run in parallel during batch execution
@@ -128,21 +127,58 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_IMAGE_PATH = OMNETPP_LAUNCH_ID + ".IMAGE_PATH";
 
     /**
-     * Whether to show the the debug view on launch
+     * Whether to record cmdenv output (tri-state setting)
      */
-    public static final String OPP_SHOWDEBUGVIEW = OMNETPP_LAUNCH_ID + ".SHOW_DEBUG_VIEW";
+    public static final String OPP_CMDENV_REDIRECT_STDOUT = OMNETPP_LAUNCH_ID + ".REDIRECT_STDOUT";
 
     /**
-     * Whether to record eventlog
+     * Whether to record eventlog (tri-state setting)
      */
     public static final String OPP_RECORD_EVENTLOG = OMNETPP_LAUNCH_ID + ".RECORD_EVENTLOG";
+
+    /**
+     * Whether to record scalar results (tri-state setting)
+     */
+    public static final String OPP_RECORD_SCALARS = OMNETPP_LAUNCH_ID + ".RECORD_SCALARS";
+
+    /**
+     * Whether to record vector results (tri-state setting)
+     */
+    public static final String OPP_RECORD_VECTORS = OMNETPP_LAUNCH_ID + ".RECORD_VECTORS";
+
+    /**
+     * Whether to set the cmdenv-express-mode config option (tri-state setting)
+     */
+    public static final String OPP_CMDENV_EXPRESS_MODE = OMNETPP_LAUNCH_ID + ".CMDENV_EXPRESS_MODE";
+
+    /**
+     * Whether to pass the "-s" option to the simulation (boolean)
+     */
+    public static final String OPP_SILENT = OMNETPP_LAUNCH_ID + ".SILENT";
 
     /**
      * Whether to drop to debugger on an simulation error; values are "true", "false", "auto", "".
      * "" means that the "Default" radio button should be selected in the launch dialog.
      * A missing (unset) value MUST be understood as "auto".
      */
-    public static final String OPP_DEBUG_ON_ERRORS = OMNETPP_LAUNCH_ID + ".DEBUG_ON_ERRORS";
+    @Deprecated
+    public static final String OPP_DEBUG_ON_ERRORS = OMNETPP_LAUNCH_ID + ".DEBUG_ON_ERRORS"; // NOTE: Obsolete/unused since version 5.1
+
+    /**
+     * Only for DEBUG mode: Whether to drop to debugger on an simulation error. Type: Boolean.
+     * Ignored in non-debug mode.
+     */
+    public static final String OPP_DEBUGMODE_DEBUG_ON_ERRORS = OMNETPP_LAUNCH_ID + ".OPP_DEBUGMODE_DEBUG_ON_ERRORS";
+
+    /**
+     * Simulation time limit (sim-time-limit option)
+     */
+    public static final String OPP_SIM_TIME_LIMIT = OMNETPP_LAUNCH_ID + ".OPP_SIM_TIME_LIMIT";
+
+    /**
+     * CPU time limit (cpu-time-limit option)
+     */
+    public static final String OPP_CPU_TIME_LIMIT = OMNETPP_LAUNCH_ID + ".OPP_CPU_TIME_LIMIT";
 
     /**
      * Additional hand specified arguments
@@ -173,9 +209,4 @@ public interface IOmnetppLaunchConstants {
      * Value for OPP_USER_INTERFACE: launch the simulation program with -u Qtenv
      */
     public static final String UI_QTENV = "Qtenv";
-
-    /**
-     * If OPP_USER_INTERFACE is empty (missing, "", or all whitespace), use this value instead
-     */
-    public static final String UI_FALLBACKVALUE = UI_DEFAULTEXTERNAL; //UI_IDE; <-- TODO restore this once IDE simfrontend becomes fully usable
 }
