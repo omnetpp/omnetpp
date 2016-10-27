@@ -18,6 +18,8 @@ EV << pkt.getBitLength() << endl;
 pkt.addBitLength(-300);
 EV << pkt.getBitLength() << endl;
 
+%extraargs: -m
+
 %exitcode: 1
 
 %contains-regex: stdout
