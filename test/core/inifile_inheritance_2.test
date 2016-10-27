@@ -17,6 +17,5 @@ extends = B
 extends = A
 
 %exitcode: 1
-%contains: stdout
+%contains: stderr
 <!> Error during startup: Cycle detected in section fallback chain at: [Config A].
-

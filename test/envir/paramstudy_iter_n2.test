@@ -10,5 +10,5 @@ Tests scenario generation: circular variable references
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Error while computing the number of runs in config Test: Cycle detected in iteration variable references.

@@ -10,5 +10,5 @@ Tests scenario generation: parallel iterations: not enough values
 
 %exitcode: 1
 
-%contains: stdout
+%contains: stderr
 Error while computing the number of runs in config Test: parallel iterator ${...!i} does not have enough values

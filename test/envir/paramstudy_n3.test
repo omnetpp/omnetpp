@@ -9,6 +9,5 @@ constraint = $a > 1  # "korte" should generate an error here
 %extraargs: -c Bogus -q runs
 
 %exitcode: 1
-
-%contains: stdout
+%contains: stderr
 Cannot evaluate constraint expression: Parse error in expression: korte > 1

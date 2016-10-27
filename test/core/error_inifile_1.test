@@ -16,6 +16,6 @@ network = Test
 %contains-regex: stdout
 End\.$
 
-%contains-regex: stdout
+%contains-regex: stderr
 <!> Error during startup: Unknown configuration option: some-unknown-key
 
