@@ -517,7 +517,7 @@ class SIM_API cEnvir
      *
      * This method is used by some methods of cImageFigure, e.g. getBounds().
      */
-    virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) = 0;
+    virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) = 0;
 
     /**
      * Returns the size and ascent of the bounding box of the text when rendered
@@ -526,7 +526,7 @@ class SIM_API cEnvir
      *
      * This method is used by some methods of cTextFigure, e.g. getBounds().
      */
-    virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) = 0;
+    virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) = 0;
 
     virtual double getAnimationTime() const = 0;  // starts from zero, monotonically increasing
     virtual double getAnimationSpeed() const = 0; // the current animation speed; this is usually computed as the minimum of the animSpeeds of visible canvases, unless maybe the user interactively overrides it in the Qtenv GUI (i.e. imposes a lower limit)

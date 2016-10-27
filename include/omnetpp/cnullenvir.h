@@ -109,8 +109,8 @@ class SIM_API cNullEnvir : public cEnvir
     virtual bool isGUI() const override  {return false;}
     virtual bool isExpressMode() const override {return false;}
 
-    virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override {unsupported();}
-    virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override {unsupported();}
+    virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override {unsupported();}
+    virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override {unsupported();}
     virtual double getAnimationTime() const override {return 0;}
     virtual double getAnimationSpeed() const override {return 0;}
     virtual double getRemainingAnimationHoldTime() const override {return 0;}

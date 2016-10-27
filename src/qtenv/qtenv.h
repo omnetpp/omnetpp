@@ -247,8 +247,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       virtual bool isGUI() const override {return true;}
       virtual bool isExpressMode() const override {return runMode == RUNMODE_EXPRESS;}
 
-      virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
-      virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
+      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
+      virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;
 
       // smooth animation API
       virtual double getAnimationTime() const override;

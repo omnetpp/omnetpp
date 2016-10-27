@@ -1804,7 +1804,7 @@ bool Tkenv::askYesNo(const char *question)
     return Tcl_GetStringResult(interp)[0] == 'y';
 }
 
-void Tkenv::getImageSize(const char *imageName, int& outWidth, int& outHeight)
+void Tkenv::getImageSize(const char *imageName, double& outWidth, double& outHeight)
 {
     const char *image = Tcl_GetVar2(interp, "bitmaps", TCLCONST(imageName), TCL_GLOBAL_ONLY);
     if (!image)
@@ -1818,8 +1818,13 @@ void Tkenv::getImageSize(const char *imageName, int& outWidth, int& outHeight)
     outHeight = opp_atol(Tcl_GetStringResult(interp));
 }
 
-void Tkenv::getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent)
+void Tkenv::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
 {
+    if (!*text) {
+        outWidth = outHeight = outAscent = 0;
+        return;
+    }
+
     Tcl_Eval(interp, "font actual CanvasFont -family");
     std::string defaultFont = Tcl_GetStringResult(interp);
 
@@ -1845,9 +1850,9 @@ void Tkenv::getTextExtent(const cFigure::Font& font, const char *text, int& outW
     const char *result = Tcl_GetStringResult(interp);
     double x1, y1, x2, y2, ascent;
     sscanf(result, "%lf %lf %lf %lf %lf", &x1, &y1, &x2, &y2, &ascent);
-    outWidth = x2 - x1 - 2; // the -2 is to remove the antialiasing fuzz.
-    outHeight = y2 - y1 - 2; // should also include the outline, but figures dont use it. YET. XXX
-    outAscent = ascent;
+    outWidth = std::max(x2 - x1 - 2, 0.0); // the -2 is to remove the antialiasing fuzz.
+    outHeight = std::max(y2 - y1 - 2, 0.0); // should also include the outline, but figures dont use it. YET. XXX
+    outAscent = std::max(ascent, 0.0);
 }
 
 unsigned Tkenv::getExtraStackForEnvir() const

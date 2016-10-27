@@ -656,13 +656,18 @@ bool Cmdenv::idle()
     return sigintReceived;
 }
 
-void Cmdenv::getImageSize(const char *imageName, int& outWidth, int& outHeight)
+void Cmdenv::getImageSize(const char *imageName, double& outWidth, double& outHeight)
 {
     outWidth = outHeight = 32;
 }
 
-void Cmdenv::getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent)
+void Cmdenv::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
 {
+    if (!*text) {
+        outWidth = outHeight = outAscent = 0;
+        return;
+    }
+
     outWidth = 10 * strlen(text);
     outHeight = 12;
     outAscent = 8;

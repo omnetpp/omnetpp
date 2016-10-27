@@ -214,8 +214,8 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
 
       virtual bool idle() override;
 
-      virtual void getImageSize(const char *imageName, int& outWidth, int& outHeight) override;
-      virtual void getTextExtent(const cFigure::Font& font, const char *text, int& outWidth, int& outHeight, int& outAscent) override;
+      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
+      virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;
       virtual double getAnimationTime() const override {return 0;}  // custom animations not supported
       virtual double getAnimationSpeed() const override {return 0;}
       virtual double getRemainingAnimationHoldTime() const override {return 0;}

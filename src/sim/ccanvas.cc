@@ -3051,7 +3051,7 @@ void cAbstractTextFigure::setText(const char* text)
 
 cFigure::Rectangle cAbstractTextFigure::getBounds() const
 {
-    int width, height, ascent;
+    double width, height, ascent;
     getEnvir()->getTextExtent(getFont(), getText(), width, height, ascent);
     return computeBoundingBox(position, Point(width, height), ascent, anchor);
 }
@@ -3291,7 +3291,7 @@ void cImageFigure::setImageName(const char* imageName)
 
 cFigure::Point cImageFigure::getDefaultSize() const
 {
-    int width, height;
+    double width, height;
     getEnvir()->getImageSize(getImageName(), width, height);
     return Point(width, height);
 }
