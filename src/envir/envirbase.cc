@@ -287,8 +287,8 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     opt = createOptions();
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwse");  // TODO share spec with startup.cc!
-    opt->useStderr = args->optionGiven('e');
+    args->parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwsm");  // TODO share spec with startup.cc!
+    opt->useStderr = !args->optionGiven('m');
     opt->verbose = !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
@@ -625,8 +625,8 @@ void EnvirBase::printHelp()
     out << "                minus sign will turn off the built-in web server.\n";
     out << "                The default value is \"8000+\".\n";
     out << "  -v            Print version and build info, and exit.\n";
-    out << "  -e            Use the standard error for error reporting. (The default is\n";
-    out << "                the standard output.)\n";
+    out << "  -m            Merge standard error into standard output, i.e. report errors on\n";
+    out << "                the standard output instead of the default standard error.\n";
     out << "  -a            Print all config names and number of runs in them, and exit.\n";
     out << "  -q <what>     To be used together with -c and -r. Prints information about\n";
     out << "                the specified configuration and runs, and exits.\n";
@@ -1667,7 +1667,9 @@ std::string EnvirBase::getFormattedMessage(std::exception& ex)
 void EnvirBase::displayException(std::exception& ex)
 {
     std::string msg = getFormattedMessage(ex);
-    if (dynamic_cast<cTerminationException*>(&ex) != nullptr || msg.substr(0,5) == "Error")
+    if (dynamic_cast<cTerminationException*>(&ex) != nullptr)
+        out << endl << "<!> " << msg << endl;
+    else if (msg.substr(0,5) == "Error")
         errWithoutPrefix() << msg << endl;
     else
         err() << msg << endl;

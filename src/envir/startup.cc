@@ -114,9 +114,9 @@ int setupUserInterface(int argc, char *argv[])
 
         // args
         ArgList args;
-        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwse");
+        args.parse(argc, argv, "h?f:u:l:c:r:n:p:x:X:q:agGvwsm");
 
-        useStderr = args.optionGiven('e');
+        useStderr = !args.optionGiven('m');
 
         verbose = !args.optionGiven('s');  // "not silent"
         if (verbose) {
@@ -185,7 +185,7 @@ int setupUserInterface(int argc, char *argv[])
         }
 
         // validate the configuration, but make sure we don't report cmdenv-* keys
-        // as errors if Cmdenv is absent; same for Tkenv.
+        // as errors if Cmdenv is absent; same for other UIs.
         std::string ignorableKeys;
         if (omnetapps.getInstance()->lookup("Cmdenv") == nullptr)
             ignorableKeys += " cmdenv-*";
@@ -211,8 +211,8 @@ int setupUserInterface(int argc, char *argv[])
             appReg = static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(appName.c_str()));
             if (!appReg) {
                 if (verbose) {
-                    std::cout << "User interface '%s' not found (not linked in or loaded dynamically)." << endl;
-                    std::cout << "Available ones are:" << appName.c_str() << endl;
+                    std::cout << "User interface '" << appName << "' not found (not linked in or loaded dynamically)." << endl << endl;
+                    std::cout << "Available ones are:" << endl;
                     cRegistrationList *a = omnetapps.getInstance();
                     for (int i = 0; i < a->size(); i++)
                         std::cout << "  " << a->get(i)->getName() << " : " << a->get(i)->str() << endl;
