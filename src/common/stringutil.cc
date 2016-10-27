@@ -41,16 +41,16 @@ bool opp_isblank(const char *txt)
     return true;
 }
 
-std::string opp_trim(const char *txt)
+std::string opp_trim(const std::string& text)
 {
-    if (!txt)
-        return "";
-    while (opp_isspace(*txt))
-        txt++;
-    const char *end = txt + strlen(txt);
-    while (end > txt && opp_isspace(*(end-1)))
-        end--;
-    return std::string(txt, end-txt);
+    int length = text.length();
+    int pos = 0;
+    while (pos < length && opp_isspace(text[pos]))
+        pos++;
+    int endpos = length;
+    while (endpos > pos && opp_isspace(text[endpos-1]))
+        endpos--;
+    return text.substr(pos, endpos-pos);
 }
 
 std::string opp_parsequotedstr(const char *txt)
@@ -136,12 +136,12 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
     return ret;
 }
 
-std::string opp_quotestr(const char *txt)
+std::string opp_quotestr(const std::string& txt)
 {
-    char *buf = new char[4*strlen(txt)+3];  // a conservative guess
+    char *buf = new char[4 * txt.length() + 3];  // a conservative guess
     char *d = buf;
     *d++ = '"';
-    const char *s = txt;
+    const char *s = txt.c_str();
     while (*s) {
         switch (*s) {
             case '\b': *d++ = '\\'; *d++ = 'b'; s++; break;
@@ -250,18 +250,18 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
     }
 }
 
-std::string opp_replacesubstring(const char *s, const char *substring, const char *replacement, bool replaceAll)
+std::string opp_replacesubstring(const std::string& text, const std::string& substring, const std::string& replacement, bool replaceAll)
 {
-    std::string text = s;
+    std::string tmp = text;
     std::string::size_type pos = 0;
     do {
-        pos = text.find(substring, pos);
+        pos = tmp.find(substring, pos);
         if (pos == std::string::npos)
             break;
-        text.replace(pos, strlen(substring), replacement);
-        pos += strlen(replacement);
+        tmp.replace(pos, substring.length(), replacement);
+        pos += replacement.length();
     } while (replaceAll);
-    return text;
+    return tmp;
 }
 
 namespace {
@@ -330,13 +330,12 @@ std::string opp_substitutevariables(const std::string& raw, opp_substitutevariab
     return result;
 }
 
-std::string opp_breaklines(const char *text, int lineLength)
+std::string opp_breaklines(const std::string& text, int lineLength)
 {
-    char *buf = new char[strlen(text)+1];
-    strcpy(buf, text);
+    std::string buf = text;
 
     int leftMargin = 0;
-    int length = strlen(buf);
+    int length = buf.length();
     while (true) {
         int rightMargin = leftMargin + lineLength;
         if (rightMargin >= length)
@@ -370,16 +369,14 @@ std::string opp_breaklines(const char *text, int lineLength)
         leftMargin = i+1;
     }
 
-    std::string tmp = buf;
-    delete[] buf;
-    return tmp;
+    return buf;
 }
 
-std::string opp_indentlines(const char *text, const char *indent)
+std::string opp_indentlines(const std::string& text, const std::string& indent)
 {
-    std::string tmp = std::string(indent) + opp_replacesubstring(text, "\n", (std::string("\n")+indent).c_str(), true);
-    if (*(text + strlen(text) - 1) == '\n')
-        tmp = tmp.substr(0, tmp.size() - strlen(indent)); // remove indent after last line
+    std::string tmp = indent + opp_replacesubstring(text, "\n", std::string("\n")+indent, true);
+    if (text[text.length()-1] == '\n')
+        tmp = tmp.substr(0, tmp.length() - indent.length()); // remove indent after last line
     return tmp;
 }
 
@@ -791,50 +788,50 @@ const char *opp_strnistr(const char *haystack, const char *needle, int n, bool c
     return nullptr;
 }
 
-std::string opp_latexQuote(const char *s)
+std::string opp_latexQuote(const std::string& str)
 {
-    std::string tmp = s;
-    tmp = opp_replacesubstring(tmp.c_str(), "\\", "\b", true);  // temporarily
-    tmp = opp_replacesubstring(tmp.c_str(), "{", "\\{", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "}", "\\}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "_", "\\_", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "$", "\\$", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "%", "\\%", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "&", "\\&", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "#", "\\#", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "\b", "{\\textbackslash}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "\n", "\\\\", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "~", "{\\textasciitilde}", true);
+    std::string tmp = str;
+    tmp = opp_replacesubstring(tmp, "\\", "\b", true);  // temporarily
+    tmp = opp_replacesubstring(tmp, "{", "\\{", true);
+    tmp = opp_replacesubstring(tmp, "}", "\\}", true);
+    tmp = opp_replacesubstring(tmp, "_", "\\_", true);
+    tmp = opp_replacesubstring(tmp, "$", "\\$", true);
+    tmp = opp_replacesubstring(tmp, "%", "\\%", true);
+    tmp = opp_replacesubstring(tmp, "&", "\\&", true);
+    tmp = opp_replacesubstring(tmp, "#", "\\#", true);
+    tmp = opp_replacesubstring(tmp, "\b", "{\\textbackslash}", true);
+    tmp = opp_replacesubstring(tmp, "\n", "\\\\", true);
+    tmp = opp_replacesubstring(tmp, "~", "{\\textasciitilde}", true);
 
     return tmp.c_str();
 }
 
-std::string opp_latexInsertBreaks(const char *s)
+std::string opp_latexInsertBreaks(const std::string& str)
 {
-    std::string tmp = s;
-    tmp = opp_replacesubstring(tmp.c_str(), "-", "-{\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "=", "={\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), ",", ",{\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "/", "/{\\allowbreak}", true);
+    std::string tmp = str;
+    tmp = opp_replacesubstring(tmp, "-", "-{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, "=", "={\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, ",", ",{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, "/", "/{\\allowbreak}", true);
 
     // properties and variables
-    tmp = opp_replacesubstring(tmp.c_str(), "@", "@{\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "$\\{", "$\\{{\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "\\}", "\\}{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, "@", "@{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, "$\\{", "$\\{{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, "\\}", "\\}{\\allowbreak}", true);
 
     // colons
-    tmp = opp_replacesubstring(tmp.c_str(), "::", ">>>doublecolon<<<", true);
-    tmp = opp_replacesubstring(tmp.c_str(), ":", ":{\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), ">>>doublecolon<<<", "::{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, "::", ">>>doublecolon<<<", true);
+    tmp = opp_replacesubstring(tmp, ":", ":{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, ">>>doublecolon<<<", "::{\\allowbreak}", true);
 
     // dots
-    tmp = opp_replacesubstring(tmp.c_str(), "...", ">>>tripledot<<<", true);
-    tmp = opp_replacesubstring(tmp.c_str(), "..", ">>>doubledot<<<", true);
-    tmp = opp_replacesubstring(tmp.c_str(), ".", ".{\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), ">>>tripledot<<<", "...{\\allowbreak}", true);
-    tmp = opp_replacesubstring(tmp.c_str(), ">>>doubledot<<<", "..{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, "...", ">>>tripledot<<<", true);
+    tmp = opp_replacesubstring(tmp, "..", ">>>doubledot<<<", true);
+    tmp = opp_replacesubstring(tmp, ".", ".{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, ">>>tripledot<<<", "...{\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, ">>>doubledot<<<", "..{\\allowbreak}", true);
 
-    tmp = opp_replacesubstring(tmp.c_str(), " ", " {\\allowbreak}", true);
+    tmp = opp_replacesubstring(tmp, " ", " {\\allowbreak}", true);
 
     char ch;
     char previousCh;
@@ -852,10 +849,10 @@ std::string opp_latexInsertBreaks(const char *s)
     return tmp;
 }
 
-std::string opp_markup2Latex(const char *s)
+std::string opp_markup2Latex(const std::string& str)
 {
     // replace `monospace text` to \ttt{monospace text}
-    std::string tmp = s;
+    std::string tmp = str;
     std::string::size_type begin;
     std::string::size_type end;
     std::string::size_type pos = 0;
@@ -876,14 +873,14 @@ std::string opp_markup2Latex(const char *s)
             tmp.replace(pos, strlen(substring), replacement[idx]);
             pos += strlen(replacement[idx]);
             // replace content
-            std::string processed = opp_latexInsertBreaks(tmp.substr(begin, end - begin).c_str());
+            std::string processed = opp_latexInsertBreaks(tmp.substr(begin, end - begin));
             pos += strlen(processed.c_str()) - (end - begin);
             tmp.replace(begin, end - begin, processed);
         }
         idx = 1 - idx;
     } while (true);
     if (idx)
-        throw opp_runtime_error("missing right backtick from text >>> %s <<<", s);
+        throw opp_runtime_error("missing right backtick from text >>> %s <<<", str.c_str());
 
     return tmp;
 }

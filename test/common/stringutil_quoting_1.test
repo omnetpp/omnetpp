@@ -1,0 +1,72 @@
+%description:
+Tests stringutil.h functions
+
+%includes:
+#include <common/stringutil.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void parseQuoted(const char *txt)
+{
+    EV << "P '" << txt << "' -> ";
+    try {
+        std::string res = opp_parsequotedstr(txt);
+        EV << "'" << res << "'\n";
+    } catch (std::exception& e) {
+        EV << "exception\n";  // e.what() << "\n";
+    }
+}
+
+static void quote(const char *txt)
+{
+    EV << "Q '" << txt << "' -> ";
+    try {
+        std::string res = opp_quotestr(txt);
+        EV << "'" << res << "'\n";
+    } catch (std::exception& e) {
+        EV << "exception\n";  // e.what() << "\n";
+    }
+}
+
+%activity:
+parseQuoted("  \"foo\"  ");
+parseQuoted("  \"foo\"  ");
+parseQuoted("  \"foo bar\"  ");
+parseQuoted("  \"foo\\tbar\"  ");
+parseQuoted("  \"foo\\x40bar\"  ");
+parseQuoted("  \"foo\\\\bar\"  ");
+parseQuoted("  \"foo\\\"bar\"  ");
+parseQuoted("  \"foo\\=bar\"  ");
+parseQuoted("  \"foo\\,bar\"  ");
+parseQuoted("  \"foo  ");
+parseQuoted("  \"foo\\\"  ");
+
+quote("foo");
+quote("foo bar");
+quote("foo\\bar");
+quote("foo\tbar");
+quote("foo\"bar");
+EV << ".\n";
+
+%exitcode: 0
+
+%contains: stdout
+P '  "foo"  ' -> 'foo'
+P '  "foo"  ' -> 'foo'
+P '  "foo bar"  ' -> 'foo bar'
+P '  "foo\tbar"  ' -> 'foo	bar'
+P '  "foo\x40bar"  ' -> 'foo@bar'
+P '  "foo\\bar"  ' -> 'foo\bar'
+P '  "foo\"bar"  ' -> 'foo"bar'
+P '  "foo\=bar"  ' -> exception
+P '  "foo\,bar"  ' -> exception
+P '  "foo  ' -> exception
+P '  "foo\"  ' -> exception
+Q 'foo' -> '"foo"'
+Q 'foo bar' -> '"foo bar"'
+Q 'foo\bar' -> '"foo\\bar"'
+Q 'foo	bar' -> '"foo\tbar"'
+Q 'foo"bar' -> '"foo\"bar"'
+.
+

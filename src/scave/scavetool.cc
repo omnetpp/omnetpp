@@ -692,7 +692,7 @@ int infoCommand(int argc, char **argv)
             }
             else {
                 // print filter description and parameter descriptions
-                printf(":\n%s\n", opp_indentlines(opp_breaklines(nodeType->getDescription(), 76).c_str(), "  ").c_str());
+                printf(":\n%s\n", opp_indentlines(opp_breaklines(nodeType->getDescription(), 76), "  ").c_str());
                 for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it) {
                     printf("    - %s: %s\n", it->first.c_str(), it->second.c_str());
                 }

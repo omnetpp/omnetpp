@@ -103,7 +103,7 @@ std::string cNEDValue::str() const
     switch (type) {
         case BOOL: return bl ? "true" : "false";
         case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
-        case STR:  return opp_quotestr(s.c_str());
+        case STR:  return opp_quotestr(s);
         case XML:  return xml->str();
         default:   throw cRuntimeError("internal error: bad cNEDValue type");
     }

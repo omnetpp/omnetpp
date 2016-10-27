@@ -199,7 +199,7 @@ std::string PatternMatcher::debugStrFrom(int from)
         Elem& e = pattern[k];
         switch (e.type) {
             case LITERALSTRING:
-                result += opp_quotestr(e.literalString.c_str());
+                result += opp_quotestr(e.literalString);
                 break;
 
             case ANYCHAR:

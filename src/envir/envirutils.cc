@@ -100,7 +100,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
             if (printDescriptions)
                 out << "    " << getConfigOptionType(obj) << ".\n";
             if (printDescriptions && !opp_isempty(obj->getDescription()))
-                out << opp_indentlines(opp_breaklines(obj->getDescription(), 75).c_str(), "    ") << "\n";
+                out << opp_indentlines(opp_breaklines(obj->getDescription(), 75), "    ") << "\n";
             if (printDescriptions)
                 out << "\n";
         }
@@ -114,7 +114,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
             out << "${" << v[i] << "}\n";
             const char *desc = config->getVariableDescription(v[i]);
             if (printDescriptions && !opp_isempty(desc))
-                out << opp_indentlines(opp_breaklines(desc, 75).c_str(), "    ") << "\n";
+                out << opp_indentlines(opp_breaklines(desc, 75), "    ") << "\n";
         }
         out << "\n";
     }
@@ -132,10 +132,10 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
             if (obj->getUnit())
                 out << ", unit=\\ttt{" << obj->getUnit() << "}";
             if (obj->getDefaultValue())
-                out << ", default: \\ttt{" << opp_latexInsertBreaks(opp_latexQuote(obj->getDefaultValue()).c_str()) << "}";
+                out << ", default: \\ttt{" << opp_latexInsertBreaks(opp_latexQuote(obj->getDefaultValue())) << "}";
             out << "\\\\\n";
             out << "    \\textit{" << getConfigOptionType(obj) << ".}\\\\\n";
-            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(obj->getDescription()).c_str()).c_str(), 75).c_str(), "    ") << "\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(obj->getDescription())), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
 
@@ -145,7 +145,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
         for (int i = 0; i < (int)v.size(); i++) {
             out << "\\item[\\$\\{" << v[i] << "\\}] : \\\\\n";
             const char *desc = config->getVariableDescription(v[i]);
-            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc).c_str()).c_str(), 75).c_str(), "    ") << "\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc)), 75).c_str(), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
     }
@@ -212,14 +212,14 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
             out << ",\n";
 
             std::string desc = key->getDescription();
-            desc = opp_replacesubstring(desc.c_str(), "\n", "\\n\n", true);  // keep explicit line breaks
-            desc = opp_breaklines(desc.c_str(), 75);  // break long lines
-            desc = opp_replacesubstring(desc.c_str(), "\"", "\\\"", true);
-            desc = opp_replacesubstring(desc.c_str(), "\n", " \" +\n\"", true);
-            desc = opp_replacesubstring(desc.c_str(), "\\n \"", "\\n\"", true);  // remove bogus space after explicit line breaks
+            desc = opp_replacesubstring(desc, "\n", "\\n\n", true);  // keep explicit line breaks
+            desc = opp_breaklines(desc, 75);  // break long lines
+            desc = opp_replacesubstring(desc, "\"", "\\\"", true);
+            desc = opp_replacesubstring(desc, "\n", " \" +\n\"", true);
+            desc = opp_replacesubstring(desc, "\\n \"", "\\n\"", true);  // remove bogus space after explicit line breaks
             desc = "\"" + desc + "\"";
 
-            out << opp_indentlines(desc.c_str(), "        ") << ");\n";
+            out << opp_indentlines(desc, "        ") << ");\n";
         }
         out << "\n";
 

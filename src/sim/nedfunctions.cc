@@ -300,7 +300,7 @@ DEF(nedf_trim,
     "strings",
     "Discards whitespace from the start and end of s, and returns the result.",
 {
-    return opp_trim(argv[0].stdstringValue().c_str());
+    return opp_trim(argv[0].stdstringValue());
 })
 
 DEF(nedf_indexOf,

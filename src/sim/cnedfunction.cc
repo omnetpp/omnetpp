@@ -96,7 +96,7 @@ static const char *syntaxErrorMessage =
 void cNEDFunction::parseSignature(const char *signature)
 {
     std::string str = opp_nulltoempty(signature);
-    std::string typeAndName = opp_trim(opp_substringbefore(str, "(").c_str());
+    std::string typeAndName = opp_trim(opp_substringbefore(str, "("));
     char type;
     std::string name;
     if (!splitTypeAndName(typeAndName, type, name))
@@ -104,10 +104,10 @@ void cNEDFunction::parseSignature(const char *signature)
     setName(name.c_str());
     returnType = type;
 
-    std::string rest = opp_trim(opp_substringafter(str, "(").c_str());
+    std::string rest = opp_trim(opp_substringafter(str, "("));
     bool missingRParen = !contains(rest, ")");
-    std::string argList = opp_trim(opp_substringbefore(rest, ")").c_str());
-    std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")").c_str());
+    std::string argList = opp_trim(opp_substringbefore(rest, ")"));
+    std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")"));
     if (missingRParen || trailingGarbage.size() != 0)
         throw cRuntimeError(syntaxErrorMessage, signature);
 
@@ -115,7 +115,7 @@ void cNEDFunction::parseSignature(const char *signature)
     hasVarargs_ = false;
     std::vector<std::string> args = StringTokenizer(argList.c_str(), ",").asVector();
     for (int i = 0; i < (int)args.size(); i++) {
-        if (opp_trim(args[i].c_str()) == "...") {
+        if (opp_trim(args[i]) == "...") {
             if (i != (int)args.size() - 1)
                 throw cRuntimeError(syntaxErrorMessage, signature);  // "..." must be the last one
             hasVarargs_ = true;

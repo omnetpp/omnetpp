@@ -356,7 +356,7 @@ void NED1Generator::doCompoundModule(CompoundModuleElement *node, const char *in
         try {
             dispstr = DisplayStringUtil::toOldBackgroundDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
             OUT << getBannerComment(displayProp, increaseIndent(indent));
-            OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
+            OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr) << ";" << getRightComment(displayProp);
         }
         catch (std::exception& e) {
             errors->addWarning(node, opp_stringf("error converting display string: %s", e.what()).c_str());
@@ -725,7 +725,7 @@ void NED1Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool
         try {
             dispstr = DisplayStringUtil::toOldSubmoduleDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
             OUT << getBannerComment(displayProp, increaseIndent(indent));
-            OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr.c_str()) << ";" << getRightComment(displayProp);
+            OUT << increaseIndent(indent) << "display: " << opp_quotestr(dispstr) << ";" << getRightComment(displayProp);
         }
         catch (std::exception& e) {
             errors->addWarning(node, opp_stringf("error converting display string: %s", e.what()).c_str());
@@ -828,7 +828,7 @@ void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bo
     if (!dispstr.empty()) {
         try {
             dispstr = DisplayStringUtil::toOldConnectionDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
-            OUT << " display " << opp_quotestr(dispstr.c_str());
+            OUT << " display " << opp_quotestr(dispstr);
         }
         catch (std::exception& e) {
             errors->addWarning(node, opp_stringf("error converting display string: %s", e.what()).c_str());

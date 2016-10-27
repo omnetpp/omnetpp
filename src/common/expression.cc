@@ -87,7 +87,7 @@ std::string Expression::Value::str()
     switch (type) {
       case BOOL: return bl ? "true" : "false";
       case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
-      case STR:  return opp_quotestr(s.c_str());
+      case STR:  return opp_quotestr(s);
       default:   throw opp_runtime_error("internal error: bad Value type");
     }
 }

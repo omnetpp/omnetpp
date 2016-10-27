@@ -27,6 +27,12 @@
 namespace omnetpp {
 namespace common {
 
+//
+// GUIDELINES for choosing between std::string and const char * for new functions:
+// 1. No std::string if const char * is sufficient.
+// 2. No mixing within one function signature: if return type or one arg is std::string, use std::string throughout.
+//
+
 /**
  * Returns true if the string is nullptr or has zero length.
  */
@@ -94,7 +100,7 @@ inline int opp_strcmp(const char *s1, const char *s2)
 /**
  * Removes any leading and trailing whitespace.
  */
-COMMON_API std::string opp_trim(const char *txt);
+COMMON_API std::string opp_trim(const std::string& text);
 
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
@@ -117,7 +123,7 @@ COMMON_API std::string opp_parsequotedstr(const char *txt);
  * Surround the given string with "quotes", also escape with backslash
  * where needed.
  */
-COMMON_API std::string opp_quotestr(const char *txt);
+COMMON_API std::string opp_quotestr(const std::string& txt);
 
 /**
  * Returns true if the string contains space, backslash, quote, or anything
@@ -129,14 +135,15 @@ COMMON_API bool opp_needsquotes(const char *txt);
 /**
  * Combines opp_needsquotes() and opp_quotestr().
  */
-inline std::string opp_quotestr_ifneeded(const char *txt)
+inline std::string opp_quotestr_ifneeded(const std::string& txt)
 {
-    return opp_needsquotes(txt) ? opp_quotestr(txt) : std::string(txt);
+    return opp_needsquotes(txt.c_str()) ? opp_quotestr(txt) : txt;
 }
 
 /**
  * A macro version of opp_quotestr_ifneeded(). This is more efficient,
  * because it avoids conversion to std::string when no quoting is needed.
+ * USE WITH CARE.
  */
 #define QUOTE(txt)   (opp_needsquotes(txt) ? opp_quotestr(txt).c_str() : (txt))
 
@@ -158,7 +165,7 @@ COMMON_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
 /**
  * Performs find/replace within a string.
  */
-COMMON_API std::string opp_replacesubstring(const char *s, const char *substring, const char *replacement, bool replaceAll);
+COMMON_API std::string opp_replacesubstring(const std::string& text, const std::string& substring, const std::string& replacement, bool replaceAll);
 
 /**
  * For opp_substitutevariables().
@@ -184,12 +191,12 @@ COMMON_API std::string opp_substitutevariables(const std::string& raw, const std
 /**
  * Inserts newlines into the string, performing rudimentary line breaking.
  */
-COMMON_API std::string opp_breaklines(const char *text, int maxLineLength);
+COMMON_API std::string opp_breaklines(const std::string& text, int maxLineLength);
 
 /**
  * Indent each line of the input text.
  */
-COMMON_API std::string opp_indentlines(const char *text, const char *indent);
+COMMON_API std::string opp_indentlines(const std::string& text, const std::string& indent);
 
 /**
  * Returns true if the first string begins with the second string.
@@ -386,17 +393,17 @@ COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, in
 /**
  * Rudimentary quoting for LaTeX. Escape underscores, backslashes, dollar signs, etc.
  */
-COMMON_API std::string opp_latexQuote(const char *s);
+COMMON_API std::string opp_latexQuote(const std::string& str);
 
 /**
  * Add break opportunities.
  */
-COMMON_API std::string opp_latexInsertBreaks(const char *s);
+COMMON_API std::string opp_latexInsertBreaks(const std::string& str);
 
 /**
  * Convert opp markup to LaTeX.
  */
-COMMON_API std::string opp_markup2Latex(const char *s);
+COMMON_API std::string opp_markup2Latex(const std::string& str);
 
 /**
  * XML-quote the string.

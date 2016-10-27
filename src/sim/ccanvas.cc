@@ -580,7 +580,7 @@ inline double rad2deg(double rad) { return rad / M_PI * 180; }
 
 cFigure::Transform cFigure::parseTransform(const char *s)
 {
-    std::string operation = opp_trim(opp_substringbefore(s, "(").c_str());
+    std::string operation = opp_trim(opp_substringbefore(s, "("));
     if (operation == "") {
         cFigure::Transform t;
         int parsedChars = 0;
@@ -591,10 +591,10 @@ cFigure::Transform cFigure::parseTransform(const char *s)
         return t;
     }
 
-    std::string rest = opp_trim(opp_substringafter(s, "(").c_str());
+    std::string rest = opp_trim(opp_substringafter(s, "("));
     bool missingRParen = !contains(rest, ")");
-    std::string argsStr = opp_trim(opp_substringbefore(rest, ")").c_str());
-    std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")").c_str());
+    std::string argsStr = opp_trim(opp_substringbefore(rest, ")"));
+    std::string trailingGarbage = opp_trim(opp_substringafter(rest, ")"));
     if (operation == "" || missingRParen || trailingGarbage.size() != 0)
         throw cRuntimeError("Syntax error in '%s', 'operation(arg1,arg2...)' expected", s);
     std::vector<double> args = cStringTokenizer(argsStr.c_str(), ",").asDoubleVector();
@@ -714,13 +714,13 @@ cFigure::Font cFigure::parseFont(const char *s)
     if (*s == '(') s++;
     const char *comma = strchr(s, ',');
     std::string typeface = comma ? std::string(s, comma-s) : s;
-    typeface = opp_trim(typeface.c_str());
+    typeface = opp_trim(typeface);
     if (typeface != "<default>")
         font.typeface = typeface;
     if (comma) {
         std::vector<std::string> items = cStringTokenizer(comma+1, "(), ").asVector();
         for (int i = 0; i < (int)items.size(); i++) {
-            std::string item = opp_trim(items[i].c_str());
+            std::string item = opp_trim(items[i]);
             if (opp_isdigit(item[0]))
                 font.pointSize = strtol(item.c_str(), nullptr, 10);
             else if (item == "bold")

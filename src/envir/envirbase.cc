@@ -428,7 +428,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
             for (int runNumber : runNumbers) {
                 const cConfiguration::RunInfo& runInfo = runInfos[runNumber];
                 out << "Run " << runNumber << ": " << runInfo.info << endl;
-                out << opp_indentlines(runInfo.configBrief.c_str(), "\t");
+                out << opp_indentlines(runInfo.configBrief, "\t");
                 if (runNumber != runNumbers.back())
                     out << endl;
             }

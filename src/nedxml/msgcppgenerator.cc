@@ -962,7 +962,7 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
 
     std::ostringstream o;
     o << " * <pre>\n";
-    o << opp_indentlines(opp_trim(opp_replacesubstring(str.c_str(), "*/", "  ", true).c_str()).c_str(), " * ");
+    o << opp_indentlines(opp_trim(opp_replacesubstring(str, "*/", "  ", true)), " * ");
 //    o << ';';   //FIXME HACK for reduce difference
     o << "\n";
     o << " * </pre>\n";
@@ -1605,7 +1605,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    if (!propertynames) {\n";
     CC << "        static const char *names[] = { ";
     for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
-        CC << opp_quotestr(key->first.c_str()) << ", ";
+        CC << opp_quotestr(key->first) << ", ";
     }
     CC << " nullptr };\n";
     CC << "        omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
@@ -1620,7 +1620,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "const char *" << info.msgdescclass << "::getProperty(const char *propertyname) const\n";
     CC << "{\n";
     for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
-        CC << "    if (!strcmp(propertyname,"<< opp_quotestr(key->first.c_str()) << ")) return " << opp_quotestr(key->second.c_str()) << ";\n";
+        CC << "    if (!strcmp(propertyname,"<< opp_quotestr(key->first) << ")) return " << opp_quotestr(key->second) << ";\n";
     }
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    return basedesc ? basedesc->getProperty(propertyname) : nullptr;\n";
@@ -1759,7 +1759,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             CC << "        case " << i << ": {\n";
             CC << "            static const char *names[] = { ";
             for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
-                CC << opp_quotestr(it->first.c_str()) << ", ";
+                CC << opp_quotestr(it->first) << ", ";
             }
             CC << " nullptr };\n";
             CC << "            return names;\n";
@@ -1788,7 +1788,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         if (!ref.empty()) {
             CC << "        case " << i << ":\n";
             for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
-                std::string prop = opp_quotestr(it->second.c_str());
+                std::string prop = opp_quotestr(it->second);
                 CC << "            if (!strcmp(propertyname,\"" << it->first << "\")) return " << prop << ";\n";
             }
             CC << "            return nullptr;\n";
@@ -2090,7 +2090,7 @@ std::string MsgCppGenerator::makeFuncall(const std::string& var, const std::stri
     }
     else if (funcTemplate.find('$') != std::string::npos) {
         // "tostring($)" becomes "tostring(var)", "getchild($,i)" becomes "getchild(var,i)"
-        return opp_replacesubstring(funcTemplate.c_str(), "$", var.c_str(), true);
+        return opp_replacesubstring(funcTemplate, "$", var, true);
     }
     else {
         // "foo" is a shorthand for "var->foo()" or "var->foo(i)", depending on flag

@@ -174,7 +174,7 @@ std::string cStringParImpl::str() const
     if (flags & FL_ISEXPR)
         return expr->str();
 
-    return opp_quotestr(val.c_str());
+    return opp_quotestr(val);
 }
 
 void cStringParImpl::parse(const char *text)

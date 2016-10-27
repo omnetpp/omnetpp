@@ -29,7 +29,7 @@ namespace omnetpp {
 
 std::string cWatch_stdstring::str() const
 {
-    return opp_quotestr(r.c_str());
+    return opp_quotestr(r);
 }
 
 void cWatch_stdstring::assign(const char *s)
