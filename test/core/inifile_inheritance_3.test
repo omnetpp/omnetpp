@@ -21,4 +21,4 @@ extends = C,D
 
 %exitcode: 1
 %contains: stderr
-<!> Error during startup: Detected section fallback chain inconsistency at: [Config E].
+<!> Error: Detected section fallback chain inconsistency at: [Config E]

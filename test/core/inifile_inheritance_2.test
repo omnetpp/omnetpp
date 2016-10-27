@@ -18,4 +18,4 @@ extends = A
 
 %exitcode: 1
 %contains: stderr
-<!> Error during startup: Cycle detected in section fallback chain at: [Config A].
+<!> Error: Cycle detected in section fallback chain at: [Config A]

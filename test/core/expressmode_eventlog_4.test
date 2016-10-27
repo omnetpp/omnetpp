@@ -23,6 +23,6 @@ Before wait
 ** Event #2  t=1   Test (Test, id=1)
 After wait
 
-<!> No more events -- simulation ended at event #2, t=1.
+<!> No more events -- simulation ended at event #2, t=1
 
 %file-not-exists: results/General-#0.elog

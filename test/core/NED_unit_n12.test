@@ -38,4 +38,5 @@ void Test::activity()
 %exitcode: 1
 
 %contains-regex: stderr
-<!> Error.*: Cannot convert unit 'unknownA' to 'unknownB', at .*test\.ned:7\.
+Cannot convert unit 'unknownA' to 'unknownB', at .*test\.ned:7
+

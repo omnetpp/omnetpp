@@ -90,7 +90,7 @@ static bool useStderr = false;
 static std::ostream& err()
 {
     std::ostream& err = useStderr ? std::cerr : std::cout;
-    err << "\n<!> Error during startup: ";
+    err << "\n<!> Error: ";
     return err;
 }
 
@@ -235,7 +235,7 @@ int setupUserInterface(int argc, char *argv[])
         app = appReg->createOne();
     }
     catch (std::exception& e) {
-        err() << e.what() << "." << endl; //TODO delete "."
+        err() << e.what() << endl;
         if (app) {
             delete app;
             app = nullptr;
@@ -260,7 +260,7 @@ int setupUserInterface(int argc, char *argv[])
         }
     }
     catch (std::exception& e) {
-        err() << e.what() << "." << endl; //TODO delete "."
+        err() << e.what() << endl;
         exitCode = 1;
     }
 

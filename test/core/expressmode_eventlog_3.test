@@ -23,7 +23,7 @@ Before wait
 ** Event #2  t=1   Test (Test, id=1)
 After wait
 
-<!> No more events -- simulation ended at event #2, t=1.
+<!> No more events -- simulation ended at event #2, t=1
 
 %subst: /^SB .*/SB .../m
 
@@ -45,5 +45,5 @@ ES t 1
 
 E # 2 t 1 m 1 ce 1 msg 0
 - After wait
-SE e 0 c 13 m "No more events -- simulation ended at event #2, t=1."
+SE e 0 c 13 m "No more events -- simulation ended at event #2, t=1"
 

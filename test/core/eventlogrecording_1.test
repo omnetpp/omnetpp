@@ -371,6 +371,6 @@ MD id 7
 GD m 7 g 1
 GD m 7 g 6
 DM id 7 tid 7 eid 7 etid 7 c cMessage n deleteModule k 8 pe 14
-SE e 0 c 13 m "No more events -- simulation ended at event #14, t=8."
+SE e 0 c 13 m "No more events -- simulation ended at event #14, t=8"
 - finishing...
 - finishing...

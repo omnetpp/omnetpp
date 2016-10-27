@@ -10,4 +10,4 @@ vec.setName("vec");
 %exitcode: 1
 
 %contains: stderr
-changing name of an output vector after record() calls is not allowed.
+changing name of an output vector after record() calls is not allowed

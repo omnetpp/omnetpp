@@ -59,4 +59,4 @@ BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 pe 10
 ES t 10
 
 E # 11 t 10 m 1 ce 10 msg 0
-SE e 0 c 13 m "No more events -- simulation ended at event #11, t=10."
+SE e 0 c 13 m "No more events -- simulation ended at event #11, t=10"

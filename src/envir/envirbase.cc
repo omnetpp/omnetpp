@@ -1623,7 +1623,7 @@ std::string EnvirBase::makeDebuggerCommand()
     }
     size_t pos = cmd.find('%');
     if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u') {
-        err() << "Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign." << endl;
+        err() << "Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign" << endl;
         return "";
     }
     pid_t pid = getpid();
@@ -1661,7 +1661,7 @@ std::string EnvirBase::getFormattedMessage(std::exception& ex)
     if (cException *e = dynamic_cast<cException *>(&ex))
         return e->getFormattedMessage();
     else
-        return std::string(ex.what()) + ".";
+        return ex.what();
 }
 
 void EnvirBase::displayException(std::exception& ex)

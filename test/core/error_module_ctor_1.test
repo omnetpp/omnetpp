@@ -17,7 +17,7 @@ Define_Module(Foo);
 %exitcode: 1
 
 %contains-regex: stderr
-<!> Error: oops\.
+<!> Error: oops
 
 %contains: stdout
 End.

@@ -189,18 +189,18 @@ std::string cException::getFormattedMessage() const
     std::string result;
     if (isError()) {
         if (!hasContext())
-            result = opp_stringf("Error%s: %s.", when.c_str(), what());
+            result = opp_stringf("Error%s: %s", when.c_str(), what());
         else
-            result = opp_stringf("Error in %s (%s) %s (id=%d)%s: %s.",
+            result = opp_stringf("Error in %s (%s) %s (id=%d)%s: %s",
                         getKindStr((cComponent::ComponentKind)getContextComponentKind(), false),
                         getContextClassName(), getContextFullPath(), getContextComponentId(),
                         when.c_str(), what());
     }
     else {
         if (!hasContext())
-            result = opp_stringf("%s%s.", what(), when.c_str());
+            result = opp_stringf("%s%s", what(), when.c_str());
         else
-            result = opp_stringf("%s (%s) %s (id=%d)%s: %s.",
+            result = opp_stringf("%s (%s) %s (id=%d)%s: %s",
                         getKindStr((cComponent::ComponentKind)getContextComponentKind(), true),
                         getContextClassName(), getContextFullPath(), getContextComponentId(),
                         when.c_str(), what());

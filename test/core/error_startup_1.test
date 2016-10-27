@@ -19,5 +19,5 @@ EXECUTE_ON_STARTUP(
 throwing...
 
 %contains: stdout
-<!> Error during startup: something bad happened
+<!> Error: something bad happened
 
