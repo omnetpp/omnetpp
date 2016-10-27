@@ -79,13 +79,6 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig, andras
  */
-//FIXME in RUN mode, stderr is not shown in Console!!!! (error msg cannot be seen)
-//FIXME RUN mode + all option checkboxes cleared + invalid option as extra arg --> order of output in console is wong, error message is uninformative (not the error message but "Finished with error")
-//FIXME Levy's bug: remove quotes from value in ${iterationvarsf}
-//TODO restore ${iterationvars2} that contains "repetition=.." in the right position (nesting order)
-//TODO for batches: make it optional to save capture output in Console pages!
-//TODO allow at least sim-time-limit and cpu-time-limit to be specified in this page...
-//TODO content assist for the Additional Arguments editfield
 public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
 
     protected static final int MAX_TOOLTIP_CHARS = 50000;

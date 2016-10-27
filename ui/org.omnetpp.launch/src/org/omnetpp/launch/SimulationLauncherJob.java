@@ -21,13 +21,13 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
 import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
@@ -40,16 +40,21 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 /**
  * A job to launch a single simulation process in the background
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class SimulationLauncherJob extends Job {
+    private static final String ERROR_MARKER = "<!> Error";
+
     public final static String SIMULATION_JOB_FAMILY = "simulation";
-    ILaunchConfiguration configuration;
-    ILaunch launch;
-    String runFilter;
-    String taskName;
-    boolean reportProgress;
-    int port;
+
+    private ILaunchConfiguration configuration;
+    private ILaunch launch;
+    private String runFilter;
+    private String taskName;
+    private boolean reportProgress;
+    private int port;
+
+    private StringBuffer errors = new StringBuffer();
 
     public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, String runFilter, boolean reportProgress, int port) {
         super("Simulating "+configuration.getName());
@@ -92,12 +97,13 @@ public class SimulationLauncherJob extends Job {
             String[] cmdLineArgs = OmnetppLaunchUtils.createCommandLine(configuration, additionalArgs);
             IPath workingDir = OmnetppLaunchUtils.getWorkingDirectoryPath(configuration);
             String commandLine = OmnetppLaunchUtils.makeRelativePathTo(new Path(cmdLineArgs[0]), workingDir).toString();
+
             // if opp_run is used, do not display any path info
             if (commandLine.endsWith("/opp_run"))
                 commandLine = "opp_run";
             if (commandLine.endsWith("/opp_run_release"))
                 commandLine = "opp_run_release";
-            for (int i=1; i<cmdLineArgs.length; ++i)
+            for (int i = 1; i < cmdLineArgs.length; ++i)
                 commandLine += " " + cmdLineArgs[i];
 
             // launch the process
@@ -110,29 +116,13 @@ public class SimulationLauncherJob extends Job {
 
             // setup a stream monitor on the process output, so we can track the progress
             if (reportProgress && monitor != null)
-                iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () { //TODO this is null if "Allocate console" is off
-                    int prevPercentComplete = 0;
-                    @Override
-                    public void streamAppended(String text, IStreamMonitor ismon) {
-                        int percentComplete = OmnetppLaunchUtils.getProgressInPercent(text);
-                        if (percentComplete >= 0) {
-                            subMonitor.worked(percentComplete - prevPercentComplete);
-                            prevPercentComplete = percentComplete;
-                        }
-
-                        if (OmnetppLaunchUtils.isWaitingForUserInput(text))
-                            subMonitor.subTask("Waiting for user input... (Switch to console)");
-                        else
-                            subMonitor.subTask("Executing (" + prevPercentComplete + "%)");
-                    }
-                });
+                hookProgressTracker(subMonitor, iprocess);
 
             // poll the state of the monitor and terminate the process if cancel was requested
             while (!iprocess.isTerminated()) {
                 synchronized (iprocess) {
                     try {
-                        iprocess.wait(1000);
-                        // check the monitor state on every 1000ms and terminate the process if requested
+                        iprocess.wait(200);
                         if (subMonitor.isCanceled())
                             iprocess.terminate();
                     } catch (InterruptedException e) {
@@ -143,37 +133,17 @@ public class SimulationLauncherJob extends Job {
 
             subMonitor.done();
 
-            // do some error reporting if the process finished with error
-            if (iprocess.isTerminated() && iprocess.getExitValue() != 0) {
-                try {
-                    String errorMsg = "\nSimulation terminated with exit code: " + iprocess.getExitValue() + "\n";
-                    errorMsg += "Working directory: " + workingDir + "\n";
-                    errorMsg += "Command line: " + commandLine + "\n";
+            if (iprocess.getExitValue() != 0) {
+                // do some error reporting if the process finished with error
+                dumpPostMortemInfo(iprocess, commandLine, workingDir);
 
-                    // add the environment variables we are interested in
-                    String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
-                    errorMsg += "\nEnvironment variables:\n";
-                    for (String env : environment) {
-                        // on Windows, environment variable names are case insensitive, so we convert the name to upper case
-                        if (Platform.getOS().equals(Platform.OS_WIN32))
-                            env = StringUtils.substringBefore(env, "=").toUpperCase() + "=" + StringUtils.substringAfter(env, "=");
-                        if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=")
-                                || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH="))
-                            errorMsg += env  + "\n";
-                    }
-
-                    printToConsole(iprocess, errorMsg, true);
-                    if (subMonitor.isCanceled() || iprocess.getExitValue() == 2) {
-                        printToConsole(iprocess, "Cancelled by user request.", true);
-                        subMonitor.subTask("Cancelled");
-                        return Status.CANCEL_STATUS;
-                    } else {
-                        subMonitor.subTask("Failed");
-                        return new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, iprocess.getExitValue(), taskName+": Finished with Error", null);
-                    }
-                }
-                catch (DebugException e) {
-                    LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
+                if (subMonitor.isCanceled() || iprocess.getExitValue() == 2) {
+                    printToConsole(iprocess, "Cancelled by user request.", true);
+                    subMonitor.subTask("Cancelled");
+                    return Status.CANCEL_STATUS;
+                } else {
+                    subMonitor.subTask("Failed");
+                    return new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, iprocess.getExitValue(), taskName+": Finished with Error", new RuntimeException(errors.toString()));
                 }
             }
         }
@@ -185,11 +155,43 @@ public class SimulationLauncherJob extends Job {
         return Status.OK_STATUS;
     }
 
+    protected void hookProgressTracker(final SubMonitor subMonitor, IProcess iprocess) {
+        IStreamsProxy streamsProxy = iprocess.getStreamsProxy();
+        if (streamsProxy == null)
+            return;  // no console (likely the "Allocate console" checkbox on the Common page is cleared)
+
+        streamsProxy.getOutputStreamMonitor().addListener(new IStreamListener () {
+            int prevPercentComplete = 0;
+            @Override
+            public void streamAppended(String text, IStreamMonitor streamMonitor) {
+                // collect error messages from stream
+                if (text.contains(ERROR_MARKER)) {
+                    for (String line : text.split("\n")) {
+                        if (line.startsWith(ERROR_MARKER))
+                            errors.append(line + "\n");
+                    }
+                }
+
+                // parse and report progress percentage
+                int percentComplete = OmnetppLaunchUtils.getProgressInPercent(text);
+                if (percentComplete >= 0) {
+                    subMonitor.worked(percentComplete - prevPercentComplete);
+                    prevPercentComplete = percentComplete;
+                }
+
+                if (OmnetppLaunchUtils.isWaitingForUserInput(text))
+                    subMonitor.subTask("Waiting for user input... (Switch to console)");
+                else
+                    subMonitor.subTask("Executing (" + prevPercentComplete + "%)");
+            }
+        });
+    }
+
     /**
      * Print something to the process's console output. Error message will be written in red
      * and the console will be brought to focus.
      */
-    private void printToConsole(IProcess iprocess, String text, boolean isErrorMessage) {
+    protected void printToConsole(IProcess iprocess, String text, boolean isErrorMessage) {
         try {
             ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
             if (console != null) {
@@ -212,10 +214,30 @@ public class SimulationLauncherJob extends Job {
         }
     }
 
+    protected void dumpPostMortemInfo(IProcess iprocess, String commandLine, IPath workingDir) throws CoreException {
+        String errorMsg = "\nSimulation terminated with exit code: " + iprocess.getExitValue() + "\n";
+        errorMsg += "Working directory: " + workingDir + "\n";
+        errorMsg += "Command line: " + commandLine + "\n";
+
+        // add the environment variables we are interested in
+        errorMsg += "\nEnvironment variables:\n";
+        String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
+        for (String env : environment) {
+            // on Windows, environment variable names are case insensitive, so we convert the name to upper case
+            if (Platform.getOS().equals(Platform.OS_WIN32))
+                env = StringUtils.substringBefore(env, "=").toUpperCase() + "=" + StringUtils.substringAfter(env, "=");
+            if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=") || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH="))
+                errorMsg += env  + "\n";
+        }
+
+        printToConsole(iprocess, errorMsg, true);
+    }
+
+
     /**
      * Returns the process label to display.
      */
-    private String renderProcessLabel(String runFilter) throws CoreException {
+    protected String renderProcessLabel(String runFilter) throws CoreException {
         String progAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
         String expandedProg = StringUtils.substituteVariables(progAttr);
         String format = "{0} ({1} - " + runFilter + ")";
