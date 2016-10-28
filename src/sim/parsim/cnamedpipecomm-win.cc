@@ -183,9 +183,9 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
 
     unsigned long bytesWritten;
     if (!WriteFile(h, &ph, sizeof(ph), &bytesWritten, 0))
-        throw cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
     if (!WriteFile(h, b->getBuffer(), ph.contentLength, &bytesWritten, 0))
-        throw cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
 }
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
@@ -212,7 +212,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
             continue;
         unsigned long bytesAvail, bytesLeft;
         if (!PeekNamedPipe(rpipes[i], nullptr, 0, nullptr, &bytesAvail, &bytesLeft))
-            throw cRuntimeError("cNamedPipeCommunications: cannot peek pipe to procId=%d: %s",
+            throw cRuntimeError("cNamedPipeCommunications: Cannot peek pipe to procId=%d: %s",
                     i, getWindowsError().c_str());
         if (bytesAvail > 0)
             break;
@@ -228,7 +228,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     unsigned long bytesRead;
     struct PipeHeader ph;
     if (!ReadFile(h, &ph, sizeof(ph), &bytesRead, nullptr))
-        throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
+        throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe to procId=%d: %s",
                 sourceProcId, getWindowsError().c_str());
     if (bytesRead < sizeof(ph))
         throw cRuntimeError("cNamedPipeCommunications: ReadFile returned less data than expected");
@@ -238,7 +238,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     b->setMessageSize(ph.contentLength);
 
     if (!ReadFile(h, b->getBuffer(), ph.contentLength, &bytesRead, nullptr))
-        throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
+        throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe to procId=%d: %s",
                 sourceProcId, getWindowsError().c_str());
     if (bytesRead < ph.contentLength)
         throw cRuntimeError("cNamedPipeCommunications: ReadFile returned less data than expected");

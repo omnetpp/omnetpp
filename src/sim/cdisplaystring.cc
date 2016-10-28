@@ -297,12 +297,10 @@ int cDisplayString::doInsertTag(const char *tagname, int atindex)
 {
     // check name validity
     if (!tagname || !tagname[0])
-        throw cRuntimeError("Error adding a new display string tag: tag name is empty");
+        throw cRuntimeError("cDisplayString::insertTag(): Tag name cannot be empty");
     for (const char *s = tagname; *s; s++)
         if (!opp_isalnum(*s) && *s != ':')
-            throw cRuntimeError("Error adding a new display string tag: tag name \"%s\" "
-                                "contains invalid character", tagname);
-
+            throw cRuntimeError("cDisplayString::insertTag(): Name \"%s\" contains illegal character '%c'", tagname, *s);
 
     // check uniqueness
     int t = getTagIndex(tagname);
@@ -449,8 +447,7 @@ void cDisplayString::doParse()
             // new argument of current tag begins
             *d = '\0';
             if (tags[numTags-1].numArgs >= MAXARGS)
-                throw cRuntimeError("Error parsing display string: too many parameters for a tag, "
-                                    "max %d allowed in \"%s\"", MAXARGS, assembledString);
+                throw cRuntimeError("Too many tag arguments (max %d allowed) while parsing display string \"%s\"", MAXARGS, assembledString);
             tags[numTags-1].numArgs++;
             tags[numTags-1].args[tags[numTags-1].numArgs-1] = d+1;
         }
@@ -466,11 +463,11 @@ void cDisplayString::doParse()
             if (tags[i].numArgs == 0)
                 ;  // empty tag (occurs when there're redundant semicolons, or the display string is empty) -- XXX remove it
             else
-                throw cRuntimeError("Error parsing display string: missing tag name in \"%s\"", assembledString);
+                throw cRuntimeError("Missing tag name encountered while parsing display string \"%s\"", assembledString);
         }
         for (const char *s = tags[i].name; *s; s++)
             if (!opp_isalnum(*s) && *s != ':')
-                throw cRuntimeError("Error parsing display string: tag name \"%s\" contains invalid character in  \"%s\"", tags[i].name, assembledString);
+                throw cRuntimeError("Illegal character \"%c\" encountered in tag name while parsing display string \"%s\"", *s, assembledString);
 
     }
 }

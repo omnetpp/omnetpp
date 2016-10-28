@@ -50,7 +50,7 @@ uint32_t cHasher::parse(const char *hash) const
     unsigned long d = strtoul(s.c_str(), &e, 16);
     uint32_t value = (uint32_t)d;
     if (*e || value != d)
-        throw cRuntimeError("Error verifying hash: invalid hash text \"%s\"", hash);
+        throw cRuntimeError("Cannot verify hash: invalid hash text \"%s\"", hash);
     return value;
 }
 

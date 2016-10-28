@@ -30,8 +30,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
-#define ERRPREFIX    "Error at `%s' line %d: "
-
 InifileReader::InifileReader()
 {
 }
@@ -159,14 +157,14 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
         if (!strncmp(line, "#% old-wildcards", 16)) {
             // in old ini files, "*" matched dots as well, like "**" does now;
             // we don't support this backward compatibility feature any longer
-            throw cRuntimeError(ERRPREFIX "old-wildcards mode (#%% old-wildcards syntax) no longer supported", filename, lineNumber);
+            throw cRuntimeError("Old-wildcards mode (#%% old-wildcards syntax) no longer supported, `%s' line %d", filename, lineNumber);
         }
         else if (!*line || *line == '#') {
             // blank or comment line, ignore
         }
         else if (*line == ';') {
             // obsolete comment line
-            throw cRuntimeError(ERRPREFIX "semicolon is no longer a comment start character, please use hashmark ('#')", filename, lineNumber);
+            throw cRuntimeError("Use hash mark instead of semicolon to start comments, `%s' line %d", filename, lineNumber);
         }
         else if (*line == 'i' && strncmp(line, "include", 7) == 0 && opp_isspace(line[7])) {
             // include directive
@@ -187,14 +185,14 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
             // section heading
             const char *endPos = findEndContent(line, filename, lineNumber);
             if (*(endPos-1) != ']')
-                throw cRuntimeError(ERRPREFIX "syntax error in section heading", filename, lineNumber);
+                throw cRuntimeError("Syntax error in section heading, `%s' line %d", filename, lineNumber);
             std::string sectionName = trim(line+1, endPos-1);
             if (sectionName.empty())
-                throw cRuntimeError(ERRPREFIX "section name cannot be empty", filename, lineNumber);
+                throw cRuntimeError("Section name cannot be empty, `%s' line %d", filename, lineNumber);
 
             // section name must be unique within file (to reduce risk of copy/paste errors)
             if (sectionsInFile.find(sectionName) != sectionsInFile.end())
-                throw cRuntimeError(ERRPREFIX "section name not unique within file", filename, lineNumber);
+                throw cRuntimeError("Section name must be unique within file, `%s' line %d", filename, lineNumber);
             sectionsInFile.insert(sectionName);
 
             // add section of not yet seen (in another file)
@@ -207,11 +205,11 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
             const char *endPos = findEndContent(line, filename, lineNumber);
             const char *equalSignPos = strchr(line, '=');
             if (equalSignPos == nullptr || equalSignPos > endPos)
-                throw cRuntimeError(ERRPREFIX "line must be in the form key=value", filename, lineNumber);
+                throw cRuntimeError("Line must be in the form key=value, `%s' line %d", filename, lineNumber);
             std::string key = trim(line, equalSignPos);
             std::string value = trim(equalSignPos+1, endPos);
             if (key.empty())
-                throw cRuntimeError(ERRPREFIX "line must be in the form key=value", filename, lineNumber);
+                throw cRuntimeError("Line must be in the form key=value, `%s' line %d", filename, lineNumber);
 
             sections[currentSectionIndex].entries.push_back(KeyValue1(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
         }
@@ -242,7 +240,7 @@ const char *InifileReader::findEndContent(const char *line, const char *filename
                     s++;
                 }
                 if (!*s)
-                    throw cRuntimeError(ERRPREFIX "unterminated string constant", filename, lineNumber);
+                    throw cRuntimeError("Unterminated string constant, `%s' line %d", filename, lineNumber);
                 s++;
                 break;
 

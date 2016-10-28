@@ -442,7 +442,7 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
         return Scenario(v, constraint, "").getNumRuns();
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Error while computing the number of runs in config %s: %s", configName, e.what());
+        throw cRuntimeError("Could not compute number of runs in config %s: %s", configName, e.what());
     }
 }
 

@@ -42,7 +42,7 @@ Scenario::Scenario(const std::vector<IterationVariable>& iterationVariables, con
             varExt.iterator.parse(var.value.c_str());
         }
         catch (std::exception& e) {
-            throw cRuntimeError("Cannot parse iteration variable '%s' (%s in %s)", var.varName.c_str(), e.what(), var.value.c_str());
+            throw cRuntimeError("Cannot parse iteration variable '%s' (%s in '%s')", var.varName.c_str(), e.what(), var.value.c_str());
         }
         variables.push_back(&varExt); // point into the map
     }
@@ -293,10 +293,10 @@ std::string Scenario::getVariable(const char *varName) const
 {
     auto it = variablesByName.find(varName);
     if (it == variablesByName.end())
-        throw cRuntimeError("Unknown iteration variable: %s", varName);
+        throw cRuntimeError("Unknown iteration variable '%s'", varName);
     const IterationVariableExt& var = it->second;
     if (var.iterator.end())
-        throw cRuntimeError("Variable '%s' has no more values", varName);
+        throw cRuntimeError("Out of values for iteration variable '%s'", varName);
     return var.iterator.get();
 }
 
@@ -304,7 +304,7 @@ int Scenario::getIteratorPosition(const char *varName) const
 {
     auto it = variablesByName.find(varName);
     if (it == variablesByName.end())
-        throw cRuntimeError("Unknown iteration variable: %s", varName);
+        throw cRuntimeError("Unknown iteration variable '%s'", varName);
     const IterationVariableExt& var = it->second;
     return var.iterator.getPosition();
 }

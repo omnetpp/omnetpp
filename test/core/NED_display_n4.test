@@ -14,4 +14,4 @@ network Test {
 %exitcode: 1
 
 %contains: stderr
-tag name "i**" contains invalid character in  "i**=foo"
+Illegal character "*" encountered in tag name while parsing display string "i**=foo"

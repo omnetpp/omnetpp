@@ -161,7 +161,7 @@ void yyerror(const char *s)
     if (buf[strlen(buf)-1] == '\n')
         buf[strlen(buf)-1] = '\0';
 
-    throw opp_runtime_error("Error parsing match expression: %s", buf);
+    throw opp_runtime_error("Parse error in match expression: %s", buf);
 }
 
 } // namespace common

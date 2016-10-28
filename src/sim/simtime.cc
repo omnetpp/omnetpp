@@ -113,8 +113,8 @@ void SimTime::overflowSubtracting(const SimTime& x)
 
 void SimTime::overflowNegating()
 {
-    throw cRuntimeError("Error negating simtime_t %s: it is internally represented with INT64_MIN "
-            "that has no positive equivalent, try decreasing precision", str().c_str());
+    throw cRuntimeError("Cannot negate simtime_t %s: it is internally represented with INT64_MIN "
+            "that has no positive equivalent (try decreasing precision)", str().c_str());
 }
 
 SimTime::SimTime(int64_t value, SimTimeUnit unit)
@@ -327,7 +327,7 @@ const SimTime SimTime::parse(const char *s)
         return unit.empty() ? d : UnitConversion::convertUnit(d, unit.c_str(), "s");
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Error converting string \"%s\" to SimTime: %s", s, e.what());
+        throw cRuntimeError("Cannot convert string \"%s\" to SimTime: %s", s, e.what());
     }
 }
 

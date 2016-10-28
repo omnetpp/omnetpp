@@ -54,5 +54,5 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stderr
-Error reading `nosuchfile.xml'
+Cannot load `nosuchfile.xml': File not found
 

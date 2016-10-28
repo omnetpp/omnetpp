@@ -212,7 +212,7 @@ SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, const c
         }
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): error in source=%s: %s",
+        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): error in source=%s: %s",
                 statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
     }
 }
@@ -234,7 +234,7 @@ void cStatisticBuilder::doResultRecorder(const SignalSource& source, const char 
         }
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Error adding statistic '%s' to module %s (NED type: %s): bad recording mode '%s': %s",
+        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): bad recording mode '%s': %s",
                 statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
     }
 }

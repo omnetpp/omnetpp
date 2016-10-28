@@ -91,8 +91,8 @@ EV << ".\n";
 -(1km+1km) ==> -2km
 
 ~(1+1) ==> _maxlong_
-~(1m+1m) ==> Error in expression: `~': argument(s) must be dimensionless
-~(1km+1km) ==> Error in expression: `~': argument(s) must be dimensionless
+~(1m+1m) ==> `~' expects dimensionless arguments
+~(1km+1km) ==> `~' expects dimensionless arguments
 
 3 + 2 ==> 5
 3m + 2m ==> 5m
@@ -127,60 +127,60 @@ EV << ".\n";
 3m / 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
 
 3 % 2 ==> 1
-3m % 2m ==> Error in expression: `%': argument(s) must be dimensionless
-3m % 2km ==> Error in expression: `%': argument(s) must be dimensionless
-3km % 2m ==> Error in expression: `%': argument(s) must be dimensionless
-3 % 2m ==> Error in expression: `%': argument(s) must be dimensionless
-3m % 2 ==> Error in expression: `%': argument(s) must be dimensionless
-3m % 2s ==> Error in expression: `%': argument(s) must be dimensionless
+3m % 2m ==> `%' expects dimensionless arguments
+3m % 2km ==> `%' expects dimensionless arguments
+3km % 2m ==> `%' expects dimensionless arguments
+3 % 2m ==> `%' expects dimensionless arguments
+3m % 2 ==> `%' expects dimensionless arguments
+3m % 2s ==> `%' expects dimensionless arguments
 
 3 ^ 2 ==> 9
-3m ^ 2m ==> Error in expression: `^': argument(s) must be dimensionless
-3m ^ 2km ==> Error in expression: `^': argument(s) must be dimensionless
-3km ^ 2m ==> Error in expression: `^': argument(s) must be dimensionless
-3 ^ 2m ==> Error in expression: `^': argument(s) must be dimensionless
-3m ^ 2 ==> Error in expression: `^': argument(s) must be dimensionless
-3m ^ 2s ==> Error in expression: `^': argument(s) must be dimensionless
+3m ^ 2m ==> `^' expects dimensionless arguments
+3m ^ 2km ==> `^' expects dimensionless arguments
+3km ^ 2m ==> `^' expects dimensionless arguments
+3 ^ 2m ==> `^' expects dimensionless arguments
+3m ^ 2 ==> `^' expects dimensionless arguments
+3m ^ 2s ==> `^' expects dimensionless arguments
 
 3 & 2 ==> 2
-3m & 2m ==> Error in expression: `&': argument(s) must be dimensionless
-3m & 2km ==> Error in expression: `&': argument(s) must be dimensionless
-3km & 2m ==> Error in expression: `&': argument(s) must be dimensionless
-3 & 2m ==> Error in expression: `&': argument(s) must be dimensionless
-3m & 2 ==> Error in expression: `&': argument(s) must be dimensionless
-3m & 2s ==> Error in expression: `&': argument(s) must be dimensionless
+3m & 2m ==> `&' expects dimensionless arguments
+3m & 2km ==> `&' expects dimensionless arguments
+3km & 2m ==> `&' expects dimensionless arguments
+3 & 2m ==> `&' expects dimensionless arguments
+3m & 2 ==> `&' expects dimensionless arguments
+3m & 2s ==> `&' expects dimensionless arguments
 
 3 | 2 ==> 3
-3m | 2m ==> Error in expression: `|': argument(s) must be dimensionless
-3m | 2km ==> Error in expression: `|': argument(s) must be dimensionless
-3km | 2m ==> Error in expression: `|': argument(s) must be dimensionless
-3 | 2m ==> Error in expression: `|': argument(s) must be dimensionless
-3m | 2 ==> Error in expression: `|': argument(s) must be dimensionless
-3m | 2s ==> Error in expression: `|': argument(s) must be dimensionless
+3m | 2m ==> `|' expects dimensionless arguments
+3m | 2km ==> `|' expects dimensionless arguments
+3km | 2m ==> `|' expects dimensionless arguments
+3 | 2m ==> `|' expects dimensionless arguments
+3m | 2 ==> `|' expects dimensionless arguments
+3m | 2s ==> `|' expects dimensionless arguments
 
 3 # 2 ==> 1
-3m # 2m ==> Error in expression: `#': argument(s) must be dimensionless
-3m # 2km ==> Error in expression: `#': argument(s) must be dimensionless
-3km # 2m ==> Error in expression: `#': argument(s) must be dimensionless
-3 # 2m ==> Error in expression: `#': argument(s) must be dimensionless
-3m # 2 ==> Error in expression: `#': argument(s) must be dimensionless
-3m # 2s ==> Error in expression: `#': argument(s) must be dimensionless
+3m # 2m ==> `#' expects dimensionless arguments
+3m # 2km ==> `#' expects dimensionless arguments
+3km # 2m ==> `#' expects dimensionless arguments
+3 # 2m ==> `#' expects dimensionless arguments
+3m # 2 ==> `#' expects dimensionless arguments
+3m # 2s ==> `#' expects dimensionless arguments
 
 3 << 2 ==> 12
-3m << 2m ==> Error in expression: `<<': argument(s) must be dimensionless
-3m << 2km ==> Error in expression: `<<': argument(s) must be dimensionless
-3km << 2m ==> Error in expression: `<<': argument(s) must be dimensionless
-3 << 2m ==> Error in expression: `<<': argument(s) must be dimensionless
-3m << 2 ==> Error in expression: `<<': argument(s) must be dimensionless
-3m << 2s ==> Error in expression: `<<': argument(s) must be dimensionless
+3m << 2m ==> `<<' expects dimensionless arguments
+3m << 2km ==> `<<' expects dimensionless arguments
+3km << 2m ==> `<<' expects dimensionless arguments
+3 << 2m ==> `<<' expects dimensionless arguments
+3m << 2 ==> `<<' expects dimensionless arguments
+3m << 2s ==> `<<' expects dimensionless arguments
 
 3 >> 2 ==> 0
-3m >> 2m ==> Error in expression: `>>': argument(s) must be dimensionless
-3m >> 2km ==> Error in expression: `>>': argument(s) must be dimensionless
-3km >> 2m ==> Error in expression: `>>': argument(s) must be dimensionless
-3 >> 2m ==> Error in expression: `>>': argument(s) must be dimensionless
-3m >> 2 ==> Error in expression: `>>': argument(s) must be dimensionless
-3m >> 2s ==> Error in expression: `>>': argument(s) must be dimensionless
+3m >> 2m ==> `>>' expects dimensionless arguments
+3m >> 2km ==> `>>' expects dimensionless arguments
+3km >> 2m ==> `>>' expects dimensionless arguments
+3 >> 2m ==> `>>' expects dimensionless arguments
+3m >> 2 ==> `>>' expects dimensionless arguments
+3m >> 2s ==> `>>' expects dimensionless arguments
 
 3 == 2 ==> false
 3m == 2m ==> false

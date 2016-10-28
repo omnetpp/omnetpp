@@ -23,11 +23,14 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdarg>
+#include "common/stringutil.h"
+#include "common/fileutil.h"
 #include "saxparser.h"
 
 namespace omnetpp {
 namespace nedxml {
 
+using namespace omnetpp::common;
 
 //
 // Validating only if LibXML is at least 2.6.0
@@ -113,7 +116,7 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
             break;
 
         case XML_PI_NODE:
-            // FIXME sh->processingInstruction((const char *)target,(const char *)data);
+            // ignored: sh->processingInstruction((const char *)target,(const char *)data);
             break;
 
         case XML_COMMENT_NODE:
@@ -154,6 +157,11 @@ bool SAXParser::doParse(const char *filename, const char *content)
     assert((filename == nullptr) != (content == nullptr));  // exactly one of them is non-nullptr
     strcpy(errortext, "<error msg unfilled>");
 
+    if (filename && !fileExists(filename)) {
+        sprintf(errortext, "File not found");
+        return false;
+    }
+
     //
     // When there's a DTD given, we *must* use it, and complete default attrs from it.
     //
@@ -187,7 +195,7 @@ bool SAXParser::doParse(const char *filename, const char *content)
     // check if parsing succeeded
     if (!doc) {
         sprintf(errortext, "Parse error: %s at line %s:%d",
-                ctxt->lastError.message, ctxt->lastError.file, ctxt->lastError.line);
+                opp_trim(ctxt->lastError.message).c_str(), ctxt->lastError.file, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
         return false;
     }

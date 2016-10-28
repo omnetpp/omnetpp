@@ -163,7 +163,7 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
     parser.setHandler(&sh);
     bool ok = parser.parse(filename);
     if (!ok)
-        throw cRuntimeError("Error reading `%s': %s", filename, parser.getErrorMessage());
+        throw cRuntimeError("Cannot load `%s': %s", filename, parser.getErrorMessage());
 
     return sh.getTree();
 #endif
@@ -182,7 +182,7 @@ cXMLElement *cXMLDocCache::parseContent(const char *content)
     parser.setHandler(&sh);
     bool ok = parser.parseContent(content);
     if (!ok)
-        throw cRuntimeError("Error parsing XML string: %s", parser.getErrorMessage());
+        throw cRuntimeError("Cannot parse XML string: %s", parser.getErrorMessage());
 
     return sh.getTree();
 #endif

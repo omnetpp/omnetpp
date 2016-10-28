@@ -76,7 +76,7 @@ int NEDResourceCache::loadNedSourceFolder(const char *foldername)
         return doLoadNedSourceFolder(foldername, rootPackageName.c_str());
     }
     catch (std::exception& e) {
-        throw NEDException("Error loading NED sources from `%s': %s", foldername, e.what());
+        throw NEDException("Could not load NED sources from `%s': %s", foldername, e.what());
     }
 }
 
@@ -151,7 +151,7 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     }
     if (errors.containsError()) {
         delete tree;
-        throw NEDException("errors while loading or parsing file `%s'", fname);  // FIXME these errors print relative path????
+        throw NEDException("syntax error in file `%s'", fname);
     }
 
     // DTD validation and additional syntax validation
@@ -159,14 +159,14 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     dtdvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NEDException("errors during DTD validation of file `%s'", fname);
+        throw NEDException("file `%s' failed internal DTD validation", fname);
     }
 
     NEDSyntaxValidator syntaxvalidator(true, &errors);
     syntaxvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NEDException("errors during validation of file `%s'", fname);
+        throw NEDException("file `%s' failed internal validation", fname);
     }
     return tree;
 }

@@ -131,7 +131,7 @@ using namespace omnetpp::nedxml;
 
 \"                      { countChars(); BEGIN(stringliteral); }
 <stringliteral>{
-      \n                { BEGIN(INITIAL); throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
+      \n                { BEGIN(INITIAL); throw NEDException("Unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
       \\\n              { extendCount(); /* line continuation */ }
       \\\"              { extendCount(); /* qouted quote */ }
       \\[^\n\"]         { extendCount(); /* qouted char */ }

@@ -69,7 +69,7 @@ void cNullEnvir::notifyLifecycleListeners(SimulationLifecycleEventType eventType
         }
         catch (std::exception& e) {  //XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyLifecycleListeners() calls MUST be surrounded with try-catch!!!!
             const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
-            printfmsg("Error in %s listener: %s", eventName, e.what());
+            printfmsg("Error: Exception during notifying lifecycle listeners about %s event: %s", eventName, e.what());
         }
     }
 }

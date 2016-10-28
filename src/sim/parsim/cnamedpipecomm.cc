@@ -103,10 +103,10 @@ void cNamedPipeCommunications::init()
         EV << "cNamedPipeCommunications: creating and opening pipe '" << fname << "' for read...\n";
         unlink(fname);
         if (mknod(fname, S_IFIFO|0600, 0) == -1)
-            throw cRuntimeError("cNamedPipeCommunications: cannot create pipe '%s': %s", fname, strerror(errno));
+            throw cRuntimeError("cNamedPipeCommunications: Cannot create pipe '%s': %s", fname, strerror(errno));
         rpipes[i] = open(fname, O_RDONLY|O_NONBLOCK);
         if (rpipes[i] == -1)
-            throw cRuntimeError("cNamedPipeCommunications: cannot open pipe '%s' for read: %s", fname, strerror(errno));
+            throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for read: %s", fname, strerror(errno));
 
         if (rpipes[i] > maxFdPlus1)
             maxFdPlus1 = rpipes[i];
@@ -130,7 +130,7 @@ void cNamedPipeCommunications::init()
             wpipes[i] = open(fname, O_WRONLY);
         }
         if (wpipes[i] == -1)
-            throw cRuntimeError("cNamedPipeCommunications: cannot open pipe '%s' for write: %s", fname, strerror(errno));
+            throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for write: %s", fname, strerror(errno));
     }
 }
 
@@ -171,9 +171,9 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
     ph.tag = tag;
     ph.contentLength = b->getMessageSize();
     if (write(fd, &ph, sizeof(ph)) == -1)
-        throw cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
     if (write(fd, b->getBuffer(), ph.contentLength) == -1)
-        throw cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
 }
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
@@ -211,7 +211,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
             if (rpipes[i] != -1 && FD_ISSET(rpipes[i], &fdset)) {
                 struct PipeHeader ph;
                 if (readBytes(rpipes[i], &ph, sizeof(ph)) == -1)
-                    throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
+                    throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe "
                                         "to procId=%d: %s", sourceProcId, strerror(errno));
 
                 sourceProcId = i;
@@ -220,7 +220,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
                 b->setMessageSize(ph.contentLength);
 
                 if (readBytes(rpipes[i], b->getBuffer(), ph.contentLength) == -1)
-                    throw cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
+                    throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe "
                                         "to procId=%d: %s", sourceProcId, strerror(errno));
                 return true;
             }

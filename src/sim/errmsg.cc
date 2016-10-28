@@ -35,8 +35,8 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_CANTDUP:   return "This object cannot dup() itself";
         case E_CANTPACK:  return "parsimPack()/parsimUnpack() not supported for this object";
         case E_CUSTOM:    return "%s";
-        case E_DIMLESS:   return "Error in expression: `%s': argument(s) must be dimensionless";
-        case E_EBADARGS:  return "Error in expression: `%s': wrong argument type(s)";
+        case E_DIMLESS:   return "`%s' expects dimensionless arguments";
+        case E_EBADARGS:  return "Wrong argument type for `%s'";
         case E_ECANTCAST: return "Cannot cast result of expression to %s";
         case E_ENDEDOK:   return "No more events -- simulation ended";
         case E_ENDSIM:    return "Simulation stopped with endSimulation()";

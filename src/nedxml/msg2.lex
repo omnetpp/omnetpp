@@ -107,7 +107,7 @@ using namespace omnetpp::nedxml;
 
 \"                       { countChars(); BEGIN(stringliteral); }
 <stringliteral>{
-    \n                   { BEGIN(INITIAL); parenDepth=0; throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); }
+    \n                   { BEGIN(INITIAL); parenDepth=0; throw NEDException("Unterminated string literal"); }
     \\\n                 { extendCount(); /* line continuation */ }
     \\\"                 { extendCount(); /* qouted quote */ }
     \\[^\n\"]            { extendCount(); /* qouted char */ }

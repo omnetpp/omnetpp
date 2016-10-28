@@ -92,7 +92,7 @@ static std::string extendbuf;
 
 \"                       { BEGIN(stringliteral); countChars(); }
 <stringliteral>{
-      \n                 { BEGIN(INITIAL); throw std::runtime_error("Error parsing expression: unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral> state! */  }
+      \n                 { BEGIN(INITIAL); throw std::runtime_error("Unterminated string literal"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral> state! */  }
       \\\n               { extendCount(); /* line continuation */ }
       \\\"               { extendCount(); /* qouted quote */ }
       \\[^\n\"]          { extendCount(); /* qouted char */ }

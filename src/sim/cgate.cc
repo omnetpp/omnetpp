@@ -478,7 +478,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
             // transmission channel:
             // channel must be idle
             if (channel->getTransmissionFinishTime() > t)
-                throw cRuntimeError("Error sending message (%s)%s on gate %s: channel is currently "
+                throw cRuntimeError("Cannot send message (%s)%s on gate %s: channel is currently "
                                     "busy with an ongoing transmission -- please rewrite the sender "
                                     "simple module to only send when the previous transmission has "
                                     "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "

@@ -796,7 +796,7 @@ std::vector<int> EnvirBase::resolveRunFilter(const char *configName, const char 
                     runNumbers.push_back(runNumber);
             }
             catch (std::exception& e) {
-                throw cRuntimeError("Cannot evaluate run filter: %s", e.what());
+                throw cRuntimeError("Cannot evaluate run filter %s: %s", runFilter, e.what());
             }
         }
     }
@@ -1498,7 +1498,7 @@ void EnvirBase::setupRNGMapping(cComponent *component)
             char *endptr;
             int modRng = strtol(suffix+strlen("rng-"), &endptr, 10);
             if (*endptr != '\0')
-                throw opp_runtime_error("numeric RNG indices expected");
+                throw opp_runtime_error("Numeric RNG index expected after `rng-'");
 
             int physRng = strtol(value, &endptr, 10);
             if (*endptr != '\0') {
@@ -1507,7 +1507,7 @@ void EnvirBase::setupRNGMapping(cComponent *component)
                 expr.parse(value);
                 cNEDValue tmp = expr.evaluate(component);
                 if (!tmp.isNumeric())
-                    throw opp_runtime_error("numeric constant or expression expected");
+                    throw opp_runtime_error("Numeric constant or expression expected");
                 physRng = tmp.longValue();
             }
 
@@ -1515,7 +1515,7 @@ void EnvirBase::setupRNGMapping(cComponent *component)
                 throw cRuntimeError("RNG index %d out of range (num-rngs=%d)", physRng, getNumRNGs());
             if (modRng >= mapsize) {
                 if (modRng >= 100)
-                    throw cRuntimeError("local RNG index %d out of supported range 0..99", modRng);
+                    throw cRuntimeError("Local RNG index %d out of supported range 0..99", modRng);
                 while (mapsize <= modRng) {
                     tmpmap[mapsize] = mapsize;
                     mapsize++;
@@ -1524,8 +1524,8 @@ void EnvirBase::setupRNGMapping(cComponent *component)
             tmpmap[modRng] = physRng;
         }
         catch (std::exception& e) {
-            throw cRuntimeError("configuration entry *.%s = %s for module/channel %s: %s",
-                    suffix, value, component->getFullPath().c_str(), e.what());
+            throw cRuntimeError("%s in configuration entry *.%s = %s for module/channel %s",
+                    e.what(), suffix, value, component->getFullPath().c_str());
 
         }
     }

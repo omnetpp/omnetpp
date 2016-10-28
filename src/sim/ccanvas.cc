@@ -3522,7 +3522,7 @@ cFigure *cCanvas::parseFigure(cProperty *property) const
         return figure;
     }
     catch (std::exception& e) {
-        throw cRuntimeError(this, "Error creating figure from NED property @%s: %s", property->getFullName(), e.what());
+        throw cRuntimeError(this, "Cannot create figure from NED property @%s: %s", property->getFullName(), e.what());
     }
 }
 

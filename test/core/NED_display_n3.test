@@ -14,4 +14,4 @@ network Test {
 %exitcode: 1
 
 %contains: stderr
-missing tag name in "=;=;="
+Missing tag name encountered while parsing display string "=;=;="
