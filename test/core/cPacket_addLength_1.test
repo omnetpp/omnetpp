@@ -22,12 +22,14 @@ EV << pkt.getBitLength() << endl;
 
 %exitcode: 1
 
-%contains-regex: stdout
+%contains: stdout
 0
 100
 150
 140
 
-<!> Error .*Length became negative
+<!> Error: (omnetpp::cPacket)pkt: addBitLength(): Length became negative (-160) after adding -300
+
+
 
 

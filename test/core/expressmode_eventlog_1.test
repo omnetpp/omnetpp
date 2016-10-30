@@ -21,7 +21,7 @@ Running simulation...
 \*\* Event #0   t=0   Elapsed: .*?
 \*\* Event #2   t=1   Elapsed: .*?
 
-<!> No more events -- simulation ended.
+<!> No more events, simulation completed -- at t=1s, event #2
 
 %subst: /^SB .*/SB .../m
 
@@ -41,5 +41,5 @@ BS id 0 tid 0 eid 0 etid 0 c cMessage n timeout-1 k -2 pe 1
 ES t 1
 
 E # 2 t 1 m 1 ce 1 msg 0
-SE e 0 c 13 m "No more events -- simulation ended at event #2, t=1"
+SE e 0 c 13 m "No more events, simulation completed -- at t=1s, event #2"
 

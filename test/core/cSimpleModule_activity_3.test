@@ -318,4 +318,5 @@ starting module
 deleting new module
 ** Event #170  t=23.062837046984   Test.x (Simple, id=21)
 
-<!> No more events -- simulation ended at event #170, t=23.062837046984
+<!> No more events, simulation completed -- at t=23.062837046984s, event #170
+

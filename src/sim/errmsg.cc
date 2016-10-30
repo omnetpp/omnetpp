@@ -25,7 +25,7 @@ namespace omnetpp {
 const char *cErrorMessages::get(OppErrorCode e)
 {
     switch (e) {
-        case E_OK:        return "No error -- everything's fine";
+        case E_OK:        return "No error";
         case E_BACKSCHED: return "Cannot schedule message (%s)%s to the past, t=%g";
         case E_BADCAST:   return "Cannot cast from type %s to %s";
         case E_BADEXP:    return "Badly formed Reverse Polish expression";
@@ -38,7 +38,7 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_DIMLESS:   return "'%s' expects dimensionless arguments";
         case E_EBADARGS:  return "Wrong argument type for '%s'";
         case E_ECANTCAST: return "Cannot cast result of expression to %s";
-        case E_ENDEDOK:   return "No more events -- simulation ended";
+        case E_ENDEDOK:   return "No more events, simulation completed";
         case E_ENDSIM:    return "Simulation stopped with endSimulation()";
         case E_ENOPARENT: return "Expression cannot be interpreted on network level";
         case E_ESTKOFLOW: return "Expression stack overflow";
@@ -59,8 +59,8 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_PARAM:     return "Cannot evaluate parameter '%s': %s";
         case E_PARNOTSET: return "Parameter is not yet accessible";
         case E_PARAMSNOTREADY: return "Attempt to access component parameters too early, they have not been set up yet";
-        case E_REALTIME:  return "CPU time limit reached -- simulation stopped";
-        case E_SIMTIME:   return "Simulation time limit reached -- simulation stopped";
+        case E_REALTIME:  return "CPU time limit reached";
+        case E_SIMTIME:   return "Simulation time limit reached";
         case E_STATECHG:  return "FSM: state changed during state entry code (now in state %s)";
         case E_STOPSIMRCVD: return "Simulation stopped by partition %d: %s";
         case E_USER:      return "Model error: %s";

@@ -112,7 +112,7 @@ Running simulation...
 - Test.b handleMessage: "packet"
 - Test.a handleMessage: "packet"
 
-<!> No more events -- simulation ended at event #4, t=1
+<!> No more events, simulation completed -- at t=1s, event #4
 
 Calling finish() at end of Run #0...
 - Test.a.g$o.channel finish

@@ -25,6 +25,6 @@ void Module::finish()
 %exitcode: 1
 
 %contains-regex: stderr
-Error in module .*: std::runtime_error: something bad happened
+std::runtime_error: something bad happened
 
 

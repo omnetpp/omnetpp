@@ -32,5 +32,5 @@ network Test
 %exitcode: 0
 
 %contains: stdout
-No more events -- simulation ended
+No more events
 

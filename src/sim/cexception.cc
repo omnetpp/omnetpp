@@ -176,36 +176,25 @@ static const char *getKindStr(cComponent::ComponentKind kind, bool capitalized)
 
 std::string cException::getFormattedMessage() const
 {
-    std::string when;
+    std::string when, where;
     switch (getSimulationStage()) {
         case CTX_NONE: when = ""; break;
         case CTX_BUILD: when = " during network setup"; break; // note leading spaces
         case CTX_INITIALIZE: when = " during network initialization"; break;
-        case CTX_EVENT: when = opp_stringf(" at event #%" LL "d, t=%s", getEventNumber(), SIMTIME_STR(getSimtime())); break; // note we say "at" and not "in", because error may have occurred outside handleMessage()
+        case CTX_EVENT: when = opp_stringf(" at t=%ss, event #%" LL "d", SIMTIME_STR(getSimtime()), getEventNumber()); break;
         case CTX_FINISH: when = " during finalization"; break;
         case CTX_CLEANUP: when = " during network cleanup"; break;
     }
 
-    std::string result;
-    if (isError()) {
-        if (!hasContext())
-            result = opp_stringf("Error%s: %s", when.c_str(), what());
-        else
-            result = opp_stringf("Error in %s (%s) %s (id=%d)%s: %s",
-                        getKindStr((cComponent::ComponentKind)getContextComponentKind(), false),
-                        getContextClassName(), getContextFullPath(), getContextComponentId(),
-                        when.c_str(), what());
-    }
-    else {
-        if (!hasContext())
-            result = opp_stringf("%s%s", what(), when.c_str());
-        else
-            result = opp_stringf("%s (%s) %s (id=%d)%s: %s",
-                        getKindStr((cComponent::ComponentKind)getContextComponentKind(), true),
-                        getContextClassName(), getContextFullPath(), getContextComponentId(),
-                        when.c_str(), what());
+    //TODO include event name
+    if (hasContext()) {
+        where = opp_stringf(" in %s (%s) %s (id=%d)",
+                getKindStr((cComponent::ComponentKind)getContextComponentKind(), false),
+                getContextClassName(), getContextFullPath(), getContextComponentId());
     }
 
+    std::string whereWhen = opp_join(",", where.c_str(), when.c_str());
+    std::string result = opp_join(" --", what(), whereWhen.c_str());  // note: isError() is not used
     return result;
 }
 

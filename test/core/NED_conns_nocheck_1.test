@@ -44,5 +44,5 @@ void Simple::activity()
 %exitcode: 0
 
 %contains-regex: stdout
-No more events -- simulation ended
+No more events
 

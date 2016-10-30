@@ -21,6 +21,6 @@ Running simulation...
 \*\* Event #0   t=0   Elapsed: .*?
 \*\* Event #2   t=1   Elapsed: .*?
 
-<!> No more events -- simulation ended.
+<!> No more events, simulation complete
 
 %file-not-exists: results/General-#0.elog

@@ -236,7 +236,7 @@ void cPacket::addBitLength(int64_t l)
 {
     bitLength += l;
     if (bitLength < 0)
-        throw cRuntimeError(this, "addBitLength(): Length became negative (%" INT64_PRINTF_FORMAT ") after adding %" INT64_PRINTF_FORMAT "d", bitLength, l);
+        throw cRuntimeError(this, "addBitLength(): Length became negative (%" INT64_PRINTF_FORMAT "d) after adding %" INT64_PRINTF_FORMAT "d", bitLength, l);
 }
 
 void cPacket::encapsulate(cPacket *msg)

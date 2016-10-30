@@ -8,6 +8,6 @@ scheduleAt(9, new cMessage("one"));
 
 %exitcode: 1
 
-%contains-regex: stderr
-Error in module .*: Cannot schedule message .* to the past
+%contains: stderr
+Cannot schedule message (omnetpp::cMessage)one to the past
 
