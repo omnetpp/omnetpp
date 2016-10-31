@@ -184,7 +184,8 @@ void Cmdenv::doRun()
         if (opt->configName.empty())
             opt->configName = "General";
 
-        opt->runFilter = opp_nulltoempty(args->optionValue('r'));
+        if (args->optionGiven('r'))  // note: there's also a cmdenv-runs-to-execute option!
+            opt->runFilter = args->optionValue('r');
 
         std::vector<int> runNumbers;
         try {
