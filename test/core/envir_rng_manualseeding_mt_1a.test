@@ -31,19 +31,19 @@ seed-2-mt = ${848,745,497!repetition}
 cmdenv-runs-to-execute = 0,1,2,1
 
 %contains-regex: stdout
-.*General-#0.*
+.*General, run #0.*
 ev.rng-0: 2254393713  1261982705, drawn 2
 ev.rng-1: 1858543364  225661242, drawn 2
 ev.rng-2: 741472848  1938224766, drawn 2
-.*General-1.*
+.*General, run #1.*
 ev.rng-0: 1773256507  3374371453, drawn 2
 ev.rng-1: 345413299  2799562883, drawn 2
 ev.rng-2: 227844297  4101779991, drawn 2
-.*General-2.*
+.*General, run #2.*
 ev.rng-0: 1485903282  1518241553, drawn 2
 ev.rng-1: 2355297642  3233577405, drawn 2
 ev.rng-2: 762090162  3944582764, drawn 2
-.*General-1.*
+.*General, run #1.*
 ev.rng-0: 1773256507  3374371453, drawn 2
 ev.rng-1: 345413299  2799562883, drawn 2
 ev.rng-2: 227844297  4101779991, drawn 2

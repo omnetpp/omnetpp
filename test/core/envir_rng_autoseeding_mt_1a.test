@@ -26,31 +26,31 @@ repeat = 5
 cmdenv-runs-to-execute = 0,4,3,1,4,0,2
 
 %contains-regex: stdout
-.*General-#0.*
+.*General, run #0.*
 ev.rng-0: 2546248239  2357136044, drawn 2
 ev.rng-1: 4282876139  1791095845, drawn 2
 ev.rng-2: 794921487  1872583848, drawn 2
-.*General-4.*
+.*General, run #4.*
 ev.rng-0: 1916507803  662124363, drawn 2
 ev.rng-1: 2608511152  3340206418, drawn 2
 ev.rng-2: 3959502168  2207369835, drawn 2
-.*General-3.*
+.*General, run #3.*
 ev.rng-0: 1565348188  44556670, drawn 2
 ev.rng-1: 1283169405  3312796937, drawn 2
 ev.rng-2: 293375679  774252441, drawn 2
-.*General-1.*
+.*General, run #1.*
 ev.rng-0: 303761048  2365658986, drawn 2
 ev.rng-1: 3868139694  4153361530, drawn 2
 ev.rng-2: 236996814  953453411, drawn 2
-.*General-4.*
+.*General, run #4.*
 ev.rng-0: 1916507803  662124363, drawn 2
 ev.rng-1: 2608511152  3340206418, drawn 2
 ev.rng-2: 3959502168  2207369835, drawn 2
-.*General-#0.*
+.*General, run #0.*
 ev.rng-0: 2546248239  2357136044, drawn 2
 ev.rng-1: 4282876139  1791095845, drawn 2
 ev.rng-2: 794921487  1872583848, drawn 2
-.*General-2.*
+.*General, run #2.*
 ev.rng-0: 4069378761  3834805130, drawn 2
 ev.rng-1: 976413892  327741615, drawn 2
 ev.rng-2: 47736148  3751350723, drawn 2
