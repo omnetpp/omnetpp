@@ -17,7 +17,10 @@
 #ifndef __OMNETPP_QTENV_MESSAGEANIMATIONS_H
 #define __OMNETPP_QTENV_MESSAGEANIMATIONS_H
 
-#include <QDebug>
+#include <vector>
+#include <map>
+#include <QString>
+#include <QLineF>
 #include "omnetpp/simtime_t.h"
 
 namespace omnetpp {

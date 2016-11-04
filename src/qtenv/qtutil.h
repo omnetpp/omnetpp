@@ -136,6 +136,11 @@ long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultVa
 double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
 
 
+inline double clip(double min, double v, double max)
+{
+    return std::min(std::max(v, min), max);
+}
+
 
 template <typename K, typename V>
 class OrderedMultiMap {

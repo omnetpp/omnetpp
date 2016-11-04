@@ -17,9 +17,7 @@
 #include "messageanimator.h"
 
 #include "qtenv.h"
-#include "displayupdatecontroller.h"
 #include "moduleinspector.h"  // for the layer
-#include "connectionitem.h"
 #include "messageitem.h"
 #include "messageanimations.h"
 #include "graphicsitems.h"
@@ -211,21 +209,28 @@ bool MessageAnimator::willAnimate(cMessage *msg)
 
 void MessageAnimator::update()
 {
+    // Always updating all non-holding animations first.
     for (auto& p : animations)
         if (!p->isHolding() && !p->advance()) {
             delete p;
             p = nullptr;
         }
-
+    // Removing the ones that are done.
     animations.removeValues(nullptr);
 
+    // Then come the deliveries, if any.
     if (deliveries && deliveries->advance())
         return;
     else {
+        // If done, removing it.
         delete deliveries;
         deliveries = nullptr;
     }
 
+    // If there were no deliveries (or the last one just ended),
+    // continuing with the rest of the animations, that are holding.
+    // Only advancing them until one is found that is not instantly done.
+    // TODO: In broadcast mode, the first few are advanced, except for methodcalls.
     for (auto& p : animations)
         if (p->isHolding()) {
             if (!p->advance()) {
@@ -235,7 +240,7 @@ void MessageAnimator::update()
             if (p && p->isHolding()/* && !getQtenv()->getPref("concurrent-anim").toBool() // TODO */)
                 break;
         }
-
+    // And removing the ones that are done.
     animations.removeValues(nullptr);
 }
 

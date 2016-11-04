@@ -21,7 +21,6 @@
 #include "messageitem.h"
 #include "connectionitem.h"
 #include "graphicsitems.h"
-#include "displayupdatecontroller.h"
 #include "common/stlutil.h"
 
 namespace omnetpp {

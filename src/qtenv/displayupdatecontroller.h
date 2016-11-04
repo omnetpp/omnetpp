@@ -25,10 +25,6 @@
 namespace omnetpp {
 namespace qtenv {
 
-inline static double clip(double min, double v, double max) {
-    return std::min(std::max(v, min), max);
-}
-
 class AnimationControllerDialog;
 
 struct RunModeProfile {

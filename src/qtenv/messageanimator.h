@@ -21,10 +21,6 @@
 #include <set>
 #include <utility>
 #include <functional>
-#include <QGraphicsScene>
-#include <QGraphicsItem>
-#include <QObject>
-#include <QTimer>
 #include "omnetpp/simtime_t.h"
 #include "qtutil.h"
 
@@ -43,7 +39,7 @@ class AnimationSequence;
 class MethodcallAnimation;
 class DeliveryAnimation;
 
-class MessageAnimator : public QObject
+class MessageAnimator
 {
     // This stores the animation speed requests of all running,
     // non-empty, non-holding animations.
@@ -75,6 +71,7 @@ class MessageAnimator : public QObject
 
     void clearMessages();
 
+    // Simple utility function to deduplicate the delivery functions.
     void addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim);
 
 public:
@@ -92,7 +89,6 @@ public:
     double getAnimationSpeed();
 
     void update();
-
     void redrawMessages();
 
     // These two must always be called in a regular tree pattern!
@@ -124,6 +120,7 @@ public:
     // so it can be deleted safely. called from the ModuleInspector dtor.
     void clearInspector(ModuleInspector *insp);
 
+    // Called by the LogBuffer when it clones a message. XXX: should be a slot?
     void messageDuplicated(cMessage *msg, cMessage *dup);
 
     // Removes the cMessage* data from any (static or animated) items
