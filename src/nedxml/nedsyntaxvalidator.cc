@@ -134,12 +134,12 @@ void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char 
                         break;
 
                 if (!expr)
-                    errors->addError(node, "expression-valued attribute '%s' not present in parsed form (missing 'expression' element)", attrs[i]);
+                    errors->addError(node, "Expression-valued attribute '%s' not present in parsed form (missing 'expression' element)", attrs[i]);
             }
             else {
                 // attribute must be there
                 if (!node->getAttribute(attrs[i]) || !(node->getAttribute(attrs[i]))[0])
-                    errors->addError(node, "missing attribute '%s'", attrs[i]);
+                    errors->addError(node, "Missing attribute '%s'", attrs[i]);
             }
         }
     }
@@ -153,7 +153,7 @@ void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *
         return;
     for ( ; *s; s++)
         if (!opp_isalnumext(*s) && *s != '_' && *s != '.' && (wildcardsAllowed ? *s != '*' : true)) {
-            errors->addError(node, "illegal character in %s '%s'", attr, node->getAttribute(attr));
+            errors->addError(node, "Illegal character in %s '%s'", attr, node->getAttribute(attr));
             return;
         }
 }
@@ -166,7 +166,7 @@ void NEDSyntaxValidator::checkPropertyNameAttribute(NEDElement *node, const char
         return;
     for ( ; *s; s++)
         if (!opp_isalnumext(*s) && strchr("_-:.", *s) == nullptr) {  // note: same rule as for XML attribute names
-            errors->addError(node, "illegal character in %s '%s'", attr, node->getAttribute(attr));
+            errors->addError(node, "Illegal character in %s '%s'", attr, node->getAttribute(attr));
             return;
         }
 }
@@ -179,7 +179,7 @@ void NEDSyntaxValidator::checkPropertyIndexAttribute(NEDElement *node, const cha
         return;
     for ( ; *s; s++)
         if (!opp_isalnumext(*s) && strchr("*?{}_-:.", *s) == nullptr) {  // note: same rule as for XML attribute names, plus wildcards
-            errors->addError(node, "illegal character in %s '%s'", attr, node->getAttribute(attr));
+            errors->addError(node, "Illegal character in %s '%s'", attr, node->getAttribute(attr));
             return;
         }
 }
@@ -273,29 +273,29 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
     // param declarations cannot occur in submodules
     if (parent->getTagCode() == NED_SUBMODULE) {
         if (node->getType() != NED_PARTYPE_NONE)
-            errors->addError(node, "cannot define new parameters within a submodule");
+            errors->addError(node, "Cannot define new parameters within a submodule");
     }
 
     // check isPattern flag is consistent with 'name' attribute
     bool containsDot = strchr(node->getName(), '.') != nullptr;
     if (!node->getIsPattern() && containsDot)
-        errors->addError(node, "parameter names must not contain a dot");
+        errors->addError(node, "Parameter names must not contain a dot");
     if (node->getIsPattern() && !containsDot)
-        errors->addError(node, "parameter name patterns must contain a dot");
+        errors->addError(node, "Parameter name patterns must contain a dot");
 
     // type+pattern are not compatible
     if (node->getIsPattern() && node->getType() != NED_PARTYPE_NONE)
-        errors->addError(node, "name must be an identifier when defining a new parameter");
+        errors->addError(node, "Name must be an identifier when defining a new parameter");
 
     // in module or channel interfaces, one cannot specify parameter values
     if (parent->getTagCode() == NED_MODULE_INTERFACE || parent->getTagCode() == NED_CHANNEL_INTERFACE) {
         if (parsedExpressions) {
             if (node->getFirstChildWithTag(NED_EXPRESSION))  // && expr->getTarget()=="value"
-                errors->addError(node, "cannot specify parameter values within a module interface or or channel interface");
+                errors->addError(node, "Cannot specify parameter values within a module interface or or channel interface");
         }
         else {
             if (!opp_isempty(node->getValue()))
-                errors->addError(node, "cannot specify parameter values within a module interface or or channel interface");
+                errors->addError(node, "Cannot specify parameter values within a module interface or or channel interface");
         }
     }
 }
@@ -311,7 +311,7 @@ void NEDSyntaxValidator::validateElement(PropertyElement *node)
     if (parent && (parent->getTagCode() == NED_PARAM || parent->getTagCode() == NED_GATE)) {
         NEDElement *container = parent->getParent()->getParent();
         if (container && (container->getTagCode() == NED_SUBMODULE || container->getTagCode() == NED_CONNECTION))
-            errors->addError(node, "cannot modify parameter/gate properties in a submodule or connection");
+            errors->addError(node, "Cannot modify parameter/gate properties in a submodule or connection");
     }
 }
 
@@ -338,7 +338,7 @@ void NEDSyntaxValidator::validateElement(GateElement *node)
         if (parent)
             parent = parent->getParent();
         if (parent->getTagCode() == NED_SUBMODULE)
-            errors->addError(node, "cannot define new gates within a submodule");
+            errors->addError(node, "Cannot define new gates within a submodule");
     }
 }
 
@@ -370,7 +370,7 @@ void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
 //            INTERNAL_ERROR0(node,"occurs outside a compound-module");
 //        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMETERS);
 //        if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==nullptr)
-//            {errors->addError(node, "compound module has no parameter named '%s'", paramName);return;}
+//            {errors->addError(node, "Compound module has no parameter named '%s'", paramName);return;}
 //    }
 }
 
@@ -432,9 +432,9 @@ void NEDSyntaxValidator::validateElement(ConnectionElement *node)
     bool srcGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index") != nullptr;
     bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index") != nullptr;
     if (srcGateIx && node->getSrcGatePlusplus())
-        errors->addError(node, "wrong source gate: cannot have both gate index and '++' operator specified");
+        errors->addError(node, "Wrong source gate: cannot have both gate index and '++' operator specified");
     if (destGateIx && node->getDestGatePlusplus())
-        errors->addError(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
+        errors->addError(node, "Wrong destination gate: cannot have both gate index and '++' operator specified");
 
     checkDottedNameAttribute(node, "type", false);
     checkDottedNameAttribute(node, "like-type", false);
@@ -482,7 +482,7 @@ void NEDSyntaxValidator::validateElement(OperatorElement *node)
 
     // next list uses space as separator, so make sure op does not contain space
     if (strchr(op, ' ')) {
-        errors->addError(node, "invalid operator '%s' (contains space)", op);
+        errors->addError(node, "Invalid operator '%s' (contains space)", op);
         return;
     }
 
@@ -494,25 +494,25 @@ void NEDSyntaxValidator::validateElement(OperatorElement *node)
     // unary?
     if (strstr("! ~", op)) {
         if (args != 1)
-            errors->addError(node, "operator '%s' should have 1 operand, not %d", op, args);
+            errors->addError(node, "Operator '%s' should have 1 operand, not %d", op, args);
     }
     // unary or binary?
     else if (strstr("-", op)) {
         if (args != 1 && args != 2)
-            errors->addError(node, "operator '%s' should have 1 or 2 operands, not %d", op, args);
+            errors->addError(node, "Operator '%s' should have 1 or 2 operands, not %d", op, args);
     }
     // binary?
     else if (strstr("+ * / % ^ == != > >= < <= && || ## & | # << >>", op)) {
         if (args != 2)
-            errors->addError(node, "operator '%s' should have 2 operands, not %d", op, args);
+            errors->addError(node, "Operator '%s' should have 2 operands, not %d", op, args);
     }
     // tertiary?
     else if (strstr("?:", op)) {
         if (args != 3)
-            errors->addError(node, "operator '%s' should have 3 operands, not %d", op, args);
+            errors->addError(node, "Operator '%s' should have 3 operands, not %d", op, args);
     }
     else {
-        errors->addError(node, "invalid operator '%s'", op);
+        errors->addError(node, "Invalid operator '%s'", op);
     }
 }
 
@@ -526,7 +526,7 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
     // if it's an operator, treat specially
     if (!strcmp(func, "index")) {
         if (args != 0)
-            errors->addError(node, "operator 'index' does not take arguments");
+            errors->addError(node, "Operator 'index' does not take arguments");
 
         // find expression and submodule node we're under
         NEDElement *parent = node->getParent();
@@ -546,9 +546,9 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
     }
     else if (!strcmp(func, "sizeof")) {
         if (args != 1)
-            errors->addError(node, "operator 'sizeof' takes one argument");
+            errors->addError(node, "Operator 'sizeof' takes one argument");
         // else if (node->getFirstChild()->getTagCode()!=NED_IDENT)
-        //    errors->addError(node, "argument of operator 'sizeof' should be an identifier");
+        //    errors->addError(node, "Argument of operator 'sizeof' should be an identifier");
         else {
             // TBD further check it's an existing parent module gate or submodule name
         }
@@ -556,12 +556,12 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
     }
     else if (!strcmp(func, "input")) {
         if (args > 2)
-            errors->addError(node, "operator 'input' takes 0, 1 or 2 arguments");
+            errors->addError(node, "Operator 'input' takes 0, 1 or 2 arguments");
         NEDElement *op1 = node->getFirstChild();
         NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
         if (args == 2)
             if (op2->getTagCode() != NED_LITERAL || ((LiteralElement *)op2)->getType() != NED_CONST_STRING)
-                errors->addError(node, "second argument to 'input()' must be a string literal (prompt text)");
+                errors->addError(node, "Second argument to 'input()' must be a string literal (prompt text)");
 
         NEDElement *parent = node->getParent();
         if (parent->getTagCode() != NED_EXPRESSION)
@@ -594,7 +594,7 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
         }
     }
     if (name_found && !argc_matches) {
-        errors->addError(node, "function '%s' cannot take %d operands", func, args);
+        errors->addError(node, "Function '%s' cannot take %d operands", func, args);
     }
 }
 
@@ -638,7 +638,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
     if (type == NED_CONST_BOOL) {
         // check bool
         if (strcmp(value, "true") && strcmp(value, "false"))
-            errors->addError(node, "bool constant should be 'true' or 'false'");
+            errors->addError(node, "Bool constant should be 'true' or 'false'");
         // TBD check that if text is present, it's the same as value
     }
     else if (type == NED_CONST_INT) {
@@ -646,7 +646,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
         char *s;
         (void)strtol(value, &s, 0);
         if (s && *s)
-            errors->addError(node, "invalid integer constant '%s'", value);
+            errors->addError(node, "Invalid integer constant '%s'", value);
         // TBD check that if text is present, it's the same as value
     }
     else if (type == NED_CONST_DOUBLE) {
@@ -655,7 +655,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
         setlocale(LC_NUMERIC, "C");
         (void)strtod(value, &s);
         if (s && *s)
-            errors->addError(node, "invalid real constant '%s'", value);
+            errors->addError(node, "Invalid real constant '%s'", value);
         // TBD check that if text is present, it's the same as value
     }
     else if (type == NED_CONST_QUANTITY) {
@@ -742,32 +742,32 @@ void NEDSyntaxValidator::validateElement(FieldElement *node)
     bool isStruct = !strcmp(classNode->getTagName(), "struct");
 
     if (node->getIsAbstract() && isStruct)
-        errors->addError(node, "a struct cannot have abstract fields");
+        errors->addError(node, "A struct cannot have abstract fields");
 
     if (node->getIsAbstract() && !opp_isempty(node->getDefaultValue()))
-        errors->addError(node, "an abstract field cannot be assigned a default value");
+        errors->addError(node, "An abstract field cannot be assigned a default value");
 
     if (node->getIsVector() && opp_isempty(node->getVectorSize()) && isStruct)
-        errors->addError(node, "a struct cannot have dynamic array fields");
+        errors->addError(node, "A struct cannot have dynamic array fields");
 
     // if (!opp_isempty(node->getDataType())) // type is there
     // {
     //      if (defined in base class too)
     //      {
     //          if (!node->getIsReadonly())
-    //              errors->addError(node, "field is already declared in a base class (only readonly fields can be overridden)");
+    //              errors->addError(node, "Field is already declared in a base class (only readonly fields can be overridden)");
     //          if (node->getIsReadonly() && type is not the same)
-    //              errors->addError(node, "field is already declared in a base class with a different type");
+    //              errors->addError(node, "Field is already declared in a base class with a different type");
     //      }
     // }
 
     if (opp_isempty(node->getDataType())) {  // type is missing
         if (node->getIsAbstract())
-            errors->addError(node, "an abstract field needs a type");
+            errors->addError(node, "An abstract field needs a type");
         if (node->getIsVector())
-            errors->addError(node, "cannot set array field of the base class");
+            errors->addError(node, "Cannot set array field of the base class");
         if (opp_isempty(node->getDefaultValue()))
-            errors->addError(node, "missing field type");
+            errors->addError(node, "Missing field type");
     }
 
     // TBD check syntax of default value, and that its type agrees with field type
