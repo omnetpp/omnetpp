@@ -20,6 +20,7 @@
 #include "common/stringutil.h"
 #include "common/fileglobber.h"
 #include "common/patternmatcher.h"
+#include "common/opp_ctype.h"
 #include "nederror.h"
 #include "nedexception.h"
 #include "nedresourcecache.h"
@@ -58,10 +59,8 @@ void NEDResourceCache::registerBuiltinDeclarations()
     NEDElement *tree = parser.parseNEDText(nedcode, "built-in-declarations");
     if (errors.containsError()) {
         delete tree;
-        throw NEDException("error during parsing of internal NED declarations");
+        throw NEDException(getFirstError(&errors).c_str());
     }
-
-    // TODO check errors, run validation perhaps
 
     // note: file must be called package.ned so that @namespace("") takes effect
     addFile("/[built-in-declarations]/package.ned", tree);
@@ -134,7 +133,6 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     // load file
     NEDElement *tree = nullptr;
     NEDErrorStore errors;
-    errors.setPrintToStderr(true);  // XXX
     if (isXML) {
         if (nedtext)
             throw NEDException("loadNedText(): parsing XML from string not supported");
@@ -151,7 +149,7 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     }
     if (errors.containsError()) {
         delete tree;
-        throw NEDException("syntax error in file `%s'", fname);
+        throw NEDException(getFirstError(&errors).c_str());
     }
 
     // DTD validation and additional syntax validation
@@ -159,16 +157,34 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     dtdvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NEDException("file `%s' failed internal DTD validation", fname);
+        throw NEDException(getFirstError(&errors).c_str());
     }
 
     NEDSyntaxValidator syntaxvalidator(true, &errors);
     syntaxvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NEDException("file `%s' failed internal validation", fname);
+        throw NEDException(getFirstError(&errors).c_str());
     }
     return tree;
+}
+
+std::string NEDResourceCache::getFirstError(NEDErrorStore *errors)
+{
+    // find first error
+    int i;
+    for (i = 0; i < errors->numMessages(); i++)
+        if (errors->errorSeverityCode(i) == NED_SEVERITY_ERROR)
+            break;
+    Assert(i != errors->numMessages());
+
+    // assemble message
+    std::string message = errors->errorText(i);
+    message[0] = opp_toupper(message[0]);
+    std::string location = errors->errorLocation(i);
+    if (opp_stringbeginswith(message.c_str(), "Syntax error, unexpected")) // this message is not really useful, replace it
+        message = "Syntax error";
+    return location.empty() ? message : message + " at " + location;
 }
 
 void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
