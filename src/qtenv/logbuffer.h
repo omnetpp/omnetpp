@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_LOGBUFFER_H
 
 #include <vector>
+#include <map>
 #include "omnetpp/simtime_t.h"
 #include "circularbuffer.h"
 #include "qtenvdefs.h"
@@ -70,6 +71,10 @@ class QTENV_API LogBuffer : public QObject
     void discardEventsIfLimitExceeded();
     void fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
 
+    // Makes our privateDups of the logged messages easily accessible.
+    // Every message is duplicated once each time it is sent.
+    std::multimap<cMessage *, cMessage *> messageDups;
+
   public:
     ~LogBuffer() { clear(); }
 
@@ -86,6 +91,8 @@ class QTENV_API LogBuffer : public QObject
     void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard);
     void endSend(cMessage *msg);
 
+    void delivery(cMessage *msg); // doesn't matter if direct or not
+
     void setMaxNumEntries(int limit); // when exceeded, oldest entries are discarded
     int getMaxNumEntries()  {return maxNumEntries;}
 
@@ -94,6 +101,11 @@ class QTENV_API LogBuffer : public QObject
     int getNumEntriesDiscarded() const {return entriesDiscarded;}
     int findEntryByEventNumber(eventnumber_t eventNumber);
     Entry *getEntryByEventNumber(eventnumber_t eventNumber);
+
+    // Returns the last private copy we made of a given message,
+    // ot nullptr if no copy is found. The parameter doesn't have
+    // to point to an existing message, or be valid at all.
+    cMessage *getLastMessageDup(cMessage *of);
 
     void clear();
 

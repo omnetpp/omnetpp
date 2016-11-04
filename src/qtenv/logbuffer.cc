@@ -161,6 +161,10 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
         // the message was discarded, so it will not arrive, endSend() will not be called,
         // but we have to make a copy anyway
         msgsend.msg = msg->privateDup();
+
+        // storing the copy for animation
+        messageDups.insert({msg, msgsend.msg});
+
         // clearing the previous arrival module/gate, since it did not really arrive
         msgsend.msg->setArrival(0, 0);
         msgsend.discarded = true;
@@ -176,7 +180,19 @@ void LogBuffer::endSend(cMessage *msg)
     MessageSend& msgsend = entry->msgs.back();
     // the message has arrived, we have to make a copy
     msgsend.msg = msg->privateDup();
+
+    // storing the copy for animation
+    messageDups.insert({msg, msgsend.msg});
+
     emit messageSendAdded();
+}
+
+void LogBuffer::delivery(cMessage *msg)
+{
+    // most likely we just got out of express mode
+    if (!getLastMessageDup(msg))
+        // storing a copy for animation
+        messageDups.insert({msg, msg->privateDup()});
 }
 
 void LogBuffer::setMaxNumEntries(int limit)
@@ -203,6 +219,7 @@ void LogBuffer::clear()
         delete entries[i];
     entries.clear();
     entriesDiscarded = 0;
+    messageDups.clear();
 }
 
 int LogBuffer::findEntryByEventNumber(eventnumber_t eventNumber)
@@ -226,6 +243,14 @@ LogBuffer::Entry *LogBuffer::getEntryByEventNumber(eventnumber_t eventNumber)
 {
     int i = findEntryByEventNumber(eventNumber);
     return i == -1 ? nullptr : entries[i];
+}
+
+cMessage *LogBuffer::getLastMessageDup(cMessage *of)
+{
+    auto range = messageDups.equal_range(of);
+    if (range.first == range.second)
+        return nullptr;
+    return (--range.second)->second;
 }
 
 #define LL    INT64_PRINTF_FORMAT
