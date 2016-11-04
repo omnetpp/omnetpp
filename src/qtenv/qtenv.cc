@@ -73,6 +73,7 @@
 #include "objecttreeinspector.h"
 #include "canvasinspector.h"
 #include "osgviewer.h"
+#include "messageanimator.h"
 #include "displayupdatecontroller.h"
 
 #ifdef Q_OS_MAC

@@ -17,8 +17,6 @@
 #ifndef __OMNETPP_QTENV_MESSAGEITEM_H
 #define __OMNETPP_QTENV_MESSAGEITEM_H
 
-#include "graphicsitems.h"
-
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsObject>
 
@@ -27,6 +25,9 @@ namespace omnetpp {
 class cMessage;
 
 namespace qtenv {
+
+class OutlinedTextItem;
+class ArrowheadItem;
 
 class MessageItem;
 class MessageItemUtil {

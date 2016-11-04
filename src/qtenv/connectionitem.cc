@@ -20,6 +20,7 @@
 #include <QPainter>
 #include <omnetpp/cgate.h>
 #include <omnetpp/cchannel.h>
+#include "graphicsitems.h"
 #include "qtutil.h"
 
 namespace omnetpp {
@@ -289,6 +290,11 @@ void ConnectionItem::setArrowEnabled(bool enabled)
         updateArrowItem();
         updateLineItem();
     }
+}
+
+bool ConnectionItem::isArrowEnabled() const
+{
+    return arrowItem->isVisible();
 }
 
 void ConnectionItem::setHalfLength(bool enabled)

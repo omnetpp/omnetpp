@@ -17,13 +17,18 @@
 #ifndef __OMNETPP_QTENV_COMPOUNDMODULEITEM_H
 #define __OMNETPP_QTENV_COMPOUNDMODULEITEM_H
 
-#include "graphicsitems.h"
+#include <QString>
+#include <QPointF>
+#include <QColor>
+#include <QGraphicsObject>
 
 namespace omnetpp {
 
 class cModule;
 
 namespace qtenv {
+
+class OutlinedTextItem;
 
 class CompoundModuleItem;
 class CompoundModuleItemUtil {

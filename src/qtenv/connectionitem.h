@@ -19,11 +19,12 @@
 
 #include <QGraphicsObject>
 #include <omnetpp/cdisplaystring.h>
-#include "graphicsitems.h"
-#include "qtutil.h"
 
 namespace omnetpp {
 namespace qtenv {
+
+class OutlinedTextItem;
+class ArrowheadItem;
 
 class ConnectionItem;
 class ConnectionItemUtil {
@@ -76,7 +77,7 @@ public:
     void setLineEnabled(bool enabled);
     bool isLineEnabled() const { return lineEnabled; }
     void setArrowEnabled(bool enabled);
-    bool isArrowEnabled() const { return arrowItem->isVisible(); }
+    bool isArrowEnabled() const;
     // This is used in two-way connections to show the styles
     // in both cGate's cDisplayStrings next to each other.
     void setHalfLength(bool enabled);

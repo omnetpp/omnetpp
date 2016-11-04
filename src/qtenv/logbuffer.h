@@ -19,8 +19,9 @@
 
 #include <vector>
 #include "omnetpp/simtime_t.h"
-#include "qtutil.h"
 #include "circularbuffer.h"
+#include "qtenvdefs.h"
+#include <QObject>
 
 namespace omnetpp {
 
@@ -63,22 +64,20 @@ class QTENV_API LogBuffer : public QObject
 
   protected:
     circular_buffer<Entry*> entries;
-    int maxNumEntries;
-    int entriesDiscarded;
+    int maxNumEntries = 100000;
+    int entriesDiscarded = 0;
 
-  protected:
     void discardEventsIfLimitExceeded();
     void fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner);
 
   public:
-    LogBuffer();
-    ~LogBuffer();
+    ~LogBuffer() { clear(); }
 
     void addInitialize(cComponent *component, const char *banner);
     void addEvent(eventnumber_t e, simtime_t t, cModule *moduleIds, const char *banner);
-    void addLogLine(const char *prefix, const char *text);
+    void addLogLine(const char *prefix, const char *text) { addLogLine(prefix, text, strlen(text)); }
     void addLogLine(const char *prefix, const char *text, int len);
-    void addInfo(const char *text);
+    void addInfo(const char *text) { addInfo(text, strlen(text)); }
     void addInfo(const char *text, int len);
 
     void beginSend(cMessage *msg);
@@ -113,7 +112,4 @@ signals:
 } // namespace qtenv
 } // namespace omnetpp
 
-
 #endif
-
-

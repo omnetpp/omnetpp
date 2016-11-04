@@ -23,6 +23,7 @@
 #include "textviewerwidget.h"
 #include "textviewerproviders.h"
 #include "logfinddialog.h"
+#include "qtenv.h"
 
 #include <QDebug>
 

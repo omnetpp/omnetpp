@@ -45,6 +45,7 @@
 #include "omnetpp/cqueue.h"
 #include "omnetpp/carray.h"
 #include "omnetpp/cwatch.h"
+#include "omnetpp/cdisplaystring.h"
 #include "qtenv.h"
 #include "qtutil.h"
 #include "moduleinspector.h"

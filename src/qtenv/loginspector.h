@@ -22,7 +22,7 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "inspector.h"
-#include <textviewerwidget.h>
+#include "textviewerwidget.h"
 
 namespace omnetpp {
 namespace qtenv {

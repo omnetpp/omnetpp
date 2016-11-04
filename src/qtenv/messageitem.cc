@@ -16,7 +16,10 @@
 
 #include "messageitem.h"
 #include <QDebug>
+#include <QPen>
 #include "qtenv.h"
+#include "graphicsitems.h"
+#include "omnetpp/cdisplaystring.h"
 
 namespace omnetpp {
 namespace qtenv {

@@ -32,6 +32,7 @@
 #include "compoundmoduleitem.h"
 #include "connectionitem.h"
 #include "submoduleitem.h"
+#include "graphicsitems.h"
 #include "arrow.h"
 #include <QGraphicsScene>
 #include <QScrollBar>

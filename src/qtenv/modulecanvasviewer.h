@@ -17,8 +17,6 @@
 #ifndef __OMNETPP_QTENV_MODULECANVASVIEWER_H
 #define __OMNETPP_QTENV_MODULECANVASVIEWER_H
 
-#include "submoduleitem.h"
-
 #include <map>
 #include <QPointF>
 #include <QGraphicsView>
@@ -41,6 +39,7 @@ class SubmoduleItem;
 class ConnectionItem;
 struct FigureRenderingHints;
 class CanvasRenderer;
+class ZoomLabel;
 
 class ModuleCanvasViewer : public QGraphicsView
 {

@@ -19,7 +19,6 @@
 
 #include <QDialog>
 #include <map>
-#include "qtenvdefs.h"
 
 namespace Ui {
 class RunSelectionDialog;

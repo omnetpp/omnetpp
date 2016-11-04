@@ -1319,6 +1319,10 @@ void IconFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, 
                       true, hints->zoom);
 }
 
+QGraphicsItem *GroupFigureRenderer::newItem() {
+    return new GraphicsLayer();
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
 

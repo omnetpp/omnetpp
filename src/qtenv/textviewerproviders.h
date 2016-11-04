@@ -28,7 +28,6 @@
 #include "omnetpp/cmessage.h"
 
 #include "logbuffer.h"
-#include "qtenv.h"
 #include "textviewerwidget.h"
 #include "loginspector.h"
 
@@ -39,6 +38,7 @@
 namespace omnetpp {
 namespace qtenv {
 
+class Qtenv;
 
 class TextViewerContentProvider : public QObject {
     Q_OBJECT

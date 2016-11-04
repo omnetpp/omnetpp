@@ -17,8 +17,6 @@
 #ifndef __OMNETPP_QTENV_SUBMODULEITEM_H
 #define __OMNETPP_QTENV_SUBMODULEITEM_H
 
-#include "graphicsitems.h"
-
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsObject>
 #include <QAbstractGraphicsShapeItem>
@@ -29,6 +27,10 @@ class cModule;
 class cDisplayString;
 
 namespace qtenv {
+
+class OutlinedTextItem;
+class ColorizeEffect;
+class GraphicsLayer;
 
 class SubmoduleItem;
 class SubmoduleItemUtil {

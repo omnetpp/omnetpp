@@ -15,8 +15,11 @@
 *--------------------------------------------------------------*/
 
 #include "submoduleitem.h"
+
 #include "qtenv.h"
 #include "qtutil.h"
+#include "graphicsitems.h"
+
 #include <QDebug>
 #include <QPainter>
 #include <QEvent>

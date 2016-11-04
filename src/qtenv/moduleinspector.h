@@ -18,9 +18,7 @@
 #define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
 #include <vector>
-#include "messageanimator.h"
 #include "inspector.h"
-#include "modulecanvasviewer.h"
 
 class QAction;
 class QStackedLayout;
@@ -41,7 +39,8 @@ namespace qtenv {
 
 class CanvasRenderer;
 class OsgViewer;
-
+class ModuleCanvasViewer;
+class GraphicsLayer;
 
 class QTENV_API ModuleInspector : public Inspector
 {
@@ -142,13 +141,13 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void refresh() override;
       virtual void clearObjectChangeFlags() override;
 
-      bool needsRedraw() { return canvasViewer->getNeedsRedraw(); }
+      bool needsRedraw();
 
       // implementations of inspector commands:
       virtual int getDefaultLayoutSeed();
 
       // drawing methods:
-      virtual void redraw() override { canvasViewer->redraw(); }
+      virtual void redraw() override;
 
       QImage getScreenshot();
 
@@ -165,9 +164,9 @@ class QTENV_API ModuleInspector : public Inspector
       double getZoomFactor();
       double getImageSizeFactor();
 
-      GraphicsLayer *getAnimationLayer() { return canvasViewer->getAnimationLayer(); }
-      QPointF getSubmodCoords(cModule *mod) { return canvasViewer->getSubmodCoords(mod); }
-      QLineF getConnectionLine(cGate *gate) { return canvasViewer->getConnectionLine(gate); }
+      GraphicsLayer *getAnimationLayer();
+      QPointF getSubmodCoords(cModule *mod);
+      QLineF getConnectionLine(cGate *gate);
 };
 
 } // namespace qtenv

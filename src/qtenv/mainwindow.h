@@ -18,11 +18,10 @@
 #define __OMNETPP_QTENV_MAINWINDOW_H
 
 #include <set>
-#include "qtenvdefs.h"
-#include "qtenv.h"
 #include "ui_mainwindow.h"
 #include <QMainWindow>
 #include <QModelIndex>
+#include "qtenv.h"
 
 class QGraphicsScene;
 class QStandardItem;

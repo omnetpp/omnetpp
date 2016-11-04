@@ -19,8 +19,6 @@
 
 #ifdef WITH_OSG
 
-#include "inspector.h"
-
 #include <osgGA/OrbitManipulator>
 
 namespace omnetpp {

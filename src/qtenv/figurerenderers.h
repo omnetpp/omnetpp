@@ -20,21 +20,15 @@
 #include <string>
 #include <map>
 
-#include "moduleinspector.h"
 #include "omnetpp/ccanvas.h"
 
-class QPen;
-class QGraphicsScene;
-class QGraphicsItem;
-class QGraphicsLineItem;
-class QGraphicsPathItem;
-class QBrush;
-class QPainter;
-class QPainterPath;
-class QPointF;
+#include <QGraphicsPathItem>
 
 namespace omnetpp {
 namespace qtenv {
+
+class GraphicsLayer;
+class ArrowheadItem;
 
 struct FigureRenderingHints
 { // all of these should be overwritten before use
@@ -144,7 +138,7 @@ protected:
 class GroupFigureRenderer : public FigureRenderer
 {
 protected:
-    virtual QGraphicsItem *newItem() { return new GraphicsLayer(); }
+    virtual QGraphicsItem *newItem();
     virtual void createVisual(cFigure*, QGraphicsItem*, FigureRenderingHints *) {}
     virtual void setItemGeometryProperties(cFigure*, QGraphicsItem*, FigureRenderingHints *) {}
 };

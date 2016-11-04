@@ -18,6 +18,7 @@
 
 #include "canvasrenderer.h"
 #include "figurerenderers.h"
+#include "graphicsitems.h"
 
 namespace omnetpp {
 namespace qtenv {

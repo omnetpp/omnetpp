@@ -20,21 +20,19 @@
 #include <QAbstractItemModel>
 #include <QMenu>
 #include <QTreeView>
-#include "qtenvdefs.h"
 
 class QMainWindow;
 
 namespace omnetpp {
-class cObject;
-} // namespace omnetpp
 
-namespace omnetpp {
+class cObject;
+
 namespace qtenv {
 
 class TreeItemModel : public QAbstractItemModel
 {
     Q_OBJECT
-private:
+
     cObject *rootNode;
 
     int findObjectInParent(cObject *obj, cObject *parent) const;

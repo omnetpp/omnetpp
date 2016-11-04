@@ -29,6 +29,7 @@
 #include "qtenv.h"
 #include <QDebug>
 #include <QApplication>
+#include <QGraphicsLineItem>
 
 namespace omnetpp {
 namespace qtenv {

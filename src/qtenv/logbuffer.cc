@@ -18,6 +18,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cmessage.h"
 #include "logbuffer.h"
+#include "qtutil.h"
 
 #define emit    // Qt...
 
@@ -42,17 +43,6 @@ LogBuffer::Entry::~Entry()
 }
 
 //----
-
-LogBuffer::LogBuffer()
-{
-    maxNumEntries = 100000;
-    entriesDiscarded = 0;
-}
-
-LogBuffer::~LogBuffer()
-{
-    clear();
-}
 
 void LogBuffer::fillEntry(Entry *entry, eventnumber_t e, simtime_t t, cModule *mod, const char *banner)
 {
@@ -88,10 +78,7 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     emit logLineAdded();
 }
 
-void LogBuffer::addLogLine(const char *prefix, const char *text)
-{
-    addLogLine(prefix, text, strlen(text));
-}
+
 
 void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
 {
@@ -109,11 +96,6 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text, len)));
 
     emit logLineAdded();
-}
-
-void LogBuffer::addInfo(const char *text)
-{
-    addInfo(text, strlen(text));
 }
 
 void LogBuffer::addInfo(const char *text, int len)

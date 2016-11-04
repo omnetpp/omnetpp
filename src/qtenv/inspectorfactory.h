@@ -17,9 +17,9 @@
 #ifndef __OMNETPP_QTENV_INSPECTORFACTORY_H
 #define __OMNETPP_QTENV_INSPECTORFACTORY_H
 
+#include "qtenvdefs.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/cregistrationlist.h"
-#include "inspector.h"
 
 namespace omnetpp {
 namespace qtenv {

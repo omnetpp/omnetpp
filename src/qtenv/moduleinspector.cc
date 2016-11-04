@@ -49,6 +49,7 @@
 #include "modulecanvasviewer.h"
 #include "inspectorutil.h"
 #include "layersdialog.h"
+#include "messageanimator.h"
 
 using namespace omnetpp::common;
 
@@ -415,6 +416,10 @@ void ModuleInspector::clearObjectChangeFlags()
         canvas->getRootFigure()->clearChangeFlags();
 }
 
+bool ModuleInspector::needsRedraw() {
+    return canvasViewer->getNeedsRedraw();
+}
+
 void ModuleInspector::runUntil()
 {
     if (object)
@@ -515,6 +520,21 @@ double ModuleInspector::getImageSizeFactor()
     return getPref(PREF_ICONSCALE, 1).toDouble();
 }
 
+GraphicsLayer *ModuleInspector::getAnimationLayer()
+{
+    return canvasViewer->getAnimationLayer();
+}
+
+QPointF ModuleInspector::getSubmodCoords(cModule *mod)
+{
+    return canvasViewer->getSubmodCoords(mod);
+}
+
+QLineF ModuleInspector::getConnectionLine(cGate *gate)
+{
+    return canvasViewer->getConnectionLine(gate);
+}
+
 void ModuleInspector::submoduleCreated(cModule *newmodule)
 {
     canvasViewer->setNeedsRedraw();
@@ -558,6 +578,10 @@ int ModuleInspector::getDefaultLayoutSeed()
     const cDisplayString& ds = parentModule && parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
     long seed = resolveLongDispStrArg(ds.getTagArg("bgl", 4), parentModule, 1);
     return seed;
+}
+
+void ModuleInspector::redraw() {
+    canvasViewer->redraw();
 }
 
 void ModuleInspector::click(QMouseEvent *event)

@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "textviewerproviders.h"
+#include "qtenv.h"
 #include <QDebug>
 
 namespace omnetpp {

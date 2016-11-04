@@ -29,7 +29,6 @@
 #include "componenthistory.h"
 #include "imagecache.h"
 #include "inspector.h"
-#include "messageanimator.h"
 #include <QSettings>
 #include <QSet>
 #include <QString>
@@ -52,6 +51,7 @@ class ModuleInspector;
 class TimeLineInspector;
 class ObjectTreeInspector;
 class DisplayUpdateController;
+class MessageAnimator;
 
 using namespace envir;
 
@@ -362,7 +362,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void channelDisplayStringChanged(cChannel *channel);
       void moduleDisplayStringChanged(cModule *module);
 
-      // small functions:
+      // small functions. Not inline to avoid including mainwindow.h in this file
       void updateNetworkRunDisplay();
       void updateSimtimeDisplay();
       void updateStatusDisplay();

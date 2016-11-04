@@ -19,10 +19,12 @@
 #include <QMouseEvent>
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
+#include "omnetpp/cdisplaystring.h"
 #include "qtenv.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"
 #include "qtutil.h"
+#include "graphicsitems.h"
 
 #include <QDebug>
 

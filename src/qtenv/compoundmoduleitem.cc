@@ -15,7 +15,9 @@
 *--------------------------------------------------------------*/
 
 #include "compoundmoduleitem.h"
+
 #include "submoduleitem.h"
+#include "graphicsitems.h"
 
 #include <QPen>
 #include <QDebug>

@@ -18,12 +18,12 @@
 #define __OMNETPP_QTENV_CANVASRENDERER_H
 
 #include "omnetpp/ccanvas.h"
-#include "moduleinspector.h"
 #include <QGraphicsScene>
 
 namespace omnetpp {
 namespace qtenv {
 
+class GraphicsLayer;
 class FigureRenderer;
 struct FigureRenderingHints;
 

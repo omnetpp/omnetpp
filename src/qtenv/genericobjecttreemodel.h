@@ -20,7 +20,6 @@
 #include <QAbstractItemModel>
 #include <QMenu>
 #include <QTreeView>
-#include "qtenvdefs.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/cclassdescriptor.h"
 

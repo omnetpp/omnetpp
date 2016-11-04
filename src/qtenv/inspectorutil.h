@@ -18,7 +18,8 @@
 #define __OMNETPP_QTENV_INSPECTORUTIL_H
 
 #include <QVector>
-#include "qtenvdefs.h"
+
+#include "logbuffer.h"
 
 class QMenu;
 class QActionGroup;

@@ -16,14 +16,16 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+
+#include "arrow.h"
+
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
 #include <algorithm>
 
-#include "arrow.h"
-#include "qtutil.h"
+#include "omnetpp/cexception.h" // for ASSERT2
 
 namespace omnetpp {
 namespace qtenv {

@@ -17,8 +17,8 @@
 #ifndef __OMNETPP_QTENV_CIRCULARBUFFER_H
 #define __OMNETPP_QTENV_CIRCULARBUFFER_H
 
-#include "qtenvdefs.h"
 #include "omnetpp/simkerneldefs.h" // for ASSERT
+#include "omnetpp/cexception.h"
 
 namespace omnetpp {
 namespace qtenv {

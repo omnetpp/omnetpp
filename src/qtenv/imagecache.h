@@ -19,7 +19,6 @@
 
 #include <string>
 #include <unordered_map>
-#include "qtenvdefs.h"
 
 class QImage;
 class QPixmap;
