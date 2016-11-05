@@ -18,6 +18,7 @@
 
 #include <cstring>
 #include "common/opp_ctype.h"
+#include "common/stringutil.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "minixpath.h"
@@ -25,8 +26,6 @@
 using namespace omnetpp::common;
 
 namespace omnetpp {
-
-
 
 MiniXPath::MiniXPath(cXMLElement::ParamResolver *resolver)
 {
@@ -207,6 +206,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
         return nullptr;
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && steplen == (int)tagname.length()) {
+        tagname = opp_trim(tagname);
         for (cXMLElement *child = getNthSibling(node->getFirstChild(), tagname.c_str(), 0);
              child;
              child = getNthSibling(child->getNextSibling(), tagname.c_str(), 0))
@@ -218,12 +218,14 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
         return nullptr;
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedNum(n, stepexpr+tagname.length(), steplen-tagname.length())) {
+        tagname = opp_trim(tagname);
         cXMLElement *nthnode = getNthSibling(node->getFirstChild(), tagname.c_str(), n);
         if (!nthnode)
             return nullptr;
         return matchSeparator(nthnode, sep);
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedAttrEquals(attr, value, stepexpr+tagname.length(), steplen-tagname.length())) {
+        tagname = opp_trim(tagname);
         for (cXMLElement *child = getFirstSiblingWithAttribute(node->getFirstChild(), tagname.c_str(), attr.c_str(), value.c_str());
              child;
              child = getFirstSiblingWithAttribute(child->getNextSibling(), tagname.c_str(), attr.c_str(), value.c_str()))
