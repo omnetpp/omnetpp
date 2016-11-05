@@ -1,12 +1,12 @@
 %description:
-Test display string inheritance.
+Test display string parsing.
 
 %file: test.ned
 
 import testlib.Dump;
 
 network Test {
-    @display(",foo");  // missing tagname
+    @display(",foo");  // missing tag name (?)
     submodules:
         dump: Dump;
 }
@@ -14,4 +14,4 @@ network Test {
 %exitcode: 1
 
 %contains: stderr
-Missing tag name encountered while parsing display string ",foo"
+Illegal character "," encountered in tag name while parsing display string ",foo"

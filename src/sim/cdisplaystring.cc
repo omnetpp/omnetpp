@@ -421,6 +421,7 @@ void cDisplayString::doParse()
         tags[0].args[i] = nullptr;
 
     char *s, *d;
+    bool insideTagName = true;
     for (s = assembledString, d = buffer; *s; s++, d++) {
         if (*s == '\\' && *(s+1)) {
             // allow escaping display string special chars (=,;) with backslash.
@@ -436,14 +437,16 @@ void cDisplayString::doParse()
             tags[numTags-1].numArgs = 0;
             for (int i = 0; i < MAXARGS; i++)
                 tags[numTags-1].args[i] = nullptr;
+            insideTagName = true;
         }
-        else if (*s == '=') {
+        else if (*s == '=' && insideTagName) {
             // first argument of new tag begins
             *d = '\0';
             tags[numTags-1].numArgs = 1;
             tags[numTags-1].args[0] = d+1;
+            insideTagName = false;
         }
-        else if (*s == ',') {
+        else if (*s == ',' && !insideTagName) {
             // new argument of current tag begins
             *d = '\0';
             if (tags[numTags-1].numArgs >= MAXARGS)

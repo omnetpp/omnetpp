@@ -1,0 +1,71 @@
+%description:
+Test NED display strings:
+1. The "\n", "\t", "\\" and "\"" escape sequences are resolved by the 
+   NED parser into LF, TAB, \, ", as in any other string contant
+2. Backslash (doubled to protect from the above mechanism) can be used to protect
+   commas and semicolons from being interpreted as tag argument separator.
+
+%file: test.ned
+
+simple Dump 
+{
+}
+
+network Test
+{
+    parameters:
+        @display("t1=A1\tB1\tC1\nA2\tB2\tC2;t2=backslash: \\ quote: \";t3=foo\\,bar\\;baz=1;t4=back\\\\slash");
+    submodules:
+        dump: Dump;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Dump : public cSimpleModule
+{
+  public:
+    Dump() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Dump);
+
+void Dump::activity() 
+{
+    cDisplayString& ds = getParentModule()->getDisplayString();
+    EV << "t1[0]:" << endl << ds.getTagArg("t1",0) << endl << endl;
+    EV << "t2[0]:" << endl << ds.getTagArg("t2",0) << endl << endl;
+    EV << "t3[0]:" << endl << ds.getTagArg("t3",0) << endl << endl;
+    EV << "t4[0]:" << endl << ds.getTagArg("t4",0) << endl << endl;
+    EV << "." << endl;
+}
+
+} // namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%contains: stdout
+t1[0]:
+A1	B1	C1
+A2	B2	C2
+
+t2[0]:
+backslash:  quote: "
+
+t3[0]:
+foo,bar;baz=1
+
+t4[0]:
+back\slash
+
+.
+

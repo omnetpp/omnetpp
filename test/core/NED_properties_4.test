@@ -1,0 +1,63 @@
+%description:
+Test property parsing: in string literals, "\n", "\t", "\\" and "\"" 
+work as expected (LF, TAB, \, ")
+
+%file: test.ned
+
+simple Dump 
+{
+}
+
+network Test
+{
+    parameters:
+        @foo("A1\tB1\tC1\nA2\tB2\tC2\nbackslash: \\ quote: \"");
+        string foo = default("A1\tB1\tC1\nA2\tB2\tC2\nbackslash: \\ quote: \"");
+    submodules:
+        dump: Dump;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Dump : public cSimpleModule
+{
+  public:
+    Dump() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Dump);
+
+void Dump::activity() 
+{
+    cModule *network = getParentModule();
+    EV << "@foo:\n" << network->getProperties()->get("foo")->getValue() << endl << endl;
+    EV << "par foo:\n" << network->par("foo").stringValue() << endl;
+    EV << "." << endl;
+}
+
+} // namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%contains: stdout
+@foo:
+A1	B1	C1
+A2	B2	C2
+backslash: \ quote: "
+
+par foo:
+A1	B1	C1
+A2	B2	C2
+backslash: \ quote: "
+.
+

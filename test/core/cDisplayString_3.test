@@ -1,47 +1,30 @@
 %description:
 check backslash handling in cDisplayString
 
+
 %activity:
-EV << "#UNRESOLVED: tab parsing should be implemented\n";
 
-// unfortunately, because of the C++ compiler we have to duplicate all backslashes :(
-cDisplayString ds("a=c:\\\\tmp\\\\;b=,the \\; mark,Hello\\, Dolly!;"
-                  "c=1\\t2\\n\\3\\t4\\n\\!\\*\\\"\\'\\a\\xB.");
+#define P(s) {ds.parse(s); EV << "'" << s << "' --> t[0]='" << ds.getTagArg("t",0) << "'" << endl; }
 
-ds.insertTag("x",1);
-ds.setTagArg("a",1,"alpha");
-ds.setTagArg("b",0,"bubu");
-ds.setTagArg("c",1,"chick");
+cDisplayString ds;
+P("t=foo");
+P("t=foo,bar");
+P("t=foo\\,bar");
+P("t=foo;bar=1");
+P("t=foo\\;bar=1");
+P("t=fo\\o\\\\b\\ar");
+P("t=foo\\,bar;baz=1;t2=more stuff");
 
-EV << ds.str() << endl;
 
-EV << ds.getTagArg("a",0) << endl;
-EV << ds.getTagArg("a",1) << endl;
-EV << ds.getTagArg("b",0) << endl;
-EV << ds.getTagArg("b",1) << endl;
-EV << ds.getTagArg("b",2) << endl;
-EV << ds.getTagArg("c",0) << endl;
-EV << ds.getTagArg("c",1) << endl;
 EV << ".\n";
 
 %contains: stdout
-a=c:\\tmp\\,alpha;x;b=bubu,the \; mark,Hello\, Dolly!;c=1\t2\n3\t4\n!*"'a\x0B.,chick
-c:\tmp\
-alpha
-bubu
-the ; mark
-Hello, Dolly!
-1	2
-3	4
-!*"'a
-
-%contains: stdout
+'t=foo' --> t[0]='foo'
+'t=foo,bar' --> t[0]='foo'
+'t=foo\,bar' --> t[0]='foo,bar'
+'t=foo;bar=1' --> t[0]='foo'
+'t=foo\;bar=1' --> t[0]='foo;bar=1'
+'t=fo\o\\b\ar' --> t[0]='foo\bar'
+'t=foo\,bar;baz=1;t2=more stuff' --> t[0]='foo,bar'
 .
-chick
-.
-
-
-
-
-
 

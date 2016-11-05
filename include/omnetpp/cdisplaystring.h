@@ -116,7 +116,9 @@ class SIM_API cDisplayString
     cDisplayString();
 
     /**
-     * Constructor. Throws an error if there was an error parsing the string.
+     * Constructor that initializes the object with the given string.
+     * See parse() for details. Throws an error if there was an error
+     * parsing the string.
      */
     cDisplayString(const char *dispstr);
 
@@ -165,6 +167,13 @@ class SIM_API cDisplayString
     /**
      * Sets the display string to the given value. Throws an error if there
      * was an error parsing the string.
+     *
+     * If a tag argument contains a "," or ";", it needs to be escaped with
+     * a backslash to take away its special meaning. Other backslashes are
+     * are ignored (i.e. not stored). To add a backslash into a tag argument,
+     * it needs to be duplicated. Example: the 't=foo\,bar\;bs=\\' string
+     * (i.e. the "t=foo\\,bar\\;bs=\\\\" C++ string constant) will be parsed
+     * as a "t" tag having the single argument "foo,bar;bs=\".
      */
     void parse(const char *displaystr);
 
