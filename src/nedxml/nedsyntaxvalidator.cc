@@ -33,8 +33,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-// FIXME TODO: assert types begin with capital letters, and submods/gates/params with lowercase! warning if not!
-
 
 static struct { const char *fname; int args; } known_funcs[] =
 {
@@ -145,6 +143,15 @@ void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char 
     }
 }
 
+void NEDSyntaxValidator::checkEnumAttribute(NEDElement *node, const char *attr, const char *values[], int n)
+{
+    const char *value = node->getAttribute(attr);
+    for (int i = 0; i < n; i++)
+        if (strcmp(value, values[i]) == 0)
+            return;
+    errors->addError(node, "Illegal attribute value '%s'", value);
+}
+
 void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed)
 {
     const char *s = node->getAttribute(attr);
@@ -216,7 +223,8 @@ void NEDSyntaxValidator::validateElement(NedFileElement *node)
 
 void NEDSyntaxValidator::validateElement(CommentElement *node)
 {
-    // FIXME revise
+    const char *values[] = { "banner", "right", "trailing", "inner" };
+    checkEnumAttribute(node, "locid", values, 4);
 }
 
 void NEDSyntaxValidator::validateElement(PackageElement *node)
@@ -246,22 +254,18 @@ void NEDSyntaxValidator::validateElement(InterfaceNameElement *node)
 
 void NEDSyntaxValidator::validateElement(SimpleModuleElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(ModuleInterfaceElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(CompoundModuleElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(ParametersElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(ParamElement *node)
@@ -322,12 +326,10 @@ void NEDSyntaxValidator::validateElement(PropertyKeyElement *node)
 
 void NEDSyntaxValidator::validateElement(GatesElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(TypesElement *node)
 {
-    // make sure type names are unique
 }
 
 void NEDSyntaxValidator::validateElement(GateElement *node)
@@ -344,88 +346,26 @@ void NEDSyntaxValidator::validateElement(GateElement *node)
 
 void NEDSyntaxValidator::validateElement(SubmodulesElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
 {
-    // FIXME revise
-    const char *expr[] = {
-        "like-expr", "vector-size"
-    };
-    bool opt[] = {
-        true, true
-    };
+    const char *expr[] = { "like-expr", "vector-size" };
+    bool opt[] = { true, true };
     checkExpressionAttributes(node, expr, opt, 2);
 
     checkDottedNameAttribute(node, "type", false);
     checkDottedNameAttribute(node, "like-type", false);
-
-//    // if there's a "like", name should be an existing module parameter name
-//    if (!opp_isempty(node->getLikeExpr()))
-//    {
-//        const char *paramName = node->getLikeExpr();
-//        NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
-//        if (!compound)
-//            INTERNAL_ERROR0(node,"occurs outside a compound-module");
-//        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMETERS);
-//        if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==nullptr)
-//            {errors->addError(node, "Compound module has no parameter named '%s'", paramName);return;}
-//    }
 }
-
-// void NEDSyntaxValidator::validateElement(SubstparamsElement *node)
-// {
-//    const char *expr[] = {"condition"};
-//    bool opt[] = {true};
-//    checkExpressionAttributes(node, expr, opt, 1);
-//
-//    // make sure parameter names are unique
-//    checkUniqueness(node, NED_SUBSTPARAM, "name");
-// }
-
-// TODO merge into 'parameters'
-// void NEDSyntaxValidator::validateElement(SubstparamElement *node)
-// {
-//    const char *expr[] = {"value"};
-//    bool opt[] = {false};
-//    checkExpressionAttributes(node, expr, opt, 1);
-// }
-
-// TODO merge into 'gates'
-// void NEDSyntaxValidator::validateElement(GatesizesElement *node)
-// {
-//    const char *expr[] = {"condition"};
-//    bool opt[] = {true};
-//    checkExpressionAttributes(node, expr, opt, 1);
-//
-//    // make sure gate names are unique
-//    checkUniqueness(node, NED_GATESIZE, "name");
-// }
-
-// TODO merge into 'gates'
-// void NEDSyntaxValidator::validateElement(GatesizeElement *node)
-// {
-//    const char *expr[] = {"vector-size"};
-//    bool opt[] = {true};
-//    checkExpressionAttributes(node, expr, opt, 1);
-// }
 
 void NEDSyntaxValidator::validateElement(ConnectionsElement *node)
 {
-    // FIXME revise
-    // TBD if check=true, make sure all gates are connected
 }
 
 void NEDSyntaxValidator::validateElement(ConnectionElement *node)
 {
-    // FIXME revise
-    const char *expr[] = {
-        "condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index", "like-expr"
-    };
-    bool opt[] = {
-        true, true, true, true, true, true
-    };
+    const char *expr[] = { "condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index", "like-expr" };
+    bool opt[] = { true, true, true, true, true, true };
     checkExpressionAttributes(node, expr, opt, 6);
 
     // plusplus and gate index expression cannot be both there
@@ -442,41 +382,38 @@ void NEDSyntaxValidator::validateElement(ConnectionElement *node)
 
 void NEDSyntaxValidator::validateElement(ChannelInterfaceElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(ChannelElement *node)
 {
-    // FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(ConnectionGroupElement *node)
 {
-    // FIXME revise
-    // TODO check loop vars are unique etc
+    // TODO check loop vars are unique
 }
 
 void NEDSyntaxValidator::validateElement(LoopElement *node)
 {
-    // TODO adapt
-    // const char *expr[] = {"from-value", "to-value"};
-    // bool opt[] = {false, false};
-    // checkExpressionAttributes(node, expr, opt, 2);
+    const char *expr[] = {"from-value", "to-value"};
+    bool opt[] = {false, false};
+    checkExpressionAttributes(node, expr, opt, 2);
 }
 
 void NEDSyntaxValidator::validateElement(ConditionElement *node)
 {
-    // FIXME revise
+    const char *expr[] = {"condition"};
+    bool opt[] = {true};
+    checkExpressionAttributes(node, expr, opt, 1);
 }
 
 void NEDSyntaxValidator::validateElement(ExpressionElement *node)
 {
-    // FIXME revise
+    // TODO
 }
 
 void NEDSyntaxValidator::validateElement(OperatorElement *node)
 {
-    // FIXME revise
     // check operator name is valid and argument count matches
     const char *op = node->getName();
 
@@ -518,7 +455,6 @@ void NEDSyntaxValidator::validateElement(OperatorElement *node)
 
 void NEDSyntaxValidator::validateElement(FunctionElement *node)
 {
-    // FIXME revise
     // if we know the function, check argument count
     const char *func = node->getName();
     int args = node->getNumChildren();
@@ -600,28 +536,9 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
 
 void NEDSyntaxValidator::validateElement(IdentElement *node)
 {
-    const char *expr[] = {
-        "module-index", "param-index"
-    };
-    bool opt[] = {
-        true, true
-    };
+    const char *expr[] = { "module-index", "param-index" };
+    bool opt[] = { true, true };
     checkExpressionAttributes(node, expr, opt, 2);
-
-/*TODO:
-    bool withinSubcomponent = isWithinSubcomponent(node);
-    bool withinInnerType = isWithinInnerType(node);
-
-    const char *modulename = node->getModule();
-    if (opp_isempty(modulename) || strcmp(modulename, "this")==0)
-    {
-        // OK -- "identifier" and "this.identifier" are allowed in expressions anywhere
-    }
-    else
-    {
-        // TODO module.ident is not legal at certain places
-    }
- */
 }
 
 void NEDSyntaxValidator::validateElement(LiteralElement *node)
@@ -749,17 +666,6 @@ void NEDSyntaxValidator::validateElement(FieldElement *node)
 
     if (node->getIsVector() && opp_isempty(node->getVectorSize()) && isStruct)
         errors->addError(node, "A struct cannot have dynamic array fields");
-
-    // if (!opp_isempty(node->getDataType())) // type is there
-    // {
-    //      if (defined in base class too)
-    //      {
-    //          if (!node->getIsReadonly())
-    //              errors->addError(node, "Field is already declared in a base class (only readonly fields can be overridden)");
-    //          if (node->getIsReadonly() && type is not the same)
-    //              errors->addError(node, "Field is already declared in a base class with a different type");
-    //      }
-    // }
 
     if (opp_isempty(node->getDataType())) {  // type is missing
         if (node->getIsAbstract())

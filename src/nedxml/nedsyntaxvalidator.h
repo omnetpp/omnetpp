@@ -44,6 +44,7 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
 
     // internal helpers: verify attributes
     void checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n);
+    void checkEnumAttribute(NEDElement *node, const char *attr, const char *values[], int n);
     void checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed);
     void checkPropertyNameAttribute(NEDElement *node, const char *attr);
     void checkPropertyIndexAttribute(NEDElement *node, const char *attr);
