@@ -28,6 +28,9 @@ namespace qtenv {
 class AnimationControllerDialog;
 
 struct RunModeProfile {
+    void save(const QString& prefix);
+    void load(const QString& prefix);
+
     double targetAnimationCpuUsage;
     double minFps, maxFps; // these limit the adaptive mechanism
 
@@ -94,8 +97,7 @@ class DisplayUpdateController : public QObject
     void setTargetFps(double fps); // obeys limits
 
 public:
-
-    DisplayUpdateController() { animationTimer.restart(); setTargetFps(maxPossibleFps * currentProfile->targetAnimationCpuUsage); }
+    DisplayUpdateController();
 
     double getAnimationTime() const { return animationTime; }
     double getAnimationSpeed() const;
@@ -143,7 +145,7 @@ public:
 
     void reset();
 
-    ~DisplayUpdateController() { hideDialog(); }
+    ~DisplayUpdateController();
 };
 
 } // namespace qtenv
