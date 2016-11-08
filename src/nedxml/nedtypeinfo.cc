@@ -48,6 +48,9 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
     }
     bool isInterface = type == MODULEINTERFACE || type == CHANNELINTERFACE;
 
+    // collect local params, gates, etc., as checkComplianceToInterface() will need them
+    collectLocalDeclarations();
+
     // add "extends" and "like" names, after resolving them
     NEDLookupContext context = NEDResourceCache::getParentContextOf(qname, tree);
     for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
@@ -130,8 +133,6 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
                 implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
         }
     }
-
-    collectLocalDeclarations();
 
     // TODO check that parameter, gate, submodule and inner type declarations don't conflict with those in super types
 }
@@ -357,14 +358,8 @@ void NEDTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElement
 
 SubmoduleElement *NEDTypeInfo::getLocalSubmoduleElement(const char *subcomponentName) const
 {
-    //TODO use map
-    SubmodulesElement *submodulesNode = getSubmodulesElement();
-    if (submodulesNode) {
-        NEDElement *submoduleNode = submodulesNode->getFirstChildWithAttribute(NED_SUBMODULE, "name", subcomponentName);
-        if (submoduleNode)
-            return (SubmoduleElement *)submoduleNode;
-    }
-    return nullptr;
+    auto it = localSubmoduleDecls.find(subcomponentName);
+    return it != localSubmoduleDecls.end() ? (SubmoduleElement*)it->second : nullptr;
 }
 
 ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
@@ -416,14 +411,8 @@ ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
 
 ParamElement *NEDTypeInfo::findLocalParamDecl(const char *name) const
 {
-    //TODO use map
-    ParametersElement *params = getParametersElement();
-    if (params)
-        for (ParamElement *param = params->getFirstParamChild(); param; param = param->getNextParamSibling())
-            if (param->getType() != NED_PARTYPE_NONE && opp_strcmp(param->getName(), name) == 0)
-                return param;
-
-    return nullptr;
+    auto it = localParamDecls.find(name);
+    return it != localParamDecls.end() ? (ParamElement*)it->second : nullptr;
 }
 
 ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
@@ -440,14 +429,8 @@ ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
 
 GateElement *NEDTypeInfo::findLocalGateDecl(const char *name) const
 {
-    //TODO use map
-    GatesElement *gates = getGatesElement();
-    if (gates)
-        for (GateElement *gate = gates->getFirstGateChild(); gate; gate = gate->getNextGateSibling())
-            if (gate->getType() != NED_PARTYPE_NONE && opp_strcmp(gate->getName(), name) == 0)
-                return gate;
-
-    return nullptr;
+    auto it = localGateDecls.find(name);
+    return it != localGateDecls.end() ? (GateElement*)it->second : nullptr;
 }
 
 GateElement *NEDTypeInfo::findGateDecl(const char *name) const
