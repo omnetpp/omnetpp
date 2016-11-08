@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <cstring>
 #include <sstream>
+#include "common/stlutil.h"
 #include "common/stringutil.h"
 #include "nederror.h"
 #include "nedutil.h"
@@ -129,6 +130,8 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
                 implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
         }
     }
+
+    collectLocalDeclarations();
 
     // TODO check that parameter, gate, submodule and inner type declarations don't conflict with those in super types
 }
@@ -264,6 +267,11 @@ bool NEDTypeInfo::isNetwork() const
     return NEDElementUtil::getLocalBoolProperty(getTree(), "isNetwork");
 }
 
+TypesElement *NEDTypeInfo::getTypesElement() const
+{
+    return (TypesElement *)getTree()->getFirstChildWithTag(NED_TYPES);
+}
+
 ParametersElement *NEDTypeInfo::getParametersElement() const
 {
     return (ParametersElement *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
@@ -284,8 +292,72 @@ ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
     return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }
 
+void NEDTypeInfo::collectLocalDeclarations()
+{
+    if (TypesElement *types = getTypesElement()) {
+        for (NEDElement *child = types->getFirstChild(); child; child = child->getNextSibling()) {
+            int code = child->getTagCode();
+            if (code == NED_SIMPLE_MODULE || code == NED_COMPOUND_MODULE || code == NED_CHANNEL || code == NED_CHANNEL_INTERFACE || code == NED_MODULE_INTERFACE)
+                addToElementMap(localInnerTypeDecls, child);
+        }
+    }
+
+    if (ParametersElement *params = getParametersElement())
+        for (ParamElement *param = params->getFirstParamChild(); param; param = param->getNextParamSibling())
+            if (param->getType() != NED_PARTYPE_NONE)
+                addToElementMap(localParamDecls, param);
+
+    if (GatesElement *gates = getGatesElement())
+        for (GateElement *gate = gates->getFirstGateChild(); gate; gate = gate->getNextGateSibling())
+            if (gate->getType() != NED_GATETYPE_NONE)
+                addToElementMap(localGateDecls, gate);
+
+    if (SubmodulesElement *submodulesNode = getSubmodulesElement())
+        for (SubmoduleElement *submodule = submodulesNode->getFirstSubmoduleChild(); submodule; submodule = submodule->getNextSubmoduleSibling())
+            addToElementMap(localSubmoduleDecls, submodule);
+
+    if (ConnectionsElement *connectionsNode = getConnectionsElement()) {
+        for (NEDElement *child = connectionsNode->getFirstChild(); child; child = child->getNextSibling()) {
+            if (child->getTagCode() == NED_CONNECTION && !opp_isempty(((ConnectionElement*)child)->getName()))
+                addToElementMap(localConnectionDecls, child);
+            else if (child->getTagCode() == NED_CONNECTION_GROUP) {
+                NEDElement *connectionGroup = child;
+                for (NEDElement *child = connectionGroup->getFirstChild(); child; child = child->getNextSibling())
+                    if (child->getTagCode() == NED_CONNECTION && !opp_isempty(((ConnectionElement*)child)->getName()))
+                        addToElementMap(localConnectionDecls, child);
+            }
+        }
+    }
+
+    mergeElementMap(allLocalDecls, localInnerTypeDecls);
+    mergeElementMap(allLocalDecls, localParamDecls);
+    mergeElementMap(allLocalDecls, localGateDecls);
+    mergeElementMap(allLocalDecls, localSubmoduleDecls);
+    mergeElementMap(allLocalDecls, localConnectionDecls);
+}
+
+void NEDTypeInfo::addToElementMap(NameToElementMap& elementMap, NEDElement *node)
+{
+    std::string name = node->getAttribute("name");
+    if (containsKey(elementMap, name))
+        throw NEDException(node, "Name '%s' is not unique within its component", name.c_str());
+    elementMap[name] = node;
+}
+
+void NEDTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap)
+{
+    for (auto it = elementMap.begin(); it != elementMap.end(); ++it) {
+        const std::string& name = it->first;
+        NEDElement *node = it->second;
+        if (containsKey(destMap, name))
+            throw NEDException(node, "Name '%s' is not unique within its component", name.c_str());
+        destMap[name] = node;
+    }
+}
+
 SubmoduleElement *NEDTypeInfo::getLocalSubmoduleElement(const char *subcomponentName) const
 {
+    //TODO use map
     SubmodulesElement *submodulesNode = getSubmodulesElement();
     if (submodulesNode) {
         NEDElement *submoduleNode = submodulesNode->getFirstChildWithAttribute(NED_SUBMODULE, "name", subcomponentName);
@@ -312,7 +384,6 @@ ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
                 for (NEDElement *child = conngroup->getFirstChild(); child; child = child->getNextSibling())
                     if (child->getId() == id && child->getTagCode() == NED_CONNECTION)
                         return (ConnectionElement *)child;
-
             }
         }
     }
@@ -345,6 +416,7 @@ ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
 
 ParamElement *NEDTypeInfo::findLocalParamDecl(const char *name) const
 {
+    //TODO use map
     ParametersElement *params = getParametersElement();
     if (params)
         for (ParamElement *param = params->getFirstParamChild(); param; param = param->getNextParamSibling())
@@ -368,6 +440,7 @@ ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
 
 GateElement *NEDTypeInfo::findLocalGateDecl(const char *name) const
 {
+    //TODO use map
     GatesElement *gates = getGatesElement();
     if (gates)
         for (GateElement *gate = gates->getFirstGateChild(); gate; gate = gate->getNextGateSibling())

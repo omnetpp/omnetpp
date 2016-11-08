@@ -1,0 +1,29 @@
+%description:
+Check that names of named connections must be unique.
+
+NOTE: This test used to be called NED_submodule_n1.test
+
+%file: test.ned
+
+simple Node 
+{
+    gates:
+        inout g[];
+}
+
+network TestNetwork
+{
+    submodules:
+        a: Node;
+        b: Node;
+        c: Node;
+    connections:
+        a.g++ <--> foo: <--> b.g++;
+        b.g++ <--> foo: <--> c.g++;
+}
+
+%exitcode: 1
+
+%contains: stderr
+Name 'foo' is not unique within its component
+

@@ -22,6 +22,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include "commonutil.h"  // Assert()
 
 namespace omnetpp {
 namespace common {

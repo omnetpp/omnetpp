@@ -1,0 +1,21 @@
+%description:
+Check that submodule names must be unique.
+
+NOTE: This test used to be called NED_submodule_n1.test
+
+%file: test.ned
+
+simple Test { }
+
+network TestNetwork
+{
+    submodules:
+        foo: Test;
+        foo: Test;
+}
+
+%exitcode: 1
+
+%contains: stderr
+Name 'foo' is not unique within its component
+

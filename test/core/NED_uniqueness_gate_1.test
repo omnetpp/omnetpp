@@ -1,0 +1,17 @@
+%description:
+Check that gate names must be unique.
+
+%file: test.ned
+
+simple Test 
+{
+    gates:
+        input foo;
+        output foo;
+}
+
+%exitcode: 1
+
+%contains: stderr
+Name 'foo' is not unique within its component
+

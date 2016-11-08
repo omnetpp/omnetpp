@@ -1,0 +1,19 @@
+%description:
+Check that parameter names must be unique.
+
+NOTE: This test used to be called NED_submodule_n1.test
+
+%file: test.ned
+
+network TestNetwork
+{
+    parameters:
+        int foo;
+        string foo;
+}
+
+%exitcode: 1
+
+%contains: stderr
+Name 'foo' is not unique within its component
+

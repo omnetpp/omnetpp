@@ -19,12 +19,12 @@ module Foo like IModule
     parameters:
         int p1 = 5;
         string p2 = "x";
-        double additional = 0;
+        double extraPar = 0;
     gates:
         input in;
         output out[];
         inout fixed[6];
-        inout additional[];
+        inout extraGate[];
     connections allowunconnected:
 }
 

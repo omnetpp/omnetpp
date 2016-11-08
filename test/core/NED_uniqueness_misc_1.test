@@ -1,0 +1,20 @@
+%description:
+Check that all names must be unique.
+
+%file: test.ned
+
+simple Test { }
+
+network TestNetwork
+{
+    parameters:
+        string foo;
+    submodules:
+        foo: Test;
+}
+
+%exitcode: 1
+
+%contains: stderr
+Name 'foo' is not unique within its component
+

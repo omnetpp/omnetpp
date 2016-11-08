@@ -1,0 +1,17 @@
+%description:
+Check that inner type names must be unique.
+
+%file: test.ned
+
+network TestNetwork 
+{
+    types:
+        simple Foo {}
+        channel Foo {}
+}
+
+%exitcode: 1
+
+%contains: stderr
+Name 'Foo' is not unique within its component
+

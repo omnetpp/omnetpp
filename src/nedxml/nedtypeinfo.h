@@ -57,7 +57,7 @@ class NEDXML_API NEDTypeInfo
     NEDElement *tree; // points into resolver
 
     typedef std::vector<std::string> StringVector;
-    typedef std::map<std::string,int> StringToIntMap;
+    typedef std::map<std::string,NEDElement*> NameToElementMap;
 
     // inheritance. Vectors contain fully qualifies names, and include
     // indirect base types/interfaces as well (transitive closure).
@@ -69,8 +69,19 @@ class NEDXML_API NEDTypeInfo
     // simple module/channel C++ class to instantiate
     std::string implClassName;
 
+    // local declarations by name
+    NameToElementMap localInnerTypeDecls;
+    NameToElementMap localParamDecls;
+    NameToElementMap localGateDecls;
+    NameToElementMap localSubmoduleDecls;
+    NameToElementMap localConnectionDecls;
+    NameToElementMap allLocalDecls;
+
   protected:
     void checkComplianceToInterface(NEDTypeInfo *interfaceDecl);
+    void collectLocalDeclarations();
+    void addToElementMap(NameToElementMap& elementMap, NEDElement *node);
+    void mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap);
 
   public:
     /** Constructor. It expects fully qualified name */
@@ -191,6 +202,7 @@ class NEDXML_API NEDTypeInfo
 
     /** @name Convenience method to query the tree */
     //@{
+    TypesElement *getTypesElement() const;
     ParametersElement *getParametersElement() const;
     GatesElement *getGatesElement() const;
     SubmodulesElement *getSubmodulesElement() const;
