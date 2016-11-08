@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "common/stringutil.h"
 #include "common/patternmatcher.h"
 #include "nedxml/nederror.h"
@@ -80,6 +81,16 @@ cNEDDeclaration *cNEDDeclaration::getSuperDecl() const
     cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(NEDTypeInfo::getSuperDecl());
     ASSERT(decl);
     return decl;
+}
+
+const std::vector<cNEDDeclaration*>& cNEDDeclaration::getInheritanceChain()
+{
+    if (inheritanceChain.empty()) {
+        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames() == 0 ? nullptr : d->getSuperDecl())
+            inheritanceChain.push_back(d);
+        std::reverse(inheritanceChain.begin(), inheritanceChain.end());
+    }
+    return inheritanceChain;
 }
 
 void cNEDDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const
@@ -343,8 +354,8 @@ void cNEDDeclaration::putSharedParImplFor(NEDElement *node, cParImpl *value)
 const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getParamPatterns()
 {
     if (!patternsValid) {
-        // collected param assignment patterns from all super classes
-        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames() == 0 ? nullptr : d->getSuperDecl()) {
+        // collect param assignment patterns from all super classes (in base-to-derived order)
+        for (cNEDDeclaration *d : getInheritanceChain()) {
             ParametersElement *paramsNode = d->getParametersElement();
             if (paramsNode)
                 collectPatternsFrom(paramsNode, patterns);
@@ -361,8 +372,8 @@ const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getSubmodulePa
         // do super classes as well (due to inherited submodules!)
         std::vector<PatternData>& v = submodulePatterns[submoduleName];  // create
 
-        // collected param assignment patterns from all super classes
-        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames() == 0 ? nullptr : d->getSuperDecl()) {
+        // collect param assignment patterns from all super classes (in base-to-derived order)
+        for (cNEDDeclaration *d : getInheritanceChain()) {
             SubmodulesElement *submodsNode = d->getSubmodulesElement();
             if (!submodsNode)
                 continue;

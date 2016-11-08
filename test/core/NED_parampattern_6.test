@@ -1,5 +1,5 @@
 %description:
-Verify that default values assigned via pattern assignments can be overwritten in subclasses.
+Verify that values set via pattern assignments CANNOT be overridden in subclasses.
 
 
 %file: test.ned
@@ -15,7 +15,7 @@ module Sub
 module Base
 {
     parameters:
-        *.p = default(0);
+        *.p = 0;
     submodules:
         sub: Sub;
 }
@@ -23,7 +23,7 @@ module Base
 module Extended extends Base
 {
     parameters:
-        *.p = default(1);  // should overwrite default value set in Base
+        *.p = 1; // should be a no-op (value set in Base cannot be changed in subclasses)
 }
 
 network Test
@@ -42,7 +42,7 @@ module Test: Test {
             submodules:
                 module Test.e.sub: Sub {
                     parameters:
-                        p = 1
+                        p = 0
                 }
         }
 }

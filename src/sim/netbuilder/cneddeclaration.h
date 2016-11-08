@@ -79,6 +79,9 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     typedef std::map<std::string, std::vector<PatternData> > StringPatternDataMap;
     StringPatternDataMap submodulePatterns;  // contains patterns defined in the "submodules" section
 
+    // super types in base-to-derived order, including (and ending with) the "this" pointer; empty if unfilled
+    std::vector<cNEDDeclaration*> inheritanceChain;
+
   protected:
     void putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const;
     cProperties *getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const;
@@ -118,6 +121,12 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
      * Redefined to change return type (covariant return type)
      */
     virtual cNEDDeclaration *getSuperDecl() const override;
+
+    /**
+     * Returns the inheritance chain. Starts with the base types, and ends
+     * with the "this" pointer.
+     */
+    virtual const std::vector<cNEDDeclaration*>& getInheritanceChain();
 
     /**
      * Returns the pattern-based parameter assignments on the type (i.e. the
