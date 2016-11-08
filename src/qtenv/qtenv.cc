@@ -1952,8 +1952,11 @@ void Qtenv::bubble(cComponent *component, const char *text)
 
 void Qtenv::confirm(DialogKind kind, const char *msg)
 {
-    if (!mainWindow)
-        out << "\n<!> " << msg << endl << endl;  // fallback in case Qt didn't fire up correctly
+    if (!mainWindow) {
+        // fallback in case Qt didn't fire up correctly
+        const char *prefix = kind==ERROR ? "Error: " : kind==WARNING ? "Warning: " : "";
+        out << "\n<!> " << prefix << msg << endl << endl;
+    }
     else {
         switch (kind) {
         case INFO: QMessageBox::information(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok); break;

@@ -1711,8 +1711,11 @@ void Tkenv::bubble(cComponent *component, const char *text)
 
 void Tkenv::confirm(DialogKind kind, const char *msg)
 {
-    if (!interp)
-        out << "<!> " << msg << endl;  // fallback in case Tkenv didn't fire up correctly
+    if (!interp) {
+        // fallback in case Tkenv didn't fire up correctly
+        const char *prefix = kind==ERROR ? "Error: " : kind==WARNING ? "Warning: " : "";
+        out << "\n<!> " << prefix << msg << endl << endl;
+    }
     else {
         const char *icon = kind==INFO ? "info" : kind==WARNING ? "warning" : "error";
         CHK(Tcl_VarEval(interp, "messagebox {Confirm} ", TclQuotedString(msg).get(), " ", icon, " ok", TCL_NULL));
