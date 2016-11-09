@@ -168,23 +168,22 @@ bool TreeItemModel::hasChildren(const QModelIndex& parent) const
 
 void TreeItemModel::getExpandedItems(QTreeView *view, QList<QVariant>& list, QModelIndex idx)
 {
-    if (view->isExpanded(idx)) {
-        // adding the pointer of the current node to the list because it is expanded in the view
+    if (!idx.isValid()) {
+        // the root index must always be added
         list.append(idx.data(Qt::UserRole));
-    }
-
-    if (idx.isValid()) {
-        // this is not the root node, so we iterate on all of its children
-        for (int row = 0; row < rowCount(idx); ++row) {
-            getExpandedItems(view, list, idx.child(row, 0));
-        }
-    }
-    else {
         // this is the root node, so we index the model itself in the iteration
-        for (int row = 0; row < rowCount(); ++row) {
+        for (int row = 0; row < rowCount(); ++row)
             getExpandedItems(view, list, index(row, 0));
-        }
     }
+    else
+        if (view->isExpanded(idx)) {
+            // adding the pointer of the current node to the list because it is expanded in the view
+            list.append(idx.data(Qt::UserRole));
+
+            // this is not the root node, so we iterate on all of its children
+            for (int row = 0; row < rowCount(idx); ++row)
+                getExpandedItems(view, list, idx.child(row, 0));
+        }
 }
 
 void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant>& list, QModelIndex idx)
@@ -192,18 +191,18 @@ void TreeItemModel::expandItems(QTreeView *view, const QList<QVariant>& list, QM
     if (list.contains(idx.data(Qt::UserRole))) {
         // expanding the node in the view because it is in the list
         view->expand(idx);
-    }
 
-    if (idx.isValid()) {
-        // this is not the root node, so we iterate on all of its children
-        for (int row = 0; row < rowCount(idx); ++row) {
-            expandItems(view, list, idx.child(row, 0));
+        if (idx.isValid()) {
+            // this is not the root node, so we iterate on all of its children
+            for (int row = 0; row < rowCount(idx); ++row) {
+                expandItems(view, list, idx.child(row, 0));
+            }
         }
-    }
-    else {
-        // this is the root node, so we index the model itself in the iteration
-        for (int row = 0; row < rowCount(); ++row) {
-            expandItems(view, list, index(row, 0));
+        else {
+            // this is the root node, so we index the model itself in the iteration
+            for (int row = 0; row < rowCount(); ++row) {
+                expandItems(view, list, index(row, 0));
+            }
         }
     }
 }
