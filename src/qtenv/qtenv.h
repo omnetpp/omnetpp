@@ -109,7 +109,6 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     bool showLayouting = false;            // show layouting process in graphical module inspectors
     LayouterChoice layouterChoice = LAYOUTER_AUTO; // which new layouting algorithm to use
     bool arrangeVectorConnections = false; // arrange connections on vector gates parallel to each other
-    int iconMinimumSize = 5;               // minimum size of icons when zooming out
     bool showBubbles = true;               // show result of bubble() calls
     double playbackSpeed = 1.0;            // the scaling of animationTime relative to real time
     long updateFreqFast = 500;             // Fast Run updates display every N milliseconds

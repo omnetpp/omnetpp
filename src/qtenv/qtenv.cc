@@ -134,7 +134,6 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 
 void Qtenv::storeOptsInPrefs()
 {
-    setPref("updatefreq_fast_ms", QVariant::fromValue<int>(opt->updateFreqFast));
     setPref("updatefreq_express_ms", QVariant::fromValue<int>(opt->updateFreqExpress));
     setPref("event_banners", opt->printEventBanners);
     setPref("init_banners", opt->printInitBanners);
@@ -160,7 +159,6 @@ void Qtenv::storeOptsInPrefs()
     setPref("layouterchoice", layouterChoiceString);
 
     setPref("arrangevectorconnections", opt->arrangeVectorConnections);
-    setPref("iconminsize", opt->iconMinimumSize);
     setPref("bubbles", opt->showBubbles);
     setPref("playback_speed", opt->playbackSpeed);
     setPref("expressmode_autoupdate", opt->autoupdateInExpress);
@@ -194,11 +192,7 @@ void Qtenv::storeOptsInPrefs()
 
 void Qtenv::restoreOptsFromPrefs()
 {
-    auto pref = getPref("updatefreq_fast_ms");
-    if (pref.isValid())
-        opt->updateFreqFast = pref.toLongLong();
-
-    pref = getPref("updatefreq_express_ms");
+    auto pref = getPref("updatefreq_express_ms");
     if (pref.isValid())
         opt->updateFreqExpress = pref.toLongLong();
 
@@ -275,10 +269,6 @@ void Qtenv::restoreOptsFromPrefs()
     pref = getPref("arrangevectorconnections");
     if (pref.isValid())
         opt->arrangeVectorConnections = pref.toBool();
-
-    pref = getPref("iconminsize");
-    if (pref.isValid())
-        opt->iconMinimumSize = pref.toInt();
 
     pref = getPref("bubbles");
     if (pref.isValid())

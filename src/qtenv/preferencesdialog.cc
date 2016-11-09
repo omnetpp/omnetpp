@@ -44,12 +44,9 @@ PreferencesDialog::PreferencesDialog(int defaultPage, QWidget *parent) :
 void PreferencesDialog::init()
 {
     // General tab
-    QVariant variant = getQtenv()->getPref("keep-inspectors-on-top");
-    ui->keepOnTop->setChecked(variant.isValid() ? variant.value<bool>() : false);
-    variant = getQtenv()->getPref("reuse-inspectors");
-    ui->reuseInsp->setChecked(variant.isValid() ? variant.value<bool>() : false);
+    QVariant variant;
     variant = getQtenv()->getPref("confirm-exit");
-    ui->confirmExit->setChecked(variant.isValid() ? variant.value<bool>() : false);
+    ui->confirmExit->setChecked(variant.isValid() ? variant.value<bool>() : true);
     ui->initBanners->setChecked(getQtenv()->opt->printInitBanners);
     ui->eventBanners->setChecked(getQtenv()->opt->printEventBanners);
     ui->shortBanners->setChecked(getQtenv()->opt->shortBanners);
@@ -68,11 +65,8 @@ void PreferencesDialog::init()
     }
     ui->showLayouting->setChecked(getQtenv()->opt->showLayouting);
     ui->arrange->setChecked(getQtenv()->opt->arrangeVectorConnections);
-    variant = getQtenv()->getPref("layout-may-resize-window");
-    ui->allowResize->setChecked(variant.isValid() ? variant.value<bool>() : false);
     variant = getQtenv()->getPref("layout-may-change-zoom");
     ui->allowZoom->setChecked(variant.isValid() ? variant.value<bool>() : false);
-    ui->minIconSizeEdit->setText(QString::number(getQtenv()->opt->iconMinimumSize));
 
     // Animation tab
     ui->animMsg->setChecked(getQtenv()->opt->animationEnabled);
@@ -106,6 +100,8 @@ void PreferencesDialog::init()
 
     setFontsTabFonts(interfaceFont, timelineFont, canvasFont, logBoxFont, timeFont);
     connect(ui->restoreButton, SIGNAL(clicked()), this, SLOT(restoreDefaultFonts()));
+
+    adjustSize();
 }
 
 void PreferencesDialog::setFontsTabFonts(const QFont &interfaceFont, const QFont &timelineFont,
@@ -177,7 +173,6 @@ void PreferencesDialog::accept()
     getQtenv()->opt->animationMsgClassNames = ui->dispClass->isChecked();
     getQtenv()->opt->animationMsgColors = ui->colorMsg->isChecked();
 
-    getQtenv()->opt->iconMinimumSize = std::min(40, std::max(1, ui->minIconSizeEdit->text().toInt()));
     getQtenv()->opt->penguinMode = ui->penguinMode->isChecked();
     getQtenv()->opt->showLayouting = ui->showLayouting->isChecked();
     getQtenv()->opt->layouterChoice =
@@ -187,11 +182,8 @@ void PreferencesDialog::accept()
 
     getQtenv()->opt->arrangeVectorConnections = ui->arrange->isChecked();
     getQtenv()->opt->showBubbles = ui->showBubbles->isChecked();
-    getQtenv()->setPref("keep-inspectors-on-top", ui->keepOnTop->isChecked());
-    getQtenv()->setPref("reuse-inspectors", ui->reuseInsp->isChecked());
     getQtenv()->setPref("confirm-exit", ui->confirmExit->isChecked());
     getQtenv()->opt->stripNamespace = StripNamespace(ui->hideNameSpace->currentIndex());
-    getQtenv()->setPref("layout-may-resize-window", ui->allowResize->isChecked());
     getQtenv()->setPref("layout-may-change-zoom", ui->allowZoom->isChecked());
     getQtenv()->setPref("timeline-wantselfmsgs", ui->selfMsg->isChecked());
     getQtenv()->setPref("timeline-wantnonselfmsgs", ui->nonSelfMsg->isChecked());
@@ -234,4 +226,3 @@ PreferencesDialog::~PreferencesDialog()
 
 }  // namespace qtenv
 }  // namespace omnetpp
-

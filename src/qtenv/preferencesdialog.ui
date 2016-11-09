@@ -21,7 +21,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="general">
       <attribute name="title">
@@ -40,20 +40,6 @@
           <string>User Interface</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_9">
-          <item>
-           <widget class="QCheckBox" name="keepOnTop">
-            <property name="text">
-             <string>Keep inspector windows on top</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="reuseInsp">
-            <property name="text">
-             <string>Reuse inspectors if possible</string>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QCheckBox" name="confirmExit">
             <property name="text">
@@ -442,27 +428,6 @@ Padding with spaces:
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="minIconSizeText">
-              <property name="text">
-               <string>Minimum icon size when zoomed out (pixels):</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="minIconSizeEdit"/>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="allowResize">
-            <property name="text">
-             <string>Resize window to fit network with current zoom level first</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="allowZoom">
             <property name="text">
              <string>Zoom out if necessary to fit network into window</string>
@@ -516,18 +481,11 @@ Padding with spaces:
           </item>
           <item>
            <widget class="QCheckBox" name="animBroadcast">
-            <property name="text">
-             <string>Broadcast animation</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="animText">
-            <property name="text">
+            <property name="toolTip">
              <string>Animates send/sendDirect calls concurrently, after processing each event (i.e. out of sequence)</string>
             </property>
-            <property name="wordWrap">
-             <bool>true</bool>
+            <property name="text">
+             <string>Broadcast animation</string>
             </property>
            </widget>
           </item>
@@ -604,18 +562,11 @@ Padding with spaces:
           </item>
           <item>
            <widget class="QCheckBox" name="colorMsg">
-            <property name="text">
-             <string>Color messages by message kind</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="colorCode">
-            <property name="text">
+            <property name="toolTip">
              <string>Color code (message kind modulo 8): 0=red 1=green 2=blue 3=white 4=yellow 5=cyan 6=magenta 7=black</string>
             </property>
-            <property name="wordWrap">
-             <bool>true</bool>
+            <property name="text">
+             <string>Color messages by message kind</string>
             </property>
            </widget>
           </item>
