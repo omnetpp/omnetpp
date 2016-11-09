@@ -36,7 +36,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output vector file `%s'", fileName.c_str())
+#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output vector file '%s'", fileName.c_str())
 
 VectorFileWriterNode::VectorFileWriterNode(const char *fileName, const char *fileHeader)
 {
@@ -71,7 +71,7 @@ void VectorFileWriterNode::process()
     if (!f) {
         f = fopen(fileName.c_str(), "w");
         if (!f)
-            throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
+            throw opp_runtime_error("cannot open '%s' for write", fileName.c_str());
 
         setlocale(LC_NUMERIC, "C");
 

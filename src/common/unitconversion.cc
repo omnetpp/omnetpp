@@ -124,7 +124,7 @@ bool UnitConversion::readNumber(const char *& s, double& number)
     if (s == endp)
         return false;  // no number read
     if (errno == ERANGE)
-        throw opp_runtime_error("overflow or underflow during conversion of `%s'", s);
+        throw opp_runtime_error("overflow or underflow during conversion of '%s'", s);
     s = endp;
 
     while (opp_isspace(*s))

@@ -81,6 +81,6 @@ g$i: ok
 gv$i[2]: ok
 g$o: ok
 gv$o[2]: ok
-g: ERROR: Inout gate `g' cannot be referenced without $i/$o suffix
-gv[2]: ERROR: Inout gate `gv' cannot be referenced without $i/$o suffix
+g: ERROR: Inout gate 'g' cannot be referenced without $i/$o suffix
+gv[2]: ERROR: Inout gate 'gv' cannot be referenced without $i/$o suffix
 .

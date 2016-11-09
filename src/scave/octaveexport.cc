@@ -26,7 +26,7 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace scave {
-#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write file `%s'", fileName.c_str())
+#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write file '%s'", fileName.c_str())
 
 
 OctaveExport::OctaveExport(const char *fileName)
@@ -48,7 +48,7 @@ void OctaveExport::openFileIfNeeded()
         // cygwin-based Octave chokes on CR-LF...
         f = fopen(fileName.c_str(), "wb");
         if (!f)
-            throw opp_runtime_error("cannot open `%s' for write", fileName.c_str());
+            throw opp_runtime_error("cannot open '%s' for write", fileName.c_str());
 
         setlocale(LC_NUMERIC, "C");
         // print file header

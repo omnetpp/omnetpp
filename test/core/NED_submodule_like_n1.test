@@ -14,4 +14,4 @@ network Test
 %exitcode: 1
 
 %contains-regex: stderr
-cannot resolve module interface `IMissingType'
+cannot resolve module interface 'IMissingType'

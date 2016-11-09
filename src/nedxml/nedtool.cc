@@ -102,7 +102,7 @@ void printUsage()
        "  -s <suffix>: suffix for generated files\n"
        "  -t <suffix>: when generating C++, suffix for generated header files\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
-       "      single XML file created by `nedtool -m -x': replace original NED files\n"
+       "      single XML file created by 'nedtool -m -x': replace original NED files\n"
        "  -u: with -m or -k: split NED files to one NED component per file\n" //XXX refine help text
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
@@ -362,7 +362,7 @@ bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStor
         if (opt_verbose)
             fprintf(stdout, "changing into '%s'...\n", dir.c_str());
         if (chdir(dir.c_str())) {
-            fprintf(stderr, "nedtool: cannot temporarily change to directory `%s' (does it exist?)\n", dir.c_str());
+            fprintf(stderr, "nedtool: cannot temporarily change to directory '%s' (does it exist?)\n", dir.c_str());
             return false;
         }
     }
@@ -397,7 +397,7 @@ bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStor
         if (opt_verbose)
             fprintf(stdout, "changing back to '%s'...\n", olddir);
         if (chdir(olddir)) {
-            fprintf(stderr, "nedtool: cannot change back to directory `%s'\n", olddir);
+            fprintf(stderr, "nedtool: cannot change back to directory '%s'\n", olddir);
             return false;
         }
     }

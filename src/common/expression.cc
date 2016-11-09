@@ -29,7 +29,7 @@ namespace common {
 #define E_EBADARGS     "Wrong arguments for '%s'"
 #define E_BADEXP       "Malformed expression"
 #define E_ECANTCAST    "Cannot cast to %s"
-#define E_DIMLESS      "Error in expression: `%s': argument(s) must be dimensionless"
+#define E_DIMLESS      "Error in expression: '%s': argument(s) must be dimensionless"
 
 StringPool Expression::Elem::stringPool;
 

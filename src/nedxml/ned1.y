@@ -1261,22 +1261,22 @@ parameter_expr
         | REF NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
-                  np->getErrors()->addError(ps.substparams,"`ref' modifier no longer supported (add `volatile' modifier to destination parameter instead)");
+                  np->getErrors()->addError(ps.substparams,"'ref' modifier no longer supported (add 'volatile' modifier to destination parameter instead)");
                 }
         | REF ANCESTOR NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
-                  np->getErrors()->addError(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->addError(ps.substparams,"'ancestor' and 'ref' modifiers no longer supported");
                 }
         | ANCESTOR REF NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
-                  np->getErrors()->addError(ps.substparams,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->addError(ps.substparams,"'ancestor' and 'ref' modifiers no longer supported");
                 }
         | ANCESTOR NAME
                 {
                   if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
-                  np->getErrors()->addError(ps.substparams,"`ancestor' modifier no longer supported");
+                  np->getErrors()->addError(ps.substparams,"'ancestor' modifier no longer supported");
                 }
         ;
 

@@ -26,6 +26,6 @@ ERROR:(cOutVector): setType(): set the object name first, using setName()
 ERROR:(cOutVector): setMin(): set the object name first, using setName()
 ERROR:(cOutVector): setMax(): set the object name first, using setName()
 ERROR:(cOutVector): setInterpolationMode(): set the object name first, using setName()
-ERROR:(cOutVector): setEnum(): enum `Foo' not found -- is it declared with Register_Enum()?
+ERROR:(cOutVector): setEnum(): enum 'Foo' not found -- is it declared with Register_Enum()?
 ERROR:(cOutVector): setEnum(): set the object name first, using setName()
 

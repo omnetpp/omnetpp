@@ -181,7 +181,7 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
 }
 
 #undef CHECK
-#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output file `%s'", filename)
+#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output file '%s'", filename)
 
 void RunData::writeToFile(FILE *file, const char *filename) const
 {
@@ -434,7 +434,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output file `%s'", filename.c_str())
+#define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output file '%s'", filename.c_str())
 #define INDEX_FILE_VERSION 2
 
 IndexFileWriter::IndexFileWriter(const char *filename, int precision)

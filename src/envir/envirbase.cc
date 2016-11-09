@@ -775,12 +775,12 @@ std::vector<int> EnvirBase::resolveRunFilter(const char *configName, const char 
             if (runNumber == -1)
                 break;
             if (runNumber >= numRuns)
-                throw cRuntimeError("Run number %d in run list `%s' is out of range 0..%d", runNumber, runFilter, numRuns-1);
+                throw cRuntimeError("Run number %d in run list '%s' is out of range 0..%d", runNumber, runFilter, numRuns-1);
             runNumbers.push_back(runNumber);
             it++;
         }
         if (it.hasError())
-            throw cRuntimeError("Syntax error in run list `%s'", runFilter);
+            throw cRuntimeError("Syntax error in run list '%s'", runFilter);
     }
     else {
         // evaluate filter as constraint expression
@@ -1195,7 +1195,7 @@ void EnvirBase::processFileName(std::string& fname)
 
         const char *hostname = opp_gethostname();
         if (!hostname)
-            throw cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
+            throw cRuntimeError("Cannot append hostname to file name '%s': no HOST, HOSTNAME "
                                 "or COMPUTERNAME (Windows) environment variable", fname.c_str());
         int pid = getpid();
 
@@ -1213,7 +1213,7 @@ void EnvirBase::startOutputRedirection(const char *fileName)
     std::filebuf *fbuf = new std::filebuf;
     fbuf->open(fileName, std::ios_base::out);
     if (!fbuf->is_open())
-       throw cRuntimeError("Cannot open output redirection file `%s'", fileName);
+       throw cRuntimeError("Cannot open output redirection file '%s'", fileName);
     out.rdbuf(fbuf);
     redirectionFilename = fileName;
 }
@@ -1498,7 +1498,7 @@ void EnvirBase::setupRNGMapping(cComponent *component)
             char *endptr;
             int modRng = strtol(suffix+strlen("rng-"), &endptr, 10);
             if (*endptr != '\0')
-                throw opp_runtime_error("Numeric RNG index expected after `rng-'");
+                throw opp_runtime_error("Numeric RNG index expected after 'rng-'");
 
             int physRng = strtol(value, &endptr, 10);
             if (*endptr != '\0') {
@@ -1821,13 +1821,13 @@ cModuleType *EnvirBase::resolveNetwork(const char *networkname)
         network = cModuleType::find(networkname);
     if (!network) {
         if (hasInifilePackage)
-            throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files",
+            throw cRuntimeError("Network '%s' or '%s' not found, check .ini and .ned files",
                     networkname, (inifilePackage+"."+networkname).c_str());
         else
-            throw cRuntimeError("Network `%s' not found, check .ini and .ned files", networkname);
+            throw cRuntimeError("Network '%s' not found, check .ini and .ned files", networkname);
     }
     if (!network->isNetwork())
-        throw cRuntimeError("Module type `%s' is not a network", network->getFullName());
+        throw cRuntimeError("Module type '%s' is not a network", network->getFullName());
     return network;
 }
 

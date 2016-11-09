@@ -149,7 +149,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
         simtime_t eotResendTime = sim->getSimTime() + lookahead*laziness;
         rescheduleEvent(segInfo[destProcId].eotEvent, eotResendTime);
 
-        {if (debug) EV << "piggybacking null msg on `" << msg->getName() << "' to " << destProcId << ", lookahead=" << lookahead << ", EOT=" << eot << "; next resend at " << eotResendTime << "\n";}
+        {if (debug) EV << "piggybacking null msg on '" << msg->getName() << "' to " << destProcId << ", lookahead=" << lookahead << ", EOT=" << eot << "; next resend at " << eotResendTime << "\n";}
 
         // send cMessage with piggybacked null message
         buffer->pack(eot);
@@ -160,7 +160,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
     }
     else
     {
-        {if (debug) EV << "sending `" << msg->getName() << "' to " << destProcId << "\n";}
+        {if (debug) EV << "sending '" << msg->getName() << "' to " << destProcId << "\n";}
 
         // send cMessage
         buffer->pack(destModuleId);
@@ -246,7 +246,7 @@ cEvent *cNullMessageProtocol::takeNextEvent()
         }
         else if (msg && msg->getKind() == MK_PARSIM_EIT) {
             // wait until it gets out of the way (i.e. we get a higher EIT)
-            {if (debug) EV << "blocking on EIT event `" << event->getName() << "'\n";}
+            {if (debug) EV << "blocking on EIT event '" << event->getName() << "'\n";}
             if (!receiveBlocking())
                 return nullptr;
         }

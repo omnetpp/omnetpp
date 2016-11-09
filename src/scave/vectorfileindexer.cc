@@ -238,7 +238,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
         // rename generated index file
         if (unlink(indexFileName.c_str()) != 0 && errno != ENOENT)
-            throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName.c_str(), strerror(errno));
+            throw opp_runtime_error("Cannot remove original index file '%s': %s", indexFileName.c_str(), strerror(errno));
         if (rename(tempIndexFileName.c_str(), indexFileName.c_str()) != 0)
             throw opp_runtime_error("Cannot rename index file from '%s' to '%s': %s", tempIndexFileName.c_str(), indexFileName.c_str(), strerror(errno));
     }
@@ -329,9 +329,9 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
 
         // rename temp to orig
         if (unlink(indexFileName.c_str()) != 0 && errno != ENOENT)
-            throw opp_runtime_error("Cannot remove original index file `%s': %s", indexFileName.c_str(), strerror(errno));
+            throw opp_runtime_error("Cannot remove original index file '%s': %s", indexFileName.c_str(), strerror(errno));
         if (unlink(vectorFileName) != 0)
-            throw opp_runtime_error("Cannot remove original vector file `%s': %s", vectorFileName, strerror(errno));
+            throw opp_runtime_error("Cannot remove original vector file '%s': %s", vectorFileName, strerror(errno));
         if (rename(tempVectorFileName.c_str(), vectorFileName) != 0)
             throw opp_runtime_error("Cannot move generated vector file '%s' to the original '%s': %s",
                     tempVectorFileName.c_str(), vectorFileName, strerror(errno));

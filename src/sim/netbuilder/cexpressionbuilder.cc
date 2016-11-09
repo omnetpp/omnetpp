@@ -158,11 +158,11 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
     // operators should be handled specially
     if (!strcmp(funcname, "index")) {
         if (!inSubcomponentScope)
-            throw cRuntimeError("`index' operator is only supported in submodule parameters");
+            throw cRuntimeError("'index' operator is only supported in submodule parameters");
         elems[pos++] = new NEDSupport::ModuleIndex();
     }
     else if (!strcmp(funcname, "const")) {
-        throw cRuntimeError("`const' operator: not yet supported");  // TBD
+        throw cRuntimeError("'const' operator: not yet supported");  // TBD
     }
     else if (!strcmp(funcname, "sizeof")) {
         // operands are in a child "ident" node
@@ -194,11 +194,11 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             elems[pos++] = functype;
         else if (nedfunctype) {
             if (argcount < nedfunctype->getMinArgs() || (argcount > nedfunctype->getMaxArgs() && !nedfunctype->hasVarArgs()))
-                throw cRuntimeError("Function `%s' does not accept %d arguments", nedfunctype->getSignature(), argcount);
+                throw cRuntimeError("Function '%s' does not accept %d arguments", nedfunctype->getSignature(), argcount);
             elems[pos++].set(nedfunctype, argcount);
         }
         else
-            throw cRuntimeError("Function `%s()' (with %d args) not found (Define_NED_Function() or Define_NED_Math_Function() missing from C++ code?)", funcname, argcount);
+            throw cRuntimeError("Function '%s()' (with %d args) not found (Define_NED_Function() or Define_NED_Math_Function() missing from C++ code?)", funcname, argcount);
     }
 }
 

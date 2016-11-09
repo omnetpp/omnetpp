@@ -260,7 +260,7 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertBefore(w,o): object w=`%s' not in the queue", where->getName());
+        throw cRuntimeError(this, "insertBefore(w,o): object w='%s' not in the queue", where->getName());
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
@@ -274,7 +274,7 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertAfter(w,o): object w=`%s' not in the queue", where->getName());
+        throw cRuntimeError(this, "insertAfter(w,o): object w='%s' not in the queue", where->getName());
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));

@@ -393,9 +393,9 @@ cPar *displayStringPar(const char *parname, cComponent *component, bool searchpa
         // not found -- generate suitable error message
         const char *what = component->isModule() ? "module" : "channel";
         if (!searchparent)
-            throw cRuntimeError("%s `%s' has no parameter `%s'", what, component->getFullPath().c_str(), parname);
+            throw cRuntimeError("%s '%s' has no parameter '%s'", what, component->getFullPath().c_str(), parname);
         else
-            throw cRuntimeError("%s `%s' and its parent have no parameter `%s'", what, component->getFullPath().c_str(), parname);
+            throw cRuntimeError("%s '%s' and its parent have no parameter '%s'", what, component->getFullPath().c_str(), parname);
     }
     return par;
 }

@@ -26,5 +26,5 @@ include a.ini
 %exitcode: 1
 
 %contains: stderr
-<!> Error: Ini file `a.ini' includes itself, directly or indirectly
+<!> Error: Ini file 'a.ini' includes itself, directly or indirectly
 

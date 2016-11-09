@@ -115,9 +115,9 @@ const char *cStringParImpl::stringValue(cComponent *context) const
         throw cRuntimeError(E_PARNOTSET);
 
     if (flags & FL_ISEXPR)
-        throw cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
-                                  "on parameters declared `volatile string' in NED -- use stdstringValue() "
-                                  "or conversion to `std::string' instead.");
+        throw cRuntimeError(this, "stringValue() and conversion to 'const char *' cannot be invoked "
+                                  "on parameters declared 'volatile string' in NED -- use stdstringValue() "
+                                  "or conversion to 'std::string' instead.");
     return val.c_str();
 }
 

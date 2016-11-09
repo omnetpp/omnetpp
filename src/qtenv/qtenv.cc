@@ -1175,7 +1175,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
 
     InspectorFactory *factory = findInspectorFactoryFor(obj, type);
     if (!factory) {
-        confirm(ERROR, opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
+        confirm(ERROR, opp_stringf("Class '%s' has no associated inspectors.", obj->getClassName()).c_str());
         return nullptr;
     }
 
@@ -1190,7 +1190,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
     inspector = factory->createInspector(mainWindow, true);
     if (!inspector) {
         // message: object has no such inspector
-        confirm(ERROR, opp_stringf("Class `%s' has no `%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
+        confirm(ERROR, opp_stringf("Class '%s' has no '%s' inspector.", obj->getClassName(), insptypeNameFromCode(type)).c_str());
         return nullptr;
     }
 
@@ -1481,7 +1481,7 @@ void Qtenv::askParameter(cPar *par, bool unassigned)
         cProperty *prop = props->get("prompt");
         std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
         if (prompt.empty())
-            prompt = std::string("Enter parameter `") + par->getFullPath() + "':";
+            prompt = std::string("Enter parameter '") + par->getFullPath() + "':";
 
         std::string reply;
         std::string title = unassigned ? "Unassigned Parameter" : "Requested to Ask Parameter";
@@ -1574,7 +1574,7 @@ void Qtenv::messageCancelled(cMessage *msg)
 {
     if (msg == runUntil.msg && runUntil.stopOnMsgCancel) {
         if (simulationState == SIM_RUNNING || simulationState == SIM_BUSY)
-            confirm(INFO, opp_stringf("Run-until message `%s' got cancelled.", msg->getName()).c_str());
+            confirm(INFO, opp_stringf("Run-until message '%s' got cancelled.", msg->getName()).c_str());
         runUntil.msg = nullptr;
         runUntil.eventNumber = getSimulation()->getEventNumber();  // stop the simulation using the event number limit
     }

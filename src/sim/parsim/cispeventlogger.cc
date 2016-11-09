@@ -48,7 +48,7 @@ void cISPEventLogger::startRun()
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
     fout = fopen(fname, "wb");
     if (!fout)
-        throw cRuntimeError("cISPEventLogger error: cannot open file `%s' for write", fname);
+        throw cRuntimeError("cISPEventLogger error: cannot open file '%s' for write", fname);
 }
 
 void cISPEventLogger::endRun()

@@ -19,4 +19,4 @@ network Test
 %exitcode: 1
 
 %contains-regex: stderr
-[Cc]annot resolve channel interface `IMissingType'
+[Cc]annot resolve channel interface 'IMissingType'

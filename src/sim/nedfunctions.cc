@@ -435,9 +435,9 @@ DEF(nedf_parentIndex,
 {
     cModule *mod = contextComponent->getParentModule();
     if (!mod)
-        throw cRuntimeError("parentIndex(): `%s' has no parent module", contextComponent->getFullPath().c_str());
+        throw cRuntimeError("parentIndex(): '%s' has no parent module", contextComponent->getFullPath().c_str());
     if (!mod->isVector())
-        throw cRuntimeError("parentIndex(): module `%s' is not a vector", mod->getFullPath().c_str());
+        throw cRuntimeError("parentIndex(): module '%s' is not a vector", mod->getFullPath().c_str());
     return (long)mod->getIndex();
 })
 
@@ -457,7 +457,7 @@ DEF(nedf_ancestorIndex,
     if (!mod)
         throw cRuntimeError("ancestorIndex(): argument is larger than current nesting level");
     if (!mod->isVector())
-        throw cRuntimeError("ancestorIndex(): module `%s' is not a vector", mod->getFullPath().c_str());
+        throw cRuntimeError("ancestorIndex(): module '%s' is not a vector", mod->getFullPath().c_str());
     return (long)mod->getIndex();
 })
 

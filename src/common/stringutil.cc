@@ -112,10 +112,10 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
                 case '\0': d--; s--; break; // string ends in stray backslash
                 case '=':
                 case ';':
-                case ',': throw opp_runtime_error("illegal escape sequence `\\%c' "
+                case ',': throw opp_runtime_error("illegal escape sequence '\\%c' "
                           "(Hint: use double backslashes to quote display string "
                           "special chars: equal sign, comma, semicolon)", *s);
-                default:  throw opp_runtime_error("illegal escape sequence `\\%c'", *s);
+                default:  throw opp_runtime_error("illegal escape sequence '\\%c'", *s);
             }
         }
         else {
@@ -591,7 +591,7 @@ long opp_strtol(const char *s, char **endptr)
     errno = 0;
     long d = strtol(s, endptr, ishex ? 16 : 10);
     if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
-        throw opp_runtime_error("overflow converting `%s' to long", s);
+        throw opp_runtime_error("overflow converting '%s' to long", s);
     return d;
 }
 
@@ -602,7 +602,7 @@ long opp_atol(const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("`%s' is not a valid integer", s);
+        throw opp_runtime_error("'%s' is not a valid integer", s);
     return d;
 }
 
@@ -618,7 +618,7 @@ unsigned long opp_strtoul(const char *s, char **endptr)
     errno = 0;
     unsigned long d = strtoul(s, endptr, ishex ? 16 : 10);
     if (d == ULONG_MAX && errno == ERANGE)
-        throw opp_runtime_error("overflow converting `%s' to unsigned long", s);
+        throw opp_runtime_error("overflow converting '%s' to unsigned long", s);
     return d;
 }
 
@@ -629,7 +629,7 @@ unsigned long opp_atoul(const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("`%s' is not a valid unsigned integer", s);
+        throw opp_runtime_error("'%s' is not a valid unsigned integer", s);
     return d;
 }
 
@@ -638,7 +638,7 @@ double opp_strtod(const char *s, char **endptr)
     setlocale(LC_NUMERIC, "C");
     double d = strtod(s, endptr);
     if (d == -HUGE_VAL || d == HUGE_VAL)
-        throw opp_runtime_error("overflow converting `%s' to double", s);
+        throw opp_runtime_error("overflow converting '%s' to double", s);
     return d;
 }
 
@@ -650,7 +650,7 @@ double opp_atof(const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("`%s' is not a valid double value", s);
+        throw opp_runtime_error("'%s' is not a valid double value", s);
     return d;
 }
 

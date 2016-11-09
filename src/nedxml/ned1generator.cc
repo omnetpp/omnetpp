@@ -789,7 +789,7 @@ void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bo
         bool hasParams = params && params->getFirstChildWithTag(NED_PARAM);
 
         if (!opp_isempty(node->getLikeType())) {
-            errors->addWarning(node, NED2FEATURE "channel `like'");
+            errors->addWarning(node, NED2FEATURE "channel 'like'");
         }
         else if (!opp_isempty(node->getType())) {
             // concrete channel type
@@ -813,10 +813,10 @@ void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bo
         printConnectionGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
 
     if (node->getFirstChildWithTag(NED_LOOP))
-        errors->addWarning(node, NED2FEATURE "per-connection `for'");
+        errors->addWarning(node, NED2FEATURE "per-connection 'for'");
 
     if (node->getNumChildrenWithTag(NED_CONDITION) > 1)
-        errors->addWarning(node, NED2FEATURE "more than one `if' per-connection");
+        errors->addWarning(node, NED2FEATURE "more than one 'if' per-connection");
 
     NEDElement *condition = node->getFirstChildWithTag(NED_CONDITION);
     if (condition)

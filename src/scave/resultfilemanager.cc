@@ -1211,7 +1211,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     if (fileSystemFileName == nullptr)
         fileSystemFileName = fileName;
     if (!isFileReadable(fileSystemFileName))
-        throw opp_runtime_error("cannot open `%s' for read", fileSystemFileName);
+        throw opp_runtime_error("cannot open '%s' for read", fileSystemFileName);
 
     // add to fileList
     fileRef = nullptr;

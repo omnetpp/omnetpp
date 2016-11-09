@@ -56,22 +56,22 @@ void printUsage()
        "    v, vector   filter and process data in vector files\n"
        "    s, scalar   filter and process data in scalar files\n"
        "    l, list     list summary info about input files\n"
-       "    i, info     print list of available functions (to be used with `-a')\n"
+       "    i, info     print list of available functions (to be used with '-a')\n"
        "    x, index    generate index files for vector files\n"
        "Options:\n"
-       " `vector' command:\n"
+       " 'vector' command:\n"
        "    -p <pattern>    the filter expression (see syntax below)\n"
        "    -a <function>   apply the given processing to the selected vectors (see syntax below);\n"
-       "                    the `info' command prints the names of available operations. This option\n"
+       "                    the 'info' command prints the names of available operations. This option\n"
        "                    may occur multiple times.\n"
        "    -O <filename>   output file name\n"
        "    -F <formatname> format of output file: vec (default), splitvec, matlab, octave, csv, splitcsv\n"
        "    -V              print info about progress (verbose)\n"
        //TODO option: print matching vectorIDs and exit
-       " `scalar' command:\n"
+       " 'scalar' command:\n"
        "    -p <pattern>    the filter expression (see syntax below)\n"
        "    -a <function>   apply the given processing to the selected scalars (see syntax below);\n"
-       "                    the `info' command prints the names of available operations. This option\n"
+       "                    the 'info' command prints the names of available operations. This option\n"
        "                    may occur multiple times.\n"
        "    -g <grouping>   specifies how the scalars are grouped. It is a comma separated list of field\n"
        "                    names ('file','run','module','name'). Scalars are grouped by the values of these\n"
@@ -80,7 +80,7 @@ void printUsage()
        "    -O <filename>   output file name\n"
        "    -F <formatname> format of output file: csv (default), matlab, octave\n" //TODO sca files
        "    -V              print info about progress (verbose)\n"
-       " `list' command:\n"
+       " 'list' command:\n"
        //TODO allow filtering by patterns here too?
        //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
        // occurring in the input files
@@ -89,15 +89,15 @@ void printUsage()
        "    -r   print list of unique run Ids\n"
        "    -c   print list of unique configuration Ids (aka run numbers)\n"
        //TODO other attributes
-       " `info' command:\n"
+       " 'info' command:\n"
        "    -b   list filter names only (brief)\n"
        "    -s   list filter names with parameter list (summary)\n"
        "    -v   include descriptions in the output (default)\n"
-       " `index' command:\n"
+       " 'index' command:\n"
        "    -r   rebuild vector file (rearranges records into blocks)\n"
        "    -V   print info about progress (verbose)\n"
        "\n"
-       "Function syntax (for `vector -a'): <name>(<parameterlist>).\n"
+       "Function syntax (for 'vector -a'): <name>(<parameterlist>).\n"
        "Examples: winavg(10), mean()\n"
        "\n"
        // TODO scalar functions
@@ -214,7 +214,7 @@ int vectorCommand(int argc, char **argv)
         else if (!strcmp(opt, "-r") && i != argc-1)  // for testing only
             opt_readerNodeType = argv[++i];
         else {
-            fprintf(stderr, "unknown option `%s'\n", opt);
+            fprintf(stderr, "unknown option '%s'\n", opt);
             return 1;
         }
     }
@@ -413,7 +413,7 @@ static void parseScalarFunction(const string& functionCall,  /*out*/ string& nam
     // check that string ends in right paren
     string::size_type size = functionCall.length();
     if (functionCall[size-1] != ')')
-        throw opp_runtime_error("syntax error in filter spec `%s'", functionCall.c_str());
+        throw opp_runtime_error("syntax error in filter spec '%s'", functionCall.c_str());
 
     // filter name is the part before the left paren
     name.assign(functionCall, 0, paren);
@@ -461,7 +461,7 @@ int scalarCommand(int argc, char **argv)
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else {
-            cerr << "unknown option `" << opt << "'" << endl;
+            cerr << "unknown option '" << opt << "'" << endl;
             return 1;
         }
     }
@@ -591,7 +591,7 @@ int listCommand(int argc, char **argv)
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else {
-            fprintf(stderr, "unknown option `%s'\n", opt);
+            fprintf(stderr, "unknown option '%s'\n", opt);
             return 1;
         }
     }
@@ -650,7 +650,7 @@ int infoCommand(int argc, char **argv)
         else if (!strcmp(opt, "-v"))
             ;  // no-op
         else {
-            fprintf(stderr, "unknown option `%s'\n", opt);
+            fprintf(stderr, "unknown option '%s'\n", opt);
             return 1;
         }
     }
@@ -718,7 +718,7 @@ int indexCommand(int argc, char **argv)
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else {
-            fprintf(stderr, "unknown option `%s'\n", opt);
+            fprintf(stderr, "unknown option '%s'\n", opt);
             return 1;
         }
     }
@@ -771,7 +771,7 @@ int main(int argc, char **argv)
     else if (!strcmp(command, "x") || !strcmp(command, "index"))
         return indexCommand(argc, argv);
     else {
-        fprintf(stderr, "unknown command `%s'\n", command);
+        fprintf(stderr, "unknown command '%s'\n", command);
         return 1;
     }
 }

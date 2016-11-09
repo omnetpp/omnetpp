@@ -34,4 +34,4 @@ void Test::activity()
 %exitcode: 1
 
 %contains-regex: stderr
-Module type `Test' is not a network
+Module type 'Test' is not a network

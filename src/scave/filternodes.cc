@@ -630,8 +630,8 @@ const char *CropNodeType::getDescription() const
 
 void CropNodeType::getAttributes(StringMap& attrs) const
 {
-    attrs["t1"] = "`from' time";
-    attrs["t2"] = "`to' time";
+    attrs["t1"] = "'from' time";
+    attrs["t2"] = "'to' time";
 }
 
 Node *CropNodeType::create(DataflowManager *mgr, StringMap& attrs) const

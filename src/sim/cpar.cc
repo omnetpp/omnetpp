@@ -422,7 +422,7 @@ void cPar::parse(const char *text)
         }
         catch (std::exception& e) {
             delete tmp;
-            throw cRuntimeError("Wrong value `%s' for parameter `%s': %s", text, getFullPath().c_str(), e.what());
+            throw cRuntimeError("Wrong value '%s' for parameter '%s': %s", text, getFullPath().c_str(), e.what());
         }
 
         // successfully parsed: install it

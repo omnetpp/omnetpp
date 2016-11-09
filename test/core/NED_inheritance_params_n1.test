@@ -24,4 +24,4 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-cannot add parameter `p1': already exists
+cannot add parameter 'p1': already exists

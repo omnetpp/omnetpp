@@ -20,4 +20,4 @@ network Test
 %exitcode: 1
 
 %contains-regex: stderr
-Error.* Gate `Test.a.out' is not connected to a submodule \(or internally to another gate of the same module\).
+Error.* Gate 'Test.a.out' is not connected to a submodule \(or internally to another gate of the same module\).

@@ -22,4 +22,4 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-Gate `out' must be a vector gate, as required by interface `IModule'
+Gate 'out' must be a vector gate, as required by interface 'IModule'

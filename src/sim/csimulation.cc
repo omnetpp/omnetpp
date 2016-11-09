@@ -267,7 +267,7 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 #ifdef WITH_NETBUILDER
     return cNEDLoader::getInstance()->loadNedSourceFolder(folder);
 #else
-    throw cRuntimeError("cannot load NED files from `%s': simulation kernel was compiled without "
+    throw cRuntimeError("cannot load NED files from '%s': simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);
 #endif
 }
@@ -277,7 +277,7 @@ void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPacka
 #ifdef WITH_NETBUILDER
     cNEDLoader::getInstance()->loadNedFile(nedFilename, expectedPackage, isXML);
 #else
-    throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
+    throw cRuntimeError("cannot load '%s': simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedFilename);
 #endif
 }
@@ -370,7 +370,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     if (!network)
         throw cRuntimeError(E_NONET);
     if (!network->isNetwork())
-        throw cRuntimeError("setupNetwork: `%s' is not a network", network->getFullName());
+        throw cRuntimeError("setupNetwork: '%s' is not a network", network->getFullName());
 
     // set cNetworkType pointer
     networkType = network;
@@ -848,7 +848,7 @@ void StaticEnv::undisposedObject(cObject *obj)
 {
     if (!cStaticFlag::insideMain()) {
         ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: "
-                 "(%s)`%s' at %p\n", obj->getClassName(), obj->getFullPath().c_str(), obj);
+                 "(%s)'%s' at %p\n", obj->getClassName(), obj->getFullPath().c_str(), obj);
     }
 }
 

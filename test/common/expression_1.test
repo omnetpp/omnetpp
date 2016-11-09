@@ -164,8 +164,8 @@ true && true -> true
 1m-2s -> exception: Cannot convert unit 's' (second) to 'm' (meter)
 1s*2s -> exception: Multiplying two quantities with units is not supported
 1s/2m -> exception: Cannot convert unit 'm' (meter) to 's' (second)
-1s^2 -> exception: Error in expression: `^': argument(s) must be dimensionless
-1s^2s -> exception: Error in expression: `^': argument(s) must be dimensionless
-1^2s -> exception: Error in expression: `^': argument(s) must be dimensionless
+1s^2 -> exception: Error in expression: '^': argument(s) must be dimensionless
+1s^2s -> exception: Error in expression: '^': argument(s) must be dimensionless
+1^2s -> exception: Error in expression: '^': argument(s) must be dimensionless
 .
 

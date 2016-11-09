@@ -185,8 +185,8 @@ void EventlogFileManager::open()
     mkPath(directoryOf(filename.c_str()).c_str());
     FILE *out = fopen(filename.c_str(), "w");
     if (!out)
-        throw cRuntimeError("Cannot open eventlog file `%s' for write", filename.c_str());
-    ::printf("Recording eventlog to file `%s'...\n", filename.c_str());
+        throw cRuntimeError("Cannot open eventlog file '%s' for write", filename.c_str());
+    ::printf("Recording eventlog to file '%s'...\n", filename.c_str());
     feventlog = out;
     clearInternalState();
 }

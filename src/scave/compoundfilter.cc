@@ -193,7 +193,7 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
         !strcmp(name, "out") ? compound->getLastNode() :
         nullptr;
     if (!subnode)
-        throw opp_runtime_error("no such port `%s'", name);
+        throw opp_runtime_error("no such port '%s'", name);
     return subnode->getNodeType()->getPort(subnode, name);
 }
 

@@ -83,7 +83,7 @@ void FileReader::ensureFileOpenInternal()
         file = fopen(fileName.c_str(), "rb");
 
         if (!file)
-            throw opp_runtime_error("Cannot open file `%s'", fileName.c_str());
+            throw opp_runtime_error("Cannot open file '%s'", fileName.c_str());
 
         if (bufferFileOffset == -1)
             seekTo(0);
@@ -96,10 +96,10 @@ int FileReader::readFileEnd(void *dataPointer)
         throw opp_runtime_error("File is not open '%s'", fileName.c_str());
     opp_fseek(file, std::max((file_offset_t)0, (file_offset_t)(fileSize - bufferSize)), SEEK_SET);
     if (ferror(file))
-        throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
+        throw opp_runtime_error("Cannot seek in file '%s'", fileName.c_str());
     int bytesRead = fread(dataPointer, 1, std::min((int64_t)bufferSize, fileSize), file);
     if (ferror(file))
-        throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
+        throw opp_runtime_error("Read error in file '%s'", fileName.c_str());
     return bytesRead;
 }
 
@@ -170,10 +170,10 @@ void FileReader::signalFileChanges(FileChangedState change)
         case UNCHANGED:
             break;
         case OVERWRITTEN:
-            throw FileChangedError(change, "File changed: `%s' has been overwritten", fileName.c_str());
+            throw FileChangedError(change, "File changed: '%s' has been overwritten", fileName.c_str());
         case APPENDED:
             if (!enableIgnoreAppendChanges)
-                throw FileChangedError(change, "File changed: `%s' has been appended", fileName.c_str());
+                throw FileChangedError(change, "File changed: '%s' has been appended", fileName.c_str());
             else
                 break;
     }
@@ -245,11 +245,11 @@ void FileReader::fillBuffer(bool forward)
             throw opp_runtime_error("File is not open '%s'", fileName.c_str());
         opp_fseek(file, fileOffset, SEEK_SET);
         if (ferror(file))
-            throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
+            throw opp_runtime_error("Cannot seek in file '%s'", fileName.c_str());
         dataLength = std::min((int64_t)dataLength, fileSize - fileOffset);
         int bytesRead = fread(dataPointer, 1, dataLength, file);
         if (ferror(file))
-            throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
+            throw opp_runtime_error("Read error in file '%s'", fileName.c_str());
 
 #ifdef TRACE_FILEREADER
         TPRINTF("FileReader::fillBuffer data at file offset: %" LL "d, length: %d", fileOffset, bytesRead);
@@ -293,10 +293,10 @@ bool FileReader::isLineStart(char *s)
                 throw opp_runtime_error("File is not open '%s'", fileName.c_str());
             opp_fseek(file, fileOffset, SEEK_SET);
             if (ferror(file))
-                throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
+                throw opp_runtime_error("Cannot seek in file '%s'", fileName.c_str());
             char previousChar = fgetc(file);  // khmm: EOF
             if (ferror(file))
-                throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
+                throw opp_runtime_error("Read error in file '%s'", fileName.c_str());
             return previousChar == '\n';
         }
     }
@@ -351,7 +351,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
         else if (getDataEndFileOffset() == getFileSize())  // searching reached to the end of the file without CR/LF
             return nullptr;
         else  // line too long
-            throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
+            throw opp_runtime_error("Line too long, should be below %d in file '%s'", maxLineSize, fileName.c_str());
     }
 
 #ifdef TRACE_FILEREADER
@@ -406,7 +406,7 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
         else if (getDataBeginFileOffset() == 0)  // searching reached to the beginning of the file without CR/LF
             return dataBegin;
         else  // line too long
-            throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
+            throw opp_runtime_error("Line too long, should be below %d in file '%s'", maxLineSize, fileName.c_str());
     }
 
 #ifdef TRACE_FILEREADER

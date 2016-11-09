@@ -75,7 +75,7 @@ int NEDResourceCache::loadNedSourceFolder(const char *foldername)
         return doLoadNedSourceFolder(foldername, rootPackageName.c_str());
     }
     catch (std::exception& e) {
-        throw NEDException("Could not load NED sources from `%s': %s", foldername, e.what());
+        throw NEDException("Could not load NED sources from '%s': %s", foldername, e.what());
     }
 }
 
@@ -116,7 +116,7 @@ void NEDResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
     if (expectedPackage != nullptr && declaredPackage != std::string(expectedPackage))
-        throw NEDException("Declared package `%s' does not match expected package `%s' in file %s",
+        throw NEDException("Declared package '%s' does not match expected package '%s' in file %s",
                 declaredPackage.c_str(), expectedPackage, nedfname);
 
     // register it
@@ -200,7 +200,7 @@ void NEDResourceCache::loadNedText(const char *name, const char *nedtext, const 
     if (!name)
         throw NEDException("loadNedText(): name is nullptr");
     if (getFile(name))
-        throw NEDException("loadNedText(): name `%s' already used", name);
+        throw NEDException("loadNedText(): name '%s' already used", name);
 
     doLoadNedFileOrText(name, nedtext, expectedPackage, isXML);
     registerPendingNedTypes();
@@ -274,7 +274,7 @@ void NEDResourceCache::doneLoadingNedFiles()
         for (int i = 0; i < (int)pendingList.size(); i++)
             unresolvedNames += std::string(i == 0 ? "" : ", ") + pendingList[i].qname;
         if (pendingList.size() == 1)
-            throw NEDException(pendingList[0].node, "NED type `%s' could not be fully resolved due to a missing base type or interface", unresolvedNames.c_str());
+            throw NEDException(pendingList[0].node, "NED type '%s' could not be fully resolved due to a missing base type or interface", unresolvedNames.c_str());
         else
             throw NEDException("The following NED types could not be fully resolved due to a missing base type or interface: %s", unresolvedNames.c_str());
     }

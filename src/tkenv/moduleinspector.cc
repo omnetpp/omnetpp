@@ -335,7 +335,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
     }
     else {
         CHK(Tcl_VarEval(interp, "messagebox {Error} "
-                                "{Error: invalid layout `", layout, "' in `p' tag "
+                                "{Error: invalid layout '", layout, "' in 'p' tag "
                                 "of display string \"", ds.str(), "\"} error ok", TCL_NULL));
     }
 }

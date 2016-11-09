@@ -54,7 +54,7 @@ Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recordi
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file '%s'", fname.c_str())
 
 
 cFileOutputVectorManager::cFileOutputVectorManager()
@@ -74,7 +74,7 @@ void cFileOutputVectorManager::openFile()
     mkPath(directoryOf(fname.c_str()).c_str());
     f = fopen(fname.c_str(), "a");
     if (f == nullptr)
-        throw cRuntimeError("Cannot open output vector file `%s'", fname.c_str());
+        throw cRuntimeError("Cannot open output vector file '%s'", fname.c_str());
 }
 
 void cFileOutputVectorManager::closeFile()

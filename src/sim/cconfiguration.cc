@@ -42,7 +42,7 @@ bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fal
     else if (strcmp(s, "no") == 0 || strcmp(s, "false") == 0)
         return false;
     else
-        throw opp_runtime_error("`%s' is not a valid boolean value, use true/false", s);
+        throw opp_runtime_error("'%s' is not a valid boolean value, use true/false", s);
 }
 
 long cConfiguration::parseLong(const char *s, const char *defaultValue, long fallbackValue)

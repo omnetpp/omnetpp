@@ -105,7 +105,7 @@ void cOutVector::setEnum(const char *registeredEnumName)
 {
     cEnum *enumDecl = cEnum::find(registeredEnumName);
     if (!enumDecl)
-        throw cRuntimeError(this, "setEnum(): enum `%s' not found -- is it declared with Register_Enum()?", registeredEnumName);
+        throw cRuntimeError(this, "setEnum(): enum '%s' not found -- is it declared with Register_Enum()?", registeredEnumName);
     setEnum(enumDecl);
 }
 

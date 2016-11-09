@@ -59,7 +59,7 @@ Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buf
 #undef CHECK
 #endif
 
-#define CHECK(fprintf, fname)    if (fprintf<0) throw cRuntimeError("Cannot write output file `%s'", fname.c_str())
+#define CHECK(fprintf, fname)    if (fprintf<0) throw cRuntimeError("Cannot write output file '%s'", fname.c_str())
 
 
 Register_Class(cIndexedFileOutputVectorManager);
@@ -79,7 +79,7 @@ void cIndexedFileOutputVectorManager::openIndexFile()
     mkPath(directoryOf(ifname.c_str()).c_str());
     fi = fopen(ifname.c_str(), "w");
     if (fi == nullptr)
-        throw cRuntimeError("Cannot open index file `%s'", ifname.c_str());
+        throw cRuntimeError("Cannot open index file '%s'", ifname.c_str());
 
     // leave blank space for fingerprint
     fprintf(fi, "%64s\n", "");

@@ -334,7 +334,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         Scenario scenario(itervars, constraint, nestingSpec);
         int numRuns = scenario.getNumRuns();
         if (runNumber < 0 || runNumber >= numRuns)
-            throw cRuntimeError("Run number %d is out of range for configuration `%s': it contains %d run(s)", runNumber, configName, numRuns);
+            throw cRuntimeError("Run number %d is out of range for configuration '%s': it contains %d run(s)", runNumber, configName, numRuns);
 
         scenario.gotoRun(runNumber);
         variables = computeVariables(getActiveConfigName(), getActiveRunNumber(), sectionChain, &scenario, locationToVarName);
@@ -1185,8 +1185,8 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                         continue;
                     if (!e || !e->isPerObject()) {
                         if (suffix == "type-name")
-                            throw cRuntimeError("Configuration option `type-name' has been renamed to `typename', please update key `%s' in the ini file", key);
-                        throw cRuntimeError("Unknown per-object configuration option `%s' in %s", suffix.c_str(), key);
+                            throw cRuntimeError("Configuration option 'type-name' has been renamed to 'typename', please update key '%s' in the ini file", key);
+                        throw cRuntimeError("Unknown per-object configuration option '%s' in %s", suffix.c_str(), key);
                     }
                 }
             }

@@ -65,8 +65,8 @@ simple Test
         double p44 = int(false ## true);  // logical xor
         double p45 = int(false ## false); // logical xor
 
-        double p46 = (true ? 5 : 2);  // the C/C++ ``inline if''
-        double p47 = (false ? 5 : 2); // the C/C++ ``inline if''
+        double p46 = (true ? 5 : 2);  // the C/C++ ''inline if''
+        double p47 = (false ? 5 : 2); // the C/C++ ''inline if''
 
         string p48 = "" + "";      // concatenation
         string p49 = "Hello" + ""; // concatenation

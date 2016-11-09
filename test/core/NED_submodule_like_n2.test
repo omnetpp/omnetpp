@@ -16,4 +16,4 @@ network Test
 %exitcode: 1
 
 %contains-regex: stderr
-`IFoo' is not a module interface
+'IFoo' is not a module interface

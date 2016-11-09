@@ -33,7 +33,7 @@ namespace envir {
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file '%s'", fname.c_str())
 
 
 void RunData::initRun()

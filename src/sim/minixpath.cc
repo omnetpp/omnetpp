@@ -237,7 +237,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
         return nullptr;
     }
     else {
-        throw cRuntimeError("cXMLElement::getElementByPath(): invalid path expression `%s'", pathexpr);
+        throw cRuntimeError("cXMLElement::getElementByPath(): invalid path expression '%s'", pathexpr);
     }
 }
 
@@ -284,7 +284,7 @@ bool MiniXPath::nodeMatchesStepExpr(cXMLElement *node, const char *stepexpr, int
     }
     else
     {
-        throw cRuntimeError("cXMLElement::getElementByPath(): invalid step in expression `%s'", stepexpr);
+        throw cRuntimeError("cXMLElement::getElementByPath(): invalid step in expression '%s'", stepexpr);
     }
 }
 */

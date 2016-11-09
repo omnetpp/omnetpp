@@ -110,11 +110,11 @@ static void addFunction(const char *funcname, int argc)
     cNEDFunction *nf = cNEDFunction::find(funcname);
     if (nf) {
         if (argc < nf->getMinArgs() || (argc > nf->getMaxArgs() && !nf->hasVarArgs()))
-            yyerror(opp_stringf("function `%s' does not accept %d arguments", nf->getSignature(), argc).c_str());
+            yyerror(opp_stringf("function '%s' does not accept %d arguments", nf->getSignature(), argc).c_str());
         (e++)->set(nf,argc);
         return;
     }
-    yyerror(opp_stringf("function `%s()' (with %d args) not found (Define_NED_Function() or Define_NED_Math_Function() missing from C++ code?)", funcname, argc).c_str());
+    yyerror(opp_stringf("function '%s()' (with %d args) not found (Define_NED_Function() or Define_NED_Math_Function() missing from C++ code?)", funcname, argc).c_str());
 }
 
 static double parseQuantity(const char *text, std::string& unit)

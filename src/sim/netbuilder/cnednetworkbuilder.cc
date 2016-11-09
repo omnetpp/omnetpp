@@ -177,7 +177,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             else {
                 cPar& par = component->par(paramName);  // must exist already
                 if (par.isSet())
-                    throw cRuntimeError(component, "Cannot overwrite non-default value of parameter `%s'", paramName);
+                    throw cRuntimeError(component, "Cannot overwrite non-default value of parameter '%s'", paramName);
                 par.setImpl(impl);
             }
             return;
@@ -202,7 +202,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             // parameter must exist already. Un-share it so that we can modify its value
             cPar& par = component->par(paramName);
             if (par.isSet())
-                throw cRuntimeError(component, "Cannot overwrite non-default value of parameter `%s'", paramName);
+                throw cRuntimeError(component, "Cannot overwrite non-default value of parameter '%s'", paramName);
             impl = par.copyIfShared();
         }
 
@@ -223,7 +223,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             // because it would be complicated to implement in the Inifile Editor.
             //
             if (!impl->containsValue())
-                throw cRuntimeError(component, "Cannot apply default value to parameter `%s': it has no default value", paramName);
+                throw cRuntimeError(component, "Cannot apply default value to parameter '%s': it has no default value", paramName);
             impl->setIsSet(true);
         }
         impl->setIsShared(true);
@@ -342,7 +342,7 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             // Note: this branch ("=default" in NED files) is currently not supported,
             // because it would be complicated to implement in the Inifile Editor.
             if (!impl->containsValue())
-                throw cRuntimeError(par.getOwner(), "Cannot apply default value to parameter `%s': it has no default value", par.getName());
+                throw cRuntimeError(par.getOwner(), "Cannot apply default value to parameter '%s': it has no default value", par.getName());
             impl->setIsSet(true);
         }
     }
@@ -512,11 +512,11 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string qname = resolveComponentType(context, modTypeName);
     if (qname.empty())
-        throw cRuntimeError(modp, "Submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "Submodule %s: cannot resolve module type '%s' (not in the loaded NED files?)",
                 submodName, modTypeName);
     cComponentType *componentType = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componentType))
-        throw cRuntimeError(modp, "Submodule %s: `%s' is not a module type",
+        throw cRuntimeError(modp, "Submodule %s: '%s' is not a module type",
                 submodName, qname.c_str());
     return (cModuleType *)componentType;
 }
@@ -530,24 +530,24 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
     cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
-        throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface `%s'",
+        throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface '%s'",
                 submodName, likeType);
     if (interfaceDecl->getTree()->getTagCode() != NED_MODULE_INTERFACE)
-        throw cRuntimeError(modp, "Submodule %s: `%s' is not a module interface",
+        throw cRuntimeError(modp, "Submodule %s: '%s' is not a module interface",
                 submodName, interfaceQName.c_str());
 
     // search for module type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceQName.c_str());
     if (candidates.empty())
-        throw cRuntimeError(modp, "Submodule %s: no module type named `%s' found that implements module interface %s (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "Submodule %s: no module type named '%s' found that implements module interface %s (not in the loaded NED files?)",
                 submodName, modTypeName, interfaceQName.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError(modp, "Submodule %s: more than one module types named `%s' found that implement module interface %s (use fully qualified name to disambiguate)",
+        throw cRuntimeError(modp, "Submodule %s: more than one module types named '%s' found that implement module interface %s (use fully qualified name to disambiguate)",
                 submodName, modTypeName, interfaceQName.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
-        throw cRuntimeError(modp, "Submodule %s: `%s' is not a module type",
+        throw cRuntimeError(modp, "Submodule %s: '%s' is not a module type",
                 submodName, candidates[0].c_str());
     return (cModuleType *)componenttype;
 }
@@ -956,7 +956,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *compoundModule,
         int subgate, bool isPlusPlus)
 {
     if (isPlusPlus && gateIndexExpr)
-        throw cRuntimeError(compoundModule, "Both `++' and gate index expression used in a connection");
+        throw cRuntimeError(compoundModule, "Both '++' and gate index expression used in a connection");
 
     cModule *module = resolveModuleForConnection(compoundModule, moduleName, moduleIndexExpr);
 
@@ -979,7 +979,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *compoundModule,
         if (module == compoundModule) {
             gate = module->getOrCreateFirstUnconnectedGate(gateName2, 0, true, false);  // inside, don't expand
             if (!gate)
-                throw cRuntimeError(module, "%s[] gates are all connected, no gate left for `++' operator", gateName);
+                throw cRuntimeError(module, "%s[] gates are all connected, no gate left for '++' operator", gateName);
         }
         else {
             gate = module->getOrCreateFirstUnconnectedGate(gateName2, 0, false, true);  // outside, expand
@@ -1000,7 +1000,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *compoundModule,
         cGate *& outGate1, cGate *& outGate2)
 {
     if (isPlusPlus && gateIndexExpr)
-        throw cRuntimeError(compoundModule, "Both `++' and gate index expression used in a connection");
+        throw cRuntimeError(compoundModule, "Both '++' and gate index expression used in a connection");
 
     cModule *module = resolveModuleForConnection(compoundModule, moduleName, moduleIndexExpr);
 
@@ -1014,7 +1014,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *compoundModule,
         if (module == compoundModule) {
             module->getOrCreateFirstUnconnectedGatePair(gateName, true, false, outGate1, outGate2);  // inside, don't expand
             if (!outGate1 || !outGate2)
-                throw cRuntimeError(compoundModule, "%s[] gates are all connected, no gate left for `++' operator", gateName);
+                throw cRuntimeError(compoundModule, "%s[] gates are all connected, no gate left for '++' operator", gateName);
         }
         else {
             module->getOrCreateFirstUnconnectedGatePair(gateName, false, true, outGate1, outGate2);  // outside, expand
@@ -1043,9 +1043,9 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *compoundModule,
         cModule *module = _submodule(compoundModule, moduleName, moduleIndex);
         if (!module) {
             if (!moduleIndexExpr)
-                throw cRuntimeError(module, "No submodule `%s' to be connected", moduleName);
+                throw cRuntimeError(module, "No submodule '%s' to be connected", moduleName);
             else
-                throw cRuntimeError(module, "No submodule `%s[%d]' to be connected", moduleName, moduleIndex);
+                throw cRuntimeError(module, "No submodule '%s[%d]' to be connected", moduleName, moduleIndex);
         }
         return module;
     }
@@ -1154,11 +1154,11 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channelTyp
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string qname = resolveComponentType(context, channelTypeName);
     if (qname.empty())
-        throw cRuntimeError(modp, "Cannot resolve channel type `%s' (not in the loaded NED files?)", channelTypeName);
+        throw cRuntimeError(modp, "Cannot resolve channel type '%s' (not in the loaded NED files?)", channelTypeName);
 
     cComponentType *componentType = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cChannelType *>(componentType))
-        throw cRuntimeError(modp, "`%s' is not a channel type", qname.c_str());
+        throw cRuntimeError(modp, "'%s' is not a channel type", qname.c_str());
     return (cChannelType *)componentType;
 }
 
@@ -1171,22 +1171,22 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
     cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
-        throw cRuntimeError(modp, "Cannot resolve channel interface `%s'", likeType);
+        throw cRuntimeError(modp, "Cannot resolve channel interface '%s'", likeType);
     if (interfaceDecl->getTree()->getTagCode() != NED_CHANNEL_INTERFACE)
-        throw cRuntimeError(modp, "`%s' is not a channel interface", interfaceQName.c_str());
+        throw cRuntimeError(modp, "'%s' is not a channel interface", interfaceQName.c_str());
 
     // search for channel type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(channelTypeName, interfaceQName.c_str());
     if (candidates.empty())
-        throw cRuntimeError(modp, "No channel type named `%s' found that implements channel interface %s (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "No channel type named '%s' found that implements channel interface %s (not in the loaded NED files?)",
                 channelTypeName, interfaceQName.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError(modp, "More than one channel types named `%s' found that implement channel interface %s (use fully qualified name to disambiguate)",
+        throw cRuntimeError(modp, "More than one channel types named '%s' found that implement channel interface %s (use fully qualified name to disambiguate)",
                 channelTypeName, interfaceQName.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
-        throw cRuntimeError(modp, "`%s' is not a channel type", candidates[0].c_str());
+        throw cRuntimeError(modp, "'%s' is not a channel type", candidates[0].c_str());
     return (cChannelType *)componenttype;
 }
 

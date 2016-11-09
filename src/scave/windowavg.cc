@@ -62,7 +62,7 @@ void WindowAverageNode::process()
 
 const char *WindowAverageNodeType::getDescription() const
 {
-    return "Calculates batched average: replaces every `winsize' input values\n"
+    return "Calculates batched average: replaces every 'winsize' input values\n"
            "with their mean. Time is the time of the first value in the batch.";
 }
 
@@ -145,7 +145,7 @@ void TimeWindowAverageNode::process()
 
 const char *TimeWindowAverageNodeType::getDescription() const
 {
-    return "Calculates time average: replaces input values in every `windowSize' interval with their mean.\n"
+    return "Calculates time average: replaces input values in every 'windowSize' interval with their mean.\n"
            "tout[k] = k * winSize\n"
            "yout[k] = average of y values in the [(k-1)*winSize, k*winSize) interval";
 }

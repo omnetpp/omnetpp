@@ -41,7 +41,7 @@ cNEDValue ModuleIndex::evaluate(cComponent *context, cNEDValue args[], int numar
     ASSERT(numargs == 0 && context != nullptr);
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module)
-        throw cRuntimeError(context, "cannot evaluate `index' operator in expression: context is not a module");
+        throw cRuntimeError(context, "cannot evaluate 'index' operator in expression: context is not a module");
     return (double)module->getIndex();
 }
 
@@ -110,7 +110,7 @@ cNEDValue SiblingModuleParameterRef::evaluate(cComponent *context, cNEDValue arg
     cModule *siblingModule = compoundModule->getSubmodule(moduleName.c_str(), moduleIndex);
     if (!siblingModule) {
         std::string modName = moduleIndex == -1 ? moduleName : opp_stringf("%s[%d]", moduleName.c_str(), moduleIndex);
-        throw cRuntimeError(context, "cannot find submodule for parameter `%s.%s'", modName.c_str(), paramName.c_str());
+        throw cRuntimeError(context, "cannot find submodule for parameter '%s.%s'", modName.c_str(), paramName.c_str());
     }
     return siblingModule->par(paramName.c_str());
 }
@@ -252,7 +252,7 @@ cNEDValue cDynamicExpression::getSizeofGate(cComponent *context, cNEDValue args[
     const char *gateName = args[0].s.c_str();
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module || !module->hasGate(gateName))
-        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
+        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: '%s'", gateName);
     return (long) module->gateSize(gateName); // returns 1 if it's not a vector
 }
 
@@ -267,7 +267,7 @@ cNEDValue cDynamicExpression::getSizeofParentModuleGate(cComponent *context, cNE
     if (!parentModule)
         throw cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
     if (!parentModule->hasGate(gateName))
-        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
+        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: '%s'", gateName);
     return (long) parentModule->gateSize(gateName); // returns 1 if it's not a vector
 }
 
@@ -285,7 +285,7 @@ cNEDValue cDynamicExpression::getSizeofSiblingModuleGate(cComponent *context, cN
         throw cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
     cModule *siblingModule = parentModule->getSubmodule(siblingModuleName); // returns nullptr if submodule is not a vector
     if (!siblingModule->hasGate(gateName))
-        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
+        throw cRuntimeError(context, "error evaluating sizeof(): no such gate: '%s'", gateName);
     return (long) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
 }
 

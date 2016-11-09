@@ -75,7 +75,7 @@ void cLinkDelayLookahead::startRun()
                     // check we have a delay on this link (it gives us lookahead)
                     simtime_t linkDelay = collectPathDelay(pg);
                     if (linkDelay <= 0.0)
-                        throw cRuntimeError("cLinkDelayLookahead: zero delay on path that ends at proxy gate `%s', no lookahead for parallel simulation",
+                        throw cRuntimeError("cLinkDelayLookahead: zero delay on path that ends at proxy gate '%s', no lookahead for parallel simulation",
                                 pg->getFullPath().c_str());
 
                     // store

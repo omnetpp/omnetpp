@@ -325,7 +325,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
             ff = cNEDMathFunction::find(funcname, argc);
             if (ff == nullptr) {
                 delete[] funcname;
-                throw cRuntimeError(this, "parsimUnpack(): transmitted function `%s' with %d args not registered here",
+                throw cRuntimeError(this, "parsimUnpack(): transmitted function '%s' with %d args not registered here",
                         funcname, argc);
             }
             func.f = ff->getMathFunc();
@@ -885,7 +885,7 @@ bool cMsgPar::setfunction(char *text)
     if (ff == nullptr)
         return false;
 
-    // now `args' points to something like '(10,1.5E-3)', without spaces
+    // now 'args' points to something like '(10,1.5E-3)', without spaces
     s = args;
     double p1, p2, p3, p4;
     switch (ff->getNumArgs()) {

@@ -184,7 +184,7 @@ void cComponent::addPar(cParImpl *value)
     if (parametersFinalized())
         throw cRuntimeError(this, "cannot add parameters at runtime");
     if (findPar(value->getName()) >= 0)
-        throw cRuntimeError(this, "cannot add parameter `%s': already exists", value->getName());
+        throw cRuntimeError(this, "cannot add parameter '%s': already exists", value->getName());
     if (numPars == parArraySize)
         reallocParamv(parArraySize+1);
     parArray[numPars++].init(this, value);
@@ -201,7 +201,7 @@ cPar& cComponent::par(const char *parName)
 {
     int k = findPar(parName);
     if (k < 0)
-        throw cRuntimeError(this, "unknown parameter `%s'", parName);
+        throw cRuntimeError(this, "unknown parameter '%s'", parName);
     return parArray[k];
 }
 
@@ -304,11 +304,11 @@ void cComponent::recordParametersAsScalars()
                 recordScalar(par(i).getName(), par(i).boolValue());
             else if (par(i).isNumeric()) {
                 if (par(i).isVolatile() && (par(i).doubleValue() != par(i).doubleValue() || par(i).doubleValue() != par(i).doubleValue()))  // crude check for random variates
-                    throw cRuntimeError(this, "recording volatile parameter `%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).getName());
+                    throw cRuntimeError(this, "recording volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).getName());
                 recordScalar(par(i).getName(), par(i).doubleValue());
             }
             else
-                throw cRuntimeError(this, "cannot record non-numeric parameter `%s' as an output scalar", par(i).getName());
+                throw cRuntimeError(this, "cannot record non-numeric parameter '%s' as an output scalar", par(i).getName());
         }
     }
 }

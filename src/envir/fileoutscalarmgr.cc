@@ -54,7 +54,7 @@ Register_Class(cFileOutputScalarManager);
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str())
+#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str())
 
 
 cFileOutputScalarManager::cFileOutputScalarManager()
@@ -73,7 +73,7 @@ void cFileOutputScalarManager::openFile()
     mkPath(directoryOf(fname.c_str()).c_str());
     f = fopen(fname.c_str(), "a");
     if (f == nullptr)
-        throw cRuntimeError("Cannot open output scalar file `%s'", fname.c_str());
+        throw cRuntimeError("Cannot open output scalar file '%s'", fname.c_str());
 }
 
 void cFileOutputScalarManager::closeFile()
@@ -246,13 +246,13 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 void cFileOutputScalarManager::writeStatisticField(const char *name, long value)
 {
     if (fprintf(f, "field %s %ld\n", QUOTE(name), value) < 0)
-        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+        throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str());
 }
 
 void cFileOutputScalarManager::writeStatisticField(const char *name, double value)
 {
     if (fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value) < 0)
-        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+        throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str());
 }
 
 const char *cFileOutputScalarManager::getFileName() const

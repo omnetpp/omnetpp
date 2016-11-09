@@ -81,7 +81,7 @@ std::string DisplayStringUtil::upgradeConnectionDisplayString(const char *s)
 void DisplayStringUtil::parseDisplayString(const char *s, DisplayString& ds)
 {
     if (!ds.parse(s))
-        throw opp_runtime_error("parse error in display string `%s'", s);
+        throw opp_runtime_error("parse error in display string '%s'", s);
 }
 
 std::string DisplayStringUtil::toOldBackgroundDisplayString(const char *s)

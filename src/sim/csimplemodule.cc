@@ -74,7 +74,7 @@ void cSimpleModule::activate(void *p)
         // hand exception to cSimulation::transferTo() and switch back
         mod->setFlag(FL_ISTERMINATED, true);
         mod->setFlag(FL_STACKALREADYUNWOUND, true);
-        simulation->exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module `%s'", mod->getFullPath().c_str());
+        simulation->exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module '%s'", mod->getFullPath().c_str());
         simulation->transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
         abort();
@@ -99,7 +99,7 @@ void cSimpleModule::activate(void *p)
         // IMPORTANT: No transferTo() in catch blocks! See Note 2 below.
         exception = new cRuntimeError("%s [NOTE: exception was thrown by pointer. "
                                       "In OMNeT++ 4.0+, exceptions have to be thrown by value. "
-                                      "Please delete `new' from `throw new ...' in the code]",
+                                      "Please delete 'new' from 'throw new ...' in the code]",
                                       e->what());
         delete e;
     }
@@ -107,7 +107,7 @@ void cSimpleModule::activate(void *p)
         // IMPORTANT: No transferTo() in catch blocks! See Note 2 below.
         exception = new cRuntimeError("%s [NOTE: exception was thrown with pointer. "
                                       "In OMNeT++ 4.0+, exceptions have to be thrown by value. "
-                                      "Please delete `new' from `throw new ...' in the code]",
+                                      "Please delete 'new' from 'throw new ...' in the code]",
                                       e->what());
         delete e;
     }
@@ -181,7 +181,7 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stackSize)
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stackSize+getEnvir()->getExtraStackForEnvir()))
-           throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
+           throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module '%s' -- "
                                "see Manual for hints on how to increase the number of coroutines that can be created, "
                                "or rewrite modules to use handleMessage() instead of activity()",
                                stackSize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
@@ -204,7 +204,7 @@ cSimpleModule::cSimpleModule(unsigned stackSize)
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stackSize+getEnvir()->getExtraStackForEnvir()))
-           throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
+           throw cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module '%s' -- "
                                "see Manual for hints on how to increase the number of coroutines that can be created, "
                                "or rewrite modules to use handleMessage() instead of activity()",
                                stackSize, getEnvir()->getExtraStackForEnvir(), getFullPath().c_str());
@@ -287,7 +287,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
     // contains a call to scheduleStart()) can be used for both.
     if (usesActivity()) {
         if (timeoutMessage != nullptr)
-            throw cRuntimeError("scheduleStart(): module `%s' already started", getFullPath().c_str());
+            throw cRuntimeError("scheduleStart(): module '%s' already started", getFullPath().c_str());
 
         Enter_Method_Silent("scheduleStart()");
 
@@ -348,11 +348,11 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
     if (outGate == nullptr)
         throw cRuntimeError("send()/sendDelayed(): gate pointer is nullptr");
     if (outGate->getType() == cGate::INPUT)
-        throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')", outGate->getFullName());
+        throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate ('%s')", outGate->getFullName());
     if (!outGate->getNextGate())  // NOTE: without this error check, msg would become self-message
-        throw cRuntimeError("send()/sendDelayed(): gate `%s' not connected", outGate->getFullName());
+        throw cRuntimeError("send()/sendDelayed(): gate '%s' not connected", outGate->getFullName());
     if (outGate->getPreviousGate())
-        throw cRuntimeError("send()/sendDelayed(): gate `%s' is not the start of a connection path (path starts at gate %s)",
+        throw cRuntimeError("send()/sendDelayed(): gate '%s' is not the start of a connection path (path starts at gate %s)",
                 outGate->getFullName(), outGate->getPathStartGate()->getFullPath().c_str());
     if (msg == nullptr)
         throw cRuntimeError("send()/sendDelayed(): message pointer is nullptr");
@@ -447,7 +447,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
         throw cRuntimeError("sendDirect(): destination gate pointer is nullptr");
     if (toGate->getPreviousGate())
         throw cRuntimeError("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
-                            " (\"from\" side of dest. gate `%s' should NOT be connected)", toGate->getFullPath().c_str());
+                            " (\"from\" side of dest. gate '%s' should NOT be connected)", toGate->getFullPath().c_str());
     if (propagationDelay < SIMTIME_ZERO || duration < SIMTIME_ZERO)
         throw cRuntimeError("sendDirect(): the propagation time and duration parameters cannot be negative");
     if (msg == nullptr)
@@ -575,7 +575,7 @@ void cSimpleModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
     if (isTerminated())
         throw cRuntimeError(E_MODFIN, getFullPath().c_str());
     if (t < simTime())
-        throw cRuntimeError("Causality violation: message `%s' arrival time %s at module `%s' "
+        throw cRuntimeError("Causality violation: message '%s' arrival time %s at module '%s' "
                             "is earlier than current simulation time",
                             msg->getName(), SIMTIME_STR(t), getFullPath().c_str());
     msg->setArrival(getId(), ongate->getId());

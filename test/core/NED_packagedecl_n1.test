@@ -12,6 +12,6 @@ package foo;
 %exitcode: 1
 
 %contains-regex: stderr
-Declared package `foo' does not match expected package `'
+Declared package 'foo' does not match expected package ''
 
 

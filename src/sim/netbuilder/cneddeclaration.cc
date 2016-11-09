@@ -111,7 +111,7 @@ cProperties *cNEDDeclaration::getProperties() const
 {
     cProperties *props = doProperties();
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties", getFullName());
+        throw cRuntimeError("Internal error in NED type '%s': no properties", getFullName());
     return props;
 }
 
@@ -134,7 +134,7 @@ cProperties *cNEDDeclaration::getParamProperties(const char *paramName) const
 {
     cProperties *props = doParamProperties(paramName);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for parameter %s", getFullName(), paramName);
+        throw cRuntimeError("Internal error in NED type '%s': no properties for parameter %s", getFullName(), paramName);
     return props;
 }
 
@@ -162,7 +162,7 @@ cProperties *cNEDDeclaration::getGateProperties(const char *gateName) const
 {
     cProperties *props = doGateProperties(gateName);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for gate %s", getFullName(), gateName);
+        throw cRuntimeError("Internal error in NED type '%s': no properties for gate %s", getFullName(), gateName);
     return props;
 }
 
@@ -190,7 +190,7 @@ cProperties *cNEDDeclaration::getSubmoduleProperties(const char *submoduleName, 
 {
     cProperties *props = doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for submodule %s, type %s", getFullName(), submoduleName, submoduleType);
+        throw cRuntimeError("Internal error in NED type '%s': no properties for submodule %s, type %s", getFullName(), submoduleName, submoduleType);
     return props;
 }
 
@@ -222,7 +222,7 @@ cProperties *cNEDDeclaration::getConnectionProperties(int connectionId, const ch
 {
     cProperties *props = doConnectionProperties(connectionId, channelType);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for connection with id=%d type=%s", getFullName(), connectionId, channelType);
+        throw cRuntimeError("Internal error in NED type '%s': no properties for connection with id=%d type=%s", getFullName(), connectionId, channelType);
     return props;
 }
 

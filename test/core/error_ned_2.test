@@ -16,7 +16,7 @@ network Test {
 %exitcode: 1
 
 %contains-regex: stderr
-No submodule `node\[1000\]' to be connected.*
+No submodule 'node\[1000\]' to be connected.*
 
 %contains: stdout
 End.

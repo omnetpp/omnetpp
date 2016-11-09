@@ -20,4 +20,4 @@ cmdenv-express-mode = false
 %exitcode: 1
 
 %contains-regex: stderr
-Network `TestNet' not found
+Network 'TestNet' not found

@@ -1426,7 +1426,7 @@ opt_subgate
                   else if (!strcmp(s,"o"))
                       ps.subgate = NED_SUBGATE_O;
                   else
-                       np->getErrors()->addError(currentLocation(), "invalid subgate spec `%s', must be `i' or `o'", toString(@2));
+                       np->getErrors()->addError(currentLocation(), "invalid subgate spec '%s', must be 'i' or 'o'", toString(@2));
                 }
         |
                 { ps.subgate = NED_SUBGATE_NONE; }

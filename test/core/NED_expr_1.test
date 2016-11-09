@@ -65,8 +65,8 @@ simple Test
         volatile double p44 = int(false ## true);  // logical xor
         volatile double p45 = int(false ## false); // logical xor
 
-        volatile double p46 = (true ? 5 : 2);  // the C/C++ ``inline if''
-        volatile double p47 = (false ? 5 : 2); // the C/C++ ``inline if''
+        volatile double p46 = (true ? 5 : 2);  // the C/C++ ''inline if''
+        volatile double p47 = (false ? 5 : 2); // the C/C++ ''inline if''
 
         volatile string p48 = "" + "";      // concatenation
         volatile string p49 = "Hello" + ""; // concatenation

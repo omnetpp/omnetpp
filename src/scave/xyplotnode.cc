@@ -128,7 +128,7 @@ Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
         return node1->getPortY(atoi(portname+1));
     else if (!strncmp(portname, "out", 3))
         return node1->getPortOut(atoi(portname+3));
-    throw opp_runtime_error("no such port `%s'", portname);
+    throw opp_runtime_error("no such port '%s'", portname);
 }
 
 }  // namespace scave

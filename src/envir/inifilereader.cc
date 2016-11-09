@@ -115,7 +115,7 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
     std::string tmpfname = tidyFilename(toAbsolutePath(filename).c_str(), true);
     std::string tmpdir = directoryOf(tmpfname.c_str());
     if (find(includedFiles.begin(), includedFiles.end(), tmpfname) != includedFiles.end())
-        throw cRuntimeError("Ini file `%s' includes itself, directly or indirectly", filename);
+        throw cRuntimeError("Ini file '%s' includes itself, directly or indirectly", filename);
     filenames.insert(tmpfname);
     if (basedirs.find(tmpdir) == basedirs.end())
         basedirs.insert(tmpdir);
@@ -127,7 +127,7 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
     // open and read this file
     std::ifstream in(filename, std::ios::in);
     if (!in.is_open())
-        throw cRuntimeError("Cannot open ini file `%s'", filename);
+        throw cRuntimeError("Cannot open ini file '%s'", filename);
 
     int lineNumber = 0;
     std::set<std::string> sectionsInFile;  // we'll check for uniqueness
@@ -157,14 +157,14 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
         if (!strncmp(line, "#% old-wildcards", 16)) {
             // in old ini files, "*" matched dots as well, like "**" does now;
             // we don't support this backward compatibility feature any longer
-            throw cRuntimeError("Old-wildcards mode (#%% old-wildcards syntax) no longer supported, `%s' line %d", filename, lineNumber);
+            throw cRuntimeError("Old-wildcards mode (#%% old-wildcards syntax) no longer supported, '%s' line %d", filename, lineNumber);
         }
         else if (!*line || *line == '#') {
             // blank or comment line, ignore
         }
         else if (*line == ';') {
             // obsolete comment line
-            throw cRuntimeError("Use hash mark instead of semicolon to start comments, `%s' line %d", filename, lineNumber);
+            throw cRuntimeError("Use hash mark instead of semicolon to start comments, '%s' line %d", filename, lineNumber);
         }
         else if (*line == 'i' && strncmp(line, "include", 7) == 0 && opp_isspace(line[7])) {
             // include directive
@@ -185,14 +185,14 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
             // section heading
             const char *endPos = findEndContent(line, filename, lineNumber);
             if (*(endPos-1) != ']')
-                throw cRuntimeError("Syntax error in section heading, `%s' line %d", filename, lineNumber);
+                throw cRuntimeError("Syntax error in section heading, '%s' line %d", filename, lineNumber);
             std::string sectionName = trim(line+1, endPos-1);
             if (sectionName.empty())
-                throw cRuntimeError("Section name cannot be empty, `%s' line %d", filename, lineNumber);
+                throw cRuntimeError("Section name cannot be empty, '%s' line %d", filename, lineNumber);
 
             // section name must be unique within file (to reduce risk of copy/paste errors)
             if (sectionsInFile.find(sectionName) != sectionsInFile.end())
-                throw cRuntimeError("Section name must be unique within file, `%s' line %d", filename, lineNumber);
+                throw cRuntimeError("Section name must be unique within file, '%s' line %d", filename, lineNumber);
             sectionsInFile.insert(sectionName);
 
             // add section of not yet seen (in another file)
@@ -205,18 +205,18 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
             const char *endPos = findEndContent(line, filename, lineNumber);
             const char *equalSignPos = strchr(line, '=');
             if (equalSignPos == nullptr || equalSignPos > endPos)
-                throw cRuntimeError("Line must be in the form key=value, `%s' line %d", filename, lineNumber);
+                throw cRuntimeError("Line must be in the form key=value, '%s' line %d", filename, lineNumber);
             std::string key = trim(line, equalSignPos);
             std::string value = trim(equalSignPos+1, endPos);
             if (key.empty())
-                throw cRuntimeError("Line must be in the form key=value, `%s' line %d", filename, lineNumber);
+                throw cRuntimeError("Line must be in the form key=value, '%s' line %d", filename, lineNumber);
 
             sections[currentSectionIndex].entries.push_back(KeyValue1(basedirRef, filenameRef, lineNumber, key.c_str(), value.c_str()));
         }
     }
 
     if (in.bad())
-        throw cRuntimeError("Cannot read ini file `%s'", filename);
+        throw cRuntimeError("Cannot read ini file '%s'", filename);
 
     in.close();
 }
@@ -240,7 +240,7 @@ const char *InifileReader::findEndContent(const char *line, const char *filename
                     s++;
                 }
                 if (!*s)
-                    throw cRuntimeError("Unterminated string constant, `%s' line %d", filename, lineNumber);
+                    throw cRuntimeError("Unterminated string constant, '%s' line %d", filename, lineNumber);
                 s++;
                 break;
 

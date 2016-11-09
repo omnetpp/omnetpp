@@ -20,4 +20,4 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-Module type has no parameter `p1', required by interface `IModule'
+Module type has no parameter 'p1', required by interface 'IModule'

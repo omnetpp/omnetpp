@@ -163,7 +163,7 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
     const char *fmt_comment = strstr(fmt, "#=");
     const char *line_comment = strstr(line, "#=");
     if (fmt_comment && line_comment && strcmp(fmt_comment, line_comment) != 0)
-        throw cRuntimeError(this, "bad file format in loadFromFile(): expected `%s' and got `%s'", fmt, line);
+        throw cRuntimeError(this, "bad file format in loadFromFile(): expected '%s' and got '%s'", fmt, line);
 
     // actual read
     va_list va;

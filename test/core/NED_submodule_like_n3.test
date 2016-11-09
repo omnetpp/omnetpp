@@ -16,4 +16,4 @@ network Test
 %exitcode: 1
 
 %contains-regex: stderr
-no module type named `foo'
+no module type named 'foo'

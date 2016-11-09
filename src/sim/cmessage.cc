@@ -310,9 +310,9 @@ cMsgPar& cMessage::par(const char *name)
     cArray& parlist = getParList();
     cObject *p = parlist.get(name);
     if (!p)
-        throw cRuntimeError(this, "par(const char *): has no parameter called `%s'", name);
+        throw cRuntimeError(this, "par(const char *): has no parameter called '%s'", name);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this, "par(const char *): parameter `%s' is of type %s, not cMsgPar", name, p->getClassName());
+        throw cRuntimeError(this, "par(const char *): parameter '%s' is of type %s, not cMsgPar", name, p->getClassName());
     return *(cMsgPar *)p;
 }
 

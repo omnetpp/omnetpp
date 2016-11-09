@@ -27,7 +27,7 @@ Port *SingleSourceNodeType::getPort(Node *node, const char *name) const
     SingleSourceNode *node1 = dynamic_cast<SingleSourceNode *>(node);
     if (!strcmp(name, "out"))
         return &(node1->out);
-    throw opp_runtime_error("no such port `%s'", name);
+    throw opp_runtime_error("no such port '%s'", name);
 }
 
 Port *SingleSinkNodeType::getPort(Node *node, const char *name) const
@@ -35,7 +35,7 @@ Port *SingleSinkNodeType::getPort(Node *node, const char *name) const
     SingleSinkNode *node1 = dynamic_cast<SingleSinkNode *>(node);
     if (!strcmp(name, "in"))
         return &(node1->in);
-    throw opp_runtime_error("no such port `%s'", name);
+    throw opp_runtime_error("no such port '%s'", name);
 }
 
 bool FilterNode::isFinished() const
@@ -50,7 +50,7 @@ Port *FilterNodeType::getPort(Node *node, const char *name) const
         return &(node1->in);
     else if (!strcmp(name, "out"))
         return &(node1->out);
-    throw opp_runtime_error("no such port `%s'", name);
+    throw opp_runtime_error("no such port '%s'", name);
 }
 
 }  // namespace scave

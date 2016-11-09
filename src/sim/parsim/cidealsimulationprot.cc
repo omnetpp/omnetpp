@@ -66,7 +66,7 @@ void cIdealSimulationProtocol::startRun()
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
     fin = fopen(fname, "rb");
     if (!fin)
-        throw cRuntimeError("cIdealSimulationProtocol error: cannot open file `%s' for read", fname);
+        throw cRuntimeError("cIdealSimulationProtocol error: cannot open file '%s' for read", fname);
 
     readNextRecordedEvent();
 }
