@@ -224,7 +224,7 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
     return true;
 }
 
-void NEDResourceCache::collectNedTypesFrom(NEDElement *node, const std::string& namespacePrefix, bool areInnerTypes)
+void NEDResourceCache::collectNedTypesFrom(NEDElement *node, const std::string& packagePrefix, bool areInnerTypes)
 {
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         int tag = child->getTagCode();
@@ -232,14 +232,10 @@ void NEDResourceCache::collectNedTypesFrom(NEDElement *node, const std::string& 
             tag == NED_COMPOUND_MODULE || tag == NED_MODULE_INTERFACE ||
             tag == NED_ENUM || tag == NED_STRUCT || tag == NED_CLASS || tag == NED_MESSAGE)
         {
-            std::string qname = namespacePrefix + child->getAttribute("name");
-            if (lookup(qname.c_str()))
-                throw NEDException(child, "Redeclaration of %s %s", child->getTagName(), qname.c_str());  // XXX maybe just NEDError?
-
+            std::string qname = packagePrefix + child->getAttribute("name");
             collectNedType(qname.c_str(), areInnerTypes, child);
 
-            NEDElement *types = child->getFirstChildWithTag(NED_TYPES);
-            if (types)
+            if (NEDElement *types = child->getFirstChildWithTag(NED_TYPES))
                 collectNedTypesFrom(types, qname+".", true);
         }
     }
@@ -292,6 +288,9 @@ void NEDResourceCache::registerPendingNedTypes()
         for (int i = 0; i < (int)pendingList.size(); i++) {
             PendingNedType type = pendingList[i];
             if (areDependenciesResolved(type.qname.c_str(), type.node)) {
+                if (lookup(type.qname.c_str()))
+                    throw NEDException(type.node, "Redeclaration of %s %s", type.node->getTagName(), type.qname.c_str());
+
                 registerNedType(type.qname.c_str(), type.isInnerType, type.node);
                 pendingList.erase(pendingList.begin() + i--);
                 again = true;

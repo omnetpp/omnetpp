@@ -1,0 +1,15 @@
+%description:
+Check that inner type names must be unique.
+
+%file: test.ned
+
+simple Foo {}
+channel Foo {}
+
+network TestNetwork {}
+
+%exitcode: 1
+
+%contains: stderr
+Redeclaration of channel Foo
+

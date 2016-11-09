@@ -113,7 +113,7 @@ class NEDXML_API NEDResourceCache
     virtual NEDElement *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
     virtual std::string determineRootPackageName(const char *nedSourceFolderName);
     virtual std::string getNedSourceFolderForFolder(const char *folder) const;
-    virtual void collectNedTypesFrom(NEDElement *node, const std::string& namespacePrefix, bool areInnerTypes);
+    virtual void collectNedTypesFrom(NEDElement *node, const std::string& packagePrefix, bool areInnerTypes);
     virtual void collectNedType(const char *qname, bool isInnerType, NEDElement *node);
     virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
     virtual void registerPendingNedTypes();
