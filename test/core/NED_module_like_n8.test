@@ -22,4 +22,4 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-size of gate vector `out' must be left unspecified, as required by interface `IModule'
+Size of gate vector `out' must be left unspecified, as required by interface `IModule'

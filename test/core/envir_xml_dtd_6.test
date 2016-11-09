@@ -30,4 +30,5 @@ EV << node->getXML();
 %exitcode: 1
 
 %contains-regex: stderr
-Validation error:.*extraAttr
+Cannot load 'test.xml': No declaration for attribute extraAttr of element bar
+

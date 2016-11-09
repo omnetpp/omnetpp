@@ -20,4 +20,4 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-module type has no gate `out', required by interface `IModule'
+Module type has no gate `out', required by interface `IModule'

@@ -197,8 +197,7 @@ static double gamma_MarsagliaTransf(cRNG *rng, double alpha)
 double gamma_d(cRNG *rng, double alpha, double theta)
 {
     if (alpha <= 0 || theta <= 0)
-        throw cRuntimeError("gamma(): alpha and theta params must be positive "
-                            "(alpha=%g, theta=%g)", alpha, theta);
+        throw cRuntimeError("gamma(): Wrong parameters alpha=%g, theta=%g: Both must be positive", alpha, theta);
 
     if (fabs(alpha - 1.0) <= DBL_EPSILON) {
         return exponential(rng, theta);
@@ -216,8 +215,7 @@ double gamma_d(cRNG *rng, double alpha, double theta)
 double beta(cRNG *rng, double alpha1, double alpha2)
 {
     if (alpha1 <= 0 || alpha2 <= 0)
-        throw cRuntimeError("beta(): alpha1 and alpha2 parameters must be positive "
-                            "(alpha1=%g, alpha2=%g)", alpha1, alpha2);
+        throw cRuntimeError("beta(): Wrong parameters alpha1=%g, alpha2=%g: Both must be positive", alpha1, alpha2);
 
     double Y1 = gamma_d(rng, alpha1, 1.0);
     double Y2 = gamma_d(rng, alpha2, 1.0);
@@ -252,7 +250,7 @@ double student_t(cRNG *rng, unsigned int i)
 double cauchy(cRNG *rng, double a, double b)
 {
     if (b <= 0)
-        throw cRuntimeError("cauchy(): parameters must be b>0 (a=%g, b=%g)", a, b);
+        throw cRuntimeError("cauchy(): Wrong parameters a=%g, b=%g: b>0 expected", a, b);
 
     return a + b * tan(M_PI * rng->doubleRand());
 }
@@ -260,7 +258,7 @@ double cauchy(cRNG *rng, double a, double b)
 double triang(cRNG *rng, double a, double b, double c)
 {
     if (b < a || c < b || a == c)
-        throw cRuntimeError("triang(): parameters must be a<=b<=c, a<c (a=%g, b=%g, c=%g)", a, b, c);
+        throw cRuntimeError("triang(): Wrong parameters a=%g, b=%g, c=%g: a<=b<=c, a<c expected", a, b, c);
 
     double U, beta, T;
 
@@ -280,7 +278,7 @@ double triang(cRNG *rng, double a, double b, double c)
 double weibull(cRNG *rng, double a, double b)
 {
     if (a <= 0 || b <= 0)
-        throw cRuntimeError("weibull(): a,b parameters must be positive (a=%g, b=%g)", a, b);
+        throw cRuntimeError("weibull(): Wrong parameters a=%g, b=%g: Both must be positive", a, b);
 
     return a * pow(-log(1.0 - rng->doubleRand()), 1.0 / b);
 }
@@ -288,7 +286,7 @@ double weibull(cRNG *rng, double a, double b)
 double pareto_shifted(cRNG *rng, double a, double b, double c)
 {
     if (a == 0)
-        throw cRuntimeError("pareto_shifted(): parameter a cannot be zero)");
+        throw cRuntimeError("pareto_shifted(): Wrong parameter a=0: Cannot be zero");
 
     double u_pow = pow(1.0 - rng->doubleRand(), 1.0 / a);
     return b / u_pow - c;
@@ -337,7 +335,7 @@ int binomial(cRNG *rng, int n, double p)
 int geometric(cRNG *rng, double p)
 {
     if (p < 0 || p >= 1)
-        throw cRuntimeError("geometric(): parameter p=%g out of range [0,1)", p);
+        throw cRuntimeError("geometric(): Wrong parameter p=%g: Out of range [0,1)", p);
 
     double a = 1.0 / (log(1.0 - p));
     return (int)floor(a * log(1.0 - rng->doubleRand()));
@@ -358,8 +356,7 @@ int negbinomial(cRNG *rng, int n, double p)
 int hypergeometric(cRNG *rng, int a, int b, int n)
 {
     if (a<0 || b<0 || n>a+b)
-        throw cRuntimeError("hypergeometric(): params must be a>=0, b>=0, n=<a+b "
-                            "(a=%d, b=%d, n=%d)", a,b,n);
+        throw cRuntimeError("hypergeometric(): Wrong parameters a=%d, b=%d, n=%d: a>=0, b>=0, n=<a+b expected", a,b,n);
 
     double U = rng->doubleRand();
     double alpha = _factorial(b) / (double) _factorial(a + b - n);

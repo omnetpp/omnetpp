@@ -22,4 +22,4 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-type of gate `out' must be output, as required by interface `IModule'
+Type of gate `out' must be output, as required by interface `IModule'

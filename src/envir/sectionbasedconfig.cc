@@ -758,7 +758,7 @@ std::vector<int> SectionBasedConfiguration::computeSectionChain(int sectionId) c
     if (mergeSectionChains(chainsToBeMerged, result))
         return result;
     else
-        throw cRuntimeError("Detected section fallback chain inconsistency at: [%s]", ini->getSectionName(sectionId));  // TODO more details?
+        throw cRuntimeError("Detected section fallback chain inconsistency at [%s]", ini->getSectionName(sectionId));  // TODO more details?
 }
 
 static int selectNext(const SectionChainList& remainingInputs);
@@ -852,7 +852,7 @@ static int selectNext(const SectionChainList& sectionChains)
     while (true)
     {
         if (std::find(sectionChain.begin(), sectionChain.end(), sectionId) != sectionChain.end())
-            throw cRuntimeError("Cycle detected in section fallback chain at: [%s]", ini->getSectionName(sectionId));
+            throw cRuntimeError("Cycle detected in section fallback chain at [%s]", ini->getSectionName(sectionId));
         sectionChain.push_back(sectionId);
         int entryId = internalFindEntry(sectionId, CFGID_EXTENDS->getName());
         std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
@@ -1196,7 +1196,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
     // check circularity in inheritance graph
     int sectionId = findCycle(graph);
     if (sectionId != -1)
-        throw cRuntimeError("Cycle detected in section fallback chain at: [%s]", ini->getSectionName(sectionId));
+        throw cRuntimeError("Cycle detected in section fallback chain at [%s]", ini->getSectionName(sectionId));
 
     // check for inconsistent hierarchy
     for (int i = 0; i < ini->getNumSections(); i++)

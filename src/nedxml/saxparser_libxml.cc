@@ -227,7 +227,7 @@ bool SAXParser::doParse(const char *filename, const char *content)
         vctxt->warning = (xmlValidityWarningFunc)sprintf;
 
         if (!xmlValidateDocument(vctxt, doc)) {
-            sprintf(errortext, "Validation error: %s", std::string(errortext).c_str());
+            strcpy(errortext, opp_trim(errortext).c_str());
             xmlFreeValidCtxt(vctxt);
             xmlFreeParserCtxt(ctxt);
             xmlFreeDoc(doc);
@@ -406,7 +406,7 @@ bool SAXParser::parse(const char *filename)
     if (!ctxt->valid) {
         ok = false;
         sprintf(errortext, "validation error %d at line %d",
-                ctxt->errNo,  // TODO something better
+                ctxt->errNo,
                 ctxt->input->line);
     }
 

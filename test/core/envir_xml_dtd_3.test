@@ -18,4 +18,5 @@ EV << node->getXML();
 %exitcode: 1
 
 %contains: stderr
-Validation error
+Cannot load 'test.xml': Could not load the external subset "./no-such-file.dtd"
+

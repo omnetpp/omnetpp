@@ -39,21 +39,20 @@ TEST_ERROR(hypergeometric(2,3,-1));
 */
 
 %contains: stdout
-gamma_d(0,1): gamma(): alpha and theta params must be positive (alpha=0, theta=1)
-gamma_d(1,0): gamma(): alpha and theta params must be positive (alpha=1, theta=0)
-gamma_d(-1,-1): gamma(): alpha and theta params must be positive (alpha=-1, theta=-1)
-beta(0,1): beta(): alpha1 and alpha2 parameters must be positive (alpha1=0, alpha2=1)
-beta(1,0): beta(): alpha1 and alpha2 parameters must be positive (alpha1=1, alpha2=0)
-beta(-1,-1): beta(): alpha1 and alpha2 parameters must be positive (alpha1=-1, alpha2=-1)
-cauchy(-1,-1): cauchy(): parameters must be b>0 (a=-1, b=-1)
-cauchy(-1,0): cauchy(): parameters must be b>0 (a=-1, b=0)
+gamma_d(0,1): gamma(): Wrong parameters alpha=0, theta=1: Both must be positive
+gamma_d(1,0): gamma(): Wrong parameters alpha=1, theta=0: Both must be positive
+gamma_d(-1,-1): gamma(): Wrong parameters alpha=-1, theta=-1: Both must be positive
+beta(0,1): beta(): Wrong parameters alpha1=0, alpha2=1: Both must be positive
+beta(1,0): beta(): Wrong parameters alpha1=1, alpha2=0: Both must be positive
+beta(-1,-1): beta(): Wrong parameters alpha1=-1, alpha2=-1: Both must be positive
+cauchy(-1,-1): cauchy(): Wrong parameters a=-1, b=-1: b>0 expected
+cauchy(-1,0): cauchy(): Wrong parameters a=-1, b=0: b>0 expected
 cauchy(-1,1): no error
 cauchy(1,1): no error
-triang(0,0,0): triang(): parameters must be a<=b<=c, a<c (a=0, b=0, c=0)
+triang(0,0,0): triang(): Wrong parameters a=0, b=0, c=0: a<=b<=c, a<c expected
 triang(0,0,1): no error
 triang(0,1,1): no error
 triang(0,1,2): no error
 weibull(1,1): no error
-weibull(0,1): weibull(): a,b parameters must be positive (a=0, b=1)
-weibull(1,0): weibull(): a,b parameters must be positive (a=1, b=0)
-
+weibull(0,1): weibull(): Wrong parameters a=0, b=1: Both must be positive
+weibull(1,0): weibull(): Wrong parameters a=1, b=0: Both must be positive

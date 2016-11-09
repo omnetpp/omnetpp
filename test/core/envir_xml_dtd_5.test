@@ -31,4 +31,5 @@ EV << node->getXML();
 %exitcode: 1
 
 %contains-regex: stderr
-Validation error:.*(extraElem|foo)
+Cannot load 'test.xml': No declaration for element extraElem
+

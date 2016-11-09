@@ -30,4 +30,5 @@ EV << node->getXML();
 %exitcode: 1
 
 %contains-regex: stderr
-Validation error:.*reqAttr
+Cannot load 'test.xml': Element bar does not carry attribute reqAttr
+

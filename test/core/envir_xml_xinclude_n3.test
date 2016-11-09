@@ -24,4 +24,5 @@ EV << node->getXML();
 %exitcode: 1
 
 %contains: stderr
-Validation error: No declaration for element bar_non
+Cannot load 'foo.xml': No declaration for element bar_non
+

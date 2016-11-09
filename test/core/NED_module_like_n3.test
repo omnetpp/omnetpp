@@ -22,4 +22,4 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-parameter `p1' must not be volatile, as required by interface `IModule'
+Parameter `p1' must not be volatile, as required by interface `IModule'
