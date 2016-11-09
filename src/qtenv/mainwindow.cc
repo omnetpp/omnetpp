@@ -73,14 +73,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     stopDialog = new StopDialog(this);
     fileEditor = new FileEditor(this);
 
-    slider = new QSlider();
-    slider->setMinimum(playbackSpeedToSliderValue(0.1));
-    slider->setMaximum(playbackSpeedToSliderValue(10));
-    slider->setValue(playbackSpeedToSliderValue(env->opt->playbackSpeed));
-    slider->setOrientation(Qt::Orientation::Horizontal);
-    slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
-
     // This will hold the toolbar itself, the animation speed
     // slider (the slider can't be allowed to collapse, since it
     // can't be inserted into a menu), then a stretch, and
@@ -98,10 +90,16 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     // too narrow instead of the more important labels on the toolbar.
     toolBarLayout->addWidget(ui->mainToolBar);
 
+    slider = new QSlider();
+    slider->setOrientation(Qt::Orientation::Horizontal);
+    slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
     slider->setTracking(true);
     slider->setMinimumWidth(100);
     slider->setFocusPolicy(Qt::NoFocus);
     toolBarLayout->addWidget(slider);
+
+    setGuiForRunmode(env->getSimulationRunMode());
 
     // add current event status
     simTimeLabel = new QLabel();
@@ -137,7 +135,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     toolBarLayout->addStretch(1);
     toolBarLayout->addWidget(labelsContainer);
 
-    connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
 
     adjustSize();
 }
@@ -318,6 +315,18 @@ void MainWindow::setGuiForRunmode(RunMode runMode, bool untilMode)
         showStopDialog();
     else
         closeStopDialog();
+
+    auto duc = env->getDisplayUpdateController();
+    duc->setRunMode(runMode);
+
+    slider->setEnabled(runMode != RUNMODE_NOT_RUNNING);
+
+    bool blocked = slider->blockSignals(true);
+    slider->setMinimum(playbackSpeedToSliderValue(duc->getMinPlaybackSpeed()));
+    slider->setMaximum(playbackSpeedToSliderValue(duc->getMaxPlaybackSpeed()));
+    slider->setValue(playbackSpeedToSliderValue(duc->getPlaybackSpeed()));
+    slider->setToolTip(QString::number(duc->getPlaybackSpeed(), 'f', 2));
+    slider->blockSignals(blocked);
 
     ui->actionRunUntil->setChecked(untilMode);
 }
@@ -605,7 +614,7 @@ void MainWindow::onSliderValueChanged(int value)
 {
     double speed = sliderValueToPlaybackSpeed(value);
     slider->setToolTip(QString::number(speed, 'f', 2));
-    getQtenv()->setAnimationSpeed(speed);
+    env->getDisplayUpdateController()->setPlaybackSpeed(speed);
 }
 
 void MainWindow::updateStatusDisplay()
@@ -1015,12 +1024,6 @@ void MainWindow::onSplitterMoved(int, int)
     if (ui->mainSplitter->sizes().at(0) != 0)
         timeLineSize = defaultTimeLineSize;
     ui->actionTimeline->setChecked(ui->mainSplitter->sizes().at(0) != 0);
-}
-
-void MainWindow::onAnimationSpeedChanged(float speed)
-{
-    slider->setToolTip(QString::number(speed));
-    slider->setValue(playbackSpeedToSliderValue(speed));
 }
 
 void MainWindow::on_actionStatusDetails_triggered()

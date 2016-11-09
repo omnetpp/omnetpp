@@ -110,8 +110,6 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     LayouterChoice layouterChoice = LAYOUTER_AUTO; // which new layouting algorithm to use
     bool arrangeVectorConnections = false; // arrange connections on vector gates parallel to each other
     bool showBubbles = true;               // show result of bubble() calls
-    double playbackSpeed = 1.0;            // the scaling of animationTime relative to real time
-    long updateFreqFast = 500;             // Fast Run updates display every N milliseconds
     long updateFreqExpress = 1000;         // Express Run updates display every N milliseconds
     bool autoupdateInExpress = true;       // update inspectors at every display refresh in EXPRESS mode or not
     StripNamespace stripNamespace = STRIPNAMESPACE_ALL; // whether to display type names with full C++ namespace prefix or not
@@ -158,7 +156,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       bool isConfigRun;            // true after newRun(), and false after newConfig()
       eState simulationState;      // state of the simulation run
-      RunMode runMode;             // the current mode the simulation is executing under
+      RunMode runMode = RUNMODE_NOT_RUNNING; // the current mode the simulation is executing under
       struct RunUntil {
           simtime_t time;          // time limit in current "Run Until" execution, or zero
           eventnumber_t eventNumber;  // event number in current "Run Until" execution, or zero
@@ -282,7 +280,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
   signals:
       void fontChanged();
-      void animationSpeedChanged(float newSpeed);
 
   public slots:
       // on single click, only shows the object in the GenericObjectInspector
@@ -376,7 +373,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
                        std::string& outResult, bool& inoutCheckState);
 
       void printEventBanner(cEvent *event);
-      void setAnimationSpeed(float speed);
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}

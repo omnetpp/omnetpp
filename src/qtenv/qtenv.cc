@@ -160,7 +160,6 @@ void Qtenv::storeOptsInPrefs()
 
     setPref("arrangevectorconnections", opt->arrangeVectorConnections);
     setPref("bubbles", opt->showBubbles);
-    setPref("playback_speed", opt->playbackSpeed);
     setPref("expressmode_autoupdate", opt->autoupdateInExpress);
 
     QString stripNamespaceString;
@@ -273,10 +272,6 @@ void Qtenv::restoreOptsFromPrefs()
     pref = getPref("bubbles");
     if (pref.isValid())
         opt->showBubbles = pref.toBool();
-
-    pref = getPref("playback_speed");
-    if (pref.isValid())
-        setAnimationSpeed(pref.toDouble());
 
     pref = getPref("expressmode_autoupdate");
     if (pref.isValid())
@@ -1272,7 +1267,6 @@ void Qtenv::performAnimations()
     displayUpdateController->setRunMode(runMode);
     messageAnimator->start();
     displayUpdateController->animateUntilHoldEnds();
-    messageAnimator->clear();
 }
 
 std::string Qtenv::getWindowTitle()
@@ -1354,13 +1348,6 @@ void Qtenv::printEventBanner(cEvent *event)
 
     // insert into log buffer
     logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
-}
-
-void Qtenv::setAnimationSpeed(float speed)
-{
-    opt->playbackSpeed = speed;
-    setPref("playback_speed", opt->playbackSpeed);
-    emit animationSpeedChanged(speed);
 }
 
 void Qtenv::displayException(std::exception& ex)

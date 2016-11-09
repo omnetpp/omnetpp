@@ -383,7 +383,8 @@ void MessageAnimator::frame()
         animation->cleanup();
         clear();
         redrawMessages();
-    }
+    } else
+        hold();
 }
 
 void MessageAnimator::hold()

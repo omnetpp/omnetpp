@@ -67,14 +67,17 @@ void AnimationControllerDialog::displayMetrics()
 {
     auto env = getQtenv();
 
+    ui->minFpsSpinBox->setValue(duc->getMinFps());
+    ui->maxFpsSpinBox->setValue(duc->getMaxFps());
+
     ui->targetFpsValueLabel->setText(QString::number(duc->getTargetFps(), 'f', 0));
     ui->currentFpsValueLabel->setText(QString::number(duc->getCurrentFps(), 'f', 0));
 
-    ui->animationTimeValueLabel->setText(QString::number(env->getAnimationTime(), 'f', 2));
+    ui->animationTimeValueLabel->setText(QString::number(duc->getAnimationTime(), 'f', 2));
     ui->holdTimeValueLabel->setText(QString::number(env->getRemainingAnimationHoldTime(), 'f', 2));
 
-    ui->animationSpeedValueLabel->setText(QString::number(env->getAnimationSpeed(), 'g', 2));
-    ui->playbackSpeedValueLabel->setText(QString::number(env->opt->playbackSpeed, 'f', 2));
+    ui->animationSpeedValueLabel->setText(QString::number(duc->getAnimationSpeed(), 'g', 2));
+    ui->playbackSpeedValueLabel->setText(QString::number(duc->getPlaybackSpeed(), 'f', 2));
 
     ui->refreshDisplayCountValueLabel->setText(QString::number(env->getRefreshDisplayCount()));
 }

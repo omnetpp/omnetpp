@@ -20,13 +20,30 @@
 #include <QElapsedTimer>
 #include <QToolButton>
 
-#include "animationcontrollerdialog.h"
 #include "qtenv.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-class Qtenv;
+inline static double clip(double min, double v, double max) {
+    return std::min(std::max(v, min), max);
+}
+
+class AnimationControllerDialog;
+
+struct RunModeProfile {
+    double targetAnimationCpuUsage;
+    double minFps, maxFps; // these limit the adaptive mechanism
+
+    double minPlaybackSpeed, maxPlaybackSpeed;
+    double playbackSpeed;
+
+    double minAnimationSpeed, maxAnimationSpeed;
+
+    void setPlaybackSpeed(double speed) {
+        playbackSpeed = clip(minPlaybackSpeed, speed, maxPlaybackSpeed);
+    }
+};
 
 class DisplayUpdateController : public QObject
 {
@@ -36,19 +53,19 @@ class DisplayUpdateController : public QObject
     cSimulation *sim = getSimulation();
     Qtenv *qtenv = getQtenv();
 
+    RunModeProfile runProfile  = {0.8,  2.0, 60.0, 1e-2, 1e2, 1,    1e-18, 1e18};
+    RunModeProfile fastProfile = {0.05, 1.0, 5.0,  1e0,  1e9, 1000, 1e0,   1e18};
+    RunModeProfile *currentProfile = &runProfile;
+
     RunMode runMode = RUNMODE_NORMAL;
 
     AnimationControllerDialog *dialog = nullptr;
 
     double animationTime = 0; // this is The Animation Time
-    double animationHoldEndTime = 0; // this is only for the internal hold, the real hold duration is computed in Qtenv
-
-    double targetAnimationCpuUsage = 0.5;
 
     double targetFps = 30; // this is what we try to achieve to maintain smoothness / cpu usage
     double currentFps = targetFps; // this is the actual measured framerate
-    double minFps = 2, maxFps = 60; // these limit the adaptive mechanism
-    double maxPossibleFps = maxFps; // this is what the computer could achieve at most
+    double maxPossibleFps = currentProfile->maxFps; // this is what the computer could achieve at most
 
     double fpsMemory = 0.0;
 
@@ -82,9 +99,11 @@ class DisplayUpdateController : public QObject
 
 public:
 
-    DisplayUpdateController() { animationTimer.restart(); setTargetFps(maxPossibleFps * targetAnimationCpuUsage); }
+    DisplayUpdateController() { animationTimer.restart(); setTargetFps(maxPossibleFps * currentProfile->targetAnimationCpuUsage); }
 
     double getAnimationTime() const { return animationTime; }
+    double getAnimationSpeed() const;
+    bool isExplicitAnimationSpeed();
 
     void setRunMode(RunMode value);
 
@@ -92,9 +111,6 @@ public:
     // returns true if really reached the time for the next event, false if interrupted/stopped before
     bool animateUntilNextEvent() { return animateUntilNextEvent(false); }
     bool animateUntilHoldEnds() { return animateUntilNextEvent(true); }
-
-    void holdSimulationFor(double s);
-    double getAnimationHoldEndTime() const { return animationHoldEndTime; }
 
     void startVideoRecording() { recordingVideo = true; }
     void stopVideoRecording() { recordingVideo = false; }
@@ -108,11 +124,17 @@ public:
     void showDialog(QAction *action);
     void hideDialog();
 
-    double getMinFps() const { return minFps; }
-    void setMinFps(double value) { minFps = value; targetFps = std::max(targetFps, minFps); }
+    double getMinPlaybackSpeed() { return currentProfile->minPlaybackSpeed; }
+    double getMaxPlaybackSpeed() { return currentProfile->maxPlaybackSpeed; }
+    double getPlaybackSpeed() { return currentProfile->playbackSpeed; }
 
-    double getMaxFps() const { return maxFps; }
-    void setMaxFps(double value) { maxFps = value; targetFps = std::min(targetFps, maxFps); }
+    void setPlaybackSpeed(double speed) { currentProfile->setPlaybackSpeed(speed); }
+
+    double getMinFps() const { return currentProfile->minFps; }
+    void setMinFps(double value) { currentProfile->minFps = value; setTargetFps(targetFps); }
+
+    double getMaxFps() const { return currentProfile->maxFps; }
+    void setMaxFps(double value) { currentProfile->maxFps = value; setTargetFps(targetFps); }
 
     int getFrameCount() const { return frameCount; }
 
