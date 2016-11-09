@@ -30,6 +30,8 @@
 #include "common/fileutil.h"
 #include "envir/speedometer.h"
 
+#define emit
+
 namespace omnetpp {
 using namespace common;
 namespace qtenv {
@@ -178,12 +180,11 @@ bool DisplayUpdateController::isExplicitAnimationSpeed()
 void DisplayUpdateController::setRunMode(RunMode value)
 {
     runMode = value;
+    currentProfile = &runProfile;
 
     switch (runMode) {
         case RUNMODE_STEP:
             currentFps = 0;
-        case RUNMODE_NORMAL:
-            currentProfile = &runProfile;
             break;
         case RUNMODE_FAST:
             currentProfile = &fastProfile;
@@ -193,10 +194,15 @@ void DisplayUpdateController::setRunMode(RunMode value)
             currentFps = 0;
             animationTimer.invalidate();
             break;
+        case RUNMODE_NORMAL:
+            // nothing to do
+            break;
     }
 
     if (dialog)
         dialog->displayMetrics();
+
+    emit playbackSpeedChanged(getPlaybackSpeed());
 }
 
 bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
@@ -229,7 +235,7 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             }
 
             SimTime nextEvent = sim->guessNextSimtime();
-            SimTime nextFrame = lastRecordedFrame + frameDelta * animationSpeed;
+            SimTime nextFrame = lastRecordedFrame + frameDelta * animationSpeed * currentProfile->playbackSpeed;
 
             if (nextEvent <= nextFrame) {
                 // the time has come to execute the next event
@@ -320,6 +326,15 @@ void DisplayUpdateController::hideDialog()
     }
 }
 
+void DisplayUpdateController::setPlaybackSpeed(double speed)
+{
+    currentProfile->setPlaybackSpeed(speed);
+    if (dialog)
+        dialog->displayMetrics();
+
+    emit playbackSpeedChanged(speed);
+}
+
 void DisplayUpdateController::simulationEvent(cEvent *event)
 {
     lastExecutedEvent = event->getArrivalTime();
@@ -358,6 +373,8 @@ void DisplayUpdateController::reset()
     lastRecordedFrame = 0; // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
 
     filenameBase = "frames/"; // the prefix of the frame files' path
+
+    emit playbackSpeedChanged(getPlaybackSpeed());
 }
 
 DisplayUpdateController::~DisplayUpdateController()

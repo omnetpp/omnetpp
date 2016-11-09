@@ -90,15 +90,21 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     // too narrow instead of the more important labels on the toolbar.
     toolBarLayout->addWidget(ui->mainToolBar);
 
+    // This is the animation playback speed slider on the toolbar.
+    // It is exponential, see the playbackSpeedToSliderValue and
+    // sliderValueToPlaybackSpeed functions for the mapping.
+    // A simple snapping mechanism is also implemented in
+    // onSliderValueChanged to make selecting 1.0 easier
     slider = new QSlider();
     slider->setOrientation(Qt::Orientation::Horizontal);
     slider->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
     slider->setTracking(true);
+    slider->setTickPosition(QSlider::TicksBelow);
     slider->setMinimumWidth(100);
-    slider->setFocusPolicy(Qt::NoFocus);
+    slider->setMaximumHeight(ui->mainToolBar->height());
     toolBarLayout->addWidget(slider);
-
+    // this will set it up with the current limits
     setGuiForRunmode(env->getSimulationRunMode());
 
     // add current event status
@@ -135,6 +141,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     toolBarLayout->addStretch(1);
     toolBarLayout->addWidget(labelsContainer);
 
+    connect(env->getDisplayUpdateController(), &DisplayUpdateController::playbackSpeedChanged,
+            this, &MainWindow::updateSpeedSlider);
 
     adjustSize();
 }
@@ -319,14 +327,7 @@ void MainWindow::setGuiForRunmode(RunMode runMode, bool untilMode)
     auto duc = env->getDisplayUpdateController();
     duc->setRunMode(runMode);
 
-    slider->setEnabled(runMode != RUNMODE_NOT_RUNNING);
-
-    bool blocked = slider->blockSignals(true);
-    slider->setMinimum(playbackSpeedToSliderValue(duc->getMinPlaybackSpeed()));
-    slider->setMaximum(playbackSpeedToSliderValue(duc->getMaxPlaybackSpeed()));
-    slider->setValue(playbackSpeedToSliderValue(duc->getPlaybackSpeed()));
-    slider->setToolTip(QString::number(duc->getPlaybackSpeed(), 'f', 2));
-    slider->blockSignals(blocked);
+    //slider->setEnabled(runMode != RUNMODE_NOT_RUNNING);
 
     ui->actionRunUntil->setChecked(untilMode);
 }
@@ -396,6 +397,23 @@ bool MainWindow::checkRunning()
         return true;
     }
     return false;
+}
+
+void MainWindow::updateSpeedSlider()
+{
+    auto duc = env->getDisplayUpdateController();
+    bool blocked = slider->blockSignals(true);
+    int min = playbackSpeedToSliderValue(duc->getMinPlaybackSpeed());
+    int max = playbackSpeedToSliderValue(duc->getMaxPlaybackSpeed());
+    slider->setMinimum(min);
+    slider->setMaximum(max);
+    slider->setPageStep((max - min) / 25);
+    slider->setSingleStep((max - min) / 50);
+    slider->setTickInterval(playbackSpeedToSliderValue(10) - playbackSpeedToSliderValue(1));
+
+    slider->setValue(playbackSpeedToSliderValue(duc->getPlaybackSpeed()));
+    slider->setToolTip("Playback speed: " + QString::number(duc->getPlaybackSpeed(), 'f', 2));
+    slider->blockSignals(blocked);
 }
 
 // oneStep
@@ -613,6 +631,29 @@ void MainWindow::on_actionRunUntil_triggered()
 void MainWindow::onSliderValueChanged(int value)
 {
     double speed = sliderValueToPlaybackSpeed(value);
+
+    // only doing snapping when it is moved with the mouse
+    if (slider->isSliderDown()) {
+        int pixelThreshold = 2;
+        double snapToSpeed = 1.0;
+
+        // finding out the length in pixels the slider handle can travel (approx)
+        QStyleOptionSlider opt;
+        opt.initFrom(slider);
+        int span = slider->style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderGroove, this).width()
+                - slider->style()->pixelMetric(QStyle::PM_SliderLength);
+
+        int valueOne = playbackSpeedToSliderValue(snapToSpeed);
+
+        int positionOne = QStyle::sliderPositionFromValue(slider->minimum(), slider->maximum(), valueOne, span);
+        int positionCurrent = QStyle::sliderPositionFromValue(slider->minimum(), slider->maximum(), value, span);
+
+        if (std::abs(positionOne - positionCurrent) <= pixelThreshold) {
+            slider->setValue(valueOne);
+            speed = snapToSpeed;
+        }
+    }
+
     slider->setToolTip(QString::number(speed, 'f', 2));
     env->getDisplayUpdateController()->setPlaybackSpeed(speed);
 }

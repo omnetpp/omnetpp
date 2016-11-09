@@ -52,8 +52,9 @@ class DisplayUpdateController : public QObject
     cSimulation *sim = getSimulation();
     Qtenv *qtenv = getQtenv();
 
-    RunModeProfile runProfile  = {0.8,  2.0, 60.0, 1e-2, 1e2, 1,    1e-18, 1e18};
-    RunModeProfile fastProfile = {0.05, 1.0, 5.0,  1e0,  1e9, 1000, 1e0,   1e18};
+    // factory defaults
+    RunModeProfile runProfile  = {0.8,   2.0, 60.0, 1e-2, 1e2, 1,    1e-18, 1e18};
+    RunModeProfile fastProfile = {0.05, 10.0, 30.0, 1e0,  1e9, 1000, 1e0,   1e18};
     RunModeProfile *currentProfile = &runProfile;
 
     RunMode runMode = RUNMODE_NORMAL;
@@ -96,6 +97,12 @@ class DisplayUpdateController : public QObject
 
     void setTargetFps(double fps); // obeys limits
 
+signals:
+    void playbackSpeedChanged(double speed);
+
+public slots:
+    void setPlaybackSpeed(double speed);
+
 public:
     DisplayUpdateController();
 
@@ -126,8 +133,6 @@ public:
     double getMinPlaybackSpeed() { return currentProfile->minPlaybackSpeed; }
     double getMaxPlaybackSpeed() { return currentProfile->maxPlaybackSpeed; }
     double getPlaybackSpeed() { return currentProfile->playbackSpeed; }
-
-    void setPlaybackSpeed(double speed) { currentProfile->setPlaybackSpeed(speed); }
 
     double getMinFps() const { return currentProfile->minFps; }
     void setMinFps(double value) { currentProfile->minFps = value; setTargetFps(targetFps); }

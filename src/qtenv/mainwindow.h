@@ -119,6 +119,9 @@ public slots:
 
     void showFindObjectsDialog(cObject *obj);
 
+    // without emitting the change signal!
+    void updateSpeedSlider();
+
 protected slots:
     void on_actionVerticalLayout_triggered(bool checked);
     void on_actionHorizontalLayout_triggered(bool checked);

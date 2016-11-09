@@ -33,9 +33,6 @@ AnimationControllerDialog::AnimationControllerDialog(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::Tool);
 
-    ui->minFpsSpinBox->setValue(duc->getMinFps());
-    ui->maxFpsSpinBox->setValue(duc->getMaxFps());
-
     displayMetrics();
 
     adjustSize();
@@ -56,6 +53,9 @@ AnimationControllerDialog::AnimationControllerDialog(QWidget *parent) :
             ui->minFpsSpinBox->setValue(value);
         duc->setMaxFps(ui->maxFpsSpinBox->value());
     });
+
+    connect(ui->playbackSpeedSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            duc, &DisplayUpdateController::setPlaybackSpeed);
 }
 
 AnimationControllerDialog::~AnimationControllerDialog()
@@ -77,7 +77,23 @@ void AnimationControllerDialog::displayMetrics()
     ui->holdTimeValueLabel->setText(QString::number(env->getRemainingAnimationHoldTime(), 'f', 2));
 
     ui->animationSpeedValueLabel->setText(QString::number(duc->getAnimationSpeed(), 'g', 2));
-    ui->playbackSpeedValueLabel->setText(QString::number(duc->getPlaybackSpeed(), 'f', 2));
+
+    // don't want to influence the speed here programatically through the valueChanged signal
+    bool blocked = ui->playbackSpeedSpinBox->blockSignals(true);
+
+    // making it kindof exponential
+    int magnitude = std::ceil(std::log10(duc->getPlaybackSpeed()*1.0001));
+    ui->playbackSpeedSpinBox->setSingleStep(duc->getPlaybackSpeed() / 10);
+    // the ifs are here to keep it spinning (except when magnitude changes...)
+    if (ui->playbackSpeedSpinBox->decimals() != (4 -magnitude))
+        ui->playbackSpeedSpinBox->setDecimals(4 - magnitude);
+    if (ui->playbackSpeedSpinBox->minimum() != duc->getMinPlaybackSpeed())
+        ui->playbackSpeedSpinBox->setMinimum(duc->getMinPlaybackSpeed());
+    if (ui->playbackSpeedSpinBox->maximum() != duc->getMaxPlaybackSpeed())
+        ui->playbackSpeedSpinBox->setMaximum(duc->getMaxPlaybackSpeed());
+    ui->playbackSpeedSpinBox->setValue(duc->getPlaybackSpeed());
+
+    ui->playbackSpeedSpinBox->blockSignals(blocked);
 
     ui->refreshDisplayCountValueLabel->setText(QString::number(env->getRefreshDisplayCount()));
 }
