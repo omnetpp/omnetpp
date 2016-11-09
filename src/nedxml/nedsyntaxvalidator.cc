@@ -295,11 +295,11 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
     if (parent->getTagCode() == NED_MODULE_INTERFACE || parent->getTagCode() == NED_CHANNEL_INTERFACE) {
         if (parsedExpressions) {
             if (node->getFirstChildWithTag(NED_EXPRESSION))  // && expr->getTarget()=="value"
-                errors->addError(node, "Cannot specify parameter values within a module interface or or channel interface");
+                errors->addError(node, "Cannot specify parameter values within a module interface or channel interface");
         }
         else {
             if (!opp_isempty(node->getValue()))
-                errors->addError(node, "Cannot specify parameter values within a module interface or or channel interface");
+                errors->addError(node, "Cannot specify parameter values within a module interface or channel interface");
         }
     }
 }
@@ -518,19 +518,19 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
     }
 
     // check if we know about it
-    bool name_found = false;
-    bool argc_matches = false;
+    bool nameFound = false;
+    bool argCountMatches = false;
     for (int i = 0; known_funcs[i].fname != nullptr; i++) {
         if (!strcmp(func, known_funcs[i].fname)) {
-            name_found = true;
+            nameFound = true;
             if (known_funcs[i].args == args) {
-                argc_matches = true;
+                argCountMatches = true;
                 break;
             }
         }
     }
-    if (name_found && !argc_matches) {
-        errors->addError(node, "Function '%s' cannot take %d operands", func, args);
+    if (nameFound && !argCountMatches) {
+        errors->addError(node, "Function '%s()' does not take %d arguments", func, args);
     }
 }
 

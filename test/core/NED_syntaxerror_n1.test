@@ -15,4 +15,5 @@ bla bla bla
 End\.$
 
 %contains-regex: stderr
-test\.ned:1: Error: syntax error, unexpected NAME, expecting \$end$
+Syntax error
+

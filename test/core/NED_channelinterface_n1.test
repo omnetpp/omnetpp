@@ -12,5 +12,5 @@ channelinterface IFooChannel
 %exitcode: 1
 
 %contains-regex: stderr
-Cannot specify parameter values within a module interface or or channel interface
+Cannot specify parameter values within a module interface or channel interface
 

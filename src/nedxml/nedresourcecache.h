@@ -118,7 +118,7 @@ class NEDXML_API NEDResourceCache
     virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
     virtual void registerPendingNedTypes();
     virtual void registerNedType(const char *qname, bool isInnerType, NEDElement *node);
-    virtual std::string getFirstError(NEDErrorStore *errors);
+    virtual std::string getFirstError(NEDErrorStore *errors, const char *prefix=nullptr);
 
   public:
     /** Constructor */

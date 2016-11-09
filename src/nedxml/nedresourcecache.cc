@@ -116,16 +116,11 @@ void NEDResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
     if (expectedPackage != nullptr && declaredPackage != std::string(expectedPackage))
-        throw NEDException("NED error in file `%s': declared package `%s' does not match expected package `%s'",
-                nedfname, declaredPackage.c_str(), expectedPackage);
+        throw NEDException("Declared package `%s' does not match expected package `%s' in file %s",
+                declaredPackage.c_str(), expectedPackage, nedfname);
 
     // register it
-    try {
-        addFile(nedfname2.c_str(), tree);
-    }
-    catch (NEDException& e) {
-        throw NEDException("NED error: %s", e.what());
-    }
+    addFile(nedfname2.c_str(), tree);
 }
 
 NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedtext, bool isXML)
@@ -157,7 +152,7 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     dtdvalidator.validate(tree);
     if (errors.containsError()) {
         delete tree;
-        throw NEDException(getFirstError(&errors).c_str());
+        throw NEDException(getFirstError(&errors, "NED internal DTD validation failure: ").c_str());
     }
 
     NEDSyntaxValidator syntaxvalidator(true, &errors);
@@ -169,7 +164,7 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     return tree;
 }
 
-std::string NEDResourceCache::getFirstError(NEDErrorStore *errors)
+std::string NEDResourceCache::getFirstError(NEDErrorStore *errors, const char *prefix)
 {
     // find first error
     int i;
@@ -184,7 +179,11 @@ std::string NEDResourceCache::getFirstError(NEDErrorStore *errors)
     std::string location = errors->errorLocation(i);
     if (opp_stringbeginswith(message.c_str(), "Syntax error, unexpected")) // this message is not really useful, replace it
         message = "Syntax error";
-    return location.empty() ? message : message + " at " + location;
+    if (!location.empty())
+        message += ", at " + location;
+    if (prefix)
+        message = std::string(prefix) + message;
+    return message;
 }
 
 void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
@@ -235,7 +234,7 @@ void NEDResourceCache::collectNedTypesFrom(NEDElement *node, const std::string& 
         {
             std::string qname = namespacePrefix + child->getAttribute("name");
             if (lookup(qname.c_str()))
-                throw NEDException("redeclaration of %s %s", child->getTagName(), qname.c_str());  // XXX maybe just NEDError?
+                throw NEDException(child, "Redeclaration of %s %s", child->getTagName(), qname.c_str());  // XXX maybe just NEDError?
 
             collectNedType(qname.c_str(), areInnerTypes, child);
 
@@ -279,9 +278,9 @@ void NEDResourceCache::doneLoadingNedFiles()
         for (int i = 0; i < (int)pendingList.size(); i++)
             unresolvedNames += std::string(i == 0 ? "" : ", ") + pendingList[i].qname;
         if (pendingList.size() == 1)
-            throw NEDException("NED type `%s' could not be fully resolved, due to a missing base type or interface", unresolvedNames.c_str());
+            throw NEDException(pendingList[0].node, "NED type `%s' could not be fully resolved due to a missing base type or interface", unresolvedNames.c_str());
         else
-            throw NEDException("The following NED types could not be fully resolved, due to a missing base type or interface: %s", unresolvedNames.c_str());
+            throw NEDException("The following NED types could not be fully resolved due to a missing base type or interface: %s", unresolvedNames.c_str());
     }
 }
 

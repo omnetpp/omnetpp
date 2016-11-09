@@ -14,6 +14,6 @@ package org.omnetpp.test;
 %exitcode: 1
 
 %contains-regex: stderr
-declared package `' does not match expected package `org.omnetpp.test.foo'.
+Declared package `' does not match expected package `org.omnetpp.test.foo'
 
 
