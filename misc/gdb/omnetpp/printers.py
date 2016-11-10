@@ -27,7 +27,7 @@ omnetpp_printer_debug = False #or True
 def debug(s):
     global omnetpp_printer_debug
     if omnetpp_printer_debug:
-        print s
+        print(s)
 
 
 ##############################################
@@ -59,7 +59,7 @@ class cPrinterBase:
                 else:
                     yield(fld.name, self.val[fld.name])
             except Exception as e:
-                print '<ERROR %s>' % e
+                print('<ERROR %s>' % e)
                 yield(fld.name, '<ERROR %s>' % e)
 
 
@@ -94,7 +94,7 @@ class cObjectPrinter(cPrinterBase):
         try:
             path = gdb.parse_and_eval("((::cObject *)%s)->getFullPath()" % str(self.addr))
         except Exception as e:
-            print 'Error in getFullPath: %s' % e
+            print('Error in getFullPath: %s' % e)
             path = None
         return path
 
@@ -105,7 +105,7 @@ class cObjectPrinter(cPrinterBase):
         try:
             name = gdb.parse_and_eval("((::cObject *)%s)->getFullName()" % str(self.addr))
         except Exception as e:
-            print 'Error in getFullName: %s' % e
+            print('Error in getFullName: %s' % e)
             name = None
         return name
 
@@ -116,7 +116,7 @@ class cObjectPrinter(cPrinterBase):
         try:
             owner = gdb.parse_and_eval("((::cObject *)%s)->getOwner()" % str(self.addr))
         except Exception as e:
-            print 'Error in getOwner: %s' % e
+            print('Error in getOwner: %s' % e)
             owner = None
         return owner
 
@@ -127,7 +127,7 @@ class cObjectPrinter(cPrinterBase):
         try:
             info = gdb.parse_and_eval("((::cObject *)%s)->info()" % str(self.addr))
         except Exception as e:
-            print 'Error in getInfo: %s' % e
+            print('Error in getInfo: %s' % e)
             info = None
         return info
 
