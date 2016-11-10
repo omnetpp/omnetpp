@@ -37,15 +37,22 @@ class Host : public cSimpleModule
     simsignal_t stateSignal;
     int pkCounter;
 
-    // position on the canvas
-    int x, y;
+    // position on the canvas, unit is m
+    double x, y;
 
-    // 1/c in seconds
-    const simtime_t lightToReachOneMeter = 3.33564095e-9;
+    // speed of light in m/s
+    const double propagationSpeed = 299792458.0;
 
-    cPacket *lastPacket = nullptr;
-    cRingFigure *lastTransmission;
-    simtime_t lastPacketStarted = 0;
+    // Animation parameters:
+    // Limitation: we only animate the last outgoing message for each host
+    cPacket *lastPacket = nullptr;// a copy of the last sent message, needed for animation
+    mutable cRingFigure *transmissionRing = nullptr; // shows the last packet
+    mutable std::vector<cOvalFigure *> transmissionCircles; // illustrates transmission speed inside the ring
+    const double maxRadius = 2000; // in m
+    const double rippleRadius = 1000; // in m
+    double idleAnimationSpeed;
+    double transmissionEdgeAnimationSpeed;
+    double midTransmissionAnimationSpeed;
 
   public:
     Host();

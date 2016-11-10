@@ -43,6 +43,9 @@ void Server::initialize()
 
     emit(receiveSignal, 0L);
     emit(receiveBeginSignal, 0L);
+
+    getDisplayString().setTagArg("p", 0, par("x").doubleValue());
+    getDisplayString().setTagArg("p", 1, par("y").doubleValue());
 }
 
 void Server::handleMessage(cMessage *msg)

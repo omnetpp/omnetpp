@@ -47,18 +47,21 @@ void Host::initialize()
     WATCH((int&)state);
     WATCH(pkCounter);
 
-    x = intrand(1000);
-    y = intrand(1000);
+    x = par("x").doubleValue();
+    y = par("y").doubleValue();
 
-    double dist = std::sqrt((x - 500) * (x-500) + (y-500) * (y-500));
-    radioDelay = lightToReachOneMeter * dist;
+    double serverX = server->par("x").doubleValue();
+    double serverY = server->par("y").doubleValue();
 
-    lastTransmission = new cRingFigure();
-    lastTransmission->setFillColor(cFigure::GOOD_LIGHT_COLORS[getId() % cFigure::NUM_GOOD_LIGHT_COLORS]);
-    lastTransmission->setFillOpacity(0.5);
-    lastTransmission->setFilled(true);
-    lastTransmission->setVisible(false);
-    getParentModule()->getCanvas()->addFigure(lastTransmission);
+    idleAnimationSpeed = par("idleAnimationSpeed");
+    transmissionEdgeAnimationSpeed = par("transmissionEdgeAnimationSpeed");
+    midTransmissionAnimationSpeed = par("midTransmissionAnimationSpeed");
+
+    double dist = std::sqrt((x-serverX) * (x-serverX) + (y-serverY) * (y-serverY));
+    radioDelay = dist / propagationSpeed;
+
+    getDisplayString().setTagArg("p", 0, x);
+    getDisplayString().setTagArg("p", 1, y);
 
     scheduleAt(getNextTransmissionTime(), endTxEvent);
 }
@@ -67,8 +70,7 @@ void Host::handleMessage(cMessage *msg)
 {
     ASSERT(msg == endTxEvent);
 
-    if (par("controlAnimationSpeed").boolValue())
-        getParentModule()->getCanvas()->setAnimationSpeed(1e-6, this);
+    getParentModule()->getCanvas()->setAnimationSpeed(transmissionEdgeAnimationSpeed, this);
 
     if (state == IDLE) {
         // generate packet and schedule timer when it ends
@@ -86,8 +88,9 @@ void Host::handleMessage(cMessage *msg)
 
         delete lastPacket;
         lastPacket = pk->dup();
-        lastTransmission->setAssociatedObject(lastPacket);
-        lastPacketStarted = simTime();
+        transmissionRing->setAssociatedObject(lastPacket);
+        for (auto c : transmissionCircles)
+            c->setAssociatedObject(lastPacket);
 
         scheduleAt(simTime()+duration, endTxEvent);
     }
@@ -117,37 +120,89 @@ simtime_t Host::getNextTransmissionTime()
 
 void Host::refreshDisplay() const
 {
-    double animSpeed = 0.1;
+    const int numRipples = 20;
+
+    if (!transmissionRing) {
+        auto color = cFigure::GOOD_DARK_COLORS[getId() % cFigure::NUM_GOOD_DARK_COLORS];
+
+        transmissionRing = new cRingFigure();
+        transmissionRing->setFillColor(color);
+        transmissionRing->setLineColor(color);
+        transmissionRing->setFillOpacity(0.25);
+        transmissionRing->setFilled(true);
+        transmissionRing->setVisible(false);
+        getParentModule()->getCanvas()->addFigure(transmissionRing);
+
+        for (int i = 0; i < numRipples; ++i) {
+            auto circle = new cOvalFigure();
+            circle->setFilled(false);
+            circle->setLineColor(color);
+            circle->setLineOpacity(0.75);
+            circle->setLineWidth(10);
+            circle->setZoomLineWidth(true);
+            circle->setVisible(false);
+            transmissionCircles.push_back(circle);
+            getParentModule()->getCanvas()->addFigure(circle);
+        }
+    }
+
+    double animSpeed = idleAnimationSpeed;
+
     if (lastPacket) {
-        auto st = simTime();
+        auto now = simTime();
 
-        auto frontDelta = st - lastPacketStarted;
-        auto backDelta = st - (lastPacketStarted + lastPacket->getDuration());
+        auto frontTravelTime = now - lastPacket->getSendingTime();
+        auto backTravelTime = now - (lastPacket->getSendingTime() + lastPacket->getDuration());
 
-        double frontRadius = std::min(10000.0, frontDelta / lightToReachOneMeter);
-        double backRadius = backDelta / lightToReachOneMeter;
+        // conversion from time to distance in m using speed
+        double frontRadius = std::min(maxRadius, frontTravelTime.dbl() * propagationSpeed);
+        double backRadius = backTravelTime.dbl() * propagationSpeed;
+        double interCircleRadius = rippleRadius / numRipples;
 
-        if (backRadius > 10000) {
-            lastTransmission->setVisible(false);
-            lastTransmission->setAssociatedObject(nullptr);
+        double opacity = 1.0;
+        if (backRadius > maxRadius) {
+            transmissionRing->setVisible(false);
+            transmissionRing->setAssociatedObject(nullptr);
         }
         else {
-            lastTransmission->setVisible(true);
-            lastTransmission->setBounds(cFigure::Rectangle(x - frontRadius, y - frontRadius, 2*frontRadius, 2*frontRadius));
-            lastTransmission->setInnerRadius(std::max(0.0, backRadius));
+            transmissionRing->setVisible(true);
+            transmissionRing->setBounds(cFigure::Rectangle(x - frontRadius, y - frontRadius, 2*frontRadius, 2*frontRadius));
+            transmissionRing->setInnerRadius(std::max(0.0, std::min(maxRadius, backRadius)));
+            if (backRadius > 0)
+                opacity = std::max(0.0, 1.0 - backRadius / rippleRadius);
         }
 
-        if ((frontRadius >= 0 && frontRadius < 1000) || (backRadius >= 0 && backRadius < 1000))
-            animSpeed = 1e-6;
+        transmissionRing->setLineOpacity(opacity);
+        transmissionRing->setFillOpacity(opacity/5);
+
+        double radius0 = std::fmod(frontTravelTime.dbl() * propagationSpeed, interCircleRadius);
+        for (int i = 0; i < (int)transmissionCircles.size(); ++i) {
+            double circleRadius = std::min(maxRadius, radius0 + i * interCircleRadius);
+            if (circleRadius < frontRadius - interCircleRadius/2 && circleRadius > backRadius + interCircleRadius/2) {
+                transmissionCircles[i]->setVisible(true);
+                transmissionCircles[i]->setBounds(cFigure::Rectangle(x - circleRadius, y - circleRadius, 2*circleRadius, 2*circleRadius));
+                transmissionCircles[i]->setLineOpacity(std::max(0.0, 0.2 - 0.2 * (circleRadius / rippleRadius)));
+            }
+            else
+                transmissionCircles[i]->setVisible(false);
+        }
+
+        if ((frontRadius >= 0 && frontRadius < rippleRadius) || (backRadius >= 0 && backRadius < rippleRadius))
+            animSpeed = transmissionEdgeAnimationSpeed;
+        if (frontRadius > rippleRadius && backRadius < 0)
+            animSpeed = midTransmissionAnimationSpeed;
     }
-    else
-        lastTransmission->setVisible(false);
+    else {
+        transmissionRing->setVisible(false);
+        transmissionRing->setAssociatedObject(nullptr);
 
-    if (par("controlAnimationSpeed").boolValue())
-        getParentModule()->getCanvas()->setAnimationSpeed(animSpeed, this);
+        for (auto c : transmissionCircles) {
+            c->setVisible(false);
+            c->setAssociatedObject(nullptr);
+        }
+    }
 
-    getDisplayString().setTagArg("p", 0, x);
-    getDisplayString().setTagArg("p", 1, y);
+    getParentModule()->getCanvas()->setAnimationSpeed(animSpeed, this);
 
     getDisplayString().setTagArg("t", 2, "#808000");
 
