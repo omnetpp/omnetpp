@@ -66,7 +66,7 @@ void cIdealSimulationProtocol::startRun()
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
     fin = fopen(fname, "rb");
     if (!fin)
-        throw cRuntimeError("cIdealSimulationProtocol error: cannot open file '%s' for read", fname);
+        throw cRuntimeError("cIdealSimulationProtocol error: Cannot open file '%s' for read", fname);
 
     readNextRecordedEvent();
 }
@@ -127,7 +127,7 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
     } while (event->getSrcProcId() != nextExternalEvent.srcProcId || eventTime > nextExternalEvent.t);
 
     if (eventTime < nextExternalEvent.t) {
-        throw cRuntimeError("cIdealSimulationProtocol: event trace does not match actual events: "
+        throw cRuntimeError("cIdealSimulationProtocol: Event trace does not match actual events: "
                             "expected event with timestamp %s from proc=%d, and got one with timestamp %s",
                             SIMTIME_STR(nextExternalEvent.t), nextExternalEvent.srcProcId, SIMTIME_STR(eventTime));
     }
@@ -150,7 +150,7 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
         nextPos = 0;
         numItems = fread(table, sizeof(ExternalEvent), tableSize, fin);
         if (numItems == 0)
-            throw cTerminationException("cIdealSimulationProtocol: end of event trace file");
+            throw cTerminationException("cIdealSimulationProtocol: End of event trace file");
     }
 
     // get next entry from table

@@ -104,28 +104,28 @@ int CompoundFilterType::getNumSubfilters() const
 CompoundFilterType::Subfilter& CompoundFilterType::getSubfilter(int pos)
 {
     if (pos < 0 || pos >= (int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
+        throw opp_runtime_error("%s: Invalid subfilter index %d", getName(), pos);
     return _subfilters[pos];
 }
 
 const CompoundFilterType::Subfilter& CompoundFilterType::getSubfilter(int pos) const
 {
     if (pos < 0 || pos >= (int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
+        throw opp_runtime_error("%s: Invalid subfilter index %d", getName(), pos);
     return _subfilters[pos];
 }
 
 void CompoundFilterType::insertSubfilter(int pos, const Subfilter& f)
 {
     if (pos < 0 || pos > (int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter insert index %d", getName(), pos);
+        throw opp_runtime_error("%s: Invalid subfilter insert index %d", getName(), pos);
     _subfilters.insert(_subfilters.begin()+pos, f);
 }
 
 void CompoundFilterType::removeSubfilter(int pos)
 {
     if (pos < 0 || pos >= (int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
+        throw opp_runtime_error("%s: Invalid subfilter index %d", getName(), pos);
     _subfilters.erase(_subfilters.begin()+pos);
 }
 
@@ -168,7 +168,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
         // create and add instance
         FilterNode *subnode = dynamic_cast<FilterNode *>(subnodetype->create(mgr, subattrs));
         if (!subnode)
-            throw opp_runtime_error("%s: subfilter type %s is not subclassed from FilterNode", getName(), subnodetypename);
+            throw opp_runtime_error("%s: Subfilter type %s is not subclassed from FilterNode", getName(), subnodetypename);
         if (i == 0)
             node->first = subnode;
         if (i == n-1)
@@ -193,7 +193,7 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
         !strcmp(name, "out") ? compound->getLastNode() :
         nullptr;
     if (!subnode)
-        throw opp_runtime_error("no such port '%s'", name);
+        throw opp_runtime_error("No such port '%s'", name);
     return subnode->getNodeType()->getPort(subnode, name);
 }
 

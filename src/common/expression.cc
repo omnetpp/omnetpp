@@ -88,7 +88,7 @@ std::string Expression::Value::str()
       case BOOL: return bl ? "true" : "false";
       case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
       case STR:  return opp_quotestr(s);
-      default:   throw opp_runtime_error("internal error: bad Value type");
+      default:   throw opp_runtime_error("Internal error: Bad Value type");
     }
 }
 
@@ -620,7 +620,7 @@ MathFunction::MathFunction(const char *name)
     funcname = name;
     FuncDesc *fd = lookup(funcname.c_str());
     if (!fd)
-        throw opp_runtime_error("unrecognized function %s", name);
+        throw opp_runtime_error("Unrecognized function %s", name);
     f = fd->f;
     argcount = fd->argcount;
 }
@@ -675,7 +675,7 @@ Expression::Value MathFunction::evaluate(Expression::Value args[], int numargs)
         case 1: return f(args[0].dbl);
         case 2: return f(args[0].dbl, args[1].dbl);
         case 3: return f(args[0].dbl, args[1].dbl, args[2].dbl);
-        default: throw opp_runtime_error("too many args");
+        default: throw opp_runtime_error("Too many args");
     }
 }
 

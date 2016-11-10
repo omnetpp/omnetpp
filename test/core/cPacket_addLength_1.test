@@ -28,6 +28,6 @@ EV << pkt.getBitLength() << endl;
 150
 140
 
-<!> Error .*length became negative
+<!> Error .*Length became negative
 
 

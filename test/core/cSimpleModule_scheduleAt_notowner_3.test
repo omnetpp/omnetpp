@@ -67,5 +67,5 @@ Define_Module(Receiver);
 
 %subst: /omnetpp:://
 %contains-regex: stderr
-Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one, it is currently in scheduled-events, being underway between two modules
+scheduleAt\(\): Cannot schedule message \(cMessage\)one, it is currently in scheduled-events, being underway between two modules
 

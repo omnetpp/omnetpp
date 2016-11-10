@@ -271,7 +271,7 @@ std::string getObjectIcon(Tcl_Interp *interp, cObject *object)
     // look up the image in the icons() array
     const char *image = Tcl_GetVar2(interp, TCLCONST("icons"), TCLCONST(iconName), TCL_GLOBAL_ONLY);
     if (!image)
-        throw cRuntimeError("getObjectIcon(): undefined variable $icons(%s)", iconName);
+        throw cRuntimeError("getObjectIcon(): Undefined variable $icons(%s)", iconName);
     return image;
 }
 
@@ -455,7 +455,7 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
               case cPar::STRING: buffer += par->stdstringValue(); break;
               case cPar::LONG: buffer += opp_stringf("%ld", par->longValue()); break;
               case cPar::DOUBLE: buffer += opp_stringf("%g", par->doubleValue()); break;
-              default: throw cRuntimeError("Cannot substitute parameter %s into display string: wrong data type", par->getFullPath().c_str());
+              default: throw cRuntimeError("Cannot substitute parameter %s into display string: Wrong data type", par->getFullPath().c_str());
             }
         }
     }

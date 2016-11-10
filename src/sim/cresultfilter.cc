@@ -171,7 +171,7 @@ void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, 
 
 //---
 
-#define THROW(t)    throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
+#define THROW(t)    throw opp_runtime_error("%s: Received data with wrong type (%s): Object expected", getClassName(), t);
 
 void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {

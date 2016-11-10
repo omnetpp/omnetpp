@@ -193,7 +193,7 @@ bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
     bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
     // TBD implement tag filtering
     if (recv && filtTag != PARSIM_ANY_TAG && filtTag != receivedTag)
-        throw cRuntimeError("cNamedPipeCommunications: tag filtering not implemented");
+        throw cRuntimeError("cNamedPipeCommunications: Tag filtering not implemented");
     return recv;
 }
 

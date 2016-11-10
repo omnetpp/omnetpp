@@ -48,7 +48,7 @@ void OctaveExport::openFileIfNeeded()
         // cygwin-based Octave chokes on CR-LF...
         f = fopen(fileName.c_str(), "wb");
         if (!f)
-            throw opp_runtime_error("cannot open '%s' for write", fileName.c_str());
+            throw opp_runtime_error("Cannot open '%s' for write", fileName.c_str());
 
         setlocale(LC_NUMERIC, "C");
         // print file header
@@ -90,7 +90,7 @@ std::string OctaveExport::makeUniqueName(const char *nameHint)
         if (it == savedVars.end())
             return newName;
     }
-    throw opp_runtime_error("banged head against the sky");
+    throw opp_runtime_error("Banged head against the sky");
 }
 
 void OctaveExport::writeMatrixHeader(const char *name, int rows, int columns)

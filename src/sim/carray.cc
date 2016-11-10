@@ -156,7 +156,7 @@ void cArray::parsimPack(cCommBuffer *buffer) const
     for (int i = 0; i <= last; i++) {
         if (buffer->packFlag(vect[i] != nullptr)) {
             if (vect[i]->isOwnedObject() && vect[i]->getOwner() != this)
-                throw cRuntimeError(this, "parsimPack(): refusing to transmit an object not owned by the container");
+                throw cRuntimeError(this, "parsimPack(): Refusing to transmit an object not owned by the container");
             buffer->packObject(vect[i]);
         }
     }
@@ -209,7 +209,7 @@ void cArray::clear()
 void cArray::setCapacity(int newCapacity)
 {
     if (newCapacity < size())
-        throw cRuntimeError(this, "setCapacity: new capacity %d cannot be less than current size %d", newCapacity, size());
+        throw cRuntimeError(this, "setCapacity: New capacity %d cannot be less than current size %d", newCapacity, size());
 
     cObject **newVect = new cObject *[newCapacity];
     for (int i = 0; i <= last; i++)
@@ -224,7 +224,7 @@ void cArray::setCapacity(int newCapacity)
 int cArray::add(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert nullptr");
+        throw cRuntimeError(this, "Cannot insert nullptr");
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
@@ -255,13 +255,13 @@ int cArray::add(cObject *obj)
 int cArray::addAt(int m, cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert nullptr");
+        throw cRuntimeError(this, "Cannot insert nullptr");
 
     if (m < capacity) {  // fits in current vector
         if (m < 0)
-            throw cRuntimeError(this, "addAt(): negative position %d", m);
+            throw cRuntimeError(this, "addAt(): Negative position %d", m);
         if (vect[m] != nullptr)
-            throw cRuntimeError(this, "addAt(): position %d already used", m);
+            throw cRuntimeError(this, "addAt(): Position %d already used", m);
         vect[m] = obj;
         if (obj->isOwnedObject() && getTakeOwnership())
             take(static_cast<cOwnedObject *>(obj));
@@ -291,7 +291,7 @@ int cArray::addAt(int m, cObject *obj)
 int cArray::set(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert nullptr");
+        throw cRuntimeError(this, "Cannot insert nullptr");
 
     int i = find(obj->getName());
     if (i < 0) {

@@ -118,7 +118,7 @@ inline int h2d(const char *s, int index)
         return c - 'A' + 10;
     if (c >= 'a' && c <= 'f')
         return c - 'a' + 10;
-    throw opp_runtime_error("illegal hex digit '%c' in string '%s'", c, s);
+    throw opp_runtime_error("Illegal hex digit '%c' in string '%s'", c, s);
 }
 
 static void fillColorsMap();
@@ -127,14 +127,14 @@ void parseColor(const char *s, uint8_t &r, uint8_t &g, uint8_t &b)
 {
     if (s[0] == '#') {
         if (strlen(s) != 7)
-            throw opp_runtime_error("wrong color syntax '%s': 6 hex digits expected after '#'", s);
+            throw opp_runtime_error("Wrong color syntax '%s': 6 hex digits expected after '#'", s);
         r = h2d(s, 1) * 16 + h2d(s, 2);
         g = h2d(s, 3) * 16 + h2d(s, 4);
         b = h2d(s, 5) * 16 + h2d(s, 6);
     }
     else if (s[0] == '@') {
         if (strlen(s) != 7)
-            throw opp_runtime_error("wrong color syntax '%s': 6 hex digits expected after '@'", s);
+            throw opp_runtime_error("Wrong color syntax '%s': 6 hex digits expected after '@'", s);
         double hue = (h2d(s, 1) * 16 + h2d(s, 2)) / 255.0;
         double saturation = (h2d(s, 3) * 16 + h2d(s, 4)) / 255.0;
         double brightness = (h2d(s, 5) * 16 + h2d(s, 6)) / 255.0;

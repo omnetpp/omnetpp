@@ -19,6 +19,6 @@ network Test
 %exitcode: 1
 
 %contains: stderr
-While evaluating parameter 'i': cannot find submodule for parameter 'b.i'
+Cannot evaluate parameter 'i': Cannot find submodule for parameter 'b.i'
 
 

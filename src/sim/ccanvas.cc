@@ -483,7 +483,7 @@ std::vector<cFigure::Point> cFigure::parsePoints(cProperty *property, const char
     std::vector<Point> points;
     int n = property->getNumValues(key);
     if (n % 2 != 0)
-        throw cRuntimeError("number of coordinates must be even");
+        throw cRuntimeError("Number of coordinates must be even");
     for (int i = 0; i < n; i += 2)
         points.push_back(parsePoint(property, key, i));
     return points;
@@ -561,7 +561,7 @@ cFigure::Rectangle cFigure::parseBounds(cProperty *property, const Rectangle& de
     else {
         int numCoords = property->getNumValues(PKEY_POS);
         if (numCoords != 2)
-            throw cRuntimeError("%s: two coordinates expected", PKEY_POS);
+            throw cRuntimeError("%s: Two coordinates expected", PKEY_POS);
         Point p = property->containsKey(PKEY_POS) ? parsePoint(property, PKEY_POS, 0) : Point(defaults.x, defaults.y);
         Point size = property->containsKey(PKEY_SIZE) ? parsePoint(property, PKEY_SIZE, 0) : Point(defaults.width, defaults.height);
         const char *anchorStr = property->getValue(PKEY_ANCHOR);
@@ -682,7 +682,7 @@ cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
         else if (!strcmp(token, "underline"))
             flags |= FONT_UNDERLINE;
         else
-            throw cRuntimeError("unknown font style '%s'", token);
+            throw cRuntimeError("Unknown font style '%s'", token);
     }
     return Font(opp_nulltoempty(typeface), size, flags);
 }
@@ -742,7 +742,7 @@ bool cFigure::parseBool(const char *s)
         return true;
     if (!strcmp(s, "false"))
         return false;
-    throw cRuntimeError("invalid boolean value '%s'", s);
+    throw cRuntimeError("Invalid boolean value '%s'", s);
 }
 
 cFigure::Color cFigure::parseColor(const char *s)
@@ -757,7 +757,7 @@ cFigure::LineStyle cFigure::parseLineStyle(const char *s)
     if (!strcmp(s,"solid")) return LINE_SOLID;
     if (!strcmp(s,"dotted")) return LINE_DOTTED;
     if (!strcmp(s,"dashed")) return LINE_DASHED;
-    throw cRuntimeError("invalid line style '%s'", s);
+    throw cRuntimeError("Invalid line style '%s'", s);
 }
 
 cFigure::CapStyle cFigure::parseCapStyle(const char *s)
@@ -765,7 +765,7 @@ cFigure::CapStyle cFigure::parseCapStyle(const char *s)
     if (!strcmp(s,"butt")) return CAP_BUTT;
     if (!strcmp(s,"square")) return CAP_SQUARE;
     if (!strcmp(s,"round")) return CAP_ROUND;
-    throw cRuntimeError("invalid cap style '%s'", s);
+    throw cRuntimeError("Invalid cap style '%s'", s);
 }
 
 cFigure::JoinStyle cFigure::parseJoinStyle(const char *s)
@@ -773,14 +773,14 @@ cFigure::JoinStyle cFigure::parseJoinStyle(const char *s)
     if (!strcmp(s,"bevel")) return JOIN_BEVEL;
     if (!strcmp(s,"miter")) return JOIN_MITER;
     if (!strcmp(s,"round")) return JOIN_ROUND;
-    throw cRuntimeError("invalid join style '%s'", s);
+    throw cRuntimeError("Invalid join style '%s'", s);
 }
 
 cFigure::FillRule cFigure::parseFillRule(const char *s)
 {
     if (!strcmp(s,"evenodd")) return FILL_EVENODD;
     if (!strcmp(s,"nonzero")) return FILL_NONZERO;
-    throw cRuntimeError("invalid fill rule '%s'", s);
+    throw cRuntimeError("Invalid fill rule '%s'", s);
 }
 
 cFigure::Arrowhead cFigure::parseArrowhead(const char *s)
@@ -789,7 +789,7 @@ cFigure::Arrowhead cFigure::parseArrowhead(const char *s)
     if (!strcmp(s,"simple")) return ARROW_SIMPLE;
     if (!strcmp(s,"triangle")) return ARROW_TRIANGLE;
     if (!strcmp(s,"barbed")) return ARROW_BARBED;
-    throw cRuntimeError("invalid arrowhead style '%s'", s);
+    throw cRuntimeError("Invalid arrowhead style '%s'", s);
 }
 
 cFigure::Interpolation cFigure::parseInterpolation(const char *s)
@@ -797,7 +797,7 @@ cFigure::Interpolation cFigure::parseInterpolation(const char *s)
     if (!strcmp(s,"none")) return INTERPOLATION_NONE;
     if (!strcmp(s,"fast")) return INTERPOLATION_FAST;
     if (!strcmp(s,"best")) return INTERPOLATION_BEST;
-    throw cRuntimeError("invalid interpolation mode '%s'", s);
+    throw cRuntimeError("Invalid interpolation mode '%s'", s);
 }
 
 
@@ -816,7 +816,7 @@ cFigure::Anchor cFigure::parseAnchor(const char *s)
     if (!strcmp(s,"start")) return ANCHOR_BASELINE_START;
     if (!strcmp(s,"middle")) return ANCHOR_BASELINE_MIDDLE;
     if (!strcmp(s,"end")) return ANCHOR_BASELINE_END;
-    throw cRuntimeError("invalid anchor '%s'", s);
+    throw cRuntimeError("Invalid anchor '%s'", s);
 }
 
 cFigure::~cFigure()
@@ -987,7 +987,7 @@ void cFigure::setTags(const char *tags)
 void cFigure::addFigure(cFigure *figure)
 {
     if (!figure)
-        throw cRuntimeError(this, "addFigure(): cannot insert nullptr");
+        throw cRuntimeError(this, "addFigure(): Cannot insert nullptr");
     take(figure);
     children.push_back(figure);
     refreshTagBits();
@@ -998,9 +998,9 @@ void cFigure::addFigure(cFigure *figure)
 void cFigure::addFigure(cFigure *figure, int pos)
 {
     if (!figure)
-        throw cRuntimeError(this, "addFigure(): cannot insert nullptr");
+        throw cRuntimeError(this, "addFigure(): Cannot insert nullptr");
     if (pos < 0 || pos > (int)children.size())
-        throw cRuntimeError(this, "addFigure(): insert position %d out of bounds", pos);
+        throw cRuntimeError(this, "addFigure(): Insert position %d out of bounds", pos);
     take(figure);
     children.insert(children.begin() + pos, figure);
     refreshTagBits();
@@ -1012,7 +1012,7 @@ void cFigure::insertAfter(const cFigure *referenceFigure)
 {
     cFigure *parent = referenceFigure->getParentFigure();
     if (!parent)
-        throw cRuntimeError(this, "insertAfter(): reference figure has no parent");
+        throw cRuntimeError(this, "insertAfter(): Reference figure has no parent");
     int refPos = parent->findFigure(referenceFigure);
     ASSERT(refPos != -1);
     parent->addFigure(this, refPos + 1);
@@ -1022,7 +1022,7 @@ void cFigure::insertBefore(const cFigure *referenceFigure)
 {
     cFigure *parent = referenceFigure->getParentFigure();
     if (!parent)
-        throw cRuntimeError(this, "insertBefore(): reference figure has no parent");
+        throw cRuntimeError(this, "insertBefore(): Reference figure has no parent");
     int refPos = parent->findFigure(referenceFigure);
     ASSERT(refPos != -1);
     parent->addFigure(this, refPos);
@@ -1040,14 +1040,14 @@ cFigure *cFigure::removeFromParent()
 {
     cFigure *parent = getParentFigure();
     if (!parent)
-        throw cRuntimeError(this, "removeFromParent(): figure has no parent");
+        throw cRuntimeError(this, "removeFromParent(): Figure has no parent");
     return parent->removeFigure(this);
 }
 
 cFigure *cFigure::removeFigure(int pos)
 {
     if (pos < 0 || pos >= (int)children.size())
-        throw cRuntimeError(this, "removeFigure(): index %d out of bounds", pos);
+        throw cRuntimeError(this, "removeFigure(): Index %d out of bounds", pos);
     cFigure *figure = children[pos];
     children.erase(children.begin() + pos);
     drop(figure);
@@ -1059,7 +1059,7 @@ cFigure *cFigure::removeFigure(cFigure *figure)
 {
     int pos = findFigure(figure);
     if (pos == -1)
-        throw cRuntimeError(this, "removeFigure(): figure is not a child");
+        throw cRuntimeError(this, "removeFigure(): Figure is not a child");
     return removeFigure(pos);
 }
 
@@ -1082,7 +1082,7 @@ int cFigure::findFigure(const cFigure *figure) const
 cFigure *cFigure::getFigure(int pos) const
 {
     if (pos < 0 || pos >= (int)children.size())
-        throw cRuntimeError(this, "getFigure(): index %d out of bounds", pos);
+        throw cRuntimeError(this, "getFigure(): Index %d out of bounds", pos);
     return children[pos];
 }
 
@@ -1192,7 +1192,7 @@ bool cFigure::isAbove(const cFigure *figure) const
 {
     cFigure *parent = getParentFigure();
     if (!parent || figure->getParentFigure() != parent)
-        throw cRuntimeError(this, "isAbove(): figures do not share the same parent (or have no parent)");
+        throw cRuntimeError(this, "isAbove(): Figures do not share the same parent (or have no parent)");
     double zDiff = getZIndex() - figure->getZIndex();
     if (zDiff > 0)
         return true;
@@ -1209,7 +1209,7 @@ bool cFigure::isBelow(const cFigure *figure) const
 {
     cFigure *parent = getParentFigure();
     if (!parent || figure->getParentFigure() != parent)
-        throw cRuntimeError(this, "isBelow(): figures do not share the same parent (or have no parent)");
+        throw cRuntimeError(this, "isBelow(): Figures do not share the same parent (or have no parent)");
     double zDiff = getZIndex() - figure->getZIndex();
     if (zDiff > 0)
         return false;
@@ -1247,7 +1247,7 @@ void cFigure::raiseToTop()
     // move to back
     cFigure *parent = getParentFigure();
     if (!parent)
-        throw cRuntimeError(this, "raiseToTop(): figure has no parent figure");
+        throw cRuntimeError(this, "raiseToTop(): Figure has no parent figure");
     int myPos = parent->findFigure(this);
     if (myPos != (int)parent->children.size() - 1) {
         parent->children.erase(parent->children.begin() + myPos);
@@ -1265,7 +1265,7 @@ void cFigure::lowerToBottom()
     // move to front
     cFigure *parent = getParentFigure();
     if (!parent)
-        throw cRuntimeError(this, "lowerToBottom(): figure has no parent figure");
+        throw cRuntimeError(this, "lowerToBottom(): Figure has no parent figure");
     int myPos = parent->findFigure(this);
     if (myPos != 0) {
         parent->children.erase(parent->children.begin() + myPos);
@@ -2413,7 +2413,7 @@ static double getNum(const char *&s)
     char *end;
     double d = opp_strtod(s, &end);
     if (end == s)
-        throw cRuntimeError("number expected");
+        throw cRuntimeError("Number expected");
     s = end;
     return d;
 }
@@ -2422,7 +2422,7 @@ static bool getBool(const char *&s)
 {
     double d = getNum(s);
     if (d != 0 && d != 1)
-        throw cRuntimeError("boolean (0 or 1) expected");
+        throw cRuntimeError("Boolean (0 or 1) expected");
     return d != 0;
 }
 
@@ -2548,7 +2548,7 @@ void cPathFigure::setPath(const char *pathString)
                     break;
                 }
                 default:
-                    throw cRuntimeError("unknown drawing primitive '%c'", code);
+                    throw cRuntimeError("Unknown drawing primitive '%c'", code);
             }
             while (opp_isspace(*s))
                 s++;
@@ -2666,7 +2666,7 @@ const char *cPathFigure::getPath() const
                 break;
             }
             default:
-                throw cRuntimeError(this, "unknown path item '%c'", base->code);
+                throw cRuntimeError(this, "Unknown path item '%c'", base->code);
         }
         os << " ";
     }
@@ -3497,7 +3497,7 @@ cFigure *cCanvas::parseFigure(cProperty *property) const
             std::string parentPath = std::string(path, lastDot - path);
             parent = getFigureByPath(parentPath.c_str());
             if (!parent)
-                throw cRuntimeError("parent figure \"%s\" not found", parentPath.c_str());
+                throw cRuntimeError("Parent figure \"%s\" not found", parentPath.c_str());
             name = lastDot + 1;
         }
         else {
@@ -3505,7 +3505,7 @@ cFigure *cCanvas::parseFigure(cProperty *property) const
             name = path;
         }
         if (!name[0])
-            throw cRuntimeError("figure name cannot be empty");
+            throw cRuntimeError("Figure name cannot be empty");
 
         cFigure *figure = parent->getFigure(name);
         if (!figure) {
@@ -3593,7 +3593,7 @@ cFigure *cCanvas::createFigure(const char *type) const
         cObject *obj = factory->createOne();
         figure = dynamic_cast<cFigure *>(obj);
         if (!figure)
-            throw cRuntimeError("Wrong figure class: cannot cast %s to cFigure", obj->getClassName());
+            throw cRuntimeError("Wrong figure class: Cannot cast %s to cFigure", obj->getClassName());
     }
     return figure;
 }
@@ -3631,7 +3631,7 @@ uint64_t cCanvas::parseTags(const char *s)
         else {
             bitIndex = tagBitIndex.size();
             if (bitIndex >= 64)
-                throw cRuntimeError(this, "Cannot add figure tag \"%s\": maximum 64 tags supported", tag);
+                throw cRuntimeError(this, "Cannot add figure tag \"%s\": Maximum 64 tags supported", tag);
             tagBitIndex[tag] = bitIndex;
         }
         result |= ((uint64_t)1) << bitIndex;

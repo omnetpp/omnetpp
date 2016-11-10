@@ -146,9 +146,9 @@ static void assertType(cConfigOption *option, bool isPerObject, cConfigOption::T
 {
     if (option->isPerObject() != isPerObject) {
         if (option->isPerObject())
-            throw cRuntimeError("Option %s= is read from the configuration in the wrong way: it is per-object configuration", option->getName());
+            throw cRuntimeError("Option %s= is read from the configuration in the wrong way: It is per-object configuration", option->getName());
         else
-            throw cRuntimeError("Option %s= is read from the configuration in the wrong way: it is global (not per-object) configuration", option->getName());
+            throw cRuntimeError("Option %s= is read from the configuration in the wrong way: It is global (not per-object) configuration", option->getName());
     }
     if (option->getType() != requiredType)
         throw cRuntimeError("Option %s= is read from the configuration with the wrong type (type=%s, actual=%s)",

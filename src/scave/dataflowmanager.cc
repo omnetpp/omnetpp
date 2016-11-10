@@ -56,11 +56,11 @@ void DataflowManager::addChannel(Channel *channel)
 void DataflowManager::connect(Port *src, Port *dest)
 {
     if (src->getChannel())
-        throw opp_runtime_error("connect: source port already connected");
+        throw opp_runtime_error("connect: Source port already connected");
     if (dest->getChannel())
-        throw opp_runtime_error("connect: destination port already connected");
+        throw opp_runtime_error("connect: Destination port already connected");
     if (!dest->getNode())
-        throw opp_runtime_error("connect: port's owner node not filled in");
+        throw opp_runtime_error("connect: Port's owner node not filled in");
 
     Channel *ch = new Channel();
     addChannel(ch);
@@ -148,14 +148,14 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     // check all nodes have finished now
     for (i = 0; i < nodes.size(); i++)
         if (!nodes[i]->getAlreadyFinished())
-            throw opp_runtime_error("execute: deadlock: no ready nodes but node %s not finished",
+            throw opp_runtime_error("execute: Deadlock: No ready nodes but node %s not finished",
                     nodes[i]->getNodeType()->getName());
 
 
     // check all channel buffers are empty
     for (i = 0; i < channels.size(); i++)
         if (!channels[i]->eof())
-            throw opp_runtime_error("execute: all nodes finished but channel %d not at eof", i);
+            throw opp_runtime_error("execute: All nodes finished but channel %d not at eof", i);
 
 }
 

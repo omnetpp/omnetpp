@@ -405,13 +405,13 @@ const char *PARSIMPACK_BOILERPLATE =
     "template<typename T>\n"
     "void doParsimPacking(omnetpp::cCommBuffer *, const T& t)\n"
     "{\n"
-    "    throw omnetpp::cRuntimeError(\"Parsim error: no doParsimPacking() function for type %s\", omnetpp::opp_typename(typeid(t)));\n"
+    "    throw omnetpp::cRuntimeError(\"Parsim error: No doParsimPacking() function for type %s\", omnetpp::opp_typename(typeid(t)));\n"
     "}\n"
     "\n"
     "template<typename T>\n"
     "void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)\n"
     "{\n"
-    "    throw omnetpp::cRuntimeError(\"Parsim error: no doParsimUnpacking() function for type %s\", omnetpp::opp_typename(typeid(t)));\n"
+    "    throw omnetpp::cRuntimeError(\"Parsim error: No doParsimUnpacking() function for type %s\", omnetpp::opp_typename(typeid(t)));\n"
     "}\n"
     "\n"
     "}  // namespace omnetpp\n"
@@ -796,7 +796,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     }
     else {
         if (tdIt == PRIMITIVE_TYPES.end())
-            throw NEDException("internal error - unknown primitive data type '%s'", it->ftype.c_str());
+            throw NEDException("Internal error - unknown primitive data type '%s'", it->ftype.c_str());
         // defaults:
         it->datatype = tdIt->second.cppTypeName;
         it->argtype = tdIt->second.cppTypeName;
@@ -852,7 +852,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
             info.classtype = STRUCT;
         }
         else {
-            throw NEDException("internal error: invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
+            throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
         }
         // if announced earlier as noncobject, accept that.
         if (isClassDeclared(info.msgqname)) {
@@ -913,7 +913,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
             info.msgbaseclass = "";
         }
         else {
-            throw NEDException("internal error");
+            throw NEDException("Internal error");
         }
     }
     else if (info.msgbase == "void") {
@@ -1491,11 +1491,11 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
 
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fisabstract)
-            throw NEDException("abstract fields are not supported in a struct");
+            throw NEDException("Abstract fields are not supported in a struct");
         if (it->classtype == COWNEDOBJECT)
             throw NEDException("cOwnedObject fields are not supported in a struct");
         if (it->fisarray && it->farraysize.empty())
-            throw NEDException("dynamic arrays are not supported in a struct");
+            throw NEDException("Dynamic arrays are not supported in a struct");
         if (it->fisarray && !it->farraysize.empty()) {
             if (it->fisprimitivetype && !it->fval.empty()) {
                 CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
@@ -1890,7 +1890,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             }
         }
         else {
-            throw NEDException("internal error");
+            throw NEDException("Internal error");
         }
     }
     CC << "        default: return \"\";\n";

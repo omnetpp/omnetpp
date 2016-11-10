@@ -892,7 +892,7 @@ Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     else if (modeString == "linear")
         mode = LINEAR;
     else
-        throw opp_runtime_error("unknown interpolation mode: %s", modeString.c_str());
+        throw opp_runtime_error("Unknown interpolation mode: %s", modeString.c_str());
 
     Node *node = new IntegrateNode(mode);
     node->setNodeType(this);
@@ -984,7 +984,7 @@ Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     else if (modeString == "linear")
         mode = LINEAR;
     else
-        throw opp_runtime_error("unknown interpolation mode: %s", modeString.c_str());
+        throw opp_runtime_error("Unknown interpolation mode: %s", modeString.c_str());
 
     Node *node = new TimeAverageNode(mode);
     node->setNodeType(this);

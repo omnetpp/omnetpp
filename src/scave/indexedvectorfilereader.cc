@@ -78,9 +78,9 @@ void IndexedVectorFileReaderNode::readIndexFile()
     const char *fn = filename.c_str();
 
     if (!IndexFile::isVectorFile(fn))
-        throw opp_runtime_error("indexed vector file reader: not a vector file, file %s", fn);
+        throw opp_runtime_error("Indexed vector file reader: Not a vector file, file %s", fn);
     if (!IndexFile::isIndexFileUpToDate(fn))
-        throw opp_runtime_error("indexed vector file reader: index file is not up to date, file %s", fn);
+        throw opp_runtime_error("Indexed vector file reader: Index file is not up to date, file %s", fn);
 
     string indexFileName = IndexFile::getIndexFileName(fn);
     IndexFileReader reader(indexFileName.c_str());
@@ -93,7 +93,7 @@ void IndexedVectorFileReaderNode::readIndexFile()
         portData.vector = index->getVectorById(vectorId);
 
         if (!portData.vector)
-            throw opp_runtime_error("indexed vector file reader: vector %d not found, file %s",
+            throw opp_runtime_error("Indexed vector file reader: Vector %d not found, file %s",
                     vectorId, indexFileName.c_str());
 
         Blocks& blocks = portData.vector->blocks;
@@ -189,7 +189,7 @@ Port *IndexedVectorFileReaderNodeType::getPort(Node *node, const char *portname)
     IndexedVectorFileReaderNode *node1 = dynamic_cast<IndexedVectorFileReaderNode *>(node);
     VectorResult vector;
     if (!parseInt(portname, vector.vectorId))
-        throw opp_runtime_error("indexed file reader node: port should be a vector id, received: %s", portname);
+        throw opp_runtime_error("Indexed file reader node: Port should be a vector id, received: %s", portname);
     return node1->addVector(vector);
 }
 

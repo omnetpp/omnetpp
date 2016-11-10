@@ -409,7 +409,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
                         break;
 
                     default:
-                        throw opp_runtime_error("unknown column type: '%c'", columns[j]);
+                        throw opp_runtime_error("Unknown column type: '%c'", columns[j]);
                 }
             }
             bufferPrintf(port, "\n");

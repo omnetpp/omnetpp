@@ -136,7 +136,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
     simtime_t lookahead = lookaheadcalc->getCurrentLookahead(msg, destProcId, data);
     simtime_t eot = sim->getSimTime() + lookahead;
     if (eot < segInfo[destProcId].lastEotSent)
-        throw cRuntimeError("cNullMessageProtocol error: attempt to decrease EOT");
+        throw cRuntimeError("cNullMessageProtocol error: Attempt to decrease EOT");
 
     // send a null message only if EOT is better than last time
     bool sendNull = (eot > segInfo[destProcId].lastEotSent);
@@ -279,7 +279,7 @@ void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)
     if (eot == segInfo[procId].lastEotSent)
         return;
     if (eot < segInfo[procId].lastEotSent)
-        throw cRuntimeError("cNullMessageProtocol error: attempt to decrease EOT");
+        throw cRuntimeError("cNullMessageProtocol error: Attempt to decrease EOT");
     segInfo[procId].lastEotSent = eot;
 
     // calculate time of next null message sending, and schedule "resend-EOT" event

@@ -53,7 +53,7 @@ void cDelayChannel::rereadPars()
 {
     delay = par("delay");
     if (delay < 0)
-        throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delay));
+        throw cRuntimeError(this, "Negative delay %s", SIMTIME_STR(delay));
     setFlag(FL_ISDISABLED, par("disabled"));
     setFlag(FL_DELAY_NONZERO, delay != 0);
 }

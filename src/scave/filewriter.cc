@@ -52,7 +52,7 @@ void FileWriterNode::process()
     if (!f) {
         f = fopen(fileName.c_str(), "w");
         if (!f)
-            throw opp_runtime_error("cannot open '%s' for write", fileName.c_str());
+            throw opp_runtime_error("Cannot open '%s' for write", fileName.c_str());
 
         setlocale(LC_NUMERIC, "C");
 

@@ -136,7 +136,7 @@ void FileReader::checkConsistency(bool checkDataPointer) const
           (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
 
     if (!ok)
-        throw opp_runtime_error("FileReader: internal error");
+        throw opp_runtime_error("FileReader: Internal error");
 }
 
 FileReader::FileChangedState FileReader::checkFileForChanges()

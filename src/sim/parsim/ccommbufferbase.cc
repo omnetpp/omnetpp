@@ -108,12 +108,12 @@ void cCommBufferBase::assertBufferEmpty()
         return;
 
     if (mPosition > mMsgSize) {
-        throw cRuntimeError("internal error: cCommBuffer pack/unpack mismatch: "
+        throw cRuntimeError("Internal error: cCommBuffer pack/unpack mismatch: "
                              "read %d bytes past end of buffer while unpacking %d bytes",
                              mPosition-mMsgSize, mPosition);
     }
     else {
-        throw cRuntimeError("internal error: cCommBuffer pack/unpack mismatch: "
+        throw cRuntimeError("Internal error: cCommBuffer pack/unpack mismatch: "
                             "%d extra bytes remained in buffer after unpacking %d bytes",
                             mMsgSize-mPosition, mPosition);
     }

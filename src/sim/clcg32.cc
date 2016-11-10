@@ -54,7 +54,7 @@ void cLCG32::initialize(int seedSet, int rngId, int numRngs,
     else {
         seed = cConfiguration::parseLong(value, nullptr);
         if (seed == 0)
-            throw cRuntimeError("cLCG32: zero is not allowed as seed in %s config file entry", key);
+            throw cRuntimeError("cLCG32: Zero is not allowed as seed in %s config file entry", key);
     }
 }
 
@@ -85,7 +85,7 @@ unsigned long cLCG32::intRandMax()
 unsigned long cLCG32::intRand(unsigned long n)
 {
     if (n > LCG32_MAX)
-        throw cRuntimeError("cLCG32: intRand(%d): argument out of range 1..2^31-2");
+        throw cRuntimeError("cLCG32: intRand(%d): Argument out of range 1..2^31-2");
 
     // code from MersenneTwister.h, Richard J. Wagner rjwagner@writeme.com
     // Find which bits are used in n

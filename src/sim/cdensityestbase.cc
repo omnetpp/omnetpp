@@ -151,12 +151,12 @@ void cDensityEstBase::merge(const cStatistic *other)
 
         // make sure that cells are aligned
         if (getNumCells() != otherd->getNumCells())
-            throw cRuntimeError(this, "Cannot merge (%s)%s: different number of histogram cells (%d vs %d)",
+            throw cRuntimeError(this, "Cannot merge (%s)%s: Different number of histogram cells (%d vs %d)",
                     otherd->getClassName(), otherd->getFullPath().c_str(), getNumCells(), otherd->getNumCells());
         int n = getNumCells();
         for (int i = 0; i <= n; i++)
             if (getBasepoint(i) != otherd->getBasepoint(i))
-                throw cRuntimeError(this, "Cannot merge (%s)%s: histogram cells are not aligned",
+                throw cRuntimeError(this, "Cannot merge (%s)%s: Histogram cells are not aligned",
                         otherd->getClassName(), otherd->getFullPath().c_str());
 
 

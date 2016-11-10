@@ -87,33 +87,33 @@ void SimTime::initError(double d)
 
 void SimTime::rangeErrorInt64(double i64)
 {
-    throw cRuntimeError("Cannot convert %g to simtime_t: out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("Cannot convert %g to simtime_t: Out of range %s, allowed by scale exponent %d",
             i64*invfscale, range().c_str(), scaleexp);
 }
 
 void SimTime::rangeErrorSeconds(int64_t sec)
 {
-    throw cRuntimeError("Cannot convert % " LL "d to simtime_t: out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("Cannot convert % " LL "D to simtime_t: Out of range %s, allowed by scale exponent %d",
             sec, range().c_str(), scaleexp);
 }
 
 void SimTime::overflowAdding(const SimTime& x)
 {
     t -= x.t;  // restore original value
-    throw cRuntimeError("simtime_t overflow adding %s to %s: result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t overflow adding %s to %s: Result is out of range %s, allowed by scale exponent %d",
             x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
 void SimTime::overflowSubtracting(const SimTime& x)
 {
     t += x.t;  // restore original value
-    throw cRuntimeError("simtime_t overflow subtracting %s from %s: result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t overflow subtracting %s from %s: Result is out of range %s, allowed by scale exponent %d",
             x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
 void SimTime::overflowNegating()
 {
-    throw cRuntimeError("Cannot negate simtime_t %s: it is internally represented with INT64_MIN "
+    throw cRuntimeError("Cannot negate simtime_t %s: It is internally represented with INT64_MIN "
             "that has no positive equivalent (try decreasing precision)", str().c_str());
 }
 
@@ -131,7 +131,7 @@ SimTime::SimTime(int64_t value, SimTimeUnit unit)
         int64_t mul = exp10(-expdiff);
         int64_t tmp = t / mul;
         if (mul == -1 || tmp * mul != t)
-            throw cRuntimeError("simtime_t error: %" LL "d*10^%d cannot be represented precisely using the current scale exponent %d, "
+            throw cRuntimeError("simtime_t: %" LL "d*10^%d cannot be represented precisely using the current scale exponent %d, "
                     "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
                     value, exponent, scaleexp);
         t = tmp;
@@ -140,7 +140,7 @@ SimTime::SimTime(int64_t value, SimTimeUnit unit)
         int64_t mul = exp10(expdiff);
         t *= mul;
         if (mul == -1 || t / mul != value)
-            throw cRuntimeError("simtime_t overflow: cannot represent %" LL "d*10^%d, out of range %s allowed by scale exponent %d",
+            throw cRuntimeError("simtime_t overflow: Cannot represent %" LL "d*10^%d, out of range %s allowed by scale exponent %d",
                     value, exponent, range().c_str(), scaleexp);
     }
 }
@@ -153,7 +153,7 @@ void SimTime::checkedMul(int64_t x)
         return;
     }
 
-    throw cRuntimeError("simtime_t overflow multiplying %s by %" LL "d: result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t overflow multiplying %s by %" LL "d: Result is out of range %s, allowed by scale exponent %d",
         str().c_str(), x, range().c_str(), scaleexp);
 }
 
@@ -169,7 +169,7 @@ int64_t SimTime::inUnit(SimTimeUnit unit) const
     else if (expdiff < 0) {
         int64_t mul = exp10(-expdiff);
         if (mul == -1 || (x < 0 ? -x : x) >= INT64_MAX / mul)
-            throw cRuntimeError("simtime: inUnits(): overflow: cannot represent %s in units of 10^%ds", str().c_str(), exponent);
+            throw cRuntimeError("SimTime::inUnit(): Overflow: Cannot represent %s in units of 10^%ds", str().c_str(), exponent);
         x *= mul;
     }
     return x;

@@ -213,7 +213,7 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
         }
     }
 
-    throw opp_runtime_error("index out of range");
+    throw opp_runtime_error("Index out of range");
 }
 
 bool Event::isSelfMessage(BeginSendEntry *beginSendEntry)
@@ -249,7 +249,7 @@ EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
             return nullptr;
     }
 
-    throw opp_runtime_error("neither EndSendEntry nor DeleteMessageEntry found");
+    throw opp_runtime_error("Neither EndSendEntry nor DeleteMessageEntry found");
 }
 
 simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)

@@ -146,7 +146,7 @@ void cSingleFingerprintCalculator::initialize(const char *expectedFingerprints, 
             if (options.empty())
                 options = currentOptions;
             else if (options != currentOptions)
-                throw cRuntimeError("fingerprint option suffixes (parts after the '/') must agree"); //TODO better msg
+                throw cRuntimeError("Fingerprint option suffixes (parts after the '/') must agree"); //TODO better msg
         }
     }
 

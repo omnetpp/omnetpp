@@ -60,9 +60,9 @@ Datum parseColumns(char **tokens, int numtokens, const string& columns, const ch
     int colno = columns.size();
 
     if (colno > numtokens - 1)
-        throw ResultFileFormatException("invalid vector file syntax: missing columns", file, lineno, offset);
+        throw ResultFileFormatException("Invalid vector file syntax: Missing columns", file, lineno, offset);
     if (numtokens - 1 > colno)
-        throw ResultFileFormatException("invalid vector file syntax: extra columns", file, lineno, offset);
+        throw ResultFileFormatException("Invalid vector file syntax: Extra columns", file, lineno, offset);
 
     // optimization:
     //   first process the two most common case, then the general case
@@ -70,14 +70,14 @@ Datum parseColumns(char **tokens, int numtokens, const string& columns, const ch
     if (colno == 2 && columns[0] == 'T' && columns[1] == 'V') {
         // parse time and value
         if (!parseSimtime(tokens[1], a.xp) || !parseDouble(tokens[2], a.y))
-            throw ResultFileFormatException("invalid vector file syntax: invalid time or value column", file, lineno, offset);
+            throw ResultFileFormatException("Invalid vector file syntax: Invalid time or value column", file, lineno, offset);
         a.eventNumber = -1;
         a.x = a.xp.dbl();
     }
     else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V') {
         // parse event number, time and value
         if (!parseInt64(tokens[1], a.eventNumber) || !parseSimtime(tokens[2], a.xp) || !parseDouble(tokens[3], a.y))
-            throw ResultFileFormatException("invalid vector file syntax: invalid event number, time or value column", file, lineno, offset);
+            throw ResultFileFormatException("Invalid vector file syntax: Invalid event number, time or value column", file, lineno, offset);
         a.x = a.xp.dbl();
     }
     else {  // interpret general case
@@ -86,22 +86,22 @@ Datum parseColumns(char **tokens, int numtokens, const string& columns, const ch
             switch (columns[i]) {
                 case 'E':
                     if (!parseInt64(tokens[i+1], a.eventNumber))
-                        throw ResultFileFormatException("invalid vector file syntax: invalid event number", file, lineno, offset);
+                        throw ResultFileFormatException("Invalid vector file syntax: Invalid event number", file, lineno, offset);
                     break;
 
                 case 'T':
                     if (!parseSimtime(tokens[i+1], a.xp))
-                        throw ResultFileFormatException("invalid vector file syntax: invalid time", file, lineno, offset);
+                        throw ResultFileFormatException("Invalid vector file syntax: Invalid time", file, lineno, offset);
                     a.x = a.xp.dbl();
                     break;
 
                 case 'V':
                     if (!parseDouble(tokens[i+1], a.y))
-                        throw ResultFileFormatException("invalid vector file syntax: invalid value", file, lineno, offset);
+                        throw ResultFileFormatException("Invalid vector file syntax: Invalid value", file, lineno, offset);
                     break;
 
                 default:
-                    throw ResultFileFormatException("invalid vector file syntax: unknown column type", file, lineno, offset);
+                    throw ResultFileFormatException("Invalid vector file syntax: Unknown column type", file, lineno, offset);
             }
         }
     }
@@ -112,7 +112,7 @@ Datum parseColumns(char **tokens, int numtokens, const string& columns, const ch
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(cond, msg)    if (!(cond)) { throw ResultFileFormatException("vector file reader" msg, file, lineNo); }
+#define CHECK(cond, msg)    if (!(cond)) { throw ResultFileFormatException("Vector file reader" msg, file, lineNo); }
 
 void VectorFileReaderNode::process()
 {

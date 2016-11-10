@@ -48,7 +48,7 @@ void cISPEventLogger::startRun()
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
     fout = fopen(fname, "wb");
     if (!fout)
-        throw cRuntimeError("cISPEventLogger error: cannot open file '%s' for write", fname);
+        throw cRuntimeError("cISPEventLogger error: Cannot open file '%s' for write", fname);
 }
 
 void cISPEventLogger::endRun()
@@ -66,7 +66,7 @@ void cISPEventLogger::processReceivedMessage(cMessage *msg, int destModuleId, in
 void cISPEventLogger::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
     if (msg->getSchedulingPriority() != 0)
-        throw cRuntimeError("cISPEventLogger: outgoing message (%s)%s has nonzero priority set -- "
+        throw cRuntimeError("cISPEventLogger: Outgoing message (%s)%s has nonzero priority set -- "
                             "this conflicts with ISP which uses priority for its own purposes",
                             msg->getClassName(), msg->getName());
     cParsimProtocolBase::processOutgoingMessage(msg, procId, moduleId, gateId, data);
@@ -86,7 +86,7 @@ cEvent *cISPEventLogger::takeNextEvent()
         e.srcProcId = event->getSrcProcId();
 
         if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout) < 1)
-            throw cRuntimeError("cISPEventLogger: file write failed (disk full?)");
+            throw cRuntimeError("cISPEventLogger: File write failed (disk full?)");
     }
 
     return event;

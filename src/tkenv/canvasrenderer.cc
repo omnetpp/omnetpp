@@ -140,7 +140,7 @@ void CanvasRenderer::refreshFigureRec(cFigure *figure, const cFigure::Transform&
 void CanvasRenderer::assertCanvas()
 {
     if (!canvas)
-        throw cRuntimeError("CanvasRenderer: no canvas object");
+        throw cRuntimeError("CanvasRenderer: No canvas object");
 }
 
 std::string CanvasRenderer::getAllTags()

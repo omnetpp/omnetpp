@@ -252,7 +252,7 @@ bool Scenario::incOuter(int n)
             int pos = otherIteration->iterator.getPosition();
             bool ok = var->iterator.gotoPosition(pos, iteratorsByName);
             if (!ok)
-                throw cRuntimeError("parallel iterator ${...!%s} does not have enough values", var->parvar.c_str());
+                throw cRuntimeError("Parallel iterator ${...!%s} does not have enough values", var->parvar.c_str());
         }
         else {
             var->iterator.restart(iteratorsByName);
@@ -283,7 +283,7 @@ void Scenario::gotoRun(int runNumber)
 {
     // spin the iteration variables to the given run number
     if (!restart())
-        throw cRuntimeError("Iterators or constraint too restrictive: not even one run can be generated");
+        throw cRuntimeError("Iterators or constraint too restrictive: Not even one run can be generated");
     for (int i = 0; i < runNumber; i++)
         if (!next())
             throw cRuntimeError("Run number %d is out of range", runNumber);

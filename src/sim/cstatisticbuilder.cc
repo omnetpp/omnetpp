@@ -76,7 +76,7 @@ TristateBool cStatisticBuilder::parseTristateBool(const char *s, const char *wha
     else if (strcmp(s, "false") == 0)
         return TRISTATE_FALSE;
     else
-        throw opp_runtime_error("invalid value '%s' for %s, expecting 'true' or 'false'", s, what);
+        throw opp_runtime_error("Invalid value '%s' for %s, expecting 'true' or 'false'", s, what);
 }
 
 void cStatisticBuilder::addResultRecorders(cComponent *component)
@@ -212,7 +212,7 @@ SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, const c
         }
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): error in source=%s: %s",
+        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): Error in source=%s: %s",
                 statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
     }
 }
@@ -234,7 +234,7 @@ void cStatisticBuilder::doResultRecorder(const SignalSource& source, const char 
         }
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): bad recording mode '%s': %s",
+        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): Bad recording mode '%s': %s",
                 statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
     }
 }

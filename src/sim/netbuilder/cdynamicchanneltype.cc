@@ -80,17 +80,17 @@ cProperties *cDynamicChannelType::getParamProperties(const char *paramName) cons
 
 cProperties *cDynamicChannelType::getGateProperties(const char *gateName) const
 {
-    throw cRuntimeError("cDynamicChannelType::getGateProperties(): channels have no gates");
+    throw cRuntimeError("cDynamicChannelType::getGateProperties(): Channels have no gates");
 }
 
 cProperties *cDynamicChannelType::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
-    throw cRuntimeError("cDynamicChannelType::getSubmoduleProperties(): channels do not contain submodules");
+    throw cRuntimeError("cDynamicChannelType::getSubmoduleProperties(): Channels do not contain submodules");
 }
 
 cProperties *cDynamicChannelType::getConnectionProperties(int connectionId, const char *channelType) const
 {
-    throw cRuntimeError("cDynamicChannelType::getConnectionProperties(): channels do not contain further connections");
+    throw cRuntimeError("cDynamicChannelType::getConnectionProperties(): Channels do not contain further connections");
 }
 
 std::string cDynamicChannelType::getPackageProperty(const char *name) const

@@ -165,7 +165,7 @@ void cMessage::parsimPack(cCommBuffer *buffer) const
     cEvent::parsimPack(buffer);
 
     if (contextPointer || controlInfo || tags)
-        throw cRuntimeError(this,"parsimPack(): cannot pack object with contextPointer, controlInfo or tags set");
+        throw cRuntimeError(this,"parsimPack(): Cannot pack object with contextPointer, controlInfo or tags set");
 
     buffer->pack(messageKind);
     buffer->pack(timestamp);
@@ -272,9 +272,9 @@ cMessage *cMessage::privateDup() const
 void cMessage::setControlInfo(cObject *p)
 {
     if (!p)
-        throw cRuntimeError(this, "setControlInfo(): pointer is nullptr");
+        throw cRuntimeError(this, "setControlInfo(): Pointer is nullptr");
     if (controlInfo)
-        throw cRuntimeError(this, "setControlInfo(): message already has control info attached");
+        throw cRuntimeError(this, "setControlInfo(): Message already has control info attached");
     if (p->isOwnedObject())
         take((cOwnedObject *)p);
     controlInfo = p;
@@ -299,9 +299,9 @@ cMsgPar& cMessage::par(int index)
     cArray& parlist = getParList();
     cObject *p = parlist.get(index);
     if (!p)
-        throw cRuntimeError(this, "par(int): has no parameter #%d", index);
+        throw cRuntimeError(this, "par(int): Has no parameter #%d", index);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this, "par(int): parameter #%d is of type %s, not cMsgPar", index, p->getClassName());
+        throw cRuntimeError(this, "par(int): Parameter #%d is of type %s, not cMsgPar", index, p->getClassName());
     return *(cMsgPar *)p;
 }
 
@@ -310,9 +310,9 @@ cMsgPar& cMessage::par(const char *name)
     cArray& parlist = getParList();
     cObject *p = parlist.get(name);
     if (!p)
-        throw cRuntimeError(this, "par(const char *): has no parameter called '%s'", name);
+        throw cRuntimeError(this, "par(const char *): Has no parameter called '%s'", name);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this, "par(const char *): parameter '%s' is of type %s, not cMsgPar", name, p->getClassName());
+        throw cRuntimeError(this, "par(const char *): Parameter '%s' is of type %s, not cMsgPar", name, p->getClassName());
     return *(cMsgPar *)p;
 }
 
@@ -370,7 +370,7 @@ bool cMessage::isStale()
 
 void cMessage::execute()
 {
-    throw new cRuntimeError("illegal call to cMessage::execute()");
+    throw new cRuntimeError("Illegal call to cMessage::execute()");
 }
 
 void cMessage::doAddTag(cObject *tag)

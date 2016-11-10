@@ -35,7 +35,7 @@ void cResultRecorder::init(cComponent *comp, const char *statsName, const char *
     manualAttrs = attrs;
     finishCalled = false;
     if ((!attrsProperty) == (!manualAttrs))
-        throw cRuntimeError("cResultRecorder::init(): exactly one of attrsProperty and manualAttrs must be specified");
+        throw cRuntimeError("cResultRecorder::init(): Exactly one of attrsProperty and manualAttrs must be specified");
 }
 
 void cResultRecorder::callFinish(cResultFilter *prev)
@@ -116,7 +116,7 @@ struct Resolver : public opp_substitutevariables_resolver
         else if (opp_stringbeginswith(name.c_str(), "namePart") && opp_isdigit(name.c_str()[8]))
             return getPart(self->getStatisticName(), strtol(name.c_str() + 8, nullptr, 10) - 1);
         else
-            throw cRuntimeError("unknown variable $%s", name.c_str());
+            throw cRuntimeError("Unknown variable $%s", name.c_str());
     }
 };
 }

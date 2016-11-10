@@ -27,7 +27,7 @@ SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
 {
     array = nullptr;
     if (windowSize < 1 || windowSize > 100000)
-        throw opp_runtime_error("slidingwinavg: invalid window size %d", windowSize);
+        throw opp_runtime_error("slidingwinavg: Invalid window size %d", windowSize);
     winsize = windowSize;
     array = new Datum[winsize];
     count = pos = 0;

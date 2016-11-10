@@ -138,7 +138,7 @@ void cNEDFunction::parseSignature(const char *signature)
 void cNEDFunction::checkArgs(cNEDValue argv[], int argc)
 {
     if (argc < minArgc || (argc > maxArgc && !hasVarargs_))
-        throw cRuntimeError("%s: called with wrong number of arguments", getName());
+        throw cRuntimeError("%s: Called with wrong number of arguments", getName());
 
     int n = std::min(argc, maxArgc);
     for (int i = 0; i < n; i++) {

@@ -69,7 +69,7 @@ const char *FileGlobber::getNext()
         *(s+1) = '\0';  // points (s+1) points either after last "/" or at beg of string.
 
         if (strchr(data->dir, '*') || strchr(data->dir, '?'))
-            throw std::runtime_error(std::string(data->dir)+": wildcard characters in directory names are not allowed");
+            throw std::runtime_error(std::string(data->dir)+": Wildcard characters in directory names are not allowed");
 
         // get first file
         data->handle = _findfirst(fnamepattern.c_str(), &data->fdata);
@@ -156,7 +156,7 @@ const char *FileGlobber::getNext()
         *(s+1) = '\0';  // points (s+1) points either after last "/" or at beginning of string.
 
         if (strchr(data->dir, '*') || strchr(data->dir, '?'))
-            throw std::runtime_error(std::string(data->dir)+": wildcard characters in directory names are not allowed");
+            throw std::runtime_error(std::string(data->dir)+": Wildcard characters in directory names are not allowed");
 
         // get first file
         errno = 0;
@@ -167,12 +167,12 @@ const char *FileGlobber::getNext()
             data->pdir = opendir(data->dir);
 
         if (!data->pdir)
-            throw std::runtime_error(std::string(data->dir)+": directory cannot be opened");
+            throw std::runtime_error(std::string(data->dir)+": Directory cannot be opened");
 
         data->pent = readdir(data->pdir);
 
         if (errno)
-            throw std::runtime_error(std::string(data->dir)+": cannot read directory");
+            throw std::runtime_error(std::string(data->dir)+": Cannot read directory");
 
         if (!data->pent)
             return nullptr;
@@ -192,7 +192,7 @@ const char *FileGlobber::getNext()
 
         data->pent = readdir(data->pdir);
         if (errno)
-            throw std::runtime_error(std::string(data->dir)+": cannot read directory");
+            throw std::runtime_error(std::string(data->dir)+": Cannot read directory");
 
         if (!data->pent) {
             return nullptr;

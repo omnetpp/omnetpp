@@ -189,7 +189,7 @@ void Tkenv::doRun()
         // set up Tcl/Tk
         interp = initTk(args->getArgCount(), args->getArgVector());
         if (!interp)
-            throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
+            throw opp_runtime_error("Tkenv: Cannot create Tcl interpreter");
 
         // add OMNeT++'s commands to Tcl
         createTkCommands(interp, tcl_commands);

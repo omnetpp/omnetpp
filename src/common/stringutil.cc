@@ -58,7 +58,7 @@ std::string opp_parsequotedstr(const char *txt)
     const char *endp;
     std::string ret = opp_parsequotedstr(txt, endp);
     if (*endp)
-        throw opp_runtime_error("trailing garbage after string literal");
+        throw opp_runtime_error("Trailing garbage after string literal");
     return ret;
 }
 
@@ -92,7 +92,7 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
     while (opp_isspace(*s))
         s++;
     if (*s++ != '"')
-        throw opp_runtime_error("missing opening quote");
+        throw opp_runtime_error("Missing opening quote");
     char *buf = new char[strlen(txt)+1];
     char *d = buf;
     for ( ; *s && *s != '"'; s++, d++) {
@@ -112,10 +112,10 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
                 case '\0': d--; s--; break; // string ends in stray backslash
                 case '=':
                 case ';':
-                case ',': throw opp_runtime_error("illegal escape sequence '\\%c' "
+                case ',': throw opp_runtime_error("Illegal escape sequence '\\%c' "
                           "(Hint: use double backslashes to quote display string "
                           "special chars: equal sign, comma, semicolon)", *s);
-                default:  throw opp_runtime_error("illegal escape sequence '\\%c'", *s);
+                default:  throw opp_runtime_error("Illegal escape sequence '\\%c'", *s);
             }
         }
         else {
@@ -125,7 +125,7 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp)
     *d = '\0';
     if (*s++ != '"') {
         delete[] buf;
-        throw opp_runtime_error("missing closing quote");
+        throw opp_runtime_error("Missing closing quote");
     }
     while (opp_isspace(*s))
         s++;
@@ -233,7 +233,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
                 fmt += 2;
             }
             else {
-                throw opp_runtime_error("opp_vsscanf: unsupported format '%s'", fmt);
+                throw opp_runtime_error("opp_vsscanf: Unsupported format '%s'", fmt);
             }
         }
         else if (opp_isspace(*fmt)) {
@@ -245,7 +245,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             return k;
         }
         else {
-            throw opp_runtime_error("opp_vsscanf: unexpected char in format: '%s'", fmt);
+            throw opp_runtime_error("opp_vsscanf: Unexpected char in format: '%s'", fmt);
         }
     }
 }
@@ -278,7 +278,7 @@ struct MapBasedResolver : public opp_substitutevariables_resolver
     {
         const std::map<std::string, std::string>::const_iterator it = map.find(name);
         if (it == map.end())
-            throw opp_runtime_error("unknown variable: $%s", name.c_str());
+            throw opp_runtime_error("Unknown variable: $%s", name.c_str());
         return it->second;
     }
 };
@@ -591,7 +591,7 @@ long opp_strtol(const char *s, char **endptr)
     errno = 0;
     long d = strtol(s, endptr, ishex ? 16 : 10);
     if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
-        throw opp_runtime_error("overflow converting '%s' to long", s);
+        throw opp_runtime_error("Overflow converting '%s' to long", s);
     return d;
 }
 
@@ -618,7 +618,7 @@ unsigned long opp_strtoul(const char *s, char **endptr)
     errno = 0;
     unsigned long d = strtoul(s, endptr, ishex ? 16 : 10);
     if (d == ULONG_MAX && errno == ERANGE)
-        throw opp_runtime_error("overflow converting '%s' to unsigned long", s);
+        throw opp_runtime_error("Overflow converting '%s' to unsigned long", s);
     return d;
 }
 
@@ -638,7 +638,7 @@ double opp_strtod(const char *s, char **endptr)
     setlocale(LC_NUMERIC, "C");
     double d = strtod(s, endptr);
     if (d == -HUGE_VAL || d == HUGE_VAL)
-        throw opp_runtime_error("overflow converting '%s' to double", s);
+        throw opp_runtime_error("Overflow converting '%s' to double", s);
     return d;
 }
 
@@ -670,7 +670,7 @@ const char *opp_findmatchingquote(const char *s)
     while (opp_isspace(*s))
         s++;
     if (*s++ != '"')
-        throw opp_runtime_error("missing opening quote");
+        throw opp_runtime_error("Missing opening quote");
     for ( ; *s && *s != '"'; s++)
         if (*s == '\\')
             s++;
@@ -683,7 +683,7 @@ const char *opp_findmatchingparen(const char *s)
     while (opp_isspace(*s))
         s++;
     if (*s++ != '(')
-        throw opp_runtime_error("missing left parenthesis");
+        throw opp_runtime_error("Missing left parenthesis");
 
     int parens = 1;
     while (*s && parens > 0) {
@@ -880,7 +880,7 @@ std::string opp_markup2Latex(const std::string& str)
         idx = 1 - idx;
     } while (true);
     if (idx)
-        throw opp_runtime_error("missing right backtick from text >>> %s <<<", str.c_str());
+        throw opp_runtime_error("Missing right backtick from text >>> %s <<<", str.c_str());
 
     return tmp;
 }

@@ -143,7 +143,7 @@ void PatternMatcher::parseSet(const char *& s, Elem& e)
         e.setOfChars += range;
     }
     if (!*s)
-        throw opp_runtime_error("unmatched '}' in expression");
+        throw opp_runtime_error("Unmatched '}' in expression");
     s++;  // skip "}"
 }
 

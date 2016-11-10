@@ -26,4 +26,4 @@ debug-statistics-recording = true
 %exitcode: 1
 
 %contains: stderr
-error in source=3.14: a constant statistics source is meaningless
+Error in source=3.14: A constant statistics source is meaningless

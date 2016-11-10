@@ -30,4 +30,4 @@ network Test
 %exitcode: 1
 
 %contains-regex: stderr
-more than one module types named 'FooModule'
+More than one module types named 'FooModule'

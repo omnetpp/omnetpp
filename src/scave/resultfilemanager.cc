@@ -127,7 +127,7 @@ InterpolationMode VectorResult::getInterpolationMode() const
 void HistogramResult::addBin(double lower_bound, double value)
 {
     if (!bins.empty() && bins.back() >= lower_bound)
-        throw opp_runtime_error("histogram bin bounds must be specified in increasing order");
+        throw opp_runtime_error("Histogram bin bounds must be specified in increasing order");
     bins.push_back(lower_bound);
     values.push_back(value);
 }
@@ -196,11 +196,11 @@ const ResultItem& ResultFileManager::getItem(ID id) const
             case SCALAR: return getFileForID(id)->scalarResults.at(_pos(id));
             case VECTOR: return getFileForID(id)->vectorResults.at(_pos(id));
             case HISTOGRAM: return getFileForID(id)->histogramResults.at(_pos(id));
-            default: throw opp_runtime_error("ResultFileManager: invalid ID: wrong type");
+            default: throw opp_runtime_error("ResultFileManager: Invalid ID: Wrong type");
         }
     }
     catch (std::out_of_range& e) {
-        throw opp_runtime_error("ResultFileManager::getItem(id): invalid ID");
+        throw opp_runtime_error("ResultFileManager::getItem(id): Invalid ID");
     }
 }
 
@@ -338,7 +338,7 @@ const ScalarResult& ResultFileManager::getScalar(ID id) const
 {
     READER_MUTEX
     if (_type(id) != SCALAR)
-        throw opp_runtime_error("ResultFileManager::getScalar(id): this item is not a scalar");
+        throw opp_runtime_error("ResultFileManager::getScalar(id): This item is not a scalar");
     return getFileForID(id)->scalarResults.at(_pos(id));
 }
 
@@ -346,7 +346,7 @@ const VectorResult& ResultFileManager::getVector(ID id) const
 {
     READER_MUTEX
     if (_type(id) != VECTOR)
-        throw opp_runtime_error("ResultFileManager::getVector(id): this item is not a vector");
+        throw opp_runtime_error("ResultFileManager::getVector(id): This item is not a vector");
     return getFileForID(id)->vectorResults.at(_pos(id));
 }
 
@@ -354,7 +354,7 @@ const HistogramResult& ResultFileManager::getHistogram(ID id) const
 {
     READER_MUTEX
     if (_type(id) != HISTOGRAM)
-        throw opp_runtime_error("ResultFileManager::getHistogram(id): this item is not a histogram");
+        throw opp_runtime_error("ResultFileManager::getHistogram(id): This item is not a histogram");
     return getFileForID(id)->histogramResults.at(_pos(id));
 }
 
@@ -1211,7 +1211,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     if (fileSystemFileName == nullptr)
         fileSystemFileName = fileName;
     if (!isFileReadable(fileSystemFileName))
-        throw opp_runtime_error("cannot open '%s' for read", fileSystemFileName);
+        throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
     // add to fileList
     fileRef = nullptr;

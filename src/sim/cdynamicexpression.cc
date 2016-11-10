@@ -89,7 +89,7 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
         case FUNCTOR: return CMP(fu);
         case OP: return other.op - op;
         case CONSTSUBEXPR: return constExpr->compare(other.constExpr);
-        default: throw cRuntimeError("internal error: bad Elem type");
+        default: throw cRuntimeError("Internal error: Bad Elem type");
 #undef CMP
     }
 }
@@ -190,7 +190,7 @@ bool cDynamicExpression::containsConstSubexpressions() const
 
 void cDynamicExpression::evaluateConstSubexpressions(cComponent *context)
 {
-    throw cRuntimeError(this, "const subexpressions not yet implemented");  // TODO implement
+    throw cRuntimeError(this, "Const subexpressions not yet implemented");  // TODO implement
 }
 
 bool cDynamicExpression::boolValue(cComponent *context)
@@ -376,7 +376,7 @@ cNEDValue cDynamicExpression::evaluate(cComponent *context) const
 
             case Elem::CONSTSUBEXPR:
                 // this should not occur
-                throw cRuntimeError("evaluate: constant subexpressions must have already been evaluated");
+                throw cRuntimeError("evaluate: Constant subexpressions must have already been evaluated");
 
             case Elem::OP:
                 if (e.op == NEG || e.op == NOT || e.op == BIN_NOT) {

@@ -139,7 +139,7 @@ void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cO
                 case SIMSIGNAL_SIMTIME: receiveSignal(nullptr, v->getTimestamp(signalID), v->simtimeValue(signalID), details); break;
                 case SIMSIGNAL_STRING: receiveSignal(nullptr, v->getTimestamp(signalID), v->stringValue(signalID), details); break;
                 case SIMSIGNAL_OBJECT: receiveSignal(nullptr, v->getTimestamp(signalID), v->objectValue(signalID), details); break;
-                default: throw opp_runtime_error("got cITimestampedValue with blank or invalid data type");
+                default: throw opp_runtime_error("Got cITimestampedValue with blank or invalid data type");
             }
         }
     }

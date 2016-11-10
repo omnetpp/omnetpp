@@ -114,7 +114,7 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
             cObject *obj = factory->createOne();
             renderer = dynamic_cast<FigureRenderer *>(obj);
             if (!renderer)
-                throw cRuntimeError("Wrong figure renderer class: cannot cast %s to FigureRenderer", obj->getClassName());
+                throw cRuntimeError("Wrong figure renderer class: Cannot cast %s to FigureRenderer", obj->getClassName());
         }
         rendererCache[rendererClassName] = renderer;
     }

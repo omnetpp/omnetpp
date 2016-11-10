@@ -44,7 +44,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         case NED_MODULE_INTERFACE: type = MODULEINTERFACE; break;
         case NED_CHANNEL: type = CHANNEL; break;
         case NED_CHANNEL_INTERFACE: type = CHANNELINTERFACE; break;
-        default: throw NEDException("NEDTypeInfo: element of wrong type (<%s>) passed into constructor", tree->getTagName());
+        default: throw NEDException("NEDTypeInfo: Element of wrong type (<%s>) passed into constructor", tree->getTagName());
     }
     bool isInterface = type == MODULEINTERFACE || type == CHANNELINTERFACE;
 
@@ -226,7 +226,7 @@ std::string NEDTypeInfo::getNedSource() const
 const char *NEDTypeInfo::getInterfaceName(int k) const
 {
     if (k < 0 || k >= (int)interfaceNames.size())
-        throw NEDException("NEDTypeInfo: interface index %d out of range 0..%d", k, interfaceNames.size()-1);
+        throw NEDException("NEDTypeInfo: Interface index %d out of range 0..%d", k, interfaceNames.size()-1);
     return interfaceNames[k].c_str();
 }
 
@@ -243,7 +243,7 @@ bool NEDTypeInfo::supportsInterface(const char *qname)
 const char *NEDTypeInfo::getExtendsName(int k) const
 {
     if (k < 0 || k >= (int)extendsNames.size())
-        throw NEDException("NEDTypeInfo: extendsName(): index %d out of range 0..%d", k, extendsNames.size()-1);
+        throw NEDException("NEDTypeInfo: extendsName(): Index %d out of range 0..%d", k, extendsNames.size()-1);
     return extendsNames[k].c_str();
 }
 

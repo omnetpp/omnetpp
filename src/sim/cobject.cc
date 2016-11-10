@@ -103,7 +103,7 @@ void cObject::take(cOwnedObject *obj)
 void cObject::drop(cOwnedObject *obj)
 {
     if (obj->owner != this)
-        throw cRuntimeError(this, "drop(): not owner of object (%s)%s",
+        throw cRuntimeError(this, "drop(): Not owner of object (%s)%s",
                 obj->getClassName(), obj->getFullPath().c_str());
     cOwnedObject::defaultOwner->doInsert(obj);
 }
@@ -113,7 +113,7 @@ void cObject::dropAndDelete(cOwnedObject *obj)
     if (!obj)
         return;
     if (obj->owner != this)
-        throw cRuntimeError(this, "dropAndDelete(): not owner of object (%s)%s",
+        throw cRuntimeError(this, "dropAndDelete(): Not owner of object (%s)%s",
                 obj->getClassName(), obj->getFullPath().c_str());
     obj->owner = nullptr;
     delete obj;

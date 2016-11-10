@@ -44,4 +44,4 @@ void Simple::activity()
 %exitcode: 1
 
 %contains-regex: stderr
-Error .*gate 'out' not connected
+Error .*Gate 'out' not connected

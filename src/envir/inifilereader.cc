@@ -74,14 +74,14 @@ const InifileReader::KeyValue& InifileReader::getEntry(int sectionId, int entryI
 {
     const Section& section = getSection(sectionId);
     if (entryId < 0 || entryId >= (int)section.entries.size())
-        throw cRuntimeError("InifileReader: entry index %d out of bounds", entryId);
+        throw cRuntimeError("InifileReader: Entry index %d out of bounds", entryId);
     return section.entries[entryId];
 }
 
 const InifileReader::Section& InifileReader::getSection(int sectionId) const
 {
     if (sectionId < 0 || sectionId >= (int)sections.size())
-        throw cRuntimeError("InifileReader: section index %d out of bounds", sectionId);
+        throw cRuntimeError("InifileReader: Section index %d out of bounds", sectionId);
     return sections[sectionId];
 }
 

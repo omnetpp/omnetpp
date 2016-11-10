@@ -345,7 +345,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
             while (true) {
                 cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
-                    throw cTerminationException("scheduler interrupted while waiting");
+                    throw cTerminationException("Scheduler interrupted while waiting");
 
                 // flush *between* printing event banner and event processing, so that
                 // if event processing crashes, it can be seen which event it was
@@ -374,7 +374,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
             while (true) {
                 cEvent *event = getSimulation()->takeNextEvent();
                 if (!event)
-                    throw cTerminationException("scheduler interrupted while waiting");
+                    throw cTerminationException("Scheduler interrupted while waiting");
 
                 speedometer.addEvent(getSimulation()->getSimTime());  // XXX potential performance hog
 

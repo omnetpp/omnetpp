@@ -87,7 +87,7 @@ void cExpressionBuilder::doOperator(OperatorElement *node)
         else if (!strcmp(name, "~"))
             elems[pos++] = cDynamicExpression::BIN_NOT;
         else
-            throw cRuntimeError("Unexpected operator %s", name);
+            throw cRuntimeError("Unexpected operator '%s'", name);
     }
     else if (!op3) {
         // binary:
@@ -138,14 +138,14 @@ void cExpressionBuilder::doOperator(OperatorElement *node)
         else if (!strcmp(name, ">>"))
             elems[pos++] = cDynamicExpression::RSHIFT;
         else
-            throw cRuntimeError("Unexpected operator %s", name);
+            throw cRuntimeError("Unexpected operator '%s'", name);
     }
     else {
         // tertiary can only be "?:"
         if (!strcmp(name, "?:"))
             elems[pos++] = cDynamicExpression::IIF;
         else
-            throw cRuntimeError("Unexpected operator %s", name);
+            throw cRuntimeError("Unexpected operator '%s'", name);
     }
 }
 
@@ -162,7 +162,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         elems[pos++] = new NEDSupport::ModuleIndex();
     }
     else if (!strcmp(funcname, "const")) {
-        throw cRuntimeError("'const' operator: not yet supported");  // TBD
+        throw cRuntimeError("'const' operator is not yet supported");  // TBD
     }
     else if (!strcmp(funcname, "sizeof")) {
         // operands are in a child "ident" node
@@ -180,7 +180,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         else if (strcmp(modulename, "this") == 0)
             elems[pos++] = new NEDSupport::Sizeof(ident, false, true);
         else
-            throw cRuntimeError("dynamic module builder: sizeof(module.ident): not yet supported");  // TBD
+            throw cRuntimeError("sizeof(module.ident) is not yet supported");  // TBD
     }
     else {  // normal function
             // push args first
@@ -198,7 +198,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             elems[pos++].set(nedfunctype, argcount);
         }
         else
-            throw cRuntimeError("Function '%s()' (with %d args) not found (Define_NED_Function() or Define_NED_Math_Function() missing from C++ code?)", funcname, argcount);
+            throw cRuntimeError("Function %s() not found (Define_NED_Function() or Define_NED_Math_Function() missing from C++ code?)", funcname);
     }
 }
 
@@ -245,7 +245,7 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
             elems[pos-1].setUnit(unit.c_str());
             break;
         }
-        default: throw cRuntimeError("Internal error: wrong constant type");
+        default: throw cRuntimeError("Internal error: Wrong constant type");
     }
 }
 

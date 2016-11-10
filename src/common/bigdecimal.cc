@@ -85,7 +85,7 @@ void BigDecimal::normalize()
 
     // overflow
     if (scale > maxScale + INT64_MAX_DIGITS)
-        throw opp_runtime_error("BigDecimal: normalize(): scale %d is too big", scale);  // XXX should be +-Infinity?
+        throw opp_runtime_error("BigDecimal: normalize(): Scale %d is too big", scale);  // XXX should be +-Infinity?
 
     // transform scale between minScale and maxScale
     if (scale < minScale) {
@@ -102,7 +102,7 @@ void BigDecimal::normalize()
     else if (scale > maxScale) {
         while (scale > maxScale) {
             if (intVal > INT64_MAX/10)
-                throw opp_runtime_error("BigDecimal: normalize(): arithmetic overflow");
+                throw opp_runtime_error("BigDecimal: normalize(): Arithmetic overflow");
 
             intVal *= 10;
             scale--;
@@ -240,7 +240,7 @@ bool BigDecimal::operator<(const BigDecimal& x) const
 int64_t BigDecimal::getMantissaForScale(int reqScale) const
 {
     if (isSpecial())
-        throw opp_runtime_error("BigDecimal: cannot return mantissa for Nil, NaN or +/-Inf value");
+        throw opp_runtime_error("BigDecimal: Cannot return mantissa for Nil, NaN or +/-Inf value");
     checkScale(reqScale);
     int scaleDiff = scale - reqScale;
     if (scaleDiff == 0)
@@ -261,7 +261,7 @@ double BigDecimal::dbl() const
         else if (*this == NegativeInfinity)
             return NEGATIVE_INFINITY;
         else  // Nil
-            throw opp_runtime_error("BigDecimal: cannot convert Nil to double");  // XXX should return NaN?
+            throw opp_runtime_error("BigDecimal: Cannot convert Nil to double");  // XXX should return NaN?
     }
 
     return (double)intVal * negativePowersOfTen[-scale];
@@ -348,12 +348,12 @@ const BigDecimal BigDecimal::parse(const char *s)
     const char *endp;
     BigDecimal value = parse(s, endp);
     if (*endp != '\0')
-        throw opp_runtime_error("BigDecimal: invalid number syntax '%s'", s);
+        throw opp_runtime_error("BigDecimal: Invalid number syntax '%s'", s);
     return value;
 }
 
 #define OVERFLOW_CHECK(c, s)    if (!(c)) \
-        throw opp_runtime_error("BigDecimal: arithmetic overflow while parsing '%s'", (s));
+        throw opp_runtime_error("BigDecimal: Arithmetic overflow while parsing '%s'", (s));
 
 const BigDecimal BigDecimal::parse(const char *s, const char *& endp)
 {
@@ -415,7 +415,7 @@ const BigDecimal BigDecimal::parse(const char *s, const char *& endp)
     }
 
     if (digits == 0 && *p != '.') {
-        throw opp_runtime_error("BigDecimal: invalid number syntax '%s'", s);
+        throw opp_runtime_error("BigDecimal: Invalid number syntax '%s'", s);
     }
 
     // digits after decimal

@@ -56,7 +56,7 @@ bool StddevNode::isFinished() const
 void StddevNode::collect(double val)
 {
     if (++numValues <= 0)
-        throw opp_runtime_error("StddevNode: observation count overflow");
+        throw opp_runtime_error("StddevNode: Observation count overflow");
 
     sumValues += val;
     sqrsumValues += val*val;

@@ -78,7 +78,7 @@ Port *TeeNodeType::getPort(Node *node, const char *portname) const
         return node1->addPort();
     else if (!strcmp(portname, "in"))
         return &(node1->in);
-    throw opp_runtime_error("no such port '%s'", portname);
+    throw opp_runtime_error("No such port '%s'", portname);
 }
 
 }  // namespace scave

@@ -197,7 +197,7 @@ void cKSplit::doMergeCellValues(const cDensityEstBase *other)
 void cKSplit::transform()
 {
     if (isTransformed())
-        throw cRuntimeError(this, "transform(): histogram already transformed");
+        throw cRuntimeError(this, "transform(): Histogram already transformed");
 
     setupRange();
     createRootGrid();

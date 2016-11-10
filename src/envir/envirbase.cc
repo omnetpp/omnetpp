@@ -889,7 +889,7 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
     if (procIds.empty()) {
         // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
         if (!parentmod->getParentModule())
-            throw cRuntimeError("incomplete partitioning: missing value for '%s'", parname);
+            throw cRuntimeError("Incomplete partitioning: Missing value for '%s'", parname);
         // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
         return true;
     }
@@ -903,14 +903,14 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
         // is the Id of the local partition, otherwise false.
         EnumStringIterator procIdIter(procIds.c_str());
         if (procIdIter.hasError())
-            throw cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
+            throw cRuntimeError("Wrong partitioning: Syntax error in value '%s' for '%s' "
                                 "(allowed syntax: '', '*', '1', '0,3,5-7')",
                     procIds.c_str(), parname);
         int numPartitions = parsimComm->getNumPartitions();
         int myProcId = parsimComm->getProcId();
         for ( ; procIdIter() != -1; procIdIter++) {
             if (procIdIter() >= numPartitions)
-                throw cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
+                throw cRuntimeError("Wrong partitioning: Value %d too large for '%s' (total partitions=%d)",
                         procIdIter(), parname, numPartitions);
             if (procIdIter() == myProcId)
                 return true;
@@ -1195,7 +1195,7 @@ void EnvirBase::processFileName(std::string& fname)
 
         const char *hostname = opp_gethostname();
         if (!hostname)
-            throw cRuntimeError("Cannot append hostname to file name '%s': no HOST, HOSTNAME "
+            throw cRuntimeError("Cannot append hostname to file name '%s': No HOST, HOSTNAME "
                                 "or COMPUTERNAME (Windows) environment variable", fname.c_str());
         int pid = getpid();
 
@@ -1415,7 +1415,7 @@ int EnvirBase::parseSimtimeResolution(const char *resolution)
             // try as <unit-only>, e.g. "ms"
             double f = UnitConversion::getConversionFactor(resolution, "s");
             if (f == 0)
-                throw std::runtime_error("wrong unit");
+                throw std::runtime_error("Wrong unit");
             exp = log10(f);
             ASSERT(exp == floor(exp));
         }
@@ -1428,7 +1428,7 @@ int EnvirBase::parseSimtimeResolution(const char *resolution)
                 double f = UnitConversion::parseQuantity(resolution, "s");
                 exp = log10(f);
                 if (exp != floor(exp))
-                    throw std::runtime_error("not power of 10");
+                    throw std::runtime_error("Not power of 10");
             }
         }
         return (int)exp;
@@ -1603,12 +1603,12 @@ unsigned long EnvirBase::getUniqueNumber()
 {
     unsigned long ret = nextUniqueNumber++;
     if (nextUniqueNumber == 0)
-        throw cRuntimeError("getUniqueNumber(): all values have been consumed");
+        throw cRuntimeError("getUniqueNumber(): All values have been consumed");
 #ifdef WITH_PARSIM
     if (opt->parsim) {
         unsigned long limit = (unsigned)(parsimComm->getProcId()+1) * ((~0UL) / (unsigned)parsimComm->getNumPartitions());
         if (nextUniqueNumber == limit)
-            throw cRuntimeError("getUniqueNumber(): all values have been consumed");
+            throw cRuntimeError("getUniqueNumber(): All values have been consumed");
     }
 #endif
     return ret;

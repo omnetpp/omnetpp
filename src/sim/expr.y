@@ -344,7 +344,7 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        throw std::runtime_error("parser is unable to allocate work memory");
+        throw std::runtime_error("Parser is unable to allocate work memory");
 
     cDynamicExpression::Elem *v = new cDynamicExpression::Elem[100]; // overestimate for now; XXX danger of overrun
     e = v;

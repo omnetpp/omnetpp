@@ -349,7 +349,7 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
         return text;
     }
 
-    throw std::runtime_error("log entry line index out of bounds");
+    throw std::runtime_error("Log entry line index out of bounds");
 }
 
 QList<EventEntryLinesProvider::TabStop> EventEntryLinesProvider::getTabStops(LogBuffer::Entry *entry, int lineIndex)
@@ -377,7 +377,7 @@ QList<EventEntryLinesProvider::TabStop> EventEntryLinesProvider::getTabStops(Log
         return tabStops;
     }
 
-    throw std::runtime_error("log entry line index out of bounds");
+    throw std::runtime_error("Log entry line index out of bounds");
 }
 
 cMessagePrinter *EventEntryMessageLinesProvider::chooseMessagePrinter(cMessage *msg)

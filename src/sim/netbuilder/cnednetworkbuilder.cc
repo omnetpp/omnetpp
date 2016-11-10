@@ -223,7 +223,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             // because it would be complicated to implement in the Inifile Editor.
             //
             if (!impl->containsValue())
-                throw cRuntimeError(component, "Cannot apply default value to parameter '%s': it has no default value", paramName);
+                throw cRuntimeError(component, "Cannot apply default value to parameter '%s': It has no default value", paramName);
             impl->setIsSet(true);
         }
         impl->setIsShared(true);
@@ -342,7 +342,7 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             // Note: this branch ("=default" in NED files) is currently not supported,
             // because it would be complicated to implement in the Inifile Editor.
             if (!impl->containsValue())
-                throw cRuntimeError(par.getOwner(), "Cannot apply default value to parameter '%s': it has no default value", par.getName());
+                throw cRuntimeError(par.getOwner(), "Cannot apply default value to parameter '%s': It has no default value", par.getName());
             impl->setIsSet(true);
         }
     }
@@ -512,7 +512,7 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string qname = resolveComponentType(context, modTypeName);
     if (qname.empty())
-        throw cRuntimeError(modp, "Submodule %s: cannot resolve module type '%s' (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "Submodule %s: Cannot resolve module type '%s' (not in the loaded NED files?)",
                 submodName, modTypeName);
     cComponentType *componentType = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componentType))
@@ -530,7 +530,7 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
     cNEDDeclaration *interfaceDecl = interfaceQName.empty() ? nullptr : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfaceDecl)
-        throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface '%s'",
+        throw cRuntimeError(modp, "Submodule %s: Cannot resolve module interface '%s'",
                 submodName, likeType);
     if (interfaceDecl->getTree()->getTagCode() != NED_MODULE_INTERFACE)
         throw cRuntimeError(modp, "Submodule %s: '%s' is not a module interface",
@@ -539,10 +539,10 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     // search for module type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceQName.c_str());
     if (candidates.empty())
-        throw cRuntimeError(modp, "Submodule %s: no module type named '%s' found that implements module interface %s (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "Submodule %s: No module type named '%s' found that implements module interface %s (not in the loaded NED files?)",
                 submodName, modTypeName, interfaceQName.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError(modp, "Submodule %s: more than one module types named '%s' found that implement module interface %s (use fully qualified name to disambiguate)",
+        throw cRuntimeError(modp, "Submodule %s: More than one module types named '%s' found that implement module interface %s (use fully qualified name to disambiguate)",
                 submodName, modTypeName, interfaceQName.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
@@ -1119,7 +1119,7 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
             if (likeExprElement)
                 return evaluateAsString(likeExprElement, parentmodp, false);
         }
-        throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPENAME->getName());
+        throw cRuntimeError(parentmodp, "Unable to determine type name for channel: Missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPENAME->getName());
     }
 }
 

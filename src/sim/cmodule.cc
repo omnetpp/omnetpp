@@ -403,11 +403,11 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
     // check limits
     if (isVector) {
         if (gateDescArraySize >= MAX_VECTORGATES)
-            throw cRuntimeError(this, "cannot add gate '%s[]': too many vector gates (limit is %d)", gatename, MAX_VECTORGATES);
+            throw cRuntimeError(this, "Cannot add gate '%s[]': Too many vector gates (limit is %d)", gatename, MAX_VECTORGATES);
     }
     else {
         if (gateDescArraySize >= MAX_SCALARGATES)
-            throw cRuntimeError(this, "cannot add gate '%s': too many scalar gates (limit is %d)", gatename, MAX_SCALARGATES);
+            throw cRuntimeError(this, "Cannot add gate '%s': Too many scalar gates (limit is %d)", gatename, MAX_SCALARGATES);
     }
 
     // allocate new array
@@ -490,7 +490,7 @@ cGate::Desc *cModule::gateDesc(const char *gatename, char& suffix) const
 {
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex < 0)
-        throw cRuntimeError(this, "no such gate or gate vector: '%s'", gatename);
+        throw cRuntimeError(this, "No such gate or gate vector: '%s'", gatename);
     return gateDescArray + descIndex;
 }
 
@@ -526,7 +526,7 @@ cGate *cModule::gate(int id)
         if (index >= (unsigned int)desc->gateSize()) {
             // try to issue a useful error message if gate was likely produced as baseId+index
             if (index < 100000)
-                throw cRuntimeError(this, "Invalid gate Id %d: size of '%s[]' is only %d, so index %d (deduced from the Id) is out of bounds",
+                throw cRuntimeError(this, "Invalid gate Id %d: Size of '%s[]' is only %d, so index %d (deduced from the Id) is out of bounds",
                         id, desc->nameFor(isOutput ? cGate::OUTPUT : cGate::INPUT), desc->gateSize(), index);
             else
                 throw cRuntimeError(this, E_GATEID, id);  // id probably just plain garbage
@@ -609,16 +609,16 @@ void cModule::setGateSize(const char *gatename, int newSize)
     char suffix;
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex < 0)
-        throw cRuntimeError(this, "no '%s' or '%s[]' gate", gatename, gatename);
+        throw cRuntimeError(this, "No '%s' or '%s[]' gate", gatename, gatename);
     if (suffix)
-        throw cRuntimeError(this, "setGateSize(): wrong gate name '%s', suffix '$i'/'$o' not accepted here", gatename);
+        throw cRuntimeError(this, "setGateSize(): Wrong gate name '%s', suffix '$i'/'$o' not accepted here", gatename);
     cGate::Desc *desc = gateDescArray + descIndex;
     if (!desc->isVector())
-        throw cRuntimeError(this, "setGateSize(): gate '%s' is not a vector gate", gatename);
+        throw cRuntimeError(this, "setGateSize(): Gate '%s' is not a vector gate", gatename);
     if (newSize < 0)
-        throw cRuntimeError(this, "setGateSize(): negative vector size (%d) requested for gate %s[]", newSize, gatename);
+        throw cRuntimeError(this, "setGateSize(): Negative vector size (%d) requested for gate %s[]", newSize, gatename);
     if (newSize > MAX_VECTORGATESIZE)
-        throw cRuntimeError(this, "setGateSize(): vector size for gate %s[] too large (%d), limit is %d", gatename, newSize, MAX_VECTORGATESIZE);
+        throw cRuntimeError(this, "setGateSize(): Vector size for gate %s[] too large (%d), limit is %d", gatename, newSize, MAX_VECTORGATESIZE);
 
     // notify pre-change listeners
     if (hasListeners(PRE_MODEL_CHANGE)) {
@@ -731,10 +731,10 @@ int cModule::gateBaseId(const char *gatename) const
     char suffix;
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex < 0)
-        throw cRuntimeError(this, "gateBaseId(): no such gate or gate vector: '%s'", gatename);
+        throw cRuntimeError(this, "gateBaseId(): No such gate or gate vector: '%s'", gatename);
     const cGate::Desc *desc = gateDescArray + descIndex;
     if (desc->getType() == cGate::INOUT && !suffix)
-        throw cRuntimeError(this, "gateBaseId(): inout gate '%s' cannot be referenced without $i/$o suffix", gatename);
+        throw cRuntimeError(this, "gateBaseId(): Inout gate '%s' cannot be referenced without $i/$o suffix", gatename);
     bool isInput = (suffix == 'i' || desc->getType() == cGate::INPUT);
 
     // To make sense of the following code, see comment in cgate.cc,
@@ -898,21 +898,21 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
     char suffix1;
     cGate::Desc *desc = const_cast<cGate::Desc *>(gateDesc(gatename, suffix1));
     if (!desc->isVector())
-        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): gate '%s' is not a vector gate", gatename);
+        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): Gate '%s' is not a vector gate", gatename);
     if (suffix1 && suffix)
-        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): gate '%s' AND suffix '%c' given", gatename, suffix);
+        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): Gate '%s' AND suffix '%c' given", gatename, suffix);
     suffix = suffix | suffix1;
 
     // determine whether input or output gates to check
     bool inputSide;
     if (!suffix) {
         if (desc->getType() == cGate::INOUT)
-            throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): inout gate specified but no suffix");
+            throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): Inout gate specified but no suffix");
         inputSide = desc->getType() == cGate::INPUT;
     }
     else {
         if (suffix != 'i' && suffix != 'o')
-            throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): wrong gate name suffix '%c'", suffix);
+            throw cRuntimeError(this, "getOrCreateFirstUnconnectedGate(): Wrong gate name suffix '%c'", suffix);
         inputSide = suffix == 'i';
     }
 
@@ -956,9 +956,9 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
     char suffix;
     cGate::Desc *desc = const_cast<cGate::Desc *>(gateDesc(gatename, suffix));
     if (!desc->isVector())
-        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGatePair(): gate '%s' is not a vector gate", gatename);
+        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGatePair(): Gate '%s' is not a vector gate", gatename);
     if (suffix)
-        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGatePair(): inout gate expected, without '$i'/'$o' suffix");
+        throw cRuntimeError(this, "getOrCreateFirstUnconnectedGatePair(): Inout gate expected, without '$i'/'$o' suffix");
 
     // the gate arrays we'll work with
     int oldSize = desc->vectorSize;
@@ -1112,7 +1112,7 @@ cModule *cModule::getModuleByPath(const char *path) const
             module = module->getSubmodule(token);
         else {
             if (token[strlen(token)-1] != ']')
-                throw cRuntimeError(this, "getModuleByPath(): syntax error (unmatched bracket?) in path '%s'", path);
+                throw cRuntimeError(this, "getModuleByPath(): Syntax error (unmatched bracket?) in path '%s'", path);
             int index = atoi(lbracket+1);
             *lbracket = '\0';  // cut off [index]
             module = module->getSubmodule(token, index);
@@ -1132,7 +1132,7 @@ cPar& cModule::getAncestorPar(const char *name)
     while (module && (k = module->findPar(name)) < 0)
         module = module->getParentModule();
     if (!module)
-        throw cRuntimeError(this, "has no ancestor parameter called '%s'", name);
+        throw cRuntimeError(this, "Has no ancestor parameter called '%s'", name);
     return module->par(k);
 }
 
@@ -1188,7 +1188,7 @@ void cModule::deleteModule()
     // check this module doesn't contain the executing module somehow
     for (cModule *module = getSimulation()->getContextModule(); module; module = module->getParentModule())
         if (module == this)
-            throw cRuntimeError(this, "it is not supported to delete a module that contains "
+            throw cRuntimeError(this, "It is not supported to delete a module that contains "
                                       "the currently executing simple module");
 
 
@@ -1225,19 +1225,19 @@ void cModule::deleteModule()
 void cModule::changeParentTo(cModule *module)
 {
     if (!module)
-        throw cRuntimeError(this, "changeParentTo(): got nullptr");
+        throw cRuntimeError(this, "changeParentTo(): Got nullptr");
 
     // gates must be unconnected to avoid connections breaking module hierarchy rules
     for (GateIterator it(this); !it.end(); ++it)
         if ((*it)->isConnectedOutside())
-            throw cRuntimeError(this, "changeParentTo(): gates of the module must not be "
+            throw cRuntimeError(this, "changeParentTo(): Gates of the module must not be "
                                       "connected (%s is connected now)", (*it)->getFullName());
 
 
     // cannot insert module under one of its own submodules
     for (cModule *m = module; m; m = m->getParentModule())
         if (m == this)
-            throw cRuntimeError(this, "changeParentTo(): cannot move module under one of its own submodules");
+            throw cRuntimeError(this, "changeParentTo(): Cannot move module under one of its own submodules");
 
 
     // notify pre-change listeners
@@ -1327,7 +1327,7 @@ bool cModule::callInitialize(int stage)
 bool cModule::initializeChannels(int stage)
 {
     if (getSimulation()->getContextType() != CTX_INITIALIZE)
-        throw cRuntimeError("internal function initializeChannels() may only be called via callInitialize()");
+        throw cRuntimeError("Internal function initializeChannels() may only be called via callInitialize()");
 
     // initialize channels directly under this module
     bool moreStages = false;
@@ -1348,7 +1348,7 @@ bool cModule::initializeChannels(int stage)
 bool cModule::initializeModules(int stage)
 {
     if (getSimulation()->getContextType() != CTX_INITIALIZE)
-        throw cRuntimeError("internal function initializeModules() may only be called via callInitialize()");
+        throw cRuntimeError("Internal function initializeModules() may only be called via callInitialize()");
 
     if (stage == 0) {
         if (initialized())

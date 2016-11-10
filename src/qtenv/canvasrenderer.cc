@@ -82,7 +82,7 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
 void CanvasRenderer::assertCanvas()
 {
     if (!canvas) {
-    }  // throw cRuntimeError("CanvasRenderer: no canvas object");
+    }  // throw cRuntimeError("CanvasRenderer: No canvas object");
 }
 
 std::string CanvasRenderer::getAllTags()

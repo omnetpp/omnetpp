@@ -53,7 +53,7 @@ const char *cNEDValue::getTypeName(Type t)
 
 void cNEDValue::cannotCastError(Type t) const
 {
-    throw cRuntimeError("cNEDValue: cannot cast %s from type %s to %s",
+    throw cRuntimeError("cNEDValue: Cannot cast %s from type %s to %s",
             str().c_str(), getTypeName(type), getTypeName(t));
 }
 
@@ -65,7 +65,7 @@ void cNEDValue::set(const cPar& par)
         case cPar::LONG: *this = par.doubleValue(); dblunit = par.getUnit(); break;
         case cPar::STRING: *this = par.stdstringValue(); break;
         case cPar::XML: *this = par.xmlValue(); break;
-        default: throw cRuntimeError("internal error: bad cPar type: %s", par.getFullPath().c_str());
+        default: throw cRuntimeError("Internal error: Bad cPar type: %s", par.getFullPath().c_str());
     }
 }
 
@@ -105,7 +105,7 @@ std::string cNEDValue::str() const
         case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
         case STR:  return opp_quotestr(s);
         case XML:  return xml->str();
-        default:   throw cRuntimeError("internal error: bad cNEDValue type");
+        default:   throw cRuntimeError("Internal error: Bad cNEDValue type");
     }
 }
 

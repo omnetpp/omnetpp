@@ -40,7 +40,7 @@ bool NEDElement::stringToBool(const char *s)
     else if (!strcmp(s, "false"))
         return false;
     else
-        throw NEDException("invalid attribute value '%s': should be 'true' or 'false'", (s ? s : ""));
+        throw NEDException("Invalid attribute value '%s': Should be 'true' or 'false'", (s ? s : ""));
 }
 
 const char *NEDElement::boolToString(bool b)
@@ -51,14 +51,14 @@ const char *NEDElement::boolToString(bool b)
 int NEDElement::stringToEnum(const char *s, const char *vals[], int nums[], int n)
 {
     if (!s)
-        throw NEDException("attribute cannot be empty: should be one of the allowed words '%s', etc.", vals[0]);
+        throw NEDException("Attribute cannot be empty: Should be one of the allowed words '%s', etc.", vals[0]);
     for (int i = 0; i < n; i++)
         if (!strcmp(s, vals[i]))
             return nums[i];
 
     if (n == 0)
-        throw NEDException("call to stringToEnum() with n=0");
-    throw NEDException("invalid attribute value '%s': should be one of the allowed words '%s', etc.", s, vals[0]);
+        throw NEDException("Call to stringToEnum() with n=0");
+    throw NEDException("Invalid attribute value '%s': Should be one of the allowed words '%s', etc.", s, vals[0]);
 }
 
 const char *NEDElement::enumToString(int b, const char *vals[], int nums[], int n)
@@ -68,8 +68,8 @@ const char *NEDElement::enumToString(int b, const char *vals[], int nums[], int 
             return vals[i];
 
     if (n == 0)
-        throw NEDException("call to enumToString() with n=0");
-    throw NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
+        throw NEDException("Call to enumToString() with n=0");
+    throw NEDException("Invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
 }
 
 void NEDElement::validateEnum(int b, const char *vals[], int nums[], int n)
@@ -80,8 +80,8 @@ void NEDElement::validateEnum(int b, const char *vals[], int nums[], int n)
             return;
 
     if (n == 0)
-        throw NEDException("call to validateEnum() with n=0");
-    throw NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
+        throw NEDException("Call to validateEnum() with n=0");
+    throw NEDException("Invalid integer value %d for enum attribute (not one of '%s'=%d etc)", b, vals[0], nums[0]);
 }
 
 NEDElement::NEDElement()

@@ -36,7 +36,7 @@ void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char 
             break;
 
     if (i == argc)
-        throw cRuntimeError("%s: missing -p<procId>,<numPartitions> switch on the command line", caller);
+        throw cRuntimeError("%s: Missing -p<procId>,<numPartitions> switch on the command line", caller);
 
     char *parg = argv[i];
     myProcId = atoi(parg+2);
@@ -45,7 +45,7 @@ void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char 
         s++;
     numPartitions = (*s) ? atoi(s+1) : 0;
     if (myProcId < 0 || numPartitions <= 0 || myProcId >= numPartitions)
-        throw cRuntimeError("%s: invalid switch '%s' -- should have the format -p<procId>,<numPartitions>",
+        throw cRuntimeError("%s: Invalid switch '%s' -- should have the format -p<procId>,<numPartitions>",
                 caller, parg);
 }
 

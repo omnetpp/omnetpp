@@ -8,4 +8,4 @@ std::vector<double> v = cStringTokenizer(str).asDoubleVector();
 
 %exitcode: 1
 %contains: stderr
-Converting string to a vector of doubles: overflow or underflow while converting '1E900' to double
+Converting string to a vector of doubles: Overflow or underflow while converting '1E900' to double

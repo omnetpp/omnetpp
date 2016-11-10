@@ -116,6 +116,6 @@ out->getNextGate\(\):nullptr
 rcvin->getPreviousGate\(\):nullptr
 out->getNextGate\(\):in
 rcvin->getPreviousGate\(\):out
-.*Error .*gate already connected
+.*Error .*Gate already connected
 
 

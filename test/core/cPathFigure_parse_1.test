@@ -96,8 +96,8 @@ C 20 30 50 60 100 200 Z
 c 20 30 50 60 100 200 Z
 S 50 60 100 200 Z
 s 50 60 100 200 Z
-M 1 2 F ==> ERROR: unknown drawing primitive 'F' in path near column 7
-M 1 Z ==> ERROR: number expected in path near column 3
-A 10 15 45 0 999 100 200 Z ==> ERROR: boolean (0 or 1) expected in path near column 16
+M 1 2 F ==> ERROR: Unknown drawing primitive 'F' in path near column 7
+M 1 Z ==> ERROR: Number expected in path near column 3
+A 10 15 45 0 999 100 200 Z ==> ERROR: Boolean (0 or 1) expected in path near column 16
 .
 

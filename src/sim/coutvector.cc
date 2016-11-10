@@ -64,7 +64,7 @@ cOutVector::~cOutVector()
 void cOutVector::setName(const char *nam)
 {
     if (handle)
-        throw cRuntimeError(this, "setName(): changing name of an output vector after record() calls is not allowed");
+        throw cRuntimeError(this, "setName(): Changing name of an output vector after record() calls is not allowed");
 
     cOwnedObject::setName(nam);
 
@@ -91,13 +91,13 @@ void cOutVector::parsimPack(cCommBuffer *buffer) const
 
 void cOutVector::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this, "parsimUnpack(): not supported");
+    throw cRuntimeError(this, "parsimUnpack(): Not supported");
 }
 
 void cOutVector::setUnit(const char *unit)
 {
     if (!handle)
-        throw cRuntimeError(this, "setUnit(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setUnit(): Set the object name first, using setName()");
     getEnvir()->setVectorAttribute(handle, "unit", unit);
 }
 
@@ -105,14 +105,14 @@ void cOutVector::setEnum(const char *registeredEnumName)
 {
     cEnum *enumDecl = cEnum::find(registeredEnumName);
     if (!enumDecl)
-        throw cRuntimeError(this, "setEnum(): enum '%s' not found -- is it declared with Register_Enum()?", registeredEnumName);
+        throw cRuntimeError(this, "setEnum(): Enum '%s' not found -- is it declared with Register_Enum()?", registeredEnumName);
     setEnum(enumDecl);
 }
 
 void cOutVector::setEnum(cEnum *enumDecl)
 {
     if (!handle)
-        throw cRuntimeError(this, "setEnum(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setEnum(): Set the object name first, using setName()");
     getEnvir()->setVectorAttribute(handle, "enumname", enumDecl->getName());
     getEnvir()->setVectorAttribute(handle, "enum", enumDecl->str().c_str());
 }
@@ -120,7 +120,7 @@ void cOutVector::setEnum(cEnum *enumDecl)
 void cOutVector::setType(Type type)
 {
     if (!handle)
-        throw cRuntimeError(this,"setType(): set the object name first, using setName()");
+        throw cRuntimeError(this,"setType(): Set the object name first, using setName()");
 
     const char *typeString = nullptr;
     switch (type) {
@@ -130,14 +130,14 @@ void cOutVector::setType(Type type)
         //Note: no "default:" so that compiler can warn of incomplete coverage
     }
     if (!typeString)
-        throw cRuntimeError(this, "setType(): invalid type %d", type);
+        throw cRuntimeError(this, "setType(): Invalid type %d", type);
     getEnvir()->setVectorAttribute(handle, "type", typeString);
 }
 
 void cOutVector::setInterpolationMode(InterpolationMode mode)
 {
     if (!handle)
-        throw cRuntimeError(this,"setInterpolationMode(): set the object name first, using setName()");
+        throw cRuntimeError(this,"setInterpolationMode(): Set the object name first, using setName()");
 
     const char *modeString = nullptr;
     switch (mode) {
@@ -148,14 +148,14 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
         //Note: no "default:" so that compiler can warn of incomplete coverage
     }
     if (!modeString)
-        throw cRuntimeError(this, "setInterpolationMode(): invalid interpolation mode %d", mode);
+        throw cRuntimeError(this, "setInterpolationMode(): Invalid interpolation mode %d", mode);
     getEnvir()->setVectorAttribute(handle, "interpolationmode", modeString);
 }
 
 void cOutVector::setMin(double minValue)
 {
     if (!handle)
-        throw cRuntimeError(this, "setMin(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setMin(): Set the object name first, using setName()");
 
     char buf[32];
     sprintf(buf, "%g", minValue);
@@ -165,7 +165,7 @@ void cOutVector::setMin(double minValue)
 void cOutVector::setMax(double maxValue)
 {
     if (!handle)
-        throw cRuntimeError(this, "setMax(): set the object name first, using setName()");
+        throw cRuntimeError(this, "setMax(): Set the object name first, using setName()");
 
     char buf[32];
     sprintf(buf, "%g", maxValue);

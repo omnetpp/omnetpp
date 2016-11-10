@@ -357,7 +357,7 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
         }
     }
     if (xpos == -1)
-        throw opp_runtime_error("data for X axis not found");
+        throw opp_runtime_error("Data for X axis not found");
 
     // ... and bring X series to 1st place
     if (xpos != 0)

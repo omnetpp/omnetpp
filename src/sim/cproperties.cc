@@ -91,7 +91,7 @@ void cProperties::parsimUnpack(cCommBuffer *buffer)
 cProperty *cProperties::get(int k) const
 {
     if (k < 0 || k >= (int)propv.size())
-        throw cRuntimeError(this, "property index %d out of range", k);
+        throw cRuntimeError(this, "Property index %d out of range", k);
     return propv[k];
 }
 
@@ -111,7 +111,7 @@ bool cProperties::getAsBool(const char *name, const char *index) const
         return false;
     const char *value = prop->getValue(cProperty::DEFAULTKEY, 0);
     if (!opp_isempty(value) && strcmp(value, "true") != 0 && strcmp(value, "false") != 0)
-        throw cRuntimeError(this, "@%s property: boolean value expected, got '%s'", name, value);
+        throw cRuntimeError(this, "@%s property: Boolean value expected, got '%s'", name, value);
 
     return omnetpp::opp_strcmp(value, "false") == 0 ? false : true;
 }
@@ -130,7 +130,7 @@ void cProperties::remove(int k)
         throw cRuntimeError(this, E_LOCKED);
 
     if (k < 0 || k >= (int)propv.size())
-        throw cRuntimeError(this, "property index %d out of range", k);
+        throw cRuntimeError(this, "Property index %d out of range", k);
 
     delete propv[k];
     propv.erase(propv.begin() + k);

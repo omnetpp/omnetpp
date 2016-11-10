@@ -231,7 +231,7 @@ bool isDirectory(const char *pathname)
 void removeFile(const char *fname, const char *descr)
 {
     if (unlink(fname) != 0 && errno != ENOENT)
-        throw opp_runtime_error("cannot remove %s '%s': %s", descr, fname, strerror(errno));
+        throw opp_runtime_error("Cannot remove %s '%s': %s", descr, fname, strerror(errno));
 }
 
 void mkPath(const char *pathname)
@@ -243,7 +243,7 @@ void mkPath(const char *pathname)
         // note: anomaly with slash-terminated dirnames: stat("foo/") says
         // it does not exist, and mkdir("foo/") says cannot create (EEXIST):
         if (mkdir(pathname, 0755) != 0 && errno != EEXIST)
-            throw opp_runtime_error("cannot create directory '%s': %s", pathname, strerror(errno));
+            throw opp_runtime_error("Cannot create directory '%s': %s", pathname, strerror(errno));
     }
 }
 
@@ -255,9 +255,9 @@ PushDir::PushDir(const char *changetodir)
         return;
     char buf[1024];
     if (!getcwd(buf, 1024))
-        throw opp_runtime_error("cannot get the name of current directory");
+        throw opp_runtime_error("Cannot get the name of current directory");
     if (chdir(changetodir))
-        throw opp_runtime_error("cannot temporarily change to directory '%s' (does it exist?)", changetodir);
+        throw opp_runtime_error("Cannot temporarily change to directory '%s' (does it exist?)", changetodir);
     olddir = buf;
 }
 
@@ -265,7 +265,7 @@ PushDir::~PushDir()
 {
     if (!olddir.empty()) {
         if (chdir(olddir.c_str()))
-            throw opp_runtime_error("cannot change back to directory '%s'", olddir.c_str());
+            throw opp_runtime_error("Cannot change back to directory '%s'", olddir.c_str());
     }
 }
 

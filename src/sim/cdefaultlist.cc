@@ -182,7 +182,7 @@ void cDefaultList::parsimUnpack(cCommBuffer *buffer)
 #else
     cOwnedObject::parsimUnpack(buffer);
     if (numObjs > 0)
-        throw cRuntimeError(this, "parsimUnpack(): can only unpack into empty object");
+        throw cRuntimeError(this, "parsimUnpack(): Can only unpack into empty object");
 #endif
 }
 
@@ -196,7 +196,7 @@ void cDefaultList::take(cOwnedObject *obj)
 void cDefaultList::drop(cOwnedObject *obj)
 {
     if (obj->owner != this)
-        throw cRuntimeError(this, "drop(): not owner of object (%s)%s",
+        throw cRuntimeError(this, "drop(): Not owner of object (%s)%s",
                 obj->getClassName(), obj->getFullPath().c_str());
     // the following 2 lines are actually the same as defaultOwner->take(obj);
     yieldOwnership(obj, defaultOwner);

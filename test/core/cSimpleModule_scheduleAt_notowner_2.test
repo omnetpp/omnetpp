@@ -14,4 +14,4 @@ scheduleAt(3,msg);
 
 %subst: /omnetpp:://
 %contains-regex: stderr
-Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one, it is currently contained/owned by
+scheduleAt\(\): Cannot schedule message \(cMessage\)one, it is currently contained/owned by

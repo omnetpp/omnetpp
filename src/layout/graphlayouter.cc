@@ -75,7 +75,7 @@ void GraphLayouter::setSize(double w, double h, double bd)
     border = bd;
 
     if ((width != 0 && width < 2*border) || (height != 0 && height < 2*border))
-        throw opp_runtime_error("GraphLayouter::setSize(): required width or height smaller than 2*border");
+        throw opp_runtime_error("GraphLayouter::setSize(): Required width or height smaller than 2*border");
 }
 
 } // namespace layout

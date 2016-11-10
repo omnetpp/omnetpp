@@ -114,7 +114,7 @@ cStatistic& cStatistic::operator=(const cStatistic& res)
 void cStatistic::setTransientDetectionObject(cTransientDetection *obj)
 {
     if (td)
-        throw cRuntimeError(this, "setTransientDetection(): object already has a transient detection algorithm");
+        throw cRuntimeError(this, "setTransientDetection(): Object already has a transient detection algorithm");
     td = obj;  // create pointer to td object
     td->setHostObject(this);  // and create one back
     take(td);
@@ -123,7 +123,7 @@ void cStatistic::setTransientDetectionObject(cTransientDetection *obj)
 void cStatistic::setAccuracyDetectionObject(cAccuracyDetection *obj)
 {
     if (ra)
-        throw cRuntimeError(this, "setAccuracyDetection(): object already has an accuracy detection algorithm");
+        throw cRuntimeError(this, "setAccuracyDetection(): Object already has an accuracy detection algorithm");
     ra = obj;  // create pointer to ra object
     ra->setHostObject(this);  // and create one back
     take(ra);
@@ -163,7 +163,7 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
     const char *fmt_comment = strstr(fmt, "#=");
     const char *line_comment = strstr(line, "#=");
     if (fmt_comment && line_comment && strcmp(fmt_comment, line_comment) != 0)
-        throw cRuntimeError(this, "bad file format in loadFromFile(): expected '%s' and got '%s'", fmt, line);
+        throw cRuntimeError(this, "Bad file format in loadFromFile(): Expected '%s' and got '%s'", fmt, line);
 
     // actual read
     va_list va;

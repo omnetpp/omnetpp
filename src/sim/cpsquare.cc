@@ -220,7 +220,7 @@ double cPSquare::draw() const
     cRNG *rng = getRNG();
 
     if (numObs < numCells+1)
-        throw cRuntimeError(this, "must collect at least num_cells values before random() can be used");
+        throw cRuntimeError(this, "Must collect at least num_cells values before random() can be used");
 
     s = numObs * dblrand(rng);
 

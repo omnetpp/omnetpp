@@ -127,7 +127,7 @@ cSimulation::~cSimulation()
 {
     if (this == activeSimulation)
         // NOTE: subclass destructors will not be called, but the simulation will stop anyway
-        throw cRuntimeError(this, "cannot delete the active simulation manager object");
+        throw cRuntimeError(this, "Cannot delete the active simulation manager object");
 
     deleteNetwork();
 
@@ -146,7 +146,7 @@ void cSimulation::setActiveSimulation(cSimulation *sim)
 void cSimulation::setStaticEnvir(cEnvir *env)
 {
     if (!env)
-        throw cRuntimeError("cSimulation::setStaticEnvir(): argument cannot be nullptr");
+        throw cRuntimeError("cSimulation::setStaticEnvir(): Argument cannot be nullptr");
     staticEnvir = env;
 }
 
@@ -188,7 +188,7 @@ class cSnapshotWriterVisitor : public cVisitor
 bool cSimulation::snapshot(cObject *object, const char *label)
 {
     if (!object)
-        throw cRuntimeError("snapshot(): object pointer is nullptr");
+        throw cRuntimeError("snapshot(): Object pointer is nullptr");
 
     ostream *osptr = getEnvir()->getStreamForSnapshot();
     if (!osptr)
@@ -220,9 +220,9 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 void cSimulation::setScheduler(cScheduler *sch)
 {
     if (systemModule)
-        throw cRuntimeError(this, "setScheduler(): cannot switch schedulers when a network is already set up");
+        throw cRuntimeError(this, "setScheduler(): Cannot switch schedulers when a network is already set up");
     if (!sch)
-        throw cRuntimeError(this, "setScheduler(): new scheduler cannot be nullptr");
+        throw cRuntimeError(this, "setScheduler(): New scheduler cannot be nullptr");
 
     if (scheduler) {
         getEnvir()->removeLifecycleListener(scheduler);
@@ -237,11 +237,11 @@ void cSimulation::setScheduler(cScheduler *sch)
 void cSimulation::setFES(cFutureEventSet *f)
 {
     if (systemModule)
-        throw cRuntimeError(this, "setFES(): cannot switch FES when a network is already set up");
+        throw cRuntimeError(this, "setFES(): Cannot switch FES when a network is already set up");
     if (fes && !fes->isEmpty())
-        throw cRuntimeError(this, "setFES(): existing FES is not empty");
+        throw cRuntimeError(this, "setFES(): Existing FES is not empty");
     if (!f)
-        throw cRuntimeError(this, "setFES(): new FES cannot be nullptr");
+        throw cRuntimeError(this, "setFES(): New FES cannot be nullptr");
 
     if (fes) {
         drop(fes);
@@ -267,7 +267,7 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 #ifdef WITH_NETBUILDER
     return cNEDLoader::getInstance()->loadNedSourceFolder(folder);
 #else
-    throw cRuntimeError("cannot load NED files from '%s': simulation kernel was compiled without "
+    throw cRuntimeError("Cannot load NED files from '%s': Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);
 #endif
 }
@@ -277,7 +277,7 @@ void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPacka
 #ifdef WITH_NETBUILDER
     cNEDLoader::getInstance()->loadNedFile(nedFilename, expectedPackage, isXML);
 #else
-    throw cRuntimeError("cannot load '%s': simulation kernel was compiled without "
+    throw cRuntimeError("Cannot load '%s': Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedFilename);
 #endif
 }
@@ -287,7 +287,7 @@ void cSimulation::loadNedText(const char *name, const char *nedText, const char 
 #ifdef WITH_NETBUILDER
     cNEDLoader::getInstance()->loadNedText(name, nedText, expectedPackage, isXML);
 #else
-    throw cRuntimeError("cannot source NED text: simulation kernel was compiled without "
+    throw cRuntimeError("Cannot source NED text: Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)");
 #endif
 }
@@ -448,7 +448,7 @@ void cSimulation::deleteNetwork()
         return;  // network already deleted
 
     if (cSimulation::getActiveSimulation() != this)
-        throw cRuntimeError("cSimulation: cannot invoke deleteNetwork() on an instance that is not the active one (see cSimulation::getActiveSimulation())");  // because cModule::deleteModule() would crash
+        throw cRuntimeError("cSimulation: Cannot invoke deleteNetwork() on an instance that is not the active one (see cSimulation::getActiveSimulation())");  // because cModule::deleteModule() would crash
 
     if (getContextModule() != nullptr)
         throw cRuntimeError("Attempt to delete network during simulation");
@@ -540,7 +540,7 @@ cSimpleModule *cSimulation::guessNextModule()
 void cSimulation::transferTo(cSimpleModule *module)
 {
     if (!module)
-        throw cRuntimeError("transferTo(): attempt to transfer to nullptr");
+        throw cRuntimeError("transferTo(): Attempt to transfer to nullptr");
 
     // switch to activity() of the simple module
     exception = nullptr;
@@ -548,7 +548,7 @@ void cSimulation::transferTo(cSimpleModule *module)
     cCoroutine::switchTo(module->coroutine);
 
     if (module->hasStackOverflow())
-        throw cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
+        throw cRuntimeError("Stack violation in module (%s)%s: Module stack too small? "
                             "Try increasing it in the class' Module_Class_Members() or constructor",
                 module->getClassName(), module->getFullPath().c_str());
 
@@ -735,7 +735,7 @@ void cSimulation::insertEvent(cEvent *event)
  * The solution provided here is that <tt>evPtr</tt> is initialized
  * to point to a StaticEnv instance, thus enabling library classes to work.
  *
- * StaticEnv methods either do nothing, or throw an "unsupported method"
+ * StaticEnv methods either do nothing, or throw an "Unsupported method"
  * exception, so StaticEnv is only useful for the most basic usage scenarios.
  * For anything more complicated, <tt>evPtr</tt> must be set in <tt>main()</tt>
  * to point to a proper cEnvir implementation, like the Cmdenv or
@@ -747,7 +747,7 @@ void cSimulation::insertEvent(cEvent *event)
 class StaticEnv : public cEnvir
 {
   protected:
-    void unsupported() const { throw opp_runtime_error("StaticEnv: unsupported method called"); }
+    void unsupported() const { throw opp_runtime_error("StaticEnv: Unsupported method called"); }
     virtual void alert(const char *msg) override { ::printf("\n<!> %s\n\n", msg); }
     virtual bool askYesNo(const char *msg) override  { unsupported(); return false; }
 

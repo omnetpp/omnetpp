@@ -111,11 +111,11 @@ class SourceExpressionResolver : public Expression::Resolver
             std::string modulePath = std::string(".") + std::string(signalPath, lastDot - signalPath);
             component = contextModule->getModuleByPath(modulePath.c_str());
             if (!component)
-                throw opp_runtime_error("no module '%s' under '%s'", modulePath.c_str()+1, context->getFullPath().c_str());
+                throw opp_runtime_error("No module '%s' under '%s'", modulePath.c_str()+1, context->getFullPath().c_str());
             signalName = lastDot + 1;
         }
         else
-            throw opp_runtime_error("signal names qualified with module path may only be used in a @statistic declared on a module");
+            throw opp_runtime_error("Signal names qualified with module path may only be used in a @statistic declared on a module");
 
         StatisticSourceParser::checkSignalDeclaration(component, signalName, checkSignalDecl);
 
@@ -173,7 +173,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
                 const SignalSource& u = ((SignalSourceReference *)e.getFunctor())->getSignalSource();
                 const SignalSource& v = ((SignalSourceReference *)f.getFunctor())->getSignalSource();
                 if (u.getComponent() && v.getComponent() && u.getComponent() == v.getComponent() && u.getSignalID() == v.getSignalID())
-                    throw opp_runtime_error("cannot use a signal more than once in a statistics source expression");  // something wrong
+                    throw opp_runtime_error("Cannot use a signal more than once in a statistics source expression");  // something wrong
             }
         }
     }
@@ -219,9 +219,9 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
     // the whole expression must have evaluated to a single SignalSourceReference
     // (at least now, when we don't support computing a scalar from multiple signals)
     if (stack.size() != 1)
-        throw opp_runtime_error("malformed expression");  // something wrong
+        throw opp_runtime_error("Malformed expression");  // something wrong
     if (stack[0].getType() != Expression::Elem::FUNCTOR || !dynamic_cast<SignalSourceReference *>(stack[0].getFunctor()))
-        throw opp_runtime_error("a constant statistics source is meaningless");  // something wrong
+        throw opp_runtime_error("A constant statistics source is meaningless");  // something wrong
     SignalSourceReference *signalSourceReference = (SignalSourceReference *)stack[0].getFunctor();
     return signalSourceReference->getSignalSource();
 }
@@ -269,7 +269,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
             // replace Expr with SignalSourceReference
         ExpressionFilter *exprFilter;
         if (numSignalRefs == 0)
-            throw opp_runtime_error("a constant statistics source expression is meaningless");
+            throw opp_runtime_error("A constant statistics source expression is meaningless");
         else if (numSignalRefs == 1)
             exprFilter = new UnaryExpressionFilter();
         else if (numSignalRefs > 1)
@@ -322,7 +322,7 @@ void StatisticSourceParser::checkSignalDeclaration(cComponent *component, const 
     if (checkSignalDecl==cStatisticBuilder::TRISTATE_TRUE || (checkSignalDecl==cStatisticBuilder::TRISTATE_DEFAULT && (component->isChannel() || (component->isModule() && ((cModule*)component)->isSimple())))) {
         omnetpp::cProperty *signalDeclaration = component->getComponentType()->getSignalDeclaration(signalName);
         if (!signalDeclaration)
-            throw opp_runtime_error("signal '%s' is not declared on type '%s' (you can turn off or force this check by setting %s=false/true)",
+            throw opp_runtime_error("Signal '%s' is not declared on type '%s' (you can turn off or force this check by setting %s=false/true)",
                     signalName, component->getComponentType()->getFullName(), PROPKEY_STATISTIC_CHECKSIGNALS);
     }
 
@@ -418,11 +418,11 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
     // containing a SignalSource(nullptr), because the outer element must be a recorder
     // that does not support further chaining (see markRecorders())
     if (stack.size() != 1)
-        throw opp_runtime_error("malformed expression");  // something wrong
+        throw opp_runtime_error("Malformed expression");  // something wrong
     if (stack[0].getType() != Expression::Elem::FUNCTOR || !dynamic_cast<SignalSourceReference *>(stack[0].getFunctor()))
-        throw opp_runtime_error("malformed expression");  // something wrong
+        throw opp_runtime_error("Malformed expression");  // something wrong
     if (!((SignalSourceReference *)stack[0].getFunctor())->getSignalSource().isNull())
-        throw opp_runtime_error("malformed expression");  // something wrong
+        throw opp_runtime_error("Malformed expression");  // something wrong
 }
 
 // XXX now it appears that StatisticSourceParser::createFilter() is a special case of this -- eliminate it?
@@ -452,9 +452,9 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         if (numSignalRefs != 1) {
             // note: filterOrRecorderRef can be nullptr, so cannot use its name in the error msg
             if (numSignalRefs == 0)
-                throw cRuntimeError("expression does not refer to any signal");
+                throw cRuntimeError("Expression does not refer to any signal");
             else
-                throw cRuntimeError("expression may only refer to one signal");
+                throw cRuntimeError("Expression may only refer to one signal");
         }
     }
 

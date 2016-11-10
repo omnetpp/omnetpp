@@ -57,7 +57,7 @@ class SIM_API cNullEnvir : public cEnvir
     std::vector<cISimulationLifecycleListener*> listeners;
 
   protected:
-    void unsupported() const {throw cRuntimeError("cNullEnvir: unsupported method called");}
+    void unsupported() const {throw cRuntimeError("cNullEnvir: Unsupported method called");}
     virtual void alert(const char *msg) override {::printf("\n<!> %s\n\n", msg);}
     virtual bool askYesNo(const char *prompt) override  {unsupported(); return false;}
 

@@ -130,7 +130,7 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     NEDErrorStore errors;
     if (isXML) {
         if (nedtext)
-            throw NEDException("loadNedText(): parsing XML from string not supported");
+            throw NEDException("loadNedText(): Parsing XML from string not supported");
         tree = parseXML(fname, &errors);
     }
     else {
@@ -189,7 +189,7 @@ std::string NEDResourceCache::getFirstError(NEDErrorStore *errors, const char *p
 void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
 {
     if (!nedfname)
-        throw NEDException("loadNedFile(): file name is nullptr");
+        throw NEDException("loadNedFile(): File name is nullptr");
 
     doLoadNedFileOrText(nedfname, nullptr, expectedPackage, isXML);
     registerPendingNedTypes();
@@ -198,9 +198,9 @@ void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPac
 void NEDResourceCache::loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML)
 {
     if (!name)
-        throw NEDException("loadNedText(): name is nullptr");
+        throw NEDException("loadNedText(): Name is nullptr");
     if (getFile(name))
-        throw NEDException("loadNedText(): name '%s' already used", name);
+        throw NEDException("loadNedText(): Name '%s' already used", name);
 
     doLoadNedFileOrText(name, nedtext, expectedPackage, isXML);
     registerPendingNedTypes();

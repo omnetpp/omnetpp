@@ -104,7 +104,7 @@ struct Resolver : public opp_substitutevariables_resolver
     {
         ValueIterator::VariableMap::const_iterator it = map.find(name);
         if (it == map.end())
-            throw opp_runtime_error("unknown iteration variable: $%s", name.c_str());
+            throw opp_runtime_error("Unknown iteration variable: $%s", name.c_str());
         return it->second->get();
     }
 };
@@ -265,7 +265,7 @@ int ValueIterator::length() const
 std::string ValueIterator::get(int index) const
 {
     if (index < 0 || index >= length())
-        throw cRuntimeError("ValueIterator: index %d out of bounds", index);
+        throw cRuntimeError("ValueIterator: Index %d out of bounds", index);
 
     int k = 0;
     for (int i = 0; i < (int)items.size(); i++) {

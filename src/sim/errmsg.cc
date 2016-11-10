@@ -56,7 +56,7 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_NOPARSIM:  return "Simulation kernel was compiled without parallel simulation support (WITH_PARSIM=no)";
         case E_NORECV:    return "Cannot use receive..() or wait() with handleMessage()";
         case E_NUMARGS:   return "Bad number of arguments, %d expected";
-        case E_PARAM:     return "While evaluating parameter '%s': %s";
+        case E_PARAM:     return "Cannot evaluate parameter '%s': %s";
         case E_PARNOTSET: return "Parameter is not yet accessible";
         case E_PARAMSNOTREADY: return "Attempt to access component parameters too early, they have not been set up yet";
         case E_REALTIME:  return "CPU time limit reached -- simulation stopped";

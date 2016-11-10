@@ -8,5 +8,5 @@ q.pop();
 %exitcode: 1
 
 %contains-regex: stderr
-Error .*pop\(\): queue empty
+Error .*pop\(\): Queue empty
 

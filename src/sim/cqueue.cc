@@ -80,14 +80,14 @@ void cQueue::parsimPack(cCommBuffer *buffer) const
     cOwnedObject::parsimPack(buffer);
 
     if (compare)
-        throw cRuntimeError(this, "parsimPack(): cannot transmit comparison function");
+        throw cRuntimeError(this, "parsimPack(): Cannot transmit comparison function");
 
     buffer->pack(n);
 
     for (cQueue::Iterator it(*this); !it.end(); ++it) {
         cObject *obj = *it;
         if (obj->isOwnedObject() && obj->getOwner() != this)
-            throw cRuntimeError(this, "parsimPack(): refusing to transmit an object not owned by the queue");
+            throw cRuntimeError(this, "parsimPack(): Refusing to transmit an object not owned by the queue");
         buffer->packObject(obj);
     }
 #endif
@@ -225,7 +225,7 @@ cObject *cQueue::remove_qelem(QElem *p)
 void cQueue::insert(cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert nullptr");
+        throw cRuntimeError(this, "Cannot insert nullptr");
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
@@ -256,11 +256,11 @@ void cQueue::insert(cObject *obj)
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert nullptr");
+        throw cRuntimeError(this, "Cannot insert nullptr");
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertBefore(w,o): object w='%s' not in the queue", where->getName());
+        throw cRuntimeError(this, "insertBefore(w,o): Object w='%s' not in the queue", where->getName());
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
@@ -270,11 +270,11 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
 void cQueue::insertAfter(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert nullptr");
+        throw cRuntimeError(this, "Cannot insert nullptr");
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertAfter(w,o): object w='%s' not in the queue", where->getName());
+        throw cRuntimeError(this, "insertAfter(w,o): Object w='%s' not in the queue", where->getName());
 
     if (obj->isOwnedObject() && getTakeOwnership())
         take(static_cast<cOwnedObject *>(obj));
@@ -305,7 +305,7 @@ cObject *cQueue::remove(cObject *obj)
 cObject *cQueue::pop()
 {
     if (!frontp)
-        throw cRuntimeError(this, "pop(): queue empty");
+        throw cRuntimeError(this, "pop(): Queue empty");
 
     return remove_qelem(frontp);
 }

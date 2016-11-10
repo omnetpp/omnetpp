@@ -87,13 +87,13 @@ void cDatarateChannel::rereadPars()
     per = par("per");
 
     if (delay < SIMTIME_ZERO)
-        throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delay));
+        throw cRuntimeError(this, "Negative delay %s", SIMTIME_STR(delay));
     if (datarate < 0)
-        throw cRuntimeError(this, "negative datarate %g", datarate);
+        throw cRuntimeError(this, "Negative datarate %g", datarate);
     if (ber < 0 || ber > 1)
-        throw cRuntimeError(this, "wrong bit error rate %g", ber);
+        throw cRuntimeError(this, "Wrong bit error rate %g", ber);
     if (per < 0 || per > 1)
-        throw cRuntimeError(this, "wrong packet error rate %g", per);
+        throw cRuntimeError(this, "Wrong packet error rate %g", per);
 
     setFlag(FL_ISDISABLED, par("disabled"));
     setFlag(FL_DELAY_NONZERO, delay != SIMTIME_ZERO);

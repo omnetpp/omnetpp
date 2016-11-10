@@ -47,14 +47,14 @@ Register_Class(cTopology);
 cTopology::LinkIn *cTopology::Node::getLinkIn(int i)
 {
     if (i < 0 || i >= (int)inLinks.size())
-        throw cRuntimeError("cTopology::Node::getLinkIn: invalid link index %d", i);
+        throw cRuntimeError("cTopology::Node::getLinkIn: Invalid link index %d", i);
     return (cTopology::LinkIn *)inLinks[i];
 }
 
 cTopology::LinkOut *cTopology::Node::getLinkOut(int i)
 {
     if (i < 0 || i >= (int)outLinks.size())
-        throw cRuntimeError("cTopology::Node::getLinkOut: invalid index %d", i);
+        throw cRuntimeError("cTopology::Node::getLinkOut: Invalid index %d", i);
     return (cTopology::LinkOut *)outLinks[i];
 }
 
@@ -67,7 +67,7 @@ cTopology::cTopology(const char *name) : cOwnedObject(name)
 
 cTopology::cTopology(const cTopology& topo) : cOwnedObject(topo)
 {
-    throw cRuntimeError(this, "copy ctor not implemented yet");
+    throw cRuntimeError(this, "Copy ctor not implemented yet");
 }
 
 cTopology::~cTopology()
@@ -310,9 +310,9 @@ void cTopology::addLink(Link *link, cGate *srcGate, cGate *destGate)
     Node *srcNode = getNodeFor(srcGate->getOwnerModule());
     Node *destNode = getNodeFor(destGate->getOwnerModule());
     if (!srcNode)
-        throw cRuntimeError("cTopology::addLink: module of source gate \"%s\" is not in the graph", srcGate->getFullPath().c_str());
+        throw cRuntimeError("cTopology::addLink: Module of source gate \"%s\" is not in the graph", srcGate->getFullPath().c_str());
     if (!destNode)
-        throw cRuntimeError("cTopology::addLink: module of destination gate \"%s\" is not in the graph", destGate->getFullPath().c_str());
+        throw cRuntimeError("cTopology::addLink: Module of destination gate \"%s\" is not in the graph", destGate->getFullPath().c_str());
     link->srcNode = srcNode;
     link->destNode = destNode;
     link->srcGateId = srcGate->getId();
@@ -347,7 +347,7 @@ void cTopology::unlinkFromDestNode(Link *link)
 cTopology::Node *cTopology::getNode(int i)
 {
     if (i < 0 || i >= (int)nodes.size())
-        throw cRuntimeError(this, "invalid node index %d", i);
+        throw cRuntimeError(this, "Invalid node index %d", i);
     return nodes[i];
 }
 
@@ -365,7 +365,7 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
     // multiple paths not supported :-(
 
     if (!_target)
-        throw cRuntimeError(this, "..ShortestPathTo(): target node is nullptr");
+        throw cRuntimeError(this, "..ShortestPathTo(): Target node is nullptr");
     target = _target;
 
     for (int i = 0; i < (int)nodes.size(); i++) {
@@ -403,7 +403,7 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
 void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
 {
     if (!_target)
-        throw cRuntimeError(this, "..ShortestPathTo(): target node is nullptr");
+        throw cRuntimeError(this, "..ShortestPathTo(): Target node is nullptr");
     target = _target;
 
     // clean path infos

@@ -259,7 +259,7 @@ bool NaryExpressionFilter::process(cResultFilter *prev, simtime_t& t, double& va
             return true;
         }
     }
-    throw cRuntimeError("unknown signal");
+    throw cRuntimeError("Unknown signal");
 }
 
 Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultFilter *prevFilter)

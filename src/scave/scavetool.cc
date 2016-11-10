@@ -413,7 +413,7 @@ static void parseScalarFunction(const string& functionCall,  /*out*/ string& nam
     // check that string ends in right paren
     string::size_type size = functionCall.length();
     if (functionCall[size-1] != ')')
-        throw opp_runtime_error("syntax error in filter spec '%s'", functionCall.c_str());
+        throw opp_runtime_error("Syntax error in filter spec '%s'", functionCall.c_str());
 
     // filter name is the part before the left paren
     name.assign(functionCall, 0, paren);

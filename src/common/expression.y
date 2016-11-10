@@ -106,12 +106,12 @@ static void addFunction(const char *funcname, int numargs)
 {
     try {
         if (!resolver)
-            throw opp_runtime_error("no resolver provided, cannot resolve function name: %s", funcname);
+            throw opp_runtime_error("Cannot resolve function '%s': No resolver provided", funcname);
         Expression::Functor *f = resolver->resolveFunction(funcname, numargs);
         if (!f)
-            throw opp_runtime_error("cannot resolve function name: %s", funcname);
+            throw opp_runtime_error("Cannot resolve function name '%s'", funcname);
         if (f->getNumArgs() != numargs)
-            throw opp_runtime_error("function %s() takes %d argument(s) and not %d", funcname, f->getNumArgs(), numargs);
+            throw opp_runtime_error("Function %s() takes %d argument(s) and not %d", funcname, f->getNumArgs(), numargs);
         *e++ = f;
     }
     catch (std::exception& e) {
@@ -123,12 +123,12 @@ static void addVariableRef(const char *varname)
 {
     try {
         if (!resolver)
-            throw opp_runtime_error("no resolver provided, cannot resolve variable name: %s", varname);
+            throw opp_runtime_error("Cannot resolve variable '%s': No resolver provided", varname);
         Expression::Functor *f = resolver->resolveVariable(varname);
         if (!f)
-            throw opp_runtime_error("cannot resolve variable: %s", varname);
+            throw opp_runtime_error("Cannot resolve variable '%s'", varname);
         if (f->getNumArgs() != 0)
-            throw opp_runtime_error("internal error: functor representing a variable cannot expect arguments: %s", varname);
+            throw opp_runtime_error("Internal error: functor representing a variable cannot expect arguments: %s", varname);
         *e++ = f;
     }
     catch (std::exception& e) {
@@ -320,7 +320,7 @@ void doParseExpression(const char *text, Expression::Resolver *res, Expression::
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(text);
     if (!handle)
-        throw std::runtime_error("parser is unable to allocate work memory");
+        throw std::runtime_error("Parser is unable to allocate work memory");
 
     Expression::Elem *v = new Expression::Elem[100]; // overestimate for now; XXX danger of overrun
     e = v;

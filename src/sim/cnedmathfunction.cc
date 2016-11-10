@@ -105,35 +105,35 @@ std::string cNEDMathFunction::str() const
 MathFuncNoArg cNEDMathFunction::getMathFuncNoArg() const
 {
     if (argc != 0)
-        throw cRuntimeError(this, "getMathFuncNoArg(): arg count mismatch (argc=%d)", argc);
+        throw cRuntimeError(this, "getMathFuncNoArg(): Arg count mismatch (argc=%d)", argc);
     return (MathFuncNoArg)f;
 }
 
 MathFunc1Arg cNEDMathFunction::getMathFunc1Arg() const
 {
     if (argc != 1)
-        throw cRuntimeError(this, "getMathFunc1Arg(): arg count mismatch (argc=%d)", argc);
+        throw cRuntimeError(this, "getMathFunc1Arg(): Arg count mismatch (argc=%d)", argc);
     return (MathFunc1Arg)f;
 }
 
 MathFunc2Args cNEDMathFunction::getMathFunc2Args() const
 {
     if (argc != 2)
-        throw cRuntimeError(this, "getMathFunc2Args(): arg count mismatch (argc=%d)", argc);
+        throw cRuntimeError(this, "getMathFunc2Args(): Arg count mismatch (argc=%d)", argc);
     return (MathFunc2Args)f;
 }
 
 MathFunc3Args cNEDMathFunction::getMathFunc3Args() const
 {
     if (argc != 3)
-        throw cRuntimeError(this, "getMathFunc3Args(): arg count mismatch (argc=%d)", argc);
+        throw cRuntimeError(this, "getMathFunc3Args(): Arg count mismatch (argc=%d)", argc);
     return (MathFunc3Args)f;
 }
 
 MathFunc4Args cNEDMathFunction::getMathFunc4Args() const
 {
     if (argc != 4)
-        throw cRuntimeError(this, "getMathFunc4Args(): arg count mismatch (argc=%d)", argc);
+        throw cRuntimeError(this, "getMathFunc4Args(): Arg count mismatch (argc=%d)", argc);
     return (MathFunc4Args)f;
 }
 

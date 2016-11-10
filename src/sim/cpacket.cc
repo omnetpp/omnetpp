@@ -160,7 +160,7 @@ void cPacket::copy(const cPacket& msg)
 {
 #ifdef REFCOUNTING
     if (shareCount != 0)
-        throw cRuntimeError(this, "operator=(): this message is refcounted (shared between "
+        throw cRuntimeError(this, "operator=(): This message is refcounted (shared between "
                                   "several messages), it is forbidden to change it");
 #endif
 
@@ -228,7 +228,7 @@ const char *cPacket::getDisplayString() const
 void cPacket::setBitLength(int64_t l)
 {
     if (l < 0)
-        throw cRuntimeError(this, "setBitLength(): negative length %" INT64_PRINTF_FORMAT "d", l);
+        throw cRuntimeError(this, "setBitLength(): Negative length %" INT64_PRINTF_FORMAT "d", l);
     bitLength = l;
 }
 
@@ -236,17 +236,17 @@ void cPacket::addBitLength(int64_t l)
 {
     bitLength += l;
     if (bitLength < 0)
-        throw cRuntimeError(this, "addBitLength(): length became negative (%" INT64_PRINTF_FORMAT ") after adding %" INT64_PRINTF_FORMAT "d", bitLength, l);
+        throw cRuntimeError(this, "addBitLength(): Length became negative (%" INT64_PRINTF_FORMAT ") after adding %" INT64_PRINTF_FORMAT "d", bitLength, l);
 }
 
 void cPacket::encapsulate(cPacket *msg)
 {
     if (encapsulatedPacket)
-        throw cRuntimeError(this, "encapsulate(): another message already encapsulated");
+        throw cRuntimeError(this, "encapsulate(): Another message already encapsulated");
 
     if (msg) {
         if (msg->getOwner() != getSimulation()->getContextSimpleModule())
-            throw cRuntimeError(this, "encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
+            throw cRuntimeError(this, "encapsulate(): Not owner of message (%s)%s, owner is (%s)%s",
                     msg->getClassName(), msg->getFullName(),
                     msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());
         take(encapsulatedPacket = msg);
@@ -265,7 +265,7 @@ cPacket *cPacket::decapsulate()
     if (bitLength > 0)
         bitLength -= encapsulatedPacket->bitLength;
     if (bitLength < 0)
-        throw cRuntimeError(this, "decapsulate(): packet length is smaller than encapsulated packet");
+        throw cRuntimeError(this, "decapsulate(): Packet length is smaller than encapsulated packet");
 
 #ifdef REFCOUNTING
     if (encapsulatedPacket->shareCount > 0) {

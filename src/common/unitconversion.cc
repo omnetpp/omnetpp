@@ -124,7 +124,7 @@ bool UnitConversion::readNumber(const char *& s, double& number)
     if (s == endp)
         return false;  // no number read
     if (errno == ERANGE)
-        throw opp_runtime_error("overflow or underflow during conversion of '%s'", s);
+        throw opp_runtime_error("Overflow or underflow during conversion of '%s'", s);
     s = endp;
 
     while (opp_isspace(*s))
@@ -159,11 +159,11 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
 
     // read first number and unit
     if (!readNumber(s, result))
-        throw opp_runtime_error("Syntax error parsing quantity '%s': must begin with a number", str);
+        throw opp_runtime_error("Syntax error parsing quantity '%s': Must begin with a number", str);
     if (!readUnit(s, unit)) {
         // special case: plain number without unit
         if (*s)
-            throw opp_runtime_error("Syntax error parsing quantity '%s': garbage after first number", str);
+            throw opp_runtime_error("Syntax error parsing quantity '%s': Garbage after first number", str);
         return result;
     }
 
@@ -175,12 +175,12 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
             break;
         std::string tmpUnit;
         if (!readUnit(s, tmpUnit))
-            throw opp_runtime_error("syntax error parsing quantity '%s': missing unit", str);
+            throw opp_runtime_error("Syntax error parsing quantity '%s': Missing unit", str);
 
         // check unit
         double factor = getConversionFactor(unit.c_str(), tmpUnit.c_str());
         if (factor == 0)
-            throw opp_runtime_error("error in quantity '%s': unit %s does not match %s",
+            throw opp_runtime_error("Error in quantity '%s': Unit %s does not match %s",
                     str, getUnitDescription(tmpUnit.c_str()).c_str(), getUnitDescription(unit.c_str()).c_str());
 
         // do the conversion
@@ -190,7 +190,7 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
 
     // must be at the end of the input string
     if (*s)
-        throw opp_runtime_error("syntax error parsing quantity '%s'", str);
+        throw opp_runtime_error("Syntax error parsing quantity '%s'", str);
 
     // success
     return result;

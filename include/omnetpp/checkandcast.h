@@ -30,12 +30,12 @@ void check_and_cast_failure(T *p, P ret)
 {
     const cObject *o = dynamic_cast<const cObject *>(p);
     if (o)
-        throw cRuntimeError("check_and_cast(): cannot cast (%s*)%s to type '%s'",
+        throw cRuntimeError("check_and_cast(): Cannot cast (%s*)%s to type '%s'",
                 o->getClassName(),
                 o->getOwner() == cSimulation::getActiveSimulation()->getContextModule() ? o->getFullName() : o->getFullPath().c_str(),
                 opp_typename(typeid(P)));
     else
-        throw cRuntimeError("check_and_cast(): cannot cast '%s*' to type '%s'",
+        throw cRuntimeError("check_and_cast(): Cannot cast '%s*' to type '%s'",
                 opp_typename(typeid(T)),
                 opp_typename(typeid(P)));
 }
@@ -61,7 +61,7 @@ template<class P, class T>
 P check_and_cast(T *p)
 {
     if (!p)
-        throw cRuntimeError("check_and_cast(): cannot cast nullptr to type '%s'",opp_typename(typeid(P)));
+        throw cRuntimeError("check_and_cast(): Cannot cast nullptr to type '%s'", opp_typename(typeid(P)));
     P ret = dynamic_cast<P>(p);
     if (!ret)
         check_and_cast_failure(p, ret);

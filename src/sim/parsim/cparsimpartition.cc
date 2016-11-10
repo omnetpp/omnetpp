@@ -191,7 +191,7 @@ void cParsimPartition::connectRemoteGates()
             for (cModule::GateIterator it(mod); !it.end(); ++it) {
                 cProxyGate *pg = dynamic_cast<cProxyGate *>(*it);
                 if (pg && pg->getRemoteProcId() == -1 && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
-                    throw cRuntimeError("parallel simulation error: dangling proxy gate '%s' "
+                    throw cRuntimeError("Parallel simulation error: Dangling proxy gate '%s' "
                                         "(module '%s' or some of its submodules not instantiated in any partition?)",
                             pg->getFullPath().c_str(), mod->getFullPath().c_str());
             }
@@ -221,7 +221,7 @@ void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int s
             throw cReceivedException(sourceProcId, errmsg.c_str());
 
         default:
-            throw cRuntimeError("cParsimPartition::processReceivedBuffer(): unexpected tag %d "
+            throw cRuntimeError("cParsimPartition::processReceivedBuffer(): Unexpected tag %d "
                                 "from procId %d", tag, sourceProcId);
     }
     buffer->assertBufferEmpty();
@@ -232,12 +232,12 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     msg->setSrcProcId(sourceProcId);
     cModule *mod = sim->getModule(destModuleId);
     if (!mod)
-        throw cRuntimeError("parallel simulation error: destination module id=%d for message \"%s\""
+        throw cRuntimeError("Parallel simulation error: Destination module id=%d for message \"%s\""
                              "from partition %d does not exist (any longer)",
                              destModuleId, msg->getName(), sourceProcId);
     cGate *g = mod->gate(destGateId);
     if (!g)
-        throw cRuntimeError("parallel simulation error: destination gate %d of module id=%d "
+        throw cRuntimeError("Parallel simulation error: Destination gate %d of module id=%d "
                              "for message \"%s\" from partition %d does not exist",
                              destGateId, destModuleId, msg->getName(), sourceProcId);
 

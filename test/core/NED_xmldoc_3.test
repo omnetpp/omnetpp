@@ -61,5 +61,5 @@ void Simple::activity()
 %exitcode: 1
 
 %contains: stderr
-element not found
+Element not found
 

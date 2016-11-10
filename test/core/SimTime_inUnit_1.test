@@ -47,10 +47,10 @@ simtime-scale = -9
 %subst: /e\-0(\d\d)/e-$1/
 
 %contains: stdout
-428.571428571s in units of 10^-20s = ~4.28571e+22 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-20s
-428.571428571s in units of 10^-19s = ~4.28571e+21 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-19s
-428.571428571s in units of 10^-18s = ~4.28571e+20 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-18s
-428.571428571s in units of 10^-17s = ~4.28571e+19 -> ERROR: simtime: inUnits(): overflow: cannot represent 428.571428571 in units of 10^-17s
+428.571428571s in units of 10^-20s = ~4.28571e+22 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent 428.571428571 in units of 10^-20s
+428.571428571s in units of 10^-19s = ~4.28571e+21 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent 428.571428571 in units of 10^-19s
+428.571428571s in units of 10^-18s = ~4.28571e+20 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent 428.571428571 in units of 10^-18s
+428.571428571s in units of 10^-17s = ~4.28571e+19 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent 428.571428571 in units of 10^-17s
 428.571428571s in units of 10^-16s = ~4.28571e+18 -> 4285714285710000000 ok
 428.571428571s in units of 10^-15s = ~4.28571e+17 -> 428571428571000000 ok
 428.571428571s in units of 10^-14s = ~4.28571e+16 -> 42857142857100000 ok
@@ -82,10 +82,10 @@ simtime-scale = -9
 428.571428571s in units of 10^12s = ~0 -> 0 ok
 428.571428571s in units of 10^13s = ~0 -> 0 ok
 428.571428571s in units of 10^14s = ~0 -> 0 ok
--428.571428571s in units of 10^-20s = ~-4.28571e+22 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-20s
--428.571428571s in units of 10^-19s = ~-4.28571e+21 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-19s
--428.571428571s in units of 10^-18s = ~-4.28571e+20 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-18s
--428.571428571s in units of 10^-17s = ~-4.28571e+19 -> ERROR: simtime: inUnits(): overflow: cannot represent -428.571428571 in units of 10^-17s
+-428.571428571s in units of 10^-20s = ~-4.28571e+22 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent -428.571428571 in units of 10^-20s
+-428.571428571s in units of 10^-19s = ~-4.28571e+21 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent -428.571428571 in units of 10^-19s
+-428.571428571s in units of 10^-18s = ~-4.28571e+20 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent -428.571428571 in units of 10^-18s
+-428.571428571s in units of 10^-17s = ~-4.28571e+19 -> ERROR: SimTime::inUnit(): Overflow: Cannot represent -428.571428571 in units of 10^-17s
 -428.571428571s in units of 10^-16s = ~-4.28571e+18 -> -4285714285710000000 ok
 -428.571428571s in units of 10^-15s = ~-4.28571e+17 -> -428571428571000000 ok
 -428.571428571s in units of 10^-14s = ~-4.28571e+16 -> -42857142857100000 ok

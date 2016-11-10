@@ -357,17 +357,17 @@ cModule *cModuleType::instantiateModuleClass(const char *className)
     cObject *obj = cObjectFactory::createOne(className);  // this won't return nullptr
     cModule *module = dynamic_cast<cModule *>(obj);
     if (!module)
-        throw cRuntimeError("incorrect module class %s: not subclassed from cModule", className);
+        throw cRuntimeError("Incorrect module class %s: Not subclassed from cModule", className);
 
     // check module object
     if (!module->isModule())
-        throw cRuntimeError("incorrect module class %s: isModule() returns false", className);
+        throw cRuntimeError("Incorrect module class %s: isModule() returns false", className);
 
     if (isSimple()) {
         if (dynamic_cast<cSimpleModule *>(module) == nullptr)
-            throw cRuntimeError("incorrect simple module class %s: not subclassed from cSimpleModule", className);
+            throw cRuntimeError("Incorrect simple module class %s: Not subclassed from cSimpleModule", className);
         if (module->isSimple() == false)
-            throw cRuntimeError("incorrect simple module class %s: isSimple() returns false", className);
+            throw cRuntimeError("Incorrect simple module class %s: isSimple() returns false", className);
     }
 
     return module;
@@ -376,7 +376,7 @@ cModule *cModuleType::instantiateModuleClass(const char *className)
 cModule *cModuleType::createScheduleInit(const char *moduleName, cModule *parentModule)
 {
     if (!parentModule)
-        throw cRuntimeError("createScheduleInit(): parent module pointer cannot be nullptr "
+        throw cRuntimeError("createScheduleInit(): Parent module pointer cannot be nullptr "
                             "when creating module named '%s' of type %s", moduleName, getFullName());
     cModule *module = create(moduleName, parentModule);
     module->finalizeParameters();
@@ -416,7 +416,7 @@ cChannel *cChannelType::instantiateChannelClass(const char *classname)
     cObject *obj = cObjectFactory::createOne(classname);  // this won't return nullptr
     cChannel *channel = dynamic_cast<cChannel *>(obj);
     if (!channel)
-        throw cRuntimeError("class %s is not a channel type", classname);  //FIXME better msg
+        throw cRuntimeError("Class %s is not a channel type", classname);  //FIXME better msg
     return channel;
 }
 

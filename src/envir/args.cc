@@ -62,7 +62,7 @@ void ArgList::parse(int argc, char *argv[], const char *spec)
             // short option
             char c = argv[i][1];
             if (!isValidOption(c))
-                throw opp_runtime_error("invalid command-line option %s, try -h for help", argv[i]);
+                throw opp_runtime_error("Invalid command-line option %s, try -h for help", argv[i]);
 
             std::vector<std::string>& v = shortOpts[c];  // get or create map element
             if (hasArg(c)) {

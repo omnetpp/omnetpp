@@ -64,7 +64,7 @@ void LCGRandom::selfTest()
     for (int i = 0; i < 10000; i++)
         next01();
     if (seed != 1043618065L)
-        throw opp_runtime_error("LCGRandom: self test failed, please report this problem!");
+        throw opp_runtime_error("LCGRandom: Self test failed, please report this problem!");
 }
 
 }  // namespace common

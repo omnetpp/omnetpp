@@ -113,17 +113,17 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                 }
                 else {  // vector attribute
                     if (numTokens < 3)
-                        throw ResultFileFormatException("vector file indexer: missing attribute name or value", vectorFileName, lineNo);
+                        throw ResultFileFormatException("Vector file indexer: Missing attribute name or value", vectorFileName, lineNo);
                     lastVectorDecl->attributes[tokens[1]] = tokens[2];
                 }
             }
             else if (tokens[0][0] == 'v' && strcmp(tokens[0], "vector") == 0) {
                 if (numTokens < 4)
-                    throw ResultFileFormatException("vector file indexer: broken vector declaration", vectorFileName, lineNo);
+                    throw ResultFileFormatException("Vector file indexer: Broken vector declaration", vectorFileName, lineNo);
 
                 VectorData vector;
                 if (!parseInt(tokens[1], vector.vectorId))
-                    throw ResultFileFormatException("vector file indexer: malformed vector in vector declaration", vectorFileName, lineNo);
+                    throw ResultFileFormatException("Vector file indexer: Malformed vector in vector declaration", vectorFileName, lineNo);
                 vector.moduleName = tokens[2];
                 vector.name = tokens[3];
                 vector.columns = (numTokens < 5 || opp_isdigit(tokens[4][0]) ? "TV" : tokens[4]);
@@ -136,11 +136,11 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
             else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0) {
                 int version;
                 if (numTokens < 2)
-                    throw ResultFileFormatException("vector file indexer: missing version number", vectorFileName, lineNo);
+                    throw ResultFileFormatException("Vector file indexer: Missing version number", vectorFileName, lineNo);
                 if (!parseInt(tokens[1], version))
-                    throw ResultFileFormatException("vector file indexer: version is not a number", vectorFileName, lineNo);
+                    throw ResultFileFormatException("Vector file indexer: Version is not a number", vectorFileName, lineNo);
                 if (version > 2)
-                    throw ResultFileFormatException("vector file indexer: expects version 2 or lower", vectorFileName, lineNo);
+                    throw ResultFileFormatException("Vector file indexer: Expects version 2 or lower", vectorFileName, lineNo);
             }
             else {  // data line
                 int vectorId;
@@ -165,29 +165,29 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                     currentBlock.startOffset = reader.getCurrentLineStartOffset();
                     currentVectorRef = index.getVectorById(vectorId);
                     if (currentVectorRef == nullptr)
-                        throw ResultFileFormatException("vector file indexer: missing vector declaration", vectorFileName, lineNo);
+                        throw ResultFileFormatException("Vector file indexer: Missing vector declaration", vectorFileName, lineNo);
                 }
 
                 for (int i = 0; i < (int)currentVectorRef->columns.size(); ++i) {
                     char column = currentVectorRef->columns[i];
                     if (i+1 >= numTokens)
-                        throw ResultFileFormatException("vector file indexer: data line too short", vectorFileName, lineNo);
+                        throw ResultFileFormatException("Vector file indexer: Data line too short", vectorFileName, lineNo);
 
                     char *token = tokens[i+1];
                     switch (column) {
                         case 'T':
                             if (!parseSimtime(token, simTime))
-                                throw ResultFileFormatException("vector file indexer: malformed simulation time", vectorFileName, lineNo);
+                                throw ResultFileFormatException("Vector file indexer: Malformed simulation time", vectorFileName, lineNo);
                             break;
 
                         case 'V':
                             if (!parseDouble(token, value))
-                                throw ResultFileFormatException("vector file indexer: malformed data value", vectorFileName, lineNo);
+                                throw ResultFileFormatException("Vector file indexer: Malformed data value", vectorFileName, lineNo);
                             break;
 
                         case 'E':
                             if (!parseInt64(token, eventNum))
-                                throw ResultFileFormatException("vector file indexer: malformed event number", vectorFileName, lineNo);
+                                throw ResultFileFormatException("Vector file indexer: Malformed event number", vectorFileName, lineNo);
                             break;
                     }
                 }

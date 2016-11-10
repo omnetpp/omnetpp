@@ -22,10 +22,10 @@ intVec.record(1);
 
 %subst: /omnetpp:://
 %contains: stdout
-ERROR:(cOutVector): setType(): set the object name first, using setName()
-ERROR:(cOutVector): setMin(): set the object name first, using setName()
-ERROR:(cOutVector): setMax(): set the object name first, using setName()
-ERROR:(cOutVector): setInterpolationMode(): set the object name first, using setName()
-ERROR:(cOutVector): setEnum(): enum 'Foo' not found -- is it declared with Register_Enum()?
-ERROR:(cOutVector): setEnum(): set the object name first, using setName()
+ERROR:(cOutVector): setType(): Set the object name first, using setName()
+ERROR:(cOutVector): setMin(): Set the object name first, using setName()
+ERROR:(cOutVector): setMax(): Set the object name first, using setName()
+ERROR:(cOutVector): setInterpolationMode(): Set the object name first, using setName()
+ERROR:(cOutVector): setEnum(): Enum 'Foo' not found -- is it declared with Register_Enum()?
+ERROR:(cOutVector): setEnum(): Set the object name first, using setName()
 

@@ -294,11 +294,11 @@ cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentNode, co
 cXMLElement *cXMLElement::getElementByPath(const char *pathExpr, cXMLElement *root, cXMLElement::ParamResolver *resolver) const
 {
     if (pathExpr[0] == '/' && !root)
-        throw cRuntimeError("cXMLElement::getElementByPath(): absolute path expression "
+        throw cRuntimeError("cXMLElement::getElementByPath(): Absolute path expression "
                             "(that begins with  '/') can only be used if root node is "
                             "also specified (path expression: '%s')", pathExpr);
     if (root && !root->getParentNode())
-        throw cRuntimeError("cXMLElement::getElementByPath(): root element must have a "
+        throw cRuntimeError("cXMLElement::getElementByPath(): Root element must have a "
                             "parent node, the \"document node\" (path expression: '%s')", pathExpr);
 
     return MiniXPath(resolver).matchPathExpression(const_cast<cXMLElement *>(this),

@@ -201,16 +201,16 @@ contains("Hello", "bubu") ==> false
 substring("Hello", 0) ==> "Hello"
 substring("Hello", 3) ==> "lo"
 substring("Hello", 5) ==> ""
-substring("Hello", -1) ==> substring(): index out of bounds
-substring("Hello", 6) ==> substring(): index out of bounds
+substring("Hello", -1) ==> substring(): Index out of bounds
+substring("Hello", 6) ==> substring(): Index out of bounds
 
 substring("Hello", 0, 2) ==> "He"
 substring("Hello", 1, 3) ==> "ell"
 substring("Hello", 1, 0) ==> ""
 substring("Hello", 1, 10) ==> "ello"
-substring("Hello", 1, -1) ==> substring(): length is negative
-substring("Hello", -1, 3) ==> substring(): index out of bounds
-substring("Hello", -1, 10) ==> substring(): index out of bounds
+substring("Hello", 1, -1) ==> substring(): Length is negative
+substring("Hello", -1, 3) ==> substring(): Index out of bounds
+substring("Hello", -1, 10) ==> substring(): Index out of bounds
 
 substringBefore("this and this and that", "and") ==> "this "
 substringBefore("this and this and that", "XXX") ==> ""
@@ -261,8 +261,8 @@ trim("foo") ==> "foo"
 choose(0, "Zero One Two Three") ==> "Zero"
 choose(2, "Zero One Two Three") ==> "Two"
 choose(3, "Zero One Two Three") ==> "Three"
-choose(-1, "Zero One Two Three") ==> choose(): negative index
-choose(4, "Zero One Two Three") ==> choose(): index out of bounds: 4
+choose(-1, "Zero One Two Three") ==> choose(): Negative index
+choose(4, "Zero One Two Three") ==> choose(): Index out of bounds: 4
 
 int(true) ==> 1
 int(3.14) ==> 3

@@ -14,7 +14,7 @@ EV << p << endl;
 %exitcode: 1
 
 %contains: stderr
-cannot cast
+Cannot cast
 
 %not-contains: stdout
 fell through

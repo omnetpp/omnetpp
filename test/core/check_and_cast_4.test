@@ -21,7 +21,7 @@ EV << "fell through" << endl;
 p1:1
 
 %contains: stderr
-cannot cast
+Cannot cast
 
 %not-contains: stdout
 fell through

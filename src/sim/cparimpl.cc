@@ -146,7 +146,7 @@ cParImpl *cParImpl::createWithType(Type type)
         case cPar::LONG:    return new cLongParImpl();
         case cPar::STRING:  return new cStringParImpl();
         case cPar::XML:     return new cXMLParImpl();
-        default: throw cRuntimeError("cParImpl::createWithType(): no such type: %d", type);
+        default: throw cRuntimeError("cParImpl::createWithType(): No such type: %d", type);
     }
 }
 

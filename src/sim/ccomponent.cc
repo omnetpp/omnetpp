@@ -170,7 +170,7 @@ void cComponent::reallocParamv(int size)
 {
     ASSERT(size >= numPars);
     if (size != (short)size)
-        throw cRuntimeError(this, "reallocParamv(%d): at most %d parameters allowed", size, 0x7fff);
+        throw cRuntimeError(this, "reallocParamv(%d): At most %d parameters allowed", size, 0x7fff);
     cPar *newparamv = new cPar[size];
     for (int i = 0; i < numPars; i++)
         parArray[i].moveto(newparamv[i]);
@@ -182,9 +182,9 @@ void cComponent::reallocParamv(int size)
 void cComponent::addPar(cParImpl *value)
 {
     if (parametersFinalized())
-        throw cRuntimeError(this, "cannot add parameters at runtime");
+        throw cRuntimeError(this, "Cannot add parameters at runtime");
     if (findPar(value->getName()) >= 0)
-        throw cRuntimeError(this, "cannot add parameter '%s': already exists", value->getName());
+        throw cRuntimeError(this, "Cannot add parameter '%s': It already exists", value->getName());
     if (numPars == parArraySize)
         reallocParamv(parArraySize+1);
     parArray[numPars++].init(this, value);
@@ -193,7 +193,7 @@ void cComponent::addPar(cParImpl *value)
 cPar& cComponent::par(int k)
 {
     if (k < 0 || k >= numPars)
-        throw cRuntimeError(this, "parameter id %d out of range", k);
+        throw cRuntimeError(this, "Parameter id %d out of range", k);
     return parArray[k];
 }
 
@@ -201,7 +201,7 @@ cPar& cComponent::par(const char *parName)
 {
     int k = findPar(parName);
     if (k < 0)
-        throw cRuntimeError(this, "unknown parameter '%s'", parName);
+        throw cRuntimeError(this, "Unknown parameter '%s'", parName);
     return parArray[k];
 }
 
@@ -304,11 +304,11 @@ void cComponent::recordParametersAsScalars()
                 recordScalar(par(i).getName(), par(i).boolValue());
             else if (par(i).isNumeric()) {
                 if (par(i).isVolatile() && (par(i).doubleValue() != par(i).doubleValue() || par(i).doubleValue() != par(i).doubleValue()))  // crude check for random variates
-                    throw cRuntimeError(this, "recording volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).getName());
+                    throw cRuntimeError(this, "Refusing to record volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar: Recorded value would likely be a meaningless random number", par(i).getName());
                 recordScalar(par(i).getName(), par(i).doubleValue());
             }
             else
-                throw cRuntimeError(this, "cannot record non-numeric parameter '%s' as an output scalar", par(i).getName());
+                throw cRuntimeError(this, "Cannot record non-numeric parameter '%s' as an output scalar", par(i).getName());
         }
     }
 }
@@ -495,7 +495,7 @@ void cComponent::checkNotFiring(simsignal_t signalID, cIListener **listenerList)
     if (listenerList)
         for (int i = 0; i < notificationSP; i++)
             if (notificationStack[i] == listenerList)
-                throw cRuntimeError(this, "subscribe()/unsubscribe() failed: cannot update listener list "
+                throw cRuntimeError(this, "subscribe()/unsubscribe() failed: Cannot update listener list "
                                           "while its listeners are being notified, signalID=%d", signalID);
 }
 
@@ -600,7 +600,7 @@ void cComponent::fire(cComponent *source, simsignal_t signalID, T x, cObject *de
     if (listenerList) {
         cIListener **listeners = listenerList->listeners;
         if (notificationSP >= NOTIFICATION_STACK_SIZE)
-            throw cRuntimeError(this, "emit(): recursive notification stack overflow, signalID=%d", signalID);
+            throw cRuntimeError(this, "emit(): Recursive notification stack overflow, signalID=%d", signalID);
 
         int oldNotificationSP = notificationSP;
         try {
@@ -635,13 +635,13 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
 {
     // check that the signal exits
     if (signalID > lastSignalID)
-        throw cRuntimeError("subscribe(): not a valid signal: signalID=%d", signalID);
+        throw cRuntimeError("subscribe(): Not a valid signal: SignalID=%d", signalID);
 
     // add to local listeners
     SignalListenerList *listenerList = findOrCreateListenerList(signalID);
     checkNotFiring(signalID, listenerList->listeners);
     if (!listenerList->addListener(listener))
-        throw cRuntimeError(this, "subscribe(): listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
+        throw cRuntimeError(this, "subscribe(): Listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
     signalListenerCount[signalID]++;
     listener->subscribeCount++;
     listener->subscribedTo(this, signalID);
@@ -651,7 +651,7 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
 {
     // check that the signal exits
     if (signalID > lastSignalID)
-        throw cRuntimeError("unsubscribe(): not a valid signal: signalID=%d", signalID);
+        throw cRuntimeError("unsubscribe(): Not a valid signal: SignalID=%d", signalID);
 
     // remove from local listeners list
     SignalListenerList *listenerList = findListenerList(signalID);

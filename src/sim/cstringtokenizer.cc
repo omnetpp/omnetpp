@@ -123,7 +123,7 @@ std::vector<int> cStringTokenizer::asIntVector()
         errno = 0;
         long d = strtol(s, &e, 10);
         if (*e)
-            throw cRuntimeError("Converting string to a vector of ints: error at token '%s'", s);
+            throw cRuntimeError("Converting string to a vector of ints: Error at token '%s'", s);
         if ((int)d != d || (errno == ERANGE && (d == LONG_MAX || d == LONG_MIN)))
             throw cRuntimeError("Converting string to a vector of ints: '%s' does not fit into an int", s);
         v.push_back((int)d);
@@ -140,9 +140,9 @@ std::vector<double> cStringTokenizer::asDoubleVector()
         char *e;
         double d = strtod(s, &e);
         if (*e)
-            throw cRuntimeError("Converting string to a vector of doubles: error at token '%s'", s);
+            throw cRuntimeError("Converting string to a vector of doubles: Error at token '%s'", s);
         if (d == HUGE_VAL)
-            throw cRuntimeError("Converting string to a vector of doubles: overflow or underflow while converting '%s' to double", s);
+            throw cRuntimeError("Converting string to a vector of doubles: Overflow or underflow while converting '%s' to double", s);
         v.push_back(d);
     }
     return v;

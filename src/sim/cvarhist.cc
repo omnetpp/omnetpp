@@ -53,7 +53,7 @@ cVarHistogram::cVarHistogram(const char *name, int maxnumcells, TransformType tr
 
     if ((transformType == HIST_TR_AUTO_EPC_DBL ||
          transformType == HIST_TR_AUTO_EPC_INT) && maxNumCells < 2)
-        throw cRuntimeError(this, "constructor: the maximal number of cells should be >=2");
+        throw cRuntimeError(this, "constructor: The maximal number of cells should be >=2");
 }
 
 cVarHistogram::~cVarHistogram()
@@ -92,7 +92,7 @@ void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 void cVarHistogram::addBinBound(double x)
 {
     if (isTransformed())
-        throw cRuntimeError(this, "cannot add bin bound after transform()");
+        throw cRuntimeError(this, "Cannot add bin bound after transform()");
 
     // create bin_bounds if not exists
     if (cellLowerBounds == nullptr)
@@ -167,7 +167,7 @@ void cVarHistogram::createEquiprobableCells()
 {
     // this method is called from transform() if equi-probable cells (automatic setup) was requested
     if (numCells > 0)
-        throw cRuntimeError(this, "some bin bounds already present when making equi-probable cells");
+        throw cRuntimeError(this, "Some bin bounds already present when making equi-probable cells");
 
     // setRange() methods must not be used with cVarHistogram's equi-probable cell auto-setup mode,
     // so range_mode should still be the RANGE_NOTSET that we set in the ctor
@@ -257,7 +257,7 @@ void cVarHistogram::createEquiprobableCells()
 void cVarHistogram::transform()
 {
     if (isTransformed())
-        throw cRuntimeError(this, "transform(): histogram already transformed");
+        throw cRuntimeError(this, "transform(): Histogram already transformed");
 
     setupRange();
 
@@ -271,7 +271,7 @@ void cVarHistogram::transform()
         // all manually added bin bounds must be in the range
         if (rangeMode != RANGE_NOTSET) {
             if (rangeMin > cellLowerBounds[0] || rangeMax < cellLowerBounds[numCells])
-                throw cRuntimeError(this, "some bin bounds out of preset range");
+                throw cRuntimeError(this, "Some bin bounds out of preset range");
 
             if (rangeMin < cellLowerBounds[0])
                 addBinBound(rangeMin);
@@ -339,7 +339,7 @@ double cVarHistogram::getBasepoint(int k) const
     if (k < numCells+1)
         return cellLowerBounds[k];
     else
-        throw cRuntimeError(this, "invalid basepoint index %u", k);
+        throw cRuntimeError(this, "Invalid basepoint index %u", k);
 }
 
 double cVarHistogram::getCellValue(int k) const
@@ -347,7 +347,7 @@ double cVarHistogram::getCellValue(int k) const
     if (k < numCells)
         return cellv[k];
     else
-        throw cRuntimeError(this, "invalid cell index %u", k);
+        throw cRuntimeError(this, "Invalid cell index %u", k);
 }
 
 double cVarHistogram::draw() const

@@ -53,7 +53,7 @@ StringTokenizer2::StringTokenizer2(const char *s, const char *delim, const char 
     if (!parens)
         parens = "()";
     else if (strlen(parens) % 2 != 0)
-        throw StringTokenizerException("StringTokenizer2(): invalid parens arg: %s", parens);
+        throw StringTokenizerException("StringTokenizer2(): Invalid parens arg: %s", parens);
     parenChars = parens;
 
     if (!quotes)
@@ -78,7 +78,7 @@ void StringTokenizer2::setParentheses(const char *parens)
     if (!parens)
         parens = "()";
     else if (strlen(parens) % 2 != 0)
-        throw StringTokenizerException("StringTokenizer2::setParentheses(): invalid parens arg: %s", parens);
+        throw StringTokenizerException("StringTokenizer2::setParentheses(): Invalid parens arg: %s", parens);
     parenChars = parens;
 }
 
@@ -123,7 +123,7 @@ char *StringTokenizer2::readToken()
                 parens.push(ch);
             else {  // close
                 if (parens.empty() || parens.top() != parenChars[pos-1])
-                    throw StringTokenizerException("Unmatched closing parenthesis: %c.", ch);
+                    throw StringTokenizerException("Unmatched closing parenthesis '%c'", ch);
                 parens.pop();
             }
         }
@@ -137,9 +137,9 @@ char *StringTokenizer2::readToken()
     *dst = '\0';
 
     if (quoteChar)
-        throw StringTokenizerException("Unclosed string constant.");
+        throw StringTokenizerException("Unclosed string constant");
     if (!parens.empty())
-        throw StringTokenizerException("Unclosed parenthesis: %c.", parens.top());
+        throw StringTokenizerException("Unclosed parenthesis '%c'", parens.top());
 
     return str;
 }

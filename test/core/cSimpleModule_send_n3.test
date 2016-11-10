@@ -7,5 +7,5 @@ send(new cMessage(), "qwerty", 99);
 %exitcode: 1
 
 %contains: stderr
-send()/sendDelayed(): no such gate or gate vector: 'qwerty'
+send()/sendDelayed(): No such gate or gate vector: 'qwerty'
 

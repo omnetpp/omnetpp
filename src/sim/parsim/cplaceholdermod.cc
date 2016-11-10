@@ -50,7 +50,7 @@ std::string cPlaceholderModule::str() const
 
 void cPlaceholderModule::arrived(cMessage *msg, cGate *ongate, simtime_t t)
 {
-    throw cRuntimeError(this, "internal error: arrived() called");
+    throw cRuntimeError(this, "Internal error: arrived() called");
 }
 
 void cPlaceholderModule::scheduleStart(simtime_t t)

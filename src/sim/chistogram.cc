@@ -121,7 +121,7 @@ void cHistogramBase::clearResult()
 void cHistogramBase::transform()
 {
     if (isTransformed())
-        throw cRuntimeError(this, "transform(): histogram already transformed");
+        throw cRuntimeError(this, "transform(): Histogram already transformed");
 
     setupRange();  // this will set num_cells if it was unspecified (-1)
 
@@ -175,7 +175,7 @@ void cHistogramBase::loadFromFile(FILE *f)
 void cHistogramBase::setNumCells(int numcells)
 {
     if (cellv)
-        throw cRuntimeError(this, "setNumCells(): too late, cells already set up");
+        throw cRuntimeError(this, "setNumCells(): Too late, cells already set up");
     numCells = numcells;
 }
 
@@ -309,7 +309,7 @@ void cHistogram::setupRangeInteger()
                     break;
 
             if (cellSize > maxCellsize)
-                throw cRuntimeError(this, COMPLAINT ": specified range is too large, and cannot divide it to 10..200 equal-sized cells");
+                throw cRuntimeError(this, COMPLAINT ": Specified range is too large, and cannot divide it to 10..200 equal-sized cells");
             numCells = range / cellSize;
         }
 #undef COMPLAINT
@@ -439,7 +439,7 @@ double cHistogram::getBasepoint(int k) const
     //   k=num_cells   : rangemax
 
     if (k < 0 || k > numCells)
-        throw cRuntimeError(this, "invalid basepoint index %u", k);
+        throw cRuntimeError(this, "Invalid basepoint index %u", k);
 
     if (k == numCells)
         return rangeMax;
@@ -450,7 +450,7 @@ double cHistogram::getBasepoint(int k) const
 double cHistogram::getCellValue(int k) const
 {
     if (k < 0 || k > numCells)
-        throw cRuntimeError(this, "invalid cell index %u", k);
+        throw cRuntimeError(this, "Invalid cell index %u", k);
     return cellv[k];
 }
 

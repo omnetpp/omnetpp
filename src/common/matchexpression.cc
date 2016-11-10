@@ -80,44 +80,44 @@ bool MatchExpression::matches(const Matchable *object)
         switch (e.type) {
             case Elem::PATTERN:
                 if (tos >= stksize-1)
-                    throw opp_runtime_error("MatchExpression: malformed expression: stack overflow");
+                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack overflow");
                 attr = object->getAsString();
                 stk[++tos] = attr == nullptr ? false : e.pattern->matches(attr);
                 break;
 
             case Elem::FIELDPATTERN:
                 if (tos >= stksize-1)
-                    throw opp_runtime_error("MatchExpression: malformed expression: stack overflow");
+                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack overflow");
                 attr = object->getAsString(e.fieldname.c_str());
                 stk[++tos] = attr == nullptr ? false : e.pattern->matches(attr);
                 break;
 
             case Elem::OR:
                 if (tos < 1)
-                    throw opp_runtime_error("MatchExpression: malformed expression: stack underflow");
+                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack underflow");
                 stk[tos-1] = stk[tos-1] || stk[tos];
                 tos--;
                 break;
 
             case Elem::AND:
                 if (tos < 1)
-                    throw opp_runtime_error("MatchExpression: malformed expression: stack underflow");
+                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack underflow");
                 stk[tos-1] = stk[tos-1] && stk[tos];
                 tos--;
                 break;
 
             case Elem::NOT:
                 if (tos < 0)
-                    throw opp_runtime_error("MatchExpression: malformed expression: stack underflow");
+                    throw opp_runtime_error("MatchExpression: Malformed expression: Stack underflow");
                 stk[tos] = !stk[tos];
                 break;
 
             default:
-                throw opp_runtime_error("MatchExpression: malformed expression: unknown element type");
+                throw opp_runtime_error("MatchExpression: Malformed expression: Unknown element type");
         }
     }
     if (tos != 0)
-        throw opp_runtime_error("MatchExpression: malformed expression: %d items left on stack", tos);
+        throw opp_runtime_error("MatchExpression: Malformed expression: %d items left on stack", tos);
 
     return stk[tos];
 }

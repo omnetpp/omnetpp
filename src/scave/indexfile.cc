@@ -273,7 +273,7 @@ FingerPrint::FingerPrint(const char *vectorFileName)
 {
     struct opp_stat_t s;
     if (opp_stat(vectorFileName, &s) != 0)
-        throw opp_runtime_error("vector file '%s' does not exist", vectorFileName);
+        throw opp_runtime_error("Vector file '%s' does not exist", vectorFileName);
 
     this->lastModified = (int64_t)s.st_mtime;
     this->fileSize = (int64_t)s.st_size;

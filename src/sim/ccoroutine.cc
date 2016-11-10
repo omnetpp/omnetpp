@@ -43,7 +43,7 @@ void cCoroutine::init(unsigned totalStack, unsigned mainStack)
         if (err == ERROR_ALREADY_FIBER)
             lpMainFiber = GetCurrentFiber();
         if (!lpMainFiber)
-            throw cRuntimeError("cCoroutine::init(): cannot convert main thread to fiber");
+            throw cRuntimeError("cCoroutine::init(): Cannot convert main thread to fiber");
     }
 }
 

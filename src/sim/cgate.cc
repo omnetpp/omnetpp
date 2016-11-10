@@ -148,7 +148,7 @@ const char *cGate::getFullName() const
     // note: this implementation assumes that this method will be called infrequently
     // (ie. we reproduce the string every time).
     if (omnetpp::opp_strlen(getName()) > 100)
-        throw cRuntimeError(this, "getFullName(): gate name too long, should be under 100 characters");
+        throw cRuntimeError(this, "getFullName(): Gate name too long, should be under 100 characters");
 
     static char tmp[128];
     strcpy(tmp, getName());
@@ -256,11 +256,11 @@ bool cGate::hasChangedSince(int64_t lastRefreshSerial)
 cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 {
     if (nextGate)
-        throw cRuntimeError(this, "connectTo(): gate already connected");
+        throw cRuntimeError(this, "connectTo(): Gate already connected");
     if (!g)
-        throw cRuntimeError(this, "connectTo(): destination gate cannot be nullptr");
+        throw cRuntimeError(this, "connectTo(): Destination gate cannot be nullptr");
     if (g->prevGate)
-        throw cRuntimeError(this, "connectTo(): destination gate already connected");
+        throw cRuntimeError(this, "connectTo(): Destination gate already connected");
 
     // notify pre-change listeners
     cModule *mod = getOwnerModule();
@@ -416,7 +416,7 @@ cChannel *cGate::reconnectWith(cChannel *channel, bool leaveUninitialized)
 {
     cGate *otherGate = getNextGate();
     if (!otherGate)
-        throw cRuntimeError(this, "reconnectWith(): gate must be already connected");
+        throw cRuntimeError(this, "reconnectWith(): Gate must be already connected");
     disconnect();
     return connectTo(otherGate, channel, leaveUninitialized);
 }
@@ -478,7 +478,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
             // transmission channel:
             // channel must be idle
             if (channel->getTransmissionFinishTime() > t)
-                throw cRuntimeError("Cannot send message (%s)%s on gate %s: channel is currently "
+                throw cRuntimeError("Cannot send message (%s)%s on gate %s: Channel is currently "
                                     "busy with an ongoing transmission -- please rewrite the sender "
                                     "simple module to only send when the previous transmission has "
                                     "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
@@ -523,15 +523,15 @@ cChannel *cGate::getTransmissionChannel() const
 
     // transmission channel not found, try to issue a helpful error message
     if (nextGate)
-        throw cRuntimeError(this, "getTransmissionChannel(): no transmission channel "
+        throw cRuntimeError(this, "getTransmissionChannel(): No transmission channel "
                                   "found in the connection path between gates %s and %s",
                 getFullPath().c_str(),
                 getPathEndGate()->getFullPath().c_str());
     else if (getType() == OUTPUT)
-        throw cRuntimeError(this, "getTransmissionChannel(): no transmission channel found: "
+        throw cRuntimeError(this, "getTransmissionChannel(): No transmission channel found: "
                                   "gate is not connected");
     else
-        throw cRuntimeError(this, "getTransmissionChannel(): cannot be invoked on a "
+        throw cRuntimeError(this, "getTransmissionChannel(): Cannot be invoked on a "
                                   "simple module input gate (or a compound module "
                                   "input gate which is not connected on the inside)");
 }
@@ -552,15 +552,15 @@ cChannel *cGate::getIncomingTransmissionChannel() const
 
     // transmission channel not found, try to issue a helpful error message
     if (prevGate)
-        throw cRuntimeError(this, "getIncomingTransmissionChannel(): no transmission channel "
+        throw cRuntimeError(this, "getIncomingTransmissionChannel(): No transmission channel "
                                   "found in the connection path between gates %s and %s",
                 getFullPath().c_str(),
                 getPathStartGate()->getFullPath().c_str());
     else if (getType() == INPUT)
-        throw cRuntimeError(this, "getIncomingTransmissionChannel(): no transmission channel found: "
+        throw cRuntimeError(this, "getIncomingTransmissionChannel(): No transmission channel found: "
                                   "gate is not connected");
     else
-        throw cRuntimeError(this, "getIncomingTransmissionChannel(): cannot be invoked on a "
+        throw cRuntimeError(this, "getIncomingTransmissionChannel(): Cannot be invoked on a "
                                   "simple module output gate (or a compound module "
                                   "output gate which is not connected on the inside)");
 }

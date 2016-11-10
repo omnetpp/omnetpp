@@ -53,7 +53,7 @@
  * will be thrown with file/line/function information.
  */
 #define ASSERT(expr) \
-  ((void) ((expr) ? 0 : (throw omnetpp::cRuntimeError("ASSERT: condition %s false in function %s, %s line %d", \
+  ((void) ((expr) ? 0 : (throw omnetpp::cRuntimeError("ASSERT: Condition '%s' does not hold in function %s, %s line %d", \
                                    #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
 
 /**

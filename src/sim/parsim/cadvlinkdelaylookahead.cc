@@ -103,7 +103,7 @@ void cAdvancedLinkDelayLookahead::startRun()
                     cPar *delaypar = datarateChan ? datarateChan->getDelay() : nullptr;
                     double linkDelay = delaypar ? delaypar->doubleValue() : 0;
                     if (linkDelay <= 0.0)
-                        throw cRuntimeError("cAdvancedLinkDelayLookahead: zero delay on link from gate '%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
+                        throw cRuntimeError("cAdvancedLinkDelayLookahead: Zero delay on link from gate '%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
 
                     // store
                     int procId = pg->getRemoteProcId();
@@ -134,7 +134,7 @@ simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int pr
     // find LinkOut structure in segInfo[destProcId].
     LinkOut *link = (LinkOut *)data;
     if (!link)
-        throw cRuntimeError("internal parallel simulation error: cProxyGate has no associated data pointer");
+        throw cRuntimeError("Internal parallel simulation error: cProxyGate has no associated data pointer");
 
     // calculate EOT
     simtime_t eot;

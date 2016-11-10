@@ -149,7 +149,7 @@ void cStdDev::doMerge(const cStatistic *other)
     long orig_num_vals = numValues;
     numValues += other->getCount();
     if (numValues < 0)
-        throw cRuntimeError(this, "merge(): observation count overflow");
+        throw cRuntimeError(this, "merge(): Observation count overflow");
 
     if (other->getCount() > 0 && (orig_num_vals == 0 || minValue > other->getMin()))
         minValue = other->getMin();
@@ -294,7 +294,7 @@ cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
 void cWeightedStdDev::collect2(double value, double weight)
 {
     if (weight < 0)
-        throw cRuntimeError(this, "collect2(): negative weight %g", weight);
+        throw cRuntimeError(this, "collect2(): Negative weight %g", weight);
 
     if (++numValues <= 0) {
         // num_vals overflow: issue warning and stop collecting

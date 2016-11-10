@@ -166,7 +166,7 @@ void SectionBasedConfiguration::initializeFrom(cConfiguration *bootConfig)
 {
     std::string classname = bootConfig->getAsString(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS);
     if (classname.empty())
-        throw cRuntimeError("SectionBasedConfiguration: no configuration reader class specified (missing %s option)",
+        throw cRuntimeError("SectionBasedConfiguration: No configuration reader class specified (missing %s option)",
                 CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS->getName());
     cConfigurationReader *reader = dynamic_cast<cConfigurationReader *>(createOne(classname.c_str()));
     if (!reader)
@@ -334,7 +334,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
         Scenario scenario(itervars, constraint, nestingSpec);
         int numRuns = scenario.getNumRuns();
         if (runNumber < 0 || runNumber >= numRuns)
-            throw cRuntimeError("Run number %d is out of range for configuration '%s': it contains %d run(s)", runNumber, configName, numRuns);
+            throw cRuntimeError("Run number %d is out of range for configuration '%s': It contains %d run(s)", runNumber, configName, numRuns);
 
         scenario.gotoRun(runNumber);
         variables = computeVariables(getActiveConfigName(), getActiveRunNumber(), sectionChain, &scenario, locationToVarName);
@@ -520,7 +520,7 @@ std::vector<Scenario::IterationVariable> SectionBasedConfiguration::collectItera
                         // check it does not conflict with other iteration variables or predefined variables
                         for (int j = 0; j < (int)v.size(); j++)
                             if (v[j].varName == iterVar.varName)
-                                throw cRuntimeError("Scenario generator: redefinition of iteration variable ${%s} in the configuration", iterVar.varName.c_str());
+                                throw cRuntimeError("Scenario generator: Redefinition of iteration variable ${%s} in the configuration", iterVar.varName.c_str());
 
                         if (isPredefinedVariable(iterVar.varName.c_str()))
                             throw cRuntimeError("Scenario generator: ${%s} is a predefined variable and cannot be changed", iterVar.varName.c_str());
@@ -556,7 +556,7 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
     StringTokenizer2 tokenizer(pos+1, "}", "{}", "\"");
     const char *token = tokenizer.nextToken();  // ends at matching '}'
     if (!token)
-        throw cRuntimeError("missing '}' for '${'");
+        throw cRuntimeError("Missing '}' for '${'");
     outEndPos = pos + 1 + tokenizer.getTokenLength();
 
     // parse what's inside the ${...}
@@ -591,7 +591,7 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
             varbegin = varend = nullptr;
         }
         else {
-            throw cRuntimeError("missing '=' after '${varname'");
+            throw cRuntimeError("Missing '=' after '${varname'");
         }
     }
     else {
@@ -652,7 +652,7 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
         }
         StringMap::const_iterator it = variables.find(varName);
         if (it == variables.end())
-            throw cRuntimeError("no such variable: ${%s}", varName.c_str());
+            throw cRuntimeError("No such variable: ${%s}", varName.c_str());
         std::string value = it->second;
 
         result.replace(pos, endPos-pos+1, value);
@@ -982,7 +982,7 @@ int SectionBasedConfiguration::internalGetSectionId(const char *section) const
 {
     int sectionId = internalFindSection(section);
     if (sectionId == -1)
-        throw cRuntimeError("no such section: %s", section);
+        throw cRuntimeError("No such section: %s", section);
     return sectionId;
 }
 
@@ -1114,9 +1114,9 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             throw cRuntimeError("Invalid section name [%s], should be [General] or [Config <name>]", section);
         if (configName) {
             if (*configName == ' ')
-                throw cRuntimeError("Invalid section name [%s]: too many spaces", section);
+                throw cRuntimeError("Invalid section name [%s]: Too many spaces", section);
             if (!opp_isalphaext(*configName) && *configName != '_')
-                throw cRuntimeError("Invalid section name [%s]: config name must begin with a letter or underscore", section);
+                throw cRuntimeError("Invalid section name [%s]: Config name must begin with a letter or underscore", section);
             for (const char *s = configName; *s; s++)
                 if (!opp_isalnumext(*s) && strchr("-_@", *s) == nullptr)
                     throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
@@ -1361,7 +1361,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
     // to handle the "pattern matches pattern" case (see below as well).
     bool anyObject = strcmp(objectFullPathPattern, "**") == 0;
     if (!anyObject && PatternMatcher::containsWildcards(objectFullPathPattern))
-        throw cRuntimeError("getMatchingPerObjectConfigKeys: invalid objectFullPath parameter: the only wildcard pattern accepted is '**'");
+        throw cRuntimeError("getMatchingPerObjectConfigKeys: Invalid objectFullPath parameter: The only wildcard pattern accepted is '**'");
 
     // check all suffix groups whose name matches the pattern
     PatternMatcher suffixMatcher(keySuffixPattern, true, true, true);
