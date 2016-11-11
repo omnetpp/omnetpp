@@ -171,6 +171,7 @@ COMMON_API std::string opp_replacesubstring(const std::string& text, const std::
  * For opp_substitutevariables().
  */
 struct opp_substitutevariables_resolver {
+    virtual ~opp_substitutevariables_resolver() {}
     virtual bool isVariableNameChar(char c) = 0;
     virtual std::string operator()(const std::string&) = 0;
 };

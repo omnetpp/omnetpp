@@ -93,11 +93,11 @@ std::string Expression::Value::str()
 }
 
 // should be member of Function, but the VC++ 9.0 linker disagrees
-std::string Expression::Function_str(const char *name, std::string args[], int numargs)
+std::string Expression::Function_str(const char *name, std::string args[], int numArgs)
 {
     std::stringstream os;
     os << name << "(";
-    for (int i = 0; i < numargs; i++)
+    for (int i = 0; i < numArgs; i++)
         os << (i == 0 ? "" : ", ") << args[i];
     os << ")";
     return os.str();
@@ -170,16 +170,16 @@ Expression::Value Expression::evaluate() const
 
            case Elem::FUNCTOR:
              {
-             int numargs = e.fu->getNumArgs();
-             int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
-             if (argpos<0)
+             int numArgs = e.fu->getNumArgs();
+             int argPos = tos-numArgs+1; // stk[] index of 1st arg to pass
+             if (argPos<0)
                  throw opp_runtime_error(E_ESTKUFLOW);
              const char *argtypes = e.fu->getArgTypes();
-             for (int i=0; i<numargs; i++)
-                 if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
+             for (int i=0; i<numArgs; i++)
+                 if (stk[argPos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
                      throw opp_runtime_error(E_EBADARGS,e.fu->getName());
-             stk[argpos] = e.fu->evaluate(stk+argpos, numargs);
-             tos = argpos;
+             stk[argPos] = e.fu->evaluate(stk+argPos, numArgs);
+             tos = argPos;
              break;
              }
 
@@ -458,12 +458,12 @@ std::string Expression::str() const
                  break;
                case Elem::FUNCTOR:
                  {
-                 int numargs = e.fu->getNumArgs();
-                 int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
-                 if (argpos<0)
+                 int numArgs = e.fu->getNumArgs();
+                 int argPos = tos-numArgs+1; // strstk[] index of 1st arg to pass
+                 if (argPos<0)
                      throw opp_runtime_error(E_ESTKUFLOW);
-                 strstk[argpos] = e.fu->str(strstk+argpos, numargs);
-                 tos = argpos;
+                 strstk[argPos] = e.fu->str(strstk+argPos, numArgs);
+                 tos = argPos;
                  pristk[tos] = 0;
                  break;
                  }
@@ -667,10 +667,10 @@ char MathFunction::getReturnType() const
     return Expression::Value::DBL;
 }
 
-Expression::Value MathFunction::evaluate(Expression::Value args[], int numargs)
+Expression::Value MathFunction::evaluate(Expression::Value args[], int numArgs)
 {
-    Assert(numargs==argcount);
-    switch (numargs) {
+    Assert(numArgs==argcount);
+    switch (numArgs) {
         case 0: return f();
         case 1: return f(args[0].dbl);
         case 2: return f(args[0].dbl, args[1].dbl);

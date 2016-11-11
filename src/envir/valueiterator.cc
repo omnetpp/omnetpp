@@ -83,10 +83,9 @@ class FunctionResolver : public Expression::Resolver
     FunctionResolver() {}
     virtual ~FunctionResolver() {};
     // Variables are substituted textually before parsing the expression
-    virtual Expression::Functor *resolveVariable(const char *varname) override { return nullptr; }
-    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override
-    {
-        return MathFunction::supports(funcname) ? new MathFunction(funcname) : nullptr;  // argcount will be checked by the caller afterwards
+    virtual Expression::Functor *resolveVariable(const char *varName) override { return nullptr; }
+    virtual Expression::Functor *resolveFunction(const char *functionName, int argCount) override {
+        return MathFunction::supports(functionName) ? new MathFunction(functionName) : nullptr;  // argcount will be checked by the caller afterwards
     }
 };
 
@@ -95,13 +94,9 @@ struct Resolver : public opp_substitutevariables_resolver
 {
     const ValueIterator::VariableMap& map;
     Resolver(const ValueIterator::VariableMap& map) : map(map) {}
-    virtual bool isVariableNameChar(char c) override
-    {
-        return omnetpp::envir::isVariableNameChar(c);
-    }
+    virtual bool isVariableNameChar(char c) override { return omnetpp::envir::isVariableNameChar(c); }
 
-    virtual std::string operator()(const std::string& name) override
-    {
+    virtual std::string operator()(const std::string& name) override {
         ValueIterator::VariableMap::const_iterator it = map.find(name);
         if (it == map.end())
             throw opp_runtime_error("Unknown iteration variable: $%s", name.c_str());

@@ -223,8 +223,8 @@ class COMMON_API Expression
         virtual const char *getArgTypes() const = 0;
         virtual int getNumArgs() const {return strlen(getArgTypes());}
         virtual char getReturnType() const = 0;
-        virtual Value evaluate(Value args[], int numargs) = 0;
-        virtual std::string str(std::string args[], int numargs) = 0;
+        virtual Value evaluate(Value args[], int numArgs) = 0;
+        virtual std::string str(std::string args[], int numArgs) = 0;
     };
 
     /**
@@ -235,7 +235,7 @@ class COMMON_API Expression
       public:
         virtual const char *getArgTypes() const override {return "";}
         virtual int getNumArgs() const override {return 0;}
-        virtual std::string str(std::string args[], int numargs) override {return getName();}
+        virtual std::string str(std::string args[], int numArgs) override {return getName();}
     };
 
     /**
@@ -245,7 +245,7 @@ class COMMON_API Expression
     {
       public:
         // returns name(arg1,arg2,...)
-        virtual std::string str(std::string args[], int numargs) override {return Function_str(getName(), args, numargs);}
+        virtual std::string str(std::string args[], int numArgs) override {return Function_str(getName(), args, numArgs);}
     };
 
     /**
@@ -263,12 +263,12 @@ class COMMON_API Expression
         /**
          * Should return nullptr or throw exception if variable is not found
          */
-        virtual Functor *resolveVariable(const char *varname) = 0;
+        virtual Functor *resolveVariable(const char *varName) = 0;
         /**
          * Should return nullptr or throw exception if variable is not found.
-         * Does not need to check the argcount, because it is also done by the caller.
+         * Does not need to check the argCount, because it is also done by the caller.
          */
-        virtual Functor *resolveFunction(const char *funcname, int argcount) = 0;
+        virtual Functor *resolveFunction(const char *functionName, int argCount) = 0;
     };
 
   protected:
@@ -281,7 +281,7 @@ class COMMON_API Expression
     static void Elem_eq(Elem& e, const Elem& other);
     static int Elem_getNumArgs(const Elem& e);
     static std::string Elem_str(int type, bool b, double d, const char *s, Functor *fu, int op);
-    static std::string Function_str(const char *name, std::string args[], int numargs);
+    static std::string Function_str(const char *name, std::string args[], int numArgs);
 
   private:
     void copy(const Expression& other);
@@ -409,7 +409,7 @@ class COMMON_API MathFunction : public Expression::Function
     virtual const char *getName() const override;
     virtual const char *getArgTypes() const override;
     virtual char getReturnType() const override;
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) override;
+    virtual Expression::Value evaluate(Expression::Value args[], int numArgs) override;
 };
 
 } // namespace common
