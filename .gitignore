@@ -98,6 +98,9 @@ Thumbs.db
 /samples/rundemo.bat
 /samples/*/results/
 /samples/*/results.*/
+/samples/*/frames/
+/samples/*/*.mkv
+/samples/*/.settings
 /tmp/
 /ui/org.omnetpp.test.gui/test-workspace/.metadata
 /ui/_*/
