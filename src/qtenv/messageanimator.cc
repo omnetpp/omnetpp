@@ -42,7 +42,7 @@ void MessageAnimator::redrawMessages()
     clearMessages();
 
     // this thingy is only needed if animation is going on
-    if (!getQtenv()->animating)
+    if (!(getQtenv()->animating && getQtenv()->opt->animationEnabled))
         return;
 
     // loop through all messages in the event queue and display them
