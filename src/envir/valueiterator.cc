@@ -83,7 +83,7 @@ class FunctionResolver : public Expression::Resolver
     FunctionResolver() {}
     virtual ~FunctionResolver() {};
     // Variables are substituted textually before parsing the expression
-    virtual Expression::Functor *resolveVariable(const char *varname) override { Assert(false); return nullptr; }
+    virtual Expression::Functor *resolveVariable(const char *varname) override { return nullptr; }
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) override
     {
         return MathFunction::supports(funcname) ? new MathFunction(funcname) : nullptr;  // argcount will be checked by the caller afterwards
@@ -126,13 +126,13 @@ void ValueIterator::Expr::evaluate()
         expr.parse(value.s.c_str(), &resolver);
     }
     catch (std::exception& e) {
-        throw opp_runtime_error("Parse error in expression: %s", value.s.c_str(), e.what());
+        throw opp_runtime_error("Parse error in expression '%s': %s", value.s.c_str(), e.what());
     }
     try {
         value = expr.evaluate();
     }
     catch (std::exception& e) {
-        throw opp_runtime_error("Cannot evaluate expression: %s (%s)", value.s.c_str(), e.what());
+        throw opp_runtime_error("Cannot evaluate expression '%s': %s", value.s.c_str(), e.what());
     }
 }
 

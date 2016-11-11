@@ -245,7 +245,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             return k;
         }
         else {
-            throw opp_runtime_error("opp_vsscanf: Unexpected char in format: '%s'", fmt);
+            throw opp_runtime_error("opp_vsscanf: Unexpected char in format string '%s'", fmt);
         }
     }
 }
@@ -278,7 +278,7 @@ struct MapBasedResolver : public opp_substitutevariables_resolver
     {
         const std::map<std::string, std::string>::const_iterator it = map.find(name);
         if (it == map.end())
-            throw opp_runtime_error("Unknown variable: $%s", name.c_str());
+            throw opp_runtime_error("Unknown variable $%s", name.c_str());
         return it->second;
     }
 };

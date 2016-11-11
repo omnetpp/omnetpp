@@ -10,4 +10,4 @@ constraint = $a > 1  # "korte" should generate an error here
 
 %exitcode: 1
 %contains: stderr
-Cannot evaluate constraint expression: Parse error in expression: korte > 1
+Cannot evaluate constraint expression: Parse error in expression 'korte > 1'

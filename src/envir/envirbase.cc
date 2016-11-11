@@ -796,7 +796,7 @@ std::vector<int> EnvirBase::resolveRunFilter(const char *configName, const char 
                     runNumbers.push_back(runNumber);
             }
             catch (std::exception& e) {
-                throw cRuntimeError("Cannot evaluate run filter %s: %s", runFilter, e.what());
+                throw cRuntimeError("Cannot evaluate run filter: %s", e.what());
             }
         }
     }
