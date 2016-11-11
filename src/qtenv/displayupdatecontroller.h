@@ -53,8 +53,8 @@ class DisplayUpdateController : public QObject
     Qtenv *qtenv = getQtenv();
 
     // factory defaults
-    RunModeProfile runProfile  = {0.8,   2.0, 60.0, 1e-2, 1e2, 1,    1e-18, 1e18};
-    RunModeProfile fastProfile = {0.05, 10.0, 30.0, 1e0,  1e9, 1000, 1e0,   1e18};
+    RunModeProfile runProfile  = {0.8,   2.0, 60.0, 1e-2, 1e2, 1,    1e-15, 1e6};
+    RunModeProfile fastProfile = {0.05, 10.0, 30.0, 1e0,  1e6, 1000, 1e-3,  1e12};
     RunModeProfile *currentProfile = &runProfile;
 
     RunMode runMode = RUNMODE_NORMAL;
@@ -118,8 +118,8 @@ public:
     bool animateUntilNextEvent() { return animateUntilNextEvent(false); }
     bool animateUntilHoldEnds() { return animateUntilNextEvent(true); }
 
-    void startVideoRecording() { recordingVideo = true; }
-    void stopVideoRecording() { recordingVideo = false; }
+    void startVideoRecording();
+    void stopVideoRecording();
 
     std::string getFilenameBase() const { return filenameBase; }
     void setFilenameBase(const char *base) { filenameBase = base; }
