@@ -67,12 +67,12 @@ CallTracer::CallTracer(const char *fmt, ...)
     char buf[1024];
     VSNPRINTF(buf, 1024, fmt);
     funcname = buf;
-    std::cout << std::setw(depth++ *2) << "" << " ++ " << funcname << std::endl;
+    std::cout << std::setw(depth++*4) << "" << funcname << " {" << std::endl;
 }
 
 CallTracer::~CallTracer()
 {
-    std::cout << std::setw(--depth*2) << "" << " -- " << funcname;
+    std::cout << std::setw(--depth*4) << "" << "}";
     if (!result.empty())
         std::cout << ", result: " << result;
     std::cout << std::endl;
@@ -82,7 +82,7 @@ void CallTracer::printf(const char *fmt, ...)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, fmt);
-    std::cout << std::setw(depth*2) << "" << "    " << buf << std::endl;
+    std::cout << std::setw(depth*4) << "" << "  " << buf << std::endl;
 }
 
 //----

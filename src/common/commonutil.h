@@ -93,6 +93,7 @@ class COMMON_API CallTracer
     CallTracer(const char *fmt,...);
     ~CallTracer();
     static void printf(const char *fmt, ...);
+    static void setDepth(int d) {depth = d;}
     template <class T> void setResult(T x) { result = ToString<T>::toString(x); };
 };
 
