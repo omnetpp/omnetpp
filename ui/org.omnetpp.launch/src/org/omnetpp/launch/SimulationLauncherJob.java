@@ -89,7 +89,7 @@ public class SimulationLauncherJob extends Job {
         try {
             String additionalArgs = "";
             if (runFilter != "")
-                additionalArgs += " -r " + runFilter;
+                additionalArgs += " -r " + StringUtils.quoteStringIfNeeded(runFilter);
             if (port != -1)
                 additionalArgs += " -p  " + port;
 
