@@ -32,7 +32,7 @@ message Dummy {
 .*
 using namespace std_before;
 .*
-namespace foo {
+namespace foo \{
 .*
 using namespace std_after;
 .*

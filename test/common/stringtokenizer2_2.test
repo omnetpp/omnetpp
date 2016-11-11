@@ -37,10 +37,10 @@ T("'bubu");
 EV << ".\n";
 
 %contains: stdout
-Unclosed parenthesis: {.
-Unmatched closing parenthesis: }.
-Unclosed parenthesis: (.
-Unmatched closing parenthesis: ).
-Unmatched closing parenthesis: }.
-Unclosed string constant.
+Unclosed parenthesis '{'
+Unmatched closing parenthesis '}'
+Unclosed parenthesis '('
+Unmatched closing parenthesis ')'
+Unmatched closing parenthesis '}'
+Unclosed string constant
 .

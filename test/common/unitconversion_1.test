@@ -74,17 +74,17 @@ EV << ".\n";
 %subst: /6e\+0+23/6e\+23/
 
 %contains: stdout
-'' ==> ERROR: Syntax error parsing quantity '': must begin with a number
-'  ' ==> ERROR: Syntax error parsing quantity '  ': must begin with a number
-'2 33' ==> ERROR: Syntax error parsing quantity '2 33': garbage after first number
-'2 33 ' ==> ERROR: Syntax error parsing quantity '2 33 ': garbage after first number
-'2 33s ' ==> ERROR: Syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
-'1s 99 kbps' ==> ERROR: error in quantity '1s 99 kbps': unit 'kbps' (kilobit/sec) does not match 's' (second)
-'1s 1min 99 kbps' ==> ERROR: error in quantity '1s 1min 99 kbps': unit 'kbps' (kilobit/sec) does not match 'min' (minute)
-'1s 99 bogomips' ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's' (second)
-'3 bogomips 99' ==> ERROR: syntax error parsing quantity '3 bogomips 99': missing unit
-'3 bogomips 3 gallons' ==> ERROR: error in quantity '3 bogomips 3 gallons': unit 'gallons' does not match 'bogomips'
+'' ==> ERROR: Syntax error parsing quantity '': Must begin with a number
+'  ' ==> ERROR: Syntax error parsing quantity '  ': Must begin with a number
+'2 33' ==> ERROR: Syntax error parsing quantity '2 33': Garbage after first number
+'2 33 ' ==> ERROR: Syntax error parsing quantity '2 33 ': Garbage after first number
+'2 33s ' ==> ERROR: Syntax error parsing quantity '2 33s ': Garbage after first number
+'1.5s 33' ==> ERROR: Syntax error parsing quantity '1.5s 33': Missing unit
+'1s 99 kbps' ==> ERROR: Error in quantity '1s 99 kbps': Unit 'kbps' (kilobit/sec) does not match 's' (second)
+'1s 1min 99 kbps' ==> ERROR: Error in quantity '1s 1min 99 kbps': Unit 'kbps' (kilobit/sec) does not match 'min' (minute)
+'1s 99 bogomips' ==> ERROR: Error in quantity '1s 99 bogomips': Unit 'bogomips' does not match 's' (second)
+'3 bogomips 99' ==> ERROR: Syntax error parsing quantity '3 bogomips 99': Missing unit
+'3 bogomips 3 gallons' ==> ERROR: Error in quantity '3 bogomips 3 gallons': Unit 'gallons' does not match 'bogomips'
 '3.14' ==> 3.14
 '6e23' ==> 6e+23
 ' 3.14 ' ==> 3.14
@@ -101,19 +101,19 @@ EV << ".\n";
 '1h 2min 2s 520ms' ==> ERROR: Cannot convert unit 'ms' (millisecond) to none
 '1s 550ms 700us ' ==> ERROR: Cannot convert unit 'us' (microsecond) to none
 ' 1s 550ms 700us ' ==> ERROR: Cannot convert unit 'us' (microsecond) to none
-'17s 71ggg' ==> ERROR: error in quantity '17s 71ggg': unit 'ggg' does not match 's' (second)
+'17s 71ggg' ==> ERROR: Error in quantity '17s 71ggg': Unit 'ggg' does not match 's' (second)
 
-'' (as s) ==> ERROR: Syntax error parsing quantity '': must begin with a number
-'  ' (as s) ==> ERROR: Syntax error parsing quantity '  ': must begin with a number
-'2 33' (as s) ==> ERROR: Syntax error parsing quantity '2 33': garbage after first number
-'2 33 ' (as s) ==> ERROR: Syntax error parsing quantity '2 33 ': garbage after first number
-'2 33s ' (as s) ==> ERROR: Syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' (as s) ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
-'1s 99 kbps' (as s) ==> ERROR: error in quantity '1s 99 kbps': unit 'kbps' (kilobit/sec) does not match 's' (second)
-'1s 1min 99 kbps' (as s) ==> ERROR: error in quantity '1s 1min 99 kbps': unit 'kbps' (kilobit/sec) does not match 'min' (minute)
-'1s 99 bogomips' (as s) ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's' (second)
-'3 bogomips 99' (as s) ==> ERROR: syntax error parsing quantity '3 bogomips 99': missing unit
-'3 bogomips 3 gallons' (as s) ==> ERROR: error in quantity '3 bogomips 3 gallons': unit 'gallons' does not match 'bogomips'
+'' (as s) ==> ERROR: Syntax error parsing quantity '': Must begin with a number
+'  ' (as s) ==> ERROR: Syntax error parsing quantity '  ': Must begin with a number
+'2 33' (as s) ==> ERROR: Syntax error parsing quantity '2 33': Garbage after first number
+'2 33 ' (as s) ==> ERROR: Syntax error parsing quantity '2 33 ': Garbage after first number
+'2 33s ' (as s) ==> ERROR: Syntax error parsing quantity '2 33s ': Garbage after first number
+'1.5s 33' (as s) ==> ERROR: Syntax error parsing quantity '1.5s 33': Missing unit
+'1s 99 kbps' (as s) ==> ERROR: Error in quantity '1s 99 kbps': Unit 'kbps' (kilobit/sec) does not match 's' (second)
+'1s 1min 99 kbps' (as s) ==> ERROR: Error in quantity '1s 1min 99 kbps': Unit 'kbps' (kilobit/sec) does not match 'min' (minute)
+'1s 99 bogomips' (as s) ==> ERROR: Error in quantity '1s 99 bogomips': Unit 'bogomips' does not match 's' (second)
+'3 bogomips 99' (as s) ==> ERROR: Syntax error parsing quantity '3 bogomips 99': Missing unit
+'3 bogomips 3 gallons' (as s) ==> ERROR: Error in quantity '3 bogomips 3 gallons': Unit 'gallons' does not match 'bogomips'
 '3.14' (as s) ==> ERROR: Cannot convert unit none to 's' (second)
 '6e23' (as s) ==> ERROR: Cannot convert unit none to 's' (second)
 ' 3.14 ' (as s) ==> ERROR: Cannot convert unit none to 's' (second)
@@ -130,19 +130,19 @@ EV << ".\n";
 '1h 2min 2s 520ms' (as s) ==> 3722.52
 '1s 550ms 700us ' (as s) ==> 1.5507
 ' 1s 550ms 700us ' (as s) ==> 1.5507
-'17s 71ggg' (as s) ==> ERROR: error in quantity '17s 71ggg': unit 'ggg' does not match 's' (second)
+'17s 71ggg' (as s) ==> ERROR: Error in quantity '17s 71ggg': Unit 'ggg' does not match 's' (second)
 
-'' (as ms) ==> ERROR: Syntax error parsing quantity '': must begin with a number
-'  ' (as ms) ==> ERROR: Syntax error parsing quantity '  ': must begin with a number
-'2 33' (as ms) ==> ERROR: Syntax error parsing quantity '2 33': garbage after first number
-'2 33 ' (as ms) ==> ERROR: Syntax error parsing quantity '2 33 ': garbage after first number
-'2 33s ' (as ms) ==> ERROR: Syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' (as ms) ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
-'1s 99 kbps' (as ms) ==> ERROR: error in quantity '1s 99 kbps': unit 'kbps' (kilobit/sec) does not match 's' (second)
-'1s 1min 99 kbps' (as ms) ==> ERROR: error in quantity '1s 1min 99 kbps': unit 'kbps' (kilobit/sec) does not match 'min' (minute)
-'1s 99 bogomips' (as ms) ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's' (second)
-'3 bogomips 99' (as ms) ==> ERROR: syntax error parsing quantity '3 bogomips 99': missing unit
-'3 bogomips 3 gallons' (as ms) ==> ERROR: error in quantity '3 bogomips 3 gallons': unit 'gallons' does not match 'bogomips'
+'' (as ms) ==> ERROR: Syntax error parsing quantity '': Must begin with a number
+'  ' (as ms) ==> ERROR: Syntax error parsing quantity '  ': Must begin with a number
+'2 33' (as ms) ==> ERROR: Syntax error parsing quantity '2 33': Garbage after first number
+'2 33 ' (as ms) ==> ERROR: Syntax error parsing quantity '2 33 ': Garbage after first number
+'2 33s ' (as ms) ==> ERROR: Syntax error parsing quantity '2 33s ': Garbage after first number
+'1.5s 33' (as ms) ==> ERROR: Syntax error parsing quantity '1.5s 33': Missing unit
+'1s 99 kbps' (as ms) ==> ERROR: Error in quantity '1s 99 kbps': Unit 'kbps' (kilobit/sec) does not match 's' (second)
+'1s 1min 99 kbps' (as ms) ==> ERROR: Error in quantity '1s 1min 99 kbps': Unit 'kbps' (kilobit/sec) does not match 'min' (minute)
+'1s 99 bogomips' (as ms) ==> ERROR: Error in quantity '1s 99 bogomips': Unit 'bogomips' does not match 's' (second)
+'3 bogomips 99' (as ms) ==> ERROR: Syntax error parsing quantity '3 bogomips 99': Missing unit
+'3 bogomips 3 gallons' (as ms) ==> ERROR: Error in quantity '3 bogomips 3 gallons': Unit 'gallons' does not match 'bogomips'
 '3.14' (as ms) ==> ERROR: Cannot convert unit none to 'ms' (millisecond)
 '6e23' (as ms) ==> ERROR: Cannot convert unit none to 'ms' (millisecond)
 ' 3.14 ' (as ms) ==> ERROR: Cannot convert unit none to 'ms' (millisecond)
@@ -159,19 +159,19 @@ EV << ".\n";
 '1h 2min 2s 520ms' (as ms) ==> 3.72252e+06
 '1s 550ms 700us ' (as ms) ==> 1550.7
 ' 1s 550ms 700us ' (as ms) ==> 1550.7
-'17s 71ggg' (as ms) ==> ERROR: error in quantity '17s 71ggg': unit 'ggg' does not match 's' (second)
+'17s 71ggg' (as ms) ==> ERROR: Error in quantity '17s 71ggg': Unit 'ggg' does not match 's' (second)
 
-'' (as W) ==> ERROR: Syntax error parsing quantity '': must begin with a number
-'  ' (as W) ==> ERROR: Syntax error parsing quantity '  ': must begin with a number
-'2 33' (as W) ==> ERROR: Syntax error parsing quantity '2 33': garbage after first number
-'2 33 ' (as W) ==> ERROR: Syntax error parsing quantity '2 33 ': garbage after first number
-'2 33s ' (as W) ==> ERROR: Syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' (as W) ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
-'1s 99 kbps' (as W) ==> ERROR: error in quantity '1s 99 kbps': unit 'kbps' (kilobit/sec) does not match 's' (second)
-'1s 1min 99 kbps' (as W) ==> ERROR: error in quantity '1s 1min 99 kbps': unit 'kbps' (kilobit/sec) does not match 'min' (minute)
-'1s 99 bogomips' (as W) ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's' (second)
-'3 bogomips 99' (as W) ==> ERROR: syntax error parsing quantity '3 bogomips 99': missing unit
-'3 bogomips 3 gallons' (as W) ==> ERROR: error in quantity '3 bogomips 3 gallons': unit 'gallons' does not match 'bogomips'
+'' (as W) ==> ERROR: Syntax error parsing quantity '': Must begin with a number
+'  ' (as W) ==> ERROR: Syntax error parsing quantity '  ': Must begin with a number
+'2 33' (as W) ==> ERROR: Syntax error parsing quantity '2 33': Garbage after first number
+'2 33 ' (as W) ==> ERROR: Syntax error parsing quantity '2 33 ': Garbage after first number
+'2 33s ' (as W) ==> ERROR: Syntax error parsing quantity '2 33s ': Garbage after first number
+'1.5s 33' (as W) ==> ERROR: Syntax error parsing quantity '1.5s 33': Missing unit
+'1s 99 kbps' (as W) ==> ERROR: Error in quantity '1s 99 kbps': Unit 'kbps' (kilobit/sec) does not match 's' (second)
+'1s 1min 99 kbps' (as W) ==> ERROR: Error in quantity '1s 1min 99 kbps': Unit 'kbps' (kilobit/sec) does not match 'min' (minute)
+'1s 99 bogomips' (as W) ==> ERROR: Error in quantity '1s 99 bogomips': Unit 'bogomips' does not match 's' (second)
+'3 bogomips 99' (as W) ==> ERROR: Syntax error parsing quantity '3 bogomips 99': Missing unit
+'3 bogomips 3 gallons' (as W) ==> ERROR: Error in quantity '3 bogomips 3 gallons': Unit 'gallons' does not match 'bogomips'
 '3.14' (as W) ==> ERROR: Cannot convert unit none to 'W' (watt)
 '6e23' (as W) ==> ERROR: Cannot convert unit none to 'W' (watt)
 ' 3.14 ' (as W) ==> ERROR: Cannot convert unit none to 'W' (watt)
@@ -188,19 +188,19 @@ EV << ".\n";
 '1h 2min 2s 520ms' (as W) ==> ERROR: Cannot convert unit 'ms' (millisecond) to 'W' (watt)
 '1s 550ms 700us ' (as W) ==> ERROR: Cannot convert unit 'us' (microsecond) to 'W' (watt)
 ' 1s 550ms 700us ' (as W) ==> ERROR: Cannot convert unit 'us' (microsecond) to 'W' (watt)
-'17s 71ggg' (as W) ==> ERROR: error in quantity '17s 71ggg': unit 'ggg' does not match 's' (second)
+'17s 71ggg' (as W) ==> ERROR: Error in quantity '17s 71ggg': Unit 'ggg' does not match 's' (second)
 
-'' (as bogomips) ==> ERROR: Syntax error parsing quantity '': must begin with a number
-'  ' (as bogomips) ==> ERROR: Syntax error parsing quantity '  ': must begin with a number
-'2 33' (as bogomips) ==> ERROR: Syntax error parsing quantity '2 33': garbage after first number
-'2 33 ' (as bogomips) ==> ERROR: Syntax error parsing quantity '2 33 ': garbage after first number
-'2 33s ' (as bogomips) ==> ERROR: Syntax error parsing quantity '2 33s ': garbage after first number
-'1.5s 33' (as bogomips) ==> ERROR: syntax error parsing quantity '1.5s 33': missing unit
-'1s 99 kbps' (as bogomips) ==> ERROR: error in quantity '1s 99 kbps': unit 'kbps' (kilobit/sec) does not match 's' (second)
-'1s 1min 99 kbps' (as bogomips) ==> ERROR: error in quantity '1s 1min 99 kbps': unit 'kbps' (kilobit/sec) does not match 'min' (minute)
-'1s 99 bogomips' (as bogomips) ==> ERROR: error in quantity '1s 99 bogomips': unit 'bogomips' does not match 's' (second)
-'3 bogomips 99' (as bogomips) ==> ERROR: syntax error parsing quantity '3 bogomips 99': missing unit
-'3 bogomips 3 gallons' (as bogomips) ==> ERROR: error in quantity '3 bogomips 3 gallons': unit 'gallons' does not match 'bogomips'
+'' (as bogomips) ==> ERROR: Syntax error parsing quantity '': Must begin with a number
+'  ' (as bogomips) ==> ERROR: Syntax error parsing quantity '  ': Must begin with a number
+'2 33' (as bogomips) ==> ERROR: Syntax error parsing quantity '2 33': Garbage after first number
+'2 33 ' (as bogomips) ==> ERROR: Syntax error parsing quantity '2 33 ': Garbage after first number
+'2 33s ' (as bogomips) ==> ERROR: Syntax error parsing quantity '2 33s ': Garbage after first number
+'1.5s 33' (as bogomips) ==> ERROR: Syntax error parsing quantity '1.5s 33': Missing unit
+'1s 99 kbps' (as bogomips) ==> ERROR: Error in quantity '1s 99 kbps': Unit 'kbps' (kilobit/sec) does not match 's' (second)
+'1s 1min 99 kbps' (as bogomips) ==> ERROR: Error in quantity '1s 1min 99 kbps': Unit 'kbps' (kilobit/sec) does not match 'min' (minute)
+'1s 99 bogomips' (as bogomips) ==> ERROR: Error in quantity '1s 99 bogomips': Unit 'bogomips' does not match 's' (second)
+'3 bogomips 99' (as bogomips) ==> ERROR: Syntax error parsing quantity '3 bogomips 99': Missing unit
+'3 bogomips 3 gallons' (as bogomips) ==> ERROR: Error in quantity '3 bogomips 3 gallons': Unit 'gallons' does not match 'bogomips'
 '3.14' (as bogomips) ==> ERROR: Cannot convert unit none to 'bogomips'
 '6e23' (as bogomips) ==> ERROR: Cannot convert unit none to 'bogomips'
 ' 3.14 ' (as bogomips) ==> ERROR: Cannot convert unit none to 'bogomips'
@@ -217,5 +217,5 @@ EV << ".\n";
 '1h 2min 2s 520ms' (as bogomips) ==> ERROR: Cannot convert unit 'ms' (millisecond) to 'bogomips'
 '1s 550ms 700us ' (as bogomips) ==> ERROR: Cannot convert unit 'us' (microsecond) to 'bogomips'
 ' 1s 550ms 700us ' (as bogomips) ==> ERROR: Cannot convert unit 'us' (microsecond) to 'bogomips'
-'17s 71ggg' (as bogomips) ==> ERROR: error in quantity '17s 71ggg': unit 'ggg' does not match 's' (second)
+'17s 71ggg' (as bogomips) ==> ERROR: Error in quantity '17s 71ggg': Unit 'ggg' does not match 's' (second)
 .

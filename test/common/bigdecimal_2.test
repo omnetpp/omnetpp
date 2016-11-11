@@ -64,5 +64,5 @@ EV << ".\n";
 zero/zero ==> NaN, intVal=0, scale=2147483647
 1/zero ==> +Inf, intVal=1, scale=2147483647
 -1/zero ==> -Inf, intVal=-1, scale=2147483647
-12345678901234567890.0 ==> ERROR: BigDecimal: normalize(): arithmetic overflow
+12345678901234567890.0 ==> ERROR: BigDecimal: normalize(): Arithmetic overflow
 .

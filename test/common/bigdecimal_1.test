@@ -81,7 +81,7 @@ EV << ".\n";
 '-infinity' ==> intVal=-1, scale=2147483647
 '-1.#INF' ==> intVal=-1, scale=2147483647
 'Inf' ==> intVal=1, scale=2147483647
-'12345678901234567890' ==> ERROR: BigDecimal: arithmetic overflow while parsing '12345678901234567890'
-'' ==> ERROR: BigDecimal: invalid number syntax ''
-'  ' ==> ERROR: BigDecimal: invalid number syntax '  '
+'12345678901234567890' ==> ERROR: BigDecimal: Arithmetic overflow while parsing '12345678901234567890'
+'' ==> ERROR: BigDecimal: Invalid number syntax ''
+'  ' ==> ERROR: BigDecimal: Invalid number syntax '  '
 .

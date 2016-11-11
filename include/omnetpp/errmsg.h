@@ -53,7 +53,6 @@ enum OppErrorCode
     E_NEGTIME,
     E_NEGTOUT,
     E_NOCHANDEF,
-    E_NONET,
     E_NOPARENTMOD,
     E_NOPARSIM,
     E_NORECV,

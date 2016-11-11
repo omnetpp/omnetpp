@@ -115,7 +115,7 @@ void Test::compareFes()
 {
     fes->sort();
     int n = fes->getLength();
-    ASSERT(shadowFes.size() == n);
+    ASSERT((int)shadowFes.size() == n);
     for (int i = 0; i < n; i++) {
         if (fes->get(i) != shadowFes[i]) {
             dumpFes();
@@ -128,7 +128,7 @@ void Test::dumpFes()
 {
     fes->sort();
     int n = fes->getLength();
-    ASSERT(shadowFes.size() == n);
+    ASSERT((int)shadowFes.size() == n);
     EV << "FES\t\t\t\t\tshadow FES\n";
     for (int i = 0; i < n; i++) {
         cMessage *fesMsg = check_and_cast<cMessage*>(fes->get(i));

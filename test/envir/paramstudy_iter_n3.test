@@ -11,4 +11,5 @@ Tests scenario generation: type error
 %exitcode: 1
 
 %contains: stderr
-Error while computing the number of runs in config Test: number expected, but string ("1") found in the expression '$x'.
+Could not compute number of runs in config Test: number expected, but string ("1") found in the expression '$x'
+

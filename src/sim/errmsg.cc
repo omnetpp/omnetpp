@@ -29,7 +29,7 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_BACKSCHED: return "Cannot schedule message (%s)%s to the past, t=%g";
         case E_BADCAST:   return "Cannot cast from type %s to %s";
         case E_BADEXP:    return "Badly formed Reverse Polish expression";
-        case E_BADINIT:   return "setValue(): Type %s does not suit arg types";
+        case E_BADINIT:   return "setValue(): Type %s does not match arg types";
         case E_CANCEL:    return "Simulation cancelled";
         case E_CANTCOPY:  return "Assignment, copying and duplication are not supported by this class";
         case E_CANTDUP:   return "This object cannot dup() itself";
@@ -52,7 +52,6 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_MODINI:    return "Module initialization error";
         case E_NEGTIME:   return "wait(): negative delay";
         case E_NEGTOUT:   return "receive()/receiveNew(): negative timeout";
-        case E_NONET:     return "Network definition not found";
         case E_NOPARSIM:  return "Simulation kernel was compiled without parallel simulation support (WITH_PARSIM=no)";
         case E_NORECV:    return "Cannot use receive..() or wait() with handleMessage()";
         case E_NUMARGS:   return "Bad number of arguments, %d expected";
@@ -65,7 +64,7 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_STOPSIMRCVD: return "Simulation stopped by partition %d: %s";
         case E_USER:      return "Model error: %s";
         case E_WRONGSIM:  return "cSimulation instance not activated before invoked (need setActiveSimulation())";
-        default:         return "<missing error text>";
+        default:          return "<missing error text>";
     }
 }
 
