@@ -114,7 +114,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     protected Button fRecordScalarsCheckbox;
     protected Button fRecordVectorsCheckbox;
     protected Button fCmdenvExpressModeCheckbox;
-    protected Button fSilentCheckbox;
+    protected Button fVerboseCheckbox;
 
     private ILaunchConfiguration config;
     private boolean updateDialogStateInProgress = false;
@@ -357,7 +357,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         SWTFactory.setEqualColumnWidth(composite, true);
 
         // ordering is so that related controls are in one column in the 3-column layout
-        fSilentCheckbox = SWTFactory.createCheckButton(composite, "Suppress logo", null, false, 1);
+        fVerboseCheckbox = SWTFactory.createCheckButton(composite, "Verbose", null, false, 1);
         fCmdenvExpressModeCheckbox = SWTFactory.createTristateCheckButton(composite, "Express mode (Cmdenv)", null, false, false, 1);
         fRedirectStdoutCheckbox = SWTFactory.createTristateCheckButton(composite, "Save stdout (Cmdenv)", null, false, false, 1);
         fRecordScalarsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record scalar results", null, false, false, 1);
@@ -369,7 +369,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fRecordVectorsCheckbox.setToolTipText("Allow creating an output vector file. Overrides similar ini file setting.");
         fRecordEventlogCheckbox.setToolTipText("Record eventlog for Sequence Chart tool. Overrides similar ini file setting.");
         fCmdenvExpressModeCheckbox.setToolTipText("Express mode (Cmdenv). Overrides similar ini file setting.");
-        fSilentCheckbox.setToolTipText("Non-verbose output. Corresponds to the -s command-line option");
+        fVerboseCheckbox.setToolTipText("Verbose output.");
     }
 
     protected Composite createAdvancedGroup(Composite parent, int colSpan) {
@@ -470,7 +470,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             setTristateCheckbox(fRecordScalarsCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, ""));
             setTristateCheckbox(fRecordVectorsCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, ""));
             setTristateCheckbox(fCmdenvExpressModeCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, ""));
-            fSilentCheckbox.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_SILENT, false));
+            fVerboseCheckbox.setSelection(!config.getAttribute(IOmnetppLaunchConstants.OPP_SILENT, false));
 
             fLibraryText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim());
             fNedPathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim());
@@ -533,7 +533,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, getTristateCheckboxValue(fRecordScalarsCheckbox));
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, getTristateCheckboxValue(fRecordVectorsCheckbox));
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, getTristateCheckboxValue(fCmdenvExpressModeCheckbox));
-        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SILENT, fSilentCheckbox.getSelection());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SILENT, !fVerboseCheckbox.getSelection());
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, fLibraryText.getText().trim());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, fNedPathText.getText().trim());
