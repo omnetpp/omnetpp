@@ -196,7 +196,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Finds a module by its path. The path is a string of module names
      * separated by dots. Inclusion of the toplevel module's name in the
-     * path is optional. Returns nullptr if the module is not found.
+     * path is optional. The toplevel module's name may also be written
+     * as "<root>". Returns nullptr if the module was not found or the
+     * empty string was given as input.
      */
     cModule *getModuleByPath(const char *modulePath) const;
 

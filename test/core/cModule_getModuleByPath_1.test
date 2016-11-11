@@ -48,8 +48,13 @@ Define_Module(Tester);
 
 void Tester::test(cModule *base, const char *path)
 {
-    cModule *result = base->getModuleByPath(path);
-    EV << base->getFullPath() << " + " << (path ? path : "nullptr") << " = " <<  (result ? result->getFullPath() : "nullptr") << endl;
+    EV << base->getFullPath() << " + " << (path ? path : "nullptr") << " = ";
+    try {
+        cModule *result = base->getModuleByPath(path);
+        EV << (result ? result->getFullPath() : "nullptr") << endl;
+    } catch (std::exception& e) {
+        EV << "ERROR: " << e.what() << endl;
+    }
 }
 
 void Tester::activity()
@@ -66,7 +71,7 @@ void Tester::activity()
     test(root, "host[2].missing");
     sep();
 
-    // absolute w/ network name
+    // absolute w/ concrete network name
     test(root, "Test");
     test(root, "Test.server");
     test(root, "Test.host[2]");
@@ -74,6 +79,16 @@ void Tester::activity()
     test(root, "Test.host[2].nic[2]");
     test(root, "Test.missing");
     test(root, "Test.host[2].missing");
+    sep();
+
+    // absolute w/ "<root>"
+    test(root, "<root>");
+    test(root, "<root>.server");
+    test(root, "<root>.host[2]");
+    test(root, "<root>.server.tcp");
+    test(root, "<root>.host[2].nic[2]");
+    test(root, "<root>.missing");
+    test(root, "<root>.host[2].missing");
     sep();
 
     // relative to root
@@ -88,6 +103,8 @@ void Tester::activity()
     // absolute from host0
     test(host0, "server.tcp");
     test(host0, "Test.server.tcp");
+    test(host0, "<root>");
+    test(host0, "<root>.server.tcp");
     sep();
 
     // relative to host0
@@ -126,6 +143,15 @@ void Tester::activity()
     test(host0, "^...host[1]...tcp..");
     sep();
 
+    // errors
+    test(host0, "^.host[1.tcp");
+    test(host0, "^.host[1.]tcp");
+    test(host0, "^.host.[1].tcp");
+    test(host0, ".<root>");
+    test(host0, ".<root>.host[0]");
+    test(host0, ".<root>[3]");
+    test(host0, ".<root>[3].host[0]");
+    sep();
 }
 
 };
@@ -153,6 +179,14 @@ Test + Test.host[2].nic[2] = Test.host[2].nic[2]
 Test + Test.missing = nullptr
 Test + Test.host[2].missing = nullptr
 ---
+Test + <root> = Test
+Test + <root>.server = Test.server
+Test + <root>.host[2] = Test.host[2]
+Test + <root>.server.tcp = Test.server.tcp
+Test + <root>.host[2].nic[2] = Test.host[2].nic[2]
+Test + <root>.missing = nullptr
+Test + <root>.host[2].missing = nullptr
+---
 Test + .server = Test.server
 Test + .host[2] = Test.host[2]
 Test + .server.tcp = Test.server.tcp
@@ -162,6 +196,8 @@ Test + .host[2].missing = nullptr
 ---
 Test.host[0] + server.tcp = Test.server.tcp
 Test.host[0] + Test.server.tcp = Test.server.tcp
+Test.host[0] + <root> = Test
+Test.host[0] + <root>.server.tcp = Test.server.tcp
 ---
 Test.host[0] + .tcp = Test.host[0].tcp
 Test.host[0] + .networkLayer.ip = Test.host[0].networkLayer.ip
@@ -192,5 +228,13 @@ Test.host[0] + .tcp. = Test.host[0].tcp
 Test.host[0] + Test. = Test
 Test.host[0] + .^. = Test
 Test.host[0] + ^...host[1]...tcp.. = Test.host[1].tcp
+---
+Test.host[0] + ^.host[1.tcp = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Syntax error (unmatched bracket?) in path '^.host[1.tcp'
+Test.host[0] + ^.host[1.]tcp = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Syntax error (unmatched bracket?) in path '^.host[1.]tcp'
+Test.host[0] + ^.host.[1].tcp = nullptr
+Test.host[0] + .<root> = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>', '<root>' may only occur as the first component
+Test.host[0] + .<root>.host[0] = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>.host[0]', '<root>' may only occur as the first component
+Test.host[0] + .<root>[3] = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>[3]', '<root>' may only occur as the first component
+Test.host[0] + .<root>[3].host[0] = ERROR: (omnetpp::cModule)Test.host[0]: getModuleByPath(): Wrong path '.<root>[3].host[0]', '<root>' may only occur as the first component
 ---
 

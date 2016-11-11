@@ -1084,6 +1084,8 @@ inline char *nextToken(char *& rest)
     return token;
 }
 
+#define ROOTNAME "<root>"
+
 cModule *cModule::getModuleByPath(const char *path) const
 {
     if (!path || !path[0])
@@ -1092,11 +1094,10 @@ cModule *cModule::getModuleByPath(const char *path) const
     // determine starting point
     bool isRelative = (path[0] == '.' || path[0] == '^');
     const cModule *module = isRelative ? this : getSimulation()->getSystemModule();
-    if (path[0] == '.')
-        path++;  // skip initial dot
+    const char *pathWithoutFirstDot = (path[0] == '.') ? path+1 : path;
 
     // match components of the path
-    opp_string pathbuf(path);
+    opp_string pathbuf(pathWithoutFirstDot);
     char *rest = pathbuf.buffer();
     char *token = nextToken(rest);
     bool isFirst = true;
@@ -1104,17 +1105,22 @@ cModule *cModule::getModuleByPath(const char *path) const
         char *lbracket;
         if (!token[0])
             ;  /*skip empty path component*/
-        else if (!isRelative && isFirst && module->isName(token))
+        else if (!isRelative && isFirst && (module->isName(token) || strcmp(token, ROOTNAME)==0))
             /*ignore network name*/;
         else if (token[0] == '^' && token[1] == '\0')
-            module = module->getParentModule();  // if modp is the root, return nullptr
-        else if ((lbracket = strchr(token, '[')) == nullptr)
+            module = module->getParentModule();  // if module is the root, we'll return nullptr
+        else if ((lbracket = strchr(token, '[')) == nullptr) {
+            if (token[0] == '<' && strcmp(token, ROOTNAME) == 0)
+                throw cRuntimeError(this, "getModuleByPath(): Wrong path '%s', '" ROOTNAME "' may only occur as the first component", path);
             module = module->getSubmodule(token);
+        }
         else {
             if (token[strlen(token)-1] != ']')
                 throw cRuntimeError(this, "getModuleByPath(): Syntax error (unmatched bracket?) in path '%s'", path);
             int index = atoi(lbracket+1);
             *lbracket = '\0';  // cut off [index]
+            if (token[0] == '<' && strcmp(token, ROOTNAME) == 0)
+                throw cRuntimeError(this, "getModuleByPath(): Wrong path '%s', '" ROOTNAME "' may only occur as the first component", path);
             module = module->getSubmodule(token, index);
         }
         token = nextToken(rest);

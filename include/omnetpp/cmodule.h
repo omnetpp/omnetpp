@@ -618,14 +618,20 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * with a dot or caret, it is understood as relative to this module,
      * otherwise it is taken to mean an absolute path. For absolute paths,
      * inclusion of the toplevel module's name in the path is optional.
-     * Returns nullptr if the module was not found.
+     * The toplevel module may also be referred to as "<root>". Returns
+     * nullptr if the module was not found or the empty string was given as
+     * input.
      *
      * Examples:
-     *   ".sink" means the sink submodule;
+     *   "" means nullptr.
+     *   "." means this module;
+     *   "<root>" means the toplevel module;
+     *   ".sink" means the sink submodule of this module;
      *   ".queue[2].srv" means the srv submodule of the queue[2] submodule;
      *   "^.host2" or ".^.host2" means the host2 sibling module;
-     *   "src" or "Net.src" means the top src module (provided the network is called Net);
-     *   "." means this module.
+     *   "src" or "<root>.src" means the src submodule of the toplevel module;
+     *   "Net.src" also means the src submodule of the toplevel module, provided
+     *   it is called Net.
      *
      *  @see cSimulation::getModuleByPath()
      */
