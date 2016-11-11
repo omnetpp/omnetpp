@@ -84,7 +84,7 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
     @Override
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 
-        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode);
+        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode, true);
         OmnetppLaunchUtils.replaceConfigurationInLaunch(launch, configuration);
 
         monitor.beginTask("Launching Simulation", 1);
@@ -175,7 +175,7 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
     protected IProject[] getProjectsForProblemSearch(ILaunchConfiguration configuration, String mode) throws CoreException {
         // NOTE: we need to do this twice: here and in launch() which is kind of superfluous
         //       but it is unclear whether those two incoming configurations are the same or not
-        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode);
+        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode, true);
         String projectName = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
 
         if (StringUtils.isEmpty(projectName))

@@ -102,7 +102,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
         }
 
         // convert configuration to be suitable for CDT
-        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode);
+        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode, true);
         OmnetppLaunchUtils.replaceConfigurationInLaunch(launch, configuration);
 
         // launch the debug session

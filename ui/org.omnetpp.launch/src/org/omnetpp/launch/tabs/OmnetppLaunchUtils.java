@@ -234,7 +234,7 @@ public class OmnetppLaunchUtils {
      */
     public static void updateLaunchConfigurationWithProgramAttributes(String mode, ILaunch launch)
                 throws CoreException {
-        ILaunchConfigurationWorkingCopy newConfig = createUpdatedLaunchConfig(launch.getLaunchConfiguration(), mode);
+        ILaunchConfigurationWorkingCopy newConfig = createUpdatedLaunchConfig(launch.getLaunchConfiguration(), mode, true);
         replaceConfigurationInLaunch(launch, newConfig);
     }
 
@@ -314,7 +314,7 @@ public class OmnetppLaunchUtils {
      * required to start a program correctly with a debugger launch delegate.
      */
     @SuppressWarnings("unchecked")
-    public static ILaunchConfigurationWorkingCopy createUpdatedLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
+    public static ILaunchConfigurationWorkingCopy createUpdatedLaunchConfig(ILaunchConfiguration config, String mode, boolean mergeStderr) throws CoreException {
         ILaunchConfigurationWorkingCopy newCfg = config.copy(config.getName());
         newCfg.setAttributes(CollectionUtils.getDeepCopyOf(newCfg.getAttributes())); // otherwise attrs that are Collections themselves are not copied
 
@@ -360,7 +360,8 @@ public class OmnetppLaunchUtils {
 
         String args = "";
 
-        args += " -m ";  // report errors on stdout, because Console does not guarantee correct ordering of stdout and stderr output
+        if (mergeStderr)
+            args += " -m ";  // report errors on stdout, because Console does not guarantee correct ordering of stdout and stderr output
 
         String envirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim();
         if (StringUtils.isNotEmpty(envirStr) && !envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL))
@@ -736,6 +737,7 @@ public class OmnetppLaunchUtils {
      * Runs the simulation with the '-q runnumbers' option, and returns the resulting run numbers.
      */
     public static List<Integer> queryRunNumbers(ILaunchConfiguration configuration, String runFilter) throws CoreException, InterruptedException {
+        final String ERROR_PREFIX = "Could not resolve run filter by running the simulation program: ";
         try {
             String additionalArgs = "";
             if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").isEmpty())
@@ -745,10 +747,10 @@ public class OmnetppLaunchUtils {
             additionalArgs += " -s -q runnumbers";
             ProcessResult result = getSimulationOutput(configuration, additionalArgs);
             if (result.exitCode != 0)
-                throw LaunchPlugin.wrapIntoCoreException("Error running simulation command with '-q runnumbers': " + result.stderr.trim() + " (exit code " + result.exitCode + ")", null);
+                throw LaunchPlugin.wrapIntoCoreException(ERROR_PREFIX + "\n" + result.stderr.trim() + " (exit code " + result.exitCode + ")", null);
             String output = result.stdout.trim();
             if (!output.matches("[0-9 ]*"))
-                throw LaunchPlugin.wrapIntoCoreException("Error running simulation command with '-q runnumbers': unexpected output", null);
+                throw LaunchPlugin.wrapIntoCoreException(ERROR_PREFIX + "Unexpected output", null);
             ArrayList<Integer> runNumbers = new ArrayList<>();
             for (String token : output.split(" +"))
                 if (token.length() > 0)
@@ -756,7 +758,7 @@ public class OmnetppLaunchUtils {
             return runNumbers;
         }
         catch (IOException e) {
-            throw LaunchPlugin.wrapIntoCoreException("Error running simulation command with '-q runnumbers'", e);
+            throw LaunchPlugin.wrapIntoCoreException(ERROR_PREFIX, e);
         }
     }
 
@@ -816,7 +818,7 @@ public class OmnetppLaunchUtils {
      */
     private static ProcessResult getSimulationOutput(ILaunchConfiguration configuration, String additionalArgs) throws CoreException, IOException, InterruptedException {
         long startTime = System.currentTimeMillis();
-        configuration = createUpdatedLaunchConfig(configuration, ILaunchManager.RUN_MODE);
+        configuration = createUpdatedLaunchConfig(configuration, ILaunchManager.RUN_MODE, false);
         Process process = startSimulationProcess(configuration, createCommandLine(configuration, additionalArgs));
 
         // read output
