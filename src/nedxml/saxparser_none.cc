@@ -24,12 +24,13 @@ namespace nedxml {
 
 SAXParser::SAXParser()
 {
-    saxhandler = nullptr;
+    saxHandler = nullptr;
+    currentParser = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)
 {
-    saxhandler = sh;
+    saxHandler = sh;
     sh->setParser(this);
 }
 
@@ -45,7 +46,7 @@ bool SAXParser::parseContent(const char *content)
 
 bool SAXParser::doParse(const char *filename, const char *content)
 {
-    strcpy(errortext, "XML input is not supported: this copy of OMNeT++ was "
+    strcpy(errorText, "XML input is not supported: this copy of OMNeT++ was "
                       "compiled without an XML parser (libXML or Expat)");
     return false;
 }

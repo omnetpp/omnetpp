@@ -107,9 +107,9 @@ class NEDXML_API SAXHandler
 class NEDXML_API SAXParser
 {
   protected:
-    char errortext[512];
-    SAXHandler *saxhandler;
-    void *currentparser;
+    char errorText[512];
+    SAXHandler *saxHandler;
+    void *currentParser;
 
   protected:
     // allows for a common implementation of parse() and parseContent()
@@ -150,7 +150,7 @@ class NEDXML_API SAXParser
     /**
      * Can be called after parse() returned false. Returns the error description.
      */
-    const char *getErrorMessage()  {return errortext;}
+    const char *getErrorMessage()  {return errorText;}
 };
 
 } // namespace nedxml

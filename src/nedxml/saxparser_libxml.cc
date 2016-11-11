@@ -39,12 +39,12 @@ using namespace omnetpp::common;
 
 SAXParser::SAXParser()
 {
-    saxhandler = nullptr;
+    saxHandler = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)
 {
-    saxhandler = sh;
+    saxHandler = sh;
     sh->setParser(this);
 }
 
@@ -155,10 +155,10 @@ bool SAXParser::parseContent(const char *content)
 bool SAXParser::doParse(const char *filename, const char *content)
 {
     assert((filename == nullptr) != (content == nullptr));  // exactly one of them is non-nullptr
-    strcpy(errortext, "<error msg unfilled>");
+    strcpy(errorText, "<error msg unfilled>");
 
     if (filename && !fileExists(filename)) {
-        sprintf(errortext, "File not found");
+        sprintf(errorText, "File not found");
         return false;
     }
 
@@ -171,7 +171,7 @@ bool SAXParser::doParse(const char *filename, const char *content)
     //
     ctxt = xmlNewParserCtxt();
     if (!ctxt) {
-        strcpy(errortext, "Failed to allocate parser context");
+        strcpy(errorText, "Failed to allocate parser context");
         return false;
     }
 
@@ -194,7 +194,7 @@ bool SAXParser::doParse(const char *filename, const char *content)
 
     // check if parsing succeeded
     if (!doc) {
-        sprintf(errortext, "Parse error: %s at line %s:%d",
+        sprintf(errorText, "Parse error: %s at line %s:%d",
                 opp_trim(ctxt->lastError.message).c_str(), ctxt->lastError.file, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
         return false;
@@ -206,7 +206,7 @@ bool SAXParser::doParse(const char *filename, const char *content)
     // xmlStructuredError = dontPrintError;
     int xincludeResult = xmlXIncludeProcess(doc);
     if (xincludeResult == -1) {  // error
-        sprintf(errortext, "XInclude substitution error");  // further details unavailable from libXML without much pain
+        sprintf(errorText, "XInclude substitution error");  // further details unavailable from libXML without much pain
         xmlFreeParserCtxt(ctxt);
         xmlFreeDoc(doc);
         return false;
@@ -222,12 +222,12 @@ bool SAXParser::doParse(const char *filename, const char *content)
 
     if (hasDTD) {
         xmlValidCtxtPtr vctxt = xmlNewValidCtxt();
-        vctxt->userData = errortext;
+        vctxt->userData = errorText;
         vctxt->error = (xmlValidityErrorFunc)sprintf;
         vctxt->warning = (xmlValidityWarningFunc)sprintf;
 
         if (!xmlValidateDocument(vctxt, doc)) {
-            strcpy(errortext, opp_trim(errortext).c_str());
+            strcpy(errorText, opp_trim(errorText).c_str());
             xmlFreeValidCtxt(vctxt);
             xmlFreeParserCtxt(ctxt);
             xmlFreeDoc(doc);
@@ -238,7 +238,7 @@ bool SAXParser::doParse(const char *filename, const char *content)
 
     // traverse tree and generate SAX events
     xmlNode *root = xmlDocGetRootElement(doc);
-    generateSAXEvents(root, saxhandler);
+    generateSAXEvents(root, saxHandler);
 
     // free parser context and document tree
     xmlFreeParserCtxt(ctxt);
@@ -333,12 +333,12 @@ static void libxmlFatalErrorHandler(void *userData, const char *msg, ...)
 
 SAXParser::SAXParser()
 {
-    saxhandler = nullptr;
+    saxHandler = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)
 {
-    saxhandler = sh;
+    saxHandler = sh;
     sh->setParser(this);
 }
 
@@ -381,11 +381,11 @@ bool SAXParser::parse(const char *filename)
 
     FILE *f = fopen(filename, "r");
     if (!f) {
-        sprintf(errortext, "Cannot open file");
+        sprintf(errorText, "Cannot open file");
         return false;
     }
 
-    ctxt = xmlCreatePushParserCtxt(&libxmlSAXParser, saxhandler, nullptr, 0, nullptr);
+    ctxt = xmlCreatePushParserCtxt(&libxmlSAXParser, saxHandler, nullptr, 0, nullptr);
 
     int n;
     char Buffer[512];
@@ -398,14 +398,14 @@ bool SAXParser::parse(const char *filename)
     bool ok = true;
     if (!ctxt->wellFormed) {
         ok = false;
-        sprintf(errortext, "parser error %d at line %d",
+        sprintf(errorText, "parser error %d at line %d",
                 ctxt->errNo,  // TODO something better
                 ctxt->input->line);
     }
 
     if (!ctxt->valid) {
         ok = false;
-        sprintf(errortext, "validation error %d at line %d",
+        sprintf(errorText, "validation error %d at line %d",
                 ctxt->errNo,
                 ctxt->input->line);
     }
@@ -420,7 +420,7 @@ bool SAXParser::parse(const char *filename)
 
 bool SAXParser::parseContent(const char *xml)
 {
-    sprintf(errortext, "XML parsing of string literals is not supported with "
+    sprintf(errorText, "XML parsing of string literals is not supported with "
                        "this libXML2 version, at least version 2.6.0 is required");
     return false;
 }

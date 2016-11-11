@@ -96,12 +96,12 @@ static XML_Parser expatCreateParser(void *userData)
 
 SAXParser::SAXParser()
 {
-    saxhandler = nullptr;
+    saxHandler = nullptr;
 }
 
 void SAXParser::setHandler(SAXHandler *sh)
 {
-    saxhandler = sh;
+    saxHandler = sh;
     sh->setParser(this);
 }
 
@@ -110,13 +110,13 @@ bool SAXParser::parse(const char *filename)
     // open file
     FILE *f = fopen(filename, "r");
     if (!f) {
-        sprintf(errortext, "Cannot open file");
+        sprintf(errorText, "Cannot open file");
         return false;
     }
 
     // prepare parser
-    XML_Parser parser = expatCreateParser(saxhandler);
-    currentparser = &parser;
+    XML_Parser parser = expatCreateParser(saxHandler);
+    currentParser = &parser;
 
     // read file chunk-by-chunk and parse it
     char buf[BUFSIZ];
@@ -127,14 +127,14 @@ bool SAXParser::parse(const char *filename)
         size_t len = fread(buf, 1, sizeof(buf), f);
         done = len < sizeof(buf);
         if (!XML_Parse(parser, buf, len, done)) {
-            sprintf(errortext, "Parse error: %s at line %ld",
+            sprintf(errorText, "Parse error: %s at line %ld",
                     XML_ErrorString(XML_GetErrorCode(parser)),
                     (long)XML_GetCurrentLineNumber(parser));
             err = true;
             done = true;
         }
         if (hasDTD) {
-            sprintf(errortext, "Cannot validate document and complete default attributes "
+            sprintf(errorText, "Cannot validate document and complete default attributes "
                                "from DTD, because underlying parser (Expat) does not support it. "
                                "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
                                " %s",
@@ -153,20 +153,20 @@ bool SAXParser::parse(const char *filename)
 bool SAXParser::parseContent(const char *content)
 {
     // prepare parser
-    XML_Parser parser = expatCreateParser(saxhandler);
-    currentparser = &parser;
+    XML_Parser parser = expatCreateParser(saxHandler);
+    currentParser = &parser;
 
     bool err = false;
     hasDTD = false;
 
     if (!XML_Parse(parser, content, strlen(content), true)) {
-        sprintf(errortext, "Parse error: %s at line %d",
+        sprintf(errorText, "Parse error: %s at line %d",
                 XML_ErrorString(XML_GetErrorCode(parser)),
                 XML_GetCurrentLineNumber(parser));
         err = true;
     }
     if (hasDTD) {
-        sprintf(errortext, "Cannot validate document and complete default attributes "
+        sprintf(errorText, "Cannot validate document and complete default attributes "
                            "from DTD, because underlying parser (Expat) does not support it. "
                            "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
                            "all XML content");
@@ -186,7 +186,7 @@ bool SAXParser::doParse(const char *filename, const char *content)
 
 int SAXParser::getCurrentLineNumber()
 {
-    return XML_GetCurrentLineNumber(*(XML_Parser *)currentparser);
+    return XML_GetCurrentLineNumber(*(XML_Parser *)currentParser);
 }
 
 }  // namespace nedxml
