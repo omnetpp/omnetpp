@@ -334,7 +334,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         }
 
         if (isDebugLaunch) {
-            fDebugOnErrorCheckbox = SWTFactory.createCheckButton(composite, "Debug on errors", null, false, 2);
+            fDebugOnErrorCheckbox = SWTFactory.createTristateCheckButton(composite, "Debug on errors", null, false, false, 2);
             fDebugOnErrorCheckbox.setToolTipText("Trigger debugger interrupt when simulation encounters runtime error. Overrides similar ini file setting.");
         }
 
@@ -463,7 +463,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             }
 
             if (fDebugOnErrorCheckbox != null)
-                fDebugOnErrorCheckbox.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, true));
+                setTristateCheckbox(fDebugOnErrorCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, "true"));
 
             fSimTimeLimitText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, "").trim());
             fCpuTimeLimitText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, "").trim());
@@ -526,7 +526,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         }
 
         if (fDebugOnErrorCheckbox != null)
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, fDebugOnErrorCheckbox.getSelection());
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, getTristateCheckboxValue(fDebugOnErrorCheckbox));
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, fSimTimeLimitText.getText().trim());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, fCpuTimeLimitText.getText().trim());

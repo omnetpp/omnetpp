@@ -424,8 +424,7 @@ public class OmnetppLaunchUtils {
         }
 
         // debug-on-errors: use setting in DEBUG mode, disable in RUN mode
-        boolean value = isDebugLaunch ? config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, true) : false;
-        args += " --" + ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getName() + "=" + value + " ";
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getName(), isDebugLaunch ? config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, "") : "false");
 
         if (config.getAttribute(IOmnetppLaunchConstants.OPP_SILENT, false))
             args += " -s ";

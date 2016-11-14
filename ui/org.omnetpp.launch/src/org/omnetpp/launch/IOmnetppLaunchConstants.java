@@ -165,7 +165,7 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_DEBUG_ON_ERRORS = OMNETPP_LAUNCH_ID + ".DEBUG_ON_ERRORS"; // NOTE: Obsolete/unused since version 5.1
 
     /**
-     * Only for DEBUG mode: Whether to drop to debugger on an simulation error. Type: Boolean.
+     * Only for DEBUG mode: Whether to drop to debugger on an simulation error (tri-state setting).
      * Ignored in non-debug mode.
      */
     public static final String OPP_DEBUGMODE_DEBUG_ON_ERRORS = OMNETPP_LAUNCH_ID + ".OPP_DEBUGMODE_DEBUG_ON_ERRORS";
