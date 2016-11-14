@@ -319,6 +319,14 @@ void MessageAnimator::clear()
 
     animations.clear();
 
+    animSpeedMap.clear();
+    holdRequests.clear();
+
+    currentMethodCall = nullptr;
+
+    lastHopTime = -1;
+    currentMessageSend = nullptr;
+
     clearMessages();
 }
 

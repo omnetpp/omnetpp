@@ -307,6 +307,40 @@ void DisplayUpdateController::simulationEvent(cEvent *event)
     lastEventAt = now + animationTimer.nsecsElapsed() / 10.0e9;
 }
 
+void DisplayUpdateController::reset()
+{
+    animationTimer.restart();
+
+    currentProfile = &runProfile;
+    setTargetFps(maxPossibleFps * currentProfile->targetAnimationCpuUsage);
+
+    runMode = RUNMODE_NORMAL;
+    hideDialog();
+
+    animationTime = 0; // this is The Animation Time
+
+    currentFps = targetFps;
+    maxPossibleFps = currentProfile->maxFps;
+
+    fpsMemory = 0.0;
+
+    videoFps = 30; // the framerate of the recorded video
+
+    now = 0; // this is a "real time" stopwatch, only incremented if the simulation is not stopped
+
+    lastFrameAt = 0; // these are in realTime (calculated from "now")
+    lastEventAt = 0;
+
+    lastExecutedEvent = SIMTIME_ZERO; // this is used to compute the adaptive nonlinear mapping
+
+    recordingVideo = false; // a simple state variable
+
+    frameCount = 0; // this will be the sequence number of the next recorded frame
+    lastRecordedFrame = 0; // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
+
+    filenameBase = "frames/"; // the prefix of the frame files' path
+}
+
 double DisplayUpdateController::renderFrame(bool record) {
     if (runMode != RUNMODE_STEP)
         qtenv->getSpeedometer().beginNewInterval();

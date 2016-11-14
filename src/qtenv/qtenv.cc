@@ -623,7 +623,7 @@ void Qtenv::doRun()
 #endif
 
     // clear log
-    logBuffer.clear();  // FIXME how is the log cleared between runs??????????????
+    logBuffer.clear();
 
     delete messageAnimator;
     messageAnimator = nullptr;
@@ -850,6 +850,9 @@ bool Qtenv::doRunSimulation()
     loggingEnabled = true;
     bool firstevent = true;
 
+    if (runMode == RUNMODE_FAST)
+        messageAnimator->clear();
+
     QElapsedTimer uiUpdateTimer;
     uiUpdateTimer.start();
 
@@ -944,6 +947,8 @@ bool Qtenv::doRunSimulationExpress()
     speedometer.start(getSimulation()->getSimTime());
     loggingEnabled = false;
     animating = false;
+
+    messageAnimator->clear();
 
     struct timeval last_update;
     gettimeofday(&last_update, nullptr);
@@ -1045,9 +1050,17 @@ void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
     }
 }
 
+// XXX too similar to newRun
 void Qtenv::newNetwork(const char *networkname)
 {
     try {
+        refreshDisplayCount = 0;
+        messageAnimator->clear();
+        displayUpdateController->reset();
+        answers.clear();
+        logBuffer.clear();
+        componentHistory.clear();
+
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
             storeInspectors(true);
@@ -1087,9 +1100,17 @@ void Qtenv::newNetwork(const char *networkname)
     refreshInspectors();
 }
 
+// XXX too similar to newNetwork
 void Qtenv::newRun(const char *configname, int runnumber)
 {
     try {
+        refreshDisplayCount = 0;
+        messageAnimator->clear();
+        displayUpdateController->reset();
+        answers.clear();
+        logBuffer.clear();
+        componentHistory.clear();
+
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
             storeInspectors(true);
@@ -1136,10 +1157,6 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
 void Qtenv::setupNetwork(cModuleType *network)
 {
-    answers.clear();
-    logBuffer.clear();
-    componentHistory.clear();
-
     EnvirBase::setupNetwork(network);
 
     // collapsing all nodes in the object tree, because even if a new network is

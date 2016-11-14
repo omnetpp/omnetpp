@@ -144,6 +144,8 @@ public:
 
     void simulationEvent(cEvent *event);
 
+    void reset();
+
     ~DisplayUpdateController() { hideDialog(); }
 };
 

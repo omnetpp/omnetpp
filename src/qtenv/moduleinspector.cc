@@ -241,15 +241,13 @@ void ModuleInspector::doSetObject(cObject *obj)
 {
     if (obj == object)
         return;
-
-    getQtenv()->getMessageAnimator()->clearInspector(this);
-
     Inspector::doSetObject(obj);
 
     cModule *module = dynamic_cast<cModule *>(obj);
 
     canvasViewer->setObject(module);
     canvasViewer->clear();
+    getQtenv()->getMessageAnimator()->clearInspector(this);
 
     if (object) {
         canvasViewer->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
@@ -266,6 +264,7 @@ void ModuleInspector::doSetObject(cObject *obj)
         }
         // so they will appear on the correct places with the updated zoom levels.
         getQtenv()->getMessageAnimator()->redrawMessages();
+        getQtenv()->getMessageAnimator()->addInspector(this);
     } else {
         canvasViewer->setZoomFactor(1);
         if (isToplevel())
@@ -284,8 +283,6 @@ void ModuleInspector::doSetObject(cObject *obj)
 #else
     switchToCanvasView();
 #endif
-
-    getQtenv()->getMessageAnimator()->addInspector(this);
 }
 
 #ifdef WITH_OSG
