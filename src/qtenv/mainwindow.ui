@@ -244,7 +244,7 @@
          <string>Current inifile configuration, run number, network name, and potential scheduler information</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">border: 1px solid palette(mid);</string>
+         <string notr="true">QLabel { border: 1px solid palette(mid); }</string>
         </property>
         <property name="text">
          <string>(No network set up)</string>
@@ -262,7 +262,7 @@ Number of existing message objects, including scheduled ones /
 Total number of messages created since start of the simulation</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">border: 1px solid palette(mid);</string>
+         <string notr="true">QLabel { border: 1px solid palette(mid); }</string>
         </property>
         <property name="text">
          <string>Msg stats: 0 scheduled / 0 existing / 0 created</string>

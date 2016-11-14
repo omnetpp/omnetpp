@@ -105,7 +105,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
 
     // add current event status
     simTimeLabel = new QLabel();
-    simTimeLabel->setToolTip("Simulation time of last event");
+    simTimeLabel->setToolTip("Current simulation time");
     simTimeLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     simTimeLabel->setObjectName("simTimeLabel");
     simTimeLabel->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -138,6 +138,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     toolBarLayout->addWidget(labelsContainer);
 
     connect(getQtenv(), SIGNAL(animationSpeedChanged(float)), this, SLOT(onAnimationSpeedChanged(float)));
+
+    adjustSize();
 }
 
 MainWindow::~MainWindow()
@@ -668,7 +670,7 @@ void MainWindow::updateNextEventDisplay()
         simtime_t diff = nextTime - getSimulation()->getSimTime();
         ui->nextEventLabel->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName()
                 +", id=" + (objId == -1 ? "" : QString::number(objId)) + ")");
-        ui->nextTimeLabel->setText(QString("At: ") + nextTime.str().c_str() + "s (+" + diff.str().c_str() + "s)");
+        ui->nextTimeLabel->setText(QString("At: ") + nextTime.str().c_str() + "s (now+" + diff.str().c_str() + "s)");
     }
     else {
         ui->nextEventLabel->setText("Next: n/a");
@@ -918,8 +920,8 @@ void MainWindow::restoreGeometry()
     defaultTimeLineSize = sizes;
 
     QList<int> defaultSizes;
-    defaultSizes.append(ui->splitter_3->width() / 3);
-    defaultSizes.append(ui->splitter_3->width() / 3 * 2);
+    defaultSizes.append(ui->splitter_3->width() / 4);
+    defaultSizes.append(ui->splitter_3->width() / 4 * 3);
 
     restoreSplitter("mainwin-main-splittersizes", ui->mainSplitter, sizes);
     restoreSplitter("mainwin-bottom-splittersizes", ui->splitter_3, defaultSizes);
@@ -927,15 +929,21 @@ void MainWindow::restoreGeometry()
 
     QVariant orient = env->getPref("mainwin-right-splitter-orientation");
 
+    defaultSizes.clear();
+
     if (orient == "horiz") {
         ui->splitter_2->setOrientation(Qt::Horizontal);
         ui->actionHorizontalLayout->setChecked(true);
+        defaultSizes.append(ui->splitter_2->width() / 4 * 3);
+        defaultSizes.append(ui->splitter_2->width() / 4);
         restoreSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2, defaultSizes);
     }
     else if (orient == "vert") {
         ui->splitter_2->setOrientation(Qt::Vertical);
         ui->actionVerticalLayout->setChecked(true);
-        restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
+        defaultSizes.append(ui->splitter_2->height() / 4 * 3);
+        defaultSizes.append(ui->splitter_2->height() / 4);
+        restoreSplitter("mainwin-right-splittersizes-vert", ui->splitter_2, defaultSizes);
     }
 
     // initialize timeline
@@ -956,11 +964,6 @@ void MainWindow::restoreGeometry()
 
     // initialize eventNumLabel
     eventNumDigitGrouping = (DigitGrouping)getQtenv()->getPref("eventnumlabel-digitgrouping", int(APOSTROPHE)).value<int>();
-}
-
-QSize MainWindow::sizeHint() const
-{
-    return QSize(1200, 600);
 }
 
 // rebuild

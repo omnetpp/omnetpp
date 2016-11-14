@@ -75,7 +75,7 @@ public:
     void storeGeometry();
     void restoreGeometry();
 
-    QSize sizeHint() const override;
+    QSize sizeHint() const override { return QSize(1100, 700); }
 
     //menuproc.tcl
     bool isRunning();
