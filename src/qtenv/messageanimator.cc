@@ -281,11 +281,11 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
 
 double MessageAnimator::getAnimationHoldEndTime() const
 {
-    double rem = 0;
+    double rem = -1;
     for (auto a : holdRequests)
-        rem = std::max(rem, a->getRemainingHoldTime());
+        rem = std::max(rem, a->getHoldEndTime());
 
-    return getQtenv()->getAnimationTime() + (holdRequests.empty() ? 0 : std::max(0.001, rem));
+    return rem;
 }
 
 void MessageAnimator::setAnimationSpeed(double speed, const Animation *source)

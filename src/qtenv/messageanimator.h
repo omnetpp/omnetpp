@@ -79,11 +79,16 @@ class MessageAnimator : public QObject
 
 public:
 
+    // Must be used by the animations only!
     void requestHold(const Animation *source) { holdRequests.insert(source); }
     void clearHold(const Animation *source) { holdRequests.erase(source); }
-    double getAnimationHoldEndTime() const;
+    // DisplayUpdateController can query how the holds are using these:
+    bool isHoldActive() { return !holdRequests.empty(); }
+    double getAnimationHoldEndTime() const; // ONLY AN ESTIMATE!
 
+    // Must be used by the animations only!
     void setAnimationSpeed(double speed, const Animation *source);
+    // DisplayUpdateController can query what the animations requested using this:
     double getAnimationSpeed();
 
     void update();

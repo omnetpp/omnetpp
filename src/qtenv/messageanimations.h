@@ -75,7 +75,11 @@ public:
     virtual bool isHolding() const { return holding; } // see comment for holding
 
     double getHoldPosition() const; // a [0..1] value, the progress in this animations hold
-    double getRemainingHoldTime() const; // see comment for holdDuration
+    // Basically getHoldPosition() >= 1.0, but that can't be used because of floating point inaccuracies.
+    // This returning true doesn't mean that the hold request has been cancelled,
+    // only that it should be called now, because the time has come for it.
+    bool holdExpired() const;
+    double getHoldEndTime() const; // see comment for holdDuration
 
     // All of these must be called from the subclasses' overrides!
     virtual void init(); // when the sequence is started

@@ -339,6 +339,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void storeInspectors(bool closeThem);
       void restoreInspectors();
       int getRefreshDisplayCount() const { return refreshDisplayCount; }
+      double computeModelAnimationSpeedRequest();
+      double computeModelHoldEndTime();
       Inspector *inspect(cObject *obj, int type=INSP_DEFAULT, bool ignoreEmbedded=false);
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
       Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);

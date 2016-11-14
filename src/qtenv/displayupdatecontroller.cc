@@ -84,8 +84,9 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
         }
 
         double holdTime = qtenv->getRemainingAnimationHoldTime();
-        if (holdTime > 0 && runMode != RUNMODE_FAST) { // we are on a hold, simTime is paused
-            animationTime += std::min(holdTime, (now - lastStepAt) * currentProfile->playbackSpeed);
+        if ((holdTime > 0 || qtenv->getMessageAnimator()->isHoldActive())
+                && runMode != RUNMODE_FAST) { // we are on a hold, simTime is paused
+            animationTime += std::min(std::max(0.0, holdTime), (now - lastStepAt) * currentProfile->playbackSpeed);
             adjustFrameRate(renderFrame(false));
 
             lastEventAt += now - lastFrameAt; // dragging this marker with us, so we can keep a correct pace when the hold ends
@@ -137,7 +138,7 @@ void DisplayUpdateController::setTargetFps(double fps)
 double DisplayUpdateController::getAnimationSpeed() const
 {
     double animSpeed = qtenv->getMessageAnimator()->getAnimationSpeed();
-    double modelSpeed = qtenv->getAnimationSpeed();
+    double modelSpeed = qtenv->computeModelAnimationSpeedRequest();
 
     if (modelSpeed == 0.0)
         modelSpeed = animSpeed;
@@ -145,14 +146,23 @@ double DisplayUpdateController::getAnimationSpeed() const
     if (animSpeed == 0.0)
         animSpeed = modelSpeed;
 
+    if (animSpeed == 0.0)
+        return 0;
+
     return clip(currentProfile->minAnimationSpeed,
                 std::min(animSpeed, modelSpeed),
                 currentProfile->maxAnimationSpeed);
 }
 
+double DisplayUpdateController::getAnimationHoldEndTime() const
+{
+    return std::max(qtenv->getMessageAnimator()->getAnimationHoldEndTime(),
+            qtenv->computeModelHoldEndTime());
+}
+
 bool DisplayUpdateController::isExplicitAnimationSpeed()
 {
-    return qtenv->getAnimationSpeed() != 0.0
+    return qtenv->computeModelAnimationSpeedRequest() != 0.0
             || qtenv->getMessageAnimator()->getAnimationSpeed() != 0.0;
 }
 

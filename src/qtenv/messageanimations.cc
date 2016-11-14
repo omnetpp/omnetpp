@@ -103,7 +103,13 @@ double Animation::getHoldPosition() const
     return (getQtenv()->getAnimationTime() - holdStarted) / holdDuration;
 }
 
-double Animation::getRemainingHoldTime() const
+bool Animation::holdExpired() const
+{
+    ASSERT(holding);
+    return getQtenv()->getAnimationTime() >= (holdStarted + holdDuration);
+}
+
+double Animation::getHoldEndTime() const
 {
     if (!holding || isEmpty())
         return 0;
@@ -113,11 +119,13 @@ double Animation::getRemainingHoldTime() const
         case WAITING:
             return holdDuration;
         case PLAYING:
-            return holdStarted + holdDuration - getQtenv()->getAnimationTime();
+            return holdStarted + holdDuration;
         case FINISHED:
         case DONE:
             return 0;
     }
+    ASSERT(false);
+    return -1;
 }
 
 void Animation::init()
@@ -399,20 +407,21 @@ void MethodcallAnimation::update()
         return;
     }
 
+    if (holdExpired())
+        if (body.isEmpty() || !body.advance()) {
+            end();
+            return;
+        }
+
     double t = getHoldPosition();
 
-    if (t < 1.0) {
-        bool enabled = (t > 0.2 && t < 0.4) || (t > 0.6);
+    bool enabled = (t > 0.2 && t < 0.4) || (t > 0.6);
 
-        for (auto &m : connectionItems)
-            for (auto p : m) {
-                p.second->setLineEnabled(enabled);
-                p.second->setArrowEnabled(enabled);
-            }
-    }
-    else
-        if (body.isEmpty() || !body.advance())
-            end();
+    for (auto &m : connectionItems)
+        for (auto p : m) {
+            p.second->setLineEnabled(enabled);
+            p.second->setArrowEnabled(enabled);
+        }
 }
 
 void MethodcallAnimation::end()
@@ -610,8 +619,10 @@ void SendOnConnAnimation::begin()
 {
     MessageAnimation::begin();
 
-    if (isEmpty())
-        end(); // XXX only end if holding!
+    if (isEmpty()) {
+        if (holding)
+            end();
+    }
     else {
         for (auto p : messageItems)
             p.second->setPos(p.first->getConnectionLine(gate).p1());
@@ -624,11 +635,12 @@ void SendOnConnAnimation::update()
     MessageAnimation::update();
 
     if (holding) {
-        double t = getHoldPosition();
-        if (isEmpty() || t >= 1.0) {
+        if (isEmpty() || holdExpired()) {
             end();
             return;
         }
+
+        double t = getHoldPosition();
 
         for (auto p : messageItems)
             p.second->setPos(p.first->getConnectionLine(gate).pointAt(t));
@@ -753,8 +765,10 @@ void SendDirectAnimation::init()
 void SendDirectAnimation::begin()
 {
     MessageAnimation::begin();
-    if (isEmpty())
-        end(); // XXX only end if holding!
+    if (isEmpty()) {
+        if (holding)
+            end();
+    }
     else // still ok if holding
         getQtenv()->getMessageAnimator()->setAnimationSpeed(prop.dbl()+trans.dbl(), this);
 }
@@ -766,12 +780,12 @@ void SendDirectAnimation::update()
     double t1, t2;
 
     if (holding) {
-        t1 = t2 = getHoldPosition();
-
-        if (isEmpty() || t1 >= 1.0) {
+        if (isEmpty() || holdExpired()) {
             end();
             return;
         }
+
+        t1 = t2 = getHoldPosition();
     }
     else {
         SimTime progr = simTime() - start;
@@ -955,12 +969,12 @@ void DeliveryAnimation::update()
 {
     MessageAnimation::update();
 
-    double t = getHoldPosition();
-
-    if (isEmpty() || t >= 1.0) {
+    if (isEmpty() || holdExpired()) {
         end();
         return;
     }
+
+    double t = getHoldPosition();
 
     for (auto p : messageItems) {
         if (gate) {

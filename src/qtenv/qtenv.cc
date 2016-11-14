@@ -486,6 +486,56 @@ void Qtenv::restoreInspectors()
     }
 }
 
+double Qtenv::computeModelAnimationSpeedRequest()
+{
+    double animSpeed = DBL_MAX;
+
+    bool wasNan = false;
+
+    for (auto i : inspectors) {
+        if (auto mi = dynamic_cast<ModuleInspector *>(i))
+            if (auto mod = dynamic_cast<cModule *>(mi->getObject()))
+                if (auto canv = mod->getCanvasIfExists()) {
+                    const std::map<const cObject*,double>& speedMap = canv->getAnimationSpeedMap();
+
+                    for (const auto& s : speedMap) {
+                        if (std::isnan(s.second))
+                            wasNan = true;
+                        animSpeed = std::min(animSpeed, s.second);
+                    }
+                }
+
+        // TODO
+        //if (auto ci = dynamic_cast<CanvasInspector *>(i)) {
+        //
+        //}
+    }
+
+    if (animSpeed == DBL_MAX)
+        animSpeed = wasNan ? NAN : 0.0; // TODO: some smarter default
+
+    return animSpeed;
+}
+
+double Qtenv::computeModelHoldEndTime()
+{
+    double holdEndTime = -1;
+
+    for (auto i : inspectors) {
+        if (auto mi = dynamic_cast<ModuleInspector *>(i))
+            if (auto mod = dynamic_cast<cModule *>(mi->getObject()))
+                if (auto canv = mod->getCanvasIfExists())
+                    holdEndTime = std::max(holdEndTime, canv->getAnimationHoldEndTime());
+
+        // TODO
+        //if (auto ci = dynamic_cast<CanvasInspector *>(i)) {
+        //
+        //}
+    }
+
+    return holdEndTime;
+}
+
 Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
 {
     // Note: ctor should only contain trivial initializations, because
@@ -1820,54 +1870,12 @@ double Qtenv::getAnimationTime() const
 
 double Qtenv::getAnimationSpeed() const
 {
-    double animSpeed = DBL_MAX;
-
-    bool wasNan = false;
-
-    for (auto i : inspectors) {
-        if (auto mi = dynamic_cast<ModuleInspector *>(i)) {
-            auto mod = dynamic_cast<cModule *>(mi->getObject());
-            if (auto canv = mod->getCanvasIfExists()) {
-                const std::map<const cObject*,double>& speedMap = canv->getAnimationSpeedMap();
-
-                for (const auto& s : speedMap) {
-                    if (std::isnan(s.second))
-                        wasNan = true;
-                    animSpeed = std::min(animSpeed, s.second);
-                }
-            }
-        }
-
-        // TODO
-        //if (auto ci = dynamic_cast<CanvasInspector *>(i)) {
-        //
-        //}
-    }
-
-    if (animSpeed == DBL_MAX)
-        animSpeed = wasNan ? NAN : 0.0; // TODO: some smarter default
-
-    return animSpeed;
+    return displayUpdateController->getAnimationSpeed();
 }
 
 double Qtenv::getRemainingAnimationHoldTime() const
 {
-    double holdEndTime = messageAnimator->getAnimationHoldEndTime();
-
-    for (auto i : inspectors) {
-        if (auto mi = dynamic_cast<ModuleInspector *>(i)) {
-            auto mod = dynamic_cast<cModule *>(mi->getObject());
-            if (auto canv = mod->getCanvasIfExists())
-                holdEndTime = std::max(holdEndTime, canv->getAnimationHoldEndTime());
-        }
-
-        // TODO
-        //if (auto ci = dynamic_cast<CanvasInspector *>(i)) {
-        //
-        //}
-    }
-
-    return std::max(0.0, holdEndTime - displayUpdateController->getAnimationTime());
+    return std::max(0.0, displayUpdateController->getAnimationHoldEndTime() - displayUpdateController->getAnimationTime());
 }
 
 void Qtenv::channelDisplayStringChanged(cChannel *channel)
