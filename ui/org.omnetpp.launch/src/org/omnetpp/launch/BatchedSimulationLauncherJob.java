@@ -83,6 +83,8 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
                 Job.getJobManager().join(launch, null);
             }
 
+            //TODO We should report summary statistics! Number of successful / cancelled / erroneous runs, etc.
+            
             // refresh the workspace finally to show the result files
             finishJob.setProgressGroup(groupMonitor, 0);
             finishJob.schedule();
