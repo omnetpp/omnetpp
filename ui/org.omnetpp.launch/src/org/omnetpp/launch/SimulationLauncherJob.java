@@ -47,6 +47,9 @@ public class SimulationLauncherJob extends Job {
 
     public final static String SIMULATION_JOB_FAMILY = "simulation";
 
+    private static final int SIGTERM = 15;
+    private static final int SIMULATION_CANCELLED_EXITCODE = 2;
+
     private ILaunchConfiguration configuration;
     private ILaunch launch;
     private String runFilter;
@@ -137,7 +140,7 @@ public class SimulationLauncherJob extends Job {
                 // do some error reporting if the process finished with error
                 dumpPostMortemInfo(iprocess, commandLine, workingDir);
 
-                if (subMonitor.isCanceled() || iprocess.getExitValue() == 2) {
+                if (subMonitor.isCanceled() || iprocess.getExitValue() == SIMULATION_CANCELLED_EXITCODE || iprocess.getExitValue() == 128 + SIGTERM) {
                     printToConsole(iprocess, "Cancelled by user request.", true);
                     subMonitor.subTask("Cancelled");
                     return Status.CANCEL_STATUS;
