@@ -73,6 +73,7 @@ cModule::cModule()
 
     canvas = nullptr;
     osgCanvas = nullptr;
+    flags |= FL_BUILTIN_ANIMATIONS;
 
     // gates and parameters will be added by cModuleType
 }

@@ -280,6 +280,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     enum {
         FL_BUILDINSIDE_CALLED = 1 << 9, // whether buildInside() has been called
         FL_RECORD_EVENTS      = 1 << 10, // enables recording events in this module
+        FL_BUILTIN_ANIMATIONS = 1 << 11, // whether built-in animations are requested on this module's graphical inspector
     };
 
   private:
@@ -809,6 +810,18 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * it if it hasn't existed before.
      */
     virtual cOsgCanvas *getOsgCanvas() const;
+
+    /**
+     * Sets whether built-in animations are requested on this module's
+     * graphical inspector.
+     */
+    virtual void setBuiltinAnimations(bool enabled) {setFlag(FL_BUILTIN_ANIMATIONS, enabled);}
+
+    /**
+     * Returns true if built-in animations are requested on this module's
+     * graphical inspector, and false otherwise.
+     */
+    virtual bool getBuiltinAnimations() const {return flags & FL_BUILTIN_ANIMATIONS;}
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.
