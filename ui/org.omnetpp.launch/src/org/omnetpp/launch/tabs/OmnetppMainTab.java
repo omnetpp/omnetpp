@@ -268,7 +268,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fConfigCombo.setVisibleItemCount(10);
 
         SWTFactory.createLabel(composite, "Run(s):", 1);
-        fRunText = SWTFactory.createSingleText(composite, 2);
+        fRunText = SWTFactory.createText(composite, SWT.SINGLE | SWT.BORDER | SWT.SEARCH, 2);
+        fRunText.setMessage("Enter filter expression; hover to get list of matching runs");
 
         String runTooltip = "Filter expression (e.g. $numHosts > 10) or list of run numbers (e.g. 1,5,8..13)";
 
