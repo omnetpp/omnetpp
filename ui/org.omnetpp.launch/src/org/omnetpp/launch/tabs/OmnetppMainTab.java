@@ -271,7 +271,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         fRunText = SWTFactory.createText(composite, SWT.SINGLE | SWT.BORDER | SWT.SEARCH, 2);
         fRunText.setMessage("Enter filter expression; hover to get list of matching runs");
 
-        String runTooltip = "Filter expression (e.g. $numHosts > 10) or list of run numbers (e.g. 1,5,8..13)";
+        String runTooltip = "Filter expression or list of run numbers (e.g. \"$numHosts>10\", \"1,5,8..13\")";
 
         HoverSupport hover = new HoverSupport();
         hover.adapt(fRunText, new IHoverInfoProvider() {
@@ -357,22 +357,19 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         SWTFactory.setEqualColumnWidth(composite, true);
 
         // ordering is so that related controls are in one column in the 3-column layout
-        fRedirectStdoutCheckbox = SWTFactory.createTristateCheckButton(composite, "Save stdout to per-run files (Cmdenv)", null, false, false, 1);
-        fRecordScalarsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record scalar results", null, false, false, 1);
         fSilentCheckbox = SWTFactory.createCheckButton(composite, "Suppress logo", null, false, 1);
-        fRecordEventlogCheckbox = SWTFactory.createTristateCheckButton(composite, "Record eventlog", null, false, false, 1);
-        fRecordVectorsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record vector results", null, false, false, 1);
         fCmdenvExpressModeCheckbox = SWTFactory.createTristateCheckButton(composite, "Express mode (Cmdenv)", null, false, false, 1);
+        fRedirectStdoutCheckbox = SWTFactory.createTristateCheckButton(composite, "Save stdout (Cmdenv)", null, false, false, 1);
+        fRecordScalarsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record scalar results", null, false, false, 1);
+        fRecordVectorsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record vector results", null, false, false, 1);
+        fRecordEventlogCheckbox = SWTFactory.createTristateCheckButton(composite, "Record eventlog", null, false, false, 1);
 
-        //These tooltips are not very useful
-        //fRedirectStdoutCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_CMDENV_REDIRECT_OUTPUT.getName() + "\" configuration option");
-        //fRecordScalarsCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_SCALAR_RECORDING.getName() + "\" option");
-        //fRecordEventlogCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_RECORD_EVENTLOG.getName() + "\" configuration option");
-        //fRecordVectorsCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_VECTOR_RECORDING.getName() + "\" configuration option");
-        //fCmdenvExpressModeCheckbox.setToolTipText("Corresponds to the \"" + ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE.getName() + "\" configuration option");
-        //fSilentCheckbox.setToolTipText("Corresponds to the -s command-line option");
-
-        //TODO sim-time-limit, cpu-time-limit (In an Options group)
+        fRedirectStdoutCheckbox.setToolTipText("Save stdout to per-run files in the results folder. Overrides similar ini file setting.");
+        fRecordScalarsCheckbox.setToolTipText("Allow creating an output scalar file. Overrides similar ini file setting.");
+        fRecordVectorsCheckbox.setToolTipText("Allow creating an output vector file. Overrides similar ini file setting.");
+        fRecordEventlogCheckbox.setToolTipText("Record eventlog for Sequence Chart tool. Overrides similar ini file setting.");
+        fCmdenvExpressModeCheckbox.setToolTipText("Express mode (Cmdenv). Overrides similar ini file setting.");
+        fSilentCheckbox.setToolTipText("Non-verbose output. Corresponds to the -s command-line option");
     }
 
     protected Composite createAdvancedGroup(Composite parent, int colSpan) {
