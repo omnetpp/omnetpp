@@ -1387,6 +1387,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
+                CC << "    handleChange();\n";
                 CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
@@ -1394,6 +1395,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             else if (it->fisarray && it->farraysize.empty()) {
                 CC << "void " << info.msgclass << "::" << it->alloc << "(" << it->fsizetype << " size)\n";
                 CC << "{\n";
+                CC << "    handleChange();\n";
                 CC << "    " << it->datatype << " *" << it->var << "2 = (size==0) ? nullptr : new " << it->datatype << "[size];\n";
                 CC << "    " << it->fsizetype << " sz = " << it->varsize << " < size ? " << it->varsize << " : size;\n";
                 CC << "    for (" << it->fsizetype << " i=0; i<sz; i++)\n";
@@ -1424,6 +1426,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
+                CC << "    handleChange();\n";
                 CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
@@ -1436,6 +1439,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
+                CC << "    handleChange();\n";
                 CC << "    this->" << it->var << " = " << it->argname << ";\n";
                 CC << "}\n\n";
             }

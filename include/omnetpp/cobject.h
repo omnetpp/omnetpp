@@ -82,6 +82,8 @@ class SIM_API cObject
     // internal
     virtual void yieldOwnership(cOwnedObject *obj, cObject *to);
 
+    virtual void handleChange() {};
+
   public:
     /**
      * Constructor. It has an empty body. (The class does not have data members
