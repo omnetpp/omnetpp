@@ -141,9 +141,13 @@ namespace omnetpp {
 
 // internal
 #define __REGISTER_CLASS(CLASSNAME, BASECLASS, DESC) \
+  __REGISTER_CLASS_X(CLASSNAME, BASECLASS, DESC, /*nothing*/ )
+
+// internal
+#define __REGISTER_CLASS_X(CLASSNAME, BASECLASS, DESC, EXTRACODE) \
   static omnetpp::cObject *MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_)() {BASECLASS *ret = new CLASSNAME; return ret; } \
   static void *MAKE_UNIQUE_WITHIN_FILE(__castfunc_)(omnetpp::cObject *obj) {return (void*)dynamic_cast<CLASSNAME*>(obj);} \
-  EXECUTE_ON_STARTUP(omnetpp::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_), MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC));)
+  EXECUTE_ON_STARTUP(omnetpp::classes.getInstance()->add(new omnetpp::cObjectFactory(omnetpp::opp_typename(typeid(CLASSNAME)), MAKE_UNIQUE_WITHIN_FILE(__factoryfunc_), MAKE_UNIQUE_WITHIN_FILE(__castfunc_), DESC)); EXTRACODE; )
 
 // internal
 #define __REGISTER_ABSTRACT_CLASS(CLASSNAME, BASECLASS /*unused*/, DESC) \
@@ -265,6 +269,16 @@ namespace omnetpp {
 #define Register_Enum2(VAR, NAME, VALUES)  \
   static omnetpp::cEnum *VAR; \
   EXECUTE_ON_STARTUP(VAR = new omnetpp::cEnum(NAME); VAR->bulkInsert VALUES; omnetpp::enums.getInstance()->add(VAR))
+
+/**
+ * @brief Registers a new figure type. The macro accepts a type name (an
+ * identifier that can be used in the type attribute of the \@figure property),
+ * and a C++ class name. The class must be derived from cFigure.
+ *
+ * @hideinitializer
+ */
+#define Register_Figure(NAME, CLASSNAME)  \
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cFigure, "figure", figureTypes[#NAME] = omnetpp::opp_typename(typeid(CLASSNAME)))
 
 //@}
 

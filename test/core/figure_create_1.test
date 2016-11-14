@@ -7,30 +7,16 @@ Test instantiating custom figure types from @figure.
 
 using namespace omnetpp;
 
-class FooFigure : public cGroupFigure { };
-Register_Class(FooFigure);
-
-namespace inet {
-
-class BarFigure : public cGroupFigure { };
-Register_Class(BarFigure);
-
-namespace common {
-
-class BazFigure : public cGroupFigure { };
-Register_Class(BazFigure);
-
-} // namespace common
-} // namespace inet
-
 namespace @TESTNAME@ {
 
 class Test : public cSimpleModule {
 public:
     void initialize() {
         cCanvas *canvas = getCanvas();
-        for (int i = 0; i < canvas->getNumFigures(); i++)
-            EV << canvas->getFigure(i)->getClassName() << endl;
+        for (int i = 0; i < canvas->getNumFigures(); i++) {
+            cFigure *f = canvas->getFigure(i);
+            EV << f->getName() << " --> " << f->getClassName() << endl;
+        }
         EV << "." << endl;
     }
 };
@@ -44,34 +30,37 @@ simple Test
 {
     @isNetwork(true);
 
-    // without namespace
-    @figure[01](type=foo);
-    @figure[02](type=Foo);
-    @figure[03](type=FooFigure);
-
-    // with (nested) namespace
-    @figure[04](type=inet::bar);
-    @figure[05](type=inet::Bar);
-    @figure[06](type=inet::BarFigure);
-    @figure[07](type=inet::common::baz);
-    @figure[08](type=inet::common::Baz);
-    @figure[09](type=inet::common::BazFigure);
-
-    // test caching of lookup results
-    @figure[dup1](type=foo);
-
+	@figure[group](type=group);
+	@figure[line](type=line);
+	@figure[arc](type=arc);
+	@figure[polyline](type=polyline);
+	@figure[rectangle](type=rectangle);
+	@figure[oval](type=oval);
+	@figure[ring](type=ring);
+	@figure[pieslice](type=pieslice);
+	@figure[polygon](type=polygon);
+	@figure[path](type=path);
+	@figure[text](type=text);
+	@figure[label](type=label);
+	@figure[image](type=image);
+	@figure[icon](type=icon);
+	@figure[pixmap](type=pixmap);
 }
 
 %contains: stdout
-omnetpp::cGroupFigure
-FooFigure
-FooFigure
-FooFigure
-inet::BarFigure
-inet::BarFigure
-inet::BarFigure
-inet::common::BazFigure
-inet::common::BazFigure
-inet::common::BazFigure
-FooFigure
+group --> omnetpp::cGroupFigure
+line --> omnetpp::cLineFigure
+arc --> omnetpp::cArcFigure
+polyline --> omnetpp::cPolylineFigure
+rectangle --> omnetpp::cRectangleFigure
+oval --> omnetpp::cOvalFigure
+ring --> omnetpp::cRingFigure
+pieslice --> omnetpp::cPieSliceFigure
+polygon --> omnetpp::cPolygonFigure
+path --> omnetpp::cPathFigure
+text --> omnetpp::cTextFigure
+label --> omnetpp::cLabelFigure
+image --> omnetpp::cImageFigure
+icon --> omnetpp::cIconFigure
+pixmap --> omnetpp::cPixmapFigure
 .

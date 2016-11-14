@@ -16,6 +16,8 @@
 #ifndef __OMNETPP_GLOBALS_H
 #define __OMNETPP_GLOBALS_H
 
+#include <map>
+#include <string>
 #include "onstartup.h"
 #include "cregistrationlist.h"
 #include "cobjectfactory.h"
@@ -39,6 +41,7 @@ SIM_API extern cGlobalRegistrationList configOptions;   ///< List of supported c
 SIM_API extern cGlobalRegistrationList resultFilters;   ///< List of result filters (cResultFilter)
 SIM_API extern cGlobalRegistrationList resultRecorders; ///< List of result recorders (cResultRecorder)
 SIM_API extern cGlobalRegistrationList messagePrinters; ///< List of message printers (cMessagePrinter)
+SIM_API extern std::map<std::string,std::string> figureTypes; ///< Maps figure type names to implementation C++ class names (index into "classes")
 
 }  // namespace omnetpp
 

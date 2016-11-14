@@ -25,6 +25,7 @@
 #include "omnetpp/csimulation.h"  // getEnvir()
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/platdep/platmisc.h"
+#include "omnetpp/globals.h"
 #include "omnetpp/opp_string.h"
 
 using namespace omnetpp::common;
@@ -560,9 +561,9 @@ cFigure::Rectangle cFigure::parseBounds(cProperty *property, const Rectangle& de
     }
     else {
         int numCoords = property->getNumValues(PKEY_POS);
-        if (numCoords != 2)
+        if (numCoords != 0 && numCoords != 2)
             throw cRuntimeError("%s: Two coordinates expected", PKEY_POS);
-        Point p = property->containsKey(PKEY_POS) ? parsePoint(property, PKEY_POS, 0) : Point(defaults.x, defaults.y);
+        Point p = numCoords == 2 ? parsePoint(property, PKEY_POS, 0) : Point(defaults.x, defaults.y);
         Point size = property->containsKey(PKEY_SIZE) ? parsePoint(property, PKEY_SIZE, 0) : Point(defaults.width, defaults.height);
         const char *anchorStr = property->getValue(PKEY_ANCHOR);
         Anchor anchor = opp_isblank(anchorStr) ? cFigure::ANCHOR_NW : parseAnchor(anchorStr);
@@ -3572,28 +3573,23 @@ cFigure *cCanvas::createFigure(const char *type) const
         figure = new cPixmapFigure();
     else {
         std::map<std::string, cObjectFactory*>::iterator it = figureTypes.find(type);
-        cObjectFactory *factory;
+        cObjectFactory *factory = nullptr;
         if (it != figureTypes.end())
             factory = it->second;
         else {
-            std::string className1 = type;
-            std::string className2 = capitalizeClassName(className1);
-            std::string className3 = className2 + "Figure";
-
-            factory = cObjectFactory::find(className1.c_str());
+            std::map<std::string, std::string>::iterator it = omnetpp::figureTypes.find(type);
+            if (it == omnetpp::figureTypes.end())
+                throw cRuntimeError("Figure type '%s' not found (Register_Figure() missing?)", type);
+            std::string className = it->second;
+            factory = cObjectFactory::find(className.c_str());
             if (!factory)
-                factory = cObjectFactory::find(className2.c_str());
-            if (!factory)
-                factory = cObjectFactory::find(className3.c_str());
-            if (!factory)
-                throw cRuntimeError("Implementation class for figure not found (tried '%s', '%s' and '%s')",
-                        className1.c_str(), className2.c_str(), className3.c_str());
+                throw cRuntimeError("Implementation class '%s' for figure type '%s' not found", className.c_str(), type);
             figureTypes[type] = factory;
         }
         cObject *obj = factory->createOne();
         figure = dynamic_cast<cFigure *>(obj);
         if (!figure)
-            throw cRuntimeError("Wrong figure class: Cannot cast %s to cFigure", obj->getClassName());
+            throw cRuntimeError("Wrong figure class '%s': Cannot cast to cFigure", obj->getClassName());
     }
     return figure;
 }

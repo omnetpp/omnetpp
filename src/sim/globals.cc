@@ -33,6 +33,7 @@ cGlobalRegistrationList configOptions("supported configuration options");
 cGlobalRegistrationList resultFilters("resultFilters");
 cGlobalRegistrationList resultRecorders("resultRecorders");
 cGlobalRegistrationList messagePrinters("messagePrinters");
+std::map<std::string,std::string> figureTypes;
 
 EXECUTE_ON_SHUTDOWN(
         componentTypes.clear();
@@ -44,7 +45,7 @@ EXECUTE_ON_SHUTDOWN(
         resultFilters.clear();
         resultRecorders.clear();
         messagePrinters.clear();
+        figureTypes.clear();
 );
-
 
 }  // namespace omnetpp

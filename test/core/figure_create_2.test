@@ -1,0 +1,64 @@
+%description:
+Test instantiating custom figure types from @figure.
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+class FooFigure : public cGroupFigure { };
+Register_Figure(foo, FooFigure);
+
+namespace inet {
+
+class BarFigure : public cGroupFigure { };
+Register_Figure(bar, BarFigure);
+
+namespace common {
+
+class BazFigure : public cGroupFigure { };
+Register_Figure(baz, BazFigure);
+
+} // namespace common
+} // namespace inet
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule {
+public:
+    void initialize() {
+        cCanvas *canvas = getCanvas();
+        for (int i = 0; i < canvas->getNumFigures(); i++) {
+            cFigure *f = canvas->getFigure(i);
+            EV << f->getName() << " --> " << f->getClassName() << endl;
+        }
+        EV << "." << endl;
+    }
+};
+Define_Module(Test);
+
+} // namespace @TESTNAME@
+
+%file: test.ned
+
+simple Test
+{
+    @isNetwork(true);
+    
+    // registered figure types
+    @figure[f1](type=foo);
+    @figure[f2](type=bar);
+    @figure[f3](type=baz);
+    
+    // test caching of lookup results
+    @figure[f4](type=foo);  
+
+}
+
+%contains: stdout
+f1 --> FooFigure
+f2 --> inet::BarFigure
+f3 --> inet::common::BazFigure
+f4 --> FooFigure
+.

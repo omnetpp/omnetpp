@@ -1,0 +1,16 @@
+%description:
+Test error message from unregistered figure type @figure.
+
+%file: test.ned
+
+module Test
+{
+    @isNetwork(true);
+    @figure[01](type=nosuchfigure);
+
+}
+
+%exitcode: 1
+
+%contains: stderr
+Cannot create figure from NED property @figure[01]: Figure type 'nosuchfigure' not found (Register_Figure() missing?)
