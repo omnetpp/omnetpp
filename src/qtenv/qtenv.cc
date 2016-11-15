@@ -1266,7 +1266,7 @@ void Qtenv::createSnapshot(const char *label)
 void Qtenv::performAnimations()
 {
     displayUpdateController->setRunMode(runMode);
-    messageAnimator->start();
+    messageAnimator->update();
     displayUpdateController->animateUntilHoldEnds();
 }
 
@@ -1534,9 +1534,9 @@ void Qtenv::simulationEvent(cEvent *event)
 
             // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
             if (arrivalGate->getPreviousGate())
-                messageAnimator->animateDelivery(msg);
+                messageAnimator->delivery(msg);
             else
-                messageAnimator->animateDeliveryDirect(msg);
+                messageAnimator->deliveryDirect(msg);
 
             // deliveries must be played immediately, since we
             // are right before the processing of the message,
@@ -1568,59 +1568,65 @@ void Qtenv::beginSend(cMessage *msg)
 
     if (loggingEnabled)
         logBuffer.beginSend(msg);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+        messageAnimator->beginSend(msg);
 }
 
 void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg))
-        messageAnimator->animateSendDirect(msg, msg->getSenderModule(), toGate);
-
     if (loggingEnabled)
         logBuffer.messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+        messageAnimator->sendDirect(msg, msg->getSenderModule(), toGate, propagationDelay, transmissionDelay);
 }
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-        bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
-        messageAnimator->animateSendHop(msg, srcGate, isLastHop);
-    }
-
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
+        messageAnimator->sendHop(msg, srcGate, isLastHop);
+    }
 }
 
 void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool discard)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
 
-    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
-        bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
-        messageAnimator->animateSendHop(msg, srcGate, isLastHop);
-    }
-
     if (loggingEnabled)
         logBuffer.messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, discard);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg)) {
+        bool isLastHop = srcGate->getNextGate() == msg->getArrivalGate();
+        messageAnimator->sendHop(msg, srcGate, isLastHop, propagationDelay, transmissionDelay, discard);
+    }
 }
 
 void Qtenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
-    if (animating)
-        messageAnimator->redrawMessages();
+
     if (loggingEnabled)
         logBuffer.endSend(msg);
+
+    if (animating && opt->animationEnabled && !isSilentEvent(msg))
+        messageAnimator->endSend(msg);
 }
 
 void Qtenv::messageDeleted(cMessage *msg)
 {
+    EnvirBase::messageDeleted(msg);
+
     if (messageAnimator)
         messageAnimator->removeMessagePointer(msg);
-    EnvirBase::messageDeleted(msg);
 }
 
 void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va, bool silent)
@@ -1630,18 +1636,21 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
     va_end(va2);
 
-    if (!silent && animating && opt->animateMethodCalls && methodFmt) {
+    if (animating && opt->animateMethodCalls) {
         static char methodText[MAX_METHODCALL];
-        vsnprintf(methodText, MAX_METHODCALL, methodFmt, va);
+        vsnprintf(methodText, MAX_METHODCALL, opp_nulltoempty(methodFmt), va);
         methodText[MAX_METHODCALL-1] = '\0';
 
-        messageAnimator->animateMethodcall(fromComp, toComp, methodText);
+        messageAnimator->methodcallBegin(fromComp, toComp, methodText, silent);
     }
 }
 
 void Qtenv::componentMethodEnd()
 {
     EnvirBase::componentMethodEnd();
+
+    if (animating && opt->animateMethodCalls)
+        messageAnimator->methodcallEnd();
 }
 
 void Qtenv::moduleCreated(cModule *newmodule)
@@ -1824,14 +1833,9 @@ double Qtenv::getAnimationSpeed() const
     return animSpeed;
 }
 
-void Qtenv::holdSimulationFor(double s)
-{
-    displayUpdateController->holdSimulationFor(s);
-}
-
 double Qtenv::getRemainingAnimationHoldTime() const
 {
-    double holdEndTime = displayUpdateController->getAnimationHoldEndTime();
+    double holdEndTime = messageAnimator->getAnimationHoldEndTime();
 
     for (auto i : inspectors) {
         if (auto mi = dynamic_cast<ModuleInspector *>(i)) {

@@ -284,6 +284,8 @@ void ModuleInspector::doSetObject(cObject *obj)
 #else
     switchToCanvasView();
 #endif
+
+    getQtenv()->getMessageAnimator()->addInspector(this);
 }
 
 #ifdef WITH_OSG
@@ -438,6 +440,7 @@ void ModuleInspector::relayout()
 {
     canvasViewer->incLayoutSeed();
     canvasViewer->relayoutAndRedrawAll();
+    getQtenv()->getMessageAnimator()->updateInspector(this);
 }
 
 void ModuleInspector::zoomIn(int x, int y)
@@ -482,9 +485,8 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
         }
 
         // so animations will not wander around at the old module positions
-        getQtenv()->getMessageAnimator()->clearInspector(this);
         canvasViewer->setZoomFactor(newZoomFactor);
-        getQtenv()->getMessageAnimator()->redrawMessages();
+        getQtenv()->getMessageAnimator()->updateInspector(this);
 
         auto center = oldModulePos * newZoomFactor - QPointF(x - cx, y - cy);
         canvasViewer->centerOn(center);

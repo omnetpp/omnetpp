@@ -17,214 +17,332 @@
 #ifndef __OMNETPP_QTENV_MESSAGEANIMATIONS_H
 #define __OMNETPP_QTENV_MESSAGEANIMATIONS_H
 
-#include "messageitem.h"
-#include "connectionitem.h"
+#include <QDebug>
+#include "omnetpp/simtime_t.h"
 
 namespace omnetpp {
+
+class cMessage;
+class cComponent;
+class cModule;
+class cGate;
+
 namespace qtenv {
 
-enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
+class ModuleInspector;
+class MessageItem;
+class ConnectionItem;
+class Inspector;
+
+
+struct PathEntry {
+   cModule *from; // nullptr if descent
+   cModule *to;   // nullptr if ascent
+};
+typedef std::vector<PathEntry> PathVec;
+
 
 class Animation {
+protected:
+    // For holding animations.
+    explicit Animation(double holdDuration): holding(true), holdDuration(holdDuration) { }
+
+    // For non-holding, SimTime animations.
+    explicit Animation(): holding(false) { }
+
+    // If true, the animation will take place during a hold, and setProgress() will be called from update().
+    // If false, during some amount of simtime without hold, and only update() should be used.
+    // This is not a dynamic state variable, but a static property.
+    const bool holding;
+
+    // In animation time, ONLY AN ESTIMATE to show the user.
+    // Real (internal) hold management is done with the requestHold()
+    // and clearHold() methods of the AnimationManager.
+    // This is nonzero only if holding is false.
+    double holdDuration = 0;
+    // In animation time, set in begin(). Not used if holding is false.
+    double holdStarted = 0;
+
 public:
 
+    //                                       ,-------------------v
+    // > PENDING -> init() -> WAITING -> begin() -> PLAYING -> end() -> FINISHED -> cleanup() -> DONE >
+    //                                                 '|,      /'
+    //                                                  update()
     enum State { PENDING, WAITING, PLAYING, FINISHED, DONE } state = PENDING;
-    // PENDING -> init() -> WAITING -> begin() ->
-    // -> PLAYING -> end() -> FINISHED -> cleanup() -> DONE
-    //      '|,      /'
-    //  setProgress()
 
-    virtual void advance(float delta) = 0; // delta is in seconds
+    State getState() const { return state; } // see comment for state
+    virtual bool isHolding() const { return holding; } // see comment for holding
 
-    State getState() const { return state; }
-    virtual float getTime() const = 0;
-    virtual float getDuration() = 0;
+    double getHoldPosition() const; // a [0..1] value, the progress in this animations hold
+    double getRemainingHoldTime() const; // see comment for holdDuration
 
-    virtual bool willAnimate(cMessage *msg) { return false; }
-    virtual bool didAnimate(cMessage *msg) { return false; }
-    virtual bool isEmpty() { return false; }
+    // All of these must be called from the subclasses' overrides!
+    virtual void init(); // when the sequence is started
+    virtual void begin(); // when this anim is started in the sequence
+    virtual void update(); // called regularly while in PLAYING state
+    virtual void end(); // when this animation is over (called from either begin() or update())
+    virtual void cleanup(); // when the group is ended
 
-    // only needed for debugging
+    // Helper method to call the ones above in the right order.
+    // Returns true if the animation has not ended yet.
+    bool advance();
+
+    // The parameter of the next 3 functions is not a ModuleInspector*,
+    // so we can call them on all open inspectors easily, and they
+    // perform an isModuleInspectorFor anyway.
+
+    // The animations should make themselves visible in insp if applicable.
+    // The inspector should be remembered and animated in until removed.
+    // Also see MessageAnimator::addInspector.
+    virtual void addToInspector(Inspector *insp) = 0;
+
+    // This is different from a simple update(), animations should completely
+    // rebuild the parts of them that are visible in insp, because it may
+    // have been zoomed or relayouted, or the displayed module changed, etc...
+    // Also see MessageAnimator::updateInspector.
+    virtual void updateInInspector(Inspector *insp) = 0;
+
+    // In this method the animations should completely clear any parts of them
+    // that are visible in insp, so it can be safely closed, or the inspected
+    // object can be changed.
+    // Also see MessageAnimator::clearInspector.
+    virtual void removeFromInspector(Inspector *insp) = 0;
+
+
+    // True if currently no part of this animation is visible in any open inspectors.
+    virtual bool isEmpty() const = 0;
+
+    // True if this animation (tree) is currently, or will in the future,
+    // show a representation of msg. Needed to avoid drawing the static
+    // message item where it has not "arrived" yet in the animation.
+    virtual bool willAnimate(cMessage *msg) = 0;
+
+    virtual void messageDuplicated(cMessage *msg, cMessage *dup) = 0;
+
+    // This is called when the message is delivered or deleted, so
+    // the graphics items can remove their references to it.
+    // If needed, animations might clone the message for later use.
+    virtual void removeMessagePointer(cMessage *msg) = 0;
+
+    // Only needed for debugging.
     virtual QString str() const = 0;
 
-    // all of these must be called from the subclasses' overrides
-    // TODO make the ASSERTs true in all cases
-    virtual void init() { /* ASSERT2(state == PENDING, str().toStdString().c_str()); */ state = WAITING; } // when the group is started
-    virtual void begin() { /* ASSERT2(state == WAITING, str().toStdString().c_str()); */ state = PLAYING; } // when this anim is started in the group
-    virtual void end() { /* ASSERT2(state == PLAYING, str().toStdString().c_str()); */ state = FINISHED; } // when this anim ended (called by advance)
-    virtual void cleanup() { /* ASSERT2(state == FINISHED, str().toStdString().c_str()); */ state = DONE; } // when the group is ended
-
-    virtual ~Animation() { }
+    virtual ~Animation();
 };
 
-class AnimationGroup : public Animation
+class AnimationSequence : public Animation
 {
-  protected:
+protected:
     std::vector<Animation *> parts;
-    int flags;
-
-  public:
-
-    // flag constants. Not two simple bools to make the calls to the constructor more verbose.
+    size_t currentPart = 0;
 
     // If this is set, the init() of the parts will be
     // called just before their begin() calls,
-    // (at some time in this groups advance())
-    // and not in this groups init() or begin().
-    // If not set, they will be called in the groups begin()
-    static const int DEFER_PARTS_INIT = 1 << 0;
+    // (at some time in this sequence's update())
+    // and not in this sequence's init() or begin().
+    // If not set, they will be called in the sequence's begin()
+    bool deferPartsInit;
 
-    // If this is set, the cleanup() of the parts will be
-    // called in this groups cleanup().
-    // If not set, they will be called in this groups end().
-    static const int DEFER_PARTS_CLEANUP = 1 << 1;
+    // Returns a new AnimationSequence which contains the parts of
+    // this sequence, starting with index from, and removes those
+    // parts from this sequence.
+    AnimationSequence *chopTail(size_t from);
 
-    explicit AnimationGroup(int flags = 0) : flags(flags) {}
+public:
+    explicit AnimationSequence(bool deferPartsInit = false)
+        : Animation(), deferPartsInit(deferPartsInit) { }
 
-    void prune();
-    bool isEmpty() override;
+    // Appends a part to the end of this sequence, and inits it if necessary.
+    virtual void addAnimation(Animation *a);
+
+    // Removes the parts from the end that are holding,
+    // and returns them in a new sequence.
+    AnimationSequence *chopHoldingTail();
+
+    // If this sequence is currently playing a part that is holding in nature.
+    bool isHolding() const override;
+    // If this sequence consists entierly of holding parts.
+    bool isHoldingOnly() const;
 
     void begin() override;
+    void update() override;
     void end() override;
-    void cleanup() override;
 
+    void addToInspector(Inspector *insp) override;
+    void updateInInspector(Inspector *insp) override;
+    void removeFromInspector(Inspector *insp) override;
+
+    bool isEmpty() const override;
     bool willAnimate(cMessage *msg) override;
-
-    virtual void addAnimation(Animation *a) { parts.push_back(a); }
-
-    const std::vector<Animation *>& getParts() const { return parts; }
-
-    void clearInspector(ModuleInspector *insp);
-    void removeMessagePointer(cMessage *msg);
+    void messageDuplicated(cMessage *msg, cMessage *dup) override;
+    void removeMessagePointer(cMessage *msg) override;
 
     QString str() const override;
 
-    virtual ~AnimationGroup() {
-        for (auto p : parts)
-            delete p;
-    }
+    virtual ~AnimationSequence();
 };
 
-class SequentialAnimation : public AnimationGroup
+class MethodcallAnimation : public Animation
 {
-    size_t currentPart = 0;
-
-  public:
-    using AnimationGroup::AnimationGroup;
-
-    float getTime() const override;
-    float getDuration() override;
-
-    void begin() override;
-    void advance(float delta);
-
-    QString str() const override { return "Sequential" + AnimationGroup::str(); }
-};
-
-class ParallelAnimation : public AnimationGroup
-{
-    float time = 0;
-
-    float getTime() const override { return time; }
-    float getDuration() override;
-
-    void begin() override;
-    void advance(float delta);
-
-    QString str() const override { return "Parallel" + AnimationGroup::str(); }
-
-  public:
-
-    using AnimationGroup::AnimationGroup;
-
-    // If set, all parts will be played for the duration of the longest one.
-    // If unset, each of the parts' own duration will be respected
-    static const int STRETCH_TIME = 1 << 8;
-    // shift by 8 just to ensure independence from superclass flags
-};
-
-class SimpleAnimation : public Animation
-{
-    friend class AnimationGroup;
-
-  protected:
-    ModuleInspector *inspector;
-
-    QPointF src, dest;
-
-    float time = 0;
-    float duration;
-
-    float getTime() const override { return time; }
-    float getDuration() override { return duration; }
-
-    SimpleAnimation(ModuleInspector *insp, const QPointF& src, const QPointF& dest, float duration)
-        : inspector(insp), src(src), dest(dest), duration(duration) { }
-
-    void advance(float delta) override;
-
-    virtual void setProgress(float t) = 0;  // t is always 0..1
-};
-
-class MethodcallAnimation : public SimpleAnimation
-{
+    // The caller and callee modules.
     cModule *srcMod, *destMod;
+    // Name and parameters of the method.
     QString text;
-    ConnectionItem *connectionItem;
+    // If this is true, we don't show anything.
+    bool silent;
 
-  public:
-    MethodcallAnimation(ModuleInspector *insp, cModule *srcMod, cModule *destMod, const char *text);
+    // The direct route. Every element of this will be shown as a line in the
+    // inspectors of the corresponding (containing) module.
+    PathVec path;
+    // The graphical represenations of each "hop" in the path from srcMod to destMod.
+    std::vector<std::map<ModuleInspector *, ConnectionItem *>> connectionItems;
+
+    // The animation the body of which this one is.
+    // Needed so we can walk up the tree in methodcallEnd.
+    MethodcallAnimation *parent = nullptr;
+    // These are the animations that have to be done while this methodcall "runs" (is visible).
+    // These can be subcalls, or even sent messages, if they are completely instantaneous (in SimTime).
+    AnimationSequence body;
+
+public:
+    MethodcallAnimation(cComponent *src, cComponent *dest, const char *text, bool silent);
+
+    MethodcallAnimation *getParent() const { return parent; } // see parent
+    // Appends an animation to the body of this methodcall animation.
+    void addOperation(Animation *operation);
+
     void begin() override;
-    void setProgress(float t) override;
-    void cleanup() override;
-    QString str() const override;
-
-    ~MethodcallAnimation() { delete connectionItem; }
-};
-
-class SendAnimation : public SimpleAnimation
-{
-    friend class MessageAnimator;
-    friend class AnimationGroup;
-
-  protected:
-    cMessage *msg;
-    MessageItem *messageItem;
-    SendAnimMode mode;
-    SendAnimation(ModuleInspector *insp, SendAnimMode mode, const QPointF& src, const QPointF& dest, cMessage *msg, float duration);
-    void removeMessagePointer();
-    bool willAnimate(cMessage *msg) override { return state < FINISHED && msg == this->msg; }
-    void begin() override;
-    void setProgress(float t) override { messageItem->setPos(src * (1-t) + dest * t); }
+    void update() override;
     void end() override;
-    void cleanup() override;
-    ~SendAnimation() { delete messageItem; }
+
+    void addToInspector(Inspector *insp) override;
+    void updateInInspector(Inspector *insp) override;
+    void removeFromInspector(Inspector *insp) override;
+
+    bool isEmpty() const override;
+    bool willAnimate(cMessage *msg) override { return body.willAnimate(msg); }
+    void messageDuplicated(cMessage *msg, cMessage *dup) { body.messageDuplicated(msg, dup); }
+    void removeMessagePointer(cMessage *msg) override { body.removeMessagePointer(msg); }
+
+    QString str() const override;
+
+    ~MethodcallAnimation();
 };
 
-class SendOnConnAnimation : public SendAnimation
+class MessageAnimation : public Animation {
+protected:
+    // The actual cMessage used by the model.
+    // This is used as long as possible, until we are asked
+    // to release it (possibly because it was delivered or deleted).
+    cMessage *msg = nullptr;
+    // The privateDup of msg made by LogInspector.
+    // This is filled in messageDuplicated, and takes the place of msg
+    // in removeMessagePointer, when we are no longer allowed to use that.
+    cMessage *msgDup = nullptr;
+
+    // The graphical representations of the animated message.
+    std::map<ModuleInspector *, MessageItem *> messageItems;
+
+    explicit MessageAnimation(cMessage *msg, double holdDuration): Animation(holdDuration), msg(msg) { }
+    explicit MessageAnimation(cMessage *msg): Animation(), msg(msg) { }
+
+    // Returns the original message if we are still allowed
+    // to use it, and the private copy of it if not.
+    cMessage *msgToUse() const { return msg ? msg : msgDup; }
+
+public:
+
+    void begin() override;
+    void end() override;
+
+    bool isEmpty() const override { return messageItems.empty(); }
+    bool willAnimate(cMessage *msg) override { return state < FINISHED && msg == this->msg; }
+    void removeMessagePointer(cMessage *msg) override;
+    void messageDuplicated(cMessage *msg, cMessage *dup) override;
+
+    ~MessageAnimation();
+};
+
+// TODO: animate discarsion
+class SendOnConnAnimation : public MessageAnimation
 {
-  public:
-    SendOnConnAnimation(ModuleInspector *insp, SendAnimMode mode, const QPointF& src, const QPointF& dest, cMessage *msg);
+    cGate *gate; // source
+
+    // when the first bit of the message is sent, the propagation delay and transmission duration.
+    SimTime start, prop, trans;
+
+    // Where this hop should travel in the given inspector.
+    QLineF getLine(ModuleInspector *mi);
+
+public:
+    // The holding variant with 0 delays.
+    SendOnConnAnimation(cGate *gate, cMessage *msg)
+        : MessageAnimation(msg, 1.0), gate(gate) { }
+
+    // The non-holding variant with finite delay(s). TODO: animate discarsion
+    SendOnConnAnimation(cGate *gate, cMessage *msg, SimTime start, SimTime prop, SimTime trans, bool discard)
+        : MessageAnimation(msg), gate(gate), start(start), prop(prop), trans(trans) { }
+
+    void begin() override;
+    void update() override;
+    void end() override;
+
+    void addToInspector(Inspector *insp) override;
+    void updateInInspector(Inspector *insp) override;
+    void removeFromInspector(Inspector *insp) override;
+
     QString str() const override;
 };
 
-class SendDirectAnimation : public SendAnimation
+class SendDirectAnimation : public MessageAnimation
 {
-  public:
-    enum Direction { DIR_ASCENT, DIR_HORIZ, DIR_DESCENT, DIR_DELIVERY };
+    cModule *src;
+    cGate *dest;
+    SimTime start, prop, trans;
 
-  private:
-    ConnectionItem *connectionItem = nullptr;
-    Direction dir;
+    PathVec path;
+    std::map<ModuleInspector *, ConnectionItem *> connectionItems;
 
-  public:
-    SendDirectAnimation(ModuleInspector *insp, Direction dir, SendAnimMode mode, const QPointF& src, const QPointF& dest, cMessage *msg);
+public:
+    SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest);
+    SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest, SimTime start, SimTime prop, SimTime trans);
+
     void init() override;
-    void setProgress(float t) override;
-    void cleanup() override { connectionItem->setVisible(false); }
+    void begin() override;
+    void update() override;
+    void end() override;
+
+    void addToInspector(Inspector *insp) override;
+    void updateInInspector(Inspector *insp) override;
+    void removeFromInspector(Inspector *insp) override;
+
     QString str() const override;
 
-    ~SendDirectAnimation() { delete connectionItem; }
+    ~SendDirectAnimation();
+};
+
+class DeliveryAnimation : public MessageAnimation {
+    cGate *gate = nullptr; // source gate. if nullptr, this is a deliveryDirect
+
+    QLineF getLine(ModuleInspector *mi) const;
+
+public:
+    // for delivery on a connection
+    explicit DeliveryAnimation(cGate *gate, cMessage *msg)
+        : MessageAnimation(msg, 0.25), gate(gate) { }
+    // for delivery after a sendDirect
+    explicit DeliveryAnimation(cMessage *msg)
+        : MessageAnimation(msg, 0.5) { }
+
+    void begin() override;
+    void update() override;
+
+    void addToInspector(Inspector *insp) override;
+    void updateInInspector(Inspector *insp) override;
+    void removeFromInspector(Inspector *insp) override;
+
+    QString str() const override;
 };
 
 } // namespace qtenv

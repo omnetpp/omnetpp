@@ -14,91 +14,122 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_ANIMATOR_H
-#define __OMNETPP_QTENV_ANIMATOR_H
+#ifndef __OMNETPP_QTENV_MESSAGEANIMATOR_H
+#define __OMNETPP_QTENV_MESSAGEANIMATOR_H
 
 #include <vector>
+#include <set>
+#include <utility>
+#include <functional>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QObject>
 #include <QTimer>
-#include <omnetpp/cmessage.h>
 #include "omnetpp/simtime_t.h"
-#include "messageitem.h"
-#include "connectionitem.h"
-#include "messageanimations.h"
+#include "qtutil.h"
 
 namespace omnetpp {
+
+class cMessage;
+
 namespace qtenv {
 
 class GraphicsLayer;
 class ModuleInspector;
+class ConnectionItem;
+class MessageItem;
+class Animation;
+class AnimationSequence;
+class MethodcallAnimation;
+class DeliveryAnimation;
 
 class MessageAnimator : public QObject
 {
-    Q_OBJECT
+    // This stores the animation speed requests of all running,
+    // non-empty, non-holding animations.
+    std::map<const Animation*, double> animSpeedMap;
 
-    AnimationGroup *animation = new SequentialAnimation();
+    // The Animations that are currently requesting a hold.
+    // If empty, no hold is in effect.
+    std::set<const Animation*> holdRequests;
+
+    // cursor in the tree
+    MethodcallAnimation *currentMethodCall = nullptr;
+
+    // Used to keep track of time in the current send sequence.
+    // -1 if not between a beginSend / endSend pair.
+    SimTime lastHopTime = -1;
+    // The sequence we are building now, created in beginSend, reset in endSend
+    AnimationSequence *currentMessageSend = nullptr;
+
+    // The non-delivery animations.
+    // Additionally, nullptr is used as a key for methodcall animations,
+    // since they are potentially interleaved.
+    OrderedMultiMap<cMessage *, Animation *> animations;
+
+    // The delivery animation(s), these take precedence over the rest.
+    AnimationSequence *deliveries = nullptr;
+
+    // the static items waiting for delivery on the border or center of the arrival module
     std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
-
-    double lastFrameTime = 0;
-
-    // the max amount of pixels an arriving message will move inside the dest submodule rectangle
-    static const double msgEndCreep;
-
-    struct sPathEntry {
-       cModule *from; // nullptr if descent
-       cModule *to;   // nullptr if ascent
-    };
-    typedef std::vector<sPathEntry> PathVec;
-
-    static void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
-
-    // just a helper pointer for the "broadcast" grouping
-    AnimationGroup *messageStages = nullptr;
-
-    // for deliveries and "complete", "self-contained"
-    // methodcall sequence animations, will be sequential
-    void insertSerial(Animation *anim);
-
-    // for message hops, this will group each message-send
-    // sequence into parallel stages if enabled
-    void insertConcurrent(Animation *anim, cMessage *msg);
-
-    void hold();
 
     void clearMessages();
 
+    void addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim);
+
 public:
-    void start();
-    void frame();
+
+    void requestHold(const Animation *source) { holdRequests.insert(source); }
+    void clearHold(const Animation *source) { holdRequests.erase(source); }
+    double getAnimationHoldEndTime() const;
+
+    void setAnimationSpeed(double speed, const Animation *source);
+    double getAnimationSpeed();
+
+    void update();
 
     void redrawMessages();
 
-    void animateMethodcall(cComponent *fromComp, cComponent *toComp, const char *methodText);
-    void animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate);
-    void animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop);
-    void animateDelivery(cMessage *msg);
-    void animateDeliveryDirect(cMessage *msg);
+    // These two must always be called in a regular tree pattern!
+    void methodcallBegin(cComponent *fromComp, cComponent *toComp, const char *methodText, bool silent);
+    void methodcallEnd();
 
-    bool willAnimate(cMessage *msg) { return animation->willAnimate(msg); }
+    void beginSend(cMessage *msg);
+    void sendDirect(cMessage *msg, cModule *srcModule, cGate *destGate, simtime_t prop, simtime_t trans);
+    void sendHop(cMessage *msg, cGate *srcGate, bool isLastHop);
+    void sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, simtime_t prop, simtime_t trans, bool discard);
+    void endSend(cMessage *msg);
 
-    ~MessageAnimator();
+    void deliveryDirect(cMessage *msg);
+    void delivery(cMessage *msg);
 
-public slots:
+    // see Animation::willAnimate
+    bool willAnimate(cMessage *msg);
+
     void clear();
+
+    // Makes the animation show itself in an inspector, if applicable.
+    void addInspector(ModuleInspector *insp);
+
+    // Adjusts existing animations in an inspector.
+    // Called for example when the user zoomed or relayouted.
+    void updateInspector(ModuleInspector *insp);
 
     // Removes any animation and items on the given inspector,
     // so it can be deleted safely. called from the ModuleInspector dtor.
     void clearInspector(ModuleInspector *insp);
 
+    void messageDuplicated(cMessage *msg, cMessage *dup);
+
     // Removes the cMessage* data from any (static or animated) items
     // that had msg set on them as data(1), so they will not point
     // to an invalid, already deleted message.
     void removeMessagePointer(cMessage *msg);
+
+    ~MessageAnimator() { clear(); }
 };
 
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // __OMNETPP_QTENV_ANIMATOR_H
+#endif // __OMNETPP_QTENV_MESSAGEANIMATOR_H

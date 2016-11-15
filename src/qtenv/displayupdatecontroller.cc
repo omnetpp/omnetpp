@@ -317,8 +317,7 @@ double DisplayUpdateController::renderFrame(bool record) {
     if (dialog)
         dialog->displayMetrics();
 
-    if (qtenv->animating)
-        qtenv->getMessageAnimator()->frame();
+    qtenv->getMessageAnimator()->update();
 
     qtenv->callRefreshDisplay();
     qtenv->updateSimtimeDisplay();

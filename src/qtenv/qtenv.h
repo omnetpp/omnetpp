@@ -250,7 +250,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       // smooth animation API
       virtual double getAnimationTime() const override;
       virtual double getAnimationSpeed() const override;
-      void holdSimulationFor(double s);
       virtual double getRemainingAnimationHoldTime() const override;
 
       virtual void bubble(cComponent *component, const char *text) override;
