@@ -1,5 +1,5 @@
 %description:
-Test NaN: 0/0 to produce it, and that x!=x if x is NaN
+Test NaN: x!=x if x is NaN
 
 Note: MSVC prints NaN as -1.#IND and 1.#QNAN, so we need to %subst them
 to their gcc equivalent.
@@ -9,8 +9,9 @@ static bool isNaN(double d) { return d != d; }
 
 %activity:
 #define PRINT(x) EV << #x << ":" << (x) << endl;
+
 double zero = 0;
-double nan = zero/zero;
+double nan = NAN; // defined in header <cmath> since C++11
 
 PRINT(nan);
 PRINT(nan*2);
