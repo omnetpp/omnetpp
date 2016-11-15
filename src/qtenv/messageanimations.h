@@ -56,6 +56,8 @@ protected:
     // If true, the animation will take place during a hold, and setProgress() will be called from update().
     // If false, during some amount of simtime without hold, and only update() should be used.
     // This is not a dynamic state variable, but a static property.
+    // Not used for AnimationSequence, see isHolding in that class.
+    // XXX consider moving this to MessageAnimation?
     const bool holding;
 
     // In animation time, ONLY AN ESTIMATE to show the user.
@@ -65,6 +67,9 @@ protected:
     double holdDuration = 0;
     // In animation time, set in begin(). Not used if holding is false.
     double holdStarted = 0;
+
+    // a simple shortcut, forwards the request to the MessageAnimator
+    void requestAnimationSpeed(double speed);
 
 public:
 
@@ -268,6 +273,9 @@ public:
     void removeMessagePointer(cMessage *msg) override;
     void messageDuplicated(cMessage *msg, cMessage *dup) override;
 
+    // call this from subclasses!
+    void removeFromInspector(Inspector *insp) override;
+
     ~MessageAnimation();
 };
 
@@ -293,11 +301,9 @@ public:
 
     void begin() override;
     void update() override;
-    void end() override;
 
     void addToInspector(Inspector *insp) override;
     void updateInInspector(Inspector *insp) override;
-    void removeFromInspector(Inspector *insp) override;
 
     QString str() const override;
 };
@@ -347,7 +353,6 @@ public:
 
     void addToInspector(Inspector *insp) override;
     void updateInInspector(Inspector *insp) override;
-    void removeFromInspector(Inspector *insp) override;
 
     QString str() const override;
 };

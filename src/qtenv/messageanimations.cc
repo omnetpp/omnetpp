@@ -95,6 +95,12 @@ static PathVec findDirectPath(cModule *srcmod, cModule *destmod)
 
 // --------  Animation functions  --------
 
+void Animation::requestAnimationSpeed(double speed)
+{
+    ASSERT(!holding || (speed <= 0.0));
+    getQtenv()->getMessageAnimator()->setAnimationSpeed(speed, this);
+}
+
 double Animation::getHoldPosition() const
 {
     ASSERT(state == PLAYING);
@@ -447,6 +453,9 @@ void MethodcallAnimation::addToInspector(Inspector *insp)
         if (from && to)
             ASSERT(from->getParentModule() == to->getParentModule());
 
+        if (!showIn->getBuiltinAnimations())
+            continue;
+
         if (auto mi = isModuleInspectorFor(showIn, insp)) {
 
             QPointF src, dest;
@@ -584,6 +593,8 @@ void MessageAnimation::end()
 
     for (auto p : messageItems)
         p.second->setVisible(false);
+
+    requestAnimationSpeed(0.0);
 }
 
 void MessageAnimation::removeMessagePointer(cMessage *msg)
@@ -606,10 +617,29 @@ void MessageAnimation::messageDuplicated(cMessage *msg, cMessage *dup)
         msgDup = dup;
 }
 
+void MessageAnimation::removeFromInspector(Inspector *insp)
+{
+    for (auto &p : messageItems)
+        if ((Inspector*)p.first == insp) {
+            delete p.second;
+            p.second = nullptr;
+        }
+    messageItems.erase((ModuleInspector*)insp);
+
+    if (isEmpty()) {
+        requestAnimationSpeed(0.0);
+
+        if (holding && state == PLAYING)
+            end();
+    }
+}
+
 MessageAnimation::~MessageAnimation()
 {
     for (auto &p : messageItems)
         delete p.second;
+
+    requestAnimationSpeed(0.0);
 }
 
 // --------  SendOnConnAnimation methods  --------
@@ -625,7 +655,7 @@ void SendOnConnAnimation::begin()
     else {
         for (auto p : messageItems)
             p.second->setPos(p.first->getConnectionLine(gate).p1());
-        getQtenv()->getMessageAnimator()->setAnimationSpeed(prop.dbl()+trans.dbl(), this);
+        requestAnimationSpeed(prop.dbl()+trans.dbl());
     }
 }
 
@@ -660,7 +690,9 @@ void SendOnConnAnimation::update()
                 : ((t1 <= 1.0 || t2 >= 0.0)
                    ? prop.dbl()
                    : 2*trans.dbl());
-        getQtenv()->getMessageAnimator()->setAnimationSpeed(animSpeed, this);
+
+        if (!isEmpty())
+            requestAnimationSpeed(animSpeed);
 
         t1 = clip(0.0, t1, 1.0);
         t2 = clip(0.0, t2, t1);
@@ -675,18 +707,14 @@ void SendOnConnAnimation::update()
     }
 }
 
-void SendOnConnAnimation::end()
-{
-    MessageAnimation::end();
-
-    getQtenv()->getMessageAnimator()->setAnimationSpeed(0, this);
-}
-
 void SendOnConnAnimation::addToInspector(Inspector *insp)
 {
     cModule *mod = gate->getOwnerModule();
     if (gate->getType() == cGate::OUTPUT)
         mod = mod->getParentModule();
+
+    if (!mod->getBuiltinAnimations())
+        return;
 
     if (auto mi = isModuleInspectorFor(mod, insp)) {
         auto layer = mi->getAnimationLayer();
@@ -718,16 +746,6 @@ void SendOnConnAnimation::updateInInspector(Inspector *insp)
         ASSERT(messageItem);
         messageItem->setLine(getLine(mi).pointAt(getHoldPosition()));
     }*/
-}
-
-void SendOnConnAnimation::removeFromInspector(Inspector *insp)
-{
-    for (auto &p : messageItems)
-        if ((Inspector*)p.first == insp) {
-            delete p.second;
-            p.second = nullptr;
-        }
-    messageItems.erase((ModuleInspector*)insp);
 }
 
 QString SendOnConnAnimation::str() const {
@@ -769,7 +787,7 @@ void SendDirectAnimation::begin()
             end();
     }
     else // still ok if holding
-        getQtenv()->getMessageAnimator()->setAnimationSpeed(prop.dbl()+trans.dbl(), this);
+        requestAnimationSpeed(prop.dbl()+trans.dbl());
 }
 
 void SendDirectAnimation::update()
@@ -803,7 +821,8 @@ void SendDirectAnimation::update()
                    ? prop.dbl()
                    : 2*trans.dbl());
 
-        getQtenv()->getMessageAnimator()->setAnimationSpeed(animSpeed, this);
+        if (!isEmpty())
+            requestAnimationSpeed(animSpeed);
 
         t1 = clip(0.0, t1, 1.0);
         t2 = clip(0.0, t2, t1);
@@ -863,6 +882,9 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
         if (from && to)
             ASSERT(from->getParentModule() == to->getParentModule());
 
+        if (!showIn->getBuiltinAnimations())
+            continue;
+
         if (auto mi = isModuleInspectorFor(showIn, insp)) {
             auto layer = mi->getAnimationLayer();
             auto messageItem = new MessageItem(layer);
@@ -906,11 +928,9 @@ void SendDirectAnimation::updateInInspector(Inspector *insp)
 
 void SendDirectAnimation::removeFromInspector(Inspector *insp)
 {
-    if (auto mi = dynamic_cast<ModuleInspector *>(insp)) {
-        delete messageItems[mi];
-        messageItems[mi] = nullptr;
-        messageItems.erase(mi);
+    MessageAnimation::removeFromInspector(insp);
 
+    if (auto mi = dynamic_cast<ModuleInspector *>(insp)) {
         delete connectionItems[mi];
         connectionItems[mi] = nullptr;
         connectionItems.erase(mi);
@@ -926,8 +946,6 @@ QString SendDirectAnimation::str() const
 
 SendDirectAnimation::~SendDirectAnimation()
 {
-    getQtenv()->getMessageAnimator()->setAnimationSpeed(0, this);
-
     for (auto &c: connectionItems)
         delete c.second;
 }
@@ -995,6 +1013,9 @@ void DeliveryAnimation::addToInspector(Inspector *insp)
     } else
         mod = msgToUse()->getArrivalModule()->getParentModule();
 
+    if (!mod->getBuiltinAnimations())
+        return;
+
     if (auto mi = isModuleInspectorFor(mod, insp)) {
         auto layer = mi->getAnimationLayer();
         MessageItem *messageItem = new MessageItem(layer);
@@ -1014,14 +1035,6 @@ void DeliveryAnimation::updateInInspector(Inspector *insp)
 {
     removeFromInspector(insp);
     addToInspector(insp);
-}
-
-void DeliveryAnimation::removeFromInspector(Inspector *insp)
-{
-    for (auto &p : messageItems)
-        if ((Inspector*)p.first == insp)
-            delete p.second;
-    messageItems.erase((ModuleInspector*)insp);
 }
 
 QString DeliveryAnimation::str() const

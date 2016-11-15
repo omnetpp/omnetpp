@@ -55,12 +55,16 @@ void MessageAnimator::redrawMessages()
         cMessage *msg = (cMessage *)event;
 
         cModule *arrivalMod = msg->getArrivalModule();
+        cModule *showIn = arrivalMod->getParentModule();
+
+        if (!showIn || !showIn->getBuiltinAnimations())
+            continue;
 
         for (auto& insp : getQtenv()->getInspectors()) {
             auto moduleInsp = dynamic_cast<ModuleInspector *>(insp);
 
             if (moduleInsp && !willAnimate(msg)
-                    && arrivalMod && arrivalMod->getParentModule() == moduleInsp->getObject()
+                    && arrivalMod && showIn == moduleInsp->getObject()
                     && msg->getArrivalGateId() >= 0) {
                 cGate *arrivalGate = msg->getArrivalGate();
 
@@ -237,7 +241,8 @@ void MessageAnimator::update()
                 delete p;
                 p = nullptr;
             }
-            if (p && p->isHolding()/* && !getQtenv()->getPref("concurrent-anim").toBool() // TODO */)
+            // isHolding can change
+            if (p && p->isHolding())
                 break;
         }
     // And removing the ones that are done.
