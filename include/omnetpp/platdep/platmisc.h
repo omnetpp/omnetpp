@@ -100,6 +100,7 @@ typedef int pid_t;
 #include <windows.h>
 #undef min
 #undef max
+#undef ERROR
 #include <string>
 
 // errorCode usually comes from GetLastError()

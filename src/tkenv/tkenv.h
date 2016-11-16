@@ -55,13 +55,6 @@ enum StripNamespace
     STRIPNAMESPACE_ALL
 };
 
-enum DialogKind
-{
-    INFO,
-    WARNING,
-    ERROR
-};
-
 struct TkenvOptions : public omnetpp::envir::EnvirOptions
 {
     TkenvOptions();
@@ -124,6 +117,12 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
           RUNMODE_NORMAL = 1,
           RUNMODE_FAST = 2,
           RUNMODE_EXPRESS = 3
+      };
+
+      enum DialogKind {
+          INFO,
+          WARNING,
+          ERROR
       };
 
       struct sPathEntry {
