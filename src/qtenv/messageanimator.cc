@@ -233,18 +233,38 @@ void MessageAnimator::update()
 
     // If there were no deliveries (or the last one just ended),
     // continuing with the rest of the animations, that are holding.
-    // Only advancing them until one is found that is not instantly done.
-    // TODO: In broadcast mode, the first few are advanced, except for methodcalls.
-    for (auto& p : animations)
-        if (p->isHolding()) {
-            if (!p->advance()) {
-                delete p;
-                p = nullptr;
+
+    if (getQtenv()->getPref("concurrent-anim", false).toBool()) {
+        bool first = true;
+        for (auto& p : animations)
+            if (p->isHolding()) {
+                bool isMethodcall = dynamic_cast<MethodcallAnimation *>(p);
+                if (isMethodcall && !first)
+                    break;
+                if (!p->advance()) {
+                    delete p;
+                    p = nullptr;
+                } else {
+                    first = false;
+                    if (isMethodcall)
+                        break;
+                }
             }
-            // isHolding can change
-            if (p && p->isHolding())
-                break;
-        }
+    }
+    else {
+        // Only advancing them until one is found that is not instantly done.
+        for (auto& p : animations)
+            if (p->isHolding()) {
+                if (!p->advance()) {
+                    delete p;
+                    p = nullptr;
+                }
+                // isHolding can change
+                if (p && p->isHolding())
+                    break;
+            }
+    }
+
     // And removing the ones that are done.
     animations.removeValues(nullptr);
 }
