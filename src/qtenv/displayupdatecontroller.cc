@@ -62,7 +62,7 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
         double nextFrameAt = lastFrameAt + 1.0 / targetFps;
         double nextEventAt;
 
-        if (!isExplicitAnimationSpeed())
+        if (animationSpeed == 0)
             nextEventAt = now;
         else {
             if (runMode == RUNMODE_FAST) {
@@ -101,7 +101,7 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
             if (onlyHold)
                 return true;
 
-            if (!isExplicitAnimationSpeed() && runMode != RUNMODE_FAST) {
+            if (animationSpeed == 0 && runMode != RUNMODE_FAST) {
                 renderFrame(false);
                 return true; // to get the old behaviour back
             }
@@ -177,12 +177,6 @@ double DisplayUpdateController::getAnimationHoldEndTime() const
             qtenv->computeModelHoldEndTime());
 }
 
-bool DisplayUpdateController::isExplicitAnimationSpeed()
-{
-    return qtenv->computeModelAnimationSpeedRequest() != 0.0
-            || qtenv->getMessageAnimator()->getAnimationSpeed() != 0.0;
-}
-
 void DisplayUpdateController::setRunMode(RunMode value)
 {
     runMode = value;
@@ -227,6 +221,7 @@ void DisplayUpdateController::stopVideoRecording()
 
 bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
 {
+    // in animationSpeed
     double frameDelta = 1.0 / videoFps;
 
     while (!qtenv->getStopSimulationFlag()) {
@@ -236,9 +231,8 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
         if (!recordingVideo)
             return false;
 
-        double animationSpeed = getAnimationSpeed();
-
         double holdTime = qtenv->getRemainingAnimationHoldTime();
+
         if (holdTime > 0 || qtenv->getMessageAnimator()->isHoldActive()) { // we are on a hold, simTime is paused
             animationTime += frameDelta; // TODO account for the cases where there is less hold left than frameDelta
             renderFrame(true);
@@ -247,8 +241,22 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             if (onlyHold)
                 return true;
 
-            if (!isExplicitAnimationSpeed() && runMode != RUNMODE_FAST) {
-                renderFrame(true);
+            double animationSpeed = getAnimationSpeed();
+
+            if (animationSpeed == 0) {
+
+                if (runMode == RUNMODE_FAST) {
+                    if (animationTimer.elapsed() >= 1000.0 / targetFps) {
+                        animationTime += frameDelta;
+                        lastRecordedFrame = simTime();
+                        renderFrame(true);
+                        animationTimer.restart();
+                    }
+                } else {
+                    animationTime += frameDelta;
+                    lastRecordedFrame = simTime();
+                    renderFrame(true);
+                }
                 return true; // to get the old behaviour back
             }
 
@@ -260,18 +268,12 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
 
                 // TODO: compute the real animation delta time for the actual currentEvent->arrivalTime() - simTime delta
                 //animationTime += animDeltaTime;
-
-                // showing a frame for the user, but not recording it.
-                // XXX is this needed?
-                if (animationTimer.elapsed() >= 1000.0 / currentProfile->minFps) {
-                    renderFrame(false);
-                    animationTimer.restart();
-                }
                 return true;
             }
             else {
                 // this is the case when the event is far away, and we have time to animate peacefully
                 animationTime += frameDelta;
+                ASSERT(nextFrame >= simTime());
                 sim->setSimTime(nextFrame);
                 renderFrame(true);
                 lastRecordedFrame = nextFrame;
@@ -438,7 +440,6 @@ double DisplayUpdateController::renderFrame(bool record)
 
     double totalTime = frameDelta + frameTime;
     currentFps = fpsMemory * currentFps + (1-fpsMemory) * (1.0/totalTime);
-
 
     frameTimer.restart();
     return frameTime;

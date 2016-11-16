@@ -109,7 +109,6 @@ public:
     double getAnimationTime() const { return animationTime; }
     double getAnimationSpeed() const;
     double getAnimationHoldEndTime() const;
-    bool isExplicitAnimationSpeed();
 
     void setRunMode(RunMode value);
 
