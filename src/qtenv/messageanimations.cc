@@ -105,13 +105,13 @@ double Animation::getHoldPosition() const
 {
     ASSERT(state == PLAYING);
     ASSERT(holding);
-    return (getQtenv()->getAnimationTime() - holdStarted) / holdDuration;
+    return (getQtenv()->getAnimationTime() - holdStartTime) / holdDuration;
 }
 
 bool Animation::holdExpired() const
 {
     ASSERT(holding);
-    return getQtenv()->getAnimationTime() >= (holdStarted + holdDuration);
+    return getQtenv()->getAnimationTime() >= (holdStartTime + holdDuration);
 }
 
 double Animation::getHoldEndTime() const
@@ -124,7 +124,7 @@ double Animation::getHoldEndTime() const
         case WAITING:
             return holdDuration;
         case PLAYING:
-            return holdStarted + holdDuration;
+            return holdStartTime + holdDuration;
         case FINISHED:
         case DONE:
             return 0;
@@ -144,7 +144,7 @@ void Animation::begin()
     ASSERT2(state == WAITING, str().toStdString().c_str());
     state = PLAYING;
 
-    holdStarted = getQtenv()->getAnimationTime();
+    holdStartTime = getQtenv()->getAnimationTime();
     if (!isEmpty() && holding)
         getQtenv()->getMessageAnimator()->requestHold(this);
 }

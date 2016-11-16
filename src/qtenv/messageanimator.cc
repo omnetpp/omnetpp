@@ -98,6 +98,7 @@ void MessageAnimator::methodcallEnd()
     auto parent = currentMethodCall->getParent();
 
     if (!parent) {
+        // when the root method call returns, add the whole tree recursively to all inspectors
         for (auto insp : getQtenv()->getInspectors())
             currentMethodCall->addToInspector(insp);
 
@@ -109,7 +110,8 @@ void MessageAnimator::methodcallEnd()
     update();
 }
 
-void MessageAnimator::beginSend(cMessage *msg) {
+void MessageAnimator::beginSend(cMessage *msg)
+{
     ASSERT(!currentMessageSend);
     currentMessageSend = new AnimationSequence();
 
@@ -236,6 +238,9 @@ void MessageAnimator::update()
 
     if (getQtenv()->getPref("concurrent-anim", false).toBool()) {
         bool first = true;
+        // If the next animation is a methodcall, we only advance that.
+        // If it is a holding messagesend, then we animate all holding
+        // messagesends at the beginnig of the animations "list" together.
         for (auto& p : animations)
             if (p->isHolding()) {
                 bool isMethodcall = dynamic_cast<MethodcallAnimation *>(p);
@@ -290,14 +295,26 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
     if (!deliveries)
         deliveries = new AnimationSequence();
 
+    // If the mesage that is getting delivered right now
+    // already has a "sending" animation, we are chopping the
+    // end of that animation off, and appending it before
+    // the delivery animation.
+    // This way if a message arrived to a host on a channel
+    // that has prop/trans delay, and got delivered into a
+    // submodule of the host, the delivery will not be animated
+    // before the end of the sending sequence (inside the host).
     if (animations.containsKey(msg)) {
         auto seq = dynamic_cast<AnimationSequence*>(animations.getLast(msg));
         ASSERT(seq);
         auto tail = seq->chopHoldingTail();
+        // If there was a sending animation for the message, and it ended
+        // with some zero length hops, we append the delivery to those last
+        // parts and act as if this whole thing was the delivery.
         if (tail) {
             tail->addAnimation(anim);
             deliveries->addAnimation(tail);
         } else {
+            // Otherwise just adding the delivery animation itself.
             deliveries->addAnimation(anim);
         }
     } else {

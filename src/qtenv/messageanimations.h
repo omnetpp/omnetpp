@@ -66,7 +66,7 @@ protected:
     // This is nonzero only if holding is false.
     double holdDuration = 0;
     // In animation time, set in begin(). Not used if holding is false.
-    double holdStarted = 0;
+    double holdStartTime = 0;
 
     // a simple shortcut, forwards the request to the MessageAnimator
     void requestAnimationSpeed(double speed);
@@ -130,6 +130,8 @@ public:
     // message item where it has not "arrived" yet in the animation.
     virtual bool willAnimate(cMessage *msg) = 0;
 
+    // This is used to notify the animations about the creation of a
+    // cMessage's private clone by the LogBuffer.
     virtual void messageDuplicated(cMessage *msg, cMessage *dup) = 0;
 
     // This is called when the message is delivered or deleted, so
@@ -181,6 +183,7 @@ public:
     void update() override;
     void end() override;
 
+    // These are applied to the parts.
     void addToInspector(Inspector *insp) override;
     void updateInInspector(Inspector *insp) override;
     void removeFromInspector(Inspector *insp) override;
@@ -213,7 +216,7 @@ class MethodcallAnimation : public Animation
     // The animation the body of which this one is.
     // Needed so we can walk up the tree in methodcallEnd.
     MethodcallAnimation *parent = nullptr;
-    // These are the animations that have to be done while this methodcall "runs" (is visible).
+    // The animations that have to be done while this methodcall "runs" (is visible).
     // These can be subcalls, or even sent messages, if they are completely instantaneous (in SimTime).
     AnimationSequence body;
 
@@ -228,6 +231,7 @@ public:
     void update() override;
     void end() override;
 
+    // Recursive: Also adds the child animations (in the 'body' sequence) to insp.
     void addToInspector(Inspector *insp) override;
     void updateInInspector(Inspector *insp) override;
     void removeFromInspector(Inspector *insp) override;

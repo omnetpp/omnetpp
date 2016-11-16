@@ -55,7 +55,7 @@ class MessageAnimator
     // Used to keep track of time in the current send sequence.
     // -1 if not between a beginSend / endSend pair.
     SimTime lastHopTime = -1;
-    // The sequence we are building now, created in beginSend, reset in endSend
+    // For accumulation of message hop animations between beginSend / endSend.
     AnimationSequence *currentMessageSend = nullptr;
 
     // The non-delivery animations.
