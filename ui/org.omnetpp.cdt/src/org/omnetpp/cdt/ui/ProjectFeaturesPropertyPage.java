@@ -553,8 +553,11 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         if (problemId.equals("config")) {
             try {
                 List<Problem> problems = features.validateProjectState();
-                if (!problems.isEmpty() && isOkToFixConfigProblems(problems))
+                if (!problems.isEmpty() && isOkToFixConfigProblems(problems)) {
                     features.fixupProjectState();
+                    NedSourceFoldersConfiguration tmp = ProjectUtils.readNedFoldersFile(getProject());
+                    nedSourceFoldersConfig.setExcludedPackages(tmp.getExcludedPackages());
+                }
             }
             catch (CoreException e1) {
                 Activator.logError(e1);
