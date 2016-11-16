@@ -412,7 +412,7 @@ void MethodcallAnimation::update()
         return;
     }
 
-    if (holdExpired())
+    if (silent || holdExpired())
         if (body.isEmpty() || !body.advance()) {
             end();
             return;
@@ -550,9 +550,11 @@ void MethodcallAnimation::removeFromInspector(Inspector *insp)
         }
 }
 
-// XXX body.isEmpty() ?
 bool MethodcallAnimation::isEmpty() const
 {
+    if (!body.isEmpty())
+        return false;
+
     if (silent || text.isEmpty())
         return true;
 
