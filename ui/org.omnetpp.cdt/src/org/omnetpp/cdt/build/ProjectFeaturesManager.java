@@ -937,7 +937,7 @@ public class ProjectFeaturesManager {
             try {
                 if (!definesFile.exists())
                     addProblem(problems, null, "Missing defines file " + definesFile.getFullPath());
-                else if (!Arrays.equals(FileUtils.readBinaryFile(definesFile.getContents()), content.getBytes())) // NOTE: byte[].equals does NOT compare content, only references!!!
+                else if (!areDefinesFilesEqual(FileUtils.readTextFile(definesFile.getContents(), definesFile.getCharset()), content))
                     addProblem(problems, null, "Generated defines file is out of date: " + definesFile.getFullPath());
             }
             catch (IOException e) {
@@ -946,6 +946,27 @@ public class ProjectFeaturesManager {
         }
 
         return problems;
+    }
+
+    protected boolean areDefinesFilesEqual(String content1, String content2) {
+        // make comparison insensitive to comment, whitespace and order differences 
+        String short1 = shortenDefinesFile(content1);
+        String short2 = shortenDefinesFile(content2);
+        return short1.equals(short2);
+    }
+
+    protected String shortenDefinesFile(String content) {
+        content += "\n";
+        content = content.replaceAll("\r\n", "\n");  // unix lines
+        content = content.replaceAll("//.*\n", "");  // remove comments
+        content = content.replaceAll("\n\n+", "\n"); // remove blank lines
+        content = content.replaceAll("[ \t]", " ");  // remove multiple spaces
+        content = content.replaceAll(" *# *", "#");  // remove spaces from preprocessor directives
+        content = content.replaceAll("#ifndef .*\n#define (.*)\n#endif\n+", "#define_if_new $1\n");
+        String[] lines = content.split("\n");
+        Arrays.sort(lines);
+        content = StringUtils.join(lines, "\n");
+        return content;
     }
 
     protected void addProblem(List<Problem> problems, ProjectFeature feature, String message) {
