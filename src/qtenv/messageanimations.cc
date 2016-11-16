@@ -711,6 +711,9 @@ void SendOnConnAnimation::update()
 
 void SendOnConnAnimation::addToInspector(Inspector *insp)
 {
+    if (!msgToUse())
+        return;
+
     cModule *mod = gate->getOwnerModule();
     if (gate->getType() == cGate::OUTPUT)
         mod = mod->getParentModule();
@@ -871,6 +874,9 @@ void SendDirectAnimation::end()
 
 void SendDirectAnimation::addToInspector(Inspector *insp)
 {
+    if (!msgToUse())
+        return;
+
     for (size_t i = 0; i < path.size(); ++i) {
         cModule *from = path[i].from;
         cModule *to = path[i].to;
@@ -975,7 +981,7 @@ void DeliveryAnimation::begin()
 {
     MessageAnimation::begin();
 
-    if (isEmpty())
+    if (isEmpty() || !msgToUse())
         end();
     else
         for (auto m : messageItems)
@@ -988,7 +994,7 @@ void DeliveryAnimation::update()
 {
     MessageAnimation::update();
 
-    if (isEmpty() || holdExpired()) {
+    if (isEmpty() || holdExpired() || !msgToUse()) {
         end();
         return;
     }
@@ -1007,6 +1013,9 @@ void DeliveryAnimation::update()
 
 void DeliveryAnimation::addToInspector(Inspector *insp)
 {
+    if (!msgToUse())
+        return;
+
     cModule *mod;
     if (gate) {
         mod = gate->getOwnerModule();
@@ -1041,7 +1050,7 @@ void DeliveryAnimation::updateInInspector(Inspector *insp)
 
 QString DeliveryAnimation::str() const
 {
-    return QString("delivery of") + msgToUse()->getFullName()
+    return QString("delivery of") + (msgToUse() ? msgToUse()->getFullName() : "NULL")
             + " state: " + stateText[state];
 }
 
