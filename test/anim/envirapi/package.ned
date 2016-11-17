@@ -1,0 +1,3 @@
+package envirapi;
+
+@license(LGPL);
