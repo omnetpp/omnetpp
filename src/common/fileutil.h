@@ -67,6 +67,12 @@ COMMON_API std::string getWorkingDir();
 COMMON_API bool fileExists(const char *pathname);
 
 /**
+ * Returns true if the given pathname exists in the file system and is a
+ * regular file, and false otherwise.
+ */
+bool isFile(const char *pathname);
+
+/**
  * Returns true if the given pathname exists in the file system and is a directory,
  * and false otherwise.
  */
@@ -78,7 +84,9 @@ COMMON_API bool isDirectory(const char *pathname);
  */
 COMMON_API void removeFile(const char *fname, const char *descr);
 
-/** Recursively creates all directories in the specified path */
+/**
+ * Recursively creates all directories in the specified path
+ */
 COMMON_API void mkPath(const char *pathname);
 
 /**

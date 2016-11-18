@@ -221,11 +221,18 @@ bool fileExists(const char *pathname)
     return stat(pathname, &statbuf) == 0;
 }
 
+bool isFile(const char *pathname)
+{
+    struct stat statbuf;
+    int err = stat(pathname, &statbuf);  // note: do not throw if file/directory does not exist or there's some other error, see bug #284
+    return err == 0 && S_ISREG(statbuf.st_mode);
+}
+
 bool isDirectory(const char *pathname)
 {
     struct stat statbuf;
     int err = stat(pathname, &statbuf);  // note: do not throw if file/directory does not exist or there's some other error, see bug #284
-    return err == 0 && (statbuf.st_mode & S_IFDIR) != 0;
+    return err == 0 && S_ISDIR(statbuf.st_mode);
 }
 
 void removeFile(const char *fname, const char *descr)

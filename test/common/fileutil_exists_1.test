@@ -1,0 +1,49 @@
+%description:
+Tests fileExists(), isFile(), isDirectory().
+
+%includes:
+#include <common/fileutil.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void testFile(const char *fname)
+{
+    EV << fname << " -> " << (fileExists(fname)?"EXISTS":"NOT EXISTS") << (isFile(fname)?" FILE":"") << (isDirectory(fname)?" DIRECTORY":"") << endl;
+}
+
+%activity:
+
+testFile(".");
+testFile("./");
+testFile("bar");
+testFile("bar/");
+
+testFile("foo.txt");
+testFile("./foo.txt");
+testFile("bar/foo.txt");
+
+testFile("nosuchfile.txt");
+testFile("bar/nosuchfile.txt");
+
+EV << ".\n";
+
+%file: foo.txt
+This is foo.
+
+%file: bar/foo.txt
+This is bar/foo.
+
+%exitcode: 0
+
+%contains: stdout
+. -> EXISTS DIRECTORY
+./ -> EXISTS DIRECTORY
+bar -> EXISTS DIRECTORY
+bar/ -> EXISTS DIRECTORY
+foo.txt -> EXISTS FILE
+./foo.txt -> EXISTS FILE
+bar/foo.txt -> EXISTS FILE
+nosuchfile.txt -> NOT EXISTS
+bar/nosuchfile.txt -> NOT EXISTS
+.
