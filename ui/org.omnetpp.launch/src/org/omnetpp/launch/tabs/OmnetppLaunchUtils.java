@@ -439,6 +439,7 @@ public class OmnetppLaunchUtils {
         args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_SCALAR_RECORDING.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, ""));
         args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_VECTOR_RECORDING.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_VECTORS, ""));
         args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_EXPRESS_MODE, ""));
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_CMDENV_STOP_BATCH_ON_ERROR.getName(), config.getAttribute(IOmnetppLaunchConstants.OPP_STOP_BATCH_ON_ERROR, ""));
 
         // ini files
         String iniStr = config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, "").trim();

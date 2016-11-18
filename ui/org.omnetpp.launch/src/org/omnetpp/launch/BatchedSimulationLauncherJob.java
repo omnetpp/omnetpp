@@ -32,7 +32,9 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
     protected String[] batchRunFilters;  // one for each batch
     protected int batchIndex = 0;
     protected int maxParallelJobs;
+    protected boolean stopOnFirstError;
     protected int finishedJobs = 0;
+    protected boolean errorOccurred = false; // one simulation run had an error
     protected boolean cancelled = false; // some simulation job cancelled
     protected IProgressMonitor monitor;
     protected IProgressMonitor groupMonitor = Job.getJobManager().createProgressGroup();
@@ -61,14 +63,15 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
      * @param configuration The configuration to be started
      * @param launch The launch object
      * @param batchRunFilters Run filters for the individual batches
-     * @param parallelism How many batches should able to run concurrently
+     * @param maxParallelJobs How many batches should able to run concurrently
      */
-    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, String[] batchRunFilters, int parallelism) {
+    public BatchedSimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, String[] batchRunFilters, int maxParallelJobs, boolean stopOnFirstError) {
         super("Running " + batchRunFilters.length + " simulation batches.");
         this.configuration = configuration;
         this.launch = launch;
         this.batchRunFilters = batchRunFilters;
-        this.maxParallelJobs = parallelism;
+        this.maxParallelJobs = maxParallelJobs;
+        this.stopOnFirstError = stopOnFirstError;
         setSystem(false);
     }
 
@@ -78,7 +81,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
         batchIndex = finishedJobs = 0;
         this.monitor = mon;
         try {
-            while (finishedJobs < batchRunFilters.length && canSchedule() && !mon.isCanceled()) {
+            while (finishedJobs < batchRunFilters.length && canSchedule() && !mon.isCanceled() && (!stopOnFirstError || !errorOccurred)) {
                 scheduleJobs();
                 Job.getJobManager().join(launch, null);
             }
@@ -103,7 +106,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
      * Schedules as many jobs for execution as possible
      */
     protected synchronized void scheduleJobs() {
-        while (canSchedule() && !monitor.isCanceled() && !cancelled) {
+        while (canSchedule() && !monitor.isCanceled() && !cancelled && (!stopOnFirstError || !errorOccurred)) {
             Job job = new SimulationLauncherJob(configuration, launch, batchRunFilters[batchIndex++], true, -1);
             job.setProgressGroup(groupMonitor, 1); // assign it to the group monitor so it will be displayed under a single progress view item
             job.addJobChangeListener(this);
@@ -128,6 +131,8 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
         if (event.getResult() == Status.CANCEL_STATUS)
             cancelled = true;
         else {
+            if (event.getResult().getSeverity() == IStatus.ERROR)
+                errorOccurred = true;
             finishedJobs++;
             scheduleJobs(); // schedule some more jobs (if there is any left)
         }

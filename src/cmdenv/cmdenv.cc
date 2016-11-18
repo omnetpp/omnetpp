@@ -63,9 +63,10 @@ namespace omnetpp {
 namespace cmdenv {
 
 Register_GlobalConfigOption(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, nullptr, "Specifies the name of the configuration to be run (for a value `Foo`, section `[Config Foo]` will be used from the ini file). See also `cmdenv-runs-to-execute`. The `-c` command line option overrides this setting.")
-Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, nullptr, "Specifies which runs to execute from the selected configuration (see `cmdenv-config-name` option). It accepts a comma-separated list of run numbers or run number ranges, e.g. `1,3..4,7..9`. If the value is missing, Cmdenv executes all runs in the selected configuration. The `-r` command line option overrides this setting.")
+Register_GlobalConfigOption(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, nullptr, "Specifies which runs to execute from the selected configuration (see `cmdenv-config-name` option). It accepts a filter expression of iteration variables such as `$numHosts>10 && $iatime==1s`, or a comma-separated list of run numbers or run number ranges, e.g. `1,3..4,7..9`. If the value is missing, Cmdenv executes all runs in the selected configuration. The `-r` command line option overrides this setting.")
 Register_GlobalConfigOptionU(CFGID_CMDENV_EXTRA_STACK, "cmdenv-extra-stack", "B", "8KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Cmdenv.")
-Register_GlobalConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL, "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
+Register_PerRunConfigOption(CFGID_STOP_BATCH_ON_ERROR, "cmdenv-stop-batch-on-error", CFG_BOOL, "true", "Decides whether Cmdenv should skip the rest of the runs when an error occurs during the execution of one run.")
+Register_PerRunConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL, "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
 Register_PerRunConfigOption(CFGID_CMDENV_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.out", "When `cmdenv-record-output=true`: file name to redirect standard output to. See also `fname-append-host`.")
 Register_PerRunConfigOption(CFGID_CMDENV_REDIRECT_OUTPUT, "cmdenv-redirect-output", CFG_BOOL, "false", "Causes Cmdenv to redirect standard output of simulation runs to a file or separate files per run. This option can be useful with running simulation campaigns (e.g. using opp_runall), and also with parallel simulation. See also: `cmdenv-output-file`, `fname-append-host`.");
 Register_PerRunConfigOption(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects normal (debug/trace) or express mode.")
@@ -113,6 +114,7 @@ char *timeToStr(timeval t, char *buf = nullptr)
 CmdenvOptions::CmdenvOptions()
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
+    stopBatchOnError = true;
     extraStack = 0;
     redirectOutput = false;
     autoflush = true;
@@ -147,11 +149,10 @@ void Cmdenv::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    // note: configname and runstoexec will possibly be overwritten
+    // note: configName and runFilter will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
     opt->configName = cfg->getAsString(CFGID_CONFIG_NAME);
     opt->runFilter = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
-
     opt->extraStack = (size_t)cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
 }
 
@@ -160,6 +161,7 @@ void Cmdenv::readPerRunOptions()
     EnvirBase::readPerRunOptions();
 
     cConfiguration *cfg = getConfig();
+    opt->stopBatchOnError = cfg->getAsBool(CFGID_STOP_BATCH_ON_ERROR);
     opt->expressMode = cfg->getAsBool(CFGID_EXPRESS_MODE);
     opt->interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
     opt->autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
@@ -197,11 +199,12 @@ void Cmdenv::doRun()
             return;
         }
 
-        int numRuns = 0;
+        int runsTried = 0;
         int numErrors = 0;
         for (int i = 0; i < (int)runNumbers.size(); i++) {
-            numRuns++;
+            runsTried++;
             int runNumber = runNumbers[i];
+            bool finishedOK = false;
             bool networkSetupDone = false;
             bool startrunDone = false;
             try {
@@ -269,21 +272,23 @@ void Cmdenv::doRun()
                 checkFingerprint();
 
                 notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
+
+                finishedOK = true;
             }
             catch (std::exception& e) {
-                numErrors++;
                 loggingEnabled = true;
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
             }
+
             // call endRun()
             if (startrunDone) {
                 try {
                     endRun();
                 }
                 catch (std::exception& e) {
-                    numErrors++;
+                    finishedOK = false;
                     notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
@@ -304,14 +309,29 @@ void Cmdenv::doRun()
             // stop redirecting into file
             stopOutputRedirection();
 
+            if (!finishedOK)
+                numErrors++;
+
             // skip further runs if signal was caught
             if (sigintReceived)
                 break;
+
+            if (!finishedOK && opt->stopBatchOnError)
+                break;
         }
 
-        if (numRuns > 1)
-            if (opt->verbose)
-                out << opp_stringf("\nDone %d simulation runs, %d successful, %d error%s", numRuns, numRuns-numErrors, numErrors, numErrors==1 ? "" : "s") << endl;
+        if (runNumbers.size() > 1 && opt->verbose) {
+            int numSkipped = runNumbers.size() - runsTried;
+            int numSuccess = runsTried - numErrors;
+            out << "\nRun statistics: total " << runNumbers.size();
+            if (numSuccess > 0)
+                out << ", successful " << numSuccess;
+            if (numErrors > 0)
+                out << ", errors " << numErrors;
+            if (numSkipped > 0)
+                out << ", skipped " << numSkipped;
+            out << endl;
+        }
 
         exitCode = numErrors > 0 ? 1 : sigintReceived ? 2 : 0;
     }

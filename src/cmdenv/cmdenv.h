@@ -33,6 +33,7 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
     CmdenvOptions();
     std::string configName;
     std::string runFilter;
+    bool stopBatchOnError;
     size_t extraStack;
     std::string outputFile;
     bool redirectOutput;

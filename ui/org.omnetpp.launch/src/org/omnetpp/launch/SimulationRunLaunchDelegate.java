@@ -110,12 +110,13 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
 
             int numConcurrentProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
             int batchSize = configuration.getAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
+            boolean stopOnError = configuration.getAttribute(IOmnetppLaunchConstants.OPP_STOP_BATCH_ON_ERROR, "false").equals("true"); //XXX similar ini setting won't take effect here
 
             List<List<Integer>> batches = splitIntoBatches(runNumbers, batchSize);
             System.out.println(batches);
 
             String[] batchRunFilters = batches.stream().map(batch -> StringUtils.join(batch, ",")).collect(Collectors.toList()).toArray(new String[]{});
-            Job job = new BatchedSimulationLauncherJob(configuration, launch, batchRunFilters, numConcurrentProcesses);
+            Job job = new BatchedSimulationLauncherJob(configuration, launch, batchRunFilters, numConcurrentProcesses, stopOnError);
             job.schedule();
 
             /*
@@ -123,6 +124,7 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
              * is broken in Eclipse 4.6, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=505959
              *
             Job launcherJob = new Job("x") {
+                //TODO obey stopOnError option!
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
                     JobGroup jobGroup = new JobGroup("Simulation batch", numConcurrentProcesses, batchRunFilters.length) {

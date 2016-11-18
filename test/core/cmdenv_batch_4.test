@@ -1,0 +1,19 @@
+%description:
+Test that Cmdenv obeys run filter.
+
+%inifile: omnetpp.ini
+[Config Joe]
+network = testlib.ThrowError
+**.throwError = false
+**.dummy1 = ${foo=10,20,30}
+**.dummy2 = ${bar=apples,oranges}
+repeat = 2
+
+%extraargs: -c Joe -r '\\\$foo=20'
+
+%contains: stdout
+Run statistics: total 4, successful 4
+
+End.
+
+

@@ -1,0 +1,18 @@
+%description:
+Test that Cmdenv executes all runs in another config
+
+%inifile: omnetpp.ini
+[Config Joe]
+network = testlib.ThrowError
+**.throwError = false
+**.dummy1 = ${foo=10,20,30}
+**.dummy2 = ${bar=apples,oranges}
+repeat = 2
+
+%extraargs: -c Joe
+%contains: stdout
+Run statistics: total 12, successful 12
+
+End.
+
+

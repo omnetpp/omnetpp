@@ -1,0 +1,17 @@
+%description:
+Test that Cmdenv executes all runs in [General]
+
+%inifile: omnetpp.ini
+[General]
+network = testlib.ThrowError
+**.throwError = false
+**.dummy1 = ${foo=10,20,30}
+**.dummy2 = ${bar=apples,oranges}
+repeat = 2
+
+%contains: stdout
+Run statistics: total 12, successful 12
+
+End.
+
+

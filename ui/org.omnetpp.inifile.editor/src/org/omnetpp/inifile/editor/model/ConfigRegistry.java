@@ -197,7 +197,7 @@ public class ConfigRegistry {
         "cmdenv-extra-stack", "B", "8KiB",
         "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Cmdenv.");
-    public static final ConfigOption CFGID_CMDENV_INTERACTIVE = addGlobalOption(
+    public static final ConfigOption CFGID_CMDENV_INTERACTIVE = addPerRunOption(
         "cmdenv-interactive", CFG_BOOL, "false",
         "Defines what Cmdenv should do when the model contains unassigned " +
         "parameters. In interactive mode, it asks the user. In non-interactive mode " +
@@ -236,13 +236,18 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_CMDENV_RUNS_TO_EXECUTE = addGlobalOption(
         "cmdenv-runs-to-execute", CFG_STRING, null,
         "Specifies which runs to execute from the selected configuration (see " +
-        "`cmdenv-config-name` option). It accepts a comma-separated list of run " +
-        "numbers or run number ranges, e.g. `1,3..4,7..9`. If the value is missing, " +
-        "Cmdenv executes all runs in the selected configuration. The `-r` command " +
-        "line option overrides this setting.");
+        "`cmdenv-config-name` option). It accepts a filter expression of iteration " +
+        "variables such as `$numHosts>10 && $iatime==1s`, or a comma-separated list " +
+        "of run numbers or run number ranges, e.g. `1,3..4,7..9`. If the value is " +
+        "missing, Cmdenv executes all runs in the selected configuration. The `-r` " +
+        "command line option overrides this setting.");
     public static final ConfigOption CFGID_CMDENV_STATUS_FREQUENCY = addPerRunOptionU(
         "cmdenv-status-frequency", "s", "2s",
         "When `cmdenv-express-mode=true`: print status update every n seconds.");
+    public static final ConfigOption CFGID_CMDENV_STOP_BATCH_ON_ERROR = addPerRunOption(
+        "cmdenv-stop-batch-on-error", CFG_BOOL, "true",
+        "Decides whether Cmdenv should skip the rest of the runs when an error " +
+        "occurs during the execution of one run.");
     public static final ConfigOption CFGID_CONFIGURATION_CLASS = addGlobalOption(
         "configuration-class", CFG_STRING, null,
         "Part of the Envir plugin mechanism: selects the class from which all " +

@@ -231,9 +231,9 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
         }
         else if (category.equals(CAT_CMDENV)) {
-            group = createGroup(form, "When no command-line options are present, run the following:");
+            group = createGroup(form, "When command-line options do not say otherwise, run the following:");
             addTextFieldEditor(group, CFGID_CMDENV_CONFIG_NAME, "Config name");
-            addTextFieldEditor(group, CFGID_CMDENV_RUNS_TO_EXECUTE, "Run numbers");
+            addTextFieldEditor(group, CFGID_CMDENV_RUNS_TO_EXECUTE, "Runs to execute");
             addSpacer(form);
             addCheckboxFieldEditor(form, CFGID_CMDENV_EXPRESS_MODE, "Run in Express mode");
             addSpacer(form);
@@ -248,6 +248,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_CMDENV_LOG_PREFIX, "Log prefix");
             addSpacer(form);
             group = createGroup(form, "Other");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_STOP_BATCH_ON_ERROR, "Stop batch on first error");
             addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");  //TODO when opened (table), it should contain a 3rd, combobox-based column (true/false) instead of a checkbox
             addCheckboxFieldEditor(group, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
             addTextFieldEditor(group, CFGID_CMDENV_REDIRECT_OUTPUT, "Redirect stdout to per-run file");

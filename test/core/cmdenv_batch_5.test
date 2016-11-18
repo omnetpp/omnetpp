@@ -1,0 +1,23 @@
+%description:
+Test that by default, Cmdenv stops on the first error in the batch, and skips the rest of the runs
+
+%inifile: omnetpp.ini
+[Config Joe]
+network = testlib.ThrowError
+**.throwError = ${$foo==30}
+**.dummy1 = ${foo=10,20,30}
+**.dummy2 = ${bar=apples,oranges}
+repeat = 2
+
+%extraargs: -c Joe
+
+%exitcode: 1
+
+%contains: stdout
+Run statistics: total 12, successful 8, errors 1, skipped 3
+
+End.
+
+%contains: stderr
+This is an intentionally bogus run
+

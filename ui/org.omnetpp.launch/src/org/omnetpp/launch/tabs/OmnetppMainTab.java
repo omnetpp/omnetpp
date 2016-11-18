@@ -115,6 +115,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     protected Button fRecordVectorsCheckbox;
     protected Button fCmdenvExpressModeCheckbox;
     protected Button fVerboseCheckbox;
+    protected Button fStopBatchOnErrorCheckbox;
 
     private ILaunchConfiguration config;
     private boolean updateDialogStateInProgress = false;
@@ -353,23 +354,24 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     }
 
     protected void createOptionsGroup(Composite parent, int colSpan) {
-        Composite composite = SWTFactory.createGroup(parent, "Output", 3, colSpan, GridData.FILL_HORIZONTAL);
-        SWTFactory.setEqualColumnWidth(composite, true);
+        Composite composite = SWTFactory.createGroup(parent, "Output", 4, colSpan, GridData.FILL_HORIZONTAL);
+        SWTFactory.setEqualColumnWidth(composite, false);
 
-        // ordering is so that related controls are in one column in the 3-column layout
         fVerboseCheckbox = SWTFactory.createCheckButton(composite, "Verbose", null, false, 1);
-        fCmdenvExpressModeCheckbox = SWTFactory.createTristateCheckButton(composite, "Express mode (Cmdenv)", null, false, false, 1);
-        fRedirectStdoutCheckbox = SWTFactory.createTristateCheckButton(composite, "Save stdout (Cmdenv)", null, false, false, 1);
+        fStopBatchOnErrorCheckbox = SWTFactory.createTristateCheckButton(composite, "Stop batch on error", null, false, false, 1);
+        fCmdenvExpressModeCheckbox = SWTFactory.createTristateCheckButton(composite, "Express mode", null, false, false, 1);
+        fRedirectStdoutCheckbox = SWTFactory.createTristateCheckButton(composite, "Save stdout", null, false, false, 1);
         fRecordScalarsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record scalar results", null, false, false, 1);
         fRecordVectorsCheckbox = SWTFactory.createTristateCheckButton(composite, "Record vector results", null, false, false, 1);
         fRecordEventlogCheckbox = SWTFactory.createTristateCheckButton(composite, "Record eventlog", null, false, false, 1);
 
-        fRedirectStdoutCheckbox.setToolTipText("Save stdout to per-run files in the results folder. Overrides similar ini file setting.");
-        fRecordScalarsCheckbox.setToolTipText("Allow creating an output scalar file. Overrides similar ini file setting.");
-        fRecordVectorsCheckbox.setToolTipText("Allow creating an output vector file. Overrides similar ini file setting.");
-        fRecordEventlogCheckbox.setToolTipText("Record eventlog for Sequence Chart tool. Overrides similar ini file setting.");
-        fCmdenvExpressModeCheckbox.setToolTipText("Express mode (Cmdenv). Overrides similar ini file setting.");
-        fVerboseCheckbox.setToolTipText("Verbose output.");
+        fVerboseCheckbox.setToolTipText("Verbose output");
+        fStopBatchOnErrorCheckbox.setToolTipText("Skip further runs when a run stops with a simulation error. Overrides similar ini file setting");
+        fCmdenvExpressModeCheckbox.setToolTipText("Run in Express mode (Cmdenv-only.) Overrides similar ini file setting");
+        fRedirectStdoutCheckbox.setToolTipText("Save stdout to per-run files in the results folder (Cmdenv-only.) Overrides similar ini file setting");
+        fRecordScalarsCheckbox.setToolTipText("Allow creating an output scalar file. Overrides similar ini file setting");
+        fRecordVectorsCheckbox.setToolTipText("Allow creating an output vector file. Overrides similar ini file setting");
+        fRecordEventlogCheckbox.setToolTipText("Record eventlog for Sequence Chart tool. Overrides similar ini file setting");
     }
 
     protected Composite createAdvancedGroup(Composite parent, int colSpan) {
@@ -465,6 +467,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             fSimTimeLimitText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, "").trim());
             fCpuTimeLimitText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, "").trim());
 
+            setTristateCheckbox(fStopBatchOnErrorCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_STOP_BATCH_ON_ERROR, ""));
             setTristateCheckbox(fRedirectStdoutCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_CMDENV_REDIRECT_STDOUT, ""));
             setTristateCheckbox(fRecordEventlogCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, ""));
             setTristateCheckbox(fRecordScalarsCheckbox, config.getAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, ""));
@@ -528,6 +531,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SIM_TIME_LIMIT, fSimTimeLimitText.getText().trim());
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_CPU_TIME_LIMIT, fCpuTimeLimitText.getText().trim());
 
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_STOP_BATCH_ON_ERROR, getTristateCheckboxValue(fStopBatchOnErrorCheckbox));
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_CMDENV_REDIRECT_STDOUT, getTristateCheckboxValue(fRedirectStdoutCheckbox));
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, getTristateCheckboxValue(fRecordEventlogCheckbox));
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_SCALARS, getTristateCheckboxValue(fRecordScalarsCheckbox));

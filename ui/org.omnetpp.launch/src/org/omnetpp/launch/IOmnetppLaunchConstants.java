@@ -132,6 +132,11 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_CMDENV_REDIRECT_STDOUT = OMNETPP_LAUNCH_ID + ".REDIRECT_STDOUT";
 
     /**
+     * Whether to stop batch execution on first error
+     */
+    public static final String OPP_STOP_BATCH_ON_ERROR = OMNETPP_LAUNCH_ID + ".STOP_BATCH_ON_ERROR";
+
+    /**
      * Whether to record eventlog (tri-state setting)
      */
     public static final String OPP_RECORD_EVENTLOG = OMNETPP_LAUNCH_ID + ".RECORD_EVENTLOG";
