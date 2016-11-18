@@ -674,6 +674,19 @@ void Cmdenv::getTextExtent(const cFigure::Font& font, const char *text, double& 
     outAscent = 8;
 }
 
+void Cmdenv::appendToImagePath(const char *directory)
+{
+}
+
+void Cmdenv::loadImage(const char *fileName, const char *imageName)
+{
+}
+
+cFigure::Point Cmdenv::getSubmodulePosition(const cModule *submodule)
+{
+    return cFigure::Point(NAN, NAN);
+}
+
 void Cmdenv::printUISpecificHelp()
 {
     out << "Cmdenv-specific information:\n";

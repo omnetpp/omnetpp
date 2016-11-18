@@ -38,6 +38,7 @@ enum SendAnimMode {ANIM_BEGIN, ANIM_END, ANIM_THROUGH};
 class TKENV_API ModuleInspector : public Inspector
 {
    public:
+      struct Point {double x,y;};
 
    protected:
       char canvas[128];
@@ -47,7 +48,6 @@ class TKENV_API ModuleInspector : public Inspector
       int32_t layoutSeed;
       bool notDrawn;
 
-      struct Point {double x,y;};
       typedef std::map<cModule*,Point> PositionMap;
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
@@ -71,6 +71,8 @@ class TKENV_API ModuleInspector : public Inspector
       virtual int inspectorCommand(int argc, const char **argv) override;
 
       bool needsRedraw() {return needs_redraw;}
+
+      Point getSubmodulePosition(const cModule *submodule);
 
       // implementations of inspector commands:
       virtual int getDefaultLayoutSeed(int argc, const char **argv);

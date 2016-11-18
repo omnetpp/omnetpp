@@ -202,6 +202,13 @@ void ModuleInspector::relayoutAndRedrawAll()
     redrawMessages();
     refreshSubmodules();
     adjustSubmodulesZOrder();
+
+    // let the model re-read new positions via cEnvir::getSubmodulePosition(), and update the graphics
+    int simState = getTkenv()->getSimulationState();
+    if (simState == Tkenv::SIM_NEW || simState == Tkenv::SIM_READY || simState == Tkenv::SIM_RUNNING || simState == Tkenv::SIM_TERMINATED) {
+        getTkenv()->callRefreshDisplay();
+        getTkenv()->refreshInspectors();
+    }
 }
 
 void ModuleInspector::redraw()
@@ -345,6 +352,12 @@ void ModuleInspector::recalculateLayout()
     // refresh layout with empty submodPosMap -- everything layouted
     submodPosMap.clear();
     refreshLayout();
+}
+
+ModuleInspector::Point ModuleInspector::getSubmodulePosition(const cModule *submodule)
+{
+    auto it = submodPosMap.find(const_cast<cModule *>(submodule));
+    return it != submodPosMap.end() ? it->second : Point{NAN,NAN};
 }
 
 void ModuleInspector::refreshLayout()

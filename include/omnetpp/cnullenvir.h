@@ -111,6 +111,9 @@ class SIM_API cNullEnvir : public cEnvir
 
     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override {unsupported();}
     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override {unsupported();}
+    virtual void appendToImagePath(const char *directory) override {unsupported();}
+    virtual void loadImage(const char *fileName, const char *imageName=nullptr) override {unsupported();}
+    virtual cFigure::Point getSubmodulePosition(const cModule *submodule) override {return cFigure::Point(NAN, NAN);}
     virtual double getAnimationTime() const override {return 0;}
     virtual double getAnimationSpeed() const override {return 0;}
     virtual double getRemainingAnimationHoldTime() const override {return 0;}

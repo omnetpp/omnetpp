@@ -1863,6 +1863,22 @@ void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, double& o
     outAscent = metrics.ascent();
 }
 
+void Qtenv::appendToImagePath(const char *directory)
+{
+	//TODO
+}
+
+void Qtenv::loadImage(const char *fileName, const char *imageName)
+{
+	//TODO
+}
+
+cFigure::Point Qtenv::getSubmodulePosition(const cModule *submodule)
+{
+	//TODO
+	return cFigure::Point(NAN, NAN);
+}
+
 double Qtenv::getAnimationTime() const
 {
     return displayUpdateController->getAnimationTime();

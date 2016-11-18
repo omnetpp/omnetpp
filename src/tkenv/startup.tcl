@@ -522,23 +522,20 @@ proc loadBitmaps {path} {
 
    foreach dir [splitPath $path] {
        if {$dir!=""} {
-           puts -nonewline "Loading images from $dir: "
+           puts -nonewline "Loading images from '$dir': "
            doLoadBitmaps $dir ""
            puts ""
        }
    }
 
    if {$bitmap_ctr==0} {
-       puts "*** no images (gif) in $path"
+       puts "*** no images in $path"
    }
 
    puts ""
 }
 
 proc doLoadBitmaps {dir prefix} {
-   global bitmaps bitmap_ctr
-
-   #debug "entering $dir"
    set files [concat [glob -nocomplain -- [file join $dir {*.gif}]] \
                      [glob -nocomplain -- [file join $dir {*.png}]]]
 
@@ -546,19 +543,8 @@ proc doLoadBitmaps {dir prefix} {
    set numTotal 0
    set numLoaded 0
    foreach f $files {
-      set name [file tail [file rootname $f]]
-      set img "i[incr bitmap_ctr]$name"
-      if [catch {
-         image create photo $img -file $f
-         #fixupImageIfNeeded $img - no longer needed with tkpath
-         set size "n" ;#default
-         regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
-         set loaded [doAddBitmap $img $prefix $name $size]
-         if {$loaded} {incr numLoaded}
-         incr numTotal
-      } err] {
-         puts -nonewline "(*** cannot load $f: $err ***) "
-      }
+      if [loadImage $f $prefix] {incr numLoaded}
+      incr numTotal
    }
    if {$numLoaded==$numTotal} {
       puts -nonewline "$prefix*: $numTotal  "
@@ -572,6 +558,25 @@ proc doLoadBitmaps {dir prefix} {
          doLoadBitmaps "$f" "$prefix[file tail $f]/"
       }
    }
+}
+
+proc loadImage {f {prefix ""} {name ""}} {
+   global bitmap_ctr
+   if {$name==""} {
+       set name [file tail [file rootname $f]]
+   }
+   set img "i[incr bitmap_ctr]$name"
+   if [catch {
+      set loaded 0
+      image create photo $img -file $f
+      #fixupImageIfNeeded $img - no longer needed with tkpath
+      set size "n" ;#default
+      regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
+      set loaded [doAddBitmap $img $prefix $name $size]
+   } err] {
+      puts -nonewline "(*** cannot load $f: $err ***) "
+   }
+   return $loaded
 }
 
 # On recent versions of OS X, images with partial transparency (alpha not 0 or 255)

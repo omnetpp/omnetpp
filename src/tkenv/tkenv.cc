@@ -1858,6 +1858,35 @@ void Tkenv::getTextExtent(const cFigure::Font& font, const char *text, double& o
     outAscent = std::max(ascent, 0.0);
 }
 
+void Tkenv::appendToImagePath(const char *directory)
+{
+    if (!isDirectory(directory))
+        throw cRuntimeError("appendToImagePath(): path '%s' not found or not a directory", directory);
+    CHK(Tcl_VarEval(interp, "loadBitmaps ", TclQuotedString(directory).get(), TCL_NULL));
+}
+
+void Tkenv::loadImage(const char *fileName, const char *imageName)
+{
+    if (!isFile(fileName))
+        throw cRuntimeError("loadImage(): path '%s' not found or not a regular file", fileName);
+    CHK(Tcl_VarEval(interp, "loadImage ", TclQuotedString(fileName).get(), " {} ",
+            TclQuotedString(opp_nulltoempty(imageName)).get(), TCL_NULL));
+}
+
+cFigure::Point Tkenv::getSubmodulePosition(const cModule *submodule)
+{
+    // an easy solution that works in most practical cases: take the coordinates
+    // from the first open inspector that we find for this module
+    if (cModule *enclosingModule = submodule->getParentModule()) {
+        Inspector *insp = findFirstInspector(enclosingModule, INSP_GRAPHICAL, false);
+        if (ModuleInspector *modinsp = dynamic_cast<ModuleInspector*>(insp)) {
+            auto p = modinsp->getSubmodulePosition(submodule);
+            return cFigure::Point(p.x, p.y);
+        }
+    }
+    return cFigure::Point(NAN, NAN);
+}
+
 unsigned Tkenv::getExtraStackForEnvir() const
 {
     return opt->extraStack;

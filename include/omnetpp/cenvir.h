@@ -474,8 +474,8 @@ class SIM_API cEnvir
     virtual bool isExpressMode() const = 0;
 
     /**
-     * In graphical user interfaces (Tkenv/Qtenv), it pops up a "bubble" over
-     * the module icon.
+     * In graphical user interfaces (Tkenv/Qtenv), it pops up a transient
+     * "bubble" over the module icon.
      */
     virtual void bubble(cComponent *component, const char *text) = 0;
 
@@ -528,9 +528,88 @@ class SIM_API cEnvir
      */
     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) = 0;
 
-    virtual double getAnimationTime() const = 0;  // starts from zero, monotonically increasing
-    virtual double getAnimationSpeed() const = 0; // the current animation speed; this is usually computed as the minimum of the animSpeeds of visible canvases, unless maybe the user interactively overrides it in the Qtenv GUI (i.e. imposes a lower limit)
-    virtual double getRemainingAnimationHoldTime() const = 0;  // remaining hold time
+    /**
+     * Tells the user interface to load the images from the given directory,
+     * as if the directory was part of the the OMNeT++ image path. The loaded
+     * images can then be used in display strings and with cImageFigure/cIconFigure.
+     *
+     * An error is thrown if the given directory does not exist or cannot be
+     * accessed. This method is idempotent: the second and further invocations
+     * with the same parameter have no effect. The method may have no effect
+     * if the simulation is running under Cmdenv or another non-graphical user
+     * interface.
+     */
+    virtual void appendToImagePath(const char *directory) = 0;
+
+    /**
+     * Tells the user interface to load the image from the given image file.
+     * The loaded image can then be used in display strings and with
+     * cImageFigure/cIconFigure, by referencing it with the image name.
+     * If the location of the image file is not known or cannot be easily
+     * determined, resolveResourcePath() may be used to find it prior to
+     * loadImage().
+     *
+     * The image name may be specified explicitly (in the imageName argument),
+     * or if it is missing (is nullptr or empty string), the base file name
+     * will be used (fileName with directories and extension stripped). Note
+     * that if an image with the given name has already been loaded, this
+     * method will do nothing, i.e. already loaded images are NOT replaced.
+     * This also means that the method is idempotent: the second and further
+     * invocations with the same parameter have no effect.
+     *
+     * An error is thrown if the given file does not exist or cannot be
+     * loaded as a supported image format. The method may have no effect
+     * if the simulation is running under Cmdenv or another non-graphical
+     * user interface.
+     *
+     * @see resolveResourcePath()
+     */
+    virtual void loadImage(const char *fileName, const char *imageName=nullptr) = 0;
+
+    /**
+     * Returns the effective position of the given module when it is visualized
+     * in the graphical inspector of its containing compound module, or (NAN,NAN)
+     * if such position is not available. This method is the only way to access
+     * positions of "floating" modules, i.e. those placed by a layouting algorithm
+     * that runs as part of the UI. The method may unconditionally return (NAN,NAN)
+     * if the simulation is running under Cmdenv or another non-graphical user
+     * interface.
+     *
+     * Also note that this method may return different values at different times,
+     * e.g. as a result of the user opening and closing inspectors, or hitting
+     * the "Relayout" button. Visualization code relying on this method is
+     * advised to re-read positions in every refreshDisplay() call, and check
+     * whether they changed since last time.
+     */
+    virtual cFigure::Point getSubmodulePosition(const cModule *submodule) = 0;
+
+    /**
+     * Returns the current animation time. Animation time starts from zero, and
+     * monotonically increases with simulation time and also during zero-simtime
+     * animations a.k.a. "holds". The method may return 0 if the simulation is
+     * running under Cmdenv or another non-graphical user interface.
+     */
+    virtual double getAnimationTime() const = 0;
+
+    /**
+     * Returns the current animation speed. It is usually computed as the
+     * minimum of the animation speeds of visible canvases, unless the user
+     * interactively overrides it in the UI, for example imposes a lower limit.
+     * The method may return 0 if the simulation is running under Cmdenv or
+     * another non-graphical user interface.
+     *
+     * @see cCanvas::setAnimationSpeed()
+     */
+    virtual double getAnimationSpeed() const = 0;
+
+    /**
+     * Returns the remaining animation "hold" time. This is the maximum of the
+     * animation times remaining from the holds times requested by visible
+     * canvases.
+     *
+     * @see cCanvas::holdSimulationFor()
+     */
+    virtual double getRemainingAnimationHoldTime() const = 0;
     //@}
 
     /** @name Access to RNGs. */
