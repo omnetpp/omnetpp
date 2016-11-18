@@ -86,11 +86,13 @@ void Host::handleMessage(cMessage *msg)
         simtime_t duration = pk->getBitLength() / txRate;
         sendDirect(pk, radioDelay, duration, server->gate("in"));
 
-        delete lastPacket;
-        lastPacket = pk->dup();
-        transmissionRing->setAssociatedObject(lastPacket);
-        for (auto c : transmissionCircles)
-            c->setAssociatedObject(lastPacket);
+        if (hasGUI() && transmissionRing != nullptr) {
+            delete lastPacket;
+            lastPacket = pk->dup();
+            transmissionRing->setAssociatedObject(lastPacket);
+            for (auto c : transmissionCircles)
+                c->setAssociatedObject(lastPacket);
+        }
 
         scheduleAt(simTime()+duration, endTxEvent);
     }
