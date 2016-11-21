@@ -1,0 +1,23 @@
+define hook-run
+    skipstdcxxheaders
+end
+define hook-start
+    skipstdcxxheaders
+end
+define hook-stop
+    skipstdcxxheaders
+end
+define hook-attach
+    skipstdcxxheaders
+end
+
+define skipstdcxxheaders
+python
+global skippedstdcxxheaders
+if skippedstdcxxheaders == False:
+    skipAllIn('/usr/include/c++')
+    print('Standard C++ headers skipped during stepping')
+skippedstdcxxheaders = True
+end
+end
+

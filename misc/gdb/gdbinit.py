@@ -6,6 +6,19 @@ import tempfile
 # set unwind signal so an exeption caused by the pretty printer will not stop the debugger
 gdb.execute('set unwindonsignal on')
 
+# skip standard C++ headers when stepping
+global skippedstdcxxheaders
+skippedstdcxxheaders = False
+
+def skipAllIn(root):
+    import os
+    for root, dirs, files in os.walk(root, topdown=False):
+        for name in files:
+            path = os.path.join(root, name)
+            gdb.execute('skip file %s' % path, to_string=True)
+
+gdb.execute('source %s' % os.path.join(os.path.dirname(__file__), 'gdbinit'))
+
 # add the pretty printer classes to the system class path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
