@@ -55,7 +55,7 @@ void Host::initialize()
 
     idleAnimationSpeed = par("idleAnimationSpeed");
     transmissionEdgeAnimationSpeed = par("transmissionEdgeAnimationSpeed");
-    midTransmissionAnimationSpeed = par("midTransmissionAnimationSpeed");
+    midtransmissionAnimationSpeed = par("midTransmissionAnimationSpeed");
 
     double dist = std::sqrt((x-serverX) * (x-serverX) + (y-serverY) * (y-serverY));
     radioDelay = dist / propagationSpeed;
@@ -86,15 +86,13 @@ void Host::handleMessage(cMessage *msg)
         simtime_t duration = pk->getBitLength() / txRate;
         sendDirect(pk, radioDelay, duration, server->gate("in"));
 
-        if (hasGUI() && transmissionRing != nullptr) {
+        scheduleAt(simTime()+duration, endTxEvent);
+
+        // let visualization code know about the new packet
+        if (transmissionRing != nullptr) {
             delete lastPacket;
             lastPacket = pk->dup();
-            transmissionRing->setAssociatedObject(lastPacket);
-            for (auto c : transmissionCircles)
-                c->setAssociatedObject(lastPacket);
         }
-
-        scheduleAt(simTime()+duration, endTxEvent);
     }
     else if (state == TRANSMIT) {
         // endTxEvent indicates end of transmission
@@ -122,92 +120,108 @@ simtime_t Host::getNextTransmissionTime()
 
 void Host::refreshDisplay() const
 {
-    const int numRipples = 20;
+    cCanvas *canvas = getParentModule()->getCanvas();
+    const int numCircles = 20;
+    const double circleLineWidth = 10;
 
+    // create figures on our first invocation
     if (!transmissionRing) {
         auto color = cFigure::GOOD_DARK_COLORS[getId() % cFigure::NUM_GOOD_DARK_COLORS];
 
         transmissionRing = new cRingFigure();
+        transmissionRing->setOutlined(false);
         transmissionRing->setFillColor(color);
-        transmissionRing->setLineColor(color);
         transmissionRing->setFillOpacity(0.25);
         transmissionRing->setFilled(true);
         transmissionRing->setVisible(false);
-        getParentModule()->getCanvas()->addFigure(transmissionRing);
+        transmissionRing->setZIndex(-1);
+        canvas->addFigure(transmissionRing);
 
-        for (int i = 0; i < numRipples; ++i) {
+        for (int i = 0; i < numCircles; ++i) {
             auto circle = new cOvalFigure();
             circle->setFilled(false);
             circle->setLineColor(color);
             circle->setLineOpacity(0.75);
-            circle->setLineWidth(10);
+            circle->setLineWidth(circleLineWidth);
             circle->setZoomLineWidth(true);
             circle->setVisible(false);
+            circle->setZIndex(-0.5);
             transmissionCircles.push_back(circle);
-            getParentModule()->getCanvas()->addFigure(circle);
+            canvas->addFigure(circle);
         }
     }
 
-    double animSpeed = idleAnimationSpeed;
-
     if (lastPacket) {
-        auto now = simTime();
+        // update transmission ring and circles
+        if (transmissionRing->getAssociatedObject() != lastPacket) {
+            transmissionRing->setAssociatedObject(lastPacket);
+            for (auto c : transmissionCircles)
+                c->setAssociatedObject(lastPacket);
+        }
 
-        auto frontTravelTime = now - lastPacket->getSendingTime();
-        auto backTravelTime = now - (lastPacket->getSendingTime() + lastPacket->getDuration());
+        simtime_t now = simTime();
+        simtime_t frontTravelTime = now - lastPacket->getSendingTime();
+        simtime_t backTravelTime = now - (lastPacket->getSendingTime() + lastPacket->getDuration());
 
         // conversion from time to distance in m using speed
-        double frontRadius = std::min(maxRadius, frontTravelTime.dbl() * propagationSpeed);
+        double frontRadius = std::min(ringMaxRadius, frontTravelTime.dbl() * propagationSpeed);
         double backRadius = backTravelTime.dbl() * propagationSpeed;
-        double interCircleRadius = rippleRadius / numRipples;
+        double circleRadiusIncrement = circlesMaxRadius / numCircles;
 
+        // update transmission ring geometry and visibility/opacity
         double opacity = 1.0;
-        if (backRadius > maxRadius) {
+        if (backRadius > ringMaxRadius) {
             transmissionRing->setVisible(false);
             transmissionRing->setAssociatedObject(nullptr);
         }
         else {
             transmissionRing->setVisible(true);
             transmissionRing->setBounds(cFigure::Rectangle(x - frontRadius, y - frontRadius, 2*frontRadius, 2*frontRadius));
-            transmissionRing->setInnerRadius(std::max(0.0, std::min(maxRadius, backRadius)));
+            transmissionRing->setInnerRadius(std::max(0.0, std::min(ringMaxRadius, backRadius)));
             if (backRadius > 0)
-                opacity = std::max(0.0, 1.0 - backRadius / rippleRadius);
+                opacity = std::max(0.0, 1.0 - backRadius / circlesMaxRadius);
         }
 
         transmissionRing->setLineOpacity(opacity);
         transmissionRing->setFillOpacity(opacity/5);
 
-        double radius0 = std::fmod(frontTravelTime.dbl() * propagationSpeed, interCircleRadius);
+        // update transmission circles geometry and visibility/opacity
+        double radius0 = std::fmod(frontTravelTime.dbl() * propagationSpeed, circleRadiusIncrement);
         for (int i = 0; i < (int)transmissionCircles.size(); ++i) {
-            double circleRadius = std::min(maxRadius, radius0 + i * interCircleRadius);
-            if (circleRadius < frontRadius - interCircleRadius/2 && circleRadius > backRadius + interCircleRadius/2) {
+            double circleRadius = std::min(ringMaxRadius, radius0 + i * circleRadiusIncrement);
+            if (circleRadius < frontRadius - circleRadiusIncrement/2 && circleRadius > backRadius + circleLineWidth/2) {
                 transmissionCircles[i]->setVisible(true);
                 transmissionCircles[i]->setBounds(cFigure::Rectangle(x - circleRadius, y - circleRadius, 2*circleRadius, 2*circleRadius));
-                transmissionCircles[i]->setLineOpacity(std::max(0.0, 0.2 - 0.2 * (circleRadius / rippleRadius)));
+                transmissionCircles[i]->setLineOpacity(std::max(0.0, 0.2 - 0.2 * (circleRadius / circlesMaxRadius)));
             }
             else
                 transmissionCircles[i]->setVisible(false);
         }
 
-        if ((frontRadius >= 0 && frontRadius < rippleRadius) || (backRadius >= 0 && backRadius < rippleRadius))
+        // compute animation speed
+        double animSpeed = idleAnimationSpeed;
+        if ((frontRadius >= 0 && frontRadius < circlesMaxRadius) || (backRadius >= 0 && backRadius < circlesMaxRadius))
             animSpeed = transmissionEdgeAnimationSpeed;
-        if (frontRadius > rippleRadius && backRadius < 0)
-            animSpeed = midTransmissionAnimationSpeed;
+        if (frontRadius > circlesMaxRadius && backRadius < 0)
+            animSpeed = midtransmissionAnimationSpeed;
+        canvas->setAnimationSpeed(animSpeed, this);
     }
     else {
-        transmissionRing->setVisible(false);
-        transmissionRing->setAssociatedObject(nullptr);
+        // hide transmission rings, update animation speed
+        if (transmissionRing->getAssociatedObject() != nullptr) {
+            transmissionRing->setVisible(false);
+            transmissionRing->setAssociatedObject(nullptr);
 
-        for (auto c : transmissionCircles) {
-            c->setVisible(false);
-            c->setAssociatedObject(nullptr);
+            for (auto c : transmissionCircles) {
+                c->setVisible(false);
+                c->setAssociatedObject(nullptr);
+            }
+            canvas->setAnimationSpeed(idleAnimationSpeed, this);
         }
     }
 
-    getParentModule()->getCanvas()->setAnimationSpeed(animSpeed, this);
-
+    // update host appearance (color and text)
     getDisplayString().setTagArg("t", 2, "#808000");
-
     if (state == IDLE) {
         getDisplayString().setTagArg("i", 1, "");
         getDisplayString().setTagArg("t", 0, "");

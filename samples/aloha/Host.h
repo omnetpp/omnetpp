@@ -43,16 +43,17 @@ class Host : public cSimpleModule
     // speed of light in m/s
     const double propagationSpeed = 299792458.0;
 
-    // Animation parameters:
-    // Limitation: we only animate the last outgoing message for each host
-    cPacket *lastPacket = nullptr;// a copy of the last sent message, needed for animation
-    mutable cRingFigure *transmissionRing = nullptr; // shows the last packet
-    mutable std::vector<cOvalFigure *> transmissionCircles; // illustrates transmission speed inside the ring
-    const double maxRadius = 2000; // in m
-    const double rippleRadius = 1000; // in m
+    // animation parameters
+    const double ringMaxRadius = 2000; // in m
+    const double circlesMaxRadius = 1000; // in m
     double idleAnimationSpeed;
     double transmissionEdgeAnimationSpeed;
-    double midTransmissionAnimationSpeed;
+    double midtransmissionAnimationSpeed;
+
+    // figures and animation state
+    cPacket *lastPacket = nullptr; // a copy of the last sent message, needed for animation
+    mutable cRingFigure *transmissionRing = nullptr; // shows the last packet
+    mutable std::vector<cOvalFigure *> transmissionCircles; // ripples inside the packet ring
 
   public:
     Host();
