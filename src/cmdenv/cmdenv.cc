@@ -493,11 +493,11 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
 const char *Cmdenv::progressPercentage()
 {
     double simtimeRatio = -1;
-    if (opt->simtimeLimit != 0)
+    if (opt->simtimeLimit >= 0)
         simtimeRatio = getSimulation()->getSimTime() / opt->simtimeLimit;
 
     double cputimeRatio = -1;
-    if (opt->cpuTimeLimit != 0) {
+    if (opt->cpuTimeLimit >= 0) {
         timeval now;
         gettimeofday(&now, nullptr);
         long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;

@@ -742,7 +742,7 @@ void EnvirBase::setupNetwork(cModuleType *network)
 void EnvirBase::startRun()
 {
     resetClock();
-    if (opt->simtimeLimit > SIMTIME_ZERO)
+    if (opt->simtimeLimit >= SIMTIME_ZERO)
         getSimulation()->setSimulationTimeLimit(opt->simtimeLimit);
     getSimulation()->callInitialize();
     cLogProxy::flushLastLine();
@@ -1343,8 +1343,8 @@ void EnvirBase::readPerRunOptions()
     opt->networkName = cfg->getAsString(CFGID_NETWORK);
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
     opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
-    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
-    opt->cpuTimeLimit = (long)cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
+    opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
+    opt->cpuTimeLimit = (long)cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
     opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     opt->numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt->rngClass = cfg->getAsString(CFGID_RNG_CLASS);
@@ -1757,10 +1757,10 @@ timeval EnvirBase::totalElapsed()
 void EnvirBase::checkTimeLimits()
 {
 #ifdef USE_OMNETPP4x_FINGERPRINTS
-    if (opt->simtimeLimit != SIMTIME_ZERO && getSimulation()->getSimTime() >= opt->simtimeLimit)
+    if (opt->simtimeLimit >= SIMTIME_ZERO && getSimulation()->getSimTime() >= opt->simtimeLimit)
         throw cTerminationException(E_SIMTIME);
 #endif
-    if (opt->cpuTimeLimit == 0)  // no limit
+    if (opt->cpuTimeLimit < 0)  // no limit
         return;
     if (isExpressMode() && (getSimulation()->getEventNumber()&0xFF) != 0)  // optimize: in Express mode, don't call gettimeofday() on every event
         return;
