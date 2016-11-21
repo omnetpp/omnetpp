@@ -30,5 +30,5 @@ else:
 
 initfile = tempfile.gettempdir() + '/gdbinit.tmp'
 if os.path.isfile(initfile):
-    execfile(initfile)
+    exec(open(initfile).read())
 

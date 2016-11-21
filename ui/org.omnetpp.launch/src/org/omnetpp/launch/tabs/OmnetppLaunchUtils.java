@@ -519,7 +519,7 @@ public class OmnetppLaunchUtils {
             for (IProject p : projects) {
                 String gdbInit = p.getLocation().addTrailingSeparator().append(".gdbinit.py").toString();
                 if (new File(gdbInit).isFile())
-                    tmpGDBInit += "execfile('"+gdbInit+"', {}, {'__file__':'"+gdbInit+"'})\n";
+                    tmpGDBInit += "exec(open('"+gdbInit+"').read(), {}, {'__file__':'"+gdbInit+"'})\n";
             }
             String tmpDir = System.getProperty("java.io.tmpdir");
             FileUtils.writeTextFile(tmpDir+"/gdbinit.tmp", tmpGDBInit, null);  // NOTE: the file name must match with the file name in misc/gdb/gdbinit.py
