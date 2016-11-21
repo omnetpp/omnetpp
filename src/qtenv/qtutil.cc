@@ -489,8 +489,10 @@ QString makeObjectTooltip(cObject *obj)
             return userTooltip;
     }
 
-    return QString("(") + getObjectShortTypeName(obj) + ") "
-            + obj->getFullName() + ", " + obj->str().c_str();
+    QString tooltip = QString("(") + getObjectShortTypeName(obj) + ") " + obj->getFullName();
+    if (!obj->str().empty())
+        tooltip += QString(", ") + obj->str().c_str();
+    return tooltip;
 }
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
