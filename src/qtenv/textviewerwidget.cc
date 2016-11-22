@@ -108,6 +108,8 @@ void TextViewerWidget::setFont(QFont font)
 
     isMonospaceFont = QFontInfo(font).fixedPitch();
 
+    updateScrollbars();
+
     viewport()->update();
 }
 
@@ -115,14 +117,8 @@ void TextViewerWidget::setToolBar(QToolBar *toolBar)
 {
     this->toolBar = toolBar;
     if (toolBar) {
-        delete viewport()->layout();
-        QGridLayout *layout = new QGridLayout(viewport());
-        viewport()->setLayout(layout);
-
-        layout->addWidget(toolBar, 0, 0, Qt::Alignment(Qt::AlignRight | Qt::AlignTop));
-        layout->setMargin(toolbarSpacing);
-
-        toolBar->setAutoFillBackground(true);
+        static_cast<QGridLayout*>(layout())->addWidget(toolBar, 2, 1, Qt::Alignment(Qt::AlignRight | Qt::AlignTop));
+        toolBar->setAutoFillBackground(false);
     }
 }
 
@@ -235,15 +231,30 @@ void TextViewerWidget::find(QString text, FindOptions options)
     viewport()->update();
 }
 
-int TextViewerWidget::getMaxVisibleLineWidth(int numVisibleLines)
+int TextViewerWidget::getMaxVisibleLineWidth()
+{
+    auto vsb = verticalScrollBar();
+    return getMaxVisibleLineWidth(vsb->value(), vsb->value() + viewport()->height());
+}
+
+int TextViewerWidget::getMaxVisibleLineWidth(int contentPixelBegin, int contentPixelEnd)
 {
     auto metrics = QFontMetrics(font, viewport());
+    int firstLine = (int)std::floor(contentPixelBegin / (float)lineSpacing);
+    int lastLine = (int)std::floor((contentPixelEnd-1) / (float)lineSpacing); // inclusive
+
+    firstLine = clip(0, content->getLineCount() - 1, firstLine);
+    lastLine = clip(0, content->getLineCount() - 1, lastLine);
+
+    ASSERT(lastLine >= firstLine);
+
     int maxWidth = 0;
-    for (int lineIndex = topLineIndex; lineIndex < content->getLineCount() && lineIndex < topLineIndex + numVisibleLines; ++lineIndex) {
-        auto line = content->getLineText(lineIndex);
-        maxWidth = std::max(maxWidth, getLineColumnOffset(metrics, lineIndex, line.length()));
+    for (int lineIndex = firstLine; lineIndex <= lastLine; ++lineIndex) {
+        const QString& line = content->getLineText(lineIndex);
+        // left margin is included in getLineColumnOffset, adding the right one here
+        maxWidth = std::max(maxWidth, getLineColumnOffset(metrics, lineIndex, line.length()) + horizontalMargin);
     }
-    return maxWidth + horizontalMargin; // left one is added in getLineColumnOffset, this is the right one
+    return maxWidth;
 }
 
 int TextViewerWidget::getNumVisibleLines(int height)
@@ -282,20 +293,25 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
     auto line = content->getLineText(lineIndex);
 
     int tabIndex = tabStops.size()-1;
-    while (tabIndex > 0 && tabStops[tabIndex].atCharacter > columnIndex) {
+
+    while (tabIndex > 0 && tabStops[tabIndex].atCharacter > columnIndex)
         --tabIndex;
-    }
+
     tabIndex = clip(0, tabStops.size()-1, tabIndex);
 
-    int offset = getLinePartOffset(metrics, lineIndex, tabIndex)
-                  + metrics.width(line.mid(tabStops[tabIndex].atCharacter,
-                                           columnIndex - tabStops[tabIndex].atCharacter));
+    int offset = getLinePartOffset(metrics, lineIndex, tabIndex);
+
+    int from = tabStops[tabIndex].atCharacter;
+    int n = columnIndex - tabStops[tabIndex].atCharacter;
+    QString lineMid = line.mid(from, n);
+    offset += metrics.width(lineMid);
+
     return offset;
 }
 
 Pos TextViewerWidget::getLineColumnAt(int x, int y)
 {
-    int lineIndex = topLineIndex + (y-topLineY) / lineSpacing;
+    int lineIndex = (verticalScrollOffset + y) / lineSpacing;
     lineIndex = clip(0, content->getLineCount()-1, lineIndex);
 
     QString line = content->getLineText(lineIndex);
@@ -396,7 +412,7 @@ void TextViewerWidget::doLineUp(bool select)
     caretLineIndex = std::max(0, caretLineIndex-1);
     if (!select)
         clearSelection();
-    if (caretLineIndex <= topLineIndex)
+    if (caretLineIndex <= getTopLineIndex())
         followContentEnd = false;
     emit caretMoved(caretLineIndex, caretColumn);
 }
@@ -442,7 +458,8 @@ void TextViewerWidget::doPageUp(bool select)
 {
     int pageLines = std::max(1, getNumVisibleLines()-1);
     caretLineIndex = std::max(0, caretLineIndex - pageLines);
-    topLineIndex = clip(0, std::max(0, content->getLineCount()-getNumVisibleLines()), topLineIndex - pageLines);
+    auto vsb = verticalScrollBar();
+    vsb->setValue(vsb->value() - vsb->pageStep());
     followContentEnd = false;
     if (!select)
         clearSelection();
@@ -454,7 +471,8 @@ void TextViewerWidget::doPageDown(bool select)
     int pageLines = std::max(1, getNumVisibleLines()-1);
     int lastLineIndex = content->getLineCount()-1;
     caretLineIndex = std::min(lastLineIndex, caretLineIndex + pageLines);
-    topLineIndex = clip(0, std::max(0, content->getLineCount()-getNumVisibleLines()), topLineIndex + pageLines);
+    auto vsb = verticalScrollBar();
+    vsb->setValue(vsb->value() + vsb->pageStep());
     if (caretLineIndex == lastLineIndex)
         followContentEnd = true;
     if (!select)
@@ -529,7 +547,7 @@ void TextViewerWidget::doWordNext(bool select)
 
 void TextViewerWidget::doPageStart(bool select)
 {
-    caretLineIndex = topLineIndex;
+    caretLineIndex = getTopLineIndex();
     caretColumn = 0;
     if (!select)
         clearSelection();
@@ -538,7 +556,7 @@ void TextViewerWidget::doPageStart(bool select)
 
 void TextViewerWidget::doPageEnd(bool select)
 {
-    caretLineIndex = std::min(content->getLineCount()-1, topLineIndex + getNumVisibleLines());
+    caretLineIndex = std::min(content->getLineCount()-1, getTopLineIndex() + getNumVisibleLines());
     caretColumn = content->getLineText(caretLineIndex).length();
     if (!select)
         clearSelection();
@@ -596,6 +614,7 @@ bool TextViewerWidget::isWordChar(QChar ch)
 
 void TextViewerWidget::resizeEvent(QResizeEvent *event)
 {
+    QWidget::resizeEvent(event);
     updateScrollbars();
     viewport()->update();
 }
@@ -623,28 +642,28 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
         // But we need the exact font used to calculate all kinds of caret positions and such, so
         // we have no other choice, but to save the actually used font for ourselves here.
         setFont(painter.font());
-    }
 
-    // this has to be after the font has been updated, because then the lineSpacing changes, and we need the actual value here
-    updateScrollbars();
+        // this has to be after the font has been updated, because then the lineSpacing changes, and we need the actual value here
+        updateScrollbars();
+    }
 
     int numLines = content->getLineCount();
     int numVisibleLines = getNumVisibleLines();
 
     // note: if the following asserts are triggered, odds are that content has changed without a call to our contentChanged() method
-    Q_ASSERT(topLineIndex >= 0 && topLineIndex <= std::max(0, numLines-numVisibleLines));
+    Q_ASSERT(getTopLineIndex() >= 0 && getTopLineIndex() <= std::max(0, numLines-numVisibleLines));
     Q_ASSERT(numLines == 0 || (caretLineIndex >= 0 && caretLineIndex < numLines));
 
     int x = horizontalMargin - horizontalScrollOffset;
-    int lineIndex = topLineIndex;
-    int startY = topLineY;
+    int lineIndex = getTopLineIndex();
+    int startY = getTopLineY();
 
     // Drawing the gray highlight under the line in which the caret is-
     // Have to do this before any text painting, otherwise
     // it might paint over some parts of a few letters.
-    int highlightY = startY + (caretLineIndex-topLineIndex) * lineSpacing;
+    int highlightY = startY + (caretLineIndex-lineIndex) * lineSpacing;
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor("lightgray"));
+    painter.setBrush(palette().color(QPalette::AlternateBase));
     painter.drawRect(0, highlightY, contentsRect().width(), lineSpacing);
 
     // draw the lines
@@ -693,10 +712,15 @@ void TextViewerWidget::drawLinePart(QPainter& painter, const QFontMetrics& metri
             int startColumn = (lineIndex == selStart.line) ? clip(tabStop.atCharacter, nextTabStopAt, selStart.column) : tabStop.atCharacter;
             int endColumn = (lineIndex == selEnd.line) ? clip(tabStop.atCharacter, nextTabStopAt, selEnd.column) : nextTabStopAt;
 
-            if (startColumn != endColumn) {
+            if (startColumn != endColumn || last) {
                 int startColOffset = getLineColumnOffset(metrics, lineIndex, startColumn);
                 int endColOffset = getLineColumnOffset(metrics, lineIndex, endColumn);
                 QRect selectionRect(startColOffset - horizontalScrollOffset, y, endColOffset - startColOffset, lineSpacing);
+
+                // If the selection does not end in the current line, and we are painting the last part,
+                // then we should paint the selection background to the very end of the viewport.
+                if (lineIndex < selEnd.line && last)
+                    selectionRect.setRight(viewport()->width());
 
                 if (selectionRect.isValid()) {
                     painter.setBrush(selectionBackgroundColor);
@@ -767,27 +791,13 @@ void TextViewerWidget::keyPressEvent(QKeyEvent *event)
             if (controlPressed)
                 selectAll();
             break;
+        default:
+            return;
     }
 
     caretShown = true;
     caretBlinkTimer.start();
     revealCaret();
-    viewport()->update();
-}
-
-void TextViewerWidget::wheelEvent(QWheelEvent *event)
-{
-    QAbstractScrollArea::wheelEvent(event);
-
-    // This way the single line offset provided by topLineY can be scrolled
-    // as well, even if the vertical scrollbar isn't visible (hence no scroll events...)
-    if (event->angleDelta().y() > 0) {
-        alignTopLine();
-        followContentEnd = false;
-    }
-    if (event->angleDelta().y() < 0 && content->getLineCount() >= getNumVisibleLines())
-        alignBottomLine();
-
     viewport()->update();
 }
 
@@ -910,48 +920,84 @@ void TextViewerWidget::stopAutoScroll()
 
 void TextViewerWidget::updateScrollbars()
 {
+    // This function should be completely idempotent (with pixel accuracy)
+    // to avoid any stack overflows / infinite event floods / flickering.
+    // So with any combination of followContentEnd's value, both scrollbars
+    // being visible or not, etc, invoking this function more than once
+    // with no other state changing should give the exact same result.
+    // Note that it can happen that we are showing a toolbar that is
+    // not scrollable at all, but this can not be avoided, deal with it.
+
+    // Counts how many times this function is on the stack.
+    // Used as a last resort safeguard to break any loops that
+    // might still happen, despite all our best intentions.
+    static int callDepth = 0;
+
+    if (!content)
+        return;
+
+    if (callDepth >= 10) {
+        qDebug() << "Too deep recursion while updating scrollbars! Giving up...";
+        return;
+    }
+
+    ++callDepth;
+
     auto vsb = verticalScrollBar();
     auto hsb = horizontalScrollBar();
 
-    QSize maxSize = contentsRect().size();
+    // We could display this many pixels of the content if both scrollbars were hidden.
+    // Must not use contentsMargins! It changes in an unreliable manner with some styles
+    // and Qt versions. And maximumViewportSize seems to be affected by the scrollbarPolicies.
+    QSize maxSize = size()
+         - QSize(viewportMargins().left() + viewportMargins().right(),
+                 viewportMargins().top() + viewportMargins().bottom());
 
-    int l = getNumVisibleLines(maxSize.height() - hsb->height());
-    // first determine if we need each toolbar separately,
-    // assuming that both of them are visible (take up space)
-    bool vertNeeded = content->getLineCount() >= l;
-    bool horizNeeded = getMaxVisibleLineWidth(l) >= (maxSize.width() - vsb->width());
+    // first determine if we need each scrollbar separately, being conservative about it
+    // (better show unnecessarily than not show when it would be needed)
 
+    // Showing the vertical scrollbar if the height of the content is greater than the height
+    // of the viewport with visible horizontal scrollbar (even if that one is not really visible right now).
+    bool vertNeeded = (content->getLineCount() * lineSpacing) > (maxSize.height() - hsb->height());
+
+    // If we follow the content end ("scroll lock is off"), then the disappearing horizontal scrollbar will
+    // move the top content pixel up, not the bottom pixel down. Th
+    int topContentPixel = std::max(0, std::min(verticalScrollOffset, (content->getLineCount() * lineSpacing) - maxSize.height()));
+
+    // Showing the horizontal scrollbar if the longest visible line is longer (wider) than the width
+    // of the viewport with visible vertical scrollbar (even if that one is not really visible right now).
+    // The lines used for width calculation are the ones that have any chance of becoming visible
+    // after we are done.
+    int maxLineWidth = getMaxVisibleLineWidth(topContentPixel, topContentPixel + maxSize.height());
+    bool horizNeeded = maxLineWidth >= (maxSize.width() - vsb->width());
+
+    // show or hide as computed before
     setVerticalScrollBarPolicy(vertNeeded ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(horizNeeded ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
-    if (!vertNeeded) {
-        topLineIndex = 0;
-        topLineY = 0;
-    }
-    if (!horizNeeded)
-        horizontalScrollOffset = 0;
-
-    hsb->setMinimum(0);
-    hsb->setMaximum(std::max(0, getMaxVisibleLineWidth() - viewport()->width() + horizontalMargin));
-    hsb->setPageStep(viewport()->width());
-    hsb->setSingleStep(4);
 
     // configure
-    int visibleLines = getNumVisibleLines();
-    vsb->setMaximum(std::max(0, content->getLineCount() - visibleLines));
     vsb->setMinimum(0);
-    vsb->setSingleStep(1);
-    vsb->setPageStep(visibleLines);
-
-    // adjust
-    topLineIndex = clip(0, std::max(0, content->getLineCount() - visibleLines), topLineIndex);
-    verticalScrollBar()->setValue(topLineIndex);
-    horizontalScrollBar()->setValue(horizontalScrollOffset);
+    vsb->setMaximum(std::max(0, content->getLineCount() * lineSpacing - viewport()->height()));
+    vsb->setSingleStep(lineSpacing);
+    vsb->setPageStep(viewport()->height());
 
     // following output growth
-    if (followContentEnd && content->getLineCount() >= visibleLines) {
+    if (followContentEnd && vsb->maximum() > vsb->minimum())
         vsb->setValue(vsb->maximum());
-        alignBottomLine();
-    }
+
+    // the horizontal depends on the vertical more
+    hsb->setMinimum(0);
+    // not reusing the maxLineWidth variable, computing it again, with the updated vertical scrollbar value
+    hsb->setMaximum(std::max(0, getMaxVisibleLineWidth() - viewport()->width()));
+    hsb->setSingleStep(averageCharWidth);
+    hsb->setPageStep(viewport()->width());
+
+    // adjusting the layout to make all child widgets
+    // (the headerview and the toolbar) clear of the toolbar
+    if (layout())
+        layout()->setContentsMargins(0, 0, (vertNeeded ? vsb->width() : 0), (horizNeeded ? hsb->height() : 0));
+
+    --callDepth;
 }
 
 void TextViewerWidget::handleContentChange()
@@ -989,38 +1035,35 @@ void TextViewerWidget::handleContentChange()
 
 void TextViewerWidget::revealCaret()
 {
-    if (caretLineIndex < topLineIndex)
-        topLineIndex = caretLineIndex;
-    if (caretLineIndex >= topLineIndex + getNumVisibleLines())
-        topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
-    topLineIndex = clip(0, std::max(0, content->getLineCount()-getNumVisibleLines()), topLineIndex);
+    int topPixel = caretLineIndex * lineSpacing;
+    int bottomPixel = topPixel + lineSpacing - 1;
+
+    auto vsb = verticalScrollBar();
+
+    int val = vsb->value();
+
+    if (val < bottomPixel - viewport()->height())
+        val = bottomPixel - viewport()->height();
+
+    if (val > topPixel)
+        val = topPixel;
+
+    vsb->setValue(val);
 
 
-    // if caret is in the top or bottom line, view that line fully
-    if (caretLineIndex == topLineIndex)
-        alignTopLine();
-    else if (caretLineIndex == topLineIndex+getNumVisibleLines()-1)
-        alignBottomLine();
+    int caretX = getLineColumnOffset(QFontMetrics(font, viewport()), caretLineIndex, caretColumn);
 
-    // TODO with columns too
-    //        if (caretColumn < )
-    //            topLineIndex = caretLineIndex;
-    //        if (caretLineIndex >= topLineIndex + getNumVisibleLines())
-    //            topLineIndex = caretLineIndex - getNumVisibleLines() + 1;
+    auto hsb = horizontalScrollBar();
 
-    updateScrollbars();
-}
+    val = hsb->value();
 
-void TextViewerWidget::alignTopLine()
-{
-    topLineY = 0;
-}
+    if (val < caretX - viewport()->width() + 1)
+        val = caretX - viewport()->width() + 1;
 
-void TextViewerWidget::alignBottomLine()
-{
-    topLineY = viewport()->height() % lineSpacing;
-    if (topLineY > 0)
-        topLineY -= lineSpacing;
+    if (val > caretX)
+        val = caretX;
+
+    hsb->setValue(val);
 }
 
 void TextViewerWidget::onAutoScrollTimer()
@@ -1104,27 +1147,19 @@ void TextViewerWidget::onLinesDiscarded(int numLinesDiscarded)
 void TextViewerWidget::scrolledHorizontally(int value)
 {
     horizontalScrollOffset = value;
+    updateScrollbars();
     viewport()->update();
     header->setOffset(value);
 }
 
 void TextViewerWidget::scrolledVertically(int value)
 {
-    int diff = value - topLineIndex;
-
-    // aesthetics
-    if (diff > 0)
-        alignBottomLine();
-    else if (diff < 0) {
-        alignTopLine();
+    if (value < verticalScrollOffset)
         followContentEnd = false;
-    }
-
     if (value == verticalScrollBar()->maximum())
         followContentEnd = true;
-
-    topLineIndex = value;
-
+    verticalScrollOffset = value;
+    updateScrollbars();
     viewport()->update();
 }
 

@@ -97,16 +97,15 @@ protected:
     int horizontalMargin = 6;
     int baseline, lineSpacing, averageCharWidth; // measured from font
     bool isMonospaceFont;
-    int topLineIndex = 0;
-    int topLineY = 0; // Y coordinate of where top edge of line topLineIndex gets painted (range: -(lineHeight-1)..0)
+    int getTopLineIndex() { return verticalScrollOffset / lineSpacing; }
+    int getTopLineY() { return -(verticalScrollOffset % lineSpacing); }
     bool followContentEnd = true; // scroll down if new content lines are appended (stick to bottom), negated scroll lock
     int horizontalScrollOffset = 0; // in pixels
+    int verticalScrollOffset = 0; // in pixels
     int caretLineIndex = 0, caretColumn = 0;  // caretColumn may be greater than line length! ()
     int selectionAnchorLineIndex = 0, selectionAnchorColumn = 0; // selection is between anchor and caret
-    //Map<Integer,Integer> keyActionMap = new HashMap<Integer, Integer>(); // key: keycode, value: ST.xxx constants
 
     int clickCount = 0;
-    //ISelectionProvider selectionProvider = new SelectionProvider();
     QTimer caretBlinkTimer;
     bool caretShown = true; // during blinking
     QTimer autoScrollTimer;
@@ -148,7 +147,6 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-    void wheelEvent(QWheelEvent *event) override;
 
     // Qt doesn't support triple clicks.
     // the events we receive on triple click are: single, double, single
@@ -187,9 +185,6 @@ protected:
      * Scroll the caret into view
      */
     void revealCaret();
-
-    void alignTopLine();
-    void alignBottomLine();
 
 protected slots:
 
@@ -246,8 +241,8 @@ public:
 
     void find(QString text, FindOptions options);
 
-    int getMaxVisibleLineWidth() { return getMaxVisibleLineWidth(getNumVisibleLines()); }
-    int getMaxVisibleLineWidth(int numVisibleLines);
+    int getMaxVisibleLineWidth();
+    int getMaxVisibleLineWidth(int contentPixelBegin, int contentPixelEnd); // begin (top) included, end (bottom) excluded
     int getNumVisibleLines() { return getNumVisibleLines(viewport()->height()); }
     int getNumVisibleLines(int height);
 
