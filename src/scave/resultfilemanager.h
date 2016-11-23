@@ -3,7 +3,7 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//  Author: Andras Varga, Tamas Borbely
+//  Author: Andras Varga, Tamas Borbely, Zoltan Bojthe
 //
 //=========================================================================
 
@@ -37,6 +37,9 @@
 #ifdef THREADED
 #include "common/rwlock.h"
 #endif
+
+//TODO move sqlite related class to a new file
+#include "common/sqlite3.h"
 
 namespace omnetpp {
 namespace scave {
@@ -234,6 +237,9 @@ typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
 
 class CmpBase;
 
+class OmnetppResultFileLoader;
+class SqliteResultFileLoader;
+
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
  * vector files. (Actual vector contents in vector files are not read
@@ -277,6 +283,7 @@ class SCAVE_API ResultFileManager
     omnetpp::common::ReentrantReadWriteLock lock;
 #endif
 
+  public:               //TODO for OmnetppResultFileLoader
     struct sParseContext
     {
         ResultFile *fileRef; /*in*/
@@ -330,7 +337,6 @@ class SCAVE_API ResultFileManager
     Run *addRun(bool computed);
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
-    void processLine(char **vec, int numTokens, sParseContext &ctx);
     int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value, bool isField);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap &attrs);
@@ -469,6 +475,9 @@ class SCAVE_API ResultFileManager
     StringVector *getModuleParamFilterHints(const RunList &runList, const char * paramName) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;
+
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
 };
 
 inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
@@ -509,6 +518,18 @@ inline bool ResultFileManager::isStaleID(ID id) const
 {
     return fileList.at(_fileid(id)) == nullptr;
 }
+
+class SCAVE_API IResultFileLoader
+{
+  protected:
+    ResultFileManager *resultFileManager;
+  public:
+    IResultFileLoader(ResultFileManager *resultFileManagerPar) : resultFileManager(resultFileManagerPar) {}
+    virtual ~IResultFileLoader() {}
+    virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) = 0;
+};
+
+bool isSqliteFile(const char *fileName); // TODO move to a better place
 
 } // namespace scave
 }  // namespace omnetpp

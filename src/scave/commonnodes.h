@@ -70,18 +70,29 @@ class SCAVE_API FilterNode : public Node
 };
 
 /**
- * Base class for reading input from file.
+ * Base class for reading input from file/database/etc.
  */
 class SCAVE_API ReaderNode : public Node
+{
+    public:
+        ReaderNode() {}
+        virtual int64_t getFileSize() = 0;
+        virtual int64_t getNumReadBytes() = 0;
+};
+
+/**
+ * Base class for reading input from file.
+ */
+class SCAVE_API FileReaderNode : public ReaderNode
 {
     protected:
         std::string filename;
         omnetpp::common::FileReader reader;
     public:
-        ReaderNode(const char* filename, size_t bufferSize)
+        FileReaderNode(const char* filename, size_t bufferSize)
             : filename(filename), reader(filename, bufferSize) {}
-        int64_t getFileSize() { return reader.getFileSize(); }
-        int64_t getNumReadBytes() { return reader.getNumReadBytes(); }
+        virtual int64_t getFileSize() override { return reader.getFileSize(); }
+        virtual int64_t getNumReadBytes() override { return reader.getNumReadBytes(); }
 };
 
 /**

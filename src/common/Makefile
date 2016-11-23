@@ -24,6 +24,8 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o $O/stringtokenizer2.o $O/colorutil.o
 
+OBJS+= $O/sqlite3.o
+
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.hh matchexpression.tab.cc
 
@@ -88,6 +90,11 @@ lex.expressionyy.cc: expression.lex
 matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
+
+$O/sqlite3.o: sqlite3.c
+	@mkdir -p $O
+	$(qecho) "$<"
+	$(Q)$(CC) -c $(COPTS) -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1  -o $@ $<
 
 clean:
 	$(qecho) Cleaning...

@@ -30,7 +30,7 @@ namespace omnetpp {
 namespace scave {
 
 VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :
-    ReaderNode(fileName, bufferSize), fFinished(false)
+    FileReaderNode(fileName, bufferSize), fFinished(false)
 {
 }
 

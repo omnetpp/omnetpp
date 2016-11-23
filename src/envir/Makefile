@@ -31,6 +31,9 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirb
       $O/eventlogfilemgr.o $O/runattributes.o $O/intervals.o \
       $O/visitor.o $O/envirutils.o
 
+OBJS+= $O/sqliteoutscalarmgr.o $O/sqliteoutvectormgr.o
+OBJS+= $O/sqlitebufferedoutvectormgr.o
+
 GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib

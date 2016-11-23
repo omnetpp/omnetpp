@@ -37,7 +37,7 @@ namespace scave {
 /**
  * Producer node which reads an output vector file.
  */
-class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
+class SCAVE_API IndexedVectorFileReaderNode : public FileReaderNode
 {
     typedef omnetpp::common::LineTokenizer LineTokenizer;
     typedef std::vector<Port> PortVector;

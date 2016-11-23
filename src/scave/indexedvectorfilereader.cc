@@ -31,7 +31,7 @@ namespace scave {
 #define LL    INT64_PRINTF_FORMAT
 
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
-    ReaderNode(filename, bufferSize), index(nullptr), currentBlockIndex(0)
+    FileReaderNode(filename, bufferSize), index(nullptr), currentBlockIndex(0)
 {
 }
 

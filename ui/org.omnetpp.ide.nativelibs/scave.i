@@ -22,6 +22,7 @@
 #include "scave/vectorfileindexer.h"
 #include "scave/vectorfilereader.h"
 #include "scave/indexedvectorfilereader.h"
+#include "scave/sqlitevectorreader.h"
 #include "scave/scaveexception.h"
 #include "scave/export.h"
 
@@ -585,6 +586,7 @@ namespace omnetpp { namespace scave {
 %ignore SingleSinkNode;
 %ignore FilterNode;
 %ignore ReaderNode;
+%ignore FileReaderNode;
 %ignore SingleSourceNodeType;
 %ignore SingleSinkNodeType;
 %ignore FilterNodeType;
@@ -612,6 +614,15 @@ namespace omnetpp { namespace scave {
 namespace omnetpp { namespace scave {
 %extend IndexedVectorFileReaderNode {
     static IndexedVectorFileReaderNode *cast(Node* node) { return dynamic_cast<IndexedVectorFileReaderNode*>(node); }
+};
+} } // namespaces
+
+/* ------------- sqlitevectorreader.h  ----------------- */
+%include "scave/sqlitevectorreader.h"
+
+namespace omnetpp { namespace scave {
+%extend SqliteVectorReaderNode {
+    static SqliteVectorReaderNode *cast(Node* node) { return dynamic_cast<SqliteVectorReaderNode*>(node); }
 };
 } } // namespaces
 

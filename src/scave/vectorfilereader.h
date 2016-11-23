@@ -40,7 +40,7 @@ Datum parseColumns(char **tokens, int numtokens, const std::string &columns, con
 /**
  * Producer node which reads an output vector file.
  */
-class SCAVE_API VectorFileReaderNode : public ReaderNode
+class SCAVE_API VectorFileReaderNode : public FileReaderNode
 {
     public:
         typedef omnetpp::common::LineTokenizer LineTokenizer;

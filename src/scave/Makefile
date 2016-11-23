@@ -25,12 +25,14 @@ OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/dataflowmanager.o $O/datasorter.o $O/diffquot.o \
       $O/filewriter.o $O/filternodes.o $O/customfilter.o $O/stddev.o \
       $O/idlist.o $O/mergernodes.o $O/nodetype.o $O/nodetyperegistry.o \
+      $O/omnetppresultfileloader.o $O/sqliteresultfileloader.o \
       $O/resultfilemanager.o $O/slidingwinavg.o \
       $O/vectorfilereader.o $O/vectorfilewriter.o $O/windowavg.o \
       $O/xyplotnode.o $O/indexedvectorfile.o \
       $O/vectorfileindexer.o $O/indexfile.o $O/scaveutils.o \
       $O/scaveexception.o $O/enumtype.o $O/export.o $O/teenode.o \
       $O/indexedvectorfilereader.o $O/xyarray.o $O/fields.o \
+      $O/sqlitevectorreader.o $O/vectorreaderbyfiletype.o \
       $O/indexedvectorfilereader2.o
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib

@@ -181,7 +181,7 @@ public class DataflowNetworkBuilder {
         ResultFile resultFile;
 
         public ReaderNode(ResultFile resultFile) {
-            super("indexedvectorfilereader", null);
+            super("vectorreaderbyfiletype", null);
             this.resultFile = resultFile;
             this.attrs = new StringMap();
             this.attrs.set("filename", resultFile.getFileSystemFilePath());
@@ -212,8 +212,7 @@ public class DataflowNetworkBuilder {
 
         @Override
         public Port createPort(PortWrapper port) {
-            IndexedVectorFileReaderNode reader = IndexedVectorFileReaderNode.cast(node);
-            return reader.addVector(resultfileManager.getVector(port.id));
+            return node.getNodeType().getPort(node, port.name);
         }
 
         public String toString() {
