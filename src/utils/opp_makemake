@@ -1198,7 +1198,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 {sharedlib:}OMNETPP_LIBS = {-l}oppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
 {~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}ifneq ($(TOOLCHAIN_NAME),clangc2)
-{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,`abspath {dir}`{/@}
+{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,$(abspath {dir}){/@}
 {~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}endif
 
 {sourcedirs:}COPTS = $(CFLAGS) $(IMPORT_DEFINES) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)

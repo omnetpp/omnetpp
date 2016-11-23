@@ -18,7 +18,7 @@ COPTS=$(CFLAGS) $(INCL_FLAGS)
 #
 # Rules
 #
-all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
+all:
 	$(qecho) Copying scripts to bin directory...
 	$(Q)echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
 	$(Q)if [ "$$OS" = "Windows_NT" ] ; then \
@@ -42,8 +42,6 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	$(Q)cp omnetpp $(OMNETPP_BIN_DIR)
 	$(Q)cp omnest $(OMNETPP_BIN_DIR)
 	$(Q)chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test $(OMNETPP_BIN_DIR)/opp_makedep $(OMNETPP_BIN_DIR)/splitvec $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-prog opp_lcg32_seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-prog abspath$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	@# next line is for samples/rundemo
 	$(Q)echo $(WISH) >$(HOME)/.wishname
 
@@ -52,20 +50,10 @@ $O/%.o: %.cc
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
-$O/opp_lcg32_seedtool$(EXE_SUFFIX) : $O/opp_lcg32_seedtool.o
-	@mkdir -p $O
-	@echo Creating executable: $@
-	$(Q)$(CXX) $(LDFLAGS) $O/opp_lcg32_seedtool.o -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
-
-$O/abspath$(EXE_SUFFIX) : $O/abspath.o
-	@mkdir -p $O
-	@echo Creating executable: $@
-	$(Q)$(CXX) $(LDFLAGS) $O/abspath.o -o $O/abspath$(EXE_SUFFIX)
-
 clean:
 	$(qecho) Cleaning...
 	$(Q)rm -rf $O
-	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_lcg32_seedtool$(EXE_SUFFIX) abspath$(EXE_SUFFIX) opp_makemake opp_runall opp_test opp_makedep splitvec
+	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_makemake opp_runall opp_test opp_makedep splitvec
 #	$(Q)rm -f opp_configfilepath
 #	$(Q)rm -f opp_configfilepath.cmd
 
