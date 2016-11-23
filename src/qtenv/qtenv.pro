@@ -35,11 +35,11 @@ include(qtenv.pri)
 # IMPORTANT: on turn off the option to generate both debug and release version
 # we need only one of them not both and this is the default setting on Windows
 # but sadly it generates broken makefiles
-CONFIG *= static c++11 qt
+CONFIG *= static c++14 qt
 CONFIG -= debug_and_release
 CONFIG -= warn_on warn_off
-DEFINES += "BUILDING_QTENV" "QT_NO_EMIT"
-WARNING_FLAGS *= -Wall -Wextra -Wno-unused-parameter
+DEFINES += "QT_NO_EMIT"
+WARNING_FLAGS *= -Wall -Wextra -Wno-unused-parameter -Wno-microsoft-enum-value
 QMAKE_CXXFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
 QMAKE_CFLAGS += $$(OPP_CFLAGS) $$WARNING_FLAGS
 # we have to add all defines to the MOC compiler command line to correctly parse the code

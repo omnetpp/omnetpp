@@ -34,6 +34,7 @@
 #include <osgEarthUtil/EarthManipulator>
 #endif
 
+#include <osgDB/DatabasePager>
 #include <osgGA/TerrainManipulator>
 #include <osgGA/TrackballManipulator>
 #include <osg/TexGenNode>

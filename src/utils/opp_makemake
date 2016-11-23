@@ -510,10 +510,10 @@ sub makemake()
         $targetSuffix = $isNMake ? ".exe" : "\$(EXE_SUFFIX)";
     } elsif ($type eq "SHAREDLIB") {
         $targetSuffix = $isNMake ? ".dll" : "\$(SHARED_LIB_SUFFIX)";
-        $targetPrefix = $isNMake ? "" : "lib";
+        $targetPrefix = $isNMake ? "" : "\$(LIB_PREFIX)";
     } elsif ($type eq "STATICLIB") {
         $targetSuffix = $isNMake ? ".lib" : "\$(A_LIB_SUFFIX)";
-        $targetPrefix = $isNMake ? "" : "lib";
+        $targetPrefix = $isNMake ? "" : "\$(LIB_PREFIX)";
     }
 
     # prepare submakeDirs. First, check that all specified subdirs exist
@@ -627,7 +627,7 @@ sub makemake()
         "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
         "args" =>  join(" ", @args),
         "configfile" =>  $configFile,
-        "-L" =>  $isNMake ? "/libpath:" : "-L",
+        "-L" =>  $isNMake ? "/libpath:" : "\$(LDFLAG_LIBPATH)",
         "-l" =>  $isNMake ? "" : "-l",
         ".lib" =>  $isNMake ? ".lib" : "",
         "-out" =>  $isNMake ? "/out:" : "-o ", # note space after "-o" -- OS/X needs it
@@ -1122,7 +1122,6 @@ sub template()
 {~nolink:}
 {~nolink:}{~staticlib:}# Additional libraries (-L, -l options)
 {~nolink:}{~staticlib:}LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
-{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,`abspath {dir}`{/@}
 {~nolink:}{~staticlib:}
 # Output directory
 ### Note: these variables are public API (see help text), don't change
@@ -1196,11 +1195,13 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### {~nmake:}endif
 
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
-{~nolink:}{~staticlib:}OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
-{exe:}OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" {-l}oppmain$D{.lib} $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
-{sharedlib:}OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" {-l}oppenvir$D{.lib} $(KERNEL_LIBS) $(SYS_LIBS)
+{exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
+{sharedlib:}OMNETPP_LIBS = {-l}oppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
+{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}ifneq ($(TOOLCHAIN_NAME),clangc2)
+{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,`abspath {dir}`{/@}
+{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}endif
 
-{sourcedirs:}COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+{sourcedirs:}COPTS = $(CFLAGS) $(IMPORT_DEFINES) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 {sourcedirs:}MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 {sourcedirs:}SMCOPTS =
 {sourcedirs:}

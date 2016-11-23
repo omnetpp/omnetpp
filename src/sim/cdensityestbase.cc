@@ -23,6 +23,7 @@
 #include <cstring>
 #include <cmath>
 #include <sstream>
+#include <algorithm>
 #include "omnetpp/globals.h"
 #include "omnetpp/cdensityestbase.h"
 #include "omnetpp/cexception.h"

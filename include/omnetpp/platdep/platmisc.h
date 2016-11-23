@@ -24,8 +24,9 @@
 //
 // Breaking into the debugger
 //
-#if defined _MSC_VER
-#define DEBUG_TRAP  __asm {int 3}  // Visual C++: debug interrupt
+#if defined(_MSC_VER)
+#include <intrin.h>
+#define DEBUG_TRAP  __debugbreak()  // Windows debug interrupt (MSVC/ClangC2)
 #elif defined _WIN32 and defined __GNUC__
 #define DEBUG_TRAP  asm("int $3\n")  // MinGW or Cygwin: debug interrupt with GNU syntax
 #elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
@@ -38,7 +39,7 @@
 //
 // Common Unix functionality
 //
-#ifdef _WIN32
+#if defined(_WIN32)
 
 #include <process.h>
 #include <io.h>
@@ -50,11 +51,6 @@
 #endif
 
 #define mkdir(x,y) _mkdir(x)
-
-// unistd.h contains usleep only on mingw 4.4 or later (minor version 16), otherwise use Windows.h Sleep()
-#if defined(_MSC_VER) || __MINGW32_MINOR_VERSION < 16
-#define usleep(x) Sleep((x)/1000)
-#endif
 
 #else // !_WIN32
 
@@ -101,6 +97,12 @@ typedef int pid_t;
 #undef min
 #undef max
 #undef ERROR
+
+// use Windows.h Sleep() on visualc compiler
+#if defined(_MSC_VER)
+inline void usleep(uint64_t x) { Sleep((x)/1000); }
+#endif
+
 #include <string>
 
 // errorCode usually comes from GetLastError()

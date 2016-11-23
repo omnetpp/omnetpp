@@ -73,7 +73,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
         };
 
         // this is only needed to simplify the Viewpoint hint
-        struct Vec3d {
+        struct SIM_API Vec3d {
             double x, y, z;
             Vec3d() : x(0), y(0), z(0) {}
             Vec3d(double x, double y, double z): x(x), y(y), z(z) {}
@@ -89,7 +89,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
          *
          * @ingroup OSG
          */
-        struct Viewpoint {
+        struct SIM_API Viewpoint {
             /** @name Data members. */
             //@{
             Vec3d eye;    ///< Specifies the position of the eye point.

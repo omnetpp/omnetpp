@@ -84,11 +84,6 @@ WITH_SYSTEMC=no
 SHARED_LIBS=yes
 
 #
-# Set to "yes" to compile with C++ 11 support enabled (-std=c++11)
-#
-USE_CXX11=yes
-
-#
 # Compiler and linker options for Tcl/Tk
 #
 # You can explicitly tell 'configure' which compile switches (TK_CFLAGS)

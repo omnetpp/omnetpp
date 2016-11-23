@@ -137,47 +137,11 @@ else
     OMNETPP_IDE_EXECUTABLE="omnest"
 fi
 
-
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
 
-#
-# Location of various components. They are defined here so that they can be overridden in configure.user.
-#
-
-# determine OMNETPP_ROOT; note that 'case' branches on *build* platform not the host platform
-case $build in
-*-*-cygwin*)
-    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
-    ;;
-*-*-mingw*)
-    OMNETPP_ROOT=`pwd -W`
-    ;;
-*)
-    OMNETPP_ROOT=`pwd`
-    ;;
-esac
-
-OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
-OMNETPP_UI_DIR="$OMNETPP_ROOT/ui"
-OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
-OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
-OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
-OMNETPP_IMAGE_PATH="./bitmaps;./images;$OMNETPP_ROOT/images"
-
-OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
-OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
-OMNETPP_OUT_DIR="$OMNETPP_ROOT/out"
-OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
-
-OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
-
-if test "$cygwin" = yes; then
-    MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
-else
-    MYPWD="pwd"
-fi
+# determine OMNETPP_ROOT
+OMNETPP_ROOT=$(cd $(dirname "$0"); pwd)
 
 #----------------------
 # Read user settings (and allow override the above settings)
@@ -208,15 +172,14 @@ LIB_PREFIX="lib"
 #----------------------
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP}
-CXXFLAGS=${CXXFLAGS:-}
+CXXFLAGS=${CXXFLAGS:- -std=c++11}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-no}
-USE_CXX11=${USE_CXX11:-yes}
-PREFER_QTENV=${PREFER_QTENV:-no}
+PREFER_QTENV=${PREFER_QTENV:-yes}
 WITH_QTENV=${WITH_QTENV:-yes}
 WITH_TKENV=${WITH_TKENV:-yes}
-
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
 SMC=${SMC:-opp_smc}
@@ -224,11 +187,7 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 LN=${LN:-ln -sf}
 MKPATH=${MKPATH:-mkdir -p}
 SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
-
 JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
-
-# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
-CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
 
 # Build shared library by default
 SHARED_LIBS=${SHARED_LIBS:-yes}
@@ -236,113 +195,13 @@ SHARED_LIBS=${SHARED_LIBS:-yes}
 # No SystemC support by default
 WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 
+LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
+LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
+LDFLAG_LIB=${LDFLAG_LIB:--l}
+LDFLAG_IMPLIB=${LDFLAG_IMPLIB:--Wl,--out-implib,}
+ARFLAG_OUT=${ARFLAG_OUT:-}
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
-
-#-------------------------------
-#  Figure out the host platform
-#-------------------------------
-if test "$TOOLCHAIN" = "mingw"; then
-    # cross compiling for mingw
-    mingw=yes
-    jni_platform=win32
-    PLATFORM=win32.x86
-    EXE_SUFFIX=".exe"
-    SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-    LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc"
-else
-    jni_platform=$host_os
-    case $host in
-    *-*-cygwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
-        cygwin=yes
-        jni_platform=win32
-        PLATFORM=win32.x86
-        EXE_SUFFIX=".exe"
-        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # on NT, set total stack size
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
-        ;;
-    i686-*-mingw*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
-        mingw=yes
-        jni_platform=win32
-        PLATFORM=win32.x86
-        # add /; to the beginning of the path to prevent MSYS to convert from POSIX to WINDOWS path
-        # when the variable is passed to tkenv.cc. See bug#785
-        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
-        EXE_SUFFIX=".exe"
-        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
-        # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
-
-        # If we are building on windows (native compile) we have to add the /usr/lib and
-        # /usr/include directories as they are not added by default, but they are needed
-        # to properly find the Tcl/Tk, LibXML2 libraries.
-        if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
-        fi
-            # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
-            # /usr/lib directory as that would interfere with the native build.
-        ;;
-    x86_64-*-mingw*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
-        mingw=yes
-        jni_platform=win32
-        PLATFORM=win32.x86_64
-        # add /; to the beginning of the path to prevent MSYS to convert from POSIX to WINDOWS path
-        # when the variable is passed to tkenv.cc. See bug#785
-        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
-        EXE_SUFFIX=".exe"
-        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
-        # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
-
-        # If we are building on windows (native compile) we have to add the /usr/lib and
-        # /usr/include directories as they are not added by default, but they are needed
-        # to properly find the Tcl/Tk, LibXML2 libraries.
-        if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
-        fi
-            # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
-            # /usr/lib directory as that would interfere with the native build.
-        ;;
-    x86_64-*-linux*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux64"
-        jni_platform=linux
-        PLATFORM=linux.x86_64
-        ;;
-    *-linux*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux32"
-        # add long file support on 32 bit linux
-        DEFINES="$DEFINES -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
-        jni_platform=linux
-        PLATFORM=linux.x86
-        ;;
-    *darwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
-        CFLAGS_ARCH="$CFLAGS_ARCH -isystem $OMNETPP_TOOLS_DIR/include"
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
-        jni_platform=
-        PLATFORM=macosx
-        SO_LIB_SUFFIX=".dylib"
-        JNI_LIB_SUFFIX=".jnilib"
-        ;;
-    *)
-        ;;
-    esac
-fi
-
-# check if the user wants to use Qtenv by default instead of Tkenv
-if test "$PREFER_QTENV" = "yes"; then
-    DEFINES="$DEFINES -DPREFER_QTENV"
-fi
 
 #----------------------
 # Check compiler
@@ -354,11 +213,11 @@ if test "$TOOLCHAIN" = "mingw"; then
 else
     # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
     cc_candidates="icc gcc clang cc xlc"
-    cxx_candidates="icpc g++ clang++ c++ cxx xlC"
+    cxx_candidates="icpc g++ clang++ clang c++ cxx xlC"
     if test "$PREFER_CLANG" = "yes"; then
       # if we prefer clang over gcc put it at the beginning so it will be detected first
       cc_candidates="clang $cc_candidates"
-      cxx_candidates="clang++ $cxx_candidates"
+      cxx_candidates="clang++ clang $cxx_candidates"
     fi
 fi
 
@@ -415,42 +274,127 @@ else
     AC_PROG_RANLIB
 fi
 
-
 # determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
-if test "$TOOLCHAIN_NAME" = ""; then
-    if test "$mingw" = yes; then
-        TOOLCHAIN_NAME="gcc"
-    elif test "$cygwin" = yes; then
-        TOOLCHAIN_NAME="cygwin"
-    else
-        # toolchain name: compiler ($CC) without path
-        # note: doubling the brackets is needed, otherwise M4 swallows them!
-        TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![[ :]]!_!'g`
-    fi
+if test "$CC" = "clang" -a "$($CC --version | grep windows-msvc)" != ""; then
+    # detect if we happen to have Microsoft's Clang/C2 compiler detected
+    TOOLCHAIN_NAME="clangc2"
+else
+    # toolchain name: compiler ($CC) without path
+    # note: doubling the brackets is needed, otherwise M4 swallows them!
+    TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![[ :]]!_!'g`
 fi
 
-# FIXME: this is a temporary workaround for mingw/clang 3.7. The optimizer crashes if an optimization
-# higher than -O0 is specified. This should be removed once clang 3.8 fixes this.
-if test "$mingw" = yes -a "$CC" = clang; then
-  CFLAGS_RELEASE="$CFLAGS_RELEASE -O0"
+#-------------------------------
+#  Figure out the host platform
+#-------------------------------
+if test "$TOOLCHAIN" = "mingw"; then
+    # cross compiling for mingw
+    mingw=yes
+    jni_platform=win32
+    PLATFORM=win32.x86
+    EXE_SUFFIX=".exe"
+    SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+    LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc"
+else
+    jni_platform=$host_os
+    case $host in
+    i686-*-mingw*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
+        mingw=yes
+        jni_platform=win32
+        PLATFORM=win32.x86
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
+        # otherwise exceptions can't be thrown across dll boundaries
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
+
+        # If we are building on windows (native compile) we have to add the /usr/lib and
+        # /usr/include directories as they are not added by default, but they are needed
+        # to properly find the Tcl/Tk, LibXML2 libraries.
+        if test "$cross_compiling" = no ; then
+            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
+        fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
+        ;;
+    x86_64-*-mingw*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
+        mingw=yes
+        jni_platform=win32
+        PLATFORM=win32.x86_64
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        if test "$TOOLCHAIN_NAME" = "clangc2"; then
+            DEFINES="$DEFINES -D_MT -D_WINDOWS -D_WIN32 -DWIN32 -DWIN64 -D_USRDLL -D_WINDLL -D_DLL"
+            CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-declarations -isystem /visualc/include"
+            CXXFLAGS="-std=c++14 -fcxx-exceptions"
+            LDFLAG_LIBPATH="-Wl,-libpath:"
+            LDFLAG_INCLUDE="-Wl,-include:"
+            LDFLAG_LIB="-Wl,-wholearchive:"
+            LDFLAG_IMPLIB="-Wl,-implib:"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,-libpath:/visualc/lib -Wl,-nodefaultlib:libcmt -lmsvcrt -loldnames -lmsvcprt"
+            AR="lib -nologo"
+            ARFLAG_OUT="-out:"
+            RANLIB="test"
+            A_LIB_SUFFIX=".lib"
+            LIB_PREFIX=""
+        else # mingw compiler (clang or gcc)
+            # on MinGW dll auto importing MUST be used with shared gcc and stdc++
+            # otherwise exceptions can't be thrown across dll boundaries
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
+
+            # If we are building on windows (native compile) we have to add the /usr/lib and
+            # /usr/include directories as they are not added by default, but they are needed
+            # to properly find the Tcl/Tk, LibXML2 libraries.
+            if test "$cross_compiling" = no ; then
+                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
+                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
+            fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
+        fi
+        ;;
+    x86_64-*-linux*)
+        OMNETPP_TOOLS_DIR="\$(OMNETPP_TOOLS_DIR)/linux64"
+        jni_platform=linux
+        PLATFORM=linux.x86_64
+        ;;
+    *-linux*)
+        OMNETPP_TOOLS_DIR="\$(OMNETPP_TOOLS_DIR)/linux32"
+        # add long file support on 32 bit linux
+        DEFINES="$DEFINES -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+        jni_platform=linux
+        PLATFORM=linux.x86
+        ;;
+    *darwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
+        CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
+        CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
+        LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
+        jni_platform=
+        PLATFORM=macosx
+        SO_LIB_SUFFIX=".dylib"
+        JNI_LIB_SUFFIX=".jnilib"
+        ;;
+    *)
+        ;;
+    esac
 fi
 
-# test if we are running on mingw using gcc as we have t force the use of shared libgcc
+# test if we are running on mingw using gcc as we have to force the use of shared libgcc
 if test "$mingw" = yes -a "$CC" = "gcc"; then
   LDFLAGS_ARCH="$LDFLAGS_ARCH -shared-libgcc"
 fi
 
 #----------------------
-# check whether the compiler supports the C++11 standard (gcc/clang specific option)
+# check if clang is used as we want to specify -Wno-deprecated-register to avoid warning from generated code
 #----------------------
-if test "$USE_CXX11" = "yes"; then
-  AC_PROG_CXX_OPTION(-std=c++11, CXXFLAGS="$CXXFLAGS -std=c++11")
-fi
-
-#----------------------
-# check if clang++ is used as we wnat to specify -Wno-deprecated-register to avoid warning from generated code
-#----------------------
-if test "$CXX" = "clang++"; then
+if test "$CC" = "clang"; then
   CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-register"
 fi
 
@@ -461,12 +405,15 @@ AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_ARCH="$CFLAGS_ARCH -fno-stack-pr
 
 #----------------------
 # check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib
-# if the program does not reference a symbol from the lib.
+# if the program does not reference a symbol from the lib. ClangC2 compiler does not support this, but accept it
+# so we exclude it from testing.
 #----------------------
-AS_NEEDED_OFF=-Wl,--no-as-needed
-AC_PROG_CXX_OPTION($AS_NEEDED_OFF, ,AS_NEEDED_OFF="")
-AS_NEEDED_ON=-Wl,--as-needed
-AC_PROG_CXX_OPTION($AS_NEEDED_ON, ,AS_NEEDED_ON="")
+if test "$TOOLCHAIN_NAME" != "clangc2"; then
+  AS_NEEDED_OFF=-Wl,--no-as-needed
+  AC_PROG_CXX_OPTION($AS_NEEDED_OFF, ,AS_NEEDED_OFF="")
+  AS_NEEDED_ON=-Wl,--as-needed
+  AC_PROG_CXX_OPTION($AS_NEEDED_ON, ,AS_NEEDED_ON="")
+fi
 
 #----------------------
 # check if swapcontext() call is available (used for coroutines)
@@ -489,12 +436,10 @@ AC_MSG_CHECKING(if shared libs need -fPIC)
 echo 'int x;' >conftest.cc
 echo 'int getX() {return x;}' >>conftest.cc
 fpic="x"
-if echo $CFLAGS_DEBUG | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
-   if echo $CFLAGS_RELEASE | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
-        AC_MSG_RESULT([skip (already in CFLAGS)])
-        fpic=""
-        PIC_FLAGS=-fPIC
-   fi
+if echo $CFLAGS | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+    AC_MSG_RESULT([skip (already in CFLAGS)])
+    fpic=""
+    PIC_FLAGS=-fPIC
 fi
 if test "$fpic" = "x" && \
    $CXX -c conftest.cc >/dev/null 2>/dev/null && \
@@ -522,8 +467,7 @@ if test "$fpic" = "x"; then
    AC_MSG_WARN([COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs])
    SHARED_LIBS="no"
 else
-   CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
+   CFLAGS="$CFLAGS $fpic"
    SHLIB_LD="$SHLIB_LD $fpic"
    PIC_FLAGS="$fpic"
 fi
@@ -576,7 +520,7 @@ then
    then
       if ./conftest >/dev/null 2>/dev/null; then
          AC_MSG_RESULT(both)
-         LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
+         LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--export-dynamic"
          silly_ok="yes"
       fi
    fi
@@ -690,20 +634,6 @@ rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 
 #----------------------
-# Check Cygwin
-#----------------------
-if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
-   AC_MSG_ERROR([WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!])
-fi
-
-#----------------------
-# set arch specific flags
-#----------------------
-CFLAGS_DEBUG="$CFLAGS_DEBUG $DEPENDFLAGS $CFLAGS_ARCH"
-CFLAGS_RELEASE="$CFLAGS_RELEASE $DEPENDFLAGS $CFLAGS_ARCH"
-LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
-
-#----------------------
 # Check for rpath
 #----------------------
 # add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
@@ -772,28 +702,30 @@ AC_CHECK_PROG(SWIG, swig, swig, not found)
 
 SYS_LIBS=""
 
-# math functions
-OPP_CHECK_LIB(math, math.h, floor(0), , , math_ok)
-if test $math_ok = no; then
-   OPP_CHECK_LIB(math, math.h, floor(0), , -lm, math_ok, SYS_LIBS="-lm $SYS_LIBS")
-fi
-if test $math_ok = no; then
-   AC_MSG_ERROR([Standard C math library -lm not found])
-fi
+if test "$TOOLCHAIN_NAME" != "clangc2"; then
+  # math functions
+  OPP_CHECK_LIB(math, math.h, floor(0), , , math_ok)
+  if test $math_ok = no; then
+     OPP_CHECK_LIB(math, math.h, floor(0), , -lm, math_ok, SYS_LIBS="-lm $SYS_LIBS")
+  fi
+  if test $math_ok = no; then
+     AC_MSG_ERROR([Standard C math library -lm not found])
+  fi
 
-# Check for standard C++ library
-OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
-# standard C++ library for clang on Mac
-if test $stdcpp_ok = no; then
-    OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lc++, stdcpp_ok, SYS_LIBS="-lc++ $SYS_LIBS")
-fi
-# standard C++ library for the intel compiler
-if test $stdcpp_ok = no; then
-    OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
-fi
-if test $stdcpp_ok = no; then
-   AC_MSG_ERROR([Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found])
-fi
+  # Check for standard C++ library
+  OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
+  # standard C++ library for clang on Mac
+  if test $stdcpp_ok = no; then
+      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lc++, stdcpp_ok, SYS_LIBS="-lc++ $SYS_LIBS")
+  fi
+  # standard C++ library for the intel compiler
+  if test $stdcpp_ok = no; then
+      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
+  fi
+  if test $stdcpp_ok = no; then
+     AC_MSG_ERROR([Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found])
+  fi
+fi # end clangc2
 
 # dlopen()
 OPP_CHECK_LIB(dlopen, dlfcn.h, dlopen("",0), , , dl_ok)
@@ -807,58 +739,55 @@ else
    AC_MSG_WARN([no dlopen(): dynamic loading of libs not possible])
 fi
 
-# winsock (for MinGW)
-OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS="-lwsock32 $SYS_LIBS")
-
-# Cmdenv is always used
-ALL_ENV_LIBS='$(CMDENV_LIBS)'
-
 #-----------------------------
 # Check for Qt cflags and libs
 #-----------------------------
-if test "$WITH_QTENV" != "yes"; then
-    # skip building Qtenv
-    QTENV_IF_POSSIBLE=missing-dependency
-else
+if test "$WITH_QTENV" = "yes"; then
     # Check for qmake.
-    AC_PATH_PROGS(QMAKE, qmake qmake-qt5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
+    AC_PATH_PROGS(QMAKE, qmake qmake-qt5 qmake5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
 
     if test "$QMAKE" = nope; then
-        AC_MSG_WARN([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location.]) # XXX maybe we should ask the user the QMAKE binary including name, not just path?
-        QTENV_IF_POSSIBLE=missing-dependency
+        AC_MSG_ERROR([Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5 qmake5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location.]) # XXX maybe we should ask the user the QMAKE binary including name, not just path?
     else
-        OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE, -lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL, qt_ok, QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL")
+        AC_PATH_PROGS(MOC, moc moc-qt5 moc5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
+        AC_PATH_PROGS(UIC, uic uic-qt5 uic5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
+        AC_PATH_PROGS(RCC, rcc rcc-qt5 rcc5, nope, path = $QT_PATH$PATH_SEPARATOR$PATH )
+        QT_INSTALL_HEADERS=`$QMAKE -query QT_INSTALL_HEADERS`
+        QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
+        QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
+        QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS -Wl,-rpath=$QT_INSTALL_LIBS"}
 
-        # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
-        # we have to link with those libraries when we are linking the Qtenv shared libs.
-        # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
-        # detect Qt5 on mingw32
+QT_VERSIONCHECK_CODE=$(cat <<-EOT
+    qVersion();
+    #if QT_VERSION < QT_VERSION_CHECK(5,4,0)
+    #error
+    #endif
+EOT
+)
+        OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
+
+        # Test on Windows/MinGW toolchain
         if test $qt_ok = no; then
-          OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE, -I/mingw32/include/qt5, -lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5, qt_ok, QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5" QT_CFLAGS="-I/mingw32/include/qt5")
+            QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5"
+            OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
         fi
+
         # Test on Mac OS X using the local QT framework
         if test $qt_ok = no; then
-            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE, -framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL, qt_ok, QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL -framework QtWidgets -framework QtPrintSupport")
+            QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
+            OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $LDFLAGS_TOOLS_MACOSX $QT_LIBS, qt_ok)
         fi
+
         # finally fall back to use pkg-config (if available)
         if test $qt_ok = no; then
-            QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
             QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL"
-
-            QT_CFLAGS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`
-            QT_LIBS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs`
-            QT_LIBS_PKG_CONFIG+=" -Wl,-rpath=$QT_INSTALL_LIBS"
-            
-            # WHY ARE THE CFLAGS INCLUDED TWICE?!?!?! AND NOT EVEN ONCE IF I LEAVE THEM OUT!?
-            OPP_CHECK_LIB(Qt5, QtCore/QtGlobal, qVersion(), $CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG, $QT_LIBS_PKG_CONFIG, qt_ok, QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG")
+            QT_CFLAGS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`"
+            QT_LIBS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs` -Wl,-rpath=$QT_INSTALL_LIBS"
+            OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
         fi
         if test $qt_ok = no; then
-            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user.])
+            AC_MSG_ERROR([Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.4. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user.])
         fi
-        ALL_ENV_LIBS+=' $(QTENV_LIBS)'
-        QTENV_IF_POSSIBLE=qtenv
-        # models can detect whether Qtenv is present based on the presence of WITH_QTENV macro
-        DEFINES="$DEFINES -DWITH_QTENV"
     fi
 fi # WITH_QTENV
 
@@ -867,38 +796,17 @@ fi # WITH_QTENV
 # and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
 #-----------------------------
 if test "$WITH_OSG" = "yes"; then
-  if test -z "$OSG_LIBS"; then
-    OSG_LIBS="-losg -losgGA -losgViewer -losgUtil -lOpenThreads"
-  fi
-  OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS_RELEASE $OSG_CFLAGS, $OSG_LIBS, osg_ok)
+  OSG_LIBS=${OSG_LIBS:-"-losg -losgDB -losgGA -losgViewer -losgUtil -lOpenThreads"}
+  OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS $CFLAGS_ARCH $OSG_CFLAGS $CFLAGS_TOOLS_MACOSX, $LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSG_LIBS, osg_ok)
   if test $osg_ok = no; then
-    OSG_LIBS=""
     AC_MSG_ERROR([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. Set WITH_OSG=no in configure.user to disable this feature or install the development package for OpenSceneGraph.])
   else
-      # OpenSceneGraph found
-      # on Linux we have to link the executables directly with these libs
-      if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
-        SYS_LIBS+=" $OSG_LIBS"
-      fi
-      # models can detect whether OSG is present based on the presence of WITH_OSG macro
-      DEFINES="$DEFINES -DWITH_OSG"
-
       # detect osgEarth, too
       if test "$WITH_OSGEARTH" = "yes"; then
-        if test -z "$OSGEARTH_LIBS"; then
-            OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
-        fi
-        OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS_RELEASE $OSGEARTH_CFLAGS, $OSGEARTH_LIBS, osgearth_ok)
+        OSGEARTH_LIBS=${OSGEARTH_LIBS:-"-losgEarth -losgEarthUtil"}
+        OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS $CFLAGS_ARCH $OSGEARTH_CFLAGS $CFLAGS_TOOLS_MACOSX, $LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSGEARTH_LIBS, osgearth_ok)
         if test $osgearth_ok = no; then
-          OSGEARTH_LIBS=""
           AC_MSG_ERROR([Cannot find osgEarth. Set WITH_OSGEARTH=no in configure.user to disable this feature or install osgEarth.])
-        else
-            # on Linux we have to link the executables directly with these libs
-            if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
-              SYS_LIBS+=" $OSGEARTH_LIBS"
-            fi
-            # models can detect whether osgEarth is present based on the presence of WITH_OSGEARTH macro
-            DEFINES="$DEFINES -DWITH_OSGEARTH"
         fi
       fi # WITH_OSGEARTH
   fi
@@ -907,11 +815,7 @@ fi # WITH_OSG
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
-if test "$WITH_TKENV" != "yes"; then
-    # skip testing for TCL
-    TKENV_IF_POSSIBLE=missing-dependency
-else
-
+if test "$WITH_TKENV" = "yes"; then
    if test -d /usr/include/tcl8.6; then
         TK_CFLAGS86=${TK_CFLAGS:-"-I/usr/include/tcl8.6"}
    fi
@@ -921,12 +825,16 @@ else
 
    if test -n "$TK_LIBS"; then
         OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
+   elif test "$TOOLCHAIN_NAME" = "clangc2"; then
+        # check on clang/c2 toolchain
+        OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $CFLAGS_ARCH, $LDFLAGS_ARCH -ltk86 -ltcl86,
+                          tcltk_ok, TK_LIBS="-ltk86 -ltcl86" TK_CFLAGS="")
    else
         # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
-        OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS86, -ltk8.6 -ltcl8.6,
+        OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $TK_CFLAGS86, -ltk8.6 -ltcl8.6,
                           tcltk_ok, TK_LIBS="-ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86)
         if test $tcltk_ok = no; then
-           OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $TK_CFLAGS85, -ltk8.5 -ltcl8.5,
+           OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS $TK_CFLAGS85, -ltk8.5 -ltcl8.5,
                           tcltk_ok, TK_LIBS="-ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85)
         fi
         # look for X window libs and headers
@@ -946,49 +854,37 @@ else
             fi
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk86 -ltcl86,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk86 -ltcl86,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86")
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk8.6 -ltcl8.6,
+            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk8.6 -ltcl8.6,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86")
-        fi
-        if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86, $opp_x11lib -lcygtk86 -lcygtcl86,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86")
         fi
         # check for 8.5
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk85 -ltcl85,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk85 -ltcl85,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85")
         fi
         if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk8.5 -ltcl8.5,
+            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk8.5 -ltcl8.5,
                           tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85")
-        fi
-        if test $tcltk_ok = no -a "$cygwin" = yes; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85, $opp_x11lib -lcygtk85 -lcygtcl85,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85")
         fi
     fi
 
     if test $tcltk_ok = no; then
         # try to give a hint in the error message about the problem
         if test "$no_x" = "yes"; then
-            if test "$cygwin" = yes; then
-                AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages.])
-            else
-                AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
-            fi
+            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
         else
-            AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts. Version 8.4.0+ and devel package required. Check config.log for more info!])
+            AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts. Version 8.6.0+ and devel package required. Check config.log for more info!])
         fi
     fi
 
     # Check for wish.
-    AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5 cygwish cygwish86 cygwish85, nope)
+    AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5, nope)
     if test "$WISH" = nope; then
-       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5 cygwish cygwish86 cygwish85)])
+       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5)])
     fi
     if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
         AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you are not running X or DISPLAY environment variable not set?])
@@ -1001,23 +897,18 @@ else
     [tcl_library=`echo 'puts [info library]; exit' | $WISH`]
 
     # if we got through until here, enable building of the following progs:
-    TKENV_IF_POSSIBLE=tkenv
-
-    # and build samples using Tkenv
-    ALL_ENV_LIBS+=' $(TKENV_LIBS)'
-
-    # models can detect whether Tkenv is present based on the presence of WITH_TKENV macro
-    DEFINES="$DEFINES -DWITH_TKENV"
 fi # end of Tcl tests ($WITH_TKENV branch)
 
 #----------------------
 # Check for JRE
 #----------------------
 AC_CHECK_PROGS(JRE, $JRE java, nope)
-AC_CHECK_PROGS(PRIVATE_JRE, $PRIVATE_JRE java, nope, [`pwd`/ide/jre/bin])
-if test "$JRE" = nope -a "$PRIVATE_JRE" = nope; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
-   AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.7 or later. Please install it before configuring])
+if test "$JRE" = nope; then
+    AC_CHECK_PROGS(PRIVATE_JRE, $PRIVATE_JRE java, nope, [`pwd`/ide/jre/bin])
+    if test "$PRIVATE_JRE" = nope; then
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
+        AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.8 or later. Please install it before configuring])
+    fi
 fi
 
 #----------------------
@@ -1026,7 +917,7 @@ fi
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/default-java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-1.6.0-sun /usr/lib/jvm/java-5-sun /usr/lib/jvm/java-1.5.0-sun /usr/java/jdk /Library/Java/Home"
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/default-java /usr/java/jdk /Library/Java/Home"
      for dir in $javahome_candidates; do
          if test "$JAVA_HOME" = "" -a -d "$dir"; then
              JAVA_HOME=$dir
@@ -1048,7 +939,7 @@ if test "$JAVA_CFLAGS" = ""; then
    fi
 fi
 
-OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $CFLAGS_RELEASE $JAVA_CFLAGS, jni_ok)
+OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $CFLAGS $JAVA_CFLAGS, jni_ok)
 
 if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
    JNILIBS_IF_POSSIBLE=missing-dependency
@@ -1061,7 +952,7 @@ fi
 #----------------------
 
 if test -n "$MPI_LIBS"; then
-    OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+    OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
 else
     mpi_ok=no
     # LAM and OpenMPI support mpic++ -showme
@@ -1070,7 +961,7 @@ else
     if test "$MPICPP" != "not found"; then
         MPI_CFLAGS=`mpic++ -showme:compile`
         MPI_LIBS=`mpic++ -showme:link`
-        OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+        OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
     fi
 
     if test $mpi_ok = no; then
@@ -1080,21 +971,19 @@ else
           if test "$MPICXX" != "not found"; then
               MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
               MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
-              OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+              OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
           fi
     fi
 
     if test $mpi_ok = no; then
        mpilibs="-lmpi"   #SGI and mingw (on MinGW modify mpi.h and insert #include <wchar.h> at the top of the file)
-       OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS_RELEASE $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
+       OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
     fi
 fi
 
 if test $mpi_ok = yes; then
-   HAVE_MPI=yes
    DEFINES="$DEFINES -DWITH_MPI"
 else
-   HAVE_MPI=no
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
    AC_MSG_WARN([Optional package MPI (needed for parallel simulation) not found.])
 fi
@@ -1108,11 +997,11 @@ fi
 # otherwise the test program (that links with pcap.lib) brings up a GUI (!)
 # error dialog complaining that wpcap.dll was missing
 case $host in
-*-*-cygwin* | *-*-mingw*)
+  *-*-mingw*)
     # we do not have to test for the DLL if we are cross-compiling because the DLL is obviously not installed
     # on the build system (as it is a non-windows architecture).
     if test "$cross_compiling" = no ; then
-        OPP_CHECK_AND_RUN_LIB(WinPCAP, windows.h, return LoadLibrary("wpcap.dll")==NULL ? 1 : 0, $CFLAGS_RELEASE, , wpcap_dll)
+        OPP_CHECK_AND_RUN_LIB(WinPCAP, windows.h, return LoadLibrary("wpcap.dll")==NULL ? 1 : 0, $CFLAGS, , wpcap_dll)
     else
         wpcap_dll=notneeded
     fi
@@ -1127,20 +1016,14 @@ if test $wpcap_dll = "no"; then
     AC_MSG_NOTICE([WinPCAP not found -- if you need packet capture functionality in your models, install it from winpcap.org])
 else
     if test -n "$PCAP_LIBS"; then
-        OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+        OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
     else
         PCAP_LIBS="-lpcap"
-        OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS_RELEASE $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+        OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
     fi
 fi
 
-if test $pcap_ok = yes; then
-	HAVE_PCAP=yes
-	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS"
-	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS"
-  DEFINES="$DEFINES -DHAVE_PCAP"
-else
-    HAVE_PCAP=no
+if test $pcap_ok = "no"; then
     PCAP_CFLAGS=""
     PCAP_LIBS=""
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  PCAP (optional)"
@@ -1153,13 +1036,12 @@ fi
 #----------------------
 
 if test -n "$PTHREAD_LIBS"; then
-    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
+    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
 else
     PTHREAD_LIBS="-lpthread"
-    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS_RELEASE $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
+    OPP_CHECK_LIB(PTHREAD, pthread.h, pthread_rwlock_rdlock(0), $CFLAGS $PTHREAD_CFLAGS, $PTHREAD_LIBS, pthread_ok)
 fi
 if test $pthread_ok = yes; then
-    HAVE_PTHREAD=yes
     if test "$mingw" = yes; then
         if test "$CC" = gcc; then
             PTHREAD_CFLAGS="$PTHREAD_CFLAGS -mthreads" # add mthread only for GCC but not for clang
@@ -1167,7 +1049,6 @@ if test $pthread_ok = yes; then
         PTHREAD_LIBS="$PTHREAD_LIBS -mthreads"
     fi
 else
-    HAVE_PTHREAD=no
     PTHREAD_CFLAGS=""
     PTHREAD_LIBS=""
 fi
@@ -1176,31 +1057,40 @@ fi
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
 if test -n "$LIBXML_LIBS"; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
 else
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE $LIBXML_CFLAGS, -lxml2,
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS $LIBXML_CFLAGS, -lxml2,
                   libxml_ok, LIBXML_LIBS="-lxml2")
 
     if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/usr/include/libxml2, -lxml2,
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/usr/include/libxml2, -lxml2,
                       libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
 
     # test also in the /mingw32 directory because on MSYS2 this is the default
     if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/mingw32/include/libxml2, -lxml2,
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw32/include/libxml2, -lxml2,
                       libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
     if test $libxml_ok = no; then
-        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_RELEASE -I/mingw64/include/libxml2, -lxml2,
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw64/include/libxml2, -lxml2,
                       libxml_ok, LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2")
     fi
+    # msys/visualc version
+    if test $libxml_ok = no; then
+        OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS_ARCH $CFLAGS -I/visualc/include/libxml2, $LDFLAGS_ARCH -llibxml2,
+                      libxml_ok, LIBXML_CFLAGS="-I/visualc/include/libxml2" LIBXML_LIBS="-llibxml2")
+    fi
 fi
-if test -n "$EXPAT_LIBS"; then
-    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS_RELEASE $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
-else
-    expatlibs="-lexpat"
-    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS_RELEASE $EXPAT_CFLAGS, $expatlibs, expat_ok, EXPAT_LIBS=$expatlibs)
+
+expat_ok=no
+if test $libxml_ok = no; then
+    if test -n "$EXPAT_LIBS"; then
+      OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
+    else
+      expatlibs="-lexpat"
+      OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $CFLAGS $EXPAT_CFLAGS, $expatlibs, expat_ok, EXPAT_LIBS=$expatlibs)
+    fi
 fi
 
 if test $libxml_ok = yes; then
@@ -1220,18 +1110,21 @@ else
     AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
-DEFINES="$DEFINES -DXMLPARSER=$XMLPARSER"
-
 # zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
 if test $libxml_ok = yes -o $expat_ok = yes -o "$WITH_TKENV" = "yes" ; then
     if test "$ZLIB_LIBS" = ""; then
         ZLIB_LIBS=-lz
     fi
-    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
     # on mingw/msys try a different library name
     if test $zlib_ok = no -a "$mingw" = yes; then
         ZLIB_LIBS="-lzlib1"
-        OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_RELEASE $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+        OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+    fi
+    # on clangc2/msys try a different library name
+    if test $zlib_ok = no; then
+        ZLIB_LIBS="-lzlib"
+        OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $CFLAGS_ARCH $CFLAGS $ZLIB_CFLAGS, $LDFLAGS_ARCH $ZLIB_LIBS, zlib_ok)
     fi
     if test $zlib_ok = no; then
         AC_MSG_ERROR([zlib or zlib header file not found, please install it])
@@ -1241,17 +1134,12 @@ fi
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
-if test -z "$AKAROA_CFLAGS"; then
-    AKAROA_CFLAGS="-I/usr/local/akaroa/include"
-fi
-if test -z "$AKAROA_LIBS"; then
-    AKAROA_LIBS="-L/usr/local/akaroa/lib -lakaroa -lfl"
-fi
+AKAROA_CFLAGS=${AKAROA_CFLAGS:-"-I/usr/local/akaroa/include"}
+AKAROA_LIBS=${AKAROA_LIBS:-"-L/usr/local/akaroa/lib -lakaroa -lfl"}
 
-OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS_RELEASE $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
+OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $CFLAGS $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
 if test $akaroa_ok = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS"
+   CFLAGS="$CFLAGS $AKAROA_CFLAGS"
    DEFINES="$DEFINES -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
@@ -1260,20 +1148,10 @@ else
 fi
 
 #----------------------
-# #defines in CFLAGS
+# set final CFLAGS and LDFLAGS variable to be used in Makefile.inc
 #----------------------
-if test "$WITH_PARSIM" = yes; then
-   DEFINES="$DEFINES -DWITH_PARSIM"
-fi
-if test "$WITH_NETBUILDER" = yes; then
-   DEFINES="$DEFINES -DWITH_NETBUILDER"
-fi
-
-#-----------------------
-# add defines to cflags
-#-----------------------
-CFLAGS_DEBUG="\$(DEFINES) $CFLAGS_DEBUG"
-CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
+CFLAGS="$DEPENDFLAGS $CFLAGS $CFLAGS_ARCH \$(DEFINES)"
+LDFLAGS="$LDFLAGS $LDFLAGS_ARCH \$(LDFLAG_LIBPATH)\$(OMNETPP_LIB_DIR)"
 
 #----------------------
 # Files to be generated
@@ -1293,21 +1171,6 @@ AC_SUBST(OMNETPP_VERSION)
 AC_SUBST(OMNETPP_BUILDID)
 AC_SUBST(OMNETPP_EDITION)
 
-AC_SUBST(OMNETPP_ROOT)
-AC_SUBST(OMNETPP_BIN_DIR)
-AC_SUBST(OMNETPP_INCL_DIR)
-AC_SUBST(OMNETPP_OUT_DIR)
-AC_SUBST(OMNETPP_LIB_DIR)
-AC_SUBST(OMNETPP_IMAGE_PATH)
-
-AC_SUBST(OMNETPP_SRC_DIR)
-AC_SUBST(OMNETPP_UI_DIR)
-AC_SUBST(OMNETPP_UTILS_DIR)
-AC_SUBST(OMNETPP_DOC_DIR)
-AC_SUBST(OMNETPP_SAMPLES_DIR)
-AC_SUBST(OMNETPP_TEST_DIR)
-AC_SUBST(OMNETPP_TOOLS_DIR)
-
 AC_SUBST(QMAKE)
 AC_SUBST(PERL)
 AC_SUBST(YACC)
@@ -1317,20 +1180,25 @@ AC_SUBST(CXX)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(CFLAGS_DEBUG)
 AC_SUBST(CFLAGS_RELEASE)
+AC_SUBST(CFLAGS)
 AC_SUBST(DEFINES)
 AC_SUBST(LDFLAGS)
+AC_SUBST(LDFLAG_LIBPATH)
+AC_SUBST(LDFLAG_INCLUDE)
+AC_SUBST(LDFLAG_LIB)
+AC_SUBST(LDFLAG_IMPLIB)
 AC_SUBST(WHOLE_ARCHIVE_ON)
 AC_SUBST(WHOLE_ARCHIVE_OFF)
 AC_SUBST(AS_NEEDED_ON)
 AC_SUBST(AS_NEEDED_OFF)
 AC_SUBST(PIC_FLAGS)
 AC_SUBST(TOOLCHAIN_NAME)
-AC_SUBST(MYPWD)
 AC_SUBST(MSGC)
 AC_SUBST(SMC)
 AC_SUBST(NEDTOOL)
 AC_SUBST(AS)
 AC_SUBST(AR)
+AC_SUBST(ARFLAG_OUT)
 AC_SUBST(RANLIB)
 AC_SUBST(SHLIB_LD)
 AC_SUBST(DLLTOOL)
@@ -1350,11 +1218,9 @@ AC_SUBST(DLL_LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 
-AC_SUBST(WITH_SYSTEMC)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
-AC_SUBST(QT_VERSION)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(OSG_CFLAGS)
@@ -1363,14 +1229,11 @@ AC_SUBST(OSGEARTH_CFLAGS)
 AC_SUBST(OSGEARTH_LIBS)
 AC_SUBST(ZLIB_CFLAGS)
 AC_SUBST(ZLIB_LIBS)
-AC_SUBST(HAVE_MPI)
 AC_SUBST(MPI_CFLAGS)
 AC_SUBST(MPI_LIBS)
-AC_SUBST(HAVE_PCAP)
 AC_SUBST(PCAP_CFLAGS)
 AC_SUBST(PCAP_LIBS)
 AC_SUBST(SYS_LIBS)
-AC_SUBST(HAVE_PTHREAD)
 AC_SUBST(PTHREAD_CFLAGS)
 AC_SUBST(PTHREAD_LIBS)
 
@@ -1381,21 +1244,16 @@ AC_SUBST(XML_LIBS)
 AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
-AC_SUBST(TKENV_IF_POSSIBLE)
-AC_SUBST(QTENV_IF_POSSIBLE)
 AC_SUBST(JNILIBS_IF_POSSIBLE)
 
-AC_SUBST(ALL_ENV_LIBS)
-
 AC_SUBST(EMBED_TCL_CODE)
-AC_SUBST(OMNETPP_TKENV_DIR)
-
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)
 AC_SUBST(WITH_TKENV)
 AC_SUBST(WITH_QTENV)
 AC_SUBST(WITH_OSG)
 AC_SUBST(WITH_OSGEARTH)
+AC_SUBST(WITH_SYSTEMC)
 
 AC_SUBST(JAVA_CFLAGS)
 AC_SUBST(JAVA_LIBS)
@@ -1502,41 +1360,27 @@ fi
 
 #----------------------
 # Check if the path contains omnetpp/bin (it should)
-# Note: the method used here also works with Cygwin, but requires
-# write permission to $OMNETPP_BIN_DIR.
 #----------------------
 
 # first we need to expand the ${HOME} variable and make sure the dir exists..
-omnetpp_bin_dir=`eval echo $OMNETPP_BIN_DIR`
+omnetpp_bin_dir=$OMNETPP_ROOT/bin
 if test ! -d $omnetpp_bin_dir; then
-   echo "PROBLEM: the $OMNETPP_BIN_DIR directory does not exist!"
+   echo "PROBLEM: the $omnetpp_bin_dir directory does not exist!"
 else
   # ...then we create a small tmp file to check if the dir is in the path
   probefile=__probe__
   echo '' >$omnetpp_bin_dir/$probefile
   chmod +x  $omnetpp_bin_dir/$probefile
   if ($probefile) >/dev/null 2>/dev/null; then
-    echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
+    echo "Your PATH contains $omnetpp_bin_dir. Good!"
   else
-    if test "$cygwin" = yes; then
-      opp_bin_dir=`cygpath -u $OMNETPP_BIN_DIR`
-      if test -z "$opp_bin_dir"; then opp_bin_dir=$OMNETPP_BIN_DIR; fi
-      cat 1>&2 << EOT
+    cat 1>&2 << EOT
 
-WARNING: your PATH doesn't contain $opp_bin_dir!
-Add the following line to your startup file, $HOME/.bash_profile:
-  export PATH=\$PATH:$opp_bin_dir
-
-EOT
-    else
-      cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $OMNETPP_BIN_DIR!
+WARNING: your PATH doesn't contain $omnetpp_bin_dir!
 Add the following line to your .profile or .bash_profile (provided you use bash):
-  export PATH=\$PATH:$OMNETPP_BIN_DIR
+  export PATH=\$PATH:$omnetpp_bin_dir
 
 EOT
-    fi
   fi
   rm $omnetpp_bin_dir/$probefile
 fi

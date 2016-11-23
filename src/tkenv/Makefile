@@ -4,29 +4,18 @@
 
 include ../../Makefile.inc
 
-# Make sure that output locations are set
-ifeq ("$(strip $(OMNETPP_BIN_DIR))","")
-$(error OMNETPP_BIN_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_OUT_DIR))","")
-$(error OMNETPP_OUT_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
-$(error OMNETPP_LIB_DIR must be correctly set)
-endif
-
 #
 # Local definitions
 #
-LIBNAME=libopptkenv$D
-O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/tkenv
-L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
+LIBNAME=$(LIB_PREFIX)opptkenv$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/tkenv
+L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-COPTS=$(CFLAGS) $(INCL_FLAGS) $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV
+COPTS=$(CFLAGS) $(INCL_FLAGS) $(TK_CFLAGS) $(ZLIB_CFLAGS)
 
-IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(TK_LIBS) $(ZLIB_LIBS)
+IMPLIBS= -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o $O/logbuffer.o \
        $O/inspectorfactory.o $O/genericobjectinspector.o $O/watchinspector.o $O/canvasinspector.o \
@@ -36,18 +25,22 @@ OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o $O/l
        $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
 
 ifeq ("$(EMBED_TCL_CODE)","yes")
-TKENV_EMBED_SUFFIX=-e
+  TKENV_EMBED_SUFFIX=-e
 else
-TKENV_EMBED_SUFFIX=
+  TKENV_EMBED_SUFFIX=
 endif
 
 # Required only on Mac OS X
 ifeq ("$(PLATFORM)", "macosx")
-COPTS += -framework Carbon
-LDFLAGS += -framework Carbon
-OBJS += $O/osxproctype.o
+  COPTS += -framework Carbon
+  LDFLAGS += -framework Carbon
+  OBJS += $O/osxproctype.o
 endif
 
+# macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
+EXPORT_MACRO = -DTKENV_EXPORT
+
+.PHONY : all clean tkenv skip tcl-libs build install
 #
 # Automatic rules
 #
@@ -56,43 +49,44 @@ endif
 $O/%.o: %.c
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CC) -c $(COPTS) -o $@ $<
+	$(Q)$(CC) -c $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
 
 $O/%.o: %.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
 
 #
 # Targets
 #
-all: $(TKENV_IF_POSSIBLE)
+all: $(TKENV_TARGET)
 
-tkenv : $L/$(LIBNAME)$(LIB_SUFFIX)
-	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
+tkenv : install
 
-$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS) tcl-libs
+install: build tcl-libs
 	@mkdir -p $L
+	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
+	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :
+	-$(Q)$(SHLIB_POSTPROCESS) $L/$(LIBNAME)$(SO_LIB_SUFFIX) 2>/dev/null || :
+	-$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR) 2>/dev/null || :
+
+build : $O/$(LIBNAME)$(LIB_SUFFIX)
+
+$O/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $O
 	@echo Creating static library: $@
-	$(Q)$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
-$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS) tcl-libs
-	@mkdir -p $L
+$O/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $O
 	@echo Creating shared library: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
-	$(Q)$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
-	$(Q)rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
-	$(Q)$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
 
-$L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS) tcl-libs
-	@mkdir -p $L
+$O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $O
 	@echo Creating DLL: $@
-	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
-	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
-	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
 
 tcl-libs:
 	@echo Copying Tcl extensions to lib/
@@ -104,25 +98,24 @@ endif
 $O/tkenv.o : tkenv.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_LIB_DIR="\"$(OMNETPP_LIB_DIR)\"" -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" tkenv.cc -o $O/tkenv.o
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -DOMNETPP_LIB_DIR="\"$(OMNETPP_LIB_DIR)\"" -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" tkenv.cc -o $O/tkenv.o
 
 $O/tkenv-e.o : tkenv.cc tclcode.cc
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -DOMNETPP_LIB_DIR="\"$(OMNETPP_LIB_DIR)\"" tkenv.cc -o $O/tkenv-e.o
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -DOMNETPP_LIB_DIR="\"$(OMNETPP_LIB_DIR)\"" tkenv.cc -o $O/tkenv-e.o
 
 tclcode.cc: *.tcl tcl2c.pl
 	@# clearlooksimg.tcl must precede clearlooks.tcl (tcl2c filters out duplicates)
 	$(PERL) tcl2c.pl tclcode.cc clearlooksimg.tcl *.tcl
 
-missing-dependency:
-	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
-	@echo '  *** Install it, then run ./configure again.'
+skip:
+	@echo '  *** WITH_TKENV=no -- skipping Tkenv.'
 
 clean:
 	$(qecho) Cleaning...
 	$(Q)rm -f tclcode.cc
 	$(Q)rm -rf $O
-	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
+	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*
 
 -include $(OBJS:%.o=%.d)

@@ -18,7 +18,7 @@
 #define __OMNETPP_QTENV_LOGFINDDIALOG_H
 
 #include <QDialog>
-#include <textviewerwidget.h>
+#include "textviewerwidget.h"
 
 namespace Ui {
 class LogFindDialog;

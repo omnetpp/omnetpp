@@ -7,6 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
+#include <algorithm>
+
 #include "Host.h"
 
 namespace aloha {

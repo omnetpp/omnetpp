@@ -128,7 +128,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     virtual void recordModules(cModule *module);
     virtual void recordConnections(cModule *module);
 
-    virtual const char *getFileName() const { return filename.c_str(); }
+    virtual const char *getFileName() const override { return filename.c_str(); }
 
     /** @name Functions called from cEnvir's similar functions */
     //@{

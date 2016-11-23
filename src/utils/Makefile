@@ -4,27 +4,17 @@
 
 include ../../Makefile.inc
 
-# Make sure that output locations are set
-ifeq ("$(strip $(OMNETPP_BIN_DIR))","")
-$(error OMNETPP_BIN_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_OUT_DIR))","")
-$(error OMNETPP_OUT_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
-$(error OMNETPP_LIB_DIR must be correctly set)
-endif
-
 #
 # Local definitions
 #
-O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/utils
-L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/utils
+L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
 COPTS=$(CFLAGS) $(INCL_FLAGS)
 
+.PHONY : all clean
 #
 # Rules
 #
@@ -57,15 +47,20 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	@# next line is for samples/rundemo
 	$(Q)echo $(WISH) >$(HOME)/.wishname
 
-$O/opp_lcg32_seedtool$(EXE_SUFFIX) : opp_lcg32_seedtool.cc
+$O/%.o: %.cc
 	@mkdir -p $O
-	@echo Creating executable: $@
-	$(Q)$(CXX) $(COPTS)  opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
+	$(qecho) "$<"
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 
-$O/abspath$(EXE_SUFFIX) : abspath.cc
+$O/opp_lcg32_seedtool$(EXE_SUFFIX) : $O/opp_lcg32_seedtool.o
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) $(COPTS)  abspath.cc -o $O/abspath$(EXE_SUFFIX)
+	$(Q)$(CXX) $(LDFLAGS) $O/opp_lcg32_seedtool.o -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
+
+$O/abspath$(EXE_SUFFIX) : $O/abspath.o
+	@mkdir -p $O
+	@echo Creating executable: $@
+	$(Q)$(CXX) $(LDFLAGS) $O/abspath.o -o $O/abspath$(EXE_SUFFIX)
 
 clean:
 	$(qecho) Cleaning...

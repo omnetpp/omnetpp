@@ -23,6 +23,7 @@
 #include <csignal>
 #include <cstdio>
 #include <string>
+#include <algorithm>
 
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"

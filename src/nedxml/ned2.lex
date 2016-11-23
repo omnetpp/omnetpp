@@ -42,6 +42,7 @@ S  [ \t\v\n\r\f]
 
 /* the following option keeps isatty() out */
 %option never-interactive
+%option nounistd
 
 /*%option debug*/
 

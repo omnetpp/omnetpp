@@ -587,18 +587,15 @@ LIBOBJS
 PLATFORM
 JAVA_LIBS
 JAVA_CFLAGS
+WITH_SYSTEMC
 WITH_OSGEARTH
 WITH_OSG
 WITH_QTENV
 WITH_TKENV
 WITH_PARSIM
 WITH_NETBUILDER
-OMNETPP_TKENV_DIR
 EMBED_TCL_CODE
-ALL_ENV_LIBS
 JNILIBS_IF_POSSIBLE
-QTENV_IF_POSSIBLE
-TKENV_IF_POSSIBLE
 AKAROA_LIBS
 AKAROA_CFLAGS
 XML_LIBS
@@ -606,14 +603,11 @@ XML_CFLAGS
 XMLPARSER
 PTHREAD_LIBS
 PTHREAD_CFLAGS
-HAVE_PTHREAD
 SYS_LIBS
 PCAP_LIBS
 PCAP_CFLAGS
-HAVE_PCAP
 MPI_LIBS
 MPI_CFLAGS
-HAVE_MPI
 ZLIB_LIBS
 ZLIB_CFLAGS
 OSGEARTH_LIBS
@@ -622,11 +616,9 @@ OSG_LIBS
 OSG_CFLAGS
 QT_LIBS
 QT_CFLAGS
-QT_VERSION
 TK_LIBS
 TK_CFLAGS
 HAVE_DLOPEN
-WITH_SYSTEMC
 LIB_PREFIX
 EXE_SUFFIX
 DLL_LIB_SUFFIX
@@ -642,34 +634,25 @@ MAKEDEPEND
 STRIP
 DLLTOOL
 SHLIB_LD
+ARFLAG_OUT
 AR
 AS
 NEDTOOL
 SMC
 MSGC
-MYPWD
 TOOLCHAIN_NAME
 PIC_FLAGS
 AS_NEEDED_OFF
 AS_NEEDED_ON
 WHOLE_ARCHIVE_OFF
 WHOLE_ARCHIVE_ON
+LDFLAG_IMPLIB
+LDFLAG_LIB
+LDFLAG_INCLUDE
+LDFLAG_LIBPATH
 DEFINES
 CFLAGS_RELEASE
 CFLAGS_DEBUG
-OMNETPP_TOOLS_DIR
-OMNETPP_TEST_DIR
-OMNETPP_SAMPLES_DIR
-OMNETPP_DOC_DIR
-OMNETPP_UTILS_DIR
-OMNETPP_UI_DIR
-OMNETPP_SRC_DIR
-OMNETPP_IMAGE_PATH
-OMNETPP_LIB_DIR
-OMNETPP_OUT_DIR
-OMNETPP_INCL_DIR
-OMNETPP_BIN_DIR
-OMNETPP_ROOT
 OMNETPP_EDITION
 OMNETPP_BUILDID
 OMNETPP_VERSION
@@ -682,6 +665,9 @@ JRE
 WISH
 CXXCPP
 XMKMF
+RCC
+UIC
+MOC
 QMAKE
 SWIG
 PERL
@@ -730,6 +716,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -809,6 +796,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE}'
@@ -1061,6 +1049,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1198,7 +1195,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1351,6 +1348,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -2234,47 +2232,11 @@ else
     OMNETPP_IDE_EXECUTABLE="omnest"
 fi
 
-
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
 
-#
-# Location of various components. They are defined here so that they can be overridden in configure.user.
-#
-
-# determine OMNETPP_ROOT; note that 'case' branches on *build* platform not the host platform
-case $build in
-*-*-cygwin*)
-    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
-    ;;
-*-*-mingw*)
-    OMNETPP_ROOT=`pwd -W`
-    ;;
-*)
-    OMNETPP_ROOT=`pwd`
-    ;;
-esac
-
-OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
-OMNETPP_UI_DIR="$OMNETPP_ROOT/ui"
-OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
-OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
-OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
-OMNETPP_IMAGE_PATH="./bitmaps;./images;$OMNETPP_ROOT/images"
-
-OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
-OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
-OMNETPP_OUT_DIR="$OMNETPP_ROOT/out"
-OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
-
-OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
-
-if test "$cygwin" = yes; then
-    MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
-else
-    MYPWD="pwd"
-fi
+# determine OMNETPP_ROOT
+OMNETPP_ROOT=$(cd $(dirname "$0"); pwd)
 
 #----------------------
 # Read user settings (and allow override the above settings)
@@ -2308,15 +2270,14 @@ LIB_PREFIX="lib"
 #----------------------
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
+CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP}
-CXXFLAGS=${CXXFLAGS:-}
+CXXFLAGS=${CXXFLAGS:- -std=c++11}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-no}
-USE_CXX11=${USE_CXX11:-yes}
-PREFER_QTENV=${PREFER_QTENV:-no}
+PREFER_QTENV=${PREFER_QTENV:-yes}
 WITH_QTENV=${WITH_QTENV:-yes}
 WITH_TKENV=${WITH_TKENV:-yes}
-
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
 SMC=${SMC:-opp_smc}
@@ -2324,11 +2285,7 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 LN=${LN:-ln -sf}
 MKPATH=${MKPATH:-mkdir -p}
 SHLIB_POSTPROCESS=${SHLIB_POSTPROCESS:-opp_shlib_postprocess}
-
 JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
-
-# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
-CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
 
 # Build shared library by default
 SHARED_LIBS=${SHARED_LIBS:-yes}
@@ -2336,113 +2293,13 @@ SHARED_LIBS=${SHARED_LIBS:-yes}
 # No SystemC support by default
 WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 
+LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
+LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
+LDFLAG_LIB=${LDFLAG_LIB:--l}
+LDFLAG_IMPLIB=${LDFLAG_IMPLIB:--Wl,--out-implib,}
+ARFLAG_OUT=${ARFLAG_OUT:-}
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
-
-#-------------------------------
-#  Figure out the host platform
-#-------------------------------
-if test "$TOOLCHAIN" = "mingw"; then
-    # cross compiling for mingw
-    mingw=yes
-    jni_platform=win32
-    PLATFORM=win32.x86
-    EXE_SUFFIX=".exe"
-    SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-    LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc"
-else
-    jni_platform=$host_os
-    case $host in
-    *-*-cygwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
-        cygwin=yes
-        jni_platform=win32
-        PLATFORM=win32.x86
-        EXE_SUFFIX=".exe"
-        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # on NT, set total stack size
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
-        ;;
-    i686-*-mingw*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
-        mingw=yes
-        jni_platform=win32
-        PLATFORM=win32.x86
-        # add /; to the beginning of the path to prevent MSYS to convert from POSIX to WINDOWS path
-        # when the variable is passed to tkenv.cc. See bug#785
-        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
-        EXE_SUFFIX=".exe"
-        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
-        # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
-
-        # If we are building on windows (native compile) we have to add the /usr/lib and
-        # /usr/include directories as they are not added by default, but they are needed
-        # to properly find the Tcl/Tk, LibXML2 libraries.
-        if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
-        fi
-            # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
-            # /usr/lib directory as that would interfere with the native build.
-        ;;
-    x86_64-*-mingw*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
-        mingw=yes
-        jni_platform=win32
-        PLATFORM=win32.x86_64
-        # add /; to the beginning of the path to prevent MSYS to convert from POSIX to WINDOWS path
-        # when the variable is passed to tkenv.cc. See bug#785
-        OMNETPP_IMAGE_PATH="/;$OMNETPP_IMAGE_PATH"
-        EXE_SUFFIX=".exe"
-        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
-        # otherwise exceptions can't be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
-
-        # If we are building on windows (native compile) we have to add the /usr/lib and
-        # /usr/include directories as they are not added by default, but they are needed
-        # to properly find the Tcl/Tk, LibXML2 libraries.
-        if test "$cross_compiling" = no ; then
-            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
-        fi
-            # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
-            # /usr/lib directory as that would interfere with the native build.
-        ;;
-    x86_64-*-linux*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux64"
-        jni_platform=linux
-        PLATFORM=linux.x86_64
-        ;;
-    *-linux*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/linux32"
-        # add long file support on 32 bit linux
-        DEFINES="$DEFINES -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
-        jni_platform=linux
-        PLATFORM=linux.x86
-        ;;
-    *darwin*)
-        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
-        CFLAGS_ARCH="$CFLAGS_ARCH -isystem $OMNETPP_TOOLS_DIR/include"
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
-        jni_platform=
-        PLATFORM=macosx
-        SO_LIB_SUFFIX=".dylib"
-        JNI_LIB_SUFFIX=".jnilib"
-        ;;
-    *)
-        ;;
-    esac
-fi
-
-# check if the user wants to use Qtenv by default instead of Tkenv
-if test "$PREFER_QTENV" = "yes"; then
-    DEFINES="$DEFINES -DPREFER_QTENV"
-fi
 
 #----------------------
 # Check compiler
@@ -2454,11 +2311,11 @@ if test "$TOOLCHAIN" = "mingw"; then
 else
     # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
     cc_candidates="icc gcc clang cc xlc"
-    cxx_candidates="icpc g++ clang++ c++ cxx xlC"
+    cxx_candidates="icpc g++ clang++ clang c++ cxx xlC"
     if test "$PREFER_CLANG" = "yes"; then
       # if we prefer clang over gcc put it at the beginning so it will be detected first
       cc_candidates="clang $cc_candidates"
-      cxx_candidates="clang++ $cxx_candidates"
+      cxx_candidates="clang++ clang $cxx_candidates"
     fi
 fi
 
@@ -3495,82 +3352,134 @@ fi
 
 fi
 
-
 # determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
-if test "$TOOLCHAIN_NAME" = ""; then
-    if test "$mingw" = yes; then
-        TOOLCHAIN_NAME="gcc"
-    elif test "$cygwin" = yes; then
-        TOOLCHAIN_NAME="cygwin"
-    else
-        # toolchain name: compiler ($CC) without path
-        # note: doubling the brackets is needed, otherwise M4 swallows them!
-        TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![ :]!_!'g`
-    fi
+if test "$CC" = "clang" -a "$($CC --version | grep windows-msvc)" != ""; then
+    # detect if we happen to have Microsoft's Clang/C2 compiler detected
+    TOOLCHAIN_NAME="clangc2"
+else
+    # toolchain name: compiler ($CC) without path
+    # note: doubling the brackets is needed, otherwise M4 swallows them!
+    TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![ :]!_!'g`
 fi
 
-# FIXME: this is a temporary workaround for mingw/clang 3.7. The optimizer crashes if an optimization
-# higher than -O0 is specified. This should be removed once clang 3.8 fixes this.
-if test "$mingw" = yes -a "$CC" = clang; then
-  CFLAGS_RELEASE="$CFLAGS_RELEASE -O0"
+#-------------------------------
+#  Figure out the host platform
+#-------------------------------
+if test "$TOOLCHAIN" = "mingw"; then
+    # cross compiling for mingw
+    mingw=yes
+    jni_platform=win32
+    PLATFORM=win32.x86
+    EXE_SUFFIX=".exe"
+    SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+    LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc"
+else
+    jni_platform=$host_os
+    case $host in
+    i686-*-mingw*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win32"
+        mingw=yes
+        jni_platform=win32
+        PLATFORM=win32.x86
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
+        # otherwise exceptions can't be thrown across dll boundaries
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
+
+        # If we are building on windows (native compile) we have to add the /usr/lib and
+        # /usr/include directories as they are not added by default, but they are needed
+        # to properly find the Tcl/Tk, LibXML2 libraries.
+        if test "$cross_compiling" = no ; then
+            CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
+        fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
+        ;;
+    x86_64-*-mingw*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/win64"
+        mingw=yes
+        jni_platform=win32
+        PLATFORM=win32.x86_64
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        if test "$TOOLCHAIN_NAME" = "clangc2"; then
+            DEFINES="$DEFINES -D_MT -D_WINDOWS -D_WIN32 -DWIN32 -DWIN64 -D_USRDLL -D_WINDLL -D_DLL"
+            CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-declarations -isystem /visualc/include"
+            CXXFLAGS="-std=c++14 -fcxx-exceptions"
+            LDFLAG_LIBPATH="-Wl,-libpath:"
+            LDFLAG_INCLUDE="-Wl,-include:"
+            LDFLAG_LIB="-Wl,-wholearchive:"
+            LDFLAG_IMPLIB="-Wl,-implib:"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,-libpath:/visualc/lib -Wl,-nodefaultlib:libcmt -lmsvcrt -loldnames -lmsvcprt"
+            AR="lib -nologo"
+            ARFLAG_OUT="-out:"
+            RANLIB="test"
+            A_LIB_SUFFIX=".lib"
+            LIB_PREFIX=""
+        else # mingw compiler (clang or gcc)
+            # on MinGW dll auto importing MUST be used with shared gcc and stdc++
+            # otherwise exceptions can't be thrown across dll boundaries
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -L/usr/bin"
+
+            # If we are building on windows (native compile) we have to add the /usr/lib and
+            # /usr/include directories as they are not added by default, but they are needed
+            # to properly find the Tcl/Tk, LibXML2 libraries.
+            if test "$cross_compiling" = no ; then
+                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
+                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
+            fi
+            # NOTE: if we are cross-compiling we may need to add the lib and include path
+            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # /usr/lib directory as that would interfere with the native build.
+        fi
+        ;;
+    x86_64-*-linux*)
+        OMNETPP_TOOLS_DIR="\$(OMNETPP_TOOLS_DIR)/linux64"
+        jni_platform=linux
+        PLATFORM=linux.x86_64
+        ;;
+    *-linux*)
+        OMNETPP_TOOLS_DIR="\$(OMNETPP_TOOLS_DIR)/linux32"
+        # add long file support on 32 bit linux
+        DEFINES="$DEFINES -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+        jni_platform=linux
+        PLATFORM=linux.x86
+        ;;
+    *darwin*)
+        OMNETPP_TOOLS_DIR="$OMNETPP_ROOT/tools/macosx"
+        CFLAGS_ARCH="$CFLAGS_ARCH -isystem \$(OMNETPP_TOOLS_DIR)/include"
+        CFLAGS_TOOLS_MACOSX="-isystem $OMNETPP_TOOLS_DIR/include"
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
+        LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
+        jni_platform=
+        PLATFORM=macosx
+        SO_LIB_SUFFIX=".dylib"
+        JNI_LIB_SUFFIX=".jnilib"
+        ;;
+    *)
+        ;;
+    esac
 fi
 
-# test if we are running on mingw using gcc as we have t force the use of shared libgcc
+# test if we are running on mingw using gcc as we have to force the use of shared libgcc
 if test "$mingw" = yes -a "$CC" = "gcc"; then
   LDFLAGS_ARCH="$LDFLAGS_ARCH -shared-libgcc"
 fi
 
 #----------------------
-# check whether the compiler supports the C++11 standard (gcc/clang specific option)
+# check if clang is used as we want to specify -Wno-deprecated-register to avoid warning from generated code
 #----------------------
-if test "$USE_CXX11" = "yes"; then
-
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -std=c++11" >&5
-$as_echo_n "checking whether $CXX supports -std=c++11... " >&6; }
-    ac_save_CXX="$CXX"
-    CXX="$CXX -std=c++11"
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        CXX="$ac_save_CXX"
-        CXXFLAGS="$CXXFLAGS -std=c++11"
-
-else
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        CXX="$ac_save_CXX"
-
-
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-fi
-
-#----------------------
-# check if clang++ is used as we wnat to specify -Wno-deprecated-register to avoid warning from generated code
-#----------------------
-if test "$CXX" = "clang++"; then
+if test "$CC" = "clang"; then
   CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-register"
 fi
 
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
+
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-stack-protector" >&5
 $as_echo_n "checking whether $CXX supports -fno-stack-protector... " >&6; }
@@ -3608,9 +3517,11 @@ rm -f core conftest.err conftest.$ac_objext \
 
 #----------------------
 # check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib
-# if the program does not reference a symbol from the lib.
+# if the program does not reference a symbol from the lib. ClangC2 compiler does not support this, but accept it
+# so we exclude it from testing.
 #----------------------
-AS_NEEDED_OFF=-Wl,--no-as-needed
+if test "$TOOLCHAIN_NAME" != "clangc2"; then
+  AS_NEEDED_OFF=-Wl,--no-as-needed
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $AS_NEEDED_OFF" >&5
 $as_echo_n "checking whether $CXX supports $AS_NEEDED_OFF... " >&6; }
@@ -3645,7 +3556,7 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 
-AS_NEEDED_ON=-Wl,--as-needed
+  AS_NEEDED_ON=-Wl,--as-needed
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $AS_NEEDED_ON" >&5
 $as_echo_n "checking whether $CXX supports $AS_NEEDED_ON... " >&6; }
@@ -3680,6 +3591,7 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 
+fi
 
 #----------------------
 # check if swapcontext() call is available (used for coroutines)
@@ -3713,13 +3625,11 @@ $as_echo_n "checking if shared libs need -fPIC... " >&6; }
 echo 'int x;' >conftest.cc
 echo 'int getX() {return x;}' >>conftest.cc
 fpic="x"
-if echo $CFLAGS_DEBUG | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
-   if echo $CFLAGS_RELEASE | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: skip (already in CFLAGS)" >&5
+if echo $CFLAGS | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: skip (already in CFLAGS)" >&5
 $as_echo "skip (already in CFLAGS)" >&6; }
-        fpic=""
-        PIC_FLAGS=-fPIC
-   fi
+    fpic=""
+    PIC_FLAGS=-fPIC
 fi
 if test "$fpic" = "x" && \
    $CXX -c conftest.cc >/dev/null 2>/dev/null && \
@@ -3752,8 +3662,7 @@ $as_echo "failure" >&6; }
 $as_echo "$as_me: WARNING: COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs" >&2;}
    SHARED_LIBS="no"
 else
-   CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
+   CFLAGS="$CFLAGS $fpic"
    SHLIB_LD="$SHLIB_LD $fpic"
    PIC_FLAGS="$fpic"
 fi
@@ -3842,7 +3751,7 @@ $as_echo "not needed" >&6; }
       if ./conftest >/dev/null 2>/dev/null; then
          { $as_echo "$as_me:${as_lineno-$LINENO}: result: both" >&5
 $as_echo "both" >&6; }
-         LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
+         LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--export-dynamic"
          silly_ok="yes"
       fi
    fi
@@ -3980,20 +3889,6 @@ $as_echo "test failed" >&6; }
 fi
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
-
-#----------------------
-# Check Cygwin
-#----------------------
-if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
-   as_fn_error $? "WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!" "$LINENO" 5
-fi
-
-#----------------------
-# set arch specific flags
-#----------------------
-CFLAGS_DEBUG="$CFLAGS_DEBUG $DEPENDFLAGS $CFLAGS_ARCH"
-CFLAGS_RELEASE="$CFLAGS_RELEASE $DEPENDFLAGS $CFLAGS_ARCH"
-LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
 #----------------------
 # Check for rpath
@@ -4393,7 +4288,8 @@ fi
 
 SYS_LIBS=""
 
-# math functions
+if test "$TOOLCHAIN_NAME" != "clangc2"; then
+  # math functions
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4428,7 +4324,7 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-if test $math_ok = no; then
+  if test $math_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4463,12 +4359,12 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-fi
-if test $math_ok = no; then
-   as_fn_error $? "Standard C math library -lm not found" "$LINENO" 5
-fi
+  fi
+  if test $math_ok = no; then
+     as_fn_error $? "Standard C math library -lm not found" "$LINENO" 5
+  fi
 
-# Check for standard C++ library
+  # Check for standard C++ library
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4503,8 +4399,8 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-# standard C++ library for clang on Mac
-if test $stdcpp_ok = no; then
+  # standard C++ library for clang on Mac
+  if test $stdcpp_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4539,9 +4435,9 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-fi
-# standard C++ library for the intel compiler
-if test $stdcpp_ok = no; then
+  fi
+  # standard C++ library for the intel compiler
+  if test $stdcpp_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4576,10 +4472,11 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-fi
-if test $stdcpp_ok = no; then
-   as_fn_error $? "Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found" "$LINENO" 5
-fi
+  fi
+  if test $stdcpp_ok = no; then
+     as_fn_error $? "Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa or -lc++ not found" "$LINENO" 5
+  fi
+fi # end clangc2
 
 # dlopen()
 
@@ -4660,54 +4557,12 @@ else
 $as_echo "$as_me: WARNING: no dlopen(): dynamic loading of libs not possible" >&2;}
 fi
 
-# winsock (for MinGW)
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS=""
-   LIBS="-lwsock32"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for winsock with CFLAGS=\"\" LIBS=\"-lwsock32\"" >&5
-$as_echo_n "checking for winsock with CFLAGS=\"\" LIBS=\"-lwsock32\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <winsock.h>
-int
-main ()
-{
-socket(0,0,0);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; wsock_ok=yes; SYS_LIBS="-lwsock32 $SYS_LIBS"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; wsock_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-
-# Cmdenv is always used
-ALL_ENV_LIBS='$(CMDENV_LIBS)'
-
 #-----------------------------
 # Check for Qt cflags and libs
 #-----------------------------
-if test "$WITH_QTENV" != "yes"; then
-    # skip building Qtenv
-    QTENV_IF_POSSIBLE=missing-dependency
-else
+if test "$WITH_QTENV" = "yes"; then
     # Check for qmake.
-    for ac_prog in qmake qmake-qt5
+    for ac_prog in qmake qmake-qt5 qmake5
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -4755,34 +4610,182 @@ test -n "$QMAKE" || QMAKE="nope"
 
 
     if test "$QMAKE" = nope; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&5
-$as_echo "$as_me: WARNING: Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." >&2;} # XXX maybe we should ask the user the QMAKE binary including name, not just path?
-        QTENV_IF_POSSIBLE=missing-dependency
+        as_fn_error $? "Qtenv cannot find qmake -- maybe it is not in the PATH or has some exotic name (tested names were: qmake qmake-qt5 qmake5) - disabling Qtenv. You can try setting the QT_PATH variable in configure.user to a valid location." "$LINENO" 5 # XXX maybe we should ask the user the QMAKE binary including name, not just path?
     else
+        for ac_prog in moc moc-qt5 moc5
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_MOC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $MOC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_MOC="$MOC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_MOC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+MOC=$ac_cv_path_MOC
+if test -n "$MOC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MOC" >&5
+$as_echo "$MOC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$MOC" && break
+done
+test -n "$MOC" || MOC="nope"
+
+        for ac_prog in uic uic-qt5 uic5
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_UIC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $UIC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_UIC="$UIC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_UIC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+UIC=$ac_cv_path_UIC
+if test -n "$UIC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $UIC" >&5
+$as_echo "$UIC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$UIC" && break
+done
+test -n "$UIC" || UIC="nope"
+
+        for ac_prog in rcc rcc-qt5 rcc5
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_RCC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $RCC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_RCC="$RCC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in path = $QT_PATH$PATH_SEPARATOR$PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_RCC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+RCC=$ac_cv_path_RCC
+if test -n "$RCC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $RCC" >&5
+$as_echo "$RCC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$RCC" && break
+done
+test -n "$RCC" || RCC="nope"
+
+        QT_INSTALL_HEADERS=`$QMAKE -query QT_INSTALL_HEADERS`
+        QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
+        QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
+        QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS -Wl,-rpath=$QT_INSTALL_LIBS"}
+
+QT_VERSIONCHECK_CODE=$(cat <<-EOT
+    qVersion();
+    #if QT_VERSION < QT_VERSION_CHECK(5,4,0)
+    #error
+    #endif
+EOT
+)
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE"
-   LIBS="-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL"
+   CXXFLAGS="$CXXFLAGS $CFLAGS $QT_CFLAGS"
+   LIBS="$QT_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <QtCore/QtGlobal>
+#include <QtGlobal>
 int
 main ()
 {
-qVersion();
+$QT_VERSIONCHECK_CODE;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL"
+$as_echo "yes" >&6; }; qt_ok=yes;
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; qt_ok=no;
@@ -4794,38 +4797,36 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
 
-        # look for Qt libraries. NOTE: we need to detect libs only (i.e. flags for the linking) as
-        # we have to link with those libraries when we are linking the Qtenv shared libs.
-        # The actual qtenv build proecess is done by qmake which has its own detection mechnanism for headers and compiler flags
-        # detect Qt5 on mingw32
+        # Test on Windows/MinGW toolchain
         if test $qt_ok = no; then
+            QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE"
-   LIBS="-I/mingw32/include/qt5"
+   CXXFLAGS="$CXXFLAGS $CFLAGS $QT_CFLAGS"
+   LIBS="$QT_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-I/mingw32/include/qt5\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-I/mingw32/include/qt5\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <QtCore/QtGlobal>
+#include <QtGlobal>
 int
 main ()
 {
-qVersion();
+$QT_VERSIONCHECK_CODE;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; -lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5=yes; qt_ok
+$as_echo "yes" >&6; }; qt_ok=yes;
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; -lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5=no; QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5" QT_CFLAGS="-I/mingw32/include/qt5"
+$as_echo "no" >&6; }; qt_ok=no;
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
@@ -4834,32 +4835,34 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
         fi
+
         # Test on Mac OS X using the local QT framework
         if test $qt_ok = no; then
+            QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE"
-   LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
+   CXXFLAGS="$CXXFLAGS $CFLAGS $QT_CFLAGS"
+   LIBS="$LDFLAGS_TOOLS_MACOSX $QT_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE\" LIBS=\"-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$LDFLAGS_TOOLS_MACOSX $QT_LIBS\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$LDFLAGS_TOOLS_MACOSX $QT_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <QtCore/QtGlobal>
+#include <QtGlobal>
 int
 main ()
 {
-qVersion();
+$QT_VERSIONCHECK_CODE;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; qt_ok=yes; QT_LIBS="-framework QtGui -framework QtCore -framework QtOpenGL -framework QtWidgets -framework QtPrintSupport"
+$as_echo "yes" >&6; }; qt_ok=yes;
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; qt_ok=no;
@@ -4871,40 +4874,36 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
         fi
+
         # finally fall back to use pkg-config (if available)
         if test $qt_ok = no; then
-            QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
             QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL"
-
-            QT_CFLAGS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`
-            QT_LIBS_PKG_CONFIG=`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs`
-            QT_LIBS_PKG_CONFIG+=" -Wl,-rpath=$QT_INSTALL_LIBS"
-
-            # WHY ARE THE CFLAGS INCLUDED TWICE?!?!?! AND NOT EVEN ONCE IF I LEAVE THEM OUT!?
+            QT_CFLAGS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`"
+            QT_LIBS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs` -Wl,-rpath=$QT_INSTALL_LIBS"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG"
-   LIBS="$QT_LIBS_PKG_CONFIG"
+   CXXFLAGS="$CXXFLAGS $CFLAGS $QT_CFLAGS"
+   LIBS="$QT_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG\" LIBS=\"$QT_LIBS_PKG_CONFIG\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS_RELEASE $QT_CFLAGS_PKG_CONFIG\" LIBS=\"$QT_LIBS_PKG_CONFIG\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"" >&5
+$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <QtCore/QtGlobal>
+#include <QtGlobal>
 int
 main ()
 {
-qVersion();
+$QT_VERSIONCHECK_CODE;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; qt_ok=yes; QT_CFLAGS="$QT_CFLAGS_PKG_CONFIG" QT_LIBS="$QT_LIBS_PKG_CONFIG"
+$as_echo "yes" >&6; }; qt_ok=yes;
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; qt_ok=no;
@@ -4917,12 +4916,8 @@ rm -f core conftest.err conftest.$ac_objext \
 
         fi
         if test $qt_ok = no; then
-            as_fn_error $? "Cannot build Qt apps, probably due to missing Qt packages. Make sure Qt development packages are installed. You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user." "$LINENO" 5
+            as_fn_error $? "Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.4. You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user." "$LINENO" 5
         fi
-        ALL_ENV_LIBS+=' $(QTENV_LIBS)'
-        QTENV_IF_POSSIBLE=qtenv
-        # models can detect whether Qtenv is present based on the presence of WITH_QTENV macro
-        DEFINES="$DEFINES -DWITH_QTENV"
     fi
 fi # WITH_QTENV
 
@@ -4931,18 +4926,16 @@ fi # WITH_QTENV
 # and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
 #-----------------------------
 if test "$WITH_OSG" = "yes"; then
-  if test -z "$OSG_LIBS"; then
-    OSG_LIBS="-losg -losgGA -losgViewer -losgUtil -lOpenThreads"
-  fi
+  OSG_LIBS=${OSG_LIBS:-"-losg -losgDB -losgGA -losgViewer -losgUtil -lOpenThreads"}
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $OSG_CFLAGS"
-   LIBS="$OSG_LIBS"
+   CXXFLAGS="$CFLAGS $CFLAGS_ARCH $OSG_CFLAGS $CFLAGS_TOOLS_MACOSX"
+   LIBS="$LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSG_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenSceneGraph with CFLAGS=\"$CFLAGS_RELEASE $OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"" >&5
-$as_echo_n "checking for OpenSceneGraph with CFLAGS=\"$CFLAGS_RELEASE $OSG_CFLAGS\" LIBS=\"$OSG_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenSceneGraph with CFLAGS=\"$CFLAGS $CFLAGS_ARCH $OSG_CFLAGS $CFLAGS_TOOLS_MACOSX\" LIBS=\"$LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSG_LIBS\"" >&5
+$as_echo_n "checking for OpenSceneGraph with CFLAGS=\"$CFLAGS $CFLAGS_ARCH $OSG_CFLAGS $CFLAGS_TOOLS_MACOSX\" LIBS=\"$LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSG_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4969,31 +4962,20 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
   if test $osg_ok = no; then
-    OSG_LIBS=""
     as_fn_error $? "Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. Set WITH_OSG=no in configure.user to disable this feature or install the development package for OpenSceneGraph." "$LINENO" 5
   else
-      # OpenSceneGraph found
-      # on Linux we have to link the executables directly with these libs
-      if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
-        SYS_LIBS+=" $OSG_LIBS"
-      fi
-      # models can detect whether OSG is present based on the presence of WITH_OSG macro
-      DEFINES="$DEFINES -DWITH_OSG"
-
       # detect osgEarth, too
       if test "$WITH_OSGEARTH" = "yes"; then
-        if test -z "$OSGEARTH_LIBS"; then
-            OSGEARTH_LIBS="-losgEarth -losgEarthUtil"
-        fi
+        OSGEARTH_LIBS=${OSGEARTH_LIBS:-"-losgEarth -losgEarthUtil"}
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $OSGEARTH_CFLAGS"
-   LIBS="$OSGEARTH_LIBS"
+   CXXFLAGS="$CFLAGS $CFLAGS_ARCH $OSGEARTH_CFLAGS $CFLAGS_TOOLS_MACOSX"
+   LIBS="$LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSGEARTH_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for osgEarth with CFLAGS=\"$CFLAGS_RELEASE $OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"" >&5
-$as_echo_n "checking for osgEarth with CFLAGS=\"$CFLAGS_RELEASE $OSGEARTH_CFLAGS\" LIBS=\"$OSGEARTH_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for osgEarth with CFLAGS=\"$CFLAGS $CFLAGS_ARCH $OSGEARTH_CFLAGS $CFLAGS_TOOLS_MACOSX\" LIBS=\"$LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSGEARTH_LIBS\"" >&5
+$as_echo_n "checking for osgEarth with CFLAGS=\"$CFLAGS $CFLAGS_ARCH $OSGEARTH_CFLAGS $CFLAGS_TOOLS_MACOSX\" LIBS=\"$LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSGEARTH_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5020,15 +5002,7 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
         if test $osgearth_ok = no; then
-          OSGEARTH_LIBS=""
           as_fn_error $? "Cannot find osgEarth. Set WITH_OSGEARTH=no in configure.user to disable this feature or install osgEarth." "$LINENO" 5
-        else
-            # on Linux we have to link the executables directly with these libs
-            if test "$PLATFORM" = "linux.x86" -o "$PLATFORM" = "linux.x86_64"; then
-              SYS_LIBS+=" $OSGEARTH_LIBS"
-            fi
-            # models can detect whether osgEarth is present based on the presence of WITH_OSGEARTH macro
-            DEFINES="$DEFINES -DWITH_OSGEARTH"
         fi
       fi # WITH_OSGEARTH
   fi
@@ -5037,11 +5011,7 @@ fi # WITH_OSG
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
-if test "$WITH_TKENV" != "yes"; then
-    # skip testing for TCL
-    TKENV_IF_POSSIBLE=missing-dependency
-else
-
+if test "$WITH_TKENV" = "yes"; then
    if test -d /usr/include/tcl8.6; then
         TK_CFLAGS86=${TK_CFLAGS:-"-I/usr/include/tcl8.6"}
    fi
@@ -5084,17 +5054,53 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+   elif test "$TOOLCHAIN_NAME" = "clangc2"; then
+        # check on clang/c2 toolchain
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS $CFLAGS_ARCH"
+   LIBS="$LDFLAGS_ARCH -ltk86 -ltcl86"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $CFLAGS_ARCH\" LIBS=\"$LDFLAGS_ARCH -ltk86 -ltcl86\"" >&5
+$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $CFLAGS_ARCH\" LIBS=\"$LDFLAGS_ARCH -ltk86 -ltcl86\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk86 -ltcl86" TK_CFLAGS=""
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; tcltk_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
    else
         # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS86"
+   CXXFLAGS="$CFLAGS $TK_CFLAGS86"
    LIBS="-ltk8.6 -ltcl8.6"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"" >&5
+$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5125,11 +5131,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $TK_CFLAGS85"
+   CXXFLAGS="$CFLAGS $TK_CFLAGS85"
    LIBS="-ltk8.5 -ltcl8.5"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
+$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5503,11 +5509,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86"
+   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -ltk86 -ltcl86"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"" >&5
+$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5539,11 +5545,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86"
+   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS86"
    LIBS="$opp_x11lib -ltk8.6 -ltcl8.6"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"" >&5
+$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5570,53 +5576,17 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
         fi
-        if test $tcltk_ok = no -a "$cygwin" = yes; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86"
-   LIBS="$opp_x11lib -lcygtk86 -lcygtcl86"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -lcygtk86 -lcygtcl86\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
         # check for 8.5
         if test $tcltk_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85"
+   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -ltk85 -ltcl85"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"" >&5
+$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5648,11 +5618,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85"
+   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS85"
    LIBS="$opp_x11lib -ltk8.5 -ltcl8.5"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"" >&5
+$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5679,59 +5649,19 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
         fi
-        if test $tcltk_ok = no -a "$cygwin" = yes; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85"
-   LIBS="$opp_x11lib -lcygtk85 -lcygtcl85"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS_RELEASE $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -lcygtk85 -lcygtcl85\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
     fi
 
     if test $tcltk_ok = no; then
         # try to give a hint in the error message about the problem
         if test "$no_x" = "yes"; then
-            if test "$cygwin" = yes; then
-                as_fn_error $? "Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages." "$LINENO" 5
-            else
-                as_fn_error $? "Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!" "$LINENO" 5
-            fi
+            as_fn_error $? "Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!" "$LINENO" 5
         else
-            as_fn_error $? "Tcl/Tk not found, needed for all GUI parts. Version 8.4.0+ and devel package required. Check config.log for more info!" "$LINENO" 5
+            as_fn_error $? "Tcl/Tk not found, needed for all GUI parts. Version 8.6.0+ and devel package required. Check config.log for more info!" "$LINENO" 5
         fi
     fi
 
     # Check for wish.
-    for ac_prog in $WISH wish wish86 wish8.6 wish85 wish8.5 cygwish cygwish86 cygwish85
+    for ac_prog in $WISH wish wish86 wish8.6 wish85 wish8.5
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -5775,7 +5705,7 @@ done
 test -n "$WISH" || WISH="nope"
 
     if test "$WISH" = nope; then
-       as_fn_error $? "Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5 cygwish cygwish86 cygwish85)" "$LINENO" 5
+       as_fn_error $? "Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5)" "$LINENO" 5
     fi
     if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
         as_fn_error $? "Cannot run wish (wish command \"puts OK; exit\" failed): maybe you are not running X or DISPLAY environment variable not set?" "$LINENO" 5
@@ -5788,13 +5718,6 @@ test -n "$WISH" || WISH="nope"
     tcl_library=`echo 'puts [info library]; exit' | $WISH`
 
     # if we got through until here, enable building of the following progs:
-    TKENV_IF_POSSIBLE=tkenv
-
-    # and build samples using Tkenv
-    ALL_ENV_LIBS+=' $(TKENV_LIBS)'
-
-    # models can detect whether Tkenv is present based on the presence of WITH_TKENV macro
-    DEFINES="$DEFINES -DWITH_TKENV"
 fi # end of Tcl tests ($WITH_TKENV branch)
 
 #----------------------
@@ -5843,7 +5766,8 @@ fi
 done
 test -n "$JRE" || JRE="nope"
 
-for ac_prog in $PRIVATE_JRE java
+if test "$JRE" = nope; then
+    for ac_prog in $PRIVATE_JRE java
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -5886,10 +5810,11 @@ fi
 done
 test -n "$PRIVATE_JRE" || PRIVATE_JRE="nope"
 
-if test "$JRE" = nope -a "$PRIVATE_JRE" = nope; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.7 or later. Please install it before configuring" >&5
-$as_echo "$as_me: WARNING: Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.7 or later. Please install it before configuring" >&2;}
+    if test "$PRIVATE_JRE" = nope; then
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.8 or later. Please install it before configuring" >&5
+$as_echo "$as_me: WARNING: Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.8 or later. Please install it before configuring" >&2;}
+    fi
 fi
 
 #----------------------
@@ -5898,7 +5823,7 @@ fi
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/default-java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-1.6.0-sun /usr/lib/jvm/java-5-sun /usr/lib/jvm/java-1.5.0-sun /usr/java/jdk /Library/Java/Home"
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/default-java /usr/java/jdk /Library/Java/Home"
      for dir in $javahome_candidates; do
          if test "$JAVA_HOME" = "" -a -d "$dir"; then
              JAVA_HOME=$dir
@@ -5923,10 +5848,10 @@ fi
 
 
    save_CXXFLAGS=$CXXFLAGS
-   CXXFLAGS="$CFLAGS_RELEASE $JAVA_CFLAGS"
+   CXXFLAGS="$CFLAGS $JAVA_CFLAGS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JNI with CFLAGS=\"$CFLAGS_RELEASE $JAVA_CFLAGS\"" >&5
-$as_echo_n "checking for JNI with CFLAGS=\"$CFLAGS_RELEASE $JAVA_CFLAGS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JNI with CFLAGS=\"$CFLAGS $JAVA_CFLAGS\"" >&5
+$as_echo_n "checking for JNI with CFLAGS=\"$CFLAGS $JAVA_CFLAGS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -5966,11 +5891,11 @@ if test -n "$MPI_LIBS"; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   CXXFLAGS="$CFLAGS $MPI_CFLAGS"
    LIBS="$LDFLAGS $MPI_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
-$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
+$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6045,11 +5970,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   CXXFLAGS="$CFLAGS $MPI_CFLAGS"
    LIBS="$LDFLAGS $MPI_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
-$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
+$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6125,11 +6050,11 @@ fi
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   CXXFLAGS="$CFLAGS $MPI_CFLAGS"
    LIBS="$LDFLAGS $MPI_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
-$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"" >&5
+$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $MPI_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6164,11 +6089,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $MPI_CFLAGS"
+   CXXFLAGS="$CFLAGS $MPI_CFLAGS"
    LIBS="$LDFLAGS $mpilibs"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $mpilibs\"" >&5
-$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS_RELEASE $MPI_CFLAGS\" LIBS=\"$LDFLAGS $mpilibs\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $mpilibs\"" >&5
+$as_echo_n "checking for MPI with CFLAGS=\"$CFLAGS $MPI_CFLAGS\" LIBS=\"$LDFLAGS $mpilibs\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6198,10 +6123,8 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 
 if test $mpi_ok = yes; then
-   HAVE_MPI=yes
    DEFINES="$DEFINES -DWITH_MPI"
 else
-   HAVE_MPI=no
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Optional package MPI (needed for parallel simulation) not found." >&5
 $as_echo "$as_me: WARNING: Optional package MPI (needed for parallel simulation) not found." >&2;}
@@ -6216,7 +6139,7 @@ fi
 # otherwise the test program (that links with pcap.lib) brings up a GUI (!)
 # error dialog complaining that wpcap.dll was missing
 case $host in
-*-*-cygwin* | *-*-mingw*)
+  *-*-mingw*)
     # we do not have to test for the DLL if we are cross-compiling because the DLL is obviously not installed
     # on the build system (as it is a non-windows architecture).
     if test "$cross_compiling" = no ; then
@@ -6224,11 +6147,11 @@ case $host in
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE"
+   CXXFLAGS="$CFLAGS"
    LIBS=""
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for WinPCAP with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"\"" >&5
-$as_echo_n "checking for WinPCAP with CFLAGS=\"$CFLAGS_RELEASE\" LIBS=\"\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for WinPCAP with CFLAGS=\"$CFLAGS\" LIBS=\"\"" >&5
+$as_echo_n "checking for WinPCAP with CFLAGS=\"$CFLAGS\" LIBS=\"\"... " >&6; }
 
    if test "$cross_compiling" = yes; then :
   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -6281,11 +6204,11 @@ else
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $PCAP_CFLAGS"
+   CXXFLAGS="$CFLAGS $PCAP_CFLAGS"
    LIBS="$PCAP_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
-$as_echo_n "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCAP with CFLAGS=\"$CFLAGS $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
+$as_echo_n "checking for PCAP with CFLAGS=\"$CFLAGS $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6317,11 +6240,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $PCAP_CFLAGS"
+   CXXFLAGS="$CFLAGS $PCAP_CFLAGS"
    LIBS="$PCAP_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
-$as_echo_n "checking for PCAP with CFLAGS=\"$CFLAGS_RELEASE $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCAP with CFLAGS=\"$CFLAGS $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"" >&5
+$as_echo_n "checking for PCAP with CFLAGS=\"$CFLAGS $PCAP_CFLAGS\" LIBS=\"$PCAP_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6350,13 +6273,7 @@ rm -f core conftest.err conftest.$ac_objext \
     fi
 fi
 
-if test $pcap_ok = yes; then
-	HAVE_PCAP=yes
-	CFLAGS_RELEASE="$CFLAGS_RELEASE $PCAP_CFLAGS"
-	CFLAGS_DEBUG="$CFLAGS_DEBUG $PCAP_CFLAGS"
-  DEFINES="$DEFINES -DHAVE_PCAP"
-else
-    HAVE_PCAP=no
+if test $pcap_ok = "no"; then
     PCAP_CFLAGS=""
     PCAP_LIBS=""
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  PCAP (optional)"
@@ -6373,11 +6290,11 @@ if test -n "$PTHREAD_LIBS"; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $PTHREAD_CFLAGS"
+   CXXFLAGS="$CFLAGS $PTHREAD_CFLAGS"
    LIBS="$PTHREAD_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"" >&5
-$as_echo_n "checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PTHREAD with CFLAGS=\"$CFLAGS $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"" >&5
+$as_echo_n "checking for PTHREAD with CFLAGS=\"$CFLAGS $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6409,11 +6326,11 @@ else
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $PTHREAD_CFLAGS"
+   CXXFLAGS="$CFLAGS $PTHREAD_CFLAGS"
    LIBS="$PTHREAD_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"" >&5
-$as_echo_n "checking for PTHREAD with CFLAGS=\"$CFLAGS_RELEASE $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for PTHREAD with CFLAGS=\"$CFLAGS $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"" >&5
+$as_echo_n "checking for PTHREAD with CFLAGS=\"$CFLAGS $PTHREAD_CFLAGS\" LIBS=\"$PTHREAD_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6441,7 +6358,6 @@ rm -f core conftest.err conftest.$ac_objext \
 
 fi
 if test $pthread_ok = yes; then
-    HAVE_PTHREAD=yes
     if test "$mingw" = yes; then
         if test "$CC" = gcc; then
             PTHREAD_CFLAGS="$PTHREAD_CFLAGS -mthreads" # add mthread only for GCC but not for clang
@@ -6449,7 +6365,6 @@ if test $pthread_ok = yes; then
         PTHREAD_LIBS="$PTHREAD_LIBS -mthreads"
     fi
 else
-    HAVE_PTHREAD=no
     PTHREAD_CFLAGS=""
     PTHREAD_LIBS=""
 fi
@@ -6462,11 +6377,11 @@ if test -n "$LIBXML_LIBS"; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $LIBXML_CFLAGS"
+   CXXFLAGS="$CFLAGS $LIBXML_CFLAGS"
    LIBS="$LIBXML_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"" >&5
-$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS $LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"" >&5
+$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS $LIBXML_CFLAGS\" LIBS=\"$LIBXML_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6497,11 +6412,11 @@ else
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $LIBXML_CFLAGS"
+   CXXFLAGS="$CFLAGS $LIBXML_CFLAGS"
    LIBS="-lxml2"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"-lxml2\"" >&5
-$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE $LIBXML_CFLAGS\" LIBS=\"-lxml2\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS $LIBXML_CFLAGS\" LIBS=\"-lxml2\"" >&5
+$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS $LIBXML_CFLAGS\" LIBS=\"-lxml2\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6533,11 +6448,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE -I/usr/include/libxml2"
+   CXXFLAGS="$CFLAGS -I/usr/include/libxml2"
    LIBS="-lxml2"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/usr/include/libxml2\" LIBS=\"-lxml2\"" >&5
-$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/usr/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/usr/include/libxml2\" LIBS=\"-lxml2\"" >&5
+$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/usr/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6571,11 +6486,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE -I/mingw32/include/libxml2"
+   CXXFLAGS="$CFLAGS -I/mingw32/include/libxml2"
    LIBS="-lxml2"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/mingw32/include/libxml2\" LIBS=\"-lxml2\"" >&5
-$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/mingw32/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw32/include/libxml2\" LIBS=\"-lxml2\"" >&5
+$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw32/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6607,11 +6522,11 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE -I/mingw64/include/libxml2"
+   CXXFLAGS="$CFLAGS -I/mingw64/include/libxml2"
    LIBS="-lxml2"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"" >&5
-$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_RELEASE -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"" >&5
+$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6638,17 +6553,57 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
     fi
-fi
-if test -n "$EXPAT_LIBS"; then
+    # msys/visualc version
+    if test $libxml_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $EXPAT_CFLAGS"
+   CXXFLAGS="$CFLAGS_ARCH $CFLAGS -I/visualc/include/libxml2"
+   LIBS="$LDFLAGS_ARCH -llibxml2"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS_ARCH $CFLAGS -I/visualc/include/libxml2\" LIBS=\"$LDFLAGS_ARCH -llibxml2\"" >&5
+$as_echo_n "checking for LibXML XML parser with CFLAGS=\"$CFLAGS_ARCH $CFLAGS -I/visualc/include/libxml2\" LIBS=\"$LDFLAGS_ARCH -llibxml2\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libxml/parser.h>
+int
+main ()
+{
+xmlInitParser();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; libxml_ok=yes; LIBXML_CFLAGS="-I/visualc/include/libxml2" LIBXML_LIBS="-llibxml2"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; libxml_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    fi
+fi
+
+expat_ok=no
+if test $libxml_ok = no; then
+    if test -n "$EXPAT_LIBS"; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS $EXPAT_CFLAGS"
    LIBS="$EXPAT_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"" >&5
-$as_echo_n "checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"" >&5
+$as_echo_n "checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$EXPAT_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6674,17 +6629,17 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-else
-    expatlibs="-lexpat"
+    else
+      expatlibs="-lexpat"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $EXPAT_CFLAGS"
+   CXXFLAGS="$CFLAGS $EXPAT_CFLAGS"
    LIBS="$expatlibs"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"" >&5
-$as_echo_n "checking for Expat XML parser with CFLAGS=\"$CFLAGS_RELEASE $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"" >&5
+$as_echo_n "checking for Expat XML parser with CFLAGS=\"$CFLAGS $EXPAT_CFLAGS\" LIBS=\"$expatlibs\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6710,6 +6665,7 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+    fi
 fi
 
 if test $libxml_ok = yes; then
@@ -6733,8 +6689,6 @@ else
 $as_echo "$as_me: WARNING: No suitable XML parser found: no support for XML input" >&2;}
 fi
 
-DEFINES="$DEFINES -DXMLPARSER=$XMLPARSER"
-
 # zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
 if test $libxml_ok = yes -o $expat_ok = yes -o "$WITH_TKENV" = "yes" ; then
     if test "$ZLIB_LIBS" = ""; then
@@ -6744,11 +6698,11 @@ if test $libxml_ok = yes -o $expat_ok = yes -o "$WITH_TKENV" = "yes" ; then
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
+   CXXFLAGS="$CFLAGS $ZLIB_CFLAGS"
    LIBS="$ZLIB_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
-$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
+$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6781,11 +6735,49 @@ rm -f core conftest.err conftest.$ac_objext \
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $ZLIB_CFLAGS"
+   CXXFLAGS="$CFLAGS $ZLIB_CFLAGS"
    LIBS="$ZLIB_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
-$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS_RELEASE $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
+$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS $ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <zlib.h>
+int
+main ()
+{
+gzopen("","");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }; zlib_ok=yes;
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; zlib_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+    fi
+    # on clangc2/msys try a different library name
+    if test $zlib_ok = no; then
+        ZLIB_LIBS="-lzlib"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS_ARCH $CFLAGS $ZLIB_CFLAGS"
+   LIBS="$LDFLAGS_ARCH $ZLIB_LIBS"
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zlib with CFLAGS=\"$CFLAGS_ARCH $CFLAGS $ZLIB_CFLAGS\" LIBS=\"$LDFLAGS_ARCH $ZLIB_LIBS\"" >&5
+$as_echo_n "checking for zlib with CFLAGS=\"$CFLAGS_ARCH $CFLAGS $ZLIB_CFLAGS\" LIBS=\"$LDFLAGS_ARCH $ZLIB_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6820,22 +6812,18 @@ fi
 #----------------------
 # Check for Akaroa header and lib
 #----------------------
-if test -z "$AKAROA_CFLAGS"; then
-    AKAROA_CFLAGS="-I/usr/local/akaroa/include"
-fi
-if test -z "$AKAROA_LIBS"; then
-    AKAROA_LIBS="-L/usr/local/akaroa/lib -lakaroa -lfl"
-fi
+AKAROA_CFLAGS=${AKAROA_CFLAGS:-"-I/usr/local/akaroa/include"}
+AKAROA_LIBS=${AKAROA_LIBS:-"-L/usr/local/akaroa/lib -lakaroa -lfl"}
 
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS_RELEASE $AKAROA_CFLAGS"
+   CXXFLAGS="$CFLAGS $AKAROA_CFLAGS"
    LIBS="$AKAROA_LIBS"
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"" >&5
-$as_echo_n "checking for Akaroa with CFLAGS=\"$CFLAGS_RELEASE $AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Akaroa with CFLAGS=\"$CFLAGS $AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"" >&5
+$as_echo_n "checking for Akaroa with CFLAGS=\"$CFLAGS $AKAROA_CFLAGS\" LIBS=\"$AKAROA_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6862,8 +6850,7 @@ rm -f core conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
 if test $akaroa_ok = yes; then
-   CFLAGS_DEBUG="$CFLAGS_DEBUG $AKAROA_CFLAGS"
-   CFLAGS_RELEASE="$CFLAGS_RELEASE $AKAROA_CFLAGS"
+   CFLAGS="$CFLAGS $AKAROA_CFLAGS"
    DEFINES="$DEFINES -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
 else
@@ -6873,20 +6860,10 @@ $as_echo "$as_me: WARNING: Optional package Akaroa not found" >&2;}
 fi
 
 #----------------------
-# #defines in CFLAGS
+# set final CFLAGS and LDFLAGS variable to be used in Makefile.inc
 #----------------------
-if test "$WITH_PARSIM" = yes; then
-   DEFINES="$DEFINES -DWITH_PARSIM"
-fi
-if test "$WITH_NETBUILDER" = yes; then
-   DEFINES="$DEFINES -DWITH_NETBUILDER"
-fi
-
-#-----------------------
-# add defines to cflags
-#-----------------------
-CFLAGS_DEBUG="\$(DEFINES) $CFLAGS_DEBUG"
-CFLAGS_RELEASE="\$(DEFINES) $CFLAGS_RELEASE"
+CFLAGS="$DEPENDFLAGS $CFLAGS $CFLAGS_ARCH \$(DEFINES)"
+LDFLAGS="$LDFLAGS $LDFLAGS_ARCH \$(LDFLAG_LIBPATH)\$(OMNETPP_LIB_DIR)"
 
 #----------------------
 # Files to be generated
@@ -6897,26 +6874,6 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -8268,41 +8225,27 @@ fi
 
 #----------------------
 # Check if the path contains omnetpp/bin (it should)
-# Note: the method used here also works with Cygwin, but requires
-# write permission to $OMNETPP_BIN_DIR.
 #----------------------
 
 # first we need to expand the ${HOME} variable and make sure the dir exists..
-omnetpp_bin_dir=`eval echo $OMNETPP_BIN_DIR`
+omnetpp_bin_dir=$OMNETPP_ROOT/bin
 if test ! -d $omnetpp_bin_dir; then
-   echo "PROBLEM: the $OMNETPP_BIN_DIR directory does not exist!"
+   echo "PROBLEM: the $omnetpp_bin_dir directory does not exist!"
 else
   # ...then we create a small tmp file to check if the dir is in the path
   probefile=__probe__
   echo '' >$omnetpp_bin_dir/$probefile
   chmod +x  $omnetpp_bin_dir/$probefile
   if ($probefile) >/dev/null 2>/dev/null; then
-    echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
+    echo "Your PATH contains $omnetpp_bin_dir. Good!"
   else
-    if test "$cygwin" = yes; then
-      opp_bin_dir=`cygpath -u $OMNETPP_BIN_DIR`
-      if test -z "$opp_bin_dir"; then opp_bin_dir=$OMNETPP_BIN_DIR; fi
-      cat 1>&2 << EOT
+    cat 1>&2 << EOT
 
-WARNING: your PATH doesn't contain $opp_bin_dir!
-Add the following line to your startup file, $HOME/.bash_profile:
-  export PATH=\$PATH:$opp_bin_dir
-
-EOT
-    else
-      cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $OMNETPP_BIN_DIR!
+WARNING: your PATH doesn't contain $omnetpp_bin_dir!
 Add the following line to your .profile or .bash_profile (provided you use bash):
-  export PATH=\$PATH:$OMNETPP_BIN_DIR
+  export PATH=\$PATH:$omnetpp_bin_dir
 
 EOT
-    fi
   fi
   rm $omnetpp_bin_dir/$probefile
 fi

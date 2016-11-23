@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "inspectorutil.h"
 #include <QDebug>
 #include <QMenu>
 #include <QApplication>
@@ -23,9 +22,10 @@
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/cmodule.h>
 #include <omnetpp/cmessage.h>
-#include <qtenv.h>
-#include <qtenv/inspector.h>
-#include <inspectorfactory.h>
+#include "qtenv.h"
+#include "inspector.h"
+#include "inspectorfactory.h"
+#include "inspectorutil.h"
 #include "preferencesdialog.h"
 #include "genericobjectinspector.h"
 #include "mainwindow.h"

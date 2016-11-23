@@ -4,19 +4,8 @@
 
 include ../../Makefile.inc
 
-# Make sure that output locations are set
-ifeq ("$(strip $(OMNETPP_BIN_DIR))","")
-$(error OMNETPP_BIN_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_OUT_DIR))","")
-$(error OMNETPP_OUT_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
-$(error OMNETPP_LIB_DIR must be correctly set)
-endif
-
-L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
-O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/ui
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/ui
 
 #
 # Local definitions
@@ -34,7 +23,7 @@ LAYOUT_JAVADIR = src/$(subst .,/,$(LAYOUT_JAVAPKG))
 EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
 OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o
-LIBS=-L$L -loppnedxml$D -loppscave$D -lopplayout$D -loppeventlog$D -loppcommon$D
+LIBS= -loppnedxml$D -loppscave$D -lopplayout$D -loppeventlog$D -loppcommon$D
 
 ifeq ("$(JNI_LIB_SUFFIX)",".dll")
 # on mingw we dont need the lib prefix for a JNI library
@@ -113,17 +102,11 @@ endif
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)
 
-
 missing-dependency:
 	@echo '  *** Missing required dependency -- skipping build of UI support library.'
 	@echo '  *** Install missing packages (probably SWIG and/or JDK), then run ./configure again.'
 
-depend:
-	$(MAKEDEPEND) $(INCLUDES) -fMakefile -- *.cxx *.cc
-
 clean:
 	-rm -f *.cxx *.o *.a *.so $(DLL_TARGET_DIR)/$(DLL)
 	-rm -rf $(COMMON_JAVADIR) $(NEDXML_JAVADIR) $(SCAVE_JAVADIR) $(LAYOUT_JAVADIR) $(EVENTLOG_JAVADIR)
-
-# DO NOT DELETE THIS LINE -- make depend depends on it.
 

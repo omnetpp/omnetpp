@@ -35,16 +35,6 @@ components: base samples
 
 include Makefile.inc
 
-# Make sure that output locations are set
-ifeq ("$(strip $(OMNETPP_BIN_DIR))","")
-$(error OMNETPP_BIN_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_OUT_DIR))","")
-$(error OMNETPP_OUT_DIR must be correctly set)
-endif
-ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
-$(error OMNETPP_LIB_DIR must be correctly set)
-endif
 #=====================================================================
 #
 # OMNeT++ components
@@ -64,6 +54,9 @@ systemc: sim
 endif
 endif
 
+.PHONY: check-env cleanall depend makefiles clean apis docu tests all allmodes \
+        components base ui uilibs samples common layout eventlog scave nedxml sim \
+        envir cmdenv tkenv qtenv utils systemc
 #
 # Group targets.
 #
@@ -72,10 +65,10 @@ base: $(BASE)
 
 samples: $(SAMPLES)
 
-opplibs:
-	$(MAKE) $(MOPTS) $(MAKEFILE) BUILDING_UILIBS=yes ui
+ui:
+	$(MAKE) $(MOPTS) $(MAKEFILE) BUILDING_UILIBS=yes uilibs
 
-ui: check-ui-vars common layout eventlog scave nedxml $(JNILIBS)
+uilibs: common layout eventlog scave nedxml $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgc [nedtool], etc)
 clean depend: makefiles
@@ -89,9 +82,6 @@ $(SAMPLES) : makefiles base
 $(BASE) : check-env
 queueinglibext : queueinglib
 
-.PHONY: check-env cleanall depend makefiles clean apis docu tests all allmodes \
-        components base ui samples common layout eventlog scave nedxml sim \
-        envir cmdenv tkenv qtenv utils systemc
 
 #
 # Core libraries and programs
@@ -140,9 +130,6 @@ tests: base
 # Utilities
 #
 #=====================================================================
-
-check-ui-vars:
-	@if [ "$(BUILDING_UILIBS)" != "yes" ]; then echo 'ERROR: "make ui" must be invoked with BUILDING_UILIBS=yes!' && exit 1; fi
 
 check-env:
 	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****"

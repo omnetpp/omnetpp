@@ -117,17 +117,6 @@ template <class T> struct ToString<T*>
 #define RETURN(x) { __x.setResult(x); return x; }
 
 /**
- * Performs the RDTSC (read time stamp counter) x86 instruction, and returns
- * the resulting high-resolution 64-bit timer value. This can be used for
- * ad-hoc performance measurements on Windows (this function returns 0 on
- * other platforms).
- *
- * See http://en.wikipedia.org/wiki/RDTSC
- */
-uint64_t readCPUTimeStampCounter();
-
-
-/**
  * Not all our bison/flex based parsers are reentrant. This macro is meant
  * to catch and report concurrent invocations, e.g. from background threads
  * in the GUI code.

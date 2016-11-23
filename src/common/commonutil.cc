@@ -85,25 +85,6 @@ void CallTracer::printf(const char *fmt, ...)
     std::cout << std::setw(depth*4) << "" << "  " << buf << std::endl;
 }
 
-//----
-
-#ifdef _MSC_VER
-// source: http://en.wikipedia.org/wiki/RDTSC
-__declspec(naked)
-uint64_t __cdecl readCPUTimeStampCounter()
-{
-   __asm
-   {
-      rdtsc
-      ret       ; return value at EDX:EAX
-   }
-}
-#else
-uint64_t readCPUTimeStampCounter()
-{
-    return 0;
-}
-#endif
 
 } // namespace common
 }  // namespace omnetpp

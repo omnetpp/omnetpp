@@ -82,13 +82,6 @@ enum RunMode {
     RUNMODE_NOT_RUNNING = 5
 };
 
-enum DialogKind
-{
-    INFO,
-    WARNING,
-    ERROR
-};
-
 struct QtenvOptions : public omnetpp::envir::EnvirOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
@@ -142,6 +135,13 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
           SIM_ERROR = 5,
           SIM_FINISHCALLED = 6,
           SIM_BUSY = 7  // busy doing active wait
+      };
+
+      enum DialogKind
+      {
+          INFO,
+          WARNING,
+          ERROR
       };
 
       QtenvOptions *&opt;          // alias to EnvirBase::opt

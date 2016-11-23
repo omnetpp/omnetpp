@@ -30,7 +30,7 @@ namespace common {
 struct GlobPrivateData
 {
     bool nowildcard;
-    long handle;
+    intptr_t handle;
     struct _finddata_t fdata;
     char dir[_MAX_PATH];
     char tmpfname[_MAX_PATH];
