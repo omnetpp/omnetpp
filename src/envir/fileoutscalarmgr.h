@@ -35,15 +35,17 @@ namespace envir {
 class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
 {
   protected:
+    bool initialized;  // true after first call to initialize(), even if it failed
     RunData run;       // holds data of the current run
     std::string fname; // output file name
-    FILE *f;           // file ptr of output file
+    FILE *f;           // file ptr of output file; nullptr if closed (not yet opened, or after error)
     int prec;          // number of significant digits when writing doubles
 
   protected:
     void openFile();
     void closeFile();
     void initialize();
+    void check(int fprintfResult);
     void writeStatisticField(const char *name, long value);
     void writeStatisticField(const char *name, double value);
     void recordNumericIterationVariableAsScalar(const char *name, const char *value); // i.e. write *if* numeric

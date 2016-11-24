@@ -45,7 +45,7 @@ Register_Class(cFileOutputVectorManager);
 
 // global options
 extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE;
-extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE_APPEND;  //FIXME should throw "notsupported" error if set to true!
+extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE_APPEND;
 extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_PRECISION;
 
 // per-vector options
@@ -53,15 +53,11 @@ extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING;
 extern omnetpp::cConfigOption *CFGID_VECTOR_RECORD_EVENTNUMBERS;
 extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING_INTERVALS;
 
-#ifdef CHECK
-#undef CHECK
-#endif
-#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output vector file '%s'", fname.c_str())
-
 
 cFileOutputVectorManager::cFileOutputVectorManager()
 {
     nextid = 0;
+    initialized = false;
     f = nullptr;
     prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
 }
@@ -87,9 +83,17 @@ void cFileOutputVectorManager::closeFile()
     }
 }
 
+void cFileOutputVectorManager::check(int fprintfResult)
+{
+    if (fprintfResult < 0) {
+        throw cRuntimeError("Cannot write output vector file '%s'", fname.c_str());
+    }
+}
+
 void cFileOutputVectorManager::writeRunData()
 {
     run.initRun();
+    initialized = true;
     run.writeRunData(f, fname);
 }
 
@@ -97,18 +101,18 @@ void cFileOutputVectorManager::initVector(VectorData *vp)
 {
     if (!f) {
         openFile();
-        CHECK(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
+        check(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
     }
 
-    if (!run.initialized) {
+    if (!initialized) {
         // this is the first vector written in this run, write out run attributes
         writeRunData();
     }
 
-    CHECK(fprintf(f, "vector %d  %s  %s  %s\n",
+    check(fprintf(f, "vector %d  %s  %s  %s\n",
                     vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
     for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); ++it)
-        CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+        check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
     vp->initialized = true;
 }
@@ -128,6 +132,7 @@ void cFileOutputVectorManager::startRun()
 
     // clear run data
     run.reset();
+    initialized = false;
 }
 
 void cFileOutputVectorManager::endRun()
@@ -194,12 +199,11 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
             initVector(vp);
 
         assert(f != nullptr);
-        if (vp->recordEventNumbers) {
-            CHECK(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), t.str(buff), prec, value));
-        }
-        else {
-            CHECK(fprintf(f, "%d\t%s\t%.*g\n", vp->id, t.str(buff), prec, value));
-        }
+        ASSERT(f != nullptr);
+        if (vp->recordEventNumbers)
+            check(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), t.str(buff), prec, value));
+        else
+            check(fprintf(f, "%d\t%s\t%.*g\n", vp->id, t.str(buff), prec, value));
         return true;
     }
     return false;

@@ -38,42 +38,37 @@ namespace envir {
 
 void RunData::initRun()
 {
-    if (!initialized) {
-        // Collect the attributes and module parameters of the current run
-        // from the configuration.
-        cConfigurationEx *cfg = getEnvir()->getConfigEx();
-        runId = cfg->getVariable(CFGVAR_RUNID);
+    // Collect the attributes and module parameters of the current run
+    // from the configuration.
+    cConfigurationEx *cfg = getEnvir()->getConfigEx();
+    runId = cfg->getVariable(CFGVAR_RUNID);
 
-        std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
-        for (int i = 0; i < (int)keys1.size(); i++)
-            if (omnetpp::opp_strcmp(keys1[i], CFGVAR_RUNID) != 0)  // skip runId
-                attributes[keys1[i]] = cfg->getVariable(keys1[i]);
+    std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
+    for (int i = 0; i < (int)keys1.size(); i++)
+        if (omnetpp::opp_strcmp(keys1[i], CFGVAR_RUNID) != 0)  // skip runId
+            attributes[keys1[i]] = cfg->getVariable(keys1[i]);
 
 
-        std::vector<const char *> keys2 = cfg->getIterationVariableNames();
-        for (int i = 0; i < (int)keys2.size(); i++)
-            attributes[keys2[i]] = cfg->getVariable(keys2[i]);
+    std::vector<const char *> keys2 = cfg->getIterationVariableNames();
+    for (int i = 0; i < (int)keys2.size(); i++)
+        attributes[keys2[i]] = cfg->getVariable(keys2[i]);
 
-/*XXX
-        std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
-        for (int i=0; i<(int)keys.size(); i++)
-        {
-            const char *key = keys[i];
-            config[key] = cfg->getConfigValue(key);
-        }
-*/
-        // fill in moduleParams[]
-        std::vector<const char *> params = cfg->getParameterKeyValuePairs();
-        for (int i = 0; i < (int)params.size(); i += 2)
-            moduleParams[params[i]] = params[i+1];
-
-        initialized = true;
+/*
+    std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
+    for (int i=0; i<(int)keys.size(); i++) {
+        const char *key = keys[i];
+        config[key] = cfg->getConfigValue(key);
     }
+*/
+
+    // fill in moduleParams[]
+    std::vector<const char *> params = cfg->getParameterKeyValuePairs();
+    for (int i = 0; i < (int)params.size(); i += 2)
+        moduleParams[params[i]] = params[i+1];
 }
 
 void RunData::reset()
 {
-    initialized = false;
     attributes.clear();
     moduleParams.clear();
 }

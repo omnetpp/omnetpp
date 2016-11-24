@@ -30,12 +30,10 @@ namespace envir {
  * @ingroup Envir
  */
 struct RunData {
-   bool initialized;        // true if the other fields are valid
    opp_string runId;        // id of the run
    opp_string_map attributes;    // attributes of the run
    opp_string_map moduleParams;  // module parameters in the current run
 
-   RunData() : initialized(false) {}
    void initRun();
    void reset();
    void writeRunData(FILE *f, opp_string fname);

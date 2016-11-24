@@ -54,6 +54,7 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
        virtual ~VectorData() {}
     };
 
+    bool initialized;  // true after first call to initialize(), even if it failed
     RunData run;       // holds data of the current run
     int nextid;        // holds next free ID for output vectors
     std::string fname; // output file name
@@ -63,6 +64,7 @@ class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
   protected:
     void openFile();
     void closeFile();
+    void check(int fprintfResult);
     virtual void initVector(VectorData *vp);
     virtual VectorData *createVectorData();
     virtual void writeRunData();

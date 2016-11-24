@@ -52,14 +52,10 @@ extern omnetpp::cConfigOption *CFGID_BIN_RECORDING;
 
 Register_Class(cFileOutputScalarManager);
 
-#ifdef CHECK
-#undef CHECK
-#endif
-#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str())
-
 
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
+    initialized = false;
     f = nullptr;
     prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
 }
@@ -85,6 +81,13 @@ void cFileOutputScalarManager::closeFile()
     }
 }
 
+void cFileOutputScalarManager::check(int fprintfResult)
+{
+    if (fprintfResult < 0) {
+        throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str());
+    }
+}
+
 void cFileOutputScalarManager::startRun()
 {
     // clean up file from previous runs
@@ -94,6 +97,7 @@ void cFileOutputScalarManager::startRun()
     if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
         removeFile(fname.c_str(), "old output scalar file");
     run.reset();
+    initialized = false;
 }
 
 void cFileOutputScalarManager::endRun()
@@ -105,11 +109,12 @@ void cFileOutputScalarManager::initialize()
 {
     if (!f) {
         openFile();
-        CHECK(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
+        check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
     }
 
-    if (!run.initialized) {
+    if (!initialized) {
         run.initRun();
+        initialized = true;
 
         // this is the first scalar written in this run, write out run attributes
         run.writeRunData(f, fname);
@@ -131,7 +136,7 @@ void cFileOutputScalarManager::recordNumericIterationVariableAsScalar(const char
     (void)strtod(value, &e);
     if (*e == '\0') {
         // plain number - just record as it is
-        CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
+        check(fprintf(f, "scalar . \t%s \t%s\n", name, value));
     }
     else if (e != value) {
         // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
@@ -145,9 +150,9 @@ void cFileOutputScalarManager::recordNumericIterationVariableAsScalar(const char
         catch (std::exception& e) {
         }
         if (parsedOK) {
-            CHECK(fprintf(f, "scalar . \t%s \t%.*g\n", name, prec, d));
+            check(fprintf(f, "scalar . \t%s \t%.*g\n", name, prec, d));
             if (!unit.empty())
-                CHECK(fprintf(f, "attr unit  %s\n", QUOTE(unit.c_str())));
+                check(fprintf(f, "attr unit  %s\n", QUOTE(unit.c_str())));
         }
     }
 }
@@ -159,15 +164,15 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
 
     bool enabled = getEnvir()->getConfig()->getAsBool((component->getFullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
     if (enabled) {
-        if (!run.initialized)
+        if (!initialized)
             initialize();
         if (!f)
             return;
 
-        CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
+        check(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
         if (attributes)
             for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
-                CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+                check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
     }
 }
@@ -185,7 +190,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     if (!enabled)
         return;
 
-    if (!run.initialized)
+    if (!initialized)
         initialize();
     if (!f)
         return;
@@ -202,7 +207,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     //   bin 20 19
     //   ...
     // In Scave, fields are read as separate scalars.
-    CHECK(fprintf(f, "statistic %s \t%s\n", QUOTE(component->getFullPath().c_str()), QUOTE(name)));
+    check(fprintf(f, "statistic %s \t%s\n", QUOTE(component->getFullPath().c_str()), QUOTE(name)));
     writeStatisticField("count", statistic->getCount());
     writeStatisticField("mean", statistic->getMean());
     writeStatisticField("stddev", statistic->getStddev());
@@ -219,7 +224,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
     if (attributes)
         for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
-            CHECK(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+            check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
 
     if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {
@@ -231,10 +236,10 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
             int n = histogram->getNumCells();
             if (n > 0) {
-                CHECK(fprintf(f, "bin\t-INF\t%lu\n", histogram->getUnderflowCell()));
+                check(fprintf(f, "bin\t-INF\t%lu\n", histogram->getUnderflowCell()));
                 for (int i = 0; i < n; i++)
-                    CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBasepoint(i), prec, histogram->getCellValue(i)));
-                CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, histogram->getBasepoint(n), histogram->getOverflowCell()));
+                    check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBasepoint(i), prec, histogram->getCellValue(i)));
+                check(fprintf(f, "bin\t%.*g\t%lu\n", prec, histogram->getBasepoint(n), histogram->getOverflowCell()));
             }
         }
     }
@@ -242,14 +247,12 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
 void cFileOutputScalarManager::writeStatisticField(const char *name, long value)
 {
-    if (fprintf(f, "field %s %ld\n", QUOTE(name), value) < 0)
-        throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str());
+    check(fprintf(f, "field %s %ld\n", QUOTE(name), value));
 }
 
 void cFileOutputScalarManager::writeStatisticField(const char *name, double value)
 {
-    if (fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value) < 0)
-        throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str());
+    check(fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value));
 }
 
 const char *cFileOutputScalarManager::getFileName() const
