@@ -86,6 +86,7 @@ void cFileOutputVectorManager::closeFile()
 void cFileOutputVectorManager::check(int fprintfResult)
 {
     if (fprintfResult < 0) {
+        closeFile();
         throw cRuntimeError("Cannot write output vector file '%s'", fname.c_str());
     }
 }
@@ -93,24 +94,19 @@ void cFileOutputVectorManager::check(int fprintfResult)
 void cFileOutputVectorManager::writeRunData()
 {
     run.initRun();
-    initialized = true;
     run.writeRunData(f, fname);
 }
 
 void cFileOutputVectorManager::initVector(VectorData *vp)
 {
-    if (!f) {
+    if (!initialized) {
+        initialized = true;
         openFile();
         check(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
-    }
-
-    if (!initialized) {
-        // this is the first vector written in this run, write out run attributes
         writeRunData();
     }
 
-    check(fprintf(f, "vector %d  %s  %s  %s\n",
-                    vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
+    check(fprintf(f, "vector %d  %s  %s  %s\n", vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
     for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); ++it)
         check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
@@ -119,9 +115,11 @@ void cFileOutputVectorManager::initVector(VectorData *vp)
 
 void cFileOutputVectorManager::startRun()
 {
-    // clean up file from previous runs
+    // finish up previous run
+    initialized = false;
     closeFile();
 
+    // delete file left over from previous runs
     bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
     if (shouldAppend)
         throw cRuntimeError("%s does not support append mode", getClassName());
@@ -132,11 +130,11 @@ void cFileOutputVectorManager::startRun()
 
     // clear run data
     run.reset();
-    initialized = false;
 }
 
 void cFileOutputVectorManager::endRun()
 {
+    initialized = false;
     closeFile();
 }
 
@@ -198,7 +196,6 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialized)
             initVector(vp);
 
-        assert(f != nullptr);
         ASSERT(f != nullptr);
         if (vp->recordEventNumbers)
             check(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), t.str(buff), prec, value));

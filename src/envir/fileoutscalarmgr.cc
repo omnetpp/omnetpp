@@ -84,48 +84,45 @@ void cFileOutputScalarManager::closeFile()
 void cFileOutputScalarManager::check(int fprintfResult)
 {
     if (fprintfResult < 0) {
+        closeFile();
         throw cRuntimeError("Cannot write output scalar file '%s'", fname.c_str());
     }
 }
 
 void cFileOutputScalarManager::startRun()
 {
-    // clean up file from previous runs
+    // finish up previous run
+    initialized = false;
     closeFile();
+
+    // delete file left over from previous runs
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
         removeFile(fname.c_str(), "old output scalar file");
     run.reset();
-    initialized = false;
 }
 
 void cFileOutputScalarManager::endRun()
 {
+    initialized = false;
     closeFile();
 }
 
 void cFileOutputScalarManager::initialize()
 {
-    if (!f) {
-        openFile();
-        check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
-    }
+    openFile();
+    check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
 
-    if (!initialized) {
-        run.initRun();
-        initialized = true;
+    run.initRun();
+    run.writeRunData(f, fname);
 
-        // this is the first scalar written in this run, write out run attributes
-        run.writeRunData(f, fname);
-
-        // save numeric iteration variables as scalars as well, after saving them as run attributes (TODO this should not be necessary)
-        std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();
-        for (int i = 0; i < (int)v.size(); i++) {
-            const char *name = v[i];
-            const char *value = getEnvir()->getConfigEx()->getVariable(v[i]);
-            recordNumericIterationVariableAsScalar(name, value);
-        }
+    // save numeric iteration variables as scalars as well, after saving them as run attributes (TODO this should not be necessary)
+    std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();
+    for (int i = 0; i < (int)v.size(); i++) {
+        const char *name = v[i];
+        const char *value = getEnvir()->getConfigEx()->getVariable(v[i]);
+        recordNumericIterationVariableAsScalar(name, value);
     }
 }
 
@@ -163,18 +160,21 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
         name = "(unnamed)";
 
     bool enabled = getEnvir()->getConfig()->getAsBool((component->getFullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
-    if (enabled) {
-        if (!initialized)
-            initialize();
-        if (!f)
-            return;
+    if (!enabled)
+        return;
 
-        check(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
-        if (attributes)
-            for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
-                check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
-
+    if (!initialized) {
+        initialized = true;
+        initialize();
     }
+
+    if (!f)
+        return;
+
+    check(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
+    if (attributes)
+        for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
+            check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 }
 
 void cFileOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
@@ -190,8 +190,11 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     if (!enabled)
         return;
 
-    if (!initialized)
+    if (!initialized) {
+        initialized = true;
         initialize();
+    }
+
     if (!f)
         return;
 
