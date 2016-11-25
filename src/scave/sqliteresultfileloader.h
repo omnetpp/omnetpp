@@ -47,22 +47,28 @@ namespace scave {
 
 class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
 {
+  protected:
     sqlite3 *db;
+    sqlite3_stmt *stmt; // we only have one prepared statement active at a time
     ResultFile *fileRef;
     std::map<sqlite3_int64, FileRun *> fileRunMap;
-    bool hasScalar;
-    bool hasVector;
+
   protected:
-    void loadDbInfo();
-    void loadRuns();
-    void loadRunAttrs();
-    void loadScalars();
-    void loadHistograms();
-    void loadVectors();
-    static double sqlite3ColumnDouble(sqlite3_stmt *stmt, int fieldIdx);        // sqlite3_column_double(stmt, fieldIdx), but converts sql NULL value to NaN double value
+    virtual void loadRuns();
+    virtual void loadRunAttrs();
+    virtual void loadScalars();
+    virtual void loadHistograms();
+    virtual void loadVectors();
+    virtual void cleanupDb();
+    void prepareStatement(const char *sql);
+    void finalizeStatement();
+    static double sqlite3ColumnDouble(sqlite3_stmt *stmt, int fieldIdx);  // sqlite3_column_double(stmt, fieldIdx), but converts sql NULL value to NaN double value
+    void checkOK(int sqlite3_result);
+    void error(const char *errmsg);
 
   public:
-    SqliteResultFileLoader(ResultFileManager *resultFileManagerPar) : IResultFileLoader(resultFileManagerPar), db(nullptr), fileRef(nullptr), hasScalar(false), hasVector(false) {}
+    SqliteResultFileLoader(ResultFileManager* resultFileManagerPar);
+    virtual ~SqliteResultFileLoader();
     virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) override;
 };
 

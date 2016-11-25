@@ -20,6 +20,7 @@
 #include "scaveutils.h"
 #include "indexedvectorfilereader.h"
 #include "sqlitevectorreader.h"
+#include "sqliteresultfileutils.h"
 #include "vectorreaderbyfiletype.h"
 
 using namespace std;
@@ -27,11 +28,6 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace scave {
-
-bool isSqliteFile(const char *fileName); // TODO add proper header file
-
-#define LL    INT64_PRINTF_FORMAT
-
 
 const char *VectorReaderByFileTypeNodeType::getDescription() const
 {
@@ -41,6 +37,7 @@ const char *VectorReaderByFileTypeNodeType::getDescription() const
 void VectorReaderByFileTypeNodeType::getAttributes(StringMap& attrs) const
 {
     attrs["filename"] = "name of the output vector file (.vec)";
+    attrs["allowindexing"] = "whether adding an index on the vectordata table is allowed (true/false)";
 }
 
 Node *VectorReaderByFileTypeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
@@ -48,13 +45,14 @@ Node *VectorReaderByFileTypeNodeType::create(DataflowManager *mgr, StringMap& at
     checkAttrNames(attrs);
 
     const char *fname = attrs["filename"].c_str();
+    bool allowIndexing = attrs["allowindexing"] == "true";
 
     Node *node = nullptr;
-    if (isSqliteFile(fname))
-        node = new SqliteVectorReaderNode(fname);
+    if (SqliteResultFileUtils::isSqliteFile(fname))
+        node = new SqliteVectorReaderNode(fname, allowIndexing);
     else
         node = new IndexedVectorFileReaderNode(fname);
-    node->setNodeType(this);    //FIXME ????
+    node->setNodeType(this);  // note: both classes should be prepared to accept this class as node type
     mgr->addNode(node);
     return node;
 }
@@ -76,7 +74,7 @@ Port *VectorReaderByFileTypeNodeType::getPort(Node *node, const char *portname) 
         return node1->addVector(vector);
     }
 
-    throw opp_runtime_error("node type should be 'SqliteVectorReaderNode' or '?????'");
+    throw opp_runtime_error("SqliteVectorReaderNode or IndexedVectorFileReaderNode expected");
 }
 
 }  // namespace scave

@@ -37,7 +37,7 @@
 #include "indexfile.h"
 #include "scaveutils.h"
 #include "scaveexception.h"
-
+#include "sqliteresultfileutils.h"
 #include "resultfilemanager.h"
 #include "omnetppresultfileloader.h"
 #include "sqliteresultfileloader.h"
@@ -777,7 +777,7 @@ void ResultFileManager::checkPattern(const char *pattern)
     MatchExpression matchExpr(pattern, false  /*dottedpath*/, true  /*fullstring*/, true  /*casesensitive*/);
 }
 
-ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName, bool computed)
+ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType, bool computed)
 {
     ResultFile *file = new ResultFile();
     file->id = fileList.size();
@@ -786,6 +786,7 @@ ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSys
     file->fileSystemFilePath = fileSystemFileName;
     file->filePath = fileNameToSlash(fileName);
     splitFileName(file->filePath.c_str(), file->directory, file->fileName);
+    file->fileType = fileType;
     file->computed = computed;
     file->numLines = 0;
     file->numUnrecognizedLines = 0;
@@ -859,13 +860,13 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
 {
     WRITER_MUTEX
 
-        assert(getTypeOf(input) == VECTOR);
+    assert(getTypeOf(input) == VECTOR);
 
     const VectorResult& vector = getVector(input);
 
     ResultFile *fileRef = getFile(file);
     if (!fileRef)
-        fileRef = addFile(file, file, true);  // XXX
+        fileRef = addFile(file, file, ResultFile::FILETYPE_TEXT, true);  // XXX
     Run *runRef = vector.fileRunRef->runRef;
     FileRun *fileRunRef = getFileRun(fileRef, runRef);
     if (!fileRunRef)
@@ -907,7 +908,7 @@ ID ResultFileManager::addComputedScalar(const char *name, const char *module, co
     WRITER_MUTEX
 
     if (!computedScalarFile)
-        computedScalarFile = addFile("", "", true);
+        computedScalarFile = addFile("", "", ResultFile::FILETYPE_TEXT, true);
     Run *run = getRunByName(runName);
     if (!run) {
         run = addRun(true);
@@ -993,23 +994,6 @@ static bool isFileReadable(const char *fileName)
         return false;
 }
 
-static const char SQLITE_HEADER_BYTES[] = "SQLite format 3";
-bool isSqliteFile(const char *fileName)
-{
-    bool retval = false;
-    FILE *f = fopen(fileName, "r");
-    if (f != nullptr) {
-        char buff[100];
-        size_t l = fread(buff, 100, 1, f);
-        if (l == 1) {
-            if (0 == memcmp(buff, SQLITE_HEADER_BYTES, sizeof(SQLITE_HEADER_BYTES)))
-                retval = true;
-        }
-        fclose(f);
-    }
-    return retval;
-}
-
 ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
 {
     WRITER_MUTEX
@@ -1021,9 +1005,8 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     // check if loaded
     ResultFile *fileRef = getFile(fileName);
     if (fileRef) {
-        if (reload) {
+        if (reload)
             unloadFile(fileRef);
-        }
         else
             return fileRef;
     }
@@ -1034,7 +1017,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     if (!isFileReadable(fileSystemFileName))
         throw opp_runtime_error("Cannot open '%s' for read", fileSystemFileName);
 
-    if (isSqliteFile(fileSystemFileName)) {
+    if (SqliteResultFileUtils::isSqliteFile(fileSystemFileName)) {
         return SqliteResultFileLoader(this).loadFile(fileName, fileSystemFileName, reload);
     }
     else {

@@ -33,6 +33,7 @@
 #include "export.h"
 #include "fields.h"
 #include "scaveutils.h"
+#include "sqliteresultfileutils.h"
 
 using namespace std;
 using namespace omnetpp::common;
@@ -142,23 +143,12 @@ static void loadFiles(ResultFileManager& manager, const vector<string>& fileName
         // TODO on Windows: manual globbing of wildcards
         const char *fileName = fileNames[i].c_str();
         if (verbose)
-            printf("reading %s...", fileName);
+            printf("reading %s...\n", fileName);
         try {
             ResultFile *f = manager.loadFile(fileName);
-            if (!f) {
-                if (verbose)
-                    printf("\n");
-                fprintf(stderr, "Error: %s: load() returned null\n", fileName);
-            }
-            else if (f->numUnrecognizedLines > 0) {
-                if (verbose)
-                    printf("\n");
+            Assert(f); // or exception
+            if (f->fileType == ResultFile::FILETYPE_TEXT && f->numUnrecognizedLines > 0)
                 fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", fileName, f->numUnrecognizedLines, f->numLines);
-            }
-            else {
-                if (verbose)
-                    printf(" %d lines\n", f->numLines);
-            }
         }
         catch (exception& e) {
             fprintf(stdout, "Exception: %s\n", e.what());
@@ -187,7 +177,7 @@ int vectorCommand(int argc, char **argv)
     string opt_filterExpression;
     string opt_outputFileName = "_out_";
     string opt_outputFormat = "vec";  // TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
-    string opt_readerNodeType = "vectorfilereader";
+    string opt_readerNodeType = "vectorreaderbyfiletype";
     vector<string> opt_filterList;
     vector<string> opt_fileNames;
 
@@ -238,6 +228,17 @@ int vectorCommand(int argc, char **argv)
         if (opt_verbose)
             printf("done collecting inputs\n\n");
 
+        // add index to the SQLite vector files if not present
+        for (std::string filename : opt_fileNames) {
+            if (SqliteResultFileUtils::isSqliteFile(filename.c_str())) {
+                if (opt_verbose)
+                    printf("adding vectordata index to SQLite file '%s' if not yet added\n", filename.c_str());
+                SqliteResultFileUtils::addIndexToVectorData(filename.c_str());
+                if (opt_verbose)
+                    printf("done\n\n");
+            }
+        }
+
         //
         // assemble dataflow network for vectors
         //
@@ -260,6 +261,7 @@ int vectorCommand(int argc, char **argv)
         for (int i = 0; i < (int)filteredVectorFileList.size(); i++) {
             ResultFile *resultFile = filteredVectorFileList[i];
             attrs["filename"] = resultFile->fileSystemFilePath;
+            attrs["allowindexing"] = "true";
             Node *readerNode = readerNodeType->create(&dataflowManager, attrs);
             vectorFileReaders[resultFile] = readerNode;
         }
@@ -476,7 +478,7 @@ int scalarCommand(int argc, char **argv)
         // filter scalars
         IDList scalarIDList = resultFileManager.filterIDList(resultFileManager.getAllScalars(), opt_filterExpression.c_str());
         if (opt_verbose)
-            cout << "filter expression matches " << scalarIDList.size() << "scalars" << endl;
+            cout << "filter expression matches " << scalarIDList.size() << " scalars" << endl;
         if (opt_verbose)
             cout << "done collecting inputs" << endl << endl;
 

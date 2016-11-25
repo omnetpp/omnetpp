@@ -19,23 +19,16 @@
 
 #include <map>
 #include <string>
-//#include "common/filereader.h"
-#include "common/linetokenizer.h"
 #include "node.h"
 #include "nodetype.h"
 #include "commonnodes.h"
-#include "indexfile.h"
-#include "resultfilemanager.h"
-
 #include "common/sqlite3.h"
 
 
 namespace omnetpp {
 namespace scave {
 
-// read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
-#define VECFILEREADER_BUFSIZE  (64*1024)
-
+#define SQLITEVECFILEREADER_BUFSIZE  (64*1024)
 
 /**
  * Producer node which reads an output vector file.
@@ -53,16 +46,21 @@ class SCAVE_API SqliteVectorReaderNode : public ReaderNode
 
     typedef std::map<int,PortData> PortMap;
 
-    private:
+    protected:
         PortMap ports;
         sqlite3 *db;
         sqlite3_stmt *get_vector_data_stmt;
         std::string filename;
+        bool allowIndexing;
         size_t bufferSize;
         bool fFinished;
 
+    protected:
+        bool readNextBlock(int vectorId, PortData& portData);
+        void checkOK(int sqlite3_result);
+
     public:
-        SqliteVectorReaderNode(const char *filename, size_t bufferSize = VECFILEREADER_BUFSIZE);
+        SqliteVectorReaderNode(const char *filename, bool allowIndexing, size_t bufferSize = SQLITEVECFILEREADER_BUFSIZE);
         virtual ~SqliteVectorReaderNode();
 
         Port *addVector(const VectorResult &vector);
@@ -73,9 +71,6 @@ class SCAVE_API SqliteVectorReaderNode : public ReaderNode
 
         virtual int64_t getFileSize() override;
         virtual int64_t getNumReadBytes() override;
-
-    private:
-        bool readNextBlock(int vectorId, PortData& portData);
 };
 
 

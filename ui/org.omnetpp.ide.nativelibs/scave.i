@@ -25,6 +25,7 @@
 #include "scave/sqlitevectorreader.h"
 #include "scave/scaveexception.h"
 #include "scave/export.h"
+#include "scave/sqliteresultfileutils.h"
 
 using namespace omnetpp::scave;
 %}
@@ -707,4 +708,11 @@ namespace omnetpp { namespace scave {
 } } // namespaces
 
 %include "scave/export.h"
+
+/* ------------------ sqliteresultfileutils.h ----------------------- */
+namespace omnetpp { namespace scave {
+//TODO
+} } // namespaces
+
+%include "scave/sqliteresultfileutils.h"
 

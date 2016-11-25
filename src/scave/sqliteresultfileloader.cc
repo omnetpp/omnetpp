@@ -15,6 +15,7 @@
    `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <cmath>  // NAN
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
@@ -56,19 +57,48 @@ namespace omnetpp {
 namespace scave {
 
 
+SqliteResultFileLoader::SqliteResultFileLoader(ResultFileManager *resultFileManagerPar) :
+    IResultFileLoader(resultFileManagerPar), db(nullptr), stmt(nullptr), fileRef(nullptr)
+{
+}
+
+SqliteResultFileLoader::~SqliteResultFileLoader()
+{
+}
+
+inline void SqliteResultFileLoader::checkOK(int sqlite3_result)
+{
+    if (sqlite3_result != SQLITE_OK)
+        error(sqlite3_errmsg(db));
+}
+
+void SqliteResultFileLoader::error(const char *errmsg)
+{
+    throw opp_runtime_error("Cannot read SQLite result file '%s': %s", fileRef->fileName.c_str(), errmsg);
+}
+
+void SqliteResultFileLoader::prepareStatement(const char *sql)
+{
+    assert(stmt == nullptr);
+    checkOK(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr));
+}
+
+void SqliteResultFileLoader::finalizeStatement()
+{
+    assert(stmt != nullptr);
+    sqlite3_finalize(stmt);
+    stmt = nullptr;
+}
+
 void SqliteResultFileLoader::loadRuns()
 {
-    // LOAD RUNS
-    assert(fileRef != nullptr);
-    sqlite3_stmt *stmt = nullptr;
-    if (sqlite3_prepare_v2(db, "select runid, runname from run;", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+    prepareStatement("SELECT runid, runname FROM run;");
 
     for (int row=1; ; row++) {
-        int s = sqlite3_step (stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 0);
-            std::string runName  = (const char *)(sqlite3_column_text(stmt, 1));
+            std::string runName  = (const char *) sqlite3_column_text(stmt, 1);
             Run *runRef = resultFileManager->getRunByName(runName.c_str());
             if (!runRef) {
                 // not yet: add it
@@ -77,101 +107,67 @@ void SqliteResultFileLoader::loadRuns()
             }
             // associate Run with this file
             if (resultFileManager->getFileRun(fileRef, runRef) != nullptr)
-                throw opp_runtime_error("non-unique runId '%s' in the sqlite database '%s'", runName.c_str(), fileRef->fileSystemFilePath.c_str());
+                error("Non-unique runId in run table");
             FileRun *fileRunRef = resultFileManager->addFileRun(fileRef, runRef);
             fileRunMap[runId] = fileRunRef;
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode);
         }
     }
+    finalizeStatement();
 }
 
 void SqliteResultFileLoader::loadRunAttrs()
 {
-    // LOAD RUNATTRS
-    assert(fileRef != nullptr);
-    sqlite3_stmt *stmt = nullptr;
-    if (sqlite3_prepare_v2(db, "select runId, attrName, attrValue from runattr;", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+    prepareStatement("SELECT runId, attrName, attrValue FROM runattr;");
 
     for (int row=1; ; row++) {
-        int s = sqlite3_step (stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step (stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 0);
-            std::string attrName = (const char *)(sqlite3_column_text(stmt, 1));
-            std::string attrValue = (const char *)(sqlite3_column_text(stmt, 2));
+            std::string attrName = (const char *) sqlite3_column_text(stmt, 1);
+            std::string attrValue = (const char *) sqlite3_column_text(stmt, 2);
 
             FileRun *fileRunRef = fileRunMap.at(runId);
             StringMap& attributes = fileRunRef->runRef->attributes;
             StringMap::iterator oldPairRef = attributes.find(attrName);
             if (oldPairRef != attributes.end() && oldPairRef->second != attrValue)
-                throw opp_runtime_error("Value of run attribute conflicts with previously loaded value");       //FIXME show more info
+                error("Value of run attribute conflicts with previously loaded value");
             attributes[attrName] = attrValue;
 
             // the "runNumber" attribute is also stored separately
             if (attrName == "runNumber")
                 if (!parseInt(attrValue.c_str(), fileRunRef->runRef->runNumber))
-                    throw opp_runtime_error("invalid result file: int value expected as runNumber");       //FIXME show more info
+                    error("runNumber run attribute must be an integer");
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode);  // throw
         }
     }
-}
-
-void SqliteResultFileLoader::loadDbInfo()
-{
-    assert(fileRef != nullptr);
-    // LOAD Scalars
-    sqlite3_stmt *stmt = nullptr;
-    if (sqlite3_prepare_v2(db, "SELECT name FROM sqlite_master WHERE type='table' and name NOT LIKE 'sqlite_%'", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
-
-    for (int row=1; ; row++) {
-        int s = sqlite3_step(stmt);
-        if (s == SQLITE_ROW) {
-            std::string tableName = (const char *)sqlite3_column_text(stmt, 0);
-            std::cout << "sqlite: tablename: " << tableName << std::endl;
-            if (tableName == "scalar")
-                hasScalar = true;
-            else if (tableName == "vector")
-                hasVector = true;
-        }
-        else if (s == SQLITE_DONE) {
-            break;
-        }
-        else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
-        }
-    }
+    finalizeStatement();
 }
 
 double SqliteResultFileLoader::sqlite3ColumnDouble(sqlite3_stmt *stmt, int fieldIdx)
 {
-    return (sqlite3_column_type(stmt, fieldIdx) != SQLITE_NULL) ? sqlite3_column_double(stmt, fieldIdx) : 0.0/0.0;
+    return (sqlite3_column_type(stmt, fieldIdx) != SQLITE_NULL) ? sqlite3_column_double(stmt, fieldIdx) : NAN;
 }
 
 void SqliteResultFileLoader::loadScalars()
 {
-    assert(fileRef != nullptr);
-    // LOAD Scalars
-    sqlite3_stmt *stmt = nullptr;
-    if (sqlite3_prepare_v2(db, "select scalarId, runId, moduleName, scalarName, scalarValue from scalar;", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
-
     typedef std::map<sqlite3_int64,int> SqliteScalarIdToScalarIdx;
     SqliteScalarIdToScalarIdx sqliteScalarIdToScalarIdx;
 
+    prepareStatement("SELECT scalarId, runId, moduleName, scalarName, scalarValue FROM scalar;");
     for (int row=1; ; row++) {
-        int s = sqlite3_step(stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 scalarId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
@@ -180,36 +176,37 @@ void SqliteResultFileLoader::loadScalars()
             int i = resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), scalarName.c_str(), scalarValue, false);
             sqliteScalarIdToScalarIdx[scalarId] = i;
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode); // error
         }
     }
-    sqlite3_finalize(stmt);
-    if (sqlite3_prepare_v2(db, "select scalarId, runId, attrName, attrValue from scalarattr join scalar using (scalarId) order by runId, scalarId;", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+    finalizeStatement();
+
+    prepareStatement("SELECT scalarId, runId, attrName, attrValue FROM scalarattr JOIN scalar USING (scalarId) ORDER BY runId, scalarId;");
     for (int row=1; ; row++) {
-        int s = sqlite3_step(stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 scalarId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             std::string attrName = (const char *)sqlite3_column_text(stmt, 2);
             std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
             SqliteScalarIdToScalarIdx::iterator it = sqliteScalarIdToScalarIdx.find(scalarId);
             if (it == sqliteScalarIdToScalarIdx.end())
-                throw opp_runtime_error("Invalid scalarId %li in scalarattr table", scalarId);
+                error("Invalid scalarId in scalarattr table");
             ScalarResult& sca = fileRunMap.at(runId)->fileRef->scalarResults.at(sqliteScalarIdToScalarIdx.at(scalarId));
             sca.attributes[attrName] = attrValue;
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode); // error
         }
     }
+    finalizeStatement();
 
     loadHistograms();
 }
@@ -219,125 +216,102 @@ void SqliteResultFileLoader::loadHistograms()
 {
     Statistics stat;
     StringMap attrs;
-    assert(fileRef != nullptr);
-    // LOAD Scalars
-    sqlite3_stmt *stmt = nullptr;
-    if (sqlite3_prepare_v2(db, "select histId, runId, moduleName, histName, "
-            "histCount, "
-            "histMean, histStddev, histSum, histSqrsum, histMin, histMax, "
-            "histWeights, histWeightedSum, histSqrSumWeights, histWeightedSqrSum "
-            "from histogram;", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
-
     typedef std::map<sqlite3_int64,int> SqliteHistogramIdToHistogramIdx;
     SqliteHistogramIdToHistogramIdx sqliteHistogramIdToHistogramIdx;
 
+    prepareStatement("SELECT histId, runId, moduleName, histName, histCount, "
+            "histMean, histStddev, histSum, histSqrsum, histMin, histMax, "
+            "histWeights, histWeightedSum, histSqrSumWeights, histWeightedSqrSum "
+            "FROM histogram;");
     for (int row=1; ; row++) {
-        int s = sqlite3_step(stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 histId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
             std::string histName = (const char *)sqlite3_column_text(stmt, 3);
             sqlite3_int64 histCount = sqlite3_column_int64(stmt, 4);
-            double histMean = sqlite3ColumnDouble(stmt, 5);
-            double histStddev = sqlite3ColumnDouble(stmt, 6);
+            //double histMean = sqlite3ColumnDouble(stmt, 5); // can be computed from the others, skip
+            //double histStddev = sqlite3ColumnDouble(stmt, 6); // can be computed from the others, skip
             double histSum = sqlite3ColumnDouble(stmt, 7);
             double histSqrsum = sqlite3ColumnDouble(stmt, 8);
             double histMin = sqlite3ColumnDouble(stmt, 9);
             double histMax = sqlite3ColumnDouble(stmt, 10);
-            double histWeights = sqlite3ColumnDouble(stmt, 11);
-            double histWeightedsum = sqlite3ColumnDouble(stmt, 12);
-            double histSqrSumWeights = sqlite3ColumnDouble(stmt, 13);
-            double histWeightedSqrSum = sqlite3ColumnDouble(stmt, 14);
+            //TODO make Scave understand weighted statistics:
+            //double histWeights = sqlite3ColumnDouble(stmt, 11);
+            //double histWeightedsum = sqlite3ColumnDouble(stmt, 12);
+            //double histSqrSumWeights = sqlite3ColumnDouble(stmt, 13);
+            //double histWeightedSqrSum = sqlite3ColumnDouble(stmt, 14);
             Statistics stat(histCount, histMin, histMax, histSum, histSqrsum);
             sqliteHistogramIdToHistogramIdx[histId] = resultFileManager->addHistogram(fileRunMap.at(runId), moduleName.c_str(), histName.c_str(), stat, StringMap());
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode); // error
         }
     }
-    sqlite3_finalize(stmt);
+    finalizeStatement();
 
-    if (sqlite3_prepare_v2(db, "select histId, runId, attrName, attrValue from histattr join histogram using (histId) order by runId, histId;", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+    prepareStatement("SELECT histId, runId, attrName, attrValue FROM histattr JOIN histogram USING (histId) ORDER BY runId, histId;");
     for (int row=1; ; row++) {
-        int s = sqlite3_step(stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 histId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             std::string attrName = (const char *)sqlite3_column_text(stmt, 2);
             std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
             SqliteHistogramIdToHistogramIdx::iterator it = sqliteHistogramIdToHistogramIdx.find(histId);
             if (it == sqliteHistogramIdToHistogramIdx.end())
-                throw opp_runtime_error("Invalid scalarId %li in histattr table");
+                error("Invalid histId in histattr table");
             HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(histId));
             hist.attributes[attrName] = attrValue;
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode); // error
         }
     }
-    sqlite3_finalize(stmt);
+    finalizeStatement();
 
-    if (sqlite3_prepare_v2(db, "select histId, runId, baseValue, cellValue from histbin join histogram using (histId) order by runId, histId;", -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+    prepareStatement("SELECT histId, runId, baseValue, cellValue FROM histbin JOIN histogram USING (histId) ORDER BY runId, histId;");
     for (int row=1; ; row++) {
-        int s = sqlite3_step(stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 histId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             double baseValue = sqlite3_column_double(stmt, 2);
             sqlite3_int64 cellValue = sqlite3_column_int64(stmt, 3);
             SqliteHistogramIdToHistogramIdx::iterator it = sqliteHistogramIdToHistogramIdx.find(histId);
             if (it == sqliteHistogramIdToHistogramIdx.end())
-                throw opp_runtime_error("Invalid scalarId %li in histbin table");
+                error("Invalid histId in histbin table");
             HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(histId));
             hist.addBin(baseValue, cellValue);
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode); // error
         }
     }
-    sqlite3_finalize(stmt);
+    finalizeStatement();
 }
-
-
-// select vectorId, runId, moduleName, vectorName, count, vmin, vmax, vsum, vsumsqr, startEventNum, endEventNum  from vector left join (select vectorId, runId, count(value) as count, min(value) as vmin, max(value) as vmax,     sum(value) as vsum, sum(value*value) as vsumsqr     min(eventNumber) as startEventNum, max(eventNumber) as endEventNum    from vectordata group by vectorId ) as vectorstat using (vectorId, runId);
 
 void SqliteResultFileLoader::loadVectors()
 {
-    assert(fileRef != nullptr);
-    // LOAD Vectors
-    sqlite3_stmt *stmt = nullptr;
-    if (sqlite3_prepare_v2(db,
-            "select vectorId, runId, moduleName, vectorName, count, vmin, vmax, vsum, vsumsqr, startEventNum, endEventNum, "
-            "    startSimtimeRaw, endSimtimeRaw, simtimeExp "
-            "from vector "
-            "left join run using (runId) "
-            "left join (select vectorId, count(value) as count, min(value) as vmin, max(value) as vmax, "
-            "    sum(value) as vsum, sum(value*value) as vsumsqr, "
-            "    min(eventNumber) as startEventNum, "
-            "    max(eventNumber) as endEventNum, "
-            "    min(simtimeRaw) as startSimtimeRaw, "
-            "    max(simtimeRaw) as endSimtimeRaw "
-            "    from vectordata group by vectorId ) as vectorstat "
-            "using (vectorId);",
-            -1, &stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+    prepareStatement(
+            "SELECT vectorId, runId, moduleName, vectorName, "
+            "    vectorCount, vectorMin, vectorMax, vectorSum, vectorSumSqr, "
+            "    startEventNum, endEventNum, startSimtimeRaw, endSimtimeRaw, simtimeExp "
+            "FROM vector LEFT JOIN run USING (runId);");
 
     for (int row=1; ; row++) {
-        int s = sqlite3_step(stmt);
-        if (s == SQLITE_ROW) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_ROW) {
             sqlite3_int64 vectorId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
@@ -360,47 +334,46 @@ void SqliteResultFileLoader::loadVectors()
             vec.startTime = simultime_t(startSimtimeRaw, simtimeExp);
             vec.endTime = simultime_t(endSimtimeRaw, simtimeExp);
         }
-        else if (s == SQLITE_DONE) {
+        else if (resultCode == SQLITE_DONE) {
             break;
         }
         else {
-            throw opp_runtime_error("At %s:%d database error: %s\n", __FILE__, __LINE__, sqlite3_errmsg(db));
+            checkOK(resultCode); // error
         }
     }
-    sqlite3_finalize(stmt);
+    finalizeStatement();
+}
+
+void SqliteResultFileLoader::cleanupDb()
+{
+    if (db != nullptr) {
+        sqlite3_close(db);
+        sqlite3_finalize(stmt);
+        db = nullptr;
+        stmt = nullptr;
+    }
 }
 
 ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
 {
-    // add to fileList
-    fileRef = nullptr;
-
     try {
-        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, false);
-
-        if (sqlite3_open_v2(fileSystemFileName, &db, SQLITE_OPEN_READONLY, 0) != SQLITE_OK)
-            throw opp_runtime_error("Can't open sqlite database '%s': %s\n", fileSystemFileName, sqlite3_errmsg(db));
-
-        loadDbInfo();
+        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_SQLITE, false);
+        checkOK(sqlite3_open_v2(fileSystemFileName, &db, SQLITE_OPEN_READONLY, 0));
         loadRuns();
         loadRunAttrs();
-        if (hasScalar)
-            loadScalars();
-        if (hasVector)
-            loadVectors();
+        loadScalars();
+        loadVectors();
     }
     catch (std::exception&) {
-        if (db != nullptr)
-            sqlite3_close(db);
-        db = nullptr;
+        cleanupDb();
         try {
             if (fileRef)
                 resultFileManager->unloadFile(fileRef);
-        }
-        catch (...) {
-        }
+        } catch (...) {}
+
         throw;
     }
+    cleanupDb();
     return fileRef;
 }
 

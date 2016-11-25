@@ -59,7 +59,26 @@ namespace scave {
 #endif
 #define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, ctx.fileName, ctx.lineNo);
 
-void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ResultFileManager::sParseContext& ctx)
+
+OmnetppResultFileLoader::ParseContext::ParseContext(ResultFile* fileRef) :
+        fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0), fileRunRef(nullptr),
+        lastResultItemType(0), lastResultItemIndex(-1), count(0),
+        min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0)
+{
+}
+
+void OmnetppResultFileLoader::ParseContext::clearHistogram()
+{
+    moduleName.clear();
+    statisticName.clear();
+    count = 0;
+    min = POSITIVE_INFINITY;
+    max = NEGATIVE_INFINITY;
+    sum = 0.0;
+    sumSqr = 0.0;
+}
+
+void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContext& ctx)
 {
     ++ctx.lineNo;
 
@@ -266,7 +285,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
     ResultFile *fileRef = nullptr;
 
     try {
-        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, false);
+        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_TEXT, false);
 
         // if vector file and has index, load vectors from the index file
         if (IndexFile::isExistingVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName)) {
@@ -278,7 +297,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
             FileReader freader(fileSystemFileName);
             char *line;
             LineTokenizer tokenizer;
-            ResultFileManager::sParseContext ctx(fileRef);
+            ParseContext ctx(fileRef);
             while ((line = freader.getNextLineBufferPointer()) != nullptr) {
                 int len = freader.getCurrentLineLength();
                 int numTokens = tokenizer.tokenize(line, len);

@@ -76,7 +76,7 @@ class SCAVE_API ReaderNode : public Node
 {
     public:
         ReaderNode() {}
-        virtual int64_t getFileSize() = 0;
+        virtual int64_t getFileSize() = 0;  //TODO remove this, and rename getNumReadBytes() to getProgressPercentage()
         virtual int64_t getNumReadBytes() = 0;
 };
 

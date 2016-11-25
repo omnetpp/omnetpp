@@ -185,6 +185,7 @@ public class DataflowNetworkBuilder {
             this.resultFile = resultFile;
             this.attrs = new StringMap();
             this.attrs.set("filename", resultFile.getFileSystemFilePath());
+            this.attrs.set("allowindexing", "true");
             fileToReaderNodeMap.put(resultFile, this);
         }
 

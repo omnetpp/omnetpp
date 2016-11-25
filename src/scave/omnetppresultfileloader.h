@@ -47,7 +47,26 @@ namespace scave {
 class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
 {
   protected:
-    void processLine(char **vec, int numTokens, ResultFileManager::sParseContext& ctx);
+    struct ParseContext {
+        ResultFile *fileRef; /*in*/
+        const char *fileName; /*in*/
+        int64_t lineNo; /*inout*/
+        FileRun *fileRunRef; /*inout*/
+        // references to the result items which attributes should be added to
+        int lastResultItemType; /*inout*/
+        int lastResultItemIndex; /*inout*/
+        // collected fields of the histogram to be created when the
+        // first 'bin' is parsed
+        std::string moduleName;
+        std::string statisticName;
+        long count;
+        double min, max, sum, sumSqr;
+
+        ParseContext(ResultFile* fileRef);
+        void clearHistogram();
+    };
+  protected:
+    void processLine(char **vec, int numTokens, ParseContext& ctx);
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
   public:
     OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar) : IResultFileLoader(resultFileManagerPar) {}

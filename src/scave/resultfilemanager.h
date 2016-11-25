@@ -38,9 +38,6 @@
 #include "common/rwlock.h"
 #endif
 
-//TODO move sqlite related class to a new file
-#include "common/sqlite3.h"
-
 namespace omnetpp {
 namespace scave {
 
@@ -166,12 +163,15 @@ typedef std::vector<FileRun *> FileRunList;
  */
 struct SCAVE_API ResultFile
 {
+    enum FileType { FILETYPE_TEXT, FILETYPE_SQLITE };
+
     int id;  // position in fileList
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
     std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
     std::string directory; // directory's location in the Eclipse workspace
     std::string fileName; // file name
     std::string filePath; // workspace directory + fileName
+    FileType fileType;
     bool computed;
     ScalarResults scalarResults;
     VectorResults vectorResults;
@@ -283,40 +283,6 @@ class SCAVE_API ResultFileManager
     omnetpp::common::ReentrantReadWriteLock lock;
 #endif
 
-  public:               //TODO for OmnetppResultFileLoader
-    struct sParseContext
-    {
-        ResultFile *fileRef; /*in*/
-        const char *fileName; /*in*/
-        int64_t lineNo; /*inout*/
-        FileRun *fileRunRef; /*inout*/
-        // references to the result items which attributes should be added to
-        int lastResultItemType; /*inout*/
-        int lastResultItemIndex; /*inout*/
-        // collected fields of the histogram to be created when the
-        // first 'bin' is parsed
-        std::string moduleName;
-        std::string statisticName;
-        long count;
-        double min, max, sum, sumSqr;
-
-        sParseContext(ResultFile *fileRef)
-            : fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0),
-              fileRunRef(nullptr), lastResultItemType(0), lastResultItemIndex(-1),
-              count(0), min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0) {}
-
-        void clearHistogram()
-        {
-            moduleName.clear();
-            statisticName.clear();
-            count = 0;
-            min = POSITIVE_INFINITY;
-            max = NEGATIVE_INFINITY;
-            sum = 0.0;
-            sumSqr = 0.0;
-        }
-    };
-
   public:
     enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
@@ -333,7 +299,7 @@ class SCAVE_API ResultFileManager
     }
 
     // utility functions called while loading a result file
-    ResultFile *addFile(const char *fileName, const char *fileSystemFileName, bool computed);
+    ResultFile *addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType, bool computed);
     Run *addRun(bool computed);
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
@@ -528,8 +494,6 @@ class SCAVE_API IResultFileLoader
     virtual ~IResultFileLoader() {}
     virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) = 0;
 };
-
-bool isSqliteFile(const char *fileName); // TODO move to a better place
 
 } // namespace scave
 }  // namespace omnetpp
