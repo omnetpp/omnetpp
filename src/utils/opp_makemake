@@ -33,7 +33,6 @@ source files in current directory
 $progname [options] [object files or libraries]
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
-    --nmake               Generate Makefile.vc for Visual C++ and nmake.exe
     -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
                           By default, this is determined by looking at
                           existing files in the directory.
@@ -133,12 +132,10 @@ $progname [options] [object files or libraries]
                           need to single-quote them ('\$O') against getting
                           resolved prematurely by the shell.
 
-Default output is Makefile (with --nmake it is Makefile.vc), which you can
-invoke by typing "make" (with nmake: "nmake -f Makefile.vc").
+Default output is Makefile, which you can invoke by typing "make".
 
-The contents of the makefrag file (with --nmake: makefrag.vc) will be built
-into the generated makefile, letting you to override the default target,
-change variables, etc.
+The contents of the makefrag file will be built into the generated makefile,
+letting you to override the default target, change variables, etc.
 
 END
 }
@@ -153,7 +150,6 @@ sub makemake()
     # process command line args
     #
     @args = @ARGV;
-    $isNMake = 0;
     $projectDir = "";
     $type = "EXE";
     $target = "";
@@ -188,9 +184,6 @@ sub makemake()
         }
         elsif ($arg eq "-f" || $arg eq "--force") {
             $force = 1;
-        }
-        elsif ($arg eq "--nmake") {
-            $isNMake = 1;
         }
         elsif ($arg eq "-e" || $arg eq "--ext") {
             $ccExt = shift @ARGV;
@@ -338,7 +331,7 @@ sub makemake()
     # Prepare the variables for the template
     #
 
-    $makefile = $isNMake ? "Makefile.vc" : "Makefile";
+    $makefile = "Makefile";
     if (-f $makefile && $force ne 1) {
         error("use -f to force overwriting existing $makefile");
     }
@@ -412,12 +405,12 @@ sub makemake()
         $isRecursive = 0;
     }
 
-    $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : $ENV{MAKE} ? $ENV{MAKE} : "make";
+    $makecommand = $ENV{MAKE} ? $ENV{MAKE} : "make";
 
     # find configuser.vc / Makefile.inc
     $comspec = $ENV{COMSPEC};
     $comspec =~ s!\\!\\\\!g;
-    $configFile = $isNMake ? `$comspec /c opp_configfilepath.cmd` : `opp_configfilepath`;
+    $configFile =  `opp_configfilepath`;
     if ($? != 0) {
         error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH");
     }
@@ -502,18 +495,18 @@ sub makemake()
         }
     }
 
-    $objExt = $isNMake ? "obj" : "o";
+    $objExt = "o";
 
     $targetPrefix = "";
     $targetSuffix = "";
     if ($type eq "EXE") {
-        $targetSuffix = $isNMake ? ".exe" : "\$(EXE_SUFFIX)";
+        $targetSuffix = "\$(EXE_SUFFIX)";
     } elsif ($type eq "SHAREDLIB") {
-        $targetSuffix = $isNMake ? ".dll" : "\$(SHARED_LIB_SUFFIX)";
-        $targetPrefix = $isNMake ? "" : "\$(LIB_PREFIX)";
+        $targetSuffix = "\$(SHARED_LIB_SUFFIX)";
+        $targetPrefix = "\$(LIB_PREFIX)";
     } elsif ($type eq "STATICLIB") {
-        $targetSuffix = $isNMake ? ".lib" : "\$(A_LIB_SUFFIX)";
-        $targetPrefix = $isNMake ? "" : "\$(LIB_PREFIX)";
+        $targetSuffix = "\$(A_LIB_SUFFIX)";
+        $targetPrefix = "\$(LIB_PREFIX)";
     }
 
     # prepare submakeDirs. First, check that all specified subdirs exist
@@ -594,7 +587,7 @@ sub makemake()
         }
     }
     else {
-        $makefragFilename = $isNMake ? "makefrag.vc" : "makefrag";
+        $makefragFilename = "makefrag";
         if (-f $makefragFilename) {
             $makefrags .= "# inserted from file '$makefragFilename':\n";
             $makefrags .= readTextFile($makefragFilename) . "\n";
@@ -614,25 +607,18 @@ sub makemake()
 
     # fill in template variables
     %m = (
-        "rem" => "",  # allows putting comments into the template
         "lbrace" =>  "{",
         "rbrace" =>  "}",
-        "nmake" =>  $isNMake,
         "targetprefix" => $targetPrefix,
         "target" =>   $target,
         "targetsuffix" => $targetSuffix,
         "outdir" => $outDir,
         "subpath" => $subpath,
         "isdeep" => $isDeep,
-        "progname" => "opp_makemake",  # $isNMake ? "opp_nmakemake" : "opp_makemake",
+        "progname" => "opp_makemake",
         "args" =>  join(" ", @args),
         "configfile" =>  $configFile,
-        "-L" =>  $isNMake ? "/libpath:" : "\$(LDFLAG_LIBPATH)",
-        "-l" =>  $isNMake ? "" : "-l",
-        ".lib" =>  $isNMake ? ".lib" : "",
-        "-out" =>  $isNMake ? "/out:" : "-o ", # note space after "-o" -- OS/X needs it
         "cc" =>  $ccExt,
-        "obj" =>  $objExt,
         "deps" =>  $deps,
         "exe" =>  $type eq "EXE",
         "sharedlib" =>  $type eq "SHAREDLIB",
@@ -650,7 +636,7 @@ sub makemake()
         "defines" => prefixQuoteJoin(\@defines, "-D"),
         "makefilevariables" => \@makefileVariables,
         "makecommand" =>  $makecommand,
-        "makefile" =>  $isNMake ? "Makefile.vc" : "Makefile",
+        "makefile" =>  "Makefile",
         "makefrags" =>  $makefrags,
         "msgccfiles" =>  \@msgccfiles,
         "msghfiles" =>  \@msghfiles,
@@ -664,9 +650,7 @@ sub makemake()
         "dllsymbol" =>  $dllSymbol,
         "sourcedirs" => \@sourceDirs,
         "backslashedsourcedirs" => \@backslashedSourceDirs,
-        "nmake_inlinefile" => ($isNMake && $isLongLinkerLine) ? "@<<\n" : "",
-        "nmake_inlineend" => ($isNMake && $isLongLinkerLine) ? "\n<<" : "",
-        "gcclongline" => (!$isNMake && $isLongLinkerLine && $isWindows)
+        "gcclongline" => ($isLongLinkerLine && $isWindows)
     );
 
     my $content = substituteIntoTemplate(template(), \%m, "{", "}");
@@ -1121,7 +1105,7 @@ sub template()
 {~nolink:}EXTRA_OBJS = {extraobjs}
 {~nolink:}
 {~nolink:}{~staticlib:}# Additional libraries (-L, -l options)
-{~nolink:}{~staticlib:}LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
+{~nolink:}{~staticlib:}LIBS ={@dir:libpathdirs} $(LDFLAG_LIBPATH){dir}{/@} {@lib:libs} -l{lib}{/@}
 {~nolink:}{~staticlib:}
 # Output directory
 ### Note: these variables are public API (see help text), don't change
@@ -1140,81 +1124,63 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {sourcedirs:}SMFILES ={@sm:smfiles} \
 {sourcedirs:}    {sm}{/@}
 {sourcedirs:}
-{defaultmode:}# Default mode (-M option); can be overridden with {nmake?n}make MODE=debug (or =release)
-{defaultmode:}{nmake?!}ifndef MODE
+{defaultmode:}# Default mode (-M option); can be overridden with make MODE=debug (or =release)
+{defaultmode:}ifndef MODE
 {defaultmode:}MODE = {defaultmode}
-{defaultmode:}{nmake?!}endif
+{defaultmode:}endif
 {defaultmode:}
 {makefilevariables:}# Other makefile variables (-K)
 {@d:makefilevariables}{d}
 {/@}
 
-{nmake:}MAKE=nmake -nologo -f Makefile.vc
-{nmake:}
 #------------------------------------------------------------------------------
 
 # Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
-{nmake:}!if "$(OMNETPP_CONFIGFILE)"!=""
-{nmake:}CONFIGFILE = $(OMNETPP_CONFIGFILE)
-{nmake:}!elseif "$(OMNETPP_ROOT)"!=""
-{nmake:}CONFIGFILE = $(OMNETPP_ROOT)/configuser.vc
-{nmake:}!else
-{nmake:}CONFIGFILE = {configfile}
-{nmake:}!endif
-{nmake:}
-{nmake:}!if !exist($(CONFIGFILE))
-{nmake:}!error '$(CONFIGFILE)' does not exist -- set OMNETPP_ROOT or OMNETPP_CONFIGFILE to point to configuser.vc. From the IDE, set the OMNeT++ install location on the Window | Preferences dialog.
-{nmake:}!endif
-{nmake:}
-{nmake:}!include $(CONFIGFILE)
 
-{~nmake:}ifneq ("$(OMNETPP_CONFIGFILE)","")
-{~nmake:}CONFIGFILE = $(OMNETPP_CONFIGFILE)
-{~nmake:}else
-{~nmake:}ifneq ("$(OMNETPP_ROOT)","")
-{~nmake:}CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
-{~nmake:}else
-{~nmake:}CONFIGFILE = $(shell opp_configfilepath)
-{~nmake:}endif
-{~nmake:}endif
-{~nmake:}
-{~nmake:}ifeq ("$(wildcard $(CONFIGFILE))","")
-{~nmake:}$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
-{~nmake:}endif
-{~nmake:}
-{~nmake:}include $(CONFIGFILE)
+ifneq ("$(OMNETPP_CONFIGFILE)","")
+CONFIGFILE = $(OMNETPP_CONFIGFILE)
+else
+ifneq ("$(OMNETPP_ROOT)","")
+CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
+else
+CONFIGFILE = $(shell opp_configfilepath)
+endif
+endif
+
+ifeq ("$(wildcard $(CONFIGFILE))","")
+$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
+endif
+
+include $(CONFIGFILE)
 
 ### # Check that MODE is valid (not enabled, to allow implementing other MODEs)
-### {nmake:}!if "$(MODE)"!="debug" && "$(MODE)"!="release"
-### {nmake:}error MODE must be "debug" or "release"
-### {nmake:}!endif
-### {~nmake:}ifneq ($(MODE),"debug")
-### {~nmake:}ifneq ($(MODE),"release")
-### {~nmake:}$(error MODE must be "debug" or "release")
-### {~nmake:}endif
-### {~nmake:}endif
+### ifneq ($(MODE),"debug")
+### ifneq ($(MODE),"release")
+### $(error MODE must be "debug" or "release")
+### endif
+### endif
 
 {~nolink:}{~staticlib:}# Simulation kernel and user interface libraries
 {exe:}OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
-{sharedlib:}OMNETPP_LIBS = {-l}oppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
-{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}ifneq ($(TOOLCHAIN_NAME),clangc2)
-{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,$(abspath {dir}){/@}
-{~nolink:}{~staticlib:}{libpathdirs:}{~nmake:}endif
+{sharedlib:}OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
+{~nolink:}{~staticlib:}{libpathdirs:}ifneq ($(TOOLCHAIN_NAME),clangc2)
+{~nolink:}{~staticlib:}{libpathdirs:}LIBS +={@dir:libpathdirs} -Wl,-rpath,$(abspath {dir}){/@}
+{~nolink:}{~staticlib:}{libpathdirs:}endif
 
 {sourcedirs:}COPTS = $(CFLAGS) $(IMPORT_DEFINES) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 {sourcedirs:}MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 {sourcedirs:}SMCOPTS =
 {sourcedirs:}
-{~nmake:}# we want to recompile everything if COPTS changes,
-{~nmake:}# so we store COPTS into $COPTS_FILE and have object
-{~nmake:}# files depend on it (except when "make depend" was called)
-{~nmake:}COPTS_FILE = $O/.last-copts
-{~nmake:}ifneq ($(MAKECMDGOALS),depend)
-{~nmake:}ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
-{~nmake:}$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
-{~nmake:}endif
-{~nmake:}endif
-{~nmake:}
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE and have object
+# files depend on it (except when "make depend" was called)
+COPTS_FILE = $O/.last-copts
+ifneq ($(MAKECMDGOALS),depend)
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
+endif
+endif
+
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
 # >>>
@@ -1224,88 +1190,63 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Main target
 {~nolink:}all: $O/$(TARGET)
-{~nolink:}{nmake:}	$(Q)copy $(O:/=\)\$(TARGET) . >NUL
-{~nolink:}{nmake:}	-$(Q)copy $(O:/=\)\$(TARGET).manifest . >NUL
-{sharedlib:}{nmake:}	-$(Q)copy $(O:/=\)\$(TARGET:.dll=.lib) . >NUL
-{~nolink:}{~nmake:}	$(Q)$(LN) $O/$(TARGET) .
+{~nolink:}	$(Q)$(LN) $O/$(TARGET) .
 {~nolink:}
 ### Rules for $TARGET. Note that end product will be softlinked into the
 ### Makefile's directory; on systems that don't support soft links it will
 ### be copied. Note that MinGW's "ln -s" also actually copies the file.
-{exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
-{exe:}{nmake:}	-@md $(O:/=\) 2>nul
-{exe:}{~nmake:}	@$(MKPATH) $O
+{exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile}
+{exe:}	@$(MKPATH) $O
 {exe:}	@echo Creating executable: $@
-{gcclongline:}{exe:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
-{~gcclongline:}{exe:}	$(Q)$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
-{sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
-{sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
-{sharedlib:}{~nmake:}	@$(MKPATH) $O
-{sharedlib:}{~nmake:}	@echo Creating shared library: $@
-{gcclongline:}{sharedlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
-{~gcclongline:}{sharedlib:}	$(Q)$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
-{sharedlib:}{~nmake:}	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
-{staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
-{staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
-{staticlib:}{~nmake:}	@$(MKPATH) $O
-{staticlib:}{~nmake:}	@echo Creating static library: $@
+{gcclongline:}{exe:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) -o $O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{~gcclongline:}{exe:}	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
+{sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile}
+{sharedlib:}	@$(MKPATH) $O
+{sharedlib:}	@echo Creating shared library: $@
+{gcclongline:}{sharedlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) -o $O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{~gcclongline:}{sharedlib:}	$(Q)$(SHLIB_LD) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
+{sharedlib:}	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
+{staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile}
+{staticlib:}	@$(MKPATH) $O
+{staticlib:}	@echo Creating static library: $@
 {gcclongline:}{staticlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) $O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
-{~gcclongline:}{staticlib:}	$(Q)$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) {nmake_inlineend}
+{~gcclongline:}{staticlib:}	$(Q)$(AR) $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS)
 {nolink:}all: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {makefile}
-{nolink:}	@{nmake?rem}{~nmake?#} Do nothing
+{nolink:}	@# Do nothing
 
-### Subdir targets. Note that nmake.exe does not support .PHONY (that's why we need
-### the *_dir targets), and does not print "Entering"/"Leaving" messages like gnu make.
 {submakedirs:}submakedirs: {@i:submakenames} {i}_dir{/@}
 {submakedirs:}
-{~nmake:}.PHONY: all clean cleanall depend msgheaders smheaders {@i:submakenames} {i}{/@}
-{~nmake:}{@i:submakenames}{i}: {i}_dir
-{~nmake:}{/@}
+.PHONY: all clean cleanall depend msgheaders smheaders {@i:submakenames} {i}{/@}
+{@i:submakenames}{i}: {i}_dir
+{/@}
 {submakedirs:}
 {@i:submakenames,dir:submakedirs}{i}_dir:
-{nmake:}	echo [Entering {dir}] && cd {dir} && $(MAKE) all && echo [Leaving {dir}]
-{~nmake:}	cd {dir} && $(MAKE) all
+	cd {dir} && $(MAKE) all
 
 {/@}
 
 {sourcedirs:}.SUFFIXES: .{cc}
 {sourcedirs:}
-### Pattern rules for cc files. For gnu make a single rule is enough;
-### for nmake we need per-directory rules, plus one for "." (even though
-### "." is in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
-{sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc} $(COPTS_FILE) | msgheaders smheaders
-{sourcedirs:}{~nmake:}	@$(MKPATH) $(dir $@)
-{sourcedirs:}{~nmake:}	$(qecho) "$<"
-{sourcedirs:}{~nmake:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
-{sourcedirs:}{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
-{sourcedirs:}{nmake:}	-@md $(O:/=\) 2>nul
-{sourcedirs:}{nmake:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) /Fo"$@" -Tp $<
+### Pattern rules for cc files.
+{sourcedirs:}$O/%.o: %.{cc} $(COPTS_FILE) | msgheaders smheaders
+{sourcedirs:}	@$(MKPATH) $(dir $@)
+{sourcedirs:}	$(qecho) "$<"
+{sourcedirs:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
 {@dir:sourcedirs,bsdir:backslashedsourcedirs}
-{nmake:}{lbrace}{dir}{rbrace}.{cc}{lbrace}$O/{dir}{rbrace}.{obj}:
-{nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
-{nmake:}	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) /Fo"$@" -Tp $<
 {/@}
-### Pattern rules for msg files. For gnu make one rule is enough,
-### nmake needs per-file rules
-{sourcedirs:}{~nmake:}%_m.{cc} %_m.h: %.msg
-{sourcedirs:}{~nmake:}	$(qecho) MSGC: $<
-{sourcedirs:}{~nmake:}	$(Q)$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
-{sourcedirs:}{~nmake:}
+### Pattern rules for msg files.
+{sourcedirs:}%_m.{cc} %_m.h: %.msg
+{sourcedirs:}	$(qecho) MSGC: $<
+{sourcedirs:}	$(Q)$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
+{sourcedirs:}
 {@msg:msgfiles,m_cc:msgccfiles,m_h:msghfiles}
-{nmake:}{m_cc} {m_h} : {msg}
-{nmake:}	$(qecho) MSGC: $@
-{nmake:}	$(Q)$(MSGC:/=\) -s _m.{cc} $(MSGCOPTS) {msg}
 {/@}
-### Pattern rules for sm files. For gnu make one rule is enough,
-### nmake needs per-file rules
-{sourcedirs:}{~nmake:}%_sm.{cc} %_sm.h: %.sm
-{sourcedirs:}{~nmake:}	$(qecho) SMC: $<
-{sourcedirs:}{~nmake:}	$(Q)$(SMC) -c++ -suffix {cc} $(SMCOPTS) $?
-{sourcedirs:}{~nmake:}
+### Pattern rules for sm files.
+{sourcedirs:}%_sm.{cc} %_sm.h: %.sm
+{sourcedirs:}	$(qecho) SMC: $<
+{sourcedirs:}	$(Q)$(SMC) -c++ -suffix {cc} $(SMCOPTS) $?
+{sourcedirs:}
 {@sm:smfiles,sm_cc:smccfiles,sm_h:smhfiles}
-{nmake:}{sm_cc} {sm_h} : {sm}
-{nmake:}	$(qecho) SMC: $@
-{nmake:}	$(Q)$(SMC:/=\) -c++ -suffix {cc} $(SMCOPTS) {sm}
 {/@}
 
 ### Utility target for running opp_msgc; otherwise unused by this makefile
@@ -1321,24 +1262,15 @@ smheaders: {sourcedirs?$(SMFILES:.sm=_sm.h)}
 ### clean, depend, etc.
 clean:
 	$(qecho) Cleaning...
-{nmake:}	-$(Q)rmdir /s /q $(O:/=\) 2>nul
-{nmake:}	-$(Q)del $(VC_AUX_FILES) 2>nul
-{nmake:}{exe:}	-$(Q)del $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.exe=.dll) 2>nul
-{nmake:}{sharedlib:}	-$(Q)del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
-{nmake:}{staticlib:}	-$(Q)del $(TARGET) $(TARGET:.lib=.exe) $(TARGET:.lib=.dll) 2>nul
-{nmake:}{nolink:}	-$(Q)del {target}.exe {target}.dll {target}.lib 2>nul
-{~nmake:}	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
-{~nmake:}	$(Q)-rm -f {target} {target}.exe lib{target}.so lib{target}.a lib{target}.dll lib{target}.dylib
-{~nmake:}{@dir:sourcedirs}	$(Q)-rm -f {dir}/*_m.{cc} {dir}/*_m.h {dir}/*_sm.{cc} {dir}/*_sm.h
-{~nmake:}{/@}
-{nmake:}{@bsdir:backslashedsourcedirs}	-$(Q)del {bsdir}\*_m.{cc} {bsdir}\*_m.h {bsdir}\*_sm.{cc} {bsdir}\*_sm.h 2>nul
-{nmake:}{/@}
+	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
+	$(Q)-rm -f {target} {target}.exe lib{target}.so lib{target}.a lib{target}.dll lib{target}.dylib
+{@dir:sourcedirs}	$(Q)-rm -f {dir}/*_m.{cc} {dir}/*_m.h {dir}/*_sm.{cc} {dir}/*_sm.h
+{/@}
 {@i:submakedirs}	-$(Q)cd {i} && $(MAKE) clean
 {/@}
 
 cleanall: clean
-{nmake:}	-$(Q)rmdir /s /q $(PROJECT_OUTPUT_DIR:/=\) 2>nul
-{~nmake:}	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
+	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 # include all dependencies
 -include $(OBJS:%.o=%.d)
