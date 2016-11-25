@@ -43,7 +43,7 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
                 return omnetppRootEnvPath;
         }
 
-        // look for the Makefile.inc or configuser.vc in parent directories
+        // look for the Makefile.inc in parent directories
         IPath path = new Path(Platform.getInstallLocation().getURL().getFile());
         while (!path.isEmpty() && !path.isRoot()) {
             path = path.removeLastSegments(1);
@@ -68,7 +68,7 @@ public class ConfigurationPreferenceInitializer extends AbstractPreferenceInitia
     }
 
     private boolean containsConfigFiles(IPath path) {
-        return new File(path.append("configuser.vc").toString()).exists() || new File(path.append("Makefile.inc").toString()).exists();
+        return new File(path.append("Makefile.inc").toString()).exists();
     }
 
     private String getGraphvizDotExecutableDefault() {

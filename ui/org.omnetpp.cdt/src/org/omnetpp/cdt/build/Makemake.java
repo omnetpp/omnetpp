@@ -96,11 +96,10 @@ public class Makemake {
 
         File directory = folder.getLocation().toFile();
 
-        boolean isNMake = options.isNMake;
         boolean isDeep = options.isDeep;
         boolean isRecursive = false; // not supported from the IDE, because we have metaRecurse
 
-        String makefileName = isNMake ? "Makefile.vc" : "Makefile";
+        String makefileName = "Makefile";
         IFile makefile = folder.getFile(new Path(makefileName));
         makefile.refreshLocal(IResource.DEPTH_ZERO, null);
         if (makefile.exists() && !options.force)
@@ -134,7 +133,7 @@ public class Makemake {
         if (isDeep)
             isRecursive = false;
 
-        String makecommand = isNMake ? "nmake /nologo /f Makefile.vc" : "make";
+        String makecommand = "make";
 
         if (options.projectDir != null)
             throw new MakemakeException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
@@ -142,7 +141,7 @@ public class Makemake {
         String omnetppRoot = OmnetppDirs.getOmnetppRootDir();
         if (StringUtils.isEmpty(omnetppRoot))
             throw new MakemakeException("OMNeT++ root must be set in Window|Preferences");
-        String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc");
+        String configFile = omnetppRoot + "/Makefile.inc";
 
         // determine outDir (defaults to "out")
         String outDir = getOutDir(folder, options.outRoot);
@@ -197,18 +196,18 @@ public class Makemake {
                 Debug.println("warning: you specified -e cpp but you have only .cc files in this directory!");  //XXX
         }
 
-        String objExt = isNMake ? "obj" : "o";
+        String objExt = "o";
         String targetPrefix = "";
         String targetSuffix = "";
         if (options.type == MakemakeOptions.Type.EXE)
-            targetSuffix = isNMake ? ".exe" : "$(EXE_SUFFIX)";
+            targetSuffix = "$(EXE_SUFFIX)";
         else if (options.type == MakemakeOptions.Type.SHAREDLIB) {
-            targetSuffix = isNMake ? ".dll" : "$(SHARED_LIB_SUFFIX)";
-            targetPrefix = isNMake ? "" : "lib";
+            targetSuffix = "$(SHARED_LIB_SUFFIX)";
+            targetPrefix = "$(LIB_PREFIX)";
         }
         else if (options.type == MakemakeOptions.Type.STATICLIB) {
-            targetSuffix = isNMake ? ".lib" : "$(A_LIB_SUFFIX)";
-            targetPrefix = isNMake ? "" : "lib";
+            targetSuffix = "$(A_LIB_SUFFIX)";
+            targetPrefix = "$(LIB_PREFIX)";
         }
 
         // prepare submakeDirs. First, check that all specified submakeDirs exist
@@ -294,7 +293,7 @@ public class Makemake {
                 }
             }
             else {
-                String makefragFilename = isNMake ? "makefrag.vc" : "makefrag";
+                String makefragFilename = "makefrag";
                 if (file(makefragFilename).isFile()) {
                     makefrags += "# inserted from file '" + makefragFilename + "':\n";
                     makefrags += FileUtils.readTextFile(file(makefragFilename), null) + "\n";
@@ -315,26 +314,18 @@ public class Makemake {
 
         // collect data for the template
         Map<String, Object> m = new HashMap<String, Object>();
-        m.put("rem", "");  // allows putting comments into the template
         m.put("lbrace", "{");
         m.put("rbrace", "}");
-        m.put("nmake", isNMake);
         m.put("targetprefix", targetPrefix);
         m.put("target", target);
         m.put("targetsuffix", targetSuffix);
         m.put("outdir", outDir);
         m.put("subpath", subpath);
         m.put("isdeep", isDeep);
-        m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
+        m.put("progname", "opp_makemake");
         m.put("args", StringUtils.escapeBash(options.toString()));
         m.put("configfile", configFile);
-        m.put("-L", isNMake ? "/libpath:" : "-L");
-        m.put("-l", isNMake ? "" : "-l");
-        m.put(".lib", isNMake ? ".lib" : "");
-        m.put("-u", isNMake ? "/include:" : "-u");
-        m.put("-out", isNMake ? "/out:" : "-o ");  // note space after "-o" -- OS/X needs it
         m.put("cc", ccExt);
-        m.put("obj", objExt);
         m.put("exe", options.type == MakemakeOptions.Type.EXE);
         m.put("sharedlib", options.type == MakemakeOptions.Type.SHAREDLIB);
         m.put("staticlib", options.type == MakemakeOptions.Type.STATICLIB);
@@ -351,7 +342,7 @@ public class Makemake {
         m.put("defines", prefixQuoteJoin(defines, "-D"));
         m.put("makefilevariables", options.makefileVariables);
         m.put("makecommand", makecommand);
-        m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
+        m.put("makefile", "Makefile");
         m.put("makefrags", makefrags);
         m.put("msgccfiles", msgccfiles);
         m.put("msghfiles", msghfiles);
@@ -365,9 +356,7 @@ public class Makemake {
         m.put("dllsymbol", StringUtils.nullToEmpty(options.dllSymbol));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);
-        m.put("nmake_inlinefile", (isNMake && isLongLinkerLine) ? "@<<\n" : "");
-        m.put("nmake_inlineend", (isNMake && isLongLinkerLine) ? "\n<<" : "");
-        m.put("gcclongline", !isNMake && isLongLinkerLine && Platform.getOS().equals(Platform.OS_WIN32));
+        m.put("gcclongline", isLongLinkerLine && Platform.getOS().equals(Platform.OS_WIN32));
 
         // now generate the makefile
         Debug.println("generating makefile for " + folder.toString());

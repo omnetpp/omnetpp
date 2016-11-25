@@ -75,7 +75,6 @@ import org.omnetpp.common.util.StringUtils;
  */
 public class MakemakeOptionsPanel extends Composite {
     public static final String MAKEFRAG_FILENAME = "makefrag";
-    public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
 
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -138,7 +137,6 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Custom" page
     private Text makefragText;
-    private Text makefragvcText;
     private ToggleLink customPageToggle;
     private FileListControl makefragsList;
 
@@ -263,26 +261,13 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Custom" page
         customPage.setLayout(new GridLayout(1,false));
-        CTabFolder makefragTabFolder = new CTabFolder(customPage, SWT.TOP | SWT.BORDER);
-        makefragTabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        ((GridData)makefragTabFolder.getLayoutData()).heightHint = 100;
-
-        Composite makefragComposite = createCTabPage(makefragTabFolder, "Makefrag");
-        makefragComposite.setLayout(new GridLayout(1, false));
-        createLabel(makefragComposite, "Code fragment to be inserted into Makefile:");
-        makefragText = new Text(makefragComposite, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        createLabel(customPage, "Code fragment to be inserted into Makefile:");
+        makefragText = new Text(customPage, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
         makefragText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        Composite makefragvcComposite = createCTabPage(makefragTabFolder, "Makefrag.vc");
-        makefragvcComposite.setLayout(new GridLayout(1, false));
-        createLabel(makefragvcComposite, "Code fragment to be inserted into Makefile.vc:");
-        makefragvcText = new Text(makefragvcComposite, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-        makefragvcText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Label makefragsLabel = createLabel(customPage, "Other fragment files to include:");
         makefragsList = new FileListControl(customPage, "Makefile fragments", BROWSE_NONE);
         customPageToggle = createToggleLink(customPage, new Control[] {makefragsLabel, makefragsList.getListControl().getParent()});
-        makefragTabFolder.setSelection(0);
 
         // "Preview" page
         previewPage.setLayout(new GridLayout(1,false));
@@ -463,7 +448,6 @@ public class MakemakeOptionsPanel extends Composite {
         linkObjectsList.addChangeListener(fileListChangeListener);
 
         makefragText.addModifyListener(modifyListener);
-        makefragvcText.addModifyListener(modifyListener);
         makefragsList.addChangeListener(fileListChangeListener);
     }
 
@@ -744,21 +728,13 @@ public class MakemakeOptionsPanel extends Composite {
         return makefragText.getText();
     }
 
-    public String getMakefragvcContents() {
-        return makefragvcText.getText();
-    }
-
     public void loadMakefragFiles() throws CoreException {
         String makefragContents = readMakefrag(folder, MAKEFRAG_FILENAME);
         makefragText.setText(StringUtils.nullToEmpty(makefragContents));
-
-        String makefragvcContents = readMakefrag(folder, MAKEFRAGVC_FILENAME);
-        makefragvcText.setText(StringUtils.nullToEmpty(makefragvcContents));
     }
 
     public void saveMakefragFiles() throws CoreException {
         saveMakefrag(folder, MAKEFRAG_FILENAME, getMakefragContents());
-        saveMakefrag(folder, MAKEFRAGVC_FILENAME, getMakefragvcContents());
     }
 
     protected String readMakefrag(IContainer sourceFolder, String makefragFilename) throws CoreException  {

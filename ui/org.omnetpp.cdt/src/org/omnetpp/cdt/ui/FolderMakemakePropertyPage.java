@@ -40,7 +40,6 @@ import org.omnetpp.common.color.ColorFactory;
  */
 public class FolderMakemakePropertyPage extends PropertyPage {
     public static final String MAKEFRAG_FILENAME = "makefrag";
-    public static final String MAKEFRAGVC_FILENAME = "makefrag.vc";
 
     // state
     protected BuildSpecification buildSpec;

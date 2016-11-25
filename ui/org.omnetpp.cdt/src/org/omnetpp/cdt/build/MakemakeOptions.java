@@ -26,7 +26,6 @@ public class MakemakeOptions implements Cloneable {
     public enum Type {EXE, SHAREDLIB, STATICLIB, NOLINK};
 
     // opp_makemake options (note: -r deliberately not supported, there's --meta:recurse instead)
-    public boolean isNMake = false;
     public String projectDir = null;  // ignored (implicit)
     public Type type = Type.EXE;
     public String target = null;
@@ -118,9 +117,6 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("-f") || arg.equals("--force")) {
                 force = true;
-            }
-            else if (arg.equals("--nmake")) {
-                isNMake = true;
             }
             else if (arg.equals("-e") || arg.equals("--ext")) {
                 if (checkArg(argv, i))
@@ -327,8 +323,6 @@ public class MakemakeOptions implements Cloneable {
         List<String> result = new ArrayList<String>();
         if (force)
             add(result, "-f");
-        if (isNMake)
-            add(result, "--nmake");
         if (isDeep)
             add(result, "--deep");
         if (type == Type.NOLINK)
@@ -472,7 +466,6 @@ public class MakemakeOptions implements Cloneable {
     @Override
     public MakemakeOptions clone() {
         MakemakeOptions result = createBlank();
-        result.isNMake = isNMake;
         result.projectDir = projectDir;
         result.type = type;
         result.target = target;

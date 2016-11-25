@@ -71,7 +71,7 @@ public class OmnetppPreferencePage
         Composite parent = getFieldEditorParent();
         final Group group = createGroup(parent, "OMNeT++", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer = createComposite(group, 3, 3, GridData.FILL_HORIZONTAL);
-        createLabel(spacer, "Install location is the directory where the Makefile.inc or configuser.vc is located.", 3);
+        createLabel(spacer, "Install location is the directory where the Makefile.inc is located.", 3);
         addAndFillIntoGrid(new DirectoryFieldEditor(IConstants.PREF_OMNETPP_ROOT, "Install location:", spacer), spacer, 3);
         addAndFillIntoGrid(new DirectoryListFieldEditor(IConstants.PREF_OMNETPP_IMAGE_PATH, "Image path:", spacer), spacer, 3);
         createLabel(spacer, "Note: Image path changes take effect on next restart.", 3);

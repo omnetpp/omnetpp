@@ -40,12 +40,6 @@ import org.eclipse.core.runtime.Path;
  */
 @SuppressWarnings("restriction")
 public class CDTUtils {
-    /**
-     * Returns true if the given configuration is for MS Visual C++.
-     */
-    public static boolean isMsvcConfiguration(ICConfigurationDescription configuration) {
-        return configuration.getId().contains(".msvc."); // for lack of a better way...
-    }
 
     /**
      * Returns the source locations from the given source entries. (This method does not access CDT state.)

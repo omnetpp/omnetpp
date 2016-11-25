@@ -13,7 +13,6 @@
 
  <modules>
     <module>org.omnetpp.cdt</module>
-    <module>org.omnetpp.cdt.msvc</module>
     <module>org.omnetpp.common</module>
     <module>org.omnetpp.common.core</module>
     <module>org.omnetpp.doc</module>

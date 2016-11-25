@@ -72,7 +72,6 @@ public class MetaMakemake {
 
         // add -f, and potentially --nmake
         translatedOptions.force = true;
-        translatedOptions.isNMake = CDTUtils.isMsvcConfiguration(configuration);
 
         // add -X option for each excluded folder in CDT, and for each sub-makefile
         translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder, configuration));

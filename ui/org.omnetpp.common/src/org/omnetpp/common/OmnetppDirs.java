@@ -38,7 +38,7 @@ public class OmnetppDirs {
     }
 
     /**
-     * The main directory (where Makefile.inc or configuser.vc resides). Returns empty string if
+     * The main directory (where Makefile.inc resides). Returns empty string if
      * omnetpp location cannot be determined.
      */
     public static String getOmnetppRootDir() {
@@ -88,7 +88,7 @@ public class OmnetppDirs {
         String oppRoot = getOmnetppRootDir();
         if (StringUtils.isBlank(oppRoot))
             return "";
-        return new Path(oppRoot).append("tools").append("win32").append("usr").append("bin").toOSString();
+        return new Path(oppRoot).append("tools").append("win64").append("usr").append("bin").toOSString();
     }
 
     /**
@@ -100,25 +100,14 @@ public class OmnetppDirs {
         String oppRoot = getOmnetppRootDir();
         if (StringUtils.isBlank(oppRoot))
             return "";
-        return new Path(oppRoot).append("tools").append("win32").append("mingw32").append("bin").toOSString();
+        return new Path(oppRoot).append("tools").append("win64").append("mingw64").append("bin").toOSString();
     }
 
     /**
-     * Detects whether oppsim library (built by GCC or CLANG) is present in the
-     * lib directory.
+     * checks if there exist a unix styled compiled lib under the lib
      */
-    public static boolean isOppsimGccOrClangLibraryPresent(boolean debug) {
-        // FIXME hardcoded names! we should rather get the library path from the Makefile.inc
-        // and then use that directory to check for the presence of library files.
-        return isOppsimUnixStyleLibraryPresent("gcc", debug) ||
-                isOppsimUnixStyleLibraryPresent("clang", debug);
-    }
-
-    /**
-     * checks if there exist a unix styled compiled lib under the lib/<libSubDir>
-     */
-    private static boolean isOppsimUnixStyleLibraryPresent(String libSubDir, boolean debug) {
-        String libFileName = getOmnetppLibDir() + "/" + libSubDir + "/liboppsim" + (debug ? "d" : "");
+    public static boolean isOppsimUnixStyleLibraryPresent(boolean debug) {
+        String libFileName = getOmnetppLibDir() + "/liboppsim" + (debug ? "d" : "");
         String extension1, extension2;
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
             // on windows we do not test for dynamic libs (as they are in the bin directory)
@@ -138,23 +127,10 @@ public class OmnetppDirs {
     }
 
     /**
-     * Detects whether oppsim library (dll/lib) (built by Visual C++) is present in the
-     * lib directory.
+     * checks if there exist a compiled lib usable by ClangC2 under the lib folder
      */
-    // FIXME should be reviewed once we put all library files under /lib (instead
-    // of the current /lib/<toolchain> name.
-    public static boolean isOppsimVcLibraryPresent(boolean debug) {
-        return isOppsimVcXXXLibraryPresent("vc90", debug) ||
-               isOppsimVcXXXLibraryPresent("vc100", debug) ||
-               isOppsimVcXXXLibraryPresent("vc110", debug) ||
-               isOppsimVcXXXLibraryPresent("vc120", debug);
-    }
-
-    /**
-     * checks if there exist a compiled lib under the lib/<libSubDir>
-     */
-    private static boolean isOppsimVcXXXLibraryPresent(String libSubDir, boolean debug) {
-        String fileBaseName = getOmnetppLibDir() +"/" + libSubDir + "/oppsim" + (debug ? "d" : "");
+    public static boolean isOppsimClangC2LibraryPresent(boolean debug) {
+        String fileBaseName = getOmnetppLibDir() +"/oppsim" + (debug ? "d" : "");
         File libFile = new File(fileBaseName+".lib");
         return libFile.exists();
     }
