@@ -78,7 +78,7 @@ void cFindByPathVisitor::visit(cObject *obj)
 
     // found it?
     if (strcmp(fullPath, objPath.c_str()) == 0
-        && (!className || strcmp(className, getObjectShortTypeName(obj)) == 0)
+        && (!className || (getObjectShortTypeName(obj) == className))
         && (objectId == -1 || idMatches(obj)))
     {
         // found, collect it
@@ -106,26 +106,52 @@ bool cFindByPathVisitor::idMatches(cObject *obj)
 
 #define TRY2(CODE)    try { CODE; } catch (std::exception& e) { printf("<!> Warning: %s\n", e.what()); }
 
-const char *stripNamespace(const char *className)
+const QString& stripNamespace(const char *className)
 {
+    static std::unordered_map<const char *, QString> allStrippedCache;
+    static std::unordered_map<const char *, QString> omnetppStrippedCache;
+    static std::unordered_map<const char *, QString> noneStrippedCache;
+
     switch (getQtenv()->opt->stripNamespace) {
         case STRIPNAMESPACE_ALL: {
-            const char *lastColon = strrchr(className, ':');
-            if (lastColon)
-                className = lastColon+1;
-            break;
+            auto it = allStrippedCache.find(className);
+            if (it != allStrippedCache.end())
+                return it->second;
+            else {
+                static QRegularExpression regExp("\\w*::", QRegularExpression::OptimizeOnFirstUsageOption);
+                auto stripped = QString(className).replace(regExp, "");
+                allStrippedCache[className] = stripped;
+                // have to use the instance in the container, not 'stripped' directly, that will be destructed
+                return allStrippedCache[className];
+            }
         }
 
         case STRIPNAMESPACE_OMNETPP: {
-            if (className[0] == 'o' && opp_stringbeginswith(className, "omnetpp::"))
-                className += sizeof("omnetpp::")-1;
-            break;
+            auto it = omnetppStrippedCache.find(className);
+            if (it != omnetppStrippedCache.end())
+                return it->second;
+            else {
+                // replacing either at the start of the string,
+                // or if it's not nested, nor the suffix of the name of a different namespace
+                static QRegularExpression regExp("((^omnetpp::)|((?<![\\w:])omnetpp::))", QRegularExpression::OptimizeOnFirstUsageOption);
+                auto stripped = QString(className).replace(regExp, "");
+                omnetppStrippedCache[className] = stripped;
+                // have to use the instance in the container, not 'stripped' directly, that will be destructed
+                return omnetppStrippedCache[className];
+            }
         }
 
-        case STRIPNAMESPACE_NONE:
-            break;
+        case STRIPNAMESPACE_NONE: {
+            auto it = noneStrippedCache.find(className);
+            if (it != noneStrippedCache.end())
+                return it->second;
+            else {
+                noneStrippedCache[className] = className;
+                // have to use the instance in the container, not 'stripped' directly, that will be destructed
+                return noneStrippedCache[className];
+            }
+        }
     }
-    return className;
 }
 
 int getObjectId(cObject *object) {
@@ -137,10 +163,10 @@ int getObjectId(cObject *object) {
     return id;
 }
 
-const char *getObjectShortTypeName(cObject *object)
+const QString &getObjectShortTypeName(cObject *object)
 {
     if (cComponent *component = dynamic_cast<cComponent *>(object))
-        TRY2(return component->getComponentType()->getName());
+        TRY2(return stripNamespace(component->getComponentType()->getName()));
     return stripNamespace(object->getClassName());
 }
 

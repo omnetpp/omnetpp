@@ -66,7 +66,6 @@ class QTENV_API Inspector : public QWidget
       InspectorFactory *factory; // meta-object that describes this inspector class
       cObject *object;        // the inspected object or nullptr if inspector is empty
       int type;               // INSP_OBJECT, etc.
-      std::string windowTitle;// window title string
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       std::vector<cObject*> historyBack;
       std::vector<cObject*> historyForward;

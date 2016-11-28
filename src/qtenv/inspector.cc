@@ -224,24 +224,21 @@ void Inspector::setPref(const QString& pref, const QVariant& value)
 
 void Inspector::refreshTitle()
 {
-    // update window title (only if changed -- always updating the title produces
-    // unnecessary redraws under some window managers
-    char newTitle[256];
-    const char *prefix = getQtenv()->getWindowTitlePrefix();
-    if (!object) {
-        sprintf(newTitle, "%s N/A", prefix);
-    }
+    QString title = getQtenv()->getWindowTitlePrefix();
+    if (!object)
+        title += " N/A";
     else {
         std::string fullPath = object->getFullPath();
+
         if (fullPath.length() <= 60)
-            sprintf(newTitle, "%s(%.40s) %s", prefix, getObjectShortTypeName(object), fullPath.c_str());
+            title += QString("(%1) %2").arg(getObjectShortTypeName(object).left(40)).arg(fullPath.c_str());
+            //sprintf(newTitle, "%s(%.40s) %s", prefix, , fullPath.c_str());
         else
-            sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
+            title += QString("(%1) ...%2").arg(getObjectShortTypeName(object).left(40)).arg(fullPath.c_str()+fullPath.length()-55);
+            //sprintf(newTitle, "%s(%.40s) ...%s", prefix, getObjectShortTypeName(object), fullPath.c_str()+fullPath.length()-55);
     }
-    if (windowTitle != newTitle) {
-        windowTitle = newTitle;
-        setWindowTitle(windowTitle.c_str());
-    }
+
+    setWindowTitle(title);
 }
 
 void Inspector::objectDeleted(cObject *obj)
