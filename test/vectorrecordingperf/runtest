@@ -1,0 +1,44 @@
+#! /bin/bash
+#
+# Test raw output vector recording performance and file sizes, for the traditional 
+# text-based filed format and for SQLite with and without indexing.
+#
+# Author: Andras Varga, 2016
+#
+
+runcmd() {
+    label=$1; shift
+    printf "$label\t"
+    \time -f "%es" $* >/dev/null || exit 1
+}
+
+echo PARAMETERS
+echo ----------
+grep '\.' omnetpp.ini
+echo
+
+# clean results, build 
+opp_makemake -f -o generatevectors >/dev/null && make >/dev/null || exit 1
+rm -rf results
+
+echo WRITE PERFORMANCE
+echo -----------------
+runcmd "generating omnetpp-indexed.vec"      ./generatevectors -u Cmdenv --outputvectormanager-class=omnetpp::envir::cIndexedFileOutputVectorManager --output-vector-file=results/omnetpp-indexed.vec
+runcmd "generating sqlite-default.vec"       ./generatevectors -u Cmdenv --outputvectormanager-class=omnetpp::envir::SqliteOutputVectorManager --output-vector-file=results/sqlite-default.vec
+runcmd "generating sqlite-unindexed.vec"     ./generatevectors -u Cmdenv --outputvectormanager-class=omnetpp::envir::SqliteOutputVectorManager --output-vector-db-indexing=skip --output-vector-file=results/sqlite-unindexed.vec
+runcmd "generating sqlite-indexed-after.vec" ./generatevectors -u Cmdenv --outputvectormanager-class=omnetpp::envir::SqliteOutputVectorManager --output-vector-db-indexing=after --output-vector-file=results/sqlite-indexed-after.vec
+runcmd "generating sqlite-indexed-ahead.vec" ./generatevectors -u Cmdenv --outputvectormanager-class=omnetpp::envir::SqliteOutputVectorManager --output-vector-db-indexing=ahead --output-vector-file=results/sqlite-indexed-ahead.vec
+echo
+
+echo FILE SIZES
+echo ----------
+ls -sh1 results/*.vec
+echo
+
+echo READ PERFORMANCE
+echo -----------------
+runcmd "omnetpp-indexed.vec, export all vectors"      scavetool v results/omnetpp-indexed.vec
+runcmd "omnetpp-indexed.vec, export one vector"       scavetool v results/omnetpp-indexed.vec -p 'dummy-vector-1'
+runcmd "sqlite-indexed-after.vec, export all vectors" scavetool v results/sqlite-indexed-after.vec
+runcmd "sqlite-indexed-after.vec, export one vector"  scavetool v results/sqlite-indexed-after.vec -p 'dummy-vector-1'
+

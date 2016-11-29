@@ -1,0 +1,33 @@
+Run ./runtest to measure raw output vector wirting performance.
+
+Output on an Intel i7-4700MQ CPU @ 2.40GHz box with SSD drive:
+
+=========================================================
+PARAMETERS
+----------
+*.numVectors = 100
+*.numValues = 5e6
+
+WRITE PERFORMANCE
+-----------------
+generating omnetpp-indexed.vec	5.32s
+generating sqlite-default.vec	10.60s
+generating sqlite-unindexed.vec	10.41s
+generating sqlite-indexed-after.vec	13.65s
+generating sqlite-indexed-ahead.vec	20.72s
+
+FILE SIZES
+----------
+145M results/omnetpp-indexed.vec
+137M results/sqlite-default.vec
+185M results/sqlite-indexed-after.vec
+191M results/sqlite-indexed-ahead.vec
+137M results/sqlite-unindexed.vec
+
+READ PERFORMANCE
+-----------------
+omnetpp-indexed.vec, export all vectors	38.91s
+omnetpp-indexed.vec, export one vector	1.93s
+sqlite-indexed-after.vec, export all vectors	12.09s
+sqlite-indexed-after.vec, export one vector	0.84s
+=========================================================
