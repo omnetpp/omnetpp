@@ -391,21 +391,6 @@ void MainWindow::exitLayoutingMode()
     disabledForLayouting.clear();
 }
 
-bool MainWindow::checkRunning()
-{
-    if (env->getSimulationState() == Qtenv::SIM_RUNNING) {
-        QMessageBox::warning(this, tr("Warning"), tr("Sorry, you cannot do this while the simulation is running. Please stop it first."),
-                QMessageBox::Ok);
-        return true;
-    }
-    if (env->getSimulationState() == Qtenv::SIM_BUSY) {
-        QMessageBox::warning(this, tr("Warning"), tr("The simulation is waiting for external synchronization -- press STOP to interrupt it."),
-                QMessageBox::Ok);
-        return true;
-    }
-    return false;
-}
-
 void MainWindow::updateSpeedSlider()
 {
     auto duc = env->getDisplayUpdateController();
@@ -497,7 +482,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::initialSetUpConfiguration()
 {
     // implements File|Set Up a Configuration...
-    if (checkRunning())
+    if (env->checkRunning())
         return;
 
     std::string config;
@@ -567,7 +552,7 @@ void MainWindow::runSimulation(RunMode runMode)
 // newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
-    if (checkRunning())
+    if (env->checkRunning())
         return;
 
     cConfigurationEx *configEx = getQtenv()->getConfigEx();
@@ -1020,7 +1005,7 @@ void MainWindow::on_actionRebuildNetwork_triggered()
 {
     // implements Simulate|Rebuild
 
-    if (checkRunning())
+    if (env->checkRunning())
         return;
 
     if (!networkPresent())
@@ -1118,7 +1103,7 @@ void MainWindow::reflectRecordEventlog()
 // XXX why is this in MainWindow, and not in Qtenv?
 void MainWindow::configureNetwork()
 {
-    if (checkRunning())
+    if (env->checkRunning())
         return;
 
     // get list of network names
@@ -1330,7 +1315,7 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
 void MainWindow::on_actionConcludeSimulation_triggered()
 {
     // check state is not SIM_RUNNING
-    if (checkRunning())
+    if (env->checkRunning())
         return;
 
     // check state is not SIM_NONET

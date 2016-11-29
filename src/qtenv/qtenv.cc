@@ -1106,6 +1106,21 @@ void Qtenv::finishSimulation()
     callRefreshInspectors();
 }
 
+bool Qtenv::checkRunning()
+{
+    if (getSimulationState() == Qtenv::SIM_RUNNING) {
+        QMessageBox::warning(mainWindow, tr("Warning"), tr("Sorry, you cannot do this while the simulation is running. Please stop it first."),
+                             QMessageBox::Ok);
+        return true;
+    }
+    if (getSimulationState() == Qtenv::SIM_BUSY) {
+        QMessageBox::warning(mainWindow, tr("Warning"), tr("The simulation is waiting for external synchronization -- press STOP to interrupt it."),
+                             QMessageBox::Ok);
+        return true;
+    }
+    return false;
+}
+
 void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
 {
     try {

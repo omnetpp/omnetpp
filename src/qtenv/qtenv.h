@@ -338,6 +338,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
+      bool checkRunning();
 
       void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 

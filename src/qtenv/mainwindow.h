@@ -179,7 +179,6 @@ private:
         NONE
     } simTimeDigitGrouping, eventNumDigitGrouping;
 
-    bool checkRunning();
     void runSimulation(RunMode runMode);
 
     void updatePerformanceDisplay();
