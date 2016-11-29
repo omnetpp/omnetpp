@@ -20,6 +20,7 @@
 #include <map>
 #include <QPointF>
 #include <QGraphicsView>
+#include <QPrinter>
 
 class QGraphicsPixmapItem;
 class QRubberBand;
@@ -64,6 +65,7 @@ private:
     GraphicsLayer *backgroundLayer;
     GraphicsLayer *rangeLayer;
     GraphicsLayer *submoduleLayer;
+    GraphicsLayer *networkLayer;
     GraphicsLayer *figureLayer;
     GraphicsLayer *animationLayer;
     GraphicsLayer *bubbleLayer;
@@ -90,6 +92,8 @@ private:
     void fillFigureRenderingHints(FigureRenderingHints *hints);
 
     void updateZoomLabelPos();
+
+    void renderToPrinter(QPrinter& printer);
 
     // similar logic as in getObjectsAt()
     QString gatherTooltips(const QPoint& pos, int threshold = 4);
@@ -120,6 +124,9 @@ signals:
     void marqueeZoom(QRectF);
 
 public slots:
+    void exportToPdf();
+    void print();
+
     // This is to support visualizing the layouting process.
     // The scene passed in here will replace the ordinary scene used to display the module.
     // Does not take ownership of the scene. Pass nullptr to return to the regular module graphics.

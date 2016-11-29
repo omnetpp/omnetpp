@@ -79,6 +79,20 @@ void CanvasRenderer::redraw(FigureRenderingHints *hints)
             layer->addItem(networkLayer);
 }
 
+QRectF CanvasRenderer::itemsBoundingRect() const
+{
+    QRectF bounds;
+
+    for (auto &p : items) {
+        // deviceTransform is needed to respect ItemIgnoresTransformations flag.
+        // Using identity viewport transform because we want scene coords.
+        QTransform tf = p.second->deviceTransform(QTransform());
+        bounds = bounds.united(tf.mapRect(p.second->boundingRect()));
+    }
+
+    return bounds;
+}
+
 // TODO: delete comment when cRuntimeError class is available
 void CanvasRenderer::assertCanvas()
 {

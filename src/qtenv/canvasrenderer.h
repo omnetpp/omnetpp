@@ -56,6 +56,8 @@ public:
     virtual void refresh(FigureRenderingHints *hints);
     virtual void redraw(FigureRenderingHints *hints);
 
+    QRectF itemsBoundingRect() const;
+
     // tag-based filtering
     virtual std::string getAllTags();
     virtual std::string getEnabledTags();

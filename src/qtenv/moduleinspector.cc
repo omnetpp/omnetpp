@@ -708,51 +708,11 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
             ->setData(InspectorUtil::TAB_FILTERING);
 
     menu->addSeparator();
-    menu->addAction("Export to PDF...", this, SLOT(exportToPdf()));
-    menu->addAction("Print...", this, SLOT(print()));
+    menu->addAction("Export to PDF...", canvasViewer, SLOT(exportToPdf()));
+    menu->addAction("Print...", canvasViewer, SLOT(print()));
 
     menu->exec(globalPos);
     delete menu;
-}
-
-void ModuleInspector::exportToPdf()
-{
-    QPrinter printer(QPrinter::HighResolution);
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setColorMode(QPrinter::Color);
-
-    QString fileName = getObjectShortTypeName(object) + QString(".pdf");
-    fileName = QFileDialog::getSaveFileName(this, tr("Export to PDF"), fileName,
-                tr("PDF files (*.pdf)"));
-    if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
-        fileName += ".pdf";
-
-    printer.setOutputFileName(fileName);
-
-    renderToPrinter(printer);
-}
-
-void ModuleInspector::print()
-{
-    QPrinter printer(QPrinter::HighResolution);
-
-    QPrintDialog printDialog(&printer);
-    if (printDialog.exec() != QDialog::Accepted)
-        return;
-
-    renderToPrinter(printer);
-}
-
-void ModuleInspector::renderToPrinter(QPrinter& printer)
-{
-    QPainter painter;
-    canvasViewer->setZoomLabelVisible(false);
-    painter.begin(&printer);
-
-    canvasViewer->render(&painter, QRectF(0, 0, printer.width(), printer.height()),
-                                   canvasViewer->mapFromScene(canvasViewer->sceneRect()).boundingRect());
-    painter.end();
-    canvasViewer->setZoomLabelVisible(true);
 }
 
 void ModuleInspector::runPreferencesDialog()

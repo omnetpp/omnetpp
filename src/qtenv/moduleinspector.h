@@ -78,9 +78,6 @@ private slots:
     void onFontChanged();
     void updateToolbarLayout(); // mostly the margins, to prevent occluding the scrollbar
 
-    void exportToPdf();
-    void print();
-
 protected:
     static const QString PREF_MODE; // 0 is 2D, 1 is OSG
     static const QString PREF_CENTER; // of the viewport in the 2D scene

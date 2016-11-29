@@ -42,6 +42,9 @@
 #include <QAction>
 #include <QRubberBand>
 #include <QToolTip>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QFileDialog>
 
 #define emit
 
@@ -72,7 +75,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     moduleScene->addItem(bubbleLayer);
     moduleScene->addItem(zoomLabelLayer);
 
-    GraphicsLayer *networkLayer = new GraphicsLayer();
+    networkLayer = new GraphicsLayer();
     networkLayer->addItem(rangeLayer);
     networkLayer->addItem(submoduleLayer);
     networkLayer->addItem(animationLayer);
@@ -84,6 +87,8 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr, networkLayer);
+
+    backgroundLayer->setFlag(QGraphicsItem::ItemIgnoresTransformations);
     networkLayer->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 
     // that beautiful green shade behind everything
@@ -278,6 +283,97 @@ void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent *event)
     }
 }
 
+void ModuleCanvasViewer::exportToPdf()
+{
+    QString fileName = getObjectShortTypeName(object) + QString(".pdf");
+    fileName = QFileDialog::getSaveFileName(this, "Export to PDF", fileName, "PDF files (*.pdf)");
+
+    if (fileName.isNull())
+        return; // the file selection dialog got cancelled
+
+    if (!fileName.endsWith(".pdf", Qt::CaseInsensitive))
+        fileName += ".pdf";
+
+    QPrinter printer(QPrinter::ScreenResolution);
+    printer.setFontEmbeddingEnabled(true);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setColorMode(QPrinter::Color);
+    printer.setOutputFileName(fileName);
+
+    renderToPrinter(printer);
+}
+
+void ModuleCanvasViewer::print()
+{
+    QPrinter printer;
+
+    // the user can override this in the dialog...
+    printer.setColorMode(QPrinter::Color);
+
+    QPrintDialog printDialog(&printer);
+    printDialog.setOptions(QAbstractPrintDialog::PrintToFile);
+    if (printDialog.exec() != QDialog::Accepted)
+        return;
+
+    renderToPrinter(printer);
+}
+
+void ModuleCanvasViewer::renderToPrinter(QPrinter &printer)
+{
+    QRectF rect;
+
+    if (object && compoundModuleItem) {
+        auto compoundRect = compoundModuleItem->boundingRect()
+                .united(getSubmodulesRect());
+        auto figuresRect = canvasRenderer->itemsBoundingRect();
+
+        rect = compoundRect.united(figuresRect);
+
+        rect = QRectF(rect.topLeft(), rect.bottomRight());
+    }
+
+    const int margin = 20;
+    QMarginsF margins(margin, margin, margin, margin);
+    rect = rect.marginsAdded(margins);
+
+    // DO NOT CHANGE THE RESOLUTION!
+    // I have no idea why it has to be 75, but this is a workaround for
+    // https://bugreports.qt.io/browse/QTBUG-57005 because we use the
+    // ItemIgnoresTransformations flag extensively.
+    printer.setResolution(75);
+
+    printer.setPageMargins(QMargins(0, 0, 0, 0));
+    printer.setPaperSize(rect.size() / printer.resolution(), QPrinter::Inch);
+    scene()->setSceneRect(rect);
+
+
+    QPainter painter;
+    setZoomLabelVisible(false);
+
+    // we have to disable caching to avoid the text items
+    // (mainly cached OutlinedTextItem) being rasterized
+    std::map<QGraphicsItem *, QGraphicsItem::CacheMode> cacheModes;
+
+    for (auto i : items()) {
+        cacheModes[i] = i->cacheMode();
+        i->setCacheMode(QGraphicsItem::NoCache);
+    }
+
+    painter.begin(&printer);
+    printer.setFullPage(true);
+    painter.fillRect(printer.pageRect(), backgroundBrush()); // green background
+
+    QRect viewport = scene()->sceneRect().toAlignedRect();
+    scene()->render(&painter, printer.pageRect(), viewport);
+
+    painter.end();
+
+    setZoomLabelVisible(true);
+
+    for (auto p : cacheModes)
+        p.first->setCacheMode(p.second);
+}
+
 void ModuleCanvasViewer::redrawFigures()
 {
     FigureRenderingHints hints;
@@ -392,7 +488,7 @@ void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
         double horizExcess = std::max(0.0, viewport()->width() - rect.width());
         double vertExcess = std::max(0.0, viewport()->height() - rect.height());
 
-        auto figuresRect = figureLayer->mapToScene(figureLayer->childrenBoundingRect()).boundingRect();
+        auto figuresRect = canvasRenderer->itemsBoundingRect();
 
         rect = rect.adjusted(-horizExcess, -vertExcess, horizExcess, vertExcess)
                  .united(figuresRect // including canvas figures
