@@ -208,9 +208,9 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     void setBorderPositions();
 
     /**
-     * Returns the bounding box of the embedding and the size of bigest right and bottom vertex.
+     * Returns the bounding box of the embedding.
      */
-    Rc getBoundingBox(Rs &rs);
+    Rc getBoundingBox();
 
     /**
      * Scale coordinates.

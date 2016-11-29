@@ -16,6 +16,7 @@
 
 #include <cmath>
 #include "lcgrandom.h"
+#include <cassert>
 
 namespace omnetpp {
 namespace common {
@@ -34,6 +35,9 @@ LCGRandom::LCGRandom(int32_t seed)
 
 void LCGRandom::setSeed(int32_t seed)
 {
+    if (seed < 1 || seed > GLRAND_MAX)
+        throw opp_runtime_error("LCGRandom: Invalid seed: %d", seed);
+
     this->seed = seed;
 
     // consume some values, so that small seeds will work correctly

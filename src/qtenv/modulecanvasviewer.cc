@@ -58,7 +58,7 @@ namespace qtenv {
 
 ModuleCanvasViewer::ModuleCanvasViewer() :
     object(nullptr),
-    layoutSeed(0),
+    layoutSeed(1),
     notDrawn(false),
     needs_redraw(false)
 {

@@ -74,7 +74,7 @@ ModuleInspector::ModuleInspector(InspectorFactory *f) : Inspector(f)
 {
     needs_redraw = false;
     notDrawn = false;
-    layoutSeed = 0;
+    layoutSeed = 1;
     canvasRenderer = new CanvasRenderer();
 }
 

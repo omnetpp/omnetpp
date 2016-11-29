@@ -302,7 +302,7 @@ void ForceDirectedGraphLayouter::addBasePlaneSprings()
     }
 }
 
-Rc ForceDirectedGraphLayouter::getBoundingBox(Rs& rs)
+Rc ForceDirectedGraphLayouter::getBoundingBox()
 {
     double top = DBL_MAX, bottom = DBL_MIN;
     double left = DBL_MAX, right = DBL_MIN;
@@ -312,12 +312,8 @@ Rc ForceDirectedGraphLayouter::getBoundingBox(Rs& rs)
         IBody *body = bodies[i];
 
         if (!dynamic_cast<WallBody *>(body)) {
-            if (body->getBottom() > bottom)
-                rs.height = body->getSize().height;
             top = std::min(top, body->getTop());
             bottom = std::max(bottom, body->getBottom());
-            if (body->getRight() > right)
-                rs.width = body->getSize().width;
             left = std::min(left, body->getLeft());
             right = std::max(right, body->getRight());
         }
@@ -462,13 +458,30 @@ void ForceDirectedGraphLayouter::executePreEmbedding()
     }
 
     // ensure all vertices are within the bounding box if it is specified
-    Rs rs;  // the size of the biggest right and bottom vertex
-    Rc rc = getBoundingBox(rs);
-    scale(Pt(width ? (width - border * 2 - rs.width) / (rc.rs.width - rs.width) : 1,
-                    height ? (height - border * 2 - rs.height) / (rc.rs.height - rs.height) : 1, NaN));
+    Rc rc = getBoundingBox();
+    // ensure the top left corner of the bounding box is in the origin
+    translate(Pt(-rc.pt.x, -rc.pt.y, 0));
+
+    double scalex = width / rc.rs.width;
+    double scaley = height / rc.rs.height;
+
+    const std::vector<IBody *>& bodies = embedding.getBodies();
+    for (int i = 0; i < (int)bodies.size(); i++) {
+        IBody *body = bodies[i];
+
+        if (!dynamic_cast<WallBody *>(body)) {
+            scalex = std::min(scalex, (width - border - body->getSize().width) / body->getLeft());
+            scaley = std::min(scaley, (height - border - body->getSize().height) / body->getTop());
+        }
+    }
+
+    scale(Pt(width > 0 && scalex > 0 ? scalex : 1,
+             height > 0 && scaley > 0 ? scaley : 1,
+             NaN));
     // ensure all vertices have positive coordinates
-    rc = getBoundingBox(rs);
+    rc = getBoundingBox();
     translate(Pt(-rc.pt.x + border, -rc.pt.y + border, 0));
+
 }
 
 void ForceDirectedGraphLayouter::execute()
@@ -521,8 +534,7 @@ void ForceDirectedGraphLayouter::execute()
             }
 
             // ensure all vertices have positive coordinates even when there were no borders
-            Rs rs;
-            Rc rc = getBoundingBox(rs);
+            Rc rc = getBoundingBox();
             translate(Pt(hasFixedNode || width ? 0 : -rc.pt.x + border, hasFixedNode || height ? 0 : -rc.pt.y + border, 0));
         }
 

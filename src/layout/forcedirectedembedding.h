@@ -208,7 +208,7 @@ class LAYOUT_API ForceDirectedEmbedding
         /**
          * Sets the default parameters.
          */
-        ForceDirectedParameters getParameters(int32_t seed = 0);
+        ForceDirectedParameters getParameters(int32_t seed = 1);
 
         /**
          * Clears all results from previous calculations and sets initial values.
