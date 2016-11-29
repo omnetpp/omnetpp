@@ -34,6 +34,7 @@ class ImageCache
 private:
     std::unordered_map<std::string, QImage*> imagesWithSize;
 
+    void doLoadImage(const QString& fileName, const std::string& imageName);
     void doLoadImages(const char *dir, const char *prefix = "");
 
     // The one with the red questionmarks, from the icons.qrc file.
@@ -42,11 +43,17 @@ private:
 
     static const char *sizePostfix(IconSize size);
 
+    // A reference to the out member of EnvirBase (Qtenv),
+    // using this to make output redirection work.
+    std::ostream& out;
+
 public:
-    ImageCache();
+    ImageCache(std::ostream& out);
     ~ImageCache();
 
     void loadImages(const char *path);
+    void loadImage(const char *fileName, const char *imageName = nullptr);
+
     QImage *getImage(const char *name, const char *size);
     QImage *getImage(const char *name, IconSize size);
     QImage *getImage(const char *nameWithSize);

@@ -536,7 +536,7 @@ double Qtenv::computeModelHoldEndTime()
     return holdEndTime;
 }
 
-Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt)
+Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -1865,12 +1865,12 @@ void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, double& o
 
 void Qtenv::appendToImagePath(const char *directory)
 {
-	//TODO
+    icons.loadImages(directory);
 }
 
 void Qtenv::loadImage(const char *fileName, const char *imageName)
 {
-	//TODO
+    icons.loadImage(fileName, imageName);
 }
 
 cFigure::Point Qtenv::getSubmodulePosition(const cModule *submodule)

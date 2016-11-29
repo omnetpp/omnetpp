@@ -31,7 +31,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace qtenv {
 
-ImageCache::ImageCache()
+ImageCache::ImageCache(std::ostream& out): out(out)
 {
     unknownImage = new QImage(":/objects/icons/objects/unknown.png");
 }
@@ -39,67 +39,88 @@ ImageCache::ImageCache()
 ImageCache::~ImageCache()
 {
     delete unknownImage;
+    for (auto i : imagesWithSize)
+        delete i.second;
 }
 
 void ImageCache::loadImages(const char *path)
 {
-    //TODO
-    //global tcl_platform bitmaps bitmap_ctr
-
-    //TODO
     //# On Windows, we use ";" to separate directories in $path. Using ":" (the
     //# Unix separator) would cause trouble with dirs containing drive letter
     //# (like "c:\bitmaps"). Using a space is also not an option (think of
     //# "C:\Program Files\...").
+
+    out << std::endl;
     StringTokenizer dir(path, PATH_SEPARATOR);
-    while(dir.hasMoreTokens())
-    {
-        //TODO
-        //puts -nonewline "Loading images from $dir: "
-        doLoadImages(dir.nextToken());
-        //puts ""
+
+    while (dir.hasMoreTokens()) {
+        auto cd = dir.nextToken();
+        out << "Loading images from '" << cd << "':";
+        doLoadImages("", toAbsolutePath(cd).c_str());
+        out << std::endl;
     }
 
-    //if {$bitmap_ctr==0} {
-    //  puts "*** no images (gif) in $path"
-    //}
-    //puts ""
+    if (imagesWithSize.empty())
+        out << "*** no images in '" << path << "'";
+
+    out << std::endl;
+}
+
+void ImageCache::loadImage(const char *fileName, const char *imageName)
+{
+    if (imageName)
+        doLoadImage(fileName, imageName);
+    else {
+        std::string dir, name;
+        splitFileName(fileName, dir, name);
+        size_t pos = name.rfind('.');
+        if (pos != std::string::npos)
+            name = std::string(name, 0, pos);
+        doLoadImage(fileName, name);
+    }
+}
+
+void ImageCache::doLoadImage(const QString& fileName, const std::string& imageName)
+{
+    if (imagesWithSize.find(imageName) != imagesWithSize.end())
+        return; // maybe print: not overwriting existing image. TODO: return true, skipping silently?
+
+    QImage *image = new QImage(fileName);
+
+    if (image->isNull()) {
+        out << "Could not load image '" << fileName.toStdString() << "'" << std::endl;
+        delete image;
+    }
+    else
+        imagesWithSize[imageName] = image;
 }
 
 void ImageCache::doLoadImages(const char *dir, const char *prefix)
 {
-    //TODO global bitmaps bitmap_ctr
-
-    QDir content(dir);
+    QDir content(prefix + QString("/") + dir);
     QStringList filters;
-    filters << "*.gif" << "*.png";
+    filters << "*.gif" << "*.png" << "*.jpg";
     content.setNameFilters(filters);
     content.setFilter(QDir::Files);
 
-    // # load bitmaps from this directory
+    out << " " << dir << "*: " << content.count() << " ";
+
+    // load bitmaps from this directory
     for (size_t i = 0; i < content.count(); ++i) {
-        QString fileName = content.absoluteFilePath(content[i]);
-        // QPixmap: Cannot create a QPixmap when no GUI is being used
-        // QPixmap: Must construct a QApplication before a QPaintDevice
-        QImage *image = new QImage(fileName);
-
-        if (image->isNull())
-            printf("Could not load image %s\n", fileName.toStdString().c_str());
-
         QStringList stringList = content[i].split(".");
-        std::string key = prefix;
+        std::string key = std::string(dir);
         for (int i = 0; i < stringList.size() - 1; ++i)
             key += stringList[i].toStdString();
-        imagesWithSize[key] = image;
+
+        doLoadImage(content.absoluteFilePath(content[i]), key);
     }
 
-    // # recurse into subdirs
+    // recurse into subdirs
     content.setNameFilters(QStringList("*"));
     content.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     for (size_t i = 0; i < content.count(); ++i) {
-        QString subDir = content.absoluteFilePath(content[i]);
-        QString subPrefix = prefix + content[i] + "/";
-        doLoadImages(subDir.toStdString().c_str(), subPrefix.toStdString().c_str());
+        QString subDir = dir + content[i] + "/";
+        doLoadImages(subDir.toStdString().c_str(), prefix);
     }
 }
 
@@ -143,7 +164,7 @@ QImage *ImageCache::getImage(const char *name, IconSize size)
     const char *postfix = sizePostfix(size);
     if (!nameWithSize.endsWith(postfix))
         nameWithSize += postfix;
-    return getImage((nameWithSize).toStdString().c_str());
+    return getImage(nameWithSize.toUtf8());
 }
 
 QImage *ImageCache::getImage(const char *nameWithSize)
@@ -154,4 +175,3 @@ QImage *ImageCache::getImage(const char *nameWithSize)
 
 }  // namespace qtenv
 }  // namespace omnetpp
-
