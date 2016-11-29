@@ -744,16 +744,6 @@ void MainWindow::updateNextEventDisplay()
         ui->nextModuleLabel->setText("In: n/a");
 }
 
-int MainWindow::getObjectId(cEvent *object)
-{
-    if (dynamic_cast<cModule *>(object))
-        return dynamic_cast<cModule *>(object)->getId();
-    if (dynamic_cast<cMessage *>(object))
-        return dynamic_cast<cMessage *>(object)->getId();
-
-    return -1;
-}
-
 const char *MainWindow::getObjectShortTypeName(cObject *object)
 {
     if (dynamic_cast<cComponent *>(object)) {

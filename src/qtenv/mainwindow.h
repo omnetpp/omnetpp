@@ -84,6 +84,9 @@ public:
     void runUntilMsg(cMessage *msg, RunMode runMode);
     void excludeMessageFromAnimation(cObject *msg);
 
+    void reflectRecordEventlog();
+    void configureNetwork();
+
     // the slider value is an integer, we divide it by 100 to get a double value, then raise it to 10's exponent
     static int playbackSpeedToSliderValue(double speed) { return std::round(std::log10(speed) * 100); }
     static double sliderValueToPlaybackSpeed(int value) { return std::pow(10, value / 100.0); }
@@ -114,12 +117,12 @@ public slots:
     // without emitting the change signal!
     void updateSpeedSlider();
 
-    // disables all actions and inspectors except the stopAction and ModuleInspectors
+    // Disables all actions, widgets and inspectors, except the stopAction and widgets that contain it,
     // and saves the disabled objects into disabledForLayouting.
-    // the exit counterpart must be called at least once between calls
+    // The exit counterpart must be called at least once between calls.
     void enterLayoutingMode();
-    // restores the changes made by the function above.
-    // will do no harm if called multiple times, or without any enterLayoutingMode call at all
+    // Restores the changes made by the function above.
+    // Will do no harm if called multiple times, or without any enterLayoutingMode call at all.
     void exitLayoutingMode();
 
 protected slots:
@@ -181,7 +184,7 @@ private:
 
     void updatePerformanceDisplay();
     void updateNextEventDisplay();
-    int getObjectId(cEvent *object);
+
     const char *getObjectShortTypeName(cObject *object);
     const char *stripNamespace(const char *className);
 
@@ -194,8 +197,6 @@ private:
     void saveSplitter(QString prefName, QSplitter *splitter);
     void restoreSplitter(QString prefName, QSplitter *splitter, const QList<int> &defaultSizes = QList<int>());
 
-    void reflectRecordEventlog();
-
     void showStopDialog();
     void closeStopDialog();
 
@@ -203,8 +204,6 @@ private:
 
     void updateSimTimeLabel();
     void updateEventNumLabel();
-
-    void configureNetwork();
 
     bool exitOmnetpp();
 };
