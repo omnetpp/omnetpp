@@ -815,11 +815,17 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
             destAnch.setY(y);
     }
 
-    return arrowcoords(getSubmodRect(gate->getOwnerModule()),
-                       getSubmodRect(gate->getNextGate()->getOwnerModule()),
-                       0, 1, 0, 1, // TODO vector gates are not arranged at all now
-                       mode,
-                       srcAnch, destAnch);
+    int src_i = 0, src_n = 1, dest_i = 0, dest_n = 1;
+
+    if (getQtenv()->opt->arrangeVectorConnections) {
+        src_i = gate->getIndex();
+        src_n = gate->getVectorSize();
+        dest_i = gate->getNextGate()->getIndex();
+        dest_n = gate->getNextGate()->getVectorSize();
+    }
+
+    return arrowcoords(getSubmodRect(gate->getOwnerModule()), getSubmodRect(gate->getNextGate()->getOwnerModule()),
+                       src_i, src_n, dest_i, dest_n, mode, srcAnch, destAnch);
 }
 
 std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QPoint& pos, int threshold)
