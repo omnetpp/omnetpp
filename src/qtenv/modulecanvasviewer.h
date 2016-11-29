@@ -48,7 +48,7 @@ class ModuleCanvasViewer : public QGraphicsView
 private:
     cModule *object;
     bool notDrawn;
-    bool needs_redraw;
+    bool needsRedraw;
     CanvasRenderer *canvasRenderer;
     QRubberBand *rubberBand;
     QPoint rubberBandStartPos;
@@ -156,8 +156,8 @@ public:
     QLineF getConnectionLine(cGate *gate);
 
     void clear();
-    bool getNeedsRedraw() { return needs_redraw; }
-    void setNeedsRedraw(bool isNeed = true) { needs_redraw = isNeed; }
+    bool getNeedsRedraw() { return needsRedraw; }
+    void setNeedsRedraw(bool isNeed = true) { needsRedraw = isNeed; }
 
     void refreshSubmodule(cModule *submod);
     void refreshSubmodules();

@@ -53,7 +53,7 @@ namespace qtenv {
 ModuleCanvasViewer::ModuleCanvasViewer() :
     object(nullptr),
     notDrawn(false),
-    needs_redraw(false)
+    needsRedraw(false)
 {
     setFont(getQtenv()->getCanvasFont());
 
@@ -700,8 +700,8 @@ void ModuleCanvasViewer::refresh()
     canvasRenderer->refresh(&hints);
 
     // redraw modules only if really needed
-    if (needs_redraw) {
-        needs_redraw = false;
+    if (needsRedraw) {
+        needsRedraw = false;
         redraw();
     }
     else {
