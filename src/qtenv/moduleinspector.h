@@ -151,7 +151,6 @@ class QTENV_API ModuleInspector : public Inspector
       virtual void refresh() override;
       virtual void clearObjectChangeFlags() override;
 
-      bool needsRedraw();
 
       // implementations of inspector commands:
       virtual int getDefaultLayoutSeed();

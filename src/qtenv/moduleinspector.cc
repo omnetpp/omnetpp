@@ -438,10 +438,6 @@ void ModuleInspector::clearObjectChangeFlags()
         canvas->getRootFigure()->clearChangeFlags();
 }
 
-bool ModuleInspector::needsRedraw() {
-    return canvasViewer->getNeedsRedraw();
-}
-
 void ModuleInspector::runUntil()
 {
     if (object)
