@@ -1,3 +1,11 @@
+2016-11-30  Rudolf Hornig
+
+	* Removed 'nmake' support from the IDE. The Microsoft Clang/C2 compiler
+	now works with the same configuration as the MinGW compiler.
+
+	* Added support for 64-bit builds with both the MinGW-W64 and the Clang/C2
+	compilers.
+
 2016-08-04  Rudolf Hornig
 
 	* While detecting the omnetpp_root directory, check all parent

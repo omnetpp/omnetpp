@@ -49,7 +49,7 @@ The simulation system itself:
       distrib/     regression test suite for built-in distributions
       ...
     tools/         3rd party tools and libraries bundled with OMNeT++
-      win32/       on Windows, contains MSYS tools and the MinGW-W64 toolchain
+      win64/       on Windows, contains MSYS tools and the MinGW-W64 toolchain
       macosx/      on OS X, contains various 3rd party libraries (e.g. OSG, osgEarth, Qt)
 
 Sample simulations are in the samples directory.

@@ -1,3 +1,11 @@
+2016-11-30  Rudolf Hornig
+
+	* The updated build system now uses the ./configure file only to detect
+	certain flags and libraries. Most of the build logic is handled by the
+	Makefile.inc file itslef. This allows you to enable/disable optional
+	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
+	re-running the ./configure file.
+
 2016-09-01  Andras Varga
 
 	* Canvas: added getPosition() to arc, rectangle, oval, ring, and
