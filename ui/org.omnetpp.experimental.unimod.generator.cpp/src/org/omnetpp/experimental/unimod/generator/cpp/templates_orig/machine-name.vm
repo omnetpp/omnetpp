@@ -1,8 +1,0 @@
-/*
- * Returns name of the machine
- */
-const TDesC& $smTool.ClassName::MachineName() const
-	{
-	_LIT(KName, "${sm.Name}");
-    return KName;
-	}

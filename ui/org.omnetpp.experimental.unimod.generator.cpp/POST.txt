@@ -1,5 +1,0 @@
-C++ state machine design
-
-I'd like to use UniMod for designing C++ state machines (I'm using CDT). Adding a new Generator extension with the corresponding Velocity templates is no problem. However, the resulting "C++ state machine designer" tool would have a dependence on JDT, and would require a Java project which I'd like to avoid.
-
-Is it planned/would it be hard to factor out a plain state machine editor plug-in from UniMod which has no Java dependence? I understand that runtime capabilities will be lost, but I can live with that.

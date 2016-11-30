@@ -1,4 +1,0 @@
-const char *$smTool.ClassName::machineName() const
-{
-    return "${sm.Name}";
-}
