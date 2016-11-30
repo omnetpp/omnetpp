@@ -1,4 +1,0 @@
-#!/bin/sh
-# CYGWIN: return current dir in Windows format, but with forward slashes
-dir=`pwd`
-cygpath -w $dir | sed 's|\\|/|g'

@@ -240,21 +240,8 @@ leading to unexpected errors in the build process.
 
 The \fprog{make} program can utilize dependency information in the Makefile
 to shorten build times by omitting build steps whose input has not changed
-since the last build. Dependency information needs to be up to date for the
-build to work correctly.
-
-\fprog{opp\_makemake} automatically adds dependencies to the
-Makefile\index{Makefile!dependencies}. It also adds a \ttt{depend} target
-that regenerates the dependency information in the Makefile, i.e. one needs
-to run \ttt{make depend} when dependency information might be out of date.
-
-\ttt{make depend} internally relies on the \fprog{opp\_makedep} tool. Run
-\fprog{opp\_makedep -{}-help} to display usage information.
-
-\begin{note}
-The dependency generator does not handle conditional macros and includes.
-Conditionally included header files are always added to the file's dependency list.
-\end{note}
+since the last build. Dependency information is automatically updated
+during the build process.
 
 
 \subsection{Out-of-Directory Build}

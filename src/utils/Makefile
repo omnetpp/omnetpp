@@ -27,7 +27,6 @@ all:
 	  cp opp_makemake.cmd $(OMNETPP_BIN_DIR); \
 	  cp opp_runall.cmd $(OMNETPP_BIN_DIR); \
 	  cp opp_test.cmd $(OMNETPP_BIN_DIR); \
-	  cp opp_makedep.cmd $(OMNETPP_BIN_DIR); \
 	  cp omnetpp.cmd $(OMNETPP_BIN_DIR); \
 	  cp omnest.cmd $(OMNETPP_BIN_DIR); \
 	fi
@@ -35,13 +34,12 @@ all:
 	$(Q)cp opp_makemake $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_featuretool $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_test $(OMNETPP_BIN_DIR)
-	$(Q)cp opp_makedep $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_shlib_postprocess $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_runall $(OMNETPP_BIN_DIR)
 	$(Q)cp splitvec $(OMNETPP_BIN_DIR)
 	$(Q)cp omnetpp $(OMNETPP_BIN_DIR)
 	$(Q)cp omnest $(OMNETPP_BIN_DIR)
-	$(Q)chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test $(OMNETPP_BIN_DIR)/opp_makedep $(OMNETPP_BIN_DIR)/splitvec $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
+	$(Q)chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test  $(OMNETPP_BIN_DIR)/splitvec $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
 	@# next line is for samples/rundemo
 	$(Q)echo $(WISH) >$(HOME)/.wishname
 
@@ -53,7 +51,7 @@ $O/%.o: %.cc
 clean:
 	$(qecho) Cleaning...
 	$(Q)rm -rf $O
-	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_makemake opp_runall opp_test opp_makedep splitvec
+	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_makemake opp_runall opp_test splitvec
 #	$(Q)rm -f opp_configfilepath
 #	$(Q)rm -f opp_configfilepath.cmd
 
