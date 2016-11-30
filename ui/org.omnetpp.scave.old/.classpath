@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry sourcepath="lib/jcommon-src-1.0.0.zip" kind="lib" path="lib/jcommon-1.0.0.jar"/>
-	<classpathentry sourcepath="lib/jfreechart-src-1.0.1.zip" kind="lib" path="lib/jfreechart-1.0.1.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
