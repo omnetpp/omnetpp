@@ -21,9 +21,6 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cfutureeventset.h"
-#include "layout/graphlayouter.h"
-#include "layout/basicspringembedderlayout.h"
-#include "layout/forcedirectedgraphlayouter.h"
 #include "qtenv.h"
 #include "mainwindow.h"
 #include "layouterenv.h"
@@ -48,9 +45,6 @@
 
 #define emit
 
-#define UNKNOWNICON_WIDTH     32
-#define UNKNOWNICON_HEIGHT    32
-
 using namespace omnetpp::layout;
 
 namespace omnetpp {
@@ -58,7 +52,6 @@ namespace qtenv {
 
 ModuleCanvasViewer::ModuleCanvasViewer() :
     object(nullptr),
-    layoutSeed(1),
     notDrawn(false),
     needs_redraw(false)
 {
@@ -72,11 +65,12 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     bubbleLayer = new GraphicsLayer();
     zoomLabelLayer = new GraphicsLayer();
 
-    setScene(new QGraphicsScene());
-    scene()->addItem(backgroundLayer);
-    scene()->addItem(figureLayer);
-    scene()->addItem(bubbleLayer);
-    scene()->addItem(zoomLabelLayer);
+    moduleScene = new QGraphicsScene();
+    setScene(moduleScene);
+    moduleScene->addItem(backgroundLayer);
+    moduleScene->addItem(figureLayer);
+    moduleScene->addItem(bubbleLayer);
+    moduleScene->addItem(zoomLabelLayer);
 
     GraphicsLayer *networkLayer = new GraphicsLayer();
     networkLayer->addItem(rangeLayer);
@@ -284,322 +278,6 @@ void ModuleCanvasViewer::contextMenuEvent(QContextMenuEvent *event)
     }
 }
 
-void ModuleCanvasViewer::relayoutAndRedrawAll()
-{
-    if (!object)
-        return;
-
-    cModule *mod = object;
-    int submoduleCount = 0;
-    int estimatedGateCount = mod->gateCount();
-    for (cModule::SubmoduleIterator it(mod); !it.end(); ++it) {
-        submoduleCount++;
-        // note: estimatedGateCount will count unconnected gates in the gate array as well
-        estimatedGateCount += (*it)->gateCount();
-    }
-
-    notDrawn = false;
-    if (submoduleCount > 1000 || estimatedGateCount > 4000) {
-        char problem[200];
-        if (submoduleCount > 1000)
-            sprintf(problem, "contains more than 1000 submodules (exactly %d)", submoduleCount);
-        else
-            sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
-
-        QString message = "Module '" + QString(object->getFullName()) + "' " + problem +
-                ", it may take a long time to display the graphics.\n\nDo you want to proceed with drawing?";
-        QMessageBox::StandardButton answer = QMessageBox::warning(this, "Warning", message, QMessageBox::Yes | QMessageBox::No);
-        if (answer == QMessageBox::Yes) {
-            notDrawn = true;
-            clear();  // this must be done, still
-            return;
-        }
-    }
-
-    zoomLabel->setFont(getQtenv()->getCanvasFont());
-    updateZoomLabelPos();
-
-    clear();
-    recalculateLayout();
-    redrawFigures();
-    redrawModules();
-    getQtenv()->getMessageAnimator()->redrawMessages();
-    redrawNextEventMarker();
-    refreshSubmodules();
-}
-
-void ModuleCanvasViewer::recalculateLayout()
-{
-    // refresh layout with empty submodPosMap -- everything layouted
-    submodPosMap.clear();
-    refreshLayout();
-}
-
-void ModuleCanvasViewer::refreshLayout()
-{
-    static bool inProgress = false;
-
-    if (inProgress || !object)
-        return;
-
-    inProgress = true;
-
-    // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
-    // only new nodes are re-layouted
-
-    cModule *parentModule = object;
-
-    // Note trick avoid calling getDisplayString() directly because it'd cause
-    // the display string object inside cModule to spring into existence
-    const cDisplayString blank;
-    const cDisplayString& ds = parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
-
-    // create and configure layouter object
-    LayouterChoice choice = getQtenv()->opt->layouterChoice;
-    if (choice == LAYOUTER_AUTO) {
-        const int LIMIT = 20;  // note: on test/anim/dynamic2, Advanced is already very slow with 30-40 modules
-        int submodCountLimited = 0;
-        for (cModule::SubmoduleIterator it(parentModule); !it.end() && submodCountLimited < LIMIT; ++it)
-            submodCountLimited++;
-        choice = submodCountLimited >= LIMIT ? LAYOUTER_FAST : LAYOUTER_ADVANCED;
-    }
-    GraphLayouter *layouter = choice == LAYOUTER_FAST ?
-        (GraphLayouter *)new BasicSpringEmbedderLayout() :
-        (GraphLayouter *)new ForceDirectedGraphLayouter();
-
-    layouter->setSeed(layoutSeed);
-
-    // background size
-    int sx = resolveLongDispStrArg(ds.getTagArg("bgb", 0), parentModule, 0);
-    int sy = resolveLongDispStrArg(ds.getTagArg("bgb", 1), parentModule, 0);
-    int border = 30;
-    if (sx != 0 && sx < 2*border)
-        border = sx/2;
-    if (sy != 0 && sy < 2*border)
-        border = sy/2;
-    layouter->setSize(sx, sy, border);
-    // TODO support "bgp" tag ("background position")
-
-    // loop through all submodules, get their sizes and positions and feed them into layouting engine
-    for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
-        cModule *submod = *it;
-
-        bool explicitCoords, obeysLayout;
-        double x, y, sx, sy;
-        getSubmoduleCoords(submod, explicitCoords, obeysLayout, x, y, sx, sy);
-
-        // add node into layouter:
-        if (explicitCoords) {
-            // e.g. "p=120,70" or "p=140,30,ring"
-            layouter->addFixedNode(submod->getId(), x, y, sx, sy);
-        }
-        else if (submodPosMap.find(submod) != submodPosMap.end()) {
-            // reuse coordinates from previous layout
-            QPointF pos = submodPosMap[submod];
-            layouter->addFixedNode(submod->getId(), pos.x(), pos.y(), sx, sy);
-        }
-        else if (obeysLayout) {
-            // all modules are anchored to the anchor point with the vector's name
-            // e.g. "p=,,ring"
-            layouter->addAnchoredNode(submod->getId(), submod->getName(), x, y, sx, sy);
-        }
-        else {
-            layouter->addMovableNode(submod->getId(), sx, sy);
-        }
-    }
-
-    // add connections into the layouter, too
-    bool atParent = false;
-    for (cModule::SubmoduleIterator it(parentModule); !atParent; ++it) {
-        cModule *mod = !it.end() ? *it : (atParent = true, parentModule);
-
-        for (cModule::GateIterator git(mod); !git.end(); ++git) {
-            cGate *gate = *git;
-            cGate *destGate = gate->getNextGate();
-            if (gate->getType() == (atParent ? cGate::INPUT : cGate::OUTPUT) && destGate) {
-                cModule *destMod = destGate->getOwnerModule();
-                if (mod == parentModule && destMod == parentModule) {
-                    // nop
-                }
-                else if (destMod == parentModule) {
-                    layouter->addEdgeToBorder(mod->getId());
-                }
-                else if (destMod->getParentModule() != parentModule) {
-                    // connection goes to a module under a different parent!
-                    // this in fact violates module encapsulation, but let's
-                    // accept it nevertheless. Just skip this connection.
-                }
-                else if (mod == parentModule) {
-                    layouter->addEdgeToBorder(destMod->getId());
-                }
-                else {
-                    layouter->addEdge(mod->getId(), destMod->getId());
-                }
-            }
-        }
-    }
-
-    // set up layouter environment (responsible for "Stop" button handling and visualizing the layouting process)
-    qtenv::QtenvGraphLayouterEnvironment qtenvEnvironment(parentModule, ds);
-    connect(getQtenv()->getMainWindow()->getStopAction(), SIGNAL(triggered()), &qtenvEnvironment, SLOT(stop()));
-
-    // we still have to set something for the layouter if visualisation is disabled.
-    BasicGraphLayouterEnvironment basicEnvironment;
-
-    // we are replacing the scene in the view with a temporary one which is used only
-    // for visualising the layouting process, and is managed by the qtenvEnvironment
-    // so we don't ruin the layer structure in the existing scene
-
-    auto moduleScene = scene();
-    QGraphicsScene *layoutScene = nullptr;
-
-    // enable visualizing only if full re-layouting (no cached coordinates in submodPosMap)
-    if (submodPosMap.empty() && getQtenv()->opt->showLayouting) {  // for realz
-        // if (getQtenv()->opt->showLayouting) { // for debugging
-        layoutScene = new QGraphicsScene(this);
-
-        setSceneRect(QRectF());
-        setScene(layoutScene);
-        qtenvEnvironment.setView(this);
-
-        layoutScene->setBackgroundBrush(QColor("#a0e0a0"));
-
-        getQtenv()->getMainWindow()->enterLayoutingMode();
-
-        layouter->setEnvironment(&qtenvEnvironment);
-    }
-    else {
-        layouter->setEnvironment(&basicEnvironment);
-    }
-
-    layouter->execute();
-    qtenvEnvironment.cleanup();
-
-    if (moduleScene != scene())
-        setScene(moduleScene);
-
-    delete layoutScene;
-
-    getQtenv()->getMainWindow()->exitLayoutingMode();
-
-    // fill the map with the results
-    submodPosMap.clear();
-    for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
-        cModule *submod = *it;
-
-        QPointF pos;
-        double x, y;
-        layouter->getNodePosition(submod->getId(), x, y);
-        pos.setX(x);
-        pos.setY(y);
-        submodPosMap[submod] = pos;
-    }
-
-    layoutSeed = layouter->getSeed();
-
-    delete layouter;
-
-    inProgress = false;
-}
-
-void ModuleCanvasViewer::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
-        double& x, double& y, double& sx, double& sy)
-{
-    const cDisplayString blank;
-    const cDisplayString& ds = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString() : blank;
-
-    // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
-    double boxsx = 0, boxsy = 0;
-    int iconsx = 30, iconsy = 30;
-    if (ds.containsTag("b") || !ds.containsTag("i")) {
-        boxsx = resolveDoubleDispStrArg(ds.getTagArg("b", 0), submod, 40);
-        boxsy = resolveDoubleDispStrArg(ds.getTagArg("b", 1), submod, 24);
-    }/*
-    if (ds.containsTag("i")) {
-        const char *imgName = ds.getTagArg("i", 0);
-        const char *imgSize = ds.getTagArg("is", 0);
-        if (!imgName || !*imgName) {
-            iconsx = UNKNOWNICON_WIDTH;
-            iconsy = UNKNOWNICON_HEIGHT;
-        }
-        else {
-            //CHK(Tcl_VarEval(interp, "lookupImage ", imgName, " ", imgSize, TCL_NULL));
-            iconsx = iconsy = 30;  // TODO
-            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), nullptr, nullptr);
-            if (!img)
-            {
-                iconsx = UNKNOWNICON_WIDTH;
-                iconsy = UNKNOWNICON_HEIGHT;
-            }
-            else
-            {
-                Tk_SizeOfImage(img, &iconsx, &iconsy);
-                Tk_FreeImage(img);
-            }
-        }
-    }*/
-    sx = (boxsx > iconsx) ? boxsx : iconsx;
-    sy = (boxsy > iconsy) ? boxsy : iconsy;
-
-    // first, see if there's an explicit position ("p=" tag) given
-    x = resolveDoubleDispStrArg(ds.getTagArg("p", 0), submod, -1);
-    y = resolveDoubleDispStrArg(ds.getTagArg("p", 1), submod, -1);
-    explicitcoords = x != -1 && y != -1;
-
-    // set missing coordinates to zero
-    if (x == -1)
-        x = 0;
-    if (y == -1)
-        y = 0;
-
-    const char *layout = ds.getTagArg("p", 2);  // matrix, row, column, ring, exact etc.
-    obeysLayout = (layout && *layout);
-
-    // modify x,y using predefined layouts
-    if (!layout || !*layout) {
-        // we're happy
-    }
-    else if (!strcmp(layout, "e") || !strcmp(layout, "x") || !strcmp(layout, "exact")) {
-        double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 0);
-        double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, 0);
-        x += dx;
-        y += dy;
-    }
-    else if (!strcmp(layout, "r") || !strcmp(layout, "row")) {
-        // perhaps we should use the size of the 1st element in the vector?
-        double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sx);
-        x += submod->getIndex()*dx;
-    }
-    else if (!strcmp(layout, "c") || !strcmp(layout, "col") || !strcmp(layout, "column")) {
-        double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, 2*sy);
-        y += submod->getIndex()*dy;
-    }
-    else if (!strcmp(layout, "m") || !strcmp(layout, "matrix")) {
-        // perhaps we should use the size of the 1st element in the vector?
-        int columns = resolveLongDispStrArg(ds.getTagArg("p", 3), submod, 5);
-        double dx = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, 2*sx);
-        double dy = resolveDoubleDispStrArg(ds.getTagArg("p", 5), submod, 2*sy);
-        if (columns < 1)
-            columns = 1;
-        x += (submod->getIndex() % columns)*dx;
-        y += (submod->getIndex() / columns)*dy;
-    }
-    else if (!strcmp(layout, "i") || !strcmp(layout, "ri") || !strcmp(layout, "ring")) {
-        // perhaps we should use the size of the 1st element in the vector?
-        int vectorSize = submod->getVectorSize();
-        double rx = resolveDoubleDispStrArg(ds.getTagArg("p", 3), submod, (sx+sy)*vectorSize/4);
-        double ry = resolveDoubleDispStrArg(ds.getTagArg("p", 4), submod, rx);
-
-        x += rx - rx*sin(submod->getIndex()*2*PI/vectorSize);
-        y += ry - ry*cos(submod->getIndex()*2*PI/vectorSize);
-    }
-    else {
-        //CHK(Tcl_VarEval(interp, "messagebox {Error} "
-        //                        "{Error: invalid layout '", layout, "' in 'p' tag "
-        //                                                            "of display string \"", ds.str(), "\"} error ok", TCL_NULL));
-    }
-}
-
 void ModuleCanvasViewer::redrawFigures()
 {
     FigureRenderingHints hints;
@@ -632,7 +310,7 @@ void ModuleCanvasViewer::redrawModules()
 
     for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
         cModule *submod = *it;
-        assert(submodPosMap.find(submod) != submodPosMap.end());
+        //assert(submodPosMap.find(submod) != submodPosMap.end());
         drawSubmodule(submod);
     }
 
@@ -769,7 +447,7 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
 
 QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
 {
-    return submodPosMap[mod] * zoomFactor;
+    return getQtenv()->getModuleLayouter()->getModulePosition(mod) * zoomFactor;
 }
 
 QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
@@ -826,6 +504,21 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
 
     return arrowcoords(getSubmodRect(gate->getOwnerModule()), getSubmodRect(gate->getNextGate()->getOwnerModule()),
                        src_i, src_n, dest_i, dest_n, mode, srcAnch, destAnch);
+}
+
+void ModuleCanvasViewer::setLayoutingScene(QGraphicsScene *layoutingScene)
+{
+    if (layoutingScene) {
+        ASSERT(!this->layoutingScene);
+        this->layoutingScene = layoutingScene;
+        setScene(layoutingScene);
+        setSceneRect(QRectF());
+    }
+    else {
+        ASSERT(this->layoutingScene);
+        this->layoutingScene = nullptr;
+        setScene(moduleScene);
+    }
 }
 
 std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QPoint& pos, int threshold)
@@ -912,16 +605,21 @@ void ModuleCanvasViewer::redrawNextEventMarker()
     }
 }
 
+void ModuleCanvasViewer::refreshLayout()
+{
+    getQtenv()->getModuleLayouter()->ensureLayouted(object);
+}
+
 void ModuleCanvasViewer::refreshSubmodule(cModule *submod)
 {
     if (submoduleGraphicsItems.count(submod)) {
         auto item = submoduleGraphicsItems[submod];
         SubmoduleItemUtil::setupFromDisplayString(item, submod);
-        bool xplct, obeys;
+        /*bool explicitCoords, obeys;
         double x, y, sx, sy;
-        getSubmoduleCoords(submod, xplct, obeys, x, y, sx, sy);
-        if (xplct)
-            submodPosMap[submod] = QPointF(x, y);
+        getSubmoduleCoords(submod, explicitCoords, obeys, x, y, sx, sy);
+        if (explicitCoords)
+            submodPosMap[submod] = QPointF(x, y);*/
         item->setPos(getSubmodCoords(submod));
         item->update();
     }
@@ -929,11 +627,9 @@ void ModuleCanvasViewer::refreshSubmodule(cModule *submod)
 
 void ModuleCanvasViewer::refreshSubmodules()
 {
-    if (object) {
-        refreshLayout();
+    if (object)
         for (cModule::SubmoduleIterator it(object); !it.end(); ++it)
             refreshSubmodule(*it);
-    }
 }
 
 void ModuleCanvasViewer::refreshConnection(cGate *gate)
@@ -978,6 +674,7 @@ void ModuleCanvasViewer::redraw()
     redrawFigures();
     redrawNextEventMarker();
     refreshSubmodules();
+    refreshConnections();
 }
 
 void ModuleCanvasViewer::refresh()
@@ -1067,7 +764,7 @@ void ModuleCanvasViewer::bubble(cComponent *subcomponent, const char *text)
     // and it was dynamically created since the last update), refresh layout
     // so that we can get coordinates for it
     cModule *submod = (cModule *)subcomponent;
-    if (!submodPosMap.count(submod))
+    if (std::isnan(getSubmodCoords(submod).x()))
         refreshLayout();
 
     // will delete itself after a timeout

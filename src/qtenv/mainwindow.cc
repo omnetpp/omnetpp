@@ -360,11 +360,17 @@ void MainWindow::enterLayoutingMode()
         }
 
         auto inspector = dynamic_cast<Inspector *>(c);
-        // ModuleInspectors themselves aren't disabled, so the STOP button
-        // will still work them and any other actions are disabled anyways
-        if (inspector && inspector->isEnabled() && !dynamic_cast<ModuleInspector *>(inspector)) {
+        if (inspector && inspector->isEnabled()) {
             disabledForLayouting.insert(inspector);
             inspector->setEnabled(false);
+        }
+    }
+
+    for (auto c : ui->toolBarArea->findChildren<QObject *>()) {
+        auto widget = dynamic_cast<QWidget*>(c);
+        if (widget && widget->isEnabled() && !widget->actions().contains(ui->actionStop)) {
+            disabledForLayouting.insert(widget);
+            widget->setEnabled(false);
         }
     }
 }
@@ -372,13 +378,14 @@ void MainWindow::enterLayoutingMode()
 void MainWindow::exitLayoutingMode()
 {
     for (auto c : disabledForLayouting) {
-        auto action = dynamic_cast<QAction *>(c);
-        if (action)
+        if (auto action = dynamic_cast<QAction *>(c))
             action->setEnabled(true);
 
-        auto inspector = dynamic_cast<Inspector *>(c);
-        if (inspector)
+        if (auto inspector = dynamic_cast<Inspector *>(c))
             inspector->setEnabled(true);
+
+        if (auto widget = dynamic_cast<QWidget *>(c))
+            widget->setEnabled(true);
     }
 
     disabledForLayouting.clear();
@@ -482,6 +489,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     // if the sim has not been asked yet to stop
     if (!env->getStopSimulationFlag() && !exitOmnetpp())
         event->ignore();
+
+    emit closed();
 }
 
 // XXX why is this in MainWindow, and not in Qtenv?

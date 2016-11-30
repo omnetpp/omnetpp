@@ -101,7 +101,8 @@ SOURCES += mainwindow.cc \
     messageanimator.cc \
     displayupdatecontroller.cc \
     messageanimations.cc \
-    graphicsitems.cc
+    graphicsitems.cc \
+    modulelayouter.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -158,7 +159,8 @@ HEADERS += mainwindow.h \
     messageanimator.h \
     displayupdatecontroller.h \
     messageanimations.h \
-    graphicsitems.h
+    graphicsitems.h \
+    modulelayouter.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 

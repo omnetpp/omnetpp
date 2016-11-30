@@ -625,6 +625,8 @@ void Qtenv::doRun()
         initFonts();
         updateQtFonts();
 
+        moduleLayouter.loadSeeds();
+
         mainInspector = static_cast<GenericObjectInspector *>(addEmbeddedInspector(InspectorFactory::get("GenericObjectInspectorFactory"), mainWindow->getObjectInspectorArea()));
         mainNetworkView = static_cast<ModuleInspector *>(addEmbeddedInspector(InspectorFactory::get("ModuleInspectorFactory"), mainWindow->getMainInspectorArea()));
         mainLogView = static_cast<LogInspector *>(addEmbeddedInspector(InspectorFactory::get("LogInspectorFactory"), mainWindow->getLogInspectorArea()));
@@ -634,13 +636,22 @@ void Qtenv::doRun()
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainLogView, SLOT(setObject(cObject *)));
         connect(mainNetworkView, SIGNAL(inspectedObjectChanged(cObject *,cObject *)), mainInspector, SLOT(setObject(cObject *)));
 
+        connect(&moduleLayouter, &ModuleLayouter::layoutVisualisationStarts, mainWindow, &MainWindow::enterLayoutingMode);
+        connect(&moduleLayouter, &ModuleLayouter::layoutVisualisationEnds, mainWindow, &MainWindow::exitLayoutingMode);
+        connect(mainWindow, &MainWindow::closed, &moduleLayouter, &ModuleLayouter::stop);
+        connect(mainWindow->getStopAction(), &QAction::triggered, &moduleLayouter, &ModuleLayouter::stop);
+
         QApplication::processEvents(); // Part of the hack for Apple Menu functionality, see a few lines up.
 
         mainWindow->show();
         mainWindow->raise(); // Part of the hack for Apple Menu functionality, see a few lines up.
 
         mainWindow->restoreGeometry();
+
         mainWindow->initialSetUpConfiguration();
+        // if (mainWindow->isVisible()) {
+            // TODO: during the initial layout of the network the main window can be closed, and if it has been,
+            // we don't need to continue. - the inspectors would pop up without a MainWindow in sight.
 
         // needs to be set here too, the setting in the Designer wasn't enough on Mac
         QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
@@ -674,6 +685,8 @@ void Qtenv::doRun()
 
     // clear log
     logBuffer.clear();
+
+    moduleLayouter.saveSeeds();
 
     delete messageAnimator;
     messageAnimator = nullptr;
@@ -1150,6 +1163,7 @@ void Qtenv::newNetwork(const char *networkname)
     animating = false;  // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateStatusDisplay();
+    callRefreshDisplay();
     callRefreshInspectors();
 }
 
@@ -1884,8 +1898,8 @@ void Qtenv::loadImage(const char *fileName, const char *imageName)
 
 cFigure::Point Qtenv::getSubmodulePosition(const cModule *submodule)
 {
-	//TODO
-	return cFigure::Point(NAN, NAN);
+    QPointF p = moduleLayouter.getModulePosition(const_cast<cModule *>(submodule));
+    return cFigure::Point(p.x(), p.y());
 }
 
 double Qtenv::getAnimationTime() const
@@ -2116,6 +2130,14 @@ QVariant Qtenv::getPref(const QString& key, const QVariant& defaultValue)
 {
     QSettings *settings = localPrefKeys.contains(key) ? localPrefs : globalPrefs;
     return settings->value(key, defaultValue);
+}
+
+QStringList Qtenv::getKeysInPrefGroup(const QString &prefGroup)
+{
+    globalPrefs->beginGroup(prefGroup);
+    auto keys = globalPrefs->allKeys();
+    globalPrefs->endGroup();
+    return keys;
 }
 
 void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp)

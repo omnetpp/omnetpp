@@ -214,6 +214,7 @@ void SubmoduleItem::realignAnchoredItems()
 void SubmoduleItem::updateShapeItem()
 {
     if (shapeItem) {
+        shapeItem->setZValue(-1); // shape always below icon
         shapeItem->setBrush(shapeFillColor.isValid() ? shapeFillColor : QColor("#8080ff"));
         auto pen = shapeOutlineWidth == 0
                      ? Qt::NoPen

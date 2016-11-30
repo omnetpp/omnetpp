@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_MODULEINSPECTOR_H
 
 #include <vector>
+#include <QGraphicsScene>
 #include "inspector.h"
 
 class QAction;
@@ -113,12 +114,18 @@ class QTENV_API ModuleInspector : public Inspector
       OsgViewer *osgViewer;
 #endif
 
+   public slots:
+      void onLayoutVisualizationStarts(cModule *module, QGraphicsScene *layoutingScene);
+      void onLayoutVisualizationEnds(cModule *module);
+      void onModuleLayoutChanged(cModule *module);
+
    protected:
       cCanvas *getCanvas();
 
       void createViews(bool isTopLevel);
       QToolBar *createToolbar(bool isTopLevel);
       void refreshOsgViewer();
+
 #ifdef WITH_OSG
       cOsgCanvas *getOsgCanvas();
       void setOsgCanvas(cOsgCanvas *osgCanvas);

@@ -28,6 +28,7 @@
 #include "logbuffer.h"
 #include "componenthistory.h"
 #include "imagecache.h"
+#include "modulelayouter.h"
 #include "inspector.h"
 #include <QSettings>
 #include <QSet>
@@ -173,6 +174,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       LogBuffer logBuffer;         // text window contents
       ComponentHistory componentHistory; // id-to-fullpath mapping for deleted modules
+      ModuleLayouter moduleLayouter;
 
       GenericObjectInspector *mainInspector;
       ModuleInspector *mainNetworkView;
@@ -270,6 +272,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       MainWindow *getMainWindow() { return mainWindow; }
       MessageAnimator *getMessageAnimator() { return messageAnimator; }
       DisplayUpdateController *getDisplayUpdateController() { return displayUpdateController; }
+      ModuleLayouter *getModuleLayouter() { return &moduleLayouter; }
+
       GenericObjectInspector *getMainObjectInspector() { return mainInspector; }
       ModuleInspector *getMainModuleInspector() { return mainNetworkView; }
       LogInspector *getMainLogInspector() { return mainLogView; }
@@ -279,6 +283,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       void setPref(const QString &key, const QVariant &value);
       QVariant getPref(const QString &key, const QVariant &defaultValue = QVariant());
+      QStringList getKeysInPrefGroup(const QString &prefGroup);
 
   signals:
       void fontChanged();

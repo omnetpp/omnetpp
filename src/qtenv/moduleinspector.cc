@@ -117,6 +117,11 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     decreaseIconSizeAction->setShortcut(Qt::CTRL | Qt::Key_O);
     connect(decreaseIconSizeAction, SIGNAL(triggered(bool)), this, SLOT(decreaseIconSize()));
     addAction(decreaseIconSizeAction);
+
+    auto *layouter = getQtenv()->getModuleLayouter();
+    connect(layouter, &ModuleLayouter::layoutVisualisationStarts, this, &ModuleInspector::onLayoutVisualizationStarts);
+    connect(layouter, &ModuleLayouter::layoutVisualisationEnds, this, &ModuleInspector::onLayoutVisualizationEnds);
+    connect(layouter, &ModuleLayouter::moduleLayoutChanged, this, &ModuleInspector::onModuleLayoutChanged);
 }
 
 ModuleInspector::~ModuleInspector()
@@ -250,10 +255,10 @@ void ModuleInspector::doSetObject(cObject *obj)
     getQtenv()->getMessageAnimator()->clearInspector(this);
 
     if (object) {
-        canvasViewer->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
+        canvasViewer->refreshLayout();
+        //canvasViewer->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
         try {
-            canvasViewer->relayoutAndRedrawAll();
-
+            canvasViewer->redraw();
             canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
             canvasViewer->setImageSizeFactor(getPref(PREF_ICONSCALE, 1).toDouble());
             canvasViewer->setShowModuleNames(getPref(PREF_SHOWLABELS, true).toBool());
@@ -327,6 +332,24 @@ void ModuleInspector::updateToolbarLayout()
                                           toolbarSpacing, toolbarSpacing);
 #endif
     }
+}
+
+void ModuleInspector::onLayoutVisualizationStarts(cModule *module, QGraphicsScene *layoutingScene)
+{
+    if ((cObject*)module == object)
+        canvasViewer->setLayoutingScene(layoutingScene);
+}
+
+void ModuleInspector::onLayoutVisualizationEnds(cModule *module)
+{
+    if ((cObject*)module == object)
+        canvasViewer->setLayoutingScene(nullptr);
+}
+
+void ModuleInspector::onModuleLayoutChanged(cModule *module)
+{
+    if ((cObject*)module == object)
+        redraw();
 }
 
 QImage ModuleInspector::getScreenshot()
@@ -431,13 +454,16 @@ void ModuleInspector::fastRunUntil()
         getQtenv()->runSimulationLocal(RUNMODE_FAST, nullptr, this);
 }
 
-// Relayout the compound module, and resize the window accordingly.
-
 void ModuleInspector::relayout()
 {
-    canvasViewer->incLayoutSeed();
-    canvasViewer->relayoutAndRedrawAll();
-    getQtenv()->getMessageAnimator()->updateInspector(this);
+    if (getQtenv()->getSimulationState() != Qtenv::SIM_ERROR) {
+        // TODO: use some simpler signals-slots mechanism
+        getQtenv()->getModuleLayouter()->fullRelayout(static_cast<cModule*>(object));
+        canvasViewer->redraw();
+        getQtenv()->callRefreshDisplay();
+        getQtenv()->callRefreshInspectors();
+        getQtenv()->getMessageAnimator()->updateInspector(this);
+    }
 }
 
 void ModuleInspector::zoomIn(int x, int y)

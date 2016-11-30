@@ -84,14 +84,6 @@ public:
     void runUntilMsg(cMessage *msg, RunMode runMode);
     void excludeMessageFromAnimation(cObject *msg);
 
-    // disables all actions and inspectors except the stopAction and ModuleInspectors
-    // and saves the disabled objects into disabledForLayouting.
-    // the exit counterpart must be called at least once between calls
-    void enterLayoutingMode();
-    // restores the changes made by the function above.
-    // will do no harm if called multiple times, or without any enterLayoutingMode call at all
-    void exitLayoutingMode();
-
     // the slider value is an integer, we divide it by 100 to get a double value, then raise it to 10's exponent
     static int playbackSpeedToSliderValue(double speed) { return std::round(std::log10(speed) * 100); }
     static double sliderValueToPlaybackSpeed(int value) { return std::pow(10, value / 100.0); }
@@ -121,6 +113,14 @@ public slots:
 
     // without emitting the change signal!
     void updateSpeedSlider();
+
+    // disables all actions and inspectors except the stopAction and ModuleInspectors
+    // and saves the disabled objects into disabledForLayouting.
+    // the exit counterpart must be called at least once between calls
+    void enterLayoutingMode();
+    // restores the changes made by the function above.
+    // will do no harm if called multiple times, or without any enterLayoutingMode call at all
+    void exitLayoutingMode();
 
 protected slots:
     void on_actionVerticalLayout_triggered(bool checked);
@@ -153,6 +153,7 @@ private slots:
 
 signals:
     void setNewNetwork();
+    void closed();
 
 private:
     Ui::MainWindow *ui;

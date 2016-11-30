@@ -34,8 +34,8 @@
 namespace omnetpp {
 namespace qtenv {
 
-QtenvGraphLayouterEnvironment::QtenvGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString)
-    : parentModule(parentModule), displayString(displayString)
+QtenvGraphLayouterEnvironment::QtenvGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString, QGraphicsScene *scene)
+    : parentModule(parentModule), displayString(displayString), scene(scene)
 {
 }
 
@@ -54,22 +54,20 @@ double QtenvGraphLayouterEnvironment::getDoubleParameter(const char *tagName, in
     return resolveDoubleDispStrArg(displayString.getTagArg(tagName, index), parentModule, defaultValue);
 }
 
-void QtenvGraphLayouterEnvironment::clearGraphics()
-{
-    if (scene)
-        scene->clear();
-}
-
 void QtenvGraphLayouterEnvironment::showGraphics(const char *text)
 {
     bbox = nextbbox;
     nextbbox = QRectF();
     auto item = new QGraphicsTextItem(text);
-    item->setTextWidth(view->viewport()->size().width());
+    item->setTextWidth(viewSize.width());
     item->setFont(getQtenv()->getCanvasFont());
     scene->addItem(item);
     scene->setSceneRect(scene->itemsBoundingRect());
     QApplication::processEvents();
+
+    viewSize = QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    for (auto v : scene->views())
+        viewSize = viewSize.boundedTo(v->geometry().size());
 }
 
 void QtenvGraphLayouterEnvironment::drawText(double x, double y, const char *text, const char *tags, const char *color)
@@ -106,36 +104,21 @@ bool QtenvGraphLayouterEnvironment::okToProceed()
     return !stopFlag;
 }
 
-void QtenvGraphLayouterEnvironment::cleanup()
-{
-    if (view)
-        view->setTransform(QTransform());
-    clearGraphics();
-}
-
-void QtenvGraphLayouterEnvironment::stop()
-{
-    stopFlag = true;
-}
-
 void QtenvGraphLayouterEnvironment::scaleCoords(double& x, double& y)
 {
     int vMargin = QFontMetrics(getQtenv()->getCanvasFont()).height()*2;
     int hMargin = 20;
 
-    if (view) {
-        nextbbox = nextbbox.united(QRectF(x, y, 1, 1));
-        auto viewRect = view->viewport()->geometry();
-        x -= bbox.left();
-        y -= bbox.top();
-        float scale =std::min(1.0,
-                              std::min((viewRect.width()-hMargin*2) / bbox.width(),
-                                       (viewRect.height()-vMargin*2) / bbox.height()));
-        x *= scale;
-        y *= scale;
-        x += hMargin;
-        y += vMargin;
-    }
+    nextbbox = nextbbox.united(QRectF(x, y, 1, 1));
+    x -= bbox.left();
+    y -= bbox.top();
+    float scale =std::min(1.0,
+                          std::min((viewSize.width()-hMargin*2) / bbox.width(),
+                                   (viewSize.height()-vMargin*2) / bbox.height()));
+    x *= scale;
+    y *= scale;
+    x += hMargin;
+    y += vMargin;
 }
 
 }  // namespace qtenv

@@ -21,58 +21,59 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QObject>
+#include <climits>
 
 namespace omnetpp {
+
+using namespace layout;
 
 class cModule;
 class cDisplayString;
 
 namespace qtenv {
 
-class QtenvGraphLayouterEnvironment : public QObject, public omnetpp::layout::GraphLayouterEnvironment
+class QtenvGraphLayouterEnvironment : public QObject, public GraphLayouterEnvironment
 {
     Q_OBJECT
-   protected:
-      // configuration
-      QGraphicsScene *scene = nullptr;
-      QGraphicsView *view = nullptr;
-      cModule *parentModule;
-      const cDisplayString& displayString;
 
-      // state
-      bool stopFlag = false;
+protected:
+    // configuration
+    cModule *parentModule;
+    const cDisplayString& displayString;
+    QGraphicsScene *scene;
 
-      // bbox is used to scale the item coords to fit the viewport
-      // and nextbbox is the union of all the unscaled coords drawn
-      // in the current "frame", and will be used to scale the next one
-      QRectF bbox, nextbbox;
+    // state
+    bool stopFlag = false;
 
-      // the regular scene transformation methods distort text, so we have
-      // to scale the coords ourselves.
-      void scaleCoords(double &x, double &y);
+    // the smallest size of all the views in both dimensions
+    QSize viewSize = QSize(1000, 1000);
+    // bbox is used to scale the item coords to fit the viewport
+    // and nextbbox is the union of all the unscaled coords drawn
+    // in the current "frame", and will be used to scale the next one
+    QRectF bbox, nextbbox;
+
+    // the regular scene transformation methods distort text, so we have
+    // to scale the coords ourselves.
+    void scaleCoords(double &x, double &y);
 
 public slots:
-      void stop();
+    void stop() { stopFlag = true; }
 
-   public:
-      QtenvGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString);
+public:
+    QtenvGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString, QGraphicsScene *scene);
 
-      void setView(QGraphicsView *view) { this->view = view; scene = view->scene(); }
+    virtual bool inspected() override { return scene; }
+    virtual bool okToProceed() override;
 
-      void cleanup();
+    virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue) override;
+    virtual long getLongParameter(const char *tagName, int index, long defaultValue) override;
+    virtual double getDoubleParameter(const char *tagName, int index, double defaultValue) override;
 
-      virtual bool inspected() override { return scene; }
-      virtual bool okToProceed() override;
-
-      virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue) override;
-      virtual long getLongParameter(const char *tagName, int index, long defaultValue) override;
-      virtual double getDoubleParameter(const char *tagName, int index, double defaultValue) override;
-
-      virtual void clearGraphics() override;
-      virtual void showGraphics(const char *text) override;
-      virtual void drawText(double x, double y, const char *text, const char *tags, const char *color) override;
-      virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
-      virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
+    virtual void clearGraphics() override { scene->clear(); }
+    virtual void showGraphics(const char *text) override;
+    virtual void drawText(double x, double y, const char *text, const char *tags, const char *color) override;
+    virtual void drawLine(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
+    virtual void drawRectangle(double x1, double y1, double x2, double y2, const char *tags, const char *color) override;
 };
 
 } // namespace qtenv

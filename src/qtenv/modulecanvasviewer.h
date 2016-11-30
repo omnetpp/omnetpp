@@ -47,14 +47,15 @@ class ModuleCanvasViewer : public QGraphicsView
 
 private:
     cModule *object;
-    int32_t layoutSeed;
     bool notDrawn;
     bool needs_redraw;
     CanvasRenderer *canvasRenderer;
     QRubberBand *rubberBand;
     QPoint rubberBandStartPos;
 
-    std::map<cModule*,QPointF> submodPosMap;  // recalculateLayout() fills this map
+    // see setLayoutingScene()
+    QGraphicsScene *moduleScene; // this is used to show the module usually
+    QGraphicsScene *layoutingScene = nullptr; // borrowed from ModuleLayouter during layout visualization, not owned
 
     CompoundModuleItem *compoundModuleItem = nullptr;
     std::map<cModule*, SubmoduleItem*> submoduleGraphicsItems;
@@ -76,21 +77,11 @@ private:
 
     ZoomLabel *zoomLabel;
 
-    // does full layouting, stores results in submodPosMap
-    void recalculateLayout();
-
     // drawing methods:
     void redrawFigures();
     void refreshFigures();
     void redrawModules();
     void redrawNextEventMarker();
-
-    // updates submodPosMap (new modules, changed display strings, etc.)
-    void refreshLayout();
-
-    // helper for layouting code
-    void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
-            double& x, double& y, double& sx, double& sy);
 
     void drawSubmodule(cModule *submod);
     void drawEnclosingModule(cModule *parentModule);
@@ -129,7 +120,11 @@ signals:
     void marqueeZoom(QRectF);
 
 public slots:
-    void relayoutAndRedrawAll();
+    // This is to support visualizing the layouting process.
+    // The scene passed in here will replace the ordinary scene used to display the module.
+    // Does not take ownership of the scene. Pass nullptr to return to the regular module graphics.
+    // Should only be used when any actions that manipulate the module in any way are disabled (in "layouting mode").
+    void setLayoutingScene(QGraphicsScene *layoutingScene);
 
 public:
     ModuleCanvasViewer();
@@ -141,6 +136,8 @@ public:
 
     GraphicsLayer *getAnimationLayer() { return animationLayer; }
     CanvasRenderer *getCanvasRenderer() { return canvasRenderer; }
+
+    void refreshLayout();
 
     void redraw();
     void refresh();
@@ -161,8 +158,6 @@ public:
     void clear();
     bool getNeedsRedraw() { return needs_redraw; }
     void setNeedsRedraw(bool isNeed = true) { needs_redraw = isNeed; }
-    void setLayoutSeed(int32_t layoutSeed) { this->layoutSeed = layoutSeed; }
-    void incLayoutSeed() { ++layoutSeed; }
 
     void refreshSubmodule(cModule *submod);
     void refreshSubmodules();
