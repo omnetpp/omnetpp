@@ -46,6 +46,7 @@
 #include "fileeditor.h"
 #include "animationcontrollerdialog.h"
 #include "displayupdatecontroller.h"
+#include "qtutil.h"
 
 #include <QCheckBox>
 #include <QDebug>
@@ -478,60 +479,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     emit closed();
 }
 
-// XXX why is this in MainWindow, and not in Qtenv?
-void MainWindow::initialSetUpConfiguration()
-{
-    // implements File|Set Up a Configuration...
-    if (env->checkRunning())
-        return;
-
-    std::string config;
-    int run;
-
-    // these are what were specified in either the omnetpp.ini file or as a command line argument
-    std::string defaultConfig = getQtenv()->opt->defaultConfig;
-    int defaultRun = getQtenv()->opt->defaultRun;
-
-    auto qtenvConf = getQtenv()->getConfigEx();
-
-    // if a default isn't given but there is only one config, use that
-    if (defaultConfig.empty() && qtenvConf->getConfigNames().size() == 1)
-        defaultConfig = qtenvConf->getConfigNames().front();
-
-    // if a config is known, and a default run isn't given but there is
-    // only one run in the config, use that
-    if (!defaultConfig.empty() && defaultRun < 0
-            && qtenvConf->getNumRunsInConfig(defaultConfig.c_str()) == 1)
-        defaultRun = 0;
-
-    // if there's still some doubt, lets ask the user.
-    if (defaultConfig.empty() || defaultRun < 0) {
-        // If there isn't any config names, user have to configure network
-        if (qtenvConf->getConfigNames().size() > 0) {
-            RunSelectionDialog dialog(defaultConfig, defaultRun, this);
-            if (dialog.exec()) {
-                config = dialog.getConfigName();
-                run = dialog.getRunNumber();
-            }
-            else {  // the dialog was cancelled
-                return;
-            }
-        }
-        else {
-            configureNetwork();
-            return;
-        }
-    }
-    else {
-        // a dialog was not forced, and either there is a default config or there is only one
-        config = defaultConfig.empty() ? qtenvConf->getConfigNames().front() : defaultConfig;
-        // and either there is a default run too, or there is only one run in the config
-        run = defaultRun < 0 ? 0 : defaultRun;
-    }
-    env->newRun(config.c_str(), run);
-    reflectRecordEventlog();
-}
-
 void MainWindow::runSimulation(RunMode runMode)
 {
     if (isRunning()) {
@@ -556,15 +503,17 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
         return;
 
     cConfigurationEx *configEx = getQtenv()->getConfigEx();
-    QString config = configEx->getActiveConfigName();
-    int run = configEx->getActiveRunNumber();
 
-    RunSelectionDialog dialog(config.toStdString(), run, this);
+    // No filter used for subsequent run selections.
+    // Note that if invoked this way, we pretty much avoid all possibility of an exception,
+    // because the run filter is constant, and the config name is the current one, so it must exist.
+    // This, and the fact that Qtenv::displayException is protected, along with Qt not supporting
+    // throwing exceptions from slots, justifies the omission of a try-catch block.
+    // It would only be an ASSERT(false) or something similar anyway.
+    RunSelectionDialog dialog(configEx, configEx->getActiveConfigName(), "", this);
     if (dialog.exec()) {
         emit setNewNetwork();
-        config = dialog.getConfigName().c_str();
-        run = dialog.getRunNumber();
-        env->newRun(config.toStdString().c_str(), run);
+        env->newRun(dialog.getConfigName().c_str(), dialog.getRunNumber());
         reflectRecordEventlog();
     }
 }

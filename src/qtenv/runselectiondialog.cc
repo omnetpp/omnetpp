@@ -19,39 +19,45 @@
 #include <vector>
 #include <set>
 #include <QDebug>
+#include "common/stlutil.h"
 #include "runselectiondialog.h"
 #include "ui_runselectiondialog.h"
 #include "qtenv.h"
 
 namespace omnetpp {
+using namespace common;
 namespace qtenv {
 
-RunSelectionDialog::RunSelectionDialog(const std::string& defaultConfig, int defaultRun, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::RunSelectionDialog)
+RunSelectionDialog::RunSelectionDialog(cConfigurationEx *configuration, const std::string& configNameArg, const std::string &runFilter, QWidget *parent)
+    : QDialog(parent), ui(new Ui::RunSelectionDialog), configuration(configuration), configNameArg(configNameArg), runFilter(runFilter)
 {
     ui->setupUi(this);
     adjustSize();
     setFont(getQtenv()->getBoldFont());
 
-    bool isBase = false;
-    auto configNames = groupAndSortConfigNames();
-    configNumber = 0;
-    std::string firstConfigName = "";
-    for (auto name : configNames) {
-        if (name == "") {
-            isBase = true;
-            continue;
-        }
-        else if (firstConfigName.empty())
-            firstConfigName = name;
+    if (parent) {
+        auto geom = geometry();
+        geom.moveCenter(parent->geometry().center());
+        setGeometry(geom);
+    }
 
-        std::string desc = getQtenv()->getConfigEx()->getConfigDescription(name.c_str());
-        int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(name.c_str());
+    configNames = configuration->getConfigNames();
+
+    if (!configNameArg.empty() && !contains(configNames, configNameArg))
+        throw opp_runtime_error("No such config: %s", configNameArg.c_str());
+
+    const char *fileName = configuration->getFileName();
+
+    ui->label->setText(fileName
+                       ? QString("Set up one of the configurations defined in '%1'.").arg(fileName)
+                       : QString("No '*.ini' file is being used."));
+
+    // filling the configname combobox
+    for (auto name : configNames) {
+        std::string desc = configuration->getConfigDescription(name.c_str());
+        int runs = configuration->getNumRunsInConfig(name.c_str());
 
         std::string displayName = name;
-        if (isBase)
-            displayName = "(" + name + ")";
         if (desc != "")
             displayName += " -- " + desc;
         if (runs == 0)
@@ -60,27 +66,40 @@ RunSelectionDialog::RunSelectionDialog(const std::string& defaultConfig, int def
             displayName += " (config with " + std::to_string(runs) + " runs)";
 
         ui->configName->addItem(displayName.c_str(), QVariant(name.c_str()));
-        ++configNumber;
     }
 
-    std::string configName = defaultConfig.empty() ? getQtenv()->getPref("default-configname", "").toString().toUtf8().constData() : defaultConfig;
-    int runNumber = defaultRun < 0 ? getQtenv()->getPref("default-runnumber", "").toInt() : defaultRun;
+    // only used to set the initially selected item in the combobox. if no specified coming in, using the last chosen
+    std::string initialConfigName = configNameArg.empty()
+            ? getQtenv()->getPref("last-configname", "").toString().toStdString()
+            : configNameArg;
 
-    auto it = std::find(configNames.begin(), configNames.end(), configName);
-
-    if ((configName.size() == 0 && ui->configName->count() != 0) || it == configNames.end()) {
-        configName = firstConfigName;
-        runNumber = 0;
+    // if no config is selected/saved, or the selected/saved config is invalid,
+    // choosing the first config, while trying to skip the General one
+    if (initialConfigName.empty() || !contains(configNames, initialConfigName)) {
+        initialConfigName = configNames.front();
+        if (initialConfigName == "General" && configNames.size() > 1)
+            initialConfigName = configNames[1];
     }
 
-    int index = ui->configName->findData(configName.c_str());
+    int index = ui->configName->findData(initialConfigName.c_str());
     ui->configName->setCurrentIndex(std::max(0, index));
 
-    fillRunNumberCombo(configName.c_str());
+    // this will set up the runnumber combobox
+    updateRuns(initialConfigName.c_str());
 
-    ui->runNumber->setCurrentIndex(runNumber);
+    // only used to set the initially selected item in the combobox
+    int initialRunNumber = getQtenv()->getPref("last-runnumber", -1).toInt();
 
-    connect(ui->configName, SIGNAL(currentIndexChanged(int)), this, SLOT(configNameChanged(int)));
+    // if there isn't a saved default runNumber, or there is but it doesn't match
+    if (initialRunNumber < 0 || (!matchingRunNumbers.empty() && !contains(matchingRunNumbers, initialRunNumber)))
+        // then the default runNumber will be either the first matching (if there is any), or the first non-matching run
+        initialRunNumber = matchingRunNumbers.empty() ? -1 : matchingRunNumbers[0];
+
+
+    index = ui->runNumber->findData(initialRunNumber);
+    ui->runNumber->setCurrentIndex(std::max(0, index));
+
+    connect(ui->configName, SIGNAL(currentIndexChanged(int)), this, SLOT(configSelectionChanged(int)));
 
     // needs to be set here too, the setting in the Designer wasn't enough on Mac
     QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128w.png"));
@@ -89,28 +108,6 @@ RunSelectionDialog::RunSelectionDialog(const std::string& defaultConfig, int def
 RunSelectionDialog::~RunSelectionDialog()
 {
     delete ui;
-}
-
-std::vector<std::string> RunSelectionDialog::groupAndSortConfigNames()
-{
-    std::set<std::string> hasderivedconfig;
-
-    for (auto c : getQtenv()->getConfigEx()->getConfigNames())
-        for (auto base : getQtenv()->getConfigEx()->getBaseConfigs(c.c_str()))
-            hasderivedconfig.insert(base);
-
-
-    std::vector<std::string> leaves;
-    for (auto c : getQtenv()->getConfigEx()->getConfigNames())
-        if (hasderivedconfig.end() == hasderivedconfig.find(c))
-            leaves.push_back(c);
-
-
-    leaves.push_back("");
-    leaves.insert(leaves.end(), hasderivedconfig.begin(),
-            hasderivedconfig.end());
-
-    return leaves;  // it will be implicitly moved
 }
 
 std::string RunSelectionDialog::getConfigName()
@@ -125,39 +122,69 @@ int RunSelectionDialog::getRunNumber()
     return ui->runNumber->itemData(index).toInt();
 }
 
-void RunSelectionDialog::configNameChanged(int index)
+void RunSelectionDialog::configSelectionChanged(int index)
 {
-    fillRunNumberCombo(ui->configName->itemData(index).toString().toStdString().c_str());
+    updateRuns(ui->configName->itemData(index).toString().toStdString().c_str());
 }
 
-void RunSelectionDialog::fillRunNumberCombo(const char *configName)
+void RunSelectionDialog::updateRuns(const char *configName)
 {
-    // There isn't any config, do not have to fill Combobox
-    if (strlen(configName) == 0 || strcmp(configName, "General") == 0)
+    runDescriptions.clear();
+    matchingRunNumbers.clear();
+    ui->runNumber->clear();
+
+    // if there isn't any config, we don't have to fill the combobox
+    if (!configName || !configName[0])
         return;
 
-    ui->runNumber->clear();
-    int runs = getQtenv()->getConfigEx()->getNumRunsInConfig(configName);
-    std::vector<cConfiguration::RunInfo> runDescriptions = getQtenv()->getConfigEx()->unrollConfig(configName);
+    runDescriptions = configuration->unrollConfig(configName);
 
-    for (int i = 0; i < runs; ++i)
-        ui->runNumber->addItem(QString::number(i) + " (" + runDescriptions[i].info.c_str() + ")", QVariant(i));
+    try {
+        // we try to apply the filter to all configurations
+        matchingRunNumbers = getQtenv()->resolveRunFilter(configName, runFilter.c_str());
+    }
+    catch (std::exception&) {
+        // but only report an error if it is applied to the config the user specifically selected
+        if (configName == configNameArg)
+            throw;
+    }
+
+    // grouping the matching runs to the top
+    for (auto i : matchingRunNumbers)
+        ui->runNumber->addItem(QString("%1 (%2)").arg(i).arg(runDescriptions[i].info.c_str()), QVariant(i));
+
+    if (!matchingRunNumbers.empty() && matchingRunNumbers.size() < runDescriptions.size())
+        ui->runNumber->insertSeparator(matchingRunNumbers.size());
+
+    // and then the non-matching ones after a separator
+    for (int i = 0; i < (int)runDescriptions.size(); ++i)
+        if (!contains(matchingRunNumbers, i))
+            ui->runNumber->addItem(QString("%1 (%2)").arg(i).arg(runDescriptions[i].info.c_str()), QVariant(i));
+
 
     ui->runNumber->setDisabled(ui->runNumber->count() < 2);
 }
 
-int RunSelectionDialog::getConfigNumber()
+bool RunSelectionDialog::configNameDefinite()
 {
-    return configNumber;
+    // if there is only one configuration, and either no argument is given, or it is matching
+    if (configNames.size() == 1 && (configNameArg.empty() || configNameArg == configNames[0]))
+        return true;
+
+    return !configNameArg.empty() && contains(configNames, configNameArg);
+}
+
+bool RunSelectionDialog::configAndRunDefinite()
+{
+    return configNameDefinite() && (runDescriptions.size() == 1 || matchingRunNumbers.size() == 1);
 }
 
 void RunSelectionDialog::accept()
 {
-    getQtenv()->setPref("default-configname", getConfigName().c_str());
-    getQtenv()->setPref("default-runnumber", getRunNumber());
+    getQtenv()->setPref("last-configname", getConfigName().c_str());
+    getQtenv()->setPref("last-runnumber", getRunNumber());
     QDialog::accept();
 }
 
 }  // namespace qtenv
 }  // namespace omnetpp
-

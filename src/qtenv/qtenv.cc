@@ -75,6 +75,8 @@
 #include "osgviewer.h"
 #include "messageanimator.h"
 #include "displayupdatecontroller.h"
+#include "messageanimator.h"
+#include "runselectiondialog.h"
 
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h> // for the TransformProcessType magic on startup
@@ -120,7 +122,7 @@ extern "C" QTENV_API void _qtenv_lib() {}
 
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "80KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_INT, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. The default is to ask the user.");
+Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_STRING, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. A run filter is also accepted. The default is to ask the user.");
 
 // utility function
 static bool moduleContains(cModule *potentialparent, cModule *mod)
@@ -552,9 +554,6 @@ Qtenv::Qtenv() : opt((QtenvOptions *&)EnvirBase::opt), icons(out)
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
 
-    localPrefKeys.insert("default-configname");
-    localPrefKeys.insert("default-runnumber");
-
     loadResource();
 }
 
@@ -648,23 +647,22 @@ void Qtenv::doRun()
 
         mainWindow->restoreGeometry();
         mainInspector->setFocus();
+        mainWindow->activateWindow();
 
-        mainWindow->initialSetUpConfiguration();
+        // We have to wait a bit for the window manager to process the trauma of having to show a window,
+        // and only then pop up the RunSelectionDialog. If done instantly, our request to place it
+        // centered over the MainWindow might get ignored/overridden.
+        QTimer::singleShot(500, this, &Qtenv::initialSetUpConfiguration);
 
+        // needs to be set here too, the setting in the Designer wasn't enough on Mac
+        QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
 
-        // The main window might have been closed during the initial layouting of the network,
-        // and in that case, we don't need to continue.
-        if (mainWindow->isVisible()) {
-            // needs to be set here too, the setting in the Designer wasn't enough on Mac
-            QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
+        setLogFormat(opt->logFormat.c_str());
 
-            setLogFormat(opt->logFormat.c_str());
-
-            //
-            // RUN
-            //
-            QApplication::exec();
-        }
+        //
+        // RUN
+        //
+        QApplication::exec();
     }
     catch (std::exception& e) {
         throw;
@@ -1124,6 +1122,11 @@ bool Qtenv::checkRunning()
     return false;
 }
 
+std::vector<int> Qtenv::resolveRunFilter(const char *configName, const char *runFilter)
+{
+    return EnvirBase::resolveRunFilter(configName, runFilter);
+}
+
 void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
 {
     try {
@@ -1541,12 +1544,44 @@ void Qtenv::readOptions()
     opt->defaultConfig = s ? s : cfg->getAsString(CFGID_QTENV_DEFAULT_CONFIG);
 
     const char *r = args->optionValue('r');
-    opt->defaultRun = r ? atoi(r) : cfg->getAsInt(CFGID_QTENV_DEFAULT_RUN, -1);
+    opt->runFilter = r ? r : cfg->getAsString(CFGID_QTENV_DEFAULT_RUN);
 }
 
-void Qtenv::readPerRunOptions()
+void Qtenv::initialSetUpConfiguration()
 {
-    EnvirBase::readPerRunOptions();
+    if (checkRunning())
+        return;
+
+    std::string config;
+    int run = -1;
+
+    auto conf = getConfigEx();
+
+    if (conf->getConfigNames().empty()) {
+        mainWindow->configureNetwork();
+        return;
+    }
+    else {
+        try {
+            // defaultConfig and runFilter are what were specified in either the omnetpp.ini file or as a command line argument
+            RunSelectionDialog dialog(conf, opt->defaultConfig, opt->runFilter, mainWindow);
+
+            // only show if needed, but if cancelled, stop.
+            if (dialog.needsShowing() && !dialog.exec())
+                return;
+
+            config = dialog.getConfigName();
+            run = dialog.getRunNumber();
+        }
+        catch (std::exception& e) {
+            // if nonexistent config was given as argument or the run filter couldn't be applied, etc...
+            displayException(e);
+            return;
+        }
+    }
+
+    newRun(config.c_str(), run);
+    mainWindow->reflectRecordEventlog();
 }
 
 void Qtenv::askParameter(cPar *par, bool unassigned)

@@ -87,7 +87,7 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     size_t extraStack;                     // per-module extra stack for activity() modules
     std::string defaultConfig;             // automatically set up this config at startup
-    int  defaultRun;                       // automatically set up this run (of the default config) at startup
+    std::string runFilter;                 // groups the matching runs to the beginning of the list, or if only one matches, will set up that one automatically
     bool printInitBanners = true;          // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
     bool printEventBanners = true;         // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
     bool shortBanners = false;             // controls detail of event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
@@ -214,7 +214,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       QSettings *globalPrefs = nullptr;
       QSettings *localPrefs = nullptr;
 
-      QSet<QString> localPrefKeys;
+      // These will be saved into the .qtenvrc in the working directory, all others into the one in the home of the user.
+      QSet<QString> localPrefKeys = {"last-configname", "last-runnumber"};
 
       void storeOptsInPrefs();
       void restoreOptsFromPrefs();
@@ -307,6 +308,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void setComponentLogLevel();
       void setComponentLogLevel(cComponent *component, LogLevel level, bool save = false);
 
+      void initialSetUpConfiguration();
+
   protected:
       // redefined virtual functions from EnvirBase
       virtual void doRun() override;
@@ -314,7 +317,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
 
       virtual EnvirOptions *createOptions() override {return new QtenvOptions();}
       virtual void readOptions() override;
-      virtual void readPerRunOptions() override;
+
       virtual void setupNetwork(cModuleType *network) override;
       virtual void askParameter(cPar *par, bool unassigned) override;
       virtual void displayException(std::exception& e) override;
@@ -339,6 +342,9 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
       bool checkRunning();
+
+      // declared here just to make it public, simply delegates back to the base class
+      virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter) override;
 
       void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 

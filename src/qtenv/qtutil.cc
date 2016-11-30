@@ -141,6 +141,9 @@ const QString& stripNamespace(const char *className)
             }
         }
 
+        default: // just to silence a compiler warning...
+            ASSERT(false); // falling through gracefully to "none" stripping in release mode
+
         case STRIPNAMESPACE_NONE: {
             auto it = noneStrippedCache.find(className);
             if (it != noneStrippedCache.end())

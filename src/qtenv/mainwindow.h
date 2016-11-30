@@ -76,7 +76,6 @@ public:
 
     QSize sizeHint() const override { return QSize(1100, 700); }
 
-    //menuproc.tcl
     bool isRunning();
     void setGuiForRunmode(RunMode runMode, bool untilMode = false);
     void setRunUntilModule(Inspector *insp = nullptr);
@@ -101,8 +100,6 @@ public slots:
     void on_actionRunUntil_triggered();
     void onSliderValueChanged(int value);
     void on_actionRebuildNetwork_triggered();
-    void closeEvent(QCloseEvent *event);
-    void initialSetUpConfiguration();
     void on_actionPreferences_triggered();
     void on_actionStatusDetails_triggered();
     void on_actionFindInspectObjects_triggered();
@@ -111,6 +108,8 @@ public slots:
     void on_actionEventlogRecording_triggered();
     void on_actionSetUpUnconfiguredNetwork_triggered();
     void on_actionAbout_OMNeT_Qtenv_triggered();
+
+    void closeEvent(QCloseEvent *event) override;
 
     void showFindObjectsDialog(cObject *obj);
 
