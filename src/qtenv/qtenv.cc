@@ -748,7 +748,7 @@ void Qtenv::doOneStep()
         simulationState = SIM_READY;  // currently must precede updateStatusDisplay(), because it depends on it...
         callRefreshDisplay();
         updateStatusDisplay();
-        refreshInspectors();
+        callRefreshInspectors();
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
     catch (cTerminationException& e) {
@@ -850,7 +850,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     }
 
     updateStatusDisplay();
-    refreshInspectors();
+    callRefreshInspectors();
 }
 
 void Qtenv::setSimulationRunMode(RunMode mode)
@@ -990,7 +990,7 @@ bool Qtenv::doRunSimulationExpress()
     logBuffer.addInfo(info);
 
     // update, just to get the above notice displayed
-    refreshInspectors();
+    callRefreshInspectors();
     QCoreApplication::processEvents();
 
     // OK, let's begin
@@ -1023,7 +1023,7 @@ bool Qtenv::doRunSimulationExpress()
             speedometer.beginNewInterval();  // should precede updateStatusDisplay()
             if (opt->autoupdateInExpress) {
                 callRefreshDisplay();
-                refreshInspectors();
+                callRefreshInspectors();
             }
             updateStatusDisplay();
             QCoreApplication::processEvents();
@@ -1084,10 +1084,13 @@ void Qtenv::finishSimulation()
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
     }
-    simulationState = SIM_FINISHCALLED;
+
+    // we have to cheat if finish() is called after an error (which is already dubious)
+    if (simulationState != SIM_ERROR)
+        simulationState = SIM_FINISHCALLED;
 
     updateStatusDisplay();
-    refreshInspectors();
+    callRefreshInspectors();
 }
 
 void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
@@ -1147,7 +1150,7 @@ void Qtenv::newNetwork(const char *networkname)
     animating = false;  // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateStatusDisplay();
-    refreshInspectors();
+    callRefreshInspectors();
 }
 
 // XXX too similar to newNetwork
@@ -1202,7 +1205,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
     animating = false;  // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateStatusDisplay();
-    refreshInspectors();
+    callRefreshInspectors();
 }
 
 void Qtenv::setupNetwork(cModuleType *network)
@@ -1290,7 +1293,7 @@ void Qtenv::deleteInspector(Inspector *insp)
 
 void Qtenv::callRefreshDisplay()
 {
-    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY || simulationState == SIM_RUNNING || simulationState == SIM_TERMINATED);
+    ASSERT(simulationState != SIM_ERROR && simulationState != SIM_NONET);
     getSimulation()->getSystemModule()->callRefreshDisplay();  // Beware: this may throw a cRuntimeError, so needs to be under a try/catch
     ++refreshDisplayCount;
 }
@@ -1315,14 +1318,20 @@ void Qtenv::refreshInspectors()
     restoreInspectors();
 }
 
-void Qtenv::redrawInspectors()
+void Qtenv::callRefreshInspectors()
 {
-    // update inspectors (and close the ones marked for deletion)
-    refreshInspectors();
+    try {
+        refreshInspectors();
+    }
+    catch (std::exception& e) {
+        ASSERT(simulationState != SIM_ERROR); // the exception must have come from refreshDisplay calls in the model
+        simulationState = SIM_ERROR;
+        stoppedWithException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
 
-    // redraw them
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
-        (*it)->redraw();
+        refreshInspectors();
+    }
 }
 
 void Qtenv::createSnapshot(const char *label)

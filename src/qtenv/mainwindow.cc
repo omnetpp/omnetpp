@@ -812,7 +812,7 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
     filters += namePattern +" and className(" + cl +")\n";
     env->setSilentEventFilters(filters.toStdString().c_str());
 
-    env->refreshInspectors();
+    env->callRefreshInspectors();
 }
 
 void MainWindow::runUntilMsg(cMessage *msg, RunMode runMode)
@@ -1043,7 +1043,7 @@ void MainWindow::busy(QString msg)
 void MainWindow::on_actionPreferences_triggered()
 {
     InspectorUtil::preferencesDialog();
-    getQtenv()->refreshInspectors();
+    getQtenv()->callRefreshInspectors();
 }
 
 void MainWindow::on_actionTimeline_toggled(bool isSunken)
@@ -1266,7 +1266,7 @@ void MainWindow::on_actionLoadNEDFile_triggered()
         getQtenv()->setPref("last-nedfile", fileName);
         getQtenv()->loadNedFile(fileName.toStdString().c_str());
 
-        getQtenv()->refreshInspectors();
+        getQtenv()->callRefreshInspectors();
     }
 }
 

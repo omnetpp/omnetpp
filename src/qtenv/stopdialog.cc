@@ -54,7 +54,7 @@ void StopDialog::stopDialogAutoupdate()
 void StopDialog::onClickUpdate()
 {
     getQtenv()->callRefreshDisplay();
-    getQtenv()->refreshInspectors();
+    getQtenv()->callRefreshInspectors();
 }
 
 void StopDialog::keyPressEvent(QKeyEvent *event)

@@ -198,7 +198,7 @@ void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
 
 void GenericObjectInspector::onDataChanged()
 {
-    getQtenv()->refreshInspectors();
+    getQtenv()->callRefreshInspectors();
 }
 
 void GenericObjectInspector::createContextMenu(QPoint pos)

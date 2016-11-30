@@ -994,7 +994,8 @@ void ModuleCanvasViewer::refresh()
     if (canvas != nullptr && !canvasRenderer->hasCanvas())  // canvas was recently created
         canvasRenderer->setCanvas(canvas);
 
-    if (canvas)
+    // must not give control to the model after an error, it might be inconsistent
+    if (canvas && getQtenv()->getSimulationState() != Qtenv::SIM_ERROR)
         canvas->getRootFigure()->callRefreshDisplay();
 
     FigureRenderingHints hints;

@@ -212,7 +212,7 @@ void PreferencesDialog::accept()
 
     getQtenv()->updateQtFonts();
 
-    getQtenv()->redrawInspectors();
+    getQtenv()->callRefreshInspectors();
 
     getQtenv()->setPref("preferences-dialog-page", ui->tabWidget->currentIndex());
 

@@ -82,7 +82,7 @@ void WatchInspector::commit()
     cWatchBase *watch = static_cast<cWatchBase *>(object);
     if (watch->supportsAssignment()) {
         watch->assign(editor->text().toStdString().c_str());
-        getQtenv()->refreshInspectors();
+        getQtenv()->callRefreshInspectors();
     }
     else
         QMessageBox::warning(this, "Warning", "This inspector doesn't support changing the value.", QMessageBox::Ok);
