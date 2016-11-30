@@ -407,7 +407,7 @@
             </para>
 
             <note>
-            All generated makefiles will be named [[Makefile]]<commercial> or Makefile.vc</commercial>;
+            All generated makefiles will be named [[Makefile]];
             custom makefiles are also expected to have this name.
             </note>
         </sect3>

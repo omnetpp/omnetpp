@@ -127,21 +127,11 @@ $ opp_makemake
 This command should have now created a Makefile in the working directory
 tictoc.
 
-@note Windows+MSVC users: the command is <tt>opp_<i>n</i>makemake</tt>,
-and it will create <tt>Makefile.vc</tt>. Note: MSVC is only supported
-in the commercial version OMNEST.
-
 5. Let's now compile and link our very first simulation by issuing the make command:
 
 \code
 $ make
 \endcode
-
-@note Windows+MSVC: type <tt>nmake -f Makefile.vc</tt>.
-If you get <i>'nmake' is not recognized as an internal or external command...</i>,
-find <tt>vcvars32.bat</tt> somewhere in the MSVC directories, and run it first
-in every command window in which you want to compile. Note: MSVC is only supported
-in the commercial version OMNEST.
 
 If there are compilation errors, you need to rectify those and repeat the make until
 you get an error-free compilation and linking.

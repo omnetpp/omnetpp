@@ -442,25 +442,6 @@ the above created \ttt{makefrag} file.
 $ opp_makemake -f --nolink -O out -d test -d core -d contrib -X.
 \end{commandline}
 
-
-\ifcommercial
-\section{Using Windows and Microsoft Visual C++}
-\label{sec:build-sim-progs:using-microsoft-visual-c}
-
-There are only slight differences to the way Microsoft Visual C++
-is handled. The main differences are:
-\begin{itemize}
-  \item{You should use \ttt{opp\_nmakemake} instead of \ttt{opp\_makemake}}
-  \item{The generated Makefile will be called \ttt{Makefile.vc} by default.}
-  \item{Use \ttt{makefrag.vc} instead of \ttt{makefrag}.}
-  \item{\ttt{nmake} is used instead of \ttt{make}.}
-  \item{The build process is started by \ttt{nmake -f Makefile.vc} instead of \ttt{make}.}
-\end{itemize}
-
-Required compiler settings: turn on exception handling and RTTI, and
-set stack size to as low as 64K.
-\fi
-
 \section{Project Features}
 \label{sec:build-sim-progs:project-features}
 
