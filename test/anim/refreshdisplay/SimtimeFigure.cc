@@ -1,6 +1,6 @@
 #include "SimtimeFigure.h"
 
-Register_Class(SimtimeFigure);
+Register_Figure(simtime, SimtimeFigure);
 
 SimtimeFigure::SimtimeFigure()
 {
