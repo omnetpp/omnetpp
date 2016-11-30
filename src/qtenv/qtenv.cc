@@ -647,21 +647,24 @@ void Qtenv::doRun()
         mainWindow->raise(); // Part of the hack for Apple Menu functionality, see a few lines up.
 
         mainWindow->restoreGeometry();
+        mainInspector->setFocus();
 
         mainWindow->initialSetUpConfiguration();
-        // if (mainWindow->isVisible()) {
-            // TODO: during the initial layout of the network the main window can be closed, and if it has been,
-            // we don't need to continue. - the inspectors would pop up without a MainWindow in sight.
 
-        // needs to be set here too, the setting in the Designer wasn't enough on Mac
-        QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
 
-        setLogFormat(opt->logFormat.c_str());
+        // The main window might have been closed during the initial layouting of the network,
+        // and in that case, we don't need to continue.
+        if (mainWindow->isVisible()) {
+            // needs to be set here too, the setting in the Designer wasn't enough on Mac
+            QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
 
-        //
-        // RUN
-        //
-        QApplication::exec();
+            setLogFormat(opt->logFormat.c_str());
+
+            //
+            // RUN
+            //
+            QApplication::exec();
+        }
     }
     catch (std::exception& e) {
         throw;
