@@ -47,7 +47,7 @@ class QTENV_API CanvasInspector : public Inspector
       void onContextMenuRequested(QContextMenuEvent *event);
 
    public slots:
-      virtual void redraw() override;
+      virtual void redraw();
 
    public:
       CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

@@ -134,8 +134,6 @@ class QTENV_API Inspector : public QWidget
       virtual void showWindow();
 
       virtual void refresh();
-      virtual void redraw() {refresh();}
-      virtual void commit() {}
 
       virtual void clearObjectChangeFlags() {}
 

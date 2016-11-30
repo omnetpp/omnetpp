@@ -134,6 +134,9 @@ class QTENV_API ModuleInspector : public Inspector
 
       std::map<cComponent *, std::string> bubblesToShow;
 
+      // drawing methods:
+      virtual void redraw();
+
    public:
       ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       ~ModuleInspector();
@@ -145,9 +148,6 @@ class QTENV_API ModuleInspector : public Inspector
 
       // implementations of inspector commands:
       virtual int getDefaultLayoutSeed();
-
-      // drawing methods:
-      virtual void redraw() override;
 
       QImage getScreenshot();
 

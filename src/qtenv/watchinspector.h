@@ -33,12 +33,13 @@ protected:
     QLabel *label;
     QLineEdit *editor;
 
+protected slots:
+    virtual void commit();
+
 public:
     WatchInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
 
-public slots:
     virtual void refresh() override;
-    virtual void commit() override;
 };
 
 } // namespace qtenv qtenv

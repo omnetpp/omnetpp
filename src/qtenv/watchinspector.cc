@@ -86,8 +86,6 @@ void WatchInspector::commit()
     }
     else
         QMessageBox::warning(this, "Warning", "This inspector doesn't support changing the value.", QMessageBox::Ok);
-
-    Inspector::commit();  // must be there after all changes
 }
 
 }  // namespace qtenv

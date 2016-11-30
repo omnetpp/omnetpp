@@ -25,15 +25,12 @@ namespace qtenv {
 class QTENV_API GateInspector : public Inspector
 {
    protected:
-      char canvas[128];
-
-   protected:
       virtual void doSetObject(cObject *obj) override;
+      virtual void redraw();
 
    public:
       GateInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
       virtual void refresh() override;
-      virtual void redraw() override;
 
       // notifications from envir:
       virtual void displayStringChanged(cGate *gate);
