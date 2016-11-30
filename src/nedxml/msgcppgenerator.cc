@@ -1005,7 +1005,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << " *     " << info.realmsgclass << "(const " << info.realmsgclass << "& other) : " << info.msgclass << "(other) {copy(other);}\n";
         H << " *     " << info.realmsgclass << "& operator=(const " << info.realmsgclass << "& other) {if (this==&other) return *this; " << info.msgclass << "::operator=(other); copy(other); return *this;}\n";
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
-            H << " *     virtual " << info.realmsgclass << " *dup() const {return new " << info.realmsgclass << "(*this);}\n";
+            H << " *     virtual " << info.realmsgclass << " *dup() const override {return new " << info.realmsgclass << "(*this);}\n";
         }
         H << " *     // ADD CODE HERE to redefine and implement pure virtual functions from " << info.msgclass << "\n";
         H << " * };\n";
@@ -1089,13 +1089,13 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << "    " << info.msgclass << "& operator=(const " << info.msgclass << "& other);\n";
     }
     if (info.gap) {
-        H << "    virtual " << info.msgclass << " *dup() const {throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << info.realmsgclass << "\");}\n";
+        H << "    virtual " << info.msgclass << " *dup() const override {throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << info.realmsgclass << "\");}\n";
     }
     else {
-        H << "    virtual " << info.msgclass << " *dup() const {return new " << info.msgclass << "(*this);}\n";
+        H << "    virtual " << info.msgclass << " *dup() const override {return new " << info.msgclass << "(*this);}\n";
     }
-    H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const;\n";
-    H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b);\n";
+    H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const override;\n";
+    H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;\n";
     H << "\n";
     H << "    // field getter/setter methods\n";
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
