@@ -46,37 +46,6 @@
             name="OMNeT++ Simulation"
             projectEnvironmentSupplier="org.omnetpp.cdt.OmnetppProjectEnvironmentSupplier"
             projectMacroSupplier="org.omnetpp.cdt.OmnetppProjectMacroSupplier">
-         <configuration
-               id="org.omnetpp.cdt.msvc.config.debug"
-               name="msvc-debug"
-               parent="org.omnetpp.cdt.msvc.config.base">
-            <toolChain
-                  id="org.omnetpp.cdt.msvc.toolchain.debug"
-                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
-               <builder
-                     arguments="-f Makefile.vc MODE=debug CONFIGNAME=${ConfigName}"
-                     id="org.omnetpp.cdt.msvc.builder.debug"
-                     isAbstract="false"
-                     superClass="org.omnetpp.cdt.msvc.builder">
-               </builder>
-            </toolChain>
-         </configuration>
-         <configuration
-               id="org.omnetpp.cdt.msvc.config.release"
-               name="msvc-release"
-               parent="org.omnetpp.cdt.msvc.config.base">
-            <toolChain
-                  id="org.omnetpp.cdt.msvc.toolchain.release"
-                  superClass="org.omnetpp.cdt.msvc.toolchain.base">
-               <builder
-                     arguments="-f Makefile.vc MODE=release CONFIGNAME=${ConfigName}"
-                     id="org.omnetpp.cdt.msvc.builder.release"
-                     isAbstract="false"
-                     superClass="org.omnetpp.cdt.msvc.builder">
-               </builder>
-            </toolChain>
-         </configuration>
-
 
          <configuration
                id="org.omnetpp.cdt.gnu.config.debug"

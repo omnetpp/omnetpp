@@ -360,7 +360,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (deleteMakeFiles) {
                 // remove stale/incomplete makefile, so that build won't continue with CDT
                 try { folder.getFile(new Path("Makefile")).delete(true, null); } catch (CoreException e1) {}
-                try { folder.getFile(new Path("Makefile.vc")).delete(true, null); } catch (CoreException e1) {}
             }
         }
     }
