@@ -4,10 +4,16 @@
 #
 #-------------------------------------------------
 #
-# To properly set up the project/build process for QtCreator you need to invoke only
-# the 'make' command in this directory (by default QtCreator invokes also qmake)
+# THIS FILE IS NO LONGER USED FOR BUILDING QTENV.
 #
-# - be sure to start QtCreator from the command line (where the path contains the omnetpp/bin directory)
+# It is merely a "project file" for Qt Creator.
+# The following still applies though:
+#
+# To properly set up the project/build process for Qt Creator you need to invoke only
+# the 'make' command in this directory (by default Qt Creator also invokes qmake)
+#
+# - make sure PATH contains the omnetpp/bin directory
+#   (for example by starting Qt Creator from the command line after sourcing the setenv script)
 # - open this file as a project
 # - select the "Projects" pane on the left
 # - press "Configure Project" button
