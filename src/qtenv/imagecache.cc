@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <cstring>
+#include <iostream>
 #include <QStringList>
 #include <QDir>
 #include <QImage>
