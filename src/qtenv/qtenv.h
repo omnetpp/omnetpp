@@ -364,7 +364,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       Inspector *inspect(cObject *obj, int type=INSP_DEFAULT, bool ignoreEmbedded=false);
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
       Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);
-      Inspector *findInspector(const char *tkWidget) {return nullptr;}  //TODO obsolete, remove! find inspector by Tk widget name
       void deleteInspector(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 

@@ -183,9 +183,6 @@ private:
     void updatePerformanceDisplay();
     void updateNextEventDisplay();
 
-    const char *getObjectShortTypeName(cObject *object);
-    const char *stripNamespace(const char *className);
-
     bool networkPresent();
     bool isSimulationOk();
 

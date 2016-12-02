@@ -678,41 +678,6 @@ void MainWindow::updateNextEventDisplay()
         ui->nextModuleLabel->setText("In: n/a");
 }
 
-const char *MainWindow::getObjectShortTypeName(cObject *object)
-{
-    if (dynamic_cast<cComponent *>(object)) {
-        try {
-            return static_cast<cComponent *>(object)->getComponentType()->getName();
-        }
-        catch (std::exception& e) {
-            printf("<!> Warning: %s\n", e.what());
-        }
-    }
-    return stripNamespace(object->getClassName());
-}
-
-const char *MainWindow::stripNamespace(const char *className)
-{
-    switch (env->opt->stripNamespace) {
-        case STRIPNAMESPACE_ALL: {
-            const char *lastColon = strrchr(className, ':');
-            if (lastColon)
-                className = lastColon+1;
-            break;
-        }
-
-        case STRIPNAMESPACE_OMNETPP: {
-            if (className[0] == 'o' && opp_stringbeginswith(className, "omnetpp::"))
-                className += sizeof("omnetpp::")-1;
-            break;
-        }
-
-        case STRIPNAMESPACE_NONE:
-            break;
-    }
-    return className;
-}
-
 void MainWindow::updateNetworkRunDisplay()
 {
     const char *configName = opp_nulltoempty(env->getConfigEx()->getActiveConfigName());
@@ -728,8 +693,6 @@ void MainWindow::updateNetworkRunDisplay()
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
 {
-    const char *cl = getObjectShortTypeName(msg);
-
     // TODO must be reviewed
     QString namePattern = msg->getFullName();
     namePattern.replace(QRegExp("[0-9]+"), "*");
@@ -742,7 +705,7 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
     filters = filters.trimmed();
     if (!filters.isEmpty())
         filters += "\n";
-    filters += namePattern +" and className(" + cl +")\n";
+    filters += namePattern + " and className(" + getObjectShortTypeName(msg) + ")\n";
     env->setSilentEventFilters(filters.toStdString().c_str());
 
     env->callRefreshInspectors();
