@@ -785,6 +785,13 @@ class cOvalFigure extends cAbstractShapeFigure
     Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
 }
 
+class cRingFigure extends cAbstractShapeFigure
+{
+    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    double innerRx @group(geometry) @editable;
+    double innerRy @group(geometry) @editable;
+}
+
 class cPieSliceFigure extends cAbstractShapeFigure
 {
     Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
@@ -843,6 +850,10 @@ class cAbstractImageFigure extends cFigure
 class cImageFigure extends cAbstractImageFigure
 {
     string imageName @editable;
+}
+
+class cIconFigure extends cImageFigure
+{
 }
 
 class cPixmapFigure extends cAbstractImageFigure
