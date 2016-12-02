@@ -1274,47 +1274,6 @@ echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
 
-# Test it the IDE was already configured. If not, copy the platform specific
-# files to the IDE root directory
-if test -d ide ; then
-  if test ! -d ide/configuration -a ! -d ide/$OMNETPP_IDE_EXECUTABLE.app/Contents/Eclipse/configuration; then
-    echo Configuring the IDE...
-    case $PLATFORM in
-    win32.x86_64)
-        cp -r ide/win64/* ide
-        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
-        ;;
-    win32.x86)
-        cp -r ide/win32/* ide
-        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
-        ;;
-    linux.x86_64)
-        cp -r ide/linux64/* ide
-        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
-        ;;
-    linux.x86)
-        cp -r ide/linux/* ide
-        echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
-        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
-        ;;
-    macosx)
-        cp -r ide/macosx/* ide
-        echo osgi.instance.area.default=../../../../../samples >>ide/Eclipse.app/Contents/Eclipse/configuration/config.ini
-        mv ide/features ide/Eclipse.app/Contents/Eclipse
-        mv ide/plugins ide/Eclipse.app/Contents/Eclipse
-        mv ide/Eclipse.app ide/$OMNETPP_IDE_EXECUTABLE.app
-        rm -rf ide/win32 ide/win64 ide/linux ide/linux64 ide/macosx
-        ;;
-    *)
-        echo IDE is supported only on: Linux, Windows, macOS. Not configured.
-        ;;
-    esac
-  fi
-fi
-
 #---------------------------
 # Check for SystemC settings
 #---------------------------
