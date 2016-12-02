@@ -117,6 +117,9 @@ public:
     bool animateUntilNextEvent() { return animateUntilNextEvent(false); }
     bool animateUntilHoldEnds() { return animateUntilNextEvent(true); }
 
+    void skipToNextEvent();
+    void skipHold();
+
     void startVideoRecording();
     void stopVideoRecording();
 

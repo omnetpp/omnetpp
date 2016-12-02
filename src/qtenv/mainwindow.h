@@ -91,22 +91,27 @@ public:
     static double sliderValueToPlaybackSpeed(int value) { return std::pow(10, value / 100.0); }
 
 public slots:
-    void on_actionOneStep_triggered();
-    void on_actionQuit_triggered();
+
+    void on_actionOneStep_triggered() { runSimulation(RUNMODE_STEP); }
     void on_actionRun_triggered() { runSimulation(RUNMODE_NORMAL); }
-    void on_actionSetUpConfiguration_triggered();
     void on_actionFastRun_triggered() { runSimulation(RUNMODE_FAST); }
     void on_actionExpressRun_triggered() { runSimulation(RUNMODE_EXPRESS); }
     void on_actionRunUntil_triggered();
+    void on_actionDebugNextEvent_triggered();
+    void on_actionStop_triggered();
+
+    void on_actionQuit_triggered() { close(); }
     void onSliderValueChanged(int value);
+
+    void on_actionSetUpUnconfiguredNetwork_triggered();
+    void on_actionSetUpConfiguration_triggered();
     void on_actionRebuildNetwork_triggered();
+
     void on_actionPreferences_triggered();
     void on_actionStatusDetails_triggered();
     void on_actionFindInspectObjects_triggered();
-    void on_actionStop_triggered();
-    void on_actionDebugNextEvent_triggered();
     void on_actionEventlogRecording_triggered();
-    void on_actionSetUpUnconfiguredNetwork_triggered();
+
     void on_actionAbout_OMNeT_Qtenv_triggered();
 
     void closeEvent(QCloseEvent *event) override;

@@ -409,29 +409,6 @@ void MainWindow::updateSpeedSlider()
     slider->blockSignals(blocked);
 }
 
-// oneStep
-void MainWindow::on_actionOneStep_triggered()
-{
-    // implements Simulate|One step
-
-    if (isRunning()) {
-        setGuiForRunmode(RUNMODE_STEP);
-        env->setStopSimulationFlag();
-    }
-    else {
-        if (!networkReady())
-            return;
-        setGuiForRunmode(RUNMODE_STEP);
-        env->doOneStep();
-        setGuiForRunmode(RUNMODE_NOT_RUNNING);
-    }
-}
-
-void MainWindow::on_actionQuit_triggered()
-{
-    close();
-}
-
 bool MainWindow::exitOmnetpp()
 {
     bool confirmExit = env->getPref("confirm-exit", true).value<bool>();

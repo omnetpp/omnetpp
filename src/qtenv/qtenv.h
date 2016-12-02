@@ -165,6 +165,7 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
           cModule *module;         // stop before and after events in this module; ignored with EXPRESS mode
           bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
       } runUntil;
+      bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before it
       Speedometer speedometer;
 
       bool stopSimulationFlag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
@@ -330,7 +331,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void createSnapshot(const char *label);
 
       void rebuildSim();
-      void doOneStep();
       void runSimulation(RunMode mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr, bool stopOnMsgCancel=true);
       void setSimulationRunMode(RunMode runMode);
       RunMode getSimulationRunMode() const {return runMode;}
@@ -377,7 +377,8 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       void setSilentEventFilters(const char *filterLines);
       bool isSilentEvent(cMessage *msg);
 
-      void performAnimations();
+      void performAnimations(); // after an event, will run all holding anims, not moving simTime
+      void endAnimations(); // terminates the above. if not running, no-op.
 
       void channelDisplayStringChanged(cChannel *channel);
       void moduleDisplayStringChanged(cModule *module);

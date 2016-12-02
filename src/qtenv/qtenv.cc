@@ -738,63 +738,6 @@ void Qtenv::rebuildSim()
         confirm(INFO, "Choose File|New Network or File|New Run.");
 }
 
-void Qtenv::doOneStep()
-{
-    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
-
-    runMode = RUNMODE_STEP;
-    animating = true;
-    runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    updateStatusDisplay();
-    simulationState = SIM_RUNNING;  // currently must come after updateStatusDisplay(), because it depends on it...
-
-    startClock();
-    notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
-    try {
-        displayUpdateController->setRunMode(runMode);
-        displayUpdateController->animateUntilNextEvent();
-
-        cEvent *event = getSimulation()->takeNextEvent();
-        if (event) {  // takeNextEvent() not interrupted
-            getSimulation()->executeEvent(event);
-            performAnimations();
-        }
-        simulationState = SIM_READY;  // currently must precede updateStatusDisplay(), because it depends on it...
-        callRefreshDisplay();
-        updateStatusDisplay();
-        callRefreshInspectors();
-        notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
-    }
-    catch (cTerminationException& e) {
-        simulationState = SIM_TERMINATED;
-        stoppedWithTerminationException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
-        displayException(e);
-    }
-    catch (std::exception& e) {
-        simulationState = SIM_ERROR;
-        stoppedWithException(e);
-        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
-        displayException(e);
-    }
-    stopClock();
-    stopSimulationFlag = false;
-
-    if (simulationState == SIM_TERMINATED) {
-        // call wrapper around simulation.callFinish() and simulation.endRun()
-        //
-        // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
-        // called yet, because we want to allow the user to force finish() from
-        // the GUI -- and finish() has to precede endRun(). endRun() will be called
-        // just before a new network gets set up, or on Qtenv shutdown.
-        //
-        finishSimulation();
-    }
-
-    runMode = RUNMODE_NOT_RUNNING;
-    displayUpdateController->setRunMode(runMode);
-}
-
 void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
                           bool stopOnMsgCancel)
 {
@@ -869,6 +812,11 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
 void Qtenv::setSimulationRunMode(RunMode mode)
 {
+    if (mode == RUNMODE_STEP && (runMode == RUNMODE_STEP || runMode == RUNMODE_NORMAL)) {
+        endAnimations();
+        displayUpdateController->skipToNextEvent();
+        doNextEventInStep = true;
+    }
     runMode = mode;
 }
 
@@ -956,13 +904,15 @@ bool Qtenv::doRunSimulation()
         }
         firstevent = false;
 
-        animating = (runMode == RUNMODE_NORMAL) || untilmodule_reached;
+        animating = (runMode == RUNMODE_NORMAL || runMode == RUNMODE_STEP) || untilmodule_reached;
 
         speedometer.addEvent(getSimulation()->getSimTime());
 
         ASSERT(simTime() <= event->getArrivalTime());
         // do a simulation step
         getSimulation()->executeEvent(event);
+
+        doNextEventInStep = false;
 
         if (animating)
             performAnimations();
@@ -981,6 +931,9 @@ bool Qtenv::doRunSimulation()
             break;
 
         checkTimeLimits();
+
+        if (runMode == RUNMODE_STEP && !doNextEventInStep)
+            break;
     }
     return false;
 }
@@ -1379,6 +1332,15 @@ void Qtenv::performAnimations()
     displayUpdateController->setRunMode(runMode);
     messageAnimator->update();
     displayUpdateController->animateUntilHoldEnds();
+}
+
+void Qtenv::endAnimations()
+{
+    // TODO
+
+    messageAnimator->skipCurrentHoldingAnims();
+    displayUpdateController->skipHold();
+    messageAnimator->update();
 }
 
 std::string Qtenv::getWindowTitle()

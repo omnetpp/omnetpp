@@ -184,7 +184,7 @@ void DisplayUpdateController::setRunMode(RunMode value)
 
     switch (runMode) {
         case RUNMODE_STEP:
-            currentFps = 0;
+            //currentFps = 0;
             break;
         case RUNMODE_FAST:
             currentProfile = &fastProfile;
@@ -203,6 +203,17 @@ void DisplayUpdateController::setRunMode(RunMode value)
         dialog->displayMetrics();
 
     emit playbackSpeedChanged(getPlaybackSpeed());
+}
+
+void DisplayUpdateController::skipToNextEvent()
+{
+    skipHold();
+    sim->setSimTime(sim->guessNextSimtime());
+}
+
+void DisplayUpdateController::skipHold()
+{
+    animationTime = std::max(animationTime, getAnimationHoldEndTime());
 }
 
 void DisplayUpdateController::startVideoRecording()
@@ -244,7 +255,6 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             double animationSpeed = getAnimationSpeed();
 
             if (animationSpeed == 0) {
-
                 if (runMode == RUNMODE_FAST) {
                     if (animationTimer.elapsed() >= 1000.0 / targetFps) {
                         animationTime += frameDelta;
@@ -263,6 +273,10 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             SimTime nextEvent = sim->guessNextSimtime();
             SimTime nextFrame = lastRecordedFrame + frameDelta * animationSpeed * currentProfile->playbackSpeed;
 
+            // simTime can be moved forward even without event (skipping, etc...)
+            if (simTime() > nextFrame)
+                nextFrame = simTime();
+
             if (nextEvent <= nextFrame) {
                 // the time has come to execute the next event
 
@@ -273,7 +287,7 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             else {
                 // this is the case when the event is far away, and we have time to animate peacefully
                 animationTime += frameDelta;
-                ASSERT(nextFrame >= simTime());
+                ASSERT(nextFrame >= simTime()); // this became a bit redundant, but can't hurt
                 sim->setSimTime(nextFrame);
                 renderFrame(true);
                 lastRecordedFrame = nextFrame;

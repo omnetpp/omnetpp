@@ -90,6 +90,7 @@ public:
 
     void update();
     void redrawMessages();
+    void skipCurrentHoldingAnims();
 
     // These two must always be called in a regular tree pattern!
     void methodcallBegin(cComponent *fromComp, cComponent *toComp, const char *methodText, bool silent);

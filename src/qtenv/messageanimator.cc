@@ -39,6 +39,8 @@ namespace qtenv {
 
 void MessageAnimator::redrawMessages()
 {
+    // TODO: maybe add some messages as animations, not all of them as waiting on the dest module boundary
+
     clearMessages();
 
     // this thingy is only needed if animation is going on
@@ -79,6 +81,31 @@ void MessageAnimator::redrawMessages()
             }
         }
     }
+}
+
+void MessageAnimator::skipCurrentHoldingAnims()
+{
+    delete deliveries;
+    deliveries = nullptr;
+
+    for (auto& a : animations)
+        if (a->isHolding()) {
+            delete a;
+            a = nullptr;
+        }
+
+    animations.removeValues(nullptr);
+
+    holdRequests.clear();
+
+    currentMethodCall = nullptr;
+
+    /*
+    lastHopTime = -1;
+    currentMessageSend = nullptr;
+
+    clearMessages();
+    */
 }
 
 void MessageAnimator::methodcallBegin(cComponent *fromComp, cComponent *toComp, const char *methodText, bool silent)
