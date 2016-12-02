@@ -40,7 +40,6 @@ protected:
 
 public:
     InspectorListBoxView(QWidget *parent = nullptr);
-    ~InspectorListBoxView();
 
     void setModel(QAbstractItemModel *model) override;
 };

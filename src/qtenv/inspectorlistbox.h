@@ -32,15 +32,19 @@ class InspectorListBox : public QAbstractTableModel
 private:
     QVector<cObject*> objects;
 
+    // I could not find a way to query the current sorting indicator of the View, nor the last sort params of the model, so...
+    int lastSortColumn = 0;
+    Qt::SortOrder lastSortOrder = Qt::AscendingOrder;
+
 public slots:
-    void sort(int i, Qt::SortOrder order);
+    void sort(int i, Qt::SortOrder order) override;
 
 public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override { return objects.size(); }
+    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override { return 3; }
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    virtual QVariant headerData (int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     void setObjects(QVector<cObject *> objects);
 };
 

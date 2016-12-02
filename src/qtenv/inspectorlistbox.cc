@@ -29,16 +29,6 @@ QModelIndex InspectorListBox::index(int row, int column, const QModelIndex&) con
             : createIndex(row, column, objects[row]);
 }
 
-int InspectorListBox::rowCount(const QModelIndex& parent) const
-{
-    return objects.size();
-}
-
-int InspectorListBox::columnCount(const QModelIndex& parent) const
-{
-    return 3;
-}
-
 QVariant InspectorListBox::headerData(int section, Qt::Orientation orientation, int role) const
 {
     static QString titles[] = {"Class", "Name", "Info"};
@@ -49,8 +39,10 @@ QVariant InspectorListBox::headerData(int section, Qt::Orientation orientation, 
 
 void InspectorListBox::sort(int i, Qt::SortOrder order)
 {
+    lastSortColumn = i;
+    lastSortOrder = order;
+
     beginResetModel();
-    // qDebug() << "Sort" << order;
     qSort(objects.begin(), objects.end(),
           [i, order](cObject *arg1, cObject *arg2) -> bool {
               QString first, second;
@@ -58,33 +50,19 @@ void InspectorListBox::sort(int i, Qt::SortOrder order)
                   case 0:
                       first = getObjectShortTypeName(arg1);
                       second = getObjectShortTypeName(arg2);
-                      return order == Qt::SortOrder::AscendingOrder ?
-                                 first.toLower() < second.toLower() :
-                                 first.toLower() > second.toLower();
+                      break;
                   case 1:
                       first = arg1->getFullPath().c_str();
                       second = arg2->getFullPath().c_str();
-                      return order == Qt::SortOrder::AscendingOrder ?
-                                 first.toLower() < second.toLower() :
-                                 first.toLower() > second.toLower();
+                      break;
                   case 2:
                       first = arg1->str().c_str();
                       second = arg2->str().c_str();
-                      return order == Qt::SortOrder::AscendingOrder ?
-                                 first.toLower() < second.toLower() :
-                                 first.toLower() > second.toLower();
-                  case 3:
-                      char buffer1[50];
-                      char buffer2[50];
-                      sprintf(buffer1, "%p", (void *)arg1);
-                      sprintf(buffer2, "%p", (void *)arg2);
-                      first = buffer1;
-                      second = buffer2;
-                      return order == Qt::SortOrder::AscendingOrder ?
-                                 first.toLower() < second.toLower() :
-                                 first.toLower() > second.toLower();
+                      break;
               };
-              return false;
+              return order == Qt::SortOrder::AscendingOrder ?
+                         first.toLower() < second.toLower() :
+                         first.toLower() > second.toLower();
           }
     );
     endResetModel();
@@ -92,39 +70,27 @@ void InspectorListBox::sort(int i, Qt::SortOrder order)
 
 QVariant InspectorListBox::data(const QModelIndex& index, int role) const
 {
-    if (objects.size() < index.row()) {
-        // qDebug() << "object is nullptr";
+    if (objects.size() < index.row())
         return QVariant();
+
+    switch (role) {
+        case Qt::DisplayRole:
+            switch (index.column()) {
+                case 0:
+                    return getObjectShortTypeName(objects[index.row()]);
+                case 1:
+                    return objects[index.row()]->getFullPath().c_str();
+                case 2:
+                    return objects[index.row()]->str().c_str();
+            }
+            break;
+        case Qt:: DecorationRole:
+            return index.column() == 0
+                    ? QVariant::fromValue(QIcon(":/objects/icons/objects/" + getObjectIcon(objects[index.row()])))
+                    : QVariant();
+        case Qt::UserRole:
+            return QVariant::fromValue(objects[index.row()]);
     }
-
-    if (role == Qt::DisplayRole) {
-        QString label;
-        switch (index.column()) {
-            case 0:
-                label = getObjectShortTypeName(objects[index.row()]);
-                break;
-
-            case 1:
-                label = objects[index.row()]->getFullPath().c_str();
-                break;
-
-            case 2:
-                label = objects[index.row()]->str().c_str();
-                break;
-
-            case 3:
-                char buffer[50];
-                sprintf(buffer, "%p", (void *)objects[index.row()]);
-                label = buffer;
-                break;
-        }
-        return QVariant::fromValue(label);
-    }
-    else if (role == Qt::DecorationRole && index.column() == 0) {
-        return QVariant::fromValue(QIcon(":/objects/icons/objects/" + getObjectIcon(objects[index.row()])));
-    }
-    else if (role == Qt::UserRole)
-        return QVariant::fromValue(objects[index.row()]);
 
     return QVariant();
 }
@@ -134,6 +100,7 @@ void InspectorListBox::setObjects(QVector<cObject *> objects)
     beginResetModel();
     this->objects = objects;
     endResetModel();
+    sort(lastSortColumn, lastSortOrder);
 }
 
 }  // namespace qtenv
