@@ -10,14 +10,14 @@ echo Starting the OMNeT++ IDE...
 
 if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
   echo "A compatible JRE is required to run the IDE. "
-  echo "Found GNU GIJ which is not supported. Please use Oracle JRE or Open JRE 1.7+"
+  echo "Found GNU GIJ which is not supported. Please use Oracle JRE or Open JRE 1.8+"
   echo "If you have several JDKs installed on you machine, change the default JVM."
   echo "You can switch between Java VMs with the 'sudo update-alternatives --config java' command."
   exit 1;
 fi
 
 if test ! -d $IDEDIR/configuration -a ! -d $IDEDIR/$LAUNCHER.app/Contents/Eclipse/configuration; then
-  echo "The IDE is not yet configured. Please run the 'configure' script in the installation root folder!"
+  echo "The OMNeT++ IDE is not installed!"
   exit 1;
 fi
 
@@ -27,7 +27,7 @@ export LANG=en_US.UTF-8
 export OXYGEN_DISABLE_INNER_SHADOWS_HACK=1
 # workaround for bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=419830
 export UBUNTU_MENUPROXY=0
-# arguments needed to initially correctly show  the default 'samples' workspace
+# arguments needed to initially correctly show the default 'samples' workspace
 DEFAULT_WORKSPACE_ARGS="-vmargs -Dosgi.instance.area.default=$IDEDIR/../samples"
 
 case $PLATFORM in
@@ -38,7 +38,10 @@ case $PLATFORM in
 	$IDEDIR/${LAUNCHER} $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
-	open -a $IDEDIR/${LAUNCHER}.app --args $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log
+	# remove the quaranten extended bit so the IDE will not be copied to a private dir on macOS sierra and later
+	xattr -d com.apple.quarantine $IDEDIR/${LAUNCHER}.app
+	# starting the executable directly allows to avoid unsigned app warnings showing up
+	$IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log
         ;;
 *)
 	echo OMNeT++ IDE is supported only on: Linux, Windows and macOS
