@@ -2,7 +2,7 @@
 <?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="org.omnetpp.cdt.gnu.config.debug.203991212">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.gnu.config.debug.203991212" moduleId="org.eclipse.cdt.core.settings" name="gcc-debug">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.gnu.config.debug.203991212" moduleId="org.eclipse.cdt.core.settings" name="debug">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -16,29 +16,33 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildProperties="" description="" id="org.omnetpp.cdt.gnu.config.debug.203991212" name="gcc-debug" parent="org.omnetpp.cdt.gnu.config.debug">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="org.omnetpp.cdt.gnu.config.debug.203991212" name="debug" parent="org.omnetpp.cdt.gnu.config.debug">
 					<folderInfo id="org.omnetpp.cdt.gnu.config.debug.203991212." name="/" resourcePath="">
 						<toolChain id="org.omnetpp.cdt.gnu.toolchain.debug.474513243" name="GCC for OMNEST" superClass="org.omnetpp.cdt.gnu.toolchain.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.targetPlatform.591167750" isAbstract="false" name="Windows, Linux, Mac" osList="win32,linux,macosx" superClass="org.omnetpp.cdt.targetPlatform"/>
 							<builder id="org.omnetpp.cdt.gnu.builder.debug.65694276" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="OMNeT++ Make Builder (opp_makemake)" superClass="org.omnetpp.cdt.gnu.builder.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.761469501" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1123230562" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
-								<option id="gnu.cpp.compiler.option.preprocessor.def.553827035" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols"/>
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1814977974" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1214224963" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="WITH_OSG"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.172808111" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1347078099" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
-								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1459950350" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols"/>
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1679008272" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1202377684" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="WITH_OSG"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.974258242" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.480778368" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1621463342" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.75403080" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.2053746726" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1446385814" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.702157306" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.333983402" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -47,7 +51,7 @@
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 		<cconfiguration id="org.omnetpp.cdt.gnu.config.release.1117020921">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.gnu.config.release.1117020921" moduleId="org.eclipse.cdt.core.settings" name="gcc-release">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.gnu.config.release.1117020921" moduleId="org.eclipse.cdt.core.settings" name="release">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -61,88 +65,34 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildProperties="" description="" id="org.omnetpp.cdt.gnu.config.release.1117020921" name="gcc-release" parent="org.omnetpp.cdt.gnu.config.release">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="org.omnetpp.cdt.gnu.config.release.1117020921" name="release" parent="org.omnetpp.cdt.gnu.config.release">
 					<folderInfo id="org.omnetpp.cdt.gnu.config.release.1117020921." name="/" resourcePath="">
 						<toolChain id="org.omnetpp.cdt.gnu.toolchain.release.1355996605" name="GCC for OMNEST" superClass="org.omnetpp.cdt.gnu.toolchain.release">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.targetPlatform.179333321" isAbstract="false" name="Windows, Linux, Mac" osList="win32,linux,macosx" superClass="org.omnetpp.cdt.targetPlatform"/>
 							<builder id="org.omnetpp.cdt.gnu.builder.release.503339327" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="OMNeT++ Make Builder (opp_makemake)" superClass="org.omnetpp.cdt.gnu.builder.release"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.647805270" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.911960174" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
-								<option id="gnu.cpp.compiler.option.preprocessor.def.448792057" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+								<option id="gnu.cpp.compiler.option.preprocessor.def.912764430" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="WITH_OSG"/>
 								</option>
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.420421596" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.921223991" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.587241890" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
-								<option id="gnu.c.compiler.option.preprocessor.def.symbols.3276615" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1645153014" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="WITH_OSG"/>
 								</option>
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1298043824" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1014027879" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.80729222" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1149643550" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
-								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.364903456" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1683669618" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.464068551" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1977963561" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.664302031" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
-						</toolChain>
-					</folderInfo>
-				</configuration>
-			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
-		</cconfiguration>
-		<cconfiguration id="org.omnetpp.cdt.msvc.config.debug.1845791947">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.msvc.config.debug.1845791947" moduleId="org.eclipse.cdt.core.settings" name="msvc-debug">
-				<externalSettings/>
-				<extensions>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.autotools.core.ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-				</extensions>
-			</storageModule>
-			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildProperties="" description="" id="org.omnetpp.cdt.msvc.config.debug.1845791947" name="msvc-debug" parent="org.omnetpp.cdt.msvc.config.debug">
-					<folderInfo id="org.omnetpp.cdt.msvc.config.debug.1845791947." name="/" resourcePath="">
-						<toolChain id="org.omnetpp.cdt.msvc.toolchain.debug.866092052" name="Microsoft Visual C++ for OMNEST" superClass="org.omnetpp.cdt.msvc.toolchain.debug">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.msvc.targetPlatform.2121367715" name="Windows" osList="win32"/>
-							<builder id="org.omnetpp.cdt.msvc.builder.debug.1979059155" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="OMNeT++ Make Builder (opp_nmakemake - not supported)" superClass="org.omnetpp.cdt.msvc.builder.debug"/>
-						</toolChain>
-					</folderInfo>
-				</configuration>
-			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
-		</cconfiguration>
-		<cconfiguration id="org.omnetpp.cdt.msvc.config.release.116692774">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.omnetpp.cdt.msvc.config.release.116692774" moduleId="org.eclipse.cdt.core.settings" name="msvc-release">
-				<externalSettings/>
-				<extensions>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.autotools.core.ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-				</extensions>
-			</storageModule>
-			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildProperties="" description="" id="org.omnetpp.cdt.msvc.config.release.116692774" name="msvc-release" parent="org.omnetpp.cdt.msvc.config.release">
-					<folderInfo id="org.omnetpp.cdt.msvc.config.release.116692774." name="/" resourcePath="">
-						<toolChain id="org.omnetpp.cdt.msvc.toolchain.release.1243828459" name="Microsoft Visual C++ for OMNEST" superClass="org.omnetpp.cdt.msvc.toolchain.release">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="org.omnetpp.cdt.msvc.targetPlatform.673083900" name="Windows" osList="win32"/>
-							<builder id="org.omnetpp.cdt.msvc.builder.release.1331084877" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="OMNeT++ Make Builder (opp_nmakemake - not supported)" superClass="org.omnetpp.cdt.msvc.builder.release"/>
 						</toolChain>
 					</folderInfo>
 				</configuration>
@@ -158,17 +108,9 @@
 		<scannerConfigBuildInfo instanceId="org.omnetpp.cdt.gnu.config.release.1117020921">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.omnetpp.cdt.msvc.config.release.116692774">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.omnetpp.cdt.msvc.config.debug.1845791947">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.omnetpp.cdt.msvc.MSVCScannerInfo"/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.omnetpp.cdt.gnu.config.debug.203991212">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
-	<storageModule moduleId="refreshScope"/>
 </cproject>

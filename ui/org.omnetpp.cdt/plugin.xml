@@ -10,7 +10,7 @@
             configurationEnvironmentSupplier="org.omnetpp.cdt.GCCEnvironmentVariableSupplier"
             id="org.omnetpp.cdt.gnu.toolchain.base"
             isAbstract="true"
-            name="GCC for OMNeT++"
+            name="C++ Toolchain for OMNeT++"
             osList="all"
             scannerConfigDiscoveryProfileId="org.omnetpp.cdt.OmnetppGCCPerProjectProfile"
             resourceTypeBasedDiscovery="false"
@@ -49,7 +49,7 @@
 
          <configuration
                id="org.omnetpp.cdt.gnu.config.debug"
-               name="gcc-debug"
+               name="debug"
                parent="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="org.omnetpp.cdt.gnu.toolchain.debug"
@@ -64,7 +64,7 @@
          </configuration>
          <configuration
                id="org.omnetpp.cdt.gnu.config.release"
-               name="gcc-release"
+               name="release"
                parent="cdt.managedbuild.config.gnu.base">
             <toolChain
                   id="org.omnetpp.cdt.gnu.toolchain.release"
