@@ -62,7 +62,7 @@
 #endif
 
 #ifdef __APPLE__
-void OSXTransformProcess();
+#include <ApplicationServices/ApplicationServices.h>
 #endif
 
 using namespace omnetpp::common;
@@ -175,7 +175,15 @@ void Tkenv::doRun()
         signal(SIGTERM, signalHandler);
 
 #ifdef __APPLE__
-        OSXTransformProcess();
+// The following is required to display the menu correctly on Mac OS X 10.5.
+// An alternative solution would be to create a bundled application;
+// as much as putting the executable into a directory called Contents/MacOS,
+// or even creating Contents directory next to the executable would do,
+// but its not an elegant solution.
+//
+        ProcessSerialNumber psn;
+        GetCurrentProcess(&psn);
+        TransformProcessType(&psn, kProcessTransformToForegroundApplication);
 #endif
         // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR

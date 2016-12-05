@@ -18,7 +18,8 @@ IMPLIBS = -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS)
 
 # Required only on Mac OS X
 ifeq ("$(PLATFORM)", "macosx")
-  LDFLAGS += -framework Carbon
+  CFLAGS += -Wno-deprecated-declarations
+  LDFLAGS += -framework ApplicationServices
 endif
 
 ifeq ($(MODE),release)

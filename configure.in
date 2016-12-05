@@ -392,10 +392,10 @@ if test "$mingw" = yes -a "$CC" = "gcc"; then
 fi
 
 #----------------------
-# check if clang is used as we want to specify -Wno-deprecated-register to avoid warning from generated code
+# check if clang is used as we want to avoid warnings from generated code
 #----------------------
 if test "$CC" = "clang"; then
-  CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-register"
+  CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-register -Wno-unused-function"
 fi
 
 #----------------------

@@ -77,7 +77,7 @@
 #include "displayupdatecontroller.h"
 
 #ifdef Q_OS_MAC
-#include <Carbon/Carbon.h> // for the TransformProcessType magic on startup
+#include <ApplicationServices/ApplicationServices.h> // for the TransformProcessType magic on startup
 #endif
 
 #define emit

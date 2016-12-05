@@ -64,8 +64,10 @@
 
 // make the code compile with pre-C++11 compilers
 #if __cplusplus < 201103L
+#  if !defined nullptr
+#    define nullptr  0
+#  endif
 #  define override
-#  define nullptr  0
 #endif
 
 #if defined __GNUC__

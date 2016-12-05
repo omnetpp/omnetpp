@@ -32,9 +32,8 @@ endif
 
 # Required only on Mac OS X
 ifeq ("$(PLATFORM)", "macosx")
-  COPTS += -framework Carbon
-  LDFLAGS += -framework Carbon
-  OBJS += $O/osxproctype.o
+  CFLAGS += -Wno-deprecated-declarations
+  LDFLAGS += -framework ApplicationServices
 endif
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
