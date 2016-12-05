@@ -52,9 +52,6 @@ PLATFORM = @PLATFORM@
 ifeq ($(PLATFORM),win32.x86_64)
   OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/win64
   OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
-else ifeq ($(PLATFORM),win32.x86)
-  OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/win32
-  OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
 else ifeq ($(PLATFORM),macosx)
   OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/macosx
 else

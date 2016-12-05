@@ -14,7 +14,7 @@ L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-ifneq (,$(filter $(PLATFORM),win32.x86 win32.x86_64)) # OR operation (= on all windows platforms)
+ifeq ($(PLATFORM),win32.x86_64))
 PSAPI_LIB=-lpsapi
 endif
 
