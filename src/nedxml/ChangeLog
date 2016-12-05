@@ -1,3 +1,7 @@
+2016-12-05  Rudolf Hornig
+
+	Removed support for old libXML versions (< v2.6) without DTD validation support.
+
 2016-11-30  Rudolf Hornig
 
 	* The updated build system now uses the ./configure file only to detect
