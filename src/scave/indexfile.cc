@@ -207,15 +207,25 @@ static bool isFileReadable(const char *filename)
 
 bool IndexFile::isIndexFile(const char *filename)
 {
-    int len = strlen(filename);
-    return (len >= 4) && (strcmp(filename+len-4, ".vci") == 0);
+    return opp_stringendswith(filename, ".vci");
 }
 
-bool IndexFile::isVectorFile(const char *filename)
+bool IndexFile::isExistingVectorFile(const char *filename)
 {
-    // XXX check contents?
-    int len = strlen(filename);
-    return (len >= 4) && (strcmp(filename+len-4, ".vec") == 0);
+    if (!opp_stringendswith(filename, ".vec"))
+        return false;
+
+    FILE *f = fopen(filename, "r");
+    if (!f)
+        return false;
+
+    const char *signature = "version 2";
+    char buf[20];
+    memset(buf, 0, 20);
+    fread(buf, strlen(signature), 1, f);
+    fclose(f);
+    bool matches = memcmp(buf, signature, strlen(signature)) == 0;
+    return matches;
 }
 
 std::string IndexFile::getVectorFileName(const char *filename)

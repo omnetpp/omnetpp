@@ -41,11 +41,10 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
     }
 
     /**
-     * Returns true, if <code>file</code> is an vector file.
-     * The file need not exist.
+     * Returns true, if <code>file</code> is an existing vector file.
      */
-    public static boolean isVectorFile(IFile file) {
-        return isVectorFile(file.getLocation().toOSString());
+    public static boolean isExistingVectorFile(IFile file) {
+        return isExistingVectorFile(file.getLocation().toOSString());
     }
 
     /**
@@ -75,7 +74,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
      * @return the index file
      */
     public static IFile getIndexFileFor(IFile vectorFile) {
-        Assert.isLegal(isVectorFile(vectorFile));
+        Assert.isLegal(isExistingVectorFile(vectorFile));
         IContainer container = vectorFile.getParent();
         String path = getIndexFileName(vectorFile.getLocation().toOSString());
         return getWorkspaceFileForOsPath(container, path);
@@ -83,12 +82,12 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 
     /**
      * Returns the index file belongs to the specified vector file.
+     * The vector file does not necessarily exist.
      *
      * @param vectorFile the vector file
      * @return the index file
      */
     public static File getIndexFileFor(File vectorFile) {
-        Assert.isLegal(isVectorFile(vectorFile.getAbsolutePath()));
         return new File(getIndexFileName(vectorFile.getAbsolutePath()));
     }
 

@@ -4,7 +4,7 @@ import static org.omnetpp.scave.common.ScaveMarkers.MARKERTYPE_SCAVEPROBLEM;
 import static org.omnetpp.scave.common.ScaveMarkers.deleteMarkers;
 import static org.omnetpp.scave.common.ScaveMarkers.setMarker;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
-import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
+import static org.omnetpp.scave.engineext.IndexFile.isExistingVectorFile;
 
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -120,7 +120,7 @@ public class ResultFileManagerUpdaterJob extends Job {
                         // because the ResultFileManager loads it from the vector file and it takes too much time
                         // for ~100MB files.
                         // Create or update the index file first, and try again.
-                        if (isVectorFile(file) && !isIndexFileUpToDate(file)) {
+                        if (isExistingVectorFile(file) && !isIndexFileUpToDate(file)) {
                             generateIndexAndLoad(file);
                         }
                         else {
@@ -195,7 +195,7 @@ public class ResultFileManagerUpdaterJob extends Job {
         else if (e instanceof ResultFileFormatException) {
             ScavePlugin.logError("Wrong file: " + file.getLocation().toOSString(), e);
             ResultFileFormatException fileFormatException = (ResultFileFormatException)e;
-            if (isVectorFile(file)) {
+            if (isExistingVectorFile(file)) {
                 IFile indexFile = IndexFile.getIndexFileFor(file);
                 String message = fileFormatException.getMessage();
                 int lineNo = fileFormatException.getLineNo();
@@ -216,7 +216,7 @@ public class ResultFileManagerUpdaterJob extends Job {
     }
 
     private ISchedulingRule getSchedulingRuleFor(IFile file) {
-        if (isVectorFile(file))
+        if (isExistingVectorFile(file))
             return MultiRule.combine(file, IndexFile.getIndexFileFor(file));
         else
             return file;

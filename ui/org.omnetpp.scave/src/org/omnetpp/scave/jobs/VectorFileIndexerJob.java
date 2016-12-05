@@ -7,9 +7,6 @@
 
 package org.omnetpp.scave.jobs;
 
-import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
-import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +37,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
         ArrayList<ISchedulingRule> rule = new ArrayList<ISchedulingRule>();
         this.filesToBeIndexed = new ArrayList<IFile>();
         for (IFile file : filesToBeIndexed)
-            if (isVectorFile(file)) {
+            if (IndexFile.isExistingVectorFile(file)) {
                 this.filesToBeIndexed.add(file);
                 rule.add(file);
                 rule.add(IndexFile.getIndexFileFor(file));
@@ -66,7 +63,7 @@ public class VectorFileIndexerJob extends WorkspaceJob {
                         return Status.CANCEL_STATUS;
 
                     monitor.subTask("Indexing "+file.getName());
-                    if (file.exists() && !isIndexFileUpToDate(file)) {
+                    if (file.exists() && IndexFile.isExistingVectorFile(file) && !IndexFile.isIndexFileUpToDate(file)) {
                         IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
                         IndexFile.performIndexing(file, subMonitor);
                         if (subMonitor.isCanceled())

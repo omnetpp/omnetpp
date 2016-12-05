@@ -242,7 +242,7 @@ class SCAVE_API IndexFile
 {
     public:
         static bool isIndexFile(const char *indexFileName);
-        static bool isVectorFile(const char *vectorFileName);
+        static bool isExistingVectorFile(const char *vectorFileName);
         static std::string getIndexFileName(const char *vectorFileName);
         static std::string getVectorFileName(const char *indexFileName);
         /**

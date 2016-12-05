@@ -10,7 +10,7 @@ package org.omnetpp.scave.builder;
 import static org.omnetpp.scave.engineext.IndexFile.getVectorFileFor;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFile;
 import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
-import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
+import static org.omnetpp.scave.engineext.IndexFile.isExistingVectorFile;
 import static org.omnetpp.scave.engineext.IndexFile.performIndexing;
 
 import java.io.File;
@@ -133,7 +133,7 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
     }
 
     protected boolean toBeIndexed(IFile file) {
-        if (isVectorFile(file) && !file.getParent().isDerived()) {
+        if (isExistingVectorFile(file) && !file.getParent().isDerived()) {
             return !isIndexFileUpToDate(file);
         }
         else

@@ -1220,7 +1220,7 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
         fileRef = addFile(fileName, fileSystemFileName, false);
 
         // if vector file and has index, load vectors from the index file
-        if (IndexFile::isVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName)) {
+        if (IndexFile::isExistingVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName)) {
             std::string indexFileName = IndexFile::getIndexFileName(fileSystemFileName);
             loadVectorsFromIndex(indexFileName.c_str(), fileRef);
         }

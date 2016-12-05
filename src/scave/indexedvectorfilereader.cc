@@ -77,7 +77,7 @@ void IndexedVectorFileReaderNode::readIndexFile()
 {
     const char *fn = filename.c_str();
 
-    if (!IndexFile::isVectorFile(fn))
+    if (!IndexFile::isExistingVectorFile(fn))
         throw opp_runtime_error("Indexed vector file reader: Not a vector file, file %s", fn);
     if (!IndexFile::isIndexFileUpToDate(fn))
         throw opp_runtime_error("Indexed vector file reader: Index file is not up to date, file %s", fn);
