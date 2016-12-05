@@ -24,6 +24,7 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccanvas.h"
+#include "common/matchexpression.h"
 #include "qtenvdefs.h"
 #include "logbuffer.h"
 #include "componenthistory.h"
@@ -55,8 +56,7 @@ class DisplayUpdateController;
 class MessageAnimator;
 
 using namespace envir;
-
-namespace common { class MatchExpression; }
+using namespace common;
 
 #define MAX_CLASSNAME  100
 
@@ -159,21 +159,21 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       eState simulationState;      // state of the simulation run
       RunMode runMode = RUNMODE_NOT_RUNNING; // the current mode the simulation is executing under
       struct RunUntil {
-          simtime_t time;          // time limit in current "Run Until" execution, or zero
-          eventnumber_t eventNumber;  // event number in current "Run Until" execution, or zero
-          cMessage *msg;           // stop before this event; also when this message is cancelled
-          cModule *module;         // stop before and after events in this module; ignored with EXPRESS mode
+          simtime_t time;           // time limit in current "Run Until" execution, or zero
+          eventnumber_t eventNumber;// event number in current "Run Until" execution, or zero
+          cMessage *msg;            // stop before this event; also when this message is cancelled
+          cModule *module;          // stop before and after events in this module; ignored with EXPRESS mode
           bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
       } runUntil;
       bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before it
       Speedometer speedometer;
 
-      bool stopSimulationFlag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
+      bool stopSimulationFlag;      // indicates that the simulation should be stopped (STOP button pressed in the UI)
 
       typedef std::list<Inspector*> InspectorList;
-      InspectorList inspectors;    // list of inspector objects
+      InspectorList inspectors;     // list of inspector objects
 
-      LogBuffer logBuffer;         // text window contents
+      LogBuffer logBuffer;          // text window contents
       ComponentHistory componentHistory; // id-to-fullpath mapping for deleted modules
       ModuleLayouter moduleLayouter;
 
@@ -191,7 +191,6 @@ class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
-      typedef omnetpp::common::MatchExpression MatchExpression;
       typedef std::vector<MatchExpression*> MatchExpressions;
       std::string silentEventFilterLines; // match expressions, separated by newlines (\n)
       MatchExpressions silentEventFilters; // silent events: objects to hide from animation and the timeline
