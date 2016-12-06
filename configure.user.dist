@@ -71,6 +71,20 @@ WITH_NETBUILDER=yes
 WITH_PARSIM=yes
 
 #
+# Set to "yes" to use SQLite as default file format for output vector and
+# output scalar files. As of version 5.1, SQLite support is an experimental 
+# feature.
+#
+# To try SQLite result files without changing the default, add the following
+# lines into the omnetpp.ini files of your simulations (or specify the same 
+# settings on the simulation command line, with the "--" prefix):
+#
+# outputvectormanager-class="omnetpp::envir::SqliteOutputVectorManager"
+# outputscalarmanager-class="omnetpp::envir::SqliteOutputScalarManager"
+#
+PREFER_SQLITE_RESULT_FILES=no
+
+#
 # Set to "yes" to enable SystemC support. (Available only in the commecial version (OMNEST))
 # Please note that SystemC is not supported on MAC OS X and on the MinGW compiler on Windows.
 #
