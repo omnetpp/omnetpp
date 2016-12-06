@@ -42,15 +42,12 @@ class Inspector;
 }
 }
 
+// for Q_DECLARE_METATYPE in Qt5, omnetpp::qtenv::Inspector would have to be fully defined, which we don't want here
+Q_DECLARE_OPAQUE_POINTER(omnetpp::qtenv::Inspector*)
+
+// and for Q_DECLARE_OPAQUE_POINTER these classes would have to be subclasses of QObject which is not gonna happen...
 Q_DECLARE_METATYPE(omnetpp::cObject*)
 Q_DECLARE_METATYPE(omnetpp::cMessage*)
-
-#if QT_VERSION >= 0x050000
-// for Q_DECLARE_METATYPE in Qt5, omnetpp::qtenv::Inspector would have to be fully defined, which we don't want here
-    Q_DECLARE_OPAQUE_POINTER(omnetpp::qtenv::Inspector*)
-#else
-    Q_DECLARE_METATYPE(omnetpp::qtenv::Inspector*)
-#endif
 
 typedef QPair<omnetpp::cObject*, int> ActionDataPair;
 typedef QPair<ActionDataPair, omnetpp::qtenv::Inspector*> ActionDataTriplet;
