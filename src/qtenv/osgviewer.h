@@ -21,23 +21,9 @@
 
 #include "qtenv.h"
 #include "omnetpp/cosgcanvas.h"
-
 #include <QAction>
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    #include <QOpenGLWidget>
-    #include <QOpenGLContext>
-    typedef QOpenGLWidget GLWidget;
-    typedef QOpenGLContext GLContext;
-    #define OSGVIEWER_NEW_QT 1 // not calling it 4 and 5, since the shift is at 5.4.0
-#else
-    #include <QGLWidget>
-    #include <QGLContext>
-    typedef QGLWidget GLWidget;
-    typedef QGLContext GLContext;
-    #define OSGVIEWER_OLD_QT 1
-#endif
-
+#include <QOpenGLWidget>
+#include <QOpenGLContext>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/View>
 #include <osg/Camera>

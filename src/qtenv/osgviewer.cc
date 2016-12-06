@@ -56,7 +56,7 @@ namespace qtenv {
 
 class GraphicsWindow : public osgViewer::GraphicsWindowEmbedded {
     OsgViewer *v = nullptr;
-    GLContext *c = nullptr;
+    QOpenGLContext *c = nullptr;
     QOffscreenSurface *s = nullptr;
 
     static QSurfaceFormat traitsToSurfaceFormat(const osg::GraphicsContext::Traits *traits) {
@@ -103,7 +103,7 @@ public:
     }
 
     GraphicsWindow(osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t) {
-        c = new GLContext();
+        c = new QOpenGLContext();
         s = new QOffscreenSurface();
         s->setFormat(traitsToSurfaceFormat(t));
         auto state = new osg::State;
@@ -166,22 +166,16 @@ public:
 
     void swapBuffersImplementation() override {
         if (v) {
-            #ifdef OSGVIEWER_OLD_QT
-                v->swapBuffers();
+            // No manual buffer swapping, as in the newer QOpenGLWidget
+            // all rendering is done in a magical way into an FBO,
+            // and this will basically blit that onto the screen.
+
+            // Well except of course on Mac it has to be done differently...
+            #ifdef Q_OS_MAC
+                v->context()->swapBuffers(v->context()->surface());
             #endif
 
-            #ifdef OSGVIEWER_NEW_QT
-                // No manual buffer swapping, as in the newer QOpenGLWidget
-                // all rendering is done in a magical way into an FBO,
-                // and this will basically blit that onto the screen.
-
-                // Well except of course on Mac it has to be done differently...
-                #ifdef Q_OS_MAC
-                    v->context()->swapBuffers(v->context()->surface());
-                #endif
-
-                v->update();
-            #endif
+            v->update();
         }
     }
 };
@@ -236,15 +230,9 @@ void HeartBeat::init(osg::ref_ptr<osgViewer::CompositeViewer> viewer) {
 }
 
 void HeartBeat::start() {
-    if (!instance->timer.isActive()) {
-        #ifdef OSGVIEWER_OLD_QT // just hoping it will have a high enough resolution
-            instance->timer.start(1000 / 60, instance); // 60 FPS master race, yeah
-        #endif
-
-        #ifdef OSGVIEWER_NEW_QT
-            instance->timer.start(1000 / 60, Qt::PreciseTimer, instance); // 60 FPS master race, yeah
-        #endif
-    }
+    // TODO: make this cooperate with the dynamic FPS mechanism of the 2D canvases
+    if (!instance->timer.isActive())
+        instance->timer.start(1000 / 60, Qt::PreciseTimer, instance); // 60 FPS master race, yeah
 }
 
 void HeartBeat::uninit() {
@@ -268,7 +256,7 @@ void HeartBeat::timerEvent(QTimerEvent *event) {
 
 osg::ref_ptr<osgViewer::CompositeViewer> OsgViewer::viewer = nullptr;
 
-OsgViewer::OsgViewer(QWidget *parent): GLWidget(parent)
+OsgViewer::OsgViewer(QWidget *parent): QOpenGLWidget(parent)
 {
     if (!viewer.valid()) { // this is the validity of the pointer, not of the viewer
 #if OSG_VERSION_GREATER_OR_EQUAL(3, 5, 0)
@@ -377,7 +365,7 @@ bool OsgViewer::event(QEvent *event)
         viewer->setCameraWithFocus(camera);
     }
 
-    bool handled = GLWidget::event(event);
+    bool handled = QOpenGLWidget::event(event);
 
     // This ensures that the OSG widget is always going to be repainted after the
     // user performed some interaction. Doing this in the event handler ensures
