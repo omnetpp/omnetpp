@@ -101,27 +101,32 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
     //@{
 
     /**
-     * This method is called internally by the Envir library when a cOutVector object registers itself.
-     * The return value is a handle of type void*; this handle is passed to
-     * record() to identify the vector.
+     * Registers an output vector, and returns a handle that identifies the
+     * vector in subsequent calls e.g. record().
+     *
+     * Note: registerVector() calls are also allowed before startRun().
      */
     virtual void *registerVector(const char *modulename, const char *vectorname) = 0;
 
     /**
-     * This method is called internally by the Envir library when a cOutVector object deregisters itself.
+     * Deregisters an output vector. Deregistration makes the vector handle invalid.
+     *
+     * Note: deregisterVector() calls are also allowed after endRun().
      */
     virtual void deregisterVector(void *vechandle) = 0;
 
     /**
-     * This method is called internally by the Envir library when an attribute of the
-     * cOutVector object is set.
+     * Sets an attribute on the output vector. setVectorAttribute() is not allowed
+     * after data have already been recorded into the vector.
      */
     virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) = 0;
 
     /**
-     * This method is called internally by the Envir library when a cOutVector object
-     * writes a value into the output vector. The return value should be true if the
-     * data was actually recorded, and false if it was not recorded (because of filtering, etc.)
+     * Write data into the output vector. The return value is true if the
+     * data was actually recorded, and false if it was not recorded (because of
+     * filtering, etc.)
+     *
+     * Calling record() is only allowed between startRun() and endRun().
      */
     virtual bool record(void *vechandle, simtime_t t, double value) = 0;
 
