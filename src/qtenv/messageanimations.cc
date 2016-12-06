@@ -781,7 +781,7 @@ void SendDirectAnimation::init()
 {
     MessageAnimation::init();
     for (auto &c : connectionItems)
-        c.second->setVisible(true);
+        c.second->setVisible(getQtenv()->opt->showSendDirectArrows);
 }
 
 void SendDirectAnimation::begin()
