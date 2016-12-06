@@ -114,24 +114,23 @@ void cFileOutputScalarManager::initialize()
         // this is the first scalar written in this run, write out run attributes
         run.writeRunData(f, fname);
 
-        // save iteration variables
+        // save numeric iteration variables as scalars as well, after saving them as run attributes (TODO this should not be necessary)
         std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();
         for (int i = 0; i < (int)v.size(); i++) {
             const char *name = v[i];
             const char *value = getEnvir()->getConfigEx()->getVariable(v[i]);
-            recordNumericIterationVariable(name, value);
+            recordNumericIterationVariableAsScalar(name, value);
         }
     }
 }
 
-void cFileOutputScalarManager::recordNumericIterationVariable(const char *name, const char *value)
+void cFileOutputScalarManager::recordNumericIterationVariableAsScalar(const char *name, const char *value)
 {
     char *e;
     setlocale(LC_NUMERIC, "C");
     (void)strtod(value, &e);
     if (*e == '\0') {
         // plain number - just record as it is
-        // XXX write with using an "itervar" keyword not "scalar" (needs to be understood by IDE as well)
         CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
     }
     else if (e != value) {
