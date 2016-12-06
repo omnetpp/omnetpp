@@ -34,7 +34,7 @@ FileWriterNode::FileWriterNode(const char *filename, const char *banner)
     f = nullptr;
     this->fileName = filename;
     this->banner = (banner ? banner : "");
-    this->prec = DEFAULT_PRECISION;
+    this->prec = DEFAULT_RESULT_PRECISION;
 }
 
 FileWriterNode::~FileWriterNode()

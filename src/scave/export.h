@@ -215,7 +215,7 @@ class SCAVE_API ScaveExport
         virtual std::string makeFileName(const std::string name) = 0;
 
     public:
-        ScaveExport() : prec(DEFAULT_PRECISION) {}
+        ScaveExport() : prec(DEFAULT_RESULT_PRECISION) {}
         virtual ~ScaveExport();
 
         void setPrecision(int prec) { this->prec = prec; }

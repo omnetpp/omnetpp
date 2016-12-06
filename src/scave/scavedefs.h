@@ -33,7 +33,7 @@ namespace scave {
 #  define SCAVE_API
 #endif
 
-#define DEFAULT_PRECISION  14
+#define DEFAULT_RESULT_PRECISION  14
 
 using omnetpp::common::BigDecimal;
 using omnetpp::common::opp_runtime_error;

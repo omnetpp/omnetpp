@@ -241,7 +241,7 @@ IndexedVectorFileWriterNode::IndexedVectorFileWriterNode(const char *fileName, c
 {
     f = nullptr;
     indexWriter = nullptr;
-    this->prec = DEFAULT_PRECISION;
+    this->prec = DEFAULT_RESULT_PRECISION;
     this->fileHeader = (fileHeader ? fileHeader : "");
     this->fileName = fileName;
     this->indexFileName = indexFileName;

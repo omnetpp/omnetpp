@@ -41,7 +41,7 @@ namespace scave {
 VectorFileWriterNode::VectorFileWriterNode(const char *fileName, const char *fileHeader)
 {
     f = nullptr;
-    this->prec = DEFAULT_PRECISION;
+    this->prec = DEFAULT_RESULT_PRECISION;
     this->fileName = fileName;
     this->fileHeader = (fileHeader ? fileHeader : "");
 }

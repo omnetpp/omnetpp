@@ -32,7 +32,7 @@ namespace scave {
 OctaveExport::OctaveExport(const char *fileName)
 {
     f = nullptr;
-    this->prec = DEFAULT_PRECISION;
+    this->prec = DEFAULT_RESULT_PRECISION;
     this->fileName = fileName;
 }
 
