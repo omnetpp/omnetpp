@@ -3,7 +3,7 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Author: Zoltan Bojthe
+//  Author: Zoltan Bojthe, Andras Varga
 //
 //==========================================================================
 
@@ -13,10 +13,6 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
-
-//TODO redesign for buffered inserts
-
-#include "omnetpp/simkerneldefs.h"
 
 #include <cassert>
 #include <cstring>
@@ -42,16 +38,17 @@ namespace envir {
 
 #define DEFAULT_COMMIT_FREQ      "100000"
 
-Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_DB, "output-scalar-db", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sqlite.sca", "Name for the output scalar file.");
-Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_DB_APPEND, "output-scalar-db-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it, or delete it and begin a new file (default).");
-Register_GlobalConfigOption(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "scalar-db-commit-freq", CFG_INT, DEFAULT_COMMIT_FREQ, "COMMIT every n INSERTs, default=" DEFAULT_COMMIT_FREQ);
+// global options
+extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_FILE;
+extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_FILE_APPEND;
 
-//TODO registered in fileoutscalarmgr:
+Register_GlobalConfigOption(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "output-scalar-db-commit-freq", CFG_INT, DEFAULT_COMMIT_FREQ, "Used with SqliteOutputScalarManager: COMMIT every n INSERTs.");
+
+// per-scalar options
 extern omnetpp::cConfigOption *CFGID_SCALAR_RECORDING;
+extern omnetpp::cConfigOption *CFGID_BIN_RECORDING;
 
-Register_Class(cSqliteOutputScalarManager);
-
-#define opp_runtime_error cRuntimeError
+Register_Class(SqliteOutputScalarManager);
 
 static const char SQL_CREATE_TABLES[] =
         "PRAGMA foreign_keys = ON; "
@@ -128,10 +125,20 @@ static const char SQL_CREATE_TABLES[] =
         ""
         "CREATE TABLE if not exists vector "
         "( "
-            "vectorId      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-            "runId         INTEGER  NOT NULL REFERENCES run(runId) on DELETE CASCADE, "
-            "moduleName    TEXT NOT NULL, "
-            "vectorName    TEXT NOT NULL "
+            "vectorId        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+            "runId           INTEGER  NOT NULL REFERENCES run(runId) on DELETE CASCADE, "
+            "moduleName      TEXT NOT NULL, "
+            "vectorName      TEXT NOT NULL, "
+            "vectorCount     INTEGER, "   // cannot be NOT NULL because we fill it in later
+            "vectorMin       REAL, "
+            "vectorMax       REAL, "
+            "vectorSum       REAL, "
+            "vectorSumSqr    REAL, "
+            "startEventNum   INTEGER, "
+            "endEventNum     INTEGER, "
+            "startSimtimeRaw INTEGER, "
+            "endSimtimeRaw   INTEGER "
+
         "); "
         ""
         "CREATE TABLE if not exists vectorattr "
@@ -155,15 +162,14 @@ static const char SQL_CREATE_TABLES[] =
         "PRAGMA journal_mode = TRUNCATE; "
         "PRAGMA cache_size = 100000; "
         "PRAGMA page_size = 16384; "
-        ""
-        "BEGIN IMMEDIATE TRANSACTION; "         //TODO use it later: at the first insert
-        ""
 ;
 
-cSqliteOutputScalarManager::cSqliteOutputScalarManager()
+SqliteOutputScalarManager::SqliteOutputScalarManager()
 {
+    initialized = false;
     runId = -1;
     db = nullptr;
+    stmt = nullptr;
     add_scalar_stmt = nullptr;
     add_scalar_attr_stmt = nullptr;
     add_statistic_stmt = nullptr;
@@ -174,164 +180,177 @@ cSqliteOutputScalarManager::cSqliteOutputScalarManager()
     insertCount = 0;
 }
 
-cSqliteOutputScalarManager::~cSqliteOutputScalarManager()
+SqliteOutputScalarManager::~SqliteOutputScalarManager()
 {
-    closeDb();
+    cleanupDb(); // not closeDb() because it throws; also, closeDb() must have been called already if there was no error
 }
 
-static int callback(void *NotUsed, int argc, char **argv, char **azColName)
+inline void SqliteOutputScalarManager::checkOK(int sqlite3_result)
 {
-    int i;
-    for (i = 0; i < argc; i++) {
-        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-    }
-    printf("\n");
-    return 0;
+    if (sqlite3_result != SQLITE_OK)
+        error(sqlite3_errmsg(db));
 }
 
-void cSqliteOutputScalarManager::openDb()
+inline void SqliteOutputScalarManager::checkDone(int sqlite3_result)
+{
+    if (sqlite3_result != SQLITE_DONE)
+        error(sqlite3_errmsg(db));
+}
+
+void SqliteOutputScalarManager::error(const char *errmsg)
+{
+    std::string msg = errmsg ? errmsg : "unknown SQLite error";
+    cleanupDb();
+    throw cRuntimeError("Cannot record results into '%s': %s", fname.c_str(), msg.c_str());
+}
+
+void SqliteOutputScalarManager::openDb()
 {
     mkPath(directoryOf(fname.c_str()).c_str());
-    if (sqlite3_open(fname.c_str(), &db) != SQLITE_OK) {
-        throw opp_runtime_error("Can't open database: %s\n", sqlite3_errmsg(db));
-        sqlite3_close(db);
-        db = nullptr;
-        return;
-    }
+    checkOK(sqlite3_open(fname.c_str(), &db));
 
-    sqlite3_busy_timeout(db, 10000);    // max time [ms] for waiting to unlock database
+    checkOK(sqlite3_busy_timeout(db, 10000));    // max time [ms] for waiting to unlock database
 
-    char *zErrMsg = nullptr;
-    if (sqlite3_exec(db, SQL_CREATE_TABLES, callback, 0, &zErrMsg) != SQLITE_OK) {
-        throw opp_runtime_error("SQL error at CREATE TABLES: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
-        sqlite3_close(db);
-        db = nullptr;
-    }
+    checkOK(sqlite3_exec(db, SQL_CREATE_TABLES, nullptr, 0, nullptr));
+    checkOK(sqlite3_exec(db, "BEGIN IMMEDIATE TRANSACTION;", nullptr, 0, nullptr));
+
     commitFreq = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ);
     insertCount = 0;
 }
 
-void cSqliteOutputScalarManager::closeDb()
+void SqliteOutputScalarManager::closeDb()
 {
     if (db) {
-        sqlite3_finalize(add_scalar_stmt);
-        sqlite3_finalize(add_scalar_attr_stmt);
-        char *zErrMsg = nullptr;
-        if (sqlite3_exec(db, "COMMIT TRANSACTION;", callback, nullptr, &zErrMsg) != SQLITE_OK)
-            throw opp_runtime_error("SQL error at COMMIT TRANSACTION: %s\n", zErrMsg);
-        if (sqlite3_exec(db, "PRAGMA journal_mode = DELETE; ", callback, nullptr, &zErrMsg) != SQLITE_OK) {
-            throw opp_runtime_error("SQL error at PRAGMA journal_mode = DELETE: %s\n", zErrMsg);
-        }
-        sqlite3_close(db);
+        finalizeStatement(stmt);
+        finalizeStatement(add_scalar_stmt);
+        finalizeStatement(add_scalar_attr_stmt);
+        finalizeStatement(add_statistic_stmt);
+        finalizeStatement(add_statistic_attr_stmt);
+        finalizeStatement(add_statistic_bin_stmt);
+
+        checkOK(sqlite3_exec(db, "COMMIT TRANSACTION;", nullptr, nullptr, nullptr));
+        checkOK(sqlite3_exec(db, "PRAGMA journal_mode = DELETE;", nullptr, nullptr, nullptr));
+        checkOK(sqlite3_close(db));
+
         runId = -1;
         db = nullptr;
-        add_scalar_stmt = nullptr;
-        add_scalar_attr_stmt = nullptr;
     }
 }
 
-void cSqliteOutputScalarManager::startRun()
+void SqliteOutputScalarManager::cleanupDb()  // MUST NOT THROW
+{
+    if (db) {
+        finalizeStatement(stmt);
+        finalizeStatement(add_scalar_stmt);
+        finalizeStatement(add_scalar_attr_stmt);
+        finalizeStatement(add_statistic_stmt);
+        finalizeStatement(add_statistic_attr_stmt);
+        finalizeStatement(add_statistic_bin_stmt);
+
+        // note: no checkOK() because it would throw
+        sqlite3_exec(db, "COMMIT TRANSACTION;", nullptr, nullptr, nullptr);
+        sqlite3_exec(db, "PRAGMA journal_mode = DELETE;", nullptr, nullptr, nullptr);
+        sqlite3_close(db);
+
+        runId = -1;
+        db = nullptr;
+    }
+}
+
+void SqliteOutputScalarManager::prepareStatement(sqlite3_stmt *&stmt, const char *sql)
+{
+    checkOK(sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr));
+}
+
+void SqliteOutputScalarManager::finalizeStatement(sqlite3_stmt *&stmt)
+{
+    sqlite3_finalize(stmt); // note: no checkOK() needed, see sqlite3_finalize() docu
+    stmt = nullptr; // prevent use-after-finalize
+}
+
+void SqliteOutputScalarManager::startRun()
 {
     // clean up file from previous runs
+    initialized = false;
     closeDb();
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_DB);
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
-    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_DB_APPEND) == false) {
-        removeFile(fname.c_str(), "old sqlite output scalar file");
-    }
+    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
+        removeFile(fname.c_str(), "old SQLite output scalar file");
     run.reset();
 }
 
-void cSqliteOutputScalarManager::endRun()
+void SqliteOutputScalarManager::endRun()
 {
     closeDb();
+    initialized = false;
 }
 
-void cSqliteOutputScalarManager::init()
+void SqliteOutputScalarManager::initialize()
 {
-    if (!db) {
-        openDb();
-        if (!db)
-            return;
+    openDb();
+    writeRunData();
+}
+
+void SqliteOutputScalarManager::writeRunData()
+{
+    run.initRun();
+
+    // prepare sql statements
+    prepareStatement(add_scalar_stmt, "INSERT INTO scalar (runId, moduleName, scalarName, scalarValue) VALUES (?, ?, ?, ?);");
+    prepareStatement(add_scalar_attr_stmt, "INSERT INTO scalarattr (scalarId, attrName, attrValue) VALUES (?, ?, ?);");
+    prepareStatement(add_statistic_stmt,
+            "INSERT INTO histogram (runId, moduleName, histName, "
+            "histCount, "
+            "histMean, histStddev, histSum, histSqrsum, histMin, histMax, "
+            "histWeights, histWeightedSum, histSqrSumWeights, histWeightedSqrSum"
+            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+    prepareStatement(add_statistic_attr_stmt, "INSERT INTO histattr (histId, attrName, attrValue) VALUES (?, ?, ?);");
+    prepareStatement(add_statistic_bin_stmt, "INSERT INTO histbin (histId, baseValue, cellValue) VALUES (?, ?, ?);");
+
+    // save run
+    prepareStatement(stmt, "INSERT INTO run (runname, simTimeExp) VALUES (?, ?);");
+    checkOK(sqlite3_bind_text(stmt, 1, run.runId.c_str(), run.runId.size(), SQLITE_STATIC));
+    checkOK(sqlite3_bind_int(stmt, 2, SimTime::getScaleExp()));
+    checkDone(sqlite3_step(stmt));
+    checkOK(sqlite3_clear_bindings(stmt));
+    runId = sqlite3_last_insert_rowid(db);
+    finalizeStatement(stmt);
+
+    // save run attributes
+    prepareStatement(stmt, "INSERT INTO runattr (runid, attrname, attrvalue) VALUES (?, ?, ?);");
+    for (opp_string_map::iterator it = run.attributes.begin(); it != run.attributes.end(); ++it) {
+        checkOK(sqlite3_reset(stmt));
+        checkOK(sqlite3_bind_int64(stmt, 1, runId));
+        checkOK(sqlite3_bind_text(stmt, 2, it->first.c_str(), it->first.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_text(stmt, 3, it->second.c_str(), it->second.size(), SQLITE_STATIC));
+        checkDone(sqlite3_step(stmt));
+        checkOK(sqlite3_clear_bindings(stmt));
     }
+    finalizeStatement(stmt);
 
-    if (!run.initialized) {
-        // this is the first scalar written in this run
+    // save run params
+    prepareStatement(stmt, "INSERT INTO runparam (runid, parname, parvalue) VALUES (?, ?, ?);");
+    for (opp_string_map::iterator it = run.moduleParams.begin(); it != run.moduleParams.end(); ++it) {
+        checkOK(sqlite3_reset(stmt));
+        checkOK(sqlite3_bind_int64(stmt, 1, runId));
+        checkOK(sqlite3_bind_text(stmt, 2, it->first.c_str(), it->first.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_text(stmt, 3, it->second.c_str(), it->second.size(), SQLITE_STATIC));
+        checkDone(sqlite3_step(stmt));
+        checkOK(sqlite3_clear_bindings(stmt));
+    }
+    finalizeStatement(stmt);
 
-        run.initRun();
-
-        sqlite3_stmt *stmt = nullptr;
-        //TODO check and use existing run based on runName
-        // save run
-        prepareStmt(&stmt, "insert into run (runname, simTimeExp) values (?, ?);");
-        if (sqlite3_bind_text(stmt, 1, run.runId.c_str(), run.runId.size(), SQLITE_STATIC) != SQLITE_OK)
-            throw opp_runtime_error("database error: %s\n", sqlite3_errmsg(db));
-        if (sqlite3_bind_int(stmt, 2, SimTime::getScaleExp()) != SQLITE_OK)
-            throw opp_runtime_error("database error: %s\n", sqlite3_errmsg(db));
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-            throw opp_runtime_error("database error: %s\n", sqlite3_errmsg(db));
-        sqlite3_clear_bindings(stmt);
-        runId = sqlite3_last_insert_rowid(db);
-        sqlite3_finalize(stmt);
-
-        // save run attributes
-        prepareStmt(&stmt, "insert into runattr (runid, attrname, attrvalue) values (?, ?, ?);");
-        for (opp_string_map::iterator it = run.attributes.begin(); it != run.attributes.end(); ++it) {
-            sqlite3_reset(stmt);
-            sqlite3_bind_int64(stmt, 1, runId);
-            sqlite3_bind_text(stmt, 2, it->first.c_str(), it->first.size(), SQLITE_STATIC);
-            sqlite3_bind_text(stmt, 3, it->second.c_str(), it->second.size(), SQLITE_STATIC);
-            if (sqlite3_step(stmt) != SQLITE_DONE)
-                throw opp_runtime_error("database error: %s\n", sqlite3_errmsg(db));
-            sqlite3_clear_bindings(stmt);
-        }
-        sqlite3_finalize(stmt);
-
-        // save run params
-        prepareStmt(&stmt, "insert into runparam (runid, parname, parvalue) values (?, ?, ?);");
-        for (opp_string_map::iterator it = run.moduleParams.begin(); it != run.moduleParams.end(); ++it) {
-            sqlite3_reset(stmt);
-            sqlite3_bind_int64(stmt, 1, runId);
-            sqlite3_bind_text(stmt, 2, it->first.c_str(), it->first.size(), SQLITE_STATIC);
-            sqlite3_bind_text(stmt, 3, it->second.c_str(), it->second.size(), SQLITE_STATIC);
-            if (sqlite3_step(stmt) != SQLITE_DONE)
-                throw opp_runtime_error("database error: %s\n", sqlite3_errmsg(db));
-            sqlite3_clear_bindings(stmt);
-        }
-        sqlite3_finalize(stmt);
-
-        // prepare sql statements
-        prepareStmt(&add_scalar_stmt, "insert into scalar (runId, moduleName, scalarName, scalarValue) values (?, ?, ?, ?);");
-        prepareStmt(&add_scalar_attr_stmt, "insert into scalarattr (scalarId, attrName, attrValue) values (?, ?, ?);");
-        prepareStmt(&add_statistic_stmt,
-                "insert into histogram (runId, moduleName, histName, "
-                "histCount, "
-                "histMean, histStddev, histSum, histSqrsum, histMin, histMax, "
-                "histWeights, histWeightedSum, histSqrSumWeights, histWeightedSqrSum"
-                ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-        prepareStmt(&add_statistic_attr_stmt, "insert into histattr (histId, attrName, attrValue) values (?, ?, ?);");
-        prepareStmt(&add_statistic_bin_stmt, "insert into histbin (histId, baseValue, cellValue) values (?, ?, ?);");
-
-        // save iteration variables
-        std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();
-        std::cout << "Save iteration variables: " << v.size() << std::endl;
-        for (int i = 0; i < (int)v.size(); i++) {
-            const char *name = v[i];
-            const char *value = getEnvir()->getConfigEx()->getVariable(v[i]);
-            std::cout << "recordNumericIterationVariable(" << name << ", " << value << ");" << std::endl;
-            recordNumericIterationVariable(name, value);
-        }
+    // save numeric iteration variables as scalars as well, after saving them as run attributes (TODO this should not be necessary)
+    std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();
+    for (int i = 0; i < (int)v.size(); i++) {
+        const char *name = v[i];
+        const char *value = getEnvir()->getConfigEx()->getVariable(v[i]);
+        recordNumericIterationVariableAsScalar(name, value);
     }
 }
 
-void cSqliteOutputScalarManager::prepareStmt(sqlite3_stmt **stmt, const char *sql)
-{
-    if (sqlite3_prepare_v2(db, sql, -1, stmt, nullptr) != SQLITE_OK)
-        throw opp_runtime_error("database error at prepareStmt(`%s`): %s in statement `%s`\n", sql, sqlite3_errmsg(db));
-}
-
-void cSqliteOutputScalarManager::recordNumericIterationVariable(const char *name, const char *valueStr)
+void SqliteOutputScalarManager::recordNumericIterationVariableAsScalar(const char *name, const char *valueStr)
 {
     static const std::string DOT(".");
     char *e;
@@ -339,7 +358,6 @@ void cSqliteOutputScalarManager::recordNumericIterationVariable(const char *name
     double value = strtod(valueStr, &e);
     if (*e == '\0') {
         // plain number - just record as it is
-        // XXX write with using an "itervar" keyword not "scalar" (needs to be understood by IDE as well)
         writeScalar(DOT, name, value);
     }
     else if (e != valueStr) {
@@ -354,41 +372,43 @@ void cSqliteOutputScalarManager::recordNumericIterationVariable(const char *name
         }
         if (parsedOK) {
             sqlite3_int64 scalarId = writeScalar(DOT, name, value);
-            if (!unit.empty()) {
+            if (!unit.empty())
                 writeScalarAttr(scalarId, "unit", 4, unit.c_str(), unit.size());
-            }
         }
     }
 }
 
-sqlite_int64 cSqliteOutputScalarManager::writeScalar(const std::string &componentFullPath, const char *name, double value)
+sqlite_int64 SqliteOutputScalarManager::writeScalar(const std::string &componentFullPath, const char *name, double value)
 {
-    sqlite3_reset(add_scalar_stmt);
-    sqlite3_bind_int64(add_scalar_stmt, 1, runId);
-    sqlite3_bind_text(add_scalar_stmt, 2, componentFullPath.c_str(), componentFullPath.size(), SQLITE_STATIC);
-    sqlite3_bind_text(add_scalar_stmt, 3, name, strlen(name), SQLITE_STATIC);
-    sqlite3_bind_double(add_scalar_stmt, 4, value);
-    sqlite3_step(add_scalar_stmt);
-//    sqlite3_clear_bindings(add_scalar_stmt);
+    checkOK(sqlite3_reset(add_scalar_stmt));
+    checkOK(sqlite3_bind_int64(add_scalar_stmt, 1, runId));
+    checkOK(sqlite3_bind_text(add_scalar_stmt, 2, componentFullPath.c_str(), componentFullPath.size(), SQLITE_STATIC));
+    checkOK(sqlite3_bind_text(add_scalar_stmt, 3, name, strlen(name), SQLITE_STATIC));
+    checkOK(sqlite3_bind_double(add_scalar_stmt, 4, value));
+    checkDone(sqlite3_step(add_scalar_stmt));
+    checkOK(sqlite3_clear_bindings(add_scalar_stmt));
     sqlite3_int64 scalarId = sqlite3_last_insert_rowid(db);
     return scalarId;
 }
 
-void cSqliteOutputScalarManager::writeScalarAttr(sqlite_int64 scalarId, const char *name, size_t nameLength, const char *value, size_t valueLength)
+void SqliteOutputScalarManager::writeScalarAttr(sqlite_int64 scalarId, const char *name, size_t nameLength, const char *value, size_t valueLength)
 {
-    sqlite3_reset(add_scalar_attr_stmt);
-    sqlite3_bind_int64(add_scalar_attr_stmt, 1, scalarId);
-    sqlite3_bind_text(add_scalar_attr_stmt, 2, name, nameLength, SQLITE_STATIC);
-    sqlite3_bind_text(add_scalar_attr_stmt, 3, value, valueLength, SQLITE_STATIC);
-    sqlite3_step(add_scalar_attr_stmt);
-//    sqlite3_clear_bindings(add_scalar_attr_stmt);
+    checkOK(sqlite3_reset(add_scalar_attr_stmt));
+    checkOK(sqlite3_bind_int64(add_scalar_attr_stmt, 1, scalarId));
+    checkOK(sqlite3_bind_text(add_scalar_attr_stmt, 2, name, nameLength, SQLITE_STATIC));
+    checkOK(sqlite3_bind_text(add_scalar_attr_stmt, 3, value, valueLength, SQLITE_STATIC));
+    checkDone(sqlite3_step(add_scalar_attr_stmt));
+    checkOK(sqlite3_clear_bindings(add_scalar_attr_stmt));
 }
 
-void cSqliteOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
+void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    if (!run.initialized)
-        init();
-    if (!db)
+    if (!initialized) {
+        initialized = true;
+        initialize();
+    }
+
+    if (isBad())
         return;
 
     if (!name || !name[0])
@@ -399,25 +419,28 @@ void cSqliteOutputScalarManager::recordScalar(cComponent *component, const char 
     if (enabled) {
         sqlite3_int64 scalarId = writeScalar(componentFullPath, name, value);
         if (attributes) {
-            for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it) {
+            for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
                 writeScalarAttr(scalarId, it->first.c_str(), it->first.size(), it->second.c_str(), it->second.size());
-            }
         }
     }
+
     // commit every once in a while
     if (++insertCount >= commitFreq) {
         insertCount = 0;
-        commitDb();
+        commitAndBeginNew();
     }
 }
 
-void cSqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void SqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     static const double MinusInfinity = -1.0/0.0;
 
-    if (!run.initialized)
-        init();
-    if (!db)
+    if (!initialized) {
+        initialized = true;
+        initialize();
+    }
+
+    if (isBad())
         return;
 
     if (!name)
@@ -432,26 +455,26 @@ void cSqliteOutputScalarManager::recordStatistic(cComponent *component, const ch
     if (!enabled)
         return;
 
-    sqlite3_reset(add_statistic_stmt);
-    sqlite3_bind_int64(add_statistic_stmt, 1, runId);
-    sqlite3_bind_text(add_statistic_stmt, 2, fullPath.c_str(), fullPath.size(), SQLITE_STATIC);
-    sqlite3_bind_text(add_statistic_stmt, 3, name, strlen(name), SQLITE_STATIC);
-    sqlite3_bind_int64(add_statistic_stmt, 4, statistic->getCount());
-    sqlite3_bind_double(add_statistic_stmt, 5, statistic->getMean());
-    sqlite3_bind_double(add_statistic_stmt, 6, statistic->getStddev());
-    sqlite3_bind_double(add_statistic_stmt, 7, statistic->getSum());
-    sqlite3_bind_double(add_statistic_stmt, 8, statistic->getSqrSum());
-    sqlite3_bind_double(add_statistic_stmt, 9, statistic->getMin());
-    sqlite3_bind_double(add_statistic_stmt, 10, statistic->getMax());
+    checkOK(sqlite3_reset(add_statistic_stmt));
+    checkOK(sqlite3_bind_int64(add_statistic_stmt, 1, runId));
+    checkOK(sqlite3_bind_text(add_statistic_stmt, 2, fullPath.c_str(), fullPath.size(), SQLITE_STATIC));
+    checkOK(sqlite3_bind_text(add_statistic_stmt, 3, name, strlen(name), SQLITE_STATIC));
+    checkOK(sqlite3_bind_int64(add_statistic_stmt, 4, statistic->getCount()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 5, statistic->getMean()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 6, statistic->getStddev()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 7, statistic->getSum()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 8, statistic->getSqrSum()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 9, statistic->getMin()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 10, statistic->getMax()));
     if (statistic->isWeighted()) {
-        sqlite3_bind_double(add_statistic_stmt, 11, statistic->getWeights());
-        sqlite3_bind_double(add_statistic_stmt, 12, statistic->getWeightedSum());
-        sqlite3_bind_double(add_statistic_stmt, 13, statistic->getSqrSumWeights());
-        sqlite3_bind_double(add_statistic_stmt, 14, statistic->getWeightedSqrSum());
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 11, statistic->getWeights()));
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 12, statistic->getWeightedSum()));
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 13, statistic->getSqrSumWeights()));
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 14, statistic->getWeightedSqrSum()));
     }
-    sqlite3_step(add_statistic_stmt);
+    checkDone(sqlite3_step(add_statistic_stmt));
     sqlite3_int64 statisticId = sqlite3_last_insert_rowid(db);
-    sqlite3_clear_bindings(add_statistic_stmt);
+    checkOK(sqlite3_clear_bindings(add_statistic_stmt));
 
     if (attributes)
         for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
@@ -459,8 +482,8 @@ void cSqliteOutputScalarManager::recordStatistic(cComponent *component, const ch
 
     if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {
         // check that recording the histogram is enabled
-        bool enabled = getEnvir()->getConfig()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
-        if (enabled) {
+        bool binsEnabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
+        if (binsEnabled) {
             if (!histogram->isTransformed())
                 histogram->transform();
 
@@ -475,45 +498,41 @@ void cSqliteOutputScalarManager::recordStatistic(cComponent *component, const ch
     }
 }
 
-void cSqliteOutputScalarManager::writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value)
+void SqliteOutputScalarManager::writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value)
 {
-    sqlite3_reset(add_statistic_attr_stmt);
-    sqlite3_bind_int64(add_statistic_attr_stmt, 1, statisticId);
-    sqlite3_bind_text(add_statistic_attr_stmt, 2, name, strlen(name), SQLITE_STATIC);
-    sqlite3_bind_text(add_statistic_attr_stmt, 3, value, strlen(value), SQLITE_STATIC);
-    sqlite3_step(add_statistic_attr_stmt);
-//    sqlite3_clear_bindings(add_statistic_attr_stmt);
+    checkOK(sqlite3_reset(add_statistic_attr_stmt));
+    checkOK(sqlite3_bind_int64(add_statistic_attr_stmt, 1, statisticId));
+    checkOK(sqlite3_bind_text(add_statistic_attr_stmt, 2, name, strlen(name), SQLITE_STATIC));
+    checkOK(sqlite3_bind_text(add_statistic_attr_stmt, 3, value, strlen(value), SQLITE_STATIC));
+    checkDone(sqlite3_step(add_statistic_attr_stmt));
+    checkOK(sqlite3_clear_bindings(add_statistic_attr_stmt));
 }
 
-void cSqliteOutputScalarManager::writeStatisticBin(sqlite_int64 statisticId, double basePoint, unsigned long cellValue)
+void SqliteOutputScalarManager::writeStatisticBin(sqlite_int64 statisticId, double basePoint, unsigned long cellValue)
 {
-    sqlite3_reset(add_statistic_bin_stmt);
-    sqlite3_bind_int64(add_statistic_bin_stmt, 1, statisticId);
-    sqlite3_bind_double(add_statistic_bin_stmt, 2, basePoint);
-    sqlite3_bind_int64(add_statistic_bin_stmt, 3, cellValue);
-    sqlite3_step(add_statistic_bin_stmt);
-//    sqlite3_clear_bindings(add_statistic_attr_stmt);
+    checkOK(sqlite3_reset(add_statistic_bin_stmt));
+    checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 1, statisticId));
+    checkOK(sqlite3_bind_double(add_statistic_bin_stmt, 2, basePoint));
+    checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 3, cellValue));
+    checkDone(sqlite3_step(add_statistic_bin_stmt));
+    checkOK(sqlite3_clear_bindings(add_statistic_bin_stmt));
 }
 
-const char *cSqliteOutputScalarManager::getFileName() const
+const char *SqliteOutputScalarManager::getFileName() const
 {
     return fname.c_str();
 }
 
-void cSqliteOutputScalarManager::commitDb()
+void SqliteOutputScalarManager::commitAndBeginNew()
 {
-    if (db) {
-        char *zErrMsg = nullptr;
-        if (sqlite3_exec(db, "COMMIT TRANSACTION;", callback, nullptr, &zErrMsg) != SQLITE_OK)
-            throw opp_runtime_error("SQL error at COMMIT TRANSACTION: %s\n", zErrMsg);
-        if (sqlite3_exec(db, "BEGIN IMMEDIATE TRANSACTION;", callback, nullptr, &zErrMsg) != SQLITE_OK)
-            throw opp_runtime_error("SQL error at BEGIN TRANSACTION: %s\n", zErrMsg);
-    }
+    checkOK(sqlite3_exec(db, "COMMIT TRANSACTION;", nullptr, nullptr, nullptr));
+    checkOK(sqlite3_exec(db, "BEGIN IMMEDIATE TRANSACTION;", nullptr, nullptr, nullptr));
 }
 
-void cSqliteOutputScalarManager::flush()
+void SqliteOutputScalarManager::flush()
 {
-    commitDb();
+    if (db)
+        commitAndBeginNew();
 }
 
 }  // namespace envir

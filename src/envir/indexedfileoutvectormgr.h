@@ -32,9 +32,6 @@
 namespace omnetpp {
 namespace envir {
 
-#define MIN_BUFFER_MEMORY    (1024*1024)
-#define DEFAULT_MEMORY_LIMIT "16MiB"
-
 /**
  * cFileOutputManager that writes vector data in chunks and
  * generate an index file for the output.
@@ -75,7 +72,7 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
 
     struct Vector : VectorData {
       std::vector<Sample> buffer; // buffer holding recorded data not yet written to the file
-      long maxBufferedSamples;     // maximum number of samples gathered in the buffer
+      long maxBufferedSamples;    // maximum number of samples gathered in the buffer
       Block currentBlock;
 
       Vector() : buffer(), maxBufferedSamples(0) {}
@@ -87,7 +84,7 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
 
     opp_string ifname;  // index file name
     FILE *fi;           // file ptr of index file
-    size_t maxMemoryUsed;
+    size_t totalMemoryLimit;
     size_t memoryUsed;
     Vectors vectors; // registered output vectors
 

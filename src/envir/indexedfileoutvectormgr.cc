@@ -52,13 +52,15 @@ using std::ostream;
 using std::ofstream;
 using std::ios;
 
-Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
-Register_PerObjectConfigOption(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buffered-values", KIND_VECTOR, CFG_INT, nullptr, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file. The default is no per-vector limit (i.e. only the total memory limit is in effect).\nUsage: `<module-full-path>.<vector-name>.vector-max-buffered-values=<count>`.");
+// per-run option
+extern omnetpp::cConfigOption *CFGID_OUTPUTVECTOR_MEMORY_LIMIT;
+
+// per-vector option
+extern omnetpp::cConfigOption *CFGID_VECTOR_BUFFER;
 
 #ifdef CHECK
 #undef CHECK
 #endif
-
 #define CHECK(fprintf, fname)    if (fprintf<0) throw cRuntimeError("Cannot write output file '%s'", fname.c_str())
 
 
@@ -69,9 +71,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
 {
     fi = nullptr;
     memoryUsed = 0;
-
-    long d = (long)getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
-    maxMemoryUsed = (size_t)std::max(d, (long)MIN_BUFFER_MEMORY);
+    totalMemoryLimit = (long)getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
 }
 
 void cIndexedFileOutputVectorManager::openIndexFile()
@@ -138,7 +138,8 @@ void cIndexedFileOutputVectorManager::endRun()
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     Vector *vp = (Vector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
-    vp->maxBufferedSamples = getEnvir()->getConfig()->getAsInt(modulename, CFGID_VECTOR_MAX_BUFFERED_VALUES);
+    long bufferSize = (long) getEnvir()->getConfig()->getAsDouble(modulename, CFGID_VECTOR_BUFFER);
+    vp->maxBufferedSamples = bufferSize / sizeof(Sample);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 
@@ -211,7 +212,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
 
         if (vp->maxBufferedSamples > 0 && (int)vp->buffer.size() >= vp->maxBufferedSamples)
             writeBlock(vp);
-        else if (memoryUsed >= maxMemoryUsed)
+        else if (totalMemoryLimit > 0 && memoryUsed >= totalMemoryLimit)
             writeRecords();
 
         return true;

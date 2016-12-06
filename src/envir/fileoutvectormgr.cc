@@ -40,16 +40,18 @@ namespace envir {
 Register_Class(cFileOutputVectorManager);
 
 #define VECTOR_FILE_VERSION    2
-#define DEFAULT_PRECISION      "14"
 
 #define LL  INT64_PRINTF_FORMAT
 
-Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.vec", "Name for the output vector file.");
-Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on the \"time\" column of output vectors, which are represented as fixed-point numbers and always get recorded precisely.");
+// global options
+extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE;
+extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE_APPEND;  //FIXME should throw "notsupported" error if set to true!
+extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_PRECISION;
 
-Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING, "vector-recording", KIND_VECTOR, CFG_BOOL, "true", "Whether data written into an output vector should be recorded.\nUsage: `<module-full-path>.<vector-name>.vector-recording=true/false`. To control vector recording from a `@statistic`, use `<statistic-name>:vector for <vector-name>`. Example: `**.ping.roundTripTime:vector.vector-recording=false`");
-Register_PerObjectConfigOption(CFGID_VECTOR_RECORD_EVENTNUMBERS, "vector-record-eventnumbers", KIND_VECTOR, CFG_BOOL, "true", "Whether to record event numbers for an output vector. (Values and timestamps are always recorded.) Event numbers are needed by the Sequence Chart Tool, for example.\nUsage: `<module-full-path>.<vector-name>.vector-record-eventnumbers=true/false`.\nExample: `**.ping.roundTripTime:vector.vector-record-eventnumbers=false`");
-Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, nullptr, "Allows one to restrict recording of an output vector to one or more simulation time intervals. Usage: `<module-full-path>.<vector-name>.vector-recording-intervals=<intervals>`. The syntax for `<intervals>` is: `[<from>]..[<to>],...` That is, both start and end of an interval are optional, and intervals are separated by comma.\nExample: `**.roundTripTime:vector.vector-recording-intervals=..100, 200..400, 900..`");
+// per-vector options
+extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING;
+extern omnetpp::cConfigOption *CFGID_VECTOR_RECORD_EVENTNUMBERS;
+extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING_INTERVALS;
 
 #ifdef CHECK
 #undef CHECK
@@ -95,9 +97,6 @@ void cFileOutputVectorManager::initVector(VectorData *vp)
 {
     if (!f) {
         openFile();
-        if (!f)
-            return;
-
         CHECK(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
     }
 
@@ -118,6 +117,11 @@ void cFileOutputVectorManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
+
+    bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
+    if (shouldAppend)
+        throw cRuntimeError("%s does not support append mode", getClassName());
+
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");

@@ -3,7 +3,7 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Author: Zoltan Bojthe
+//  Author: Zoltan Bojthe, Andras Varga
 //
 //==========================================================================
 
@@ -33,33 +33,42 @@ namespace envir {
  *
  * @ingroup Envir
  */
-class cSqliteOutputScalarManager : public cIOutputScalarManager
+class SqliteOutputScalarManager : public cIOutputScalarManager
 {
   protected:
-    RunData run;       // holds data of the current run
-    std::string fname; // output file name
+    bool initialized;    // true after first call to initialize(), even if it failed
+    RunData run;         // holds data of the current run
+    std::string fname;   // output file name
     sqlite_int64 runId;  // runId in sqlite database
-    sqlite3 *db;       // sqlite database
+    sqlite3 *db;         // sqlite database, nullptr before initialization and after error
+    sqlite3_stmt *stmt;
     sqlite3_stmt *add_scalar_stmt;
     sqlite3_stmt *add_scalar_attr_stmt;
     sqlite3_stmt *add_statistic_stmt;
     sqlite3_stmt *add_statistic_attr_stmt;
     sqlite3_stmt *add_statistic_bin_stmt;
-    // we COMMIT after every commitFreq INSERT statements
-    int commitFreq;
+
+    int commitFreq; // we COMMIT after every commitFreq INSERT statements
     int insertCount;
 
   protected:
-    void openDb();
-    void closeDb();
-    void commitDb();
-    void init();
-    void prepareStmt(sqlite3_stmt **stmt, const char *sql);
-    sqlite_int64 writeScalar(const std::string &componentFullPath, const char *name, double value);
-    void writeScalarAttr(sqlite_int64 scalarId, const char *name, size_t nameLength, const char *value, size_t valueLength);
-    void recordNumericIterationVariable(const char *name, const char *value); // i.e. write *if* numeric
-    void writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value);
-    void writeStatisticBin(sqlite_int64 statisticId, double basePoint, unsigned long cellValue);
+    virtual void initialize();
+    virtual void openDb();
+    virtual void closeDb();
+    virtual void cleanupDb();  // MUST NOT THROW
+    virtual void commitAndBeginNew();
+    virtual void writeRunData();
+    virtual sqlite_int64 writeScalar(const std::string &componentFullPath, const char *name, double value);
+    virtual void writeScalarAttr(sqlite_int64 scalarId, const char *name, size_t nameLength, const char *value, size_t valueLength);
+    virtual void recordNumericIterationVariableAsScalar(const char *name, const char *value); // i.e. write *if* numeric
+    virtual void writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value);
+    virtual void writeStatisticBin(sqlite_int64 statisticId, double basePoint, unsigned long cellValue);
+    void prepareStatement(sqlite3_stmt *&stmt, const char *sql);
+    void finalizeStatement(sqlite3_stmt *&stmt);
+    bool isBad() {return initialized && db == nullptr;}
+    void checkOK(int sqlite3_result);
+    void checkDone(int sqlite3_result);
+    void error(const char *errmsg);
 
   public:
     /** @name Constructors, destructor */
@@ -68,12 +77,12 @@ class cSqliteOutputScalarManager : public cIOutputScalarManager
     /**
      * Constructor.
      */
-    explicit cSqliteOutputScalarManager();
+    explicit SqliteOutputScalarManager();
 
     /**
      * Destructor.
      */
-    virtual ~cSqliteOutputScalarManager();
+    virtual ~SqliteOutputScalarManager();
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */
