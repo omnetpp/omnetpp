@@ -339,8 +339,15 @@ void Tkenv::doOneStep()
         cEvent *event = getSimulation()->takeNextEvent();
         if (event) {  // takeNextEvent() not interrupted
             getSimulation()->executeEvent(event);
+
+            // updating before animation, so a more recent (less unreasonable) state is shown while the animations are running
+            callRefreshDisplay();
+            updateStatusDisplay();
+            refreshInspectors();
+            Tcl_Eval(interp, "update idletasks");
             performAnimations();
         }
+        // display update, even if we already did one before the animations
         callRefreshDisplay();
         updateStatusDisplay();
         refreshInspectors();
@@ -526,12 +533,19 @@ bool Tkenv::doRunSimulation()
 
         // do a simulation step
         getSimulation()->executeEvent(event);
-        performAnimations();
+        if (animating) {
+            // updating before animation, so a more recent (less unreasonable) state is shown while the animations are running
+            callRefreshDisplay();
+            updateStatusDisplay();
+            refreshInspectors();
+            Tcl_Eval(interp, "update idletasks");
+            performAnimations();
+        }
 
         // flush so that output from different modules don't get mixed
         cLogProxy::flushLastLine();
 
-        // display update
+        // display update, even if we already did one before the animations
         if (frequent_updates || ((getSimulation()->getEventNumber()&0x0f) == 0 && elapsed(opt->updateFreqFast, last_update))) {
             if (!frequent_updates || (speedometer.getMillisSinceIntervalStart() > opt->updateFreqFast && speedometer.getNumEventsSinceIntervalStart() >= 3)) // do not start new interval at every event
                 speedometer.beginNewInterval();  // should precede updateStatusDisplay()
