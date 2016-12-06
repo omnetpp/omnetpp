@@ -15,13 +15,9 @@
 
 package animation2;
 
-//
-// Generates messages with a configurable interarrival time.
-//
 simple Source
 {
     parameters:
-        volatile double sendInterval @unit(s) = default(1s);
         @display("i=block/source");
     gates:
         output outSA;

@@ -29,8 +29,18 @@ Source::~Source()
 
 void Source::initialize()
 {
+    ASSERT(explanations.size() == numOperations);
+
+
+    cCanvas *canv = getParentModule()->getCanvas();
+    canv->setAnimationSpeed(1, this);
+
+    text = check_and_cast<cTextFigure*>(canv->getFigure("operation"));
+    check_and_cast<cTextFigure*>(canv->getFigure("title"))->setText(title.c_str());
+
     timerMessage = new cMessage("timer");
     scheduleAt(simTime(), timerMessage);
+
 }
 
 void Source::handleMessage(cMessage *msg)
@@ -39,52 +49,59 @@ void Source::handleMessage(cMessage *msg)
 
     int packetByteLength = 4096;
 
-    EV << "Performing operation " << operation;
+    EV << "Performing operation " << operation << " out of [0.." << numOperations-1 << "]...\n";
+
+    text->setText(("Operation " + std::to_string(operation) + " in [0.." + std::to_string(numOperations-1) + "]:\n"
+            + explanations[operation]).c_str());
+
+    getParentModule()->getCanvas()->holdSimulationFor(5);
+
+    Node *nodeA = static_cast<Node*>(getParentModule()->getSubmodule("nodeA"));
+    Node *nodeB = static_cast<Node*>(getParentModule()->getSubmodule("nodeB"));
+    Sink *sinkA = static_cast<Sink*>(getParentModule()->getSubmodule("sinkA"));
+    Sink *sinkB = static_cast<Sink*>(getParentModule()->getSubmodule("sinkB"));
 
     switch (operation) {
-    case 0: {
-        cPacket *jobA = new cPacket("jobA");
-        jobA->setByteLength(packetByteLength);
-        send(jobA, "outNA");
-        break;
-    }
-    case 1: {
-        cPacket *jobB = new cPacket("jobB");
-        jobB->setByteLength(packetByteLength);
-        send(jobB, "outNB");
-        break;
-    }
-    case 2: {
-        cPacket *jobA = new cPacket("jobA");
-        jobA->setByteLength(packetByteLength);
-        send(jobA, "outSA");
-        static_cast<Sink*>(gate("outSA")->getNextGate()->getOwnerModule())->bar();
+        case 0: {
+            cPacket *jobA = new cPacket("jobA");
+            jobA->setByteLength(packetByteLength);
+            send(jobA, "outNA");
+            break;
+        }
+        case 1: {
+            cPacket *jobB = new cPacket("jobB");
+            jobB->setByteLength(packetByteLength);
+            send(jobB, "outNB");
+            break;
+        }
+        case 2: {
+            cPacket *jobA = new cPacket("jobA");
+            jobA->setByteLength(packetByteLength);
+            send(jobA, "outSA");
 
-        cPacket *jobB = new cPacket("jobB");
-        jobB->setByteLength(packetByteLength);
-        send(jobB, "outSB");
-        static_cast<Sink*>(gate("outSB")->getNextGate()->getOwnerModule())->bar();
+            sinkA->bar();
 
-        break;
-    }
-    case 3:
-        static_cast<Node*>(gate("outNA")->getNextGate()->getOwnerModule())->foo();
-        break;
-    case 4:
-        static_cast<Node*>(gate("outNB")->getNextGate()->getOwnerModule())->foo();
-        break;
-    case 5:
-        static_cast<Node*>(gate("outNA")->getNextGate()->getOwnerModule())->baz();
-        break;
-    case 6:
-        static_cast<Node*>(gate("outNB")->getNextGate()->getOwnerModule())->baz();
-        break;
+            cPacket *jobB = new cPacket("jobB");
+            jobB->setByteLength(packetByteLength);
+            send(jobB, "outSB");
+
+            sinkB->bar();
+
+            break;
+        }
+        case 3: nodeA->foo(); break;
+        case 4: nodeB->foo(); break;
+        case 5: nodeA->baz(); break;
+        case 6: nodeB->baz(); break;
+
+        default: ASSERT(false);
     }
 
     ++operation;
-    operation %= 7;
 
-    scheduleAt(simTime()+par("sendInterval").doubleValue(), timerMessage);
+    operation %= numOperations;
+
+    scheduleAt(simTime() + 1, timerMessage);
 }
 
 }; // namespace

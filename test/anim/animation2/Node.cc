@@ -44,11 +44,17 @@ void Node::foo() {
 void Node::baz() {
     Enter_Method("baz");
 
+    int packetByteLength = 4096;
+
     static_cast<Sink*>(gate("outA")->getNextGate()->getOwnerModule())->baz();
-    send(new cMessage("dummy"), "outA");
+    auto dummyA = new cPacket("dummyA");
+    dummyA->setByteLength(packetByteLength);
+    send(dummyA, "outA");
 
     static_cast<Sink*>(gate("outB")->getNextGate()->getOwnerModule())->baz();
-    send(new cMessage("dummy"), "outB");
+    auto dummyB = new cPacket("dummyB");
+    dummyB->setByteLength(packetByteLength);
+    send(dummyB, "outB");
 }
 
 } //namespace
