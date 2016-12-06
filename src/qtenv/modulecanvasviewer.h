@@ -21,6 +21,7 @@
 #include <QPointF>
 #include <QGraphicsView>
 #include <QPrinter>
+#include "qtenvdefs.h"
 
 class QGraphicsPixmapItem;
 class QRubberBand;
@@ -42,7 +43,7 @@ struct FigureRenderingHints;
 class CanvasRenderer;
 class ZoomLabel;
 
-class ModuleCanvasViewer : public QGraphicsView
+class QTENV_API ModuleCanvasViewer : public QGraphicsView
 {
     Q_OBJECT
 

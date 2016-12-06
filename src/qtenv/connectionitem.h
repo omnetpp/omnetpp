@@ -18,7 +18,8 @@
 #define __OMNETPP_QTENV_CONNECTIONITEM_H
 
 #include <QGraphicsObject>
-#include <omnetpp/cdisplaystring.h>
+#include "omnetpp/cdisplaystring.h"
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -27,13 +28,13 @@ class OutlinedTextItem;
 class ArrowheadItem;
 
 class ConnectionItem;
-class ConnectionItemUtil {
+class QTENV_API ConnectionItemUtil {
 public:
     // only stylistic tags are handled here (color, width, style, etc), positioning is in the ModuleCanvasViewer
     static void setupFromDisplayString(ConnectionItem *ci, cGate *gate, bool twoWay);
 };
 
-class ConnectionItem : public QGraphicsObject
+class QTENV_API ConnectionItem : public QGraphicsObject
 {
     Q_OBJECT
 

@@ -47,7 +47,7 @@ class StopDialog;
 class AnimationControllerDialog;
 class FileEditor;
 
-class MainWindow : public QMainWindow
+class QTENV_API MainWindow : public QMainWindow
 {
     Q_OBJECT
 

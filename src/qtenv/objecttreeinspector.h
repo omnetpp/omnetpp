@@ -27,7 +27,7 @@ namespace qtenv {
 
 class TreeItemModel;
 
-class ObjectTreeInspector : public Inspector
+class QTENV_API ObjectTreeInspector : public Inspector
 {
     Q_OBJECT
 private:

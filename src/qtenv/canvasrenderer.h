@@ -17,8 +17,9 @@
 #ifndef __OMNETPP_QTENV_CANVASRENDERER_H
 #define __OMNETPP_QTENV_CANVASRENDERER_H
 
-#include "omnetpp/ccanvas.h"
 #include <QGraphicsScene>
+#include "omnetpp/ccanvas.h"
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -27,7 +28,7 @@ class GraphicsLayer;
 class FigureRenderer;
 struct FigureRenderingHints;
 
-class CanvasRenderer
+class QTENV_API CanvasRenderer
 {
 protected:
     GraphicsLayer *layer = nullptr;

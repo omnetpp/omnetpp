@@ -42,7 +42,7 @@ class AnimationSequence;
 class MethodcallAnimation;
 class DeliveryAnimation;
 
-class MessageAnimator
+class QTENV_API MessageAnimator
 {
     // This stores the animation speed requests of all running,
     // non-empty, non-holding animations.

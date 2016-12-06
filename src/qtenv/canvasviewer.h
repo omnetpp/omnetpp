@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_CANVASVIEWER_H
 
 #include <QGraphicsView>
+#include "qtenvdefs.h"
 
 class QGraphicsPixmapItem;
 
@@ -33,7 +34,7 @@ struct FigureRenderingHints;
 class GraphicsLayer;
 class ZoomLabel;
 
-class CanvasViewer : public QGraphicsView
+class QTENV_API CanvasViewer : public QGraphicsView
 {
     Q_OBJECT
 

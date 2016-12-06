@@ -22,6 +22,7 @@
 #include <QTreeView>
 #include "omnetpp/cobject.h"
 #include "omnetpp/cclassdescriptor.h"
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -31,13 +32,13 @@ class TreeNode;
 // this is wrapped in a QVariant to be returned by the model
 // when the UserRole data is requested, so the itemdelegate
 // of the TreeView can highlight a section in the string
-struct HighlightRange {
+struct QTENV_API HighlightRange {
     int start; // the index of the first highlighted character
     int length; // the number of highlighted characters
 };
 
 // encapsulates the tree model, handles QModelIndexes, etc
-class GenericObjectTreeModel : public QAbstractItemModel
+class QTENV_API GenericObjectTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 

@@ -24,7 +24,7 @@ namespace qtenv {
 
 class TimeLineGraphicsView;
 
-class TimeLineInspector : public Inspector
+class QTENV_API TimeLineInspector : public Inspector
 {
     Q_OBJECT
 private:

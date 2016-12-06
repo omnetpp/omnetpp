@@ -19,6 +19,7 @@
 
 #include <QGraphicsView>
 #include "omnetpp/simtime_t.h"
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -28,7 +29,7 @@ class cObject;
 
 namespace qtenv {
 
-class TimeLineGraphicsView : public QGraphicsView
+class QTENV_API TimeLineGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 private:

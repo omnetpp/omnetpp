@@ -19,6 +19,7 @@
 
 #include <string>
 #include <unordered_map>
+#include "qtenvdefs.h"
 
 class QImage;
 class QPixmap;
@@ -29,7 +30,7 @@ namespace qtenv {
 
 enum IconSize { EXTRA_SMALL, VERY_SMALL, SMALL, NORMAL, LARGE, VERY_LARGE, EXTRA_LARGE };
 
-class ImageCache
+class QTENV_API ImageCache
 {
 private:
     std::unordered_map<std::string, QImage*> imagesWithSize;

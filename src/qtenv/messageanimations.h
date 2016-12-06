@@ -22,6 +22,7 @@
 #include <QString>
 #include <QLineF>
 #include "omnetpp/simtime_t.h"
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -38,14 +39,14 @@ class ConnectionItem;
 class Inspector;
 
 
-struct PathEntry {
+struct QTENV_API PathEntry {
    cModule *from; // nullptr if descent
    cModule *to;   // nullptr if ascent
 };
 typedef std::vector<PathEntry> PathVec;
 
 
-class Animation {
+class QTENV_API Animation {
 protected:
     // For holding animations.
     explicit Animation(double holdDuration): holding(true), holdDuration(holdDuration) { }
@@ -145,7 +146,7 @@ public:
     virtual ~Animation();
 };
 
-class AnimationSequence : public Animation
+class QTENV_API AnimationSequence : public Animation
 {
 protected:
     std::vector<Animation *> parts;
@@ -198,7 +199,7 @@ public:
     virtual ~AnimationSequence();
 };
 
-class MethodcallAnimation : public Animation
+class QTENV_API MethodcallAnimation : public Animation
 {
     // The caller and callee modules.
     cModule *srcMod, *destMod;
@@ -246,7 +247,7 @@ public:
     ~MethodcallAnimation();
 };
 
-class MessageAnimation : public Animation {
+class QTENV_API MessageAnimation : public Animation {
 protected:
     // The actual cMessage used by the model.
     // This is used as long as possible, until we are asked
@@ -284,7 +285,7 @@ public:
 };
 
 // TODO: animate discarsion
-class SendOnConnAnimation : public MessageAnimation
+class QTENV_API SendOnConnAnimation : public MessageAnimation
 {
     cGate *gate; // source
 
@@ -312,7 +313,7 @@ public:
     QString str() const override;
 };
 
-class SendDirectAnimation : public MessageAnimation
+class QTENV_API SendDirectAnimation : public MessageAnimation
 {
     cModule *src;
     cGate *dest;
@@ -339,7 +340,7 @@ public:
     ~SendDirectAnimation();
 };
 
-class DeliveryAnimation : public MessageAnimation {
+class QTENV_API DeliveryAnimation : public MessageAnimation {
     cGate *gate = nullptr; // source gate. if nullptr, this is a deliveryDirect
 
     QLineF getLine(ModuleInspector *mi) const;

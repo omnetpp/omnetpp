@@ -19,6 +19,7 @@
 
 #include "omnetpp/simkerneldefs.h" // for ASSERT
 #include "omnetpp/cexception.h"
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -27,7 +28,7 @@ namespace qtenv {
  * A limited STL-like circular buffer implementation.
  */
 template <typename T>
-class circular_buffer
+class QTENV_API circular_buffer
 {
     private:
         T *cb;              // size of the circular buffer

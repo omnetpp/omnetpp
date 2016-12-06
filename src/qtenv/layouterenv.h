@@ -22,6 +22,7 @@
 #include <QGraphicsView>
 #include <QObject>
 #include <climits>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -32,7 +33,7 @@ class cDisplayString;
 
 namespace qtenv {
 
-class QtenvGraphLayouterEnvironment : public QObject, public GraphLayouterEnvironment
+class QTENV_API QtenvGraphLayouterEnvironment : public QObject, public GraphLayouterEnvironment
 {
     Q_OBJECT
 

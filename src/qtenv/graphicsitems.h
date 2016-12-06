@@ -21,6 +21,7 @@
 #include <QGraphicsEffect>
 #include <QFont>
 #include <QTimer>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -30,7 +31,7 @@ constexpr int ITEMDATA_COBJECT = 1;
 // see modulecanvasviewer.cc for why this is necessary, and setToolTip isn't usable
 constexpr int ITEMDATA_TOOLTIP = 2;
 
-class ArrowheadItem : public QGraphicsPolygonItem
+class QTENV_API ArrowheadItem : public QGraphicsPolygonItem
 {
     double arrowWidth = 6;
     // This will offset the tail sideways. -1 is fully left, 1 is fully right.
@@ -63,7 +64,7 @@ public:
 // does something similar to QGraphicsColorizeEffect,
 // but in a way that matches the Tkenv colorization,
 // and also preserves smooth scaling of pixmaps
-class ColorizeEffect : public QGraphicsEffect {
+class QTENV_API ColorizeEffect : public QGraphicsEffect {
     QColor color = QColor(255, 0, 0); // alpha is ignored
     double weight = 0; // [0..1]
 
@@ -91,7 +92,7 @@ protected:
 
 
 // used in the ModuleInspector and some related classes
-class GraphicsLayer : public QGraphicsObject {
+class QTENV_API GraphicsLayer : public QGraphicsObject {
     Q_OBJECT
 
 public:
@@ -108,7 +109,7 @@ public:
 // functions, and forward them to one or both members accordingly.
 // The occasional small "offset" of the outline relative to the text
 // itself (mostly with small fonts) is likely caused by font hinting.
-class OutlinedTextItem : public QGraphicsItem {
+class QTENV_API OutlinedTextItem : public QGraphicsItem {
 protected:
     // these are NOT PART of the scene, not even children of this object
     // we just misuse them in the paint method
@@ -140,7 +141,7 @@ public:
 };
 
 // Label in the bottom right corner that display zoom factor
-class ZoomLabel : public QGraphicsSimpleTextItem
+class QTENV_API ZoomLabel : public QGraphicsSimpleTextItem
 {
 private:
     double zoomFactor;
@@ -154,7 +155,7 @@ public:
     void setZoomFactor(double zoomFactor);
 };
 
-class BubbleItem : public QGraphicsObject {
+class QTENV_API BubbleItem : public QGraphicsObject {
     Q_OBJECT
 
 protected:

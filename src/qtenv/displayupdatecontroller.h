@@ -27,7 +27,7 @@ namespace qtenv {
 
 class AnimationControllerDialog;
 
-struct RunModeProfile {
+struct QTENV_API RunModeProfile {
     void save(const QString& prefix);
     void load(const QString& prefix);
 
@@ -44,7 +44,7 @@ struct RunModeProfile {
     }
 };
 
-class DisplayUpdateController : public QObject
+class QTENV_API DisplayUpdateController : public QObject
 {
     Q_OBJECT
 

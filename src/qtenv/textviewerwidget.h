@@ -26,17 +26,18 @@
 #include <QStandardItemModel>
 #include <QTimer>
 #include <QToolBar>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-class TextViewerContentProvider;
+class QTENV_API TextViewerContentProvider;
 
 /**
  * Primarily for TextViewer
  * @author Andras
  */
-class Pos {
+class QTENV_API Pos {
 public:
     int line;
     int column;
@@ -49,7 +50,7 @@ public:
 };
 
 
-class TextViewerWidget : public QAbstractScrollArea
+class QTENV_API TextViewerWidget : public QAbstractScrollArea
 {
     Q_OBJECT
 

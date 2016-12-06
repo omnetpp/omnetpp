@@ -22,19 +22,20 @@
 #include <QPointF>
 #include <QRectF>
 #include <QLineF>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
 
 // just a bit more convenient wrapper for the other function
-QLineF arrowcoords(const QRectF &srcRect, const QRectF &destRect,
+QTENV_API QLineF arrowcoords(const QRectF &srcRect, const QRectF &destRect,
                   int src_i = 0, int src_n = 1, // src vector gate index and size
                   int dest_i = 0, int dest_n = 1, // src vector gate index and size
                   char mode = 'a', // must be one of "amnews"
                   QPointF srcAnch = QPointF(50, 50),
                   QPointF destAnch = QPointF(50, 50));
 
-QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, // src rect
+QTENV_API QLineF arrowcoords(double src_x1, double src_y1, double src_x2, double src_y2, // src rect
                   double dest_x1, double dest_y1, double dest_x2, double dest_y2, // dest rect
                   int src_i = 0, int src_n = 1, // src vector gate index and size
                   int dest_i = 0, int dest_n = 1, // src vector gate index and size

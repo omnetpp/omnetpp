@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_ANIMATIONCONTROLLERDIALOG_H
 
 #include <QDialog>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class AnimationControllerDialog;
@@ -28,7 +29,7 @@ namespace qtenv {
 
 class DisplayUpdateController;
 
-class AnimationControllerDialog : public QDialog
+class QTENV_API AnimationControllerDialog : public QDialog
 {
     Q_OBJECT
 

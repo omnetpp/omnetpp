@@ -19,6 +19,7 @@
 
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsObject>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -30,13 +31,13 @@ class OutlinedTextItem;
 class ArrowheadItem;
 
 class MessageItem;
-class MessageItemUtil {
+class QTENV_API MessageItemUtil {
     static QVector<QColor> msgKindColors;
 public:
     static void setupFromDisplayString(MessageItem *mi, cMessage *msg, double imageSizeFactor);
 };
 
-class MessageItem : public QGraphicsObject
+class QTENV_API MessageItem : public QGraphicsObject
 {
     Q_OBJECT
 

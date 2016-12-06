@@ -19,6 +19,7 @@
 
 #include <QDialog>
 #include "textviewerwidget.h"
+#include "qtenvdefs.h"
 
 namespace Ui {
 class LogFindDialog;
@@ -30,7 +31,7 @@ class cObject;
 
 namespace qtenv {
 
-class LogFindDialog : public QDialog
+class QTENV_API LogFindDialog : public QDialog
 {
     Q_OBJECT
 

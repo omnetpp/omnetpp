@@ -74,7 +74,7 @@ public:
     static void uninit();
 };
 
-class QTENV_API OsgViewer : public GLWidget
+class QTENV_API OsgViewer : public QOpenGLWidget
 {
     Q_OBJECT
 

@@ -21,6 +21,7 @@
 #include <QPointF>
 #include <QColor>
 #include <QGraphicsObject>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -31,12 +32,12 @@ namespace qtenv {
 class OutlinedTextItem;
 
 class CompoundModuleItem;
-class CompoundModuleItemUtil {
+class QTENV_API CompoundModuleItemUtil {
 public:
     static void setupFromDisplayString(CompoundModuleItem *cmi, cModule *mod, double zoomFactor, QRectF submodulesRect);
 };
 
-class CompoundModuleItem : public QGraphicsObject
+class QTENV_API CompoundModuleItem : public QGraphicsObject
 {
     Q_OBJECT
 

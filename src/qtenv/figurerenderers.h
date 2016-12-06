@@ -19,10 +19,9 @@
 
 #include <string>
 #include <map>
-
-#include "omnetpp/ccanvas.h"
-
 #include <QGraphicsPathItem>
+#include "omnetpp/ccanvas.h"
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -30,14 +29,14 @@ namespace qtenv {
 class GraphicsLayer;
 class ArrowheadItem;
 
-struct FigureRenderingHints
+struct QTENV_API FigureRenderingHints
 { // all of these should be overwritten before use
     double zoom = 1;
     std::string defaultFont = "Arial";
     int defaultFontSize = 12;
 };
 
-class FigureRenderer : public cObject // because Register_Class() takes cObject*
+class QTENV_API FigureRenderer : public cObject // because Register_Class() takes cObject*
 {
 protected:
     // This class should be used in place of every QGraphicsPathItem

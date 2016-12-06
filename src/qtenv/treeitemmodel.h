@@ -20,6 +20,7 @@
 #include <QAbstractItemModel>
 #include <QMenu>
 #include <QTreeView>
+#include "qtenvdefs.h"
 
 class QMainWindow;
 
@@ -29,7 +30,7 @@ class cObject;
 
 namespace qtenv {
 
-class TreeItemModel : public QAbstractItemModel
+class QTENV_API TreeItemModel : public QAbstractItemModel
 {
     Q_OBJECT
 

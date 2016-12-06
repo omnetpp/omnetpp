@@ -30,7 +30,7 @@ class cObject;
 
 namespace qtenv {
 
-class RunUntilDialog : public QDialog
+class QTENV_API RunUntilDialog : public QDialog
 {
     Q_OBJECT
 private:

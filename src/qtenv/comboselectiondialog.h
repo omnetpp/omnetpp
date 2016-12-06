@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_COMBOSELECTIONDIALOG_H
 
 #include <QDialog>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class ComboSelectionDialog;
@@ -26,7 +27,7 @@ class ComboSelectionDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class ComboSelectionDialog : public QDialog
+class QTENV_API ComboSelectionDialog : public QDialog
 {
     Q_OBJECT
 

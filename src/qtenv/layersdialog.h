@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_LAYERSDIALOG_H
 
 #include <QDialog>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class LayersDialog;
@@ -26,7 +27,7 @@ class LayersDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class LayersDialog : public QDialog
+class QTENV_API LayersDialog : public QDialog
 {
     Q_OBJECT
 

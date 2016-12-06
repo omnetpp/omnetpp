@@ -19,8 +19,8 @@
 
 #include <QDialog>
 #include <map>
-
 #include <omnetpp/cconfiguration.h>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class RunSelectionDialog;
@@ -31,7 +31,7 @@ namespace qtenv {
 
 class Qtenv;
 
-class RunSelectionDialog : public QDialog
+class QTENV_API RunSelectionDialog : public QDialog
 {
     Q_OBJECT
 

@@ -23,8 +23,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-
-class CircBuffer
+class QTENV_API CircBuffer
 {
    public:
       struct CBEntry {

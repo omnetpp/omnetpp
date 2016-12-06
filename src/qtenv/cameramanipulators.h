@@ -20,6 +20,7 @@
 #ifdef WITH_OSG
 
 #include <osgGA/OrbitManipulator>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -27,7 +28,7 @@ namespace qtenv {
 // derived from TerrainManipulator, but will not let the eye
 // move below the center, the center can be moved with
 // the right mouse button, and this will never roll (up is always +z)
-class OverviewManipulator : public osgGA::OrbitManipulator
+class QTENV_API OverviewManipulator : public osgGA::OrbitManipulator
 {
     typedef OrbitManipulator inherited;
 

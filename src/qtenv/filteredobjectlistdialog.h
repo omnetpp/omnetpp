@@ -20,6 +20,7 @@
 #include <QDialog>
 #include <QItemSelection>
 #include <QModelIndex>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class FilteredObjectListDialog;
@@ -33,7 +34,7 @@ namespace qtenv {
 
 class InspectorListBoxView;
 
-class FilteredObjectListDialog : public QDialog
+class QTENV_API FilteredObjectListDialog : public QDialog
 {
     Q_OBJECT
 public:

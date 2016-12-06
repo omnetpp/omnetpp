@@ -19,6 +19,7 @@
 
 #include <QDialog>
 #include <QFile>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class fileEditor;
@@ -31,7 +32,7 @@ namespace qtenv {
 
 class TextViewerWidget;
 
-class FileEditor : public QDialog
+class QTENV_API FileEditor : public QDialog
 {
     Q_OBJECT
 

@@ -32,7 +32,7 @@ namespace qtenv {
 
 class Inspector;
 
-class InspectorUtil
+class QTENV_API InspectorUtil
 {
 private:
     static void addLoglevel(LogLevel level, QString levelInStr, cComponent *comp, QActionGroup *logLevelActionGroup, QMenu *subMenu);

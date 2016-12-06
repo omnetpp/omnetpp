@@ -42,7 +42,7 @@ QColor parseColor(const QString &name, const QColor &fallbackColor = QColor());
 /**
  * Find objects by full path, and optionally also matching class name and/or Id.
  */
-class cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisitor
+class QTENV_API cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisitor
 {
   private:
     const char *fullPath;
@@ -62,7 +62,7 @@ class cFindByPathVisitor : public omnetpp::envir::cCollectObjectsVisitor
  * T must be a subclass of cObject, and the resulting array should be safely casted to T**.
  */
 template<typename T>
-class cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectObjectsVisitor {
+class QTENV_API cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectObjectsVisitor {
   protected:
     void visit(cObject *obj) override {
         if (dynamic_cast<T*>(obj))
@@ -143,7 +143,7 @@ inline double clip(double min, double v, double max)
 
 
 template <typename K, typename V>
-class OrderedMultiMap {
+class QTENV_API OrderedMultiMap {
 
     using keys_t = std::multimap<K, size_t>;
     using values_t = std::vector<V>;

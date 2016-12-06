@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QPointF>
 #include <QGraphicsScene>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -28,7 +29,7 @@ class cModule;
 
 namespace qtenv {
 
-class ModuleLayouter : public QObject {
+class QTENV_API ModuleLayouter : public QObject {
     Q_OBJECT
 
     // key is full type name as given by getObjectFullTypeName

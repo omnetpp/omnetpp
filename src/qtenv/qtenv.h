@@ -82,7 +82,7 @@ enum RunMode {
     RUNMODE_NOT_RUNNING = 5
 };
 
-struct QtenvOptions : public omnetpp::envir::EnvirOptions
+struct QtenvOptions : public EnvirOptions
 {
     // note: these values will be overwritten in setup()/readOptions() before taking effect
     size_t extraStack;                     // per-module extra stack for activity() modules
@@ -115,7 +115,7 @@ struct QtenvOptions : public omnetpp::envir::EnvirOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public QObject, public omnetpp::envir::EnvirBase
+class QTENV_API Qtenv : public QObject, public EnvirBase
 {
    Q_OBJECT
 

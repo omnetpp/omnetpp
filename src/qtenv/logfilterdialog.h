@@ -18,11 +18,10 @@
 #define __OMNETPP_QTENV_LOGFILTERDIALOG_H
 
 #include <QDialog>
-
 #include <QTreeWidgetItem>
 #include <set>
-
 #include "omnetpp/cmodule.h"
+#include "qtenvdefs.h"
 
 namespace Ui {
 class logfilterdialog;
@@ -33,7 +32,7 @@ class cComponent;
 
 namespace qtenv {
 
-class LogFilterDialog : public QDialog
+class QTENV_API LogFilterDialog : public QDialog
 {
     Q_OBJECT
 

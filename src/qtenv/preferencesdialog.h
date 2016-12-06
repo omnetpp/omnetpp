@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_PREFERENCESDIALOG_H
 
 #include <QDialog>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class PreferencesDialog;
@@ -26,7 +27,7 @@ class PreferencesDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class PreferencesDialog : public QDialog
+class QTENV_API PreferencesDialog : public QDialog
 {
     Q_OBJECT
 

@@ -20,6 +20,7 @@
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsObject>
 #include <QAbstractGraphicsShapeItem>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -33,13 +34,13 @@ class ColorizeEffect;
 class GraphicsLayer;
 
 class SubmoduleItem;
-class SubmoduleItemUtil {
+class QTENV_API SubmoduleItemUtil {
 public:
     static void setupFromDisplayString(SubmoduleItem *si, cModule *mod);
 };
 
 
-class SubmoduleItem : public QGraphicsObject
+class QTENV_API SubmoduleItem : public QGraphicsObject
 {
     Q_OBJECT
 

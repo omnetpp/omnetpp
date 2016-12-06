@@ -40,7 +40,7 @@ namespace qtenv {
 
 class Qtenv;
 
-class TextViewerContentProvider : public QObject {
+class QTENV_API TextViewerContentProvider : public QObject {
     Q_OBJECT
 
 public:
@@ -91,7 +91,7 @@ signals:
  *
  * @author Andras
  */
-class StringTextViewerContentProvider: public TextViewerContentProvider {
+class QTENV_API StringTextViewerContentProvider: public TextViewerContentProvider {
     Q_OBJECT
 
     QStringList lines;  // text, split to lines
@@ -111,7 +111,7 @@ public:
  *
  * @author Andras
  */
-class AbstractEventEntryLinesProvider {
+class QTENV_API AbstractEventEntryLinesProvider {
 protected:
     int inspectedComponentId;
     const std::set<int>& excludedComponents;
@@ -130,7 +130,7 @@ public:
 
 
 
-class EventEntryLinesProvider : public AbstractEventEntryLinesProvider {
+class QTENV_API EventEntryLinesProvider : public AbstractEventEntryLinesProvider {
     // helpers
     bool isAncestorModule(int componentId, int potentialAncestorModuleId);
     bool isMatchingComponent(int componentId);
@@ -143,7 +143,7 @@ public:
     virtual QList<TabStop> getTabStops(LogBuffer::Entry *entry, int lineIndex) override;
 };
 
-class EventEntryMessageLinesProvider : public AbstractEventEntryLinesProvider {
+class QTENV_API EventEntryMessageLinesProvider : public AbstractEventEntryLinesProvider {
 protected:
     static cMessagePrinter *chooseMessagePrinter(cMessage *msg);
 
@@ -162,12 +162,12 @@ public:
 };
 
 
-class AbstractEventEntryFilter {
+class QTENV_API AbstractEventEntryFilter {
 public:
     virtual bool matches(LogBuffer::Entry *entry) = 0;
 };
 
-class ModulePathsEventEntryFilter : public AbstractEventEntryFilter {
+class QTENV_API ModulePathsEventEntryFilter : public AbstractEventEntryFilter {
     QStringList moduleFullPaths;
     ComponentHistory *componentHistory;
 
@@ -177,7 +177,7 @@ public:
     bool matches(LogBuffer::Entry *entry) override;
 };
 
-class ModuleOutputContentProvider: public TextViewerContentProvider {
+class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     Q_OBJECT
 
     LogBuffer *logBuffer;

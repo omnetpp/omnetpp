@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_INSPECTORLISTBOXVIEW_H
 
 #include <QTableView>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -27,7 +28,7 @@ namespace qtenv {
 
 class InspectorListBox;
 
-class InspectorListBoxView : public QTableView
+class QTENV_API InspectorListBoxView : public QTableView
 {
     Q_OBJECT
 private:

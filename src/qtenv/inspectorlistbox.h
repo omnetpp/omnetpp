@@ -19,6 +19,7 @@
 
 #include <QAbstractTableModel>
 #include <QVector>
+#include "qtenvdefs.h"
 
 namespace omnetpp {
 
@@ -26,7 +27,7 @@ class cObject;
 
 namespace qtenv {
 
-class InspectorListBox : public QAbstractTableModel
+class QTENV_API InspectorListBox : public QAbstractTableModel
 {
     Q_OBJECT
 private:

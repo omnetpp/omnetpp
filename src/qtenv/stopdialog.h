@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_STOPDIALOG_H
 
 #include <QDialog>
+#include "qtenvdefs.h"
 
 namespace Ui {
 class StopDialog;
@@ -26,7 +27,7 @@ class StopDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class StopDialog : public QDialog
+class QTENV_API StopDialog : public QDialog
 {
     Q_OBJECT
 
