@@ -1710,19 +1710,10 @@ void EnvirBase::removeLifecycleListener(cISimulationLifecycleListener *listener)
 
 void EnvirBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType, cObject *details)
 {
-    // make a copy of the listener list, to avoid problems from listeners
-    // getting added/removed during notification
+    // make a copy of the listener list, to avoid problems from listeners getting added/removed during notification
     std::vector<cISimulationLifecycleListener *> copy = listeners;
-    for (int i = 0; i < (int)copy.size(); i++) {
-        try {
-            copy[i]->lifecycleEvent(eventType, details);
-        }
-        catch (std::exception& e) {  // XXX perhaps we shouldn't hide the exception!!!! just re-throw? then all notifyLifecycleListeners() calls MUST be surrounded with try-catch!!!!
-            // XXX const char *eventName = cISimulationLifecycleListener::getSimulationLifecycleEventName(eventType);
-            // XXX printfmsg("Error in %s listener: %s", eventName, e.what());
-            displayException(e);
-        }
-    }
+    for (int i = 0; i < (int)copy.size(); i++)
+        copy[i]->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
 }
 
 //-------------------------------------------------------------
