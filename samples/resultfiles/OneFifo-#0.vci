@@ -1,0 +1,30 @@
+file 1440 1470139842                                            
+version 2
+run OneFifo-0-20110223-16:56:19-17958
+attr configname OneFifo
+attr datetime 20110223-16:56:19
+attr experiment OneFifo
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network SimpleQueue
+attr processid 17958
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+vector 1  SimpleQueue.queue  queueLength:vector  ETV
+attr interpolationmode sample-hold
+attr title "queue length, vector"
+1	758 233 0 33 0 23.080215111267 11 0 2 7 9
+vector 3  SimpleQueue.queue  busy:vector  ETV
+attr interpolationmode sample-hold
+attr title "server busy state, vector"
+3	1256 184 0 35 0 24.047419321163 9 0 1 4 4
+vector 2  SimpleQueue.queue  queueingTime:vector  ETV
+attr interpolationmode none
+attr title "queueing time at dequeue, vector"
+attr unit s
+2	991 265 2 33 1.591749009131 23.080215111267 9 0 4.563761324157 9.747714007348 37.798059763447
