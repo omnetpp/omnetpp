@@ -43,7 +43,7 @@ The simulation system itself:
       common/      common utility classes
       utils/       makefile generator and various utilities
     ide/           the OMNeT++ Integrated Development Environment
-    misc/          various misc file (e.g. debugger pretty printer scripts)
+    misc/          various 3rd party contributions
     test/          regression test suite
       core/        regression test suite for the simulation library
       distrib/     regression test suite for built-in distributions
@@ -58,17 +58,6 @@ Sample simulations are in the samples directory.
       aloha/     models the Aloha protocol
       cqn/       Closed Queueing Network
       ...
-
-The contrib directory contains material from the OMNeT++ community.
-
-    contrib/     directory for contributed material
-      jresultwriter/  package for creating OMNeT++ result files from 3rd party Java-based simulators
-      topologyexport/ simple module for exporting model topology in XML
-      akaroa/    patch file to compile akaroa with GCC 4.4
-      gtk/       files to make Eclipse look good on Linux
-      octave/    Octave scripts for result processing (somewhat outdated)
-      emacs/     NED syntax highlighting for Emacs (somewhat outdated)
-      med/       NED syntax highlighting for the MED editor (somewhat outdated)
 
 
 The example simulations
