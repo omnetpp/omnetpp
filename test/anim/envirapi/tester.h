@@ -22,10 +22,10 @@ using namespace omnetpp;
 
 class Tester : public cSimpleModule
 {
-    cOvalFigure *locator;
+    cRectangleFigure *bounds;
   protected:
     virtual void initialize();
-    virtual void handleMessage(cMessage *msg) { /* empty */ }
+    virtual void handleMessage(cMessage *msg);
     virtual void refreshDisplay() const;
 };
 

@@ -31,16 +31,23 @@ void Tester::initialize()
     // Loading an image with a custom name.
     getEnvir()->loadImage(resolveResourcePath("photos2/cgi/bunny.png").c_str(), "3d/hare");
 
-    // This oval figure will always be placed where this module is in its parent.
-    locator = new cOvalFigure();
-    locator->setLineWidth(4);
-    locator->setLineColor("red");
-    locator->setZIndex(1.5);
-    getParentModule()->getCanvas()->addFigure(locator);
+    // This rectangle will always be placed around this module is in its parent.
+    bounds = new cRectangleFigure();
+    bounds->setLineWidth(2);
+    bounds->setLineColor("yellow");
+    bounds->setZIndex(2);
+    getParentModule()->getCanvas()->addFigure(bounds);
+
+    scheduleAt(simTime()+1, new cMessage());
+}
+
+void Tester::handleMessage(cMessage *msg)
+{
+    delete msg;
+    scheduleAt(simTime()+1, new cMessage());
 }
 
 void Tester::refreshDisplay() const
 {
-    cFigure::Point pos = getEnvir()->getSubmodulePosition(this);
-    locator->setBounds(cFigure::Rectangle(pos.x - 25, pos.y - 25, 50, 50));
+    bounds->setBounds(getEnvir()->getSubmoduleBounds(this));
 }
