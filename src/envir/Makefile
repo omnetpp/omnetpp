@@ -14,8 +14,8 @@ L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-ifeq ($(PLATFORM),win32.x86_64))
-PSAPI_LIB=-lpsapi
+ifeq ($(PLATFORM),win32.x86_64)
+  PSAPI_LIB=-lpsapi
 endif
 
 ifeq ($(PREFER_SQLITE_RESULT_FILES),yes)
