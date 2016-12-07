@@ -1,3 +1,28 @@
+2016-11-10  Andras Varga
+
+	src: capitalize error messages (also explanations that come after colons)
+
+	Tests updated
+
+2016-11-09  Andras Varga
+
+	src,test: changed `mixed quoting' to 'apostrophe quoting' in error
+	messages and elsewhere
+
+	Backtick+apostrophe was inherited from GNU and LaTeX, but no longer looks
+	nice with today's fonts where apos is straight.
+
+	Also updated tests.
+
+2016-10-28  Andras Varga
+
+	eliminating messages like "<!> Error: Error during blah blah", etc
+
+	- Actual messages should not start with (or contain) the word "Error"
+	- Refined other messages
+
+----------- lines above this marker have been added from git log -----------
+
 2016-08-23  Andras Varga
 
 	* Follow change: info() renamed to str()

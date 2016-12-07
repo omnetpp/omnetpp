@@ -1,10 +1,337 @@
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-11-30  Attila Torok
+
+	* Stop initial network layouting when MainWindow is closed.
+
+	If the main window was closed while the first layoutign of the network
+	was still running, the environment didn't quit, but the saved open
+	Inspectors popped up without a main window after it finished.
+
+2016-11-29  Attila Torok
+
+	* Refactoring
+
+2016-11-30  Attila Torok
+
+	* Global module layouting, persistent seeds, modulesize calculation
+	fixes, misc tweaks.
+
+2016-11-30  Attila Torok
+
+	* Refactoring
+
+2016-11-29  Attila Torok
+
+	* Image loading improved, related cEnvir API implemented.
+
+2016-11-29  Attila Torok
+
+	* Connections on vector gates can be arranged.
+
+2016-11-28  Attila Torok
+
+	* Fixed stripNamespace(), the method behind the "Hide namespace prefix"
+	preference. The old version failed at stripping template types, such as
+	std::vector<inet::RoutingTable *>.
+
+2016-11-18  Attila Torok
+
+	* .gitignore files created by the new (common, qmake-less) build
+	system in clangc2 branch.
+
+2016-11-21  Andras Varga
+
+	* Tooltips: 1. eliminate continuous redraw (and thus, flashing) of
+	tooltips over animated areas of the canvas 2. drop trailing "," for empty
+	info strings
+
+2016-11-18  Andras Varga
+
+	* Follow cEnvir API change: implemented appendToImagePath(), loadImage(),
+	getSubmodulePosition()
+
+2016-11-16  Attila Torok
+
+	* Add message animation crash guards.
+
+2016-11-16  Attila Torok
+
+	* MessageAnimation comments, renaming, formatting.
+
+2016-11-16  Attila Torok
+
+	* DisplayUpdateController::isExplicitAnimationSpeed removed, more
+	fixes...
+
+2016-11-16  Attila Torok
+
+	* Animate the bodies of silent methodcalls.
+
+2016-11-16  Attila Torok
+
+	* Broadcast animation #0.
+
+2016-11-15  Attila Torok
+
+	* Respect cModule::getBuiltinAnimations().
+
+2016-11-11  Attila Torok
+
+	* DisplayUpdateController fixes.
+
+	Switching into Express mode, recording in Fast mode, etc...
+
+2016-11-11  Attila Torok
+
+	* Not drawing static messages if message animation is disabled.
+
+2016-11-09  Attila Torok
+
+	* playbackSpeed: SpinBox in AnimCtrlDialog, Slider snaps to 1,
+	affects recording.
+
+2016-11-07  Attila Torok
+
+	* RunModeProfiles in DisplayUpdateController made persistent.
+
+2016-11-04  Attila Torok
+
+	* Some comments and cleanups in MessageAnimator and
+	DisplayUpdateController.
+
+2016-11-14  Attila Torok
+
+	* AnimationSpeed computation cleaned up. holdExpired added. Hold
+	time: remaining -> end.
+
+2016-11-14  Attila Torok
+
+	* Properly clear and reset everything (for example when a new
+	network is set up).
+
+2016-11-15  Attila Torok
+
+	* Message animation rework.
+
+	Born from these (and many more) WIP commits:
+
+	Do inter-event animation after the message anims are updated.
+	Only a single currentMessageSend in MessageAnimator, more comments.
+	Broadcast animation, senddirect tweaked, updateInInspector plugged.
+	Disable arrowhead when the start of the message line is not visible.
+	DeliveryAnimation added, SendAnimMode removed. Small fixes to message
+	animation. WIP animation using the LogBuffer privateDup()'d messages.
+	methodCall and messageSend animations merged, deliveries deduplicated.
+	Animation::advance(). MethodcallAnimation cleanup. SendOnConn fixes,
+	Delivery cleanups. MessageAnimation introduced DeliveryAnimation tweaks.
+	End animations in update() if they become empty. * Don't use the
+	privatedup as key in MessageAnimator. Less flicker before message
+	delivery, animationspeed computed differently for message animations.
+	SendDirect behavior changed, much simplified code, more stuff moved
+	to MessageAnimation.
+
+2016-11-04  Attila Torok
+
+	* LogBuffer: Keep a map of privateDup'd messages, also duplicate on
+	delivery.
+
+2016-10-24  Attila Torok
+
+	* OrderedMultiMap container added.
+
+2016-11-09  Attila Torok
+
+	* RunModeProfiles, other fixes.
+
+2016-10-11  Attila Torok
+
+	* Animation: Ability to display the message as a line added.
+
+2016-11-09  Attila Torok
+
+	* Removed a few preference options. Default for confirm-exit is on.
+	Some text moved into tooltips.
+
+	Removed: Minimum icon size, reusing inspectors, keep inspectors on top,
+	update frequency in fast mode, resize inspector windows.
+
+2016-11-09  Attila Torok
+
+	* TreeItemModel performance improvement.
+
+	Although this will make it forget the expansion state of the currently
+	invisible nodes between refreshes.
+
+2016-10-14  Attila Torok
+
+	* TextViewerWidget: scrollbar conflict (hangup) resolved + crash fix.
+
+	Explicit (internal) 'scroll lock', scrollbar setup improved.
+
+2016-10-24  Attila Torok
+
+	* Bubble()s deferred to refresh(), not creating QTimers, enabled in
+	Express mode.
+
+	At most one after every refresh per component.
+
+2016-11-14  Andras Varga
+
+	* MainWindow tooltip, label, and layout tweaks.
+
+2016-11-09  Andras Varga
+
+	* Error messages refined (start with capital letter, use apostrophes
+	for quoting, etc.)
+
+2016-10-26  Attila Torok
+
+	* Clearing the alpha buffer to 1 at the end of each frame in OsgViewer.
+
+	It was necessary because any transparent items (such as transmission
+	rings/spheres, obstacles, labels) drawn on the canvas made the window
+	itself transparent (on Wayland/Weston at least), and we don't want that.
+
+2016-10-24  Attila Torok
+
+	* Reduced video recording glitches with alpha.
+
+2016-10-11  Attila Torok
+
+	* ConnectionItem: Some formatting and simplifications.
+
+	Click threshold removed, it's implemented in ModuleCanvasViewer.
+
+2016-10-21  Attila Torok
+
+	* GenericObjectInspector formatting fix.
+
+2016-10-24  Attila Torok
+
+	* << operators for printing std::string and SimTime values to
+	QDebug.
+
+2016-10-11  Attila Torok
+
+	* Object inspector: Display the @hint property of fields as a tooltip.
+
+2016-10-11  Attila Torok
+
+	* Better support for editable objects in the object inspector.
+
+2016-10-21  Attila Torok
+
+	* Removed conditions checking for Qt version 5 from qtenv.pro.
+
+2016-10-25  Attila Torok
+
+	* build: Preliminary support for using a Qt bundle in a custom location.
+
+2016-10-21  Attila Torok
+
+	* Wording clarified in the video recording info window.
+
+2016-10-27  Andras Varga
+
+	* Follow cEnvir API change: getImageSize() / getTextExtent(): use doubles for size
+
+2016-10-19  Andras Varga
+
+	* Follow cEnvir API change regarding askyesno(), putsmsg(), alert() etc
+
+2016-10-03  Attila Torok
+
+	* Many graphics items from qtutil.[h|cc] and GraphicsPathArrowItem
+	moved into graphicsitems.[h|cc], the latter renamed to ArrowheadItem.
+
+2016-09-30  Attila Torok
+
+	* Fixed [submodules] figure stacking order.
+
+2016-09-30  Attila Torok
+
+	* Implementation of smooth animation.
+
+	Changes include:
+	- Animator renamed to MessageAnimator
+	- Animation primitives moved to separate files
+	- Added DisplayUpdateController
+	- Added AnimationParameters window
+
+	Operation in various run modes:
+
+	- "Run" mode:
+	If no animationSpeed is specified, the old behaviour
+	of alternating frames and events is emulated in Run mode.
+	If there is a given animationSpeed:
+	Holds are effective, built-in message animations are performed
+	(if enabled), the playback speed can be controlled by a slider.
+
+	- "Fast" mode:
+	Holds and animationSpeed are ignored, message animations are off,
+	the playback speed slider is ineffective, there are no delays
+	between events, framerate will be mostly kept near the minimum
+	setting. Typically several events are processed between frames.
+
+	- "Express" mode:
+	Exactly the same as before.
+
+2016-09-08  Rudolf Hornig
+
+	* Build: Added qtenv.pri file template to the configure process
+
+2016-08-08  Andras Varga
+
+	* Follow cEnvir API change: added placeholders for future implementations
+	of getAnimationTime(), getAnimationSpeed(), getRemainingAnimationHoldTime()
+
+2016-09-28  Attila Torok
+
+	* ModuleInspector: Improved refreshing.
+
+2016-09-27  Attila Torok
+
+	* Removed some old cruft, inlined a couple functions
+	(mainwin,moduleinsp).
+
+2016-09-21  Attila Torok
+
+	* Enable multisampling antialiasing by default in OsgViewer.
+
+2016-09-22  Attila Torok
+
+	* QtenvOptions defaults moved into the class.
+
+2016-09-20  Attila Torok
+
+	* Some performance improvements throughout.
+
+2016-09-07  Attila Torok
+
+	* Connect the objects of embedded inspectors early enough.
+
+2016-09-07  Attila Torok
+
+	* Prevent setting up a new configuration while the simulation is running.
+
+2016-09-07  Attila Torok
+
+	* Only show the initial 'Set up configuration' dialog once.
+
+2016-09-01  Attila Torok
+
+	* ToolTip is updated upon refresh even if the cursor was not moved.
+
+2016-09-01  Attila Torok
+
+	* Crash fix in CanvasRenderer.
 
 2016-09-05  Rudolf Hornig
 

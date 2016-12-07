@@ -1,3 +1,11 @@
+2016-12-05  Rudolf Hornig
+
+	* Removed unsused abspath.c
+
+2016-12-02  Rudolf Hornig
+
+	* Fixed IDE start scripts to avoid security warnings on macOS
+
 2016-11-30  Rudolf Hornig
 
 	* Removed several unused utilities like opp_makedep, abspath etc.
@@ -8,9 +16,29 @@
 
 	* The updated build system now uses the ./configure file only to detect
 	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
+	Makefile.inc file itself. This allows you to enable/disable optional
+	components (i.e. Tkenv, Qtenv, OSG and osgEarth support) without even
 	re-running the ./configure file.
+
+2016-11-30  Rudolf Hornig
+
+	* Removed unused utilities and updated manual
+
+2016-11-23  Rudolf Hornig
+
+	* Removed abspath and lcg32_seedtool binaries.
+
+2016-08-04  Andras Varga
+
+	* opp_test: print bigger tail on failure
+
+2016-10-06  Andras Varga
+
+	* opp_test: export "run" script to facilitate running tests manually
+
+2016-09-27  Andras Varga
+
+	* opp_runall reimplemented in Python, for the new "-q" API
 
 2016-07-05  Andras Varga
 
@@ -18,8 +46,9 @@
 	--no-deep-includes option (used to turn off deep includes) is
 	still accepted for backward compatibility, and is a no-op.
 
-	As it turned out, deep includes is not good for large projects
-	(error-prone), and not needed for small projects. It was removed
+	As it turned out, deep includes (i.e. adding every directory in the
+	source tree to the include path) is not good for large projects
+	(too error-prone), and not needed for small projects. It was removed
 	from the IDE as well.
 
 2016-06-23  Rudolf Hornig

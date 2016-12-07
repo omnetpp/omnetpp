@@ -1,3 +1,84 @@
+2016-12-06  Andras Varga
+
+	* cIOutputVectorManager: clarify lifecycle in doxy comments
+
+2016-11-18  Andras Varga
+
+	* cEnvir: added appendToImagePath(), loadImage(), getSubmodulePosition()
+
+2016-11-14  Andras Varga
+
+	* cModule: added setBuiltinAnimations(bool enabled) method
+
+2016-11-14  Andras Varga
+
+	* Figures: added Register_Figure(NAME, CLASSNAME) macro
+
+2016-11-11  Andras Varga
+
+	* cModule: getModuleByPath(): "<root>" now means the toplevel module.
+	There was no syntax accessing the toplevel module, apart from spelling
+	out its module name.
+
+2016-11-05  Andras Varga
+
+	* cDisplayString: clarify quoting/escaping in parse() method's comment
+
+2016-10-27  Andras Varga
+
+	* cEnvir: getImageSize()/getTextExtent(): use doubles for size
+
+	Motivation:
+	- handling of small font sizes (displayed zoomed)
+	- SVG and other vector images don't necessarily have integer dimensions
+
+2016-10-23  Andras Varga
+
+	* cConfiguration: getter methods made const
+
+2016-10-22  Andras Varga
+
+	* cConfigOption: added public static find() and get() lookup methods
+
+2016-10-19  Andras Varga
+
+	* cEnvir interface changes:
+	- askYesNo() no longer has a printf-style arg list
+	- askyesno() (lower-case, protected version) removed
+	- putsmsg() removed
+	- alert() added as replacement for putsmsg()
+
+2016-10-03  Andras Varga
+
+	* cPacket: fix: getByteLength() to rely on getBitLength() instead
+	of directly accessing private data member
+
+2016-10-03  Andras Varga
+
+	* cIEventlogManager: added getFileName() for consistency with other 
+	output file recorder classes
+
+2016-08-08  Andras Varga
+
+	* Initial API for custom animation:
+	- cCanvas: setAnimationSpeed(), holdSimulationFor()
+	- cEnvir: getAnimationTime(), getAnimationSpeed(),
+	  getRemainingAnimationHoldTime()
+
+2016-09-25  Andras Varga
+
+	* cConfigurationEx: unrollConfig() signature change to allow it return
+	more information: return type changed from std::vector<std::string> to 
+	std::vector<RunInfo>; also removed 'bool detailed' arg.
+
+2016-09-22  Andras Varga
+
+	* cConfigurationEx: added getKeyValuePairs()
+
+2016-09-25  Andras Varga
+
+	* cconfiguration.h: removed CFGVAR_ITERATIONVARS2, added CFGVAR_ITERATIONVARSF
+
 2016-09-07  Zoltan Bojthe
 
 	* SimTime: added SIMTIME_AS (= -18) to SimTimeUnit enum
@@ -215,7 +296,7 @@
 2016-07-11  Andras Varga
 
 	* Added cStatisticBuilder internal class, as part of the change where
-	setting up statistics recording was moved from EnvirBase	into the sim.
+	setting up statistics recording was moved from EnvirBase into the sim.
 	kernel.
 
 2016-07-06  Andras Varga

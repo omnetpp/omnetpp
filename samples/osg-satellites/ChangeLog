@@ -1,0 +1,27 @@
+2016-04-13  ------ omnetpp-5.0 released ------
+
+2016-03-10  ------ omnetpp-5.0rc released ------
+
+2015-12-07  ------ omnetpp-5.0b3 released ------
+
+2015-08-25  TÖRÖK Attila
+
+	* General improvements, more configuration options, separate configs. Details:
+	 - Connection (sat2sat and sat2gnd) colors and widths are now configurable.
+	 - Range cone color is now configurable.
+	 - Replaced connection cylinders with proper lines that	keep their widths.
+	 - Satellite orbits are now configurable.   
+	 - Added random, geostat and polar configs.
+
+2015-08-25  TÖRÖK Attila
+
+	* Transparency fixes, some cleanups, configurable orbit and cone colors.
+
+2015-08-24  TÖRÖK Attila
+
+	* Lighting fixes, earth rotation.
+
+2015-08-19  TÖRÖK Attila
+
+	* Initial demo.
+

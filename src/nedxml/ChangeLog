@@ -1,14 +1,41 @@
 2016-12-05  Rudolf Hornig
 
-	Removed support for old libXML versions (< v2.6) without DTD validation support.
+	* Removed support for old, non-validating version of libXML (<2.6.0)
 
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-11-10  Andras Varga
+
+	* Error messages refined (start with capital letter, use apostrophes
+	for quoting, etc.)
+
+2016-11-09  Andras Varga
+
+	* NED: fix: duplicate type names were not detected, "Redeclaration of type X"
+	errors were never issued
+
+2016-11-04  Andras Varga
+
+	* Error handling: don't just dump NED messages on stderr, but use them
+	in exception texts
+
+2016-11-08  Andras Varga
+
+	* NEDTypeInfo: use maps to find gates, params, etc.
+
+2016-11-08  Andras Varga
+
+	* Check for uniqueness of names within component
+
+2016-12-05  Rudolf Hornig
+
+	Removed support for old libXML versions (< v2.6) without DTD validation support.
 
 2016-08-23  Andras Varga
 
@@ -196,8 +223,6 @@
 
 	 - if field has the @enum property, conversion to/from string will accept
 	   symbolic constants too (enum2string(), string2enum())
-
-////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 

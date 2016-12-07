@@ -1,3 +1,25 @@
+2016-11-10  Andras Varga
+
+	src: capitalize error messages (also explanations that come after colons)
+
+	Tests updated
+
+2016-11-09  Andras Varga
+
+	src,test: changed `mixed quoting' to 'apostrophe quoting' in error
+	messages and elsewhere
+
+	Backtick+apostrophe was inherited from GNU and LaTeX, but no longer looks
+	nice with today's fonts where apos is straight.
+
+	Also updated tests.
+
+2016-11-08  Andras Varga
+
+	sim/netbuilder: fix NED_parampattern_5.test; new tests
+
+----------- lines above this marker have been added from git log -----------
+
 2016-08-23  Andras Varga
 
 	* Follow cComponentType change: added getNedSource() to subclasses

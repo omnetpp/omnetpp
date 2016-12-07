@@ -1,10 +1,38 @@
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-11-18  Andras Varga
+
+	* Follow cEnvir API change: implemented appendToImagePath(), loadImage(),
+	getSubmodulePosition()
+
+2016-11-10  Andras Varga
+
+	* Error messages refined (start with capital letter, use apostrophes
+	for quoting, etc.)
+
+2016-10-27  Andras Varga
+
+	* Follow cEnvir API change: getImageSize() / getTextExtent(): use doubles
+	for size
+
+2016-10-19  Andras Varga
+
+	* Follow cEnvir API change regarding askyesno(), putsmsg(), alert(), etc.
+
+2016-10-04  Andras Varga
+
+	* Updated Tkenv's description in "-h userinterfaces" output
+
+2016-08-08  Andras Varga
+
+	* Follow API changes: added dummy implementations for getAnimationTime(),
+	getAnimationSpeed(), getRemainingAnimationHoldTime()
 
 2016-08-31  Andras Varga
 

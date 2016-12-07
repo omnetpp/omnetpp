@@ -1,3 +1,59 @@
+2016-11-23  Zoltan Bojthe
+
+	* Added sqlite3.cc/h
+
+2016-11-29  Attila Torok
+
+	* LCGRandom: disallow invalid LCGRandom seeds
+
+2016-11-18  Andras Varga
+
+	* fileutil.h: added isFile()
+
+2016-11-11  Andras Varga
+
+	* CallTracer: output format tweak
+
+2016-10-30  Andras Varga
+
+	* Adjustments on error messages
+
+2016-10-27  Andras Varga
+
+	* stringutil.h: more const std::string& arguments instead of const char *.
+
+	We don't like mixing const char * and std::string in method signatures,
+	as it results in too many .c_str() at call sites, and in some cases
+	prevents optimizing std::string assignments (e.g. refcounting+COW).
+
+2016-10-21  Andras Varga
+
+	* EnumStringIterator (used for resolving run number lists): fix: properly
+	skip empty ranges, tolerate spaces. It used to return the start of the
+	range, e.g. 5..1 expanded to 5.
+
+2016-10-20  Andras Varga
+
+	* expression.y: accept '=' as alternative to '=='
+
+2016-09-30  Levente Mészáros
+
+	* unitconversion.cc: Added coulomb [C] and related units As, mAs, Ah, mAh.
+
+2016-09-25  Andras Varga
+
+	* Added stlutil.h
+
+2016-09-25  Andras Varga
+
+	* matchexpression.h: added MatchableStringMap
+
+	* stringutil.h: opp_indentlines() fix: do not add indent after last line
+
+2016-09-25  Andras Varga
+
+	* stringutil.h: added opp_sanitizeFileName() and opp_filenameencode()
+
 2016-11-30  Rudolf Hornig
 
 	* The updated build system now uses the ./configure file only to detect

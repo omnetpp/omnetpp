@@ -1,14 +1,153 @@
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-12-06  Andras Varga
+
+	* build: Added support for the PREFER_SQLITE_RESULT_FILES macro
+
+2016-11-24  Andras Varga
+
+	* OMNeT++ result file recorders: refactoring, small improvements
+
+2016-11-25  Andras Varga
+
+	* Revised SQLite-related code: configuration options, error handling,
+	internal logic, refactoring, etc.
+
+	To switch to SQLite-based result files, add the following to your omnetpp.ini:
+
+	outputscalarmanager-class = "omnetpp::envir::SqliteOutputScalarManager"
+	outputvectormanager-class = "omnetpp::envir::SqliteOutputVectorManager"
+
+	The file names will not change (new files will still get the .sca and .vec
+	extensions), only the file format. Use the SQLite console (sqlite3) or
+	a GUI program like SQLiteBrowser to view the contents of the resulting
+	SQLite result files.
+
+	Further options that affect the recording of SQLite result files are:
+
+	Scalars: output-scalar-file, output-scalar-file-append, output-scalar-
+	db-commit-freq (NEW), **.scalar-recording, **.bin-recording.
+
+	Vectors: output-vector-file, output-vector-file-append (NEW),
+	output-vector-db-indexing (NEW), **.vector-recording, **.vector-
+	record-eventnumbers, **.vector-recording-intervals, output-vectors-
+	memory-limit, **.vector-buffer
+
+2016-11-23  Andras Varga
+
+	* Added initial support for SQLite-based result files [Zoltan Bojthe].
+
+2016-12-06  Andras Varga
+
+	* EnvirBase: notifyLifecycleListeners() to let exceptions through
+
+2016-11-21  Andras Varga
+
+	* EnvirBase: sim-time-limit=0s and cpu-time-limit=0s to take effect
+
+2016-10-28  Andras Varga
+
+	* Error messages refined (start with capital letter, use apostrophes
+	for quoting, etc.)
+
+2016-10-27  Andras Varga
+
+	* EnvirBase: added -m option ("merge stderr into stdout")
+
+	This option is useful because when launching simulations from the IDE,
+	stdout and stderr get interleaved in quite a random manner in the
+	Console, and it's very confusing.
+
+2016-10-25  Andras Varga
+
+	* InifileReader: use C++ I/O instead of FILE*
+
+2016-10-21  Andras Varga
+
+	* SectionBasedConfig: internal refactoring
+
+2016-10-19  Andras Varga
+
+	* Follow cEnvir API change regarding askyesno(), putsmsg(), alert(), etc.
+
+	* EnvirBase: unified way of printing error/warning messages (err()/warn())
+
+2016-10-19  Andras Varga
+
+	* FileOutputScalarManager: fix: disabling scalar recording still created
+	a small sca file that contained a header only
+
+2016-10-05  Andras Varga
+
+	* EnvirBase: use C++-style I/O for all logging
+
+2016-10-03  Andras Varga
+
+	* EnvirBase: Added the -s (silent, i.e. non-verbose) command-line option.
+
+2016-09-27  Andras Varga
+
+	* Fix: command-line "--constraint=" setting did not take effect (see
+	test/envir/cmdline_options_runinfo_5.test)
+
+2016-09-25  Andras Varga
+
+	* Scenario class: Implemented the iteration-nesting-order config option.
+
+	* Also: Scenario class refactored, using stlutil.h and C++11 features
+
+2016-09-23  Andras Varga
+
+	* Scenario class: removed unused VariableReference inner class
+
+2016-09-26  Andras Varga
+
+	* SectionBasedConfiguration: substituteVariables() change: do not
+	substitute inside substituted content. (see paramstudy_iter_16.test)
+
+2016-09-25  Andras Varga
+
+	* Run filtering: The -r option now also	accepts a run filter expression
+	as an altenative to a list of run numbers and run number ranges.
+	Use the new -q option to query the list of matching runs.
+
+	Example: -c Aloha -r '$numHosts=>20 && $numHosts<=100' -q runconfig
+
+2016-09-22  Andras Varga
+
+	* SectionBasedConfiguration: added getKeyValuePairs(), refactored
+	getParameterKeyValuePairs().
+
+2016-09-25  Andras Varga
+
+	* Changed default result file naming scheme: Instead of using the
+	run number as part of the file name which has little attached meaning,
+	the values of the iteration variables plus the repetition counter.
+	For example, "PureAlohaExperiment-4.sca" becomes "PureAlohaExperiment-
+	numHosts=10,mean=2-#0.sca".
+
+	Technically, the default has changed from
+	"${resultdir}/${configname}-${runnumber}.<ext>" to
+	"${resultdir}/${configname}-${iterationvarsf}#${repetition}.<ext>".
+
+	This affects the following configuration options: eventlog-file,
+	output-scalar-file, output-vector-file, snapshot-file.
+
+	To that end, the "iterationvarsf" inifile variable has been introduced,
+	which is the same as "iterationvars" but characters that are invalid or
+	inconvenient in file names are quoted/encoded in it.
+
+	At the same time, "iterationvars2" was removed due to lack of usefulness.
 
 2016-08-23  Andras Varga
 
-	* EventlogFileManager: fix: filename was always "General-0.elog"
+	* EventlogFileManager: fix: filename was always "General-0.elog", literally
 
 2016-08-23  Andras Varga
 
@@ -26,7 +165,7 @@
 2016-07-11  Andras Varga
 
 	* EnvirBase: Factored out a StatisticBuilder class, and moved it
-	into the sim.kernel
+	into the simulation kernel (src/sim)
 
 	* Further improvements in @statistic configuration, see sim/ChangeLog.
 

@@ -1,3 +1,168 @@
+2016-11-25  Andras Varga
+
+	* Analysis tool: initial support for SQLite-based result files [Zoltan
+	Bojthe, Rudolf Hornig, Andras Varga]
+
+2016-12-05  Rudolf Hornig
+
+	* Build: renamed default config names from gcc-debug -> debug.
+
+2016-12-01  Rudolf Hornig
+
+	* Build: removed Visual C++ specific code, as now we support the
+	Visual C++ compiler with the normal makefiles and build mechanism.
+
+2016-11-18  Andras Varga
+
+	* Inifile editor, Launcher: support for cmdenv-stop-batch-on-error
+
+2016-11-11  Andras Varga
+
+	* Launch page: "Silent" checkbox replaced by "Verbose"
+
+2016-11-14  Andras Varga
+
+	* Launch page: more/better tooltips
+
+2016-11-18  Andras Varga
+
+	* Launcher: don't force --debug-on-errors=false in RUN mode. Reason:
+	user may want to launch simulation using RUN, and use an external
+	debugger to debug it.
+
+2016-11-14  Andras Varga
+
+	* Launch page: "Debug on errors" made tri-state checkbox
+
+2016-11-14  Andras Varga
+
+	* Launcher: added hint for the run filter
+
+2016-11-14  Andras Varga
+
+	* IDE: omnetpp-ide.launch updated
+
+2016-11-16  Andras Varga
+
+	* Project Features: detecting external changes in the generated header file
+	made more robust: made comparison insensitive to comment, whitespace and
+	order differences.
+
+2016-11-16  Andras Varga
+
+	* Project Features property page: fix: could not properly fix NED
+	exclusions list
+
+	The old NED exclusions list always came back after "fixing" the project
+	configuration from the Project Features property page. (.nedexclusions
+	with updated content was saved to disk, then on "Apply" it was
+	overwritten with old content.)
+
+2016-10-27  Andras Varga
+
+	* Launcher improvements
+
+	- tolerate lack of console (no NPE in stream monitor)
+	- on simulation error, display concrete message in the error dialog,
+	  not just "Finished with error"
+	- code structuring for readability
+
+2016-10-27  Andras Varga
+
+	* Launch page: UI revamp
+
+	- use tristate checkboxes instead of Yes/No/Default radio buttons or combos
+	- UI: use editable combo instead
+	- working dir merged into Simulation group
+	- Qtenv to precede Tkenv
+	- Batch settings into separate group
+	- introduced explicit "useBatching" checkbox
+	- debug-on-errors: replace combo with checkbox that appears only in DEBUG
+	  mode (and fixed "false" in RUN mode)
+	- use our own SWTFactory
+	- added simulation time limit / CPU time limit
+	- added content assist for Additional Arguments
+	- hook modificatoin listeners automatically
+	- etc.
+
+2016-10-07  Andras Varga
+
+	* Launcher: allow simulations execute in batches
+
+	OmnetppMainTab: added "Batch size" spinner, etc.
+
+	Added JobGroup-based alternative implementation code as comment (it
+	currently does not work, because progress reporting from job groups is
+	broken, see Eclipse bugtracker)
+
+2016-10-20  Rudolf Hornig
+
+	* IDE: set all plugin's minimum runtime requirement to JRE 1.8
+
+2016-10-20  Rudolf Hornig
+
+	* IDE: Updated to eclipse 4.6.1
+
+2016-10-19  Andras Varga
+
+	* Fix NPE on startup when open ANF file was deleted since last session
+
+2016-10-19  Andras Varga
+
+	* Analysis tool: display Experiment/Measurement/Replication columns in
+	Browse Data tables instead of Folder/Filename/RunId/Config/RunNumber.
+
+	Note that this is only the default values for a preference, so change
+	will only take effect in new installations (or delete delete scave
+	preferences from .metadata/org.eclipse.core.runtime/...)
+
+	Also: increase default columns widths
+
+2016-10-19  Andras Varga
+
+	* Analysis tool: updated generation of default anf file names from
+	vec/sca file names
+
+2016-10-12  Andras Varga
+
+	* Launcher: make simulation batch cancellable; getting run list was
+	broken by a recent commit
+
+2016-10-12  Levente Mészáros
+
+	* Fixed incorrect tooltip background/foreground colors.
+
+	Added colorLock flag to prevent the eclipse styling mechanism from
+	overriding colors already set on the widget. Added kludge to workaround
+	the fact that the HTML parser returns black colors for
+	foreground/background even when they were not specified. Removed colors
+	from HTML prolog to fallback to system defaults.
+
+2016-10-10  Andras Varga
+
+	* Analysis tool: dark scheme fix
+
+2016-10-10  Andras Varga
+
+	* NED editor: improvement for dark color schemes (removed grey strip
+	from "package" heading)
+
+2016-10-10  Andras Varga
+
+	* Inifile edtor: icons: better transparency (for dark color schemes)
+
+2016-10-10  Andras Varga
+
+	* Inifile form editor: improvements for the dark color scheme
+
+2016-10-10  Andras Varga
+
+	* Inifile editor: fix "widget already disposed" error
+
+2016-10-05  Levente Mészáros
+
+	* Fixed incorrect swig mapping for ptr_t/uintptr_t.
+
 2016-11-30  Rudolf Hornig
 
 	* Removed 'nmake' support from the IDE. The Microsoft Clang/C2 compiler
@@ -571,18 +736,23 @@
 
 2011-04-30 Andras Varga
 
-	* Added "Export BuildTester makefile" to the project properties dialog to halp testing projects
-	 that define several "Project Features" (i.e. INET-Framework)
+	* Added "Export BuildTester makefile" to the project properties dialog
+	to help testing projects that define several "Project Features" (i.e.
+	INET-Framework)
 
 2011-04-21 Andras Varga
 
 	* Ini editor: rearranged tree and default page on the form editor.
-	* Fixed #282, #283. Source/sink example generated by the new project wizard was incorrect.
+
+	* Fixed #282, #283. Source/sink example generated by the new project
+	wizard was incorrect.
 
 2011-04-20 Tamas Borbely
 
 	* Ini file editor performance enhancements.
-	* Ini editor: a new INI edior opens with the same page (text/form) that was used last time
+
+	* Ini editor: a new INI edior opens with the same page (text/form) that
+	was used last time
 
 2011-04-14 Andras Varga
 
@@ -641,8 +811,8 @@
 
 2011-02-05 Andras Varga
 
-	* Several performance optimizations for the NED Editor. It must be able to open networks containing
-	around 10.000 submodules.
+	* Several performance optimizations for the NED Editor. It must be able to
+	open networks containing around 10.000 submodules.
 
 	* Performance: NED validation is done now in a background thread
 
@@ -650,34 +820,37 @@
 
 	* Graphical editor: Figure borders and outlines now correctly follow the zoom level.
 
-	* Graphical editor: The resize/move feedback figures have been changed to transparent blue from a simple outline.
+	* Graphical editor: The resize/move feedback figures have been changed to
+	transparent blue from a simple outline.
 
 2011-02-03 Levente Meszaros
 
-	* Added Technology Preview version of the network animator. It works only on .elog files
-	smaller than 10Mb. You can open it by right clicking on an .elog file and selection "Open with...".
-	This implementation is NOT optimized for larger files.
+	* Added Technology Preview version of the network animator. It works only
+	on .elog files smaller than 10Mb. You can open it by right clicking on an
+	.elog file and selection "Open with...". This implementation is NOT optimized
+	for larger files.
 
 2011-02-01 Rudolf Hornig
 
-	* NED Files are refreshed now before opening. No more "file is out of sync" message if the opened
-	NED file was modified outside of the IDE.
+	* NED Files are refreshed now before opening. No more "file is out of sync"
+	message if the opened NED file was modified outside of the IDE.
 
 2011-02-01 Andras Varga
 
-	* Simulation launcher: Size of the popup information tooltip is limited when displaying all the runs.
-	(i.e. whan the parameter space is too big)
+	* Simulation launcher: Size of the popup information tooltip is limited
+	when displaying all the runs (i.e. whan the parameter space is too big)
 
 2011-01-31 Levente Meszaros
 
-	* Added the possibility to go to a specific simulation time in event log view by specifying
-	relative values (+-) in the dialog (units are supported)
+	* Added the possibility to go to a specific simulation time in event log
+	view by specifying relative values (+-) in the dialog (units are supported)
 
-	* In sequence chart added 'Goto simulation time' and 'Goto event number' in the context menu
+	* In sequence chart added 'Goto simulation time' and 'Goto event number'
+	in the context menu
 
 	* Sequence chart: the current position is shown in the gutter
 
-	* Completion proposals in inner types after @ are working properly in ned text editor
+	* Completion proposals in inner types after @ are working properly in NED text editor
 
 2011-01-28 Andras Varga
 
@@ -688,9 +861,10 @@
 	* Context menu in graphical editor is reorganized for better and easier access of the
 	 most used functions.
 
-	* Linux tools now included in the build. It allows to profile the simulation using Valgrind
-	on Linux systems. (Windows and Mac builds does not have this capability). Use the "Profile as"
-	menu item in the context menu of the project directory.
+	* Linux tools now included in the build. It allows to profile the simulation
+	using Valgrind on Linux systems. (Windows and Mac builds does not have
+	this capability). Use the "Profile as" menu item in the context menu of
+	the project directory.
 
 2011-01-21 Rudolf Hornig
 
@@ -699,14 +873,15 @@
 
 2011-01-20 Rudolf Hornig
 
-	* In graphical editor the previous action used with double click (go to type or supertype)
-	has ben moved to the F3 key. It is also available from the context menu.
+	* In graphical editor the previous action used with double click (go to
+	type or supertype) has ben moved to the F3 key. It is also available
+	from the context menu.
 
 2011-01-20 Andras Varga
 
-	* Added a brand new Property dialog that can be accessed by double clicking on the module or type.
-	Type, name, vector size and graphical properties are supported. A preview is shown at the bottom
-	of the dialog.
+	* Added a brand new Property dialog that can be accessed by double clicking
+	on the module or type. Type, name, vector size and graphical properties
+	are supported. A preview is shown at the bottom	of the dialog.
 
 	* Enhanced Ned Type Selection dialog (CTRL-SHIFT-N)
 
@@ -759,20 +934,23 @@
 
 2010-12-17 Rudolf Hornig
 
-	* Fixed #230. The values for Type, Like and Extends property on a submodule/connections/or
-	NED type (top-level or inner) are initialized correctly. They contain correct values according
-	to the current lookup context.
+	* Fixed #230. The values for Type, Like and Extends property on a
+	submodule/connections/or NED type (top-level or inner) are initialized
+	correctly. They contain correct values according to the current lookup context.
 
-	* Cloning or creating new inner types using the graphical editor now generates unique names correctly
+	* Cloning or creating new inner types using the graphical editor now
+	generates unique names correctly
 
 2010-12-16 Rudolf Hornig
 
-	* Changed the palette entry ordering in NED editor to include inner types in the current file on the top.
+	* Changed the palette entry ordering in NED editor to include inner types
+	in the current file on the top.
 
 2010-12-15 Rudolf Hornig
 
-	* Fixed #229. In NED Editor: Inherited display property values can be cleared now using "-" as a value.
-	It is possible now to remove an icon even if the ancestor specified one.
+	* Fixed #229. In NED Editor: Inherited display property values can be
+	leared now using "-" as a value. It is possible now to remove an icon
+	even if the ancestor specified one.
 
 2010-12-14 Rudolf Hornig
 
@@ -789,7 +967,8 @@
 
 2010-12-11 Rudolf Hornig
 
-	* Fixed bug#213. NPE occurred in NedEditorLauncher if the filesystem and the workspace got out of sync.
+	* Fixed bug#213. NPE occurred in NedEditorLauncher if the filesystem and the
+	workspace got out of sync.
 
 2010-12-11 Andras Varga
 
@@ -802,8 +981,9 @@
 
 2010-12-10 Rudolf Hornig
 
-	* Changed the default OMNeT++ source code formatter profile to match the current INET coding convention.
-	Profile is using only spaces instead of tabs for indentation.
+	* Changed the default OMNeT++ source code formatter profile to match the
+	current INET coding convention. Profile is using only spaces instead of
+	tabs for indentation.
 
 2010-12-10 Andras Varga
 
@@ -840,14 +1020,16 @@
 
 2010-07-13 Tamas Borbely
 
-	* Scave: Line type on vector chart did get reflected in the Chart Properties dialog (issue 182).
-	When the line property has the same value for each selected line in the Properties dialog,
-	then that value is displayed in the control, instead of 'No change'.
+	* Scave: Line type on vector chart did get reflected in the Chart Properties
+	dialog (issue 182). When the line property has the same value for each
+	selected line in the Properties dialog, then that value is displayed in
+	the control, instead of 'No change'.
 
-	* Scave: Empty chart if refreshing a temp chart after re-running simulation (issue 186).
-	When creating a temp chart, runs was identified by runname, now they are identified
-	by file/configname/runnumber. 'Add Selected Data to Dataset' and 'Convert to Dataset'
-	actions also use the file/configname/runnumber fields for consistency.
+	* Scave: Empty chart if refreshing a temp chart after re-running simulation
+	(issue 186). When creating a temp chart, runs was identified by runname,
+	now they are identified by file/configname/runnumber.  'Add Selected Data
+	to Dataset' and 'Convert to Dataset' actions also use the file/configname/
+	runnumber fields for consistency.
 
 2010-07-19 Levente Meszaros
 
@@ -922,8 +1104,13 @@
 
 2009-08-03  Levente Meszaros
 
-	* Connection chooser brings up channel chooser when using the default connection tool and there are matching labels between the connected gates and an available channel type.
-	* Palette shows NED types in two distinct groups: the first contains those which are related to the current editor ordered by score, the second contains all available types ordered by name
+	* Connection chooser brings up channel chooser when using the default
+	connection tool and there are matching labels between the connected
+	gates and an available channel type.
+
+	* Palette shows NED types in two distinct groups: the first contains
+	those which are related to the current editor ordered by score, the
+	second contains all available types ordered by name
 
 2009-07-17  Levente Meszaros
 
@@ -931,27 +1118,34 @@
 
 2009-07-15  Levente Meszaros
 
-	* Palette provides regexp based substring filtering for qualified NED type names and @label properties.
-	* Palette sorts submodules based on what is actually already used, what could be connected and @contains properties.
+	* Palette provides regexp based substring filtering for qualified NED
+	type names and @label properties.
+
+	* Palette sorts submodules based on what is actually already used, what
+	could be connected and @contains properties.
 
 2009-07-14  Levente Meszaros
 
-	* Added support for matching @labels properties of gates in the connection chooser popup menu.
+	* Added support for matching @labels properties of gates in the connection
+	chooser popup menu.
 
 2009-07-13  Levente Meszaros
 
-	* Added validation to parameters dialog, reserved NED words cannot be parameter names, and parameter values must be valid expressions.
+	* Added validation to parameters dialog, reserved NED words cannot be
+	parameter names, and parameter values must be valid expressions.
 
 2009-06-09  Levente Meszaros
 
-	* SEQCHART: Added sequence chart support to display module method calls as vertical orange arrows.
-	The arrow's label is the method's name, tooltips are also available.
+	* SEQCHART: Added sequence chart support to display module method calls
+	as vertical orange arrows. The arrow's label is the method's name,
+	tooltips are also available.
 
-	* Some message send arrows were drawn incorrectly from the caller module due to not taking
-	into consideration module method calls. From now on these kind of arrows might start from
-	any point on a module's axis, even if there was no event at that simulation time in the
-	callee module.
+	* Some message send arrows were drawn incorrectly from the caller module
+	due to not taking into consideration module method calls. From now on
+	these kind of arrows might start from any point on a module's axis,
+	even if there was no event at that simulation time in the callee module.
 
 	* Store various show/hide flags in sequence chart eventlog configuration files.
 
 2009-03-12  ------ omnetpp-4.0 released ------
+

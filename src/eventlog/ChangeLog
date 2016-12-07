@@ -1,14 +1,10 @@
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
 
-2016-07-28  Rudolf Hornig
-
-	* Fix for proper MinGW-w64 build.
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
 
 2016-07-25  Andras Varga
 
@@ -116,8 +112,6 @@
 
 	* Removed eventlog support for module reparenting (i.e. logging of
 	cModule::changeParentTo()), because tools cannot easily support it
-
-////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 

@@ -1,10 +1,22 @@
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-11-29  Attila Torok
+
+	* ForceDirectedGraphLayouter: Layout scaling fix.
+
+	In rare cases, during the prelayouting phase of the advanced layouter,
+	when scaling the layout to make it fill the given bounding box, if a node
+	had a size equivalent to the bounding box in any dimension, a division by
+	zero caused unwanted NaN values, which later triggered the failure of an
+	assertion which required the distance between two nodes to be greater
+	than zero (but it would be NaN in this case). Discovered by the EnvirApi
+	test.
 
 2016-06-23  Rudolf Hornig
 

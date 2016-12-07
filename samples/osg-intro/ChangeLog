@@ -1,0 +1,19 @@
+2016-04-13  ------ omnetpp-5.0 released ------
+
+2016-03-18  Andras Varga
+
+	* New README file; related improvements
+
+2016-03-10  ------ omnetpp-5.0rc released ------
+
+2015-12-07  ------ omnetpp-5.0b3 released ------
+
+2015-11-30  Rudolf Hornig
+
+	* omnetpp.ini: osg-intro has now several configurations. 3D model loading 
+	and different terrain modes/projections are demonstrated
+
+2015-11-30  Rudolf Hornig
+
+	* renamed Canvas3d -> osg-intro
+

@@ -1,10 +1,104 @@
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-11-18  Andras Varga
+
+	* Follow cEnvir APIs change: StaticEnv: added appendToImagePath(),
+	loadImage(), getSubmodulePosition() dummy implementations.
+
+2016-11-14  Andras Varga
+
+	* cCanvas: implementatim: added Register_Figure(), plus tests
+
+	* cArcFigure: fix so that it can be instantiated from an empty NED property
+
+2016-11-11  Andras Varga
+
+	* cModule: getModuleByPath(): "<root>" to mean the toplevel module.
+	There was no syntax for that, apart from spelling out the toplevel
+	module's name.
+
+2016-10-30  Andras Varga
+
+	* cException: put where/when information AFTER the exception text +
+	nits. Goal: improve readability, as user needs to go through less blabla
+	before getting to the actual error message.
+
+2016-11-10  Andras Varga
+
+	* Refined error messages: capitalization, quotation marks, etc.
+
+2016-11-08  Andras Varga
+
+	* sim/netbuilder: fix wrong matching order of patterns when processing
+	deep parameter assignments (see NED_parampattern_5.test)
+
+2016-11-05  Andras Varga
+
+	* cXMLElement: getElementByPath() made more tolerant to whitespace
+	inside the path string (see cXMLElement_getElementByPath_1.test)
+
+2016-11-05  Andras Varga
+
+	* cDisplayString: fix obscure parse error (see NED_display_n5.test)
+
+2016-10-28  Andras Varga
+
+	* Refined error messages.
+
+2016-10-11  Attila Torok
+
+	* sim_std.msg: Made displayString fields directly editable.
+
+2016-10-27  Andras Varga
+
+	* cAbstractTextFigure::getBounds(), cImageFigure::getDefaultSize()
+	now return more precise dimensions, due to cEnvir change: its
+	getTextExtent() and getImageSize() methods now return the size in
+	doubles and not in ints.
+
+	Motivation:
+	- small font size (displayed zoomed)
+	- SVG and other vector images that don't necessarily have integer
+	dimensions
+
+2016-10-25  Andras Varga
+
+	* cConfiguration: fix: allow filename-type config values to be quoted.
+	Necessary because result file names now routinely contain '#'.
+
+	Examples:
+	output-scalar-file=General-#0.sca   <-- wrong, as #0.sca is taken as
+	comment output-scalar-file="General-#0.sca"   <-- OK
+
+2016-10-22  Andras Varga
+
+	* cConfigOption: Implemented new lookup methods find() and get()
+
+2016-10-19  Andras Varga
+
+	* Follow cEnvir API changes related to askyesno(), putsmsg(), alert(), etc.
+
+2016-08-08  Andras Varga
+
+	* cCanvas: implemented setAnimationSpeed(), holdSimulationFor()
+
+	* StaticEnv: follow related cEnvir API change (getAnimationTime(),
+	getAnimationSpeed(), getRemainingAnimationHoldTime())
+
+2016-09-21  Andras Varga
+
+	* Figure classes: setters methods to only fire change notification
+	if value has actually changed.
+
+2016-09-21  Andras Varga
+
+	* SimTime: fix: ttoa() did not work for t=INT64_MIN
 
 2016-09-01  Andras Varga
 
@@ -172,11 +266,11 @@
 	appending "Figure". That is, a figure class named inet::FooFigure can
 	be referred to as "inet::foo", "inet::Foo" and "inet::FooFigure".
 
-2016-08-01  TÖRÖK Attila
+2016-08-01  Attila Torok
 
 	* sim_std.msg: Figure fields grouped (added @group annotations).
 
-2016-07-29  TÖRÖK Attila
+2016-07-29  Attila Torok
 
 	* sim_std.msg: ANCHOR_BASELINE_xxx constants were missing from the enum
 
@@ -709,8 +803,6 @@
 
 	The code is currently surrounded with #ifdef SIMFRONTEND_SUPPORT,
 	turned off by default.
-
-////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 

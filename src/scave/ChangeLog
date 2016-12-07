@@ -1,10 +1,45 @@
 2016-11-30  Rudolf Hornig
 
-	* The updated build system now uses the ./configure file only to detect
-	certain flags and libraries. Most of the build logic is handled by the
-	Makefile.inc file itslef. This allows you to enable/disable optional
-	components (i.e. Tkenv,Qtenv,OSG and osgEarth support) without even
-	re-running the ./configure file.
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-11-25  Andras Varga
+
+	* Revised SQLite-related code: error handling, internal logic,
+	refactoring, etc.
+
+	SQLite result files are mostly automatically detected and used by
+	the library and scavetool.
+
+	Implementation: result file loading was factored out of
+	ResultFileManager, and done via two loaders: OmnetppResultFileLoader
+	and SqliteResultFileLoader. For processing output vector data,
+	an SqliteVectorReader class was added. There are two new node types:
+	"sqlitevectorreader" and "vectorreaderbyfiletype"; the latter
+	looks at the result file given to it, and instantiates either
+	an OMNeT++ vector file reader or an SQLite vector file reader.
+
+2016-11-23  Andras Varga
+
+	* Added initial support for SQLite-based result files [Zoltan Bojthe]
+
+2016-12-06  Andras Varga
+
+	* DEFAULT_PRECISION renamed to DEFAULT_RESULT_PRECISION
+
+2016-12-05  Andras Varga
+
+	* isVectorFile() renamed to isExistingVectorFile(), and made it check
+	file contents too. This is necessary so that the code can tell OMNeT++
+	result files from SQLite result files.
+
+2016-11-10  Andras Varga
+
+	* Error messages refined (start with capital letter, use apostrophes
+	for quoting, etc.)
 
 2016-09-01  Rudolf Hornig
 
@@ -81,8 +116,6 @@
 	- In source files, sort #include statements by folder.
 
 2015-03-04  ------ omnetpp-5.0b1 released ------
-
-////////////// fixes taken from omnetpp-4.x come here /////////////////
 
 2014-11-27  ------ omnetpp-4.6 released ------
 

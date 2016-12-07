@@ -128,9 +128,9 @@
 
 	* Borland C++ project file (*.ide) removed, Makefile.bc added (unsupported!)
 
-
 1999-10-10  Andras Varga
 
 	* ------ omnetpp-2.0b3 released ------
 
 	* standardized indentation of source files
+	

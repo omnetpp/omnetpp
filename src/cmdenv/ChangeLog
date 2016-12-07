@@ -1,5 +1,78 @@
 2016-11-30  Rudolf Hornig
 
+	* build: Makefile refactored. Added clang-c2 support and optimized
+	the build process.
+
+	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	by the standard Makefiles.
+
+2016-11-21  Andras Varga
+
+	* Follow change: sim-time-limit=0s and cpu-time-limit=0s now take effect
+
+2016-11-18  Andras Varga
+
+	* Added the cmdenv-stop-batch-on-error=<bool> option. It defaults
+	to true.
+
+	* cmdenv-interactive can now be specified on per-run basis.
+
+	* Refined printing of run statistics at the end. Example output:
+	'Run statistics: total 42, successful 30, errors 1, skipped 11'
+
+2016-11-18  Andras Varga
+
+	* Follow cEnvir API change: added appendToImagePath(), loadImage(),
+	getSubmodulePosition() as no-ops.
+
+2016-11-10  Andras Varga
+
+	* Standardized error messages: Start with uppercase letter, use
+	'apostrophe quoting' instead of `mixed quoting', etc.
+
+2016-10-27  Andras Varga
+
+	* Follow cEnvir API change regarding getImageSize()/getTextExtent()
+
+2016-10-19  Andras Varga
+
+	* Follow cEnvir API change regarding askyesno(), putmsg(), alert() etc.
+
+	* Standardised printing of error messages (err()/warn())
+
+2016-10-05  Andras Varga
+
+	* Internals: use C++-style I/O for all logging
+
+2016-10-03  Andras Varga
+
+	* Output: Implemented the -s (silent, i.e. non-verbose) command-line
+	option.
+
+2016-09-29  Andras Varga
+
+	* Output: cmdenv-output-file option can now be specificied per run,
+	and it defaults to a file name similar to result files (in the results/
+	directory etc, but with the .out extension.) Since saving the output
+	can no longer be disabled by omitting the cmdenv-output-file setting,
+	it can now be controlled with the new cmdenv-redirect-output=<bool>.
+
+2016-08-08  Andras Varga
+
+	* Follow cEnvir API change: added getAnimationTime(), getAnimationSpeed(),
+	getRemainingAnimationHoldTime()) as no-ops.
+
+2016-09-25  Andras Varga
+
+	* Run filtering: The -r option and cmdenv-runs-to-execute= now also
+	accept a run filter expression as an altenative to a list of run
+	numbers and run number ranges. Use -q to query the list of matching
+	runs.
+
+	Example: -c Aloha -r '$numHosts=>20 && $numHosts<=100' -q runconfig
+
+2016-11-30  Rudolf Hornig
+
 	* The updated build system now uses the ./configure file only to detect
 	certain flags and libraries. Most of the build logic is handled by the
 	Makefile.inc file itslef. This allows you to enable/disable optional
@@ -13,8 +86,7 @@
 
 2016-07-21  Attila Torok
 
-	* Added dummy implementations for cEnvir::getImageSize() and
-	getTextExtent()
+	* Follow cEnvir API change: added getImageSize(), getTextExtent() as no-ops
 
 2016-06-23  Rudolf Hornig
 
