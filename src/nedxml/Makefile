@@ -30,6 +30,7 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
       $O/nedresourcecache.o $O/nedtypeinfo.o
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
+                  neddtdvalidator.h neddtdvalidator.cc \
                   ned1.tab.hh ned1.tab.cc lex.ned1yy.cc \
                   ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
                   msg2.tab.hh msg2.tab.cc lex.msg2yy.cc
@@ -88,7 +89,7 @@ $O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	@echo Creating DLL: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
 
-nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
+nedelements.cc nedelements.h neddtdvalidator.cc neddtdvalidator.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
 	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
 
 ned1.tab.hh ned1.tab.cc : ned1.y
