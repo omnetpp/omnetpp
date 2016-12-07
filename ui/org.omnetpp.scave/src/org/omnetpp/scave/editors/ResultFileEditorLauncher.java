@@ -7,8 +7,6 @@
 
 package org.omnetpp.scave.editors;
 
-import java.util.regex.Pattern;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -68,6 +66,8 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
         }
     }
 
+    class BasenameRetval { public String baseName, globPattern; }
+
     /**
      * Returns the analysis file belongs to <code>resultFile</code>.
      * If the analysis file does not exists, a "New Analysis" wizard
@@ -85,18 +85,18 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
         if (resultFiles.length > 0)
         {
             IFile resultFile = resultFiles[0];
-            String filenameBase = extractBaseName(resultFile.getName());
+            BasenameRetval res = extractBaseName(resultFile.getName());
 
             IContainer anfContainer = resultFile.getParent() instanceof IProject ? resultFile.getParent() : resultFile.getParent().getParent();
-            IFile analysisFile = anfContainer.getFile(new Path(filenameBase + ".anf"));
+            IFile analysisFile = anfContainer.getFile(new Path(res.baseName + ".anf"));
 
             if (analysisFile.getLocation().toFile().exists()) {
                 return analysisFile; // return existing
             }
             else {
-                String basePath = resultFile.getParent().getFullPath().append(filenameBase).toString();
-                String vecFilePattern = basePath + "-*.vec";
-                String scaFilePattern = basePath + "-*.sca";
+                String basePath = resultFile.getParent().getFullPath().append(res.globPattern).toString();
+                String vecFilePattern = basePath + ".vec";
+                String scaFilePattern = basePath + ".sca";
                 openNewAnalysisWizard(analysisFile, new String[] {vecFilePattern, scaFilePattern});
                 return null; // wizard opens the editor, too, so we don't need to
             }
@@ -104,21 +104,34 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
         else
             return null;
     }
-
+    
     /**
      * Expects a file name like "PureAlohaExperiment-numHosts=10,mean=5.2-#38.sca", and
      * returns "PureAlohaExperiment" from it.
      *
      * Note: config names that contain hyphen ("Pure-Aloha-Experiment") should not be split!
      */
-    private String extractBaseName(String fileName) {
+    private BasenameRetval extractBaseName(String fileName) {
+        BasenameRetval result = new BasenameRetval();
         fileName = fileName.replaceFirst("\\.[^.]+$", "");  // remove file extension
-        fileName = fileName.replaceFirst("-#\\d+$", ""); // remove trailing repetition ("-#0")
-        fileName = fileName.replaceFirst("-[^-=]+=.*$", ""); // remove potential iteration variables ("-foo=3,...")
-        return fileName;
+        if (fileName.matches(".*-#[0-9]+")) {
+            // new-style file name 
+            fileName = fileName.replaceFirst("-#\\d+$", ""); // remove trailing repetition ("-#0")
+            fileName = fileName.replaceFirst("-[^-=]+=.*$", ""); // remove potential iteration variables ("-foo=3,...")
+            result.baseName = fileName;
+            result.globPattern = fileName + "-*";
+        }
+        else if (fileName.matches(".*-\\d++")) {
+            // old-style trailing run number ("-0")
+            result.baseName = fileName.replaceFirst("-\\d+$", ""); 
+            result.globPattern = fileName.replaceFirst("-\\d+$", "-*");
+        } 
+        else {
+            result.baseName = fileName;
+            result.globPattern = fileName;
+        }
+        return result;
     }
-
-    private static final Pattern suffixPattern = Pattern.compile("-[0-9]+$");
 
     /**
      * Opens the "New Analysis" wizard. The new analysis file will
