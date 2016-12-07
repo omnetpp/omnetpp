@@ -239,9 +239,10 @@ class SIM_API cTopology : public cOwnedObject
      */
     class SIM_API LinkIn : public Link
     {
-      public:
+      private:
         LinkIn(double weight=1) : Link(weight) {}
 
+      public:
         /**
          * Returns the node at the remote end of this connection.
          */
@@ -284,9 +285,10 @@ class SIM_API cTopology : public cOwnedObject
      */
     class SIM_API LinkOut : public Link
     {
-      public:
+      private:
         LinkOut(double weight=1) : Link(weight) {}
 
+      public:
         /**
          * Returns the node at the remote end of this connection.
          */
