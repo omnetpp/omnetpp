@@ -567,21 +567,23 @@ class SIM_API cEnvir
     virtual void loadImage(const char *fileName, const char *imageName=nullptr) = 0;
 
     /**
-     * Returns the effective position of the given module when it is visualized
-     * in the graphical inspector of its containing compound module, or (NAN,NAN)
-     * if such position is not available. This method is the only way to access
-     * positions of "floating" modules, i.e. those placed by a layouting algorithm
-     * that runs as part of the UI. The method may unconditionally return (NAN,NAN)
-     * if the simulation is running under Cmdenv or another non-graphical user
-     * interface.
+     * Returns the effective bounding rectangle of the given module when it is
+     * visualized in the graphical inspector of its containing compound module,
+     * or (NAN,NAN,NAN,NAN) if such a rectangle is not available. This method
+     * is the only way to access positions of "floating" modules, i.e. those
+     * placed by a layouting algorithm that runs as part of the UI. The method
+     * may unconditionally return (NAN,NAN,NAN,NAN) if the simulation is
+     * running under Cmdenv or another non-graphical user interface.
      *
-     * Also note that this method may return different values at different times,
-     * e.g. as a result of the user opening and closing inspectors, or hitting
-     * the "Relayout" button. Visualization code relying on this method is
-     * advised to re-read positions in every refreshDisplay() call, and check
-     * whether they changed since last time.
+     * Also note that this method may return different values at different
+     * times, e.g. as a result of the user opening and closing inspectors,
+     * hitting the "Relayout" button, or even changing the zoom level or icon
+     * size of graphical module inspectors displaying the parent module.
+     * Visualization code relying on this method is advised to re-read
+     * coordinates in every refreshDisplay() call, and check whether they
+     * changed since last time.
      */
-    virtual cFigure::Point getSubmodulePosition(const cModule *submodule) = 0;
+    virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) = 0;
 
     /**
      * Returns the current animation time. Animation time starts from zero, and

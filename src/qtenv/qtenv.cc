@@ -1917,10 +1917,10 @@ void Qtenv::loadImage(const char *fileName, const char *imageName)
     icons.loadImage(fileName, imageName);
 }
 
-cFigure::Point Qtenv::getSubmodulePosition(const cModule *submodule)
+cFigure::Rectangle Qtenv::getSubmoduleBounds(const cModule *submodule)
 {
-    QPointF p = moduleLayouter.getModulePosition(const_cast<cModule *>(submodule));
-    return cFigure::Point(p.x(), p.y());
+    QRectF r = moduleLayouter.getModuleRectangle(const_cast<cModule *>(submodule));
+    return cFigure::Rectangle(r.x(), r.y(), r.width(), r.height());
 }
 
 double Qtenv::getAnimationTime() const

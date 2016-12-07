@@ -1896,18 +1896,23 @@ void Tkenv::loadImage(const char *fileName, const char *imageName)
             TclQuotedString(opp_nulltoempty(imageName)).get(), TCL_NULL));
 }
 
-cFigure::Point Tkenv::getSubmodulePosition(const cModule *submodule)
+cFigure::Rectangle Tkenv::getSubmoduleBounds(const cModule *submodule)
 {
     // an easy solution that works in most practical cases: take the coordinates
     // from the first open inspector that we find for this module
     if (cModule *enclosingModule = submodule->getParentModule()) {
         Inspector *insp = findFirstInspector(enclosingModule, INSP_GRAPHICAL, false);
         if (ModuleInspector *modinsp = dynamic_cast<ModuleInspector*>(insp)) {
-            auto p = modinsp->getSubmodulePosition(submodule);
-            return cFigure::Point(p.x, p.y);
+            auto c = modinsp->getSubmodulePosition(submodule);
+            bool expl, obeys;
+            double x, y, sx, sy;
+            // only using sx and sy from this!
+            modinsp->getSubmoduleCoords(const_cast<cModule *>(submodule), expl, obeys, x, y, sx, sy);
+
+            return cFigure::Rectangle(c.x - sx/2, c.y - sy/2, sx, sy);
         }
     }
-    return cFigure::Point(NAN, NAN);
+    return cFigure::Rectangle(NAN, NAN, NAN, NAN);
 }
 
 unsigned Tkenv::getExtraStackForEnvir() const

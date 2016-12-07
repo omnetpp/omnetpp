@@ -702,9 +702,9 @@ void Cmdenv::loadImage(const char *fileName, const char *imageName)
 {
 }
 
-cFigure::Point Cmdenv::getSubmodulePosition(const cModule *submodule)
+cFigure::Rectangle Cmdenv::getSubmoduleBounds(const cModule *submodule)
 {
-    return cFigure::Point(NAN, NAN);
+    return cFigure::Rectangle(NAN, NAN, NAN, NAN);
 }
 
 void Cmdenv::printUISpecificHelp()
