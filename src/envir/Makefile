@@ -2,7 +2,8 @@
 # Definitions to be customized by 'configure'
 #
 
-include ../../Makefile.inc
+CONFIGFILE = ../../Makefile.inc
+include $(CONFIGFILE)
 
 #
 # Local definitions
@@ -47,7 +48,7 @@ EXPORT_MACRO = -DENVIR_EXPORT
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc | $(GENERATED_SOURCES)
+$O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -57,7 +58,7 @@ $O/%.o: %.cc | $(GENERATED_SOURCES)
 #
 all : install
 
-install: build
+install: build $(CONFIGFILE)
 	@mkdir -p $L
 	-$(Q)cp $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
 	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :

@@ -407,7 +407,7 @@ sub makemake()
 
     $makecommand = $ENV{MAKE} ? $ENV{MAKE} : "make";
 
-    # find configuser.vc / Makefile.inc
+    # find Makefile.inc
     $comspec = $ENV{COMSPEC};
     $comspec =~ s!\\!\\\\!g;
     $configFile =  `opp_configfilepath`;
@@ -1135,7 +1135,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 #------------------------------------------------------------------------------
 
-# Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
+# Pull in OMNeT++ configuration (Makefile.inc)
 
 ifneq ("$(OMNETPP_CONFIGFILE)","")
 CONFIGFILE = $(OMNETPP_CONFIGFILE)
@@ -1175,10 +1175,8 @@ include $(CONFIGFILE)
 # so we store COPTS into $COPTS_FILE and have object
 # files depend on it (except when "make depend" was called)
 COPTS_FILE = $O/.last-copts
-ifneq ($(MAKECMDGOALS),depend)
 ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
 $(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
-endif
 endif
 
 #------------------------------------------------------------------------------
@@ -1195,23 +1193,23 @@ endif
 ### Rules for $TARGET. Note that end product will be softlinked into the
 ### Makefile's directory; on systems that don't support soft links it will
 ### be copied. Note that MinGW's "ln -s" also actually copies the file.
-{exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile}
+{exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {exe:}	@$(MKPATH) $O
 {exe:}	@echo Creating executable: $@
 {gcclongline:}{exe:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) -o $O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
 {~gcclongline:}{exe:}	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
-{sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile}
+{sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {sharedlib:}	@$(MKPATH) $O
 {sharedlib:}	@echo Creating shared library: $@
 {gcclongline:}{sharedlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) -o $O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
 {~gcclongline:}{sharedlib:}	$(Q)$(SHLIB_LD) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
 {sharedlib:}	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
-{staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile}
+{staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {staticlib:}	@$(MKPATH) $O
 {staticlib:}	@echo Creating static library: $@
 {gcclongline:}{staticlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) $O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
 {~gcclongline:}{staticlib:}	$(Q)$(AR) $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS)
-{nolink:}all: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {makefile}
+{nolink:}all: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {makefile} $(CONFIGFILE)
 {nolink:}	@# Do nothing
 
 {submakedirs:}submakedirs: {@i:submakenames} {i}_dir{/@}

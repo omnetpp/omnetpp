@@ -2,7 +2,8 @@
 # variables set by `configure':
 #
 
-include ../../Makefile.inc
+CONFIGFILE = ../../Makefile.inc
+include $(CONFIGFILE)
 
 #
 # Local definitions
@@ -18,7 +19,7 @@ COPTS=$(CFLAGS) $(INCL_FLAGS)
 #
 # Rules
 #
-all:
+all: $(CONFIGFILE)
 	$(qecho) Copying scripts to bin directory...
 	$(Q)echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
 	$(Q)if [ "$$OS" = "Windows_NT" ] ; then \

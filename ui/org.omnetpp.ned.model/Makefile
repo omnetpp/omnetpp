@@ -1,7 +1,9 @@
 #
 # Global definitions
 #
-include ../../Makefile.inc
+
+CONFIGFILE = ../../Makefile.inc
+include $(CONFIGFILE)
 
 #
 # Local definitions
@@ -15,7 +17,7 @@ JMODELDIR = src/$(subst .,/,$(JMODELPKG))
 #
 all: genjava
 
-genjava:
+genjava: $(CONFIGFILE)
 	mkdir -p $(JMODELDIR)
 	$(PERL) etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
 

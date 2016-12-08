@@ -2,7 +2,8 @@
 # Global definitions
 #
 
-include ../../Makefile.inc
+CONFIGFILE = ../../Makefile.inc
+include $(CONFIGFILE)
 
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/ui
@@ -53,11 +54,11 @@ COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS)
 #
 .SUFFIXES : .cc .cxx
 
-$O/%.o: %.cc
+$O/%.o: %.cc $(CONFIGFILE)
 	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
-$O/%.o: %.cxx
+$O/%.o: %.cxx $(CONFIGFILE)
 	@mkdir -p $O
 	$(CXX) -c $(COPTS) -o $@ $<
 
@@ -66,7 +67,7 @@ $O/%.o: %.cxx
 #
 all: $(JNILIBS_IF_POSSIBLE)
 
-jnilibs: $O/$(DLL) $(DLL_TARGET_DIR)/$(DLL)
+jnilibs: $O/$(DLL) $(DLL_TARGET_DIR)/$(DLL) $(CONFIGFILE)
 
 common.cxx : common.i
 	-rm -f $(COMMON_JAVADIR)/*.java

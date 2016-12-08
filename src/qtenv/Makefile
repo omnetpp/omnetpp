@@ -2,7 +2,8 @@
 # Definitions to be customized by 'configure'
 #
 
-include ../../Makefile.inc
+CONFIGFILE = ../../Makefile.inc
+include $(CONFIGFILE)
 
 #
 # Local definitions
@@ -64,12 +65,12 @@ EXPORT_MACRO = -DQTENV_EXPORT
 #
 .SUFFIXES : .cc .cpp .ui .qrc .h
 
-$O/%.o: %.cc | $(GENERATED_FILES)
+$O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_FILES)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(CFLAGS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
 
-$O/%.o: %.cpp | $(GENERATED_FILES)
+$O/%.o: %.cpp $(CONFIGFILE) | $(GENERATED_FILES)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(CFLAGS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -90,7 +91,7 @@ all: $(QTENV_TARGET)
 
 qtenv : install
 
-install: build
+install: build $(CONFIGFILE)
 	@mkdir -p $L
 	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
 	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :

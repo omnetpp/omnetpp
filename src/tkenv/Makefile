@@ -2,7 +2,8 @@
 # Definitions to be customized by 'configure'
 #
 
-include ../../Makefile.inc
+CONFIGFILE = ../../Makefile.inc
+include $(CONFIGFILE)
 
 #
 # Local definitions
@@ -45,12 +46,12 @@ EXPORT_MACRO = -DTKENV_EXPORT
 #
 .SUFFIXES : .cc .c
 
-$O/%.o: %.c
+$O/%.o: %.c $(CONFIGFILE)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CC) -c $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
 
-$O/%.o: %.cc
+$O/%.o: %.cc $(CONFIGFILE)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -62,7 +63,7 @@ all: $(TKENV_TARGET)
 
 tkenv : install
 
-install: build tcl-libs
+install: build tcl-libs $(CONFIGFILE)
 	@mkdir -p $L
 	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
 	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :
