@@ -11,23 +11,21 @@ OMNETPP_EDITION = @OMNETPP_EDITION@
 #
 # Optional features (set to "yes" to enable the feature)
 #
-WITH_QTENV = @WITH_QTENV@
-WITH_OSG = @WITH_OSG@
-WITH_OSGEARTH = @WITH_OSGEARTH@
-WITH_NETBUILDER = @WITH_NETBUILDER@
-WITH_PARSIM = @WITH_PARSIM@
-WITH_SYSTEMC = @WITH_SYSTEMC@
-WITH_TKENV = @WITH_TKENV@
-EMBED_TCL_CODE = @EMBED_TCL_CODE@
-PREFER_SQLITE_RESULT_FILES = @PREFER_SQLITE_RESULT_FILES@
+WITH_QTENV ?= @WITH_QTENV@
+WITH_OSG ?= @WITH_OSG@
+WITH_OSGEARTH ?= @WITH_OSGEARTH@
+WITH_NETBUILDER ?= @WITH_NETBUILDER@
+WITH_PARSIM ?= @WITH_PARSIM@
+WITH_SYSTEMC ?= @WITH_SYSTEMC@
+WITH_TKENV ?= @WITH_TKENV@
+EMBED_TCL_CODE ?= @EMBED_TCL_CODE@
+PREFER_SQLITE_RESULT_FILES ?= @PREFER_SQLITE_RESULT_FILES@
 
 #
 # SHARED_LIBS determines whether omnetpp is built as shared or static libs
 # By default we use shared libs
 #
-ifeq ("$(SHARED_LIBS)","")
-  SHARED_LIBS = @SHARED_LIBS@
-endif
+SHARED_LIBS ?= @SHARED_LIBS@
 
 #
 # Directories
@@ -83,9 +81,7 @@ endif
 # makemake-generated makefiles create object files and other
 # build artifacts.
 #
-ifndef CONFIGNAME
-  CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
-endif
+CONFIGNAME ?= $(TOOLCHAIN_NAME)-$(MODE)
 
 #
 # Control verbosity. Specifiying V=1 will make the build output verbose. You can use:
