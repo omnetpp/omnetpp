@@ -151,6 +151,8 @@ class NEDXML_API MsgCppGenerator
             bool feditable;         // @editable(true)
             bool editNotDisabled;   // true when field doesn't have property "@editable(false)"
             bool fopaque;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
+            bool overrideGetter;   // @overridegetter|@override, uses when field getter function overrides a function in base class
+            bool overrideSetter;   // @overridesetter|@override, uses when field setter function overrides a function in base class
 
           public:
             FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
