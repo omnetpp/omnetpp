@@ -1,8 +1,8 @@
 module TextOpacity
 {
-    @display("bgb=1200,200");
+    @display("bgb=1200,250");
     @class(ArrangeFigures);
-    @arrange(startPos=70,50; lineSpacing=80; columnWidth=150; drawAnchor=false);
+    @arrange(startPos=70,100; lineSpacing=80; columnWidth=150; drawAnchor=false);
 
     @addColumn[0](opacity=0);
     @addColumn[1](opacity=0.2);

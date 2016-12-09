@@ -1,6 +1,6 @@
 module TextUtf8
 {
-    @display("bgb=1200,200");
+    @display("bgb=1200,250");
     @class(ArrangeFigures);
     @arrange(startPos=70,50; lineSpacing=80; columnWidth=250; drawAnchor=false);
 

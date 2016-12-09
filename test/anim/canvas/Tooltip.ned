@@ -1,6 +1,6 @@
 module Tooltip
 {
-    @display("bgb=1000,1300");
+    @display("bgb=1000,1900");
     @class(ArrangeFigures);
     @arrange(startPos=30,100; lineSpacing=120; columnWidth=120; drawBBox=false; drawReferenceLine=false);
 

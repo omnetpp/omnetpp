@@ -1,8 +1,8 @@
 module TextAnchor
 {
-    @display("bgb=2500,400");
+    @display("bgb=2500,500");
     @class(ArrangeFigures);
-    @arrange(startPos=70,50; lineSpacing=80; columnWidth=150);
+    @arrange(startPos=50,100; lineSpacing=100; columnWidth=150);
 
     @addColumn[0](anchor=c);
     @addColumn[1](anchor=n);

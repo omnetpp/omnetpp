@@ -1,6 +1,6 @@
 module ImageAnchor
 {
-    @display("bgb=2500,1200");
+    @display("bgb=2500,1000");
     @class(ArrangeFigures);
     @arrange(startPos=70,100; lineSpacing=150; columnWidth=150);
 
