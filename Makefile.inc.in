@@ -150,6 +150,7 @@ TK_CFLAGS = @TK_CFLAGS@
 TK_LIBS = @TK_LIBS@
 QT_CFLAGS = @QT_CFLAGS@
 QT_LIBS = @QT_LIBS@
+QTENV_LDFLAGS = @QTENV_LDFLAGS@
 OSG_CFLAGS = @OSG_CFLAGS@
 OSG_LIBS = @OSG_LIBS@
 OSGEARTH_CFLAGS = @OSGEARTH_CFLAGS@
@@ -187,7 +188,7 @@ SHARED_LIB_SUFFIX = @SHARED_LIB_SUFFIX@
 # omnetpp and system libraries linked with the simulations
 #
 TKENV_LIBS = $(LDFLAG_INCLUDE)_tkenv_lib $(AS_NEEDED_OFF) -lopptkenv$D -loppenvir$D -lopplayout$D
-QTENV_LIBS = $(LDFLAG_INCLUDE)_qtenv_lib $(AS_NEEDED_OFF) -loppqtenv$D -loppenvir$D -lopplayout$D
+QTENV_LIBS = $(LDFLAG_INCLUDE)_qtenv_lib $(AS_NEEDED_OFF) $(QTENV_LDFLAGS) -loppqtenv$D -loppenvir$D -lopplayout$D
 CMDENV_LIBS = $(LDFLAG_INCLUDE)_cmdenv_lib $(AS_NEEDED_OFF) -loppcmdenv$D -loppenvir$D
 ALL_ENV_LIBS = $(CMDENV_LIBS)
 KERNEL_LIBS = -loppsim$D

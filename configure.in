@@ -756,6 +756,7 @@ if test "$WITH_QTENV" = "yes"; then
         QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS -Wl,-rpath=$QT_INSTALL_LIBS"}
+        QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
 
 QT_VERSIONCHECK_CODE=$(cat <<-EOT
     qVersion();
@@ -778,13 +779,6 @@ EOT
             OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $LDFLAGS_TOOLS_MACOSX $QT_LIBS, qt_ok)
         fi
 
-        # finally fall back to use pkg-config (if available)
-        if test $qt_ok = no; then
-            QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL"
-            QT_CFLAGS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`"
-            QT_LIBS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs` -Wl,-rpath=$QT_INSTALL_LIBS"
-            OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
-        fi
         if test $qt_ok = no; then
             AC_MSG_ERROR([Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.4. You can disable Qtenv by setting the WITH_QTENV variable to "no" in configure.user.])
         fi
@@ -1223,6 +1217,7 @@ AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
+AC_SUBST(QTENV_LDFLAGS)
 AC_SUBST(OSG_CFLAGS)
 AC_SUBST(OSG_LIBS)
 AC_SUBST(OSGEARTH_CFLAGS)

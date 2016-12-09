@@ -615,6 +615,7 @@ OSGEARTH_LIBS
 OSGEARTH_CFLAGS
 OSG_LIBS
 OSG_CFLAGS
+QTENV_LDFLAGS
 QT_LIBS
 QT_CFLAGS
 TK_LIBS
@@ -717,7 +718,6 @@ infodir
 docdir
 oldincludedir
 includedir
-runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -797,7 +797,6 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
-runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE}'
@@ -1050,15 +1049,6 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
-  -runstatedir | --runstatedir | --runstatedi | --runstated \
-  | --runstate | --runstat | --runsta | --runst | --runs \
-  | --run | --ru | --r)
-    ac_prev=runstatedir ;;
-  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
-  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
-  | --run=* | --ru=* | --r=*)
-    runstatedir=$ac_optarg ;;
-
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1196,7 +1186,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir runstatedir
+		libdir localedir mandir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1349,7 +1339,6 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
-  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -4755,6 +4744,7 @@ test -n "$RCC" || RCC="nope"
         QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS -Wl,-rpath=$QT_INSTALL_LIBS"}
+        QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
 
 QT_VERSIONCHECK_CODE=$(cat <<-EOT
     qVersion();
@@ -4876,46 +4866,6 @@ rm -f core conftest.err conftest.$ac_objext \
 
         fi
 
-        # finally fall back to use pkg-config (if available)
-        if test $qt_ok = no; then
-            QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5PrintSupport Qt5OpenGL"
-            QT_CFLAGS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --cflags`"
-            QT_LIBS="`PKG_CONFIG_PATH=$QT_INSTALL_LIBS/pkgconfig pkg-config --silence-errors $QT_MODULES --libs` -Wl,-rpath=$QT_INSTALL_LIBS"
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CXXFLAGS $CFLAGS $QT_CFLAGS"
-   LIBS="$QT_LIBS"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"" >&5
-$as_echo_n "checking for Qt5 with CFLAGS=\"$CXXFLAGS $CFLAGS $QT_CFLAGS\" LIBS=\"$QT_LIBS\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <QtGlobal>
-int
-main ()
-{
-$QT_VERSIONCHECK_CODE;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; qt_ok=yes;
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; qt_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
         if test $qt_ok = no; then
             as_fn_error $? "Cannot build Qt apps, probably due to missing or too old Qt packages. Make sure Qt development packages are installed and newer than Qt 5.4. You can disable Qtenv by setting the WITH_QTENV variable to \"no\" in configure.user." "$LINENO" 5
         fi
@@ -6875,6 +6825,7 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
