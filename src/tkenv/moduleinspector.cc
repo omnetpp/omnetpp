@@ -262,7 +262,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
     // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
     double boxsx = 0, boxsy = 0;
     int iconsx = 0, iconsy = 0;
-    if (ds.containsTag("b") || !ds.containsTag("i")) {
+    if (ds.containsTag("b")) {
         boxsx = resolveDoubleDispStrArg(ds.getTagArg("b", 0), submod, 40);
         boxsy = resolveDoubleDispStrArg(ds.getTagArg("b", 1), submod, 24);
     }
