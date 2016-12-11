@@ -35,14 +35,15 @@
 #include "scaveutils.h"
 #include "sqliteresultfileutils.h"
 
+#include "scavetool.h"
+
 using namespace std;
 using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace scave {
 
-
-void printUsage()
+void ScaveTool::printUsage()
 {
     printf(
        "scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2015 OpenSim Ltd.\n"
@@ -135,7 +136,7 @@ void printUsage()
     );
 }
 
-static void loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool verbose)
+void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool verbose)
 {
     // load files
     ResultFileManager resultFileManager;
@@ -158,7 +159,7 @@ static void loadFiles(ResultFileManager& manager, const vector<string>& fileName
         printf("%d file(s) loaded\n", (int)manager.getFiles().size());
 }
 
-static string rebuildCommandLine(int argc, char **argv)
+string ScaveTool::rebuildCommandLine(int argc, char **argv)
 {
     // FIXME quotes
     string result;
@@ -170,7 +171,7 @@ static string rebuildCommandLine(int argc, char **argv)
     return result;
 }
 
-int vectorCommand(int argc, char **argv)
+int ScaveTool::vectorCommand(int argc, char **argv)
 {
     // options
     bool opt_verbose = false;
@@ -402,7 +403,7 @@ int vectorCommand(int argc, char **argv)
     return 0;
 }
 
-static void parseScalarFunction(const string& functionCall,  /*out*/ string& name,  /*out*/ vector<string>& params)
+void ScaveTool::parseScalarFunction(const string& functionCall,  /*out*/ string& name,  /*out*/ vector<string>& params)
 {
     params.clear();
     string::size_type paren = functionCall.find('(');
@@ -429,7 +430,7 @@ static void parseScalarFunction(const string& functionCall,  /*out*/ string& nam
         params.push_back(unquoteString(tokens[i]));
 }
 
-int scalarCommand(int argc, char **argv)
+int ScaveTool::scalarCommand(int argc, char **argv)
 {
     // options
     bool opt_verbose = false;
@@ -569,7 +570,7 @@ int scalarCommand(int argc, char **argv)
 // TODO allow filtering by patterns here too?
 // TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
 // occurring in the input files
-int listCommand(int argc, char **argv)
+int ScaveTool::listCommand(int argc, char **argv)
 {
     bool opt_name = false;
     bool opt_module = false;
@@ -638,7 +639,7 @@ int listCommand(int argc, char **argv)
     return 0;
 }
 
-int infoCommand(int argc, char **argv)
+int ScaveTool::infoCommand(int argc, char **argv)
 {
     // process args
     bool opt_brief = false;
@@ -705,7 +706,7 @@ int infoCommand(int argc, char **argv)
     return 0;
 }
 
-int indexCommand(int argc, char **argv)
+int ScaveTool::indexCommand(int argc, char **argv)
 {
     // process args
     bool opt_verbose = false;
@@ -749,12 +750,7 @@ int indexCommand(int argc, char **argv)
     return rc;
 }
 
-}  // namespace scave
-}  // namespace omnetpp
-
-using namespace omnetpp::scave;
-
-int main(int argc, char **argv)
+int ScaveTool::main(int argc, char **argv)
 {
     if (argc < 2) {
         printUsage();
@@ -776,5 +772,16 @@ int main(int argc, char **argv)
         fprintf(stderr, "unknown command '%s'\n", command);
         return 1;
     }
+}
+
+}  // namespace scave
+}  // namespace omnetpp
+
+using namespace omnetpp::scave;
+
+int main(int argc, char **argv)
+{
+    ScaveTool scaveTool;
+    return scaveTool.main(argc, argv);
 }
 
