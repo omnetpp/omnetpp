@@ -171,7 +171,7 @@ void ScaveTool::vectorCommand(int argc, char **argv)
     // options
     bool opt_verbose = false;
     string opt_filterExpression;
-    string opt_outputFileName = "_out_";
+    string opt_outputFileName = "out";
     string opt_outputFormat = "vec";  // TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
     string opt_readerNodeType = "vectorreaderbyfiletype";
     vector<string> opt_filterList;
@@ -415,7 +415,7 @@ void ScaveTool::scalarCommand(int argc, char **argv)
     // options
     bool opt_verbose = false;
     string opt_filterExpression;
-    string opt_outputFileName = "_out_";
+    string opt_outputFileName = "out";
     string opt_outputFormat = "csv";
     string opt_applyFunction;
     string opt_groupingFields = "";
