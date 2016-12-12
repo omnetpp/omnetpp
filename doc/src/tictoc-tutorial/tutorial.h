@@ -42,28 +42,52 @@ NEXT: @ref part1
 /**
 @page part1 1. Getting started
 
-UP: @ref contents
+@nav{contents,part2}
 
 Since the most common application area of @opp is the simulation of
 telecommunications networks, we'll borrow our topic from there.
 For a start, let us begin with a "network" that consists of two nodes.
 The nodes will do something simple: one of the nodes will create a packet,
 and the two nodes will keep passing the same packet back and forth.
-We'll call the nodes "tic" and "toc".
+We'll call the nodes <tt>tic</tt> and <tt>toc</tt>.
 
 Here are the steps you take to implement your first simulation from scratch:
 
-1. Create a working directory called tictoc, and cd to this directory.
+Start the @opp IDE by typing <tt>omnetpp</tt> in your terminal.
+
+1. In the @opp IDE menu bar, choose New | @opp Project. Enter a project name, then click Finish.
+
+<img src="newproject.png">
 
 2. Describe your example network by creating a topology file. Topology files
 are written in the NED language (Network Definition).
 A  NED topology file is a
 text file that identifies the network's nodes and the links between them.
-You can create it with your favourite text editor.
-@note You can find a detailed description of the NED language in <a href="../manual/usman.html#cha:ned-lang" target="blank">Section 3</a> of the
+
+@note You can find a detailed description of the NED language in <a href="../manual/index.html#cha:ned-lang" target="blank">Section 3</a> of the
 @opp manual (it's also in the <tt>doc</tt> directory of your @opp installation).
 
-Let's call it tictoc1.ned:
+To add new files to a project, right click on the project directory (or anywhere in the project directory) in the <i>Project Explorer</i> panel on the left. Choose <i>New</i>, and select the type of file to create,
+this time, <i>Network Description File (NED)</i>.
+
+<img src="new.png">
+
+Let's call it tictoc1.ned.
+<img src="ned.png" height=500px>
+
+Once created, the file can be edited in the <i>Editor area</i> of the @opp IDE. The @opp IDE's NED editor has two modes:
+
+- In <i>Design</i> mode, the topology can be edited graphically, by selecting modules or other tools from the <i>Palette</i> panel to the right.
+<img src="nededitor.png">
+- In <i>Source</i> mode, the topology is specified as text
+<img src="nedsource.png">
+
+These are two representations of the same network. Changes made in one mode also appear in the other.
+
+
+@note You can also create and edit these files with any text editor. Just put the files in the project directory.
+
+Here is tictoc1.ned:
 
 @dontinclude tictoc1.ned
 @skip simple Txc1
@@ -73,24 +97,24 @@ Let's call it tictoc1.ned:
 The file is best read from the bottom up. Here's what it says:
 
    - Tictoc1 is a network, which is assembled from two submodules,
-     tic and toc. tic and toc are instances of the same module type
-     called Txc1. We connect tic's output gate (named out) to toc's input
+     <tt>tic</tt> and <tt>toc</tt>. <tt>tic</tt> and <tt>toc</tt> are instances of the same module type
+     called Txc1. We connect <tt>tic</tt>'s output gate (named out) to <tt>toc</tt>'s input
      gate (named in), and vica versa (<tt>network ... { ... }</tt>). There
      will be a 100ms propagation delay both ways;
    - Txc1 is a simple module type (which means it is atomic on NED level, and
      will be implemented in C++). Txc1 has one input gate named in,
      and one output gate named out (<tt>simple ... { ... }</tt>).
 
-@note You can find more information on Simple modules in <a href="../manual/usman.html#cha:simple-modules" target="_blank">Section 4</a> of the @opp manual.
+@note You can find more information on Simple modules in <a href="../manual/index.html#cha:simple-modules" target="_blank">Section 4</a> of the @opp manual.
 
 3. We now need to implement the functionality of the simple module Txc1. This is
-achieved by writing a C++ file @ref txc1.cc :
+achieved by writing a C++ file. In the <i>New</i> menu, select <i>Source File</i>, and name it @ref txc1.cc :
 
 @dontinclude txc1.cc
 @skip #include
 @until // send out the message
 @skipline }
-    
+
 The Txc1 simple module type is represented by the C++ class Txc1, which
 has to be subclassed from cSimpleModule, and registered in @opp with the
 Define_Module() macro.
@@ -117,36 +141,12 @@ it would continue forever. You will be able to stop it from the GUI.
 (You could also specify a simulation time limit or CPU time limit
 in the configuration file, but we don't do that in the tutorial.)
 
-4. We now create the Makefile which will help us to compile and link our program
-to create the executable tictoc:
-
-\code
-$ opp_makemake
-\endcode
-
-This command should have now created a Makefile in the working directory
-tictoc.
-
-5. Let's now compile and link our very first simulation by issuing the make command:
-
-\code
-$ make
-\endcode
-
-If there are compilation errors, you need to rectify those and repeat the make until
-you get an error-free compilation and linking.
-
-@note It might be more convenient to use the @opp IDE for the tutorial. Creating a
-new project, adding files and building your project is fully automated in the IDE.
-There is no need to manually create the <tt>Makefile</tt> either.
-
-6. If you start the executable now, it will complain that it cannot find
-the file omnetpp.ini, so you have to create one. omnetpp.ini tells the
+4. We need to create an omnetpp.ini file. omnetpp.ini tells the
 simulation program which network you want to simulate (yes, several networks
 can live in the same simulation program), you can pass parameters
 to the model, explicitly specify seeds for the random number generators etc.
 
-Create the following very simple omnetpp.ini:
+Create the following very simple omnetpp.ini. Choose <i>File | New | Initialization file (INI)</i>:
 
 \code
 [General]
@@ -157,22 +157,27 @@ tictoc2 and further steps will all share the following omnetpp.ini:
 
 @include omnetpp.ini
 
-7. Once you complete the above steps, you launch the simulation by issuing this
-command:
+5. Once you complete the above steps, you can launch the simulation by selecting omnetpp.ini (in either the Editor Area, or the Project Explorer), and pressing the Run button.
 
-\code
-$ ./tictoc
-\endcode
+<img src="run.png">
 
-and hopefully you should now get the @opp simulation window.
+@note The simulation can be started in debug mode by clicking the <i>Debug</i> button in the IDE.
+<img src="debug.png">
 
-@note To run the simulation from the IDE, just right click on
-<i>omnetpp.ini</i> and select <i>Run as</i>, then <i>@opp Simulation</i>.
+The IDE will build your project automatically. If there are compilation errors, you need to rectify those until
+you get an error-free compilation and linking.
 
-8. Press the Run button on the toolbar to start the simulation. What you should
-see is that tic and toc are exchanging messages with each other.
+@note If you want to build the simulation executable on the command-line,
+create a <i>Makefile</i> using the <tt><b>opp_makemake</b></tt>
+command, then enter <tt><b>make</b></tt> to build the project. It will produce
+an executable that can be run by entering <tt><b>./tictoc</b></tt>.
 
-<img src="step1.png">
+After successfully building and launching your simulation you should see the main @opp simulation window.
+
+6. Press the Run button on the toolbar to start the simulation. What you should
+see is that <tt>tic</tt> and <tt>toc</tt> are exchanging messages with each other.
+
+<img src="tictoc1_3.gif">
 
 The main window toolbar displays the simulated time. This is virtual time, it
 has nothing to do with the actual (or wall-clock) time that the program takes to
@@ -184,7 +189,7 @@ Note that it takes zero simulation time for a node to process the message.
 The only thing that makes the simulation time pass in this model is
 the propagation delay on the connections.
 
-9. You can play with slowing down the animation or making it faster with
+7. You can play with slowing down the animation or making it faster with
 the slider at the top of the graphics window. You can stop the simulation
 by hitting F8 (equivalent to the STOP button on the toolbar), single-step
 through it (F4), run it with (F5) or without (F6) animation.
@@ -192,8 +197,8 @@ F7 (express mode) completely turns off tracing features for maximum speed.
 Note the event/sec and simsec/sec gauges on the status bar of the
 main window (only visible when the simulation is running in fast or express mode).
 
-10. You can exit the simulation program by clicking its Close icon or
-choosing File|Exit.
+8. You can exit the simulation program by clicking its Close icon or
+choosing File | Exit.
 
 @note There are some typical mistakes that people who are new to @opp make:
 
@@ -213,13 +218,9 @@ choosing File|Exit.
     Submodule tic: cannot resolve module type 'Txc1' (not in the loaded NED files?), at
     /omnetpp-5.0/samples/tictoc/tictoc1.ned:26.</i>
 
-@note-   Also, you must run <tt>opp_makemake</tt> and <tt>make</tt> after adding a
-    <tt>.cc</tt> file to the project. Failing to do so will be indicated by the
-    first error message above. If you use the @opp IDE, this is done automatically.
-
 Sources: @ref tictoc1.ned, @ref txc1.cc, @ref omnetpp.ini
 
-NEXT: @ref part2
+@nav{contents,part2}
 */
 
 --------------------------------------------------------------------------
@@ -227,13 +228,13 @@ NEXT: @ref part2
 /**
 @page part2 2. Enhancing the 2-node TicToc
 
-PREV: @ref part1 UP: @ref contents
+@nav{part1,part3}
 
 @section s2 Step 2: Refining the graphics, and adding debugging output
 
 Here we make the model look a bit prettier in the GUI. We assign
-the "block/routing" icon (the file <tt>images/block/routing.png</tt>), and paint it cyan for tic
-and yellow for toc. This is achieved by adding display strings to the
+the "block/routing" icon (the file <tt>images/block/routing.png</tt>), and paint it cyan for <tt>tic</tt>
+and yellow for <tt>toc</tt>. This is achieved by adding display strings to the
 NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 
 @dontinclude tictoc2.ned
@@ -260,7 +261,7 @@ will appear in the log window:
 
 <img src="step2b.png">
 
-You can also open separate output windows for tic and toc by right-clicking
+You can also open separate output windows for <tt>tic</tt> and <tt>toc</tt> by right-clicking
 on their icons and choosing Component log from the menu. This feature
 will be useful when you have a large model ("fast scrolling logs syndrome")
 and you're interested only in the log messages of specific module.
@@ -291,10 +292,13 @@ Note the
 @skipline WATCH(c
 
 line in the source: this makes it possible to see the counter value
-in the graphical runtime environment. Double-click on tic's icon, then choose the Contents page
-from the inspector window that pops up.
+in the graphical runtime environment.
 
-<img src="step3.png">
+If you click on <tt>tic</tt>'s icon, the inspector window in the bottom left corner of the main window will display
+details about <tt>tic</tt>. Make sure that Children Mode is selected from the toolbar at the top.
+The inspector now displays the counter variable.
+
+<img src="inspector.png">
 
 As you continue running the simulation, you can follow as the counter
 keeps decrementing until it reaches zero.
@@ -307,7 +311,7 @@ Sources: @ref tictoc3.ned, @ref txc3.cc, @ref omnetpp.ini
 In this step you'll learn how to add input parameters to the simulation:
 we'll turn the "magic number" 10 into a parameter and add a boolean parameter
 to decide whether the module should send out the first message in its
-initialization code (whether this is a tic or a toc module).
+initialization code (whether this is a <tt>tic</tt> or a <tt>toc</tt> module).
 
 Module parameters have to be declared in the NED file. The data type can
 be numeric, string, bool, or xml (the latter is for easy access to
@@ -370,7 +374,8 @@ a dot and ** will.)
 
 In the graphical runtime environment, you can inspect module parameters either in the object tree
 on the left-hand side of the main window, or in the Parameters page of
-the module inspector (opened via double-clicking on the module icon).
+the module inspector (information is shown in the bottom left corner of the main window after
+clicking on a module).
 
 The module with the smaller limit will delete the message and thereby
 conclude the simulation.
@@ -418,8 +423,8 @@ redundant definitions and parameter settings.
 
 @section s6 Step 6: Modeling processing delay
 
-In the previous models, tic and toc immediately sent back the
-received message. Here we'll add some timing: tic and toc will hold the
+In the previous models, <tt>tic</tt> and <tt>toc</tt> immediately sent back the
+received message. Here we'll add some timing: <tt>tic</tt> and <tt>toc</tt> will hold the
 message for 1 simulated second before sending it back. In @opp
 such timing is achieved by the module sending a message to itself.
 Such messages are called self-messages (but only because of the way they
@@ -515,25 +520,25 @@ Sources: @ref tictoc8.ned, @ref txc7.cc, @ref omnetpp.ini
 
 In order to get one step closer to modelling networking protocols,
 let us transform our model into a stop-and-wait simulation.
-This time we'll have separate classes for tic and toc. The basic
-scenario is similar to the previous ones: tic and toc will be tossing a
-message to one another. However, toc will "lose" the message with some
-nonzero probability, and in that case tic will have to resend it.
+This time we'll have separate classes for <tt>tic</tt> and <tt>toc</tt>. The basic
+scenario is similar to the previous ones: <tt>tic</tt> and <tt>toc</tt> will be tossing a
+message to one another. However, <tt>toc</tt> will "lose" the message with some
+nonzero probability, and in that case <tt>tic</tt> will have to resend it.
 
-Here's toc's code:
+Here's <tt>toc</tt>'s code:
 
 @dontinclude txc8.cc
 @skip Toc8::handleMessage(
 @until else
 
-Thanks to the bubble() call in the code, toc'll display a callout whenever
+Thanks to the bubble() call in the code, <tt>toc</tt>'ll display a callout whenever
 it drops the message.
 
 <img src="step8.png">
 
-So, tic will start a timer whenever it sends the message. When
+So, <tt>tic</tt> will start a timer whenever it sends the message. When
 the timer expires, we'll assume the message was lost and send another
-one. If toc's reply arrives, the timer has to be cancelled.
+one. If <tt>toc</tt>'s reply arrives, the timer has to be cancelled.
 The timer will be (what else?) a self-message.
 
 @dontinclude txc8.cc
@@ -564,7 +569,7 @@ Keeping a pointer to the sent message - so we can send it again - might seem eas
 but when the message is destroyed at the other node the pointer becomes invalid.
 
 What we do here is keep the original packet and send only copies of it.
-We delete the original when toc's acknowledgement arrives.
+We delete the original when <tt>toc</tt>'s acknowledgement arrives.
 To make it easier to visually verify the model, we'll include a message
 sequence number the message names.
 
@@ -584,7 +589,7 @@ The functions:
 
 Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 
-NEXT: @ref part3
+@nav{part1,part3}
 */
 
 --------------------------------------------------------------------------
@@ -592,11 +597,10 @@ NEXT: @ref part3
 /**
 @page part3 3. Turning it into a real network
 
-PREV: @ref part2 UP: @ref contents
-
+@nav{part2,part4}
 @section s10 Step 10: More than two nodes
 
-Now we'll make a big step: create several tic modules and connect
+Now we'll make a big step: create several <tt>tic</tt> modules and connect
 them into a network. For now, we'll keep it simple what they do:
 one of the nodes generates a message, and the others keep tossing
 it around in random directions until it arrives at
@@ -727,7 +731,7 @@ The message class specification is in tictoc13.msg:
 @skip message TicTocMsg13
 @until }
 
-@note See <a href="../manual/usman.html#cha:msg-def" target="_blank">Section 6</a> of the @opp manual for more details on messages.
+@note See <a href="../manual/index.html#cha:msg-def" target="_blank">Section 6</a> of the @opp manual for more details on messages.
 
 The makefile is set up so that the message compiler, opp_msgc is invoked
 and it generates tictoc13_m.h and tictoc13_m.cc from the message declaration
@@ -780,7 +784,8 @@ When you run the model, it'll look like this:
 
 <img src="step13a.png">
 
-You can double-click on the messages to open an inspector for them.
+You can click on the messages to see their content in the inspector window.
+Double-clicking will open the inspector in a new window.
 (You'll either have to temporarily stop the simulation for that,
 or to be very fast in handling the mouse). The inspector window
 displays lots of useful information; the message fields can be seen
@@ -798,7 +803,7 @@ The interval between messages should be a module parameter, returning
 exponentially distributed random numbers.
 </i>
 
-NEXT: @ref part4
+@nav{part2,part4}
 */
 
 --------------------------------------------------------------------------
@@ -806,8 +811,7 @@ NEXT: @ref part4
 /**
 @page part4 4. Adding statistics collection
 
-PREV: @ref part3 UP: @ref contents
-
+@nav{part3,part5}
 
 @section s14 Step 14: Displaying the number of packets sent/received
 
@@ -920,9 +924,9 @@ The inspector:
 They will be initially empty -- run the simulation in Fast (or even Express) mode to get enough
 data to be displayed. After a while you'll get something like this:
 
-<img src="step15a.gif">
+<img src="step15a.png">
 
-<img src="step15b.gif">
+<img src="step15b.png">
 
 When you think enough data has been collected, you can stop the simulation
 and then we'll analyse the result files (<tt>Tictoc15-0.vec</tt> and
@@ -998,7 +1002,7 @@ our model.
 
 Now we have just realized that we would like to see a histogram of the hopCount on the
 tic[1] module. On the other hand we are short on disk storage and we are not interested
-having the vector data for the first three module tic 0,1,2. No problem. We can add our
+having the vector data for the first three module <tt>tic</tt> 0,1,2. No problem. We can add our
 histogram and remove the unneeded vector recording without even touching the C++ or NED
 files. Just open the INI file and modify the statistic recording:
 
@@ -1013,7 +1017,7 @@ Now that we have collected our statistics, let's see and analyse them in the IDE
 
 Sources: @ref tictoc16.ned, @ref tictoc16.msg, @ref txc16.cc, @ref omnetpp.ini
 
-NEXT: @ref part5
+@nav{part3,part5}
 */
 
 --------------------------------------------------------------------------
@@ -1021,7 +1025,7 @@ NEXT: @ref part5
 /**
 @page part5 5. Visualizing the results with the @opp IDE
 
-PREV: @ref part4 UP: @ref contents
+@nav{part4,contents}
 
 @section results Visualizing output scalars and vectors
 
@@ -1043,21 +1047,47 @@ You can select some or all of the individual results by highlighting them. If yo
 please refer to the <a href="../UserGuide.pdf" target="_blank"><b>@opp Users Guide</b></a> (you can find it in the <tt>doc</tt> directory of the @opp installation).
 
 Our last model records the <tt>hopCount</tt> of a message each time the message
-reaches its destination. The following plot shows these vectors for nodes 0 and 1.
+reaches its destination.
+To plot these vectors for all nodes, select the 6 nodes in the browse data tab.
+Right click and select Plot.
 
-<img src="vectors2.png">
+<img src="selectplot2.png">
+
+We can change various options about how the data on the chart is displayed.
+Right click on the chart background, and select Properties.
+This opens the Edit LineChart window.
+In the Lines tab, set <tt>Line type</tt> to Dots, and <tt>Symbol Type</tt> to Dot.
+
+<img src="editlinechart2.png" width="850px">
+
+To add a legend to the chart, select <tt>Display legend</tt> on the Legend tab.
+
+<img src="displaylegend.png">
+
+The chart looks like the following:
+
+<img src="hopcountchart.png">
 
 If we apply a <tt>mean</tt> operation we can see how the <tt>hopCount</tt> in the different
-nodes converge to an average:
+nodes converge to an average.
+Right click on the chart, and select Apply | Mean.
+Again, right click on the chart background, and select Properties.
+In the Lines tab, set <tt>Line type</tt> to Linear, and <tt>Symbol Type</tt> to None.
+The mean is displayed on the following chart. The lines are easier to see this way because they are thinner.
 
-<img src="vectors.png">
+<img src="mean3.png">
 
+Scalar data can be plotted on bar charts.
 The next chart displays the mean and the maximum of the <tt>hopCount</tt> of the messages
 for each destination node, based on the scalar data recorded at the end of the simulation.
+In the Browse data tab, select Scalars. Now select <tt>hop count:max</tt> and <tt>hop count:mean</tt>
+for all 6 nodes.
+
 
 <img src="scalars.png">
 
-The following diagram shows the histogram of <tt>hopCount</tt>'s distribution.
+To create a histogram that shows <tt>hopCount</tt>'s distribution, select Histograms
+on the Browse data tab. Select all nodes, and right click | Plot.
 
 <img src="histogram.png">
 
@@ -1086,7 +1116,7 @@ the model's behaviour.
 Hope you have found this tutorial a useful introduction into @opp. Comments
 and suggestions will be appreciated.
 
-UP: @ref contents
+@nav{part4,contents}
 */
 
 --------------------------------------------------------------------------

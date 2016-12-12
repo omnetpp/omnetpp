@@ -1,11 +1,12 @@
 *.pdf
 *.htm
 *.html
-tmp*.xml
+/tmp*.xml
 /ide-overview/
 /manual/
 /installguide/
 /ide-customization-guide/
+/ide-developersguide/
 /userguide/
 /api/
 /nedxml-api/
