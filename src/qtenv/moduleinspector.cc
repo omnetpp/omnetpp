@@ -256,7 +256,6 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     if (object) {
         canvasViewer->refreshLayout();
-        //canvasViewer->setLayoutSeed(1);  // we'll read the "bgl" display string tag from Tcl
         try {
             canvasViewer->redraw();
             canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
@@ -267,8 +266,6 @@ void ModuleInspector::doSetObject(cObject *obj)
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
         }
-        // so they will appear on the correct places with the updated zoom levels.
-        getQtenv()->getMessageAnimator()->redrawMessages();
         getQtenv()->getMessageAnimator()->addInspector(this);
     } else {
         canvasViewer->setZoomFactor(1);

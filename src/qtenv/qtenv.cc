@@ -1142,7 +1142,8 @@ void Qtenv::newNetwork(const char *networkname)
     mainInspector->setObject(module);
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
-    animating = false;  // affects how network graphics is drawn!
+    animating = true;  // affects how network graphics is drawn!
+    messageAnimator->redrawMessages();
     updateNetworkRunDisplay();
     updateStatusDisplay();
     callRefreshDisplay();
@@ -1200,7 +1201,8 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
-    animating = false;  // affects how network graphics is drawn!
+    animating = true;  // affects how network graphics is drawn!
+    messageAnimator->redrawMessages();
     updateNetworkRunDisplay();
     updateStatusDisplay();
     callRefreshInspectors();
