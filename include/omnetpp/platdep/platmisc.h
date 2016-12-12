@@ -50,7 +50,7 @@
 #include <unistd.h>  // getpid(), getcwd(), usleep() etc.
 #endif
 
-#define mkdir(x,y) _mkdir(x)
+#define opp_mkdir(x,y) _mkdir(x)
 
 #else // !_WIN32
 
@@ -61,6 +61,8 @@
 #if HAVE_DLOPEN
 #include <dlfcn.h>
 #endif
+
+#define opp_mkdir(x,y) mkdir(x,y)
 
 #endif // _WIN32
 

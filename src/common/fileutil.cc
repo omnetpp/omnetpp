@@ -249,7 +249,7 @@ void mkPath(const char *pathname)
         mkPath(pathprefix.c_str());
         // note: anomaly with slash-terminated dirnames: stat("foo/") says
         // it does not exist, and mkdir("foo/") says cannot create (EEXIST):
-        if (mkdir(pathname, 0755) != 0 && errno != EEXIST)
+        if (opp_mkdir(pathname, 0755) != 0 && errno != EEXIST)
             throw opp_runtime_error("Cannot create directory '%s': %s", pathname, strerror(errno));
     }
 }
