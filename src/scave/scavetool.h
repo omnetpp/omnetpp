@@ -27,14 +27,14 @@ namespace scave {
 class ScaveTool
 {
 protected:
-    void printUsage();
-    void loadFiles(ResultFileManager& manager, const std::vector<std::string>& fileNames, bool verbose);
+    void loadFiles(ResultFileManager& manager, const std::vector<std::string>& fileNames, bool indexingAllowed, bool verbose);
     std::string rebuildCommandLine(int argc, char **argv);
+    void helpCommand(int argc, char **argv);
+    void printHelpPage(std::string& page);
+    void queryCommand(int argc, char **argv);
     void vectorCommand(int argc, char **argv);
     void parseScalarFunction(const std::string& functionCall,  /*out*/ std::string& name,  /*out*/ std::vector<std::string>& params);
     void scalarCommand(int argc, char **argv);
-    void listCommand(int argc, char **argv);
-    void infoCommand(int argc, char **argv);
     void indexCommand(int argc, char **argv);
 public:
     int main(int argc, char **argv);

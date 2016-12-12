@@ -14,9 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cassert>
 #include <sstream>
 #include "common/ver.h"
+#include "common/fileutil.h"
 #include "common/linetokenizer.h"
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
@@ -24,6 +24,7 @@
 #include "nodetype.h"
 #include "nodetyperegistry.h"
 #include "dataflowmanager.h"
+#include "indexfile.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
 #include "vectorfileindexer.h"
@@ -43,109 +44,234 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-void ScaveTool::printUsage()
+//TODO change "histogram" to "statistic"
+//TODO support exporting in sca files
+
+void ScaveTool::helpCommand(int argc, char **argv)
 {
-    cout <<
-       "scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2015 OpenSim Ltd.\n"
-       "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
-       "\n"
-       "Usage: scavetool <command> [options] <files>...\n"
-       "\n"
-       "For processing result files written by simulations: vector files (.vec) and\n"
-       "scalar files (.sca).\n"
-       "\n"
-       "Commands:\n"
-       "    v, vector   filter and process data in vector files\n"
-       "    s, scalar   filter and process data in scalar files\n"
-       "    l, list     list summary info about input files\n"
-       "    i, info     print list of available functions (to be used with '-a')\n"
-       "    x, index    generate index files for vector files\n"
-       "Options:\n"
-       " 'vector' command:\n"
-       "    -p <pattern>    the filter expression (see syntax below)\n"
-       "    -a <function>   apply the given processing to the selected vectors (see syntax below);\n"
-       "                    the 'info' command prints the names of available operations. This option\n"
-       "                    may occur multiple times.\n"
-       "    -O <filename>   output file name\n"
-       "    -F <formatname> format of output file: vec (default), splitvec, matlab, octave, csv, splitcsv\n"
-       "    -V              print info about progress (verbose)\n"
-       //TODO option: print matching vectorIDs and exit
-       " 'scalar' command:\n"
-       "    -p <pattern>    the filter expression (see syntax below)\n"
-       "    -a <function>   apply the given processing to the selected scalars (see syntax below);\n"
-       "                    the 'info' command prints the names of available operations. This option\n"
-       "                    may occur multiple times.\n"
-       "    -g <grouping>   specifies how the scalars are grouped. It is a comma separated list of field\n"
-       "                    names ('file','run','module','name'). Scalars are grouped by the values of these\n"
-       "                    fields and written into separate columns (csv) or variables.\n"
-       "                    Default is '' (empty list), meaning that each row contains only one scalar value.\n"
-       "    -O <filename>   output file name\n"
-       "    -F <formatname> format of output file: csv (default), matlab, octave\n" //TODO sca files
-       "    -V              print info about progress (verbose)\n"
-       " 'list' command:\n"
-       //TODO allow filtering by patterns here too?
-       //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
-       // occurring in the input files
-       "    -n   print list of unique statistics names\n"
-       "    -m   print list of unique module name\n"
-       "    -r   print list of unique run Ids\n"
-       "    -c   print list of unique configuration Ids (aka run numbers)\n"
-       //TODO other attributes
-       " 'info' command:\n"
-       "    -b   list filter names only (brief)\n"
-       "    -s   list filter names with parameter list (summary)\n"
-       "    -v   include descriptions in the output (default)\n"
-       " 'index' command:\n"
-       "    -r   rebuild vector file (rearranges records into blocks)\n"
-       "    -V   print info about progress (verbose)\n"
-       "\n"
-       "Function syntax (for 'vector -a'): <name>(<parameterlist>).\n"
-       "Examples: winavg(10), mean()\n"
-       "\n"
-       // TODO scalar functions
-       "Pattern syntax: one or more <fieldname>(<pattern>) pairs, combined with AND,\n"
-       "OR, NOT operators.\n"
-       "  <fieldname> is one of:\n"
-       "    file:             full path of the result file\n"
-       "    run:              unique run Id\n"
-       "    module:           module full path\n"
-       "    name:             name of the statistic\n"
-       "    attr:experiment:  the experiment attribute of the run\n"
-       "    attr:measurement: the measurement attribute of the run\n"
-       "    attr:replication: the replication attribute of the run\n"
-       "  <pattern> is a glob-like pattern:\n"
-       "    ?             matches any character except '.'\n"
-       "    *             matches zero or more characters, except '.'\n"
-       "    **            matches zero or more characters (any character)\n"
-       "    {a-z}         matches a character in range a-z\n"
-       "    {^a-z}        matches a character NOT in range a-z\n"
-       "    {32..255}     any number (ie. sequence of digits) in range 32..255  (e.g. \"99\")\n"
-       "    [32..255]     any number in square brackets in range 32..255 (e.g. \"[99]\")\n"
-       "    \\ (backslash) takes away the special meaning of the subsequent character\n"
-       "Pattern example:\n"
-       "    module(\"**.sink\") AND (name(\"queueing time\") OR name(\"transmission time\"))\n"
-       "\n"
-       "Examples:\n"
-       "    scavetool vector -p \"queueing time\" -a winavg(10) -O out.vec *.vec\n"
-       "        Saves the queueing time vectors to out.vec, after applying a window \n"
-       "        average filter.\n"
-       "\n"
-       "    scavetool scalar -p \"module(sink) OR module(queue)\" -a \"scatter(.,load,queue,\\\"queue length\\\")\" -O out.csv -F csv *.sca\n"
-       "        Creates a scatter plot with the load attribute on the x axis, and queue length\n"
-       "        for iso lines.\n"
-    ;
+    string page = argc==0 ? "options" : argv[0];
+    printHelpPage(page);
 }
 
-void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool verbose)
+void ScaveTool::printHelpPage(std::string& page)
+{
+    if (page == "options") {
+        cout <<
+        "scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2016 OpenSim Ltd.\n"
+        "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
+        "\n";
+        cout <<
+        "Usage: scavetool <command> [<options>] <files>...\n"
+        "\n"
+        "For processing result files written by simulations: vector files (.vec) and\n"
+        "scalar files (.sca).\n"
+        "\n"
+        "Commands:\n"
+        "    q, query    Query the contents of result files\n"
+        "    v, vector   Export vector data\n"
+        "    s, scalar   Export scalar data\n"
+        "    i, index    Generate index files (.vci) for vector files\n"
+        "    h, help     Print this help text\n"
+        "\n"
+        "The default command is 'query'.\n"
+        "\n"
+        "To get help, use scavetool help <topic>. Available help topics: any command name, 'patterns',\n"
+        "and 'filters'.\n"
+        "\n";
+    }
+    else if (page == "q" || page == "query") {
+        cout <<
+        "Usage: scavetool query [<options>] <output-vector-and-scalar-files>\n"
+        "\n"
+        "Query the contents of result files.\n"
+        "\n"
+        "Options:\n"
+        "    -s              Report the number of result items\n"
+        "    -l              List result items\n"
+        "    -a              List run attributes\n"
+        "    -n              List unique result (vector, scalar, etc) names\n"
+        "    -m              List unique module names\n"
+        "    -e              List unique result names qualified with the module names they occur with\n"
+        "    -r              List unique runs\n"
+        "    -c              List unique configuration names\n"
+        "    -R              Per-run reporting (where applicable)\n"
+        "    -Q              Suppress labels (more suitable for machine processing)\n"
+        "    -G              Grep-friendly: with -R, put run names at the start of each line,\n"
+        "                    not above groups as headings.\n"
+        "    -T <types>      Limit item types; <types> is concatenation of type characters\n"
+        "                    (v=vector, s=scalar, t=statistic, h=histogram)\n"
+        "    -p <filter>     Filter pattern for result items (vectors, scalars, statistics, histograms)\n"
+        "                    matched by filter expression (try 'help patterns')\n"
+        "    -D <type>       Display mode for run; <type> can be any of:\n"
+        "                       'runid'       Displays ${runid} (this is the default)\n"
+        "                       'runnumber'   Displays ${configname} ${runnumber}\n"
+        "                       'itervars'    Displays ${configname} ${iterationvars} ${repetition}\n"
+        "                       'experiment'  Displays ${experiment} ${measurement} ${replication}\n"
+        "    -X              Disallow automatic indexing of vector files\n"
+        "    -V              Print info about progress (verbose)\n"
+        "\n"
+        "See also the following help topics: 'patterns'\n"
+        "\n";
+    }
+    else if (page == "v" || page == "vector") {
+        cout <<
+        "Usage: scavetool vector [<options>] <output-vector-files>\n"
+        "\n"
+        "Export vector data.\n"
+        "\n"
+        "Options:\n"
+        "    -p <filter>     Filter pattern for vectors matched by the filter expression\n"
+        "    -a <function>   Apply the given processing to the selected vectors. Try 'help filters'\n"
+        "                    for the list of available operations. This option may occur multiple times.\n"
+        "    -O <filename>   Output file name\n"
+        "    -F <formatname> Format of output file: vec (default), splitvec, matlab, octave, csv, splitcsv\n"
+        "    -X              Disallow automatic indexing of vector files\n"
+        "    -V              Print info about progress (verbose)\n"
+        "\n"
+        "Example:\n"
+        "    scavetool vector -p \"queueing time\" -a winavg(10) -O out.vec *.vec\n"
+        "        Saves the vectors named 'queueing time' into out.vec, after applying the window average filter.\n"
+        "\n"
+        "See also the following help topics: 'patterns', 'filters'\n"
+        "\n";
+    }
+    else if (page == "s" || page == "scalar") {
+        cout <<
+        "Usage: scavetool scalar [<options>] <output-scalar-files>\n"
+        "\n"
+        "Export scalar data.\n"
+        "\n"
+        "Options:\n"
+        "    -p <pattern>    Filter for scalars matched by filter expression (try 'help patterns')\n"
+        "    -a <function>   Apply the given processing to the selected scalars (try 'help filters');\n"
+        "                    the 'info' command prints the names of available operations. This option\n"
+        "                    may occur multiple times.\n"
+        "    -g <grouping>   Specifies how the scalars are grouped. It is a comma separated list of field\n"
+        "                    names ('file','run','module','name'). Scalars are grouped by the values of these\n"
+        "                    fields and written into separate columns (csv) or variables.\n"
+        "                    Default is '' (empty list), meaning that each row contains only one scalar value.\n"
+        "    -O <filename>   Output file name\n"
+        "    -F <formatname> Format of output file: csv (default), matlab, octave\n"
+        "    -X              Disallow automatic indexing of (potentially specified) vector files\n"
+        "    -V              Print info about progress (verbose)\n"
+        "\n"
+        "Example:\n"
+        "    scavetool scalar -p \"module(sink) OR module(queue)\" -a \"scatter(.,load,queue,\\\"queue capacity\\\")\" -O out.csv -F csv *.sca\n"
+        "        Creates a data table for a scatter plot with the 'load' attribute on the X axis and\n"
+        "        'queue capacity' for iso lines, and saves in CSV format.\n"
+        "\n"
+        "See also the following help topics: 'patterns', 'filters'\n"
+        "\n";
+    }
+    else if (page == "i" || page == "index") {
+        cout <<
+        "Usage: scavetool index [<options>] <output-vector-files>\n"
+        "\n"
+        "Generate index files (.vci) for vector files. Note that this command is usually not needed, as\n"
+        "other scavetool commands automatically create indices for loaded vector files if they are missing\n"
+        "or out of date, unless indexing is explicitly disabled.\n"
+        "\n"
+        "Options:\n"
+        "    -r   Rebuild vector file (rearranges records into blocks)\n"
+        "    -V   Print info about progress (verbose)\n"
+        "\n";
+    }
+    else if (page == "patterns") {
+        cout <<
+        "\nSeveral commands have a -p <filter> option that accepts a match pattern for filtering\n"
+        "result items. This page describes the syntax available for match patterns.\n"
+        "\n"
+        "Filter patterns consist of '<pattern>' and '<fieldname>(<pattern>)' elements, combined\n"
+        "with AND, OR, and NOT operators. A plain '<pattern>' is equivalent to 'name(<pattern>)'.\n"
+        "\n"
+        "<fieldname> is one of:\n"
+        "    file              Full path of the result file\n"
+        "    run               Unique run Id\n"
+        "    module            Module full path\n"
+        "    name              Name of the result item (vector, scalar, etc)\n"
+        "    attr:<runattr>    The value of a run attribute, e.g. of attr:configname\n"
+        "\n"
+        "<runattr> may be the name of a standard run attribute ('runid', 'inifile',\n"
+        "'configname', 'runnumber', 'network', 'experiment', 'measurement', 'replication',\n"
+        "'processid', 'datetime', 'resultdir', 'repetition', 'seedset', 'iterationvars',\n"
+        "'iterationvarsf').\n"
+        "\n"
+        "Inifile iteration variables (e.g. 'numHosts') can also be used for <runattr>,\n"
+        "as they are also saved as run attributes.\n"
+        "\n"
+        "<pattern> is a glob-like pattern:\n"
+        "    ?             Matches any character except '.'\n"
+        "    *             Matches zero or more characters, except '.'\n"
+        "    **            Matches zero or more characters (any character)\n"
+        "    {a-z}         Matches a character in range a-z\n"
+        "    {^a-z}        Matches a character NOT in range a-z\n"
+        "    {250..300}    Matches an embedded integer number in the given range\n"
+        "    [250..300]    Matches an integer number in the given range in square brackets\n"
+        "    \\ (backslash) Takes away the special meaning of the subsequent character\n"
+        "\n"
+        "Pattern example:\n"
+        "    module(\"**.sink\") AND (name(\"queueing time\") OR name(\"transmission time\"))\n"
+        "\n";
+    }
+    else if (page == "filters") {
+        cout << "\nScalar operations:\n\n";
+        cout << "scatter(module, scalar, ...)\n"; // currently this is the only scalar operation
+        const char *description = "Create scatter plot dataset. The first two arguments identify the "
+                "scalar  selected for the X axis. Additional arguments identify the iso attributes; "
+                "they are (module, scalar) pairs, or names of run attributes.";
+        cout << opp_indentlines(opp_breaklines(description, 76), "  ") << "\n";
+
+        cout << "\nVector operations:\n\n";
+        NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
+        NodeTypeVector nodeTypes = registry->getNodeTypes();
+        for (int i = 0; i < (int)nodeTypes.size(); i++) {
+            NodeType *nodeType = nodeTypes[i];
+            if (nodeType->isHidden())
+                continue;
+
+            // print name(parameters,...)
+            cout << nodeType->getName();
+            StringMap attrs, attrDefaults;
+            nodeType->getAttributes(attrs);
+            nodeType->getAttrDefaults(attrDefaults);
+            cout << "(";
+            for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it)
+                cout << (it != attrs.begin() ? ", " : "") << it->first;
+            cout << ")\n";
+
+            // print filter description and parameter descriptions
+            cout << opp_indentlines(opp_breaklines(nodeType->getDescription(), 76), "  ") << "\n";
+            for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it)
+                cout << "    - " << it->first << ": " << it->second << "\n";
+            cout << "\n";
+        }
+    }
+    else {
+        throw opp_runtime_error("No help topic '%s'", page.c_str());
+    }
+}
+
+void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool indexingAllowed, bool verbose)
 {
     // load files
     ResultFileManager resultFileManager;
     for (int i = 0; i < (int)fileNames.size(); i++) {
         // TODO on Windows: manual globbing of wildcards
         const char *fileName = fileNames[i].c_str();
+
+        if (indexingAllowed && IndexFile::isExistingVectorFile(fileName) && !IndexFile::isIndexFileUpToDate(fileName)) {
+            if (verbose)
+                cout << "index file for " << fileName << " is missing or out of date, indexing...\n";
+            VectorFileIndexer().generateIndex(fileName, nullptr);
+            if (verbose)
+                cout << "done\n";
+        }
+
         if (verbose)
             cout << "reading " << fileName << "...\n";
         ResultFile *f = manager.loadFile(fileName);
+        if (verbose)
+            cout << "done\n";
         Assert(f); // or exception
         if (f->fileType == ResultFile::FILETYPE_TEXT && f->numUnrecognizedLines > 0)
             cerr << "WARNING: " << fileName << ": " << f->numUnrecognizedLines << " invalid/incomplete lines out of " << f->numLines << "\n";
@@ -156,51 +282,347 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
 
 string ScaveTool::rebuildCommandLine(int argc, char **argv)
 {
-    // FIXME quotes
     string result;
     for (int i = 0; i < argc; i++) {
         if (i != 0)
             result += " ";
-        result += argv[i];
+        result += opp_quotestr_ifneeded(argv[i]);
     }
     return result;
+}
+
+static void printAndDelete(StringSet *strings, const string& prefix = "")
+{
+    if (strings != nullptr) {
+        for (StringSet::iterator it = strings->begin(); it != strings->end(); ++it)
+            cout << prefix << *it << "\n";
+        delete strings;
+    }
+}
+
+enum RunDisplayMode {
+    RUNDISPLAY_RUNID, RUNDISPLAY_CONFIG_RUNNUMBER, RUNDISPLAY_CONFIG_ITERVARS_REPETITION,
+    RUNDISPLAY_EXPERIMENT_MEASUREMENT_REPLICATION
+};
+
+static string runStr(const Run *run, RunDisplayMode mode)
+{
+    switch(mode) {
+    case RUNDISPLAY_RUNID:
+        return run->runName;
+    case RUNDISPLAY_CONFIG_RUNNUMBER:
+        return string(opp_emptytodefault(run->getAttribute("configname"), "null")) + "\t" +
+                opp_emptytodefault(run->getAttribute("runnumber"), "null");
+    case RUNDISPLAY_CONFIG_ITERVARS_REPETITION:
+        return string(opp_emptytodefault(run->getAttribute("configname"), "null")) + "\t" +
+                opp_emptytodefault(run->getAttribute("iterationvars"), "null") + "\t" +
+                opp_emptytodefault(run->getAttribute("repetition"), "null");
+    case RUNDISPLAY_EXPERIMENT_MEASUREMENT_REPLICATION:
+        return string(opp_emptytodefault(run->getAttribute("experiment"), "null")) + "\t" +
+                opp_emptytodefault(run->getAttribute("measurement"), "null") + "\t" +
+                opp_emptytodefault(run->getAttribute("replication"), "null");
+    default:
+        Assert(false); return "???";
+    }
+}
+
+void ScaveTool::queryCommand(int argc, char **argv)
+{
+    enum QueryMode {
+        PRINT_SUMMARY, LIST_RESULTS, LIST_RUNATTRS, LIST_MODULES, LIST_NAMES,
+        LIST_MODULE_AND_NAME_PAIRS, LIST_RUNS, LIST_CONFIGS
+    };
+
+    QueryMode opt_mode = PRINT_SUMMARY;
+    vector<string> opt_fileNames;
+    string opt_filterExpression;
+    string opt_resultTypeFilterStr;
+    string opt_runDisplayModeStr;
+    int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::HISTOGRAM;
+    RunDisplayMode opt_runDisplayMode = RUNDISPLAY_RUNID;
+    bool opt_labels = true;
+    bool opt_perRun = false;
+    bool opt_grepFriendly = false;
+    bool opt_verbose = false;
+    bool opt_indexingAllowed = true;
+
+    // parse options
+    bool endOpts = false;
+    for (int i = 0; i < argc; i++) {
+        string opt = argv[i];
+        if (endOpts)
+            opt_fileNames.push_back(argv[i]);
+        else if (opt == "--")
+            endOpts = true;
+        else if (opt == "-s")
+            opt_mode = PRINT_SUMMARY;
+        else if (opt == "-l")
+            opt_mode = LIST_RESULTS;
+        else if (opt == "-a")
+            opt_mode = LIST_RUNATTRS;
+        else if (opt == "-n")
+            opt_mode = LIST_NAMES;
+        else if (opt == "-m")
+            opt_mode = LIST_MODULES;
+        else if (opt == "-e")
+            opt_mode = LIST_MODULE_AND_NAME_PAIRS;
+        else if (opt == "-r")
+            opt_mode = LIST_RUNS;
+        else if (opt == "-c")
+            opt_mode = LIST_CONFIGS;
+        else if (opt == "-p" && i != argc-1)
+            opt_filterExpression = unquoteString(argv[++i]);
+        else if (opt == "-T" && i != argc-1)
+            opt_resultTypeFilterStr = unquoteString(argv[++i]);
+        else if (opt.substr(0,2) == "-T")
+            opt_resultTypeFilterStr = opt.substr(2);
+        else if (opt == "-D" && i != argc-1)
+            opt_runDisplayModeStr = unquoteString(argv[++i]);
+        else if (opt.substr(0,2) == "-D")
+            opt_runDisplayModeStr = opt.substr(2);
+        else if (opt == "-R")
+            opt_perRun = true;
+        else if (opt == "-Q")
+            opt_labels = false;
+        else if (opt == "-G")
+            opt_grepFriendly = true;
+        else if (opt == "-X")
+            opt_indexingAllowed = false;
+        else if (opt == "-V")
+            opt_verbose = true;
+        else if (opt[0] != '-')
+            opt_fileNames.push_back(argv[i]);
+        else
+            throw opp_runtime_error("Unknown option '%s'", opt.c_str());
+    }
+
+    // resolve -T, filter by result type
+    if (opt_resultTypeFilterStr != "") {
+        opt_resultTypeFilter = 0;
+        for (char c : opt_resultTypeFilterStr) {
+            switch(c) {
+            case 's': opt_resultTypeFilter |= ResultFileManager::SCALAR; break;
+            case 'v': opt_resultTypeFilter |= ResultFileManager::VECTOR; break;
+            case 'h': opt_resultTypeFilter |= ResultFileManager::HISTOGRAM; break;
+            default: throw opp_runtime_error("Invalid result type '%c' in '-T' option", c);
+            }
+        }
+    }
+
+    // resolve -D, run display mode
+    if (opt_runDisplayModeStr == "runid")
+        opt_runDisplayMode = RUNDISPLAY_RUNID;
+    else if (opt_runDisplayModeStr == "runnumber")
+        opt_runDisplayMode = RUNDISPLAY_CONFIG_RUNNUMBER;
+    else if (opt_runDisplayModeStr == "itervars")
+        opt_runDisplayMode = RUNDISPLAY_CONFIG_ITERVARS_REPETITION;
+    else if (opt_runDisplayModeStr == "experiment")
+        opt_runDisplayMode = RUNDISPLAY_EXPERIMENT_MEASUREMENT_REPLICATION;
+    else if (opt_runDisplayModeStr != "")
+        throw opp_runtime_error("Invalid run display mode '%s' in '-D' option", opt_runDisplayModeStr.c_str());
+
+    // load files
+    ResultFileManager resultFileManager;
+    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
+
+    // filter statistics
+    IDList results = resultFileManager.getAllItems(false, false);
+    results.set(results.filterByTypes(opt_resultTypeFilter));
+    results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
+
+    RunList *runs = resultFileManager.getUniqueRuns(results);
+    IDList scalars = results.filterByTypes(ResultFileManager::SCALAR);
+    IDList vectors = results.filterByTypes(ResultFileManager::VECTOR);
+    IDList histograms = results.filterByTypes(ResultFileManager::HISTOGRAM);
+
+    switch (opt_mode) {
+    case PRINT_SUMMARY: {
+#define L(label) (opt_labels ? label: "\t")
+        if (!opt_perRun) {
+            cout << L("runs: ") << runs->size() << " ";
+            if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0)
+                cout << L("\tscalars: ") << scalars.size();
+            if ((opt_resultTypeFilter & ResultFileManager::VECTOR) != 0)
+                cout << L("\tvectors: ") << vectors.size();
+            if ((opt_resultTypeFilter & ResultFileManager::HISTOGRAM) != 0)
+                cout << L("\thistograms: ") << histograms.size();
+            cout << endl;
+        }
+        else {
+            for (Run *run : *runs) {
+                cout << runStr(run, opt_runDisplayMode);
+                if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0) {
+                    IDList runScalars = resultFileManager.filterIDList(scalars, run, nullptr, nullptr);
+                    cout << L("\tscalars: ") << runScalars.size();
+                }
+                if ((opt_resultTypeFilter & ResultFileManager::VECTOR) != 0) {
+                    IDList runVectors = resultFileManager.filterIDList(vectors, run, nullptr, nullptr);
+                    cout << L("\tvectors: ") << runVectors.size();
+                }
+                if ((opt_resultTypeFilter & ResultFileManager::HISTOGRAM) != 0) {
+                    IDList runHistograms = resultFileManager.filterIDList(histograms, run, nullptr, nullptr);
+                    cout << L("\thistograms: ") << runHistograms.size();
+                }
+                cout << endl;
+            }
+        }
+        break;
+    }
+#undef L
+    case LIST_RESULTS: {
+        // note: we ignore opt_perRun, as it makes no sense here
+        for (Run *run : *runs) {
+            string runName = runStr(run, opt_runDisplayMode);
+            string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
+            if (!opt_grepFriendly)
+                cout << runName << ":" << endl << endl;
+#define L(label) (opt_labels ? "\t" #label "=" : "\t")
+            IDList runScalars = resultFileManager.filterIDList(scalars, run, nullptr, nullptr);
+            IDList runVectors = resultFileManager.filterIDList(vectors, run, nullptr, nullptr);
+            IDList runHistograms = resultFileManager.filterIDList(histograms, run, nullptr, nullptr);
+
+            for (int i = 0; i < runScalars.size(); i++) {
+                const ScalarResult& s = resultFileManager.getScalar(runScalars.get(i));
+                cout << maybeRunColumnWithTab << "scalar\t" << *s.moduleNameRef << "\t" << *s.nameRef << "\t" << s.value << endl;
+            }
+
+            for (int i = 0; i < runVectors.size(); i++) {
+                const VectorResult& v = resultFileManager.getVector(runVectors.get(i));
+                cout << maybeRunColumnWithTab << "vector\t" << *v.moduleNameRef << "\t" << *v.nameRef << L(vectorId) << v.vectorId;
+                const Statistics& s = v.getStatistics();
+                if (s.getCount() >= 0) // information is valid, i.e. index file exists
+                    cout << L(count) << s.getCount() << L(mean) << s.getMean() << L(min) << s.getMin()  << L(max) << s.getMax();
+                cout << endl;
+            }
+
+            for (int i = 0; i < runHistograms.size(); i++) {
+                const HistogramResult& h = resultFileManager.getHistogram(runHistograms.get(i));
+                const Statistics& s = h.getStatistics();
+                cout << maybeRunColumnWithTab << "histogram\t" << *h.moduleNameRef << "\t" << *h.nameRef << L(count) << s.getCount() << L(mean) << s.getMean() << L(min) << s.getMin()  << L(max) << s.getMax() << L(#bins) << h.bins.size() << endl;
+            }
+            cout << endl;
+        }
+        break;
+    }
+#undef L
+    case LIST_RUNATTRS: {
+        // note: we ignore opt_perRun, as it makes no sense here
+        for (Run *run : *runs) {
+            string runName = runStr(run, opt_runDisplayMode);
+            string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
+            if (!opt_grepFriendly)
+                cout << runName << ":" << endl << endl;
+            for (auto& runAttr : run->attributes)
+                cout << maybeRunColumnWithTab << runAttr.first << "\t" << runAttr.second << std::endl;
+            cout << endl;
+        }
+        break;
+    }
+    case LIST_NAMES: {
+        if (!opt_perRun)
+            printAndDelete(resultFileManager.getUniqueNames(results));
+        else {
+            for (Run *run : *runs) {
+                string runName = runStr(run, opt_runDisplayMode);
+                if (!opt_grepFriendly)
+                    cout << runName << ":" << endl << endl;
+                IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
+                printAndDelete(resultFileManager.getUniqueNames(runResults), opt_grepFriendly ? runName + "\t" : "");
+                cout << endl;
+            }
+        }
+        break;
+    }
+    case LIST_MODULES: {
+        if (!opt_perRun)
+            printAndDelete(resultFileManager.getUniqueModuleNames(results));
+        else {
+            for (Run *run : *runs) {
+                string runName = runStr(run, opt_runDisplayMode);
+                if (!opt_grepFriendly)
+                    cout << runName << ":" << endl << endl;
+                IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
+                printAndDelete(resultFileManager.getUniqueModuleNames(runResults), opt_grepFriendly ? runName + "\t" : "");
+                cout << endl;
+            }
+        }
+        break;
+    }
+    case LIST_MODULE_AND_NAME_PAIRS: {
+        if (!opt_perRun)
+            printAndDelete(resultFileManager.getUniqueModuleAndResultNamePairs(results));
+        else {
+            for (Run *run : *runs) {
+                string runName = runStr(run, opt_runDisplayMode);
+                if (!opt_grepFriendly)
+                    cout << runName << ":" << endl << endl;
+                IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
+                printAndDelete(resultFileManager.getUniqueModuleAndResultNamePairs(runResults), opt_grepFriendly ? runName + "\t" : "");
+                cout << endl;
+            }
+        }
+        break;
+    }
+    case LIST_RUNS: {
+        // note: we ignore opt_perRun, as it makes no sense here
+        StringSet *uniqueRunNames = new StringSet;
+        for (RunList::const_iterator it = runs->begin(); it != runs->end(); ++it)
+            uniqueRunNames->insert((*it)->runName);
+        printAndDelete(uniqueRunNames);
+        break;
+    }
+    case LIST_CONFIGS: {
+        // note: we ignore opt_perRun, as it makes no sense here
+        StringSet *uniqueConfigNames = resultFileManager.getUniqueRunAttributeValues(*runs, RunAttribute::CONFIGNAME);
+        printAndDelete(uniqueConfigNames);
+        break;
+    }
+    default: {
+        Assert(false);
+    }
+    } // switch
+
+    delete runs;
 }
 
 void ScaveTool::vectorCommand(int argc, char **argv)
 {
     // options
-    bool opt_verbose = false;
     string opt_filterExpression;
     string opt_outputFileName = "out";
     string opt_outputFormat = "vec";  // TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
     string opt_readerNodeType = "vectorreaderbyfiletype";
     vector<string> opt_filterList;
     vector<string> opt_fileNames;
+    bool opt_verbose = false;
+    bool opt_indexingAllowed = true;
 
     // parse options
     bool endOpts = false;
-    for (int i = 2; i < argc; i++) {
-        const char *opt = argv[i];
+    for (int i = 0; i < argc; i++) {
+        string opt = argv[i];
         if (endOpts)
             opt_fileNames.push_back(argv[i]);
-        else if (!strcmp(opt, "--"))
+        else if (opt == "--")
             endOpts = true;
-        else if (!strcmp(opt, "-p") && i != argc-1)
+        else if (opt == "-p" && i != argc-1)
             opt_filterExpression = unquoteString(argv[++i]);
-        else if (!strcmp(opt, "-a") && i != argc-1)
+        else if (opt == "-a" && i != argc-1)
             opt_filterList.push_back(argv[++i]);
-        else if (!strcmp(opt, "-O") && i != argc-1)
+        else if (opt == "-O" && i != argc-1)
             opt_outputFileName = argv[++i];
-        else if (!strcmp(opt, "-F") && i != argc-1)
+        else if (opt == "-F" && i != argc-1)
             opt_outputFormat = argv[++i];
-        else if (!strcmp(opt, "-V"))
+        else if (opt == "-X")
+            opt_indexingAllowed = false;
+        else if (opt == "-V")
             opt_verbose = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
-        else if (!strcmp(opt, "-r") && i != argc-1)  // for testing only
+        else if (opt == "-r" && i != argc-1)  // for testing only
             opt_readerNodeType = argv[++i];
         else
-            throw opp_runtime_error("Unknown option '%s'", opt);
+            throw opp_runtime_error("Unknown option '%s'", opt.c_str());
     }
 
     bool opt_writeSeparateFiles = false;
@@ -211,7 +633,7 @@ void ScaveTool::vectorCommand(int argc, char **argv)
 
     // load files
     ResultFileManager resultFileManager;
-    loadFiles(resultFileManager, opt_fileNames, opt_verbose);
+    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter statistics
     IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());
@@ -265,7 +687,7 @@ void ScaveTool::vectorCommand(int argc, char **argv)
         // create a port for each vector on its reader node
         char portName[30];
         const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-        assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
+        Assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
         sprintf(portName, "%d", vector.vectorId);
         Node *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
         Port *outPort = readerNodeType->getPort(readerNode, portName);
@@ -295,8 +717,8 @@ void ScaveTool::vectorCommand(int argc, char **argv)
 
                 stringstream header;
                 header << "# vector " << vector.vectorId << " "
-                        <<QUOTE(vector.moduleNameRef->c_str()) << " "
-                        <<QUOTE(vector.nameRef->c_str()) << "\n";
+                       << QUOTE(vector.moduleNameRef->c_str()) << " "
+                       << QUOTE(vector.nameRef->c_str()) << "\n";
                 header << "# file generated by scavetool\n";
 
                 FileWriterNode *writerNode = new FileWriterNode(fname.c_str(), header.str().c_str());
@@ -413,43 +835,46 @@ void ScaveTool::parseScalarFunction(const string& functionCall,  /*out*/ string&
 void ScaveTool::scalarCommand(int argc, char **argv)
 {
     // options
-    bool opt_verbose = false;
     string opt_filterExpression;
     string opt_outputFileName = "out";
     string opt_outputFormat = "csv";
     string opt_applyFunction;
     string opt_groupingFields = "";
     vector<string> opt_fileNames;
+    bool opt_verbose = false;
+    bool opt_indexingAllowed = true;
 
     // parse options
     bool endOpts = false;
-    for (int i = 2; i < argc; i++) {
-        const char *opt = argv[i];
+    for (int i = 0; i < argc; i++) {
+        string opt = argv[i];
         if (endOpts)
             opt_fileNames.push_back(argv[i]);
-        else if (!strcmp(opt, "--"))
+        else if (opt == "--")
             endOpts = true;
-        else if (!strcmp(opt, "-p") && i != argc-1)
+        else if (opt == "-p" && i != argc-1)
             opt_filterExpression = unquoteString(argv[++i]);
-        else if (!strcmp(opt, "-a") && i != argc-1)
+        else if (opt == "-a" && i != argc-1)
             opt_applyFunction = unquoteString(argv[++i]);
-        else if (!strcmp(opt, "-g") && i != argc-1)
+        else if (opt == "-g" && i != argc-1)
             opt_groupingFields = unquoteString(argv[++i]);
-        else if (!strcmp(opt, "-O") && i != argc-1)
+        else if (opt == "-O" && i != argc-1)
             opt_outputFileName = argv[++i];
-        else if (!strcmp(opt, "-F") && i != argc-1)
+        else if (opt == "-F" && i != argc-1)
             opt_outputFormat = argv[++i];
-        else if (!strcmp(opt, "-V"))
+        else if (opt == "-X")
+            opt_indexingAllowed = false;
+        else if (opt == "-V")
             opt_verbose = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
-            throw opp_runtime_error("Unknown option '%s'", opt);
+            throw opp_runtime_error("Unknown option '%s'", opt.c_str());
     }
 
     // load files
     ResultFileManager resultFileManager;
-    loadFiles(resultFileManager, opt_fileNames, opt_verbose);
+    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter scalars
     IDList scalarIDList = resultFileManager.filterIDList(resultFileManager.getAllScalars(), opt_filterExpression.c_str());
@@ -523,152 +948,22 @@ void ScaveTool::scalarCommand(int argc, char **argv)
         cout << "done" << endl;
 }
 
-// TODO allow filtering by patterns here too?
-// TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
-// occurring in the input files
-void ScaveTool::listCommand(int argc, char **argv)
-{
-    bool opt_name = false;
-    bool opt_module = false;
-    bool opt_run = false;
-    bool opt_config = false;
-    int count = 0;
-    vector<string> opt_fileNames;
-
-    for (int i = 2; i < argc; i++) {
-        const char *opt = argv[i];
-        if (opt[0] == '-')
-            count++;
-        if (strcmp(opt, "-n") == 0)
-            opt_name = true;
-        else if (strcmp(opt, "-m") == 0)
-            opt_module = true;
-        else if (strcmp(opt, "-r") == 0)
-            opt_run = true;
-        else if (strcmp(opt, "-c") == 0)
-            opt_config = true;
-        else if (opt[0] != '-')
-            opt_fileNames.push_back(argv[i]);
-        else
-            throw opp_runtime_error("Unknown option '%s'", opt);
-    }
-    if (count == 0)
-        opt_name = true;
-    else if (count > 1)
-        throw opp_runtime_error("One option expected");
-
-    ResultFileManager manager;
-    loadFiles(manager, opt_fileNames, false);
-
-    StringSet *result = nullptr;
-    if (opt_name) {
-        IDList ids = manager.getAllItems();
-        result = manager.getUniqueNames(ids);
-    }
-    else if (opt_module) {
-        IDList ids = manager.getAllItems();
-        result = manager.getUniqueModuleNames(ids);
-    }
-    else if (opt_run) {
-        const RunList& runs = manager.getRuns();
-        result = new StringSet;
-        for (RunList::const_iterator it = runs.begin(); it != runs.end(); ++it) {
-            result->insert((*it)->runName);
-        }
-    }
-    else if (opt_config) {
-        const RunList& runs = manager.getRuns();
-        result = manager.getUniqueRunAttributeValues(runs, RunAttribute::CONFIGNAME);
-    }
-
-    if (result != nullptr) {
-        for (StringSet::iterator it = result->begin(); it != result->end(); ++it) {
-            cout << *it << "\n";
-        }
-        delete result;
-    }
-}
-
-void ScaveTool::infoCommand(int argc, char **argv)
-{
-    // process args
-    bool opt_brief = false;
-    bool opt_summary = false;
-    for (int i = 2; i < argc; i++) {
-        const char *opt = argv[i];
-        if (!strcmp(opt, "-b"))
-            opt_brief = true;
-        else if (!strcmp(opt, "-s"))
-            opt_summary = true;
-        else if (!strcmp(opt, "-v"))
-            ;  // no-op
-        else
-            throw opp_runtime_error("Unknown option '%s'", opt);
-    }
-
-    cout << "\nScalar operations:\n\n";
-    cout << "scatter(module,scalar,...):\n"
-           "  Create scatter plot dataset. The first two arguments identifies the scalar\n"
-           "  selected for the X axis. Additional arguments identify the iso attributes;\n"
-           "  they are (module, scalar) pairs, or names of run attributes.\n";
-
-    cout << "\nVector operations:\n\n";
-    NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
-    NodeTypeVector nodeTypes = registry->getNodeTypes();
-    for (int i = 0; i < (int)nodeTypes.size(); i++) {
-        NodeType *nodeType = nodeTypes[i];
-        if (nodeType->isHidden())
-            continue;
-
-        if (opt_brief) {
-            // this is the -b format
-            cout << nodeType->getName() << "\n";
-        }
-        else {
-            // print name(parameters,...)
-            cout << nodeType->getName();
-            StringMap attrs, attrDefaults;
-            nodeType->getAttributes(attrs);
-            nodeType->getAttrDefaults(attrDefaults);
-            cout << "(";
-            for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it) {
-                if (it != attrs.begin())
-                    cout << ",";
-                cout << it->first;
-            }
-            cout << ")";
-
-            if (opt_summary) {
-                cout << "\n";
-            }
-            else {
-                // print filter description and parameter descriptions
-                cout << ":\n" << opp_indentlines(opp_breaklines(nodeType->getDescription(), 76), "  ") << "\n";
-                for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it) {
-                    cout << "    - " << it->first << ": " << it->second << "\n";
-                }
-                cout << "\n";
-            }
-        }
-    }
-}
-
 void ScaveTool::indexCommand(int argc, char **argv)
 {
     // process args
     bool opt_verbose = false;
     bool opt_rebuild = false;
     vector<string> opt_fileNames;
-    for (int i = 2; i < argc; i++) {
-        const char *opt = argv[i];
-        if (strcmp(opt, "-V") == 0)
+    for (int i = 0; i < argc; i++) {
+        string opt = argv[i];
+        if (opt == "-V")
             opt_verbose = true;
-        else if (strcmp(opt, "-r") == 0)
+        else if (opt == "-r")
             opt_rebuild = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
-            throw opp_runtime_error("Unknown option '%s'", opt);
+            throw opp_runtime_error("Unknown option '%s'", opt.c_str());
     }
 
     VectorFileIndexer indexer;
@@ -689,27 +984,29 @@ void ScaveTool::indexCommand(int argc, char **argv)
 int ScaveTool::main(int argc, char **argv)
 {
     if (argc < 2) {
-        printUsage();
+        helpCommand(argc-1, argv+1);
         exit(0);
     }
 
     try {
-        const char *command = argv[1];
-        if (!strcmp(command, "v") || !strcmp(command, "vector"))
-            vectorCommand(argc, argv);
-        else if (!strcmp(command, "s") || !strcmp(command, "scalar"))
-            scalarCommand(argc, argv);
-        else if (!strcmp(command, "l") || !strcmp(command, "list"))
-            listCommand(argc, argv);
-        else if (!strcmp(command, "i") || !strcmp(command, "info"))
-            infoCommand(argc, argv);
-        else if (!strcmp(command, "x") || !strcmp(command, "index"))
-            indexCommand(argc, argv);
+        string command = argv[1];
+        if (command == "q" || command == "query")
+            queryCommand(argc-2, argv+2);
+        else if (command == "v" || command == "vector")
+            vectorCommand(argc-2, argv+2);
+        else if (command == "s" || command == "scalar")
+            scalarCommand(argc-2, argv+2);
+        else if (command == "x" || command == "index")
+            indexCommand(argc-2, argv+2);
+        else if (command == "h" || command == "help" || command == "-h" || command == "--help")
+            helpCommand(argc-2, argv+2);
+        else if (command[0] == '-' || isFile(command.c_str())) // use default command
+            queryCommand(argc-1, argv+1);
         else
-            throw opp_runtime_error("Unknown command '%s'", command);
+            throw opp_runtime_error("Unknown command or file name '%s'", command.c_str());
     }
     catch (exception& e) {
-        cerr << "Error: " << e.what() << endl;
+        cerr << "scavetool: " << e.what() << endl;
         return 1;
     }
     return 0;
