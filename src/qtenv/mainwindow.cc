@@ -276,23 +276,17 @@ void MainWindow::onEventNumLabelContextMenuRequested(QPoint pos)
 
     QActionGroup *actionGroup = new QActionGroup(menu);
 
-    //TODO use this once it compiles everywere:
-    //QVector<QPair<QString, int>> elements = {
-    //    {"No digit grouping", NONE},
-    //    {"Group digits with comma", COMMA}
-    //    {"Group digits with apostrophe", APOSTROPHE},
-    //    {"Group digits with space", SPACE}
-    //};
-    QVector<QPair<QString, int>> elements;
-    elements.push_back(QPair<QString, int>("&No Digit Grouping", NONE));
-    elements.push_back(QPair<QString, int>("Group Digits with &Comma", COMMA));
-    elements.push_back(QPair<QString, int>("Group Digits with &Apostrophe", APOSTROPHE));
-    elements.push_back(QPair<QString, int>("Group Digits with &Space", SPACE));
+    QVector<QPair<QString, int>> elements = {
+        { "&No Digit Grouping", NONE },
+        { "Group Digits with &Comma", COMMA },
+        { "Group Digits with &Apostrophe", APOSTROPHE },
+        { "Group Digits with &Space", SPACE }
+    };
 
     QAction *action;
     for (auto elem : elements) {
         action = menu->addAction(elem.first, this, SLOT(onEventNumLabelGroupingTriggered()));
-        action->setData(QVariant::fromValue(elem.second));
+        action->setData(elem.second);
         action->setActionGroup(actionGroup);
         action->setCheckable(true);
         if (eventNumDigitGrouping == elem.second)
@@ -1231,7 +1225,7 @@ void MainWindow::on_actionConcludeSimulation_triggered()
         QMessageBox::StandardButton ans =
             QMessageBox::question(this, tr("Question"),
                     "Do you want to conclude this simulation run and invoke finish() on all modules?",
-                    QMessageBox::Yes | QMessageBox::No);
+                    QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 
         if (ans == QMessageBox::No)
             return;
