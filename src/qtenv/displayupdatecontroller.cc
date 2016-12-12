@@ -102,6 +102,7 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
                 return true;
 
             if (animationSpeed == 0 && runMode != RUNMODE_FAST) {
+                sim->setSimTime(sim->guessNextSimtime());
                 renderFrame(false);
                 return true; // to get the old behaviour back
             }
@@ -109,7 +110,11 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
             if (nextEventAt <= nextFrameAt || nextEventAt <= now) { // the time has come to execute the next event
                 // TODO: compute the real animation delta time for the actual currentEvent->arrivalTime() - simTime delta
                 //animationTime += animDeltaTime;
-                // but even before that, we still have to churn out a frame
+
+                // let's set to time there already
+                sim->setSimTime(sim->guessNextSimtime());
+
+                // but even before letting the event happen, we still have to churn out a frame
                 if (nextEventAt > nextFrameAt)
                     adjustFrameRate(renderFrame(false));
                 return true;
@@ -255,6 +260,7 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             double animationSpeed = getAnimationSpeed();
 
             if (animationSpeed == 0) {
+                sim->setSimTime(sim->guessNextSimtime());
                 if (runMode == RUNMODE_FAST) {
                     if (animationTimer.elapsed() >= 1000.0 / targetFps) {
                         animationTime += frameDelta;
