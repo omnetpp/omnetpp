@@ -268,7 +268,7 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
             else if (c.name == "Name")
                 return *scalar.nameRef;
             else if (opp_stringbeginswith(c.name.c_str(), "runattr:"))
-                return scalar.fileRunRef->runRef->getAttribute(opp_substringafter(c.name, ":").c_str());
+                return opp_nulltoempty(scalar.fileRunRef->runRef->getAttribute(opp_substringafter(c.name, ":").c_str()));
         }
     }
     return "";
