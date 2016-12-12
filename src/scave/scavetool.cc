@@ -45,7 +45,7 @@ namespace scave {
 
 void ScaveTool::printUsage()
 {
-    printf(
+    cout <<
        "scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2015 OpenSim Ltd.\n"
        "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
@@ -133,7 +133,7 @@ void ScaveTool::printUsage()
        "    scavetool scalar -p \"module(sink) OR module(queue)\" -a \"scatter(.,load,queue,\\\"queue length\\\")\" -O out.csv -F csv *.sca\n"
        "        Creates a scatter plot with the load attribute on the x axis, and queue length\n"
        "        for iso lines.\n"
-    );
+    ;
 }
 
 void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool verbose)
@@ -144,19 +144,19 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
         // TODO on Windows: manual globbing of wildcards
         const char *fileName = fileNames[i].c_str();
         if (verbose)
-            printf("reading %s...\n", fileName);
+            cout << "reading " << fileName << "...\n";
         try {
             ResultFile *f = manager.loadFile(fileName);
             Assert(f); // or exception
             if (f->fileType == ResultFile::FILETYPE_TEXT && f->numUnrecognizedLines > 0)
-                fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", fileName, f->numUnrecognizedLines, f->numLines);
+                cerr << "WARNING: " << fileName << ": " << f->numUnrecognizedLines << " invalid/incomplete lines out of " << f->numLines << "\n";
         }
         catch (exception& e) {
-            fprintf(stdout, "Exception: %s\n", e.what());
+            cout << "Exception: " << e.what() << "\n";
         }
     }
     if (verbose)
-        printf("%d file(s) loaded\n", (int)manager.getFiles().size());
+        cout << manager.getFiles().size() << " file(s) loaded\n";
 }
 
 string ScaveTool::rebuildCommandLine(int argc, char **argv)
@@ -225,18 +225,18 @@ int ScaveTool::vectorCommand(int argc, char **argv)
         IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());
 
         if (opt_verbose)
-            printf("filter expression matches %d vectors\n", vectorIDList.size());
+            cout << "filter expression matches " << vectorIDList.size() << " vectors\n";
         if (opt_verbose)
-            printf("done collecting inputs\n\n");
+            cout << "done collecting inputs\n\n";
 
         // add index to the SQLite vector files if not present
         for (std::string filename : opt_fileNames) {
             if (SqliteResultFileUtils::isSqliteFile(filename.c_str())) {
                 if (opt_verbose)
-                    printf("adding vectordata index to SQLite file '%s' if not yet added\n", filename.c_str());
+                    cout << "adding vectordata index to SQLite file '" << filename << "' if not yet added\n";
                 SqliteResultFileUtils::addIndexToVectorData(filename.c_str());
                 if (opt_verbose)
-                    printf("done\n\n");
+                    cout << "done\n\n";
             }
         }
 
@@ -248,7 +248,7 @@ int ScaveTool::vectorCommand(int argc, char **argv)
 
         // create filereader for each vector file
         if (opt_verbose)
-            printf("creating vector file reader(s)\n");
+            cout << "creating vector file reader(s)\n";
         ResultFileList& filteredVectorFileList = *resultFileManager.getUniqueFiles(vectorIDList);  // FIXME delete after done?
         map<ResultFile *, Node *> vectorFileReaders;
         NodeType *readerNodeType = registry->getNodeType(opt_readerNodeType.c_str());
@@ -285,7 +285,7 @@ int ScaveTool::vectorCommand(int argc, char **argv)
             for (int k = 0; k < (int)opt_filterList.size(); k++) {
                 // TODO support filter to merge all into a single vector
                 if (opt_verbose)
-                    printf("adding filter to vector: %s\n", opt_filterList[k].c_str());
+                    cout << "adding filter to vector: " << opt_filterList[k] << "\n";
                 Node *node = registry->createNode(opt_filterList[k].c_str(), &dataflowManager);
                 FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
                 if (!filterNode)
@@ -299,7 +299,7 @@ int ScaveTool::vectorCommand(int argc, char **argv)
                 if (opt_writeSeparateFiles) {
                     // every vector goes to its own file, with two columns (time+value) separated by spaces/tab
                     if (opt_verbose)
-                        printf("adding separate writers for each vector\n");
+                        cout << "adding separate writers for each vector\n";
                     char buf[16];
                     sprintf(buf, "%d", i);
                     string fname = opt_outputFileName+buf+".vec";
@@ -318,7 +318,7 @@ int ScaveTool::vectorCommand(int argc, char **argv)
                     // everything goes to a common vector file
                     if (!vectorFileWriterNode) {
                         if (opt_verbose)
-                            printf("adding vector file writer\n");
+                            cout << "adding vector file writer\n";
                         string fileName = opt_outputFileName + ".vec";
                         vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
                         dataflowManager.addNode(vectorFileWriterNode);
@@ -331,7 +331,7 @@ int ScaveTool::vectorCommand(int argc, char **argv)
             else {
                 // for Octave, we must build arrays
                 if (opt_verbose)
-                    printf("adding array builders for Octave output\n");
+                    cout << "adding array builders for Octave output\n";
                 ArrayBuilderNode *arrayBuilderNode = new ArrayBuilderNode();
                 dataflowManager.addNode(arrayBuilderNode);
                 dataflowManager.connect(outPort, &(arrayBuilderNode->in));
@@ -341,7 +341,7 @@ int ScaveTool::vectorCommand(int argc, char **argv)
 
         // run!
         if (opt_verbose)
-            printf("running dataflow network...\n");
+            cout << "running dataflow network...\n";
         dataflowManager.execute();
 
         if (opt_outputFormat != "vec") {
@@ -394,10 +394,10 @@ int ScaveTool::vectorCommand(int argc, char **argv)
         }
 
         if (opt_verbose)
-            printf("done\n");
+            cout << "done\n";
     }
     catch (exception& e) {
-        fprintf(stdout, "Exception: %s\n", e.what());
+        cout << "Exception: " << e.what() << "\n";
         return 1;
     }
     return 0;
@@ -601,7 +601,7 @@ int ScaveTool::listCommand(int argc, char **argv)
     if (count == 0)
         opt_name = true;
     else if (count > 1) {
-        fprintf(stderr, "expects only one option\n");
+        cerr << "expects only one option\n";
         return 1;
     }
 
@@ -631,7 +631,7 @@ int ScaveTool::listCommand(int argc, char **argv)
 
     if (result != nullptr) {
         for (StringSet::iterator it = result->begin(); it != result->end(); ++it) {
-            printf("%s\n", it->c_str());
+            cout << *it << "\n";
         }
         delete result;
     }
@@ -658,13 +658,13 @@ int ScaveTool::infoCommand(int argc, char **argv)
         }
     }
 
-    printf("\nScalar operations:\n\n");
-    printf("scatter(module,scalar,...):\n"
+    cout << "\nScalar operations:\n\n";
+    cout << "scatter(module,scalar,...):\n"
            "  Create scatter plot dataset. The first two arguments identifies the scalar\n"
            "  selected for the X axis. Additional arguments identify the iso attributes;\n"
-           "  they are (module, scalar) pairs, or names of run attributes.\n");
+           "  they are (module, scalar) pairs, or names of run attributes.\n";
 
-    printf("\nVector operations:\n\n");
+    cout << "\nVector operations:\n\n";
     NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
     NodeTypeVector nodeTypes = registry->getNodeTypes();
     for (int i = 0; i < (int)nodeTypes.size(); i++) {
@@ -674,32 +674,32 @@ int ScaveTool::infoCommand(int argc, char **argv)
 
         if (opt_brief) {
             // this is the -b format
-            printf("%s\n", nodeType->getName());
+            cout << nodeType->getName() << "\n";
         }
         else {
             // print name(parameters,...)
-            printf("%s", nodeType->getName());
+            cout << nodeType->getName();
             StringMap attrs, attrDefaults;
             nodeType->getAttributes(attrs);
             nodeType->getAttrDefaults(attrDefaults);
-            printf("(");
+            cout << "(";
             for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it) {
                 if (it != attrs.begin())
-                    printf(",");
-                printf("%s", it->first.c_str());
+                    cout << ",";
+                cout << it->first;
             }
-            printf(")");
+            cout << ")";
 
             if (opt_summary) {
-                printf("\n");
+                cout << "\n";
             }
             else {
                 // print filter description and parameter descriptions
-                printf(":\n%s\n", opp_indentlines(opp_breaklines(nodeType->getDescription(), 76), "  ").c_str());
+                cout << ":\n" << opp_indentlines(opp_breaklines(nodeType->getDescription(), 76), "  ") << "\n";
                 for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it) {
-                    printf("    - %s: %s\n", it->first.c_str(), it->second.c_str());
+                    cout << "    - " << it->first << ": " << it->second << "\n";
                 }
-                printf("\n");
+                cout << "\n";
             }
         }
     }
@@ -731,7 +731,7 @@ int ScaveTool::indexCommand(int argc, char **argv)
     for (int i = 0; i < (int)opt_fileNames.size(); i++) {
         const char *fileName = opt_fileNames[i].c_str();
         if (opt_verbose)
-            printf("indexing %s...\n", fileName);
+            cout << "indexing " << fileName << "...\n";
         try {
             if (opt_rebuild)
                 indexer.rebuildVectorFile(fileName);
@@ -739,13 +739,13 @@ int ScaveTool::indexCommand(int argc, char **argv)
                 indexer.generateIndex(fileName);
         }
         catch (exception& e) {
-            fprintf(stderr, "Exception: %s\n", e.what());
+            cerr << "Exception: " << e.what() << "\n";
             rc = 1;
         }
     }
 
     if (opt_verbose)
-        printf("done\n");
+        cout << "done\n";
 
     return rc;
 }
