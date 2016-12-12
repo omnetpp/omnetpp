@@ -20,6 +20,7 @@
 #include <QDialog>
 #include <QItemSelection>
 #include <QModelIndex>
+#include "inspectorlistbox.h"
 #include "qtenvdefs.h"
 
 namespace Ui {
@@ -56,7 +57,11 @@ private:
     static QString classNamePattern;
     static QString namePattern;
 
-    InspectorListBoxView *inspectorListBoxView;
+    void setPref(const QString& key, const QVariant& value);
+    QVariant getPref(const QString& key, const QVariant& defaultValue = QVariant());
+
+    InspectorListBox *inspectorListBox; // the model of the object list
+    InspectorListBoxView *inspectorListBoxView; // the list widget itself
 
     QStringList getClassNames();
     void checkPattern(const char *pattern);

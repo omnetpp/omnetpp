@@ -98,7 +98,7 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     setFont(getQtenv()->getBoldFont());
 
     if (ptr == nullptr) {
-        cFindByPathVisitor visitor(getQtenv()->getPref("filtobjlist-rootobject").toByteArray());
+        cFindByPathVisitor visitor(getPref("rootobject").toByteArray());
         visitor.process(getSimulation());
 
         ptr = (visitor.getArraySize() > 0)
@@ -113,16 +113,14 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     ui->fullPathLabel->setToolTip(namePattern);
 
     // vars
-    QVariant variant = getQtenv()->getPref("filtobjlist-class");
-    QString classText = variant.isValid() ? variant.value<QString>() : "";
-    variant = getQtenv()->getPref("filtobjlist-name");
-    QString name = variant.isValid() ? variant.value<QString>() : "";
-    variant = getQtenv()->getPref("filtobjlist-width");
+    QString classText = getPref("class", "").toString();
+    QString name = getPref("name", "").toString();
+    QVariant variant = getPref("width");
     if (variant.isValid()) {
-        int width = variant.value<int>();
-        variant = getQtenv()->getPref("filtobjlist-height");
+        int width = variant.toInt();
+        variant = getPref("height");
         if (variant.isValid()) {
-            int height = variant.value<int>();
+            int height = variant.toInt();
             resize(width, height);
         }
     }
@@ -140,37 +138,42 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     connect(ui->refresh, SIGNAL(clicked()), this, SLOT(refresh()));
 
     // category filters
-    variant = getQtenv()->getPref("cat-m", QVariant::fromValue(true));
-    ui->modulesCheckBox->setChecked(variant.value<bool>());
-    variant = getQtenv()->getPref("cat-p", QVariant::fromValue(true));
-    ui->paramCheckBox->setChecked(variant.value<bool>());
-    variant = getQtenv()->getPref("cat-q", QVariant::fromValue(true));
-    ui->queuesCheckBox->setChecked(variant.value<bool>());
-    variant = getQtenv()->getPref("cat-s", QVariant::fromValue(true));
-    ui->outVectorsCheckBox->setChecked(variant.value<bool>());
-    variant = getQtenv()->getPref("cat-g", QVariant::fromValue(true));
-    ui->messagesCheckBox->setChecked(variant.value<bool>());
-    variant = getQtenv()->getPref("cat-c", QVariant::fromValue(true));
-    ui->gatesCheckBox->setChecked(variant.value<bool>());
-    variant = getQtenv()->getPref("cat-v", QVariant::fromValue(true));
-    ui->fsmCheckBox->setChecked(variant.value<bool>());
-    variant = getQtenv()->getPref("cat-o", QVariant::fromValue(true));
-    ui->otherCheckBox->setChecked(variant.value<bool>());
+    variant = getPref("cat-m", true);
+    ui->modulesCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-p", true);
+    ui->paramCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-q", true);
+    ui->queuesCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-s", true);
+    ui->outVectorsCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-g", true);
+    ui->messagesCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-c", true);
+    ui->gatesCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-v", true);
+    ui->fsmCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-o", true);
+    ui->otherCheckBox->setChecked(variant.toBool());
 
     // Listbox
-    InspectorListBox *inspectorListBox = new InspectorListBox();
+    inspectorListBox = new InspectorListBox();
     inspectorListBoxView = new InspectorListBoxView();
     inspectorListBoxView->setModel(inspectorListBox);
 
-    variant = getQtenv()->getPref("objdialog:columnwidths");
+    int sortColumn = getPref("sortcolumn", 0).toInt();
+    Qt::SortOrder sortOrder = getPref("sortorder", 0).value<Qt::SortOrder>();
+    inspectorListBoxView->sortByColumn(sortColumn, sortOrder);
+
+    variant = getPref("columnwidths");
     if (variant.isValid()) {
-        QString widths = variant.value<QString>();
+        QString widths = variant.toString();
         QStringList columnWidths = widths.split("#");
         for (int i = 0; i < columnWidths.size(); ++i)
             inspectorListBoxView->setColumnWidth(i, columnWidths[i].toInt());
     }
 
     QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
     ui->inspectorListView->setLayout(layout);
     layout->addWidget(inspectorListBoxView);
 
@@ -179,7 +182,7 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     // geometry
-    QByteArray geometry = getQtenv()->getPref("filtobjlist-geometry", QByteArray()).value<QByteArray>();
+    QByteArray geometry = getPref("geometry", QByteArray()).value<QByteArray>();
     if (!geometry.isEmpty())
         restoreGeometry(geometry);
 }
@@ -189,13 +192,22 @@ void FilteredObjectListDialog::onFontChanged()
     setFont(getQtenv()->getBoldFont());
 }
 
+void FilteredObjectListDialog::setPref(const QString &key, const QVariant &value)
+{
+    getQtenv()->setPref("FindObjectsDialog/" + key, value);
+}
+
+QVariant FilteredObjectListDialog::getPref(const QString &key, const QVariant &defaultValue)
+{
+    return getQtenv()->getPref("FindObjectsDialog/" + key, defaultValue);
+}
+
 void FilteredObjectListDialog::inspect(QModelIndex index)
 {
     if (!index.isValid())
         return;
 
-    QVariant variant = getQtenv()->getPref("outofdate");
-    bool outOfDate = variant.isValid() ? variant.value<bool>() : true;
+    bool outOfDate = getPref("outofdate", true).toBool();
     bool isRunning = getQtenv()->getMainWindow()->isRunning();
 
     if (outOfDate || isRunning) {
@@ -284,8 +296,7 @@ void FilteredObjectListDialog::refresh()
         className = "*";
     }
     // get list
-    QVariant variant = getQtenv()->getPref("filtobjlist-maxcount");
-    int maxCount = variant.isValid() ? variant.value<int>() : 1000;
+    int maxCount = getPref("maxcount", 1000).toInt();
     int num = 0;
     cObject **objList = getSubObjectsFilt(rootObject, className.toStdString().c_str(), name.toStdString().c_str(), maxCount, num);
 
@@ -314,7 +325,7 @@ void FilteredObjectListDialog::refresh()
         static_cast<InspectorListBox *>(inspectorListBoxView->model())->setObjects(objects);
     }
 
-    getQtenv()->setPref("outofdate", false);
+    setPref("outofdate", false);
 }
 
 cObject **FilteredObjectListDialog::getSubObjectsFilt(cObject *object, const char *classNamePattern, const char *objFullPathPattern,
@@ -369,29 +380,32 @@ void FilteredObjectListDialog::checkPattern(const char *pattern)
 
 FilteredObjectListDialog::~FilteredObjectListDialog()
 {
-    getQtenv()->setPref("filtobjlist-rootobject", QVariant::fromValue(ui->searchEdit->text()));
-    getQtenv()->setPref("filtobjlist-class", QVariant::fromValue(ui->comboBox->currentText()));
-    getQtenv()->setPref("filtobjlist-name", QVariant::fromValue(ui->fullPathEdit->text()));
+    setPref("rootobject", ui->searchEdit->text());
+    setPref("class", ui->comboBox->currentText());
+    setPref("name", ui->fullPathEdit->text());
 
     // filtobjlist-category
-    getQtenv()->setPref("cat-m", ui->modulesCheckBox->isChecked());
-    getQtenv()->setPref("cat-p", ui->paramCheckBox->isChecked());
-    getQtenv()->setPref("cat-q", ui->queuesCheckBox->isChecked());
-    getQtenv()->setPref("cat-s", ui->outVectorsCheckBox->isChecked());
-    getQtenv()->setPref("cat-g", ui->messagesCheckBox->isChecked());
-    getQtenv()->setPref("cat-c", ui->gatesCheckBox->isChecked());
-    getQtenv()->setPref("cat-v", ui->fsmCheckBox->isChecked());
-    getQtenv()->setPref("cat-o", ui->otherCheckBox->isChecked());
+    setPref("cat-m", ui->modulesCheckBox->isChecked());
+    setPref("cat-p", ui->paramCheckBox->isChecked());
+    setPref("cat-q", ui->queuesCheckBox->isChecked());
+    setPref("cat-s", ui->outVectorsCheckBox->isChecked());
+    setPref("cat-g", ui->messagesCheckBox->isChecked());
+    setPref("cat-c", ui->gatesCheckBox->isChecked());
+    setPref("cat-v", ui->fsmCheckBox->isChecked());
+    setPref("cat-o", ui->otherCheckBox->isChecked());
 
-    getQtenv()->setPref("filtobjlist-width", width());
-    getQtenv()->setPref("filtobjlist-height", height());
+    setPref("width", width());
+    setPref("height", height());
+
+    setPref("sortcolumn", inspectorListBox->getLastSortColumn());
+    setPref("sortorder", inspectorListBox->getLastSortOrder());
 
     QString widths = "";
     for (int i = 0; i < inspectorListBoxView->model()->columnCount(); ++i)
         widths += QString::number(inspectorListBoxView->columnWidth(i)) + "#";
 
-    getQtenv()->setPref("objdialog:columnwidths", widths);
-    getQtenv()->setPref("filtobjlist-geometry", saveGeometry());
+    setPref("columnwidths", widths);
+    setPref("geometry", saveGeometry());
 
     // When close mainwindow while this dialog is opened, qt call
     // data method unecessarily and use corrupted pointer, which occurs

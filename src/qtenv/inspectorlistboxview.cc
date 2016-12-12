@@ -69,7 +69,8 @@ void InspectorListBoxView::contextMenuEvent(QContextMenuEvent *event)
     if (!object)
         return;
 
-    variant = getQtenv()->getPref("outofdate");
+    // TODO: proper protection against dereferencing dangling pointers!
+    variant = getQtenv()->getPref("FindObjectsDialog/outofdate");
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     bool state = (variant.isValid() ? variant.value<bool>() : true) || mainWindow->isRunning();
 
