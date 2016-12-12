@@ -145,15 +145,10 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
         const char *fileName = fileNames[i].c_str();
         if (verbose)
             cout << "reading " << fileName << "...\n";
-        try {
-            ResultFile *f = manager.loadFile(fileName);
-            Assert(f); // or exception
-            if (f->fileType == ResultFile::FILETYPE_TEXT && f->numUnrecognizedLines > 0)
-                cerr << "WARNING: " << fileName << ": " << f->numUnrecognizedLines << " invalid/incomplete lines out of " << f->numLines << "\n";
-        }
-        catch (exception& e) {
-            cout << "Exception: " << e.what() << "\n";
-        }
+        ResultFile *f = manager.loadFile(fileName);
+        Assert(f); // or exception
+        if (f->fileType == ResultFile::FILETYPE_TEXT && f->numUnrecognizedLines > 0)
+            cerr << "WARNING: " << fileName << ": " << f->numUnrecognizedLines << " invalid/incomplete lines out of " << f->numLines << "\n";
     }
     if (verbose)
         cout << manager.getFiles().size() << " file(s) loaded\n";
@@ -171,7 +166,7 @@ string ScaveTool::rebuildCommandLine(int argc, char **argv)
     return result;
 }
 
-int ScaveTool::vectorCommand(int argc, char **argv)
+void ScaveTool::vectorCommand(int argc, char **argv)
 {
     // options
     bool opt_verbose = false;
@@ -204,10 +199,8 @@ int ScaveTool::vectorCommand(int argc, char **argv)
             opt_fileNames.push_back(argv[i]);
         else if (!strcmp(opt, "-r") && i != argc-1)  // for testing only
             opt_readerNodeType = argv[++i];
-        else {
-            fprintf(stderr, "unknown option '%s'\n", opt);
-            return 1;
-        }
+        else
+            throw opp_runtime_error("Unknown option '%s'", opt);
     }
 
     bool opt_writeSeparateFiles = false;
@@ -216,191 +209,179 @@ int ScaveTool::vectorCommand(int argc, char **argv)
         opt_writeSeparateFiles = true;
     }
 
-    try {
-        // load files
-        ResultFileManager resultFileManager;
-        loadFiles(resultFileManager, opt_fileNames, opt_verbose);
+    // load files
+    ResultFileManager resultFileManager;
+    loadFiles(resultFileManager, opt_fileNames, opt_verbose);
 
-        // filter statistics
-        IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());
+    // filter statistics
+    IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());
 
-        if (opt_verbose)
-            cout << "filter expression matches " << vectorIDList.size() << " vectors\n";
-        if (opt_verbose)
-            cout << "done collecting inputs\n\n";
+    if (opt_verbose)
+        cout << "filter expression matches " << vectorIDList.size() << " vectors\n";
+    if (opt_verbose)
+        cout << "done collecting inputs\n\n";
 
-        // add index to the SQLite vector files if not present
-        for (std::string filename : opt_fileNames) {
-            if (SqliteResultFileUtils::isSqliteFile(filename.c_str())) {
+    // add index to the SQLite vector files if not present
+    for (std::string filename : opt_fileNames) {
+        if (SqliteResultFileUtils::isSqliteFile(filename.c_str())) {
+            if (opt_verbose)
+                cout << "adding vectordata index to SQLite file '" << filename << "' if not yet added\n";
+            SqliteResultFileUtils::addIndexToVectorData(filename.c_str());
+            if (opt_verbose)
+                cout << "done\n\n";
+        }
+    }
+
+    //
+    // assemble dataflow network for vectors
+    //
+    DataflowManager dataflowManager;
+    NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
+
+    // create filereader for each vector file
+    if (opt_verbose)
+        cout << "creating vector file reader(s)\n";
+    ResultFileList& filteredVectorFileList = *resultFileManager.getUniqueFiles(vectorIDList);  // FIXME delete after done?
+    map<ResultFile *, Node *> vectorFileReaders;
+    NodeType *readerNodeType = registry->getNodeType(opt_readerNodeType.c_str());
+    if (!readerNodeType)
+        throw opp_runtime_error("Unknown node type '%s'", opt_readerNodeType.c_str());
+
+    // create reader nodes
+    StringMap attrs;
+    for (int i = 0; i < (int)filteredVectorFileList.size(); i++) {
+        ResultFile *resultFile = filteredVectorFileList[i];
+        attrs["filename"] = resultFile->fileSystemFilePath;
+        attrs["allowindexing"] = "true";
+        Node *readerNode = readerNodeType->create(&dataflowManager, attrs);
+        vectorFileReaders[resultFile] = readerNode;
+    }
+
+    // create writer node, if each vector is written into the same file
+    VectorFileWriterNode *vectorFileWriterNode = nullptr;
+
+    vector<ArrayBuilderNode *> arrayBuilders;  // for exporting
+
+    for (int i = 0; i < vectorIDList.size(); i++) {
+        // create a port for each vector on its reader node
+        char portName[30];
+        const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
+        assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
+        sprintf(portName, "%d", vector.vectorId);
+        Node *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
+        Port *outPort = readerNodeType->getPort(readerNode, portName);
+
+        // add filters
+        for (int k = 0; k < (int)opt_filterList.size(); k++) {
+            // TODO support filter to merge all into a single vector
+            if (opt_verbose)
+                cout << "adding filter to vector: " << opt_filterList[k] << "\n";
+            Node *node = registry->createNode(opt_filterList[k].c_str(), &dataflowManager);
+            FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
+            if (!filterNode)
+                throw opp_runtime_error("'%s' is not a filter node", opt_filterList[k].c_str());
+            dataflowManager.connect(outPort, &(filterNode->in));
+            outPort = &(filterNode->out);
+        }
+
+        // create writer node(s) and connect them
+        if (opt_outputFormat == "vec") {
+            if (opt_writeSeparateFiles) {
+                // every vector goes to its own file, with two columns (time+value) separated by spaces/tab
                 if (opt_verbose)
-                    cout << "adding vectordata index to SQLite file '" << filename << "' if not yet added\n";
-                SqliteResultFileUtils::addIndexToVectorData(filename.c_str());
-                if (opt_verbose)
-                    cout << "done\n\n";
+                    cout << "adding separate writers for each vector\n";
+                char buf[16];
+                sprintf(buf, "%d", i);
+                string fname = opt_outputFileName+buf+".vec";
+
+                stringstream header;
+                header << "# vector " << vector.vectorId << " "
+                        <<QUOTE(vector.moduleNameRef->c_str()) << " "
+                        <<QUOTE(vector.nameRef->c_str()) << "\n";
+                header << "# file generated by scavetool\n";
+
+                FileWriterNode *writerNode = new FileWriterNode(fname.c_str(), header.str().c_str());
+                dataflowManager.addNode(writerNode);
+                dataflowManager.connect(outPort, &(writerNode->in));
             }
-        }
-
-        //
-        // assemble dataflow network for vectors
-        //
-        DataflowManager dataflowManager;
-        NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
-
-        // create filereader for each vector file
-        if (opt_verbose)
-            cout << "creating vector file reader(s)\n";
-        ResultFileList& filteredVectorFileList = *resultFileManager.getUniqueFiles(vectorIDList);  // FIXME delete after done?
-        map<ResultFile *, Node *> vectorFileReaders;
-        NodeType *readerNodeType = registry->getNodeType(opt_readerNodeType.c_str());
-        if (!readerNodeType) {
-            fprintf(stdout, "There is no node type %s in the registry\n", opt_readerNodeType.c_str());
-            return 1;
-        }
-
-        // create reader nodes
-        StringMap attrs;
-        for (int i = 0; i < (int)filteredVectorFileList.size(); i++) {
-            ResultFile *resultFile = filteredVectorFileList[i];
-            attrs["filename"] = resultFile->fileSystemFilePath;
-            attrs["allowindexing"] = "true";
-            Node *readerNode = readerNodeType->create(&dataflowManager, attrs);
-            vectorFileReaders[resultFile] = readerNode;
-        }
-
-        // create writer node, if each vector is written into the same file
-        VectorFileWriterNode *vectorFileWriterNode = nullptr;
-
-        vector<ArrayBuilderNode *> arrayBuilders;  // for exporting
-
-        for (int i = 0; i < vectorIDList.size(); i++) {
-            // create a port for each vector on its reader node
-            char portName[30];
-            const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-            assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
-            sprintf(portName, "%d", vector.vectorId);
-            Node *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
-            Port *outPort = readerNodeType->getPort(readerNode, portName);
-
-            // add filters
-            for (int k = 0; k < (int)opt_filterList.size(); k++) {
-                // TODO support filter to merge all into a single vector
-                if (opt_verbose)
-                    cout << "adding filter to vector: " << opt_filterList[k] << "\n";
-                Node *node = registry->createNode(opt_filterList[k].c_str(), &dataflowManager);
-                FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
-                if (!filterNode)
-                    throw opp_runtime_error("%s is not a filter node", opt_filterList[k].c_str());
-                dataflowManager.connect(outPort, &(filterNode->in));
-                outPort = &(filterNode->out);
-            }
-
-            // create writer node(s) and connect them
-            if (opt_outputFormat == "vec") {
-                if (opt_writeSeparateFiles) {
-                    // every vector goes to its own file, with two columns (time+value) separated by spaces/tab
+            else {
+                // everything goes to a common vector file
+                if (!vectorFileWriterNode) {
                     if (opt_verbose)
-                        cout << "adding separate writers for each vector\n";
-                    char buf[16];
-                    sprintf(buf, "%d", i);
-                    string fname = opt_outputFileName+buf+".vec";
-
-                    stringstream header;
-                    header << "# vector " << vector.vectorId << " "
-                           <<QUOTE(vector.moduleNameRef->c_str()) << " "
-                           <<QUOTE(vector.nameRef->c_str()) << "\n";
-                    header << "# file generated by scavetool\n";
-
-                    FileWriterNode *writerNode = new FileWriterNode(fname.c_str(), header.str().c_str());
-                    dataflowManager.addNode(writerNode);
-                    dataflowManager.connect(outPort, &(writerNode->in));
+                        cout << "adding vector file writer\n";
+                    string fileName = opt_outputFileName + ".vec";
+                    vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
+                    dataflowManager.addNode(vectorFileWriterNode);
                 }
-                else {
-                    // everything goes to a common vector file
-                    if (!vectorFileWriterNode) {
-                        if (opt_verbose)
-                            cout << "adding vector file writer\n";
-                        string fileName = opt_outputFileName + ".vec";
-                        vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
-                        dataflowManager.addNode(vectorFileWriterNode);
-                    }
 
-                    Port *writerNodePort = vectorFileWriterNode->addVector(vector);  // FIXME: renumber vectors
-                    dataflowManager.connect(outPort, writerNodePort);
-                }
-            }
-            else {
-                // for Octave, we must build arrays
-                if (opt_verbose)
-                    cout << "adding array builders for Octave output\n";
-                ArrayBuilderNode *arrayBuilderNode = new ArrayBuilderNode();
-                dataflowManager.addNode(arrayBuilderNode);
-                dataflowManager.connect(outPort, &(arrayBuilderNode->in));
-                arrayBuilders.push_back(arrayBuilderNode);
+                Port *writerNodePort = vectorFileWriterNode->addVector(vector);  // FIXME: renumber vectors
+                dataflowManager.connect(outPort, writerNodePort);
             }
         }
-
-        // run!
-        if (opt_verbose)
-            cout << "running dataflow network...\n";
-        dataflowManager.execute();
-
-        if (opt_outputFormat != "vec") {
-            ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
-            if (exporter) {
-                try {
-                    exporter->setBaseFileName(opt_outputFileName);
-                    if (opt_writeSeparateFiles) {
-                        // separate vectors
-                        for (int i = 0; i < vectorIDList.size(); i++) {
-                            ID vectorID = vectorIDList.get(i);
-                            bool computed = !opt_filterList.empty();
-                            const VectorResult& vector = resultFileManager.getVector(vectorID);
-                            string name = *vector.nameRef;
-                            string descr = *vector.nameRef + "; "
-                                + *vector.moduleNameRef + "; "
-                                + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
-                                + vector.fileRunRef->runRef->runName;
-                            XYArray *xyArray = arrayBuilders[i]->getArray();
-                            exporter->saveVector(name, descr, vectorID, computed, xyArray, resultFileManager);
-                            delete xyArray;
-                        }
-                    }
-                    else {  // same file
-                        if (vectorIDList.size() > 0) {
-                            // all vectors in one file
-                            vector<XYArray *> xyArrays;
-                            for (int i = 0; i < vectorIDList.size(); i++)
-                                xyArrays.push_back(arrayBuilders[i]->getArray());
-
-                            string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
-                            exporter->saveVectors("vectors", desc, vectorIDList, xyArrays, resultFileManager);
-
-                            for (int i = 0; i < vectorIDList.size(); i++)
-                                delete arrayBuilders[i]->getArray();
-                        }
-                    }
-
-                    delete exporter;
-                }
-                catch (exception&) {
-                    delete exporter;
-                    throw;
-                }
-            }
-            else {
-                fprintf(stdout, "Unknown output file format: %s\n", opt_outputFormat.c_str());
-                return 1;
-            }
+        else {
+            // for Octave, we must build arrays
+            if (opt_verbose)
+                cout << "adding array builders for Octave output\n";
+            ArrayBuilderNode *arrayBuilderNode = new ArrayBuilderNode();
+            dataflowManager.addNode(arrayBuilderNode);
+            dataflowManager.connect(outPort, &(arrayBuilderNode->in));
+            arrayBuilders.push_back(arrayBuilderNode);
         }
+    }
 
-        if (opt_verbose)
-            cout << "done\n";
+    // run!
+    if (opt_verbose)
+        cout << "running dataflow network...\n";
+    dataflowManager.execute();
+
+    if (opt_outputFormat != "vec") {
+        ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
+        if (!exporter)
+            throw opp_runtime_error("Unknown output file format '%s'", opt_outputFormat.c_str());
+
+        try {
+            exporter->setBaseFileName(opt_outputFileName);
+            if (opt_writeSeparateFiles) {
+                // separate vectors
+                for (int i = 0; i < vectorIDList.size(); i++) {
+                    ID vectorID = vectorIDList.get(i);
+                    bool computed = !opt_filterList.empty();
+                    const VectorResult& vector = resultFileManager.getVector(vectorID);
+                    string name = *vector.nameRef;
+                    string descr = *vector.nameRef + "; "
+                            + *vector.moduleNameRef + "; "
+                            + vector.fileRunRef->fileRef->fileSystemFilePath + "; "
+                            + vector.fileRunRef->runRef->runName;
+                    XYArray *xyArray = arrayBuilders[i]->getArray();
+                    exporter->saveVector(name, descr, vectorID, computed, xyArray, resultFileManager);
+                    delete xyArray;
+                }
+            }
+            else {  // same file
+                if (vectorIDList.size() > 0) {
+                    // all vectors in one file
+                    vector<XYArray *> xyArrays;
+                    for (int i = 0; i < vectorIDList.size(); i++)
+                        xyArrays.push_back(arrayBuilders[i]->getArray());
+
+                    string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
+                    exporter->saveVectors("vectors", desc, vectorIDList, xyArrays, resultFileManager);
+
+                    for (int i = 0; i < vectorIDList.size(); i++)
+                        delete arrayBuilders[i]->getArray();
+                }
+            }
+
+            delete exporter;
+        }
+        catch (exception&) {
+            delete exporter;
+            throw;
+        }
     }
-    catch (exception& e) {
-        cout << "Exception: " << e.what() << "\n";
-        return 1;
-    }
-    return 0;
+
+    if (opt_verbose)
+        cout << "done\n";
 }
 
 void ScaveTool::parseScalarFunction(const string& functionCall,  /*out*/ string& name,  /*out*/ vector<string>& params)
@@ -430,7 +411,7 @@ void ScaveTool::parseScalarFunction(const string& functionCall,  /*out*/ string&
         params.push_back(unquoteString(tokens[i]));
 }
 
-int ScaveTool::scalarCommand(int argc, char **argv)
+void ScaveTool::scalarCommand(int argc, char **argv)
 {
     // options
     bool opt_verbose = false;
@@ -463,114 +444,90 @@ int ScaveTool::scalarCommand(int argc, char **argv)
             opt_verbose = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
-        else {
-            cerr << "unknown option '" << opt << "'" << endl;
-            return 1;
-        }
+        else
+            throw opp_runtime_error("Unknown option '%s'", opt);
     }
 
-    int rc = 0;
+    // load files
+    ResultFileManager resultFileManager;
+    loadFiles(resultFileManager, opt_fileNames, opt_verbose);
 
-    try {
-        // load files
-        ResultFileManager resultFileManager;
-        loadFiles(resultFileManager, opt_fileNames, opt_verbose);
+    // filter scalars
+    IDList scalarIDList = resultFileManager.filterIDList(resultFileManager.getAllScalars(), opt_filterExpression.c_str());
+    if (opt_verbose)
+        cout << "filter expression matches " << scalarIDList.size() << " scalars" << endl;
+    if (opt_verbose)
+        cout << "done collecting inputs" << endl << endl;
 
-        // filter scalars
-        IDList scalarIDList = resultFileManager.filterIDList(resultFileManager.getAllScalars(), opt_filterExpression.c_str());
-        if (opt_verbose)
-            cout << "filter expression matches " << scalarIDList.size() << " scalars" << endl;
-        if (opt_verbose)
-            cout << "done collecting inputs" << endl << endl;
+    if (!scalarIDList.isEmpty()) {
+        ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
+        if (!exporter)
+            throw opp_runtime_error("Unknown output file format '%s'", opt_outputFormat.c_str());
+        try {
+            exporter->setBaseFileName(opt_outputFileName);
+            string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
 
-        if (!scalarIDList.isEmpty()) {
-            ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
-            if (exporter) {
-                try {
-                    exporter->setBaseFileName(opt_outputFileName);
-                    string desc = "generated by '" + rebuildCommandLine(argc, argv) + "'";
-
-                    if (opt_applyFunction.empty()) {
-                        StringTokenizer tokenizer(opt_groupingFields.c_str(), ", \t");
-                        StringVector fieldNames = tokenizer.asVector();
-                        ResultItemFields fields(fieldNames);
-                        exporter->saveScalars("scalars", desc, scalarIDList,
-                                fields.complement(), resultFileManager);
-                    }
-                    else {
-                        string function;
-                        vector<string> params;
-                        parseScalarFunction(opt_applyFunction, function, params);
-                        if (function == "scatter") {
-                            if (params.size() >= 2) {
-                                string moduleName = params[0];
-                                string scalarName = params[1];
-                                vector<string> rowFields;
-                                rowFields.push_back(ResultItemField::MODULE);
-                                rowFields.push_back(ResultItemField::NAME);
-                                vector<string> isoModuleNames;
-                                vector<string> isoScalarNames;
-                                vector<string> isoRunAttributes;
-                                for (vector<string>::iterator param = params.begin()+2; param != params.end(); ++param) {
-                                    if (RunAttribute::isAttributeName(*param)) {
-                                        isoRunAttributes.push_back(*param);
-                                    }
-                                    else {
-                                        if ((param+1) == params.end()) {
-                                            cout << "Missing scalar name after '" << *param << "'" << endl;
-                                            rc = 1;
-                                            break;
-                                        }
-                                        isoModuleNames.push_back(*param);
-                                        isoScalarNames.push_back(*++param);
-                                    }
-                                }
-
-                                if (rc == 0) {
-                                    exporter->saveScalars("scalars", desc, scalarIDList,
-                                            moduleName, scalarName, ResultItemFields(rowFields).complement(),
-                                            isoModuleNames, isoScalarNames, ResultItemFields(isoRunAttributes),
-                                            resultFileManager);
-                                }
-                            }
-                            else {
-                                cout << "Missing parameters in: " << opt_applyFunction << endl;
-                                rc = 1;
-                            }
-                        }
-                        else {
-                            cout << "Unknown scalar function: " << function << endl;
-                            rc = 1;
-                        }
-                    }
-
-                    delete exporter;
-                }
-                catch (exception&) {
-                    delete exporter;
-                    throw;
-                }
+            if (opt_applyFunction.empty()) {
+                StringTokenizer tokenizer(opt_groupingFields.c_str(), ", \t");
+                StringVector fieldNames = tokenizer.asVector();
+                ResultItemFields fields(fieldNames);
+                exporter->saveScalars("scalars", desc, scalarIDList,
+                        fields.complement(), resultFileManager);
             }
             else {
-                cout << "Unknown output file format: " << opt_outputFormat << endl;
-                rc = 1;
-            }
-        }
+                string function;
+                vector<string> params;
+                parseScalarFunction(opt_applyFunction, function, params);
+                if (function == "scatter") {
+                    if (params.size() < 2)
+                        throw opp_runtime_error("Missing parameters in '%s'", opt_applyFunction.c_str());
 
-        if (opt_verbose && rc == 0)
-            cout << "done" << endl;
+                    string moduleName = params[0];
+                    string scalarName = params[1];
+                    vector<string> rowFields;
+                    rowFields.push_back(ResultItemField::MODULE);
+                    rowFields.push_back(ResultItemField::NAME);
+                    vector<string> isoModuleNames;
+                    vector<string> isoScalarNames;
+                    vector<string> isoRunAttributes;
+                    for (vector<string>::iterator param = params.begin()+2; param != params.end(); ++param) {
+                        if (RunAttribute::isAttributeName(*param)) {
+                            isoRunAttributes.push_back(*param);
+                        }
+                        else {
+                            if ((param+1) == params.end())
+                                throw opp_runtime_error("Missing scalar name after '%s'", param->c_str());
+                            isoModuleNames.push_back(*param);
+                            isoScalarNames.push_back(*++param);
+                        }
+                    }
+
+                    exporter->saveScalars("scalars", desc, scalarIDList,
+                            moduleName, scalarName, ResultItemFields(rowFields).complement(),
+                            isoModuleNames, isoScalarNames, ResultItemFields(isoRunAttributes),
+                            resultFileManager);
+                }
+                else {
+                    throw opp_runtime_error("Unknown scalar function '%s'", function.c_str());
+                }
+            }
+
+            delete exporter;
+        }
+        catch (exception&) {
+            delete exporter;
+            throw;
+        }
     }
-    catch (exception& e) {
-        cout << "Exception: " << e.what() << endl;
-        rc = 1;
-    }
-    return rc;
+
+    if (opt_verbose)
+        cout << "done" << endl;
 }
 
 // TODO allow filtering by patterns here too?
 // TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
 // occurring in the input files
-int ScaveTool::listCommand(int argc, char **argv)
+void ScaveTool::listCommand(int argc, char **argv)
 {
     bool opt_name = false;
     bool opt_module = false;
@@ -593,17 +550,13 @@ int ScaveTool::listCommand(int argc, char **argv)
             opt_config = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
-        else {
-            fprintf(stderr, "unknown option '%s'\n", opt);
-            return 1;
-        }
+        else
+            throw opp_runtime_error("Unknown option '%s'", opt);
     }
     if (count == 0)
         opt_name = true;
-    else if (count > 1) {
-        cerr << "expects only one option\n";
-        return 1;
-    }
+    else if (count > 1)
+        throw opp_runtime_error("One option expected");
 
     ResultFileManager manager;
     loadFiles(manager, opt_fileNames, false);
@@ -635,11 +588,9 @@ int ScaveTool::listCommand(int argc, char **argv)
         }
         delete result;
     }
-
-    return 0;
 }
 
-int ScaveTool::infoCommand(int argc, char **argv)
+void ScaveTool::infoCommand(int argc, char **argv)
 {
     // process args
     bool opt_brief = false;
@@ -652,10 +603,8 @@ int ScaveTool::infoCommand(int argc, char **argv)
             opt_summary = true;
         else if (!strcmp(opt, "-v"))
             ;  // no-op
-        else {
-            fprintf(stderr, "unknown option '%s'\n", opt);
-            return 1;
-        }
+        else
+            throw opp_runtime_error("Unknown option '%s'", opt);
     }
 
     cout << "\nScalar operations:\n\n";
@@ -703,10 +652,9 @@ int ScaveTool::infoCommand(int argc, char **argv)
             }
         }
     }
-    return 0;
 }
 
-int ScaveTool::indexCommand(int argc, char **argv)
+void ScaveTool::indexCommand(int argc, char **argv)
 {
     // process args
     bool opt_verbose = false;
@@ -720,34 +668,23 @@ int ScaveTool::indexCommand(int argc, char **argv)
             opt_rebuild = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
-        else {
-            fprintf(stderr, "unknown option '%s'\n", opt);
-            return 1;
-        }
+        else
+            throw opp_runtime_error("Unknown option '%s'", opt);
     }
 
     VectorFileIndexer indexer;
-    int rc = 0;
     for (int i = 0; i < (int)opt_fileNames.size(); i++) {
         const char *fileName = opt_fileNames[i].c_str();
         if (opt_verbose)
             cout << "indexing " << fileName << "...\n";
-        try {
-            if (opt_rebuild)
-                indexer.rebuildVectorFile(fileName);
-            else
-                indexer.generateIndex(fileName);
-        }
-        catch (exception& e) {
-            cerr << "Exception: " << e.what() << "\n";
-            rc = 1;
-        }
+        if (opt_rebuild)
+            indexer.rebuildVectorFile(fileName);
+        else
+            indexer.generateIndex(fileName);
     }
 
     if (opt_verbose)
         cout << "done\n";
-
-    return rc;
 }
 
 int ScaveTool::main(int argc, char **argv)
@@ -757,21 +694,26 @@ int ScaveTool::main(int argc, char **argv)
         exit(0);
     }
 
-    const char *command = argv[1];
-    if (!strcmp(command, "v") || !strcmp(command, "vector"))
-        return vectorCommand(argc, argv);
-    else if (!strcmp(command, "s") || !strcmp(command, "scalar"))
-        return scalarCommand(argc, argv);
-    else if (!strcmp(command, "l") || !strcmp(command, "list"))
-        return listCommand(argc, argv);
-    else if (!strcmp(command, "i") || !strcmp(command, "info"))
-        return infoCommand(argc, argv);
-    else if (!strcmp(command, "x") || !strcmp(command, "index"))
-        return indexCommand(argc, argv);
-    else {
-        fprintf(stderr, "unknown command '%s'\n", command);
+    try {
+        const char *command = argv[1];
+        if (!strcmp(command, "v") || !strcmp(command, "vector"))
+            vectorCommand(argc, argv);
+        else if (!strcmp(command, "s") || !strcmp(command, "scalar"))
+            scalarCommand(argc, argv);
+        else if (!strcmp(command, "l") || !strcmp(command, "list"))
+            listCommand(argc, argv);
+        else if (!strcmp(command, "i") || !strcmp(command, "info"))
+            infoCommand(argc, argv);
+        else if (!strcmp(command, "x") || !strcmp(command, "index"))
+            indexCommand(argc, argv);
+        else
+            throw opp_runtime_error("Unknown command '%s'", command);
+    }
+    catch (exception& e) {
+        cerr << "Error: " << e.what() << endl;
         return 1;
     }
+    return 0;
 }
 
 }  // namespace scave

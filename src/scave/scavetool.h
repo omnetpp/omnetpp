@@ -30,12 +30,12 @@ protected:
     void printUsage();
     void loadFiles(ResultFileManager& manager, const std::vector<std::string>& fileNames, bool verbose);
     std::string rebuildCommandLine(int argc, char **argv);
-    int vectorCommand(int argc, char **argv);
-    static void parseScalarFunction(const std::string& functionCall,  /*out*/ std::string& name,  /*out*/ std::vector<std::string>& params);
-    int scalarCommand(int argc, char **argv);
-    int listCommand(int argc, char **argv);
-    int infoCommand(int argc, char **argv);
-    int indexCommand(int argc, char **argv);
+    void vectorCommand(int argc, char **argv);
+    void parseScalarFunction(const std::string& functionCall,  /*out*/ std::string& name,  /*out*/ std::vector<std::string>& params);
+    void scalarCommand(int argc, char **argv);
+    void listCommand(int argc, char **argv);
+    void infoCommand(int argc, char **argv);
+    void indexCommand(int argc, char **argv);
 public:
     int main(int argc, char **argv);
 
