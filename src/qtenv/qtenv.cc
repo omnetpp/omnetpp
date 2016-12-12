@@ -752,6 +752,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     stopSimulationFlag = false;
     simulationState = SIM_RUNNING;
+    doNextEventInStep = true;
 
     updateStatusDisplay();
     QCoreApplication::processEvents();
@@ -812,9 +813,12 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
 void Qtenv::setSimulationRunMode(RunMode mode)
 {
-    if (mode == RUNMODE_STEP && (runMode == RUNMODE_STEP || runMode == RUNMODE_NORMAL)) {
+    if (mode == RUNMODE_STEP) { // if the user wants to step,
+        // first quitting any holding animations in progress
         endAnimations();
+        // then if we are in between events, not stopped right before the next event, jumping there
         displayUpdateController->skipToNextEvent();
+        // finally we indicate that the next event should be executed, and we should not stop before that
         doNextEventInStep = true;
     }
     runMode = mode;
@@ -883,6 +887,9 @@ bool Qtenv::doRunSimulation()
             uiUpdateTimer.restart();
         }
 
+        if (runMode == RUNMODE_STEP && !doNextEventInStep)
+            break;
+
         // query which module will execute the next event
         cEvent *event = sim->takeNextEvent();
         if (!event)
@@ -918,6 +925,8 @@ bool Qtenv::doRunSimulation()
         if (animating)
             performAnimations();
 
+        messageAnimator->setMarkedModule(sim->guessNextModule());
+
         // flush so that output from different modules don't get mixed
         cLogProxy::flushLastLine();
 
@@ -932,11 +941,6 @@ bool Qtenv::doRunSimulation()
             break;
 
         checkTimeLimits();
-
-        messageAnimator->setMarkedModule(sim->guessNextModule());
-
-        if (runMode == RUNMODE_STEP && !doNextEventInStep)
-            break;
     }
     return false;
 }

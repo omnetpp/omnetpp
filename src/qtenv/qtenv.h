@@ -165,7 +165,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
           cModule *module;          // stop before and after events in this module; ignored with EXPRESS mode
           bool stopOnMsgCancel;     // with rununtil_msg: whether to stop when the message gets cancelled
       } runUntil;
-      bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before it
+      bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before
       Speedometer speedometer;
 
       bool stopSimulationFlag;      // indicates that the simulation should be stopped (STOP button pressed in the UI)
