@@ -59,7 +59,7 @@ void MessageAnimator::redrawMessages()
         cModule *arrivalMod = msg->getArrivalModule();
         cModule *showIn = arrivalMod->getParentModule();
 
-        if (!showIn || !showIn->getBuiltinAnimations())
+        if (!showIn || !showIn->getBuiltinAnimationsAllowed())
             continue;
 
         for (auto& insp : getQtenv()->getInspectors()) {

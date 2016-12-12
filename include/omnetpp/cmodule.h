@@ -815,13 +815,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Sets whether built-in animations are requested on this module's
      * graphical inspector.
      */
-    virtual void setBuiltinAnimations(bool enabled) {setFlag(FL_BUILTIN_ANIMATIONS, enabled);}
+    virtual void setBuiltinAnimationsAllowed(bool enabled) {setFlag(FL_BUILTIN_ANIMATIONS, enabled);}
 
     /**
      * Returns true if built-in animations are requested on this module's
      * graphical inspector, and false otherwise.
      */
-    virtual bool getBuiltinAnimations() const {return flags & FL_BUILTIN_ANIMATIONS;}
+    virtual bool getBuiltinAnimationsAllowed() const {return flags & FL_BUILTIN_ANIMATIONS;}
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.

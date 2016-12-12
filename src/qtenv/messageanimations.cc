@@ -453,7 +453,7 @@ void MethodcallAnimation::addToInspector(Inspector *insp)
         if (from && to)
             ASSERT(from->getParentModule() == to->getParentModule());
 
-        if (!showIn->getBuiltinAnimations())
+        if (!showIn->getBuiltinAnimationsAllowed())
             continue;
 
         if (auto mi = isModuleInspectorFor(showIn, insp)) {
@@ -718,7 +718,7 @@ void SendOnConnAnimation::addToInspector(Inspector *insp)
     if (gate->getType() == cGate::OUTPUT)
         mod = mod->getParentModule();
 
-    if (!mod->getBuiltinAnimations())
+    if (!mod->getBuiltinAnimationsAllowed())
         return;
 
     if (auto mi = isModuleInspectorFor(mod, insp)) {
@@ -890,7 +890,7 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
         if (from && to)
             ASSERT(from->getParentModule() == to->getParentModule());
 
-        if (!showIn->getBuiltinAnimations())
+        if (!showIn->getBuiltinAnimationsAllowed())
             continue;
 
         if (auto mi = isModuleInspectorFor(showIn, insp)) {
@@ -1024,7 +1024,7 @@ void DeliveryAnimation::addToInspector(Inspector *insp)
     } else
         mod = msgToUse()->getArrivalModule()->getParentModule();
 
-    if (!mod->getBuiltinAnimations())
+    if (!mod->getBuiltinAnimationsAllowed())
         return;
 
     if (auto mi = isModuleInspectorFor(mod, insp)) {
