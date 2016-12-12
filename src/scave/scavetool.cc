@@ -241,21 +241,20 @@ void ScaveTool::vectorCommand(int argc, char **argv)
     // create filereader for each vector file
     if (opt_verbose)
         cout << "creating vector file reader(s)\n";
-    ResultFileList& filteredVectorFileList = *resultFileManager.getUniqueFiles(vectorIDList);  // FIXME delete after done?
-    map<ResultFile *, Node *> vectorFileReaders;
     NodeType *readerNodeType = registry->getNodeType(opt_readerNodeType.c_str());
     if (!readerNodeType)
         throw opp_runtime_error("Unknown node type '%s'", opt_readerNodeType.c_str());
-
-    // create reader nodes
+    ResultFileList *filteredVectorFileList = resultFileManager.getUniqueFiles(vectorIDList);
+    map<ResultFile *, Node *> vectorFileReaders;
     StringMap attrs;
-    for (int i = 0; i < (int)filteredVectorFileList.size(); i++) {
-        ResultFile *resultFile = filteredVectorFileList[i];
+    for (int i = 0; i < (int)filteredVectorFileList->size(); i++) {
+        ResultFile *resultFile = filteredVectorFileList->at(i);
         attrs["filename"] = resultFile->fileSystemFilePath;
         attrs["allowindexing"] = "true";
         Node *readerNode = readerNodeType->create(&dataflowManager, attrs);
         vectorFileReaders[resultFile] = readerNode;
     }
+    delete filteredVectorFileList;
 
     // create writer node, if each vector is written into the same file
     VectorFileWriterNode *vectorFileWriterNode = nullptr;
