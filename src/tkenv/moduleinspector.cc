@@ -266,7 +266,7 @@ void ModuleInspector::getSubmoduleCoords(cModule *submod, bool& explicitcoords, 
         boxsx = resolveDoubleDispStrArg(ds.getTagArg("b", 0), submod, 40);
         boxsy = resolveDoubleDispStrArg(ds.getTagArg("b", 1), submod, 24);
     }
-    if (ds.containsTag("i")) {
+    if (ds.containsTag("i") || !ds.containsTag("b")) {
         const char *imgName = ds.getTagArg("i", 0);
         const char *imgSize = ds.getTagArg("is", 0);
         if (!imgName || !*imgName) {
