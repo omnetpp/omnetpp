@@ -48,16 +48,28 @@
            </widget>
           </item>
           <item>
-           <layout class="QFormLayout" name="formLayout_4">
-            <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+            <item>
              <widget class="QLabel" name="hideNamespaceText">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>5</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>Hide namespaces from C++ class names:</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item>
              <widget class="QComboBox" name="hideNameSpace">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>2</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <item>
                <property name="text">
                 <string>none</string>
@@ -93,15 +105,15 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_11">
           <item>
-           <layout class="QFormLayout" name="formLayout_3">
-            <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
              <widget class="QLabel" name="expressText">
               <property name="text">
                <string>Display update frequency for Express Run (ms):</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item>
              <widget class="QLineEdit" name="express"/>
             </item>
            </layout>
@@ -166,18 +178,11 @@
            </widget>
           </item>
           <item>
-           <layout class="QFormLayout" name="formLayout">
+           <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
              <widget class="QLabel" name="logPrefixText">
               <property name="text">
                <string>Log prefix format:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="logLevelText">
-              <property name="text">
-               <string>Log level:</string>
               </property>
              </widget>
             </item>
@@ -204,6 +209,13 @@ Padding with spaces:
   - %[0-9]+ add spaces until specified column
   - %| adaptive tabstop: add padding until longest prefix seen so far
   - %&gt; function call depth times 2-space indentation (see Enter_Method, Enter_Method_Silent)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="logLevelText">
+              <property name="text">
+               <string>Log level:</string>
               </property>
              </widget>
             </item>
@@ -265,7 +277,7 @@ Padding with spaces:
            </widget>
           </item>
           <item>
-           <layout class="QFormLayout" name="formLayout_2">
+           <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
              <widget class="QLabel" name="overallText">
               <property name="text">
@@ -273,15 +285,15 @@ Padding with spaces:
               </property>
              </widget>
             </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="overall"/>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="scrollbackText">
               <property name="text">
                <string>Scrollback buffer (lines):</string>
               </property>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="overall"/>
             </item>
             <item row="1" column="1">
              <widget class="QLineEdit" name="scrollback"/>
@@ -480,35 +492,28 @@ Padding with spaces:
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="animBroadcast">
-            <property name="toolTip">
-             <string>Animates send/sendDirect calls concurrently, after processing each event (i.e. out of sequence)</string>
+           <layout class="QVBoxLayout" name="msgSubLayout">
+            <property name="leftMargin">
+             <number>18</number>
             </property>
-            <property name="text">
-             <string>Broadcast animation</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="showMarker">
-            <property name="text">
-             <string>Show next event markers</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="showArrows">
-            <property name="text">
-             <string>Show arrows for sendDirect animation</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="showBubbles">
-            <property name="text">
-             <string>Show bubbles (bubble() calls)</string>
-            </property>
-           </widget>
+            <item>
+             <widget class="QCheckBox" name="animBroadcast">
+              <property name="toolTip">
+               <string>Animates send/sendDirect calls concurrently, after processing each event (i.e. out of sequence)</string>
+              </property>
+              <property name="text">
+               <string>Broadcast animation</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="showArrows">
+              <property name="text">
+               <string>Show arrows for sendDirect animation</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QCheckBox" name="animCalls">
@@ -518,18 +523,48 @@ Padding with spaces:
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="delayLayout">
+           <layout class="QHBoxLayout" name="delayLayout" stretch="2,1">
+            <property name="leftMargin">
+             <number>18</number>
+            </property>
             <item>
              <widget class="QLabel" name="delayText">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>Method call duration (ms):</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="delayEdit"/>
+             <widget class="QLineEdit" name="delayEdit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showMarker">
+            <property name="text">
+             <string>Show next event markers</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="showBubbles">
+            <property name="text">
+             <string>Show bubbles (bubble() calls)</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
