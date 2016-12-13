@@ -4791,6 +4791,7 @@ rm -f core conftest.err conftest.$ac_objext \
         # Test on Windows/MinGW toolchain
         if test $qt_ok = no; then
             QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5"
+            QTENV_LDFLAGS=""
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4830,6 +4831,7 @@ rm -f core conftest.err conftest.$ac_objext \
         # Test on Mac OS X using the local QT framework
         if test $qt_ok = no; then
             QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
+            QTENV_LDFLAGS=""
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS

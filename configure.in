@@ -770,12 +770,14 @@ EOT
         # Test on Windows/MinGW toolchain
         if test $qt_ok = no; then
             QT_LIBS="-lQtGui5 -lQtCore5 -lQtWidgets5 -lQtPrintSupport5 -lQtOpenGL5"
+            QTENV_LDFLAGS=""
             OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $QT_LIBS, qt_ok)
         fi
 
         # Test on Mac OS X using the local QT framework
         if test $qt_ok = no; then
             QT_LIBS="-framework QtGui -framework QtCore -framework QtWidgets -framework QtPrintSupport -framework QtOpenGL"
+            QTENV_LDFLAGS=""
             OPP_CHECK_LIB(Qt5, QtGlobal, $QT_VERSIONCHECK_CODE, $CXXFLAGS $CFLAGS $QT_CFLAGS, $LDFLAGS_TOOLS_MACOSX $QT_LIBS, qt_ok)
         fi
 
