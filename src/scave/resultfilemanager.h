@@ -354,6 +354,7 @@ class SCAVE_API ResultFileManager
     FileRunList *getUniqueFileRuns(const IDList& ids) const;
     StringSet *getUniqueModuleNames(const IDList& ids) const;
     StringSet *getUniqueNames(const IDList& ids) const;
+    StringSet *getUniqueModuleAndResultNamePairs(const IDList& ids) const;
     StringSet *getUniqueAttributeNames(const IDList &ids) const;
     StringSet *getUniqueRunAttributeNames(const RunList *runList) const;
     StringSet *getUniqueModuleParamNames(const RunList *runList) const;
@@ -382,6 +383,13 @@ class SCAVE_API ResultFileManager
                         const char *nameFilter) const;
 
     IDList filterIDList(const IDList &idlist, const char *pattern) const;
+
+    /**
+     * Get a filtered subset of the input set.
+     * All three filter parameters may be null, if given they are
+     * matched exactly.
+     */
+    IDList filterIDList(const IDList &idlist, const Run *run, const char *moduleName, const char *name) const;
 
     /**
      * Get a filtered subset of the input set.

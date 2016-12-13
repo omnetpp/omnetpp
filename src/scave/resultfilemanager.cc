@@ -264,6 +264,18 @@ StringSet *ResultFileManager::getUniqueNames(const IDList& ids) const
     return set;
 }
 
+StringSet *ResultFileManager::getUniqueModuleAndResultNamePairs(const IDList& ids) const
+{
+    READER_MUTEX
+    // collect unique scalar/vector names in this dataset
+    StringSet *set = new StringSet();
+    for (int i = 0; i < ids.size(); i++) {
+        const ResultItem& result = getItem(ids.get(i));
+        set->insert(*result.moduleNameRef + "." + *result.nameRef);
+    }
+    return set;
+}
+
 StringSet *ResultFileManager::getUniqueAttributeNames(const IDList& ids) const
 {
     READER_MUTEX
@@ -679,17 +691,21 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
 IDList ResultFileManager::filterIDList(const IDList& idlist, const char *runName, const char *moduleName, const char *name) const
 {
     READER_MUTEX
+    Run *run = getRunByName(runName);
+    return filterIDList(idlist, run, moduleName, name);
+}
 
-    // iterate over all values and add matching ones to "out".
-    // we can exploit the fact that ResultFileManager contains the data in the order
-    // they were read from file, i.e. grouped by runs
+IDList ResultFileManager::filterIDList(const IDList& idlist, const Run *run, const char *moduleName, const char *name) const
+{
+    READER_MUTEX
+
     IDList result;
     int sz = idlist.size();
     for (int i = 0; i < sz; i++) {
         ID id = idlist.get(i);
         const ResultItem& d = getItem(id);
 
-        if (runName && d.fileRunRef->runRef->runName != runName)
+        if (run && d.fileRunRef->runRef != run)
             continue;
 
         if (moduleName && (*d.moduleNameRef) != moduleName)
