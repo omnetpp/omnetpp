@@ -443,12 +443,12 @@ double DisplayUpdateController::renderFrame(bool record)
 
     qtenv->getMessageAnimator()->update();
 
-    qtenv->callRefreshDisplay();
     qtenv->updateSimtimeDisplay();
     qtenv->updateStatusDisplay();
 
+    qtenv->callRefreshDisplay();
     qtenv->refreshInspectors();
-    // We have to call the "unsafe" version (without exception handling) here,
+    // We have to call the "unsafe" versions (without exception handling) here,
     // because we are in the simulation event loop, we have to let that handle it.
 
     QApplication::processEvents();

@@ -53,7 +53,7 @@ void StopDialog::stopDialogAutoupdate()
 
 void StopDialog::onClickUpdate()
 {
-    getQtenv()->callRefreshDisplay();
+    getQtenv()->callRefreshDisplaySafe();
     getQtenv()->callRefreshInspectors();
 }
 

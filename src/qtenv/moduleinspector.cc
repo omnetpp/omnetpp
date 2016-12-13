@@ -267,6 +267,10 @@ void ModuleInspector::doSetObject(cObject *obj)
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
         }
         getQtenv()->getMessageAnimator()->addInspector(this);
+
+        // both are catching exceptions
+        getQtenv()->callRefreshDisplaySafe();
+        getQtenv()->callRefreshInspectors();
     } else {
         canvasViewer->setZoomFactor(1);
         if (isToplevel())
@@ -451,7 +455,7 @@ void ModuleInspector::relayout()
         // TODO: use some simpler signals-slots mechanism
         getQtenv()->getModuleLayouter()->fullRelayout(static_cast<cModule*>(object));
         canvasViewer->redraw();
-        getQtenv()->callRefreshDisplay();
+        getQtenv()->callRefreshDisplaySafe();
         getQtenv()->callRefreshInspectors();
         getQtenv()->getMessageAnimator()->updateInspector(this);
     }
@@ -498,14 +502,17 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
                 newZoomFactor = 1;
         }
 
+        setPref(PREF_ZOOMFACTOR, newZoomFactor);
+
         // so animations will not wander around at the old module positions
         canvasViewer->setZoomFactor(newZoomFactor);
         getQtenv()->getMessageAnimator()->updateInspector(this);
+        getQtenv()->callRefreshDisplaySafe();
+        getQtenv()->callRefreshInspectors();
 
         auto center = oldModulePos * newZoomFactor - QPointF(x - cx, y - cy);
         canvasViewer->centerOn(center);
 
-        setPref(PREF_ZOOMFACTOR, newZoomFactor);
         setPref(PREF_CENTER, center.toPoint());
     }
 }
@@ -778,6 +785,8 @@ void ModuleInspector::zoomIconsBy(double mult)
         canvasViewer->setImageSizeFactor(newImageSizeFactor);
         getQtenv()->getMessageAnimator()->updateInspector(this);
         getQtenv()->getMessageAnimator()->redrawMessages();
+        getQtenv()->callRefreshDisplaySafe();
+        getQtenv()->callRefreshInspectors();
     }
 }
 

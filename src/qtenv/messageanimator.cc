@@ -58,6 +58,10 @@ void MessageAnimator::redrawMessages()
         cMessage *msg = (cMessage *)event;
 
         cModule *arrivalMod = msg->getArrivalModule();
+
+        if (!arrivalMod)
+            continue;
+
         cModule *showIn = arrivalMod->getParentModule();
 
         if (!showIn || !showIn->getBuiltinAnimationsAllowed())
@@ -67,7 +71,7 @@ void MessageAnimator::redrawMessages()
             auto moduleInsp = dynamic_cast<ModuleInspector *>(insp);
 
             if (moduleInsp && !willAnimate(msg)
-                    && arrivalMod && showIn == moduleInsp->getObject()
+                    && showIn == moduleInsp->getObject()
                     && msg->getArrivalGateId() >= 0) {
                 cGate *arrivalGate = msg->getArrivalGate();
 

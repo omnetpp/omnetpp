@@ -1028,7 +1028,7 @@ void Qtenv::startAll()
 void Qtenv::finishSimulation()
 {
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
-    ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY || simulationState == SIM_TERMINATED || simulationState == SIM_ERROR);
+    ASSERT(simulationState != SIM_NONET && simulationState != SIM_FINISHCALLED);
 
     if (simulationState == SIM_NEW || simulationState == SIM_READY) {
         cTerminationException e("The user has finished the simulation");
@@ -1040,7 +1040,7 @@ void Qtenv::finishSimulation()
     // now really call finish()
     try {
         getSimulation()->callFinish();
-        callRefreshDisplay();
+        callRefreshDisplaySafe();
         cLogProxy::flushLastLine();
 
         checkFingerprint();
@@ -1129,7 +1129,7 @@ void Qtenv::newNetwork(const char *networkname)
         startRun();
 
         simulationState = SIM_NEW;
-        callRefreshDisplay();
+        callRefreshDisplay(); // the one without exception handling!
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -1146,7 +1146,6 @@ void Qtenv::newNetwork(const char *networkname)
     messageAnimator->redrawMessages();
     updateNetworkRunDisplay();
     updateStatusDisplay();
-    callRefreshDisplay();
     callRefreshInspectors();
 }
 
@@ -1187,7 +1186,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         startRun();
 
         simulationState = SIM_NEW;
-        callRefreshDisplay();
+        callRefreshDisplay(); // the one without exception handling!
     }
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
@@ -1294,8 +1293,23 @@ void Qtenv::deleteInspector(Inspector *insp)
 void Qtenv::callRefreshDisplay()
 {
     ASSERT(simulationState != SIM_ERROR && simulationState != SIM_NONET);
-    getSimulation()->getSystemModule()->callRefreshDisplay();  // Beware: this may throw a cRuntimeError, so needs to be under a try/catch
+    getSimulation()->getSystemModule()->callRefreshDisplay();
     ++refreshDisplayCount;
+}
+
+void Qtenv::callRefreshDisplaySafe()
+{
+    try { // if we are _in_ a callback, inside deleteNetwork, the state might not have been updated yet...
+        if (simulationState != SIM_ERROR && simulationState != SIM_NONET && getSimulation()->getSystemModule())
+            callRefreshDisplay();
+    }
+    catch (std::exception& e) {
+        ASSERT(simulationState != SIM_ERROR); // the exception must have come from refreshDisplay calls in the model
+        simulationState = SIM_ERROR;
+        stoppedWithException(e);
+        notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
 }
 
 void Qtenv::refreshInspectors()
@@ -1329,7 +1343,7 @@ void Qtenv::callRefreshInspectors()
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
-
+        // have to call it again, this time it should not throw, because the state is now SIM_ERROR
         refreshInspectors();
     }
 }

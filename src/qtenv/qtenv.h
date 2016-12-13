@@ -348,6 +348,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 
       void callRefreshDisplay();
+      void callRefreshDisplaySafe(); // with exception handling
 
       void refreshInspectors();
       void callRefreshInspectors(); // with exception handling
