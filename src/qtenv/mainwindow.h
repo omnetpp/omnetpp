@@ -204,8 +204,6 @@ private:
 
     void updateSimTimeLabel();
     void updateEventNumLabel();
-
-    bool exitOmnetpp();
 };
 
 } // namespace qtenv

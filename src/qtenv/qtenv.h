@@ -366,7 +366,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void deleteInspector(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 
-      int getSimulationState() {return simulationState;}
+      eState getSimulationState() {return simulationState;}
       void setStopSimulationFlag() {stopSimulationFlag = true;}
       bool getStopSimulationFlag() {return stopSimulationFlag;}
       Speedometer& getSpeedometer() {return speedometer;}

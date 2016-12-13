@@ -403,51 +403,86 @@ void MainWindow::updateSpeedSlider()
     slider->blockSignals(blocked);
 }
 
-bool MainWindow::exitOmnetpp()
-{
-    bool confirmExit = env->getPref("confirm-exit", true).value<bool>();
-    if (confirmExit) {
-        if (getSimulation()->getSystemModule() != nullptr) {
-            if (isRunning()) {
-                int ans = QMessageBox::warning(this, tr("Warning"), tr("The simulation is currently running. Do you really want to quit?"),
-                            QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-                if (ans == QMessageBox::No)
-                    return false;
-            }
-            else if (env->getSimulationState() == Qtenv::SIM_READY) {
-                int ans = QMessageBox::warning(this, tr("Warning"), tr("Do you want to conclude the simulation by invoking finish() before exiting?"),
-                            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
-                if (ans == QMessageBox::Yes)
-                    env->finishSimulation();
-                else if (ans == QMessageBox::Cancel)
-                    return false;
-            }
-            else {
-                // TODO
-                // #set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
-            }
-        }
-    }
-
-    if (isRunning())
-        env->setStopSimulationFlag();
-
-//    # save settings (fonts etc) globally, and inspector list locally
-//    saveTkenvrc "~/.tkenvrc" 1 1 "# Global OMNeT++/Tkenv config file"
-//    saveTkenvrc ".tkenvrc"   0 1 "# Partial OMNeT++/Tkenv config file -- see \$HOME/.tkenvrc as well"
-
-    close();
-    return true;
-}
-
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    // will only pop up the dialog in on_actionQuit_triggered
-    // if the sim has not been asked yet to stop
-    if (!env->getStopSimulationFlag() && !exitOmnetpp())
-        event->ignore();
+    Qtenv::eState state = env->getSimulationState();
 
+    // 0 = no dialog, no finish, quit
+    // 1 = no dialog, finish, quit
+    // 2 = yes/no dialog, no finish, maybe quit
+    // 3 = yes/no/cancel dialog, maybe [maybe finish, quit]
+    // 4 = yes/no/cancel dialog with warning, maybe [maybe finish, quit]
+    int action = 0;
+
+    bool confirmExit = env->getPref("confirm-exit", true).toBool();
+
+    // First, deciding what to do
+    switch (state) {
+        case Qtenv::SIM_NONET: // if there is no network, we simply quit
+            action = 0;
+            break;
+        case Qtenv::SIM_NEW: // if there's a network, but not started, always finishing and exiting
+            action = 1;
+            break;
+        case Qtenv::SIM_READY: // during simulation (running or paused), either ask to finish, or just do it
+        case Qtenv::SIM_RUNNING:
+        case Qtenv::SIM_BUSY:
+        case Qtenv::SIM_TERMINATED: // <- this can't happen by the way, we always finish() after termination right away
+            action = confirmExit ? 3 : 1;
+            break;
+        case Qtenv::SIM_FINISHCALLED: // if the simulation ended properly, a simple confirmation or nothing
+            action = confirmExit ? 2 : 0;
+            break;
+        case Qtenv::SIM_ERROR: // after an error, we either ask to finish, with a warning, or not do anything
+            action = confirmExit ? 4 : 0;
+            break;
+
+        default:
+            ASSERT(false);
+            break;
+    }
+
+    // Then acting on our decision:
+    switch (action) {
+        case 0:
+            // nothing to do
+            break;
+        case 1:
+            env->finishSimulation();
+            break;
+        case 2: // simple confirmation
+            if (!env->askYesNo("Do you really want to quit?")) {
+                event->ignore(); // answer was no, canceling quit
+                return;
+            }
+            break;
+        case 3: // dialog with 3 choices, either with warning, or a tame one
+        case 4: {
+            QString question3 = "Do you want to conclude the simulation by invoking finish() before exiting?";
+            QString question4 = question3 + "\nThis can be dangerous, as the simulation was stopped with an error, so it might be in an inconsistent state!";
+            QMessageBox::StandardButtons buttons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+
+            int ans = (action == 3)
+                    ? QMessageBox::question(this, "Question", question3, buttons, QMessageBox::Yes)
+                    : QMessageBox::warning(this, "Warning", question4, buttons, QMessageBox::Yes);
+
+            if (ans == QMessageBox::Yes)
+                env->finishSimulation();
+
+            if (ans == QMessageBox::Cancel) {
+                event->ignore();
+                return;
+            }
+            break;
+        }
+        default: // what in the...
+            ASSERT(false);
+            break;
+    }
+
+    // finally letting it go, if we got here anyway
     emit closed();
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::runSimulation(RunMode runMode)
