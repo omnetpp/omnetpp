@@ -216,7 +216,6 @@ void SubmoduleItem::realignAnchoredItems()
 void SubmoduleItem::updateShapeItem()
 {
     if (shapeItem) {
-        shapeItem->setZValue(-1); // shape always below icon
         shapeItem->setBrush(shapeFillColor.isValid() ? shapeFillColor : QColor("#8080ff"));
         auto pen = shapeOutlineWidth == 0
                      ? Qt::NoPen
@@ -393,6 +392,7 @@ void SubmoduleItem::setImage(QImage *image)
         if (image) {
             imageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*image), this);
             imageItem->setOffset(-image->width() / 2.0f, -image->height() / 2.0f);
+            imageItem->setZValue(1); // icon always on top of shape
             colorizeEffect = new ColorizeEffect();
             imageItem->setGraphicsEffect(colorizeEffect);
             colorizeEffect->setSmooth(true);
@@ -429,6 +429,7 @@ void SubmoduleItem::setDecoratorImage(QImage *decoratorImage)
             // It is easier to position using its (almost) upper right corner.
             // The 2 pixel offset moves it a bit to the right and up.
             decoratorImageItem->setOffset(-decoratorImage->width() + 2, -2);
+            decoratorImageItem->setZValue(2); // decorator icon always on top of icon
             decoratorColorizeEffect = new ColorizeEffect();
             decoratorColorizeEffect->setSmooth(true);
             decoratorImageItem->setGraphicsEffect(decoratorColorizeEffect);
