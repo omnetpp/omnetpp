@@ -358,11 +358,9 @@ QImage ModuleInspector::getScreenshot()
 
 #ifdef WITH_OSG
     if (stackedLayout->currentWidget() == osgViewer) {
-
-        osgViewer->getView()->requestRedraw();
-        OsgViewer::getViewer()->frame();
-        osgViewer->update();
-
+        // QOpenGLWidget can't be simply grab()-bed,
+        // so we have to stitch the image back together
+        // after capturing the off-screen framebuffer.
         QImage osgImage = osgViewer->grabFramebuffer();
         QPainter p;
         p.begin(&image);
