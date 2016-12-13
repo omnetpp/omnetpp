@@ -1919,7 +1919,44 @@ void Qtenv::loadImage(const char *fileName, const char *imageName)
 
 cFigure::Rectangle Qtenv::getSubmoduleBounds(const cModule *submodule)
 {
-    QRectF r = moduleLayouter.getModuleRectangle(const_cast<cModule *>(submodule));
+    cObject *parentObject = static_cast<cObject*>(submodule->getParentModule());
+
+    // If no inspector inspects the parent of submodule, will fall back to these, which is reasonable methinks.
+    double zoomFactor = 1.0;
+    double iconScale = 1.0;
+
+    // This is the inspector (if any) that will convert the submodule rectangle
+    // into canvas coordinates. It will only be guaranteed to be correct when
+    // viewed in this inspector, since the zoom level and the icon scaling
+    // both affect the submodule rectangle relative to the canvas, and they
+    // are not shared among different inspector instances viewing the same
+    // module, in contrast with the layout, which is global (now...).
+    // All other inspectors will display the canvas the same way as this one,
+    // except the submodule boundary in those will not necessarily match up with
+    // the rectangle on the canvas that we're going to return from here right now.
+    // The one embedded module inspector takes precedence, but if it's not
+    // suitable, we try finding another one, a top-level.
+    ModuleInspector *primaryInsp = (mainNetworkView->getObject() == parentObject)
+            ? mainNetworkView
+            : dynamic_cast<ModuleInspector*>(findFirstInspector(parentObject, INSP_GRAPHICAL, true));
+
+    if (primaryInsp) {
+        zoomFactor = primaryInsp->getZoomFactor();
+        iconScale = primaryInsp->getImageSizeFactor();
+    }
+
+    // If we passed these two parameters directly to the layouter, it would return the rectangle in scene
+    // coordinates. (This is really useful for us to draw the non-canvas parts of the network, like
+    // connections and messages, but not quite for the model.) Those are the ones that get bigger when
+    // zoomed in, unlike canvas coords, which stay the same, only the "output" is transformed with zoom.
+    // So to make both the size and the position match perfectly, we have to pretend that there is no zoom.
+    // This way when the rectangle is mapped back again from canvas coordinates into scene coordinates with a
+    // simple scaling by the zoom factor (in both position and size of course), everyone will be happy.
+    // Note though that the ratio of the icon factor and the zoom factor is still important, because the submodule
+    // can have the appearance of one or both of an icon and a shape (box or oval). The shape scales only with
+    // zoom, so dividing that with the zoom level obviously gives one, but the icon is scaled independently,
+    // with the icon size factor, so that's why the division is there.
+    QRectF r = moduleLayouter.getModuleRectangle(const_cast<cModule *>(submodule), 1.0, iconScale / zoomFactor);
     return cFigure::Rectangle(r.x(), r.y(), r.width(), r.height());
 }
 
