@@ -38,6 +38,11 @@ namespace qtenv {
 
 bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
 {
+    // if no more events, we lie that we reached it, so we notice that it's all over when we
+    // try to execute the non-existent next event.
+    if (!sim->guessNextEvent())
+        return true;
+
     if (!animationTimer.isValid())
         animationTimer.start();
 
@@ -218,7 +223,9 @@ void DisplayUpdateController::skipHold()
 void DisplayUpdateController::skipToNextEvent()
 {
     skipHold();
-    sim->setSimTime(sim->guessNextSimtime());
+    simtime_t nextGuess = sim->guessNextSimtime();
+    if (nextGuess > simTime()) // is -1 if no more events...
+        sim->setSimTime(nextGuess);
 }
 
 bool DisplayUpdateController::rightBeforeEvent()
@@ -244,6 +251,11 @@ void DisplayUpdateController::stopVideoRecording()
 
 bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
 {
+    // if no more events, we lie that we reached it, so we notice that it's all over when we
+    // try to execute the non-existent next event.
+    if (!sim->guessNextEvent())
+        return true;
+
     // in animationSpeed
     double frameDelta = 1.0 / videoFps;
 

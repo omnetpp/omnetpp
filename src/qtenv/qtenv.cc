@@ -890,7 +890,9 @@ bool Qtenv::doRunSimulation()
             uiUpdateTimer.restart();
         }
 
-        if (runMode == RUNMODE_STEP && !doNextEventInStep)
+        // if there is no event, we have to let the control through, so we will try to do it
+        // then terminate the simulation with an exception.
+        if (runMode == RUNMODE_STEP && !doNextEventInStep && sim->guessNextEvent())
             break;
 
         // query which module will execute the next event
