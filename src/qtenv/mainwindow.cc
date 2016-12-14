@@ -481,8 +481,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 
     // finally letting it go, if we got here anyway
-    emit closed();
+    env->setStopSimulationFlag();
     QMainWindow::closeEvent(event);
+    emit closed();
 }
 
 void MainWindow::runSimulation(RunMode runMode)
