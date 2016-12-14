@@ -616,8 +616,8 @@ void Qtenv::doRun()
             windowTitlePrefix = tmp;
         }
 
-        displayUpdateController = new DisplayUpdateController();
         messageAnimator = new MessageAnimator();
+        displayUpdateController = new DisplayUpdateController();
 
         mainWindow = new MainWindow(this);
 

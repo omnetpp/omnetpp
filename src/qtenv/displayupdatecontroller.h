@@ -51,6 +51,7 @@ class QTENV_API DisplayUpdateController : public QObject
     // simple shortcuts
     cSimulation *sim = getSimulation();
     Qtenv *qtenv = getQtenv();
+    MessageAnimator *msgAnim = qtenv->getMessageAnimator();
 
     // factory defaults
     RunModeProfile runProfile  = {0.8,   2.0, 60.0, 1e-2, 1e2, 1,    1e-15, 1e6};

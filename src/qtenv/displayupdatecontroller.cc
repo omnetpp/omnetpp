@@ -89,7 +89,7 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
         }
 
         double holdTime = qtenv->getRemainingAnimationHoldTime();
-        if ((holdTime > 0 || qtenv->getMessageAnimator()->isHoldActive())
+        if ((holdTime > 0 || msgAnim->isHoldActive())
                 && runMode != RUNMODE_FAST) { // we are on a hold, simTime is paused
             animationTime += std::min(std::max(0.0, holdTime), (now - lastStepAt) * currentProfile->playbackSpeed);
             adjustFrameRate(renderFrame(false));
@@ -159,7 +159,7 @@ DisplayUpdateController::DisplayUpdateController()
 
 double DisplayUpdateController::getAnimationSpeed() const
 {
-    double animSpeed = qtenv->getMessageAnimator()->getAnimationSpeed();
+    double animSpeed = msgAnim->getAnimationSpeed();
     double modelSpeed = qtenv->computeModelAnimationSpeedRequest();
 
     if (modelSpeed == 0.0)
@@ -178,7 +178,7 @@ double DisplayUpdateController::getAnimationSpeed() const
 
 double DisplayUpdateController::getAnimationHoldEndTime() const
 {
-    return std::max(qtenv->getMessageAnimator()->getAnimationHoldEndTime(),
+    return std::max(msgAnim->getAnimationHoldEndTime(),
             qtenv->computeModelHoldEndTime());
 }
 
@@ -249,7 +249,7 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
 
         double holdTime = qtenv->getRemainingAnimationHoldTime();
 
-        if (holdTime > 0 || qtenv->getMessageAnimator()->isHoldActive()) { // we are on a hold, simTime is paused
+        if (holdTime > 0 || msgAnim->isHoldActive()) { // we are on a hold, simTime is paused
             animationTime += frameDelta; // TODO account for the cases where there is less hold left than frameDelta
             renderFrame(true);
         }
@@ -441,7 +441,7 @@ double DisplayUpdateController::renderFrame(bool record)
     if (dialog)
         dialog->displayMetrics();
 
-    qtenv->getMessageAnimator()->update();
+    msgAnim->update();
 
     qtenv->updateSimtimeDisplay();
     qtenv->updateStatusDisplay();
