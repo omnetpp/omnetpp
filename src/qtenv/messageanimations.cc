@@ -914,7 +914,8 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
                 dest = QPointF(src.x() + src.y()  / 4 + 4, -16);
 
             auto connectionItem = new ConnectionItem(layer);
-            connectionItem->setVisible(state == WAITING || state == PLAYING);
+            connectionItem->setVisible(getQtenv()->opt->showSendDirectArrows
+                                       && (state == WAITING || state == PLAYING));
             connectionItem->setSource(src);
             connectionItem->setDestination(dest);
             connectionItem->setArrowEnabled(false);
