@@ -117,7 +117,7 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     connect(simTimeLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onSimTimeLabelContextMenuRequested(QPoint)));
 
     eventNumLabel = new QLabel();
-    eventNumLabel->setToolTip("Event number of last event");
+    eventNumLabel->setToolTip("Event number");
     eventNumLabel->setFrameStyle(ui->nextModuleLabel->frameStyle());
     eventNumLabel->setAlignment(Qt::Alignment(Qt::AlignVCenter | Qt::AlignRight));
     eventNumLabel->setObjectName("eventNumLabel");
@@ -258,11 +258,14 @@ void MainWindow::updateEventNumLabel()
             break;
     }
 
+    double showNextEvent = env->getDisplayUpdateController()->rightBeforeEvent();
+
     eventnumber_t numToShow = getSimulation()->getEventNumber() + (showNextEvent ? 1 : 0);
     const char *prefix = showNextEvent ? "next: " : "last: ";
     QString eventNumText = QString("<font color=grey><small>%1</small>#</font>").arg(prefix)
             + opp_format(numToShow, digitSeparator).c_str();
     eventNumLabel->setText(eventNumText);
+    eventNumLabel->setStyleSheet(showNextEvent ? "" : "QLabel { background: palette(alternate-base); }");
 }
 
 void MainWindow::onEventNumLabelGroupingTriggered()
