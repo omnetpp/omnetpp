@@ -62,6 +62,7 @@ public:
     void updateSimtimeDisplay();
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
+    void setShowNextEvent(bool next) { showNextEvent = next; }
 
     QWidget *getMainInspectorArea() { return ui->mainArea; }
     QWidget *getObjectTreeArea() { return ui->treeView; }
@@ -173,6 +174,9 @@ private:
     QList<int> defaultTimeLineSize;
     FileEditor *fileEditor;
     QLabel *simTimeLabel, *eventNumLabel;
+    // if true, the event number label will display "next: " and the last event number plus one
+    // otherwise "last: " and the last event number
+    bool showNextEvent = false;
     bool simTimeUnits;
 
     enum DigitGrouping

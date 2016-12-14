@@ -877,6 +877,8 @@ bool Qtenv::doRunSimulation()
         if (runMode == RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
 
+        mainWindow->setShowNextEvent(false);
+
         displayUpdateController->setRunMode(runMode);
         bool reached = displayUpdateController->animateUntilNextEvent();
         if (!reached)
@@ -887,8 +889,10 @@ bool Qtenv::doRunSimulation()
             uiUpdateTimer.restart();
         }
 
-        if (runMode == RUNMODE_STEP && !doNextEventInStep)
+        if (runMode == RUNMODE_STEP && !doNextEventInStep) {
+            mainWindow->setShowNextEvent(true);
             break;
+        }
 
         // query which module will execute the next event
         cEvent *event = sim->takeNextEvent();
