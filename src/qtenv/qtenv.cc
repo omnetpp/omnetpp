@@ -936,14 +936,17 @@ bool Qtenv::doRunSimulation()
         cLogProxy::flushLastLine();
 
         // exit conditions
-        if (untilmodule_reached)
-            break;
         if (stopSimulationFlag)
             break;
+
         if (runUntil.time > SIMTIME_ZERO && sim->guessNextSimtime() >= runUntil.time)
+            break; // TODO: animate until the target simtime
+
+        if (untilmodule_reached // run until module or message reached:
+                || (runUntil.eventNumber > 0 && sim->getEventNumber() + 1 >= runUntil.eventNumber)) {
+            displayUpdateController->animateUntilNextEvent();
             break;
-        if (runUntil.eventNumber > 0 && sim->getEventNumber() + 1 >= runUntil.eventNumber)
-            break;
+        }
 
         checkTimeLimits();
     }
