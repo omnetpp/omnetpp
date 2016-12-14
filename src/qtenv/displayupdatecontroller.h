@@ -94,6 +94,7 @@ class QTENV_API DisplayUpdateController : public QObject
 
     // this is called by animateUntilNextEvent if recordingVideo is true
     bool renderUntilNextEvent(bool onlyHold); // returns true if really reached the time for the next event, false if interrupted/stopped before
+    // will delegate to renderUntilNextEvent if recordingVideo is true
     bool animateUntilNextEvent(bool onlyHold); // returns true if really reached the time for the next event, false if interrupted/stopped before
 
     void setTargetFps(double fps); // obeys limits
@@ -113,13 +114,15 @@ public:
 
     void setRunMode(RunMode value);
 
-    // will delegate to renderUntilNextEvent if recordingVideo is true
     // returns true if really reached the time for the next event, false if interrupted/stopped before
     bool animateUntilNextEvent() { return animateUntilNextEvent(false); }
     bool animateUntilHoldEnds() { return animateUntilNextEvent(true); }
 
-    void skipToNextEvent();
-    void skipHold();
+    void skipHold(); // sets animationTime to the end of the current hold, effectively ending it
+    void skipToNextEvent(); // the above, plus sets simTime to that of the next event
+
+    // true if nothing (builtin anim, model hold, simtime anim) is "waiting to happen" before the next event
+    bool rightBeforeEvent();
 
     void startVideoRecording();
     void stopVideoRecording();

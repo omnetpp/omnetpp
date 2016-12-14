@@ -210,15 +210,22 @@ void DisplayUpdateController::setRunMode(RunMode value)
     emit playbackSpeedChanged(getPlaybackSpeed());
 }
 
+void DisplayUpdateController::skipHold()
+{
+    animationTime = std::max(animationTime, getAnimationHoldEndTime());
+}
+
 void DisplayUpdateController::skipToNextEvent()
 {
     skipHold();
     sim->setSimTime(sim->guessNextSimtime());
 }
 
-void DisplayUpdateController::skipHold()
+bool DisplayUpdateController::rightBeforeEvent()
 {
-    animationTime = std::max(animationTime, getAnimationHoldEndTime());
+    return !msgAnim->isHoldActive()
+            && qtenv->computeModelHoldEndTime() <= animationTime
+            && simTime() == sim->guessNextSimtime();
 }
 
 void DisplayUpdateController::startVideoRecording()
