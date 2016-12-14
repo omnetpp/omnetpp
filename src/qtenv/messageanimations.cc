@@ -700,7 +700,6 @@ void SendOnConnAnimation::update()
         t2 = clip(0.0, t2, t1);
 
         for (auto p : messageItems) {
-            p.second->setVisible(simTime() > start);
             QLineF line = p.first->getConnectionLine(gate);
             line = QLineF(line.pointAt(t1), line.pointAt(t2));
             p.second->setLine(line);
