@@ -411,7 +411,7 @@ simsignal_t cComponent::registerSignal(const char *name)
         signalNameMapping->signalIDToName[signalID] = name;
         if (cStaticFlag::insideMain()) { // otherwise signalListenerCount[] may not have been initialized by C++ yet
             signalListenerCount.push_back(0);
-            ASSERT(signalListenerCount.size() == lastSignalID+1);
+            ASSERT((int)signalListenerCount.size() == lastSignalID+1);
         }
         return signalID;
     }
@@ -757,7 +757,7 @@ void cComponent::releaseLocalListeners()
 const std::vector<cResultRecorder*>& cComponent::getResultRecorders() const
 {
     // return cached copy if exists
-    for (int i = 0; i < cachedResultRecorderLists.size(); i++)
+    for (size_t i = 0; i < cachedResultRecorderLists.size(); i++)
         if (cachedResultRecorderLists[i]->component == this)
             return cachedResultRecorderLists[i]->recorders;
 
@@ -795,7 +795,7 @@ void cComponent::collectResultRecorders(std::vector<cResultRecorder*>& result) c
 void cComponent::invalidateCachedResultRecorderLists()
 {
     int n = cachedResultRecorderLists.size();
-    for (unsigned int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
         delete cachedResultRecorderLists[i];
     cachedResultRecorderLists.clear();
 }

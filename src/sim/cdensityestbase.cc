@@ -360,7 +360,7 @@ void cDensityEstBase::loadFromFile(FILE *f)
 
     int tmp;
     freadvarsf(f, "%d\t #= transformed", &tmp); transformed = tmp;
-    freadvarsf(f, "%d\t #= range_mode", &rangeMode);
+    freadvarsf(f, "%d\t #= range_mode", (int *)&rangeMode);
     freadvarsf(f, "%lg\t #= range_ext_factor", &rangeExtFactor);
     freadvarsf(f, "%lg %lg\t #= range", &rangeMin, &rangeMax);
     freadvarsf(f, "%lu %lu\t #= cell_under, cell_over", &cellUnder, &cellOver);

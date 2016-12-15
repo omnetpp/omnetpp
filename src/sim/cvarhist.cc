@@ -434,7 +434,7 @@ void cVarHistogram::loadFromFile(FILE *f)
 {
     cHistogramBase::loadFromFile(f);
 
-    freadvarsf(f, "%d\t #= transform_type", &transformType);
+    freadvarsf(f, "%d\t #= transform_type", (int *)&transformType);
     freadvarsf(f, "%u\t #= max_num_cells", &maxNumCells);
 
     // increase allocated size of cellv[] to maxNumCells

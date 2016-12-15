@@ -14,7 +14,7 @@ L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-COPTS=-Wno-unused-function $(CFLAGS) $(INCL_FLAGS)
+COPTS=-Wno-sign-compare -Wno-unused-function $(CFLAGS) $(INCL_FLAGS)
 IMPLIBS=
 
 OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
