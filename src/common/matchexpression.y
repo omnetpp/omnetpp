@@ -18,10 +18,8 @@
 %token STRINGLITERAL
 %token OR_ AND_ NOT_   /* note: cannot use %left/%right because of implicit "or" operator */
 
-// for bison 2.3
-%pure_parser
-
 // for bison 3.x
+%pure-parser
 %lex-param {void *statePtr}
 %parse-param {void *statePtr}
 

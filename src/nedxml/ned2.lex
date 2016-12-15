@@ -223,7 +223,7 @@ using namespace omnetpp::nedxml;
 "<="                     { countChars(); return LE; }
 ">="                     { countChars(); return GE; }
 
-"\xEF\xBB\xBF"           { /* UTF-8 BOM mark, ignore */ }
+"\\xEF\\xBB\\xBF"           { /* UTF-8 BOM mark, ignore */ }
 {S}                      { countChars(); }
 .                        { countChars(); return INVALID_CHAR; }
 

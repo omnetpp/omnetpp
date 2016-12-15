@@ -111,7 +111,6 @@ using namespace omnetpp::common;
 "%"                      { countChars(); return '%'; }
 "<"                      { countChars(); return '<'; }
 ">"                      { countChars(); return '>'; }
-"="                      { countChars(); return '='; }
 
 "=="                     { countChars(); return EQ_; }
 "!="                     { countChars(); return NE_; }
