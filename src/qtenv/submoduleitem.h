@@ -68,6 +68,8 @@ protected slots:
     void onPositionChanged(); // keeping the range items underneath ourselves
 
 public:
+    static const char *const DEFAULT_ICON;
+
     enum Shape {
         SHAPE_NONE,
         SHAPE_OVAL,

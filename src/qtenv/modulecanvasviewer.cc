@@ -543,7 +543,7 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
 
 QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
 {
-    return getQtenv()->getModuleLayouter()->getModulePosition(mod) * zoomFactor;
+    return getQtenv()->getModuleLayouter()->getModulePosition(mod, zoomFactor);
 }
 
 QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
@@ -551,9 +551,7 @@ QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
     if (submoduleGraphicsItems.count(mod) == 0) {
         return compoundModuleItem->getArea();
     }
-
-    return submoduleGraphicsItems[mod]->boundingRect()
-                   .translated(getSubmodCoords(mod));
+    return getQtenv()->getModuleLayouter()->getModuleRectangle(mod, zoomFactor, imageSizeFactor);
 }
 
 QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)

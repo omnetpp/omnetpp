@@ -551,6 +551,11 @@ QPointF ModuleInspector::getSubmodCoords(cModule *mod)
     return canvasViewer->getSubmodCoords(mod);
 }
 
+QRectF ModuleInspector::getSubmodRect(cModule *mod)
+{
+    return canvasViewer->getSubmodRect(mod);
+}
+
 QLineF ModuleInspector::getConnectionLine(cGate *gate)
 {
     return canvasViewer->getConnectionLine(gate);

@@ -33,6 +33,8 @@ namespace qtenv {
 
 using namespace omnetpp::common;
 
+const char *const SubmoduleItem::DEFAULT_ICON = "block/process";
+
 void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
 {
     si->setName(mod->getName());
@@ -61,7 +63,7 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     si->setWidth(shapeWidth);
     si->setHeight(shapeHeight);
 
-    QString shapeName = QString(ds.getTagArg("b", 2)).toLower();
+    QString shapeName = QString(ds.getTagArg("b", 2));
 
     auto shape = (ds.getNumArgs("b") <= 0)
                    ? SubmoduleItem::SHAPE_NONE
@@ -79,7 +81,7 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
     const char *imageName = ds.getTagArg("i", 0);
 
     if (!imageName[0] && shape == SubmoduleItem::SHAPE_NONE)
-        imageName = "block/process";
+        imageName = SubmoduleItem::DEFAULT_ICON;
 
     if (imageName[0]) {
         auto image = getQtenv()->icons.getImage(imageName, ds.getTagArg("is", 0));

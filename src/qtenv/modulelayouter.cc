@@ -23,6 +23,7 @@
 #include "layout/forcedirectedgraphlayouter.h"
 #include "layouterenv.h"
 #include "mainwindow.h"
+#include "submoduleitem.h"  // for DEFAULT_ICON
 
 #define emit
 
@@ -30,7 +31,7 @@ namespace omnetpp {
 using namespace layout;
 namespace qtenv {
 
-void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, bool &obeysLayout, double &x, double &y, double &sx, double &sy)
+void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, bool &obeysLayout, double &x, double &y, double &sx, double &sy, double zoomFactor, double imageSizeFactor)
 {
     const cDisplayString blank;
     const cDisplayString& ds = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString() : blank;
@@ -58,22 +59,30 @@ void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, b
         }
     }
 
+    //TODO do it like in submoduleitem.cc
+
     // getting the "image" size
     if (ds.containsTag("i")) {
         const char *imgName = ds.getTagArg("i", 0);
-        const char *imgSize = ds.getTagArg("is", 0);
-        if (imgName && *imgName) {
+        if (*imgName) {
             // will return the unknownImage if imgName not found
-            auto img = getQtenv()->icons.getImage(imgName, imgSize);
-            iconsx = img->width();
+            auto img = getQtenv()->icons.getImage(imgName, ds.getTagArg("is", 0));
+            iconsx = img->width(); // note: no need to take image scaling factor and zoom level into account
             iconsy = img->height();
         }
     }
     else if (!ds.containsTag("b")) { // if no image nor shape size is specified, using the default submodule icon
-        auto img = getQtenv()->icons.getImage("block/process");
+        auto img = getQtenv()->icons.getImage(SubmoduleItem::DEFAULT_ICON, ds.getTagArg("is", 0));
         iconsx = img->width();
         iconsy = img->height();
     }
+
+    // applying the scaling factors
+    if (iconsx != -1) iconsx *= imageSizeFactor;
+    if (iconsy != -1) iconsy *= imageSizeFactor;
+
+    if (shapesx != -1) shapesx *= zoomFactor;
+    if (shapesy != -1) shapesy *= zoomFactor;
 
     // if no shape, then "ignoring" it
     if (shapesx == -1) { // boxsx and boxsy are both defined or both undefined.
@@ -139,6 +148,9 @@ void ModuleLayouter::getSubmoduleCoords(cModule *submod, bool &explicitcoords, b
     else {
         throw cRuntimeError("Invalid layout '%s' in 'p' tag of display string \"%s\"", layout, ds.str());
     }
+
+    x *= zoomFactor;
+    y *= zoomFactor;
 }
 
 void ModuleLayouter::clearLayout(cModule *module)
@@ -320,10 +332,22 @@ void ModuleLayouter::ensureLayouted(cModule *module)
         emit moduleLayoutChanged(module);
 }
 
-QPointF ModuleLayouter::getModulePosition(cModule *module)
+QPointF ModuleLayouter::getModulePosition(cModule *module, double zoomFactor)
 {
     auto it = modulePositions.find(module);
-    return it == modulePositions.end() ? QPointF(NAN, NAN) : it->second;
+    return it == modulePositions.end() ? QPointF(NAN, NAN) : (it->second * zoomFactor);
+}
+
+QRectF ModuleLayouter::getModuleRectangle(cModule *module, double zoomFactor, double imageSizeFactor)
+{
+    bool xplicit, obeys;
+    double x, y, sx, sy;
+    getSubmoduleCoords(module, xplicit, obeys, x, y, sx, sy, zoomFactor, imageSizeFactor);
+    // using only the size from the above, position from our layouted map
+
+    QPointF center = getModulePosition(module, zoomFactor);
+
+    return QRectF(center.x() - sx/2, center.y() - sy/2, sx, sy);
 }
 
 void ModuleLayouter::fullRelayout(cModule *module)

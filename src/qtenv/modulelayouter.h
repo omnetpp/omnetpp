@@ -38,9 +38,10 @@ class ModuleLayouter : public QObject {
     std::unordered_map<const cModule *, QPointF> modulePositions;
 
     // Extracts initial (fixed) coordinates from the displaystring of the module,
-    // along with some other information about it. Used to
+    // along with some other information about it. Used to feed the layouter, and
+    // to provide positions/rectangles for the animator/environment/model.
     void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeysLayout,
-        double& x, double& y, double& sx, double& sy);
+        double& x, double& y, double& sx, double& sy, double zoomFactor = 1.0, double imageSizeFactor = 1.0);
 
 signals:
     void layoutVisualisationStarts(cModule *module, QGraphicsScene *layoutingScene);
@@ -63,7 +64,8 @@ public:
     void loadSeeds();
     void saveSeeds();
 
-    QPointF getModulePosition(cModule *module);
+    QPointF getModulePosition(cModule *module, double zoomFactor = 1.0); // the center of the shape/icon. (NAN,NAN) if not yet layouted
+    QRectF getModuleRectangle(cModule *module, double zoomFactor = 1.0, double imageSizeFactor = 1.0); // the bounding box of the shape and/or icon. full of NANs if not yet layouted
 };
 
 } // namespace qtenv

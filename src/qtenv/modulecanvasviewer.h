@@ -157,7 +157,7 @@ public:
 
     void bubble(cComponent *subcomponent, const char *text);
 
-    QPointF getSubmodCoords(cModule *mod);
+    QPointF getSubmodCoords(cModule *mod); // gets the coords from the layouter! might return (NAN,NAN) if not yet layouted
     // also accepts the inspected module, returns the whole rectangle for it
     QRectF getSubmodRect(cModule *mod);
     QLineF getConnectionLine(cGate *gate);

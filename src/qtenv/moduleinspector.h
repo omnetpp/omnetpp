@@ -169,6 +169,7 @@ public:
 
     GraphicsLayer *getAnimationLayer();
     QPointF getSubmodCoords(cModule *mod);
+    QRectF getSubmodRect(cModule *mod);
     QLineF getConnectionLine(cGate *gate);
 };
 
