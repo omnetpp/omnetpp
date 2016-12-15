@@ -752,7 +752,8 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     stopSimulationFlag = false;
     simulationState = SIM_RUNNING;
-    doNextEventInStep = true;
+    // if there's some animating to do before the event, only do that if stepping.
+    doNextEventInStep = displayUpdateController->rightBeforeEvent();
 
     updateStatusDisplay();
     QCoreApplication::processEvents();
@@ -918,11 +919,11 @@ bool Qtenv::doRunSimulation()
 
         speedometer.addEvent(sim->getSimTime());
 
+        doNextEventInStep = false;
+
         ASSERT(simTime() <= event->getArrivalTime());
         // do a simulation step
         sim->executeEvent(event);
-
-        doNextEventInStep = false;
 
         if (animating)
             performAnimations();
@@ -1144,6 +1145,7 @@ void Qtenv::newNetwork(const char *networkname)
     mainInspector->setObject(module);
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
+    displayUpdateController->skipToNextEvent(); // should be changed to animate at some point...
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
     updateNetworkRunDisplay();
@@ -1202,6 +1204,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
 
     messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
+    displayUpdateController->skipToNextEvent(); // should be changed to animate at some point...
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
     updateNetworkRunDisplay();
