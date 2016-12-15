@@ -159,6 +159,11 @@ void ModuleLayouter::clearLayout(cModule *module)
         modulePositions.erase(*it);
 }
 
+void ModuleLayouter::forgetPosition(cModule *submodule)
+{
+    modulePositions.erase(submodule);
+}
+
 void ModuleLayouter::incrementLayoutSeed(cModule *module)
 {
     std::string fullName = getObjectFullTypeName(module);

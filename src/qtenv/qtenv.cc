@@ -1783,6 +1783,9 @@ void Qtenv::moduleDeleted(cModule *module)
 
     componentHistory.componentDeleted(module);
 
+    moduleLayouter.clearLayout(module);
+    moduleLayouter.forgetPosition(module);
+
     cModule *mod = module->getParentModule();
 
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {

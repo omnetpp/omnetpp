@@ -53,6 +53,7 @@ signals:
 
 public slots:
     void clearLayout(cModule *module);
+    void forgetPosition(cModule *submodule);
     // pointer only for convenience, the seed is shared for all instances of the class!
     void incrementLayoutSeed(cModule *module);
     void ensureLayouted(cModule *module); // with the same seed, reuses previous positions if any
