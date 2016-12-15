@@ -770,7 +770,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
                 cont = doRunSimulation();
         }
         if (runMode != RUNMODE_NORMAL) { // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
-            messageAnimator->update();
+            messageAnimator->updateAnimations();
             callRefreshDisplay();
         }
         simulationState = SIM_READY;
@@ -1366,7 +1366,7 @@ void Qtenv::createSnapshot(const char *label)
 void Qtenv::performAnimations()
 {
     displayUpdateController->setRunMode(runMode);
-    messageAnimator->update();
+    messageAnimator->updateAnimations();
     displayUpdateController->animateUntilHoldEnds();
 }
 
@@ -1376,7 +1376,7 @@ void Qtenv::endAnimations()
 
     messageAnimator->skipCurrentHoldingAnims();
     displayUpdateController->skipHold();
-    messageAnimator->update();
+    messageAnimator->updateAnimations();
 }
 
 std::string Qtenv::getWindowTitle()

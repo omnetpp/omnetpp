@@ -98,7 +98,7 @@ public:
     // DisplayUpdateController can query what the animations requested using this:
     double getAnimationSpeed();
 
-    void update();
+    void updateAnimations();
     void redrawMessages();
     void skipCurrentHoldingAnims();
 

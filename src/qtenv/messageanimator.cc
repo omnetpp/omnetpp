@@ -139,7 +139,7 @@ void MessageAnimator::methodcallEnd()
 
     currentMethodCall = parent;
 
-    update();
+    updateAnimations();
 }
 
 void MessageAnimator::beginSend(cMessage *msg)
@@ -184,7 +184,7 @@ void MessageAnimator::sendHop(cMessage *msg, cGate *srcGate, bool isLastHop, sim
 void MessageAnimator::endSend(cMessage *msg)
 {
     ASSERT(currentMessageSend);
-    update();
+    updateAnimations();
 
     auto dup = getQtenv()->getLogBuffer()->getLastMessageDup(msg);
     ASSERT(dup);
@@ -205,7 +205,7 @@ void MessageAnimator::endSend(cMessage *msg)
 
     currentMessageSend = nullptr;
     lastHopTime = -1;
-    update();
+    updateAnimations();
 }
 
 void MessageAnimator::deliveryDirect(cMessage *msg)
@@ -253,7 +253,7 @@ void MessageAnimator::setMarkedModule(cModule *mod)
     }
 }
 
-void MessageAnimator::update()
+void MessageAnimator::updateAnimations()
 {
     // Always updating all non-holding animations first.
     for (auto& p : animations)
@@ -393,7 +393,7 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
 
     anim->removeMessagePointer(msg);
 
-    update();
+    updateAnimations();
 }
 
 double MessageAnimator::getAnimationHoldEndTime() const
@@ -460,7 +460,7 @@ void MessageAnimator::addInspector(ModuleInspector *insp)
         p->addToInspector(insp);
     if (deliveries)
         deliveries->addToInspector(insp);
-    update();
+    updateAnimations();
 
     auto marker = new QGraphicsRectItem;
     insp->getAnimationLayer()->addItem(marker);
@@ -476,7 +476,7 @@ void MessageAnimator::updateInspector(ModuleInspector *insp)
         p->updateInInspector(insp);
     if (deliveries)
         deliveries->updateInInspector(insp);
-    update();
+    updateAnimations();
     updateNextEventMarkers();
 }
 
@@ -499,7 +499,7 @@ void MessageAnimator::clearInspector(ModuleInspector *insp)
     delete nextEventMarkers[insp];
     nextEventMarkers.erase(insp);
 
-    update();
+    updateAnimations();
 }
 
 void MessageAnimator::messageDuplicated(cMessage *msg, cMessage *dup)

@@ -460,7 +460,7 @@ double DisplayUpdateController::renderFrame(bool record)
     if (dialog)
         dialog->displayMetrics();
 
-    msgAnim->update();
+    msgAnim->updateAnimations();
 
     qtenv->updateSimtimeDisplay();
     qtenv->updateStatusDisplay();
