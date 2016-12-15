@@ -768,8 +768,10 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
             else
                 cont = doRunSimulation();
         }
-        if (runMode != RUNMODE_NORMAL)  // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
+        if (runMode != RUNMODE_NORMAL) { // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event
+            messageAnimator->update();
             callRefreshDisplay();
+        }
         simulationState = SIM_READY;
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);
     }
