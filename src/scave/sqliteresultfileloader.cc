@@ -219,31 +219,31 @@ void SqliteResultFileLoader::loadHistograms()
     typedef std::map<sqlite3_int64,int> SqliteHistogramIdToHistogramIdx;
     SqliteHistogramIdToHistogramIdx sqliteHistogramIdToHistogramIdx;
 
-    prepareStatement("SELECT histId, runId, moduleName, histName, histCount, "
-            "histMean, histStddev, histSum, histSqrsum, histMin, histMax, "
-            "histWeights, histWeightedSum, histSqrSumWeights, histWeightedSqrSum "
-            "FROM histogram;");
+    prepareStatement("SELECT statId, runId, moduleName, statName, statCount, "
+            "statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
+            "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum "
+            "FROM statistic;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_ROW) {
-            sqlite3_int64 histId = sqlite3_column_int64(stmt, 0);
+            sqlite3_int64 statId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
-            std::string histName = (const char *)sqlite3_column_text(stmt, 3);
-            sqlite3_int64 histCount = sqlite3_column_int64(stmt, 4);
-            //double histMean = sqlite3ColumnDouble(stmt, 5); // can be computed from the others, skip
-            //double histStddev = sqlite3ColumnDouble(stmt, 6); // can be computed from the others, skip
-            double histSum = sqlite3ColumnDouble(stmt, 7);
-            double histSqrsum = sqlite3ColumnDouble(stmt, 8);
-            double histMin = sqlite3ColumnDouble(stmt, 9);
-            double histMax = sqlite3ColumnDouble(stmt, 10);
+            std::string statName = (const char *)sqlite3_column_text(stmt, 3);
+            sqlite3_int64 statCount = sqlite3_column_int64(stmt, 4);
+            //double statMean = sqlite3ColumnDouble(stmt, 5); // can be computed from the others, skip
+            //double statStddev = sqlite3ColumnDouble(stmt, 6); // can be computed from the others, skip
+            double statSum = sqlite3ColumnDouble(stmt, 7);
+            double statSqrsum = sqlite3ColumnDouble(stmt, 8);
+            double statMin = sqlite3ColumnDouble(stmt, 9);
+            double statMax = sqlite3ColumnDouble(stmt, 10);
             //TODO make Scave understand weighted statistics:
-            //double histWeights = sqlite3ColumnDouble(stmt, 11);
-            //double histWeightedsum = sqlite3ColumnDouble(stmt, 12);
-            //double histSqrSumWeights = sqlite3ColumnDouble(stmt, 13);
-            //double histWeightedSqrSum = sqlite3ColumnDouble(stmt, 14);
-            Statistics stat(histCount, histMin, histMax, histSum, histSqrsum);
-            sqliteHistogramIdToHistogramIdx[histId] = resultFileManager->addHistogram(fileRunMap.at(runId), moduleName.c_str(), histName.c_str(), stat, StringMap());
+            //double statWeights = sqlite3ColumnDouble(stmt, 11);
+            //double statWeightedsum = sqlite3ColumnDouble(stmt, 12);
+            //double statSqrSumWeights = sqlite3ColumnDouble(stmt, 13);
+            //double statWeightedSqrSum = sqlite3ColumnDouble(stmt, 14);
+            Statistics stat(statCount, statMin, statMax, statSum, statSqrsum);
+            sqliteHistogramIdToHistogramIdx[statId] = resultFileManager->addHistogram(fileRunMap.at(runId), moduleName.c_str(), statName.c_str(), stat, StringMap());
         }
         else if (resultCode == SQLITE_DONE) {
             break;
@@ -254,18 +254,18 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT histId, runId, attrName, attrValue FROM histattr JOIN histogram USING (histId) ORDER BY runId, histId;");
+    prepareStatement("SELECT statId, runId, attrName, attrValue FROM histattr JOIN statistic USING (statId) ORDER BY runId, statId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_ROW) {
-            sqlite3_int64 histId = sqlite3_column_int64(stmt, 0);
+            sqlite3_int64 statId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             std::string attrName = (const char *)sqlite3_column_text(stmt, 2);
             std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
-            SqliteHistogramIdToHistogramIdx::iterator it = sqliteHistogramIdToHistogramIdx.find(histId);
+            SqliteHistogramIdToHistogramIdx::iterator it = sqliteHistogramIdToHistogramIdx.find(statId);
             if (it == sqliteHistogramIdToHistogramIdx.end())
-                error("Invalid histId in histattr table");
-            HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(histId));
+                error("Invalid statId in histattr table");
+            HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(statId));
             hist.attributes[attrName] = attrValue;
         }
         else if (resultCode == SQLITE_DONE) {
@@ -277,18 +277,18 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT histId, runId, baseValue, cellValue FROM histbin JOIN histogram USING (histId) ORDER BY runId, histId;");
+    prepareStatement("SELECT statId, runId, baseValue, cellValue FROM histbin JOIN statistic USING (statId) ORDER BY runId, statId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_ROW) {
-            sqlite3_int64 histId = sqlite3_column_int64(stmt, 0);
+            sqlite3_int64 statId = sqlite3_column_int64(stmt, 0);
             sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
             double baseValue = sqlite3_column_double(stmt, 2);
             sqlite3_int64 cellValue = sqlite3_column_int64(stmt, 3);
-            SqliteHistogramIdToHistogramIdx::iterator it = sqliteHistogramIdToHistogramIdx.find(histId);
+            SqliteHistogramIdToHistogramIdx::iterator it = sqliteHistogramIdToHistogramIdx.find(statId);
             if (it == sqliteHistogramIdToHistogramIdx.end())
-                error("Invalid histId in histbin table");
-            HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(histId));
+                error("Invalid statId in histbin table");
+            HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(statId));
             hist.addBin(baseValue, cellValue);
         }
         else if (resultCode == SQLITE_DONE) {
