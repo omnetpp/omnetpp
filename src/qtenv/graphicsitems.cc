@@ -288,6 +288,7 @@ void OutlinedTextItem::setText(const QString& text)
     if (text != fillItem->text()) {
         fillItem->setText(text);
         outlineItem->setText(text);
+        prepareGeometryChange();
         update();
     }
 }
@@ -325,6 +326,7 @@ void OutlinedTextItem::setFont(const QFont &font)
 {
     outlineItem->setFont(font);
     fillItem->setFont(font);
+    prepareGeometryChange();
     update();
 }
 
@@ -332,6 +334,7 @@ void OutlinedTextItem::setPen(const QPen& pen)
 {
     if (pen != outlineItem->pen()) {
         outlineItem->setPen(pen);
+        prepareGeometryChange();
         update();
     }
 }
@@ -356,6 +359,7 @@ void OutlinedTextItem::setOffset(const QPointF& offset)
 {
     if (this->offset != offset) {
         this->offset = offset;
+        prepareGeometryChange();
         update();
     }
 }
@@ -364,6 +368,7 @@ void OutlinedTextItem::setHaloEnabled(bool enabled)
 {
     if (enabled != haloEnabled) {
         haloEnabled = enabled;
+        prepareGeometryChange();
         update();
     }
 }

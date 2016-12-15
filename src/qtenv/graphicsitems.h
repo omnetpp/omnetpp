@@ -155,6 +155,7 @@ public:
     void setZoomFactor(double zoomFactor);
 };
 
+// XXX: Why not QGraphicsPathItem ?
 class QTENV_API BubbleItem : public QGraphicsObject {
     Q_OBJECT
 
