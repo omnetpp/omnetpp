@@ -247,10 +247,8 @@ bool MessageAnimator::willAnimate(cMessage *msg)
 
 void MessageAnimator::setMarkedModule(cModule *mod)
 {
-    if (markedModule != mod) {
-        markedModule = mod;
-        updateNextEventMarkers();
-    }
+    markedModule = mod;
+    updateNextEventMarkers();
 }
 
 void MessageAnimator::updateAnimations()
@@ -323,11 +321,20 @@ void MessageAnimator::clearMessages()
 
 void MessageAnimator::updateNextEventMarkers()
 {
+    // Have to add the markers we might have cleared before.
+    for (auto in : getQtenv()->getInspectors())
+        if (auto mi = dynamic_cast<ModuleInspector*>(in))
+            if (!containsKey(nextEventMarkers, mi)) {
+                auto marker = new QGraphicsRectItem;
+                mi->getAnimationLayer()->addItem(marker);
+                nextEventMarkers[mi] = marker;
+            }
+
     for (auto p : nextEventMarkers)
         p.second->setVisible(false);
 
     // this thingy is only needed if animation is going on
-    if (!markedModule || !getQtenv()->opt->showNextEventMarkers)
+    if (!getQtenv()->animating || !markedModule || !getQtenv()->opt->showNextEventMarkers)
         return;
 
     for (auto p : nextEventMarkers) {
@@ -461,11 +468,6 @@ void MessageAnimator::addInspector(ModuleInspector *insp)
     if (deliveries)
         deliveries->addToInspector(insp);
     updateAnimations();
-
-    auto marker = new QGraphicsRectItem;
-    insp->getAnimationLayer()->addItem(marker);
-    nextEventMarkers[insp] = marker;
-
     updateNextEventMarkers();
 }
 

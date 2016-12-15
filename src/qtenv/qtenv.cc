@@ -798,6 +798,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     runMode = RUNMODE_NOT_RUNNING;
     displayUpdateController->setRunMode(runMode);
+    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
     if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
@@ -1148,11 +1149,11 @@ void Qtenv::newNetwork(const char *networkname)
     auto module = getSimulation()->getSystemModule();
     mainNetworkView->setObject(module);
     mainInspector->setObject(module);
-    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
     displayUpdateController->skipToNextEvent(); // should be changed to animate at some point...
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
+    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
     updateNetworkRunDisplay();
     updateStatusDisplay();
     callRefreshInspectors();
@@ -1207,11 +1208,10 @@ void Qtenv::newRun(const char *configname, int runnumber)
     mainNetworkView->setObject(module);
     mainInspector->setObject(module);
 
-    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
-
     displayUpdateController->skipToNextEvent(); // should be changed to animate at some point...
     animating = true;  // affects how network graphics is drawn!
     messageAnimator->redrawMessages();
+    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
     updateNetworkRunDisplay();
     updateStatusDisplay();
     callRefreshInspectors();
