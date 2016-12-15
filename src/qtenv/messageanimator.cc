@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <omnetpp/cfutureeventset.h>
 #include <omnetpp/cmessage.h>
+#include <omnetpp/csimplemodule.h>
 #include <utility>
 #include <common/stlutil.h>
 #include <memory>
@@ -240,6 +241,14 @@ bool MessageAnimator::willAnimate(cMessage *msg)
     return currentMessageSend && currentMessageSend->willAnimate(msg);
 }
 
+void MessageAnimator::setMarkedModule(cModule *mod)
+{
+    if (markedModule != mod) {
+        markedModule = mod;
+        updateNextEventMarkers();
+    }
+}
+
 void MessageAnimator::update()
 {
     // Always updating all non-holding animations first.
@@ -306,6 +315,36 @@ void MessageAnimator::clearMessages()
     for (auto i : messageItems)
         delete i.second;
     messageItems.clear();
+}
+
+void MessageAnimator::updateNextEventMarkers()
+{
+    for (auto p : nextEventMarkers)
+        p.second->setVisible(false);
+
+    // this thingy is only needed if animation is going on
+    if (!markedModule || !getQtenv()->opt->showNextEventMarkers)
+        return;
+
+    for (auto p : nextEventMarkers) {
+        ModuleInspector *mi = static_cast<ModuleInspector *>(p.first);
+        cModule *mod = static_cast<cModule *>(mi->getObject());
+        auto item = p.second;
+
+        cModule *modParent = markedModule;
+        while (modParent && modParent->getParentModule() != mod)
+            modParent = modParent->getParentModule();
+
+        if (modParent) {
+            item->setVisible(true);
+            item->setRect(mi->getSubmodRect(modParent).adjusted(-2, -2, 2, 2));
+            item->setBrush(Qt::NoBrush);
+            item->setPen(QPen(QColor("red"), markedModule == modParent ? 2 : 1));
+            item->setZValue(10);
+        } else {
+            item->setVisible(false);
+        }
+    }
 }
 
 void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim)
@@ -393,10 +432,16 @@ void MessageAnimator::clear()
 
     animations.clear();
 
+    for (auto a : nextEventMarkers)
+        delete a.second;
+
+    nextEventMarkers.clear();
+
     animSpeedMap.clear();
     holdRequests.clear();
 
     currentMethodCall = nullptr;
+    markedModule = nullptr;
 
     lastHopTime = -1;
     currentMessageSend = nullptr;
@@ -412,6 +457,12 @@ void MessageAnimator::addInspector(ModuleInspector *insp)
     if (deliveries)
         deliveries->addToInspector(insp);
     update();
+
+    auto marker = new QGraphicsRectItem;
+    insp->getAnimationLayer()->addItem(marker);
+    nextEventMarkers[insp] = marker;
+
+    updateNextEventMarkers();
 }
 
 void MessageAnimator::updateInspector(ModuleInspector *insp)
@@ -422,6 +473,7 @@ void MessageAnimator::updateInspector(ModuleInspector *insp)
     if (deliveries)
         deliveries->updateInInspector(insp);
     update();
+    updateNextEventMarkers();
 }
 
 void MessageAnimator::clearInspector(ModuleInspector *insp)
@@ -439,6 +491,9 @@ void MessageAnimator::clearInspector(ModuleInspector *insp)
         }
         else
             ++it;
+
+    delete nextEventMarkers[insp];
+    nextEventMarkers.erase(insp);
 
     update();
 }

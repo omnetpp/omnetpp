@@ -19,8 +19,11 @@
 
 #include <vector>
 #include <set>
+#include <map>
+#include <unordered_map>
 #include <utility>
 #include <functional>
+#include <QGraphicsRectItem>
 #include "omnetpp/simtime_t.h"
 #include "qtutil.h"
 
@@ -69,10 +72,17 @@ class MessageAnimator
     // the static items waiting for delivery on the border or center of the arrival module
     std::map<std::pair<ModuleInspector *, cMessage *>, MessageItem *> messageItems;
 
+    // the red rectangles
+    std::unordered_map<ModuleInspector *, QGraphicsRectItem *> nextEventMarkers;
+
     void clearMessages();
+
+    void updateNextEventMarkers();
 
     // Simple utility function to deduplicate the delivery functions.
     void addDeliveryAnimation(cMessage *msg, cModule *showIn, DeliveryAnimation *anim);
+
+    cModule *markedModule = nullptr; // the next event marker will be drawn around this, and its parents. none if nullptr
 
 public:
 
@@ -107,6 +117,8 @@ public:
 
     // see Animation::willAnimate
     bool willAnimate(cMessage *msg);
+
+    void setMarkedModule(cModule *mod);
 
     void clear();
 

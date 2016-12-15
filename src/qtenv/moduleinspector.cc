@@ -781,6 +781,7 @@ void ModuleInspector::zoomIconsBy(double mult)
         double newImageSizeFactor = imageSizeFactor * mult;
         setPref(PREF_ICONSCALE, newImageSizeFactor);
         canvasViewer->setImageSizeFactor(newImageSizeFactor);
+        getQtenv()->getMessageAnimator()->updateInspector(this);
         getQtenv()->getMessageAnimator()->redrawMessages();
     }
 }

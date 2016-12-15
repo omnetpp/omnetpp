@@ -21,6 +21,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cfutureeventset.h"
+#include "common/stlutil.h"
 #include "qtenv.h"
 #include "mainwindow.h"
 #include "layouterenv.h"
@@ -665,38 +666,6 @@ void ModuleCanvasViewer::clear()
     bubbleLayer->clear();
     submoduleGraphicsItems.clear();
     connectionGraphicsItems.clear();
-    nextEventMarker = nullptr;  // because it is on the submodule layer, it has been deleted by that
-}
-
-void ModuleCanvasViewer::redrawNextEventMarker()
-{
-    delete nextEventMarker;
-    nextEventMarker = nullptr;
-
-    cModule *mod = object;
-
-    // this thingy is only needed if animation is going on
-    if (!getQtenv()->animating || !getQtenv()->opt->showNextEventMarkers)
-        return;
-
-    // if any parent of the module containing the next event is on this canvas, draw marker
-    cModule *nextMod = getSimulation()->guessNextModule();
-    cModule *nextModParent = nextMod;
-    while (nextModParent && nextModParent->getParentModule() != mod)
-        nextModParent = nextModParent->getParentModule();
-
-    if (nextModParent) {
-        // XXX maybe move this to the animation layer?
-        nextEventMarker = new QGraphicsRectItem(submoduleLayer);
-
-        auto item = submoduleGraphicsItems[nextModParent];
-        if (item) {
-            nextEventMarker->setRect(item->mapRectToParent(item->boundingRect()).adjusted(-2, -2, 2, 2));
-            nextEventMarker->setBrush(Qt::NoBrush);
-            nextEventMarker->setPen(QPen(QColor("red"), nextMod == nextModParent ? 2 : 1));
-            nextEventMarker->setZValue(10);
-        }
-    }
 }
 
 void ModuleCanvasViewer::refreshLayout()
@@ -766,7 +735,6 @@ void ModuleCanvasViewer::redraw()
     refreshLayout();
     redrawModules();
     redrawFigures();
-    redrawNextEventMarker();
     refreshSubmodules();
     refreshConnections();
 }
@@ -800,7 +768,6 @@ void ModuleCanvasViewer::refresh()
     }
     else {
         refreshFigures();
-        redrawNextEventMarker();
         refreshSubmodules();
     }
 }

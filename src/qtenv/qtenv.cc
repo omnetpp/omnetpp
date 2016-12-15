@@ -858,7 +858,8 @@ bool Qtenv::doRunSimulation()
     //  - runmode, runUntil.time, runUntil.eventNumber, runUntil.msg, runUntil.module;
     //  - stopsimulation_flag
     //
-    speedometer.start(getSimulation()->getSimTime());
+    cSimulation *sim = getSimulation();
+    speedometer.start(sim->getSimTime());
     loggingEnabled = true;
     bool firstevent = true;
 
@@ -883,13 +884,13 @@ bool Qtenv::doRunSimulation()
         }
 
         // query which module will execute the next event
-        cEvent *event = getSimulation()->takeNextEvent();
+        cEvent *event = sim->takeNextEvent();
         if (!event)
             break;  // takeNextEvent() interrupted (parsim)
 
         // "run until message": stop if desired event was reached
         if (runUntil.msg && event == runUntil.msg) {
-            getSimulation()->putBackEvent(event);
+            sim->putBackEvent(event);
             break;
         }
 
@@ -899,18 +900,18 @@ bool Qtenv::doRunSimulation()
         cModule *mod = event->isMessage() ? static_cast<cMessage *>(event)->getArrivalModule() : nullptr;
         bool untilmodule_reached = runUntil.module && moduleContains(runUntil.module, mod);
         if (untilmodule_reached && !firstevent) {
-            getSimulation()->putBackEvent(event);
+            sim->putBackEvent(event);
             break;
         }
         firstevent = false;
 
         animating = (runMode == RUNMODE_NORMAL || runMode == RUNMODE_STEP) || untilmodule_reached;
 
-        speedometer.addEvent(getSimulation()->getSimTime());
+        speedometer.addEvent(sim->getSimTime());
 
         ASSERT(simTime() <= event->getArrivalTime());
         // do a simulation step
-        getSimulation()->executeEvent(event);
+        sim->executeEvent(event);
 
         doNextEventInStep = false;
 
@@ -925,12 +926,14 @@ bool Qtenv::doRunSimulation()
             break;
         if (stopSimulationFlag)
             break;
-        if (runUntil.time > SIMTIME_ZERO && getSimulation()->guessNextSimtime() >= runUntil.time)
+        if (runUntil.time > SIMTIME_ZERO && sim->guessNextSimtime() >= runUntil.time)
             break;
-        if (runUntil.eventNumber > 0 && getSimulation()->getEventNumber() + 1 >= runUntil.eventNumber)
+        if (runUntil.eventNumber > 0 && sim->getEventNumber() + 1 >= runUntil.eventNumber)
             break;
 
         checkTimeLimits();
+
+        messageAnimator->setMarkedModule(sim->guessNextModule());
 
         if (runMode == RUNMODE_STEP && !doNextEventInStep)
             break;
@@ -1133,6 +1136,7 @@ void Qtenv::newNetwork(const char *networkname)
     auto module = getSimulation()->getSystemModule();
     mainNetworkView->setObject(module);
     mainInspector->setObject(module);
+    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
     animating = false;  // affects how network graphics is drawn!
     updateNetworkRunDisplay();
@@ -1189,6 +1193,8 @@ void Qtenv::newRun(const char *configname, int runnumber)
     auto module = getSimulation()->getSystemModule();
     mainNetworkView->setObject(module);
     mainInspector->setObject(module);
+
+    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
     animating = false;  // affects how network graphics is drawn!
     updateNetworkRunDisplay();

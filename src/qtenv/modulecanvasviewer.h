@@ -70,7 +70,6 @@ private:
     GraphicsLayer *animationLayer;
     GraphicsLayer *bubbleLayer;
     GraphicsLayer *zoomLabelLayer;
-    QGraphicsRectItem *nextEventMarker = nullptr;
 
     double zoomFactor = 1;
     double imageSizeFactor = 1;
