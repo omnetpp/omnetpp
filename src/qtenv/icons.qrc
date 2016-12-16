@@ -91,5 +91,6 @@
         <file>icons/tools/filmstrip.png</file>
         <file>icons/tools/camera.png</file>
         <file>icons/tools/recordvideo.png</file>
+        <file>icons/tools/rebuild.png</file>
     </qresource>
 </RCC>

@@ -411,6 +411,7 @@ Total number of messages created since start of the simulation</string>
    <addaction name="actionStop"/>
    <addaction name="separator"/>
    <addaction name="actionConcludeSimulation"/>
+   <addaction name="actionRebuildNetwork"/>
    <addaction name="separator"/>
    <addaction name="actionEventlogRecording"/>
    <addaction name="separator"/>
@@ -711,8 +712,15 @@ Total number of messages created since start of the simulation</string>
    </property>
   </action>
   <action name="actionRebuildNetwork">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/tools/icons/tools/rebuild.png</normaloff>:/tools/icons/tools/rebuild.png</iconset>
+   </property>
    <property name="text">
     <string>Re&amp;build Network</string>
+   </property>
+   <property name="toolTip">
+    <string>Rebuild network</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+R</string>
