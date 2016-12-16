@@ -25,7 +25,8 @@ namespace animation2 {
 class Source : public cSimpleModule
 {
   private:
-    cMessage *timerMessage = nullptr;
+    cMessage *textMessage = nullptr;
+    cMessage *operationMessage = nullptr;
 
     const int numOperations = 7;
     int operation = 0;

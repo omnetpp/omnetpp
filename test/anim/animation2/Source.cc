@@ -24,13 +24,13 @@ Define_Module(Source);
 
 Source::~Source()
 {
-    cancelAndDelete(timerMessage);
+    cancelAndDelete(textMessage);
+    cancelAndDelete(operationMessage);
 }
 
 void Source::initialize()
 {
     ASSERT(explanations.size() == numOperations);
-
 
     cCanvas *canv = getParentModule()->getCanvas();
     canv->setAnimationSpeed(1, this);
@@ -38,23 +38,26 @@ void Source::initialize()
     text = check_and_cast<cTextFigure*>(canv->getFigure("operation"));
     check_and_cast<cTextFigure*>(canv->getFigure("title"))->setText(title.c_str());
 
-    timerMessage = new cMessage("timer");
-    scheduleAt(simTime(), timerMessage);
+    textMessage = new cMessage("text");
+    operationMessage = new cMessage("operation");
 
+    scheduleAt(simTime(), textMessage);
 }
 
 void Source::handleMessage(cMessage *msg)
 {
-    ASSERT(msg == timerMessage);
+    if (msg == textMessage) {
+        text->setText(("Operation " + std::to_string(operation) + " in [0.." + std::to_string(numOperations-1) + "]:\n"
+            + explanations[operation]).c_str());
+
+        scheduleAt(simTime(), operationMessage);
+
+        return;
+    }
 
     int packetByteLength = 4096;
 
     EV << "Performing operation " << operation << " out of [0.." << numOperations-1 << "]...\n";
-
-    text->setText(("Operation " + std::to_string(operation) + " in [0.." + std::to_string(numOperations-1) + "]:\n"
-            + explanations[operation]).c_str());
-
-    getParentModule()->getCanvas()->holdSimulationFor(5);
 
     Node *nodeA = static_cast<Node*>(getParentModule()->getSubmodule("nodeA"));
     Node *nodeB = static_cast<Node*>(getParentModule()->getSubmodule("nodeB"));
@@ -101,7 +104,7 @@ void Source::handleMessage(cMessage *msg)
 
     operation %= numOperations;
 
-    scheduleAt(simTime() + 1, timerMessage);
+    scheduleAt(simTime() + 1, textMessage);
 }
 
 }; // namespace
