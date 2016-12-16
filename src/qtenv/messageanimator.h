@@ -75,7 +75,7 @@ class QTENV_API MessageAnimator
     // the red rectangles around the submodule that is expected to execute the next event.
     // The idea is that we (almost) always have exactly one rectangle on the animation
     // layer of all open moduleinspectors, just hide it if it's not needed.
-    std::unordered_map<ModuleInspector *, QGraphicsRectItem *> nextEventMarkers;
+    std::map<ModuleInspector *, QGraphicsRectItem *> nextEventMarkers;
 
     void clearMessages();
 
