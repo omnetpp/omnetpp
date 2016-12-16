@@ -294,7 +294,7 @@ void InspectorUtil::setClipboard(QString str)
 
 void InspectorUtil::preferencesDialog(eTab defaultPage)
 {
-    PreferencesDialog *prefDialog = new PreferencesDialog(defaultPage);
+    PreferencesDialog *prefDialog = new PreferencesDialog(defaultPage, getQtenv()->getMainWindow());
     prefDialog->exec();
     delete prefDialog;
 }
