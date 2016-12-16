@@ -21,6 +21,159 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.1 preview 2
+~~~~~~~~~~~~~~~~~~~~~
+
+(!!!)   cObject and subclasses: renamed info() to str(). A deprecated info() that
+        delegates to str() was added back for compatibility. See include/omnetpp/
+        ChangeLog for more information.
+
+(!!!)   Use the new Register_Figure(NAME, CLASSNAME) macro instead of
+        Register_Class() to register custom figure classes.
+
+(+)     Added Register_Figure(NAME, CLASSNAME) macro.
+
+(+)     Canvas: added setPosition(position, anchor) to the cArcFigure, cRectangleFigure,
+        cOvalFigure, cRingFigure, and cPiesliceFigure classes.
+
+(+)     cFigure: added refreshDisplay() method that can be overridden to implement
+        self-refreshing figures.
+
+(+)     cFigure: added setZIndex()/getZIndex(). In @figure, "zIndex" replaces "childZ"
+        which was only used at parse time but not stored in figures afterwards.
+
+(!)     cFigure: change in the behavior of the raiseAbove()/lowerBelow()/raiseToTop()/
+        lowerToBottom() methods: with the appearance of zIndex, they need to
+        update the Z-index as well to be able to do their jobs.
+
+(+)     cFigure: added insertAfter()/insertBefore(), isAbove()/isBelow() methods
+        that take zIndex into account.
+
+(-)     cFigure: deprecated addFigureAbove()/addFigureBelow(); use insertAfter()/
+        insertBefore() instead.
+
+(+)     cAbstractTextFigure: added setHalo() method.
+
+(+)     cFigure: added setTooltip() and setAssociatedObject().
+
+(!)     cPathFigure: some path item classes renamed (HorizLineTo/VertLineTo to
+        HorizontalLineTo/VerticalLineto; same for corresponding ...Rel classes).
+
+(+)     cAbstractImage/cAbstractText: added getBounds() method.
+
+(+)     cImageFigure: added getImageNaturalWidth()/getImageNaturalHeight().
+
+(+)     cCanvas: added setAnimationSpeed(), holdSimulationFor() that control
+        smooth animation.
+
+(+)     cEnvir: added getAnimationTime(), getAnimationSpeed(), getRemaining-
+        AnimationHoldTime() methods that can be used in implementing smooth
+        animation.
+
+(+)     cModule: added setBuiltinAnimationsAllowed(bool enabled) and
+        getBuiltinAnimationsAllowed() methods.
+
+(+)     cEnvir: added appendToImagePath(), loadImage() to allow custom images
+        to be loaded.
+        
+(+)     cEnvir: added getSubmodulePosition().
+
+(+)     cEnvir: added getImageSize() and getTextExtent() methods to support
+        related figure functionality.
+
+(!)     cEnvir: messageSendHop(): added "discard" parameter.
+
+(!)     cEnvir: removed messageSent_OBSOLETE(), a relic from OMNeT++ 3.x.
+
+(!)     cStaticFlag: isSet() method renamed to isMainRunning().
+
+(+)     cModule: getModuleByPath() now accepts "<root>" to mean the toplevel
+        module. (Previously there was no syntax accessing the toplevel module
+        apart from spelling out its module name.)
+
+(!)     cEnvir interface changes:
+        - askYesNo() no longer has a printf-style arg list
+        - askyesno() (lower-case, protected version) removed
+        - putsmsg() removed
+        - alert() added as replacement for putsmsg()
+
+(!)     cIEventlogManager: added getFileName() for consistency with other
+        output file recorder classes.
+
+(!)     cConfiguration: getter methods made const.
+
+(+)     cConfigOption: added public static find() and get() lookup methods.
+
+(!)     cConfigurationEx: unrollConfig() signature change to allow it return
+        more information: return type changed from std::vector<std::string> to
+        std::vector<RunInfo>; 'bool detailed' argument removed.
+
+(!)     cConfigurationEx: added getKeyValuePairs() method.
+
+(!)     Removed ${iterationvars2} inifile variable and corresponding 
+        CFGVAR_ITERATIONVARS2 symbol.
+
+(+)     Added ${iterationvarsf} inifile variable and corresponding 
+        CFGVAR_ITERATIONVARSF symbol.
+
+(+)     SimTime: added SIMTIME_AS (= -18) to SimTimeUnit enum.
+
+(!)     cISimulationLifecycleListener: destructor removes the listener
+        from cEnvir. (Has no effect is it was already deregistered.)
+
+(+)     cComponentType: added getNedSource() method.
+
+(!)     cPacket: getDisplayString() changed to fall back to the encapsulated
+        packet's display string.
+        
+(!)     cXMLElement now subclasses from cObject.
+
+(+)     cXMLElement: added str() and getXML() methods.
+
+(!)     cXMLElement: debugDump() was removed; use EV << element->getXML() instead.
+
+(!)     cObject and subclasses: detailedInfo() method removed with no replacement;
+        see include/omnetpp/ChangeLog for more information.
+
+(+)     Selection of coroutine library (USE_WIN32_FIBERS/USE_POSIX_COROUTINES/
+        USE_PORTABLE_COROUTINES) moved to platdefs.h, and now can be overridden
+        from the compiler command line (-D).
+
+(+)     cProperty: getValue(key,index) now has a default value for the key
+        argument too.
+
+(+)     cEvent: added shouldPrecede() method.
+
+(!)     cComponent: mayHaveListeners() now has a constant cost but may return
+        false positive, due to change implementation strategy. See sim/ChangeLog
+        for details.
+
+(!)     cClassDescriptor: added getFieldDynamicTypeString() that returns
+        the dynamic type of an object.
+
+(!)     cModule: buildInside() return type changed from int to void
+
+(+)     cModule: arrived() made public. Overriding arrived() makes it
+        possible to do custom processing at the destination module of
+        a send() call immediately, still within the send() call.
+
+(+)     cResultListener: added getClassName() and str() methods.
+        Rationale: it was not added to cIListener, because multiple inheritance
+        with cObject (e.g. module classes that are also listeners) would cause
+        compile errors in existing code due to method ambiguity.
+
+(!)     cResultListener, cResultFilter, cResultRecorder: reduced the visibility
+        (public -> protected) of inherited processing methods.
+
+(!)     cResultRecorderDescriptor renamed to cResultRecorderType;
+        cResultFilterDescriptor renamed to cResultFilterType (Reason:
+        collision with message compiler generated descriptor classes).
+
+(+)     Added cStatisticBuilder internal class, as part of the change where
+        setting up statistics recording was moved from EnvirBase into the sim.
+        kernel.
+
+
 OMNeT++ 5.0
 ~~~~~~~~~~~
 
