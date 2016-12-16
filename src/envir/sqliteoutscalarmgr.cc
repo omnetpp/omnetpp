@@ -352,13 +352,13 @@ void SqliteOutputScalarManager::writeRunData()
 
 void SqliteOutputScalarManager::recordNumericIterationVariableAsScalar(const char *name, const char *valueStr)
 {
-    static const std::string DOT(".");
+    static const std::string MODULE_FOR_RUNATTR_SCALAR("_runattrs_");
     char *e;
     setlocale(LC_NUMERIC, "C");
     double value = strtod(valueStr, &e);
     if (*e == '\0') {
         // plain number - just record as it is
-        writeScalar(DOT, name, value);
+        writeScalar(MODULE_FOR_RUNATTR_SCALAR, name, value);
     }
     else if (e != valueStr) {
         // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
@@ -371,7 +371,7 @@ void SqliteOutputScalarManager::recordNumericIterationVariableAsScalar(const cha
         catch (std::exception& e) {
         }
         if (parsedOK) {
-            sqlite3_int64 scalarId = writeScalar(DOT, name, value);
+            sqlite3_int64 scalarId = writeScalar(MODULE_FOR_RUNATTR_SCALAR, name, value);
             if (!unit.empty())
                 writeScalarAttr(scalarId, "unit", 4, unit.c_str(), unit.size());
         }

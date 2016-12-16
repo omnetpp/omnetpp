@@ -133,7 +133,7 @@ void cFileOutputScalarManager::recordNumericIterationVariableAsScalar(const char
     (void)strtod(value, &e);
     if (*e == '\0') {
         // plain number - just record as it is
-        check(fprintf(f, "scalar . \t%s \t%s\n", name, value));
+        check(fprintf(f, "scalar _runattrs_ \t%s \t%s\n", name, value));
     }
     else if (e != value) {
         // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
@@ -147,7 +147,7 @@ void cFileOutputScalarManager::recordNumericIterationVariableAsScalar(const char
         catch (std::exception& e) {
         }
         if (parsedOK) {
-            check(fprintf(f, "scalar . \t%s \t%.*g\n", name, prec, d));
+            check(fprintf(f, "scalar _runattrs_ \t%s \t%.*g\n", name, prec, d));
             if (!unit.empty())
                 check(fprintf(f, "attr unit  %s\n", QUOTE(unit.c_str())));
         }
