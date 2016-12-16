@@ -1,3 +1,11 @@
+2016-12-06  Attila Torok
+
+	* Added call to refreshDisplay() both before and after message animation. 
+	Note that support for proper smooth custom animations (i.e. calling 
+	refreshDisplay at some fps) probably won't be implemented in Tkenv 
+	any more, because development focus has shifted entirely to Qtenv. 
+	Tkenv is in maintenance mode from now on.
+
 2016-11-30  Rudolf Hornig
 
 	* build: Makefile refactored. Added clang-c2 support and optimized

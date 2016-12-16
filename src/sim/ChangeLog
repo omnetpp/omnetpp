@@ -1,3 +1,7 @@
+2016-12-02  Attila Torok
+
+	* sim_std.msg: added missing cFigure declarations for Ring and Icon.
+
 2016-11-30  Rudolf Hornig
 
 	* build: Makefile refactored. Added clang-c2 support and optimized

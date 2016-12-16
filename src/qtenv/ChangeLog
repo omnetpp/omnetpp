@@ -1,3 +1,238 @@
+2016-12-15  Attila Torok
+
+	* "Next event markers" fixed. Sometimes they were missing.
+
+	Like when the user just got out of fast/express mode.
+
+2016-12-15  Attila Torok
+
+	* MessageAnimator::update() renamed to updateAnimations()
+
+2016-12-14  Attila Torok
+
+	* Animate until before the next event when running until
+	message/module.
+
+2016-12-14  Attila Torok
+
+	* Fixes for simulations with no events (and for when we reach termination)
+
+2016-12-15  Attila Torok
+
+	* SimTime starts from right before the first event, not 0. Press F4
+	N times -> execute N events.
+
+2016-12-14  Attila Torok
+
+	* Added DUC::rightbeforeevent
+
+2016-12-14  Attila Torok
+
+	* Make SendOnConn message anims visible right after (in the instance
+	of) sending.
+
+2016-12-14  Attila Torok
+
+	* msgAnim shorthand added to duc
+
+2016-12-15  Attila Torok
+
+	* Update MessageAnimator after stepping.
+
+2016-12-14  Attila Torok
+
+	* Show the next Event# on the toolbar if we just stepped and
+	animated until right before it.
+
+2016-12-14  Attila Torok
+
+	* Stop simulation when the main window is closed... D'oh!
+
+	In hopefully the right order.
+
+2016-12-13  Attila Torok
+
+	* More refreshDisplay and refreshInspectors calls,
+	callRefreshDisplaySafe() added.
+
+	Also changed assert in finishSimulation() to allow for running and busy
+	states.
+
+2016-12-12  Attila Torok
+
+	* FindObjectsDialog: Persistent sorting, pref handling cleanup, some
+	UI tweaks.
+
+	Refresh button moved closer to the list. The label next to it says
+	'Please push Refresh to execute search' initially.
+
+2016-12-12  Attila Torok
+
+	* DUC: Set SimTime to that of the next event after animating to it.
+
+	Even with no animationSpeed.
+
+2016-12-12  Attila Torok
+
+	* Make messages sent in initialize() appear as waiting to be
+	delivered.
+
+	* Adjust animating flag. ModuleInsp: Remove unnecessary message
+	redrawing. Also remove a comment about the now-obsolete "bgl" tag.
+
+2016-12-12  Attila Torok
+
+	* One-stepping now stops right before events, not after them.
+
+2016-12-13  Attila Torok
+
+	* Rethought exiting behaviour, like calling finish() and showing
+	confirmation dialogs.
+
+2016-12-12  Attila Torok
+
+	* MainWindow: Focus is on 'Yes' when finishing simulation, some
+	cleanups.
+
+2016-12-12  Attila Torok
+
+	* PreferencesDialog tweaks.
+
+	Some checkboxes indented in the Animation tab, a few form layouts
+	converted into grid layouts.
+
+2016-12-13  Attila Torok
+
+	* OsgViewer: Avoid double rendering while recording video, disable
+	MSAA with Qt <5.6.0.
+
+2016-12-06  Attila Torok
+
+	* Removed support of Qt versions before 5.4 from OsgViewer.
+
+2016-12-06  Attila Torok
+
+	* Removed QT5 check in qtenvdefs.h.
+
+	As it is now required.
+
+2016-12-06  Attila Torok
+
+	* Added QTENV_API to (almost) every class, and a few functions.
+
+	Except for InspectorFactories, internal classes not defined in headers,
+	and a few small utilities.
+
+2016-12-14  Attila Torok
+
+	* Don't show arrows for sendDirect anims if disabled, not just
+	initially.
+
+2016-12-15  Attila Torok
+
+	* Clear layout of deleted modules.
+
+	This will fix this glitch: After selecting "Rebuild network", some
+	modules had the positions of some random modules in the old instance of
+	the network, others had random positions.
+
+2016-12-13  Attila Torok
+
+	* SubmoduleItem stacking order fixes.
+
+	Always keep icon above shape, and decoration icon above both, regardless
+	of the order in which they were set up.
+
+2016-12-13  Attila Torok
+
+	* Submodule bounds calculation with zoom level and icon scale.
+
+	See the novel in the comments of Qtenv::getSubmoduleBounds()
+
+2016-12-15  Attila Torok
+
+	* Moved next event markers from ModuleCanvasViewer to
+	MessageAnimator.
+
+2016-12-15  Attila Torok
+
+	* Added proper (internal) getSubmodRect.
+
+	Module size calculation takes 'is' tag into account even without an 'i'
+	tag. Considering zoom factor and icon scale of a selected "primary"
+	inspector Introduced SubmoduleItem::DEFAULT_ICON, etc. Also finished a
+	sentence in a small comment.
+
+2016-12-13  Rudolf Hornig
+
+	* The RunSelectionDialog does not change the application icon now.
+
+2016-12-06  Attila Torok
+
+	* Respect the "Show sendDirect arrows" option.
+
+2016-12-05  Attila Torok
+
+	* Formatting/cleanup/comment smallies.
+
+2016-12-02  Attila Torok
+
+	* One-Stepping (F4) behaviour change, assertion failure fixes.
+
+	Step mode-specific code path removed.
+
+	The rough goal was this, when pressing the F4 key (or Step button on the
+	toolbar...):
+
+	 - If still running (run or step mode): Skip to and perform next event,
+	animating it, then stop.
+	- If stopped but not completed (during after-event holding anim, or
+	between events): continue and stop before next event. (I think this one
+	works differently, but might be better...)
+	 If not running at all (stopped right before or after an event): Just
+	perform the next event (after simtime arrived to it with smooth
+	animation) and animate that one too, then stop.
+
+	This change also required some adjustments to the workings of
+	DisplayUpdateController.
+
+2016-12-02  Attila Torok
+
+	* Some useless/duplicate functions removed from MainWindow and
+	Qtenv.
+
+2016-11-29  Attila Torok
+
+	* Printing code moved to ModuleCanvasViewer, QPrinter resolution bug
+	workaround.
+
+2016-11-30  Attila Torok
+
+	* Run filters are now accepted, all logic done in the dialog.
+
+	initialSetUpConfiguration() moved to Qtenv from MainWindow. Qtenv option
+	and RunSelectionDialog parameter is now a run filter instead of a run
+	number. default-configname preference key renamed to last-configname, and
+	default-runnumber to last-runnumber. Various hacks to make the
+	RunSelectionDialog (more likely to) appear centered over the MainWindow
+	at startup.
+
+	another runseldial
+
+2016-12-02  Attila Torok
+
+	* FilteredObjectListDialog: Remember sorting state after refresh,
+	cleanups.
+
+2016-12-01  Attila Torok
+
+	* Notice of Uselessness added to qtenv.pro, plus some clarification.
+
+2016-12-08  Rudolf Hornig
+
+	* build: made the main targets depend on Makefile.inc so any change in it
+	will trigger a rebuild.
+
 2016-11-30  Rudolf Hornig
 
 	* build: Makefile refactored. Added clang-c2 support and optimized

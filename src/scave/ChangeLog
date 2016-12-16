@@ -1,3 +1,31 @@
+2016-12-12  Andras Varga
+
+	* scavetool: added query functionality, reorganized help into pages,
+	autoindex vector files, etc.
+
+	Details:
+	- added 'query' subcommand
+	- reorganized help into pages ('scavetool help <topic>')
+	- 'info' subcommand merged into help (use 'help filters')
+	- 'list' subcommand merged into 'query'
+	-  default output file name changed to 'out.<ext>'
+
+2016-12-12  Andras Varga
+
+	* scavetool: internal refactoring
+	- use exceptions for error handling
+	- use C++ I/O instead of printf
+	- turned into a class
+
+2016-12-12  Andras Varga
+
+	* export.cc: ScalarDataTable: fix NPE
+
+2016-12-13  Andras Varga
+
+	* ResultFileManager: added new methods filterIDList() and
+	getUniqueModuleAndResultNamePairs()
+
 2016-11-30  Rudolf Hornig
 
 	* build: Makefile refactored. Added clang-c2 support and optimized

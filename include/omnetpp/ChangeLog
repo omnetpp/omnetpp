@@ -2,13 +2,13 @@
 
 	* cIOutputVectorManager: clarify lifecycle in doxy comments
 
-2016-11-18  Andras Varga
+2016-11-18  Andras Varga, Attila Torok
 
-	* cEnvir: added appendToImagePath(), loadImage(), getSubmodulePosition()
+	* cEnvir: added appendToImagePath(), loadImage(), getSubmoduleBounds()
 
 2016-11-14  Andras Varga
 
-	* cModule: added setBuiltinAnimations(bool enabled) method
+	* cModule: added getBuiltinAnimationsAllowed(bool enabled) method
 
 2016-11-14  Andras Varga
 
@@ -55,7 +55,7 @@
 
 2016-10-03  Andras Varga
 
-	* cIEventlogManager: added getFileName() for consistency with other 
+	* cIEventlogManager: added getFileName() for consistency with other
 	output file recorder classes
 
 2016-08-08  Andras Varga
@@ -68,7 +68,7 @@
 2016-09-25  Andras Varga
 
 	* cConfigurationEx: unrollConfig() signature change to allow it return
-	more information: return type changed from std::vector<std::string> to 
+	more information: return type changed from std::vector<std::string> to
 	std::vector<RunInfo>; also removed 'bool detailed' arg.
 
 2016-09-22  Andras Varga

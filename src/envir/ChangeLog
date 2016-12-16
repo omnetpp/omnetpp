@@ -1,3 +1,8 @@
+2016-12-16  Andras Varga
+
+	* scalar file recording: change "." to "_runattrs_" as the module
+	name used for run attributes saved as scalars
+
 2016-11-30  Rudolf Hornig
 
 	* build: Makefile refactored. Added clang-c2 support and optimized
