@@ -225,10 +225,6 @@ void cStdDev::saveToFile(FILE *f) const
 
 void cStdDev::loadFromFile(FILE *f)
 {
-    freadvarsf(f, "");
-    freadvarsf(f, "");
-    freadvarsf(f, "");
-    freadvarsf(f, "");
     freadvarsf(f, "%ld\t #= num_vals", &numValues);
     freadvarsf(f, "%lg %lg\t #= min, max", &minValue, &maxValue);
     freadvarsf(f, "%lg\t #= sum", &sumValues);

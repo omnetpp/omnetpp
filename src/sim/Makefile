@@ -14,7 +14,7 @@ L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
-COPTS=-Wno-unused-function -Wno-sign-compare -Wno-format-zero-length $(CFLAGS) $(INCL_FLAGS)
+COPTS=-Wno-unused-function $(CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -loppcommon$D
 

@@ -72,6 +72,8 @@ static int parenDepth = 0;
 #define P(x)  (x)
 //#define P(x)  debugPrint(x)  /*for debugging*/
 
+#pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+
 using namespace omnetpp::nedxml;
 
 %}

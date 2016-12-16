@@ -739,7 +739,6 @@ void cKSplit::loadFromFile(FILE *f)
     if (gridv_exists) {
         gridv = new Grid[gridvSize+1];
         for (int i = 1; i <= lastGridIndex; i++) {
-            freadvarsf(f, "");
             freadvarsf(f, "%d\t #= parent", &gridv[i].parent);
             freadvarsf(f, "%d\t #= reldepth", &gridv[i].reldepth);
             freadvarsf(f, "%ld\t #= total", &gridv[i].total);

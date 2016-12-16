@@ -47,6 +47,8 @@ void comment();
 void countChars();
 void extendCount();
 
+#pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+
 using namespace omnetpp::nedxml;
 
 %}

@@ -71,6 +71,8 @@ static int parenDepth = 0;
 
 using namespace omnetpp::nedxml;
 
+#pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+
 %}
 
 %%

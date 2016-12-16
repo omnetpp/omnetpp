@@ -66,6 +66,9 @@ static char textbuf[TEXTBUF_LEN];
 static std::string extendbuf;
 
 #include "omnetpp/simutil.h"  // opp_strdup()
+
+#pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+
 %}
 
 %%

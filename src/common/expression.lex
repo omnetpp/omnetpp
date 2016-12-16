@@ -52,6 +52,8 @@ static std::string extendbuf;
 
 #include "stringutil.h"  // opp_strdup()
 
+#pragma GCC diagnostic ignored "-Wsign-compare"  // suppress warning in bison template code
+
 using namespace omnetpp;
 using namespace omnetpp::common;
 %}
