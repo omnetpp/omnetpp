@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>Find Objects</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="icons.qrc">
-    <normaloff>:/logo/icons/logo/logo128w.png</normaloff>:/logo/icons/logo/logo128w.png</iconset>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -238,9 +234,7 @@ Examples:
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

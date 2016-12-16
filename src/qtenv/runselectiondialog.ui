@@ -22,10 +22,6 @@
   <property name="windowTitle">
    <string>Set Up Inifile Configuration</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="icons.qrc">
-    <normaloff>:/logo/icons/logo/logo128w.png</normaloff>:/logo/icons/logo/logo128w.png</iconset>
-  </property>
   <property name="modal">
    <bool>false</bool>
   </property>
@@ -121,9 +117,7 @@
   <tabstop>runNumber</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/logo">
         <file>icons/logo/logo128m.png</file>
-        <file>icons/logo/logo128w.png</file>
     </qresource>
     <qresource prefix="/objects">
         <file>icons/objects/canvas_vs.png</file>
