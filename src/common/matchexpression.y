@@ -14,6 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/* number of expected shift-reduce conflicts */
+%expect 1
+
 /* Tokens */
 %token STRINGLITERAL
 %token OR_ AND_ NOT_   /* note: cannot use %left/%right because of implicit "or" operator */

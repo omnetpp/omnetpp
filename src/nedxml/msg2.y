@@ -14,6 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/* number of expected shift-reduce conflicts */
+%expect 0
+
 %token NAMESPACE CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
 %token EXTENDS ABSTRACT READONLY

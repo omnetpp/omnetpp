@@ -14,6 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/* number of expected shift-reduce conflicts */
+/*TODO this needs to be checked why: %expect 46 */
+
 /* Reserved words */
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE
 %token TRUE_ FALSE_

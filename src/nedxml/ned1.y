@@ -25,6 +25,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/* number of expected shift-reduce conflicts */
+%expect 5
+
 %token INCLUDE SIMPLE
 %token CHANNEL
 %token MODULE PARAMETERS GATES GATESIZES SUBMODULES CONNECTIONS DISPLAY

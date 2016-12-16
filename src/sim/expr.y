@@ -14,6 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/* number of expected shift-reduce conflicts */
+%expect 0
+
 /* Reserved words */
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE
 %token TRUE_ FALSE_ THIS_ ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ XMLDOC_

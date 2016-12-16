@@ -14,6 +14,9 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/* number of expected shift-reduce conflicts */
+%expect 7
+
 /* Reserved words */
 %token IMPORT PACKAGE PROPERTY
 %token MODULE SIMPLE NETWORK CHANNEL MODULEINTERFACE CHANNELINTERFACE
