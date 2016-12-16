@@ -43,7 +43,7 @@ foreach $fname (@fnames)
     my $name = $fname;
     $name =~ s|^(.*/)?(.*)\..*|$2|;
 
-    my $txt = `base64  $fname `;
+    my $txt = `base64 --wrap=64 $fname `;
     $txt =~ s/^/    /mg;  # indent
 
     $tclcode .= "set $varname($name) [image create photo -data {\n";
