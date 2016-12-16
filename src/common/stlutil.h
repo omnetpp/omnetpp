@@ -21,7 +21,6 @@
 
 #include <vector>
 #include <map>
-#include <unordered_map>
 #include <algorithm>
 #include "commonutil.h"  // Assert()
 
@@ -56,11 +55,6 @@ inline bool contains(const std::vector<T>& v, const T& a) {
 
 template<typename K, typename V>
 inline bool containsKey(const std::map<K,V>& m, const K& a) {
-    return m.find(a) != m.end();
-}
-
-template<typename K, typename V>
-inline bool containsKey(const std::unordered_map<K,V>& m, const K& a) {
     return m.find(a) != m.end();
 }
 
