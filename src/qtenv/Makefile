@@ -125,4 +125,6 @@ clean:
 skip:
 	@echo '  *** WITH_QTENV=no -- skipping Qtenv.'
 
+$(RESOURCES_OUT): $(wildcard icons/tools/* icons/logo/* icons/objects/*)
+
 -include $(OBJS:%.o=%.d)
