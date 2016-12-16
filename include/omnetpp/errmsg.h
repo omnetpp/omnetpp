@@ -20,10 +20,25 @@
 
 namespace omnetpp {
 
+/* Specifying that the values of this enum should be represented by an int, because otherwise the variadic
+ * constructors of cException, cTerminationException, and cRuntimeError in cexception.cc that accept an OppErrorCode
+ * as their last named parameter will trigger a warning with clang 3.9, saying
+ * "passing an object that undergoes default argument promotion to 'va_start' has undefined behavior".
+ * This is perfectly reasonable, as the integral type "behind" the enum could be shorter than int, see:
+ * https://www.securecoding.cert.org/confluence/display/cplusplus/EXP58-CPP.+Pass+an+object+of+the+correct+type+to+va_start
+ * However, in practice, most compilers (including clang) will use an int for all enums by default, so it's not an issue here,
+ * see the comment on the article above, and these messages: http://lists.llvm.org/pipermail/cfe-commits/Week-of-Mon-20160822/169004.html
+ * And even if we explicitly request int, the warning does not go away, even though it no longer applies.
+ * This has been fixed in LLVM: https://reviews.llvm.org/D23921
+ * But got reverted not long after for some reason: https://www.mail-archive.com/cfe-commits@lists.llvm.org/msg35386.html
+ * So we are still left with a few false-positive warnings... At least not undefined behavior anymore!
+ * I posted a comment asking about it: https://reviews.llvm.org/D23921#624870 Waiting for answer...
+ * Until then, they could be silenced with -Wno-varargs though.
+ */
 /**
  * @brief Error codes
  */
-enum OppErrorCode
+enum OppErrorCode : int
 {
     E_OK = 0,  // E_OK must have zero numeric value
     E_BACKSCHED,
