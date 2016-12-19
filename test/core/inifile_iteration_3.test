@@ -18,6 +18,7 @@ EV << "." << endl;
 **.dummy5 = ${quotes = "one two three"}  # quoted values
 **.dummy6 = ${badquotes = "one"+"two"}  # contains quotes but not a single quoted value
 
+%subst: |results\\|results/|
 
 %contains: stdout
 iterationvars: $0=100, $pi=-3.14, $name=John, $badchars=space dollar$ slash/ backslash\, $quotes="one two three", $badquotes="one"+"two"

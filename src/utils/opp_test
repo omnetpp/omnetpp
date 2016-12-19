@@ -620,14 +620,14 @@ sub testcase_run()
                 if ($key2 =~ /^subst/) {
                     my $rule = $values{$key2};  # something like "/foo/bar/"
                     my $sep = substr($rule, 0, 1);  # typically "/"
-                    if (!($rule =~ /^$sep(.*?)$sep(.*?)$sep(.*)$/)) {
+                    if (!($rule =~ /^\Q$sep\E(.*?)\Q$sep\E(.*?)\Q$sep\E(.*)$/)) {
                         unresolved($testfilename, "wrong subst rule: syntax is /search-regex/replace-string/flags");
                         return;
                     }
                     my $searchstring = $1;
                     my $replacement = $2;
                     my $flags = $3;
-                    if ($flags =~ /$sep/) {
+                    if ($flags =~ /\Q$sep\E/) {
                         unresolved($testfilename, "wrong subst rule: too many occurrences of separator character '$sep', choose another separator");
                         return;
                     }
