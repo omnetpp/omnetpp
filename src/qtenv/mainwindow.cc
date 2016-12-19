@@ -558,8 +558,11 @@ void MainWindow::on_actionRunUntil_triggered()
         return;
 
     RunUntilDialog runUntilDialog;
-    if (!runUntilDialog.exec())
+    if (!runUntilDialog.exec()) {
+        // popping the button back out
+        setGuiForRunmode(getQtenv()->getSimulationRunMode());
         return;
+    }
 
     RunMode runMode = runUntilDialog.getMode();
     simtime_t time = runUntilDialog.getTime();
