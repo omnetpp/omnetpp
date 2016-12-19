@@ -104,6 +104,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Stopping Condition");
             addTextFieldEditor(group, CFGID_SIM_TIME_LIMIT, "Simulation time limit", c(null, "Simulation Time Limit"));
             addTextFieldEditor(group, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "CPU Time Limit"));
+            addTextFieldEditor(group, CFGID_REAL_TIME_LIMIT, "Real time limit", c(null, "Real Time Limit"));
             addSpacer(form);
             group = createGroup(form, "Other");
             addComboboxFieldEditor(group, CFGID_SIMTIME_RESOLUTION, "Simulation time resolution", true);
@@ -118,12 +119,15 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "Precision"));
             addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", "Value"));
-            addTextFieldEditor(group, CFGID_VECTOR_MAX_BUFFERED_VALUES, "Buffered size for output vectors", c("Vector (module-path.vectorname pattern)", "Number of Values"));
+            addTextFieldEditor(group, CFGID_VECTOR_BUFFER, "Per-vector buffer size", c("Vector (module-path.vectorname pattern)", "Buffer size"));
             addTextFieldEditor(group, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit", c(null, "Memory Limit"));
             addSpacer(form);
             group = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_PRECISION, "Precision", c(null, "Precision"));
-            addCheckboxFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
+            addCheckboxFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");
+            addCheckboxFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE_APPEND, "Append to existing vector file");
+            addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "SQLite scalar file commit frequency");
+            addComboboxFieldEditor(group, CFGID_OUTPUT_VECTOR_DB_INDEXING, "SQLite vector database indexing", true);
             addSpacer(form);
             group = createGroup(form, "Limits");
             addTextFieldEditor(group, CFGID_TOTAL_STACK, "Total activity stack");

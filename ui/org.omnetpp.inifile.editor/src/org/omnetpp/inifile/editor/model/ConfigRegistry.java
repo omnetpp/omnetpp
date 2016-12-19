@@ -263,7 +263,8 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_CPU_TIME_LIMIT = addPerRunOptionU(
         "cpu-time-limit", "s", null,
         "Stops the simulation when CPU usage has reached the given limit. The " +
-        "default is no limit.");
+        "default is no limit. Note: To reduce per-event overhead, this time limit is " +
+        "only checked every N events (by default, N=1024).");
     public static final ConfigOption CFGID_DEBUG_ON_ERRORS = addGlobalOption(
         "debug-on-errors", CFG_BOOL, "false",
         "When set to true, runtime errors will cause the simulation program to break " +
@@ -462,6 +463,9 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_NUM_RNGS = addPerRunOption(
         "num-rngs", CFG_INT, "1",
         "The number of random number generators.");
+    public static final ConfigOption CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ = addGlobalOption(
+        "output-scalar-db-commit-freq", CFG_INT, "100000",
+        "Used with SqliteOutputScalarManager: COMMIT every n INSERTs.");
     public static final ConfigOption CFGID_OUTPUT_SCALAR_FILE = addPerRunOption(
         "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sca",
         "Name for the output scalar file.");
@@ -472,21 +476,34 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_OUTPUT_SCALAR_PRECISION = addPerRunOption(
         "output-scalar-precision", CFG_INT, "14",
         "The number of significant digits for recording data into the output scalar " +
-        "file. The maximum value is ~15 (IEEE double precision).");
+        "file. The maximum value is ~15 (IEEE double precision). This has no effect " +
+        "on SQLite recording, as it stores values as 8-byte IEEE floating point " +
+        "numbers.");
+    public static final ConfigOption CFGID_OUTPUT_VECTOR_DB_INDEXING = addGlobalOption(
+        "output-vector-db-indexing", CFG_CUSTOM, "skip",
+        "Whether and when to add an index to the 'vectordata' table in SQLite output " +
+        "vector files. Possible values: skip, ahead, after");
     public static final ConfigOption CFGID_OUTPUT_VECTOR_FILE = addPerRunOption(
         "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.vec",
         "Name for the output vector file.");
+    public static final ConfigOption CFGID_OUTPUT_VECTOR_FILE_APPEND = addPerRunOption(
+        "output-vector-file-append", CFG_BOOL, "false",
+        "What to do when the output vector db already exists: append to it, or " +
+        "delete it and begin a new file (default). Note: `cIndexedFileOutputVectorManager` " + 
+        "currently does not support appending.");
     public static final ConfigOption CFGID_OUTPUT_VECTOR_PRECISION = addPerRunOption(
         "output-vector-precision", CFG_INT, "14",
         "The number of significant digits for recording data into the output vector " +
         "file. The maximum value is ~15 (IEEE double precision). This setting has no " +
-        "effect on the \"time\" column of output vectors, which are represented as " +
-        "fixed-point numbers and always get recorded precisely.");
+        "effect on SQLite recording (it stores values as 8-byte IEEE floating point " +
+        "numbers), and for the \"time\" column which is represented as fixed-point " +
+        "numbers and always get recorded precisely.");
     public static final ConfigOption CFGID_OUTPUT_VECTORS_MEMORY_LIMIT = addPerRunOptionU(
         "output-vectors-memory-limit", "B", "16MiB",
         "Total memory that can be used for buffering output vectors. Larger values " +
         "produce less fragmented vector files (i.e. cause vector data to be grouped " +
-        "into larger chunks), and therefore allow more efficient processing later.");
+        "into larger chunks), and therefore allow more efficient processing later. " +
+        "There is also a per-vector limit, see `**.vector-buffer`.");
     public static final ConfigOption CFGID_OUTPUTSCALARMANAGER_CLASS = addGlobalOption(
         "outputscalarmanager-class", CFG_STRING, "omnetpp::envir::cFileOutputScalarManager",
         "Part of the Envir plugin mechanism: selects the output scalar manager class " +
@@ -575,14 +592,19 @@ public class ConfigRegistry {
         "Specifies which config Qtenv should set up automatically on startup. The " +
         "default is to ask the user.");
     public static final ConfigOption CFGID_QTENV_DEFAULT_RUN = addGlobalOption(
-        "qtenv-default-run", CFG_INT, null,
+        "qtenv-default-run", CFG_STRING, null,
         "Specifies which run (of the default config, see `qtenv-default-config`) " +
-        "Qtenv should set up automatically on startup. The default is to ask the " +
-        "user.");
+        "Qtenv should set up automatically on startup. A run filter is also " +
+        "accepted. The default is to ask the user.");
     public static final ConfigOption CFGID_QTENV_EXTRA_STACK = addGlobalOptionU(
         "qtenv-extra-stack", "B", "80KiB",
         "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Qtenv.");
+    public static final ConfigOption CFGID_REAL_TIME_LIMIT = addPerRunOptionU(
+        "real-time-limit", "s", null,
+        "Stops the simulation after the specified amount of time has elapsed. The " +
+        "default is no limit. Note: To reduce per-event overhead, this time limit is " +
+        "only checked every N events (by default, N=1024).");
     public static final ConfigOption CFGID_REALTIMESCHEDULER_SCALING = addGlobalOption(
         "realtimescheduler-scaling", CFG_DOUBLE, null,
         "When cRealTimeScheduler is selected as scheduler class: ratio of simulation " +
@@ -748,13 +770,12 @@ public class ConfigRegistry {
         "specify the user interface via a command-line option or the IDE's Run and " +
         "Debug dialogs. New user interfaces can be defined by subclassing " +
         "`cRunnableEnvir`.");
-    public static final ConfigOption CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectOption(
-        "vector-max-buffered-values", KIND_VECTOR, CFG_INT, null,
-        "For output vectors: the maximum number of values to buffer per vector, " +
-        "before writing out a block into the output vector file. The default is no " +
-        "per-vector limit (i.e. only the total memory limit is in effect).\n" +
-        "Usage: " +
-        "`<module-full-path>.<vector-name>.vector-max-buffered-values=<count>`.");
+    public static final ConfigOption CFGID_VECTOR_BUFFER = addPerObjectOptionU(
+        "vector-buffer", KIND_VECTOR, "B", "1MiB",
+        "For output vectors: the maximum per-vector buffer space used for storing " +
+        "values before writing them out as a block into the output vector file. " +
+        "There is also a total limit, see `output-vectors-memory-limit`.\n" +
+        "Usage: `<module-full-path>.<vector-name>.vector-buffer=<amount>`.");
     public static final ConfigOption CFGID_VECTOR_RECORD_EVENTNUMBERS = addPerObjectOption(
         "vector-record-eventnumbers", KIND_VECTOR, CFG_BOOL, "true",
         "Whether to record event numbers for an output vector. (Values and " +
