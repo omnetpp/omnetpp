@@ -546,9 +546,9 @@ void AbstractImageFigureRenderer::setImageTransform(cAbstractImageFigure *figure
     QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem *>(item);
     ASSERT(pixmapItem);
 
-    pixmapItem->setOffset(offset.x() / scale.x(), offset.y() / scale.y());
-
+    qTrans.translate(offset.x(), offset.y());
     qTrans.scale(scale.x(), scale.y());
+
     pixmapItem->setTransform(qTrans);
 }
 
@@ -1281,17 +1281,9 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
     ASSERT(pixmapFigure);
     ASSERT(pixmapItem);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) // this is when QImage::Format_RGBA8888 got added
+    // Qt 5.2.0 is required for this, but 5.4.0 is our minimum anyways
     const cFigure::Pixmap& pixmap = pixmapFigure->getPixmap();
     QImage image(pixmap.buffer(), pixmap.getWidth(), pixmap.getHeight(), QImage::Format_RGBA8888);
-#else // we have to manually copy each pixel
-    QImage image(pixmapFigure->getPixmapWidth(), pixmapFigure->getPixmapHeight(), QImage::Format_ARGB32);
-    for (int x = 0; x < image.width(); ++x)
-        for (int y = 0; y < image.height(); ++y) {
-            cFigure::RGBA rgba = pixmapFigure->getPixel(x, y);
-            image.setPixel(x, y, qRgba(rgba.red, rgba.green, rgba.blue, rgba.alpha));
-        }
-#endif
 
     pixmapItem->setPixmap(QPixmap::fromImage(image));
 }
