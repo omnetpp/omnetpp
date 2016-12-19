@@ -505,6 +505,7 @@ const char *Cmdenv::progressPercentage()
         cpuTimeRatio = stopwatch.getCPUUsageSec() / opt->cpuTimeLimit;
 
     double ratio = std::max(simtimeRatio, std::max(elapsedTimeRatio, cpuTimeRatio));
+    ratio = std::min(ratio, 1.0);  // eliminate occasional "101% completed" message
     if (ratio == -1)
         return "";
     else {
