@@ -253,11 +253,15 @@ void MessageAnimator::setMarkedModule(cModule *mod)
 
 void MessageAnimator::updateAnimations()
 {
-    // Always updating all non-holding animations first.
+    // Always updating all non-holding animations first that are already playing.
+    // But not beginning any pending/waiting anims before the deliveries.
     for (auto& p : animations)
-        if (!p->isHolding() && !p->advance()) {
-            delete p;
-            p = nullptr;
+        if (!p->isHolding() && (p->getState() == Animation::PLAYING)) {
+            p->update();
+            if (p->getState() == Animation::DONE) {
+                delete p;
+                p = nullptr;
+            }
         }
     // Removing the ones that are done.
     animations.removeValues(nullptr);
@@ -271,8 +275,18 @@ void MessageAnimator::updateAnimations()
         deliveries = nullptr;
     }
 
-    // If there were no deliveries (or the last one just ended),
-    // continuing with the rest of the animations, that are holding.
+    // If there were no deliveries (or the last one just ended):
+
+    // Then advancing the holding anims that we haven't already.
+    for (auto& p : animations)
+        if (!p->isHolding() && (p->getState() != Animation::PLAYING) && !p->advance()) {
+            delete p;
+            p = nullptr;
+        }
+    // Removing the ones that are done.
+    animations.removeValues(nullptr);
+
+    // Finally continuing with the rest of the animations, that are holding.
 
     if (getQtenv()->getPref("concurrent-anim", false).toBool()) {
         bool first = true;
