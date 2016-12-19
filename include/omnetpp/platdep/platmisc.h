@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_PLATMISC_H
 #define __OMNETPP_PLATMISC_H
 
-#include <cstdint>  // int64_t
+#include <stdint.h>  // int64_t
 #include <climits>   // __WORDSIZE
 #include "platdefs.h"
 
