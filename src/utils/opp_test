@@ -873,6 +873,7 @@ sub exec_program()
     }
     else
     {
+        $cmd =~ s|'|'\\''|g;  # quote due to potential nested apostrophes
         print "  running: $shell -c 'cd $dir && $cmd' >\"$dir/$outfile\" 2>\"$dir/$errfile\"\n" if ($debug);
         $status = system ("$shell -c 'cd $dir && $cmd' >\"$dir/$outfile\" 2>\"$dir/$errfile\"");
         print "  returned status = $status\n" if ($debug);
