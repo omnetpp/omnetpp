@@ -36,7 +36,7 @@
 #include "logformatter.h"
 #include "args.h"
 #include "envirdefs.h"
-#include "eventlogfilemgr.h"
+#include "stopwatch.h"
 
 namespace omnetpp {
 
@@ -48,6 +48,7 @@ class cParsimCommunications;
 class cParsimPartition;
 class cParsimSynchronizer;
 class cResultRecorder;
+class cIEventlogManager;
 
 namespace envir {
 
@@ -99,8 +100,10 @@ struct ENVIR_API EnvirOptions
     bool printUndisposed;
 
     simtime_t simtimeLimit;
-    long cpuTimeLimit;
     simtime_t warmupPeriod;
+
+    double realTimeLimit;
+    double cpuTimeLimit;
 };
 
 /**
@@ -151,10 +154,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
 
-    timeval simBegTime;  // real time when sim. started
-    timeval simEndTime;  // real time when sim. ended
-    timeval lastStarted; // real time from where sim. was last cont'd
-    timeval elapsedTime; // time spent simulating
+    // CPU and real time limit checking
+    Stopwatch stopwatch;
+
     simtime_t simulatedTime;  // sim. time after finishing simulation
 
   protected:
@@ -317,7 +319,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void resetClock();
     void startClock();
     void stopClock();
-    timeval totalElapsed();
+    timeval totalElapsed(); //FIXME into cEnvir, so it can be put into exception texts
 
     // Hook called when the simulation terminates normally.
     // Its current use is to notify parallel simulation part.

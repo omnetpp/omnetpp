@@ -496,15 +496,15 @@ const char *Cmdenv::progressPercentage()
     if (opt->simtimeLimit >= 0)
         simtimeRatio = getSimulation()->getSimTime() / opt->simtimeLimit;
 
-    double cputimeRatio = -1;
-    if (opt->cpuTimeLimit >= 0) {
-        timeval now;
-        gettimeofday(&now, nullptr);
-        long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
-        cputimeRatio = elapsedsecs / (double)opt->cpuTimeLimit;
-    }
+    double elapsedTimeRatio = -1;
+    if (opt->realTimeLimit >= 0)
+        elapsedTimeRatio = stopwatch.getElapsedSec() / opt->realTimeLimit;
 
-    double ratio = std::max(simtimeRatio, cputimeRatio);
+    double cpuTimeRatio = -1;
+    if (opt->cpuTimeLimit >= 0)
+        cpuTimeRatio = stopwatch.getCPUUsageSec() / opt->cpuTimeLimit;
+
+    double ratio = std::max(simtimeRatio, std::max(elapsedTimeRatio, cpuTimeRatio));
     if (ratio == -1)
         return "";
     else {

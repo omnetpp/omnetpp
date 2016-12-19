@@ -58,7 +58,8 @@ const char *cErrorMessages::get(OppErrorCode e)
         case E_PARAM:     return "Cannot evaluate parameter '%s': %s";
         case E_PARNOTSET: return "Parameter is not yet accessible";
         case E_PARAMSNOTREADY: return "Attempt to access component parameters too early, they have not been set up yet";
-        case E_REALTIME:  return "CPU time limit reached";
+        case E_CPUTIME:   return "CPU time limit reached";
+        case E_REALTIME:  return "Realtime limit reached";
         case E_SIMTIME:   return "Simulation time limit reached";
         case E_STATECHG:  return "FSM: state changed during state entry code (now in state %s)";
         case E_STOPSIMRCVD: return "Simulation stopped by partition %d: %s";

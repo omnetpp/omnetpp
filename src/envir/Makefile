@@ -31,7 +31,7 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirb
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
       $O/fileoutvectormgr.o $O/fileoutscalarmgr.o $O/filesnapshotmgr.o \
       $O/indexedfileoutvectormgr.o $O/akoutvectormgr.o \
-      $O/speedometer.o $O/matchableobject.o $O/matchablefield.o \
+      $O/speedometer.o $O/stopwatch.o $O/matchableobject.o $O/matchablefield.o \
       $O/akaroarng.o $O/cxmldoccache.o $O/eventlogwriter.o $O/objectprinter.o \
       $O/eventlogfilemgr.o $O/runattributes.o $O/intervals.o \
       $O/sqliteoutscalarmgr.o $O/sqliteoutvectormgr.o \

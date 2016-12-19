@@ -76,6 +76,7 @@ enum OppErrorCode : int
     E_PARAM,
     E_PARNOTSET,
     E_PARAMSNOTREADY,
+    E_CPUTIME,
     E_REALTIME,
     E_SIMTIME,
     E_STATECHG,

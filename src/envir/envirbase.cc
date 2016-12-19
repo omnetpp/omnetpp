@@ -151,7 +151,8 @@ Register_GlobalConfigOptionU(CFGID_DEBUGGER_ATTACH_WAIT_TIME, "debugger-attach-w
 Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_PerRunConfigOption(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
 Register_PerRunConfigOptionU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", nullptr, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
-Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
+Register_PerRunConfigOptionU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", nullptr, "Stops the simulation when CPU usage has reached the given limit. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
+Register_PerRunConfigOptionU(CFGID_REAL_TIME_LIMIT, "real-time-limit", "s", nullptr, "Stops the simulation after the specified amount of time has elapsed. The default is no limit. Note: To reduce per-event overhead, this time limit is only checked every N events (by default, N=1024).");
 Register_PerRunConfigOptionU(CFGID_WARMUP_PERIOD, "warmup-period", "s", nullptr, "Length of the initial warm-up period. When set, results belonging to the first x seconds of the simulation will not be recorded into output vectors, and will not be counted into output scalars (see option `**.result-recording-modes`). This option is useful for steady-state simulations. The default is 0s (no warmup period). Note that models that compute and record scalar results manually (via `recordScalar()`) will not automatically obey this setting.");
 Register_PerRunConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as `0000`), and run the simulation.");
 #ifndef USE_OMNETPP4x_FINGERPRINTS
@@ -260,7 +261,10 @@ EnvirOptions::EnvirOptions()
     checkSignals = false;
     fnameAppendHost = false;
     warnings = true;
+    verbose = true;
+    useStderr = true;
     printUndisposed = true;
+    realTimeLimit = 0;
     cpuTimeLimit = 0;
 }
 
@@ -284,7 +288,6 @@ EnvirBase::EnvirBase() : out(std::cout.rdbuf())
     parsimComm = nullptr;
     parsimPartition = nullptr;
 #endif
-
 
     exitCode = 0;
 }
@@ -1377,7 +1380,8 @@ void EnvirBase::readPerRunOptions()
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
     opt->warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt->simtimeLimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT, -1);
-    opt->cpuTimeLimit = (long)cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
+    opt->realTimeLimit = cfg->getAsDouble(CFGID_REAL_TIME_LIMIT, -1);
+    opt->cpuTimeLimit = cfg->getAsDouble(CFGID_CPU_TIME_LIMIT, -1);
     opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     opt->numRNGs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt->rngClass = cfg->getAsString(CFGID_RNG_CLASS);
@@ -1385,6 +1389,8 @@ void EnvirBase::readPerRunOptions()
     opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
 
+    stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
+    stopwatch.setRealTimeLimit(opt->realTimeLimit);
     getSimulation()->setWarmupPeriod(opt->warmupPeriod);
 
     // install fingerprint calculator object
@@ -1753,29 +1759,23 @@ void EnvirBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType,
 
 void EnvirBase::resetClock()
 {
-    timeval now;
-    gettimeofday(&now, nullptr);
-    lastStarted = simEndTime = simBegTime = now;
-    elapsedTime.tv_sec = elapsedTime.tv_usec = 0;
+    stopwatch.resetClock();
 }
 
 void EnvirBase::startClock()
 {
-    gettimeofday(&lastStarted, nullptr);
+    stopwatch.startClock();
 }
 
 void EnvirBase::stopClock()
 {
-    gettimeofday(&simEndTime, nullptr);
-    elapsedTime = elapsedTime + simEndTime - lastStarted;
+    stopwatch.stopClock();
     simulatedTime = getSimulation()->getSimTime();
 }
 
 timeval EnvirBase::totalElapsed()
 {
-    timeval now;
-    gettimeofday(&now, nullptr);
-    return now - lastStarted + elapsedTime;
+    return stopwatch.getElapsedTime();
 }
 
 void EnvirBase::checkTimeLimits()
@@ -1784,15 +1784,11 @@ void EnvirBase::checkTimeLimits()
     if (opt->simtimeLimit >= SIMTIME_ZERO && getSimulation()->getSimTime() >= opt->simtimeLimit)
         throw cTerminationException(E_SIMTIME);
 #endif
-    if (opt->cpuTimeLimit < 0)  // no limit
+    if (!stopwatch.hasTimeLimits())
         return;
-    if (isExpressMode() && (getSimulation()->getEventNumber()&0xFF) != 0)  // optimize: in Express mode, don't call gettimeofday() on every event
+    if (isExpressMode() && (getSimulation()->getEventNumber() & 1023) != 0)  // optimize: in Express mode, don't call gettimeofday() on every event
         return;
-    timeval now;
-    gettimeofday(&now, nullptr);
-    long elapsedsecs = now.tv_sec - lastStarted.tv_sec + elapsedTime.tv_sec;
-    if (elapsedsecs >= opt->cpuTimeLimit)
-        throw cTerminationException(E_REALTIME);
+    stopwatch.checkTimeLimits();
 }
 
 void EnvirBase::stoppedWithTerminationException(cTerminationException& e)

@@ -21,6 +21,7 @@
 #ifndef __OMNETPP_PLATDEP_TIMEUTIL_H
 #define __OMNETPP_PLATDEP_TIMEUTIL_H
 
+#include <cstdint> // int64_t
 #include <ctime>  // localtime()
 #include <cstdio> // sprintf()
 #include <cmath>  // fmod()
@@ -63,16 +64,45 @@ inline int gettimeofday(struct timeval *tv, struct timezone *)
 }
 #endif /* _WIN32 */
 
+inline int64_t timeval_usec(const timeval& a)
+{
+    return (int64_t)a.tv_sec * 1000000 + a.tv_usec;
+}
+
+inline timeval to_timeval(double b)
+{
+    double bInt;
+    double bFrac = modf(b, &bInt);
+    timeval res;
+    res.tv_sec = (long)bInt;
+    res.tv_usec = (long)floor(1000000.0*bFrac);
+    if (res.tv_usec < 0) {
+        res.tv_sec--;
+        res.tv_usec += 1000000;
+    }
+    return res;
+}
+
 inline timeval timeval_add(const timeval& a, const timeval& b)
 {
     timeval res;
     res.tv_sec = a.tv_sec + b.tv_sec;
     res.tv_usec = a.tv_usec + b.tv_usec;
-    if (res.tv_usec>1000000) {
+    if (res.tv_usec > 1000000) {
         res.tv_sec++;
         res.tv_usec -= 1000000;
     }
     return res;
+}
+
+inline void timeval_addto(timeval& a, const timeval& b)
+{
+    a.tv_sec += b.tv_sec;
+    a.tv_usec += b.tv_usec;
+    if (a.tv_usec > 1000000) {
+        a.tv_sec++;
+        a.tv_usec -= 1000000;
+    }
 }
 
 inline timeval timeval_add(const timeval& a, double b)
@@ -82,7 +112,7 @@ inline timeval timeval_add(const timeval& a, double b)
     timeval res;
     res.tv_sec = a.tv_sec + (long)bInt;
     res.tv_usec = a.tv_usec + (long)floor(1000000.0*bFrac);
-    if (res.tv_usec>1000000) {
+    if (res.tv_usec > 1000000) {
         res.tv_sec++;
         res.tv_usec -= 1000000;
     }
@@ -96,13 +126,12 @@ inline timeval timeval_subtract(const timeval& a, const timeval& b)
     timeval res;
     res.tv_sec = a.tv_sec - b.tv_sec;
     res.tv_usec = a.tv_usec - b.tv_usec;
-    if (res.tv_usec<0) {
+    if (res.tv_usec < 0) {
         res.tv_sec--;
         res.tv_usec += 1000000;
     }
     return res;
 }
-
 
 inline timeval timeval_subtract(const timeval& a, double b)
 {
@@ -111,7 +140,7 @@ inline timeval timeval_subtract(const timeval& a, double b)
     timeval res;
     res.tv_sec = a.tv_sec - (long)bInt;
     res.tv_usec = a.tv_usec - (long)floor(1000000.0*bFrac);
-    if (res.tv_usec<0) {
+    if (res.tv_usec < 0) {
         res.tv_sec--;
         res.tv_usec += 1000000;
     }
@@ -120,7 +149,7 @@ inline timeval timeval_subtract(const timeval& a, double b)
 
 inline bool timeval_greater(const timeval& a, const timeval& b)
 {
-    if (a.tv_sec==b.tv_sec)
+    if (a.tv_sec == b.tv_sec)
         return a.tv_usec > b.tv_usec;
     else
         return (unsigned long)a.tv_sec > (unsigned long)b.tv_sec;
@@ -142,6 +171,11 @@ inline long timeval_diff_usec(const timeval& t2, const timeval& t1)
 
 inline timeval operator+(const timeval& a, const timeval& b) {return timeval_add(a,b);}
 inline timeval operator-(const timeval& a, const timeval& b) {return timeval_subtract(a,b);}
+inline void operator+=(timeval& a, const timeval& b) {timeval_addto(a,b);}
+inline bool operator>(const timeval& a, const timeval& b) {return timeval_greater(a,b);}
+inline bool operator<(const timeval& a, const timeval& b) {return timeval_greater(b,a);}
+inline bool operator>=(const timeval& a, const timeval& b) {return !timeval_greater(b,a);}
+inline bool operator<=(const timeval& a, const timeval& b) {return !timeval_greater(a,b);}
 
 // prints time in "yyyy-mm-dd hh:mm:ss" format
 inline char *opp_asctime(time_t t, char *buf)
