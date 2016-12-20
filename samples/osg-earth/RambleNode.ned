@@ -16,13 +16,17 @@ simple RambleNode extends MobileNode
     parameters:
         @class(RambleNode);
         @display("i=block/broadcast");
+
         // mobility parameters
         double speed @unit("mps") = default(10mps);  // the speed of the mobile nodes
         double startX @unit("m") = default(0m);      // the starting coordinates in meter
         double startY @unit("m") = default(0m);      // the starting coordinates in meter
-        volatile double transmitInterval @unit("s") = default(uniform(0s, 1s)); // the amount of time between transmissions
-        string transmissionAnimUrl;                  // the location of the transmission animation file
-        string transmissionColor = default("grey");  // the color of the transmission animation
-        double transmissionAlpha = default(0.25);     // the opacity of the transmission animation
-        double transmissionDuration @unit("s") = default(0.5s); // the duration of the transmission animation (in wall-clock time)
+
+        // transmission parameters
+        volatile double transmitInterval @unit("s") = default(uniform(1s, 5s)); // the amount of time between transmissions
+        double transmissionDuration @unit("s") = default(0.1s); // the duration of the transmission animation
+
+        // appearance parameters
+        string transmissionColor = default("grey");  // the color of the transmission animation (inflating sphere)
+        double transmissionAlpha = default(0.5);     // the initial opacity of the transmission animation
 }

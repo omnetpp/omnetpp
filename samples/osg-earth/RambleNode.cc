@@ -12,6 +12,9 @@
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
 #include <osg/Depth>
+#include <osg/Geode>
+#include <osg/ShapeDrawable>
+#include <osg/PositionAttitudeTransform>
 
 using namespace omnetpp;
 
@@ -36,64 +39,43 @@ void RambleNode::initialize(int stage)
         speed = par("speed");
         playgroundHeight = getSystemModule()->par("playgroundHeight");
         playgroundWidth = getSystemModule()->par("playgroundWidth");
+        transmissionDuration = par("transmissionDuration");
+        initialAlpha = par("transmissionAlpha");
+        // this will make the animation smoother
+        getParentModule()->getCanvas()->setAnimationSpeed(1, this);
         break;
     case 1:
-        // loading the transmission bubble animation
-        std::string transmissionAnimUrl = par("transmissionAnimUrl");
-        osg::ref_ptr<osg::Node> transmissionNode = osgDB::readNodeFile(transmissionAnimUrl);
-        if (!transmissionNode)
-            throw cRuntimeError("Could not load transmission animation '%s'!", transmissionAnimUrl.c_str());
+        // creating the transmission bubble
+        transmissionNode = new osg::PositionAttitudeTransform; // we will scale using this node
+        locatorNode->addChild(transmissionNode);
+
+        osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+        transmissionNode->addChild(geode);
+
+        osg::Vec3 center(0.0f, 0.0f, 0.0f); // in the local coordinate system of the node
+        double radius = 1.0; // the scaling transformation will modulate this
+        auto drawable = new osg::ShapeDrawable(new osg::Sphere(center, radius));
+        geode->addDrawable(drawable);
 
         // setting up rendering to deal with transparency
-        auto stateSet = transmissionNode->getOrCreateStateSet();
+        auto stateSet = geode->getOrCreateStateSet();
         stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
-        osg::Depth* depth = new osg::Depth;
+        osg::Depth *depth = new osg::Depth;
         depth->setWriteMask(false);
         stateSet->setAttributeAndModes(depth, osg::StateAttribute::ON);
         stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
 
-        // setting up transparency in the material
-        cOsgCanvas::Color color(par("transmissionColor"));
-        auto matColor = osg::Vec4(color.red / 255.0, color.green / 255.0, color.blue / 255.0, par("transmissionAlpha").doubleValue());
-        auto material = new osg::Material;
-        material->setEmission(osg::Material::FRONT, matColor);
-        material->setDiffuse(osg::Material::FRONT, matColor);
-        material->setAmbient(osg::Material::FRONT, matColor);
-        material->setAlpha(osg::Material::FRONT, par("transmissionAlpha").doubleValue());
-        transmissionNode->getStateSet()->setAttributeAndModes(material, osg::StateAttribute::OVERRIDE);
+        // setting up color and alpha in the material
+        cOsgCanvas::Color col(par("transmissionColor"));
+        auto color = osg::Vec4(col.red / 255.0, col.green / 255.0, col.blue / 255.0, initialAlpha);
+        material = new osg::Material;
+        material->setEmission(osg::Material::FRONT_AND_BACK, color);
+        material->setAmbient(osg::Material::FRONT_AND_BACK, color);
+        geode->getStateSet()->setAttributeAndModes(material, osg::StateAttribute::OVERRIDE);
 
-        locatorNode->addChild(transmissionNode);
-
-        // finding the animation manager in the loaded node
-        struct AnimationManagerFinder : public osg::NodeVisitor {
-            osgAnimation::BasicAnimationManager *result = nullptr;
-            AnimationManagerFinder() : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
-            void apply(osg::Node& node) {
-                if (result) return; // already found it
-                if (osgAnimation::AnimationManagerBase* b = dynamic_cast<osgAnimation::AnimationManagerBase*>(node.getUpdateCallback())) {
-                    result = new osgAnimation::BasicAnimationManager(*b); // here it is!
-                    return;
-                }
-                traverse(node);
-            }
-        } finder;
-
-        transmissionNode->accept(finder);
-        animationManager = finder.result;
-
-        if (!animationManager)
-            throw cRuntimeError("Could not find the AnimationManagerBase in the loaded transmission animation (%s)!", transmissionAnimUrl.c_str());
-
-        // setting up the animation
-        transmissionNode->setUpdateCallback(animationManager);
-        if (animationManager->getAnimationList().empty())
-            throw cRuntimeError("No animation found in the transmission animation (%s)!", transmissionAnimUrl.c_str());
-
-        transmissionAnim = animationManager->getAnimationList().front();
-        transmissionAnim->setPlayMode(osgAnimation::Animation::STAY);
-        // duration * 2 because the sphere animation ends at half of its real length
-        // (as a workaround, otherwise spheres would randomly stick with intermediate radiuses)
-        transmissionAnim->setDuration(par("transmissionDuration").doubleValue() * 2);
+        // We only have to do this because in older OSG versions the material didn't work properly...
+        // In 3.4.0 it's no longer needed. This way at least it will be somewhat transparent.
+        drawable->setColor(color);
 
         // scheduling the first signal to ourselves
         transmitMessage = new cMessage;
@@ -112,6 +94,24 @@ void RambleNode::handleMessage(cMessage *msg)
         // otherwise let the base class handle it (it is most likely a "move" message)
         MobileNode::handleMessage(msg);
     }
+}
+
+void RambleNode::refreshDisplay() const
+{
+    MobileNode::refreshDisplay();
+
+    // this will run from 0 to 1 during the propagation of the last transmission
+    double t = 0;
+    if (lastTransmissionStarted > SIMTIME_ZERO) {
+        t = (simTime() - lastTransmissionStarted).dbl() / transmissionDuration;
+        if (t > 1)
+            t = 0; // if it is over, resetting
+    }
+
+    // fading and scaling according to the parameters
+    material->setAlpha(osg::Material::FRONT, initialAlpha * (1.0 - t));
+    t *= txRange;
+    transmissionNode->setScale(osg::Vec3d(t, t, t));
 }
 
 void RambleNode::move()
@@ -136,7 +136,8 @@ void RambleNode::move()
 
 void RambleNode::transmit()
 {
-    animationManager->playAnimation(transmissionAnim);
+    // simply remembering the current time as the time of the latest transmission
+    lastTransmissionStarted = simTime();
 }
 
 #endif // WITH_OSG

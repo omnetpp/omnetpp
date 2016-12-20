@@ -1,3 +1,7 @@
+2016-12-21  Attila Torok
+
+        * Transmission animations are no longer loaded from a file, but created from code instead.
+
 2016-12-21  Rudolf Hornig
 
 	* Added WITH_OSGEARTH to the .cproject file so the IDE will show the osgEarth specific
