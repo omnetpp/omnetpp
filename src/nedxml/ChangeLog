@@ -1,3 +1,8 @@
+2016-12-16  Rudolf Hornig
+
+	* Suppressed shift/reduce warnings in .y files by specifying the
+	expected number of conflicts (%expect)
+
 2016-12-15  Rudolf Hornig
 
 	* ned2.y fix: BOM in UTF-8 files is now correctly skipped

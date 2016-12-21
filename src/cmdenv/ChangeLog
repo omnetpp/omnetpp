@@ -1,3 +1,8 @@
+2016-12-19  Andras Varga
+
+	* Completion percentage computation updated: take real-time-limit into
+	account.
+
 2016-11-30  Rudolf Hornig
 
 	* build: Makefile refactored. Added clang-c2 support and optimized
@@ -69,7 +74,7 @@
 	numbers and run number ranges. Use -q to query the list of matching
 	runs.
 
-	Example: -c Aloha -r '$numHosts=>20 && $numHosts<=100' -q runconfig
+	Example: -c Aloha -r '$numHosts>20 and $numHosts<=100' -q runconfig
 
 2016-11-30  Rudolf Hornig
 

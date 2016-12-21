@@ -1,3 +1,10 @@
+2016-04-11  Andras Varga
+
+	* Reverted the usage of refreshDisplay(), as it was not good here.
+	Some random points were added to the movement trail in Fast and Express mode.
+
+	* Prevented displaying the traveled distance using scientific notation.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------
@@ -11,4 +18,3 @@
 2014-09-11  Andras Varga
 
 	* Initial revision
-

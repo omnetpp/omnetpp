@@ -3,17 +3,27 @@
 	* Added WITH_OSGEARTH to the .cproject file so the IDE will show the osgEarth specific
 	  code in enabled state.
 
+2016-08-26  Attila Torok
+
+	* Moved movement trails off the ground to avoid Z-fighting glitches.
+
+2016-04-12  Levente Meszaros
+
+	* Made mobile nodes more easily noticeable in the Boston streets configuration.
+	 - Added modelColor parameter to MobileNode.
+	 - Changed dumptrack model color to somewhat redish.
+	 - Increased dumptrack model size.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
-2015-08-25  TÖRÖK Attila
+2015-08-25  Attila Torok
 
 	* Added transmission sphere animation to RambleNode.
 
 2015-08-05  Rudolf Hornig
 
 	* Initial osg-earth demo based on the google-earth demo
-

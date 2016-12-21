@@ -3,30 +3,37 @@
 	* Added WITH_OSGEARTH to the .cproject file so the IDE will show the osgEarth specific
 	  code in enabled state.
 
+2016-08-04  Attila Torok
+
+	* Replaced the discontinued MapQuest public tile source with a single offline image.
+
+2016-04-12  Andras Varga
+
+	* Refactored mobility logic, some cosmetic changes to the code, added more comments.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------
 
 2015-12-07  ------ omnetpp-5.0b3 released ------
 
-2015-08-25  TÖRÖK Attila
+2015-08-25  Attila Torok
 
 	* General improvements, more configuration options, separate configs. Details:
 	 - Connection (sat2sat and sat2gnd) colors and widths are now configurable.
 	 - Range cone color is now configurable.
 	 - Replaced connection cylinders with proper lines that	keep their widths.
-	 - Satellite orbits are now configurable.   
+	 - Satellite orbits are now configurable.
 	 - Added random, geostat and polar configs.
 
-2015-08-25  TÖRÖK Attila
+2015-08-25  Attila Torok
 
 	* Transparency fixes, some cleanups, configurable orbit and cone colors.
 
-2015-08-24  TÖRÖK Attila
+2015-08-24  Attila Torok
 
 	* Lighting fixes, earth rotation.
 
-2015-08-19  TÖRÖK Attila
+2015-08-19  Attila Torok
 
 	* Initial demo.
-

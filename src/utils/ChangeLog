@@ -1,3 +1,16 @@
+2016-12-19  Rudolf Hornig
+
+	* opp_featuretool: dump the feature macros in sorted order
+
+2016-12-19  Andras Varga
+
+	* opp_test: fix for "|" as %subst separator character
+
+2016-12-19  Andras Varga
+
+	* opp_test: fix: quoting was messed up with %extraargs that contain
+	single-quoted args
+
 2016-12-05  Rudolf Hornig
 
 	* Removed unsused abspath.c

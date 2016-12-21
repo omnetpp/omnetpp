@@ -1,3 +1,15 @@
+2016-12-19  Andras Varga
+
+	* cpu-time-limit option: do not truncate to whole seconds; measure really
+	CPU usage and not elapsed time (use clock() instead of gettimeofday())
+
+	* Added real-time-limit option that measures elapsed time (gettimeofday)
+
+	* Time limit checking frequency changed from every 256 events to every
+	1024 events.
+
+	* Factored out time limit handling into a Stopwatch class.
+
 2016-12-16  Andras Varga
 
 	* scalar file recording: change "." to "_runattrs_" as the module

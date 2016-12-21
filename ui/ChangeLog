@@ -1,3 +1,11 @@
+2016-12-19  Andras Varga
+
+	* IDE: Inifile editor updated with new/changed options
+
+2016-12-16  Rudolf Hornig
+
+	* IDE: updated logo images
+
 2016-11-25  Andras Varga
 
 	* Analysis tool: initial support for SQLite-based result files [Zoltan
@@ -1148,4 +1156,3 @@
 	* Store various show/hide flags in sequence chart eventlog configuration files.
 
 2009-03-12  ------ omnetpp-4.0 released ------
-

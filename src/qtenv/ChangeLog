@@ -1,3 +1,60 @@
+2016-12-19  Attila Torok
+
+	* ImageFigureRenderer: Don't use offset for positioning.
+
+	Somehow internally it works with integers only, so for low resolution
+	pixmaps scaled up, the position was rounded to the size of a pixel, which
+	can be very coarse.
+
+	Also removed version check for Qt 5.2.0.
+
+2016-12-19  Attila Torok
+
+	* The 'Run until...' button is now popped out if the dialog is cancelled.
+
+2016-12-19  Attila Torok
+
+	* MessageAnimator: Message animation update fixed.
+
+	Don't begin any holding anims before deliveries, just update the playing
+	ones, and advance reft after them.
+
+2016-12-15  Attila Torok
+
+	* Fix OutlinedTextItem painting glitches.
+
+	By informing Qt about changing boundingRect(). Previously changing the
+	text of text figures did not properly repaint.
+
+2016-12-16  Attila Torok
+
+	* Make PreferencesDialog a child of MainWindow.
+
+	This will stop it from appearing as a separate window on task bars /
+	window list applets / app switcher panels / etc. In most cases. I hope.
+
+2016-12-16  Attila Torok
+
+	* Added the "Rebuild network" action to the main toolbar.
+
+	Made a new icon for it, and changed the tooltip.
+
+2016-12-16  Attila Torok
+
+	* Remove the "logo128w" icon, and all references to it.
+
+	That's the one with the little window on top of the logo in the corner.
+
+2016-12-16  Attila Torok
+
+	* MessageAnimator: Use map instead of unordered_map.
+
+	The compiler on our mac builder is too old for it...
+
+2016-12-16  Rudolf Hornig
+
+	* Updated logo immages and toolbar icons.
+
 2016-12-15  Attila Torok
 
 	* "Next event markers" fixed. Sometimes they were missing.

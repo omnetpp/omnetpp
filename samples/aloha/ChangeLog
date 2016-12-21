@@ -1,10 +1,25 @@
+2016-11-21  Andras Varga
+
+	* Animation/visualization code cosmetics.
+
+2016-11-10  TÖRÖK Attila
+
+	* Show circles in the transmission rings, new animation speed parameters.
+	 - Animation speed is controlled by each node, taking three parameters for
+	   different states (idle, transmission edge, midtransmission) into account.
+
 2016-08-10  TÖRÖK Attila
 
-	samples/aloha: Added transmission ring animations.
+	* Added transmission ring animations.
+	 - The Server and all Hosts now have a fixed position (still random, but
+	   deterministic, and not using auto-layouting) so their individual
+	   propagation delays can be computed.
+	 - Each transmitted packet is visualized with a ring and many concentric
+	   circles, illustrating the workings of the protocol, including collisions.
 
 2015-12-03  Andras Varga
 
-	samples: aloha rewritten to use refreshDisplay()
+	* Rewritten to use refreshDisplay()
 
 2016-04-13  ------ omnetpp-5.0 released ------
 
@@ -65,4 +80,3 @@
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2004-12-29  ------ omnetpp-3.0 released ------
-
