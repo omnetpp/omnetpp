@@ -85,7 +85,6 @@ public final class NedCompletionHelper {
                 case bgi: break;
                 case bgtt: break;
                 case bgg: shortParameterCount = 1; break;
-                case bgl: break;
                 case bgu: break;
                 case p: shortParameterCount = 2; break;
                 case b: shortParameterCount = 2; break;

@@ -44,7 +44,6 @@ public interface IDisplayString {
         bgi(COMPOUNDMODULE, "Background image"),
         bgtt(COMPOUNDMODULE, "Background tooltip"),
         bgg(COMPOUNDMODULE, "Background grid"),
-        bgl(COMPOUNDMODULE, "Layout parameters"),
         bgu(COMPOUNDMODULE, "Distance unit"),
 
         p(COMPOUNDMODULE | SUBMODULE, "Position"),
@@ -266,10 +265,6 @@ public interface IDisplayString {
         MODULE_GRID_DISTANCE(Tag.bgg, 0, PropType.DISTANCE, PropGroup.Background, "grid distance", "Distance between two major gridlines, in units", null),
         MODULE_GRID_SUBDIVISION(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "grid subdivision", "Minor gridlines per major gridlines", null),
         MODULE_GRID_COLOR(Tag.bgg, 2, PropType.COLOR, PropGroup.Background, "grid color", "Color of the grid lines (color name, #RRGGBB or @HHSSBB)", null),
-
-        // BGL tag (compound module layouting)
-        MODULE_LAYOUT_SEED(Tag.bgl, 0, PropType.INTEGER, PropGroup.BackgroundLayout, "layout seed","Seed value for layout algorithm", null),
-        MODULE_LAYOUT_ALGORITHM(Tag.bgl, 1, PropType.STRING, PropGroup.BackgroundLayout, "layout algorithm","Algorithm for child layouting", null),
 
         // BGU tag (distance unit)
         MODULE_UNIT(Tag.bgu, 0, PropType.STRING, PropGroup.Background, "distance unit", "Name of distance unit", null),
