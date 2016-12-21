@@ -1,3 +1,8 @@
+2016-12-21  Rudolf Hornig
+
+	* Added WITH_OSGEARTH to the .cproject file so the IDE will show the osgEarth specific
+	  code in enabled state.
+
 2016-04-13  ------ omnetpp-5.0 released ------
 
 2016-03-10  ------ omnetpp-5.0rc released ------
