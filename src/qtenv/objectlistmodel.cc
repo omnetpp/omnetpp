@@ -1,5 +1,5 @@
 //==========================================================================
-//  INSPECTORLISTBOX.CC - part of
+//  OBJECTLISTMODEL.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "inspectorlistbox.h"
+#include "objectlistmodel.h"
 #include "qtenv.h"
 
 #include <QDebug>
@@ -22,14 +22,14 @@
 namespace omnetpp {
 namespace qtenv {
 
-QModelIndex InspectorListBox::index(int row, int column, const QModelIndex&) const
+QModelIndex ObjectListModel::index(int row, int column, const QModelIndex&) const
 {
     return objects.empty()
             ? QModelIndex()
             : createIndex(row, column, objects[row]);
 }
 
-QVariant InspectorListBox::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant ObjectListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     static QString titles[] = {"Class", "Name", "Info"};
     return (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -37,7 +37,7 @@ QVariant InspectorListBox::headerData(int section, Qt::Orientation orientation, 
             : QVariant();
 }
 
-void InspectorListBox::sort(int i, Qt::SortOrder order)
+void ObjectListModel::sort(int i, Qt::SortOrder order)
 {
     lastSortColumn = i;
     lastSortOrder = order;
@@ -68,7 +68,7 @@ void InspectorListBox::sort(int i, Qt::SortOrder order)
     endResetModel();
 }
 
-QVariant InspectorListBox::data(const QModelIndex& index, int role) const
+QVariant ObjectListModel::data(const QModelIndex& index, int role) const
 {
     if (objects.size() < index.row())
         return QVariant();
@@ -95,7 +95,7 @@ QVariant InspectorListBox::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-void InspectorListBox::setObjects(QVector<cObject *> objects)
+void ObjectListModel::setObjects(QVector<cObject *> objects)
 {
     beginResetModel();
     this->objects = objects;

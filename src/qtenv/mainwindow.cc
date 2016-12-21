@@ -41,7 +41,7 @@
 #include "moduleinspector.h"
 #include "timelinegraphicsview.h"
 #include "rununtildialog.h"
-#include "filteredobjectlistdialog.h"
+#include "findobjectsdialog.h"
 #include "comboselectiondialog.h"
 #include "fileeditor.h"
 #include "animationcontrollerdialog.h"
@@ -1159,12 +1159,10 @@ void MainWindow::on_actionAbout_OMNeT_Qtenv_triggered()
 void MainWindow::showFindObjectsDialog(cObject *obj)
 {
     // Set mainwindow to dialog's parent, thus it is closed when mainwindow is closed.
-    QDialog *filteredObjectListDialog = new FilteredObjectListDialog(obj, this);
-    filteredObjectListDialog->setAttribute(Qt::WA_DeleteOnClose);
-    // Force to not insert in its parent as a widget.
-    filteredObjectListDialog->setWindowFlags(Qt::Dialog);
-    filteredObjectListDialog->show();
-    connect(this, SIGNAL(setNewNetwork()), filteredObjectListDialog, SLOT(invalidate()));
+    FindObjectsDialog *dialog = new FindObjectsDialog(obj, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
+    connect(this, SIGNAL(setNewNetwork()), dialog, SLOT(invalidate()));
 }
 
 void MainWindow::on_actionLoadNEDFile_triggered()

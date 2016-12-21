@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FilteredObjectListDialog</class>
- <widget class="QDialog" name="FilteredObjectListDialog">
+ <class>FindObjectsDialog</class>
+ <widget class="QDialog" name="FindObjectsDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -220,7 +220,7 @@ Examples:
     </layout>
    </item>
    <item>
-    <widget class="QWidget" name="inspectorListView" native="true"/>
+    <widget class="QWidget" name="listViewArea" native="true"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -239,7 +239,7 @@ Examples:
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>FilteredObjectListDialog</receiver>
+   <receiver>FindObjectsDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">

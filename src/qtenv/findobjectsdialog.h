@@ -1,5 +1,5 @@
 //==========================================================================
-//  FILTEREDOBJECTLISTDIALOG.H - part of
+//  FINDOBJECTSDIALOG.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,17 +14,17 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_FILTEREDOBJECTLISTDIALOG_H
-#define __OMNETPP_QTENV_FILTEREDOBJECTLISTDIALOG_H
+#ifndef __OMNETPP_QTENV_FINDOBJECTSDIALOG_H
+#define __OMNETPP_QTENV_FINDOBJECTSDIALOG_H
 
 #include <QDialog>
 #include <QItemSelection>
 #include <QModelIndex>
-#include "inspectorlistbox.h"
+#include "objectlistmodel.h"
 #include "qtenvdefs.h"
 
 namespace Ui {
-class FilteredObjectListDialog;
+class FindObjectsDialog;
 }
 
 namespace omnetpp {
@@ -33,14 +33,14 @@ class cObject;
 
 namespace qtenv {
 
-class InspectorListBoxView;
+class ObjectListView;
 
-class QTENV_API FilteredObjectListDialog : public QDialog
+class QTENV_API FindObjectsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit FilteredObjectListDialog(cObject *ptr, QWidget *parent = 0);
-    ~FilteredObjectListDialog();
+    explicit FindObjectsDialog(cObject *ptr, QWidget *parent = 0);
+    ~FindObjectsDialog();
 
 public slots:
     void invalidate();
@@ -52,16 +52,16 @@ private slots:
     void onFontChanged();
 
 private:
-    Ui::FilteredObjectListDialog *ui;
+    Ui::FindObjectsDialog *ui;
 
-    static QString classNamePattern;
-    static QString namePattern;
+    static QString classNamePatternHelp;
+    static QString namePatternHelp;
 
     void setPref(const QString& key, const QVariant& value);
     QVariant getPref(const QString& key, const QVariant& defaultValue = QVariant());
 
-    InspectorListBox *inspectorListBox; // the model of the object list
-    InspectorListBoxView *inspectorListBoxView; // the list widget itself
+    ObjectListModel *listModel; // the model of the object list
+    ObjectListView *listView; // the list widget itself
 
     QStringList getClassNames();
     void checkPattern(const char *pattern);
@@ -71,4 +71,4 @@ private:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // __OMNETPP_QTENV_FILTEREDOBJECTLISTDIALOG_H
+#endif // __OMNETPP_QTENV_FINDOBJECTSDIALOG_H

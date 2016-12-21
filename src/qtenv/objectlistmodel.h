@@ -1,5 +1,5 @@
 //==========================================================================
-//  INSPECTORLISTBOX.H - part of
+//  OBJECTLISTMODEL.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_INSPECTORLISTBOX_H
-#define __OMNETPP_QTENV_INSPECTORLISTBOX_H
+#ifndef __OMNETPP_QTENV_OBJECTLISTMODEL_H
+#define __OMNETPP_QTENV_OBJECTLISTMODEL_H
 
 #include <QAbstractTableModel>
 #include <QVector>
@@ -27,7 +27,7 @@ class cObject;
 
 namespace qtenv {
 
-class QTENV_API InspectorListBox : public QAbstractTableModel
+class QTENV_API ObjectListModel : public QAbstractTableModel
 {
     Q_OBJECT
 private:
@@ -55,4 +55,4 @@ public:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // __OMNETPP_QTENV_INSPECTORLISTBOX_H
+#endif // __OMNETPP_QTENV_OBJECTLISTMODEL_H

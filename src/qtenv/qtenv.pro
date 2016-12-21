@@ -92,9 +92,6 @@ SOURCES += mainwindow.cc \
     rununtildialog.cc \
     submoduleitem.cc \
     modulecanvasviewer.cc \
-    filteredobjectlistdialog.cc \
-    inspectorlistbox.cc \
-    inspectorlistboxview.cc \
     comboselectiondialog.cc \
     compoundmoduleitem.cc \
     connectionitem.cc \
@@ -108,7 +105,10 @@ SOURCES += mainwindow.cc \
     displayupdatecontroller.cc \
     messageanimations.cc \
     graphicsitems.cc \
-    modulelayouter.cc
+    modulelayouter.cc \
+    objectlistmodel.cc \
+    objectlistview.cc \
+    findobjectsdialog.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -150,9 +150,6 @@ HEADERS += mainwindow.h \
     rununtildialog.h \
     submoduleitem.h \
     modulecanvasviewer.h \
-    filteredobjectlistdialog.h \
-    inspectorlistbox.h \
-    inspectorlistboxview.h \
     comboselectiondialog.h \
     compoundmoduleitem.h \
     connectionitem.h \
@@ -166,7 +163,10 @@ HEADERS += mainwindow.h \
     displayupdatecontroller.h \
     messageanimations.h \
     graphicsitems.h \
-    modulelayouter.h
+    modulelayouter.h \
+    objectlistmodel.h \
+    objectlistview.h \
+    findobjectsdialog.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
@@ -181,11 +181,11 @@ FORMS += mainwindow.ui \
     logfilterdialog.ui \
     preferencesdialog.ui \
     rununtildialog.ui \
-    filteredobjectlistdialog.ui \
     comboselectiondialog.ui \
     layersdialog.ui \
     fileeditor.ui \
-    animationcontrollerdialog.ui
+    animationcontrollerdialog.ui \
+    findobjectsdialog.ui
 
 RESOURCES += \
     icons.qrc

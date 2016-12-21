@@ -1,5 +1,5 @@
 //==========================================================================
-//  FILTEREDOBJECTLISTDIALOG.CC - part of
+//  FINDOBJECTSDIALOG.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "filteredobjectlistdialog.h"
-#include "ui_filteredobjectlistdialog.h"
+#include "findobjectsdialog.h"
+#include "ui_findobjectsdialog.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/globals.h"
@@ -23,8 +23,8 @@
 #include "common/matchexpression.h"
 #include "qtenv.h"
 #include "inspector.h"
-#include "inspectorlistbox.h"
-#include "inspectorlistboxview.h"
+#include "objectlistmodel.h"
+#include "objectlistview.h"
 #include "mainwindow.h"
 #include <QMessageBox>
 #include <QKeyEvent>
@@ -32,9 +32,12 @@
 #include <QDebug>
 
 namespace omnetpp {
+
+using namespace common;
+
 namespace qtenv {
 
-QString FilteredObjectListDialog::classNamePattern =
+QString FindObjectsDialog::classNamePatternHelp =
     "Generic filter expression which matches class name by default.\n"
     "\n"
     "        Wildcards (\"?\", \"*\"), AND, OR, NOT and field matchers are accepted;\n"
@@ -49,7 +52,7 @@ QString FilteredObjectListDialog::classNamePattern =
     "          cMessage and kind(3)\n"
     "                    matches objects of class cMessage and message kind 3.";
 
-QString FilteredObjectListDialog::namePattern =
+QString FindObjectsDialog::namePatternHelp =
     "Generic filter expression which matches the object full path by default.\n"
     "\n"
     "Wildcards (\"?\", \"*\") are allowed. \"{a-exz}\" matches any character in the\n"
@@ -90,9 +93,9 @@ QString FilteredObjectListDialog::namePattern =
     "            parentheses. (Note: *.msg(ACK) without parens would be interpreted\n"
     "            as some object having a \"*.msg\" attribute with the value \"ACK\"!)";
 
-FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent) :
+FindObjectsDialog::FindObjectsDialog(cObject *ptr, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::FilteredObjectListDialog)
+    ui(new Ui::FindObjectsDialog)
 {
     ui->setupUi(this);
     setFont(getQtenv()->getBoldFont());
@@ -106,11 +109,10 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
                 : getSimulation();
     }
 
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-    ui->comboBox->setToolTip(classNamePattern);
-    ui->comboLabel->setToolTip(classNamePattern);
-    ui->fullPathEdit->setToolTip(namePattern);
-    ui->fullPathLabel->setToolTip(namePattern);
+    ui->comboBox->setToolTip(classNamePatternHelp);
+    ui->comboLabel->setToolTip(classNamePatternHelp);
+    ui->fullPathEdit->setToolTip(namePatternHelp);
+    ui->fullPathLabel->setToolTip(namePatternHelp);
 
     // vars
     QString classText = getPref("class", "").toString();
@@ -156,29 +158,29 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
     ui->otherCheckBox->setChecked(variant.toBool());
 
     // Listbox
-    inspectorListBox = new InspectorListBox();
-    inspectorListBoxView = new InspectorListBoxView();
-    inspectorListBoxView->setModel(inspectorListBox);
+    listModel = new ObjectListModel();
+    listView = new ObjectListView();
+    listView->setModel(listModel);
 
     int sortColumn = getPref("sortcolumn", 0).toInt();
     Qt::SortOrder sortOrder = getPref("sortorder", 0).value<Qt::SortOrder>();
-    inspectorListBoxView->sortByColumn(sortColumn, sortOrder);
+    listView->sortByColumn(sortColumn, sortOrder);
 
     variant = getPref("columnwidths");
     if (variant.isValid()) {
         QString widths = variant.toString();
         QStringList columnWidths = widths.split("#");
         for (int i = 0; i < columnWidths.size(); ++i)
-            inspectorListBoxView->setColumnWidth(i, columnWidths[i].toInt());
+            listView->setColumnWidth(i, columnWidths[i].toInt());
     }
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
-    ui->inspectorListView->setLayout(layout);
-    layout->addWidget(inspectorListBoxView);
+    ui->listViewArea->setLayout(layout);
+    layout->addWidget(listView);
 
-    connect(inspectorListBoxView, SIGNAL(activated(QModelIndex)), this, SLOT(inspect(QModelIndex)));
-    connect(inspectorListBoxView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), this, SLOT(onListBoxSelectionChanged(QItemSelection, QItemSelection)));
+    connect(listView, SIGNAL(activated(QModelIndex)), this, SLOT(inspect(QModelIndex)));
+    connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), this, SLOT(onListBoxSelectionChanged(QItemSelection, QItemSelection)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     // geometry
@@ -187,22 +189,22 @@ FilteredObjectListDialog::FilteredObjectListDialog(cObject *ptr, QWidget *parent
         restoreGeometry(geometry);
 }
 
-void FilteredObjectListDialog::onFontChanged()
+void FindObjectsDialog::onFontChanged()
 {
     setFont(getQtenv()->getBoldFont());
 }
 
-void FilteredObjectListDialog::setPref(const QString &key, const QVariant &value)
+void FindObjectsDialog::setPref(const QString &key, const QVariant &value)
 {
     getQtenv()->setPref("FindObjectsDialog/" + key, value);
 }
 
-QVariant FilteredObjectListDialog::getPref(const QString &key, const QVariant &defaultValue)
+QVariant FindObjectsDialog::getPref(const QString &key, const QVariant &defaultValue)
 {
     return getQtenv()->getPref("FindObjectsDialog/" + key, defaultValue);
 }
 
-void FilteredObjectListDialog::inspect(QModelIndex index)
+void FindObjectsDialog::inspect(QModelIndex index)
 {
     if (!index.isValid())
         return;
@@ -228,7 +230,7 @@ void FilteredObjectListDialog::inspect(QModelIndex index)
     getQtenv()->inspect(object, INSP_DEFAULT, true);
 }
 
-void FilteredObjectListDialog::onListBoxSelectionChanged(QItemSelection selected, QItemSelection  /*deselected*/)
+void FindObjectsDialog::onListBoxSelectionChanged(QItemSelection selected, QItemSelection  /*deselected*/)
 {
     cObject *object = selected.indexes().front().data(Qt::UserRole).value<cObject *>();
     if (object)
@@ -236,7 +238,7 @@ void FilteredObjectListDialog::onListBoxSelectionChanged(QItemSelection selected
         getQtenv()->onSelectionChanged(object);
 }
 
-QStringList FilteredObjectListDialog::getClassNames()
+QStringList FindObjectsDialog::getClassNames()
 {
     cRegistrationList *rList = classes.getInstance();
     envir::cCollectChildrenVisitor visitor(rList);
@@ -253,7 +255,7 @@ QStringList FilteredObjectListDialog::getClassNames()
     return classNames;
 }
 
-void FilteredObjectListDialog::refresh()
+void FindObjectsDialog::refresh()
 {
     // resolve root object
     std::string fullPath = ui->searchEdit->text().toStdString();
@@ -309,7 +311,7 @@ void FilteredObjectListDialog::refresh()
     }
 
     // clear listbox
-    inspectorListBoxView->model()->removeRow(0);
+    listModel->removeRow(0);
 
     // insert into listbox
     if (viewAll == QMessageBox::StandardButton::Ok) {
@@ -322,13 +324,13 @@ void FilteredObjectListDialog::refresh()
         for (int i = 0; i < num; ++i)
             objects.push_back(objList[i]);
 
-        static_cast<InspectorListBox *>(inspectorListBoxView->model())->setObjects(objects);
+        listModel->setObjects(objects);
     }
 
     setPref("outofdate", false);
 }
 
-cObject **FilteredObjectListDialog::getSubObjectsFilt(cObject *object, const char *classNamePattern, const char *objFullPathPattern,
+cObject **FindObjectsDialog::getSubObjectsFilt(cObject *object, const char *classNamePattern, const char *objFullPathPattern,
                                                  int maxCount, int &num)
 {
     // args: <ptr> <class> <fullpath> <maxcount>, where
@@ -368,23 +370,22 @@ cObject **FilteredObjectListDialog::getSubObjectsFilt(cObject *object, const cha
     return objs;
 }
 
-void FilteredObjectListDialog::checkPattern(const char *pattern)
+void FindObjectsDialog::checkPattern(const char *pattern)
 {
     // try parse className
-    omnetpp::common::MatchExpression matcher(pattern, false, true, true);
+    MatchExpression matcher(pattern, false, true, true);
     // let's see if MatchableObjectAdapter can parse field names inside
     // (unmatched "[", etc.), by trying to match some random object
     MatchableObjectAdapter objectAdapter(MatchableObjectAdapter::FULLNAME, getSimulation());
     matcher.matches(&objectAdapter);
 }
 
-FilteredObjectListDialog::~FilteredObjectListDialog()
+FindObjectsDialog::~FindObjectsDialog()
 {
     setPref("rootobject", ui->searchEdit->text());
     setPref("class", ui->comboBox->currentText());
     setPref("name", ui->fullPathEdit->text());
 
-    // filtobjlist-category
     setPref("cat-m", ui->modulesCheckBox->isChecked());
     setPref("cat-p", ui->paramCheckBox->isChecked());
     setPref("cat-q", ui->queuesCheckBox->isChecked());
@@ -397,27 +398,27 @@ FilteredObjectListDialog::~FilteredObjectListDialog()
     setPref("width", width());
     setPref("height", height());
 
-    setPref("sortcolumn", inspectorListBox->getLastSortColumn());
-    setPref("sortorder", inspectorListBox->getLastSortOrder());
+    setPref("sortcolumn", listModel->getLastSortColumn());
+    setPref("sortorder", listModel->getLastSortOrder());
 
     QString widths = "";
-    for (int i = 0; i < inspectorListBoxView->model()->columnCount(); ++i)
-        widths += QString::number(inspectorListBoxView->columnWidth(i)) + "#";
+    for (int i = 0; i < listModel->columnCount(); ++i)
+        widths += QString::number(listView->columnWidth(i)) + "#";
 
     setPref("columnwidths", widths);
     setPref("geometry", saveGeometry());
 
-    // When close mainwindow while this dialog is opened, qt call
-    // data method unecessarily and use corrupted pointer, which occurs
-    // sigsegv by dinamic_cast, that's why have to delete model explicitly
-    delete inspectorListBoxView->model();
+    // When the main window is closed while this dialog is open, Qt called
+    // the data function unecessarily, and used corrupted pointers, which
+    // causes a segfault in a dynamic_cast, so we have to delete the model.
+    delete listModel;
 
     delete ui;
 }
 
-void FilteredObjectListDialog::invalidate()
+void FindObjectsDialog::invalidate()
 {
-    static_cast<InspectorListBox*>(inspectorListBoxView->model())->setObjects(QVector<cObject*>(0));
+    listModel->setObjects(QVector<cObject*>(0));
 }
 
 }  // namespace qtenv

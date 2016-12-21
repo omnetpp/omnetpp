@@ -1,5 +1,5 @@
 //==========================================================================
-//  INSPECTORLISTBOXVIEW.CC - part of
+//  OBJECTLISTVIEW.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "inspectorlistboxview.h"
-#include "inspectorlistbox.h"
+#include "objectlistview.h"
+#include "objectlistmodel.h"
 #include "qtenv.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"
@@ -30,7 +30,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-InspectorListBoxView::InspectorListBoxView(QWidget *parent)
+ObjectListView::ObjectListView(QWidget *parent)
     : QTableView(parent)
 {
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -47,7 +47,7 @@ InspectorListBoxView::InspectorListBoxView(QWidget *parent)
     setWordWrap(false);
 }
 
-void InspectorListBoxView::setModel(QAbstractItemModel *model)
+void ObjectListView::setModel(QAbstractItemModel *model)
 {
     QTableView::setModel(model);
 
@@ -57,7 +57,7 @@ void InspectorListBoxView::setModel(QAbstractItemModel *model)
     setColumnWidth(2, 600);
 }
 
-void InspectorListBoxView::contextMenuEvent(QContextMenuEvent *event)
+void ObjectListView::contextMenuEvent(QContextMenuEvent *event)
 {
     QModelIndex index = selectionModel()->currentIndex();
     if (!index.isValid())
