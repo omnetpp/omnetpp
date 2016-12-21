@@ -233,8 +233,6 @@ public class PropertiesDialog extends TrayDialog {
     private TextFieldEditor bgGridDistanceField;
     private SpinnerFieldEditor bgGridSubdivisionField;
     private ColorFieldEditor bgGridColorField;
-    private TextFieldEditor bgLayoutSeedField;
-    //private ComboFieldEditor bgLayoutAlgorithmField;
     private List<Label> unitLabels = new ArrayList<Label>();
 
     private INedTypeInfo editedTypeOrSupertype; // when not null, use this instead of the type or supertype of the selected elements for computing the preview, etc.
@@ -983,13 +981,6 @@ public class PropertiesDialog extends TrayDialog {
         createLabel(group, "Color:", true);
         bgGridColorField = createColorSelector(group);
 
-        group = createGroup(page, "Submodule Layouting", 2, 2);
-        // BGL tag
-        createLabel(group, "RNG seed:", false);
-        bgLayoutSeedField = createText(group, 10);
-        //createLabel(group, "Layouting algorithm:");
-        //bgLayoutAlgorithmField = createCombo(group, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM.getEnumSpec().getNames());
-
         return page;
     }
 
@@ -1475,7 +1466,6 @@ public class PropertiesDialog extends TrayDialog {
         populateField(bgGridColorField, IDisplayString.Prop.MODULE_GRID_COLOR);
 
         // module layouting
-        populateField(bgLayoutSeedField, IDisplayString.Prop.MODULE_LAYOUT_SEED);
         populateField(bgUnitField, IDisplayString.Prop.MODULE_UNIT);
     }
 
@@ -1975,8 +1965,6 @@ public class PropertiesDialog extends TrayDialog {
         updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_GRID_COLOR, bgGridColorField);
 
         // module layouting
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField);
-        //updatePreviewDisplayProperty(IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField);
         updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_UNIT, bgUnitField);
     }
 
@@ -2161,8 +2149,6 @@ public class PropertiesDialog extends TrayDialog {
         addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_GRID_COLOR, bgGridColorField);
 
         // module layouting
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField);
-        //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField);
         addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_UNIT, bgUnitField);
 
         resultCommand = compoundCommand;
@@ -2346,7 +2332,6 @@ public class PropertiesDialog extends TrayDialog {
         validateNumericField(errors, "Grid distance", bgGridDistanceField);
         validateIntegerField(errors, "Grid subdivision", bgGridSubdivisionField);
         validateColorField(errors, "Grid color", bgGridColorField);
-        validateNumericField(errors, "Layout seed", bgLayoutSeedField);
 
         boolean hasError = synchronizeErrors(errors);
 

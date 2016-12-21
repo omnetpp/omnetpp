@@ -741,7 +741,6 @@ properties of the background rectangle.
   \item \ttt{bgi} -- background image and its display mode
   \item \ttt{bgtt} -- tooltip above the background
   \item \ttt{bgg} -- background grid: color, spacing, etc.
-  \item \ttt{bgl} -- seed for the submodule layouting algorithm
   \item \ttt{bgu} -- measurement unit of coordinates/distances
 \end{itemize}
 
@@ -1078,8 +1077,8 @@ Caveats:
   \item The algorithm starts by placing the nodes randomly, and this initial
     arrangement greatly affects the end result. The algorithm has its
     own RNG that starts from a default seed. The \textit{Relayout} button
-    changes this seed, but it can also be set explicitly, using the
-    \ttt{bgl=\textit{seed}} display string tag.
+    changes this seed, and this seed is persistently stored so later runs
+    of the model will produce the same layout.
 \end{itemize}
 
 
