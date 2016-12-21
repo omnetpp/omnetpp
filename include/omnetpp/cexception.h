@@ -28,6 +28,13 @@ namespace omnetpp {
 class cObject;
 class cComponent;
 
+/*
+ * The variadic constructors taking an OppErrorCode as their first parameter trigger undefined behavior in C++.
+ * Clang 3.9 and newer gives a warning about it. Some related literature:
+ * https://www.securecoding.cert.org/confluence/display/cplusplus/EXP58-CPP.+Pass+an+object+of+the+correct+type+to+va_start
+ * http://lists.llvm.org/pipermail/cfe-commits/Week-of-Mon-20160822/169004.html
+ * One solution (until the standard is updated, if ever) would be to pass them as simple integers.
+ */
 /**
  * @brief Exception class.
  *
