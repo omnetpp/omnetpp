@@ -711,9 +711,9 @@ void OsgViewer::mousePressEvent(QMouseEvent *event)
 {
     int osgButton = mouseButtonQtToOsg(event->button());
     if (event->type() == QEvent::MouseButtonDblClick)
-        getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, event->timestamp() / 1000.0);
-    else
         getEventQueue()->mouseDoubleButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, event->timestamp() / 1000.0);
+    else
+        getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, event->timestamp() / 1000.0);
 
     if (event->button() == Qt::LeftButton) {
         auto objects = objectsAt(event->pos());
