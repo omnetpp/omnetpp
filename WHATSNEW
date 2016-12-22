@@ -20,11 +20,15 @@ updated Eclipse base for the IDE.
 
 Note:
 
-1. The manuals have not yet been updated.
-2. There are now separate downloads for Linux, Windows and macOS. A fourth
+1. There are now separate downloads for Linux, Windows and macOS. A fourth
    package labelled "core" comes without the IDE, and can be used on all other
    systems.
-3. 32-bit Windows and Linux are no longer supported.
+2. 32-bit Windows and Linux are no longer supported.
+
+Known Issues:
+
+1. The manuals have not yet been updated.
+2. Documentation generation on Windows is currently not working.
 
 Changes since version 5.0:
 
