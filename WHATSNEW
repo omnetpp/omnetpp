@@ -19,6 +19,7 @@ files; updated toolchain and libraries on Windows; 64-bit Windows support;
 updated Eclipse base for the IDE.
 
 Note:
+
 1. The manuals have not yet been updated.
 2. There are now separate downloads for Linux, Windows and macOS. A fourth
    package labelled "core" comes without the IDE, and can be used on all other
