@@ -53,7 +53,7 @@ void ScaveTool::helpCommand(int argc, char **argv)
     printHelpPage(page);
 }
 
-void ScaveTool::printHelpPage(std::string& page)
+void ScaveTool::printHelpPage(const std::string& page)
 {
     if (page == "options") {
         cout <<
@@ -253,8 +253,12 @@ void ScaveTool::printHelpPage(std::string& page)
 
 void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& fileNames, bool indexingAllowed, bool verbose)
 {
+    if (fileNames.empty()) {
+        cerr << "scavetool: Warning: No input files\n";
+        return;
+    }
+
     // load files
-    ResultFileManager resultFileManager;
     for (int i = 0; i < (int)fileNames.size(); i++) {
         // TODO on Windows: manual globbing of wildcards
         const char *fileName = fileNames[i].c_str();
@@ -274,7 +278,7 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
             cout << "done\n";
         Assert(f); // or exception
         if (f->fileType == ResultFile::FILETYPE_TEXT && f->numUnrecognizedLines > 0)
-            cerr << "WARNING: " << fileName << ": " << f->numUnrecognizedLines << " invalid/incomplete lines out of " << f->numLines << "\n";
+            cerr << "scavetool: Warning: " << fileName << ": " << f->numUnrecognizedLines << " invalid/incomplete lines out of " << f->numLines << "\n";
     }
     if (verbose)
         cout << manager.getFiles().size() << " file(s) loaded\n";
@@ -566,8 +570,10 @@ void ScaveTool::queryCommand(int argc, char **argv)
     case LIST_RUNS: {
         // note: we ignore opt_perRun, as it makes no sense here
         StringSet *uniqueRunNames = new StringSet;
-        for (RunList::const_iterator it = runs->begin(); it != runs->end(); ++it)
-            uniqueRunNames->insert((*it)->runName);
+        for (Run *run : *runs) {
+            string runName = runStr(run, opt_runDisplayMode);
+            uniqueRunNames->insert(runName);
+        }
         printAndDelete(uniqueRunNames);
         break;
     }
@@ -990,7 +996,9 @@ int ScaveTool::main(int argc, char **argv)
 
     try {
         string command = argv[1];
-        if (command == "q" || command == "query")
+        if (argc >= 3 && command[0] != '-' && (string(argv[2]) == "-h" || string(argv[2]) == "--help"))  // "scavetool query -h"
+            printHelpPage(command);
+        else if (command == "q" || command == "query")
             queryCommand(argc-2, argv+2);
         else if (command == "v" || command == "vector")
             vectorCommand(argc-2, argv+2);
