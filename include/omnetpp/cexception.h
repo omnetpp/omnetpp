@@ -28,13 +28,18 @@ namespace omnetpp {
 class cObject;
 class cComponent;
 
-/*
- * The variadic constructors taking an OppErrorCode as their first parameter trigger undefined behavior in C++.
- * Clang 3.9 and newer gives a warning about it. Some related literature:
+/**
+ * This type exists purely for technical reasons: Occurrences of this type on the code
+ * should really be replaced with the ErrorCode enum. However, doing so would
+ * result in compile-time warnings: variadic constructors taking an enum trigger
+ * undefined behavior in C++. Clang 3.9 and newer gives a warning about it.
+ *
+ * Some related literature:
  * https://www.securecoding.cert.org/confluence/display/cplusplus/EXP58-CPP.+Pass+an+object+of+the+correct+type+to+va_start
  * http://lists.llvm.org/pipermail/cfe-commits/Week-of-Mon-20160822/169004.html
- * One solution (until the standard is updated, if ever) would be to pass them as simple integers.
  */
+typedef int ErrorCodeInt;
+
 /**
  * @brief Exception class.
  *
@@ -43,7 +48,7 @@ class cComponent;
 class SIM_API cException : public std::exception
 {
   protected:
-    int errorCode;
+    ErrorCode errorCode;
     std::string msg;
 
     int simulationStage;
@@ -61,7 +66,7 @@ class SIM_API cException : public std::exception
      * If the first arg is non-nullptr, the message text will be prepended (if needed)
      * with the object type and name, like this: "(cArray)array: ..."
      */
-    void init(const cObject *obj, OppErrorCode errorcode, const char *fmt, va_list va);
+    void init(const cObject *obj, ErrorCode errorcode, const char *fmt, va_list va);
 
     // helper for init()
     void storeContext();
@@ -88,7 +93,7 @@ class SIM_API cException : public std::exception
      * string table. The error string may expect printf-like arguments
      * (%s, %d) which also have to be passed to the constructor.
      */
-    cException(OppErrorCode errcode,...);
+    cException(ErrorCodeInt errcode,...);
 
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.
@@ -102,7 +107,7 @@ class SIM_API cException : public std::exception
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cException(const cObject *where, OppErrorCode errcode,...);
+    cException(const cObject *where, ErrorCodeInt errcode,...);
 
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.
@@ -238,7 +243,7 @@ class SIM_API cTerminationException : public cException
      * string table. The error string may expect printf-like arguments
      * (%s, %d) which also have to be passed to the constructor.
      */
-    cTerminationException(OppErrorCode errcode,...);
+    cTerminationException(ErrorCodeInt errcode,...);
 
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.
@@ -286,7 +291,7 @@ class SIM_API cRuntimeError : public cException
      * string table. The error string may expect printf-like arguments
      * (%s, %d) which also have to be passed to the constructor.
      */
-    cRuntimeError(OppErrorCode errcode,...);
+    cRuntimeError(ErrorCodeInt errcode,...);
 
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.
@@ -300,7 +305,7 @@ class SIM_API cRuntimeError : public cException
      * The 1st arg is the object where the error occurred: its class and
      * object name will be prepended to the message like this: "(cArray)arr".
      */
-    cRuntimeError(const cObject *where, OppErrorCode errcode,...);
+    cRuntimeError(const cObject *where, ErrorCodeInt errcode,...);
 
     /**
      * To be called like printf(). The error code is set to E_CUSTOM.

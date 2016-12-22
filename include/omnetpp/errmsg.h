@@ -23,7 +23,7 @@ namespace omnetpp {
 /**
  * @brief Error codes
  */
-enum OppErrorCode : int
+enum ErrorCode
 {
     E_OK = 0,  // E_OK must have zero numeric value
     E_BACKSCHED,
@@ -80,7 +80,7 @@ class SIM_API cErrorMessages
 {
   public:
     cErrorMessages() {}
-    static const char *get(OppErrorCode e);
+    static const char *get(ErrorCode e);
 };
 
 }  // namespace omnetpp

@@ -22,7 +22,7 @@
 namespace omnetpp {
 
 
-const char *cErrorMessages::get(OppErrorCode e)
+const char *cErrorMessages::get(ErrorCode e)
 {
     switch (e) {
         case E_OK:        return "No error";

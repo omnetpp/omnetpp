@@ -49,11 +49,11 @@ cException::cException() : std::exception()
     msg = "n/a";
 }
 
-cException::cException(OppErrorCode errorcode...) : std::exception()
+cException::cException(ErrorCodeInt errorcode...) : std::exception()
 {
     va_list va;
     va_start(va, errorcode);
-    init(nullptr, errorcode, cErrorMessages::get(errorcode), va);
+    init(nullptr, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
     va_end(va);
 }
 
@@ -65,11 +65,11 @@ cException::cException(const char *msgformat...) : std::exception()
     va_end(va);
 }
 
-cException::cException(const cObject *where, OppErrorCode errorcode...) : std::exception()
+cException::cException(const cObject *where, ErrorCodeInt errorcode...) : std::exception()
 {
     va_list va;
     va_start(va, errorcode);
-    init(where, errorcode, cErrorMessages::get(errorcode), va);
+    init(where, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
     va_end(va);
 }
 
@@ -134,7 +134,7 @@ void cException::exitIfStartupError()
     }
 }
 
-void cException::init(const cObject *where, OppErrorCode errorcode, const char *fmt, va_list va)
+void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt, va_list va)
 {
     // store error code
     this->errorCode = errorcode;
@@ -200,11 +200,11 @@ std::string cException::getFormattedMessage() const
 
 //---
 
-cTerminationException::cTerminationException(OppErrorCode errorcode...)
+cTerminationException::cTerminationException(ErrorCodeInt errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
-    init(nullptr, errorcode, cErrorMessages::get(errorcode), va);
+    init(nullptr, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
     va_end(va);
 }
 
@@ -218,11 +218,11 @@ cTerminationException::cTerminationException(const char *msgformat...)
 
 //---
 
-cRuntimeError::cRuntimeError(OppErrorCode errorcode...)
+cRuntimeError::cRuntimeError(ErrorCodeInt errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
-    init(nullptr, errorcode, cErrorMessages::get(errorcode), va);
+    init(nullptr, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
     va_end(va);
     breakIntoDebuggerIfRequested();
 }
@@ -236,11 +236,11 @@ cRuntimeError::cRuntimeError(const char *msgformat...)
     breakIntoDebuggerIfRequested();
 }
 
-cRuntimeError::cRuntimeError(const cObject *where, OppErrorCode errorcode...)
+cRuntimeError::cRuntimeError(const cObject *where, ErrorCodeInt errorcode...)
 {
     va_list va;
     va_start(va, errorcode);
-    init(where, errorcode, cErrorMessages::get(errorcode), va);
+    init(where, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
     va_end(va);
     breakIntoDebuggerIfRequested();
 }
