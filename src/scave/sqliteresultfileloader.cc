@@ -231,8 +231,8 @@ void SqliteResultFileLoader::loadHistograms()
             std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
             std::string statName = (const char *)sqlite3_column_text(stmt, 3);
             sqlite3_int64 statCount = sqlite3_column_int64(stmt, 4);
-            //double statMean = sqlite3ColumnDouble(stmt, 5); // can be computed from the others, skip
-            //double statStddev = sqlite3ColumnDouble(stmt, 6); // can be computed from the others, skip
+            double statMean = sqlite3ColumnDouble(stmt, 5); // can be computed from the others
+            double statStddev = sqlite3ColumnDouble(stmt, 6); // can be computed from the others
             double statSum = sqlite3ColumnDouble(stmt, 7);
             double statSqrsum = sqlite3ColumnDouble(stmt, 8);
             double statMin = sqlite3ColumnDouble(stmt, 9);
@@ -242,8 +242,17 @@ void SqliteResultFileLoader::loadHistograms()
             //double statWeightedsum = sqlite3ColumnDouble(stmt, 12);
             //double statSqrSumWeights = sqlite3ColumnDouble(stmt, 13);
             //double statWeightedSqrSum = sqlite3ColumnDouble(stmt, 14);
+
             Statistics stat(statCount, statMin, statMax, statSum, statSqrsum);
             sqliteHistogramIdToHistogramIdx[statId] = resultFileManager->addHistogram(fileRunMap.at(runId), moduleName.c_str(), statName.c_str(), stat, StringMap());
+
+            resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":count").c_str(), statCount, true);
+            resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":sum").c_str(), statSum, true);
+            resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":sqrsum").c_str(), statSqrsum, true);
+            resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":min").c_str(), statMin, true);
+            resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":max").c_str(), statMax, true);
+            resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":mean").c_str(), statMean, true);
+            resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":stddev").c_str(), statStddev, true);
         }
         else if (resultCode == SQLITE_DONE) {
             break;

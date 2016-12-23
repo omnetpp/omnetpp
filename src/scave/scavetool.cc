@@ -102,6 +102,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         "                    (v=vector, s=scalar, t=statistic, h=histogram)\n"
         "    -p <filter>     Filter pattern for result items (vectors, scalars, statistics, histograms)\n"
         "                    matched by filter expression (try 'help patterns')\n"
+        "    -f              Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars\n"
         "    -D <type>       Display mode for run; <type> can be any of:\n"
         "                       'runid'       Displays ${runid} (this is the default)\n"
         "                       'runnumber'   Displays ${configname} ${runnumber}\n"
@@ -344,6 +345,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     string opt_runDisplayModeStr;
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::HISTOGRAM;
     RunDisplayMode opt_runDisplayMode = RUNDISPLAY_RUNID;
+    bool opt_includeFields = false;
     bool opt_labels = true;
     bool opt_perRun = false;
     bool opt_grepFriendly = false;
@@ -384,6 +386,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_runDisplayModeStr = unquoteString(argv[++i]);
         else if (opt.substr(0,2) == "-D")
             opt_runDisplayModeStr = opt.substr(2);
+        else if (opt == "-f")
+            opt_includeFields = true;
         else if (opt == "-R")
             opt_perRun = true;
         else if (opt == "-Q")
@@ -430,7 +434,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter statistics
-    IDList results = resultFileManager.getAllItems(false, false);
+    IDList results = resultFileManager.getAllItems(true, opt_includeFields);
     results.set(results.filterByTypes(opt_resultTypeFilter));
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
 
