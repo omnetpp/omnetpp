@@ -1,5 +1,13 @@
-How to build the manual on Windows (on Linux it's easier)
-=========================================================
+How to build the manual
+=======================
+
+On Ubuntu (Debian)
+==================
+
+sudo apt-get install graphviz inkscape texlive texlive-latex-extra pdftk
+
+On Windows
+==========
 
 Prerequisites
 -------------
@@ -10,17 +18,10 @@ Prerequisites
 2. Install Inkscape. It will be used for SVG editing as well as for
    SVG-to-PNG and SVG-to-PDF conversion.
 
-How to build the manual on Linux (Ubuntu)
-=========================================
-
-sudo apt-get install graphviz inkscape texlive texlive-latex-extra pdftk
-
 
 Making HTML output
 ------------------
 Type "make html". It uses local perl scripts for the conversion.
-
-
 
 Making PDF output
 -----------------
