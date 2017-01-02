@@ -1048,10 +1048,10 @@ routing\index{routing support} in communication networks.
 A \cclass{cTopology} object stores an abstract representation of the
 network in a graph form:
 \begin{itemize}
-  \item{each \cclass{cTopology} node corresponds to a \textit{module}
-    (simple or compound), and}
-  \item{each \cclass{cTopology} edge corresponds to a \textit{link} or
-    \textit{series of connecting links}.}
+  \item each \cclass{cTopology} node corresponds to a \textit{module}
+    (simple or compound), and
+  \item each \cclass{cTopology} edge corresponds to a \textit{link} or
+    \textit{series of connecting links}.
 \end{itemize}
 
 One can specify which modules to include in the graph. Compound modules
@@ -1080,9 +1080,9 @@ object with a single method call. There are several ways to specify
 which modules should be included in the topology:
 
 \begin{itemize}
-  \item{by module type}
-  \item{by a parameter's presence and value}
-  \item{with a user-supplied boolean function}
+  \item by module type
+  \item by a parameter's presence and value
+  \item with a user-supplied boolean function
 \end{itemize}
 
 First, you can specify which node types you want to include. The
@@ -1563,27 +1563,27 @@ There are several statistic and result collection classes:
 \cclass{cStatistic}.
 
 \begin{itemize}
-  \item{\cclass{cStdDev} keeps the count, mean, standard
-    deviation, minimum and maximum value etc of the observations.}
-  \item{\cclass{cWeightedStdDev} is similar to \cclass{cStdDev}, but
+  \item \cclass{cStdDev} keeps the count, mean, standard
+    deviation, minimum and maximum value etc of the observations.
+  \item \cclass{cWeightedStdDev} is similar to \cclass{cStdDev}, but
     accepts weighted observations. \cclass{cWeightedStdDev} can be used
     for example to calculate time average. It is the only weighted
-    statistics class.}
-  \item{\cclass{cLongHistogram} and \cclass{cDoubleHistogram} are
+    statistics class.
+  \item \cclass{cLongHistogram} and \cclass{cDoubleHistogram} are
     descendants of \cclass{cStdDev} and also keep an approximation of
     the distribution of the observations using equidistant
-    (equal-sized) cell histograms\index{histogram!equal-sized}.}
-  \item{\cclass{cVarHistogram} implements a histogram where cells do not
+    (equal-sized) cell histograms\index{histogram!equal-sized}.
+  \item \cclass{cVarHistogram} implements a histogram where cells do not
     need to be the same size. One can manually add the cell (bin)
     boundaries, or alternatively, automatically have a partitioning
     created where each bin has the same number of observations (or as
-    close to that as possible).}
-  \item{\cclass{cPSquare} is a class that uses the $P^{2}$ algorithm
+    close to that as possible).
+  \item \cclass{cPSquare} is a class that uses the $P^{2}$ algorithm
     described in \cite{JCh85}. The algorithm calculates quantiles without
     storing the observations; one can also think of it as a histogram
-    with equiprobable cells\index{histogram!equiprobable-cells}.}
-  \item{\cclass{cKSplit} uses a novel, experimental method, based on an
-    adaptive histogram-like algorithm.}
+    with equiprobable cells\index{histogram!equiprobable-cells}.
+  \item \cclass{cKSplit} uses a novel, experimental method, based on an
+    adaptive histogram-like algorithm.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -1813,10 +1813,10 @@ It can operate in two modes:
 
 Modes are selected with a \textit{transform-type} parameter:
 \begin{itemize}
-  \item{\ttt{HIST\_TR\_NO\_TRANSFORM}: no transformation; uses bin boundaries
-    previously defined by \ffunc{addBinBound()}}
-  \item{\ttt{HIST\_TR\_AUTO\_EPC\_DBL}: automatically creates equiprobable cells}
-  \item{\ttt{HIST\_TR\_AUTO\_EPC\_INT}: like the above, but for integers}
+  \item \ttt{HIST\_TR\_NO\_TRANSFORM}: no transformation; uses bin boundaries
+    previously defined by \ffunc{addBinBound()}
+  \item \ttt{HIST\_TR\_AUTO\_EPC\_DBL}: automatically creates equiprobable cells
+  \item \ttt{HIST\_TR\_AUTO\_EPC\_INT}: like the above, but for integers
 \end{itemize}
 
 Creating an object:
@@ -2013,8 +2013,8 @@ reached.
 The base classes for classes implementing specific transient
 detection and result accuracy detection algorithms are:
 \begin{itemize}
-\item{\cclass{cTransientDetection}: base class for transient detection}
-\item{\cclass{cAccuracyDetection}: base class for result accuracy detection}
+\item \cclass{cTransientDetection}: base class for transient detection
+\item \cclass{cAccuracyDetection}: base class for result accuracy detection
 \end{itemize}
 
 
@@ -2038,8 +2038,8 @@ cAccuracyDetection *getAccuracyDetectionObject();
 
 Detecting the end of the period:
 \begin{itemize}
-\item{polling the \ffunc{detect()} function of the object}
-\item{installing a post-detect function}
+\item polling the \ffunc{detect()} function of the object
+\item installing a post-detect function
 \end{itemize}
 
 
@@ -2160,11 +2160,11 @@ output scalars\index{output!scalars} are supposed to record a single
 value per simulation run. You can use output scalars
 
 \begin{itemize}
-\item{to record summary data at the end of the simulation run}
-\item{to do several runs with different parameter settings/random seed
+\item to record summary data at the end of the simulation run
+\item to do several runs with different parameter settings/random seed
     and determine the dependence of some measures on the parameter
     settings. For example, multiple runs and output scalars are the
-    way to produce \textit{Throughput vs. Offered Load} plots.}
+    way to produce \textit{Throughput vs. Offered Load} plots.
 \end{itemize}
 
 Output scalars are recorded with the \ffunc{record()} method of
@@ -3014,21 +3014,21 @@ is only important if the new class is a container.
 The following methods \textbf{must} be implemented:
 
 \begin{itemize}
-  \item{\textit{Constructor}. At least two constructors should be provided:
+  \item \textit{Constructor}. At least two constructors should be provided:
         one that takes the object name string as \ttt{const char *}
         (recommended by convention), and another one with no arguments
         (must be present). The two are usually implemented as a single
-        method, with \ttt{nullptr} as default name string.}
-  \item{\textit{Copy constructor}, which must have the following signature
-        for a class \ttt{X}: \ttt{X(const X\&)}.}
-  \item{\textit{Destructor}.}
-  \item{\textit{Duplication function,} \ffunc{X *dup() const}.
+        method, with \ttt{nullptr} as default name string.
+  \item \textit{Copy constructor}, which must have the following signature
+        for a class \ttt{X}: \ttt{X(const X\&)}.
+  \item \textit{Destructor}.
+  \item \textit{Duplication function,} \ffunc{X *dup() const}.
         It should create and return an exact duplicate of the object.
-        It is usually a one-line function that delegates to the copy constructor.}
-  \item{\textit{Assignment operator}, that is, \ttt{X\& operator=(const X\&)}
+        It is usually a one-line function that delegates to the copy constructor.
+  \item \textit{Assignment operator}, that is, \ttt{X\& operator=(const X\&)}
         for a class \ttt{X}. It should copy the contents of the other
         object into this one, \textit{except} the name string. See later what to do
-        if the object contains pointers to other objects.}
+        if the object contains pointers to other objects.
 \end{itemize}
 
 If the new class contains other objects subclassed from \cclass{cObject},
@@ -3036,13 +3036,13 @@ either via pointers or as a data member, the following function \textbf{should}
 be implemented:
 
 \begin{itemize}
-  \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor *v)}.
+  \item \textit{Iteration function,} \ttt{void forEachChild(cVisitor *v)}.
         The implementation should call the function passed
         for each object it contains via pointer or as a data member;
         see the API Reference on \cclass{cObject} on how to implement
         \ttt{forEachChild()}. \ffunc{forEachChild()} makes it possible
         for Tkenv and Qtenv to display the object tree, to perform searches on it, etc.
-        It is also used by \ffunc{snapshot()} and some other library functions.}
+        It is also used by \ffunc{snapshot()} and some other library functions.
 \end{itemize}
 
 Implementation of the following methods is \textbf{recommended}:
@@ -3054,10 +3054,10 @@ Implementation of the following methods is \textbf{recommended}:
   \item{\textit{Detailed object info,} \ffunc{std::string detailedInfo()}.
         This method may potentially be implemented in addition to \ttt{info()};
         it can return a multi-line description. \ttt{detailedInfo()} is also
-        displayed by Tkenv ad Qtenv in the object's inspector.}
-  \item{\textit{Serialization}, \ffunc{parsimPack()} and \ffunc{parsimUnpack()} methods.
+        displayed by Tkenv ad Qtenv in the object's inspector.
+  \item \textit{Serialization}, \ffunc{parsimPack()} and \ffunc{parsimUnpack()} methods.
         These methods are needed for parallel simulation, if you want
-        objects of this type to be transmitted across partitions.}
+        objects of this type to be transmitted across partitions.
 \end{itemize}
 
 It is customary to implement the copy constructor and the assignment operator
@@ -3345,29 +3345,29 @@ keeping track of the owner and the list of objects owned also
 serves other purposes in {\opp}:
 
 \begin{itemize}
-    \item{enables methods like \ttt{getFullPath()} to be implemented.}
+    \item enables methods like \ttt{getFullPath()} to be implemented.
 
-    \item{prevents certain types of programming errors, namely,
-    those associated with wrong ownership handling.}
+    \item prevents certain types of programming errors, namely,
+    those associated with wrong ownership handling.
 
-    \item{enables Tkenv and Qtenv to display the list of simulation objects
+    \item enables Tkenv and Qtenv to display the list of simulation objects
     present within a simple module. This is extremely useful for finding
     memory leaks caused by forgetting to delete messages that are
-    no longer needed.}
+    no longer needed.
 \end{itemize}
 
 Some examples of programming errors that can be caught
 by the ownership facility:
 
 \begin{itemize}
-    \item{attempts to send a message while it is still in a queue,
-    encapsulated in another message, etc.}
+    \item attempts to send a message while it is still in a queue,
+    encapsulated in another message, etc.
 
-    \item{attempts to send/schedule a message while it is still owned
-    by the simulation kernel (i.e. scheduled as a future event)}
+    \item attempts to send/schedule a message while it is still owned
+    by the simulation kernel (i.e. scheduled as a future event)
 
-    \item{attempts to send the very same message object to multiple
-    destinations at the same time (ie. to all connected modules)}
+    \item attempts to send the very same message object to multiple
+    destinations at the same time (ie. to all connected modules)
 \end{itemize}
 
 For example, the \ffunc{send()} and \ffunc{scheduleAt()} functions check
@@ -3414,10 +3414,10 @@ This behavior can be changed via the \textit{takeOwnership} flag.
 
 Here is what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}) does:
 \begin{itemize}
-    \item{insert the object into the internal array/list data structure}
+    \item insert the object into the internal array/list data structure
 
-    \item{if the \textit{takeOwnership} flag is true, take ownership
-    of the object, otherwise just leave it with its original owner}
+    \item if the \textit{takeOwnership} flag is true, take ownership
+    of the object, otherwise just leave it with its original owner
 \end{itemize}
 
 The corresponding source code:
@@ -3443,11 +3443,11 @@ Here is what the \textit{remove} family of operations in \cclass{cQueue}
 (or \cclass{cArray}) does:
 
 \begin{itemize}
-    \item{remove the object from the internal array/list data structure}
+    \item remove the object from the internal array/list data structure
 
-    \item{if the object is actually owned by this \cclass{cQueue}/\cclass{cArray},
+    \item if the object is actually owned by this \cclass{cQueue}/\cclass{cArray},
     release ownership of the object, otherwise just leave it with
-    its current owner}
+    its current owner
 \end{itemize}
 
 After the object was removed from a \cclass{cQueue}/\cclass{cArray},

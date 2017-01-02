@@ -1148,15 +1148,15 @@ to conventions, and duplication and copying works properly:
 Some additional notes:
 
 \begin{enumerate}
-  \item{\ttt{setFooArraySize()}, \ttt{setBarArraySize()} are redundant.}
-  \item{\ttt{getBar(int k)} cannot be implemented in a straightforward way
+  \item \ttt{setFooArraySize()}, \ttt{setBarArraySize()} are redundant.
+  \item \ttt{getBar(int k)} cannot be implemented in a straightforward way
      (\ttt{std::stack} does not support accessing elements by index).
      It could still be implemented in a less efficient way using STL iterators,
      and efficiency does not seem to be major problem because only Tkenv
-     is going to invoke this function.}
-  \item{\ttt{setBar(int k, int x)} could not be implemented, but this
+     is going to invoke this function.
+  \item \ttt{setBar(int k, int x)} could not be implemented, but this
      is not particularly a problem. The exception will materialize in a
-     Tkenv error dialog when you try to change the field value.}
+     Tkenv error dialog when you try to change the field value.
 \end{enumerate}
 
 
@@ -1385,8 +1385,8 @@ This section summarizes the possibilities offered by message definitions.
 Base functionality:
 
 \begin{itemize}
-  \item  generation of classes and plain C structs from concise descriptions
-  \item  default base classes:
+  \item generation of classes and plain C structs from concise descriptions
+  \item default base classes:
     \cclass{cPacket} (with the \fkeyword{packet} keyword),
     \cclass{cMessage} (with the \fkeyword{message} keyword), or
     \cclass{cObject} (with the \fkeyword{class} keyword)
@@ -1395,32 +1395,32 @@ Base functionality:
 The following data types are supported for fields:
 
 \begin{itemize}
-  \item  primitive types:
+  \item primitive types:
     \ttt{bool}, \ttt{char}, \ttt{short}, \ttt{int}, \ttt{long};
     \ttt{unsigned char}, \ttt{unsigned short}, \ttt{unsigned int}, \ttt{unsigned long};
     \ttt{int8\_t}, \ttt{int16\_t}, \ttt{int32\_t}, \ttt{int64\_t};
     \ttt{uint8\_t}, \ttt{uint16\_t}, \ttt{uint32\_t}, \ttt{uint64\_t};
     \ttt{float}, \ttt{double}; \ttt{simtime\_t}
-  \item  \ttt{string}, a dynamically allocated string, presented as \ttt{const char *}
-  \item  structs and classes, declared with the message syntax or in C++ code
-  \item  typedef'd names declared in C++ and announced to the message compiler
-  \item  fixed-size arrays of the above types
-  \item  variable-size arrays of the above types (stored as a dynamically
+  \item \ttt{string}, a dynamically allocated string, presented as \ttt{const char *}
+  \item structs and classes, declared with the message syntax or in C++ code
+  \item typedef'd names declared in C++ and announced to the message compiler
+  \item fixed-size arrays of the above types
+  \item variable-size arrays of the above types (stored as a dynamically
     allocated array plus an integer for the array size)
 \end{itemize}
 
 Further features:
 
 \begin{itemize}
-  \item  fields initialize to zero (except for struct/class fields)
-  \item  field initializers can be specified (except for struct/class fields)
-  \item  associating fields of integral types with enums
-  \item  inheritance
-  \item  namespaces
-  \item  customization of generated method names
-  \item  customization of the generated class via subclassing (\textit{Generation Gap} pattern)
-  \item  abstract fields (for nonstandard storage and calculated fields)
-  \item  generation of descriptor objects that encapsulate reflection information
+  \item fields initialize to zero (except for struct/class fields)
+  \item field initializers can be specified (except for struct/class fields)
+  \item associating fields of integral types with enums
+  \item inheritance
+  \item namespaces
+  \item customization of generated method names
+  \item customization of the generated class via subclassing (\textit{Generation Gap} pattern)
+  \item abstract fields (for nonstandard storage and calculated fields)
+  \item generation of descriptor objects that encapsulate reflection information
 \end{itemize}
 
 Generated code (all generated methods are \ttt{virtual}, although

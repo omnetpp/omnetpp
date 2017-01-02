@@ -181,10 +181,10 @@ Nearly every model can be run in parallel. The constraints are the following:
 \begin{itemize}
   \item{modules may communicate via sending messages only (no direct method call
         or member access) unless mapped to the same processor}
-  \item{no global variables}
+  \item no global variables
   \item{there are some limitations on direct sending (no sending to a \textit{sub}module
         of another module, unless mapped to the same processor)}
-  \item{lookahead must be present in the form of link delays}
+  \item lookahead must be present in the form of link delays
   \item{currently static topologies are supported (we are working on a
       research project that aims to eliminate this limitation)}
 \end{itemize}

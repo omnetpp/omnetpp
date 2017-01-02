@@ -17,50 +17,50 @@ high-level architecture of {\opp} simulations:
 The blocks represent the following components:
 
 \begin{itemize}
-  \item{\textbf{Sim} is the simulation kernel and class
+  \item \textbf{Sim} is the simulation kernel and class
     library\index{simulation!kernel}. Sim is a library linked to
-    simulation programs.}
-  \item{\textbf{Envir} is another library that contains all code
+    simulation programs.
+  \item \textbf{Envir} is another library that contains all code
     that is common to all the user interfaces. \ffunc{main()} also resides
     in the Envir library. Envir presents itself towards Sim and the executing model
     as an instance of the \cclass{cEnvir} facade class. Some aspects of the
     Envir library like result recording can be customized\index{customization}
     using plugin interfaces. Embedding {\opp} into applications\index{embedding}
     usually involves writing a custom \cclass{cEnvir} subclass (see sections
-    \ref{sec:plugin-exts:user-interface} and \ref{sec:embedding:embedding}.)}
-  \item{\textbf{Cmdenv, Tkenv and Qtenv} are Envir-based libraries that contain
+    \ref{sec:plugin-exts:user-interface} and \ref{sec:embedding:embedding}.)
+  \item \textbf{Cmdenv, Tkenv and Qtenv} are Envir-based libraries that contain
     specific user interface implementations. A simulation program
     is linked with one or more of them; in the latter case, one of the UI libraries
-    is chosen and instantiated either explicitly or automatically when the program starts.}
-  \item{The \textbf{Model Component Library} includes simple module definitions and
+    is chosen and instantiated either explicitly or automatically when the program starts.
+  \item The \textbf{Model Component Library} includes simple module definitions and
     their C++ implementations, compound module types, channels, networks,
     message types, and everything belonging to models that
     have been linked to the simulation program. A simulation program can
-    run any model that contains all of the required linked components.}
-  \item{The \textbf{Executing Model} is the model that is set up
+    run any model that contains all of the required linked components.
+  \item The \textbf{Executing Model} is the model that is set up
     for simulation. This model contains objects (modules, channels, and so on) that
-    are all instances of the components in the model component library.}
+    are all instances of the components in the model component library.
 \end{itemize}
 
 The arrows in the figure describe how components interact with
 each other:
 
 \begin{itemize}
-  \item{\textbf{Executing Model $\Leftrightarrow$ Sim}. The simulation kernel
+  \item \textbf{Executing Model $\Leftrightarrow$ Sim}. The simulation kernel
     manages the future events and activates modules in the executing model
     as events occur. The modules of the executing model are stored in an
     instance of the class \cclass{cSimulation}. In turn, the executing model
-    calls functions in the simulation kernel and uses classes in the Sim library.}
-  \item{\textbf{Sim $\Leftrightarrow$ Model Component Library}. The simulation kernel
+    calls functions in the simulation kernel and uses classes in the Sim library.
+  \item \textbf{Sim $\Leftrightarrow$ Model Component Library}. The simulation kernel
     instantiates simple modules and other components when the simulation model
     is set up at the beginning of the simulation run. In addition, it refers
     to the component library when dynamic module creation is used.
     The mechanisms for registering and looking up components in the model
-    component library are implemented as part of Sim.}
-  \item{\textbf{Executing Model $\Leftrightarrow$ Envir}. The Envir presents itself
+    component library are implemented as part of Sim.
+  \item \textbf{Executing Model $\Leftrightarrow$ Envir}. The Envir presents itself
     as a facade object towards the executing model. Model code directly accesses Envir
-    e.g. for logging (\ttt{EV<<}).}
-  \item{\textbf{Sim $\Leftrightarrow$ Envir}. Envir is in full command of what
+    e.g. for logging (\ttt{EV<<}).
+  \item \textbf{Sim $\Leftrightarrow$ Envir}. Envir is in full command of what
     happens in the simulation program. Envir contains the \ttt{main()} function
     where execution begins. Envir determines which models should be set up
     for simulation, and instructs Sim to do so. Envir contains the main
@@ -74,12 +74,12 @@ each other:
     During simulation model setup, Envir supplies module parameter values for
     Sim when Sim asks for them. Sim writes output vectors via Envir,
     so one can redefine the output vector storing mechanism by changing Envir.
-    Sim and its classes use Envir to print debug information.}
-  \item{\textbf{Envir $\Leftrightarrow$ Cmdenv/Tkenv/Qtenv}. Cmdenv, Tkenv and Qtenv
+    Sim and its classes use Envir to print debug information.
+  \item \textbf{Envir $\Leftrightarrow$ Cmdenv/Tkenv/Qtenv}. Cmdenv, Tkenv and Qtenv
     are concrete user interface implementations. When a simulation program
     is started, the \ttt{main()} function (which is part of Envir) determines
     the appropriate user interface class, creates an instance and runs it.
-    Sim's or the model's calls on Envir are delegated to the user interface.}
+    Sim's or the model's calls on Envir are delegated to the user interface.
 \end{itemize}
 
 

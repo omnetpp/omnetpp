@@ -350,8 +350,8 @@ cycles do not occur.
 
 Motivation for recursive builds:
 \begin{itemize}
- \item{toplevel Makefile}
- \item{integrating sources that have their own Makefile}
+ \item toplevel Makefile
+ \item integrating sources that have their own Makefile
 \end{itemize}
 
 
@@ -543,30 +543,30 @@ and distributed by the author of the project; end users are only presented with 
 option of enabling/disabling those features. A feature definition contains:
 
 \begin{itemize}
-  \item{Feature name; for example "UDP" or "Mobility examples".}
-  \item{Feature description; This is a few sentences of text describing what the feature
-    is or does; for example "Implementation of the UDP protocol".}
-  \item{Labels; This is a list of labels or keywords that facilitate grouping or finding features.}
-  \item{Initially enabled. This is a boolean flag that determines the initial enablement
-    of the feature.}
-\item{Required features; Some features may be built on top of others; for example, a HMIPv6
+  \item Feature name; for example "UDP" or "Mobility examples".
+  \item Feature description; This is a few sentences of text describing what the feature
+    is or does; for example "Implementation of the UDP protocol".
+  \item Labels; This is a list of labels or keywords that facilitate grouping or finding features.
+  \item Initially enabled. This is a boolean flag that determines the initial enablement
+    of the feature.
+\item Required features; Some features may be built on top of others; for example, a HMIPv6
     protocol implementation relies on MIPv6, which in turn relies on IPv6. Thus, HMIPv6 can
-    only be enabled if MIPv6 and IPv6 are enabled as well.}
-\item{NED packages; This is a list of NED package names that identify the code that implements
+    only be enabled if MIPv6 and IPv6 are enabled as well.
+\item NED packages; This is a list of NED package names that identify the code that implements
     the feature. When you disable the feature, NED types defined in those packages and their
     subpackages will be excluded; also, C++ code in the folders that correspond to the packages
-    (i.e. in the same folders as excluded NED files) will also be excluded.}
-\item{Extra C++ source folders; If the feature contains C++ code that lives outside NED source
-    folders (nontypical), those folders are listed here.}
-\item{Compile options, for example \ttt{-DWITH\_IPv6}. When the feature is enabled, the compiler
+    (i.e. in the same folders as excluded NED files) will also be excluded.
+\item Extra C++ source folders; If the feature contains C++ code that lives outside NED source
+    folders (nontypical), those folders are listed here.
+\item Compile options, for example \ttt{-DWITH\_IPv6}. When the feature is enabled, the compiler
     options listed here are added to the compiler command line of all C++ files in the project.
     A typical use of this field is defining symbols (\ttt{WITH\_xxx}) that allows you to write conditional code
     that only compiles when a given feature is enabled. Currently only the \ttt{-D} option
-    (\textit{define symbol}) is supported here.}
-\item{Linker options. When the feature is enabled, the linker options listed here are added
+    (\textit{define symbol}) is supported here.
+\item Linker options. When the feature is enabled, the linker options listed here are added
     to the linker command line. A typical use of this field is linking with additional
     libraries that the feature's code requires, for example libavcodec.
-    Currently only the \ttt{-l} option (\textit{link with library}) is supported here.}
+    Currently only the \ttt{-l} option (\textit{link with library}) is supported here.
 \end{itemize}
 
 \subsection{The .oppfeatures File}
@@ -611,24 +611,24 @@ If you plan to introduce a project feature in your project, here's what you'll n
 to do:
 
 \begin{itemize}
-    \item{Isolate the code that implements the feature into a separate source directory
-      (or several directories). This is because only whole folders can be
-      declared as part of a feature, individual source files cannot.}
+  \item Isolate the code that implements the feature into a separate source directory
+        (or several directories). This is because only whole folders can be
+        declared as part of a feature, individual source files cannot.
 
-      \item{Check the remainder of the project. If you find source lines that reference
+  \item Check the remainder of the project. If you find source lines that reference
         code from the new feature, use conditional compilation (\ttt{\#ifdef WITH\_YOURFEATURE})
         to make sure that code compiles (and either works sensibly or throws an error)
         when the new feature is disabled. (Your feature should define the \ttt{WITH\_YOURFEATURE}
-        symbol, i.e. \ttt{-DWITH\_YOURFEATURE} will need to be added to the feature compile flags.)}
+        symbol, i.e. \ttt{-DWITH\_YOURFEATURE} will need to be added to the feature compile flags.)
 
-    \item{Add the feature description into the \ttt{.oppfeatures} file of your project.}
+  \item Add the feature description into the \ttt{.oppfeatures} file of your project.
 
-    \item{Test. A rudimentary test is to verify that your project compiles at all, both
-      with the new feature enabled and disabled. For such build tests, the
-      'Export build tester Makefile' function (at the bottom of the 'Project Features'
-      property page) can be quite useful: it creates a Makefile that builds the
-      project in typical feature combinations. (It does not test 2\textsuperscript{N} combinations because
-      that's usually prohibitive, only about 2*N+2.)}
+  \item Test. A rudimentary test is to verify that your project compiles at all, both
+        with the new feature enabled and disabled. For such build tests, the
+        'Export build tester Makefile' function (at the bottom of the 'Project Features'
+        property page) can be quite useful: it creates a Makefile that builds the
+        project in typical feature combinations. (It does not test 2\textsuperscript{N} combinations because
+        that's usually prohibitive, only about 2*N+2.)
 \end{itemize}
 
 %%% Local Variables:

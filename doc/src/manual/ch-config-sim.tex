@@ -169,10 +169,10 @@ The most commonly used options of the \texttt{[General]} section are the
 following.
 
 \begin{itemize}
-  \item{The \fconfig{network} option selects the model to be set up and run.}
-  \item{The length of the simulation can be set with the
+  \item The \fconfig{network} option selects the model to be set up and run.
+  \item The length of the simulation can be set with the
     \fconfig{sim-time-limit} and the \fconfig{cpu-time-limit} options (the
-    usual time units such as ms, s, m, h, etc. can be used).}
+    usual time units such as ms, s, m, h, etc. can be used).
 \end{itemize}
 
 Note that the NED files loaded by the simulation may contain several
@@ -273,14 +273,13 @@ using the \textit{C3 linearization algorithm} (\cite{Barrett1996}):
 
 The \textit{fallback chain} of a configuration \ttt{A} is
 \begin{itemize}
-  \item{if \ttt{A} does not have an \fconfig{extends} key then
-        \ttt{A}, \ttt{General}}
-  \item{otherwise the merge of the configurations enumerated in
-        the \fconfig{extends} key, and all of their
-        \textit{fallback section chains}.
+  \item if \ttt{A} does not have an \fconfig{extends} key then
+        \ttt{A}, \ttt{General}
+  \item otherwise the merge of the configurations enumerated in the
+        \fconfig{extends} key, and all of their \textit{fallback section chains}.
         The merge is \textit{monotonic}: if some configuration \ttt{X}
         precedes configuration \ttt{Y} in one of the input chains,
-        it will precede it in the output chain too. }
+        it will precede it in the output chain too.
 \end{itemize}
 
 The \textit{section fallback chain} can be printed by the \ttt{-X} option

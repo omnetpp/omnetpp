@@ -36,9 +36,9 @@ For example, computer networks are usually viewed as discrete
 event systems. Some of the events are:
 
 \begin{itemize}
-  \item{start of a packet transmission}
-  \item{end of a packet transmission}
-  \item{expiry of a retransmission timeout}
+  \item start of a packet transmission
+  \item end of a packet transmission
+  \item expiry of a retransmission timeout
 \end{itemize}
 
 This implies that between two events such as \textit{start of a packet
@@ -404,9 +404,9 @@ no arguments:
 
 \cclass{cSimpleModule} itself has two constructors:
 \begin{enumerate}
-  \item{\ttt{cSimpleModule()} -- one without arguments}
-  \item{\ttt{cSimpleModule(size\_t stacksize)} -- one that accepts the coroutine
-        stack size\index{module!stack size}\index{stack!size}}
+  \item \ttt{cSimpleModule()} -- one without arguments
+  \item \ttt{cSimpleModule(size\_t stacksize)} -- one that accepts the coroutine
+        stack size\index{module!stack size}\index{stack!size}
 \end{enumerate}
 
 The first version should be used with \ffunc{handleMessage()} simple modules,
@@ -697,9 +697,9 @@ This is important, because this tells {\opp} that you want to use
 Message/event related functions you can use in \ffunc{handleMessage()}:
 
 \begin{itemize}
-  \item{\ffunc{send()} family of functions -- to send messages to other modules}
-  \item{\ffunc{scheduleAt()} -- to schedule an event (the module ``sends a message to itself'')}
-  \item{\ffunc{cancelEvent()} -- to delete an event scheduled with \ffunc{scheduleAt()}}
+  \item \ffunc{send()} family of functions -- to send messages to other modules
+  \item \ffunc{scheduleAt()} -- to schedule an event (the module ``sends a message to itself'')
+  \item \ffunc{cancelEvent()} -- to delete an event scheduled with \ffunc{scheduleAt()}
 \end{itemize}
 
 The \ffunc{receive()} and \ffunc{wait()} functions cannot be used in
@@ -717,14 +717,14 @@ Data members to be added to the module class will typically include
 things like:
 
 \begin{itemize}
-  \item{state (e.g. IDLE/BUSY, CONN\_DOWN/CONN\_ALIVE/...)}
-  \item{other variables which belong to the state of the module: retry
-    counts, packet queues, etc.}
-  \item{values retrieved/computed once and then stored: values of module
-    parameters, gate indices, routing information, etc.}
-  \item{pointers of message objects created once and then reused for
-    timers, timeouts, etc.}
-  \item{variables/objects for statistics collection}
+  \item state (e.g. IDLE/BUSY, CONN\_DOWN/CONN\_ALIVE/...)
+  \item other variables which belong to the state of the module: retry
+    counts, packet queues, etc.
+  \item values retrieved/computed once and then stored: values of module
+    parameters, gate indices, routing information, etc.
+  \item pointers of message objects created once and then reused for
+    timers, timeouts, etc.
+  \item variables/objects for statistics collection
 \end{itemize}
 
 These variables are often initialized from the \ffunc{initialize()}
@@ -750,17 +750,17 @@ accumulated in data members of the class at the end of the simulation.
 \ffunc{handleMessage()} is in most cases a better choice than \ffunc{activity()}:
 
 \begin{enumerate}
-  \item{When you expect the module to be used in large simulations,
+  \item When you expect the module to be used in large simulations,
       involving several thousand modules. In such cases, the module stacks
-      required by \ffunc{activity()} would simply consume too much memory.}
-  \item{For modules which maintain little or no state information,
-      such as packet sinks, \ffunc{handleMessage()} is more convenient to program.}
-  \item{Other good candidates are modules with a large state space and
+      required by \ffunc{activity()} would simply consume too much memory.
+  \item For modules which maintain little or no state information,
+      such as packet sinks, \ffunc{handleMessage()} is more convenient to program.
+  \item Other good candidates are modules with a large state space and
       many arbitrary state transition possibilities (i.e. where there
       are many possible subsequent states for any state). Such algorithms
       are difficult to program with \ffunc{activity()}, and
       better suited for \ffunc{handleMessage()} (see rule of thumb
-      below). This is the case for most communication protocols.}
+      below). This is the case for most communication protocols.
 \end{enumerate}
 
 
@@ -874,10 +874,10 @@ packet bursts, each consisting of \ttt{burstLength} packets.
 
 We add some data members to the class:
 \begin{itemize}
-\item{\ttt{burstLength} will store the parameter that specifies how many
-    packets a burst must contain,}
-\item{\ttt{burstCounter} will count in how many packets are left to be sent
-    in the current burst.}
+\item \ttt{burstLength} will store the parameter that specifies how many
+    packets a burst must contain,
+\item \ttt{burstCounter} will count in how many packets are left to be sent
+    in the current burst.
 \end{itemize}
 
 The code:
@@ -929,14 +929,14 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 Pros:
 \begin{itemize}
-  \item{consumes less memory: no separate stack needed for simple modules}
-  \item{fast: function call is faster than switching between coroutines\index{coroutine}}
+  \item consumes less memory: no separate stack needed for simple modules
+  \item fast: function call is faster than switching between coroutines\index{coroutine}
 \end{itemize}
 
 Cons:
 \begin{itemize}
-  \item{local variables cannot be used to store state information}
-  \item{need to redefine \ffunc{initialize()}}
+  \item local variables cannot be used to store state information
+  \item need to redefine \ffunc{initialize()}
 \end{itemize}
 
 Usually, \ffunc{handleMessage()} should be preferred over \ffunc{activity()}.
@@ -950,12 +950,12 @@ something like a state machine\index{finite state machine}
 (FSM\index{FSM}) which hides the underlying function calls. Such
 systems are:
 \begin{itemize}
-  \item{OPNET$^{TM}$ which uses FSM's designed using a graphical editor;}
-  \item{NetSim++ clones OPNET's approach;}
-  \item{SMURPH (University of Alberta) defines a (somewhat eclectic)
+  \item OPNET$^{TM}$ which uses FSM's designed using a graphical editor;
+  \item NetSim++ clones OPNET's approach;
+  \item SMURPH (University of Alberta) defines a (somewhat eclectic)
       language to describe FSMs, and uses a precompiler to turn it
-      into C++ code;}
-  \item{Ptolemy (UC Berkeley) uses a similar method.}
+      into C++ code;
+  \item Ptolemy (UC Berkeley) uses a similar method.
 \end{itemize}
 
 {\opp}'s FSM\index{FSM} support is described in the next section.
@@ -978,17 +978,17 @@ which can run.)
 The most important functions that can be used in \ffunc{activity()} are
 (they will be discussed in detail later):
 \begin{itemize}
-\item{\ffunc{receive()} -- to receive messages (events)}
-\item{\ffunc{wait()} -- to suspend execution\index{suspend execution}
-    for some time (model time)}
-\item{\ffunc{send()} family of functions -- to send messages to other
-    modules}
-\item{\ffunc{scheduleAt()} -- to schedule an event (the module ``sends
-    a message to itself'')}
-\item{\ffunc{cancelEvent()} -- to delete an event scheduled with
-    scheduleAt()}
-\item{\ffunc{end()} -- to finish execution of this module (same as
-    exiting the \ffunc{activity()} function)}
+\item \ffunc{receive()} -- to receive messages (events)
+\item \ffunc{wait()} -- to suspend execution\index{suspend execution}
+    for some time (model time)
+\item \ffunc{send()} family of functions -- to send messages to other
+    modules
+\item \ffunc{scheduleAt()} -- to schedule an event (the module ``sends
+    a message to itself'')
+\item \ffunc{cancelEvent()} -- to delete an event scheduled with
+    \ffunc{scheduleAt()}
+\item \ffunc{end()} -- to finish execution of this module (same as
+    exiting the \ffunc{activity()} function)
 \end{itemize}
 
 The \ffunc{activity()} function normally contains an infinite loop,
@@ -1056,8 +1056,8 @@ simple modules to handle each is an option. Dynamic module creation will be disc
 later.
 
 There are situations when you certainly \textit{do not want} to use \ffunc{activity()}.
-If the \ffunc{activity()} function contains no \ffunc{wait()} and it has only one 
-\ffunc{receive()} at the top of a message handling loop, there is no point in 
+If the \ffunc{activity()} function contains no \ffunc{wait()} and it has only one
+\ffunc{receive()} at the top of a message handling loop, there is no point in
 using \ttt{activity()}, and the code should be written with \ttt{handleMessage()}.
 The body of the loop would then become the body of \ffunc{handleMessage()},
 state variables inside \ffunc{activity()} would become data members in
@@ -1092,13 +1092,13 @@ void Sink::handleMessage(cMessage *msg)
 \ffunc{activity()} is run in a coroutine\index{coroutine}.
 Coroutines are similar to threads, but are scheduled
 non-preemptively (this is also called cooperative
-multitasking\index{multitasking!cooperative}). 
+multitasking\index{multitasking!cooperative}).
 One can switch from one coroutine to another coroutine by a
 \ttt{transferTo(otherCoroutine)} call, causing the first coroutine
-to be suspended and second one to run. Later, when the 
+to be suspended and second one to run. Later, when the
 second coroutine performs a \ttt{transferTo(firstCoroutine)} call
 to the first one, the execution of the first coroutine will resume
-from the point of the \ttt{transferTo(otherCoroutine)} call. 
+from the point of the \ttt{transferTo(otherCoroutine)} call.
 The full state of the coroutine, including local variables are preserved while the
 thread of execution is in other coroutines.  This implies that each
 coroutine has its own CPU stack\index{stack}, and
@@ -1178,8 +1178,8 @@ special points in the \ffunc{activity()} function, because
 they are where
 
 \begin{itemize}
-  \item{simulation time elapses in the module, and}
-  \item{other modules get a chance to execute.}
+  \item simulation time elapses in the module, and
+  \item other modules get a chance to execute.
 \end{itemize}
 
 
@@ -1199,7 +1199,7 @@ functions are called.
 The simulation programmer needs to define the CPU stack size\index{coroutine!stack size}
 for coroutines. This cannot be automated.
 
-16 or 32 kbytes is usually a good choice, but more space may be needed 
+16 or 32 kbytes is usually a good choice, but more space may be needed
 if the module uses recursive functions or has many/large local variables.
 {\opp} has a built-in mechanism that will usually detect if the module stack
 is too small and overflows\index{stack!overflow}. {\opp} can also report how
@@ -1256,20 +1256,20 @@ MySimpleModule::finish()
 
 Pros:
 \begin{itemize}
-   \item{\ffunc{initialize()} not needed, state can be stored in local
-       variables of \ffunc{activity()}}
-   \item{process-style description is a natural programming model in some cases}
+   \item \ffunc{initialize()} not needed, state can be stored in local
+       variables of \ffunc{activity()}
+   \item process-style description is a natural programming model in some cases
 \end{itemize}
 
 Cons:
 \begin{itemize}
-   \item{limited scalability: coroutine stacks can unacceptably increase the
+   \item limited scalability: coroutine stacks can unacceptably increase the
        memory requirements of the simulation program if there are many
-       \ttt{activity()}-based simple modules;}
-   \item{run-time overhead: switching between coroutines is slower than 
-       a simple function call}
-   \item{does not encourage a good programming style: as module complexity
-       grows, \ttt{activity()} tends to become a large, monolythic function.}
+       \ttt{activity()}-based simple modules;
+   \item run-time overhead: switching between coroutines is slower than
+       a simple function call
+   \item does not encourage a good programming style: as module complexity
+       grows, \ttt{activity()} tends to become a large, monolythic function.
 \end{itemize}
 
 In most cases, cons outweigh pros and it is a better idea to use
@@ -1281,17 +1281,17 @@ In most cases, cons outweigh pros and it is a better idea to use
 
 Coroutines are used by a number of other simulation packages:
 \begin{itemize}
-\item{All simulation software which inherits from SIMULA (e.g. C++SIM)
+\item All simulation software which inherits from SIMULA (e.g. C++SIM)
     is based on coroutines, although all in all the programming
-    model is quite different.}
-\item{The simulation/parallel programming language Maisie and its successor
+    model is quite different.
+\item The simulation/parallel programming language Maisie and its successor
     PARSEC (from UCLA) also use coroutines (although implemented
     with ``normal'' preemptive threads). The philosophy
     is quite similar to {\opp}. PARSEC, being ``just''
     a programming language, it has a more elegant syntax but far fewer
-    features than {\opp}.}
-\item{Many Java-based simulation libraries are based on Java
-    threads.}
+    features than {\opp}.
+\item Many Java-based simulation libraries are based on Java
+    threads.
 \end{itemize}
 
 \subsection{How to Avoid Global Variables}
@@ -1390,7 +1390,7 @@ but otherwise the two are interchangeable.
 If you use the \ttt{par("foo")} parameter in expressions (such as
 \ttt{4*par("foo")+2}), the C++ compiler may be unable to decide
 between overloaded operators and report ambiguity. This issue can be
-resolved by adding an explicit cast such as \ttt{(double)par("foo")}, 
+resolved by adding an explicit cast such as \ttt{(double)par("foo")},
 or using the \ffunc{doubleValue()} or \ffunc{longValue()} methods.
 
 
@@ -3009,7 +3009,7 @@ class and a set of macros to build FSMs.
 
 The key points are:
 \begin{itemize}
-\item{There are two kinds of states:
+\item There are two kinds of states:
     \textit{transient}\index{transient states} and
     \textit{steady}\index{steady states}. On each event (that is, at
     each call to \ffunc{handleMessage()}), the FSM transitions out of
@@ -3019,14 +3019,14 @@ The key points are:
     events, the system is always in one of the steady states.
     Transient states are therefore not really a must -- they exist
     only to group actions to be taken during a transition in a
-    convenient way.}
-\item{You can assign program code to handle entering and leaving a state
+    convenient way.
+\item You can assign program code to handle entering and leaving a state
     (known as entry/exit code)\index{entry code}\index{exit code}.
     Staying in the same state is handled as leaving and re-entering
-    the state.}
-\item{Entry code should not modify the state (this is verified by
+    the state.
+\item Entry code should not modify the state (this is verified by
     {\opp}).  State changes (transitions) must be put into the exit
-    code.}
+    code.
 \end{itemize}
 
 {\opp}'s FSMs \textit{can} be nested\index{FSM!nested}. This means

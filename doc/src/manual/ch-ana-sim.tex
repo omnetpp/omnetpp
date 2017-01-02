@@ -520,15 +520,15 @@ However, before worrying too much about rounding and conversion errors,
 consider the \textit{real} accuracy of your results:
 
 \begin{itemize}
-  \item{in real life, it is very difficult to measure quantities (weight, distance,
+  \item In real life, it is very difficult to measure quantities (weight, distance,
      even time) with more than a few digits of precision. What precision
      are your input data? For example, if you approximate inter-arrival
      time as \textit{exponential(0.153)} when the mean is really
      \textit{0.152601...} and the distribution is not even exactly exponential,
-     you are already starting out with a bigger error than rounding can cause.}
+     you are already starting out with a bigger error than rounding can cause.
 
-  \item{the simulation model is itself an approximation of real life. How much
-     error do the (known and unknown) simplifications cause in the results?}
+  \item The simulation model is itself an approximation of real life. How much
+     error do the (known and unknown) simplifications cause in the results?
 \end{itemize}
 
 %% TODO also hint that results can be directed to database etc! by changing the implementation that cEnvir methods delegate to. (list cEnvir methods!)
