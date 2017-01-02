@@ -34,22 +34,22 @@ namespace omnetpp {
 
 using namespace canvas_stream_ops;
 
-Register_Class(cGroupFigure);
-//Register_Class(cPanelFigure);
-Register_Class(cLineFigure);
-Register_Class(cArcFigure);
-Register_Class(cPolylineFigure);
-Register_Class(cRectangleFigure);
-Register_Class(cOvalFigure);
-Register_Class(cRingFigure);
-Register_Class(cPieSliceFigure);
-Register_Class(cPolygonFigure);
-Register_Class(cPathFigure);
-Register_Class(cTextFigure);
-Register_Class(cLabelFigure);
-Register_Class(cImageFigure);
-Register_Class(cIconFigure);
-Register_Class(cPixmapFigure);
+Register_Figure("group", cGroupFigure);
+//Register_Figure("panel", cPanelFigure);
+Register_Figure("line", cLineFigure);
+Register_Figure("arc", cArcFigure);
+Register_Figure("polyline", cPolylineFigure);
+Register_Figure("rectangle", cRectangleFigure);
+Register_Figure("oval", cOvalFigure);
+Register_Figure("ring", cRingFigure);
+Register_Figure("pieslice", cPieSliceFigure);
+Register_Figure("polygon", cPolygonFigure);
+Register_Figure("path", cPathFigure);
+Register_Figure("text", cTextFigure);
+Register_Figure("label", cLabelFigure);
+Register_Figure("image", cImageFigure);
+Register_Figure("icon", cIconFigure);
+Register_Figure("pixmap", cPixmapFigure);
 
 const cFigure::Color cFigure::BLACK(0, 0, 0);
 const cFigure::Color cFigure::WHITE(255, 255, 255);
@@ -137,7 +137,7 @@ static const char *PKEY_TINT = "tint";
 int cFigure::lastId = 0;
 cStringPool cFigure::stringPool;
 
-std::map<std::string,cObjectFactory*> cCanvas::figureTypes;
+std::map<std::string,cObjectFactory*> cCanvas::figureFactories;
 
 #define ENSURE_RANGE01(var)  {if (var < 0 || var > 1) throw cRuntimeError(this, #var " must be in the range [0,1]");}
 #define ENSURE_NONNEGATIVE(var)  {if (var < 0) throw cRuntimeError(this, #var " cannot be negative");}
@@ -3545,75 +3545,25 @@ inline std::string capitalizeClassName(const std::string className)
 
 cFigure *cCanvas::createFigure(const char *type) const
 {
-    cFigure *figure;
-    if (!strcmp(type, "group"))
-        figure = new cGroupFigure();
-//    else if (!strcmp(type, "panel"))
-//        figure = new cPanelFigure();
-    else if (!strcmp(type, "line"))
-        figure = new cLineFigure();
-    else if (!strcmp(type, "arc"))
-        figure = new cArcFigure();
-    else if (!strcmp(type, "polyline"))
-        figure = new cPolylineFigure();
-    else if (!strcmp(type, "rectangle"))
-        figure = new cRectangleFigure();
-    else if (!strcmp(type, "oval"))
-        figure = new cOvalFigure();
-    else if (!strcmp(type, "ring"))
-        figure = new cRingFigure();
-    else if (!strcmp(type, "pieslice"))
-        figure = new cPieSliceFigure();
-    else if (!strcmp(type, "polygon"))
-        figure = new cPolygonFigure();
-    else if (!strcmp(type, "path"))
-        figure = new cPathFigure();
-    else if (!strcmp(type, "text"))
-        figure = new cTextFigure();
-    else if (!strcmp(type, "label"))
-        figure = new cLabelFigure();
-    else if (!strcmp(type, "image"))
-        figure = new cImageFigure();
-    else if (!strcmp(type, "icon"))
-        figure = new cIconFigure();
-    else if (!strcmp(type, "pixmap"))
-        figure = new cPixmapFigure();
+    auto it = figureFactories.find(type);
+    cObjectFactory *factory = nullptr;
+    if (it != figureFactories.end())
+        factory = it->second;
     else {
-        std::map<std::string, cObjectFactory*>::iterator it = figureTypes.find(type);
-        cObjectFactory *factory = nullptr;
-        if (it != figureTypes.end())
-            factory = it->second;
-        else {
-            std::map<std::string, std::string>::iterator it = omnetpp::figureTypes.find(type);
-            if (it == omnetpp::figureTypes.end())
-                throw cRuntimeError("Figure type '%s' not found (Register_Figure() missing?)", type);
-            std::string className = it->second;
-            factory = cObjectFactory::find(className.c_str());
-            if (!factory)
-                throw cRuntimeError("Implementation class '%s' for figure type '%s' not found", className.c_str(), type);
-            figureTypes[type] = factory;
-        }
-        cObject *obj = factory->createOne();
-        figure = dynamic_cast<cFigure *>(obj);
-        if (!figure)
-            throw cRuntimeError("Wrong figure class '%s': Cannot cast to cFigure", obj->getClassName());
+        auto it = figureTypes.find(type);
+        if (it == figureTypes.end())
+            throw cRuntimeError("Figure type '%s' not found (Register_Figure() missing?)", type);
+        std::string className = it->second;
+        factory = cObjectFactory::find(className.c_str());
+        if (!factory)
+            throw cRuntimeError("Implementation class '%s' for figure type '%s' not found", className.c_str(), type);
+        figureFactories[type] = factory;
     }
+    cObject *obj = factory->createOne();
+    cFigure *figure = dynamic_cast<cFigure *>(obj);
+    if (!figure)
+        throw cRuntimeError("Wrong figure class '%s': Cannot cast to cFigure", obj->getClassName());
     return figure;
-}
-
-void cCanvas::dumpSupportedPropertyKeys(std::ostream& out) const
-{
-    const char *types[] = {
-        "group", /*"panel",*/ "line", "arc", "polyline", "rectangle", "oval", "ring", "pieslice",
-        "polygon", "path", "text", "label", "image", "pixmap", nullptr
-    };
-
-    for (const char **p = types; *p; p++) {
-        const char *type = *p;
-        cFigure *figure = createFigure(type);
-        out << type << ": " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
-        delete figure;
-    }
 }
 
 cFigure *cCanvas::getSubmodulesLayer() const

@@ -325,8 +325,9 @@ class SIM_API cFigure : public cOwnedObject
         uint8_t subtreeChanges;
 
     protected:
-        virtual bool isAllowedPropertyKey(const char *key) const;
-        virtual void validatePropertyKeys(cProperty *property) const;
+        // internal:
+        virtual void validatePropertyKeys(cProperty *property) const; // relies on isAllowedPropertyKey()
+        virtual bool isAllowedPropertyKey(const char *key) const; // allows "x-*" keys, plus the ones returned by getAllowedPropertyKeys()
         virtual cFigure *getRootFigure() const;
         void fireStructuralChange() {fire(CHANGE_STRUCTURAL);}
         void fireTransformChange() {fire(CHANGE_TRANSFORM);}
@@ -334,17 +335,20 @@ class SIM_API cFigure : public cOwnedObject
         void fireVisualChange() {fire(CHANGE_VISUAL);}
         void fireInputDataChange() {fire(CHANGE_INPUTDATA);}
         virtual void fire(uint8_t flags);
+
+    protected:
+        // helpers for parse(cProperty*)
         static Point parsePoint(cProperty *property, const char *key, int index);
         static std::vector<Point> parsePoints(cProperty *property, const char *key);
         _OPPDEPRECATED static Rectangle parseBounds(cProperty *property) {return parseBounds(property, Rectangle());} //TODO use parseBounds(property, getBounds()) instead
         static Rectangle parseBounds(cProperty *property, const Rectangle& defaults);
         static Transform parseTransform(cProperty *property, const char *key);
         static Font parseFont(cProperty *property, const char *key);
-        static void concatArrays(const char **dest, const char **first, const char **second);
         static Rectangle computeBoundingBox(const Point& position, const Point& size, double ascent, Anchor anchor);
+        static void concatArrays(const char **dest, const char **first, const char **second); // concatenates nullptr-terminated arrays
 
     public:
-        // internal:
+        // helpers for class descriptors and parse(cProperty*)
         static Point parsePoint(const char *s); // parse Point::str() format
         static Rectangle parseRectangle(const char *s); // parse Rectangle::str() format
         static Transform parseTransform(const char *s);  // parse Transform::str() format
@@ -360,9 +364,7 @@ class SIM_API cFigure : public cOwnedObject
         static Anchor parseAnchor(const char *s);
 
     public:
-        // internal:
-        virtual void parse(cProperty *property);  // see getAllowedPropertyKeys(); plus, "x-*" keys can be added by the user
-        virtual const char **getAllowedPropertyKeys() const;
+        // internal, mostly used by runtime GUIs:
         virtual void updateParentTransform(Transform& transform) {transform.rightMultiply(getTransform());}
         virtual void callRefreshDisplay(); // call refreshDisplay(), and recurse to its children
         uint8_t getLocalChangeFlags() const {return localChanges;}
@@ -726,6 +728,11 @@ class SIM_API cFigure : public cOwnedObject
          * parent's child list. It is an error if this figure has no parent.
          */
         virtual void lowerToBottom();
+
+        /**
+         * Duplicate the figure subtree.
+         */
+        virtual cFigure *dupTree() const;
         //@}
 
         /** @name Operations on the transformation matrix. */
@@ -745,10 +752,30 @@ class SIM_API cFigure : public cOwnedObject
         //@}
 
         /** @name Miscellaneous. */
+        //@{
         /**
-         * Duplicate the figure subtree.
+         * This method is invoked by the simulation library to initialize
+         * the figure from a \@figure NED property. Custom figure classes
+         * usually need to override this method (and call the super class'
+         * similar method in it).
+         *
+         * Note: When overriding parse(), it is usually also necessary to override
+         * getAllowedPropertyKeys(), in order to allow new keys in the \@figure
+         * property.
          */
-        virtual cFigure *dupTree() const;
+        virtual void parse(cProperty *property);
+
+        /**
+         * Returns the list of allowed keys in \@figure properties with this
+         * figure type, in a nullptr-terminated array of const char* elements.
+         * This method is invoked e.g. from parse(), in order to be able to
+         * issue error messages for invalid keys in the property. Note that
+         * property keys starting with "x-" are already allowed by default.
+         * Custom figure classes usually need to override this method together
+         * with parse(); see the source code of the library classes for example
+         * implementations.
+         */
+        virtual const char **getAllowedPropertyKeys() const;
 
         /**
          * Change the figure's position by the given x and y deltas.
@@ -765,8 +792,11 @@ class SIM_API cFigure : public cOwnedObject
         virtual void move(double dx, double dy);
 
         /**
-         * TODO
-         * only local updates!
+         * This method is invoked by runtime GUIs on every display refresh,
+         * and can be overridden if the figure needs to be able to update
+         * its contents dynamically (self-refreshing figures.) The changes
+         * done inside this method should be restricted to this figure
+         * and its subfigure tree.
          */
         virtual void refreshDisplay() {}
 
@@ -2904,7 +2934,7 @@ class SIM_API cCanvas : public cOwnedObject
         cFigure::Color backgroundColor;
         cFigure *rootFigure;
         std::map<std::string,int> tagBitIndex;  // tag-to-bitindex
-        static std::map<std::string,cObjectFactory*> figureTypes;
+        static std::map<std::string,cObjectFactory*> figureFactories;
         std::map<const cObject*,double> animationSpeedMap;  // maps source to animationSpeed
         double animationHoldEndTime; // the effective one will be the maximum endTime of all visible canvases
     public:
@@ -2915,7 +2945,6 @@ class SIM_API cCanvas : public cOwnedObject
         virtual void addFiguresFrom(cProperties *properties);
         virtual uint64_t parseTags(const char *s);
         virtual std::string getTags(uint64_t tagBits);
-        void dumpSupportedPropertyKeys(std::ostream& out) const;
         const std::map<const cObject*,double>& getAnimationSpeedMap() const {return animationSpeedMap;}  // for e.g. Qtenv
         double getAnimationHoldEndTime() const {return animationHoldEndTime;}  // for e.g. Qtenv
     private:

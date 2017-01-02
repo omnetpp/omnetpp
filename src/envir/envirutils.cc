@@ -145,7 +145,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
         for (int i = 0; i < (int)v.size(); i++) {
             out << "\\item[\\$\\{" << v[i] << "\\}] : \\\\\n";
             const char *desc = config->getVariableDescription(v[i]);
-            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc)), 75).c_str(), "    ") << "\n";
+            out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc)), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
     }
@@ -356,22 +356,12 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     if (wantAll || !strcmp(category, "figures")) {
         processed = true;
         out << "Figure types and their accepted @figure property keys:\n";
-        cRegistrationList *table = classes.getInstance();
-        table->sort();
-        for (int i = 0; i < table->size(); i++) {
-            cObjectFactory *factory = check_and_cast<cObjectFactory *>(table->get(i));
-            const char *className = factory->getFullName();
-            if (opp_stringendswith(className, "Figure")) {
-                cObject *obj = factory->createOne();
-                cFigure *figure = dynamic_cast<cFigure *>(obj);
-                if (figure) {
-                    opp_string type = className[0] == 'c' ? className+1 : className;
-                    opp_strlwr(type.buffer());
-                    type.buffer()[type.size()-6] = '\0';
-                    out << "  " << type.c_str() << " (" << className << "): " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
-                }
-                delete obj;
-            }
+        for (auto it : figureTypes) {
+            std::string type = it.first;
+            std::string className = it.second;
+            cFigure *figure = check_and_cast<cFigure *>(createOne(className.c_str()));
+            out << "  " << type << " (" << className << "): " << opp_join(figure->getAllowedPropertyKeys(), ", ") << "\n";
+            delete figure;
         }
         out << "\n";
     }
