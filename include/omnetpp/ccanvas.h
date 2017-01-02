@@ -368,7 +368,6 @@ class SIM_API cFigure : public cOwnedObject
         uint8_t getLocalChangeFlags() const {return localChanges;}
         uint8_t getSubtreeChangeFlags() const {return subtreeChanges;}
         void clearChangeFlags();
-        void insertChild(cFigure *figure);
         void refreshTagBits();
         void refreshTagBitsRec();
         int64_t getTagBits() const {return tagBits;}
@@ -604,14 +603,14 @@ class SIM_API cFigure : public cOwnedObject
         virtual void addFigure(cFigure *figure, int pos);
 
         /**
-         * Deprecated due to the introduction of Z-index, use insertAfter() instead.
+         * DEPRECATED. Use figure->insertAbove(referenceFigure) instead.
          */
-        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAfter(referenceFigure);}
+        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAbove(referenceFigure);}
 
         /**
-         * Deprecated due to the introduction of Z-index, use insertBefore() instead.
+         * DEPRECATED. Use figure->insertBelow(referenceFigure) instead.
          */
-        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBefore(referenceFigure);}
+        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBelow(referenceFigure);}
 
         /**
          * Removes the given figure from the child list of this figure.
@@ -628,6 +627,12 @@ class SIM_API cFigure : public cOwnedObject
          * Prefer removeFromParent() to this method.
          */
         virtual cFigure *removeFigure(int pos);
+
+        /**
+         * Removes this figure from the child list of its parent figure.
+         * It has no effect if the figure has no parent figure.
+         */
+        virtual cFigure *removeFromParent();
         //@}
 
         /** @name Managing stacking order */
@@ -649,24 +654,46 @@ class SIM_API cFigure : public cOwnedObject
         virtual bool isBelow(const cFigure *figure) const;
 
         /**
+         * Inserts this figure under the same parent as the reference figure,
+         * guaranteeing that it will appear above the reference figure
+         * in stacking order. In order to achieve the latter, the Z-index
+         * of the figure is set to the Z-index of the reference figure if
+         * it was smaller. In case of equal Z-indices, the figure is inserted
+         * right after the reference figure. If the Z-index of the figure is
+         * already greater than that of the reference figure, nothing should be
+         * assumed about the insertion position.
+         *
+         * @see insertAfter()
+         */
+        virtual void insertAbove(cFigure *referenceFigure);
+
+        /**
+         * Inserts this figure under the same parent as the reference figure,
+         * guaranteeing that it will appear below the reference figure
+         * in stacking order. In order to achieve the latter, the Z-index
+         * of the figure is set to the Z-index of the reference figure if
+         * it was greater. In case of equal Z-indices, the figure is inserted
+         * right before the reference figure. If the Z-index of the figure is
+         * already smaller than that of the reference figure, nothing should be
+         * assumed about the insertion position.
+         *
+         * @see insertBefore()
+         */
+        virtual void insertBelow(cFigure *referenceFigure);
+
+        /**
          * Inserts this figure after the given reference figure in its parent's
-         * child list. Note that relative order in the child list only affects
+         * child list. BEWARE: Relative order in the child list only affects
          * stacking order if the respective figures have the same Z-index.
          */
-        virtual void insertAfter(const cFigure *figure);
+        virtual void insertAfter(const cFigure *referenceFigure);
 
         /**
          * Inserts this figure in front of the given reference figure in its
-         * parent's child list. Note that relative order in the child list only
+         * parent's child list. BEWARE: Relative order in the child list only
          * affects stacking order if the respective figures have the same Z-index.
          */
-        virtual void insertBefore(const cFigure *figure);
-
-        /**
-         * Remove this figure from the child list of its parent figure.
-         * It has no effect if the figure has no parent figure.
-         */
-        virtual cFigure *removeFromParent();
+        virtual void insertBefore(const cFigure *referenceFigure);
 
         /**
          * If this figure is below the given reference figure in stacking order,
@@ -2944,14 +2971,14 @@ class SIM_API cCanvas : public cOwnedObject
         virtual void addFigure(cFigure *figure, int pos) {rootFigure->addFigure(figure, pos);}
 
         /**
-         * Deprecated due to the introduction of Z-index, use cFigure::insertAfter() instead.
+         * DEPRECATED. Use cFigure::insertAbove() instead.
          */
-        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAfter(referenceFigure);}
+        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAbove(referenceFigure);}
 
         /**
-         * Deprecated due to the introduction of Z-index, use cFigure::insertBefore() instead.
+         * DEPRECATED. Use cFigure::insertBelow() instead.
          */
-        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBefore(referenceFigure);}
+        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBelow(referenceFigure);}
 
         /**
          * Removes the given figure from the child list of the root figure.

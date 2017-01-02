@@ -675,7 +675,8 @@ cFigure::Font cFigure::parseFont(cProperty *property, const char *key)
     cStringTokenizer tokenizer(property->getValue(key, 2));
     while (tokenizer.hasMoreTokens()) {
         const char *token = tokenizer.nextToken();
-        if (!strcmp(token, "normal"))  /*no-op*/;
+        if (!strcmp(token, "normal"))
+            ; /*no-op*/
         else if (!strcmp(token, "bold"))
             flags |= FONT_BOLD;
         else if (!strcmp(token, "italic"))
@@ -1009,11 +1010,25 @@ void cFigure::addFigure(cFigure *figure, int pos)
     fireStructuralChange();
 }
 
+void cFigure::insertAbove(cFigure *referenceFigure)
+{
+    if (getZIndex() < referenceFigure->getZIndex())
+        setZIndex(referenceFigure->getZIndex());
+    insertAfter(referenceFigure);
+}
+
+void cFigure::insertBelow(cFigure *referenceFigure)
+{
+    if (getZIndex() > referenceFigure->getZIndex())
+        setZIndex(referenceFigure->getZIndex());
+    insertBefore(referenceFigure);
+}
+
 void cFigure::insertAfter(const cFigure *referenceFigure)
 {
     cFigure *parent = referenceFigure->getParentFigure();
     if (!parent)
-        throw cRuntimeError(this, "insertAfter(): Reference figure has no parent");
+        throw cRuntimeError(this, "insertAbove()/insertAfter(): Reference figure has no parent");
     int refPos = parent->findFigure(referenceFigure);
     ASSERT(refPos != -1);
     parent->addFigure(this, refPos + 1);
@@ -1023,18 +1038,10 @@ void cFigure::insertBefore(const cFigure *referenceFigure)
 {
     cFigure *parent = referenceFigure->getParentFigure();
     if (!parent)
-        throw cRuntimeError(this, "insertBefore(): Reference figure has no parent");
+        throw cRuntimeError(this, "insertBelow()/insertBefore(): Reference figure has no parent");
     int refPos = parent->findFigure(referenceFigure);
     ASSERT(refPos != -1);
     parent->addFigure(this, refPos);
-}
-
-void cFigure::insertChild(cFigure *figure)
-{
-    take(figure);
-    children.push_back(figure);
-    refreshTagBits();
-    fireStructuralChange();
 }
 
 cFigure *cFigure::removeFromParent()
@@ -3513,7 +3520,7 @@ cFigure *cCanvas::parseFigure(cProperty *property) const
             const char *type = opp_nulltoempty(property->getValue(PKEY_TYPE));
             figure = createFigure(type);
             figure->setName(name);
-            parent->insertChild(figure);
+            parent->addFigure(figure);
         }
         else {
             figure->raiseToTop();
