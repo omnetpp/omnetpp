@@ -74,7 +74,7 @@ int insptypeCodeFromName(const char *name)
 //----
 
 Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
-    : QWidget(parent, isTopLevel ? Qt::Dialog : Qt::Widget)
+    : QWidget(parent, isTopLevel ? Qt::Dialog : Qt::Widget) // Qt::Tool? Qt::Popup? CustomizeWindowFlagsHint? WindowStaysOnTopHint?
 {
     inspectDropdownMenu = new QMenu(this);
     copyDropdownMenu = new QMenu(this);
