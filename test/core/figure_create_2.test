@@ -8,17 +8,17 @@ Test instantiating custom figure types from @figure.
 using namespace omnetpp;
 
 class FooFigure : public cGroupFigure { };
-Register_Figure(foo, FooFigure);
+Register_Figure("foo", FooFigure);
 
 namespace inet {
 
 class BarFigure : public cGroupFigure { };
-Register_Figure(bar, BarFigure);
+Register_Figure("bar", BarFigure);
 
 namespace common {
 
 class BazFigure : public cGroupFigure { };
-Register_Figure(baz, BazFigure);
+Register_Figure("baz", BazFigure);
 
 } // namespace common
 } // namespace inet

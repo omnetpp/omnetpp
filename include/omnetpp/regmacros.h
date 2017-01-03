@@ -271,14 +271,21 @@ namespace omnetpp {
   EXECUTE_ON_STARTUP(VAR = new omnetpp::cEnum(NAME); VAR->bulkInsert VALUES; omnetpp::enums.getInstance()->add(VAR))
 
 /**
- * @brief Registers a new figure type. The macro accepts a type name (an
- * identifier that can be used in the type attribute of the \@figure property),
+ * @brief Registers a new figure type. The macro expects a type name string
+ * (an identifier that can be used in the type attribute of the \@figure property),
  * and a C++ class name. The class must be derived from cFigure.
+ *
+ * Note: Register_Figure() includes registration the figure class via a Register_Class().
+ *
+ * Example:
+ * <pre>
+ * Register_Figure("polyline", cPolylineFigure);
+ * </pre>
  *
  * @hideinitializer
  */
 #define Register_Figure(NAME, CLASSNAME)  \
-  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cFigure, "figure", figureTypes[#NAME] = omnetpp::opp_typename(typeid(CLASSNAME)))
+  __REGISTER_CLASS_X(CLASSNAME, omnetpp::cFigure, "figure", figureTypes[NAME] = omnetpp::opp_typename(typeid(CLASSNAME)))
 
 //@}
 
