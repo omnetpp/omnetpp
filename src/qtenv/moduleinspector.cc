@@ -165,15 +165,8 @@ void ModuleInspector::createViews(bool isTopLevel)
     layout->setMargin(0);
     layout->setSpacing(0);
 
-    bool onMacQt4 = false;
-#ifdef Q_WS_MAC // This macro is no longer defined in Qt5, but in that case this workaround is not needed, so (y)
-    onMacQt4 = true;  // couldn't get the toolbar to paint over the OsgViewer on Mac, maybe it will work with Qt5
-#endif
-
-    if (isTopLevel || onMacQt4) {
-        // couldn't get the toolbar to paint over the OsgViewer on Mac, maybe it will work with Qt5
-        // Yes, it works with Qt5, so this branch is only for Qt4 on Mac.
-        layout->addWidget(toolbar, 0, (onMacQt4 && !isTopLevel) ? Qt::AlignRight : Qt::AlignLeft);
+    if (isTopLevel) {
+        layout->addWidget(toolbar, 0, Qt::AlignLeft);
         layout->addLayout(stackedLayout);
     }
     else {
