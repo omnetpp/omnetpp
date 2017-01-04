@@ -102,7 +102,7 @@ enum\_decl
         ;
 
 enum
-        : ENUM NAME '\{'
+        : ENUM qname '\{'
           opt\_enumfields '\}' opt\_semicolon
         ;
 
@@ -138,29 +138,27 @@ struct
         ;
 
 message\_header
-        : MESSAGE NAME '\{'
-        | MESSAGE NAME EXTENDS qname '\{'
+        : MESSAGE qname '\{'
+        | MESSAGE qname EXTENDS qname '\{'
         ;
 
 packet\_header
-        : PACKET NAME '\{'
-        | PACKET NAME EXTENDS qname '\{'
+        : PACKET qname '\{'
+        | PACKET qname EXTENDS qname '\{'
         ;
 
 class\_header
-        : CLASS NAME '\{'
-        | CLASS NAME EXTENDS qname '\{'
+        : CLASS qname '\{'
+        | CLASS qname EXTENDS qname '\{'
         ;
 
 struct\_header
-        : STRUCT NAME '\{'
-        | STRUCT NAME EXTENDS qname '\{'
+        : STRUCT qname '\{'
+        | STRUCT qname EXTENDS qname '\{'
         ;
 
 body
         : opt\_fields\_and\_properties
-          opt\_propertiesblock\_old
-          opt\_fieldsblock\_old
           '\}' opt\_semicolon
         ;
 
@@ -221,7 +219,7 @@ opt\_fieldvector
         |
         ;
 
-fieldvalue
+fieldvalue   
         : fieldvalue fieldvalueitem
         | fieldvalueitem
         ;
@@ -264,7 +262,7 @@ property
 property\_namevalue
         : property\_name
         | property\_name '(' opt\_property\_keys ')'
-        | ENUM '(' NAME ')'
+        | ENUM '(' NAME ')' 
         ;
 
 property\_name
@@ -273,7 +271,7 @@ property\_name
         ;
 
 opt\_property\_keys
-        : property\_keys
+        : property\_keys  
         ;
 
 property\_keys
@@ -293,7 +291,7 @@ property\_values
 
 property\_value
         : property\_literal
-        |
+        |  
         ;
 
 property\_literal
@@ -301,42 +299,6 @@ property\_literal
         | property\_literal STRINGCONSTANT
         | CHAR
         | STRINGCONSTANT
-        ;
-
-opt\_fieldsblock\_old
-        : FIELDS ':'
-          opt\_fields\_old
-        |
-        ;
-
-opt\_fields\_old
-        : fields\_old
-        |
-        ;
-
-fields\_old
-        : fields\_old field
-        | field
-        ;
-
-opt\_propertiesblock\_old
-        : PROPERTIES ':'
-          opt\_properties\_old
-        |
-        ;
-
-opt\_properties\_old
-        : properties\_old
-        |
-        ;
-
-properties\_old
-        : properties\_old property\_old
-        | property\_old
-        ;
-
-property\_old
-        : NAME '=' property\_value ';'
         ;
 
 opt\_semicolon : ';' | ;

@@ -15,10 +15,10 @@ $txt =~ s/^.*%%(.*)%%.*$/$1/s;
 
 
 # remove curly brace blocks
-$txt =~ s/'{'/'<<<'/gs;
-$txt =~ s/'}'/'>>>'/gs;
+$txt =~ s/'\{'/'<<<'/gs; # escape literal '{'
+$txt =~ s/'\}'/'>>>'/gs;
 for ($i=0; $i<10; $i++) {
-    $txt =~ s/{[^{}]*}//gs;
+    $txt =~ s/\{[^{}]*\}//gs;
 }
 $txt =~ s/'<<<'/'{'/gs;
 $txt =~ s/'>>>'/'}'/gs;
@@ -83,6 +83,8 @@ while (($key, $value) = each(%terminals)){
 $txt =~ s/{/\\{/gs;
 $txt =~ s/}/\\}/gs;
 $txt =~ s/_/\\_/gs;
+
+$txt =~ s/ *$//gm;
 
 
 # make terminals/nonterminals bold/italic (does not look good)

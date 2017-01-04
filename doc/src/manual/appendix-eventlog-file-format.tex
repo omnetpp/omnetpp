@@ -120,13 +120,6 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{id} (\textit{moduleId}, int): id of the module being deleted
 \end{itemize}
 
-\tbf{MR} \textit{(ModuleReparented)}: reparenting a module
-
-\begin{itemize}
-  \item \tbf{id} (\textit{moduleId}, int): id of the module being reparented
-  \item \tbf{p} (\textit{newParentModuleId}, int): id of the new parent module
-\end{itemize}
-
 \tbf{GC} \textit{(GateCreated)}: gate created
 
 \begin{itemize}
@@ -183,12 +176,13 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{m} (\textit{moduleId}, int): id of the processing module
   \item \tbf{ce} (\textit{causeEventNumber}, eventnumber\_t): event number from which the message being processed was sent, or -1 if the message was sent from initialize
   \item \tbf{msg} (\textit{messageId}, long): lifetime-unique id of the message being processed
+  \item \tbf{f} (\textit{fingerprints}, string): current simulation fingerprints
 \end{itemize}
 
-\tbf{KF} \textit{(Keyframe)}:
+\tbf{KF} \textit{(Keyframe)}: 
 
 \begin{itemize}
-  \item \tbf{p} (\textit{previousKeyframeFileOffset}, int64): file offset of the previous keyframe entry
+  \item \tbf{p} (\textit{previousKeyframeFileOffset}, int64\_t): file offset of the previous keyframe entry
   \item \tbf{c} (\textit{consequenceLookaheadLimits}, string): consequence lookahead data
   \item \tbf{s} (\textit{simulationStateEntries}, string): simulation state data
 \end{itemize}
@@ -204,7 +198,7 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{n} (\textit{messageName}, string): message name
   \item \tbf{k} (\textit{messageKind}, short): message kind
   \item \tbf{p} (\textit{messagePriority}, short): message priority
-  \item \tbf{l} (\textit{messageLength}, int64): message length in bits
+  \item \tbf{l} (\textit{messageLength}, int64\_t): message length in bits
   \item \tbf{er} (\textit{hasBitError}, bool): true indicates that the message has bit errors
   \item \tbf{d} (\textit{detail}, string): detailed information of message content when recording message data is turned on
   \item \tbf{pe} (\textit{previousEventNumber}, eventnumber\_t): event number from which the message being cloned was sent, or -1 if the message was sent from initialize
@@ -246,6 +240,7 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{sg} (\textit{senderGateId}, int): id of the gate at the source module from which the message is being sent
   \item \tbf{pd} (\textit{propagationDelay}, simtime\_t): propagation delay as the message is propagated through the connection
   \item \tbf{td} (\textit{transmissionDelay}, simtime\_t): transmission duration as the whole message is sent from the source gate
+  \item \tbf{del} (\textit{discard}, bool): whether the channel has discarded the message
 \end{itemize}
 
 \tbf{CM} \textit{(CreateMessage)}: creating a message

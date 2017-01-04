@@ -65,7 +65,7 @@ with the \ttt{-h configdetails} option.
     Specifies the extra amount of stack that is reserved for each
     \ttt{activity()} simple module when the simulation is run under Cmdenv.
 \item[cmdenv-interactive] = \textit{<bool>}, default: \ttt{false}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+    \textit{Per-simulation-run setting.}\\
     Defines what Cmdenv should do when the model contains unassigned
     parameters. In interactive mode, it asks the user. In non-interactive mode
     (which is more suitable for batch execution), Cmdenv stops with an error.
@@ -85,22 +85,32 @@ with the \ttt{-h configdetails} option.
     \ttt{\%} followed by a single format character).  For example \ttt{\%l}
     stands for log level, and \ttt{\%J} for source component. See the manual
     for the list of available format characters.
-\item[cmdenv-output-file] = \textit{<filename>}\\
-    \textit{Global setting (applies to all simulation runs).}\\
-    When a filename is specified, Cmdenv redirects standard output into the
-    given file. This is especially useful with parallel simulation. See the
-    \ttt{fname-{\allowbreak}append-{\allowbreak}host} option as well.
+\item[cmdenv-output-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}iterationvarsf\}{\allowbreak}\#\$\{{\allowbreak}repetition\}{\allowbreak}.{\allowbreak}out}\\
+    \textit{Per-simulation-run setting.}\\
+    When
+    \ttt{cmdenv-{\allowbreak}record-{\allowbreak}output={\allowbreak}true}:
+    file name to redirect standard output to. See also
+    \ttt{fname-{\allowbreak}append-{\allowbreak}host}.
 \item[cmdenv-performance-display] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-simulation-run setting.}\\
     When \ttt{cmdenv-{\allowbreak}express-{\allowbreak}mode={\allowbreak}true}:
     print detailed performance information. Turning it on results in a 3-line
     entry printed on each update, containing ev/sec, simsec/sec, ev/simsec,
     number of messages created/still present/currently scheduled in FES.
+\item[cmdenv-redirect-output] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    Causes Cmdenv to redirect standard output of simulation runs to a file or
+    separate files per run. This option can be useful with running simulation
+    campaigns (e.g. using opp\_runall), and also with parallel simulation. See
+    also: \ttt{cmdenv-{\allowbreak}output-{\allowbreak}file},
+    \ttt{fname-{\allowbreak}append-{\allowbreak}host}.
 \item[cmdenv-runs-to-execute] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies which runs to execute from the selected configuration (see
     \ttt{cmdenv-{\allowbreak}config-{\allowbreak}name} option). It accepts a
-    comma-separated list of run numbers or run number ranges, e.g.
+    filter expression of iteration variables such as \ttt{\$num\-Hosts>10
+    {\allowbreak}\&\& {\allowbreak}\$iatime={\allowbreak}={\allowbreak}1s}, or
+    a comma-separated list of run numbers or run number ranges, e.g.
     \ttt{1,{\allowbreak}3..{\allowbreak}4,{\allowbreak}7..{\allowbreak}9}. If
     the value is missing, Cmdenv executes all runs in the selected
     configuration. The \ttt{-{\allowbreak}r} command line option overrides this
@@ -109,6 +119,10 @@ with the \ttt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     When \ttt{cmdenv-{\allowbreak}express-{\allowbreak}mode={\allowbreak}true}:
     print status update every n seconds.
+\item[cmdenv-stop-batch-on-error] = \textit{<bool>}, default: \ttt{true}\\
+    \textit{Per-simulation-run setting.}\\
+    Decides whether Cmdenv should skip the rest of the runs when an error
+    occurs during the execution of one run.
 \item[configuration-class] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Part of the Envir plugin mechanism: selects the class from which all
@@ -125,7 +139,8 @@ with the \ttt{-h configdetails} option.
 \item[cpu-time-limit] = \textit{<double>}, unit=\ttt{s}\\
     \textit{Per-simulation-run setting.}\\
     Stops the simulation when CPU usage has reached the given limit. The
-    default is no limit.
+    default is no limit. Note: To reduce per-event overhead, this time limit is
+    only checked every N events (by default, N=1024).
 \item[debug-on-errors] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Global setting (applies to all simulation runs).}\\
     When set to true, runtime errors will cause the simulation program to break
@@ -164,7 +179,7 @@ with the \ttt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     Descriptive name for the given simulation configuration. Descriptions get
     displayed in the run selection dialog.
-\item[eventlog-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}runnumber\}{\allowbreak}.{\allowbreak}elog}\\
+\item[eventlog-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}iterationvarsf\}{\allowbreak}\#\$\{{\allowbreak}repetition\}{\allowbreak}.{\allowbreak}elog}\\
     \textit{Per-simulation-run setting.}\\
     Name of the eventlog file to generate.
 \item[eventlog-message-detail-pattern] = \textit{<custom>}\\
@@ -295,6 +310,16 @@ with the \ttt{-h configdetails} option.
     A semicolon-separated list of directories that contain module icons and
     other resources. This list with be concatenated with
     \ttt{OMNETPP\_IMAGE\_PATH}.
+\item[iteration-nesting-order] = \textit{<string>}\\
+    \textit{Per-simulation-run setting.}\\
+    Specifies the loop nesting order for iteration variables
+    (\ttt{\$\{{\allowbreak}\}{\allowbreak}} syntax). The value is a
+    comma-separated list of iteration variables; the list may also contain at
+    most one asterisk. Variables that are not explicitly listed will be
+    inserted at the position of the asterisk, or appended to the list if there
+    is no asterisk. The first variable will become the outermost loop, and the
+    last one the innermost loop. Example:
+    \ttt{repetition,{\allowbreak}num\-Hosts,{\allowbreak}*,{\allowbreak}ia\-Time}.
 \item[load-libs] = \textit{<filenames>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     A space-separated list of dynamic libraries to be loaded on startup. The
@@ -334,7 +359,10 @@ with the \ttt{-h configdetails} option.
 \item[num-rngs] = \textit{<int>}, default: \ttt{1}\\
     \textit{Per-simulation-run setting.}\\
     The number of random number generators.
-\item[output-scalar-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}runnumber\}{\allowbreak}.{\allowbreak}sca}\\
+\item[output-scalar-db-commit-freq] = \textit{<int>}, default: \ttt{100000}\\
+    \textit{Global setting (applies to all simulation runs).}\\
+    Used with SqliteOutputScalarManager: COMMIT every n INSERTs.
+\item[output-scalar-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}iterationvarsf\}{\allowbreak}\#\$\{{\allowbreak}repetition\}{\allowbreak}.{\allowbreak}sca}\\
     \textit{Per-simulation-run setting.}\\
     Name for the output scalar file.
 \item[output-scalar-file-append] = \textit{<bool>}, default: \ttt{false}\\
@@ -345,20 +373,35 @@ with the \ttt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     The number of significant digits for recording data into the output scalar
     file. The maximum value is {\textasciitilde}15 (IEEE double precision).
-\item[output-vector-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}runnumber\}{\allowbreak}.{\allowbreak}vec}\\
+    This has no effect on SQLite recording, as it stores values as 8-byte IEEE
+    floating point numbers.
+\item[output-vector-db-indexing] = \textit{<custom>}, default: \ttt{skip}\\
+    \textit{Global setting (applies to all simulation runs).}\\
+    Whether and when to add an index to the 'vectordata' table in SQLite output
+    vector files. Possible values: skip, ahead, after
+\item[output-vector-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}iterationvarsf\}{\allowbreak}\#\$\{{\allowbreak}repetition\}{\allowbreak}.{\allowbreak}vec}\\
     \textit{Per-simulation-run setting.}\\
     Name for the output vector file.
+\item[output-vector-file-append] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    What to do when the output vector file already exists: append to it, or
+    delete it and begin a new file (default). Note:
+    \ttt{cIndexed\-File\-Output\-Vector\-Manager} currently does not support
+    appending.
 \item[output-vector-precision] = \textit{<int>}, default: \ttt{14}\\
     \textit{Per-simulation-run setting.}\\
     The number of significant digits for recording data into the output vector
     file. The maximum value is {\textasciitilde}15 (IEEE double precision).
-    This setting has no effect on the "time" column of output vectors, which
-    are represented as fixed-point numbers and always get recorded precisely.
+    This setting has no effect on SQLite recording (it stores values as 8-byte
+    IEEE floating point numbers), and for the "time" column which is
+    represented as fixed-point numbers and always get recorded precisely.
 \item[output-vectors-memory-limit] = \textit{<double>}, unit=\ttt{B}, default: \ttt{16Mi\-B}\\
     \textit{Per-simulation-run setting.}\\
     Total memory that can be used for buffering output vectors. Larger values
     produce less fragmented vector files (i.e. cause vector data to be grouped
     into larger chunks), and therefore allow more efficient processing later.
+    There is also a per-vector limit, see
+    \ttt{**.{\allowbreak}vector-{\allowbreak}buffer}.
 \item[outputscalarmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}cFile\-Output\-Scalar\-Manager}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Part of the Envir plugin mechanism: selects the output scalar manager class
@@ -447,15 +490,21 @@ with the \ttt{-h configdetails} option.
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies which config Qtenv should set up automatically on startup. The
     default is to ask the user.
-\item[qtenv-default-run] = \textit{<int>}\\
+\item[qtenv-default-run] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies which run (of the default config, see
     \ttt{qtenv-{\allowbreak}default-{\allowbreak}config}) Qtenv should set up
-    automatically on startup. The default is to ask the user.
-\item[qtenv-extra-stack] = \textit{<double>}, unit=\ttt{B}, default: \ttt{48Ki\-B}\\
+    automatically on startup. A run filter is also accepted. The default is to
+    ask the user.
+\item[qtenv-extra-stack] = \textit{<double>}, unit=\ttt{B}, default: \ttt{80Ki\-B}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies the extra amount of stack that is reserved for each
     \ttt{activity()} simple module when the simulation is run under Qtenv.
+\item[real-time-limit] = \textit{<double>}, unit=\ttt{s}\\
+    \textit{Per-simulation-run setting.}\\
+    Stops the simulation after the specified amount of time has elapsed. The
+    default is no limit. Note: To reduce per-event overhead, this time limit is
+    only checked every N events (by default, N=1024).
 \item[realtimescheduler-scaling] = \textit{<double>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     When cRealTimeScheduler is selected as scheduler class: ratio of simulation
@@ -580,12 +629,12 @@ with the \ttt{-h configdetails} option.
     {\textasciitilde}110 days.
 \item[simtime-scale] = \textit{<int>}, default: \ttt{-{\allowbreak}12}\\
     \textit{Global setting (applies to all simulation runs).}\\
-    DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus
-    the resolution of time for the 64-bit fixed-point simulation time
+    DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and
+    thus the resolution of time for the 64-bit fixed-point simulation time
     representation. Accepted values are -18..0; for example, -6 selects
     microsecond resolution. -12 means picosecond resolution, with a maximum
     simtime of {\textasciitilde}110 days.
-\item[snapshot-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}runnumber\}{\allowbreak}.{\allowbreak}sna}\\
+\item[snapshot-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}iterationvarsf\}{\allowbreak}\#\$\{{\allowbreak}repetition\}{\allowbreak}.{\allowbreak}sna}\\
     \textit{Per-simulation-run setting.}\\
     Name of the snapshot file.
 \item[snapshotmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}cFile\-Snapshot\-Manager}\\
@@ -636,12 +685,13 @@ with the \ttt{-h configdetails} option.
     specify the user interface via a command-line option or the IDE's Run and
     Debug dialogs. New user interfaces can be defined by subclassing
     \ttt{cRunnable\-Envir}.
-\item[**.vector-max-buffered-values] = \textit{<int>}\\
+\item[**.vector-buffer] = \textit{<double>}, unit=\ttt{B}, default: \ttt{1Mi\-B}\\
     \textit{Per-object setting for vector results.}\\
-    For output vectors: the maximum number of values to buffer per vector,
-    before writing out a block into the output vector file. The default is no
-    per-vector limit (i.e. only the total memory limit is in effect).\\Usage:
-    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}max-{\allowbreak}buffered-{\allowbreak}values={\allowbreak}<count>}.
+    For output vectors: the maximum per-vector buffer space used for storing
+    values before writing them out as a block into the output vector file.
+    There is also a total limit, see
+    \ttt{output-{\allowbreak}vectors-{\allowbreak}memory-{\allowbreak}limit}.\\Usage:
+    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}buffer={\allowbreak}<amount>}.
 \item[**.vector-record-eventnumbers] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-object setting for vector results.}\\
     Whether to record event numbers for an output vector. (Values and
@@ -725,10 +775,8 @@ Predefined variables that can be used in config values:
 \item[\$\{iterationvars\}] : \\
     Concatenation of all user-defined iteration variables in
     \ttt{name={\allowbreak}value} form
-\item[\$\{iterationvars2\}] : \\
-    Concatenation of all user-defined iteration variables in
-    \ttt{name={\allowbreak}value} form, plus
-    \ttt{\$\{{\allowbreak}repetition\}{\allowbreak}}
+\item[\$\{iterationvarsf\}] : \\
+    Like \$\{iterationvars\}, but sanitized for use as part of file names
 \end{description}
 
 %%% Local Variables:
