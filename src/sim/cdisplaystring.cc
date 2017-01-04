@@ -36,7 +36,7 @@ cDisplayString::cDisplayString()
     bufferEnd = nullptr;
     tags = nullptr;
     numTags = 0;
-    assembledStringValid = false;
+    assembledStringValid = true;
 
     ownerComponent = nullptr;
 }
@@ -48,7 +48,7 @@ cDisplayString::cDisplayString(const char *displaystr)
     bufferEnd = nullptr;
     tags = nullptr;
     numTags = 0;
-    assembledStringValid = false;
+    assembledStringValid = true;
 
     ownerComponent = nullptr;
 
@@ -63,7 +63,7 @@ cDisplayString::cDisplayString(const cDisplayString& ds)
     bufferEnd = nullptr;
     tags = nullptr;
     numTags = 0;
-    assembledStringValid = false;
+    assembledStringValid = true;
 
     ownerComponent = nullptr;
 
@@ -96,7 +96,7 @@ void cDisplayString::beforeChange()
 
 void cDisplayString::afterChange()
 {
-    assembledStringValid = true;
+    assembledStringValid = false;
 
     if (ownerComponent) {
 #ifdef SIMFRONTEND_SUPPORT
@@ -115,7 +115,7 @@ void cDisplayString::afterChange()
 
 const char *cDisplayString::str() const
 {
-    if (assembledStringValid)
+    if (!assembledStringValid)
         assemble();
     return assembledString ? assembledString : "";
 }
@@ -130,7 +130,7 @@ void cDisplayString::parse(const char *displaystr)
 void cDisplayString::doParse(const char *displaystr)
 {
     // if it's the same, nothing to do
-    if (assembledStringValid)
+    if (!assembledStringValid)
         assemble();
     if (!omnetpp::opp_strcmp(assembledString, displaystr))
         return;
@@ -199,10 +199,16 @@ bool cDisplayString::setTagArg(const char *tagname, int index, long value)
 
 bool cDisplayString::setTagArg(const char *tagname, int index, const char *value)
 {
-    beforeChange();
-    bool result = doSetTagArg(tagname, index, value);
-    afterChange();
-    return result;
+    int tagIndex = getTagIndex(tagname);
+    if (opp_strcmp(getTagArg(tagIndex, index), value) != 0) {
+        beforeChange();
+        if (tagIndex == -1)
+            tagIndex = doInsertTag(tagname);
+        bool result = doSetTagArg(tagIndex, index, value);
+        afterChange();
+        return result;
+    }
+    return false;
 }
 
 bool cDisplayString::doSetTagArg(const char *tagname, int index, const char *value)
@@ -504,7 +510,7 @@ void cDisplayString::assemble() const
             strcatescaped(assembledString, tags[t].args[i]);
         }
     }
-    assembledStringValid = false;
+    assembledStringValid = true;
 }
 
 void cDisplayString::strcatescaped(char *d, const char *s)
