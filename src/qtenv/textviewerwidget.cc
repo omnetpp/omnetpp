@@ -54,22 +54,70 @@ TextViewerWidget::TextViewerWidget(QWidget *parent)
     // so the first single clicks behave normally
     timeSinceLastDoubleClick.invalidate();
 
-    auto layout = new QVBoxLayout(this);
-    setLayout(layout);
-    headerModel = new QStandardItemModel(this);
+    setFont(getMonospaceFont());
 
+    headerModel = new QStandardItemModel(this);
     header = new QHeaderView(Qt::Horizontal);
     header->setStretchLastSection(true);
     header->setDefaultAlignment(Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter));
     header->setModel(headerModel);
-
-    setFont(getMonospaceFont());
-
-    layout->setMargin(0);
-    layout->addWidget(header);
-    layout->addWidget(viewport());
-
     connect(header, SIGNAL(sectionResized(int, int, int)), this, SLOT(onHeaderSectionResized(int, int, int)));
+
+    // finally setting up the layout
+    QGridLayout *layout = new QGridLayout(this);
+
+    setLayout(layout);
+
+    /*
+     * The layout is set up in a grid like this:
+     *
+     *                      stretch          contentsMargin
+     *                0        1       2    /              \
+     *            +--------+-------+-------+
+     * optional 0 | headerview (colspan 3) |       ver
+     *            +--------+-------+-------+       tic
+     *          1 | empty row, for spacing |       al
+     *            +--------+-------+-------+       scr
+     *  stretch 2 |spacing |toolbar|spacing|       oll
+     *            +--------+-------+-------+       bar
+     *          3 | empty row, for spacing |
+     *            +--------+-------+-------+
+     *                                      \
+     *               horizontal scrollbar    contentsMargin
+     *                                      /
+     *
+     * The viewport (where the scrolled content gets drawn)
+     * is below this layout, but occupies the same space as
+     * rows 1 through 3, via viewportMargin.
+     * The layout's own spacing is set to zero.
+     * The scrollbars are not children of the layout.
+     * The toolbar is only added in here if this widget is
+     * in an embedded LogInspector, otherwise the inspector
+     * handles it itself, and we can keep that cell empty.
+     * The toolbar is aligned on the top right corner of
+     * the big stretching cell in the center, respecting
+     * the spacings we added around it as grid rows/columns.
+     */
+
+    layout->addWidget(header, 0, 0, 1, 3);
+
+    layout->setRowStretch(0, 0); // the header is here
+    layout->setRowStretch(1, 0); // the spacing is fixed size
+    layout->setRowStretch(2, 1); // the toolbar lives here
+    layout->setRowStretch(3, 0); // the spacing is fixed size
+
+    layout->setRowMinimumHeight(1, toolbarSpacing); // spacing above the toolbar (and below the header)
+    layout->setRowMinimumHeight(3, toolbarSpacing); // spacing below the toolbar
+
+    layout->setColumnStretch(0, 0); // the spacing is fixed size
+    layout->setColumnStretch(1, 1); // the toolbar lives here
+    layout->setColumnStretch(2, 0); // the spacing is fixed size
+
+    layout->setColumnMinimumWidth(0, toolbarSpacing); // spacing left of the toolbar
+    layout->setColumnMinimumWidth(2, toolbarSpacing); // spacing right of the toolbar
+
+    layout->setSpacing(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 }
 
 TextViewerWidget::~TextViewerWidget()
@@ -368,6 +416,9 @@ void TextViewerWidget::setContentProvider(TextViewerContentProvider *newContent)
         // no other way of setting a fixed height worked correctly for me
         header->setFixedHeight(header->sizeHint().height());
         setViewportMargins(0, header->height(), 0, 0);
+        for (int i = 0; i < headers.size(); ++i) {
+            header->setSectionHidden(i, false);
+        }
     }
     else {
         header->hide();
@@ -992,8 +1043,11 @@ void TextViewerWidget::updateScrollbars()
     hsb->setSingleStep(averageCharWidth);
     hsb->setPageStep(viewport()->width());
 
-    // adjusting the layout to make all child widgets
-    // (the headerview and the toolbar) clear of the toolbar
+    // Adjusting the layout to make all child widgets (the headerview and the toolbar) clear of the toolbar.
+    // Note that some style engines on some Qt versions will (wrongly, I believe) adjust the widget's
+    // right and bottom contentsMargins based on whether the scrollbars are visible or not.
+    // In those cases, they will be added on top of this, and the widgets will be farther in to the left
+    // than they should otherwise be, but oh well, not that much of a tragedy...
     if (layout())
         layout()->setContentsMargins(0, 0, (vertNeeded ? vsb->width() : 0), (horizNeeded ? hsb->height() : 0));
 
