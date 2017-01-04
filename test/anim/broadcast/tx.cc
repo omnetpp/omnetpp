@@ -18,7 +18,7 @@ void Tx::initialize()
 
 void Tx::handleMessage(cMessage *msg)
 {
-    int n = getParentModule()->size();
+    int n = getParentModule()->getVectorSize();
     for (int i = 0; i < n; i++)
         if (i != getParentModule()->getIndex())
             sendDirect(new cMessage("msg"), getSystemModule()->getSubmodule("node", i)->gate("in"));
