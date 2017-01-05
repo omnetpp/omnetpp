@@ -343,7 +343,7 @@ void ModuleInspector::onLayoutVisualizationEnds(cModule *module)
 void ModuleInspector::onModuleLayoutChanged(cModule *module)
 {
     if ((cObject*)module == object)
-        redraw();
+        canvasViewer->setNeedsRedraw();
 }
 
 QImage ModuleInspector::getScreenshot()
