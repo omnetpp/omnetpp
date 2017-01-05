@@ -682,11 +682,8 @@ void ModuleCanvasViewer::refreshSubmodule(cModule *submod)
     if (submoduleGraphicsItems.count(submod)) {
         auto item = submoduleGraphicsItems[submod];
         SubmoduleItemUtil::setupFromDisplayString(item, submod);
-        /*bool explicitCoords, obeys;
-        double x, y, sx, sy;
-        getSubmoduleCoords(submod, explicitCoords, obeys, x, y, sx, sy);
-        if (explicitCoords)
-            submodPosMap[submod] = QPointF(x, y);*/
+        // Do not forget to make the layouter reread the "p" tag if needed
+        // by doing a "forgetPosition" or "refreshLayout(parent)" before this.
         item->setPos(getSubmodCoords(submod));
         item->update();
     }

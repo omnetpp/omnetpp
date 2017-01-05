@@ -578,6 +578,7 @@ void ModuleInspector::connectionDeleted(cGate *srcgate)
 
 void ModuleInspector::displayStringChanged(cModule *submodule)
 {
+    getQtenv()->getModuleLayouter()->refreshPosition(submodule);
     canvasViewer->refreshSubmodule(submodule);
     canvasViewer->refreshConnections();
 }

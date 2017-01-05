@@ -164,6 +164,12 @@ void ModuleLayouter::forgetPosition(cModule *submodule)
     modulePositions.erase(submodule);
 }
 
+void ModuleLayouter::refreshPosition(cModule *submodule)
+{
+    forgetPosition(submodule);
+    ensureLayouted(submodule->getParentModule());
+}
+
 void ModuleLayouter::incrementLayoutSeed(cModule *module)
 {
     std::string fullName = getObjectFullTypeName(module);
@@ -177,6 +183,19 @@ void ModuleLayouter::incrementLayoutSeed(cModule *module)
 void ModuleLayouter::ensureLayouted(cModule *module)
 {
     if (!module)
+        return;
+
+    bool needsLayout = false;
+
+    // loop through all submodules, and check if there are any that we don't have a valid position for
+    for (cModule::SubmoduleIterator it(module); !it.end(); ++it)
+        if (modulePositions.find(*it) == modulePositions.end()) {
+            needsLayout = true;
+            break;
+        }
+
+    // if not, we have nothing to do
+    if (!needsLayout)
         return;
 
     // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
