@@ -557,6 +557,10 @@ QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
 
 QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
 {
+    cGate *nextGate = gate ? gate->getNextGate() : nullptr;
+    if (!nextGate)
+        return QLineF();
+
     char mode = 'a';
 
     QPointF srcAnch(50, 50);
@@ -593,11 +597,11 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
     if (getQtenv()->opt->arrangeVectorConnections) {
         src_i = gate->getIndex();
         src_n = gate->getVectorSize();
-        dest_i = gate->getNextGate()->getIndex();
-        dest_n = gate->getNextGate()->getVectorSize();
+        dest_i = nextGate->getIndex();
+        dest_n = nextGate->getVectorSize();
     }
 
-    return arrowcoords(getSubmodRect(gate->getOwnerModule()), getSubmodRect(gate->getNextGate()->getOwnerModule()),
+    return arrowcoords(getSubmodRect(gate->getOwnerModule()), getSubmodRect(nextGate->getOwnerModule()),
                        src_i, src_n, dest_i, dest_n, mode, srcAnch, destAnch);
 }
 
