@@ -872,9 +872,6 @@ bool Qtenv::doRunSimulation()
     loggingEnabled = true;
     bool firstevent = true;
 
-    if (runMode == RUNMODE_FAST)
-        messageAnimator->clear();
-
     QElapsedTimer uiUpdateTimer;
     uiUpdateTimer.start();
 
