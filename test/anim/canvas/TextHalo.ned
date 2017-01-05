@@ -1,6 +1,6 @@
 module TextHalo
 {
-    @display("bgb=1200,200;bgi=background/green,t");
+    @display("bgb=1200,200,#444444"); // dark grey background makes halo stand out more
     @class(ArrangeFigures);
     @arrange(startPos=70,50; lineSpacing=80; columnWidth=150; drawAnchor=false);
 
