@@ -136,12 +136,6 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual std::string str() const override;
 
     /**
-     * Calls v->visit(this) for each contained object.
-     * See cObject for more details.
-     */
-    virtual void forEachChild(cVisitor *v) override;
-
-    /**
      * Serializes the object into a buffer.
      */
     virtual void parsimPack(cCommBuffer *buffer) const override;

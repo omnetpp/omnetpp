@@ -64,11 +64,6 @@ std::string cChannel::str() const
     return out.str();
 }
 
-void cChannel::forEachChild(cVisitor *v)
-{
-    cDefaultList::forEachChild(v);
-}
-
 void cChannel::parsimPack(cCommBuffer *buffer) const
 {
     throw cRuntimeError(this, "parsimPack() not implemented");
