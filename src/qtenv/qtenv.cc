@@ -798,7 +798,8 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     runMode = RUNMODE_NOT_RUNNING;
     displayUpdateController->setRunMode(runMode);
-    messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
+    if (!messageAnimator->isHoldActive())
+        messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
 
     if (simulationState == SIM_TERMINATED) {
         // call wrapper around simulation.callFinish() and simulation.endRun()
@@ -883,7 +884,8 @@ bool Qtenv::doRunSimulation()
 
         displayUpdateController->setRunMode(runMode);
         bool reached = displayUpdateController->animateUntilNextEvent();
-        if (!reached)
+        performAnimations();
+        if (!reached || messageAnimator->isHoldActive())
             break;
 
         if (uiUpdateTimer.elapsed() > 100) {
