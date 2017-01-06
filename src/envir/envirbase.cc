@@ -348,7 +348,7 @@ bool EnvirBase::simulationRequired()
         if (!category)
             printHelp();
         else
-            EnvirUtils::dumpComponentList(out, category);
+            EnvirUtils::dumpComponentList(out, category, opt->verbose);
         return false;
     }
 
@@ -694,6 +694,7 @@ void EnvirBase::printHelp()
     out << "    -h config         Prints the list of available configuration options\n";
     out << "    -h configdetails  Prints the list of available configuration options, with\n";
     out << "                      their documentation\n";
+    out << "    -h configvars     Prints the list of variables that can be used in configuration values\n";
     out << "    -h userinterfaces Lists available user interfaces (see -u option)\n";
     out << "    -h classes        Lists registered C++ classes (including module classes)\n";
     out << "    -h classdesc      Lists C++ classes that have associated reflection\n";

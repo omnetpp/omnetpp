@@ -67,7 +67,7 @@ std::string EnvirUtils::getConfigOptionType(cConfigOption *option)
 
 }
 
-void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
+void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool verbose)
 {
     cConfigurationEx *config = getEnvir()->getConfigEx();
     bool wantAll = !strcmp(category, "all");
@@ -75,7 +75,8 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     out << "\n";
     if (wantAll || !strcmp(category, "config") || !strcmp(category, "configdetails")) {
         processed = true;
-        out << "Supported configuration options:\n";
+        if (verbose)
+            out << "Supported configuration options:\n";
         bool printDescriptions = strcmp(category, "configdetails") == 0;
 
         cRegistrationList *table = configOptions.getInstance();
@@ -104,17 +105,19 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
             if (printDescriptions)
                 out << "\n";
         }
+        if (!wantAll && verbose)
+            out << "Use '-h configvars' to print the list of dollar variables that can be used in configuration values.\n";
         out << "\n";
-
-        out << "Predefined variables that can be used in config values:\n";
+    }
+    if (wantAll || !strcmp(category, "configvars")) {
+        processed = true;
+        if (verbose)
+            out << "Predefined variables that can be used in config values:\n";
         std::vector<const char *> v = config->getPredefinedVariableNames();
         for (int i = 0; i < (int)v.size(); i++) {
-            if (!printDescriptions)
-                out << "  ";
             out << "${" << v[i] << "}\n";
             const char *desc = config->getVariableDescription(v[i]);
-            if (printDescriptions && !opp_isempty(desc))
-                out << opp_indentlines(opp_breaklines(desc, 75), "    ") << "\n";
+            out << opp_indentlines(opp_breaklines(desc, 75), "    ") << "\n";
         }
         out << "\n";
     }
@@ -152,7 +155,8 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     if (!strcmp(category, "jconfig")) {  // internal undocumented option, for maintenance purposes
         // generate Java code for ConfigurationRegistry.java in the IDE
         processed = true;
-        out << "Supported configuration options (as Java code):\n";
+        if (verbose)
+            out << "Supported configuration options (as Java code):\n";
         cRegistrationList *table = configOptions.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
@@ -235,20 +239,24 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     }
     if (wantAll || !strcmp(category, "classes")) {
         processed = true;
-        out << "Registered C++ classes, including modules, channels and messages:\n";
+        if (verbose)
+            out << "Registered C++ classes, including modules, channels and messages:\n";
         cRegistrationList *table = classes.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             out << "  class " << obj->getFullName() << "\n";
         }
-        out << "Note: if your class is not listed, it needs to be registered in the\n";
-        out << "C++ code using Define_Module(), Define_Channel() or Register_Class().\n";
+        if (verbose) {
+            out << "Note: if your class is not listed, it needs to be registered in the\n";
+            out << "C++ code using Define_Module(), Define_Channel() or Register_Class().\n";
+        }
         out << "\n";
     }
     if (wantAll || !strcmp(category, "classdesc")) {
         processed = true;
-        out << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
+        if (verbose)
+            out << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
         cRegistrationList *table = classDescriptors.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
@@ -259,7 +267,8 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     }
     if (wantAll || !strcmp(category, "nedfunctions")) {
         processed = true;
-        out << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
+        if (verbose)
+            out << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
         cRegistrationList *table = nedFunctions.getInstance();
         table->sort();
         std::set<std::string> categories;
@@ -288,16 +297,21 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     }
     if (wantAll || !strcmp(category, "neddecls")) {
         processed = true;
-        out << "Built-in NED declarations:\n\n";
-        out << "---START---\n";
+        if (verbose) {
+            out << "Built-in NED declarations:\n\n";
+            out << "---START---\n";
+        }
         out << NEDParser::getBuiltInDeclarations();
-        out << "---END---\n";
+        if (verbose)
+            out << "---END---\n";
         out << "\n";
     }
     if (wantAll || !strcmp(category, "units")) {
         processed = true;
-        out << "Recognized physical units (note: other units can be used as well, only\n";
-        out << "no automatic conversion will be available for them):\n";
+        if (verbose) {
+            out << "Recognized physical units (note: other units can be used as well, only\n";
+            out << "no automatic conversion will be available for them):\n";
+        }
         std::vector<const char *> units = UnitConversion::getAllUnits();
         for (int i = 0; i < (int)units.size(); i++) {
             const char *u = units[i];
@@ -311,7 +325,8 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     }
     if (wantAll || !strcmp(category, "enums")) {
         processed = true;
-        out << "Enums defined in .msg files\n";
+        if (verbose)
+            out << "Enums defined in .msg files\n";
         cRegistrationList *table = enums.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
@@ -322,40 +337,47 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category)
     }
     if (wantAll || !strcmp(category, "userinterfaces")) {
         processed = true;
-        out << "User interfaces loaded:\n";
+        if (verbose)
+            out << "User interfaces loaded:\n";
         cRegistrationList *table = omnetapps.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
+        out << "\n";
     }
 
     if (wantAll || !strcmp(category, "resultfilters")) {
         processed = true;
-        out << "Result filters that can be used in @statistic properties:\n";
+        if (verbose)
+            out << "Result filters that can be used in @statistic properties:\n";
         cRegistrationList *table = resultFilters.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
+        out << "\n";
     }
 
     if (wantAll || !strcmp(category, "resultrecorders")) {
         processed = true;
-        out << "Result recorders that can be used in @statistic properties:\n";
+        if (verbose)
+            out << "Result recorders that can be used in @statistic properties:\n";
         cRegistrationList *table = resultRecorders.getInstance();
         table->sort();
         for (int i = 0; i < table->size(); i++) {
             cObject *obj = table->get(i);
             out << "  " << obj->getFullName() << " : " << obj->str() << "\n";
         }
+        out << "\n";
     }
 
     if (wantAll || !strcmp(category, "figures")) {
         processed = true;
-        out << "Figure types and their accepted @figure property keys:\n";
+        if (verbose)
+            out << "Figure types and their accepted @figure property keys:\n";
         for (auto it : figureTypes) {
             std::string type = it.first;
             std::string className = it.second;

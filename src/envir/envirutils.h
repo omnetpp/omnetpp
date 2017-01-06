@@ -37,7 +37,7 @@ class ENVIR_API EnvirUtils
         static std::string getConfigOptionType(cConfigOption *option);
         static void dumpResultRecorderChain(std::ostream& out, cResultListener *listener, int depth);
     public:
-        static void dumpComponentList(std::ostream& out, const char *category);
+        static void dumpComponentList(std::ostream& out, const char *category, bool verbose);
         static void dumpResultRecorders(std::ostream& out, cComponent *component);
         static void dumpComponentResultRecorders(std::ostream& out, cComponent *component);
 };
