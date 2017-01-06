@@ -709,7 +709,7 @@ The simulation needs to have been built from source before \ttt{opp\_test
 run} can be issued. Usually one would employ a command similar to
 
 \begin{filelisting}
-$ cd work; opp_makemake --deep --no-deep-includes; make
+$ cd work; opp_makemake --deep; make
 \end{filelisting}
 
 to achieve that.
@@ -725,7 +725,7 @@ A basic variant would look like this:
 \begin{filelisting}
 #! /bin/sh
 opp_test gen -v *.test || exit 1
-(cd work; opp_makemake -f --deep --no-deep-includes; make) || exit 1
+(cd work; opp_makemake -f --deep; make) || exit 1
 opp_test run -v *.test
 \end{filelisting}
 

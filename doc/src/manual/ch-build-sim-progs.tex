@@ -87,8 +87,8 @@ The most important options are:
     \item \ttt{-n, -{}-nolink} : Produce object files but do not create an executable or library.
     \item \ttt{-s, -{}-make-so} : Build shared library (\ttt{.so}, \ttt{.dll} or \ttt{.dylib}).
     \item \ttt{-a, -{}-make-lib} : Create static library (\ttt{.a} or \ttt{.lib}).
-    \item \ttt{-I<dir>} : Additional C++ include directory.
-    \item \ttt{-L<dir>} : Add a directory to the library path.
+    \item \ttt{-I<dir>} : Add the given directory to the C++ include path.
+    \item \ttt{-L<dir>} : Add the given directory to the library path.
     \item \ttt{-l<library>} : Additional library to link against.
 \end{itemize}
 
@@ -126,17 +126,12 @@ with the \ttt{-o} option:
 $ opp_makemake -f -o aloha
 \end{commandline}
 
-In addition to the default target that builds the simulation executable,
-the \ttt{Makefile} also contains the following targets:
+The generated \ttt{Makefile} supports the following targets:
 
-\begin{longtable}{|l|p{8cm}|}
-\hline
-\tabheadcol
-\tbf{Target} & \tbf{Action}\\\hline
-all & The default target is to build the simulation executable\\\hline
-depend & Adds (or refreshes) dependencies in the \ttt{Makefile}\\\hline
-clean &  Deletes all files that were produced by the make process\\\hline
-\end{longtable}
+\begin{itemize}
+  \item \ttt{all} : Builds the simulation; this is also the default target.
+  \item \ttt{clean} : Deletes files that were produced by the make process.
+\end{itemize}
 
 
 \subsection{Debug and Release Builds}
@@ -217,34 +212,19 @@ An example:
 $ opp_makemake -f --deep -X experimental -X obsolete
 \end{commandline}
 
+In the C++ code, include statements should contain the location of the file
+relative to the Makefile's location.\footnote{
+  Support for deep includes (automatically adding each subdirectory 
+  to the include path so that includes can be written without specifying
+  the location of the file) has been dropped in {\opp} version 5.1, due to
+  being error-prone in large projects, and having limited usefulness for 
+  small projects.}
+For example, if \ttt{Foo.h} is under \ttt{utils/common/} in the source 
+tree, it needs to be included as
 
-\subsection{Automatic Include Dirs}
-\label{sec:build-sim-progs:automatic-include-dirs}
-
-If the source tree contains several subdirectories (maybe several levels
-deep), it can be annoying to have to specify relative paths for the header
-files in your \ttt{.cc} files or you should specify the include path
-explicitly by the \ttt{-I includepath} option. \ttt{opp\_makemake} has a
-command line option, which adds all directories in the current source tree
-to the compiler command line. This option is turned on by default.
-
-\begin{note}
-You may turn off this mechanism with the \ttt{-{}-no-deep-includes} option.
-\end{note}
-
-The only requirement is that \ttt{\#include} statements must unambigously
-specify the name of the header file. If there are several header files with
-the same name in various directories, one needs to qualify the include with
-enough level of ancestor directory names to make it unambiguous. For example,
-if there are several \ttt{common.h} file in the project, use includes like
-\ttt{\#include "tcp/common.h"} instead of just \ttt{\#include "common.h"}.
-
-\begin{note}
-With large projects and projects that are intended to be used by other
-projects, it is not recommended to use the automatic include directories
-feature. Dependent projects may contain header files with conflicting names,
-leading to unexpected errors in the build process.
-\end{note}
+\begin{cpp}
+#include "utils/common/Foo.h"
+\end{cpp}
 
 
 \subsection{Dependency Handling}
@@ -482,56 +462,6 @@ Project features can be enabled/disabled from both the IDE and the command line.
 It is possible to query the list of enabled project features, and use this
 information in creating a Makefile for the project.
 
-\subsection{The opp\_featuretool Program}
-\label{sec:build-sim-progs:opp-featuretool}
-
-Project features can be queried and manipulated using the \fprog{opp\_featuretool}
-program. The first argument to the program must be a command; the most frequently
-used ones are \ttt{list}, \ttt{enable} and \ttt{disable}. The operation of commands
-can be refined with further options. One can obtain the full list of comands and
-options using the \ttt{-h} option.
-
-Here are some examples of using the program.
-
-Listing all features in the project:
-\begin{commandline}
-$ opp_featuretool list
-\end{commandline}
-
-Listing all enabled features in the project:
-\begin{commandline}
-$ opp_featuretool list -e
-\end{commandline}
-
-Enabling all features:
-\begin{commandline}
-$ opp_featuretool enable all
-\end{commandline}
-
-Disabling a specific feature:
-\begin{commandline}
-$ opp_featuretool disable MyFeature
-\end{commandline}
-
-To print all the command line options that should be used with \ttt{opp\_makemake}
-to create a Makefile that builds the project with the currently enabled features:
-
-\begin{commandline}
-$ opp_featuretool options
-\end{commandline}
-
-Using it directly with the \ttt{opp\_makemake} command:
-\begin{commandline}
-$ opp_makemake --deep $(opp_featuretool options)
-\end{commandline}
-
-The above command allows you to build the same executable from both the IDE and
-the command line.
-
-Creating a header file that can be included in all C++ files:
-\begin{commandline}
-$ opp_featuretool defines >project_defines.h
-\end{commandline}
 
 \subsection{What is a Project Feature}
 \label{sec:build-sim-progs:project-feature}
@@ -568,6 +498,84 @@ option of enabling/disabling those features. A feature definition contains:
     libraries that the feature's code requires, for example libavcodec.
     Currently only the \ttt{-l} option (\textit{link with library}) is supported here.
 \end{itemize}
+
+
+\subsection{The opp\_featuretool Program}
+\label{sec:build-sim-progs:opp-featuretool}
+
+Project features can be queried and manipulated using the \fprog{opp\_featuretool}
+program. The first argument to the program must be a command; the most frequently
+used ones are \ttt{list}, \ttt{enable} and \ttt{disable}. The operation of commands
+can be refined with further options. One can obtain the full list of commands
+and options using the \ttt{-h} option.
+
+Here are some examples of using the program.
+
+Listing all features in the project:
+\begin{commandline}
+$ opp_featuretool list
+\end{commandline}
+
+Listing all enabled features in the project:
+\begin{commandline}
+$ opp_featuretool list -e
+\end{commandline}
+
+Enabling all features:
+\begin{commandline}
+$ opp_featuretool enable all
+\end{commandline}
+
+Disabling a specific feature:
+\begin{commandline}
+$ opp_featuretool disable Foo
+\end{commandline}
+
+The following command prints the command line options that should be used
+with \ttt{opp\_makemake} to create a Makefile that builds the project with the
+currently enabled features:
+
+\begin{commandline}
+$ opp_featuretool options
+\end{commandline}
+
+The easiest way to pass the output of the above command to \ttt{opp\_makemake} 
+is the \ttt{\$(\ldots)} shell construct:
+  
+\begin{commandline}
+$ opp_makemake --deep $(opp_featuretool options)
+\end{commandline}
+
+Often it is convenient to put feature defines (e.g. \ttt{WITH\_FOO}) into a
+header file instead of passing them to the compiler via \ttt{-D} options.
+This makes it easier to detect feature enablements from derived projects,
+and also makes it easier for C++ code editors to correctly highlight
+conditional code blocks that depend on project features. 
+
+The header file can be generated with \ttt{opp\_featuretool} using the
+following command:
+
+\begin{commandline}
+$ opp_featuretool defines >feature_defines.h
+\end{commandline}
+
+At the same time, \ttt{-D} options must be removed from the compiler
+command line. \ttt{opp\_featuretool options} has switches to filter them out.
+The modified command for Makefile generation:
+
+\begin{commandline}
+$ opp_makemake --deep $(opp_featuretool options -fl)
+\end{commandline}
+
+It is advisable to create a Makefile rule that regenerates the header file
+when feature enablements change:
+
+\begin{filelisting}
+feature_defines.h: $(wildcard .oppfeaturestate) .oppfeatures
+        opp_featuretool defines >feature_defines.h
+\end{filelisting}
+
+
 
 \subsection{The .oppfeatures File}
 \label{sec:build-sim-progs:oppfeatures-file}
