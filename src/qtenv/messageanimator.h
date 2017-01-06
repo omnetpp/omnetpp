@@ -122,6 +122,7 @@ public:
 
     void setMarkedModule(cModule *mod);
 
+    void clearDeliveries();
     void clear();
 
     // Makes the animation show itself in an inspector, if applicable.

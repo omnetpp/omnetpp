@@ -200,7 +200,10 @@ void DisplayUpdateController::setRunMode(RunMode value)
             currentProfile = &fastProfile;
             break;
         case RUNMODE_NOT_RUNNING:
+            msgAnim->clearDeliveries();
+            // fallthrough
         case RUNMODE_EXPRESS:
+            // express clears all animations anyway
             currentFps = 0;
             animationTimer.invalidate();
             break;

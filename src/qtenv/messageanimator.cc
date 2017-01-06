@@ -251,6 +251,12 @@ void MessageAnimator::setMarkedModule(cModule *mod)
     updateNextEventMarkers();
 }
 
+void MessageAnimator::clearDeliveries()
+{
+    delete deliveries;
+    deliveries = nullptr;
+}
+
 void MessageAnimator::updateAnimations()
 {
     // Always updating all non-holding animations first that are already playing.
