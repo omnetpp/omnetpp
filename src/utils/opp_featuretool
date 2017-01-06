@@ -64,6 +64,12 @@ def queryYesNo(question, default="yes"):
                              "(or 'y' or 'n').\n")
 
 ############################
+class OppParser(argparse.ArgumentParser):
+   def error(self, message):
+      sys.stderr.write('error: %s\n' % message)
+      self.print_help()
+      sys.exit(2)
+############################
 class Feature:
     def __init__(self, feature, ord):
         self.id = feature.getAttribute("id")
@@ -131,7 +137,7 @@ class FeatureTool:
             print("opp_featuretool: Warning: {}".format(msg), file=sys.stderr)
 
     def createParser(self):
-        self.parser = argparse.ArgumentParser(description='''Turn project features on and off in an OMNeT++/OMNEST model. List the enablement
+        self.parser = OppParser(description='''Turn project features on and off in an OMNeT++/OMNEST model. List the enablement
 of the features. Show the command line options needed to generarate a makefile
 when using the opp_makemake command. The tool must be executed in the project
 root directory where the following files are present:
