@@ -1356,11 +1356,13 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
         if (strchr(catstr, 'g'))
             category |= CATEGORY_MESSAGES;
         if (strchr(catstr, 'v'))
-            category |= CATEGORY_VARIABLES;
+            category |= CATEGORY_WATCHES;
         if (strchr(catstr, 'p'))
-            category |= CATEGORY_MODPARAMS;
+            category |= CATEGORY_PARAMS;
         if (strchr(catstr, 'c'))
             category |= CATEGORY_CHANSGATES;
+        if (strchr(catstr, 'f'))
+            category |= CATEGORY_FIGURES;
         if (strchr(catstr, 'o'))
             category |= CATEGORY_OTHERS;
     }

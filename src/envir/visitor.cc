@@ -30,6 +30,9 @@
 #include "omnetpp/cpar.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cgate.h"
+#include "omnetpp/ccanvas.h"
+#include "omnetpp/cosgcanvas.h"
+#include "omnetpp/cresultrecorder.h"
 
 #include "common/patternmatcher.h"
 #include "visitor.h"
@@ -118,24 +121,31 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
         ((category&CATEGORY_MODULES) && dynamic_cast<cModule *>(obj)) ||
         ((category&CATEGORY_MESSAGES) && dynamic_cast<cMessage *>(obj)) ||
         ((category&CATEGORY_QUEUES) && dynamic_cast<cQueue *>(obj)) ||
-        ((category&CATEGORY_VARIABLES) && (dynamic_cast<cWatchBase *>(obj) ||
-                                           dynamic_cast<cFSM *>(obj))) ||
+        ((category&CATEGORY_WATCHES) && (dynamic_cast<cWatchBase *>(obj) ||
+                                         dynamic_cast<cFSM *>(obj))) ||
         ((category&CATEGORY_STATISTICS) && (dynamic_cast<cOutVector *>(obj) ||
-                                            dynamic_cast<cWatchBase *>(obj) ||
+                                            dynamic_cast<cResultRecorder *>(obj) ||
                                             dynamic_cast<cStatistic *>(obj))) ||
-        ((category&CATEGORY_MODPARAMS) && (dynamic_cast<cPar *>(obj))) ||
+        ((category&CATEGORY_PARAMS) && (dynamic_cast<cPar *>(obj))) ||
         ((category&CATEGORY_CHANSGATES) && (dynamic_cast<cChannel *>(obj) ||
                                             dynamic_cast<cGate *>(obj))) ||
+        ((category&CATEGORY_FIGURES) && (dynamic_cast<cFigure *>(obj) ||
+                                         dynamic_cast<cCanvas *>(obj) ||
+                                         dynamic_cast<cOsgCanvas *>(obj))) ||
         ((category&CATEGORY_OTHERS) && (!dynamic_cast<cModule *>(obj) &&
                                         !dynamic_cast<cMessage *>(obj) &&
                                         !dynamic_cast<cQueue *>(obj) &&
                                         !dynamic_cast<cWatchBase *>(obj) &&
                                         !dynamic_cast<cFSM *>(obj) &&
                                         !dynamic_cast<cOutVector *>(obj) &&
+                                        !dynamic_cast<cResultRecorder *>(obj) &&
                                         !dynamic_cast<cStatistic *>(obj) &&
                                         !dynamic_cast<cPar *>(obj) &&
                                         !dynamic_cast<cChannel *>(obj) &&
-                                        !dynamic_cast<cGate *>(obj)));
+                                        !dynamic_cast<cGate *>(obj) &&
+                                        !dynamic_cast<cFigure *>(obj) &&
+                                        !dynamic_cast<cCanvas *>(obj) &&
+                                        !dynamic_cast<cOsgCanvas *>(obj)));
     if (objFullpathPattern || classnamePattern) {
         MatchableObjectAdapter objAdapter(MatchableObjectAdapter::FULLPATH, obj);
         ok = ok && (!objFullpathPattern || objFullpathPattern->matches(&objAdapter));

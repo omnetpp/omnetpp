@@ -143,17 +143,19 @@ FindObjectsDialog::FindObjectsDialog(cObject *ptr, QWidget *parent) :
     variant = getPref("cat-m", true);
     ui->modulesCheckBox->setChecked(variant.toBool());
     variant = getPref("cat-p", true);
-    ui->paramCheckBox->setChecked(variant.toBool());
+    ui->paramsCheckBox->setChecked(variant.toBool());
     variant = getPref("cat-q", true);
     ui->queuesCheckBox->setChecked(variant.toBool());
     variant = getPref("cat-s", true);
-    ui->outVectorsCheckBox->setChecked(variant.toBool());
+    ui->statisticsCheckBox->setChecked(variant.toBool());
     variant = getPref("cat-g", true);
     ui->messagesCheckBox->setChecked(variant.toBool());
     variant = getPref("cat-c", true);
     ui->gatesCheckBox->setChecked(variant.toBool());
     variant = getPref("cat-v", true);
-    ui->fsmCheckBox->setChecked(variant.toBool());
+    ui->watchesCheckBox->setChecked(variant.toBool());
+    variant = getPref("cat-f", true);
+    ui->figuresCheckBox->setChecked(variant.toBool());
     variant = getPref("cat-o", true);
     ui->otherCheckBox->setChecked(variant.toBool());
 
@@ -340,18 +342,20 @@ cObject **FindObjectsDialog::getSubObjectsFilt(cObject *object, const char *clas
 
     if (ui->modulesCheckBox->isChecked())
         category |= CATEGORY_MODULES;
-    if (ui->paramCheckBox->isChecked())
-        category |= CATEGORY_MODPARAMS;
+    if (ui->paramsCheckBox->isChecked())
+        category |= CATEGORY_PARAMS;
     if (ui->queuesCheckBox->isChecked())
         category |= CATEGORY_QUEUES;
-    if (ui->outVectorsCheckBox->isChecked())
+    if (ui->statisticsCheckBox->isChecked())
         category |= CATEGORY_STATISTICS;
     if (ui->messagesCheckBox->isChecked())
         category |= CATEGORY_MESSAGES;
     if (ui->gatesCheckBox->isChecked())
         category |= CATEGORY_CHANSGATES;
-    if (ui->fsmCheckBox->isChecked())
-        category |= CATEGORY_VARIABLES;
+    if (ui->watchesCheckBox->isChecked())
+        category |= CATEGORY_WATCHES;
+    if (ui->figuresCheckBox->isChecked())
+        category |= CATEGORY_FIGURES;
     if (ui->otherCheckBox->isChecked())
         category |= CATEGORY_OTHERS;
 
@@ -387,12 +391,13 @@ FindObjectsDialog::~FindObjectsDialog()
     setPref("name", ui->fullPathEdit->text());
 
     setPref("cat-m", ui->modulesCheckBox->isChecked());
-    setPref("cat-p", ui->paramCheckBox->isChecked());
+    setPref("cat-p", ui->paramsCheckBox->isChecked());
     setPref("cat-q", ui->queuesCheckBox->isChecked());
-    setPref("cat-s", ui->outVectorsCheckBox->isChecked());
+    setPref("cat-s", ui->statisticsCheckBox->isChecked());
     setPref("cat-g", ui->messagesCheckBox->isChecked());
     setPref("cat-c", ui->gatesCheckBox->isChecked());
-    setPref("cat-v", ui->fsmCheckBox->isChecked());
+    setPref("cat-v", ui->watchesCheckBox->isChecked());
+    setPref("cat-f", ui->figuresCheckBox->isChecked());
     setPref("cat-o", ui->otherCheckBox->isChecked());
 
     setPref("width", width());

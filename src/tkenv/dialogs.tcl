@@ -1085,20 +1085,21 @@ proc filteredObjectList:window {{ptr ""}} {
     # category filters
     ttk::labelframe $w.f.filter.cat -text "Object categories:"
     set cf $w.f.filter.cat
-    ttk::checkbutton $cf.modules -text "modules" -variable tmp(cat-m)
-    ttk::checkbutton $cf.modpars -text "module parameters" -variable tmp(cat-p)
-    ttk::checkbutton $cf.queues -text "queues" -variable tmp(cat-q)
-    ttk::checkbutton $cf.statistics -text "outvectors, statistics, variables" -variable tmp(cat-s)
-    ttk::checkbutton $cf.messages -text "messages"  -variable tmp(cat-g)
-    ttk::checkbutton $cf.chansgates -text "gates, channels" -variable tmp(cat-c)
-    ttk::checkbutton $cf.variables -text "FSM states, variables"  -variable tmp(cat-v)
-    ttk::checkbutton $cf.other -text "other" -variable tmp(cat-o)
-    grid $cf.modules   $cf.modpars     $cf.queues     $cf.statistics  -sticky nw
-    grid $cf.messages  $cf.chansgates  $cf.variables  $cf.other       -sticky nw
-    grid columnconfigure $cf 3 -weight 1
+    ttk::checkbutton $cf.modules -text "Modules" -variable tmp(cat-m)
+    ttk::checkbutton $cf.modpars -text "Parameters" -variable tmp(cat-p)
+    ttk::checkbutton $cf.queues -text "Queues" -variable tmp(cat-q)
+    ttk::checkbutton $cf.statistics -text "Statistics" -variable tmp(cat-s)
+    ttk::checkbutton $cf.messages -text "Messages"  -variable tmp(cat-g)
+    ttk::checkbutton $cf.chansgates -text "Gates, channels" -variable tmp(cat-c)
+    ttk::checkbutton $cf.variables -text "Watches, FSMs"  -variable tmp(cat-v)
+    ttk::checkbutton $cf.figures -text "Canvases, figures"  -variable tmp(cat-f)
+    ttk::checkbutton $cf.other -text "Other" -variable tmp(cat-o)
+    grid $cf.modules   $cf.modpars     $cf.queues     $cf.statistics $cf.other -sticky nw
+    grid $cf.messages  $cf.chansgates  $cf.variables  $cf.figures              -sticky nw
+    grid columnconfigure $cf 4 -weight 1
     pack $cf -anchor center -expand 0 -fill x -side top
 
-    foreach {c} {m q p c s g v o} {
+    foreach {c} {m q p c s g v f o} {
         set tmp(cat-$c) [string match "*$c*" $tmp(category)]
     }
 
@@ -1183,7 +1184,7 @@ proc filteredObjectList:refresh {w} {
     }
 
     set tmp(category) ""
-    set categories {m q p c s g v o}
+    set categories {m q p c s g v f o}
     foreach {c} $categories {
         if {$tmp(cat-$c)} {set tmp(category) "$tmp(category)$c"}
     }

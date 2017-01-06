@@ -65,10 +65,11 @@ class ENVIR_API cCollectObjectsVisitor : public cVisitor
 #define CATEGORY_QUEUES      0x02
 #define CATEGORY_STATISTICS  0x04
 #define CATEGORY_MESSAGES    0x08
-#define CATEGORY_VARIABLES   0x10
-#define CATEGORY_MODPARAMS   0x20
+#define CATEGORY_WATCHES     0x10
+#define CATEGORY_PARAMS      0x20
 #define CATEGORY_CHANSGATES  0x40
-#define CATEGORY_OTHERS      0x80
+#define CATEGORY_FIGURES     0x80
+#define CATEGORY_OTHERS      0x100
 
 /**
  * Traverses an object tree, and collects objects that belong to certain
