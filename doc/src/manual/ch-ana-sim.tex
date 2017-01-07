@@ -534,13 +534,16 @@ consider the \textit{real} accuracy of your results:
 %% TODO also hint that results can be directed to database etc! by changing the implementation that cEnvir methods delegate to. (list cEnvir methods!)
 
 
-\section{Overview of the Result File Formats}
-\label{sec:ana-sim:result-file-formats}
+\section{The {\opp} Result File Format}
+\label{sec:ana-sim:omnetpp-result-file-format}
 
-Both output vector and scalar files are textual, line-oriented files.
-The advantage of a text-based format is that it is very accessible
-with a wide range of tools and languages. The format of result files is
-documented in detail in Appendix \ref{cha:result-file-formats}.
+By default, {\opp} saves simulation results into textual, line-oriented files.
+The advantage of a text-based, line-oriented format is that it is very 
+accessible and easy to parse with a wide range of tools and languages, and 
+still provides enough flexibility to be able to represent the data it
+needs to (in contrast to e.g. CSV). This section provides an overview of 
+these file formats (output vector and output scalar files); the precise 
+specification is available in the Appendix (\ref{cha:result-file-formats}).
 
 %XXX move away:
 %  \footnote{Recording is actually configurable, and one can record
@@ -616,20 +619,181 @@ scalar "lan.hostA.mac" "bytes rcvd"   3529448
 
 Every scalar generates one \ttt{scalar} line in the file.
 
-Statistics objects (\cclass{cStatictic} subclasses such as \cclass{cStdDev})
+Statistics objects (\cclass{cStatistic} subclasses such as \cclass{cStdDev})
 generate several lines: mean, standard deviation, etc.
 
 %% FIXME TODO attributes, statistics example, etc
 
-\section{The Analysis Tool in the Simulation IDE}
+
+\section{SQLite Result Files}
+\label{sec:ana-sim:sqlite-result-files}
+
+Starting from version 5.1, {\opp} contains experimental support for
+saving simulation results into SQLite database files. The perceived advantage
+of SQLite is existing support in many existing tools and languages (no need to
+write custom parsers), and being able to use the power of the SQL language
+for queries. The latter is very useful for processing scalar results, and less
+so for vectors and histograms.
+
+To let a simulation record its results in SQLite format, add the following
+configuration options to its \ffilename{omnetpp.ini}:
+
+\begin{inifile}
+outputvectormanager-class="omnetpp::envir::SqliteOutputVectorManager"
+outputscalarmanager-class="omnetpp::envir::SqliteOutputScalarManager"
+\end{inifile}
+
+\begin{note}
+Alternatively, to make SQLite the default format, recompile {\opp} with
+\ttt{PREFER\_SQLITE\_RESULT\_FILES=yes} set in \ffilename{configure.user}. 
+(Don't forget to also run  \fprog{./configure} before \fprog{make}.) 
+\end{note}
+
+The SQLite result files will be created with the same names as textual
+result files. The two formats also store exactly the same data, only in
+a different way (there is one-to-one correspondence between them.) The
+Simulation IDE and \fprog{scavetool} also understand both formats.
+
+\begin{hint}
+If you want to get acquainted with the organization of SQLite result
+files, exploring one in a graphical tool such as SQLiteBrowser or SQLite
+Studio should be a good start.
+\end{hint}
+
+The database schema can be found in Appendix \ref{cha:result-file-formats}.
+
+%TODO file size, performance
+
+
+\section{Scavetool}
+\label{sec:ana-sim:scavetool}
+\index{scavetool}
+
+{\opp}'s \fprog{scavetool} is a command-line program for exploring, filtering
+and processing of result files, and exporting the result in formats
+digestible by other tools. 
+
+\subsection{Commands}
+
+\fprog{scavetool}'s functionality is grouped under five commands:
+\ttt{query}, \ttt{vector}, \ttt{scalar}, \ttt{index}, and \ttt{help}.
+
+\begin{itemize}
+
+\item \tbf{query}: Query the contents of result files. One can list
+    runs, run attributes, result items, unique result names, unique module
+    names, unique configuration names, etc. One can filter for result types
+    (scalar/vector/histogram), and by run, module name, result name and value,
+    using match expressions. There are various options controlling the format
+    of the output (group-by-runs; grep-friendly; suppress labels; several
+    modes for identifying the run in the output, etc.)
+
+\item \tbf{vector}: Filter and export vector data.  One can filter by run, 
+    module name and vector name, using match expressions. It is also possible
+    to apply processing steps, i.e. a sliding window average or batch average
+    filter. The list of available processing filters can be found in the
+    help of the tool. Several output formats are available: vector file
+    (default), CSV file, GNU Octave text file, MATLAB script.
+
+\item \tbf{scalar}: Filter and export scalar data. One can filter by run, 
+    module name, scalar name and value, using match expressions. In the output,
+    scalars are organized in a table. The table can be organized to contain
+    \textit{Module}, \textit{Name} and \textit{Value} columns, or to have each
+    scalar in its own column (and data from one run in each row). Other
+    groupings are also possible. Several output formats are available: CSV file,
+    GNU Octave text file, MATLAB script. 
+
+\item \tbf{index}: Generate index files (.vci) for vector files. Note that this
+    command is usually not needed, as other scavetool commands automatically create
+    vector file indices if they are missing or out of date (unless indexing is
+    explicitly disabled.) This command can also be used to rebuild a vector file
+    so that data are clustered by vectors for more efficient access.
+     
+\item \tbf{help}: Prints help. The synopsys is \ttt{scavetool help <topic>},
+    where any command name can be used as topic, plus there are
+    additional ones like \ttt{patterns} or \ttt{filters}. \ttt{scavetool
+    <command> -h} also works.
+
+\end{itemize}
+
+The default command is \ttt{query}, so its name may be omitted on the
+command line.
+
+
+\subsection{Examples}
+
+The following example prints a one-line summary about the contents of
+result files in the currect directory:
+
+\begin{commandline}
+$ scavetool *.sca *.vec
+runs: 459   scalars: 4120   vectors: 7235   histograms: 916
+\end{commandline}
+
+Listing all results is possible with \ttt{-l}: 
+
+\begin{commandline}
+$ scavetool -l *.sca *.vec
+PureAlohaExperiment-439-20161216-18:56:20-27607:
+
+scalar Aloha.server  duration              26.3156
+scalar Aloha.server  collisionLength:mean  0.139814
+vector Aloha.host[0] radioState:vector vectorId=2 count=3 mean=0.33 ..
+vector Aloha.host[1] radioState:vector vectorId=3 count=9 mean=0.44 ..  
+vector Aloha.host[2] radioState:vector vectorId=4 count=5 mean=0.44 ..
+...
+\end{commandline}
+
+To export all scalars in CSV, use the following command:
+
+\begin{commandline}
+$ scavetool scalar -g module,name -F csv -O x.csv *.sca
+\end{commandline}
+
+The following example writes the window-averaged queuing times stored
+in \ttt{in.vec} into \ttt{out.vec}:
+
+\begin{commandline}
+$ scavetool vector -p "queuing time" -a winavg(10) -O out.vec in.vec
+\end{commandline}
+
+The next example writes the queueing and transmission times of \ttt{sink}
+modules into CSV files. It generates a separate file for each vector,
+named \ttt{out-1.csv}, \ttt{out-2.csv}, etc.
+
+\begin{commandline}
+$ scavetool vector -p 'module(**.sink) AND ("queueing time" OR "tx time")' 
+    -O out.csv -F csv in.vec
+\end{commandline}
+
+
+\section{Result Analysis}
+\label{sec:ana-sim:result-analysis}
+
+We recommend the following routes for the analysis of simulation results:
+
+\begin{enumerate}
+  \item Use the \textit{Simulation IDE} for casual analysis, i.e. browsing data
+        and quick plotting.
+  \item Use \textit{Python} (or R) programs for sophisticated analysis and for
+        producing tailored reports.
+\end{enumerate}
+
+Of courses, many other approaches are also possible, some of which are also
+described in later sections. In all cases, \fprog{scavetool} can be used to
+filter and export simulation results in a format understood by other tools, for
+example CSV. 
+
+
+\subsection{The Analysis Tool in the Simulation IDE}
 \label{sec:ana-sim:analysis-tool}
 
-The Simulation IDE provides an Analysis Tool for analysis and visualization
+The Simulation IDE provides an Analysis Tool for the analysis and visualization
 of simulation results. The Analysis Tool lets you load several result files
 at once, and presents their contents somewhat like a database. You can
 browse the results, select the particular data you are interested in
-(scalars, vectors, histograms), apply processing steps, and create various
-charts or plots from them. Data selection, processing and charting steps
+(scalars, vectors, histograms), apply processing steps, and display them
+in charts or plots. Data selection, processing and charting steps
 can be freely combined, resulting in a high degree of freedom.
 These steps are grouped into and stored as "recipes", which get automatically
 re-applied when new result files are added or existing files are
@@ -639,145 +803,68 @@ without resorting to scripting.
 The Analysis Tool is covered in detail in the User Guide.
 
 
-\section{Scave Tool}
-\label{sec:ana-sim:scavetool}
-\index{scavetool}
+\subsection{Spreadsheets}
+\label{sec:ana-sim:spreadsheet-programs}
+\index{Spreadsheets}
 
-Much of the IDE Analysis Tool's functionality is available on the command
-line as well, via the \fprog{scavetool} program. \fprog{scavetool} is
-suitable for filtering and basic processing of result files, and
-exporting the result in various formats digestible for other tools.
-\fprog{scavetool} has no graphics capabilities, but it can be used
-to produce files that can be directly plotted with other tools like
-gnuplot (see \ref{sec:ana-sim:gnuplot}).
+Spreadsheets such as Excel or LibreOffice's Calc, with their charting and
+statistical features, offer an obvious alternative to the IDE's Analysis Tool.
+Spreadsheets are primarily good for analyzing scalar results, and less so for
+vectors and histograms. A commonly available feature called \textit{pivot table}
+can be especially useful.
 
-When \fprog{scavetool} is invoked without arguments, it prints usage information:
+Spreadsheets cannot open result files directly. An obvious solution is to use
+\fprog{scavetool} (see \ref{sec:ana-sim:scavetool}) to export data in CSV
+(comma-separated vector) format, and open that in the spreadsheet program.
+\fprog{scavetool} can also help you merge data from several result
+files into a single CSV, and to filter the results to reduce the amount
+of data to be loaded into the spreadsheet.
 
-\begin{commandline}
-scavetool <command> [options] <file>...
-\end{commandline}
+One drawback of using spreadsheet programs is the manual work associated
+with preparing and reloading data every time simulations are re-run.  
 
-\subsection{The \textit{filter} Command}
-\label{sec:ana-sim:scavetool-filter-command}
 
-The \textit{filter} command allows you to filter and/or convert result files.
+\subsection{Using Python for Result Analysis}
+\label{sec:ana-sim:using-python}
 
-A filter can be specified with the \textit{-p <filter>} option.
-The filter is one or more \textit{<pattern>} or \textit{<fieldname>(<pattern>)}
-expressions connected with \ttt{AND}, \ttt{OR} and \ttt{NOT} operators;
-a naked \textit{<pattern>} is understood as \ttt{name(}\textit{<pattern>}\ttt{)}.
-For example, the filter \ttt{"module(**.sink) AND name(delay)"} (or just
-\ttt{"module(**.sink) AND delay"}) selects the \ttt{delay} vectors from all
-\ttt{sink} modules.
+Python is a popular general-purpose programming language with a large ecosytem. 
+It is widely used in the open source community and also commercially in a great
+number of application areas. Python is also among the most popular languages
+for teaching introductory computer science courses at universities.
 
-The possible field names are:
-
-\begin{itemize}
-    \item\tbf{file}: full path of the result file
-    \item\tbf{run}: run identifier
-    \item\tbf{module}: module name
-    \item\tbf{name}: vector name
-    \item\tbf{attr:<runAttribute>}: value of an attribute of the run,
-        e.g. \ttt{experiment}, \ttt{datetime} or \ttt{network}
-    \item\tbf{param:<moduleParameter>}: value of the parameter in the run
-\end{itemize}
-
-Processing operations can be applied to vectors by the
-\textit{-a <function>(<parameterlist>)} option. You can list
-the available functions and their parameters with the \textit{info} command.
-
-The name and format of the output file can be specified with the
-\textit{-O <file>} and \textit{-F <formatname>} options, where
-the format name is one of the following:
+In the recent years, Python has emerged as great platform for numerical
+computing and statistics due to the appearance of powerful extension packages 
+like NumPy and Pandas. Some of the Python packages useful for our purposes:
 
 \begin{itemize}
-    \item\tbf{vec}: vector file (default)
-    \item\tbf{csv}: CSV file
-    \item\tbf{octave}: Octave text file
-    \item\tbf{matlab}: Matlab script file
+  \item \textit{NumPy} and \textit{SciPy} are numerical and scientific computing
+    packages.
+
+  \item \textit{PANDAS} is a data analysis package for Python. The design of
+    Pandas has been heavily influenced by R's data frames.
+
+  \item \textit{MatPlotlib} is a plotting library. MatPlotlib provides a
+    ``pylab'' API designed to closely resemble that of MATLAB, thereby making
+    it easy to learn for experienced MATLAB users.
+
+  \item The \textit{sqlite3} package makes it possible to access SQLite3 
+    databases from Python. Its significance is that it allows for working
+    with {\opp} SQLite result files (see \ref{sec:ana-sim:sqlite-result-files}). 
+
 \end{itemize}
 
-The following example writes the window-averaged queuing times stored
-in \ttt{in.vec} into \ttt{out.vec}:
 
-\begin{commandline}
-scavetool filter -p "queuing time" -a winavg(10) -O out.vec in.vec
-\end{commandline}
-
-The next example writes the queueing and transmission times of \ttt{sink}
-modules into CSV files. It generates a separate file for each vector,
-named \ttt{out-1.csv}, \ttt{out-2.csv}, etc.
-
-\begin{commandline}
-scavetool filter -p "module(**.sink) AND
-                    (\"queueing time\" OR \"transmission time\")"
-                 -O out.csv -F csv in.vec
-\end{commandline}
-
-The generated CSV files contain a header and two columns:
-
-\begin{filelisting}
-time,"Queue.sink.queueing time"
-2.231807576851,0
-7.843802235089,0
-15.797137536721,3.59449
-21.730758362277,6.30398
-[...]
-\end{filelisting}
-
-
-\subsection{The \textit{index} Command}
-\label{sec:ana-sim:scavetool-index-command}
-
-If the index file was deleted or the vector file was modified, you need to
-rebuild the index file before running the filter command:
-
-\begin{commandline}
-scavetool index Aloha-1.vec
-\end{commandline}
-
-Normally the vector data is written in blocks into the vector file.
-However, if the vector file was generated by an older version of the
-\cclass{cIOutputVectorManager}, it might not be so. In this case you have
-to specify the -r option to rearrange the records of the vector file,
-otherwise the index file would be too big and the indexing inefficient.
-
-\subsection{The \textit{summary} Command}
-\label{sec:ana-sim:scavetool-summary-command}
-
-The \textit{summary} command reports the list of statistics names, module names,
-run ids, configuration names in the given files to the standard output.
-
-\begin{commandline}
-scavetool summary Aloha-1.vec
-\end{commandline}
-
-
-\section{Alternative Statistical Analysis and Plotting Tools}
+\subsection{Using Other Software}
 \label{sec:ana-sim:alternative-tools}
 
-There are several programs and packages in addition to the {\opp} IDE
-and \fprog{scavetool} that can also be used to analyze
-simulation results, and create various plots and charts from them.
-
-\begin{hint}
-Our recommendation is GNU R because of its features, its popularity, and
-the existence of an extension package written specifically for {\opp}
-result processing.
-\end{hint}
-
-
-\subsection{GNU R}
+\subsubsection{GNU R}
 \label{sec:ana-sim:gnu-r}
-\index{GNU R}
 
 R is a free software environment for statistical computing and graphics.
-R has an excellent programming language and powerful plotting capabilities,
-and it is supported on all major operating systems and platforms.
-
 R is widely used for statistical software development and data analysis.
 The program uses a command line interface, though several graphical user
-interfaces are available.
+interfaces are available. It has powerful plotting capabilities,
+and it is supported on all major operating systems and platforms.
 
 \begin{hint}
 An R package for {\opp} result processing is available from
@@ -788,47 +875,28 @@ The package is well documented, and the web site offers a Tutorial, a Tips
 page, a tutorial for the Scalar Lattice GUI package, and other information.
 \end{hint}
 
-Several other {\opp}-related packages such as SimProcTC and Syntony already
-use R for data analysis and plotting.
+Some other {\opp}-related packages such as SimProcTC and Syntony also build
+on R.
 
-
-\subsection{NumPy, SciPy and MatPlotLib}
-\label{sec:ana-sim:numpy-scipy-and-matplotlib}
-\index{NumPy}\index{SciPy}\index{MatPlotLib}
-
-NumPy and SciPy are numerical and scientific computing packages for the
-Python programming language, and MatPlotlib is a plotting library (also for
-Python).
-
-MatPlotlib provides a ``pylab'' API designed to closely resemble that of
-MATLAB, thereby making it easy to learn for experienced MATLAB users.
-Matplotlib is distributed under a BSD-style license.
-
-
-\subsection{MATLAB or Octave}
+\subsubsection{MATLAB, GNU Octave}
 \label{sec:ana-sim:matlab-or-octave}
-\index{Matlab}\index{Octave}
 
 MATLAB is a commercial numerical computing environment and programming language.
 MATLAB allows easy matrix manipulation, plotting of functions and data,
 implementation of algorithms, creation of user interfaces, and interfacing
 with programs in other languages.
 
-Octave is an open-source Matlab-like package, available on nearly all platforms.
-Currently Octave relies on Gnuplot for plotting, and has more limited
-graphics capabilities than GNU R or MATLAB.
+GNU Octave is an MATLAB-like software environment, available on nearly all
+platforms. Octave is free software. 
 
-
-\subsection{Gnuplot}
+\subsubsection{Gnuplot}
 \label{sec:ana-sim:gnuplot}
-\index{Gnuplot}
 
-Gnuplot is a very popular command-line program that can generate two-
-and three-dimensional plots of functions and data. The program runs
-on all major platforms, and it is well supported.
+Gnuplot is a simple but popular program for creating two- and three-dimensional
+plots of functions and data. The program runs on all major platforms.
 
-Gnuplot has an interactive command interface. For example, if you have
-the data files \texttt{foo.csv} and \texttt{bar.csv} that contain
+Gnuplot has an interactive command interface. For example, given two
+data files \texttt{foo.csv} and \texttt{bar.csv} that contain
 two values per line ($x$ $y$; such files can be exported with
 \fprog{scavetool} from vector files), you can plot them in the same
 graph by typing:
@@ -837,63 +905,8 @@ graph by typing:
 plot "foo.csv" with lines, "bar.csv" with lines
 \end{commandline}
 
-To adjust the $y$ range, you would type:
-
-\begin{commandline}
-set yrange [0:1.2]
-replot
-\end{commandline}
-
-Several commands are available to adjust ranges, plotting style, labels,
-scaling etc. On Windows, you can copy the resulting graph to the clipboard from
-the Gnuplot window's system menu, then insert it into the application you
-are working with.
-
-
-\subsection{ROOT}
-\label{sec:ana-sim:root}
-\index{ROOT}
-
-\textit{ROOT} is an object-oriented data analysis framework,
-with strong support for plotting and graphics in general.
-ROOT was developed at CERN, and is distributed under a BSD-like license.
-
-ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
-aimed at processing C/C++ scripts. It is probably harder to get started
-using ROOT than with either Gnuplot or Grace, but you will find that ROOT provides
-power and flexibility that would be unattainable with the other two programs.
-
-
-\subsection{Grace}
-\label{sec:ana-sim:grace}
-\index{Grace}
-
-An ``honorable mention,'' \textit{Grace} is a powerful GPL data visualization
-program with a menu-and-dialog graphical user interface for X and Motif. It
-has also been ported to Windows. Grace is also known as \textit{xmgrace},
-and it is a successor of \textit{ACE/gr} or \textit{Xmgr}.
-
-Grace can export graphics in various raster and vector formats, and has
-many useful features like built-in statistics and analysis functions (e.g.
-correlation, histogram), fitting, splines, etc., and it also has a built-in
-programming language.
-
-
-\subsection{Spreadsheet Programs}
-\label{sec:ana-sim:spreadsheet-programs}
-\index{Spreadsheets}
-
-One straightforward solution is to use spreadsheets such as OpenOffice
-Calc, Microsoft Excel, Gnumeric or Calligra Tables (formerly KSpread).
-Data can be imported from CSV or other formats, exported with \fprog{scavetool}
-(see \ref{sec:ana-sim:scavetool}).
-
-Spreadsheets have good charting and statistical features. A useful
-functionality spreadsheets offer for analyzing scalar files is
-\textit{PivotTable} (Excel) or \textit{DataPilot} (OpenOffice). The
-drawback of using spreadsheets is limited automation, leading to tedious
-and repetitive tasks; also, the number of rows is usually limited to about
-32,000..64,000, which can be limiting when working with large vector files.
+Several commands are available to adjust the x/y ranges, plotting style, labels,
+scaling. The plot can be exported in various image formats.
 
 
 %%% Local Variables:
