@@ -151,6 +151,16 @@ AC_MSG_NOTICE(reading configure.user for your custom settings)
 AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
 
+# check command line arguments and override the values set in configure.user with them
+for arg in $ac_configure_args
+do
+  stripped_arg=$(echo $arg | sed "s/^\([']\)\(.*\)\1\$/\2/g")
+  case $stripped_arg in
+    -*  ) continue ;;
+    *=* ) eval $stripped_arg ;;
+  esac
+done
+
 #------------------------------------
 # set default library suffixes. May be already defined
 # with system/arch specific values
