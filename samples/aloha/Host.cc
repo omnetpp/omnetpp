@@ -130,7 +130,7 @@ void Host::refreshDisplay() const
     if (!transmissionRing) {
         auto color = cFigure::GOOD_DARK_COLORS[getId() % cFigure::NUM_GOOD_DARK_COLORS];
 
-        transmissionRing = new cRingFigure();
+        transmissionRing = new cRingFigure(("Host" + std::to_string(getIndex()) + "Ring").c_str());
         transmissionRing->setOutlined(false);
         transmissionRing->setFillColor(color);
         transmissionRing->setFillOpacity(0.25);
@@ -140,7 +140,7 @@ void Host::refreshDisplay() const
         canvas->addFigure(transmissionRing);
 
         for (int i = 0; i < numCircles; ++i) {
-            auto circle = new cOvalFigure();
+            auto circle = new cOvalFigure(("Host" + std::to_string(getIndex()) + "Circle" + std::to_string(i)).c_str());
             circle->setFilled(false);
             circle->setLineColor(color);
             circle->setLineOpacity(0.75);
