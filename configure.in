@@ -1,4 +1,4 @@
-# NOTE1: to do a proper Win32 cross compile from Linux use ./configure --host=i686-w64-mingw32
+# NOTE1: to do a proper Win64 cross compile from Linux use ./configure --host=x86_64-w64-mingw32
 #
 # NOTE2: $build refers to the platform where this script is running
 #        $host refers to the platform where the final code will run
