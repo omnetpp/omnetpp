@@ -5,8 +5,8 @@
 This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
 
-* Ubuntu 14.04 LTS, 15.10
-* Fedora Core 23
+* Ubuntu 16.04 LTS
+* Fedora Core 25
 * Red Hat Enterprise Linux Desktop Workstation 7.x
 * OpenSUSE 42
 
@@ -24,7 +24,7 @@ Ubuntu derivatives (Ubuntu instructions may apply):
 * Kubuntu, Xubuntu, Edubuntu, ...
 * Linux Mint
 
-Some Debian-based distros (Ubuntu instructions may apply, as Ubuntu itself 
+Some Debian-based distros (Ubuntu instructions may apply, as Ubuntu itself
 is based on Debian):
 
 * Knoppix and derivatives
@@ -93,7 +93,7 @@ directory. Use your favourite text editor to edit `.bashrc`, for example gedit:
 
 Add the following line at the end of the file, then save it:
 
-  export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
+  export PATH=$HOME/@omnetpp@-@version@/bin:$PATH
 
 You need to close and re-open the terminal for the changes to take effect.
 
@@ -126,9 +126,9 @@ Normally, the `configure` script needs to be running under the graphical
 environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
 via an 'ssh' session, or there is some other reason why X is not running,
 the easiest way to work around the problem is to tell @OMNETPP@ to build
-without Tcl/Tk. To do that, use the command
+without Tcl/Tk and Qtenv. To do that, use the command
 
-  $ ./configure WITH_TKENV=no
+  $ ./configure WITH_TKENV=no WITH_QTENV=no
 
 instead of plain `./configure`.
 
@@ -152,7 +152,7 @@ image::pictures/terminal-make.png[title="Building @OMNETPP@",align="center",scal
 
 [TIP]
 ===============================================================
-To take advantage of multiple processor cores, add the `-j4` option to the
+To take advantage of multiple processor cores, add the `-j8` option to the
 `make` command line.
 ===============================================================
 
@@ -245,7 +245,7 @@ or
     $ make MODE=debug
 
 By default, shared libraries will be created. If you want to build static
-libraries, set `SHARED_LIBS=no` in `configure.user` and re-configure your 
+libraries, set `SHARED_LIBS=no` in `configure.user` and re-configure your
 project.
 
 NOTE: For detailed description of all options please read the 'Build Options' chapter.
@@ -257,7 +257,7 @@ Note that at this point, MPI, Doxygen and GraphViz have been installed as part o
 ==== Qtenv
 
 @OMNETPP@ 5 comes with a new Qt based runtime environment that supports also 3D visualization.
-The new environment can be disabled by commenting out the QT_VERSION variable in the configure.user
+The new environment can be disabled by the WITH_QTENV=no variable in the configure.user
 file and then running `./configure`.
 
 ==== Akaroa
@@ -295,9 +295,9 @@ automatically detected if you installed it to the default location.
 
 ==== PCAP
 
-The optional Pcap library allows simulation models to capture and 
-transmit network packets bypassing the operating system's protocol stack. 
-It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary 
+The optional Pcap library allows simulation models to capture and
+transmit network packets bypassing the operating system's protocol stack.
+It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary
 compiler and linker options for models in case they need it.
 
 ifdef::OMNEST[]
@@ -319,4 +319,3 @@ For example, on Ubuntu and other Debian-based distros you can install it by the
 following command:
 
   $ sudo apt-get install nemiver
-

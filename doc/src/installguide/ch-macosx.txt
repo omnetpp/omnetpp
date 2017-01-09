@@ -1,42 +1,44 @@
-== Mac OS X
+== macOS
 
 === Supported Releases
 
 This chapter provides additional information for installing @OMNETPP@ on
-Mac OS X.
+macOS.
 
 The following releases are covered:
 
-* Mac OS X 10.10 and 10.11
+* macOS 10.12
 
 === Installing the Prerequisite Packages
 
  * Install the Java Runtime from http://support.apple.com/kb/DL1572 , because
-   OS X does not provide it by default. Additionally you must install the latest
+   masOS does not provide it by default. Additionally you must install the latest
    version of Java Runtime Environment from http://java.com (version 8 or later.)
- * Install the command line developer tools for OS X from
+ * Install the command line developer tools for masOS from
    http://developer.apple.com/downloads/index.action?=Command%20Line%20Tools
    (you will need a free Apple Developer Account for the download.)
 
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
 
-=== Additional Steps Required on Mac OS X 10 to Use GDB as the Debugger.
+=== Additional Steps Required on macOS to Use GDB as the Debugger.
 
-The Command Line Tools package on Mac OS X 10.10 no longer contains gcc and gdb;
+The Command Line Tools package on macOS no longer contains gcc and gdb;
 instead it contains the Clang compiler and lldb. (The `gcc` and `g++` commands
 actually run `clang`.) @OMNETPP@ will use Clang automatically. However, the
 @OMNETPP@ IDE can only use gdb as the underlying debugger, but not lldb.
 
-To be able to debug from the IDE, you have to install gdb from MacPorts.
+To be able to debug from the IDE, you have to install gdb from Homebrew.
 Alternatively, you can use XCode for debugging.
 
-To do the former, first install MacPorts from http://macports.org. Then
-you can install gdb:
+To do the former, first install the Homebrew package manager at http://brew.sh.
+Follow the instrunctions on the website.
 
-    $ sudo port install gdb
+Then you can install gdb:
 
-OS X 10.10 and later requires that you sign the `ggdb` executable with a self-signed
+    $ brew install gdb
+
+macOS 10.10 and later requires that you sign the `gdb` executable with a self-signed
 certificate (or with your own certificate, if you have one.)
 
 Start the 'Keychain Access' application. Choose 'Keychain Access > Certificate
@@ -58,11 +60,8 @@ restart the system.
 
 Now sign the executable:
 
-    $ sudo codesign -s gdb-cert /opt/local/bin/ggdb
+    $ sudo codesign -s gdb-cert /usr/local/bin/gdb
 
-After installing the @OMNETPP@ IDE, you have to change the name of the
-executable used for debugging. Go to 'Preferences > C++ > Debug > gdb'
-in the IDE, and change the executable name from `gdb` to `ggdb`.
 
 === Downloading and Unpacking @OMNETPP@
 
@@ -90,8 +89,8 @@ folder.
 
 === Environment Variables
 
-@OMNETPP@ needs its `bin/` directory to be in the path. To add `bin/` to
-`PATH` temporarily (in the current shell only), change into the @OMNETPP@
+@OMNETPP@ needs its `bin/` and `tools/macosx/bin` directories to be in the path.
+To add them to `PATH` temporarily (in the current shell only), change into the @OMNETPP@
 directory and source the `setenv` script:
 
   $ cd @omnetpp@-@version@
@@ -111,7 +110,8 @@ you can use the terminal-based 'pico' editor (`pico ~/.bashrc`)
 
 Add the following line at the end of the file, then save it:
 
-  export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
+  export PATH=$HOME/@omnetpp@-@version@/bin:$HOME/@omnetpp@-@version@/tools/macosx/bin:$PATH
+  export QT_PLUGIN_PATH=$HOME/@omnetpp@-@version@/tools/macosx/plugins
 
 You need to close and re-open the terminal for the changes to take effect.
 
@@ -142,10 +142,10 @@ read by the makefiles during the build process.
 
 Normally, the `configure` script needs to be running under the graphical
 environment in order to test for `wish`, the Tcl/Tk shell. If you are
-logged in via an ssh session or you want to compile @OMNETPP@ without Tcl/Tk,
-use the command
+logged in via an ssh session or you want to compile @OMNETPP@ without Tcl/Tk
+and/or Qtenv, use the command
 
-  $ ./configure WITH_TKENV=no
+  $ ./configure WITH_TKENV=no WITH_QTENV=no
 
 instead of plain `./configure`.
 
@@ -193,18 +193,18 @@ If you only want to build one set of the libraries, specify
 You can now verify that the sample simulations run correctly. For example,
 the dyna simulation is started by entering the following commands:
 
-    $ cd samples/dyna
-    $ ./dyna
+    $ cd samples/aloha
+    $ ./aloha
 
-By default, the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Qtenv environment. You should see
 nice gui windows and dialogs.
 
 
 === Starting the IDE
 
-@OMNETPP@ comes with an Eclipse-based Simulation IDE. On Mac OS X 10.7 (Lion) or later,
-the Java Runtime must be installed (see prerequisites)
-before you can use the IDE. Start the IDE by typing:
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. On macOS 10.10 (Lion) or later,
+the Java Runtime must be installed (see prerequisites) before you can use the IDE.
+Start the IDE by typing:
 
     $ @omnetpp@
 
@@ -248,7 +248,7 @@ different optimization), then change the top-level @OMNETPP@ directory, edit
     $ make clean
     $ make
 
-TIP: To take advantage of multiple processor cores, add the `-j2` option to the
+TIP: To take advantage of multiple processor cores, add the `-j4` option to the
 `make` command line.
 
 If you want to recompile just a single library, then change to the directory
@@ -280,8 +280,8 @@ to the `lib/` and `bin/` subdirectories.
 ===============================================================
 The Tcl/Tk environment uses the native Aqua version of Tcl/Tk, so you
 will see native widgets. However, due to problems in the Tk/Aqua port,
-you may experience minor UI quirks. We are aware of these problems,
-and are working on the solution.
+you may experience minor UI quirks. We recommend using Qtenv whenever
+it is possible.
 ===============================================================
 
 
@@ -289,20 +289,11 @@ and are working on the solution.
 
 ==== OpenMPI
 
-OS X does not come with OpenMPI, so you must install it manually.
-Download it from http://open-mpi.org and follow the installation instructions.
-Alternatively, you can install it from the MacPorts repo by typing
-`sudo port install openmpi`. In this case, you have to manually set
+MacOS does not come with OpenMPI, so you must install it manually.
+You can install it from the Homebrew repo (http://brew.sh) by typing
+`brew install open-mpi`. In this case, you have to manually set
 the MPI_CFLAGS and MPI_LIBS variables in `configure.user` and re-run
-`./configure`. Please note that we do not provide support
-for OpenMPI installed from the MacPorts repository.
-
-[NOTE]
-===============================================================
-MacPorts is a repository of several open source packages for
-Mac OS X. Using MacPorts packages may save you some manual work.
-You can install MacPorts from http://www.macports.org.
-===============================================================
+`./configure`.
 
 ==== GraphViz
 
@@ -310,12 +301,8 @@ GraphViz is needed if you want to have diagrams in HTML documentation
 that you generate from NED files in the IDE ('Generate NED Documentation...'
 item in the project context menu).
 
-Download and install the GraphViz OS X binaries from http://www.pixelglow.com/graphviz/download/.
-Download the latest, version 2.x package; at the time of writing,
-the link is at the top of the page.
-
-Alternatively, you can install it from the MacPorts project by typing
-`sudo port install graphviz`.
+You can install it from the Homebrew project (http://brew.sh) by typing
+`brew install graphviz`.
 
 After installation, make sure that the `dot` program is available
 from the command line. Open a terminal, and type
@@ -333,34 +320,25 @@ Doxygen is needed if you want to generate documentation for C++ code,
 as part of the HTML documentation that you generate from NED files in the IDE
 ('Generate NED Documentation...' item in the project context menu).
 
-Download the Doxygen OS X binaries from the Doxygen web site's download page,
-http://www.stack.nl/~dimitri/doxygen/download.html, and install it.
-
-Alternatively, you can install it from the MacPorts project by typing
-`sudo port install doxygen`.
+You can install it from the Homebrew project (http://brew.sh) by typing
+`homebrew install doxygen`.
 
 After installation, ensure that the `doxygen` program is available
 from the command line. Open a terminal, and type
 
   $ doxygen
 
-If you get the '"command not found"' error, you need to put `doxygen` into the path.
-Enter into a terminal:
-
-  $ cd /Applications/Doxygen.app/Contents/Resources/
-  $ sudo ln -s doxygen doxytags /usr/local/bin
-
 ==== Akaroa
 
 Akaroa 2.7.9, which is the latest version at the time of writing, does not
-support Mac OS X. You may try to port it using the porting guide from the
+support macOS. You may try to port it using the porting guide from the
 Akaroa distribution.
 
 ifdef::OMNEST[]
 
 ==== SystemC
 
-SystemC integration is not available on Mac OS X, because the bundled
-SystemC reference implementation does not support Mac OS X 10.10.
+SystemC integration is not available on macOS, because the bundled
+SystemC reference implementation does not currently support macOS.
 
 endif::OMNEST[]

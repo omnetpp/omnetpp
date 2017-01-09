@@ -1,4 +1,4 @@
-== Fedora 23
+== Fedora 25
 
 === Supported Releases
 
@@ -8,15 +8,15 @@ in the 'Linux' chapter.
 
 The following Fedora release is covered:
 
-* Fedora 23
+* Fedora 25
 
 It was tested on the following architectures:
 
-* Intel 32-bit and 64-bit
+* Intel 64-bit
 
 === Opening a Terminal
 
-Choose 'Applications > System Tools > Terminal' from the menu.
+Open the Search bar, and type 'Terminal'.
 
 === Installing the Prerequisite Packages
 
@@ -27,44 +27,46 @@ from the terminal, whichever you prefer.
 
 To install the required packages, type in the terminal:
 
-  $ su -c 'yum install make gcc gcc-c++ bison flex perl \
-      tcl-devel tk-devel qt-devel libxml2-devel zlib-devel \
-      java doxygen graphviz webkitgtk openmpi-devel libpcap-devel'
+  $ sudo dnf install make gcc gcc-c++ bison flex perl \
+      tcl-devel tk-devel qt5-devel libxml2-devel zlib-devel \
+      java doxygen graphviz webkitgtk
 
-To use 3D visualization support in Qtenv, you should install 
+To use 3D visualization support in Qtenv, you should install
 OpenSceneGraph 3.2 and osgEarth 2.5 or later (recommended):
 
-  $ su -c 'yum install OpenSceneGraph-devel osgearth-devel'
+  $ sudo dnf install OpenSceneGraph-devel osgearth-devel
 
 [NOTE]
 =====================================================
 You may opt to use clang and clang++ instead of the gcc and g++ compilers.
 =====================================================
 
+To enable the optional parallel simulation support you will need to install the
+MPI package:
+
+  $ sudo dnf install openmpi-devel
+
 Note that 'openmpi' will not be available by default, it needs to be
 activated in every session with the
 
-  $ module load openmpi-<arch>
+  $ module load mpi/openmpi-x86_64
 
-command, where `<arch>` is your architecture (usually `i386` or `x86_64`).
-When in doubt, use `module avail` to display the list of available
+command. When in doubt, use `module avail` to display the list of available
 modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).
 
 ==== Graphical Installation
 
-The graphical installer can be launched by choosing
-'System > Administration > Add/Remove Software' from the menu.
-
-image::pictures/fedora-packageman.png[title="Add/Remove Software",align="center",scaledwidth="75%"]
+The graphical package manager can be launched by opening the Search bar
+and typing 'dnf'.
 
 Search for the following packages in the list. Select the checkboxes
 in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, qt-devel, libxml2-devel,
-zlib-devel, webkitgtk, make, java,
-doxygen, graphviz, openmpi-devel, libpcap-devel, OpenSceneGraph-devel, osgearth-devel
+* make, bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, qt5-devel, libxml2-devel,
+zlib-devel, webkitgtk, java, doxygen, graphviz, openmpi-devel, libpcap-devel,
+OpenSceneGraph-devel, osgearth-devel
 
 Click 'Apply', then follow the instructions.

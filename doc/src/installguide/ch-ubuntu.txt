@@ -8,16 +8,15 @@ in the 'Linux' chapter.
 
 The following Ubuntu releases are covered:
 
-* Ubuntu 14.04 LTS
-* Ubuntu 15.10
+* Ubuntu 16.04 LTS
 
 They were tested on the following architectures:
 
-* Intel 32-bit and 64-bit
+* Intel 64-bit
 
-The instructions below assume that you use the Gnome desktop and the bash shell,
-which are the defaults. If you use another desktop environment or shell,
-you may need to adjust the instructions accordingly.
+The instructions below assume that you use the default desktop and the bash shell.
+If you use another desktop environment or shell, you may need to adjust the
+instructions accordingly.
 
 
 === Opening a Terminal
@@ -39,19 +38,21 @@ Type in the terminal:
 To install the required packages, type in the terminal:
 
   $ sudo apt-get install build-essential gcc g++ bison flex perl \
-       tcl-dev tk-dev libxml2-dev zlib1g-dev default-jre \
+       qt5-default tcl-dev tk-dev libxml2-dev zlib1g-dev default-jre \
        doxygen graphviz libwebkitgtk-3.0-0
 
 To use Qtenv with 3D visualization support, install the development packages
-for Qt4, OpenSceneGraph (3.2) and the osgEarth (2.5 or later) packages:
+for OpenSceneGraph (3.2) and the osgEarth (2.5 or later) packages (You may
+need to enable the 'Universe' software repository in Sotware Sources):
 
-  $ sudo apt-get install qt4-qmake libqt4-dev libqt4-opengl-dev \
-       openscenegraph libopenscenegraph-dev openscenegraph-plugin-osgearth \
-       osgearth osgearth-data libosgearth-dev
+  $ sudo apt-get install libopenscenegraph-dev \
+       openscenegraph-plugin-osgearth libosgearth-dev
 
 [NOTE]
 =====================================================
-You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+You may opt to use clang and clang++ instead of the gcc and g++ compilers. If you
+do not need the 3D visualization capabilities, you can disable them in the
+'configure.user' file.
 =====================================================
 
 To enable the optional parallel simulation support you will need to install the MPI packages:
@@ -65,8 +66,7 @@ image::pictures/terminal-package-install.png[title="Command-Line Package Install
 
 ==== Graphical Installation
 
-Ubuntu's graphical installer, 'Synaptic', can be started
-with the 'System > Administration > Synaptic package manager' menu item.
+Open the dash and type 'Synaptic'.
 
 Since software installation requires root permissions, Synaptic will ask you
 to type your password.
@@ -78,11 +78,10 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 
 The packages:
 
-* required: build-essential, gcc, g++, bison, flex, perl, tcl-dev, tk-dev, libxml2-dev,
-zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-3.0-0
-* recommended: qt4-qmake, libqt4-dev, libqt4-opengl-dev, openscenegraph,
-libopenscenegraph-dev, openscenegraph-plugin-osgearth, osgearth,
-osgearth-data, libosgearth-dev, openmpi-bin, libopenmpi-dev
+* required: build-essential, gcc, g++, bison, flex, perl, qt5-default,
+  tcl-dev, tk-dev, libxml2-dev, zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-3.0-0
+* recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev,
+  openmpi-bin, libopenmpi-dev
 
 image::pictures/ubuntu-synaptic.png[title="Synaptic Package Manager",align="center",scaledwidth="75%"]
 

@@ -2,12 +2,12 @@
 
 === Supported Windows Versions
 
-@OMNETPP@ supports the Intel 32-bit versions of Windows 7 and 10.
+@OMNETPP@ supports 64-bit versions of Windows 7 and 10.
 
 [NOTE]
 ===============================================================
-64-bit Windows versions are also supported, but be aware that binaries bundled
-with @OMNETPP@ are 32-bit ones, and simulations will also be compiled in 32-bit mode.
+32-bit Windows versions are no longer supported. If you need 32-bit
+builds on Windows, we recommend using @OMNETPP@ 5.0
 ===============================================================
 
 === Installing @OMNETPP@
@@ -16,7 +16,7 @@ Download the @OMNETPP@ source code from http://omnetpp.org. Make sure
 you select the Windows-specific archive, named
 `@omnetpp@-@version@-src-windows.zip`.
 
-The package is nearly self-contained: in addition to @OMNETPP@ files
+The package is self-contained: in addition to @OMNETPP@ files
 it includes a C++ compiler, a command-line build environment, and all
 libraries and programs required by @OMNETPP@.
 
@@ -26,7 +26,7 @@ do not put @OMNETPP@ under 'Program Files'.
 
 Extract the zip file. To do so, right-click the zip file in Windows Explorer,
 and select 'Extract All' from the menu. You can also use external programs
-like Winzip or 7zip. Rename the resulting directory to `@omnetpp@-@version@`.
+like Winzip or 7zip.
 
 When you look into the new `@omnetpp@-@version@` directory, should see
 directories named `doc`, `images`, `include`, `tools`, etc., and files named
@@ -38,10 +38,12 @@ directories named `doc`, `images`, `include`, `tools`, etc., and files named
 Start `mingwenv.cmd` in the `@omnetpp@-@version@` directory by double-clicking
 it in Windows Explorer. It will bring up a console with the MSYS 'bash' shell,
 where the path is already set to include the `@omnetpp@-@version@/bin` directory.
+On the first start of the shell, you may need to wait for the extraction of
+the `tools` directory.
 
 NOTE: If you want to start simulations from outside the shell as well
-(for example from Explorer), you need to add @OMNETPP@'s `bin` directory
-to the path; instructions are provided later.
+(for example from Explorer), you need to add @OMNETPP@'s `bin` directory and also
+the `bin` directories in the tools folder to the path; instructions are provided later.
 
 First, check the contents of the `configure.user` file to make sure
 it contains the settings you need. In most cases you don't need to change anything.
@@ -61,10 +63,10 @@ The build process will create both debug and release binaries.
 You should now test all samples and check they run correctly. As an example,
 the 'dyna' example is started by entering the following commands:
 
-    $ cd samples/dyna
-    $ ./dyna
+    $ cd samples/aloha
+    $ ./aloha
 
-By default, the samples will run using the graphical Tkenv environment.
+By default, the samples will run using the graphical Qtenv environment.
 You should see GUI windows and dialogs.
 
 
@@ -75,7 +77,8 @@ to start the IDE by typing:
 
     $ @omnetpp@
 
-We recommend that you create a shortcut for starting the IDE. To do so, locate
+We recommend that you start the IDE from the command-line.
+Yo can also create a shortcut for starting the IDE. To do so, locate
 the `omnetpp.exe` program in the `@omnetpp@-@version@/ide` directory in Windows
 Explorer, right-click it, and choose 'Send To > Desktop (create shortcut)' from
 the menu. On Windows 7, you can right-click the taskbar icon while the IDE is running,
@@ -97,7 +100,8 @@ Tool Chain Editor > Current toolchain > GCC for @OMNETPP@'.
 === Environment Variables
 
 If you want to start @OMNETPP@ simulations outside the shell as well
-(for example from Exlorer), you need to add @OMNETPP@'s `bin` directory
+(for example from Exlorer), you need to add @OMNETPP@'s `bin`,
+`tools/win64/usr/bin` and `tools/win64/mingw64/bin` directories
 to the path.
 
 First, open the 'Environment Variables' dialog.
@@ -107,11 +111,12 @@ into the search box. Choose 'Edit environment variables for your account' when i
 appears in the list. The  dialog comes up.
 
 In the dialog, select `path` or `PATH` in the list, click 'Edit'. Append
-"`;<omnetpp-dir>\bin`" to the value (without quotes), where `<omnetpp-dir>`
-is the name of the @OMNETPP@ root directory (for example `C:\@omnetpp@-@version@`).
+"`;<omnetpp-dir>\bin`" and the other needed directories to the value (without quotes),
+where `<omnetpp-dir>` is the name of the @OMNETPP@ root directory
+(for example `C:\@omnetpp@-@version@`).
 Hit Enter to accept.
 
-You need to close and re-open any command windows for the changes to take effect in them.
+You need to log-out and then log-in for the changes to take effect.
 
 
 === Reconfiguring the Libraries
@@ -152,7 +157,7 @@ to the `lib/` and `bin/` subdirs.
 @OMNETPP@ has been tested with both the gcc and the clang compiler from
 the MinGW-w64 package.
 
-Microsoft Visual C++ is not supported in the Academic Edition.
+Microsoft Visual C++/ClangC2 is not supported in the Academic Edition.
 
 
 === Additional Packages
@@ -176,7 +181,7 @@ After installing DeinoMPI, adjust the `MPI_DIR` setting in @OMNETPP@'s
     $ make
 
 NOTE: In general, if you would like to run parallel simulations, we recommend
-that you use Linux, OS X, or another unix-like platform.
+that you use Linux, macOS, or another unix-like platform.
 
 ==== PCAP
 

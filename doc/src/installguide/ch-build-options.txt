@@ -17,14 +17,9 @@ After this step, you have to remove all previous libraries and recompile @OMNETP
 
 Options:
 
-`PREFER_CLANG=yes`::
-  If both `gcc` and `clang` are installed on your system, setting this variable to `yes`
-  will force the configure script to use `clang` as C++ compiler.
-
-`USE_CXX11=yes`::
-  By default @OMNETPP@ is configured to use C++11 language features. This can be disabled if
-  your model is not yet compatible with C++11. Future @OMNETPP@ versions may require C++11, so
-  it is strongly recommended to update your models as soon as possible.
+`PREFER_CLANG=no`::
+  If both `gcc` and `clang` are installed on your system, setting this variable to `no`
+  will force the configure script to use `gcc` as C++ compiler.
 
 ifdef::OMNEST[]
 `WITH_SYSTEMC=yes`::
@@ -55,12 +50,16 @@ endif::OMNEST[]
   if your platform does not have a suitable Qt package or you will run the simulation
   only in command line mode. (i.e. You want to run @OMNETPP@ in a remote terminal session.)
 
-`QT_VERSION=4`::
-  Specifies the major Qt version that Qtenv runtime is using (at the moment only Qt4 is
-  supported.)
+`WITH_OSG=no`::
+  This will prevent the build system to use OpenScreenGraph which is used for 3D
+  visualization in Qtenv.
 
-`PREFER_QTENV=yes`::
-  Use Qtenv as the default graphical runtime instead of Tkenv.
+`WITH_OSGEARTH=no`::
+    This will prevent the build system to use osgEarth which is used for 2D/3D
+    mapping and visualization in Qtenv.
+
+`PREFER_QTENV=no`::
+  Use Tkenv as the default graphical runtime instead of Qtenv.
 
 `EMBED_TCL_CODE=no`::
   Tcl/Tk is a script language and the source of the graphical
@@ -139,7 +138,7 @@ also needs to be adjusted):
   move the installation, you need to add the `lib/` subdirectory
   of your @OMNETPP@ installation to `LD_LIBRARY_PATH`.
 
-NOTE: On Mac OS X, `DYLD_LIBRARY_PATH` is used instead of `LD_LIBRARY_PATH`.
+NOTE: On macOS, `DYLD_LIBRARY_PATH` is used instead of `LD_LIBRARY_PATH`.
 On Windows, the `PATH` variable must contain the directory where shared
 libraries (DLLs) are present.
 
@@ -150,6 +149,7 @@ By default, the configure script detects the following compilers automatically i
 * Intel compiler (icc, icpc)
 * GNU C/C++ (gcc, g++)
 * Clang (clang, clang++)
+* Clang/C2 (from Microsoft Visual Studio)
 * Sun Studio (cc, cxx)
 * IBM compiler (xlc, xlC)
 

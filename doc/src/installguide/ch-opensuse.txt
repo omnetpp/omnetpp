@@ -8,15 +8,15 @@ in the 'Linux' chapter.
 
 The following openSUSE release is covered:
 
-* openSUSE 42.1
+* openSUSE 42.2
 
 It was tested on the following architectures:
 
-* Intel 32-bit and 64-bit
+* Intel 64-bit
 
 === Opening a Terminal
 
-Choose 'Applications > System > Terminal > Terminal' from the menu.
+Open the Search bar, and type 'Terminal'.
 
 === Installing the Prerequisite Packages
 
@@ -28,14 +28,18 @@ from the terminal, whichever you prefer.
 To install the required packages, type in the terminal:
 
   $ sudo zypper install make gcc gcc-c++ bison flex perl \
-      tcl-devel tk-devel libqt4-devel libxml2-devel zlib-devel \
-      java-1_8_0-openjdk doxygen graphviz openmpi-devel libpcap-devel \
-      libwebkitgtk-1_0-0
+      tcl-devel tk-devel libqt5-qtbase-devel libxml2-devel zlib-devel \
+      java-1_8_0-openjdk doxygen graphviz libwebkitgtk-3_0-0
 
 To use 3D visualization support in Qtenv  (recommended), you should
 install the OpenSceneGraph-devel (3.2) and osgEarth-devel (2.5 or later) packages.
 These packages are not available from the official RedHat repository so you
 may need to get them from different sources (e.g. rpmfind.net).
+
+To enable the optional parallel simulation support you will need to install the
+MPI package:
+
+  $ sudo zypper install openmpi-devel
 
 Note that 'openmpi' will not be available by default, first you need to
 log out and log in again, or source your `.profile` script:
@@ -44,8 +48,8 @@ log out and log in again, or source your `.profile` script:
 
 ==== Graphical Installation
 
-The graphical installer can be launched by choosing
-'Computer > Yast > System > Software > Software Management' from the menu.
+The graphical installer can be launched by opening the Search bar and typing
+'Software Management'.
 
 image::pictures/opensuse-yast.png[title="Yast Software Management",align="center",scaledwidth="75%"]
 
@@ -54,8 +58,8 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* make, gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, libqt4-devel
-libxml2-devel, zlib-devel, java-1_7_0-openjdk, doxygen, graphviz, libwebkitgtk-1_0-0,
+* make, gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, libqt5-qtbase-devel,
+libxml2-devel, zlib-devel, java-1_8_0-openjdk, doxygen, graphviz, libwebkitgtk-3_0-0,
 openmpi-devel, libpcap-devel
 
 Click 'Accept', then follow the instructions.

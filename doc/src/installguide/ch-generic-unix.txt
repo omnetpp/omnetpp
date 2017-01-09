@@ -9,8 +9,8 @@ distributions not covered in other chapters.
 
 [NOTE]
 ===============================================================
-In addition to Windows and Mac OS X, the Simulation IDE will only work
-on Linux x86 32/64-bit platforms. Other operating systems (FreeBSD,
+In addition to Windows and macOS, the Simulation IDE will only work
+on Linux x86 64-bit platforms. Other operating systems (FreeBSD,
 Solaris, etc.) and architectures may still be used as simulation
 platforms, without the IDE.
 ===============================================================
@@ -19,7 +19,7 @@ platforms, without the IDE.
 
 The following packages are required for @OMNETPP@ to work:
 
-build-essential, GNU make, gcc, g\++, bison (2.x+), flex, perl::
+build-essential, GNU make, gcc, g\++, bison (2.4+), flex, perl::
   These packages are needed for compiling @OMNETPP@ and simulation models,
   and also for certain @OMNETPP@ tools to work. Some C++ compilers
   other than g++, for example the Intel compiler, will also be accepted.
@@ -36,15 +36,15 @@ LibXML2 or Expat::
   Either one of these XML parsers are needed for @OMNETPP@ to be able
   to read XML files. The 'devel' packages (that include the header files)
   are needed. LibXML2 is the preferred one.
-OpenJDK, version 7.0 or later::
+OpenJDK, version 8.0 or later::
   The Java runtime is required to run the Eclipse-based Simulation IDE.
   Other implementations, for example Kaffe, have been found to have problems
   running the IDE. You do not need this package if you do not plan
   to use the Simulation IDE.
-Qt 4::
+Qt 5.4 or later::
   Required by the Qtenv simulation runtime environment.
   You need the 'devel' packages that include header files as well.
-OpenSceneGraph and osgEarth::
+OpenSceneGraph (3.2+) and osgEarth (2.5+)::
   These packages will enable 3D visualization in Qtenv.
   You need the 'devel' packages that include header files as well.
 
@@ -86,18 +86,18 @@ are usually denoted with the `-dev` or `-devel` name suffix.
 
 Troubleshooting:
 
-If your platform does not have suitable Tcl/Tk packages, you may still use @OMNETPP@
+If your platform does not have suitable Tcl/Tk and/or QT packages, you may still use @OMNETPP@
 to run simulations from the command line. To disable the graphical runtime environment
 use:
 
-  $ ./configure WITH_TKENV=no
+  $ ./configure WITH_TKENV=no WITH_QTENV=no
 
-This will prevent the build system to link with Tcl/Tk libraries. This is required also
+This will prevent the build system to link with Tcl/Tk or QT libraries. This is required also
 if you are installing @OMNETPP@ from a remote terminal session.
 
 By default, the `configure` script expects to find the Tcl/Tk libraries
 in the standard linker path (without any `-Ldirectory` linker option)
-and under the standard names (i.e. with the `-ltcl8.4` or `-ltcl84`
+and under the standard names (i.e. with the `-ltcl8.5` or `-ltcl85`
 linker option). If you have them in different places or under different
 names, you have to edit `configure.user` and explicitly set `TK_LIBS` there (see
 the Build Options chapter for further details).
@@ -112,14 +112,10 @@ If you get the error: 'Tcl_Init failed: Can't find a usable init.tcl...'
 The `TCL_LIBRARY` environment variable should point to the directory which
 contains `init.tcl`. That is, you probably want to put a line like
 
-  export TCL_LIBRARY=/usr/lib/tcl8.4
+  export TCL_LIBRARY=/usr/lib/tcl8.5
 
 into your `~/.bashrc`.
 
-
-If you still have problems installing Tcl/Tk, we recommend visiting the @OMNETPP@ site's
-wiki packages for further troubleshooting tips:
-http://www.omnetpp.org/pmwiki/index.php?n=Main.TclTkRelatedProblems
 
 ==== The Java Runtime
 
@@ -128,7 +124,7 @@ The IDE is not supported on Unix platforms other than Linux, so JRE is not requi
 either. We have tested various other Java runtimes ('gcj', 'kaffe', etc.), and
 the IDE does not work well with them.
 
-Java version 1.7 (i.e. JRE 1.7) or later is required and 8.0 is recommended.
+Java version 1.8 (i.e. JRE 1.8) or later is required.
 
 ==== MPI
 
@@ -153,7 +149,7 @@ This will create an `@omnetpp@-@version@` subdirectory with the @OMNETPP@ files 
 In general @OMNETPP@ requires that its bin directory should be in the PATH. You should
 add a line something like this to your `.bashrc`:
 
-  $ export PATH=$PATH:$HOME/@omnetpp@-@version@/bin
+  $ export PATH=$HOME/@omnetpp@-@version@/bin:$PATH
 
 You may also have to specify the path where shared libraries are loaded from. Use:
 
@@ -187,7 +183,7 @@ via an ssh session, or there is some other reason why X is not running,
 the easiest way to work around the problem is to tell @OMNETPP@ to build
 without Tcl/Tk. To do that, use the command
 
-  $ ./configure WITH_TKENV=no 
+  $ ./configure WITH_TKENV=no WITH_QTENV=no
 
 instead of plain `./configure`.
 
@@ -218,8 +214,8 @@ image::pictures/terminal-make.png[title="Building @OMNETPP@",align="center",scal
 
 [TIP]
 ===============================================================
-To take advantage of multiple processor cores, add the `-j2` option to the
-`make` command line.
+To take advantage of multiple processor cores, add the `-j8` option
+(for 8 cores) to the `make` command line.
 ===============================================================
 
 [NOTE]
@@ -244,10 +240,10 @@ If you only want to build one set of the libraries, specify
 You can now verify that the sample simulations run correctly. For example,
 the dyna simulation is started by entering the following commands:
 
-    $ cd samples/dyna
-    $ ./dyna
+    $ cd samples/aloha
+    $ ./aloha
 
-By default, the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Qtenv environment. You should see
 nice gui windows and dialogs.
 
 
@@ -255,7 +251,7 @@ nice gui windows and dialogs.
 
 [NOTE]
 ===============================================================
-The IDE is supported only on Windows, Mac OS X (x86) and Linux (x86,x64).
+The IDE is supported only on 64-bit versions of Windows, macOS X and Linux.
 ===============================================================
 
 You can run the IDE by typing the following command in the terminal:
