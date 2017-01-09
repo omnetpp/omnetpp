@@ -140,7 +140,7 @@ public:
         }
         else {
             setDefaultFboId(v->defaultFramebufferObject());
-            return true;
+            return v && v->context();
         }
     }
 
@@ -150,11 +150,11 @@ public:
         else
             v->makeCurrent();
 
-        return true;
+        return c || v->context();
     }
 
     bool releaseContextImplementation() override {
-        if (v) {
+        if (v && v->context()) {
             QOpenGLFunctions funcs(v->context());
             funcs.initializeOpenGLFunctions();
 

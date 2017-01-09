@@ -245,6 +245,11 @@ void ModuleInspector::doSetObject(cObject *obj)
 
     canvasViewer->setObject(module);
     canvasViewer->clear();
+
+#ifdef WITH_OSG
+    setOsgCanvas(nullptr);
+#endif
+
     getQtenv()->getMessageAnimator()->clearInspector(this);
 
     if (object) {
