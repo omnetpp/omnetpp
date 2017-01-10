@@ -80,6 +80,8 @@ void Satellite::initialize(int stage)
         orbitX = cross;
         orbitY = normal ^ cross;
 
+        getOsgCanvas()->setScene(osgDB::readNodeFile(modelURL));
+
         break;
     }
     case 1:

@@ -43,6 +43,8 @@ void GroundStation::initialize(int stage)
         labelColor = par("labelColor").stringValue();
         longitude = par("longitude");
         latitude = par("latitude");
+
+        getOsgCanvas()->setScene(osgDB::readNodeFile(modelURL));
         break;
     }
     case 1:
