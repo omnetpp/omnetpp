@@ -421,6 +421,8 @@ void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
         }
         else
             resetViewer();
+
+        getEventQueue()->clear();
     }
 }
 
@@ -431,6 +433,7 @@ void OsgViewer::refresh()
         // otherwise textures vanish from all other views when one view is closed.
         osgUtil::Optimizer::TextureVisitor(true, false, false, false, false, false).apply(*scene);
 
+        viewer->removeView(view);
         view->setSceneData(scene);
         viewer->addView(view);
 
@@ -474,7 +477,6 @@ void OsgViewer::resetViewer()
     setClearColor(0.9, 0.9, 0.9, 1.0);
     camera->setProjectionMatrixAsPerspective(30, 1, 1, 1000);
 
-    viewer->realize(); // seems like this solved the multiple views glitch
     view->requestRedraw();
 }
 
