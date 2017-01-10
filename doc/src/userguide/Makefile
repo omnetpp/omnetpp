@@ -1,5 +1,8 @@
 FOP=fop
+
+# on Fedora, change this to /usr/share/sgml/docbook/xsl-ns-stylesheets
 DOCBOOK=/usr/share/xml/docbook/stylesheet/nwalsh
+
 export XML_CATALOG_FILES=../docbook-dtd/catalog.xml
 
 TITLE=User Guide

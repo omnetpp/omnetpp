@@ -19,37 +19,62 @@
       <listitem>network visualization</listitem>
       <listitem>message flow animation</listitem>
       <listitem>various run modes: event-by-event, normal, fast, express</listitem>
-      <listitem>run until (event or simulation time)</listitem>
+      <listitem>run until (a scheduled event, any event in a module, or given simulation time)</listitem>
       <listitem>simulation can be restarted</listitem>
+      <listitem>a different configuration/run or network can be set up</listitem>
       <listitem>log of message flow</listitem>
       <listitem>display of textual module logs</listitem>
       <listitem>inspectors for viewing contents of objects and variables in the model</listitem>
-      <listitem>visualization of statistics (histograms, etc.) during simulation execution</listitem>
+      <!-- <listitem>visualization of statistics (histograms, etc.) during simulation execution</listitem> -->
       <listitem>eventlog recording for later analysis</listitem>
+      <listitem>capturing a video of the main window</listitem>
       <listitem>snapshots (detailed report about the model: objects, variables, etc.)</listitem>
     </itemizedlist>
   </sect1>
   <sect1>
     <title>Overview of the User Interface</title>
     <picture file="pictures/Qtenv-main.png" width="400">The main window of Qtenv</picture>
+    <note> If you are experiencing graphics glitches, unreadable text, or the desktop color scheme
+      you have set up is not suitable for Qtenv, you can disable the platform (Gtk+, KDE, Win32, etc.)
+      integration style plugins of Qt by setting the [[QT_STYLE_OVERRIDE]] environment variable
+      to [[fusion]]. This will make the widgets appear in a platform-independent manner, as shown above.
+    </note>
     <para>The top of the window contains the following elements below the menu bar:</para>
     <itemizedlist>
       <listitem>
         ``Toolbar'': The toolbar lets you access the most frequently used functions,
-        such as stepping, running and stopping the simulation.
+        such as stepping, running and stopping the simulation. It also has buttons for
+        other actions to customize the interface or open various dialogs.
+      </listitem>
+      <!-- anim info/ctrl dialog? -->
+      <listitem>
+        ``Animation speed'': The slider on the end of the toolbar lets you scale
+        the speed of the built-in message and methodcall animations, as well as
+        the playback speed of the custom animations added by the model.
       </listitem>
       <listitem>
-        ``Status bar'': Two rows of various fields and gauges, displaying the current event number,
-        simulation time, information about the next simulation event, and other details.
-        When the simulation is running, it displays performance data like the number of
-        events processed per second. The second row can be turned off to free up vertical space.
+        ``Event Number and Simulation Time'': These two labels on the right end of
+        the toolbar display the event number ot the last executed or the next future
+        event, and the current simulation time. Their appearance can be adjusted by
+        right clicking on them.
+      </listitem>
+      <listitem>
+        ``Top status bar'': Three labels in a row that display either information
+        about the next simulation event (in ``Step'' and ``Normal'' mode), or
+        performance data like the number of events processed per second (in
+        ``Fast'' and ``Express'' mode). This can be hidden to free up vertical space.
       </listitem>
       <listitem>
         ``Timeline'': Displays the contents of the Future Events Set (FES) on a logarithmic time scale.
         The timeline can be turned off to free up vertical space.
       </listitem>
+      <listitem>
+        ``Bottom status bar'': Displays the current configuration, the run number, and
+        the name of the root module (network) on the left, and a few statistics
+        about the message objects in the model on the right.
+      </listitem>
     </itemizedlist>
-    <para>The main window is divided into the following areas:</para>
+    <para>The central area of the main window is divided into the following regions:</para>
     <itemizedlist>
       <listitem>
         ``Object Navigator'': Displays the hierarchy of objects in the current simulation and in the FES.
@@ -125,10 +150,11 @@
       </sect3>
       <sect3>
         <title>Run (or Normal Run)</title>
-        <para>In ``Run'' mode, the simulation runs with all tracing aids on. Message animation is active and
-          inspector windows are updated after each event. Output messages are displayed in the main window and
-          module output windows. You can stop the simulation with the ``Stop'' button on the toolbar. You can
-          fully interact with the user interface while the simulation is running (e.g. you can open inspectors, etc.).
+        <para>In ``Run'' mode, the simulation runs with all tracing aids on. Message animation is active,
+          simulation time is interpolated if the model requested a non-zero animation speed, and inspector
+          windows are constantly updated. Output messages are displayed in the main window and module output
+          windows. You can stop the simulation with the ``Stop'' button on the toolbar. You can fully interact
+          with the user interface while the simulation is running (e.g. you can open inspectors, etc.).
         </para>
         <note>
           If you find this mode too slow or distracting, you may switch off animation features in
@@ -137,18 +163,17 @@
       </sect3>
       <sect3>
         <title>Fast Run</title>
-        <para> In ``Fast'' mode, animation is turned off. The inspectors and the message output windows
-          are updated every 500 milliseconds (the actual number can be set in ``File|Preferences...'').
-          Fast mode is several times faster than the Run mode; the speed can increase by up to 10 times
-          (or up to the configured event count).
+        <para> In ``Fast'' mode, message animation is turned off. The inspectors are updated much less
+          often. Fast mode is several times faster than the Run mode; the speed can increase by up to
+          10 times (or up to the configured event count). <!--  this last note in parentheses. what?! -->
         </para>
       </sect3>
       <sect3>
         <title>Express Run</title>
-        <para> In ``Express mode'', the simulation runs at about the same speed as with Cmdenv, all tracing
-          disabled. Module log is not recorded. You can interact with the simulation only once in a while,
-          thus the run-time overhead of the user interface is minimal. You have to explicitly click
-          the ``Update inspectors'' button if you want a display update.
+        <para> In ``Express'' mode, the simulation runs at about the same speed as with Cmdenv, all tracing
+          disabled. Module log is not recorded. The simulation can only be interacted with once in a while,
+          thus the run-time overhead of the user interface is minimal. UI updates can even be disabled completely,
+          in which case you have to explicitly click the ``Update now'' button to refresh the inspectors.
         </para>
       </sect3>
       <sect3>
@@ -180,12 +205,12 @@
       </sect3>
       <sect3>
         <title>Recording an Event Log</title>
-        <para>The &Omnetpp; simulation kernel allows you to record event related information into a file
+        <para> The &Omnetpp; simulation kernel allows you to record event related information into a file
           which later can be used to analyze the simulation run using the ``Sequence Chart'' tool in
           the IDE. Eventlog recording can be turned on with the [[record-eventlog=true]] ini file option,
           but also interactively, via the respective item in the ``Simulate'' menu, or using a toobar button.
         </para>
-        <para>Note that the starting Qtenv with [[record-eventlog=true]] and turning on recording later
+        <para> Note that the starting Qtenv with [[record-eventlog=true]] and turning on recording later
           does not result in exactly the same eventlog file. In the former case, all steps of setting up
           the network, such as module creations, are recorded as they happen; while for the latter,
           Qtenv has to "fake" a chain of steps that would result in the current state of the simulation.
@@ -206,6 +231,24 @@
           usually due to incorrectly written destructors in module classes.
         </para>
       </sect3>
+      <sect3>
+        <title>Capturing a Video</title>
+        <para> When active, this feature will save the contents of the main window into a subfolder
+          named [[frames]] in the working directory with a regular frequency (in animation time).
+          Each frame is a PNG image, with a sequence number in its file name. Currently the user
+          has to convert (encode) these images into a video file after the fact by using an
+          external tool (for example [[ffmpeg]], [[avconv]], or [[vlc]]). When the recording
+          is started, an info dialog pops up, showing further details on the output, and an
+          example command for encoding in high quality using [[ffmpeg]].
+          The resulting video is also affected by the speed slider on the toolbar.
+        </para>
+        <note>
+          This built-in recording feature is able to create smooth and controlled output,
+          in contrast to external screen-capture utilities. This is because of all the
+          available information about the context that those tools don't have, and the
+          generally offline nature of the operation (the simulation can run at any speed).
+        </note>
+      </sect3>
     </sect2>
     <sect2>
       <title>Inspecting Simulation Objects</title>
@@ -221,10 +264,14 @@
           floating windows above the main window, and you can have any number of them open.
         </para>
         <picture file="pictures/Qtenv-floating-inspector.png">A floating inspector window</picture>
-        <para> Inspectors come in many flavours. They can be graphical like the network view
-          or a histogram inspector, textual like a log viewer, tree-based like an object
-          inspector, or something entirely different.
+        <para> Inspectors come in many flavours. They can be graphical like the network view, textual
+        like the log viewer, tree-based like the object inspector, or something entirely different.
         </para>
+        <note> Some window managers might disable/hide the close button of floating inspectors.
+          If this happens, you can still close them with a keyboard shortcut (most commonly
+          <keycap>Alt</keycap>+<keycap>F4</keycap>), or by right clicking on the title bar,
+          and choosing the Close option in the appearing menu.
+        </note>
       </sect3>
       <sect3>
         <title>Opening Inspectors</title>
@@ -283,15 +330,15 @@
       including the Qtenv GUI.
     </para>
     <para>The second consequence is that suspending the simulation program in a debugger
-      will also freeze the GUI until it is resumed. Also, Qtenv is also single-theaded
-      and runs in the same thread as the simulation program, so even if you only suspend
+      will also freeze the GUI until it is resumed. Also, Qtenv is single-theaded and
+      runs in the same thread as the simulation program, so even if you only suspend
       the simulation's thread in the debugger, the UI will freeze.
     </para>
     <para>The Qtenv UI deals with [[cObject]]s (the C++ methods that the GUI relies
       on are defined on [[cObject]]). All other data such as primitive variables,
       non-cObject classes and structs, STL containers etc, are hidden from Qtenv.
-      You may wrap objects into cObjects to make them visible for Qtenv, that's what
-      e.g. the WATCH macros do as well.
+      You may wrap objects into [[cObject]]s to make them visible for Qtenv, that's what
+      e.g. the [[WATCH]] macros do as well.
     </para>
     <para>The following sections go into detail about various parts and functions of the Qtenv UI.</para>
   </sect1>
@@ -299,16 +346,41 @@
   <sect1>
     <title>Parts of the Qtenv UI</title>
     <sect2>
-      <title>The Status Bar</title>
-      <para> The status bar shows the simulation's progress. It contains two rows, the second of
-        which can be hidden using the ``View|Status Details'' menu item.
+      <title>The Status Bars</title>
+      <para> The status bars show the simulation's progress. There is one row on the top
+        of the main window, and one on the bottom. The top one can be hidden using
+        the ``View | Status Details'' menu item.
       </para>
-      <picture file="pictures/Qtenv-statusbar.png" width="400">The status bar</picture>
-      <para> The first row contains the following items:</para>
+      <picture file="pictures/Qtenv-statusbar.png" width="400">The top status bar</picture>
+      <para> When the simulation is paused or runs with animation, the top row displays
+       the next expected simulation event. Note the word ``expected'': certain schedulers may
+       insert new events before the displayed event in the last moment. Some schedulers
+       that tend to do that are those that accept input from outside sources:
+       real-time scheduler, hybrid or hardware-in-the-loop schedulers, parallel
+       simulation schedulers, etc. Contents of the top row:
+      </para>
+      <orderedlist>
+        <listitem>Name, C++ class and ID of the next message (event) object</listitem>
+        <listitem>The module where the next event will occur (i.e. the module where
+          the message will be delivered)
+        </listitem>
+        <listitem>The simulation time of the next (expected) simulation event</listitem>
+        <listitem>Time of the next event, and delta from the current simulation time</listitem>
+      </orderedlist>
+      <para> When the simulation is running in ``Fast'' or ``Express'' mode, displaying
+        the next event becomes useless, so the contents of the top row are replaced by
+        the following performance gauges:
+      </para>
+      <picture file="pictures/Qtenv-statusbar-running.png" width="400">The top status bar during Fast or Express run</picture>
+      <orderedlist>
+        <listitem>Simulation speed: number of events processed per real second</listitem>
+        <listitem>Relative speed of the simulation (compared to real-time)</listitem>
+        <listitem>Event density: the number of events per simulated seconds</listitem>
+      </orderedlist>
+      <para> The bottom row contains the following items:</para>
+      <picture file="pictures/Qtenv-statusbar-bottom.png" width="400">The bottom status bar</picture>
       <orderedlist>
         <listitem>Ini config name, run number, and the name of the network</listitem>
-        <listitem>The event number of the next simulation event</listitem>
-        <listitem>The simulation time of the next (expected) simulation event.</listitem>
         <listitem>Message statistics: the number of messages currently scheduled (i.e. in the FES);
           the number of message objects that currently exists in the simulation; and the
           number of message objects that have been created this far, including the
@@ -317,50 +389,30 @@
           missing some [[delete msg]] statements, and needs to be debugged.
         </listitem>
       </orderedlist>
-      <para> When the simulation is paused or runs with animation, the second row displays
-       the next expected simulation event. Note the word ``expected'': certain schedulers may
-       insert new events before the displayed event in the last moment. Some schedulers
-       that tend to do that are those that accept input from outside sources:
-       real-time scheduler, hybrid or hardware-in-the-loop schedulers, parallel
-       simulation schedulers, etc. Contents of the second row:
-      </para>
-      <orderedlist>
-        <listitem>Name, C++ class and ID of the next message (event) object</listitem>
-        <listitem>The module where the next event will occur (i.e. the module where
-          the message will be delivered)
-        </listitem>
-        <listitem>Time of the next event since the last executed event.</listitem>
-      </orderedlist>
-      <para> When the simulation is running, displaying the next event becomes meaningless,
-        and second row is replaced by the following performance gauges:
-      </para>
-      <picture file="pictures/Qtenv-statusbar-running.png" width="400">The status bar during Fast or Express run</picture>
-      <orderedlist>
-        <listitem>Simulation speed: number of events processed per real second</listitem>
-        <listitem>Relative speed of the simulation (compared to real-time)</listitem>
-        <listitem>Event density:  the number of events per simulated seconds</listitem>
-      </orderedlist>
     </sect2>
+
     <sect2>
       <title>The Timeline</title>
       <picture file="pictures/Qtenv-timeline.png" width="400">The timeline</picture>
       <para> The timeline displays the contents of the Future Events Set on a logarithmic time scale.
-        Each dot represents a message (event).
+        Each dot represents a message (event). Messages to be delivered in the current simulation
+        time are grouped into a separate section on the left between brackets.
       </para>
-      <para>Clicking an event will focus it in the ``Object Inspector'', and double-clicking
+
+      <para> Clicking an event will focus it in the ``Object Inspector'', and double-clicking
         will open a floating inspector window. Right-clicking will bring up a context menu
         with further actions.
       </para>
-      <para>
-        The timeline is often crowded, limiting its usefulness. To overcome this, you can hide
+      <para> The timeline is often crowded, limiting its usefulness. To overcome this, you can hide
         uninteresting events from the timeline: right-click the event, and choose
-        ``Exclude Messages Like 'x' from the Animation'' from the context menu. This will
-        hide events with same name and C++ class name from the timeline, and also skip
-        the animation when such messages are sent from one module to another.
+        ``Exclude Messages Like 'x' From Animation'' from the context menu. This will
+        hide events with similar name and the same C++ class name from the timeline, and also
+        skip the animation when such messages are sent from one module to another.
         You can view and edit the list of excluded messages on the ``Filtering'' page of the
         ``Preferences'' dialog. (Tip: the timeline context menu provides a shortcut to that dialog).
       </para>
-      <para> The timeline can be hidden (and revealed again) using the ``View|Timeline'' menu item.
+      <para> The whole timeline can be hidden (and revealed again) using the ``View | Timeline'' menu item, by
+        pressing a button on the toolbar, or simply by dragging the handle of the separator under it all the way up.
       </para>
     </sect2>
     <sect2>
@@ -369,7 +421,7 @@
       <para> The ``Object Navigator'' displays inspectable objects reachable from two
         root objects (the network module and the FES) in a tree form.
       </para>
-      <para>Clicking an object will focus it in the ``Object Inspector'', and double-clicking
+      <para> Clicking an object will focus it in the ``Object Inspector'', and double-clicking
         will open a floating inspector window. Right-clicking will bring up a context menu
         with further actions.
       </para>
@@ -382,19 +434,57 @@
         It can be directly navigated as well, via the ``Back'', ``Forward'', and ``Go to Parent''
         buttons, and also by double-clicking objects shown inside the inspector's area.
       </para>
-      <picture file="pictures/Qtenv-inspector-fields.png">The object inspector</picture>
-      <para> The inspector features a tabbed interface with two pages: ``Fields'' and ``Contents''.
-        The ``Fields'' page shows the fields (or data members) of the object, organized in
-        categories. It uses meta-information generated by the message compiler to obtain
+
+      <informaltable frame="none" rowsep="0" colsep="0">
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>
+                <picture file="pictures/Qtenv-inspector-grouped.png">The object inspector in Grouped mode</picture>
+              </entry>
+              <entry>
+                <picture file="pictures/Qtenv-inspector-flat.png">The object inspector in Flat mode</picture>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+
+      <para> The inspector has four display modes: ``Grouped'', ``Flat'', ``Children'' and ``Inheritance''.
+        You can switch between these modes using the buttons on the inspector's toolbar.
+      </para>
+      <para> In ``Grouped'', ``Flat'' and ``Inheritance'' modes, the tree shows the fields (or data
+        members) of the object. It uses meta-information generated by the message compiler to obtain
         the list of fields and their values. (This is true even for the built-in classes --
         the simulation kernel contains their description of msg format.)
       </para>
-      <picture file="pictures/Qtenv-inspector-contents.png">The object inspector</picture>
+      <para> The only difference between these three modes is the way the fields are arranged.
+        In ``Grouped'' mode, they are organized in categories, in ``Flat'' mode
+        they form a simple alphabetical list, and in ``Inheritance'' mode they are
+        organized based on which superclass they are inherited from.
+      </para>
 
-      <para> The ``Contents'' page lists the child objects of the currently inspected object.
-        The child list is obtained via the [[forEach()]] method of the object.
+      <informaltable frame="none" rowsep="0" colsep="0">
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>
+                <picture file="pictures/Qtenv-inspector-children.png">The object inspector in Children mode</picture>
+              </entry>
+              <entry>
+                <picture file="pictures/Qtenv-inspector-inheritance.png">The object inspector in Inheritance mode</picture>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+
+      <para> In ``Children'' mode, the tree shows the child objects of the currently inspected object.
+        The child list is obtained via the [[forEachChild()]] method of the object.
+        This is very similar to how the ``Object Navigator'' works, but this can have an arbitrary root.
       </para>
     </sect2>
+
     <sect2>
       <title>The Network Display</title>
       <para> The network view provides a graphical view of the network and in general, modules.
@@ -405,10 +495,33 @@
         You can customize animation in the ``Animation'' page of the ``Preferences'' dialog.
       </para>
       <picture file="pictures/Qtenv-network.png">The network display</picture>
+      <para> The built-in [[cCanvas]] of the inspected object is also rendered in this view together
+        with the module contents to allow for overlaying custom annotations and animations.
+        This canvas contains the figures declared by the @figure properties in the NED source of the module.
+      </para>
+      <para>
+        By choosing the ``Show/Hide Canvas Layers'' item in the context menu of the inspected module,
+        the displayed figures can be filtered based on the tags set on them.
+      </para>
+      <picture file="pictures/Qtenv-figure-filter.png">Figure filtering dialog</picture>
+      <para>
+        Since any figure can have any number of tags, a two-step filtering mechanism is applied to give
+        sufficient control. The left side is a whitelist, while the right side is a blacklist. The
+        example above would only let all the figures with the "oval" tag appear, except those that also
+        have the "green" tag on them.
+      </para>
+
+      <para> If the inspected module has a built-in [[cOsgCanvas]] (and Qtenv is built with OSG support enabled),
+        this inspector can also be switched into a 3D display mode with the globe icon on its toolbar. In this
+        case, the 2D network and canvas display is replaced by the scene encapsulated by the [[cOsgCanvas]].
+      </para>
+      <picture file="pictures/Qtenv-osg.png">The network display in 3D mode</picture>
+
       <para> The context menu of submodules makes further actions available (see below).
       </para>
       <picture file="pictures/Qtenv-submod-contextmenu.png">Submodule context menu</picture>
       <picture file="pictures/Qtenv-submod-utilities.png">The Utilities submenu</picture>
+
       <sect3>
         <title>Zooming and Panning</title>
         <para>
@@ -416,12 +529,9 @@
         </para>
         <itemizedlist>
           <listitem>
-            <para>Use <keycap>Ctrl+M</keycap> to zoom in, <keycap>Ctrl+N</keycap> to zoom out;
-            the same functionality is also available in the canvas toolbar</para>
-          </listitem>
-          <listitem>
             <para>To zoom in around a point, double-click the canvas; use <keycap>Shift</keycap> +
-            double-click to zoom out</para>
+            double-click to zoom out, or scroll while holding down <keycap>Ctrl</keycap>.</para>
+            You can also zoom around the center of the viewport with the looking glass buttons on the canvas toolbar.
           </listitem>
           <listitem>
             <para>For marquee zoom, drag out a rectangle with the left mouse button while
@@ -431,11 +541,13 @@
           <listitem>
             <para>Panning: moving the mouse while holding down the left mouse button will
             move the canvas; this is often a more comfortable way to navigate the canvas
-            than using the scroll bars.</para>
+            than using the scroll bars. You can of course scroll in any direction with
+            simply the mouse wheel, or the similar functionality of many touchpads.</para>
           </listitem>
         </itemizedlist>
       </sect3>
     </sect2>
+
     <sect2>
       <title>The Log Viewer</title>
       <para> When you run the simulation, Qtenv will remember the output from logging statements
@@ -449,10 +561,14 @@
         the two modes with tool icons on the inspector's local toolbar.
       </para>
       <para> In ``Messages'' mode, the window displays messages sent between the (immediate) submodules
-        of the inspected compound module, and messages sent out of, or into the compound module.
+        of the inspected compound module, and messages sent out of, or into the compound module. The
+        embedded ``Log Viewer'' shows content related to the module inspected in the ``Network Display''
+        above it at any time. You can view details about any message in the ``Object Inspector'' by
+        clicking on it, and access additional functions in its context menu.
       </para>
       <note> In ``Messages'' mode, the ``Info'' column can be customized by writing and registering
-       a custom [[cMessagePrinter]] class.
+       a custom [[cMessagePrinter]] class. This string is split at the tab characters ([['\t']])
+       into parts that are aligned in additional columns.
       </note>
       <picture file="pictures/Qtenv-log-msgs.png">The log viewer showing message traffic</picture>
       <para> In ``Log'' mode, the window displays log lines that belong to submodules
@@ -463,7 +579,10 @@
         modules. Open the log window's context menu and select ``Filter Window Contents''.
       </para>
       <picture file="pictures/Qtenv-log-filter.png">The log filter dialog</picture>
-      <para> General logging behavior can be controlled in the ``Preferences'' dialog.</para>
+      <para> General logging behavior, such as the prefix format, can be controlled in the ``Preferences''
+        dialog. The log level of each module (and its descendants) can be set in its context menu.
+      </para>
+
       <para> It is also possible to open separate log windows for individual modules.
         A log window for a compound module displays the log from all of its submodule tree.
         To open a log window, find the module in the module tree or the network display,
@@ -481,9 +600,9 @@
        with several inspectors open.
       </para>
       <picture file="pictures/Qtenv-with-inspectors.png" width="400">Qtenv with several floating inspectors open</picture>
-      <para>The following screenshots show various inspectors available in Qtenv.</para>
-      <picture file="pictures/Qtenv-outvector.png">Graphical inspector for cOutVector object</picture>
-      <picture file="pictures/Qtenv-histogram.png">Graphical for a histogram object</picture>
+      <!-- <para>The following screenshots show various inspectors available in Qtenv.</para> -->
+      <!-- <picture file="pictures/Qtenv-outvector.png">Graphical inspector for cOutVector object</picture> -->
+      <!-- <picture file="pictures/Qtenv-histogram.png">Graphical for a histogram object</picture> -->
     </sect2>
     <sect2>
       <title>Browsing the Registered Components</title>
@@ -565,7 +684,7 @@
           [["data-."]]
         </listitem>
         <listitem>
-          [[not className(cMessage) and byteLength({1500..})]] : Matches messages whose class is not cMessage and
+          [[not className(omnetpp::cMessage) and byteLength({1500..})]] : Matches messages whose class is not cMessage and
           byteLength is at least 1500 (only messages have a [["byteLength"]] attribute).
         </listitem>
         <listitem>
@@ -578,6 +697,10 @@
         Qtenv uses the [[cObject::forEachChild]] method to collect all objects from a tree recursively. If you
         have your own objects derived from [[cObject]], you should redefine the [[cObject::forEachChild]] to
         function correctly with an object search.
+      </note>
+      <note>
+        The class names have to be fully qualified, that is, they should contain the namespace(s) they are in,
+        regardless of the related setting in the ``Preferences dialog''.
       </note>
       <note>
         If you are debugging the simulation with a source level debugger, you may also use
@@ -595,8 +718,17 @@
     <sect2>
       <title>General</title>
       <picture file="pictures/Qtenv-pref-general.png">General settings</picture>
-      <para>The ``General'' tab can be used to set the default display and logging behavior. It is
-        possible to set how often the user interface will be updated during the simulation run.
+      <para>The ``General'' tab can be used to set the default user interface behavior. It is
+        possible to set whether namespaces should be stripped off the displayed class names, and
+        how often the user interface will be updated while the simulation runs in ``Express'' mode.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Logs</title>
+      <picture file="pictures/Qtenv-pref-logs.png">Logging settings</picture>
+      <para>The ``Logs'' tab can be used to set the default logging behavior, such as
+        the log level of modules that do not override it, the prefix format of event
+        banners, and the size limit of the log buffer.
       </para>
     </sect2>
     <sect2>
@@ -618,8 +750,8 @@
           Animate messages: Turns on/off the visualization of messages passing between modules.
         </listitem>
         <listitem>
-          Broadcast animation: Handles message broadcasts in a special way (messages sent within the
-          same event will be animated concurrently).
+          Broadcast animation: Handles message broadcasts in a special way (zero-time messages sent
+          within the same event will be animated concurrently).
         </listitem>
         <listitem>
           Show next event marker: Highlights the module which will receive the next event.
@@ -639,12 +771,12 @@
     <sect2>
       <title>Timeline and Animation Filtering</title>
       <picture file="pictures/Qtenv-pref-filtering.png">Filtering</picture>
-      <para>The ``Filtering'' page of the dialog serves two purposes. First, it lets you
+      <para> The ``Filtering'' page of the dialog serves two purposes. First, it lets you
         filter the contents of the ``Timeline''. You can hide all self-messages (timers),
         or all non-self messages, and you can further reduce the number of messages shown
         on the timeline by also hiding the non-animated messages, explained below.
       </para>
-      <para>Second, you can suppress the animation of certain messages. For example,
+      <para> Second, you can suppress the animation of certain messages. For example,
         when your focus is routing protocol messages, you can suppress the animation
         of data traffic.
       </para>
@@ -653,9 +785,8 @@
        ``Fields'' page of the ``Object Inspector'' when you focus it on the given
        message object.
       </para>
-      <note>When you select ``Exclude from Animation'' from the context menu
-        of a message object somewhere in the UI, it will add a new filter on this
-        dialog page.
+      <note> When you select ``Exclude Messages Like 'x' From Animation'' from the context menu
+        of a message object somewhere in the UI, it will add a new filter on this dialog page.
       </note>
 
       <para> For object names, wildcards ([["?"]], [["*"]]) are allowed. [["{a-exz}"]] matches any character in the range
@@ -698,6 +829,11 @@
           object having an "msg" attribute with the value "ACK"!).
         </listitem>
       </itemizedlist>
+
+      <para>There is also a per-module setting the models can adjust programatically
+        that can prevent any animations taking place when inspecting a given module
+        ([[setBuiltinAnimationsAllowed()]]).
+      </para>
     </sect2>
     <sect2>
       <title>Configuring Fonts</title>
@@ -714,9 +850,6 @@
         Inspectors are identified by their object names. If you have several components that share the same
         name (this is especially common for messages), you may end up with a lot of inspector windows when you
         start the simulation. In such cases, you may simply delete the [[.qtenvrc]] file.
-      </note>
-      <note>
-          Error messages generated by the Qtenv runtime environment are logged to the [[.qtenvlog]] file.
       </note>
     </sect2>
   </sect1>
@@ -748,18 +881,18 @@
       <para>The ``Object Navigator'' displays the full name and class name of each object
         ([[getFullName()]] and [[getClassName()]]), and also the ID for classes that have one
         ([[getId()]] on [[cMessage]] and [[cModule]]). When you hover with the mouse, the tooltip
-        displays the info string ([[info()]] method). The roots of the tree are the network module
-        ([[simulation.getSystemModule()]]) and the FES ([[simulation.getMessageQueue()]].
+        displays the info string ([[str()]] method). The roots of the tree are the network module
+        ([[simulation.getSystemModule()]]) and the FES ([[simulation.getFES()]].
         Child objects are enumerated with the help of the [[forEachChild()]] method.
       </para>
-      <para>In the ``Object Inspector'', the ``Contents'' page displays the full name,
-        class name and info string ([[getFullName()]], [[getClassName()]], [[info()]])
+      <para>The ``Object Inspector'' in  ``Children'' mode displays the full name,
+        class name and info string ([[getFullName()]], [[getClassName()]], [[str()]])
         of child objects enumerated using [[forEachChild()]]. [[forEachChild()]] can only
         enumerate objects that are subclassed from [[cObject]]. If you want your
         non-[[cObject]] variables (e.g. primitive types or STL containers) to appear
-        in the ``Contents'' list, you need to wrap them into [[cObject]]. The [[WATCH()]]
+        in the ``Children'' tree, you need to wrap them into [[cObject]]. The [[WATCH()]]
         macro does exactly that: it creates an object wrapper that displays the
-        variable's value via the wrapper's [[info()]] method. There are watch macros
+        variable's value via the wrapper's [[str()]] method. There are watch macros
         for STL contains as well, they present the wrapped object to Qtenv in a more
         structured way, via custom class descriptors (cClassDescriptor, see below).
       </para>
@@ -768,7 +901,7 @@
         that the module class maintains a list of owned objects, and [[cObject]]
         automatically joins that list.
       </para>
-      <para> The ``Object Inspector'''s ``Fields'' page display an object's fields by
+      <para> The ``Object Inspector'' displays an object's fields by
         making use of the class descriptor ([[cClassDescriptor]]) for that class.
         Class descriptors are automatically generated for new classes by the message compiler.
         Class descriptors for the &Omnetpp; library classes are also generated by the
@@ -785,7 +918,7 @@
       <para> The message/packet traffic page of ``Log Viewer'' shows information based
         on stored copies of sent messages (the copy is created using [[dup()]]), and stored
         sendhop information. The ``Name'' column displays the message name ([[getFullName()]]).
-        However, the ``Info'' column does not display the string returned from [[info()]],
+        However, the ``Info'' column does not display the string returned from [[str()]],
         but rather, strings produced by a [[cMessagePrinter]] object. Message printers
         can be dynamically registered.
       </para>
@@ -794,7 +927,7 @@
       <title>During Simulation</title>
       <para> Qtenv sets up a network by calling [[simulation.setupNetwork()]], then
         immediately proceeds to invoke [[callInitialize()]] on the root module.
-        During simulation, [[simulation.selectNextModule()]] and [[simulation.doOneEvent()]]
+        During simulation, [[simulation.takeNextEvent()]] and [[simulation.executeEvent()]]
         are called iteratively. When the simulation ends, Qtenv invokes [[callFinish()]]
         on the root module; the same happens when you select the ``Conclude Simulation''
         menu item. The purpose of [[callFinish()]] is to record summary statistics
@@ -842,29 +975,23 @@
         </listitem>
         <listitem>
           [[-r run-number]]: It has the same effect as (but takes priority over) the ``qtenv-default-run=''
-          INI file configuration option.
+          INI file configuration option. Run filters are also accepted. <!-- see details in some other chapter/section -->
+          If there is more than one matching run, they are grouped to the top of the combobox.
         </listitem>
       </itemizedlist>
     </sect2>
     <sect2>
       <title>Environment Variables</title>
       <itemizedlist>
-        <listitem>[[OMNETPP_QTENV_DIR]]: In case of nonstandard installation, it may be necessary to
-          set this environment variable to point to [[&lt;omnetpp&gt;/src/qtenv]]
-          so that Qtenv can find its parts written in Tcl.</listitem>
         <listitem>[[OMNETPP_IMAGE_PATH]]: It controls where Qtenv will load images for network
           graphics (modules, background, etc.) from. The value should be a semicolon-separated
           list of directories, but on non-Windows systems, the colon is also accepted as separator.
-          The default is [[&lt;omnetpp&gt;/images;./images]], that is, by default Qtenv looks
-          into the [[images]] folder of your installation, and [[images]] folder
-          in the working directory of the simulation. The directories will be scanned recursively,
+          The default is [[./bitmaps;./images;&lt;omnetpp&gt;/images]], that is, by default Qtenv
+          looks into the [[bitmaps]] and [[images]] folder of the simulation, and [[images]] folder
+          in the working directory of your installation. The directories will be scanned recursively,
           and subdirectory names become part of the icon name; for example, if an [[images/]] directory
           is listed, the file [[images/misc/foo.png]] will be registered as icon [[misc/foo]].
-          PNG an GIF files are accepted.</listitem>
-        <listitem>[[OMNETPP_PLUGIN_PATH]]: Certain aspects of Qtenv can be extended with plugins written in Tcl.
-          The path where such plugins are looked for is taken from this environment variable.
-          It is expected to contain a semicolon-separated list of directories, and defaults to [[./plugins]].
-          (Again, colon is also accepted as separator on non-Windows systems.)</listitem>
+          PNG, JPG and GIF files are accepted.</listitem>
       </itemizedlist>
     </sect2>
     <sect2>
@@ -883,14 +1010,6 @@
         <listitem>
           [[qtenv-default-run]]: Specifies which run of the selected configuration Qtenv should set up
           after startup. If there is no such option, Qtenv will ask.
-        </listitem>
-        <listitem>
-          [[qtenv-image-path]]: Qtenv will append this value to the value of the [[OMNETPP_IMAGE_PATH]]
-          environment variable to determine the list of directories to load images from.
-        </listitem>
-        <listitem>
-          [[qtenv-plugin-path]]: Qtenv will append this value to the value of the [[OMNETPP_PLUGIN_PATH]]
-          or its built-in default value to get the list of directories to be scanned for plugins written in Tcl.
         </listitem>
       </itemizedlist>
       <para>All other Qtenv settings can be changed via the GUI, and are saved into the [[.qtenvrc]] file
