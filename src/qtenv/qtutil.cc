@@ -78,8 +78,8 @@ void cFindByPathVisitor::visit(cObject *obj)
 
     // found it?
     if (strcmp(fullPath, objPath.c_str()) == 0
-        && (!className || (getObjectShortTypeName(obj) == className))
-        && (objectId == -1 || idMatches(obj)))
+        && (!className || (getObjectShortTypeName(obj, STRIPNAMESPACE_NONE) == className))
+        && (objectId == -1 || objectId == getObjectId(obj)))
     {
         // found, collect it
         addPointer(obj);
@@ -90,16 +90,6 @@ void cFindByPathVisitor::visit(cObject *obj)
 
     // search recursively
     obj->forEachChild(this);
-}
-
-bool cFindByPathVisitor::idMatches(cObject *obj)
-{
-    // only messages and components have IDs
-    if (cMessage *msg = dynamic_cast<cMessage *>(obj))
-        return msg->getId() == objectId;
-    if (cComponent *component = dynamic_cast<cComponent *>(obj))
-        return component->getId() == objectId;
-    return true;
 }
 
 // =======================================================================

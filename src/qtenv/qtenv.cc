@@ -357,7 +357,7 @@ void Qtenv::storeInspectors(bool closeThem)
 
             localPrefs->beginGroup(QString("Inspector-") + QString::number(index));
             localPrefs->setValue("object", obj->getFullPath().c_str());
-            localPrefs->setValue("classname", getObjectShortTypeName(obj));
+            localPrefs->setValue("classname", getObjectShortTypeName(obj, STRIPNAMESPACE_NONE));
             localPrefs->setValue("id", getObjectId(obj));
             localPrefs->setValue("type", insp->getType());
             localPrefs->setValue("geom", insp->geometry());
@@ -414,11 +414,11 @@ void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
             }
 
             if (object == oldObject->getFullPath().c_str()
-                    && classname == getObjectShortTypeName(oldObject)
+                    && classname == getObjectShortTypeName(oldObject, STRIPNAMESPACE_NONE)
                     && objectId == getObjectId(oldObject)
                     && type == inspector->getType()) {
                 localPrefs->setValue("object", newObject->getFullPath().c_str());
-                localPrefs->setValue("classname", getObjectShortTypeName(newObject));
+                localPrefs->setValue("classname", getObjectShortTypeName(newObject, STRIPNAMESPACE_NONE));
                 localPrefs->setValue("id", getObjectId(newObject));
             }
 

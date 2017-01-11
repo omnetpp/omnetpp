@@ -204,7 +204,7 @@ QString Inspector::getFullPrefKey(const QString& pref, bool topLevel)
 {
     return "InspectorPreferences/type" + QString::number(type)
             + (topLevel ? "-toplevel" : "-embedded") + "-"
-            + (object ? getObjectShortTypeName(object) : "NULL") + "-"
+            + (object ? getObjectShortTypeName(object, STRIPNAMESPACE_NONE) : "NULL") + "-"
             + pref;
 }
 

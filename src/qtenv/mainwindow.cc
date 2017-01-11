@@ -720,7 +720,7 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
     filters = filters.trimmed();
     if (!filters.isEmpty())
         filters += "\n";
-    filters += namePattern + " and className(" + getObjectShortTypeName(msg) + ")\n";
+    filters += namePattern + " and className(" + getObjectShortTypeName(msg, STRIPNAMESPACE_NONE) + ")\n";
     env->setSilentEventFilters(filters.toStdString().c_str());
 
     env->callRefreshInspectors();
