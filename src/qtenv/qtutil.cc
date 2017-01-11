@@ -106,13 +106,29 @@ bool cFindByPathVisitor::idMatches(cObject *obj)
 
 #define TRY2(CODE)    try { CODE; } catch (std::exception& e) { printf("<!> Warning: %s\n", e.what()); }
 
+
+int getObjectId(cObject *object)
+{
+    int id = -1;
+    if (cMessage *msg = dynamic_cast<cMessage *>(object))
+        id = msg->getId();
+    if (cComponent *component = dynamic_cast<cComponent *>(object))
+        id = component->getId();
+    return id;
+}
+
 const QString& stripNamespace(const char *className)
+{
+    return stripNamespace(className, getQtenv()->opt->stripNamespace);
+}
+
+const QString& stripNamespace(const char *className, StripNamespace stripMode)
 {
     static std::unordered_map<const char *, QString> allStrippedCache;
     static std::unordered_map<const char *, QString> omnetppStrippedCache;
     static std::unordered_map<const char *, QString> noneStrippedCache;
 
-    switch (getQtenv()->opt->stripNamespace) {
+    switch (stripMode) {
         case STRIPNAMESPACE_ALL: {
             auto it = allStrippedCache.find(className);
             if (it != allStrippedCache.end())
@@ -157,20 +173,16 @@ const QString& stripNamespace(const char *className)
     }
 }
 
-int getObjectId(cObject *object) {
-    int id = -1;
-    if (cMessage *msg = dynamic_cast<cMessage *>(object))
-        id = msg->getId();
-    if (cComponent *component = dynamic_cast<cComponent *>(object))
-        id = component->getId();
-    return id;
-}
-
 const QString &getObjectShortTypeName(cObject *object)
 {
+    return getObjectShortTypeName(object, getQtenv()->opt->stripNamespace);
+}
+
+const QString &getObjectShortTypeName(cObject *object, StripNamespace stripMode)
+{
     if (cComponent *component = dynamic_cast<cComponent *>(object))
-        TRY2(return stripNamespace(component->getComponentType()->getName()));
-    return stripNamespace(object->getClassName());
+        TRY2(return stripNamespace(component->getComponentType()->getName(), stripMode));
+    return stripNamespace(object->getClassName(), stripMode);
 }
 
 const char *getObjectFullTypeName(cObject *object)

@@ -67,13 +67,6 @@ enum LayouterChoice
     LAYOUTER_AUTO
 };
 
-enum StripNamespace
-{
-    STRIPNAMESPACE_NONE,
-    STRIPNAMESPACE_OMNETPP,
-    STRIPNAMESPACE_ALL
-};
-
 enum RunMode {
     RUNMODE_NORMAL = 1,
     RUNMODE_FAST = 2,

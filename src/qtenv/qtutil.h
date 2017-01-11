@@ -32,6 +32,13 @@ class cComponent;
 
 namespace qtenv {
 
+enum StripNamespace
+{
+    STRIPNAMESPACE_NONE,
+    STRIPNAMESPACE_OMNETPP,
+    STRIPNAMESPACE_ALL
+};
+
 class LogInspector;
 class ModuleInspector;
 
@@ -76,9 +83,11 @@ class QTENV_API cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectOb
 //
 // Utility functions:
 //
-const QString& stripNamespace(const char *className);
 int getObjectId(cObject *object);
-const QString &getObjectShortTypeName(cObject *object);
+const QString& stripNamespace(const char *className); // uses the current setting in getQtenv()->opt
+const QString& stripNamespace(const char *className, StripNamespace stripMode);
+const QString &getObjectShortTypeName(cObject *object); // uses the current setting in getQtenv()->opt
+const QString &getObjectShortTypeName(cObject *object, StripNamespace stripMode);
 const char *getObjectFullTypeName(cObject *object);
 
 QString makeObjectTooltip(cObject *obj);
