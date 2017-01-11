@@ -1002,20 +1002,27 @@ bool Qtenv::doRunSimulationExpress()
 
         getSimulation()->executeEvent(event);
 
-        if ((getSimulation()->getEventNumber()&0xff) == 0 && elapsed(opt->updateFreqExpress, last_update)) {
-            speedometer.beginNewInterval();  // should precede updateStatusDisplay()
-            if (opt->autoupdateInExpress) {
-                callRefreshDisplay();
-                callRefreshInspectors();
-            }
-            updateStatusDisplay();
-            QCoreApplication::processEvents();
-            resetElapsedTime(last_update);  // exclude UI update time [bug #52]
-            if (runMode != RUNMODE_EXPRESS) {
-                result = true;  // should continue, but in a different mode
-                break;
+        // only on every 256. event to make it fast
+        if ((getSimulation()->getEventNumber()&0xff) == 0) {
+            // to make the stopDialog more responsive
+            QApplication::processEvents();
+
+            if (elapsed(opt->updateFreqExpress, last_update)) {
+                speedometer.beginNewInterval();  // should precede updateStatusDisplay()
+                if (opt->autoupdateInExpress) {
+                    callRefreshDisplay();
+                    callRefreshInspectors();
+                }
+                updateStatusDisplay();
+                QApplication::processEvents();
+                resetElapsedTime(last_update);  // exclude UI update time [bug #52]
+                if (runMode != RUNMODE_EXPRESS) {
+                    result = true;  // should continue, but in a different mode
+                    break;
+                }
             }
         }
+
         checkTimeLimits();
     } while (!stopSimulationFlag &&
              (runUntil.time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < runUntil.time) &&
