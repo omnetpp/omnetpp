@@ -709,11 +709,10 @@ void MainWindow::updateNetworkRunDisplay()
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
 {
-    // TODO must be reviewed
     QString namePattern = msg->getFullName();
-    namePattern.replace(QRegExp("[0-9]+"), "*");
-    namePattern.replace(QRegExp("(?!\\c)"), "?");  // sanitize: replace nonprintable chars with '?'
-    namePattern.replace(QRegExp("[\"\\]"), "?");  // sanitize: replace quotes (") and backslashes with '?'
+    namePattern.replace(QRegularExpression("[0-9]+"), "*"); // replace indices and such with '*' - hence the "messages like this" meaning
+    namePattern.replace(QRegularExpression("[^[:print:]]"), "?");  // sanitize: replace nonprintable chars with '?'
+    namePattern.replace(QRegularExpression("[\"\\\\]"), "?");  // sanitize: replace quotes (") and backslashes with '?'
     if (namePattern.contains(' '))  // must be quoted if contains spaces
         namePattern = "\"" + namePattern + "\"";
 
