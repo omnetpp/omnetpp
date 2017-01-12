@@ -916,6 +916,7 @@ void MainWindow::restoreGeometry()
 
     // initialize status bar
     showStatusDetails = getQtenv()->getPref("display-statusdetails", true).value<bool>();
+    ui->actionStatusDetails->setChecked(showStatusDetails);
     ui->nextEventLabel->setVisible(showStatusDetails);
     ui->nextModuleLabel->setVisible(showStatusDetails);
     ui->nextTimeLabel->setVisible(showStatusDetails);

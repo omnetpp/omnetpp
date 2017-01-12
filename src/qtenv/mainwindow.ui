@@ -772,6 +772,9 @@ Total number of messages created since start of the simulation</string>
    </property>
   </action>
   <action name="actionStatusDetails">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;Status Details</string>
    </property>
