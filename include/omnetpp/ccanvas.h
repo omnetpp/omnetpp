@@ -197,7 +197,9 @@ class SIM_API cFigure : public cOwnedObject
         //TODO enum Alignment { ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER }; // note: multi-line text is always left-aligned in tkpath
 
         /**
-         * @brief Homogeneous 2D transformation matrix (last row is not stored).
+         * @brief Homogeneous 2D transformation matrix.
+         *
+         * Note that the last row is not stored.
          * <pre>
          *  | a  c  t1 |
          *  | b  d  t2 |
@@ -3100,8 +3102,38 @@ class SIM_API cCanvas : public cOwnedObject
 
         /** @name Animation. */
         //@{
-        virtual void setAnimationSpeed(double animationSpeed, const cObject *source);  // stored in (object,speed) map; the slowest one (=minimum) will take effect (this is just a request); 0 and negative values remove setting
-        virtual void holdSimulationFor(double animationTimeDelta);  // just animate (no event processing) for the given interval from the current animation time; simulation time does not progress during this interval
+        /**
+         * Stores an animation speed request associated with the given source
+         * object. Specify zero or a negative speed value to clear (withdraw)
+         * the animation speed request.
+         *
+         * Animation speed is the speed at which animation time progresses
+         * compared to simulation time (outside "hold" intervals where the
+         * simulation does not progress). Animation speed requests might be
+         * updated at any time during simulation.
+         *
+         * It is up to the runtime GUI how much it will respect the setting,
+         * and how it will derive the global animation speed from multiple
+         * animation speed requests coming from different sources.
+         *
+         * @see cEnvir::getAnimationSpeed(), cEnvir::getAnimationTime()
+         */
+        virtual void setAnimationSpeed(double animationSpeed, const cObject *source);
+
+        /**
+         * Requests a "hold" interval of the given length, starting at the
+         * current animation time. Simulation is suspended (simulation time
+         * does not progress, and no events are processed) during a hold
+         * interval, thus it can be used to animate actions that take zero
+         * simulation time.
+         *
+         * If a hold request is issued when there is one already in progress,
+         * the current hold will be extended as needed to incorporate the
+         * request.
+         *
+         * @see cEnvir::getRemainingAnimationHoldTime(), cEnvir::getAnimationTime()
+         */
+        virtual void holdSimulationFor(double animationTimeDelta);
         //@}
 
 };
