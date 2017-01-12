@@ -474,6 +474,19 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
     CC << "#  pragma warning(disable:4065)\n";
     CC << "#endif\n\n";
 
+    CC << "#if defined(__clang__)\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wshadow\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wconversion\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wunused-parameter\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wc++98-compat\"\n";
+    CC << "#elif defined(__GNUC__)\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wshadow\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wconversion\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wunused-parameter\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wfloat-conversion\"\n";
+    CC << "#endif\n\n";
+
     CC << "#include <iostream>\n";
     CC << "#include <sstream>\n";
     CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
@@ -993,7 +1006,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << " *   public:\n";
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
             if (info.keyword == "message" || info.keyword == "packet") {
-                H << " *     " << info.realmsgclass << "(const char *name=nullptr, int kind=0) : " << info.msgclass << "(name,kind) {}\n";
+                H << " *     " << info.realmsgclass << "(const char *name=nullptr, short kind=0) : " << info.msgclass << "(name,kind) {}\n";
             }
             else {
                 H << " *     " << info.realmsgclass << "(const char *name=nullptr) : " << info.msgclass << "(name) {}\n";
@@ -1015,7 +1028,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             H << " * The following should go into a .cc (.cpp) file:\n";
             H << " *\n";
             H << " * <pre>\n";
-            H << " * Register_Class(" << info.realmsgclass << ");\n";
+            H << " * Register_Class(" << info.realmsgclass << ")\n";
             H << " * </pre>\n";
         }
     }
@@ -1068,7 +1081,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     }
     if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
         if (info.keyword == "message" || info.keyword == "packet") {
-            H << "    " << info.msgclass << "(const char *name=nullptr, int kind=0);\n";
+            H << "    " << info.msgclass << "(const char *name=nullptr, short kind=0);\n";
         }
         else {
             H << "    " << info.msgclass << "(const char *name=nullptr);\n";
@@ -1131,7 +1144,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
     if (!info.gap) {
         if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
-            CC << "Register_Class(" << info.msgclass << ");\n\n";
+            CC << "Register_Class(" << info.msgclass << ")\n\n";
         }
 
         H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
@@ -1142,7 +1155,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         if (info.keyword == "message" || info.keyword == "packet") {
             // CAREFUL when assigning values to existing members gets implemented!
             // The msg kind passed to the ctor should take priority!!!
-            CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name, int kind) : ::" << info.msgbaseclass << "(name,kind)\n";
+            CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name, short kind) : ::" << info.msgbaseclass << "(name,kind)\n";
         }
         else {
             if (info.msgbaseclass == "") {
@@ -1575,7 +1588,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "};\n\n";
 
     // register class
-    CC << "Register_ClassDescriptor(" << info.msgdescclass << ");\n\n";
+    CC << "Register_ClassDescriptor(" << info.msgdescclass << ")\n\n";
 
     // ctor, dtor
     size_t fieldcount = info.fieldlist.size();
@@ -2074,7 +2087,7 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldlist.begin(); it != enumInfo.fieldlist.end(); ++it) {
         CC << "    e->insert(" << it->name << ", \"" << it->name << "\");\n";
     }
-    CC << ");\n\n";
+    CC << ")\n\n";
 }
 
 std::string MsgCppGenerator::prefixWithNamespace(const std::string& name)

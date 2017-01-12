@@ -6,6 +6,17 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.1 Preview 3 (January 2016)
+------------------------------------
+
+Build:
+
+ - omnetpp.h is now treated as a 'system header' so it will no longer generate
+   warnings in case a model specifies more stringent checking for the compiler.
+
+ - The message compiler now generates code which produces no warnings even
+   when -Wall -Wextra -Wpedantic is used as a compiler command line option.
+
 OMNeT++ 5.1 Preview 2 (December 2016)
 -------------------------------------
 

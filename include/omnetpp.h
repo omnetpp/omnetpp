@@ -18,6 +18,13 @@
 #ifndef __OMNETPP_H
 #define __OMNETPP_H
 
+// make this a system header and supress warnings
+#if defined(__clang__)
+#pragma clang system_header
+#elif defined(__GNUC__)
+#pragma GCC system_header
+#endif
+
 #include "omnetpp/carray.h"
 #include "omnetpp/cboolparimpl.h"
 #include "omnetpp/cobjectfactory.h"
