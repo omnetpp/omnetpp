@@ -198,6 +198,7 @@ void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
 
 void GenericObjectInspector::onDataChanged()
 {
+    getQtenv()->callRefreshDisplaySafe();
     getQtenv()->callRefreshInspectors();
 }
 

@@ -22,6 +22,8 @@
 #include "qtutil.h"
 #include "common/stringutil.h"
 
+#define emit
+
 namespace omnetpp {
 
 using namespace common;
@@ -300,7 +302,7 @@ QVariant GenericObjectTreeModel::data(const QModelIndex& index, int role) const
 bool GenericObjectTreeModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     bool success = static_cast<TreeNode *>(index.internalPointer())->setData(value, role);
-    dataChanged(index, index);
+    emit dataChanged(index, index);
     return success;
 }
 
@@ -762,8 +764,7 @@ bool FieldNode::isEditable()
 bool FieldNode::setData(const QVariant& value, int role)
 {
     return containingDesc
-           ? containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0,
-            value.toString().toStdString().c_str())
+           ? containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str())
            : false;
 }
 
