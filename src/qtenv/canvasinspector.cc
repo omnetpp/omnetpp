@@ -82,11 +82,11 @@ QToolBar *CanvasInspector::createToolbar()
     toolbar->addSeparator();
 
     // canvas-specfic
-    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Redraw (Ctrl+R)", this, SLOT(redraw()));
+    QAction *action = toolbar->addAction(QIcon(":/tools/redraw"), "Redraw (Ctrl+R)", this, SLOT(redraw()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in (Ctrl+Plus)", this, SLOT(zoomIn()));
+    action = toolbar->addAction(QIcon(":/tools/zoomin"), "Zoom in (Ctrl+Plus)", this, SLOT(zoomIn()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out (Ctrl+Minus)", this, SLOT(zoomOut()));
+    action = toolbar->addAction(QIcon(":/tools/zoomout"), "Zoom out (Ctrl+Minus)", this, SLOT(zoomOut()));
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
 
     toolbar->setAutoFillBackground(true);

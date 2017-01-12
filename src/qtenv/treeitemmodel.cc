@@ -142,7 +142,7 @@ QVariant TreeItemModel::data(const QModelIndex& index, int role) const
         return QVariant(text);
     }
     else if (role == Qt::DecorationRole) {
-        return QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(node)));
+        return QVariant(QIcon(":/objects/" + getObjectIcon(node)));
     }
     else if (role == Qt::UserRole) {
         // returning the raw cObject* - needed to preserve object tree node expansion state

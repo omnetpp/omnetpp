@@ -445,7 +445,7 @@ QVariant TreeNode::getDefaultObjectData(cObject *object, int role)
 {
     switch (role) {
         case Qt::DecorationRole:
-            return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(object))) : QVariant();
+            return object ? QVariant(QIcon(":/objects/" + getObjectIcon(object))) : QVariant();
 
         case Qt::ToolTipRole:
             return opp_nulltoempty(object->getDescriptor()->getProperty("hint"));
@@ -670,7 +670,7 @@ QVariant FieldNode::data(int role)
                 : nullptr;
 
     if ((role == Qt::DecorationRole) && objectCasted) {
-        return object ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(objectCasted))) : QVariant();
+        return object ? QVariant(QIcon(":/objects/" + getObjectIcon(objectCasted))) : QVariant();
     }
 
     // the rest is for the regular, non-root nodes
@@ -942,7 +942,7 @@ QVariant ArrayElementNode::data(int role)
             return indexEquals + info + value + editable;
 
         case Qt::DecorationRole:
-            return fieldObjectPointer ? QVariant(QIcon(":/objects/icons/objects/" + getObjectIcon(fieldObjectPointer))) : QVariant();
+            return fieldObjectPointer ? QVariant(QIcon(":/objects/" + getObjectIcon(fieldObjectPointer))) : QVariant();
 
         case Qt::EditRole:
             return value;

@@ -136,24 +136,24 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         addTopLevelToolBarActions(toolBar);
 
         toolBar->addSeparator();
-        toolBar->addAction(QIcon(":/tools/icons/tools/copy.png"), "Copy selected text to clipboard (Ctrl+C)",
+        toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)",
                            textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
-        toolBar->addAction(QIcon(":/tools/icons/tools/find.png"), "Find string in window (Ctrl+F)",
+        toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
                            this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
-        toolBar->addAction(QIcon(":/tools/icons/tools/save.png"), "Save window contents to file",
+        toolBar->addAction(QIcon(":/tools/save"), "Save window contents to file",
                            this, SLOT(saveContent()));
-        toolBar->addAction(QIcon(":/tools/icons/tools/filter.png"), "Filter window contents (Ctrl+H)",
+        toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
                            this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
 
         toolBar->addSeparator();
         addModeActions(toolBar);
 
         toolBar->addSeparator();
-        runUntilAction = toolBar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this,
+        runUntilAction = toolBar->addAction(QIcon(":/tools/mrun"), "Run until next event in this module", this,
                                             SLOT(runUntil()));
         runUntilAction->setCheckable(true);
 
-        fastRunUntilAction = toolBar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)",
+        fastRunUntilAction = toolBar->addAction(QIcon(":/tools/mfast"), "Fast run until next event in this module (Ctrl+F4)",
                                                 this, SLOT(fastRunUntil()));
         fastRunUntilAction->setCheckable(true);
         fastRunUntilAction->setShortcut(Qt::CTRL + Qt::Key_F4);
@@ -167,11 +167,11 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         toolBar->addWidget(stretch);
     }
     else {
-        toolBar->addAction(QIcon(":/tools/icons/tools/copy.png"), "Copy selected text to clipboard (Ctrl+C)",
+        toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)",
                            textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
-        toolBar->addAction(QIcon(":/tools/icons/tools/find.png"), "Find string in window (Ctrl+F)",
+        toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
                            this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
-        toolBar->addAction(QIcon(":/tools/icons/tools/filter.png"), "Filter window contents (Ctrl+H)",
+        toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
                            this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
 
         addModeActions(toolBar);
@@ -191,14 +191,14 @@ void LogInspector::addModeActions(QToolBar *toolBar)
 {
     toMessagesModeAction = new QAction(toolBar);
     toMessagesModeAction->setCheckable(true);
-    toMessagesModeAction->setIcon(QIcon(":/tools/icons/tools/pkheader.png"));
+    toMessagesModeAction->setIcon(QIcon(":/tools/pkheader"));
     toMessagesModeAction->setText("Show message/packet traffic");
     connect(toMessagesModeAction, SIGNAL(triggered()), this, SLOT(toMessagesMode()));
     toolBar->addAction(toMessagesModeAction);
 
     toLogModeAction = new QAction(toolBar);
     toLogModeAction->setCheckable(true);
-    toLogModeAction->setIcon(QIcon(":/tools/icons/tools/log.png"));
+    toLogModeAction->setIcon(QIcon(":/tools/log"));
     toLogModeAction->setText("Show log");
     connect(toLogModeAction, SIGNAL(triggered()), this, SLOT(toLogMode()));
     toolBar->addAction(toLogModeAction);

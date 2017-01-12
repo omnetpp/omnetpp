@@ -1,96 +1,95 @@
 <RCC>
     <qresource prefix="/logo">
-        <file>icons/logo/logo128m.png</file>
+        <file alias="logo128m">icons/logo/logo128m.png</file>
     </qresource>
     <qresource prefix="/objects">
-        <file>icons/objects/canvas_vs.png</file>
-        <file>icons/objects/chan_vs.png</file>
-        <file>icons/objects/channel.png</file>
-        <file>icons/objects/cogwheel_vs.png</file>
-        <file>icons/objects/compound_vs.png</file>
-        <file>icons/objects/container_vs.png</file>
-        <file>icons/objects/defaulticon.png</file>
-        <file>icons/objects/fes.png</file>
-        <file>icons/objects/figure_vs.png</file>
-        <file>icons/objects/gate_vs.png</file>
-        <file>icons/objects/message_vs.png</file>
-        <file>icons/objects/node_xs.png</file>
-        <file>icons/objects/none_vs.png</file>
-        <file>icons/objects/outvect_vs.png</file>
-        <file>icons/objects/param_vs.png</file>
-        <file>icons/objects/placeholder_vs.png</file>
-        <file>icons/objects/queue_vs.png</file>
-        <file>icons/objects/simple_vs.png</file>
-        <file>icons/objects/stat_vs.png</file>
-        <file>icons/objects/unknown.png</file>
+        <file alias="canvas_vs">icons/objects/canvas_vs.png</file>
+        <file alias="chan_vs">icons/objects/chan_vs.png</file>
+        <file alias="channel">icons/objects/channel.png</file>
+        <file alias="cogwheel_vs">icons/objects/cogwheel_vs.png</file>
+        <file alias="compound_vs">icons/objects/compound_vs.png</file>
+        <file alias="container_vs">icons/objects/container_vs.png</file>
+        <file alias="defaulticon">icons/objects/defaulticon.png</file>
+        <file alias="fes">icons/objects/fes.png</file>
+        <file alias="figure_vs">icons/objects/figure_vs.png</file>
+        <file alias="gate_vs">icons/objects/gate_vs.png</file>
+        <file alias="message_vs">icons/objects/message_vs.png</file>
+        <file alias="node_xs">icons/objects/node_xs.png</file>
+        <file alias="none_vs">icons/objects/none_vs.png</file>
+        <file alias="outvect_vs">icons/objects/outvect_vs.png</file>
+        <file alias="param_vs">icons/objects/param_vs.png</file>
+        <file alias="placeholder_vs">icons/objects/placeholder_vs.png</file>
+        <file alias="queue_vs">icons/objects/queue_vs.png</file>
+        <file alias="simple_vs">icons/objects/simple_vs.png</file>
+        <file alias="stat_vs">icons/objects/stat_vs.png</file>
+        <file alias="unknown">icons/objects/unknown.png</file>
     </qresource>
     <qresource prefix="/tools">
-        <file>icons/tools/3dscene.png</file>
-        <file>icons/tools/apply.png</file>
-        <file>icons/tools/arrowhead.png</file>
-        <file>icons/tools/as.png</file>
-        <file>icons/tools/asgraphics.png</file>
-        <file>icons/tools/asobject.png</file>
-        <file>icons/tools/asoutput.png</file>
-        <file>icons/tools/back.png</file>
-        <file>icons/tools/config.png</file>
-        <file>icons/tools/copy.png</file>
-        <file>icons/tools/copyptr.png</file>
-        <file>icons/tools/cut.png</file>
-        <file>icons/tools/debugger.png</file>
-        <file>icons/tools/down_vs.png</file>
-        <file>icons/tools/express.png</file>
-        <file>icons/tools/fast.png</file>
-        <file>icons/tools/filter.png</file>
-        <file>icons/tools/find.png</file>
-        <file>icons/tools/findobj.png</file>
-        <file>icons/tools/finish.png</file>
-        <file>icons/tools/forward.png</file>
-        <file>icons/tools/horizontal.png</file>
-        <file>icons/tools/info.png</file>
-        <file>icons/tools/inspectas.png</file>
-        <file>icons/tools/layers.png</file>
-        <file>icons/tools/loadned.png</file>
-        <file>icons/tools/log.png</file>
-        <file>icons/tools/mfast.png</file>
-        <file>icons/tools/modnames.png</file>
-        <file>icons/tools/modulegraphics.png</file>
-        <file>icons/tools/modtype.png</file>
-        <file>icons/tools/mrun.png</file>
-        <file>icons/tools/network.png</file>
-        <file>icons/tools/newnet.png</file>
-        <file>icons/tools/newrun.png</file>
-        <file>icons/tools/omnetpp.ico</file>
-        <file>icons/tools/parent.png</file>
-        <file>icons/tools/paste.png</file>
-        <file>icons/tools/pkheader.png</file>
-        <file>icons/tools/props.png</file>
-        <file>icons/tools/recordeventlog.png</file>
-        <file>icons/tools/redo.png</file>
-        <file>icons/tools/redraw.png</file>
-        <file>icons/tools/reset.png</file>
-        <file>icons/tools/restart.png</file>
-        <file>icons/tools/revert.png</file>
-        <file>icons/tools/run.png</file>
-        <file>icons/tools/save.png</file>
-        <file>icons/tools/step.png</file>
-        <file>icons/tools/stop.png</file>
-        <file>icons/tools/tree.png</file>
-        <file>icons/tools/undo.png</file>
-        <file>icons/tools/until.png</file>
-        <file>icons/tools/vertical.png</file>
-        <file>icons/tools/zoomin.png</file>
-        <file>icons/tools/zoomout.png</file>
-        <file>icons/tools/treemode_auto.png</file>
-        <file>icons/tools/treemode_children.png</file>
-        <file>icons/tools/treemode_essentials.png</file>
-        <file>icons/tools/treemode_flat.png</file>
-        <file>icons/tools/treemode_grouped.png</file>
-        <file>icons/tools/treemode_inher.png</file>
-        <file>icons/tools/treemode_packet.png</file>
-        <file>icons/tools/filmstrip.png</file>
-        <file>icons/tools/camera.png</file>
-        <file>icons/tools/recordvideo.png</file>
-        <file>icons/tools/rebuild.png</file>
+        <file alias="3dscene">icons/tools/3dscene.png</file>
+        <file alias="apply">icons/tools/apply.png</file>
+        <file alias="arrowhead">icons/tools/arrowhead.png</file>
+        <file alias="as">icons/tools/as.png</file>
+        <file alias="asgraphics">icons/tools/asgraphics.png</file>
+        <file alias="asobject">icons/tools/asobject.png</file>
+        <file alias="asoutput">icons/tools/asoutput.png</file>
+        <file alias="back">icons/tools/back.png</file>
+        <file alias="config">icons/tools/config.png</file>
+        <file alias="copy">icons/tools/copy.png</file>
+        <file alias="copyptr">icons/tools/copyptr.png</file>
+        <file alias="cut">icons/tools/cut.png</file>
+        <file alias="debugger">icons/tools/debugger.png</file>
+        <file alias="down_vs">icons/tools/down_vs.png</file>
+        <file alias="express">icons/tools/express.png</file>
+        <file alias="fast">icons/tools/fast.png</file>
+        <file alias="filter">icons/tools/filter.png</file>
+        <file alias="find">icons/tools/find.png</file>
+        <file alias="findobj">icons/tools/findobj.png</file>
+        <file alias="finish">icons/tools/finish.png</file>
+        <file alias="forward">icons/tools/forward.png</file>
+        <file alias="horizontal">icons/tools/horizontal.png</file>
+        <file alias="info">icons/tools/info.png</file>
+        <file alias="inspectas">icons/tools/inspectas.png</file>
+        <file alias="layers">icons/tools/layers.png</file>
+        <file alias="loadned">icons/tools/loadned.png</file>
+        <file alias="log">icons/tools/log.png</file>
+        <file alias="mfast">icons/tools/mfast.png</file>
+        <file alias="modnames">icons/tools/modnames.png</file>
+        <file alias="modulegraphics">icons/tools/modulegraphics.png</file>
+        <file alias="modtype">icons/tools/modtype.png</file>
+        <file alias="mrun">icons/tools/mrun.png</file>
+        <file alias="network">icons/tools/network.png</file>
+        <file alias="newnet">icons/tools/newnet.png</file>
+        <file alias="newrun">icons/tools/newrun.png</file>
+        <file alias="parent">icons/tools/parent.png</file>
+        <file alias="paste">icons/tools/paste.png</file>
+        <file alias="pkheader">icons/tools/pkheader.png</file>
+        <file alias="props">icons/tools/props.png</file>
+        <file alias="recordeventlog">icons/tools/recordeventlog.png</file>
+        <file alias="redo">icons/tools/redo.png</file>
+        <file alias="redraw">icons/tools/redraw.png</file>
+        <file alias="reset">icons/tools/reset.png</file>
+        <file alias="restart">icons/tools/restart.png</file>
+        <file alias="revert">icons/tools/revert.png</file>
+        <file alias="run">icons/tools/run.png</file>
+        <file alias="save">icons/tools/save.png</file>
+        <file alias="step">icons/tools/step.png</file>
+        <file alias="stop">icons/tools/stop.png</file>
+        <file alias="tree">icons/tools/tree.png</file>
+        <file alias="undo">icons/tools/undo.png</file>
+        <file alias="until">icons/tools/until.png</file>
+        <file alias="vertical">icons/tools/vertical.png</file>
+        <file alias="zoomin">icons/tools/zoomin.png</file>
+        <file alias="zoomout">icons/tools/zoomout.png</file>
+        <file alias="treemode_auto">icons/tools/treemode_auto.png</file>
+        <file alias="treemode_children">icons/tools/treemode_children.png</file>
+        <file alias="treemode_essentials">icons/tools/treemode_essentials.png</file>
+        <file alias="treemode_flat">icons/tools/treemode_flat.png</file>
+        <file alias="treemode_grouped">icons/tools/treemode_grouped.png</file>
+        <file alias="treemode_inher">icons/tools/treemode_inher.png</file>
+        <file alias="treemode_packet">icons/tools/treemode_packet.png</file>
+        <file alias="filmstrip">icons/tools/filmstrip.png</file>
+        <file alias="camera">icons/tools/camera.png</file>
+        <file alias="recordvideo">icons/tools/recordvideo.png</file>
+        <file alias="rebuild">icons/tools/rebuild.png</file>
     </qresource>
 </RCC>

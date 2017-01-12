@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
-    <normaloff>:/logo/icons/logo/logo128m.png</normaloff>:/logo/icons/logo/logo128m.png</iconset>
+    <normaloff>:/logo/logo128m</normaloff>:/logo/logo128m</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -442,7 +442,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/step.png</normaloff>:/tools/icons/tools/step.png</iconset>
+     <normaloff>:/tools/step</normaloff>:/tools/step</iconset>
    </property>
    <property name="text">
     <string>One &amp;Step</string>
@@ -463,7 +463,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/run.png</normaloff>:/tools/icons/tools/run.png</iconset>
+     <normaloff>:/tools/run</normaloff>:/tools/run</iconset>
    </property>
    <property name="text">
     <string>&amp;Run</string>
@@ -481,7 +481,7 @@ Total number of messages created since start of the simulation</string>
   <action name="actionSetUpConfiguration">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/newrun.png</normaloff>:/tools/icons/tools/newrun.png</iconset>
+     <normaloff>:/tools/newrun</normaloff>:/tools/newrun</iconset>
    </property>
    <property name="text">
     <string>&amp;Set Up a Configuration...</string>
@@ -493,7 +493,7 @@ Total number of messages created since start of the simulation</string>
   <action name="actionStop">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/stop.png</normaloff>:/tools/icons/tools/stop.png</iconset>
+     <normaloff>:/tools/stop</normaloff>:/tools/stop</iconset>
    </property>
    <property name="text">
     <string>S&amp;top Execution</string>
@@ -514,7 +514,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/fast.png</normaloff>:/tools/icons/tools/fast.png</iconset>
+     <normaloff>:/tools/fast</normaloff>:/tools/fast</iconset>
    </property>
    <property name="text">
     <string>&amp;Fast Run (rare display updates)</string>
@@ -535,7 +535,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/express.png</normaloff>:/tools/icons/tools/express.png</iconset>
+     <normaloff>:/tools/express</normaloff>:/tools/express</iconset>
    </property>
    <property name="text">
     <string>E&amp;xpress Run (tracing off)</string>
@@ -556,7 +556,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/until.png</normaloff>:/tools/icons/tools/until.png</iconset>
+     <normaloff>:/tools/until</normaloff>:/tools/until</iconset>
    </property>
    <property name="text">
     <string>Run &amp;Until...</string>
@@ -574,7 +574,7 @@ Total number of messages created since start of the simulation</string>
   <action name="actionLoadNEDFile">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/loadned.png</normaloff>:/tools/icons/tools/loadned.png</iconset>
+     <normaloff>:/tools/loadned</normaloff>:/tools/loadned</iconset>
    </property>
    <property name="text">
     <string>&amp;Load NED File...</string>
@@ -586,7 +586,7 @@ Total number of messages created since start of the simulation</string>
   <action name="actionConcludeSimulation">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/finish.png</normaloff>:/tools/icons/tools/finish.png</iconset>
+     <normaloff>:/tools/finish</normaloff>:/tools/finish</iconset>
    </property>
    <property name="text">
     <string>&amp;Conclude Simulation</string>
@@ -601,7 +601,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/recordeventlog.png</normaloff>:/tools/icons/tools/recordeventlog.png</iconset>
+     <normaloff>:/tools/recordeventlog</normaloff>:/tools/recordeventlog</iconset>
    </property>
    <property name="text">
     <string>&amp;Eventlog Recording</string>
@@ -616,7 +616,7 @@ Total number of messages created since start of the simulation</string>
   <action name="actionFindInspectObjects">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/findobj.png</normaloff>:/tools/icons/tools/findobj.png</iconset>
+     <normaloff>:/tools/findobj</normaloff>:/tools/findobj</iconset>
    </property>
    <property name="text">
     <string>&amp;Find/Inspect Objects...</string>
@@ -637,7 +637,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/vertical.png</normaloff>:/tools/icons/tools/vertical.png</iconset>
+     <normaloff>:/tools/vertical</normaloff>:/tools/vertical</iconset>
    </property>
    <property name="text">
     <string>Vertical Main Window Layout</string>
@@ -652,7 +652,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/horizontal.png</normaloff>:/tools/icons/tools/horizontal.png</iconset>
+     <normaloff>:/tools/horizontal</normaloff>:/tools/horizontal</iconset>
    </property>
    <property name="text">
     <string>Horizontal Main Window Layout</string>
@@ -667,7 +667,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/objects/icons/objects/fes.png</normaloff>:/objects/icons/objects/fes.png</iconset>
+     <normaloff>:/objects/fes</normaloff>:/objects/fes</iconset>
    </property>
    <property name="text">
     <string>&amp;Timeline</string>
@@ -682,7 +682,7 @@ Total number of messages created since start of the simulation</string>
   <action name="actionPreferences">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/config.png</normaloff>:/tools/icons/tools/config.png</iconset>
+     <normaloff>:/tools/config</normaloff>:/tools/config</iconset>
    </property>
    <property name="text">
     <string>&amp;Preferences...</string>
@@ -714,7 +714,7 @@ Total number of messages created since start of the simulation</string>
   <action name="actionRebuildNetwork">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/rebuild.png</normaloff>:/tools/icons/tools/rebuild.png</iconset>
+     <normaloff>:/tools/rebuild</normaloff>:/tools/rebuild</iconset>
    </property>
    <property name="text">
     <string>Re&amp;build Network</string>
@@ -798,7 +798,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/recordvideo.png</normaloff>:/tools/icons/tools/recordvideo.png</iconset>
+     <normaloff>:/tools/recordvideo</normaloff>:/tools/recordvideo</iconset>
    </property>
    <property name="text">
     <string>&amp;Video Recording</string>
@@ -816,7 +816,7 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/tools/icons/tools/props.png</normaloff>:/tools/icons/tools/props.png</iconset>
+     <normaloff>:/tools/props</normaloff>:/tools/props</iconset>
    </property>
    <property name="text">
     <string>Animation Parameters</string>

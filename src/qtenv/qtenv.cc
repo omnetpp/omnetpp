@@ -655,7 +655,7 @@ void Qtenv::doRun()
         QTimer::singleShot(500, this, &Qtenv::initialSetUpConfiguration);
 
         // needs to be set here too, the setting in the Designer wasn't enough on Mac
-        QApplication::setWindowIcon(QIcon(":/logo/icons/logo/logo128m.png"));
+        QApplication::setWindowIcon(QIcon(":/logo/logo128m"));
 
         setLogFormat(opt->logFormat.c_str());
 

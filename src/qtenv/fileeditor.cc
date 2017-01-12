@@ -45,13 +45,13 @@ FileEditor::FileEditor(QWidget *parent) :
     connect(ui->plainTextEdit, SIGNAL(customContextMenuRequested(const QPoint &)),
             this, SLOT(onCustomContextMenuRequested(const QPoint &)));
 
-    copySelectionAction = new QAction(QIcon(":/tools/icons/tools/copy.png"), "&Copy", this);
+    copySelectionAction = new QAction(QIcon(":/tools/copy"), "&Copy", this);
     copySelectionAction->setToolTip("Copy selected text to clipboard");
     copySelectionAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
     connect(copySelectionAction, SIGNAL(triggered(bool)), ui->plainTextEdit, SLOT(copy()));
     addAction(copySelectionAction);
 
-    findAction = new QAction(QIcon(":/tools/icons/tools/find.png"), "&Find...", this);
+    findAction = new QAction(QIcon(":/tools/find"), "&Find...", this);
     findAction->setToolTip("Find string in window");
     findAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
     connect(findAction, SIGNAL(triggered(bool)), this, SLOT(find()));
@@ -62,7 +62,7 @@ FileEditor::FileEditor(QWidget *parent) :
     connect(findNextAction, SIGNAL(triggered(bool)), this, SLOT(findNext()));
     addAction(findNextAction);
 
-    saveAction = new QAction(QIcon(":/tools/icons/tools/save.png"), "&Save", this);
+    saveAction = new QAction(QIcon(":/tools/save"), "&Save", this);
     saveAction->setToolTip("Save window contents to file");
     saveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     connect(saveAction, SIGNAL(triggered(bool)), this, SLOT(save()));

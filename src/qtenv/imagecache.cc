@@ -34,7 +34,7 @@ namespace qtenv {
 
 ImageCache::ImageCache(std::ostream& out): out(out)
 {
-    unknownImage = new QImage(":/objects/icons/objects/unknown.png");
+    unknownImage = new QImage(":/objects/unknown");
 }
 
 ImageCache::~ImageCache()

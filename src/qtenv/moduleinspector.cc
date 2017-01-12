@@ -193,41 +193,41 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
         addTopLevelToolBarActions(toolbar);
     else {
         // general
-        goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
-        goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
-        goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+        goBackAction = toolbar->addAction(QIcon(":/tools/back"), "Back", this, SLOT(goBack()));
+        goForwardAction = toolbar->addAction(QIcon(":/tools/forward"), "Forward", this, SLOT(goForward()));
+        goUpAction = toolbar->addAction(QIcon(":/tools/parent"), "Go to parent module", this, SLOT(inspectParent()));
     }
     toolbar->addSeparator();
 
-    toolbar->addAction(QIcon(":/tools/icons/tools/mrun.png"), "Run until next event in this module", this, SLOT(runUntil()));
-    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/mfast.png"), "Fast run until next event in this module (Ctrl+F4)", this, SLOT(fastRunUntil()));
+    toolbar->addAction(QIcon(":/tools/mrun"), "Run until next event in this module", this, SLOT(runUntil()));
+    QAction *action = toolbar->addAction(QIcon(":/tools/mfast"), "Fast run until next event in this module (Ctrl+F4)", this, SLOT(fastRunUntil()));
     action->setShortcut(Qt::CTRL | Qt::Key_F4);
     toolbar->addAction(getQtenv()->getMainWindow()->getStopAction());
     toolbar->addSeparator();
 
     // canvas-specfic
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/redraw.png"), "Re-layout", this, SLOT(relayout()));
+    action = toolbar->addAction(QIcon(":/tools/redraw"), "Re-layout", this, SLOT(relayout()));
     action->setShortcut(Qt::CTRL | Qt::Key_R);
     canvasRelayoutAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomin.png"), "Zoom in", this, SLOT(zoomIn()));
+    action = toolbar->addAction(QIcon(":/tools/zoomin"), "Zoom in", this, SLOT(zoomIn()));
     action->setShortcut(Qt::CTRL | Qt::Key_Plus);
     canvasZoomInAction = action;
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/zoomout.png"), "Zoom out", this, SLOT(zoomOut()));
+    action = toolbar->addAction(QIcon(":/tools/zoomout"), "Zoom out", this, SLOT(zoomOut()));
     action->setShortcut(Qt::CTRL + Qt::Key_Minus);
     canvasZoomOutAction = action;
 
 #ifdef WITH_OSG
     // osg-specific
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/reset.png"), "Reset view", this, SLOT(resetOsgView()));
+    action = toolbar->addAction(QIcon(":/tools/reset"), "Reset view", this, SLOT(resetOsgView()));
     resetOsgViewAction = action;
     toolbar->addSeparator();
 
     // mode switching
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/3dscene.png"), "3D Scene", this, SLOT(switchToOsgView()));
+    action = toolbar->addAction(QIcon(":/tools/3dscene"), "3D Scene", this, SLOT(switchToOsgView()));
     action->setCheckable(true);
     switchToOsgViewAction = action;
 
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/modulegraphics.png"), "Module", this, SLOT(switchToCanvasView()));
+    action = toolbar->addAction(QIcon(":/tools/modulegraphics"), "Module", this, SLOT(switchToCanvasView()));
     action->setCheckable(true);
     switchToCanvasViewAction = action;
 #endif

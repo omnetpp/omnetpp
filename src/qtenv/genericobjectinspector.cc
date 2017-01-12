@@ -106,9 +106,9 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
         toolbar->addWidget(stretch);
     }
     else {
-        goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
-        goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
-        goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+        goBackAction = toolbar->addAction(QIcon(":/tools/back"), "Back", this, SLOT(goBack()));
+        goForwardAction = toolbar->addAction(QIcon(":/tools/forward"), "Forward", this, SLOT(goForward()));
+        goUpAction = toolbar->addAction(QIcon(":/tools/parent"), "Go to parent module", this, SLOT(inspectParent()));
     }
 
     toolbar->setAutoFillBackground(true);
@@ -134,13 +134,13 @@ GenericObjectInspector::~GenericObjectInspector()
 void GenericObjectInspector::addModeActions(QToolBar *toolbar)
 {
     // mode selection
-    toGroupedModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_grouped.png"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
+    toGroupedModeAction = toolbar->addAction(QIcon(":/tools/treemode_grouped"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
     toGroupedModeAction->setCheckable(true);
-    toFlatModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_flat.png"), "Switch to flat mode", this, SLOT(toFlatMode()));
+    toFlatModeAction = toolbar->addAction(QIcon(":/tools/treemode_flat"), "Switch to flat mode", this, SLOT(toFlatMode()));
     toFlatModeAction->setCheckable(true);
-    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_children.png"), "Switch to children mode", this, SLOT(toChildrenMode()));
+    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Switch to children mode", this, SLOT(toChildrenMode()));
     toChildrenModeAction->setCheckable(true);
-    toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/icons/tools/treemode_inher.png"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
+    toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/treemode_inher"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
     toInheritanceModeAction->setCheckable(true);
 }
 

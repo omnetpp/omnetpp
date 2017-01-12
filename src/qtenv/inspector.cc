@@ -364,22 +364,22 @@ void Inspector::closeEvent(QCloseEvent *)
 void Inspector::addTopLevelToolBarActions(QToolBar *toolbar)
 {
     // general
-    goBackAction = toolbar->addAction(QIcon(":/tools/icons/tools/back.png"), "Back", this, SLOT(goBack()));
-    goForwardAction = toolbar->addAction(QIcon(":/tools/icons/tools/forward.png"), "Forward", this, SLOT(goForward()));
-    goUpAction = toolbar->addAction(QIcon(":/tools/icons/tools/parent.png"), "Go to parent module", this, SLOT(inspectParent()));
+    goBackAction = toolbar->addAction(QIcon(":/tools/back"), "Back", this, SLOT(goBack()));
+    goForwardAction = toolbar->addAction(QIcon(":/tools/forward"), "Forward", this, SLOT(goForward()));
+    goUpAction = toolbar->addAction(QIcon(":/tools/parent"), "Go to parent module", this, SLOT(inspectParent()));
     toolbar->addSeparator();
 
-    QAction *action = toolbar->addAction(QIcon(":/tools/icons/tools/inspectas.png"), "Inspect");
+    QAction *action = toolbar->addAction(QIcon(":/tools/inspectas"), "Inspect");
     QToolButton* toolButton = dynamic_cast<QToolButton *>(toolbar->widgetForAction(action));
     toolButton->setMenu(inspectDropdownMenu);
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
-    action = toolbar->addAction(QIcon(":/tools/icons/tools/copyptr.png"), "Copy name, type or pointer");
+    action = toolbar->addAction(QIcon(":/tools/copyptr"), "Copy name, type or pointer");
     toolButton = dynamic_cast<QToolButton *>(toolbar->widgetForAction(action));
     toolButton->setMenu(copyDropdownMenu);
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
-    toolbar->addAction(QIcon(":/tools/icons/tools/findobj.png"), "Find/inspect objects", this, SLOT(findObjectsWithin()))
+    toolbar->addAction(QIcon(":/tools/findobj"), "Find/inspect objects", this, SLOT(findObjectsWithin()))
             ->setShortcut(Qt::CTRL | Qt::Key_S);
 }
 
