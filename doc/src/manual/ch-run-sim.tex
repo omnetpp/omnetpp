@@ -23,7 +23,7 @@ which user interface to activate, where to load NED files from, and so on.
 The following sections describe the most frequently used command-line
 options. To get a complete list of supported command line options, run
 the \fprog{opp\_run} command (or any other simulation executable) with
-the \ttt{-h} option.
+the \fopt{-h} option.
 
 \begin{commandline}
 $ opp_run -h
@@ -35,7 +35,7 @@ $ opp_run -h
 The default ini file is \ffilename{omnetpp.ini}, and is
 loaded if no other ini file is given on the command line.
 
-Ini files can be specified both as plain arguments and with the \ttt{-f}
+Ini files can be specified both as plain arguments and with the \fopt{-f}
 option, so the following two commands are equivalent:
 
 \begin{commandline}
@@ -62,14 +62,14 @@ Semicolon is used as separator on both Unix and Windows.
 The NED path can be specified in several ways:
 \begin{itemize}
   \item using the \ttt{NEDPATH} environment variable
-  \item using the \ttt{-n} command-line option
+  \item using the \fopt{-n} command-line option
   \item in ini files, with the \fconfig{ned-path} configuration option
 \end{itemize}
 
 NED path resolution rules are as follows:
 
 \begin{itemize}
-  \item {\opp} checks for NED path specified on the command line with the \ttt{-n} option
+  \item {\opp} checks for NED path specified on the command line with the \fopt{-n} option
   \item if not found on the command line, it checks for the \ttt{NEDPATH} environment variable
   \item the \fconfig{ned-path} option value from the ini file is appended to the result of the above steps
   \item if the result is still empty, it falls back to "." (the current directory)
@@ -102,22 +102,22 @@ are supported on Unix and Windows platforms.
 You can choose which runtime environment is included in your simulation
 executable when you generate your makefile. By default, both Tkenv and
 Cmdenv is linked in so you can choose between them during runtime, but it
-is possible to specify only a single user interface with the \ttt{-u
-Cmdenv} or \ttt{-u Tkenv} option on the \fprog{opp\_makemake} command line.
+is possible to specify only a single user interface with the \fopt{-u
+Cmdenv} or \fopt{-u Tkenv} option on the \fprog{opp\_makemake} command line.
 This can be useful if you intend to run your simulations on a machine where
 Tcl/Tk is not installed.
 
 By default, Tkenv will be used if both runtime environments are present in
 your executable. You explicitly select a user interface by adding the
-\ttt{user-interface=Cmdenv} (or \ttt{=Tkenv}) option in your ini file, or
-by specifying \ttt{-u Cmdenv} or \ttt{-u Tkenv} on the command line. If
+\ttt{user-interface=Cmdenv} (or \fopt{=Tkenv}) option in your ini file, or
+by specifying \fopt{-u Cmdenv} or \fopt{-u Tkenv} on the command line. If
 both the config option and the command line option are present, the command
 line option takes precedence.
 
-\subsubsection{Selecting a Configuration and Run Number}
+\subsubsection{Selecting Configuration and Runs}
 \label{sec:run-sim:selecting-configuration-and-run-number}
 
-Configurations can be selected with the \ttt{-c <configname>} command line option.
+Configurations can be selected with the \fopt{-c <configname>} command line option.
 If you do not specify the configuration and you are running under:
 
 \begin{itemize}
@@ -125,18 +125,18 @@ If you do not specify the configuration and you are running under:
   \item Cmdenv: the \ttt{General} configuration will be executed.
 \end{itemize}
 
-User interfaces may support the \ttt{-r <runnumber>} option to select runs,
+User interfaces may support the \fopt{-r <runnumber>} option to select runs,
 either one or more, depending on the type of the user interface.
 
 There are several command line options to get information about the iteration
 variables and the number of runs in the configurations:
 
 \begin{itemize}
-  \item \ttt{-a} -- Prints all configuration names and the number of runs in them.
-  \item \ttt{-x <configname>} -- Prints the number of runs available in the given configuration.
-  \item \ttt{-g} -- Prints the unrolled configuration (together with the \ttt{-x} option) and
+  \item \fopt{-a} -- Prints all configuration names and the number of runs in them.
+  \item \fopt{-x <configname>} -- Prints the number of runs available in the given configuration.
+  \item \fopt{-g} -- Prints the unrolled configuration (together with the \fopt{-x} option) and
                     expands the iteration variables.
-  \item \ttt{-G} -- Prints even more details than \ttt{-g}.
+  \item \fopt{-G} -- Prints even more details than \fopt{-g}.
 \end{itemize}
 
 
@@ -155,14 +155,14 @@ the need to explicitly link against that library. This approach has several adva
     without the need of linking or compiling.
 \end{itemize}
 
-Use the \ttt{-l <libraryname>} command line option to load a library dynamically.
+Use the \fopt{-l <libraryname>} command line option to load a library dynamically.
 {\opp} will attempt to load it using the \ffunc{dlopen()} or \ffunc{LoadLibrary()} functions and
 automatically registers all simple modules in the library.
 
 The prefix and suffix from the library name can be omitted (the extensions
 \ttt{.dll}, \ttt{.so}, \ttt{.dylib}, and also the common \ttt{lib} prefix
 on Unix systems). This means that you can specify the library name in a
-platform independent way: if you specify \ttt{-l foo}, then {\opp} will
+platform independent way: if you specify \fopt{-l foo}, then {\opp} will
 look for \ttt{foo.dll}, \ttt{libfoo.dll}, \ttt{libfoo.so} or \ttt{libfoo.dylib},
 depending on the platform.
 
@@ -236,7 +236,7 @@ There are several useful configuration options that control how a simulation is 
   It is also possible to specify a configuration option on the command line (in which case the
   command line takes precedence). To do so, prefix the option name with a double
   dash (-{}-), and be sure not to have spaces around the equal sign. Example:
-  \ttt{-{}-debug-on-errors=true}
+  \fopt{-{}-debug-on-errors=true}
 \end{note}
 
 To get the list of all possible configuration options, type:
@@ -316,7 +316,7 @@ and it can be processed using the IDE or other tools.
 \label{sec:run-sim:cmdenv-command-line-options}
 
 The command line environment allows you to specify more than one run by
-using the \ttt{-r 2,4,6..8} format. See \ref{sec:run-sim:batch-execution}
+using the \fopt{-r 2,4,6..8} format. See \ref{sec:run-sim:batch-execution}
 for more information about running simulation batches.
 
 \subsection{Cmdenv Ini File Options}
@@ -326,7 +326,7 @@ for more information about running simulation batches.
 It accepts a comma-separated list of run numbers or run number ranges, e.g.
 \ttt{1,3..4,7..9}. If the value is missing, Cmdenv executes all runs that have
 ini file sections; if no runs are specified in the ini file, Cmdenv does one run.
-The \ttt{-r} command line option overrides this ini file setting.
+The \fopt{-r} command line option overrides this ini file setting.
 
 
 Cmdenv can be executed in two modes, selected by the \fconfig{cmdenv-express-mode}
@@ -457,8 +457,8 @@ inside the network.
 \label{sec:run-sim:tkenv-options}
 
 A simulation program built with Tkenv accepts all the general command line
-options. \index{command line options} Additionally, the \ttt{-c <configname>}
-and \ttt{-r <runnumber>} options can be used to preselect a single run for execution;
+options. \index{command line options} Additionally, the \fopt{-c <configname>}
+and \fopt{-r <runnumber>} options can be used to preselect a single run for execution;
 that is, these options suppress the initial run selection dialog.
 
 Tkenv configuration options:
@@ -466,12 +466,12 @@ Tkenv configuration options:
 \begin{itemize}
   \item \fconfig{tkenv-default-config}:
     Specifies which config Tkenv should set up automatically on startup. The
-    default is to ask the user. This option is equivalent to the \ttt{-c}
+    default is to ask the user. This option is equivalent to the \fopt{-c}
     command-line option.
 
   \item \fconfig{tkenv-default-run}: Specifies which run (of the default
     config, see tkenv-default-config) Tkenv should set up automatically on startup.
-    The default is to ask the user. This option is equivalent to the \ttt{-r}
+    The default is to ask the user. This option is equivalent to the \fopt{-r}
     command-line option.
 
   \item \fconfig{tkenv-extra-stack}:
@@ -492,7 +492,7 @@ It is also affected by the following option:
 \end{itemize}
 
 Tkenv-specific configuration options can also be specified on the command line
-by prefixing them with two dashes (e.g \ttt{-{}-tkenv-extra-stack=32KiB}). See
+by prefixing them with two dashes (e.g \fopt{-{}-tkenv-extra-stack=32KiB}). See
 Appendix \ref{cha:config-options} for the list of possible configuration options.
 
 
@@ -505,7 +505,7 @@ interactive simulation execution, animation, tracing and debugging. Note
 that 3D visualization is only available in Qtenv.
 
 As of version {\opp} 5.0, Qtenv is still in preview status, and Tkenv is the
-default runtime. Qtenv can be activated by adding the \ttt{-u Qtenv} option
+default runtime. Qtenv can be activated by adding the \fopt{-u Qtenv} option
 to simulation command lines. Alternatively, one can configure and build
 {\opp} so that Qtenv is the default GUI. (Hint: specify \ttt{PREFER\_QTENV=yes}
 in \ffilename{configure.user}; see the \textit{Installation Guide} for details.)
@@ -521,8 +521,8 @@ in \ffilename{configure.user}; see the \textit{Installation Guide} for details.)
 \label{sec:run-sim:qtenv-options}
 
 A simulation program built with Qtenv accepts all the general command line
-options. \index{command line options} Additionally, the \ttt{-c <configname>}
-and \ttt{-r <runnumber>} options can be used to preselect a single run for execution;
+options. \index{command line options} Additionally, the \fopt{-c <configname>}
+and \fopt{-r <runnumber>} options can be used to preselect a single run for execution;
 that is, these options suppress the initial run selection dialog.
 
 Qtenv configuration options:
@@ -530,12 +530,12 @@ Qtenv configuration options:
 \begin{itemize}
   \item \fconfig{qtenv-default-config}:
     Specifies which config Qtenv should set up automatically on startup. The
-    default is to ask the user. This option is equivalent to the \ttt{-c}
+    default is to ask the user. This option is equivalent to the \fopt{-c}
     command-line option.
 
   \item \fconfig{qtenv-default-run}: Specifies which run (of the default
     config, see qtenv-default-config) Qtenv should set up automatically on startup.
-    The default is to ask the user. This option is equivalent to the \ttt{-r}
+    The default is to ask the user. This option is equivalent to the \fopt{-r}
     command-line option.
 
   \item \fconfig{qtenv-extra-stack}:
@@ -551,7 +551,7 @@ It is also affected by the following option:
 \end{itemize}
 
 Qtenv-specific configuration options can also be specified on the command line
-by prefixing them with two dashes (e.g \ttt{-{}-qtenv-extra-stack=32KiB}). See
+by prefixing them with two dashes (e.g \fopt{-{}-qtenv-extra-stack=32KiB}). See
 Appendix \ref{cha:config-options} for the list of possible configuration options.
 
 
@@ -581,9 +581,9 @@ simulation with an API call if some condition is true.
 \subsection{Using Cmdenv}
 \label{sec:run-sim:batches-using-cmdenv}
 
-To execute more than one run using Cmdenv, use the \ttt{-r} option
+To execute more than one run using Cmdenv, use the \fopt{-r} option
 and specify the runs in a comma separated format \ttt{1,2,4,9..11}, or you may leave
-out the \ttt{-r} option to execute all runs in the experiment.
+out the \fopt{-r} option to execute all runs in the experiment.
 
 \begin{warning}
   Although it is very convenient, we do not recommend that you use this method for
@@ -604,8 +604,8 @@ given in the \ttt{runs.ini} file.
 
 Before you execute your simulation batch, you may check how many
 runs are available in the configuration you are using. Use the
-\ttt{-x <config>} command line option to print the number of runs or
-add the \ttt{-g} to get more details.
+\fopt{-x <config>} command line option to print the number of runs or
+add the \fopt{-g} to get more details.
 
 \begin{filelisting}
 #! /bin/sh
@@ -668,15 +668,15 @@ this way:
 The command basically creates a makefile which contains
 a separate target for each run. By default the makefile will be executed causing each
 target to run. You can give additional options to the \fprog{opp\_runall} command to
-activate parallel building. The \ttt{-j} option can be used to specify the maximum number
+activate parallel building. The \fopt{-j} option can be used to specify the maximum number
 of parallel runs allowed.
 
 \begin{warning}
   Use the parallel execution option only if you have enough memory to run several simulations
   side by side. If you run out of memory your operating system will start swapping, and the overall
   performance of the system will be greatly reduced. Always specify the number of processes
-  after the \ttt{-j} option, otherwise the \fprog{make} program will try to start \textit{all}
-  runs at the same time. As a rule of thumb: if you have 4 cores (and enough memory), use \ttt{-j4}.
+  after the \fopt{-j} option, otherwise the \fprog{make} program will try to start \textit{all}
+  runs at the same time. As a rule of thumb: if you have 4 cores (and enough memory), use \fopt{-j4}.
 \end{warning}
 
 The form of the command is:
@@ -684,10 +684,10 @@ The form of the command is:
 opp_runall -j2 ./aloha -u Cmdenv -c PureAlohaExperiment -r 0..23
 \end{commandline}
 
-You can use the \ttt{-x <configname> -g} command line options with your
+You can use the \fopt{-x <configname> -g} command line options with your
 simulation to check the number of available runs.
 
-Using the \ttt{-{}-export <filename>} option only generates the
+Using the \fopt{-{}-export <filename>} option only generates the
 \ttt{makefile}, but does not start it. You can run your batch later by
 invoking the generated makefile.
 
@@ -883,7 +883,7 @@ files (output vector, output scalar, snapshot files).
 \label{sec:run-sim:unrecognized-configuration-option}
 
 If you receive an error message about unrecognized configuration
-options you may use \ttt{-h config} or \ttt{-h configdetails} options
+options you may use \fopt{-h config} or \fopt{-h configdetails} options
 to display all possible configuration options and their descriptions.
 
 \subsection{Stack Problems}

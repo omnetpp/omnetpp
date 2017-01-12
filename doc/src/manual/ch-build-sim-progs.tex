@@ -15,7 +15,7 @@ the following parts:
 \end{itemize}
 
 To build a simulation from source, MSG files\index{msg!files} first need
-to be translated into C++ using the message compiler (\ttt{opp\_msgc}).
+to be translated into C++ using the message compiler (\fprog{opp\_msgc}).
 Once this is done, the process is the same as building any C/C++ program:
 all C++ sources are compiled into object form (\ttt{.o} or \ttt{.obj} files),
 and object files are linked with the necessary libraries to get an executable
@@ -70,26 +70,26 @@ in subdirectories.
 The most important options are:
 
 \begin{itemize}
-    \item \ttt{-f, -{}-force} : Force overwriting existing Makefile
-    \item \ttt{-o <filename>} : Name of simulation executable or library to be built.
-    \item \ttt{-O <directory>}, \ttt{-{}-out <directory>} :
+    \item \fopt{-f}, \fopt{-{}-force} : Force overwriting existing Makefile
+    \item \fopt{-o <filename>} : Name of simulation executable or library to be built.
+    \item \fopt{-O <directory>}, \fopt{-{}-out <directory>} :
                           Specifies the name of the output directory tree for out-of-directory build
-    \item \ttt{-{}-deep} : Generates a "deep" Makefile. A deep Makefile will
+    \item \fopt{-{}-deep} : Generates a "deep" Makefile. A deep Makefile will
                           cover the whole source tree under the make directory,
                           not just files in that directory.
-    \item \ttt{-r, -{}-recurse} : Causes make to recursively descend into all subdirectories;
+    \item \fopt{-r}, \fopt{-{}-recurse} : Causes make to recursively descend into all subdirectories;
                           subdirectories are expected to contain Makefiles themselves.
-    \item \ttt{-X <directory>}, \ttt{-X<directory>}, \ttt{-{}-except <directory>} :
-                          With \ttt{-r} or \ttt{-{}-deep}: ignore the given directory.
-    \item \ttt{-d<subdir>}, \ttt{-d <subdir>}, \ttt{-{}-subdir <subdir>} :
+    \item \fopt{-X <directory>}, \fopt{-X<directory>}, \fopt{-{}-except <directory>} :
+                          With \fopt{-r} or \fopt{-{}-deep}: ignore the given directory.
+    \item \fopt{-d<subdir>}, \fopt{-d <subdir>}, \fopt{-{}-subdir <subdir>} :
                           Causes make to switch to the given directory and invoke
                           a Makefile in that directory.
-    \item \ttt{-n, -{}-nolink} : Produce object files but do not create an executable or library.
-    \item \ttt{-s, -{}-make-so} : Build shared library (\ttt{.so}, \ttt{.dll} or \ttt{.dylib}).
-    \item \ttt{-a, -{}-make-lib} : Create static library (\ttt{.a} or \ttt{.lib}).
-    \item \ttt{-I<dir>} : Add the given directory to the C++ include path.
-    \item \ttt{-L<dir>} : Add the given directory to the library path.
-    \item \ttt{-l<library>} : Additional library to link against.
+    \item \fopt{-n}, \fopt{-{}-nolink} : Produce object files but do not create an executable or library.
+    \item \fopt{-s}, \fopt{-{}-make-so} : Build shared library (\ttt{.so}, \ttt{.dll} or \ttt{.dylib}).
+    \item \fopt{-a}, \fopt{-{}-make-lib} : Create static library (\ttt{.a} or \ttt{.lib}).
+    \item \fopt{-I<dir>} : Add the given directory to the C++ include path.
+    \item \fopt{-L<dir>} : Add the given directory to the library path.
+    \item \fopt{-l<library>} : Additional library to link against.
 \end{itemize}
 
 
@@ -112,7 +112,7 @@ $ make
 
 If there was already a \ttt{Makefile} in that directory, \fprog{opp\_makemake}
 will refuse to overwrite it. One can force overwriting the old \ttt{Makefile}
-with the \ttt{-f} option:
+with the \fopt{-f} option:
 
 \begin{commandline}
 $ opp_makemake -f
@@ -120,7 +120,7 @@ $ opp_makemake -f
 
 The name of the output file\index{output!file} will be derived from
 the name of the project directory (see later). This can be overridden
-with the \ttt{-o} option:
+with the \fopt{-o} option:
 
 \begin{commandline}
 $ opp_makemake -f -o aloha
@@ -146,7 +146,7 @@ $ make MODE=release
 \end{commandline}
 
 It is also possible to generate a Makefile that defaults to release builds.
-This can be achieved by adding the \ttt{-{}-mode} option to the \fprog{opp\_makemake}
+This can be achieved by adding the \fopt{-{}-mode} option to the \fprog{opp\_makemake}
 command line.
 
 \begin{commandline}
@@ -174,15 +174,15 @@ If the simulation model relies on an external library, the following
 link with the library.
 
 \begin{itemize}
-  \item Use the \ttt{-I<dir>} option to specify the location of
+  \item Use the \fopt{-I<dir>} option to specify the location of
         the header files. The directory will be added to the compiler's
         include path. This option is not needed if the header files are
         at a standard location, e.g. installed under \ttt{/usr/include}
         on Linux.
-  \item Use the \ttt{-L<dir>} to specify the location of the binaries
+  \item Use the \fopt{-L<dir>} to specify the location of the binaries
         (static or shared library files.) Again, this option is not needed
         if the binaries are at a standard place, e.g. under \ttt{/usr/lib}.
-  \item Use the \ttt{-l<libname>} to specify the name of the library.
+  \item Use the \fopt{-l<libname>} to specify the name of the library.
         The name is normally the file name without the \ttt{lib} prefix and
         the file name extension (e.g. \ttt{.a}, \ttt{.so}, \ttt{.dylib}).
 \end{itemize}
@@ -203,8 +203,8 @@ and source files may be placed anywhere in the tree.
 To turn on this option, use the \ttt{opp\_makemake -{}-deep} option.
 \ttt{opp\_makemake} will collect all \ttt{.cc} and \ttt{.msg} files from
 the whole subdirectory tree, and generate a Makefile that covers all.
-To exclude a specific directory, use the \ttt{-X exclude/dir/path}
-option. (Multiple \ttt{-X} options are accepted.)
+To exclude a specific directory, use the \fopt{-X exclude/dir/path}
+option. (Multiple \fopt{-X} options are accepted.)
 
 An example:
 
@@ -214,12 +214,12 @@ $ opp_makemake -f --deep -X experimental -X obsolete
 
 In the C++ code, include statements should contain the location of the file
 relative to the Makefile's location.\footnote{
-  Support for deep includes (automatically adding each subdirectory 
+  Support for deep includes (automatically adding each subdirectory
   to the include path so that includes can be written without specifying
   the location of the file) has been dropped in {\opp} version 5.1, due to
-  being error-prone in large projects, and having limited usefulness for 
+  being error-prone in large projects, and having limited usefulness for
   small projects.}
-For example, if \ttt{Foo.h} is under \ttt{utils/common/} in the source 
+For example, if \ttt{Foo.h} is under \ttt{utils/common/} in the source
 tree, it needs to be included as
 
 \begin{cpp}
@@ -252,7 +252,7 @@ source tree rather than the output directory.
 \end{note}
 
 By default, the \ttt{out} directory is placed in the project root directory. This location
-can be changed with \fprog{opp\_makemake}'s \ttt{-O} option.
+can be changed with \fprog{opp\_makemake}'s \fopt{-O} option.
 
 \begin{commandline}
 $ opp_makemake -O ../tmp/obj
@@ -271,8 +271,8 @@ By default the Makefile will create an executable file, but it is also
 possible to build shared or static libraries. Shared libraries
 are usually a better choice.
 
-Use \ttt{-{}-make-so} to create shared libraries, and \ttt{-{}-make-lib}
-to build static libraries. The \ttt{-{}-nolink} option completely omits
+Use \fopt{-{}-make-so} to create shared libraries, and \fopt{-{}-make-lib}
+to build static libraries. The \fopt{-{}-nolink} option completely omits
 the linking step, which is useful for top-level Makefiles that only invoke
 other Makefiles, or when custom linking commands are needed.
 
@@ -282,7 +282,7 @@ The Microsoft Visual C++ compiler handles shared library (DLL) linking
 differently, and requires additional steps to compile and link correctly.
 Namely, one must choose a \ttt{<symbol>} for the project, and annotate all classes,
 functions and variables to be exported from the DLL with \ttt{<symbol>\_API}.
-Then, Makefiles need to be generated with the \ttt{-p <symbol>} option.
+Then, Makefiles need to be generated with the \fopt{-p <symbol>} option.
 This option will cause the \ttt{<symbol>\_EXPORT} macro will be passed to
 the compiler, causing \ttt{<symbol>\_API} to be defined as \ttt{\_\_declspec(dllexport)} in
 the sources. This step allows Visual C++ to correctly generate DLL exports in Windows.
@@ -297,24 +297,24 @@ the sources. This step allows Visual C++ to correctly generate DLL exports in Wi
 \label{sec:build-sim-progs:recursive-builds}
 
 
-The \ttt{-{}-recurse} option enables recursive make; when you build the simulation, make
+The \fopt{-{}-recurse} option enables recursive make; when you build the simulation, make
 descends into the subdirectories and runs make in them too.
-By default, \ttt{-{}-recurse} decends into all subdirectories; the -X directory option
+By default, \fopt{-{}-recurse} decends into all subdirectories; the \fopt{-X <dir>} option
 can be used to make it ignore certain subdirectories. This option is especially useful
 for top level Makefiles.
 
 
-The \ttt{-{}-recurse} option automatically discovers subdirectories, but this
+The \fopt{-{}-recurse} option automatically discovers subdirectories, but this
 is sometimes inconvenient. Your source directory tree may contain
 parts which need their own hand written Makefile. This can happen if
-you include source files from an other non {\opp} project. With the \ttt{-d <dir>}
-or \ttt{-{}-subdir <dir>} option, you can explicitly specify which directories to
+you include source files from an other non {\opp} project. With the \fopt{-d <dir>}
+or \fopt{-{}-subdir <dir>} option, you can explicitly specify which directories to
 recurse into, and also, the directories need not be direct children of the
 current directory.
 
 
-The recursive make options (\ttt{-{}-recurse}, \ttt{-d}, \ttt{-{}-subdir})
-imply \ttt{-X}, that is, the directories recursed into will be
+The recursive make options (\fopt{-{}-recurse}, \fopt{-d}, \fopt{-{}-subdir})
+imply \fopt{-X}, that is, the directories recursed into will be
 automatically excluded from deep Makefiles.
 
 
@@ -322,7 +322,7 @@ You can control the order of traversal by adding dependencies into
 the \ttt{makefrag} file (see \ref{sec:makefrag})
 
 \begin{note}
-With \ttt{-d}, it is also possible to create infinite recursions.
+With \fopt{-d}, it is also possible to create infinite recursions.
 \fprog{opp\_makemake} cannot detect them, it is your responsibility that
 cycles do not occur.
 \end{note}
@@ -339,12 +339,12 @@ Motivation for recursive builds:
 \label{sec:makefrag}
 
 It is possible to add rules or otherwise customize the generated Makefile
-by providing a \ttt{makefrag} file. When you run \fprog{opp\_makemake}, it
-will automatically insert the content of the \ttt{makefrag} file into the
-resulting \ttt{Makefile}. With the \ttt{-i} option, you can also name other
+by providing a \ffilename{makefrag} file. When you run \fprog{opp\_makemake}, it
+will automatically insert the content of the \ffilename{makefrag} file into the
+resulting \ffilename{Makefile}. With the \fopt{-i} option, you can also name other
 files to be included into the \ttt{Makefile}.
 
-\ttt{makefrag} will be inserted after the definitions but before the first
+\ffilename{makefrag} will be inserted after the definitions but before the first
 rule, so it is possible to override existing definitions and add new
 ones, and also to override the default target.
 
@@ -400,7 +400,7 @@ a shared lib from all .cc files in the \ttt{core} subtree, and will name it \ttt
 $ cd core && opp_makemake -f --deep --make-so -o mfcore -O out
 \end{commandline}
 
-The \ttt{contrib} directory depends on \ttt{mfcore} so we use the \ttt{-L} and \ttt{-l} options
+The \ttt{contrib} directory depends on \ttt{mfcore} so we use the \fopt{-L} and \fopt{-l} options
 to specify the library we should link with. Note that we must also add
 the include directories manually from the \ttt{core} source tree, because autodiscovery works only
 in the same source tree:
@@ -429,9 +429,9 @@ test_dir: contrib_dir
 
 Now the last step is to create a top-level Makefile in the root of the project that
 calls the previously created Makefiles in the correct order. We will use the
-\ttt{-{}-nolink} option, exclude every subdirectory from the build (\ttt{-X.}), and explicitly call
-the above Makefiles using \ttt{-d <dirname>}. \ttt{opp\_makemake} will automatically include
-the above created \ttt{makefrag} file.
+\fopt{-{}-nolink} option, exclude every subdirectory from the build (\fopt{-X.}),
+and explicitly call the above Makefiles using \fopt{-d <dir>}.
+\fprog{opp\_makemake} will automatically include the above created \ttt{makefrag} file.
 
 \begin{commandline}
 $ opp_makemake -f --nolink -O out -d test -d core -d contrib -X.
@@ -488,15 +488,15 @@ option of enabling/disabling those features. A feature definition contains:
     (i.e. in the same folders as excluded NED files) will also be excluded.
 \item Extra C++ source folders; If the feature contains C++ code that lives outside NED source
     folders (nontypical), those folders are listed here.
-\item Compile options, for example \ttt{-DWITH\_IPv6}. When the feature is enabled, the compiler
+\item Compile options, for example \fopt{-DWITH\_IPv6}. When the feature is enabled, the compiler
     options listed here are added to the compiler command line of all C++ files in the project.
     A typical use of this field is defining symbols (\ttt{WITH\_xxx}) that allows you to write conditional code
-    that only compiles when a given feature is enabled. Currently only the \ttt{-D} option
+    that only compiles when a given feature is enabled. Currently only the \fopt{-D} option
     (\textit{define symbol}) is supported here.
 \item Linker options. When the feature is enabled, the linker options listed here are added
     to the linker command line. A typical use of this field is linking with additional
     libraries that the feature's code requires, for example libavcodec.
-    Currently only the \ttt{-l} option (\textit{link with library}) is supported here.
+    Currently only the \fopt{-l} option (\textit{link with library}) is supported here.
 \end{itemize}
 
 
@@ -507,7 +507,7 @@ Project features can be queried and manipulated using the \fprog{opp\_featuretoo
 program. The first argument to the program must be a command; the most frequently
 used ones are \ttt{list}, \ttt{enable} and \ttt{disable}. The operation of commands
 can be refined with further options. One can obtain the full list of commands
-and options using the \ttt{-h} option.
+and options using the \fopt{-h} option.
 
 Here are some examples of using the program.
 
@@ -539,18 +539,18 @@ currently enabled features:
 $ opp_featuretool options
 \end{commandline}
 
-The easiest way to pass the output of the above command to \ttt{opp\_makemake} 
+The easiest way to pass the output of the above command to \ttt{opp\_makemake}
 is the \ttt{\$(\ldots)} shell construct:
-  
+
 \begin{commandline}
 $ opp_makemake --deep $(opp_featuretool options)
 \end{commandline}
 
 Often it is convenient to put feature defines (e.g. \ttt{WITH\_FOO}) into a
-header file instead of passing them to the compiler via \ttt{-D} options.
+header file instead of passing them to the compiler via \fopt{-D} options.
 This makes it easier to detect feature enablements from derived projects,
 and also makes it easier for C++ code editors to correctly highlight
-conditional code blocks that depend on project features. 
+conditional code blocks that depend on project features.
 
 The header file can be generated with \ttt{opp\_featuretool} using the
 following command:
@@ -559,7 +559,7 @@ following command:
 $ opp_featuretool defines >feature_defines.h
 \end{commandline}
 
-At the same time, \ttt{-D} options must be removed from the compiler
+At the same time, \fopt{-D} options must be removed from the compiler
 command line. \ttt{opp\_featuretool options} has switches to filter them out.
 The modified command for Makefile generation:
 
@@ -627,7 +627,7 @@ to do:
         code from the new feature, use conditional compilation (\ttt{\#ifdef WITH\_YOURFEATURE})
         to make sure that code compiles (and either works sensibly or throws an error)
         when the new feature is disabled. (Your feature should define the \ttt{WITH\_YOURFEATURE}
-        symbol, i.e. \ttt{-DWITH\_YOURFEATURE} will need to be added to the feature compile flags.)
+        symbol, i.e. \fopt{-DWITH\_YOURFEATURE} will need to be added to the feature compile flags.)
 
   \item Add the feature description into the \ttt{.oppfeatures} file of your project.
 

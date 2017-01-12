@@ -204,7 +204,7 @@ accepted in the \ttt{[General]} section, but most of them can go into \ttt{Confi
 sections as well.
 
 When a simulation is run, one needs to select one of the configurations
-to be activated. In Cmdenv, this is done with the \ttt{-c} command-line option:
+to be activated. In Cmdenv, this is done with the \fopt{-c} command-line option:
 
 \begin{commandline}
 $ aloha -c PureAloha
@@ -282,7 +282,7 @@ The \textit{fallback chain} of a configuration \ttt{A} is
         it will precede it in the output chain too.
 \end{itemize}
 
-The \textit{section fallback chain} can be printed by the \ttt{-X} option
+The \textit{section fallback chain} can be printed by the \fopt{-X} option
 of the command line of the simulation program:
 
 \begin{commandline}
@@ -460,7 +460,7 @@ on the particular user interface.
 
 \begin{note}
 In Cmdenv, one must explicitly enable interactive mode with the
-\ttt{-{}-cmdenv-interactive=true} option, otherwise the simulation
+\fopt{-{}-cmdenv-interactive=true} option, otherwise the simulation
 program will stop with an error in the setup phase.
 \end{note}
 
@@ -512,7 +512,7 @@ each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
-How does it work? First of all, Cmdenv with the \ttt{-x} option will print
+How does it work? First of all, Cmdenv with the \fopt{-x} option will print
 how many simulation runs a given section expands to. (One should of course
 use Cmdenv for batch runs, not a GUI one like Tkenv or Qtenv.)
 
@@ -525,8 +525,8 @@ Config: AlohaStudy
 Number of runs: 24
 \end{commandline}
 
-When the \ttt{-g} option is also added, the program also prints the values
-of the iteration variables for each run. (Use \ttt{-G} for even more info.)
+When the \fopt{-g} option is also added, the program also prints the values
+of the iteration variables for each run. (Use \fopt{-G} for even more info.)
 Note that the parameter study actually maps to nested loops, with the last
 \ttt{\$\{...\}} becoming the innermost loop. The iteration variables are
 just named \ttt{\$0} and \ttt{\$1} -- we'll see that it is possible to give
@@ -555,9 +555,9 @@ Run 22: $0=50, $1=0.4, $repetition=0
 Run 23: $0=50, $1=0.6, $repetition=0
 \end{commandline}
 
-Any of these runs can be executed by passing the \ttt{-r <runnumber>}
+Any of these runs can be executed by passing the \fopt{-r <runnumber>}
 option to Cmdenv. So, the task is now to run the simulation program 24
-times, with \ttt{-r} running from 0 through 23:
+times, with \fopt{-r} running from 0 through 23:
 
 \begin{commandline}
 $ aloha -u Cmdenv -c AlohaStudy -r 0
@@ -573,7 +573,7 @@ from a list, and just click Run), or using a little command-line
 batch execution tool (\fprog{opp\_runall}) supplied with {\opp}.
 
 Actually, it is also possible to get Cmdenv execute all runs in one go,
-by simply omitting the \ttt{-r} option.
+by simply omitting the \fopt{-r} option.
 
 \begin{commandline}
 $ aloha -u Cmdenv -c AlohaStudy

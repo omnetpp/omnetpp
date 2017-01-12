@@ -500,17 +500,17 @@ looks like the following (see \ttt{src/envir/startup.cc} in the source code):
      \textit{boot-time configuration object}. The boot-time configuration
      is always a \cclass{SectionBasedConfiguration} with
      \cclass{InifileReader}.
-  \item Shared libraries are loaded (see the \ttt{-l} command-line option,
-     and the \ttt{load-libs} configuration option). This allows
+  \item Shared libraries are loaded (see the \fopt{-l} command-line option,
+     and the \fconfig{load-libs} configuration option). This allows
      configuration classes to come from shared libraries.
-  \item The \ttt{configuration-class} configuration option is examined.
+  \item The \fconfig{configuration-class} configuration option is examined.
      If it is present, a configuration object of the given class
      is instantiated, and replaces the boot-time configuration.
      The new configuration object is initialized from the boot-time
      configuration, so that it can read parameters (e.g. database
      connection parameters, XML file name, etc) from it.
      Then the boot-time configuration object is deallocated.
-  \item The \ttt{load-libs} option from the new configuration object is
+  \item The \fconfig{load-libs} option from the new configuration object is
      processed.
   \item Then everything goes on as normally, using the new configuration
      object.
@@ -577,7 +577,7 @@ Register_Class(DatabaseConfigurationReader);
 It is possible to extend {\opp} with a new user interface. The new
 user interface will have fully equal rights to Cmdenv, Tkenv and Qtenv;
 that is, it can be activated by starting the simulation executable with the
-\ttt{-u} \textit{<name>} command-line or the \fconfig{user-interface}
+\fopt{-u} \textit{<name>} command-line or the \fconfig{user-interface}
 configuration option, it can be made the default user interface,
 it can define new command-line options and configuration options,
 and so on.
@@ -609,18 +609,18 @@ Register_OmnetApp("FooEnv", FooEnv, 30, "an experimental user interface");
 \end{cpp}
 
 The \ffilename{envirbase.h} header comes from the \ttt{src/envir} directory,
-so it is necessary to add it to the include path (\ttt{-I}).
+so it is necessary to add it to the include path (\fopt{-I}).
 
 The arguments to \fmac{Register\_OmnetApp()} include the user interface name
-(for use with the \ttt{-u} and \fconfig{user-interface} options),
+(for use with the \fopt{-u} and \fconfig{user-interface} options),
 the C++ class that implements it, a weight for default user interface selection
-(if \ttt{-u} is missing, the user interface with the largest weight will be
+(if \fopt{-u} is missing, the user interface with the largest weight will be
 activated), and a description string (for help and other purposes).
 
 The C++ class should implement all methods left pure virtual in
 \cclass{EnvirBase}, and possibly others if you want to customize
 their behavior. One method that you will surely want to reimplement is
-\ttt{run()} -- this is where your user interface runs. When this method
+\ffunc{run()} -- this is where your user interface runs. When this method
 exits, the simulation program exits.
 
 \begin{note}

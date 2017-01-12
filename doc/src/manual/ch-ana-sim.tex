@@ -538,11 +538,11 @@ consider the \textit{real} accuracy of your results:
 \label{sec:ana-sim:omnetpp-result-file-format}
 
 By default, {\opp} saves simulation results into textual, line-oriented files.
-The advantage of a text-based, line-oriented format is that it is very 
-accessible and easy to parse with a wide range of tools and languages, and 
+The advantage of a text-based, line-oriented format is that it is very
+accessible and easy to parse with a wide range of tools and languages, and
 still provides enough flexibility to be able to represent the data it
-needs to (in contrast to e.g. CSV). This section provides an overview of 
-these file formats (output vector and output scalar files); the precise 
+needs to (in contrast to e.g. CSV). This section provides an overview of
+these file formats (output vector and output scalar files); the precise
 specification is available in the Appendix (\ref{cha:result-file-formats}).
 
 %XXX move away:
@@ -645,8 +645,8 @@ outputscalarmanager-class="omnetpp::envir::SqliteOutputScalarManager"
 
 \begin{note}
 Alternatively, to make SQLite the default format, recompile {\opp} with
-\ttt{PREFER\_SQLITE\_RESULT\_FILES=yes} set in \ffilename{configure.user}. 
-(Don't forget to also run  \fprog{./configure} before \fprog{make}.) 
+\ttt{PREFER\_SQLITE\_RESULT\_FILES=yes} set in \ffilename{configure.user}.
+(Don't forget to also run  \fprog{./configure} before \fprog{make}.)
 \end{note}
 
 The SQLite result files will be created with the same names as textual
@@ -671,7 +671,7 @@ The database schema can be found in Appendix \ref{cha:result-file-formats}.
 
 {\opp}'s \fprog{scavetool} is a command-line program for exploring, filtering
 and processing of result files, and exporting the result in formats
-digestible by other tools. 
+digestible by other tools.
 
 \subsection{Commands}
 
@@ -688,27 +688,27 @@ digestible by other tools.
     of the output (group-by-runs; grep-friendly; suppress labels; several
     modes for identifying the run in the output, etc.)
 
-\item \tbf{vector}: Filter and export vector data.  One can filter by run, 
+\item \tbf{vector}: Filter and export vector data.  One can filter by run,
     module name and vector name, using match expressions. It is also possible
     to apply processing steps, i.e. a sliding window average or batch average
     filter. The list of available processing filters can be found in the
     help of the tool. Several output formats are available: vector file
     (default), CSV file, GNU Octave text file, MATLAB script.
 
-\item \tbf{scalar}: Filter and export scalar data. One can filter by run, 
+\item \tbf{scalar}: Filter and export scalar data. One can filter by run,
     module name, scalar name and value, using match expressions. In the output,
     scalars are organized in a table. The table can be organized to contain
     \textit{Module}, \textit{Name} and \textit{Value} columns, or to have each
     scalar in its own column (and data from one run in each row). Other
     groupings are also possible. Several output formats are available: CSV file,
-    GNU Octave text file, MATLAB script. 
+    GNU Octave text file, MATLAB script.
 
 \item \tbf{index}: Generate index files (.vci) for vector files. Note that this
     command is usually not needed, as other scavetool commands automatically create
     vector file indices if they are missing or out of date (unless indexing is
     explicitly disabled.) This command can also be used to rebuild a vector file
     so that data are clustered by vectors for more efficient access.
-     
+
 \item \tbf{help}: Prints help. The synopsys is \ttt{scavetool help <topic>},
     where any command name can be used as topic, plus there are
     additional ones like \ttt{patterns} or \ttt{filters}. \ttt{scavetool
@@ -730,7 +730,7 @@ $ scavetool *.sca *.vec
 runs: 459   scalars: 4120   vectors: 7235   histograms: 916
 \end{commandline}
 
-Listing all results is possible with \ttt{-l}: 
+Listing all results is possible with \fopt{-l}:
 
 \begin{commandline}
 $ scavetool -l *.sca *.vec
@@ -739,7 +739,7 @@ PureAlohaExperiment-439-20161216-18:56:20-27607:
 scalar Aloha.server  duration              26.3156
 scalar Aloha.server  collisionLength:mean  0.139814
 vector Aloha.host[0] radioState:vector vectorId=2 count=3 mean=0.33 ..
-vector Aloha.host[1] radioState:vector vectorId=3 count=9 mean=0.44 ..  
+vector Aloha.host[1] radioState:vector vectorId=3 count=9 mean=0.44 ..
 vector Aloha.host[2] radioState:vector vectorId=4 count=5 mean=0.44 ..
 ...
 \end{commandline}
@@ -762,7 +762,7 @@ modules into CSV files. It generates a separate file for each vector,
 named \ttt{out-1.csv}, \ttt{out-2.csv}, etc.
 
 \begin{commandline}
-$ scavetool vector -p 'module(**.sink) AND ("queueing time" OR "tx time")' 
+$ scavetool vector -p 'module(**.sink) AND ("queueing time" OR "tx time")'
     -O out.csv -F csv in.vec
 \end{commandline}
 
@@ -782,7 +782,7 @@ We recommend the following routes for the analysis of simulation results:
 Of courses, many other approaches are also possible, some of which are also
 described in later sections. In all cases, \fprog{scavetool} can be used to
 filter and export simulation results in a format understood by other tools, for
-example CSV. 
+example CSV.
 
 
 \subsection{The Analysis Tool in the Simulation IDE}
@@ -821,19 +821,19 @@ files into a single CSV, and to filter the results to reduce the amount
 of data to be loaded into the spreadsheet.
 
 One drawback of using spreadsheet programs is the manual work associated
-with preparing and reloading data every time simulations are re-run.  
+with preparing and reloading data every time simulations are re-run.
 
 
 \subsection{Using Python for Result Analysis}
 \label{sec:ana-sim:using-python}
 
-Python is a popular general-purpose programming language with a large ecosytem. 
+Python is a popular general-purpose programming language with a large ecosytem.
 It is widely used in the open source community and also commercially in a great
 number of application areas. Python is also among the most popular languages
 for teaching introductory computer science courses at universities.
 
 In the recent years, Python has emerged as great platform for numerical
-computing and statistics due to the appearance of powerful extension packages 
+computing and statistics due to the appearance of powerful extension packages
 like NumPy and Pandas. Some of the Python packages useful for our purposes:
 
 \begin{itemize}
@@ -847,9 +847,9 @@ like NumPy and Pandas. Some of the Python packages useful for our purposes:
     ``pylab'' API designed to closely resemble that of MATLAB, thereby making
     it easy to learn for experienced MATLAB users.
 
-  \item The \textit{sqlite3} package makes it possible to access SQLite3 
+  \item The \textit{sqlite3} package makes it possible to access SQLite3
     databases from Python. Its significance is that it allows for working
-    with {\opp} SQLite result files (see \ref{sec:ana-sim:sqlite-result-files}). 
+    with {\opp} SQLite result files (see \ref{sec:ana-sim:sqlite-result-files}).
 
 \end{itemize}
 
@@ -887,7 +887,7 @@ implementation of algorithms, creation of user interfaces, and interfacing
 with programs in other languages.
 
 GNU Octave is an MATLAB-like software environment, available on nearly all
-platforms. Octave is free software. 
+platforms. Octave is free software.
 
 \subsubsection{Gnuplot}
 \label{sec:ana-sim:gnuplot}

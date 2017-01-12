@@ -599,7 +599,7 @@ When \ftest{\%testprog} is present, it becomes the following:
 $ <custom-testprog> <test-extraargs> <global-extraargs>
 \end{filelisting}
 
-That is, \ttt{-u Cmdenv} and \ttt{<inifilenames>} are removed; this allows one
+That is, \fopt{-u Cmdenv} and \ttt{<inifilenames>} are removed; this allows one
 to invoke programs that do not require or understand them, and puts the test author
 in complete command of the arguments list.
 
@@ -853,7 +853,7 @@ differences in floating point arithmetic across platforms.\footnote{There
 are differences between the floating point operations of AMD and Intel
 CPUs. Running under a processor emulator like \fprog{valgrind} may also
 produce a different fingerprint. This is normal. Hint: see gcc options
-\ttt{-mfpmath=sse -msse2}.} Acknowledging this fact, {\opp} lets one list
+\fopt{-mfpmath=sse -msse2}.} Acknowledging this fact, {\opp} lets one list
 several values for a fingerprint, separated by \textit{spaces}, and will
 accept whichever is produced by the simulation. The following example lists
 two alternative values for both fingerprints.
@@ -1011,7 +1011,7 @@ tests.
 
 Statistical tests may also be implemented in \ttt{.test} files. To let the
 tool run several simulations within one test, one may use
-\ftest{\%extraargs} to pass the \ttt{-r <runs>} option to Cmdenv;
+\ftest{\%extraargs} to pass the \fopt{-r <runs>} option to Cmdenv;
 alternatively, one may use \ftest{\%testprog} to have the test tool run
 \fprog{opp\_runall} instead of the normal simulation program. For doing the
 statistical computations, one may use \ftest{\%postrun-command} to run an R
