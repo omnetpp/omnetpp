@@ -444,16 +444,14 @@ void TimeLineGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 QVector<cObject *> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
 {
     // cursor position plus minus 2 pixel
-    QRectF rect(pos.x() - 2, pos.y() - 2, 4, 4);
+    QRectF rect(pos.x() - 2, pos.y() - 2, 5, 5);
     QList<QGraphicsItem *> items = scene()->items(rect);
-    if (items.size() == 0)
-        return QVector<cObject *>();
 
     QVector<cObject *> objects;
     for (int i = 0; i < items.size(); ++i) {
-        QVariant variant = items[i]->data(ITEMDATA_COBJECT);
-        if (variant.isValid())
-            objects.push_back(variant.value<cMessage *>());
+        cObject *object = items[i]->data(ITEMDATA_COBJECT).value<cMessage *>();
+        if (object && !objects.contains(object))
+            objects.push_back(object);
     }
     return objects;
 }
