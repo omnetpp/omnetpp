@@ -130,29 +130,25 @@ QVariant TreeItemModel::data(const QModelIndex& index, int role) const
     if (!node)
         return QVariant();
 
-    if (role == Qt::DisplayRole) {
-        long id = -1;
-        if (dynamic_cast<cModule *>(node))
-            id = dynamic_cast<cModule *>(node)->getId();
-        else if (dynamic_cast<cMessage *>(node))
-            id = dynamic_cast<cMessage *>(node)->getId();
-
-        QString text = node->getFullName() + QString(" (") + getObjectShortTypeName(node) + ")"
-            +(id >= 0 ? "(id=" + QString::number(id) + QString(")") : "");
-        return QVariant(text);
+    switch (role) {
+        case Qt::DisplayRole: {
+            long id = getObjectId(node);
+            return node->getFullName() + QString(" (") + getObjectShortTypeName(node) + ")"
+                    + (id >= 0 ? " id=" + QString::number(id) : "");
+        }
+        case Qt::DecorationRole:
+            return QIcon(":/objects/" + getObjectIcon(node));
+        case Qt::UserRole:
+            // returning the raw cObject* - needed to preserve object tree node expansion state
+            return QVariant::fromValue(node);
+        case Qt::ToolTipRole: {
+            auto info = node->str();
+            return QString("(") + getObjectShortTypeName(node) + ") " + node->getFullName()
+                    + (info.empty() ? "" : (", " + info).c_str());
+        }
+        default:
+            return QVariant();
     }
-    else if (role == Qt::DecorationRole) {
-        return QVariant(QIcon(":/objects/" + getObjectIcon(node)));
-    }
-    else if (role == Qt::UserRole) {
-        // returning the raw cObject* - needed to preserve object tree node expansion state
-        return QVariant::fromValue(node);
-    }
-    else if (role == Qt::ToolTipRole) {
-        return QString("(") + getObjectShortTypeName(node) + ") " + node->getFullName() + ", " + node->str().c_str();
-    }
-
-    return QVariant();
 }
 
 bool TreeItemModel::hasChildren(const QModelIndex& parent) const
