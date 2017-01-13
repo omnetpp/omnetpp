@@ -4,11 +4,11 @@
 \section{Overview}
 \label{sec:graphics:overview}
 
-{\opp} simulations can be run under graphical user interfaces (Tkenv,
-Qtenv) that offer visualization and animation in addition to interactive
+{\opp} simulations can be run under graphical user interfaces like Qtenv
+that offer visualization and animation in addition to interactive
 execution and other features. This chapter deals with model visualization.
 
-{\opp} essentially provides three main tools for defining and enhancing
+{\opp} essentially provides four main tools for defining and enhancing
 model visualization:
 
 \begin{enumerate}
@@ -26,15 +26,22 @@ model visualization:
     and anything that can be built by combining them and applying effects like
     rotation and scaling. Like display strings, figures can also be specified
     in NED files, but it is generally more useful to create and manipulate them
-    programmatically. Extra canvas instances can also be created and populated
-    at runtime.
+    programmatically. Every module has its own default canvas, and extra canvases 
+    can also be created at runtime.
 
     \item \textit{3D visualization} of the simulation's virtual world is a
     third possiblity. {\opp}'s 3D visualization capabilities come from the
     open-source OpenSceneGraph library and its osgEarth extension. These
-    libraries offer high-level functionality, such as reading 3D model files
+    libraries build on top of OpenGL, and beyond basic graphics functionality 
+    they also offer high-level capabilities, such as reading 3D model files
     directly from disk, or displaying maps, 3D terrain or Earth as a planet
     using online map and satellite imagery data sources.
+
+    \item \textit{Support for smooth custom animation} allows models to visualize
+    their operation using sophisticated animations. The key idea is that the
+    simulation model is called back from the runtime GUI (Qtenv) repeatedly
+    at a reasonable ``frame rate,'' allowing it to continually update the
+    canvas (2D) and/or the 3D scene to produce fluid animations.
 
 \end{enumerate}
 
@@ -52,18 +59,19 @@ mobile node, it was embedded in \ffunc{handleMessage()} functions, enclosed
 in \ttt{if (ev.isGUI())} blocks. This was less than ideal, because the
 visualization code would run for all events in that module and not just
 before display updates when it was actually needed. In \textit{Express} mode,
-for example, Tkenv would only refresh the display once every second or so,
+for example, Qtenv would only refresh the display once every second or so,
 with a large number of events processed between updates, so visualization
 code placed inside \ffunc{handleMessage()} could potentially waste a
-significant amount of CPU cycles.
+significant amount of CPU cycles. Also, visualization code embedded in 
+\ffunc{handleMessage()} is not suitable for creating smooth animations.
 
 
 \subsection{The refreshDisplay() Method}
 \label{sec:graphics:refreshdisplay-usage-and-semantics}
 
 Starting from {\opp} version 5.0, visualization code can be placed into a
-dedicated method. It is called much more economically, that is, only
-when needed.
+dedicated method. It is called much more economically, that is, exactly 
+as often as needed.
 
 This method is \ffunc{refreshDisplay()}, and is declared on
 \cclass{cModule} as:
@@ -103,8 +111,8 @@ down to the following:
       zoomed, navigated in, or closed; after model data (cPar, cDisplayString
       values, etc.) is edited, and after finalization.
 
-\item If smooth animation is used, it is invoked continuously with a
-      reasonably high frequency in \textit{Step} and \textit{Run} modes.
+\item If smooth animation is used, it is invoked continuously with a reasonably
+      high frequency in \textit{Step}, \textit{Run} and \textit{Fast} modes.
       This can mean anything from many times between processing two consecutive
       events to not even once until after the processing of a couple of events,
       depending on the current animation speed and event density.
@@ -117,7 +125,7 @@ Here is an example of how one would use it:
 void FooModule::refreshDisplay() const
 {
     // refresh statistics
-    char buf[32];
+    char buf[80];
     sprintf(buf, "Sent:%d  Rcvd:%d", numSent, numReceived);
     getDisplayString()->setTagArg("t", 0, buf);
 
@@ -134,11 +142,11 @@ simulation is running under a GUI in \textit{Express} mode. Visualization
 code may check this flag and adapt the visualization accordingly. An example:
 
 \begin{cpp}
-if (!getEnvir()->isExpressMode()) {
-    // visualize current frame transmission
+if (getEnvir()->isExpressMode()) {
+    // display throughput statistics
 }
 else {
-    // display throughput statistics
+    // visualize current frame transmission
 }
 \end{cpp}
 
@@ -172,14 +180,185 @@ and \ffunc{refreshDisplay()} allows one to completely separate the two.
 \label{sec:graphics:refreshdisplay-constness}
 
 Code in \ffunc{refreshDisplay()} should never alter the state of the
-simulation (mostly because from the simulation model's point of
-view, it is completely unpredictable when and whether \ffunc{refreshDisplay()}
-is invoked by the runtime), and the method is declared \ttt{const} to gently
-encourage this behavior.
+simulation because that would destroy repeatability, due to the 
+fact that the timing and frequency of \ffunc{refreshDisplay()}
+calls is completely unpredictable from the simulation model's point of view.
+The fact that the method is declared \ttt{const} gently encourages this behavior.
 
 If visualization code makes use of internal caches or maintains some
 other mutable state, such data members can be declared \ttt{mutable}
 to allow \ffunc{refreshDisplay()} to change them.
+
+
+\section{Smooth Animation}
+\label{sec:graphics:smooth-animation}
+
+\subsection{Concepts}
+\label{sec:graphics:animation-concepts}
+
+Support for smooth custom animation allows models to visualize their operation 
+using sophisticated animations. The key idea is that the simulation model 
+is called back from the runtime GUI (Qtenv) repeatedly at a reasonable 
+``frame rate,'' allowing it to continually update the canvas (2D) and/or the 
+3D scene to produce fluid animations. Callback means that the 
+\ffunc{refreshDisplay()} methods of modules and figures are invoked.
+
+\ffunc{refreshDisplay()} knows the animation position from the simulation time
+and the \textit{animation time}, a variable also made accessible to the model.
+If you think about the animation as a movie, animation time is simply the 
+position in seconds in the movie. By default, the movie is played in Qtenv at normal (1x) 
+speed, and then animation time is simply the number of seconds since the
+start of the movie. The speed control slider in Qtenv's toolbar allows 
+you to play it at higher (2x, 10x, etc.) and lower (0.5x, 0.1x, etc.)
+speeds; so if you play the movie at 2x speed, animation time will
+pass twice as fast as real time.
+
+When smooth animation is turned on (more about that later), simulation 
+time progresses in the model (piecewise) linearly. The speed at which the simulation
+progresses in the movie is called \textit{animation speed}. Sticking to the
+movie analogy, when the simulation progresses in the movie 100 times
+faster than animation time, animation speed is 100.
+
+Certain actions take zero simulation time, but we still want to animate
+them. Examples of such actions are the sending of a message over a zero-delay link,
+or a visualized C++ method call between two modules. When these animations play
+out, simulation is paused and simulation time stays constant 
+until the animation is over. Such periods are called \textit{holds}.
+
+\subsection{Smooth vs. Traditional Animation}
+\label{sec:graphics:animation-modes}
+
+Smooth animation is a relatively new feature in \opp, and not all simulations
+need it. Smooth and traditonal, ``non-smooth'' animation in Qtenv are
+two distinct modes which operate very differently:
+
+\begin{itemize}
+  \item In \tbf{Traditional animation}, simulation events are essentially 
+    processed \textit{as fast as possible}, and meanwhile, \ffunc{refreshDisplay()}
+    is called with some policy (e.g. once before/after each event, or at
+    1s intervals real-time) to keep the displayed  graphics up to date.
+  \item \tbf{Smooth animation} is essentially a \textit{scaled realtime simulation},
+    where \ffunc{refreshDisplay()} is continually called with a reasonably
+    high frame rate.
+\end{itemize}
+
+The factor that decides which operation mode is active is the \textit{presence
+of an animation speed}. If there is no animation speed, traditional
+animation is performed; if there is one, smooth animation is done.
+
+The Qtenv GUI has a dialog (\textit{Animation Parameters}) which displays 
+the current animation speed, among other things. This dialog allows the
+user to check at any time which operation mode is currently active.\footnote{
+Note that even during traditional animation, some built-in animation effects
+request animation speeds and holds, so there may be periods when smooth animation
+is performed.}
+
+\subsection{The Choice of Animation Speed}
+\label{sec:graphics:animation-speed}
+
+Different animation speeds may be appropriate for different animation effects.
+For example, when animating WiFi traffic where various time slots are on the microsecond scale,
+an animation speed on the order of $10^-5$ might be appropriate; when animating the 
+movement of cars or pedestrians, an animation speed of $1$ is a reasonable choice.
+When several animations requiring different animation speeds occur in the same
+scene, one solution is to animate the scene using the lowest animation speed
+so that even the fastest actions can be visually followed by the human viewer.
+ 
+The solution provided by {\opp} for the above problem is the following.
+Animation speed cannot be controlled explicitly, only requests may be submitted.
+Several parts of the models may request different animation speeds. 
+The effective animation speed is computed as the minimum of the animation 
+speeds of visible canvases, unless the user interactively overrides it in the UI, 
+for example by imposing a lower or upper limit.
+
+An animation speed requests may be submitted using the \ffunc{setAnimationSpeed()} 
+method of \cclass{cCanvas}.\footnote{The class that represents the canvas for
+2D graphics, see \ref{sec:graphics:creating-accessing-and-viewing-canvases} for more
+info.} The \ffunc{setAnimationSpeed()} method takes two arguments: 
+the animation speed value (a \ttt{double}) and an object pointer (\ttt{cObject*})
+that identifies the part of the model that requests it. The second, object parameter
+is used as a key that allows the request to be updated or withdrawn later. 
+Typically, the pointer of the module that makes the request (i.e. \ttt{this}) is 
+used for that purpose. Calling \ffunc{setAnimationSpeed()} with zero animation 
+speed cancels the request.
+
+An example:
+
+\begin{cpp}
+cCanvas *canvas = getSystemModule()->getCanvas(); // toplevel canvas
+canvas->setAnimationSpeed(2.0, this); // one request
+canvas->setAnimationSpeed(1e-6, macModule); // another request
+...
+canvas->setAnimationSpeed(1.0, this); // overwrite first request
+canvas->setAnimationSpeed(0, macModule); // cancel second request
+\end{cpp}
+
+In practice, built-in animation effects such as message sending animation
+also submit their own animation speed requests internally, so they also 
+affect the effective animation speed chosen by Qtenv.
+
+The current effective animation speed can be obtained from the environment of the
+simulation (\cclass{cEnvir}, see chapter \ref{cha:embedding} for context): 
+
+\begin{cpp}
+double animSpeed = getEnvir()->getAnimationSpeed(); 
+\end{cpp}
+
+Animation time can be accessed like this:
+
+\begin{cpp}
+double animTime = getEnvir()->getAnimationTime();
+\end{cpp}
+
+Animation time starts from zero, and monotonically increases with simulation 
+time and also during ``holds''.
+
+
+\subsection{Holds}
+\label{sec:graphics:animation-hold}
+
+As mentioned earlier, a hold interval is an interval when only animation
+takes place, but simulation time does not progress and no events
+are processed. Hold intervals are intended for animating actions
+that take zero simulation time.
+
+A hold can be requested with the \ffunc{holdSimulationFor()} method
+of \cclass{cCanvas}, which accepts an animation time delta as parameter.
+If a hold request is issued when there is one already in progress,
+the current hold will be extended as needed to incorporate the
+request. A hold request cannot be cancelled or shrunk.
+
+\begin{cpp}
+cCanvas *canvas = getSystemModule()->getCanvas(); // toplevel canvas
+canvas->holdSimulationFor(0.5); // request a 0.5s (animation time) hold
+\end{cpp}
+
+When rendering frames in \ffunc{refreshDisplay()}) during a hold, the code
+can use animation time to determine the position in the animation.
+If the code needs to know the animation time elapsed since the start of
+the hold, it should query and remember the animation time when issuing
+the hold request.
+
+If the code needs to know the animation time remaining until the end
+of the hold, it can use the \ffunc{getRemainingAnimationHoldTime()} 
+method of \cclass{cEnvir}. Note that this is not necessarily the
+time remaining from its own hold request, because other parts of the
+simulation might extend the hold.
+
+
+\subsection{Disabling Built-In Animations}
+
+If a model implements such full-blown animations for a compound module that
+{\opp}'s default animations (message sending/method call animations) become
+a liability, they can be programmatically turned off for that module with
+\cclass{cModule}'s \ffunc{setBuiltinAnimationsAllowed()} method:
+
+\begin{cpp}
+// disable animations for the toplevel module
+cModule *network = getSimulation()->getSystemModule();
+network->setBuiltinAnimationsAllowed(false);
+\end{cpp}
+
 
 
 \section{Display Strings}

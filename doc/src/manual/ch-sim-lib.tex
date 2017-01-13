@@ -1770,7 +1770,7 @@ The \ffunc[getPDF()]{getPDF(x)} and \ffunc[getCDF()]{getCDF(x)} member functions
 return the value of the Probability Density Function and the Cumulated
 Density Function at a given \textit{x}, respectively.
 
-Note that bins many not be immediately available during observation
+Note that bins may not be immediately available during observation
 collection, because some histogram strategies use precollection
 to gather information about the distribution before setting up the bins.
 Use \ffunc{binsAlreadySetUp()} to figure out whether bins are
@@ -1860,29 +1860,13 @@ To keep up with distributions that change over time, this histogram strategy
 can auto-extend the histogram range by adding new bins as needed. It also
 performs bin merging when necessary, to keep the number of bins reasonably low.
 
-\cclass{cAutoRangeHistogramStrategy} is a generic, very configurable histogram 
-strategy which creates uniform bins, and creates good quality histograms 
-for practical distributions. This strategy uses precollection.
+\cclass{cAutoRangeHistogramStrategy} is a generic, very configurable,
+precollection-based histogram strategy which creates uniform bins, and 
+creates quality histograms for practical distributions.
 
-Several parameters and constraints can be specified for setting up the bins:
-range lower and/or upper endpoint, bin size, number of bins, mode (integers
-or reals), and whether bin size rounding is to be used. If bin size rounding
-is turned on, a bin size of the form ${1|2|5}*10^n$ is chosen, i.e. a power of ten,
-or two or five times a power of ten. When both endpoints of the range are
-left unspecified, the histogram range is derived by taking the range of the
-precollected observations and extending it symmetrically by a range extension
-factor. If one of the endpoints is specified by the user, that value is used
-instead of the computed one. The number of observations to precollect as well
-as the range extension factor can be configured. If the histogram mode
-(integers vs. reals) is left unspecified, it will be determined by examining
-the precollected values. In integers mode, bin edges will be whole numbers.
-If the histogram range and mode are all specified by the user, the
-precollection phase is skipped.
-
-If there are inconsistent or conflicting settings, e.g. an explicitly given
-histogram range is not multiple of the bin size in integers mode, the bin
-setup algorithm will do "best effort" to set up the histogram instead of
-stopping with an exception.
+Several constraints and hints can be specified for setting up the bins: 
+range lower and/or upper endpoint, bin size, number of bins, 
+mode (integers vs. reals), and whether bin size rounding is to be used. 
 
 This histogram strategy can auto-extend the histogram range by adding new
 bins at either end. One can also set up an upper limit to the number of
