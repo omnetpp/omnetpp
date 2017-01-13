@@ -440,6 +440,9 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
     H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
       << " from " << fileElement->getFilename() << ".\n//\n\n";
+    H << "#if defined(__clang__)\n";
+    H << "#  pragma clang diagnostic ignored \"-Wreserved-id-macro\"\n";
+    H << "#endif\n";
     H << "#ifndef " << headerGuard << "\n";
     H << "#define " << headerGuard << "\n\n";
     H << "#include <omnetpp.h>\n";
@@ -479,10 +482,13 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
     CC << "#  pragma clang diagnostic ignored \"-Wconversion\"\n";
     CC << "#  pragma clang diagnostic ignored \"-Wunused-parameter\"\n";
     CC << "#  pragma clang diagnostic ignored \"-Wc++98-compat\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wunreachable-code-break\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wold-style-cast\"\n";
     CC << "#elif defined(__GNUC__)\n";
     CC << "#  pragma GCC diagnostic ignored \"-Wshadow\"\n";
     CC << "#  pragma GCC diagnostic ignored \"-Wconversion\"\n";
     CC << "#  pragma GCC diagnostic ignored \"-Wunused-parameter\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wold-style-cast\"\n";
     CC << "#  pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"\n";
     CC << "#  pragma GCC diagnostic ignored \"-Wfloat-conversion\"\n";
     CC << "#endif\n\n";
@@ -975,8 +981,7 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
 
     std::ostringstream o;
     o << " * <pre>\n";
-    o << opp_indentlines(opp_trim(opp_replacesubstring(str, "*/", "  ", true)), " * ");
-//    o << ';';   //FIXME HACK for reduce difference
+    o << opp_indentlines(opp_trim(opp_replacesubstring(opp_replacesubstring(str, "*/", "  ", true), "@", "\\@", true)), " * ");
     o << "\n";
     o << " * </pre>\n";
     return o.str();
