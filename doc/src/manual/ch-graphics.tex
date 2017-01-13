@@ -1077,66 +1077,52 @@ we'll look into how one can define new figure types.
 
 \begin{note}
 Figures are only data storage classes. The real drawing code is inside
-Tkenv/Qtenv; it might involve a parallel data structure, figure renderer classes, etc.
-When an inspector is not open, these things don't exist. Therefore, data flow
-is only one-directional -- figures affect the rendered image, but figures
-cannot access e.g. the actual bounding box of a text just drawn.
+Tkenv/Qtenv; it might involve a parallel data structure, figure renderer
+classes, etc. When the canvas is not viewed, corresponding objects in
+Tkenv/Qtenv do not exist. Therefore, data flow is largely one-directional --
+figures-to-GUI.
 \end{note}
 
 
-\subsection{Figure Hierarchy}
-\label{sec:graphics:figure-hierarchy}
+\subsection{The Figure Tree}
+\label{sec:graphics:figure-tree}
 
-Figures on a canvas form a hierarchy. The canvas has a \textit{root
-figure}, and all toplevel figures in the canvas are children of the root
-figure. In addition, any figure may contain further figures as children.
-(That is, \textit{child list} is the built-in property of \cclass{cFigure},
-not of a specific subclass like \cclass{cGroupFigure}.)
+Figures on a canvas are organized into a tree. The canvas has a
+(hidden) \textit{root figure}, and all toplevel figures are
+children of the root figure. Any figure may contain child figures,
+not only dedicated ones like \cclass{cGroupFigure}.
 
 Every figure also has a name string, inherited from \cclass{cNamedObject}.
-Putting it together with the figure hierarchy, this means that every figure
-also has a \textit{hierarchical name}. It consists of the names of figures
-in the path from the root figure down to the the figure, joined with dots.
-(The name of the root figure itself is omitted.)
+Since figures are in a tree, every figure also has a \textit{hierarchical name}.
+It consists of the names of figures in the path from the root figure down to the
+the figure, joined with dots. (The name of the root figure itself is omitted.)
 
-One can obtain a pointer to the root figure of the canvas with the
-\ffunc{getRootFigure()} member function, but that is usually unnecessary,
-because the \cclass{cCanvas}, like \cclass{cFigure}, has methods for
-accessing and manipulating its child figures directly.
+Child figures can be added to a figure with the \ffunc{addFigure()} method, or
+inserted into the child list of a figure relative to a sibling with the
+\ffunc{insertBefore()} / \ffunc{insertAfter()} methods.
+\ffunc{addFigure()} has two flavours: one for appending, and one for inserting
+at a numeric position. Child figures can be accessed by name
+(\ffunc{getFigure(name)}), or enumerated by index in the child list
+(\ffunc{getFigure(k)}, \ffunc{getNumFigures()}). One can obtain the index of a
+child figure using  \ffunc{findFigure()}. The \ffunc{removeFromParent()} method
+can be used to remove a figure from its parent.
 
-One can add a child figure using \ffunc{addFigure()}. It has two flavours: one
-for appending, and one for inserting at a numeric position. The order of
-children is important because it also denotes Z-order. Z-order comes into
-play when children are overlapping on the screen: the first child will be
-the bottom-most one, and the last child will be the topmost one (think of
-it like drawing order). The methods \ffunc{addFigureAbove()} and
-\ffunc{addFigureBelow()} allows one to insert a figure into the child list
-relative to an existing child figure.
+For convenience, \cclass{cCanvas} also has \ffunc{addFigure()},
+\ffunc{getFigure()}, \ffunc{getNumFigures()} and other methods for managing
+toplevel figures without the need to go via the root figure.
 
-Child figures can be accessed by name (\ffunc{getFigure(name)}), or
-enumerated by index in the child list (\ffunc{getFigure(k)},
-\ffunc{getNumFigures()}). One can obtain the index of a child figure using
-\ffunc{findFigure()}.
-
-The following code illustrates these methods:
+The following code enumerates the children of a figure named \ttt{"group1"}:
 
 \begin{cpp}
-// print the names of child figures above "cloud" in Z-order
-// (in the code, 'parent' can be either a canvas or a figure):
-cFigure *cloudFigure = parent->getFigure("cloud");
-if (cloudFigure) {
-    int cloudPos = parent->findFigure(cloudFigure);
-    for (int i = cloudPos+1; i < parent->getNumFigures(); i++)
-        EV << parent->getFigure(i)->getName() << endl;
-}
+cFigure *parent = canvas->getFigure("group1");
+ASSERT(parent != nullptr);
+for (int i = 0; i < parent->getNumFigures(); i++)
+    EV << parent->getFigure(i)->getName() << endl;
 \end{cpp}
 
 It is also possible to locate a figure by its hierarchical name
 (\ffunc{getFigureByPath()}), and to find figure by its (non-hierarchical)
 name anywhere in a figure subtree (\ffunc{findFigureRecursively()}).
-
-To remove a figure from the child list, use \ffunc{removeFigure()} with
-either the figure's pointer or its index in the child list.
 
 The \ffunc{dup()} method of figure classes only duplicates the very figure
 on which it was called. (The duplicate will not have ay children.) To clone
@@ -1178,7 +1164,7 @@ module Foo
 {
     @display("bgb=800,500");
     @figure[box](type=rectangle; coords=10,50; size=200,100; fillColor=green);
-    @figure[box.txt](type=text; coords=20,80; text=placeholder);
+    @figure[box.label](type=text; coords=20,80; text=placeholder);
 }
 \end{ned}
 
@@ -1189,15 +1175,28 @@ And the C++ part:
 cCanvas *canvas = getParentModule()->getCanvas();
 
 // obtain the figure pointer by hierarchical name, and change the text:
-cTextFigure *textFigure = dynamic_cast<cTextFigure *>(canvas->
-                                          getFigureByPath("box.txt"));
-ASSERT(textFigure!=nullptr);
+cFigure *figure = canvas->getFigureByPath("box.label")
+cTextFigure *textFigure = check_and_cast<cTextFigure *>(figure);
 textFigure->setText("Hello World!");
 \end{cpp}
 
 %% In addition to \ttt{type}, there are some more special attributes
 %% (\ttt{visible}, \ttt{tags}, \ttt{transform}, \ttt{childZ})
 
+\subsection{Stacking Order}
+\label{sec:graphics:canvas-stacking-order}
+
+The stacking order or Z-order of figures is jointly determined by the child
+order and the \cclass{cFigure} attribute called Z-index, with the latter
+taking priority.
+Figures with a larger Z-index will be displayed above figures with smaller
+Z-indices. Among figures whose Z-indices are equal, the first child will be the
+bottom-most one (below others), and the last child will be the
+topmost one.
+
+There are several methods for managing stacking order:
+\ffunc{setZIndex()}/\ffunc{getZIndex()}, \ffunc{insertAbove()}/\ffunc{insertBelow()},
+\ffunc{isAbove()}/\ffunc{isBelow()}, \ffunc{raiseAbove()}/\ffunc{lowerBelow()}.
 
 
 \subsection{Transforms}
@@ -1366,7 +1365,6 @@ not just the figure itself. The flag can be accessed via the
 \ffunc{isVisible()}, \ffunc{setVisible()} member functions of
 \cclass{cFigure}.
 
-
 \subsubsection{Tags}
 \label{sec:graphics:figure-tags}
 
@@ -1390,6 +1388,40 @@ Tags functionality, when used carefully, allows one to define "layers"
 that can be turned on/off from Tkenv/Qtenv.
 
 %% TODO example
+
+
+\subsection{Figure Tooltip, Associated Object}
+\label{sec:graphics:figure-tooltip-associated-object}
+
+\subsubsection{ Tooltip}
+\label{sec:graphics:figure-tooltip}
+
+Figures may be assigned a tooltip text using the \ffunc{setTooltip()} method. 
+The tooltip is shown in the runtime GUI when one hovers with the mouse over the
+figure.
+
+\subsubsection{Associated Object}
+\label{sec:graphics:figure-associated-object}
+
+In the visualization of many simulations, some figures correspond to
+certain objects in the simulation model. For example, a truck image
+may correspond to a module that represents the mobile node
+in the simulation. Or, an inflating disc that represents a wireless
+signal may correspond to a message (\cclass{cMessage}) in the simulation.
+
+One can set the associated object on a figure using the 
+\ffunc{setAssociatedObject()} method. The GUI can use this information
+provide a shortcut access to the associated object, for example select the
+object in an inspector when the user clicks the figure, or display
+the object's tooltip over the figure if it does not have its own.
+
+\begin{caution}
+The object must exist (i.e. must not be deleted) while it is
+associated with the figure. When the object is deleted, the user
+is responsible for letting  the figure forget the pointer,  
+e.g. by a  \ttt{setAssociatedObject(nullptr)} call.
+\end{caution} 
+  
 
 \subsection{Specifying Positions, Colors, Fonts and Other Properties}
 \label{sec:graphics:figure-positions-colors-fonts-etc}
@@ -2112,7 +2144,12 @@ The font can be set with the \ffunc{setFont()} member function that takes
 size. Color can be set with \ffunc{setColor()}. The displayed text can
 also be partially transparent. This is controlled with the \ffunc{setOpacity()}
 member function that accepts an \ttt{double} in the $[0,1]$ range, $0$ meaning
-fully transparent (invisible), and $1$ meaning fully opaque.
+fully transparent (invisible), and $1$ meaning fully opaque. 
+
+It is also possible to have a partially transparent ``halo'' displayed around
+the text. The halo improves readability when the text is displayed over a
+background that has a similar color as the text, or when it overlaps with other
+text items. The halo can be turned on with \ffunc{setHalo()}. 
 
 
 \subsubsection{cTextFigure}
@@ -2373,33 +2410,104 @@ The result:
 \subsection{Compound Figures}
 \label{sec:graphics:compound-figures}
 
-There are two ways the set of figure types can be extended:
+Any graphics can be built using primitive (i.e. elementary) figures
+alone. However, when the graphical presentation of a simulation
+grows complex, it is often convenient to be able to group certain
+figures and treat them as a single unit. For example, although
+a bar chart can be displayed using several independent rectangle,
+line and text items, there are clearly benefits to being able to
+handle them together as a single bar chart object.
 
-\begin{enumerate}
-  \item Compound figures.
-  \item New standalone figure types
-\end{enumerate}
+\textit{Compound figures} are \cclass{cFigure} sublasses that
+are themselves composed of several figures, but can be instantiated
+and manipulated as a single figure. Compound figure classes
+can be used from C++ code like normal figures, and can also
+be made to be able to be instatiated from \fprop{@figure} properties.
 
-Compound figures are useful when the graphical presentation of a simulation
-grows complex, and it becomes desirable to be able to group certain figures
-into larger units that can be created and manipulated like a single figure.
+Compound figure classes usually subclass from \cclass{cGroupFigure}.
+The class would typically maintain pointers to its subfigures in
+class members, and its methods (getters, setters, etc.) would operate
+on the subfigures.
 
-Such compound figures can be created by subclassing e.g. \cclass{cGroupFigure}.
-The constructor would create and add subfigures as children, and also remember
-their pointers. Added getter and setter methods would delegate to subfigures.
+To be able to use the new C++ class with \fprop{@figure},
+it needs to be registered using the \fmac{Register\_Figure()} macro.
+The macro expects two arguments: one is the type name by which the figure
+is known to \fprop{@figure} (the string to be used with the \ttt{type} property key),
+and the other is the C++ class name. For example, to be able to instantiate
+a class named \ttt{FooFigure} with \ttt{@figure[\ldots](type=foo;\ldots)},
+the following line needs to be added into the C++ source:
+
+\begin{cpp}
+Register_Figure("foo", FooFigure);
+\end{cpp}
+
+If the figure needs to be able take values from \fprop{@figure} properties,
+the class needs to override the \ffunc{parse(cProperty*)} method,
+and proably also \ffunc{getAllowedPropertyKeys()}. We recommend that
+you examine the code of the figure classes built into {\opp} for
+implementation hints.
 
 %% TODO example: change the cGroupFigure example to be a subclass of cGroupFigure
 
-\subsection{Defining New Figure Types}
-\label{sec:graphics:defining-new-figure-types}
 
-It is is more difficult to create new figure types where the rendering is not
-based on already existing figures. The difficulty arises from the point that
-figures are only data storage classes, actual drawing takes place in the
-GUI library such as Tkenv and Qtenv. Thus, it is not enough to write the new
-figure class itself, but one also needs to extend Tkenv and/or Qtenv as well,
-to add the rendering code.
+\subsection{Self-Refreshing Figures}
+\label{sec:graphics:self-refreshing-figures}
 
+Most figures are entirely passive objects. When they need to be moved
+or updated during the course of the simulation, there must be an
+active component in the simulation that does it for them. Usually it is the
+\ffunc{refreshDisplay()} method of some simple module (or modules) that
+contain the code that updates various properties of the figures.
+
+However, certain figures can benefit from being able to refresh themselves
+during the simulation. Picture, for example, a compound figure (see
+previous section) that displays a line chart which is continually
+updated with new data as the simulation progresses. The \ttt{LineChartFigure}
+class may contain an \ttt{addDataPoint(x,y)} method which is called
+from other parts of the simulation to add new data to the chart.
+The question is when to update the subfigures that make up the chart: the
+line(s), axis ticks and labels, etc. It is clearly not very efficient
+to do it in every \ttt{addDataPoint(x,y)} call, especially when the
+simulation is running in Express mode when the screen is not refreshed
+very often. Luckily, our hypothetical \ttt{LineChartFigure} class
+can do better, and only refresh its subfigures when it matters, i.e.
+when the result can actually be seen in the GUI. To do that, the class
+needs to override \cclass{cFigure}'s \ffunc{refreshDisplay()} method, and
+place the subfigure updating code there.
+
+Figure classes that override \ffunc{refreshDisplay()} to refresh their
+own contents are called \textit{self-refreshing figures}. Self-refreshing
+figures as a feature are available since {\opp} version 5.1.
+
+\ffunc{refreshDisplay()} is declared on \cclass{cFigure} as:
+
+\begin{cpp}
+virtual void refreshDisplay();
+\end{cpp}
+
+The default implementation does nothing.
+
+Like \cclass{cModule}'s \ffunc{refreshDisplay()}, \cclass{cFigure}'s
+\ffunc{refreshDisplay()} is invoked only under graphical user interfaces
+(Qtenv/Tkenv), and right before display updates. However, it is only invoked for
+figures on canvases that are currently displayed. This makes it possible for
+canvases that are never viewed to have zero refresh overhead.
+
+Since \cclass{cFigure}'s \ffunc{refreshDisplay()} is only invoked when the
+canvas is visible, it should only be used to update local state, i.e. only
+local members and local subfigures. The code should certainly not access
+other canvases, let alone change the state of the simulation.
+
+
+\subsection{Figures with Custom Renderers}
+\label{sec:graphics:figures-with-custom-renderers}
+
+In rare cases it might be necessary to create figure types where the rendering
+is entirely custom, and not based on already existing figures. The
+difficulty arises from the point that figures are only data storage classes,
+actual drawing takes place in the GUI library such as Tkenv and Qtenv.
+Thus, in addition to writing the new figure class, one also needs to extend
+Tkenv and/or Qtenv with the corresponding rendering code.
 We won't go into full details on how to extend Tkenv/Qtenv here, just give
 you a few pointers in case you need it.
 
@@ -3348,7 +3456,7 @@ osgEarth online documentation:
 \item http://docs.osgearth.org/en/latest/index.html
 \end{itemize}
 
-\subsubsection{Samples}
+\subsubsection{Sample code}
 \label{sec:graphics:osg-osgearth-samples}
 
 Be sure to check the samples coming with the OpenSceneGraph installation, as
@@ -3373,9 +3481,8 @@ a free pdf download.
 \item \textit{OpenSceneGraph 3.0: Beginners Guide}, by Wang Rui. Packt Publishing, 2010.
 
 This book is a concise introduction to the main features of OpenSceneGraph
-which then leads you into the fundamentals of developing virtual reality
-applications. Practical instructions and explanations accompany you every
-step of the way.
+which then leads the reader into the fundamentals of developing virtual reality
+applications. Practical instructions and explanations accompany every step.
 
 \item \textit{OpenSceneGraph 3.0 Cookbook}, by Wang Rui and Qian Xuelei. Packt Publishing, 2010.
 
