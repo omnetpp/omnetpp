@@ -293,14 +293,21 @@ bool arrivedOn(const char *gatename, int gateindex) const;
 \textit{Display strings} affect the message's visualization in graphical
 user interfaces like Tkenv and Qtenv. Message objects do not store a
 display string by default, but contain a \ffunc{getDisplayString()} method
-that can be overridden in subclasses to return a desired string.  The
+that can be overridden in subclasses to return the desired string.  The
 method:
 
 \begin{cpp}
 const char *getDisplayString() const;
 \end{cpp}
 
-See chapter \ref{cha:graphics} for more information on display strings.
+Since {\opp} version 5.1, \cclass{cPacket}'s default \ffunc{getDisplayString()} 
+implementation is such so that a packet ``inherits'' the display string of its
+encapsulated packet, provided it has one. Thus, in the model of a network stack,
+the appearance of e.g. an application layer packet will be preserved even
+after multiple levels of encapsulation.
+
+See section \label{sec:graphics:message-displaystrings} for
+more information on message display string syntax and possibilities.
 
 
 

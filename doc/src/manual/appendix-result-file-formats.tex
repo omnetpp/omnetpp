@@ -117,7 +117,7 @@ Attributes associated with parameter studies (iterated runs):
     \item \textbf{replication}: replication label
     \item \textbf{repetition}: the loop counter for repetitions with different seeds
     \item \textbf{iterationvars}: string containing the values of the iteration variables
-    \item \textbf{iterationvars2}: string containing the values of the iteration variables
+    \item \textbf{iterationvarsf}: like \ttt{iterationvars}, but sanitized for use as part of file names
 \end{itemize}
 
 
@@ -130,7 +130,6 @@ attr datetime 20080514-18:19:44
 attr experiment TokenRing1
 attr inifile omnetpp.ini
 attr iterationvars ""
-attr iterationvars2 $repetition=0
 attr measurement ""
 attr network TokenRing
 attr processid 3248

@@ -2424,8 +2424,6 @@ network="FifoNet">
         <info>id=2</info>
         <object class="cPar" fullpath="FifoNet.gen.sendIaTime">
           <info>exponential(0.01s)</info>
-          <detailedinfo>double sendIaTime = exponential(0.01s) @unit(s)
-          </detailedinfo>
         </object>
         <object class="cGate" fullpath="FifoNet.gen.out">
           <info>--&gt; fifo.in</info>
@@ -2435,7 +2433,6 @@ network="FifoNet">
         <info>id=3</info>
         <object class="cPar" fullpath="FifoNet.fifo.serviceTime">
           <info>0.01</info>
-          <detailedinfo>double serviceTime = 0.01@unit(s)</detailedinfo>
         </object>
         <object class="cGate" fullpath="FifoNet.fifo.in">
           <info>&lt;-- gen.out</info>
@@ -3048,13 +3045,13 @@ be implemented:
 Implementation of the following methods is \textbf{recommended}:
 
 \begin{itemize}
-  \item{\textit{Object info,} \ffunc{std::string info()}. The \ttt{info()} function
+  \item \textit{Object info,} \ffunc{str()}. The \ttt{str()} function
         should return a one-line string describing the object's contents or state.
-        \ttt{info()} is displayed at several places in Tkenv and Qtenv.}
-  \item{\textit{Detailed object info,} \ffunc{std::string detailedInfo()}.
-        This method may potentially be implemented in addition to \ttt{info()};
-        it can return a multi-line description. \ttt{detailedInfo()} is also
-        displayed by Tkenv ad Qtenv in the object's inspector.
+        The text returned by \ttt{str()} is displayed at several places in Tkenv
+        and Qtenv.
+        \footnote{Until {\opp} version 5.1, \ffunc{str()} was called \ffunc{info()}.
+        There was also a \ffunc{detailedInfo()} method that was removed in the
+        same version for lack of real usefulness.}
   \item \textit{Serialization}, \ffunc{parsimPack()} and \ffunc{parsimUnpack()} methods.
         These methods are needed for parallel simulation, if you want
         objects of this type to be transmitted across partitions.

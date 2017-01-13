@@ -248,6 +248,14 @@ add the listener object to \cclass{cEnvir}, and the destructor to remove
 and delete it. The code is further simplified if the extension object
 itself implements \cclass{cISimulationLifecycleListener}:
 
+%% * For standalone listeners that have no other way to be invoked, one can
+% * use the <tt>EXECUTE\_ON\_STARTUP(code)</tt> macro to automatically add a%
+% * listener when the program starts:
+% *
+% * <pre>
+% * EXECUTE\_ON\_STARTUP(getEnvir()->addLifecycleListener(new MyListener()));
+% * </pre>
+
 \begin{cpp}
 class CustomScheduler : public cScheduler, public cISimulationLifecycleListener
 {

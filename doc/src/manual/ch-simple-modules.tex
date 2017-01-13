@@ -2607,6 +2607,11 @@ run-time efficiency.
    into the path to ensure strict scheduling.
 \end{note}
 
+The code which inserts the message into the FES is the \ffunc{arrived()}
+method of the recipient module. By overriding this method it is possible 
+to perform custom processing at the recipient module immediately, still 
+from within the \ffunc{send()} call. Use only if you know what you are doing!
+
 
 \subsection{Receiving Messages with activity()}
 \label{sec:simple-modules:receiving-with-activity}
@@ -3349,6 +3354,7 @@ The path is dot-separated list of module names. The special module name
 starts with a dot or caret, it is understood as relative to this module,
 otherwise it is taken to mean an absolute path. For absolute paths,
 inclusion of the toplevel module's name in the path is optional.
+The toplevel module itself may be referred to as \ttt{<root>}.
 
 The following lines demonstrate relative paths, and find the \ttt{app[3]}
 submodule and the \ttt{gen} submodule of the \ttt{app[3]} submodule of the
@@ -3958,27 +3964,24 @@ When there are no listeners, the runtime cost of \ttt{emit()} is usually minimal
 However, if producing a value has a significant runtime cost, then the
 \ffunc{mayHaveListeners()} or \ffunc{hasListeners()} method can be used
 to check beforehand whether the given signal has any listeners at all --
-if not, emitting the signal can be skipped. For some signals (in {\opp} 4.3,
-the first 64 signals used), the information whether it has listeners is cached per
-component, and can be produced in constant time.
+if not, producing the value and emitting the signal can be skipped.
 
 Example usage:
 
 \begin{cpp}
-if (mayHaveListeners(distanceToTargetSignal))
-{
+if (mayHaveListeners(distanceToTargetSignal)) {
     double d = sqrt((x-targetX)*(x-targetX) + (y-targetY)*(y-targetY));
     emit(distanceToTargetSignal, d);
 }
 \end{cpp}
 
 The \ffunc{mayHaveListeners()} method is very efficient (a constant-time
-operation) because it only uses this cached information; if the state is
-not cached for the signal, it just returns \ttt{true}. In contrast,
+operation), but may return false positive. In contrast,
 \ffunc{hasListeners()} will search up to the top of the module tree if
 the answer is not cached, so it is generally slower. We recommend that
 you take into account the cost of producing notification information when
 deciding between \ffunc{mayHaveListeners()} and \ffunc{hasListeners()}.
+
 
 \subsubsection{Signal Declarations}
 \label{sec:simple-modules:signal-declarations}
@@ -4054,7 +4057,6 @@ configuration option:
 \begin{inifile}
 check-signals = false
 \end{inifile}
-
 
 
 \subsubsection{Signal Data Objects}
@@ -4797,11 +4799,11 @@ The C++ code:
 \begin{cpp}
 simsignal_t signal = registerSignal("qlen");
 
-cResultFilter *removeRepeatsFilter =
-    cResultFilterDescriptor::get("removeRepeats")->create();
+cResultFilter *removeRepeatsFilter = 
+        cResultFilterType::get("removeRepeats")->create();
+cResultRecorder *vectorRecorder = 
 
-cResultRecorder *vectorRecorder =
-    cResultRecorderDescriptor::get("vector")->create();
+        cResultRecorderType::get("vector")->create();
 opp_string_map *attrs = new opp_string_map;
 (*attrs)["title"] = "Queue Length";
 (*attrs)["unit"] = "packets";
