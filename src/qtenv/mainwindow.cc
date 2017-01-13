@@ -674,7 +674,7 @@ void MainWindow::updateNextEventDisplay()
 
     // Set Status Detail's texts
     if (msgptr) {
-        int objId = getObjectId(msgptr);
+        long objId = getObjectId(msgptr);
         simtime_t nextTime = getSimulation()->guessNextEvent()->getArrivalTime();
         simtime_t diff = nextTime - getSimulation()->getSimTime();
         ui->nextEventLabel->setText(QString("Next: ") + msgptr->getName() + " (" + msgptr->getClassName()

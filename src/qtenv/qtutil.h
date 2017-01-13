@@ -82,7 +82,7 @@ class QTENV_API cCollectObjectsOfTypeVisitor : public omnetpp::envir::cCollectOb
 //
 // Utility functions:
 //
-int getObjectId(cObject *object);
+long getObjectId(cObject *object);
 const QString& stripNamespace(const char *className); // uses the current setting in getQtenv()->opt
 const QString& stripNamespace(const char *className, StripNamespace stripMode);
 const QString &getObjectShortTypeName(cObject *object); // uses the current setting in getQtenv()->opt

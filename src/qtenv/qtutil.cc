@@ -97,9 +97,9 @@ void cFindByPathVisitor::visit(cObject *obj)
 #define TRY2(CODE)    try { CODE; } catch (std::exception& e) { printf("<!> Warning: %s\n", e.what()); }
 
 
-int getObjectId(cObject *object)
+long getObjectId(cObject *object)
 {
-    int id = -1;
+    long id = -1;
     if (cMessage *msg = dynamic_cast<cMessage *>(object))
         id = msg->getId();
     if (cComponent *component = dynamic_cast<cComponent *>(object))

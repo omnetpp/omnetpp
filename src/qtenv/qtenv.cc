@@ -358,7 +358,7 @@ void Qtenv::storeInspectors(bool closeThem)
             localPrefs->beginGroup(QString("Inspector-") + QString::number(index));
             localPrefs->setValue("object", obj->getFullPath().c_str());
             localPrefs->setValue("classname", getObjectShortTypeName(obj, STRIPNAMESPACE_NONE));
-            localPrefs->setValue("id", getObjectId(obj));
+            localPrefs->setValue("id", QVariant::fromValue(getObjectId(obj)));
             localPrefs->setValue("type", insp->getType());
             localPrefs->setValue("geom", insp->geometry());
             localPrefs->setValue("fullscreen", insp->windowState().testFlag(Qt::WindowFullScreen));
@@ -401,8 +401,8 @@ void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
             QString classname = v.value<QString>();
 
             v = localPrefs->value("id");
-            ok = ok && v.canConvert<int>();
-            int objectId = v.value<int>();
+            ok = ok && v.canConvert<long>();
+            long objectId = v.value<long>();
 
             v = localPrefs->value("type");
             ok = ok && v.canConvert<int>();
@@ -419,7 +419,7 @@ void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
                     && type == inspector->getType()) {
                 localPrefs->setValue("object", newObject->getFullPath().c_str());
                 localPrefs->setValue("classname", getObjectShortTypeName(newObject, STRIPNAMESPACE_NONE));
-                localPrefs->setValue("id", getObjectId(newObject));
+                localPrefs->setValue("id", QVariant::fromValue(getObjectId(newObject)));
             }
 
             localPrefs->endGroup();
