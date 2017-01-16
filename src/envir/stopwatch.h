@@ -18,8 +18,8 @@
 #ifndef __OMNETPP_ENVIR_STOPWATCH_H
 #define __OMNETPP_ENVIR_STOPWATCH_H
 
+#include <ctime>  // clock_t
 #include "envirdefs.h"
-#include "omnetpp/platdep/timeutil.h"
 
 namespace omnetpp {
 namespace envir {
@@ -33,14 +33,14 @@ class ENVIR_API Stopwatch
 {
 private:
     // configuration
-    timeval realtimeLimit;
+    int64_t realtimeLimitUsecs;
     int64_t cpuTimeLimitClocks;
     bool clockRunning;
     bool hasTimeLimit_;  // cached state
 
     // state for tracking elapsed time
-    timeval elapsedTime; // accumulates real time spent simulating
-    timeval lastTime;    // result of previous gettimeofday() call
+    int64_t elapsedTimeUsecs; // accumulates real time spent simulating
+    int64_t lastTimeUsecs;    // result of the previous time measurement call
 
     // state for tracking cpu usage
     int64_t elapsedClocks;  // needed because clock_t range might be just ~72 hours
@@ -59,9 +59,8 @@ public:
     void stopClock(); // call when simulation is paused or terminated
     bool hasTimeLimits() {return hasTimeLimit_;}
     void checkTimeLimits();  // call every few events; throws appropriate exception
-    timeval getElapsedTime();
-    double getElapsedSec();
-    double getCPUUsageSec();
+    double getElapsedSecs();
+    double getCPUUsageSecs();
 };
 
 }  // namespace envir

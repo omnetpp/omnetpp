@@ -54,7 +54,6 @@
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cfutureeventset.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "qtenvdefs.h"
 #include "qtenv.h"
@@ -817,19 +816,14 @@ void Qtenv::setSimulationRunUntilModule(cModule *until_module)
 }
 
 // note: if restart is true and the interval did elapse, also updates "since" (sets it to the current time)
-inline bool elapsed(long millis, struct timeval& since, bool restart)
+inline bool elapsed(long millis, int64_t& since, bool restart)
 {
-    struct timeval now;
-    gettimeofday(&now, nullptr);
-    bool ret = timeval_diff_usec(now, since) > 1000*millis;
+    int64_t now = opp_get_monotonic_clock_usecs();
+
+    bool ret = (now - since) >= millis * 1000;
     if (ret && restart)
         since = now;
     return ret;
-}
-
-inline void resetElapsedTime(struct timeval& t)
-{
-    gettimeofday(&t, nullptr);
 }
 
 bool Qtenv::doRunSimulation()
@@ -955,8 +949,7 @@ bool Qtenv::doRunSimulationExpress()
 
     messageAnimator->clear();
 
-    struct timeval last_update;
-    gettimeofday(&last_update, nullptr);
+    int64_t last_update = opp_get_monotonic_clock_usecs();
 
     bool result = false;
     do {
@@ -991,7 +984,7 @@ bool Qtenv::doRunSimulationExpress()
                 }
                 updateStatusDisplay();
                 QApplication::processEvents();
-                resetElapsedTime(last_update);  // exclude UI update time [bug #52]
+                last_update = opp_get_monotonic_clock_usecs();  // exclude UI update time [bug #52]
                 if (runMode != RUNMODE_EXPRESS) {
                     result = true;  // should continue, but in a different mode
                     break;

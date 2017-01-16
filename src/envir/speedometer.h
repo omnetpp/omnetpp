@@ -21,7 +21,6 @@
 
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/simtime_t.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "envirdefs.h"
 
 namespace omnetpp {
@@ -38,7 +37,7 @@ class ENVIR_API Speedometer
     long numEvents;
     simtime_t currentSimtime;
     simtime_t intervalStartSimtime;
-    timeval intervalStartWalltime;
+    int64_t intervalStartWalltime; // in microseconds, as returned by opp_get_monotonic_clock_usecs()
     double lastIntervalEventsPerSec;
     double lastIntervalEventsPerSimsec;
     double lastIntervalSimsecPerSec;

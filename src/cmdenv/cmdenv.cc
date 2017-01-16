@@ -52,7 +52,6 @@
 #include "omnetpp/cdensityestbase.h"
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cdisplaystring.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "cmddefs.h"
 #include "cmdenv.h"
 
@@ -93,17 +92,18 @@ extern "C" CMDENV_API void _cmdenv_lib() {}
 bool Cmdenv::sigintReceived;
 
 // utility function for printing elapsed time
-char *timeToStr(timeval t, char *buf = nullptr)
+static char *timeToStr(double t, char *buf = nullptr)
 {
     static char buf2[64];
     char *b = buf ? buf : buf2;
 
-    if (t.tv_sec < 3600)
-        sprintf(b, "%ld.%.3ds (%dm %02ds)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/60L), int(t.tv_sec%60L));
-    else if (t.tv_sec < 86400)
-        sprintf(b, "%ld.%.3ds (%dh %02dm)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/3600L), int((t.tv_sec%3600L)/60L));
+    int sec = (int) floor(t);
+    if (t < 3600)
+        sprintf(b, "%lgs (%dm %02ds)", t, int(sec/60L), int(sec%60L));
+    else if (t < 86400)
+        sprintf(b, "%lgs (%dh %02dm)", t, int(sec/3600L), int((sec%3600L)/60L));
     else
-        sprintf(b, "%ld.%.3ds (%dd %02dh)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/86400L), int((t.tv_sec%86400L)/3600L));
+        sprintf(b, "%lgs (%dd %02dh)", t, int(sec/86400L), int((sec%86400L)/3600L));
 
     return b;
 }
@@ -335,11 +335,10 @@ void Cmdenv::doRun()
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
-inline bool elapsed(long millis, struct timeval& since)
+inline bool elapsed(long millis, int64_t& since)
 {
-    struct timeval now;
-    gettimeofday(&now, nullptr);
-    bool ret = timeval_diff_usec(now, since) > 1000*millis;
+    int64_t now = opp_get_monotonic_clock_usecs();
+    bool ret = (now - since) > millis * 1000;
     if (ret)
         since = now;
     return ret;
@@ -383,8 +382,7 @@ void Cmdenv::simulate()  // XXX probably not needed anymore -- take over interes
         else {
             speedometer.start(getSimulation()->getSimTime());
 
-            struct timeval last_update;
-            gettimeofday(&last_update, nullptr);
+            int64_t last_update = opp_get_monotonic_clock_usecs();
 
             doStatusUpdate(speedometer);
 
@@ -451,7 +449,7 @@ void Cmdenv::printEventBanner(cEvent *event)
     }
     out << "\n"; // note: "\n" not endl, because we don't want auto-flush on each event
     if (opt->detailedEventBanners) {
-        out << "   Elapsed: " << timeToStr(totalElapsed())
+        out << "   Elapsed: " << timeToStr(getElapsedSecs())
             << "   Messages: created: " << cMessage::getTotalMessageCount()
             << "  present: " << cMessage::getLiveMessageCount()
             << "  in FES: " << getSimulation()->getFES()->getLength() << "\n"; // note: "\n" not endl, because we don't want auto-flush on each event
@@ -465,7 +463,7 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
     if (opt->printPerformanceData) {
         out << "** Event #" << getSimulation()->getEventNumber()
             << "   t=" << getSimulation()->getSimTime()
-            << "   Elapsed: " << timeToStr(totalElapsed())
+            << "   Elapsed: " << timeToStr(getElapsedSecs())
             << "" << progressPercentage() << endl;  // note: IDE launcher uses this to track progress
 
         out << "     Speed:     ev/sec=" << speedometer.getEventsPerSec()
@@ -478,7 +476,7 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
     }
     else {
         out << "** Event #" << getSimulation()->getEventNumber() << "   t=" << getSimulation()->getSimTime()
-            << "   Elapsed: " << timeToStr(totalElapsed())
+            << "   Elapsed: " << timeToStr(getElapsedSecs())
             << progressPercentage() // note: IDE launcher uses this to track progress
             << "   ev/sec=" << speedometer.getEventsPerSec() << endl;
     }
@@ -495,11 +493,11 @@ const char *Cmdenv::progressPercentage()
 
     double elapsedTimeRatio = -1;
     if (opt->realTimeLimit > 0)
-        elapsedTimeRatio = stopwatch.getElapsedSec() / opt->realTimeLimit;
+        elapsedTimeRatio = stopwatch.getElapsedSecs() / opt->realTimeLimit;
 
     double cpuTimeRatio = -1;
     if (opt->cpuTimeLimit > 0)
-        cpuTimeRatio = stopwatch.getCPUUsageSec() / opt->cpuTimeLimit;
+        cpuTimeRatio = stopwatch.getCPUUsageSecs() / opt->cpuTimeLimit;
 
     double ratio = std::max(simtimeRatio, std::max(elapsedTimeRatio, cpuTimeRatio));
     ratio = std::min(ratio, 1.0);  // eliminate occasional "101% completed" message
@@ -656,14 +654,14 @@ void Cmdenv::debug(const char *fmt, ...) //FIXME apparently only for HTTP
     if (!logging)
         return;
 
-    struct timeval tv;
-    gettimeofday(&tv, nullptr);
-    time_t t = (time_t)tv.tv_sec;
-    struct tm tm = *localtime(&t);
+    time_t rawtime = time(nullptr);
+    tm time = *localtime(&rawtime);
 
-    ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" PRId64 " %s] ",
-            tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
-            getSimulation()->getEventNumber(), "");
+    char timestamp[16];
+    strftime(timestamp, 16, "%H:%M:%S", &time);
+
+    ::fprintf(logStream, "[%s event #%" PRId64 "] ", timestamp, getSimulation()->getEventNumber());
+
     va_list va;
     va_start(va, fmt);
     ::vfprintf(logStream, fmt, va);

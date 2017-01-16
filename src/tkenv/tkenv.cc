@@ -42,7 +42,6 @@
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "tkdefs.h"
 #include "tkenv.h"
@@ -144,7 +143,7 @@ Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
     animating = false;
     isConfigRun = false;
     runUntil.msg = nullptr;  // deactivate corresponding checks in eventCancelled()/objectDeleted()
-    gettimeofday(&idleLastUICheck, nullptr);
+    idleLastUICheck = opp_get_monotonic_clock_usecs();
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.getInstance()->setName("inspectorfactories");
@@ -467,19 +466,13 @@ void Tkenv::setSimulationRunUntilModule(cModule *until_module)
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
-inline bool elapsed(long millis, struct timeval& since)
+inline bool elapsed(long millis, int64_t& since)
 {
-    struct timeval now;
-    gettimeofday(&now, nullptr);
-    bool ret = timeval_diff_usec(now, since) > 1000*millis;
+    int64_t now = opp_get_monotonic_clock_usecs();
+    bool ret = (now - since) >= millis * 1000;
     if (ret)
         since = now;
     return ret;
-}
-
-inline void resetElapsedTime(struct timeval& t)
-{
-    gettimeofday(&t, nullptr);
 }
 
 bool Tkenv::doRunSimulation()
@@ -495,8 +488,7 @@ bool Tkenv::doRunSimulation()
     loggingEnabled = true;
     bool firstevent = true;
 
-    struct timeval last_update;
-    gettimeofday(&last_update, nullptr);
+    int64_t last_update = opp_get_monotonic_clock_usecs();
 
     while (true) {
         if (runMode == RUNMODE_EXPRESS)
@@ -551,7 +543,7 @@ bool Tkenv::doRunSimulation()
             refreshInspectors();
             updateStatusDisplay();
             Tcl_Eval(interp, "update");
-            resetElapsedTime(last_update);  // exclude UI update time [bug #52]
+            last_update = opp_get_monotonic_clock_usecs();  // exclude UI update time [bug #52]
         }
 
         // exit conditions
@@ -595,8 +587,7 @@ bool Tkenv::doRunSimulationExpress()
     loggingEnabled = false;
     animating = false;
 
-    struct timeval last_update;
-    gettimeofday(&last_update, nullptr);
+    int64_t last_update = opp_get_monotonic_clock_usecs();
 
     bool result = false;
     do {
@@ -622,7 +613,7 @@ bool Tkenv::doRunSimulationExpress()
             }
             updateStatusDisplay();
             Tcl_Eval(interp, "update");
-            resetElapsedTime(last_update);  // exclude UI update time [bug #52]
+            last_update = opp_get_monotonic_clock_usecs();  // exclude UI update time [bug #52]
             if (runMode != RUNMODE_EXPRESS) {
                 result = true;  // should continue, but in a different mode
                 break;
@@ -1144,9 +1135,8 @@ bool Tkenv::idle()
     // interactions are disabled except for the STOP button.
     if (runMode == RUNMODE_FAST) {
         // updateInspectors() may be costly, so do not check the UI too often
-        timeval now;
-        gettimeofday(&now, nullptr);
-        if (timeval_msec(now - idleLastUICheck) < 500)
+        int64_t now = opp_get_monotonic_clock_usecs();
+        if ((now - idleLastUICheck) < 500 * 1000)
             return false;
 
         // refresh inspectors
@@ -1164,7 +1154,7 @@ bool Tkenv::idle()
     stopSimulationFlag = false;
 
     if (runMode == RUNMODE_FAST)
-        gettimeofday(&idleLastUICheck, nullptr);
+        idleLastUICheck = opp_get_monotonic_clock_usecs();
     return stop;
 }
 

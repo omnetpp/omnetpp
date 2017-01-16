@@ -55,7 +55,6 @@
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/simtime.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/cstatisticbuilder.h"
 #include "args.h"
@@ -1775,9 +1774,9 @@ void EnvirBase::stopClock()
     simulatedTime = getSimulation()->getSimTime();
 }
 
-timeval EnvirBase::totalElapsed()
+double EnvirBase::getElapsedSecs()
 {
-    return stopwatch.getElapsedTime();
+    return stopwatch.getElapsedSecs();
 }
 
 void EnvirBase::checkTimeLimits()
@@ -1788,7 +1787,7 @@ void EnvirBase::checkTimeLimits()
 #endif
     if (!stopwatch.hasTimeLimits())
         return;
-    if (isExpressMode() && (getSimulation()->getEventNumber() & 1023) != 0)  // optimize: in Express mode, don't call gettimeofday() on every event
+    if (isExpressMode() && (getSimulation()->getEventNumber() & 1023) != 0)  // optimize: in Express mode, don't read the clock on every event
         return;
     stopwatch.checkTimeLimits();
 }

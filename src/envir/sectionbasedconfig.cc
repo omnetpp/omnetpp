@@ -29,7 +29,6 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"  // getpid()
 #include "sectionbasedconfig.h"
 #include "valueiterator.h"

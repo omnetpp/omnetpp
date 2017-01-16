@@ -16,8 +16,8 @@
 #ifndef __OMNETPP_CSCHEDULER_H
 #define __OMNETPP_CSCHEDULER_H
 
-#include "platdep/timeutil.h"  // for timeval
 #include "cobject.h"
+#include "simtime_t.h"
 #include "clifecyclelistener.h"
 
 namespace omnetpp {
@@ -214,11 +214,12 @@ class SIM_API cRealTimeScheduler : public cScheduler
     double factor;
 
     // state:
-    timeval baseTime;
+    int64_t baseTime;  // in microseconds
 
   protected:
     virtual void startRun() override;
-    bool waitUntil(const timeval& targetTime);
+    bool waitUntil(int64_t targetTime); // in microseconds
+    int64_t toUsecs(simtime_t t);
 
   public:
     /**

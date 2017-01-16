@@ -156,7 +156,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       Speedometer speedometer;
 
       bool stopSimulationFlag;     // indicates that the simulation should be stopped (STOP button pressed in the UI)
-      timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command
+      int64_t idleLastUICheck;     // opp_get_monotonic_clock_usecs() time when idle() last ran the Tk "update" command
 
       typedef std::list<Inspector*> InspectorList;
       InspectorList inspectors;    // list of inspector objects

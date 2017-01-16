@@ -26,7 +26,6 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envir/envirbase.h"
 

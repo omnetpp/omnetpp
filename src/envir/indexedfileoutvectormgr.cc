@@ -35,7 +35,6 @@
 #include "omnetpp/regmacros.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cstatistic.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
 #include "indexedfileoutvectormgr.h"

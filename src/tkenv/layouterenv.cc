@@ -40,8 +40,8 @@ TkenvGraphLayouterEnvironment::TkenvGraphLayouterEnvironment(Tcl_Interp *interp,
     canvas = nullptr;
     interp = nullptr;
 
-    gettimeofday(&beginTime, nullptr);
-    gettimeofday(&lastCheck, nullptr);
+    beginTime = opp_get_monotonic_clock_usecs();
+    lastCheck = opp_get_monotonic_clock_usecs();
     grabActive = false;
 }
 
@@ -111,9 +111,9 @@ bool TkenvGraphLayouterEnvironment::okToProceed()
     // release the grab. Do not set a grab in Express mode (i.e. if widgetToGrab==nullptr),
     // because Express mode's large STOP button already has one.
     //
-    struct timeval now;
-    gettimeofday(&now, nullptr);
-    if (timeval_msec(now - beginTime) < 3000)
+    int64_t now = opp_get_monotonic_clock_usecs();
+
+    if ((now - beginTime) < 3000 * 1000)
         return true;  // no UI interaction for up to 3 sec
 
     if (!grabActive && widgetToGrab) {
@@ -123,8 +123,8 @@ bool TkenvGraphLayouterEnvironment::okToProceed()
         CHK(Tcl_VarEval(interp, "layouter:startGrab ", widgetToGrab, TCL_NULL));
     }
 
-    // only check the UI once a while
-    if (timeval_msec(now - lastCheck) < 200)
+    // only check the UI once in a while (every 200 ms)
+    if ((now - lastCheck) < 200 * 1000)
         return true;
     lastCheck = now;
 

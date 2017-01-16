@@ -32,7 +32,6 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cresultlistener.h"
 #include "omnetpp/cevent.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "logformatter.h"
 #include "args.h"
 #include "envirdefs.h"
@@ -321,7 +320,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void resetClock();
     void startClock();
     void stopClock();
-    timeval totalElapsed(); //FIXME into cEnvir, so it can be put into exception texts
+    double getElapsedSecs(); //FIXME into cEnvir, so it can be put into exception texts
 
     // Hook called when the simulation terminates normally.
     // Its current use is to notify parallel simulation part.

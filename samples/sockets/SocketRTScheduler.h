@@ -19,7 +19,6 @@
 #define __CSOCKETRTSCHEDULER_H__
 
 #include <omnetpp/platdep/sockets.h>
-#include <omnetpp/platdep/timeutil.h>
 #include <omnetpp.h>
 
 using namespace omnetpp;
@@ -65,13 +64,13 @@ class cSocketRTScheduler : public cScheduler
     int *numBytesPtr;
 
     // state
-    timeval baseTime;
+    int64_t baseTime; // in microseconds, as returned by opp_get_monotonic_clock_usecs()
     SOCKET listenerSocket;
     SOCKET connSocket;
 
     virtual void setupListener();
     virtual bool receiveWithTimeout(long usec);
-    virtual int receiveUntil(const timeval& targetTime);
+    virtual int receiveUntil(int64_t targetTime);
 
   public:
     /**

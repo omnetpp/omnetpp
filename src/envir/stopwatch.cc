@@ -16,14 +16,16 @@
 *--------------------------------------------------------------*/
 
 #include "stopwatch.h"
+#include "common/commonutil.h"
 #include "omnetpp/cexception.h"
+#include "omnetpp/simutil.h"
 
 namespace omnetpp {
 namespace envir {
 
 Stopwatch::Stopwatch()
 {
-    realtimeLimit = to_timeval(-1);
+    realtimeLimitUsecs = -1;
     cpuTimeLimitClocks = -1;
     hasTimeLimit_ = false;
     resetClock();
@@ -31,23 +33,22 @@ Stopwatch::Stopwatch()
 
 void Stopwatch::setRealTimeLimit(double seconds)
 {
-    realtimeLimit = to_timeval(seconds < 0 ? -1 : seconds);
-    hasTimeLimit_ = realtimeLimit.tv_sec >= 0 || cpuTimeLimitClocks >= 0;
+    realtimeLimitUsecs = seconds < 0 ? -1 : (int64_t)(seconds * 1000000);
+    hasTimeLimit_ = realtimeLimitUsecs >= 0 || cpuTimeLimitClocks >= 0;
 }
 
 void Stopwatch::setCPUTimeLimit(double seconds)
 {
     cpuTimeLimitClocks = seconds < 0 ? -1 : CLOCKS_PER_SEC*seconds;
-    hasTimeLimit_ = realtimeLimit.tv_sec >= 0 || cpuTimeLimitClocks >= 0;
+    hasTimeLimit_ = realtimeLimitUsecs >= 0 || cpuTimeLimitClocks >= 0;
 }
 
 void Stopwatch::addRealtimeDelta()
 {
-    timeval now;
-    gettimeofday(&now, nullptr);
-    timeval deltaT = now - lastTime;
-    elapsedTime += deltaT;
-    lastTime = now;
+    int64_t now = opp_get_monotonic_clock_usecs();
+    int64_t delta = now - lastTimeUsecs;
+    elapsedTimeUsecs += delta;
+    lastTimeUsecs = now;
 }
 
 void Stopwatch::addClockDelta()
@@ -60,14 +61,14 @@ void Stopwatch::addClockDelta()
 
 void Stopwatch::resetClock()
 {
-    elapsedTime.tv_sec = elapsedTime.tv_usec = 0;
+    elapsedTimeUsecs = 0;
     elapsedClocks = 0;
     clockRunning = false;
 }
 
 void Stopwatch::startClock()
 {
-    gettimeofday(&lastTime, nullptr);
+    lastTimeUsecs = opp_get_monotonic_clock_usecs();
     lastClock = clock();
     clockRunning = true;
 }
@@ -84,9 +85,9 @@ void Stopwatch::stopClock()
 void Stopwatch::checkTimeLimits()
 {
     // check real time limit
-    if (realtimeLimit.tv_sec >= 0) {
+    if (realtimeLimitUsecs >= 0) {
         addRealtimeDelta();
-        if (elapsedTime >= realtimeLimit)
+        if (elapsedTimeUsecs >= realtimeLimitUsecs)
             throw cTerminationException(E_REALTIME);
     }
 
@@ -98,20 +99,14 @@ void Stopwatch::checkTimeLimits()
     }
 }
 
-timeval Stopwatch::getElapsedTime()
+double Stopwatch::getElapsedSecs()
 {
     if (clockRunning)
         addRealtimeDelta();
-    return elapsedTime;
+    return elapsedTimeUsecs / 1000000.0;
 }
 
-double Stopwatch::getElapsedSec()
-{
-    timeval elapsed = getElapsedTime();
-    return elapsed.tv_sec + elapsed.tv_usec / 1000000.0;
-}
-
-double Stopwatch::getCPUUsageSec()
+double Stopwatch::getCPUUsageSecs()
 {
     if (clockRunning)
         addClockDelta();

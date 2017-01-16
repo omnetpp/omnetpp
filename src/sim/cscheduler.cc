@@ -124,34 +124,36 @@ void cRealTimeScheduler::startRun()
         factor = 1 / factor;
     doScaling = (factor != 0);
 
-    gettimeofday(&baseTime, nullptr);
+    baseTime = opp_get_monotonic_clock_usecs();
+}
+
+int64_t cRealTimeScheduler::toUsecs(simtime_t t)
+{
+    return (int64_t) (1000000 * (doScaling ? factor * t.dbl() : t.dbl()));
 }
 
 void cRealTimeScheduler::executionResumed()
 {
-    gettimeofday(&baseTime, nullptr);
-    baseTime = timeval_subtract(baseTime, SIMTIME_DBL(doScaling ? factor * sim->getSimTime() : sim->getSimTime()));
+    baseTime = opp_get_monotonic_clock_usecs();
+    baseTime = baseTime - toUsecs(sim->getSimTime());
 }
 
-bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
+bool cRealTimeScheduler::waitUntil(int64_t targetTime)
 {
     // if there's more than 200ms to wait, wait in 100ms chunks
     // in order to keep UI responsiveness by invoking getEnvir()->idle()
-    timeval curTime;
-    gettimeofday(&curTime, nullptr);
-    while (targetTime.tv_sec - curTime.tv_sec >= 2 ||
-           timeval_diff_usec(targetTime, curTime) >= 200000)
-    {
+    int64_t currentTime = opp_get_monotonic_clock_usecs();
+    while (targetTime - currentTime >= 200000) {
         usleep(100000);  // 100ms
         if (getEnvir()->idle())
             return false;
-        gettimeofday(&curTime, nullptr);
+        currentTime = opp_get_monotonic_clock_usecs();
     }
 
     // difference is now at most 100ms, do it at once
-    long usec = timeval_diff_usec(targetTime, curTime);
-    if (usec > 0)
-        usleep(usec);
+    int64_t remaining = targetTime - currentTime;
+    if (remaining > 0)
+        usleep(remaining);
     return true;
 }
 
@@ -168,12 +170,11 @@ cEvent *cRealTimeScheduler::takeNextEvent()
 
     // calculate target time
     simtime_t eventSimtime = event->getArrivalTime();
-    timeval targetTime = timeval_add(baseTime, SIMTIME_DBL(doScaling ? factor * eventSimtime : eventSimtime));
+    int64_t targetTime = baseTime + toUsecs(eventSimtime);
 
     // if needed, wait until that time arrives
-    timeval curTime;
-    gettimeofday(&curTime, nullptr);
-    if (timeval_greater(targetTime, curTime)) {
+    int64_t currentTime = opp_get_monotonic_clock_usecs();
+    if (targetTime > currentTime) {
         if (!waitUntil(targetTime))
             return nullptr;  // user break
     }

@@ -34,14 +34,6 @@ SCAVE_API bool parseDouble(const char *str, double& dest);
 SCAVE_API bool parseSimtime(const char *str, simultime_t& dest);
 SCAVE_API std::string unquoteString(const char *str);
 
-// simple profiling macro
-// var is a long variable collecting the execution time of stmt in usec
-#define TIME(var,stmt) { timeval start,end; \
-                         gettimeofday(&start,nullptr); \
-                         stmt; \
-                         gettimeofday(&end,nullptr); \
-                         var += timeval_diff_usec(end,start); }
-
 template <class Operation>
 class FlipArgs
     : public std::binary_function<typename Operation::second_argument_type,

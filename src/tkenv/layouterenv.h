@@ -38,8 +38,8 @@ class TkenvGraphLayouterEnvironment : public omnetpp::layout::GraphLayouterEnvir
       const cDisplayString& displayString;
 
       // state
-      struct timeval beginTime;
-      struct timeval lastCheck;
+      int64_t beginTime; // both of them in microseconds, as returned by opp_get_monotonic_clock_usecs()
+      int64_t lastCheck;
       bool grabActive;
 
    public:

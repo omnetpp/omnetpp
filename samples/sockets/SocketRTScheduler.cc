@@ -48,7 +48,7 @@ void cSocketRTScheduler::startRun()
     if (initsocketlibonce() != 0)
         throw cRuntimeError("cSocketRTScheduler: Cannot initialize socket library");
 
-    gettimeofday(&baseTime, nullptr);
+    baseTime = opp_get_monotonic_clock_usecs();
 
     module = nullptr;
     notificationMsg = nullptr;
@@ -90,8 +90,8 @@ void cSocketRTScheduler::endRun()
 
 void cSocketRTScheduler::executionResumed()
 {
-    gettimeofday(&baseTime, nullptr);
-    baseTime = timeval_substract(baseTime, SIMTIME_DBL(simTime()));
+    baseTime = opp_get_monotonic_clock_usecs();
+    baseTime = baseTime - simTime().inUnit(SIMTIME_US);
 }
 
 void cSocketRTScheduler::setInterfaceModule(cModule *mod, cMessage *notifMsg, char *buf, int bufSize, int *nBytesPtr)
@@ -153,12 +153,10 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
                 EV << "cSocketRTScheduler: received " << nBytes << " bytes\n";
                 (*numBytesPtr) += nBytes;
 
-                timeval curTime;
-                gettimeofday(&curTime, nullptr);
-                curTime = timeval_substract(curTime, baseTime);
-                simtime_t t = curTime.tv_sec + curTime.tv_usec*1e-6;
-                ASSERT(t >= simTime());
-                notificationMsg->setArrival(module->getId(), -1, t);
+                int64_t currentTime = opp_get_monotonic_clock_usecs();
+                simtime_t eventTime(currentTime - baseTime, SIMTIME_US);
+                ASSERT(eventTime >= simTime());
+                notificationMsg->setArrival(module->getId(), -1, eventTime);
                 getSimulation()->getFES()->insert(notificationMsg);
                 return true;
             }
@@ -176,34 +174,30 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
     return false;
 }
 
-int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
+int cSocketRTScheduler::receiveUntil(int64_t targetTime)
 {
     // if there's more than 200ms to wait, wait in 100ms chunks
     // in order to keep UI responsiveness by invoking getEnvir()->idle()
-    timeval curTime;
-    gettimeofday(&curTime, nullptr);
-    while (targetTime.tv_sec-curTime.tv_sec >= 2 ||
-           timeval_diff_usec(targetTime, curTime) >= 200000)
+    int64_t currentTime = opp_get_monotonic_clock_usecs();
+    while (targetTime - currentTime >= 200000)
     {
         if (receiveWithTimeout(100000))  // 100ms
             return 1;
 
         // update simtime before calling envir's idle()
-        gettimeofday(&curTime, nullptr);
-        timeval relTime = timeval_substract(curTime, baseTime);
-        simtime_t t = relTime.tv_sec + relTime.tv_usec * 1e-6;
-        ASSERT(t >= simTime());
-        sim->setSimTime(t);
+        currentTime = opp_get_monotonic_clock_usecs();
+        simtime_t eventTime(currentTime - baseTime, SIMTIME_US);
+        ASSERT(eventTime >= simTime());
+        sim->setSimTime(eventTime);
         if (getEnvir()->idle())
             return -1;
-
-        gettimeofday(&curTime, nullptr);
+        currentTime = opp_get_monotonic_clock_usecs();
     }
 
     // difference is now at most 100ms, do it at once
-    long usec = timeval_diff_usec(targetTime, curTime);
-    if (usec > 0)
-        if (receiveWithTimeout(usec))
+    long remaining = targetTime - currentTime;
+    if (remaining > 0)
+        if (receiveWithTimeout(remaining))
             return 1;
 
     return 0;
@@ -221,24 +215,24 @@ cEvent *cSocketRTScheduler::takeNextEvent()
         throw cRuntimeError("cSocketRTScheduler: setInterfaceModule() not called: it must be called from a module's initialize() function");
 
     // calculate target time
-    timeval targetTime;
+    int64_t targetTime;
     cEvent *event = sim->getFES()->peekFirst();
     if (!event) {
         // if there are no events, wait until something comes from outside
         // TBD: obey simtimelimit, cpu-time-limit
-        targetTime.tv_sec = LONG_MAX;
-        targetTime.tv_usec = 0;
+        // This way targetTime will always be "as far in the future as possible", considering
+        // how integer overflows work in conjunction with comparisons in C++ (in practice...)
+        targetTime = opp_get_monotonic_clock_usecs() + INT64_MAX;
     }
     else {
         // use time of next event
         simtime_t eventSimtime = event->getArrivalTime();
-        targetTime = timeval_add(baseTime, SIMTIME_DBL(eventSimtime));
+        targetTime = baseTime + eventSimtime.inUnit(SIMTIME_US);
     }
 
     // if needed, wait until that time arrives
-    timeval curTime;
-    gettimeofday(&curTime, nullptr);
-    if (timeval_greater(targetTime, curTime)) {
+    int64_t currentTime = opp_get_monotonic_clock_usecs();
+    if (targetTime > currentTime) {
         int status = receiveUntil(targetTime);
         if (status == -1)
             return nullptr;  // interrupted by user

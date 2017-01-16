@@ -20,7 +20,6 @@
 
 #include "omnetpp/platdep/platdefs.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "omnetpp/platdep/timeutil.h"
 
 // a simple "class cObject;" is not enough for Q_DECLARE_METATYPE, it has to be fully defined
 #include "omnetpp/cobject.h"

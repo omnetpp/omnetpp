@@ -16,7 +16,6 @@
 
 #include <algorithm>
 #include "common/opp_ctype.h"
-#include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "channel.h"
 #include "scaveutils.h"
