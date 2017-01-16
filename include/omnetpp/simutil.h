@@ -61,7 +61,7 @@ inline char *opp_strcpy(char *,const char *);
 inline int opp_strcmp(const char *, const char *);
 
 /**
- * @brief Copies src string into desc, and if its length would exceed maxlen,
+ * @brief Copies src string into dest, and if its length would exceed maxlen,
  * it is truncated with an ellipsis. For example, <tt>opp_strprettytrunc(buf,
  * "long-long",6)</tt> yields <tt>"lon..."</tt>.
  */
@@ -71,6 +71,15 @@ SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
  * @brief Returns the name of a C++ type, correcting the quirks of various compilers.
  */
 SIM_API const char *opp_typename(const std::type_info& t);
+
+/**
+ * @brief Returns a monotonic time in microseconds since some unspecified
+ * starting point. This clock is not affected by discontinuous jumps in the
+ * system time (e.g. if the system administrator manually changes the clock).
+ * Note that the actual resolution (precision) of the clock may be less than
+ * microseconds.
+ */
+SIM_API int64_t opp_get_monotonic_clock_usecs();  // in gettime.cc
 
 //@}
 

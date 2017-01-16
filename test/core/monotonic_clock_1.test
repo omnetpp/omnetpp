@@ -1,0 +1,23 @@
+%description:
+Test opp_get_monotonic_clock_usecs() implementation. Sleep for some time, 
+and measure how much time has elapsed according to opp_get_monotonic_clock_usecs().
+The two must match reasonably.
+
+%activity:
+int sleepUsecs = 750000;  // 0.75s
+int marginUsecs =  10000;  // 0.01s
+
+int64_t startTime = opp_get_monotonic_clock_usecs();
+usleep(sleepUsecs);
+int64_t endTime = opp_get_monotonic_clock_usecs();
+int64_t elapsedUsecs = endTime - startTime;
+
+EV << "sleep(" << sleepUsecs << "us), elapsed: " << elapsedUsecs << "us\n";
+EV << ((elapsedUsecs >= sleepUsecs && elapsedUsecs <= sleepUsecs+marginUsecs) ? "OK" : "WRONG") << "\n";
+EV << ".\n";
+
+
+%contains: stdout
+OK
+.
+
