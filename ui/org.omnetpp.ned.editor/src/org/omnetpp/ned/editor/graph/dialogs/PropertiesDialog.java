@@ -75,7 +75,7 @@ import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.image.NedImageDescriptor;
-import org.omnetpp.common.ui.TristateButton;
+import org.omnetpp.common.ui.TristateCheckButton;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.figures.CompoundModuleFigure;
@@ -170,7 +170,7 @@ public class PropertiesDialog extends TrayDialog {
     private NedTypeFieldEditor likeTypeField;
     private TextFieldEditor likeExprField;
     private TextFieldEditor vectorSizeField;
-    private TristateButton isBidirectionalField;
+    private TristateCheckButton isBidirectionalField;
     private TextFieldEditor documentationField;
 
     // Endpoints page (for connection)
@@ -1211,8 +1211,8 @@ public class PropertiesDialog extends TrayDialog {
         return createCombo(parent, ArrayUtils.EMPTY_STRING_ARRAY, widthInChars);
     }
 
-    protected TristateButton createCheckbox(Composite parent, String label, int hSpan) {
-        TristateButton checkbox = new TristateButton(parent, SWT.CHECK);
+    protected TristateCheckButton createCheckbox(Composite parent, String label, int hSpan) {
+        TristateCheckButton checkbox = new TristateCheckButton(parent, SWT.CHECK);
         checkbox.setText(label);
         checkbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         ((GridData)checkbox.getLayoutData()).horizontalSpan = hSpan;
@@ -1345,8 +1345,10 @@ public class PropertiesDialog extends TrayDialog {
             String isBidir = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_IS_BIDIRECTIONAL));
             if (isBidir == null)
                 isBidirectionalField.setGrayed(true);
-            else
+            else {
+                isBidirectionalField.setGrayed(false);
                 isBidirectionalField.setSelection(isBidir.equals("true"));
+            }
 
             // fill in module combo item lists
             CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) ((ConnectionElement)elements[0]).getEnclosingTypeElement();
@@ -1357,8 +1359,8 @@ public class PropertiesDialog extends TrayDialog {
             String[] submoduleLabels = new String[submoduleNames.length];
             for (int i=0; i<submoduleLabels.length; i++)
                 submoduleLabels[i] = NedModelLabelProvider.getInstance().getText(submodules.get(submoduleNames[i]));
-            submoduleNames = (String[]) ArrayUtils.add(submoduleNames, 0, STR_PARENTMODULE);
-            submoduleLabels = (String[]) ArrayUtils.add(submoduleLabels, 0, STR_PARENTMODULE);
+            submoduleNames = ArrayUtils.add(submoduleNames, 0, STR_PARENTMODULE);
+            submoduleLabels = ArrayUtils.add(submoduleLabels, 0, STR_PARENTMODULE);
             connSrcModuleField.setItems(submoduleNames, submoduleLabels);
             connDestModuleField.setItems(submoduleNames, submoduleLabels);
 

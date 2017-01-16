@@ -492,7 +492,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     private static void setTristateCheckbox(Button c, String value) {
         if (value == null || value.isEmpty()) {
             c.setGrayed(true);
-            c.setSelection(true);
         }
         else {
             Assert.isTrue(value.equals("true") || value.equals("false"));
@@ -502,12 +501,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     }
 
     private static String getTristateCheckboxValue(Button c) {
-        if (!c.getSelection())
-            return "false";
-        else if (!c.getGrayed())
-            return "true";
-        else
-            return "";
+        return c.getGrayed() ? "" : c.getSelection() ? "true" : "false";
     }
 
     @Override

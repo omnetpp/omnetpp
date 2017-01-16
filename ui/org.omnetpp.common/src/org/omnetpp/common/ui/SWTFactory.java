@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.omnetpp.common.color.ColorFactory;
 
 /**
  * Factory class to create some SWT resources.
@@ -102,8 +103,7 @@ public class SWTFactory {
     }
 
     /**
-     * Creates a normal checkbox but configures it so that user clicks
-     * take it through the unchecked -> unchecked -> grayed cycle.
+     * Creates a tristate checkbox.
      *
      * @param parent the parent to add the button to
      * @param label the label for the button
@@ -113,22 +113,19 @@ public class SWTFactory {
      * @param hspan the horizontal span to take up in the parent composite
      * @return a new check button
      */
-    public static Button createTristateCheckButton(Composite parent, String label, Image image, boolean checked, boolean grayed, int hspan) {
-        Button button = doCreateCheckButton(parent, label, image, checked, hspan);
-        button.setGrayed(grayed);
-        // make the button cycle through the cleared -> checked -> grayed states
-        button.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (!button.getGrayed() && !button.getSelection()) {
-                    button.setSelection(true);
-                    button.setGrayed(true);
-                }
-                else if (button.getGrayed() && button.getSelection()) {
-                    button.setGrayed(false);
-                }
-            }
-        });
+    public static TristateCheckButton createTristateCheckButton(Composite parent, String label, Image image, boolean checked, boolean grayed, int hspan) {
+        TristateCheckButton button = new TristateCheckButton(parent, SWT.CHECK);
+        button.setFont(parent.getFont());
+        button.setSelection(checked);
+        button.setGrayed(grayed); // note: order of setSelection() and setGrayed() is important
+        if (image != null)
+            button.setImage(image);
+        if (label != null)
+            button.setText(label);
+        GridData gd = new GridData();
+        gd.horizontalSpan = hspan;
+        button.setLayoutData(gd);
+        setButtonDimensionHint(button);
         return button;
     }
 

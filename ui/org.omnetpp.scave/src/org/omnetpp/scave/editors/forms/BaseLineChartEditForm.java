@@ -58,7 +58,7 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.ImageCombo;
 import org.omnetpp.common.ui.TableLabelProvider;
-import org.omnetpp.common.ui.TristateButton;
+import org.omnetpp.common.ui.TristateCheckButton;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
@@ -144,7 +144,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     private Text xAxisMaxText;
     // "Lines" page controls
     private TableViewer linesTableViewer;
-    private TristateButton displayLineCheckbox;
+    private TristateCheckButton displayLineCheckbox;
     private Text displayNameText;
     private ColorEdit colorEdit;
     private ImageCombo symbolTypeCombo;
@@ -234,7 +234,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
             subpanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             subpanel.setLayout(new GridLayout(2, false));
 
-            displayLineCheckbox = new TristateButton(subpanel, SWT.CHECK);
+            displayLineCheckbox = new TristateCheckButton(subpanel, SWT.CHECK);
             displayLineCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
             displayLineCheckbox.setText("Display line");
             displayLineCheckbox.addSelectionListener(new SelectionAdapter() {
