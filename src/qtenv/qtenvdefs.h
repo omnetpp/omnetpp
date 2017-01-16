@@ -36,6 +36,10 @@
 #include <QMetaType>
 #include <QPair>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+#error Qtenv requires Qt 5.4 or later.
+#endif
+
 namespace omnetpp {
 namespace qtenv {
 class Inspector;
