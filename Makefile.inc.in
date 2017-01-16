@@ -200,12 +200,6 @@ OPPMAIN_LIB = $(LDFLAG_LIB)oppmain$D
 ifeq ($(WITH_QTENV),yes)
   QTENV_TARGET = qtenv
   DEFINES += -DPREFER_QTENV -DWITH_QTENV
-  ifeq ($(WITH_OSG),yes)
-    DEFINES += -DWITH_OSG
-  endif
-  ifeq ($(WITH_OSGEARTH),yes)
-    DEFINES += -DWITH_OSGEARTH
-  endif
   # libraries required for static linking
   ifneq ($(SHARED_LIBS),yes)
     QTENV_LIBS += $(QT_LIBS)
@@ -244,6 +238,9 @@ else
   TKENV_TARGET = skip
 endif
 
+#
+# Other defines
+#
 ifeq ($(WITH_PARSIM),yes)
   DEFINES += -DWITH_PARSIM
   # extra libs needed during static building
@@ -255,6 +252,16 @@ endif
 ifeq ($(WITH_NETBUILDER),yes)
   DEFINES += -DWITH_NETBUILDER
 endif
+
+# note: defines for OSG and osgEarth must be available even if WITH_QTENV=no
+ifeq ($(WITH_OSG),yes)
+  DEFINES += -DWITH_OSG
+endif
+
+ifeq ($(WITH_OSGEARTH),yes)
+  DEFINES += -DWITH_OSGEARTH
+endif
+
 
 #
 # toolchain specific flags and options
@@ -277,3 +284,4 @@ else
   # extra libraries needed when statically linking (because of indirect dependencies)
   KERNEL_LIBS += -loppnedxml$D -loppcommon$D $(XML_LIBS)
 endif
+
