@@ -737,20 +737,7 @@ void ModuleInspector::layers()
         return;
     }
 
-    QString allTags = canvasRenderer->getAllTags().c_str();
-    QString enabledTags = canvasRenderer->getEnabledTags().c_str();
-    QString exceptTags = canvasRenderer->getExceptTags().c_str();
-
-    LayersDialog *layersDialog = new LayersDialog(allTags, enabledTags, exceptTags);
-    if (QDialog::Accepted == layersDialog->exec()) {
-        QString enabledTags = layersDialog->getEnabledTags().join(" ");
-        QString exceptTags = layersDialog->getExceptTags().join(" ");
-        canvasRenderer->setEnabledTags(enabledTags.toStdString().c_str());
-        canvasRenderer->setExceptTags(exceptTags.toStdString().c_str());
-        redraw();
-    }
-
-    delete layersDialog;
+    LayersDialog(canvasViewer, this).exec();
 }
 
 void ModuleInspector::showLabels(bool show)

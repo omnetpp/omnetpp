@@ -38,7 +38,6 @@ class cOsgCanvas;
 
 namespace qtenv {
 
-class CanvasRenderer;
 class OsgViewer;
 class ModuleCanvasViewer;
 class GraphicsLayer;

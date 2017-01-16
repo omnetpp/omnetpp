@@ -27,18 +27,31 @@ class LayersDialog;
 namespace omnetpp {
 namespace qtenv {
 
+class ModuleCanvasViewer;
+class CanvasRenderer;
+
 class QTENV_API LayersDialog : public QDialog
 {
     Q_OBJECT
 
+    ModuleCanvasViewer *canvasViewer;
+    CanvasRenderer *canvasRenderer;
+
+    QString originalEnabledTags, originalExceptTags;
+    QStringList enabledTags, exceptTags;
+
 private slots:
-    void clickOnShowFig(bool checked);
+    void onEnabledCheckBoxClicked(bool checked);
+    void onExceptCheckBoxClicked(bool checked);
+
+    void applyTagFilters();
 
 public slots:
     virtual void accept();
+    virtual void reject();
 
 public:
-    explicit LayersDialog(QString allTags, QString enabledTags, QString exceptTags, QWidget *parent = 0);
+    explicit LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent = 0);
     ~LayersDialog();
 
     QStringList getEnabledTags() const { return enabledTags; }
@@ -46,8 +59,6 @@ public:
 
 private:
     Ui::LayersDialog *ui;
-
-    QStringList allTags, enabledTags, exceptTags;
 };
 
 } // namespace qtenv

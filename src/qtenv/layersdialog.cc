@@ -19,45 +19,54 @@
 #include <QCheckBox>
 #include <QVBoxLayout>
 #include "qtenv.h"
+#include "modulecanvasviewer.h"
+#include "canvasrenderer.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-LayersDialog::LayersDialog(QString allTags, QString enabledTags, QString exceptTags, QWidget *parent) :
+LayersDialog::LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent) :
     QDialog(parent),
+    canvasViewer(canvasViewer),
+    canvasRenderer(canvasViewer->getCanvasRenderer()),
     ui(new Ui::LayersDialog)
 {
     ui->setupUi(this);
     setFont(getQtenv()->getBoldFont());
 
-    this->allTags = QString(allTags).split(' ', QString::SkipEmptyParts);
-    this->enabledTags = QString(enabledTags).split(' ', QString::SkipEmptyParts);
-    this->exceptTags = QString(exceptTags).split(' ', QString::SkipEmptyParts);
+    originalEnabledTags = canvasRenderer->getEnabledTags().c_str();
+    originalExceptTags = canvasRenderer->getExceptTags().c_str();
+
+    enabledTags = originalEnabledTags.split(' ', QString::SkipEmptyParts);
+    exceptTags = originalExceptTags.split(' ', QString::SkipEmptyParts);
+
+    QStringList allTags = QString(canvasRenderer->getAllTags().c_str()).split(' ', QString::SkipEmptyParts);
 
     QVBoxLayout *showFigLayout = static_cast<QVBoxLayout *>(ui->showFigWidget->layout());
     QVBoxLayout *hideFigLayout = static_cast<QVBoxLayout *>(ui->hideFigWidget->layout());
 
-    for (QString tag : this->allTags) {
-        QCheckBox *chkBox = new QCheckBox(tag);
+    for (QString tag : allTags) {
+        QCheckBox *enabledChkBox = new QCheckBox(tag);
         QCheckBox *exceptChkBox = new QCheckBox(tag);
 
-        bool isEnabledTagsContains = this->enabledTags.contains(tag);
-        chkBox->setChecked(isEnabledTagsContains);
+        bool tagEnabled = enabledTags.contains(tag);
+        enabledChkBox->setChecked(tagEnabled);
 
-        exceptChkBox->setVisible(!isEnabledTagsContains);
-        exceptChkBox->setChecked(this->exceptTags.contains(tag));
+        exceptChkBox->setVisible(!tagEnabled);
+        exceptChkBox->setChecked(exceptTags.contains(tag));
 
-        showFigLayout->addWidget(chkBox);
+        showFigLayout->addWidget(enabledChkBox);
         hideFigLayout->addWidget(exceptChkBox);
 
-        connect(chkBox, SIGNAL(clicked(bool)), this, SLOT(clickOnShowFig(bool)));
+        connect(enabledChkBox, SIGNAL(clicked(bool)), this, SLOT(onEnabledCheckBoxClicked(bool)));
+        connect(exceptChkBox, SIGNAL(clicked(bool)), this, SLOT(onExceptCheckBoxClicked(bool)));
     }
 
     showFigLayout->addStretch();
     hideFigLayout->addStretch();
 }
 
-void LayersDialog::clickOnShowFig(bool checked)
+void LayersDialog::onEnabledCheckBoxClicked(bool checked)
 {
     QCheckBox *chkBox = static_cast<QCheckBox *>(sender());
     int index = ui->showFigWidget->layout()->indexOf(chkBox);
@@ -65,9 +74,16 @@ void LayersDialog::clickOnShowFig(bool checked)
 
     exceptChkBox->setVisible(!checked);
     exceptChkBox->setChecked(false);
+
+    applyTagFilters();
 }
 
-void LayersDialog::accept()
+void LayersDialog::onExceptCheckBoxClicked(bool checked)
+{
+    applyTagFilters();
+}
+
+void LayersDialog::applyTagFilters()
 {
     enabledTags.clear();
     for (QObject *child : ui->showFigWidget->children()) {
@@ -82,7 +98,27 @@ void LayersDialog::accept()
         if (chkBox && chkBox->isVisible() && chkBox->isChecked())
             exceptTags.push_back(chkBox->text());
     }
+
+    canvasRenderer->setEnabledTags(enabledTags.join(" ").toStdString().c_str());
+    canvasRenderer->setExceptTags(exceptTags.join(" ").toStdString().c_str());
+
+    canvasViewer->redraw();
+}
+
+void LayersDialog::accept()
+{
+    applyTagFilters();
     QDialog::accept();
+}
+
+void LayersDialog::reject()
+{
+    canvasRenderer->setEnabledTags(originalEnabledTags.toStdString().c_str());
+    canvasRenderer->setExceptTags(originalExceptTags.toStdString().c_str());
+
+    canvasViewer->redraw();
+
+    QDialog::reject();
 }
 
 LayersDialog::~LayersDialog()
