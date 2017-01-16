@@ -171,11 +171,18 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="shortBanners">
-            <property name="text">
-             <string>Short event banners</string>
+           <layout class="QVBoxLayout" name="bannersSubLayout">
+            <property name="leftMargin">
+             <number>18</number>
             </property>
-           </widget>
+            <item>
+             <widget class="QCheckBox" name="shortBanners">
+              <property name="text">
+               <string>Short event banners</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_2">
