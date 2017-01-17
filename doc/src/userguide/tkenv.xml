@@ -748,18 +748,18 @@
       <para>The ``Object Navigator'' displays the full name and class name of each object
         ([[getFullName()]] and [[getClassName()]]), and also the ID for classes that have one
         ([[getId()]] on [[cMessage]] and [[cModule]]). When you hover with the mouse, the tooltip
-        displays the info string ([[info()]] method). The roots of the tree are the network module
-        ([[simulation.getSystemModule()]]) and the FES ([[simulation.getMessageQueue()]].
+        displays the info string ([[str()]] method). The roots of the tree are the network module
+        ([[simulation.getSystemModule()]]) and the FES ([[simulation.getFES()]].
         Child objects are enumerated with the help of the [[forEachChild()]] method.
       </para>
       <para>In the ``Object Inspector'', the ``Contents'' page displays the full name,
-        class name and info string ([[getFullName()]], [[getClassName()]], [[info()]])
+        class name and info string ([[getFullName()]], [[getClassName()]], [[str()]])
         of child objects enumerated using [[forEachChild()]]. [[forEachChild()]] can only
         enumerate objects that are subclassed from [[cObject]]. If you want your
         non-[[cObject]] variables (e.g. primitive types or STL containers) to appear
         in the ``Contents'' list, you need to wrap them into [[cObject]]. The [[WATCH()]]
         macro does exactly that: it creates an object wrapper that displays the
-        variable's value via the wrapper's [[info()]] method. There are watch macros
+        variable's value via the wrapper's [[str()]] method. There are watch macros
         for STL contains as well, they present the wrapped object to Tkenv in a more
         structured way, via custom class descriptors (cClassDescriptor, see below).
       </para>
@@ -785,7 +785,7 @@
       <para> The message/packet traffic page of ``Log Viewer'' shows information based
         on stored copies of sent messages (the copy is created using [[dup()]]), and stored
         sendhop information. The ``Name'' column displays the message name ([[getFullName()]]).
-        However, the ``Info'' column does not display the string returned from [[info()]],
+        However, the ``Info'' column does not display the string returned from [[str()]],
         but rather, strings produced by a [[cMessagePrinter]] object. Message printers
         can be dynamically registered.
       </para>
@@ -794,7 +794,7 @@
       <title>During Simulation</title>
       <para> Tkenv sets up a network by calling [[simulation.setupNetwork()]], then
         immediately proceeds to invoke [[callInitialize()]] on the root module.
-        During simulation, [[simulation.selectNextModule()]] and [[simulation.doOneEvent()]]
+        During simulation, [[simulation.takeNextEvent()]] and [[simulation.executeEvent()]]
         are called iteratively. When the simulation ends, Tkenv invokes [[callFinish()]]
         on the root module; the same happens when you select the ``Conclude Simulation''
         menu item. The purpose of [[callFinish()]] is to record summary statistics
@@ -883,10 +883,6 @@
         <listitem>
           [[tkenv-default-run]]: Specifies which run of the selected configuration Tkenv should set up
           after startup. If there is no such option, Tkenv will ask.
-        </listitem>
-        <listitem>
-          [[tkenv-image-path]]: Tkenv will append this value to the value of the [[OMNETPP_IMAGE_PATH]]
-          environment variable to determine the list of directories to load images from.
         </listitem>
         <listitem>
           [[tkenv-plugin-path]]: Tkenv will append this value to the value of the [[OMNETPP_PLUGIN_PATH]]
