@@ -52,70 +52,50 @@ namespace qtenv {
 
 #define emit
 
-//  --------  GraphicsWindow  --------
+static QSurfaceFormat traitsToSurfaceFormat(const osg::GraphicsContext::Traits *traits) {
+    QSurfaceFormat format;
 
-class GraphicsWindow : public osgViewer::GraphicsWindowEmbedded {
-    OsgViewer *v = nullptr;
-    QOpenGLContext *c = nullptr;
-    QOffscreenSurface *s = nullptr;
+    format.setRedBufferSize(traits->red);
+    format.setGreenBufferSize(traits->green);
+    format.setBlueBufferSize(traits->blue);
 
-    static QSurfaceFormat traitsToSurfaceFormat(const osg::GraphicsContext::Traits *traits) {
-        QSurfaceFormat format;
+    format.setAlphaBufferSize(traits->alpha);
+    format.setDepthBufferSize(traits->depth);
+    format.setStencilBufferSize(traits->stencil);
 
-        format.setRedBufferSize(traits->red);
-        format.setGreenBufferSize(traits->green);
-        format.setBlueBufferSize(traits->blue);
-
-        format.setAlphaBufferSize(traits->alpha);
-        format.setDepthBufferSize(traits->depth);
-        format.setStencilBufferSize(traits->stencil);
-
-        // Enabling multisampling breaks OpenGL (osgCanvas) video recording,
-        // specifically grabFramebuffer() with Qt versions prior 5.6.0.
-        // see https://bugreports.qt.io/browse/QTBUG-48450
-        // I think this should check the version Qtenv is running with, not
-        // the one it has been compiled with, but that seemed nontrivial.
+    // Enabling multisampling breaks OpenGL (osgCanvas) video recording,
+    // specifically grabFramebuffer() with Qt versions prior 5.6.0.
+    // see https://bugreports.qt.io/browse/QTBUG-48450
+    // I think this should check the version Qtenv is running with, not
+    // the one it has been compiled with, but that seemed nontrivial.
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-        format.setSamples(traits->samples);
+    format.setSamples(traits->samples);
 #else
-        format.setSamples(1);
+    format.setSamples(1);
 #endif
 
-        format.setSwapBehavior(traits->doubleBuffer
-                               ? QSurfaceFormat::DoubleBuffer
-                               : QSurfaceFormat::SingleBuffer);
+    format.setSwapBehavior(traits->doubleBuffer
+                           ? QSurfaceFormat::DoubleBuffer
+                           : QSurfaceFormat::SingleBuffer);
 
-        format.setSwapInterval(traits->vsync ? 1 : 0);
-        format.setStereo(traits->quadBufferStereo);
+    format.setSwapInterval(traits->vsync ? 1 : 0);
+    format.setStereo(traits->quadBufferStereo);
 
-        return format;
-    }
+    return format;
+}
+
+//  --------  OffscreenGraphicsWindow  --------
+
+class OffscreenGraphicsWindow : public osgViewer::GraphicsWindowEmbedded {
+    QOpenGLContext *context = nullptr;
+    QOffscreenSurface *surface = nullptr;
 
 public:
-    GraphicsWindow(OsgViewer *v, int x, int y, int w, int h) : GraphicsWindowEmbedded(x, y, w, h), v(v) {
-        auto state = new osg::State;
-        setState(state);
-        state->setGraphicsContext(this);
-        // This ID is just an internal unique handle for OSG,
-        // real context creation is done entirely by Qt.
-        state->setContextID(osg::GraphicsContext::createNewContextID());
-        v->setFormat(traitsToSurfaceFormat(getTraits()));
-    }
 
-    GraphicsWindow(OsgViewer *v, osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t), v(v) {
-        auto state = new osg::State;
-        setState(state);
-        state->setGraphicsContext(this);
-        // This ID is just an internal unique handle for OSG,
-        // real context creation is done entirely by Qt.
-        state->setContextID(osg::GraphicsContext::createNewContextID());
-        v->setFormat(traitsToSurfaceFormat(t));
-    }
-
-    GraphicsWindow(osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t) {
-        c = new QOpenGLContext();
-        s = new QOffscreenSurface();
-        s->setFormat(traitsToSurfaceFormat(t));
+    OffscreenGraphicsWindow(osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t) {
+        context = new QOpenGLContext();
+        surface = new QOffscreenSurface();
+        surface->setFormat(traitsToSurfaceFormat(t));
         auto state = new osg::State;
         setState(state);
         state->setGraphicsContext(this);
@@ -125,37 +105,83 @@ public:
     }
 
     void resizedImplementation(int x, int y, int width, int height) override {
-        setDefaultFboId(c ? c->defaultFramebufferObject() : v->defaultFramebufferObject());
+        setDefaultFboId(context->defaultFramebufferObject());
 
         GraphicsWindowEmbedded::resizedImplementation(x, y, width, height); // ?
-        if (v) v->resize(width, height), v->update();
     }
 
     bool realizeImplementation() override {
-        if (c) {
-            s->create();
-            bool ret = c->create();
-            setDefaultFboId(c->defaultFramebufferObject());
-            return ret;
-        }
-        else {
-            setDefaultFboId(v->defaultFramebufferObject());
-            return v && v->context();
-        }
+        surface->create();
+        bool ret = context->create();
+        setDefaultFboId(context->defaultFramebufferObject());
+        return ret;
     }
 
     bool makeCurrentImplementation() override {
-        if (c)
-            c->makeCurrent(s);
-        else
-            v->makeCurrent();
-
-        return c || v->context();
+        return context->makeCurrent(surface);
     }
 
     bool releaseContextImplementation() override {
-        if (v && v->context()) {
-            QOpenGLFunctions funcs(v->context());
+        context->doneCurrent();
+        return true;
+    }
+
+    bool isRealizedImplementation() const override {
+        return context; // ->isValid() ?
+    }
+
+    void swapBuffersImplementation() override {
+
+    }
+};
+
+//  --------  GraphicsWindow  --------
+
+class GraphicsWindow : public osgViewer::GraphicsWindowEmbedded {
+    OsgViewer *viewer = nullptr;
+
+public:
+    GraphicsWindow(OsgViewer *v, int x, int y, int w, int h) : GraphicsWindowEmbedded(x, y, w, h), viewer(v) {
+        auto state = new osg::State;
+        setState(state);
+        state->setGraphicsContext(this);
+        // This ID is just an internal unique handle for OSG,
+        // real context creation is done entirely by Qt.
+        state->setContextID(osg::GraphicsContext::createNewContextID());
+        v->setFormat(traitsToSurfaceFormat(getTraits()));
+    }
+
+    GraphicsWindow(OsgViewer *v, osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t), viewer(v) {
+        auto state = new osg::State;
+        setState(state);
+        state->setGraphicsContext(this);
+        // This ID is just an internal unique handle for OSG,
+        // real context creation is done entirely by Qt.
+        state->setContextID(osg::GraphicsContext::createNewContextID());
+        v->setFormat(traitsToSurfaceFormat(t));
+    }
+
+    void resizedImplementation(int x, int y, int width, int height) override {
+        setDefaultFboId(viewer->defaultFramebufferObject());
+
+        GraphicsWindowEmbedded::resizedImplementation(x, y, width, height); // ?
+        viewer->resize(width, height);
+        viewer->update();
+    }
+
+    bool realizeImplementation() override {
+        setDefaultFboId(viewer->defaultFramebufferObject());
+        return viewer->context();
+    }
+
+    bool makeCurrentImplementation() override {
+        viewer->makeCurrent();
+        return viewer->context();
+    }
+
+    bool releaseContextImplementation() override {
+        if (viewer->context()) {
+            QOpenGLFunctions funcs(viewer->context());
             funcs.initializeOpenGLFunctions();
 
             // ensuring that only alpha will be affected by the clear
@@ -166,27 +192,25 @@ public:
             funcs.glClear(GL_COLOR_BUFFER_BIT);
         }
 
-        c ? c->doneCurrent() : v->doneCurrent();
+        viewer->doneCurrent();
         return true;
     }
 
     bool isRealizedImplementation() const override {
-        return c || v->context();
+        return viewer->context(); // ->isValid() ?
     }
 
     void swapBuffersImplementation() override {
-        if (v) {
-            // No manual buffer swapping, as in the newer QOpenGLWidget
-            // all rendering is done in a magical way into an FBO,
-            // and this will basically blit that onto the screen.
+        // No manual buffer swapping, as in the newer QOpenGLWidget
+        // all rendering is done in a magical way into an FBO,
+        // and this will basically blit that onto the screen.
 
-            // Well except of course on Mac it has to be done differently...
-            #ifdef Q_OS_MAC
-                v->context()->swapBuffers(v->context()->surface());
-            #endif
+        // Well except of course on Mac it has to be done differently...
+        #ifdef Q_OS_MAC
+            v->context()->swapBuffers(v->context()->surface());
+        #endif
 
-            v->update();
-        }
+        viewer->update();
     }
 };
 
@@ -214,7 +238,7 @@ struct WindowingSystemInterface : public osg::GraphicsContext::WindowingSystemIn
     osg::GraphicsContext *createGraphicsContext(osg::GraphicsContext::Traits *traits) override {
         return traits->pbuffer
                 ? nullptr // no pbuffer support
-                : new GraphicsWindow(traits);
+                : new OffscreenGraphicsWindow(traits);
     }
 
     ~WindowingSystemInterface() {
