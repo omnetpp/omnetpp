@@ -5860,8 +5860,8 @@ fi
 #----------------------
 # Check for MPI.
 #----------------------
-
-if test -n "$MPI_LIBS"; then
+if test "$WITH_PARSIM" = "yes"; then
+  if test -n "$MPI_LIBS"; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5896,11 +5896,11 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-else
-    mpi_ok=no
-    # LAM and OpenMPI support mpic++ -showme
-    # NOTE: on some systems (e.g. RHEL and Fedora), "module load openmpi_i386" or similar command may be additionally needed to make MPI accessible
-    # Extract the first word of "mpic++", so it can be a program name with args.
+  else
+      mpi_ok=no
+      # LAM and OpenMPI support mpic++ -showme
+      # NOTE: on some systems (e.g. RHEL and Fedora), "module load openmpi_i386" or similar command may be additionally needed to make MPI accessible
+      # Extract the first word of "mpic++", so it can be a program name with args.
 set dummy mpic++; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -5938,9 +5938,9 @@ $as_echo "no" >&6; }
 fi
 
 
-    if test "$MPICPP" != "not found"; then
-        MPI_CFLAGS=`mpic++ -showme:compile`
-        MPI_LIBS=`mpic++ -showme:link`
+      if test "$MPICPP" != "not found"; then
+          MPI_CFLAGS=`mpic++ -showme:compile`
+          MPI_LIBS=`mpic++ -showme:link`
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -5975,12 +5975,12 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
+      fi
 
-    if test $mpi_ok = no; then
-          # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
-          # (both print the same string, which includes the compiler name too)
-          # Extract the first word of "mpicxx", so it can be a program name with args.
+      if test $mpi_ok = no; then
+            # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
+            # (both print the same string, which includes the compiler name too)
+            # Extract the first word of "mpicxx", so it can be a program name with args.
 set dummy mpicxx; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -6018,9 +6018,9 @@ $as_echo "no" >&6; }
 fi
 
 
-          if test "$MPICXX" != "not found"; then
-              MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^^ *//'`
-              MPI_LIBS=`mpicxx -link-info | sed 's/^^ *//'`
+            if test "$MPICXX" != "not found"; then
+                MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^^ *//'`
+                MPI_LIBS=`mpicxx -link-info | sed 's/^^ *//'`
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -6055,11 +6055,11 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-          fi
-    fi
+            fi
+      fi
 
-    if test $mpi_ok = no; then
-       mpilibs="-lmpi"   #SGI and mingw (on MinGW modify mpi.h and insert #include <wchar.h> at the top of the file)
+      if test $mpi_ok = no; then
+         mpilibs="-lmpi"   #SGI and mingw (on MinGW modify mpi.h and insert #include <wchar.h> at the top of the file)
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -6094,17 +6094,17 @@ rm -f core conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-    fi
-fi
+      fi
+  fi
 
-if test $mpi_ok = yes; then
-   DEFINES="$DEFINES -DWITH_MPI"
-else
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Optional package MPI (needed for parallel simulation) not found." >&5
+  if test $mpi_ok = yes; then
+     DEFINES="$DEFINES -DWITH_MPI"
+  else
+     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
+     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Optional package MPI (needed for parallel simulation) not found." >&5
 $as_echo "$as_me: WARNING: Optional package MPI (needed for parallel simulation) not found." >&2;}
+  fi
 fi
-
 
 #----------------------
 # Check for PCAP.

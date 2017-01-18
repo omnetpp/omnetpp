@@ -956,44 +956,44 @@ fi
 #----------------------
 # Check for MPI.
 #----------------------
+if test "$WITH_PARSIM" = "yes"; then
+  if test -n "$MPI_LIBS"; then
+      OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+  else
+      mpi_ok=no
+      # LAM and OpenMPI support mpic++ -showme
+      # NOTE: on some systems (e.g. RHEL and Fedora), "module load openmpi_i386" or similar command may be additionally needed to make MPI accessible
+      AC_CHECK_PROG(MPICPP, mpic++, mpic++, not found)
+      if test "$MPICPP" != "not found"; then
+          MPI_CFLAGS=`mpic++ -showme:compile`
+          MPI_LIBS=`mpic++ -showme:link`
+          OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+      fi
 
-if test -n "$MPI_LIBS"; then
-    OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
-else
-    mpi_ok=no
-    # LAM and OpenMPI support mpic++ -showme
-    # NOTE: on some systems (e.g. RHEL and Fedora), "module load openmpi_i386" or similar command may be additionally needed to make MPI accessible
-    AC_CHECK_PROG(MPICPP, mpic++, mpic++, not found)
-    if test "$MPICPP" != "not found"; then
-        MPI_CFLAGS=`mpic++ -showme:compile`
-        MPI_LIBS=`mpic++ -showme:link`
-        OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
-    fi
+      if test $mpi_ok = no; then
+            # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
+            # (both print the same string, which includes the compiler name too)
+            AC_CHECK_PROG(MPICXX, mpicxx, mpicxx, not found)
+            if test "$MPICXX" != "not found"; then
+                MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
+                MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
+                OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
+            fi
+      fi
 
-    if test $mpi_ok = no; then
-          # MPICH2 has mpicxx -compile-info and -link-info, slightly broken
-          # (both print the same string, which includes the compiler name too)
-          AC_CHECK_PROG(MPICXX, mpicxx, mpicxx, not found)
-          if test "$MPICXX" != "not found"; then
-              MPI_CFLAGS=`mpicxx -c -compile-info | sed 's/^[^ ]*//'`
-              MPI_LIBS=`mpicxx -link-info | sed 's/^[^ ]*//'`
-              OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $MPI_LIBS, mpi_ok)
-          fi
-    fi
+      if test $mpi_ok = no; then
+         mpilibs="-lmpi"   #SGI and mingw (on MinGW modify mpi.h and insert #include <wchar.h> at the top of the file)
+         OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
+      fi
+  fi
 
-    if test $mpi_ok = no; then
-       mpilibs="-lmpi"   #SGI and mingw (on MinGW modify mpi.h and insert #include <wchar.h> at the top of the file)
-       OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $CFLAGS $MPI_CFLAGS, $LDFLAGS $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
-    fi
+  if test $mpi_ok = yes; then
+     DEFINES="$DEFINES -DWITH_MPI"
+  else
+     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
+     AC_MSG_WARN([Optional package MPI (needed for parallel simulation) not found.])
+  fi
 fi
-
-if test $mpi_ok = yes; then
-   DEFINES="$DEFINES -DWITH_MPI"
-else
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
-   AC_MSG_WARN([Optional package MPI (needed for parallel simulation) not found.])
-fi
-
 
 #----------------------
 # Check for PCAP.
