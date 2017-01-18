@@ -760,6 +760,7 @@ void ModuleInspector::showLabels(bool show)
 
     setPref(PREF_SHOWLABELS, show);
     canvasViewer->setShowModuleNames(show);
+    update();
 }
 
 void ModuleInspector::showArrowheads(bool show)
@@ -769,6 +770,7 @@ void ModuleInspector::showArrowheads(bool show)
 
     setPref(PREF_SHOWARROWHEADS, show);
     canvasViewer->setShowArrowheads(show);
+    update();
 }
 
 void ModuleInspector::zoomIconsBy(double mult)
@@ -805,6 +807,7 @@ void ModuleInspector::switchToOsgView()
     resetOsgViewAction->setVisible(true);
 
     setPref(PREF_MODE, 1);
+    update();
 #endif
 }
 
@@ -841,6 +844,8 @@ void ModuleInspector::switchToCanvasView()
     else {
         canvasViewer->setSceneRect(QRect());
     }
+
+    update();
 }
 
 }  // namespace qtenv
