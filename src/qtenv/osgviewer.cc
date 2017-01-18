@@ -95,7 +95,9 @@ public:
     OffscreenGraphicsWindow(osg::GraphicsContext::Traits *t) : GraphicsWindowEmbedded(t) {
         context = new QOpenGLContext();
         surface = new QOffscreenSurface();
-        surface->setFormat(traitsToSurfaceFormat(t));
+        auto format = traitsToSurfaceFormat(t);
+        surface->setFormat(format);
+        context->setFormat(format);
         auto state = new osg::State;
         setState(state);
         state->setGraphicsContext(this);
