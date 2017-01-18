@@ -24,6 +24,7 @@
 #include <QAction>
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
+#include <QInputEvent>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/View>
 #include <osg/Camera>
@@ -77,7 +78,17 @@ class QTENV_API OsgViewer : public QOpenGLWidget
     // Needed to show the context menu only on release,
     // and only if there was no mouse drag.
     QPoint lastRightClick;
+    // we have to remember this as a "starting point"
+    // and subtract from all timestamp values before
+    // passing it to OSG, because the values were sometimes
+    // too freaking large (I mean 3e9 large), which
+    // caused problems with camera manipulation even
+    // after converting it to seconds.
+    unsigned long firstInputEventTimestamp = 0;
 
+    // gets the timestamp from the event, subtracts the
+    // value above, and converts it to "normally" seconds
+    double getTimestamp(QInputEvent *event);
     osg::CullSettings::ComputeNearFarMode defaultComputeNearFarMode;
 
     QAction *toTerrainManipulatorAction;

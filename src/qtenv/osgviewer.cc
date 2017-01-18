@@ -401,6 +401,10 @@ bool OsgViewer::event(QEvent *event)
         viewer->setCameraWithFocus(camera);
     }
 
+    if (auto inputEvent = dynamic_cast<QInputEvent *>(event))
+         if (firstInputEventTimestamp == 0)
+             firstInputEventTimestamp = inputEvent->timestamp();
+
     bool handled = QOpenGLWidget::event(event);
 
     // This ensures that the OSG widget is always going to be repainted after the
@@ -539,6 +543,13 @@ OsgViewer::~OsgViewer()
     viewer->removeView(view);
     view = nullptr;
     graphicsWindow->close(false);
+}
+
+double OsgViewer::getTimestamp(QInputEvent *event)
+{
+    return (event->timestamp() == 0)
+            ? 0.0
+            : (event->timestamp() - firstInputEventTimestamp) / 1000.0;
 }
 
 unsigned int OsgViewer::mouseButtonQtToOsg(Qt::MouseButton button)
@@ -722,26 +733,26 @@ osgGA::EventQueue* OsgViewer::getEventQueue() const
 
 void OsgViewer::keyPressEvent(QKeyEvent *event)
 {
-    getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol(event->key()), event->timestamp() / 1000.0);
+    getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol(event->key()), getTimestamp(event));
 }
 
 void OsgViewer::keyReleaseEvent(QKeyEvent *event)
 {
-    getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KeySymbol(event->key()), event->timestamp() / 1000.0);
+    getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KeySymbol(event->key()), getTimestamp(event));
 }
 
 void OsgViewer::mouseMoveEvent(QMouseEvent *event)
 {
-    getEventQueue()->mouseMotion(event->x() * widgetAspectRatio(), event->y(), event->timestamp() / 1000.0);
+    getEventQueue()->mouseMotion(event->x() * widgetAspectRatio(), event->y(), getTimestamp(event));
 }
 
 void OsgViewer::mousePressEvent(QMouseEvent *event)
 {
     int osgButton = mouseButtonQtToOsg(event->button());
     if (event->type() == QEvent::MouseButtonDblClick)
-        getEventQueue()->mouseDoubleButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, event->timestamp() / 1000.0);
+        getEventQueue()->mouseDoubleButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, getTimestamp(event));
     else
-        getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, event->timestamp() / 1000.0);
+        getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, getTimestamp(event));
 
     if (event->button() == Qt::LeftButton) {
         auto objects = objectsAt(event->pos());
@@ -763,7 +774,7 @@ void OsgViewer::mousePressEvent(QMouseEvent *event)
 
 void OsgViewer::mouseReleaseEvent(QMouseEvent *event)
 {
-    getEventQueue()->mouseButtonRelease(event->x() * widgetAspectRatio(), event->y(), mouseButtonQtToOsg(event->button()), event->timestamp() / 1000.0);
+    getEventQueue()->mouseButtonRelease(event->x() * widgetAspectRatio(), event->y(), mouseButtonQtToOsg(event->button()), getTimestamp(event));
 
     if (event->button() == Qt::RightButton
             && (lastRightClick - event->pos()).manhattanLength() < 3) {
@@ -791,32 +802,29 @@ void OsgViewer::wheelEvent(QWheelEvent *event)
     // scroll events into this, until we have a "full step" (120, 15 deg)
     static QPoint accum;
 
-    // should really use angleDelta instead, since
-    // orientation and delta are deprecated, but
-    // no other way until we support Qt4
-    switch (event->orientation()) {
-        case Qt::Vertical:   accum.ry() += event->delta(); break;
-        case Qt::Horizontal: accum.rx() += event->delta(); break;
-    }
+    // use pixelDelta?
+    accum += event->angleDelta();
 
     // 120 represents 15 degrees, which is "one step" on most mice
     // see the Qt docs for details
 
+    double t = getTimestamp(event);
+
     while (accum.y() >= 120) {
-        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_UP, event->timestamp() / 1000.0);
+        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_UP, t);
         accum.ry() -= 120;
     }
     while (accum.y() <= -120) {
-        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_DOWN, event->timestamp() / 1000.0);
+        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_DOWN, t);
         accum.ry() += 120;
     }
 
     while (accum.x() >= 120) {
-        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_RIGHT, event->timestamp() / 1000.0);
+        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_RIGHT, t);
         accum.rx() -= 120;
     }
     while (accum.x() <= -120) {
-        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_LEFT, event->timestamp() / 1000.0);
+        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_LEFT, t);
         accum.rx() += 120;
     }
 }
