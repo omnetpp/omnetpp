@@ -743,6 +743,9 @@ void OsgViewer::keyReleaseEvent(QKeyEvent *event)
 
 void OsgViewer::mouseMoveEvent(QMouseEvent *event)
 {
+    // The multiplication by the aspect ratio is a HACK, but this makes the cursor "stick to the surface"
+    // when dragging the camera with the Earth manipulator, and normalizes rotation speed in all directions.
+    // However, it causes some issues with doubleclick zooming, which we want to avoid, see a few lines down.
     getEventQueue()->mouseMotion(event->x() * widgetAspectRatio(), event->y(), getTimestamp(event));
 }
 
@@ -750,7 +753,8 @@ void OsgViewer::mousePressEvent(QMouseEvent *event)
 {
     int osgButton = mouseButtonQtToOsg(event->button());
     if (event->type() == QEvent::MouseButtonDblClick)
-        getEventQueue()->mouseDoubleButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, getTimestamp(event));
+        // not multiplying the x coordinate with the aspect ratio in this one place is a DOUBLE HACK, but oh well...
+        getEventQueue()->mouseDoubleButtonPress(event->x() /* * widgetAspectRatio() */, event->y(), osgButton, getTimestamp(event));
     else
         getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio(), event->y(), osgButton, getTimestamp(event));
 
