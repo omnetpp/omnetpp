@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<tilemap tilemapservice="http://tms.osgeo.org/1.0.0" version="1.0.0">
+  <title>osm_mapnik</title>
+  <abstract></abstract>
+  <srs>EPSG:4326</srs>
+  <vsrs></vsrs>
+  <boundingbox maxx="180.0000000" maxy="90.0000000" minx="-180.0000000" miny="-90.0000000" />
+  <origin x="-180.0000000" y="-90.0000000" />
+  <tileformat extension="png" height="256" mime-type="image/png" width="256" />
+  <tilesets profile="global-geodetic">
+    <tileset href="" order="0" units-per-pixel="0.7031250" />
+    <tileset href="" order="1" units-per-pixel="0.3515625" />
+    <tileset href="" order="2" units-per-pixel="0.1757812" />
+    <tileset href="" order="3" units-per-pixel="0.0878906" />
+    <tileset href="" order="4" units-per-pixel="0.0439453" />
+    <tileset href="" order="5" units-per-pixel="0.0219727" />
+    <tileset href="" order="6" units-per-pixel="0.0109863" />
+    <tileset href="" order="7" units-per-pixel="0.0054932" />
+    <tileset href="" order="8" units-per-pixel="0.0027466" />
+    <tileset href="" order="9" units-per-pixel="0.0013733" />
+    <tileset href="" order="10" units-per-pixel="0.0006866" />
+    <tileset href="" order="11" units-per-pixel="0.0003433" />
+    <tileset href="" order="12" units-per-pixel="0.0001717" />
+    <tileset href="" order="13" units-per-pixel="0.0000858" />
+    <tileset href="" order="14" units-per-pixel="0.0000429" />
+    <tileset href="" order="15" units-per-pixel="0.0000215" />
+    <tileset href="" order="16" units-per-pixel="0.0000107" />
+    <tileset href="" order="17" units-per-pixel="0.0000054" />
+    <tileset href="" order="18" units-per-pixel="0.0000027" />
+    <tileset href="" order="19" units-per-pixel="0.0000013" />
+    <tileset href="" order="20" units-per-pixel="0.0000007" />
+    <tileset href="" order="21" units-per-pixel="0.0000003" />
+    <tileset href="" order="22" units-per-pixel="0.0000002" />
+  </tilesets>
+</tilemap>

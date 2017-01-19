@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<map>
+  <version>2</version>
+  <options>
+    <name>Boston Demo</name>
+    <cache>
+      <type>filesystem</type>
+      <path>cache</path>
+    </cache>
+    <cache_policy>
+      <usage>no_cache</usage>
+    </cache_policy>
+    <type>geocentric</type>
+    <elevation_tile_size>15</elevation_tile_size>
+    <terrain>
+      <lighting>false</lighting>
+    </terrain>
+    <overlay_resolution_ratio>1</overlay_resolution_ratio>
+  </options>
+  <image>
+    <cache_policy>
+      <usage>no_cache</usage>
+    </cache_policy>
+    <url>osm_mapnik/tms.xml</url>
+    <name>osm_mapnik</name>
+    <driver>tms</driver>
+  </image>
+</map>
