@@ -15,16 +15,7 @@
 
 package animation2;
 
-channel Ideal extends ned.IdealChannel { @display("ls=,3;t=ideal"); }
-channel Delay extends ned.DatarateChannel { @display("ls=blue,3;t=10 ms"); delay = 10ms; }
-channel Rate extends ned.DatarateChannel { @display("ls=green,3;t=10Mbps"); datarate = 10Mbps; }
-channel DelayAndRate extends ned.DatarateChannel {
-    @display("ls=cyan,3;t=10Mbps 10ms");
-    datarate = 10Mbps;
-    delay = 10ms;
-}
-
-network Network
+network Network1
 {
     @display("bgb=600,700");
     @figure[title](type=text;pos=300,75;anchor=c;text="");
