@@ -327,11 +327,16 @@ void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyle
     QString wholeText = index.data().toString();
     QString editorText = index.data(Qt::EditRole).toString();
 
-    // searching for the start of the value
-    int startIndex = wholeText.indexOf(editorText);
-
+    // The editor will cover the "highlighted" (blue) part of the text.
+    // This is not perfect semantically, but not an entirely wrong guess,
+    // since in editable items usually only the value itself is highlighted.
+    // And even if we get it wrong, not much depends on it, it will just look weird.
+    // (Experimented with substring search, that failed when integer values
+    // were found where the matching array index was... And we could add
+    // another UserRole, and get it from the model that way, but why bother...)
+    HighlightRange range = index.data(Qt::UserRole).value<HighlightRange>();
     // this is where the editor should start
-    int editorLeft = option.fontMetrics.width(wholeText.left(startIndex));
+    int editorLeft = option.fontMetrics.width(wholeText.left(range.start));
 
     // and this is how wide it should be
     int editorWidth = option.fontMetrics.width(editorText);
@@ -339,7 +344,7 @@ void HighlighterItemDelegate::updateEditorGeometry(QWidget *editor, const QStyle
     // moving the editor horizontally and setting its width as computed
     auto geom = editor->geometry();
     geom.translate(editorLeft, 0);
-    geom.setWidth(qMax(20, editorWidth));  // so empty values can be edited too
+    geom.setWidth(std::max(20, editorWidth));  // so empty values can be edited too
     editor->setGeometry(geom);
 }
 
