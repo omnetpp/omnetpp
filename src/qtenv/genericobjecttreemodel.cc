@@ -683,7 +683,7 @@ QVariant FieldNode::data(int role)
     QString objectClassName = objectCasted ? (QString(" (") + getObjectShortTypeName(objectCasted) + ")") : "";
     QString objectName = objectCasted ? QString(" ") + getObjectFullNameOrPath(objectCasted): "";
     QString arraySize;
-    QString fieldValue;
+    QString prefix, fieldValue, postfix; // pre- and postfix mostly (only) for 'string values'
     QString objectInfo;
     QString equals = " = ";
     QString editable = isEditable() ? " [...] " : "";
@@ -698,37 +698,30 @@ QVariant FieldNode::data(int role)
     }
 
     // the name can be overridden by a label property
-    const char *label = containingDesc->getFieldProperty(fieldIndex, "label");
-    if (label) {
+    if (const char *label = containingDesc->getFieldProperty(fieldIndex, "label"))
         fieldName = label;
-    }
 
     // it is a simple value (not an array, but may be compound - like color or transform)
-    if (!isArray && !isCObject) {
+    if (!isArray && !isCObject)
         fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
-    }
 
     if (!isArray && isCObject) {
         if (objectCasted) {
             objectInfo = objectCasted->str().c_str();
-            if (objectInfo.length() > 0) {
+            if (objectInfo.length() > 0)
                 objectInfo = QString(": ") + objectInfo;
-            }
         }
-        else {
+        else
             fieldValue = "nullptr";
-        }
     }
 
     if (isArray)
         arraySize = QString("[") + QVariant::fromValue(containingDesc->getFieldArraySize(containingObject, fieldIndex)).toString() + "]";
 
-    // the apostrophes have to be there when showing the value and when calculating the highlight range
-    // but not in the editor or the tooltip
-    if ((role == Qt::DisplayRole || role == Qt::UserRole) && fieldType == "string" && !isArray)
-        fieldValue = "'" + fieldValue + "'";
+    if (fieldType == "string" && !isArray)
+        prefix = postfix = "'";
 
-    if (isArray || fieldValue.isEmpty())
+    if (isArray || (prefix + fieldValue + postfix).isEmpty())
         equals = "";  // no need to add an " = " in these cases
 
     QString tooltip = opp_nulltoempty(containingDesc->getFieldProperty(fieldIndex, "hint"));
@@ -744,10 +737,10 @@ QVariant FieldNode::data(int role)
             return tooltip;
 
         case Qt::DisplayRole:
-            return fieldName + arraySize + equals + fieldValue + objectClassName + objectName + objectInfo + editable + " (" + fieldType + ")";
+            return fieldName + arraySize + equals + prefix + fieldValue + postfix + objectClassName + objectName + objectInfo + editable + " (" + fieldType + ")";
 
         case Qt::UserRole:
-            return QVariant::fromValue(HighlightRange { fieldName.length() + arraySize.length() + equals.length(), fieldValue.length() + objectClassName.length() + objectName.length() + objectInfo.length() });
+            return QVariant::fromValue(HighlightRange { fieldName.length() + arraySize.length() + equals.length() + prefix.length(), fieldValue.length() + objectClassName.length() + objectName.length() + objectInfo.length() });
 
         default:
             return QVariant();
