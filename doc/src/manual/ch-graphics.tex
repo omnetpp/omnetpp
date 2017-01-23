@@ -3375,6 +3375,62 @@ ellipse (a hollow cylinder) next to it, and a big red flag nearby.
 </map>
 \end{filelisting}
 
+\subsubsection{Creating offline tile packages}
+\label{sec:graphics:offline-tiles}
+
+In some cases it may be desirable to make a simulation that includes visualization
+using osgEarth run offline, i.e. without access to an online map provider.
+
+A command line tool called osgearth\_package makes this possible by downloading
+the tiles that make up the map, and arranging them in a fairly standardized,
+self-contained package complete with an .earth file, which can be later used just
+like any other.
+
+This way (a part of) the original data can be distributed together with the model,
+no internet access will be necessary, the used data will not change spontaneously,
+and the tiles will generally load faster, with the price of some disk space.
+
+For example, the offline configurations of the osg-earth sample simulation use
+a tile package which has been created with a command similar to this one:
+
+\begin{commandline}
+osgearth_package --tms boston.earth --out offline-tiles \
+  --bounds -71.0705566406 42.350425122434 -71.05957031 42.358543917497 \
+  --max-level 18 --out-earth boston_offline.earth --mt --concurrency 8
+\end{commandline}
+
+The \ttt{-{}-tms boston.earth} arguments mean that we want to create a package
+in TMS format from the input file boston.earth. The \ttt{-{}-out offline-tiles}
+argument specifies the output directory.
+
+The \ttt{-{}-bounds} argument specifies the rectangle of the map we want to include
+in the package, in the order \textit{xmin ymin xmax ymax} order, as standard WGS84
+datum (longitude/latitude). These example coordinates include the Boston Common
+area, used in some samples. The size of this rectangle obviously has a big impact
+on the size of the resulting package.
+
+The \ttt{-{}-max-level 18} argument is the maximum level of detail to be saved. This
+is a simple way of adjusting the tradeoff between quality and required disk space.
+Values between 15 and 20 are generally suitable, depending on the size of the
+target area and the available storage capacity.
+
+The \ttt{-{}-out-earth boston\_offline.earth} option tells the utility to generate
+an .earth file with the given name in the output directory that references the
+prepared tile package as image source.
+
+The \ttt{-{}-mt -{}-concurrency 8} arguments will make the process run in multithreaded
+mode, using 8 threads, potentially speeding it up.
+
+The tool has a few more options for controlling the image format and compression
+mode among others. Consult the documentation for details, or the short usage help
+accessible with the \ttt{-h} switch.
+
+There is also a graphical utility called osgearth\_package\_qt which makes this
+whole process much more convenient by providing an easy way of selecting the
+bounding rectangle on the actual map using the mouse, the input and output files,
+and with the export options, without having to resort to a command line interface.
+
+
 \subsubsection{Placing Objects on a Map}
 \label{sec:graphics:osgearth-placing-objects}
 
