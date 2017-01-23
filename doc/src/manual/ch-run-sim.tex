@@ -4,8 +4,7 @@
 \section{Introduction}
 
 This chapter describes how to run simulations. It covers basic usage, user
-interfaces, batch runs, how to use Akaroa, and also explains how to solve the
-most common errors.
+interfaces, running simulation campaigns, and many other topics.
 
 \section{Simulation Executables vs Libraries}
 \label{sec:run-sim:running}
@@ -41,7 +40,7 @@ code in it.
 
 
 \section{Command-Line Options}
-\label{sec:run-sim:command-line options}
+\label{sec:run-sim:command-line-options}
 
 The above commands illustrate just the simplest case. Usually you will
 need to add extra command-line options, for example to specify what ini file(s)
@@ -62,12 +61,15 @@ Or:
 $ ./fifo -h
 \end{commandline}
 
-Additionally, it is also possible to specify configuration options (i.e. ini
-file options) on the command line. To do so, prefix the option name with a
-double dash, and append the value with an equal sign. Be sure not to have spaces
-around the equal sign. If the value contains spaces or shell metacharacters,
-you'll need to protect the value (or the whole option) with quotes or
-apostrophes.
+
+\section{Configuration Options on the Command Line}
+\label{sec:run-sim:config-options-on-cmdline}
+
+Configuration options can also be specified on the command line, not only in
+ini files. To do so, prefix the option name with a double dash, and append the
+value with an equal sign. Be sure not to have spaces around the equal sign. If
+the value contains spaces or shell metacharacters, you'll need to protect the
+value (or the whole option) with quotes or apostrophes.
 
 Example:
 
@@ -247,12 +249,12 @@ $ ./aloha -c PureAlohaExperiment -r "\$numHosts>10 && \$mean<2"
 The \fopt{-q} (query) option complements \fopt{-c} and \fopt{-r}, and
 allows one to list the runs matched by the run filter.
 \fopt{-q} expects an argument that defines the format and verbosity of the
-output. For example, \fopt{-q runs} prints one line of information with 
-the iteration variables about each run that the run filter matches.
-The list of available format names include \ttt{numruns},
-\ttt{runnumbers}, \ttt{runs}, \ttt{rundetails} and \ttt{runconfig}. 
+output. Several formats are available: \ttt{numruns}, \ttt{runnumbers}, 
+\ttt{runs}, \ttt{rundetails}, \ttt{runconfig}. Use \ttt{opp\_run -h} to get a
+complete list.
 
-Example:
+\fopt{-q runs} prints one line of information with the iteration variables 
+about each run that the run filter matches. An example:
 
 \begin{commandline}
 $ ./aloha -s -c PureAlohaExperiment -r '$numHosts>10 && $mean<2' -q runs
@@ -264,9 +266,39 @@ Run 29: $numHosts=20, $mean=1, $repetition=1
 
 The \fopt{-s} option just makes the output less verbose.
 
-The \ttt{-q sectioninheritance} option ignores \fopt{-r}, and prints the
-section inheritance chain (the inheritance graph after linearization)
-for the configuration denoted by \fopt{-c}. 
+If you need more information, use \fopt{-q rundetails} or \fopt{-q runconfig}.
+\ttt{rundetails} is like \ttt{numruns}, but it also prints the values of the
+iteration variables and a summary of the configuration (the expanded
+values of configuration entries that contain iteration variables)
+for each matching run:
+
+\begin{commandline}
+$ ./aloha -s -c PureAlohaExperiment -r '$numHosts>10 && $mean<2' -q rundetails
+Run 14: $numHosts=15, $mean=1, $repetition=0
+    Aloha.numHosts = 15
+    Aloha.host[*].iaTime = exponential(1s)
+
+Run 15: $numHosts=15, $mean=1, $repetition=1
+    Aloha.numHosts = 15
+    Aloha.host[*].iaTime = exponential(1s)
+...
+\end{commandline}
+
+The \ttt{numruns} and \ttt{runnumbers} formats are mainly intended for use in
+scripts. They just print the number of matching runs and the plain run number
+list, respectively.
+
+\begin{commandline}
+$ ./aloha -s -c PureAlohaExperiment -r '$numHosts>10 && $mean<2' -q numruns
+4
+$ ./aloha -s -c PureAlohaExperiment -r '$numHosts>10 && $mean<2' -q runnumbers
+ 14 15 28 29
+\end{commandline}
+
+The \fopt{-q} option encapsulates some unrelated functionality, as well:
+\fopt{-q sectioninheritance} ignores \fopt{-r}, and prints the inheritance chain
+of the  inifile sections (the inheritance graph after linearization) for the
+configuration denoted by \fopt{-c}.
 
 
 \section{Loading Extra Libraries}
@@ -326,6 +358,16 @@ configuration options:
   \item \fconfig{real-time-limit} : Limits how long the simulation can run (in real time)
 \end{itemize}
 
+\begin{note}
+\fconfig{cpu-time-limit} and \fconfig{real-time-limit} may look
+similar, but in practice, you'll almost always need \fconfig{cpu-time-limit} of
+the two. Its alternative, \fconfig{real-time-limit} simply measures elapsed
+time (wall-clock interval), so it does not imply how many cycles the CPU has
+spent on running your simulation. On a heavily overloaded system where the CPU
+is shared among a number of computationally intensive jobs,
+\fconfig{real-time-limit} may stop your simulation much too early.
+\end{note}
+
 An example:
 
 \begin{commandline}
@@ -334,6 +376,7 @@ $ ./fifo --sim-time-limit=500s
 
 If several time limits are set together, the simulation will stop when the first
 one is hit.
+
 
 If needed, the simulation may also be stopped programmatically, for example when
 results of a (steady-state) simulation have reached the desired accuracy. 
@@ -363,11 +406,13 @@ output files during simulation.
 
   \item \fconfig{cmdenv-redirect-output} : This is a Cmdenv-specific option,
         only mentioned here for completeness. It tells Cmdenv to save its
-        standard output to files, one file per run. 
+        standard output to files, one file per run. This option is mainly
+        helpful when running simulation batches.
 
 \end{itemize}
 
-An example:
+These configuration options, like any other, can be specified both in ini
+files and on the command line. An example:
 
 \begin{commandline}
 $ ./fifo --record-eventlog=true --scalar-recording=false --vector-recording=false
@@ -401,56 +446,87 @@ configuration options are related to C++ debugging:
         to start the simulation in a debugger.
         \end{hint}
 
-  \item \fconfig{fingerprint} : This option is a regressing testing tool that
-        is handy during model development, but not something directly related to
-        C++ debugging. It instructs the simulation kernel to compute one or more
-        fingerprints while the simulation is running. When the simulation
-        terminates, the simulation kernel will generate an error if the computed
-        fingerprints don't match with the provided ones. This  feature is mainly
-        useful for regression testing. Fingerprint tests are discussed in detail
-        in section  \ref{sec:testing:fingerprint-tests}. 
-
 \end{itemize}
 
-An example: 
+An example that launches the simulation under the \fprog{gdb} debugger: 
 
 \begin{commandline}
 $ gdb --args ./aloha --debug-on-errors=true
 \end{commandline}
 
 
+\section{Debugging Leaked Messages}
+\label{sec:run-sim:leaked-messages}
+
+The most common cause of memory leaks in {\opp} simulations is forgetting to
+delete messages. When this happens, the simulation process will continually grow
+in size as the simulation progresses, and when left to run long enough, it will
+eventually cause an out-of-memory condition. 
+
+Luckily, this problem is easy to indentify, as all user interfaces display the
+number of message objects currently in the system. Take a look at the following
+example Cmdenv output: 
+
+\begin{commandline}
+...
+** Event #1908736   t=58914.051870113485   Elapsed: 2.000s (0m 02s)
+     Speed:     ev/sec=954368   simsec/sec=29457   ev/simsec=32.3987
+     Messages:  created: 561611   `\tbf{present:\ 21}`   in FES: 34
+** Event #3433472   t=106067.401570204991   Elapsed: 4.000s (0m 04s)
+     Speed:     ev/sec=762368   simsec/sec=23576.7   ev/simsec=32.3357
+     Messages:  created: 1010142   `\tbf{present:\ 354}`   in FES: 27
+** Event #5338880   t=165025.763387178965   Elapsed: 6.000s (0m 06s)
+     Speed:     ev/sec=952704   simsec/sec=29479.2   ev/simsec=32.3179
+     Messages:  created: 1570675   `\tbf{present:\ 596}`   in FES: 21
+** Event #6850304   t=211763.433233042017   Elapsed: 8.000s (0m 08s)
+     Speed:     ev/sec=755712   simsec/sec=23368.8   ev/simsec=32.3385
+     Messages:  created: 2015318   `\tbf{present:\ 732}`   in FES: 38
+** Event #8753920   t=270587.781554343184   Elapsed: 10.000s (0m 10s)
+     Speed:     ev/sec=951808   simsec/sec=29412.2   ev/simsec=32.361
+     Messages:  created: 2575634   `\tbf{present:\ 937}`   in FES: 32 
+** Event #10270208   t=317495.244698246477   Elapsed: 12.000s (0m 12s)
+     Speed:     ev/sec=758144   simsec/sec=23453.7   ev/simsec=32.3251
+     Messages:  created: 3021646   `\tbf{present:\ 1213}`   in FES: 20
+...
+\end{commandline}
+
+The interesting parts are in bold font. The steadily increasing numbers are an
+indication that the simulation model, i.e. one or more modules in it, are
+missing some \ttt{delete msg} calls. It is best to use Qtenv or Tkenv to narrow
+down the issue to specific modules and/or message types.
+
+Qtenv and Tkenv are also able to display the number of messages currently
+in the simulation. The numbers are displayed on the status bar. If you find that
+the number of messages is steadily increasing, you need to find where the
+message objects are located. This can be done with the help of the
+\textit{Find/Inspect Objects} dialog. 
+
+If the number of messages is stable, it is still possible that the simulation
+is leaking other \cclass{cObject}-based objects; they can also be found
+using the \textit{Find/Inspect Objects} dialog. 
+
+If the simulation is leaking non-{\opp} objects (i.e. not something derived
+from \cclass{cObject}) or other memory blocks, Cmdenv, Tkenv or Qtenv cannot
+help in tracking down the issue.
 
 
-\section{Debugging Memory Problems}
+\section{Debugging Other Memory Problems}
 \label{sec:run-sim:memory-leaks-and-crashes}
 
-Many errors in C++ programs are associated with memory allocations, i.e. the
-usage of \ttt{new} and \ttt{delete}:
+Technically, memory leaks are only a subset of problems associated with memory
+allocations, i.e. the usage of \ttt{new} and \ttt{delete} in C++. 
 
 \begin{itemize}
    \item \textit{memory leaks,} that is, forgetting to delete objects
-     or memory blocks no longer used;
-   \item \textit{crashes,} usually due to referring to an already deleted
-     object or memory block, or trying to delete one for a second time;
-   \item \textit{heap corruption} (eventually leading to crash) due to
-     overrunning allocated blocks, i.e. writing past the end of an allocated
-     array.
+     or memory blocks no longer used, usually just prevents the user from
+     being able to run the simulation program long enough;
+   \item \textit{dereferencing dangling pointers}, i.e. accessing
+    an already deleted object or memory block (or trying to delete one
+    for a second time) usually results in a crash;
+   \item \textit{heap corruption}, caused by e.g. writing past the end of
+   an allocated array, usually also results in a crash.
 \end{itemize}
 
-The most common cause of memory leaks in {\opp} simulations is
-forgetting to delete messages. Both Qtenv/Tkenv and Cmdenv are able
-to display the number of messages currently in the simulation,
-helping you to determine if you have such a memory leak.
-If you find that the number of messages is steadily increasing,
-you need to find where the message objects are located. This can be done with
-the help of the \textit{Find/Inspect Objects} dialog.
-
-If the number of messages is stable, it is still possible
-you are leaking other \cclass{cObject}-based objects. You can also
-find them using the \textit{Find/Inspect Objects} dialog.
-
-If you are leaking other objects or memory blocks, you will not be able to find
-them via Qtenv/Tkenv.
 
 There are specialized tools that can help in tracking down memory allocation
 problems (memory leak, double-deletion, referencing deleted blocks, etc). Some
@@ -486,8 +562,9 @@ If you must run the simulation under Qtenv/Tkenv, you can still gain speed by
 disabling animation features, closing all inspectors, hiding UI elements like
 the timeline, and so on.
 
-Also, compile your code as release instead of debug. That can make a huge
-difference, especially with heavily templated code.
+Also, compile your code in release mode (with \ttt{make MODE=release}, see
+\ref{sec:build-sim-progs:debug-and-release-builds}) instead of debug. That
+can make a huge difference, especially with heavily templated code.
 
 \begin{hint}
 If you decide to optimize the program, we recommend that you don't skip the
@@ -502,8 +579,8 @@ Some profiling software:
   \item \tbf{Debuggers}. A very simple but frequently useful way of profiling is
         stopping the program in a debugger from time to time, and looking at the
         stack trace before resuming (manual statistical profiling). If
-        the program always stops at the same place in the code, that might the
-        bottleneck.
+        the program always stops at the same place in the code, that might be
+        the bottleneck.
   \item \tbf{Valgrind/KCachegrind}. KCachegrind is a graphical visualizer
         for traces generated by \textit{valgrind} and its \textit{callgrind}
         tool in Linux. These tools are free and open source software,
@@ -549,7 +626,7 @@ Cmdenv simply executes some or all simulation runs that are described
 in the configuration file. The runs to be executed can be
 passed via command-line arguments or configuration options. 
 
-Cmdenv runs simulations in its own process. This means that e.g. if one
+Cmdenv runs simulations in the same process. This means that e.g. if one
 simulation run writes a global variable, subsequent runs will also
 see the change. This is one reason why global variables in models are
 strongly discouraged.
@@ -610,15 +687,14 @@ methods of the simple modules are run, and the outputs from them are displayed.
 
 The most important command-line options for Cmdenv are \fopt{-c} and
 \fopt{-r} for selecting which simulations to perform. (They were described
-in section \ref{sec:run-sim:selecting-configuration-and-runs}.) 
+in section \ref{sec:run-sim:selecting-configuration-and-runs}.) They also have
+their equivalent configuration options that can be written in files as well:
+\fconfig{cmdenv-config-name} and \fconfig{cmdenv-runs-to-execute}.
 
-\begin{itemize}
-    \item \fconfig{cmdenv-config-name} : Same as the \fopt{-c} option.
-    \item \fconfig{cmdenv-runs-to-execute} : Same as the \fopt{-r} option.
-    \item \fconfig{cmdenv-stop-batch-on-error} : When performing multiple runs,
-           this option controls whether Cmdenv should stop after the first run
-           that finishes with an error. By default, it does.
-\end{itemize}
+Another configuration option, \fconfig{cmdenv-stop-batch-on-error} controls
+Cmdenv's behavior when performing multiple runs: it determines
+whether Cmdenv should stop after the first run that finishes with an
+error. By default, it does.
 
 When performing multiple runs, Cmdenv prints run statistics at the end. Example
 output:
@@ -660,12 +736,13 @@ mode behavior:
         \fconfig{cmdenv-log-level}, \fconfig{cmdenv-log-prefix}, etc.
 \end{itemize}
 
+See Appendix \ref{cha:config-options} for more information about these options.
 
 \subsubsection{Interpreting Express-Mode Output}
 
 When the simulation is running in Express mode with detailed
-performance display enabled, Cmdenv periodically outputs a three-line
-status report about the progress of the simulation.
+performance display enabled (\ttt{cmdenv-performance-display=true}), Cmdenv
+periodically outputs a three-line status report about the progress of the simulation.
 The output looks like this:
 
 \begin{commandline}
@@ -696,9 +773,9 @@ The second line displays simulation performance metrics:
      (faster CPUs process more events per second), and on the other hand
      it depends on the complexity (amount of calculations) associated
      with processing one event. For example, protocol simulations tend to require
-     more processing per event than e.g. queueing networks, thus
-     the latter produce higher ev/sec values.
-     In any case, this value is independent of the size (number of modules) in your model.
+     more processing per event than e.g. queueing networks, thus the latter
+     produce higher ev/sec values. In any case, this value is largely
+     independent of the size of your model, i.e. the number of modules in it.
    \item \ttt{simsec/sec} shows \textit{relative speed} of the simulation, that
      is, how fast the simulation is progressing compared to real time, how many
      simulated seconds can be done in one real second. This value virtually depends
@@ -710,7 +787,8 @@ The second line displays simulation performance metrics:
      optical network simulation you will have very high values ($10^9$), 
      while in a call center simulation this value is probably well
      under 1. It also depends on the size of your model: if you double the
-     number of modules in your model, you can expect the event density double, too.
+     number of modules in your model, you can expect the event density to
+     double, too.
 \end{itemize}
 
 The third line displays the number of messages, and it is important
@@ -793,7 +871,7 @@ The configuration options specific to Qtenv include:
     simple module when the simulation is run under Qtenv.
 \end{itemize}
 
-It is also affected by the following option:
+Qtenv is also affected by the following option:
 
 \begin{itemize}
   \item \fconfig{image-path}: Specifies the path for loading module icons.
@@ -847,7 +925,7 @@ The configuration options specific to Tkenv include:
     that get evaluated on startup.
 \end{itemize}
 
-It is also affected by the following option:
+Tkenv is also affected by the following option:
 
 \begin{itemize}
   \item \fconfig{image-path}: Specifies the path for loading module icons.
@@ -869,7 +947,7 @@ multiple repetitions with different RNG seeds to increase the statistical
 accuracy of the results (see section
 \ref{sec:config-sim:repeating-runs-with-different-seeds}). 
 
-In this section, we will explore several ways to run simulation batches of
+In this section, we will explore several ways to run batches of
 simulations efficently.
 
 \subsection{The Naive Approach}
@@ -892,7 +970,8 @@ It works fine. However, this approach has some drawbacks which becomes
 apparent when running hundreds or thousands of simulation runs.
 
 \begin{enumerate}
-  \item It uses only one CPU. In the age of multi-core CPUs, this is not good.
+  \item It uses only one CPU. In the age of multi-core CPUs, this is not 
+        very efficient.
   \item More prone to C++ programming errors in the model. A failure in a single
         run may abort execution (segfault) or corrupt the process
         state, possibly invalidating the results of subsequent runs.
@@ -966,8 +1045,8 @@ number of CPUs to use have sensible defaults but can be overridden.
 The first positional (non-option) argument and all following arguments are
 treated as the simulation command (simulation program and its arguments).
 
-Thus, to make a normal Cmdenv simulation command make use of multiple CPUs,
-simply prefix it with \ttt{opp\_runall}:    
+Thus, to modify a normal Cmdenv simulation command to make use of multiple
+CPUs, simply prefix it with \ttt{opp\_runall}:    
 
 \begin{commandline}
 $ opp_runall ./aloha -u Cmdenv -c PureAlohaExperiment -r '$numHosts>15'
@@ -1180,7 +1259,7 @@ sent to the \ttt{akmaster} process, and when the required precision
 has been reached, \ttt{akmaster} tells the simulation processes to
 terminate. The results are written to the standard output.
 
-The above description is not detailed enough help you
+The above description is not detailed enough to help you
 set up and successfully use Akaroa -- for that you need to read the
 Akaroa manual.
 

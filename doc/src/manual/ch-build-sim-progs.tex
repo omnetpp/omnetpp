@@ -4,30 +4,46 @@
 \section{Overview}
 \label{sec:build-sim-progs:overview}
 
-As has already been mentioned, an {\opp} model consists of
-the following parts:
+This chapter describes the process and tools for building executable simulation
+models from their source code.
+
+As described in the the previous chapters, the source of an {\opp} model usually
+contains the following files:
 
 \begin{itemize}
-  \item NED language\index{ned!files} topology description(s). These are files
-        with the \ttt{.ned} extension.
-  \item Message definitions\index{message definitions}, in files with \ttt{.msg} extension.
-  \item Simple module implementations and other C++ code, in \ttt{.cc} and \ttt{.h} files.
+  \item C++ (\ttt{.cc} and \ttt{.h}) files, containing simple module
+        implementations and other code;
+  \item Message (\ttt{.msg}) files, containing message definitions to be
+        translated into C++ classes;
+  \item NED (\ttt{.ned}) files with component declarations and topology
+        descriptions;
+  \item Configuration (\ttt{.ini}) files with model parameter assignments and 
+        other settings.
 \end{itemize}
 
-To build a simulation from source, MSG files\index{msg!files} first need
-to be translated into C++ using the message compiler (\fprog{opp\_msgc}).
-Once this is done, the process is the same as building any C/C++ program:
-all C++ sources are compiled into object form (\ttt{.o} or \ttt{.obj} files),
-and object files are linked with the necessary libraries to get an executable
-or a shared library.
+The process to turn the source into an executable form is this, in nutshell:
+
+\begin{enumerate}
+  \item Message files are translated into C++ using the message compiler,
+        \fprog{opp\_msgc}
+  \item C++ sources are compiled into object form (\ttt{.o} files)
+  \item Object files are linked with the simulation kernel and other 
+        libraries to get an executable or a shared library
+\end{enumerate}
+
+Note that apart from the first step, the process is the same as building any 
+C/C++ program. Also note that NED and ini files do not play a part in this
+process, as they are loaded by the simulation program at runtime.
 
 One needs to link with the following libraries:
 
 \begin{itemize}
-  \item The simulation kernel and class library\index{simulation!kernel} (the \textit{oppsim} library)
-  \item User interfaces: one or more of Tkenv, Qtenv and Cmdenv (the \textit{opptkenv},
-        \textit{oppqtenv} and \textit{oppcmdenv} libraries, their common part \textit{oppenvir},
-        and any additional libraries they depend on)
+  \item The simulation kernel and class library\index{simulation!kernel} (the
+        \textit{oppsim} library) and its dependencies (\textit{oppenvir},
+        \textit{oppcommon}, \textit{oppnedxml}, etc).
+  \item Optionally, with one or more user interface libraries
+  (\textit{opptkenv}, \textit{oppqtenv} and \textit{oppcmdenv}.) 
+  Note that these libraries themselves may depend on other libraries.
 \end{itemize}
 
 The exact files names of libraries depend on the platform and a number of
@@ -37,17 +53,23 @@ name. Static libraries have the \ttt{.a} suffix (except on Windows where
 the file extension is \ttt{.lib}). Shared libraries end in \ttt{.so} on
 Unix-like platforms (but \ttt{.dylib} on OS X), and \ttt{.dll} on Windows.}
 
-The following figure gives an overview of the process of building
-(and running) simulation programs.
-
-%% TODO add reference to figure
+Figure \ref{fig:ch-build:workflow} shows an overview of the process of
+building (and running) simulation programs.
 
 \begin{figure}[htbp]
   \begin{center}
     \includesvg{figures/build-workflow}
     \caption{Building and running simulation}
+    \label{fig:ch-build:workflow}
   \end{center}
 \end{figure}
+
+You can see that the build process is not complicated. Tools such as
+\fprog{make} and \fprog{opp\_makemake}, to be described in the rest of the
+chapter, are primarily needed to optimize rebuilds (if a message file has been
+translated already, there is no need to repeat the translation for every build
+unless the file has changed), and for automation.
+ 
 
 \section{Using opp\_makemake and Makefiles}
 \label{sec:build-sim-progs:opp-makemake}
@@ -64,10 +86,7 @@ in subdirectories.
 \subsection{Command-line Options}
 \label{sec:build-sim-progs:makemake-options}
 
-\fprog{opp\_makemake} has several options;
-\ttt{opp\_makemake -h} displays help.
-
-The most important options are:
+The most important options accepted by \fprog{opp\_makemake} are:
 
 \begin{itemize}
     \item \fopt{-f}, \fopt{-{}-force} : Force overwriting existing Makefile
@@ -88,9 +107,14 @@ The most important options are:
     \item \fopt{-s}, \fopt{-{}-make-so} : Build shared library (\ttt{.so}, \ttt{.dll} or \ttt{.dylib}).
     \item \fopt{-a}, \fopt{-{}-make-lib} : Create static library (\ttt{.a} or \ttt{.lib}).
     \item \fopt{-I<dir>} : Add the given directory to the C++ include path.
+    \item \fopt{-D<name>[=<value>]}, \fopt{-D <name>[=v<alue>]}, \fopt{--define <name>[=<value>]} : 
+                          Define the given symbol in the C++ compiler.
     \item \fopt{-L<dir>} : Add the given directory to the library path.
     \item \fopt{-l<library>} : Additional library to link against.
 \end{itemize}
+
+There are several other options; run \ttt{opp\_makemake -h} to see the complete
+list.
 
 
 \subsection{Basic Use}
@@ -110,16 +134,21 @@ This will create a file named \ttt{Makefile}\index{Makefile}. Now, running the
 $ make
 \end{commandline}
 
-If there was already a \ttt{Makefile} in that directory, \fprog{opp\_makemake}
-will refuse to overwrite it. One can force overwriting the old \ttt{Makefile}
-with the \fopt{-f} option:
+\begin{important}
+The generated \ttt{Makefile} will contain the names of the sources files,
+so you need to re-run \fprog{opp\_makemake} every time new files are added to 
+or removed from the project. 
+\end{important}
+ 
+To regenerate an existing \ttt{Makefile}, add the \fopt{-f} option to the
+command line, otherwise \fprog{opp\_makemake} will refuse overwriting it.
 
 \begin{commandline}
 $ opp_makemake -f
 \end{commandline}
 
 The name of the output file\index{output!file} will be derived from
-the name of the project directory (see later). This can be overridden
+the name of the project directory (see later). It can be overridden
 with the \fopt{-o} option:
 
 \begin{commandline}
@@ -232,8 +261,10 @@ tree, it needs to be included as
 
 The \fprog{make} program can utilize dependency information in the Makefile
 to shorten build times by omitting build steps whose input has not changed
-since the last build. Dependency information is automatically updated
-during the build process.
+since the last build. Dependency information is automatically created and kept
+up-to-date during the build process.
+
+Dependency information is kept in \ttt{.d} files in the output directory.
 
 
 \subsection{Out-of-Directory Build}
@@ -400,27 +431,24 @@ a shared lib from all .cc files in the \ttt{core} subtree, and will name it \ttt
 $ cd core && opp_makemake -f --deep --make-so -o mfcore -O out
 \end{commandline}
 
-The \ttt{contrib} directory depends on \ttt{mfcore} so we use the \fopt{-L} and \fopt{-l} options
-to specify the library we should link with. Note that we must also add
-the include directories manually from the \ttt{core} source tree, because autodiscovery works only
-in the same source tree:
+The \ttt{contrib} directory depends on \ttt{mfcore}, so we use the \fopt{-L} and
+\fopt{-l} options to specify the library we should link with.
 
 \begin{commandline}
 $ cd contrib && opp_makemake -f --deep --make-so -o mfcontrib -O out \
-  -I../core/basicModules -I../core/utils -L../out/$(CONFIGNAME)/core -lmfcore
+  -I../core -L../out/\$\(CONFIGNAME\)/core -lmfcore
 \end{commandline}
 
 The \ttt{testSuite} will be created as an executable file which depends on both
 \ttt{mfcontrib} and \ttt{mfcore}.
 
 \begin{commandline}
-$ cd test && opp_makemake -f --deep -o testSuite -O out
-    -I../core/utils -I../core/basicModules -I../contrib/utils \
-    -I../contrib/applLayer -L../out/$(CONFIGNAME)/contrib -lmfcontrib
+$ cd test && opp_makemake -f --deep -o testSuite -O out \
+    -I../core -I../contrib -L../out/\$\(CONFIGNAME\)/contrib -lmfcontrib
 \end{commandline}
 
-Now let us specify the dependencies between the above directories.
-Add the lines below to the \ttt{makefrag} file in the project directory root.
+Now, let us specify the dependencies among the above directories.
+Add the lines below to the \ttt{makefrag} file in the project root directory.
 
 \begin{filelisting}
 contrib_dir: core_dir
@@ -488,11 +516,15 @@ option of enabling/disabling those features. A feature definition contains:
     (i.e. in the same folders as excluded NED files) will also be excluded.
 \item Extra C++ source folders; If the feature contains C++ code that lives outside NED source
     folders (nontypical), those folders are listed here.
-\item Compile options, for example \fopt{-DWITH\_IPv6}. When the feature is enabled, the compiler
-    options listed here are added to the compiler command line of all C++ files in the project.
-    A typical use of this field is defining symbols (\ttt{WITH\_xxx}) that allows you to write conditional code
-    that only compiles when a given feature is enabled. Currently only the \fopt{-D} option
-    (\textit{define symbol}) is supported here.
+\item Compile options. When the feature is enabled, the compiler options listed
+    here are added to the compiler command line of all C++ files in the project.
+    Defines (\fopt{-D} options) are treated somewhat specially: the project can
+    be set up so that defines go into a generated header file as \ttt{\#define}
+    lines instead of being added to the compiler command line. It is
+    customary for each feature to have a corresponding symbol
+    (\ttt{WITH\_FOO} for a feature called \textit{Foo}), so that other parts of
+    the code can contain conditional blocks that are only compiled in when the
+    given feature is enabled (or disabled). 
 \item Linker options. When the feature is enabled, the linker options listed here are added
     to the linker command line. A typical use of this field is linking with additional
     libraries that the feature's code requires, for example libavcodec.
@@ -631,12 +663,12 @@ to do:
 
   \item Add the feature description into the \ttt{.oppfeatures} file of your project.
 
-  \item Test. A rudimentary test is to verify that your project compiles at all, both
-        with the new feature enabled and disabled. For such build tests, the
-        'Export build tester Makefile' function (at the bottom of the 'Project Features'
-        property page) can be quite useful: it creates a Makefile that builds the
-        project in typical feature combinations. (It does not test 2\textsuperscript{N} combinations because
-        that's usually prohibitive, only about 2*N+2.)
+  \item Test. A rudimentary test is to verify that the project compiles at all,
+        both with the new feature enabled and disabled. For projects with many
+        features, automated build tests that compile the project using various
+        feature configurations can be very useful. Such build tests can be
+        written on top of \ttt{opp\_featuretool}.
+        
 \end{itemize}
 
 %%% Local Variables:
