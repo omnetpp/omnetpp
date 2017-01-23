@@ -138,6 +138,7 @@ protected:
 
     void selectAll();
     void clearSelection();
+    QString getSelectedText();
 
 
     static int clip(int lower, int upper, int x);

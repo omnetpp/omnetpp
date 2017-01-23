@@ -649,6 +649,26 @@ void TextViewerWidget::clearSelection()
     selectionAnchorColumn = caretColumn;
 }
 
+QString TextViewerWidget::getSelectedText()
+{
+    QString text;
+
+    Pos start = getSelectionStart();
+    Pos end = getSelectionEnd();
+
+    if (start.line == end.line) {
+        text = content->getLineText(start.line).mid(start.column, end.column - start.column);
+    }
+    else {
+        text = content->getLineText(start.line).mid(start.column).trimmed() + "\n";
+        for (int l = start.line + 1; l < end.line; ++l)
+            text += content->getLineText(l).trimmed() + "\n";
+        text += content->getLineText(end.line).left(end.column).trimmed();
+    }
+
+    return text;
+}
+
 int TextViewerWidget::clip(int lower, int upper, int x)
 {
     if (x < lower)
@@ -846,6 +866,9 @@ void TextViewerWidget::keyPressEvent(QKeyEvent *event)
             return;
     }
 
+    if (shiftPressed)
+        QApplication::clipboard()->setText(getSelectedText(), QClipboard::Selection);
+
     caretShown = true;
     caretBlinkTimer.start();
     revealCaret();
@@ -868,6 +891,9 @@ void TextViewerWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     clickCount = 0;
     stopAutoScroll();
+
+    if (getSelectionStart() != getSelectionEnd())
+        QApplication::clipboard()->setText(getSelectedText(), QClipboard::Selection);
 }
 
 void TextViewerWidget::mousePressEvent(QMouseEvent *event)
@@ -1159,22 +1185,7 @@ void TextViewerWidget::onHeaderSectionResized(int logicalIndex, int oldSize, int
 
 void TextViewerWidget::copySelection()
 {
-    QString text;
-
-    Pos start = getSelectionStart();
-    Pos end = getSelectionEnd();
-
-    if (start.line == end.line) {
-        text = content->getLineText(start.line).mid(end.column, end.column - start.column);
-    }
-    else {
-        text = content->getLineText(start.line).mid(start.column).trimmed() + "\n";
-        for (int l = start.line + 1; l < end.line; ++l)
-            text += content->getLineText(l).trimmed() + "\n";
-        text += content->getLineText(end.line).left(end.column).trimmed();
-    }
-
-    QApplication::clipboard()->setText(text);
+    QApplication::clipboard()->setText(getSelectedText());
 }
 
 void TextViewerWidget::onContentChanged()
