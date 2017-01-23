@@ -25,27 +25,10 @@
 // With some care, it's possible to write platform-independent socket code
 // using the macros below.
 //
-// IMPORTANT: this header needs to be included BEFORE <omnetpp.h>, because
-// of timeval definitions in timeutil.h (see more info in timeutil.h)
-//
-
-#ifdef __OMNETPP_PLATDEP_TIMEUTIL_H
-# error "#include <platdep/sockets.h> must precede <omnetpp.h> (and <platdep/timeutil.h> if present)"
-#endif
 
 #ifdef _WIN32
-//
-// Winsock version
-//
 
-// include <winsock.h> or <winsock2.h> (mutually exclusive) if neither has been included yet
-#if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
-# ifndef WANT_WINSOCK2
-#  include <winsock.h>
-# else
-#  include <winsock2.h>
-# endif
-#endif
+#include <winsock2.h>
 #undef min
 #undef max
 
@@ -53,11 +36,10 @@
 #define SOCKETERR(x)  WS#x
 inline int sock_errno()  {return WSAGetLastError();}
 
-// Shutdown mode constants are named differently (and only in winsock2.h
-// which we don't want to pull in)
-#define SHUT_RD   0x00  // as SD_RECEIVE in winsock2.h
-#define SHUT_WR   0x01  // as SD_SEND in winsock2.h
-#define SHUT_RDWR 0x02  // as SD_BOTH in winsock2.h
+// Shutdown mode constants are named differently in winsock2.h
+#define SHUT_RD   SD_RECEIVE
+#define SHUT_WR   SD_SEND
+#define SHUT_RDWR SD_BOTH
 
 typedef int socklen_t;
 
@@ -66,11 +48,7 @@ inline int initsocketlibonce() {
     if (inited) return 0;
     inited = true;
     WSAData wsaData;
-#ifdef _WINSOCKAPI_
-    return WSAStartup(MAKEWORD(1,1), &wsaData);
-#else
     return WSAStartup(MAKEWORD(2,2), &wsaData);
-#endif
 }
 
 

@@ -24,34 +24,22 @@
 #include <stdint.h> // int64_t
 #include <ctime>  // localtime()
 #include <cstdio> // sprintf()
-#include <cmath>  // fmod()
+#include <cmath>  // modf()
+#include <cassert>
 
 //
-// Platform-independent gettimeofday(), and some basic timeval operations
+// Platform-independent gettimeofday() and timeval.
 //
-
 #ifndef _WIN32
+
 # include <sys/time.h>
 # include <unistd.h>
+
 #else
-// Windows:
+
+# include <winsock2.h>  // timeval
 # include <sys/types.h>
 # include <sys/timeb.h>  // ftime(), timeb
-
-// Declare struct timeval. Note: timeval is declared in <winsock.h>/<winsock2.h>
-// (they're mutually exclusive), but we don't want <omnetpp.h> to pull them in
-// because winsock definitions often conflict with similar definitions in
-// model code; we rather define struct timeval here ourselves.
-// (Note: _WINSOCKAPI_ is used in the Windows SDK headers, _TIMEVAL_DEFINED in MinGW)
-#if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_) && !defined(_TIMEVAL_DEFINED)
-#define _TIMEVAL_DEFINED
-// NOTE: if this timeval definition conflicts with winsock.h's definition,
-// make sure that winsock.h gets #included before this header!
-struct timeval {
-    long tv_sec;
-    long tv_usec;
-};
-#endif
 
 // Windows doesn't have gettimeofday(), so emulate it with ftime()
 inline int gettimeofday(struct timeval *tv, struct timezone *)
@@ -62,7 +50,13 @@ inline int gettimeofday(struct timeval *tv, struct timezone *)
     tv->tv_usec = tb.millitm * 1000UL;
     return 0;
 }
-#endif /* _WIN32 */
+
+#endif // _WIN32
+
+//
+// timeval utility functions (all platforms)
+//
+namespace omnetpp {
 
 inline int64_t timeval_usec(const timeval& a)
 {
@@ -72,10 +66,10 @@ inline int64_t timeval_usec(const timeval& a)
 inline timeval to_timeval(double b)
 {
     double bInt;
-    double bFrac = modf(b, &bInt);
+    double bFrac = std::modf(b, &bInt);
     timeval res;
     res.tv_sec = (long)bInt;
-    res.tv_usec = (long)floor(1000000.0*bFrac);
+    res.tv_usec = (long) std::floor(1000000.0*bFrac);
     if (res.tv_usec < 0) {
         res.tv_sec--;
         res.tv_usec += 1000000;
@@ -111,7 +105,7 @@ inline timeval timeval_add(const timeval& a, double b)
     double bFrac = modf(b, &bInt);
     timeval res;
     res.tv_sec = a.tv_sec + (long)bInt;
-    res.tv_usec = a.tv_usec + (long)floor(1000000.0*bFrac);
+    res.tv_usec = a.tv_usec + (long) std::floor(1000000.0*bFrac);
     if (res.tv_usec > 1000000) {
         res.tv_sec++;
         res.tv_usec -= 1000000;
@@ -139,7 +133,7 @@ inline timeval timeval_subtract(const timeval& a, double b)
     double bFrac = modf(b, &bInt);
     timeval res;
     res.tv_sec = a.tv_sec - (long)bInt;
-    res.tv_usec = a.tv_usec - (long)floor(1000000.0*bFrac);
+    res.tv_usec = a.tv_usec - (long) std::floor(1000000.0*bFrac);
     if (res.tv_usec < 0) {
         res.tv_sec--;
         res.tv_usec += 1000000;
@@ -177,6 +171,7 @@ inline bool operator<(const timeval& a, const timeval& b) {return timeval_greate
 inline bool operator>=(const timeval& a, const timeval& b) {return !timeval_greater(b,a);}
 inline bool operator<=(const timeval& a, const timeval& b) {return !timeval_greater(a,b);}
 
+
 // prints time in "yyyy-mm-dd hh:mm:ss" format
 inline char *opp_asctime(time_t t, char *buf)
 {
@@ -186,5 +181,7 @@ inline char *opp_asctime(time_t t, char *buf)
                 now.tm_hour, now.tm_min, now.tm_sec);
     return buf;
 }
+
+} // namespace omnetpp
 
 #endif
