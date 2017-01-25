@@ -19,9 +19,6 @@ simple Txc16
         inout gate[];
 }
 
-//
-// Same as Tictoc12
-//
 network Tictoc16
 {
     types:
@@ -37,4 +34,3 @@ network Tictoc16
         tic[3].gate++ <--> Channel <--> tic[4].gate++;
         tic[4].gate++ <--> Channel <--> tic[5].gate++;
 }
-

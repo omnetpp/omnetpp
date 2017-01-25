@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-
 simple Txc14
 {
     parameters:
@@ -16,9 +15,6 @@ simple Txc14
         inout gate[];
 }
 
-//
-// Same as Tictoc12
-//
 network Tictoc14
 {
     types:

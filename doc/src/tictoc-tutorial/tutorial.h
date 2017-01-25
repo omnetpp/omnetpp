@@ -33,6 +33,7 @@ the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
   - @ref part3
   - @ref part4
   - @ref part5
+  - @ref part6
 
 NEXT: @ref part1
 */
@@ -40,7 +41,7 @@ NEXT: @ref part1
 --------------------------------------------------------------------------
 
 /**
-@page part1 1. Getting started
+@page part1 Part 1 - Getting started
 
 @nav{contents,part2}
 
@@ -226,7 +227,7 @@ Sources: @ref tictoc1.ned, @ref txc1.cc, @ref omnetpp.ini
 --------------------------------------------------------------------------
 
 /**
-@page part2 2. Enhancing the 2-node TicToc
+@page part2 Part 2 - Enhancing the 2-node TicToc
 
 @nav{part1,part3}
 
@@ -595,7 +596,7 @@ Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 --------------------------------------------------------------------------
 
 /**
-@page part3 3. Turning it into a real network
+@page part3 Part 3 - Turning it into a real network
 
 @nav{part2,part4}
 @section s10 Step 10: More than two nodes
@@ -809,7 +810,7 @@ exponentially distributed random numbers.
 --------------------------------------------------------------------------
 
 /**
-@page part4 4. Adding statistics collection
+@page part4 Part 4 - Adding statistics collection
 
 @nav{part3,part5}
 
@@ -852,17 +853,6 @@ Sources: @ref tictoc14.ned, @ref tictoc14.msg, @ref txc14.cc, @ref omnetpp.ini
 
 @section s15 Step 15: Adding statistics collection
 
-The @opp simulation kernel can record a detailed log about your message
-exchanges automatically by setting the
-
-@dontinclude omnetpp.ini
-@skipline eventlog
-
-configuration option in the omnetpp.ini file. This log file can be later displayed
-by the IDE (see: @ref logs).
-
-@note The resulting log file can be quite large, so enable this feature only if you really need it.
-
 The previous simulation model does something interesting enough
 so that we can collect some statistics. For example, you may be interested
 in the average hop count a message has to travel before reaching
@@ -875,7 +865,7 @@ write them into a file at the end of the simulation. Then we'll use
 tools from the @opp IDE to analyse the output files.
 
 For that, we add an output vector object (which will record the data into
-<tt>Tictoc15-0.vec</tt>) and a histogram object (which also calculates mean, etc)
+<tt>Tictoc15-#0.vec</tt>) and a histogram object (which also calculates mean, etc)
 to the class.
 
 @dontinclude txc15.cc
@@ -889,21 +879,21 @@ The following code has been added to handleMessage():
 @skipline hopCountVector.record
 @skipline hopCountStats.collect
 
-hopCountVector.record() call writes the data into <tt>Tictoc15-0.vec</tt>.
-With a large simulation model or long execution time, the <tt>Tictoc15-0.vec</tt> file
+hopCountVector.record() call writes the data into <tt>Tictoc15-#0.vec</tt>.
+With a large simulation model or long execution time, the <tt>Tictoc15-#0.vec</tt> file
 may grow very large. To handle this situation, you can specifically
 disable/enable vector in omnetpp.ini, and you can also specify
 a simulation time interval in which you're interested
 (data recorded outside this interval will be discarded.)
 
-When you begin a new simulation, the existing <tt>Tictoc15-0.vec/sca</tt>
-file gets deleted.
+When you begin a new simulation, the existing <tt>Tictoc15-#0.vec/sca</tt>
+files get deleted.
 
 Scalar data (collected by the histogram object in this simulation)
 have to be recorded manually, in the finish() function.
 finish() gets invoked on successful completion of the simulation,
 i.e. not when it's stopped with an error. The recordScalar() calls
-in the code below write into the <tt>Tictoc15-0.sca</tt> file.
+in the code below write into the <tt>Tictoc15-#0.sca</tt> file.
 
 @skip ::finish
 @until }
@@ -929,11 +919,11 @@ data to be displayed. After a while you'll get something like this:
 <img src="step15b.png">
 
 When you think enough data has been collected, you can stop the simulation
-and then we'll analyse the result files (<tt>Tictoc15-0.vec</tt> and
-<tt>Tictoc15-0.sca</tt>) off-line. You'll need to choose Simulate|Call finish()
+and then we'll analyse the result files (<tt>Tictoc15-#0.vec</tt> and
+<tt>Tictoc15-#0.sca</tt>) off-line. You'll need to choose Simulate|Call finish()
 from the menu (or click the corresponding toolbar button) before exiting --
 this will cause the finish() functions to run and data to be written into
-<tt>Tictoc15-0.sca</tt>.
+<tt>Tictoc15-#0.sca</tt>.
 
 Sources: @ref tictoc15.ned, @ref tictoc15.msg, @ref txc15.cc, @ref omnetpp.ini
 
@@ -1013,9 +1003,55 @@ files. Just open the INI file and modify the statistic recording:
 We can configure a wide range of statistics without even looking into the C++ code,
 provided that the original model emits the necessary signals for us.
 
-Now that we have collected our statistics, let's see and analyse them in the IDE.
-
 Sources: @ref tictoc16.ned, @ref tictoc16.msg, @ref txc16.cc, @ref omnetpp.ini
+
+@section s17 Step 17: Adding figures
+
+@opp can display figures on the canvas, such as text, geometric shapes or images.
+These figures can be static, or change dinamically according to what happens in the simulation.
+In this case, we will display a static descriptive text, and a dynamic text showing the hop count of the last message that arrived at its destination.
+
+We create figures in @ref tictoc17.ned, with the <tt>\@figure</tt> property.
+
+@dontinclude tictoc17.ned
+@skipline Tictoc17
+@until hopCount
+
+This creates two text figures named <tt>description</tt> and <tt>lasthopcount</tt>, and sets their positions on the canvas (we place them in the top right corner).
+The <tt>font</tt> attribute sets the figure text's font. It has three parameters: <tt>typeface, size, style</tt>. Any one of them
+can be omitted to leave the parameter at default. Here we set the description figure's font to bold.
+
+By default the text in <tt>lasthopcount</tt> is static, but we'll
+change it when a message arrives. This is done in @ref txc17.cc, in the <tt>handleMessage()</tt> function.
+
+@dontinclude txc17.cc
+@skipline hasGUI
+@until setText
+
+The figure is represented by the <tt>cTextFigure</tt> C++ class. There are several figure types,
+all of them are subclassed from the <a href="file:///home/user/omnetpp-git-tictoc/doc/api/classomnetpp_1_1cFigure.html"><tt>cFigure</tt></a> base class.
+We insert the code responsible for updating the figure text after we retreive the <tt>hopcount</tt> variable.
+
+We want to draw the figures on the network's canvas. The <tt>getParentModule()</tt> function returns the parent of the node, ie. the network.
+Then the <tt>getCanvas()</tt> function returns the network's canvas, and <tt>getFigure()</tt> gets the figure by name.
+Then, we update the figure's text with the <tt>setText()</tt> function.
+
+@note For more information on figures and the canvas, see <a href="../manual/index.html#sec:graphics:canvas" target="_blank">The Canvas</a> section of the @opp manual
+
+When you run the simulation, the figure displays 'last hopCount: N/A' before the arrival of the first message.
+Then, it is updated whenever a message arrives at its destination.
+
+<img src="step17.png">
+
+@note If the figure text and nodes overlap, press 're-layout'.
+
+@note <img src="relayout.png">
+
+In the last few steps, we have collected and displayed statistics. In the next part,
+we'll see and analyze them in the IDE.
+
+
+Sources: @ref tictoc17.ned, @ref tictoc17.msg, @ref txc17.cc, @ref omnetpp.ini
 
 @nav{part3,part5}
 */
@@ -1023,7 +1059,7 @@ Sources: @ref tictoc16.ned, @ref tictoc16.msg, @ref txc16.cc, @ref omnetpp.ini
 --------------------------------------------------------------------------
 
 /**
-@page part5 5. Visualizing the results with the @opp IDE
+@page part5 Part 5 - Visualizing the results with the @opp IDE
 
 @nav{part4,contents}
 
@@ -1101,6 +1137,8 @@ This log file can be analyzed later with the Sequence Chart tool. The <tt>result
 the <tt>.elog</tt> file. Double clicking on this in the @opp IDE opens the Sequence Chart tool,
 and the event log tab at the bottom of the screen.
 
+@note The resulting log file can be quite large, so enable this feature only if you really need it.
+
 The following figure has been created with the Sequence Chart tool, and shows
 how the message is routed between the different nodes in the network.
 In this instance the chart is very simple, but when you have a complex model,
@@ -1111,14 +1149,137 @@ the model's behaviour.
 
 
 
-@section conclusion Conclusion
+
+@nav{part4,part6}
+*/
+
+--------------------------------------------------------------------------
+
+/**
+@nav{part5,contents}
+
+@page part6 Part 6 - Parameter studies
+
+@section steo18 Step 18: Multiple simulation runs with variable parameters
+
+We want to run the simulation with a different number of nodes, and see how the behavior of the network changes.
+With @opp you can do parameter studies, which are multiple simulation runs with different parameter values.
+
+We'll make the number of central nodes (the "handle" in the dumbbell shape) a parameter, and
+use the same random routing protocol as before. We're interested in how the average hop count depends on the number of
+nodes.
+
+To parameterize the network, the number of nodes is given as a NED parameter, <tt>numberOfCentralNodes</tt>. This parameter
+specifies how many nodes are in the central section of the network, but doesn't cover the two nodes at each side.
+
+<img src="numberofnodes.png">
+
+The total number of nodes including the four nodes on the sides is <tt>numberOfCentralNodes+4</tt>.
+The default of the <tt>numberOfCentralNodes</tt> parameter is 2, this corresponds to the network in the previous step.
+
+@dontinclude tictoc18.ned
+@skipline TicToc18
+@until Txc18
+
+Now, we must specify that the variable number of nodes should be connected into the dumbbell shape.
+First, the two nodes on one side is connected to the third one. Then the the last two nodes on the other side is
+connected to the third last. The nodes in the center of the dumbbell can be connected with a for loop.
+Starting from the third, each <i>i</i>th node is connected to the <i>i+1</i>th.
+
+@dontinclude tictoc18.ned
+@skipline connections
+@until numberOfCentralNodes+3
+
+Here is how the network looks like with <tt>numberOfCentralNodes = 4</tt>:
+
+<img src="step18.png">
+
+
+To run the simulation with multiple different values of <tt>numberOfCentralNodes</tt>, we specify
+the variable <tt>N</tt> in the ini file:
+
+@dontinclude omnetpp.ini
+@skipline numberOfCentralNodes = $
+
+We specify that <tt>N</tt> should go from 2 to 100, in steps of 2.
+This produces about 50 simulation runs. Each can be explored in the graphical user interface, but
+simulation batches are often run from the command line interface using the <i>Cmdenv</i> runtime environment.
+
+@note You can find more information on variables and parameter studies in the <a href="../manual/index.html#sec:config-sim:parameter-studies" target="_blank">Parameter Studies</a> section of the @opp manual.
+
+To increase the accuracy of the simulation we may need to run the same simulation several times
+using different random numbers. These runs are clled 'Repetitions' and are specified in <tt>omnetpp.ini</tt>:
+
+@dontinclude omnetpp.ini
+@skipline repeat = 4
+
+This means that each simulation run will be executed four times, each time with a different seed for the RNGs.
+This produces more samples, which can be averaged. With more repetitions, the results will increasingly converge
+to the expected values.
+
+Now, we can run the simulations. In the dropdown menu of the <i>Run</i> icon, select <i>Run Configurations</i>.
+
+<img src="runconfig.png">
+
+In the <i>Run Configurations</i> window, select the config name, make sure <i>Cmdenv</i> is selected as the user interface.
+
+<img src="runconfig2.png">
+
+If you have a multicore CPU, you can specify how many simulations to run concurrently.
+
+@note Alternatively, you can run the simulation batches from the command line with <tt>opp_runall</tt> tool, with the following syntax:
+@code opp_runall -j4 ./tictoc -u Cmdenv -c TicToc18 @endcode
+The -j parameter specifies the number of CPU cores, the -u parameter the user interface, and -c the config to run.
+
+@section analyzing Analyzing the results of the parameter study
+
+Now, we can visualize and analyze the data we've collected from the simulation runs.
+We'll display the average hop count for messages that reach their destinations vs <tt>N</tt>, the number of central nodes.
+Additionally, we will display the average number of packets that reached their destinations vs <tt>N</tt>.
+The analysis file <tt>Tictoc18.anf</tt> contains the dataset we will use for the visualization.
+
+<img src="dataset.png">
+
+These two average scalars are not recorded during the simulation, we will have to compute them from the available data.
+
+The hop count is recorded at each node when a message arrives, so the mean of hop count will be available as a statistic.
+But this is recorded per node, and we're interested in the average of the mean hop count for all nodes.
+The 'Compute Scalar' dataset node can be used to compute scalar statistics from other scalars.
+We compute <tt>AvgHopCount</tt> as <tt>mean(**.'hopCount:stats:mean')</tt>.
+
+We're also interested in the average number of packets that arrive at their destination.
+The count of the arrived packets is available at each node. We can compute their average,
+<tt>AvgNumPackets</tt> as <tt>mean('hopCount:stats:count')</tt>.
+
+@note Refer to the chapter "Using the Analysis Editor" in the User Guide for more information on datasets. You can find it in the '/doc' directory of your
+@opp installation.
+
+Then, we plot these two computed scalars against <tt>N</tt> in two scatter charts. The data for different repetitions is automatically averaged.
+Here is the average hop count vs <tt>N</tt>:
+
+<img src="avghopcount.png">
+
+The average hop count increases as the network gets larger, as packets travel more to reach their destination.
+The increase is polynomial. Notice that there are missing values at the far right of the chart.
+This is because in such a large network, some packets might not reach their destination in the simulation time limit.
+When no packets arrive at a node, the hop count statistic will be NaN (not a number) for that node.
+When there is a NaN in any mathematical expression, its result will be also NaN.
+Thus it takes just one node in all the simulation runs to have a NaN statistic, and the average will be NaN, and there'll be no data to display.
+This can be remedied by increasing the simulation time limit, so more packets have a chance to arrive.
+
+Below is the average number of packets that arrived vs <tt>N</tt>:
+
+<img src="avgnumpackets.png">
+
+Notice that the Y axis is logarithmic. The average number of packets that arrive decreases polynomially
+as <tt>N</tt> increases, and the network gets larger.
+
+@section closing Closing words
 
 Hope you have found this tutorial a useful introduction into @opp. Comments
 and suggestions will be appreciated.
 
-@nav{part4,contents}
 */
-
 --------------------------------------------------------------------------
 
 
@@ -1170,6 +1331,12 @@ and suggestions will be appreciated.
 /// @page tictoc16.ned tictoc16.ned
 /// @include tictoc16.ned
 
+/// @page tictoc17.ned tictoc17.ned
+/// @include tictoc17.ned
+
+/// @page tictoc18.ned tictoc18.ned
+/// @include tictoc18.ned
+
 /// @page txc1.cc txc1.cc
 /// @include txc1.cc
 
@@ -1215,6 +1382,12 @@ and suggestions will be appreciated.
 /// @page txc16.cc txc16.cc
 /// @include txc16.cc
 
+/// @page txc17.cc txc17.cc
+/// @include txc17.cc
+
+/// @page txc18.cc txc18.cc
+/// @include txc18.cc
+
 /// @page tictoc13.msg tictoc13.msg
 /// @include tictoc13.msg
 
@@ -1226,6 +1399,9 @@ and suggestions will be appreciated.
 
 /// @page tictoc16.msg tictoc16.msg
 /// @include tictoc16.msg
+
+/// @page tictoc17.msg tictoc17.msg
+/// @include tictoc17.msg
 
 /// @page omnetpp.ini omnetpp.ini
 /// @include omnetpp.ini
