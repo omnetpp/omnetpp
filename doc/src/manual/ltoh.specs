@@ -150,6 +150,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\fvar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\ffunc(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fprog(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\fopt(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\cclass(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fmac(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fkeyword(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::

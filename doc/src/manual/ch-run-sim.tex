@@ -2,6 +2,7 @@
 \label{cha:run-sim}
 
 \section{Introduction}
+\label{cha:run-sim:intro}
 
 This chapter describes how to run simulations. It covers basic usage, user
 interfaces, running simulation campaigns, and many other topics.
@@ -220,7 +221,8 @@ run selection dialog (or to set up the simulation automatically if there is
 only one matching run.)
 
 
-\subsubsection{Run Filter Syntax}
+\subsection{Run Filter Syntax}
+\label{sec:run-sim:selecting-configuration-and-runs:syntax}
 
 The run filter accepts two syntaxes: a comma-separated list of run numbers or
 run number ranges (for example \ttt{1,2,5-10}), or an arithmetic expression.
@@ -244,7 +246,8 @@ $ ./aloha -c PureAlohaExperiment -r "\$numHosts>10 && \$mean<2"
 \end{commandline}
 
 
-\subsubsection{The Query Option}
+\subsection{The Query Option}
+\label{sec:run-sim:selecting-configuration-and-runs:queryoption}
 
 The \fopt{-q} (query) option complements \fopt{-c} and \fopt{-r}, and
 allows one to list the runs matched by the run filter.
@@ -739,6 +742,7 @@ mode behavior:
 See Appendix \ref{cha:config-options} for more information about these options.
 
 \subsubsection{Interpreting Express-Mode Output}
+\label{sec:run-sim:cmdenv:express-mode:output}
 
 When the simulation is running in Express mode with detailed
 performance display enabled (\ttt{cmdenv-performance-display=true}), Cmdenv
