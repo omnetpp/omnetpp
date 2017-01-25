@@ -3375,28 +3375,34 @@ ellipse (a hollow cylinder) next to it, and a big red flag nearby.
 </map>
 \end{filelisting}
 
-\subsubsection{Creating offline tile packages}
+
+\subsubsection{Creating Offline Tile Packages}
 \label{sec:graphics:offline-tiles}
 
-In some cases it may be desirable to make a simulation that includes visualization
-using osgEarth run offline, i.e. without access to an online map provider.
+Being able to use online map providers is very convenient, but it is
+often more desirable to use an offline map resource. Doing so not only makes
+the simulation usable without internet access, but also speeds up map
+loading and insulates the simulation against changes in the online environment
+(availablity, content and configuration changes of map servers). 
 
-A command line tool called osgearth\_package makes this possible by downloading
-the tiles that make up the map, and arranging them in a fairly standardized,
-self-contained package complete with an .earth file, which can be later used just
-like any other.
+There are two ways map data may come from the local disk: caching, and 
+using a self-contained offline map package. In this section we'll cover the
+latter, and show how you can create an offline map package from online sources,
+using the command line tool called \fprog{osgearth\_package}. The resulting
+package, unlike map cache, will also be redistributable.
 
-This way (a part of) the original data can be distributed together with the model,
-no internet access will be necessary, the used data will not change spontaneously,
-and the tiles will generally load faster, with the price of some disk space.
+Given the right arguments, \fprog{osgearth\_package} will download the tiles
+that make up the map, and arrange them in a fairly standardized, self-contained
+package. It will also create a corresponding \ttt{.earth} file that can be later
+used just like any other. 
 
-For example, the offline configurations of the osg-earth sample simulation use
-a tile package which has been created with a command similar to this one:
+For example, the osg-earth sample simulation uses a tile package which has been
+created with a command similar to this one:
 
 \begin{commandline}
-osgearth_package --tms boston.earth --out offline-tiles \
-  --bounds -71.0705566406 42.350425122434 -71.05957031 42.358543917497 \
-  --max-level 18 --out-earth boston_offline.earth --mt --concurrency 8
+$ osgearth_package --tms boston.earth --out offline-tiles \
+    --bounds -71.0705566406 42.350425122434 -71.05957031 42.358543917497 \
+    --max-level 18 --out-earth boston_offline.earth --mt --concurrency 8
 \end{commandline}
 
 The \ttt{-{}-tms boston.earth} arguments mean that we want to create a package
@@ -3425,10 +3431,13 @@ The tool has a few more options for controlling the image format and compression
 mode among others. Consult the documentation for details, or the short usage help
 accessible with the \ttt{-h} switch.
 
-There is also a graphical utility called osgearth\_package\_qt which makes this
-whole process much more convenient by providing an easy way of selecting the
-bounding rectangle on the actual map using the mouse, the input and output files,
-and with the export options, without having to resort to a command line interface.
+\begin{hint}
+There is also a GUI front-end for \fprog{osgearth\_package}, called 
+\fprog{osgearth\_package\_qt}. This tool provides an easy way to select
+the bounding rectangle on the actual map using the mouse, lets the user
+choose the input and output files and the export options, and performs the
+exporting, all without having to resort to a command line interface.
+\end{hint}
 
 
 \subsubsection{Placing Objects on a Map}
