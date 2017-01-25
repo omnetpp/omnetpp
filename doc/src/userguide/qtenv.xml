@@ -35,7 +35,7 @@
     <title>Overview of the User Interface</title>
     <picture file="pictures/Qtenv-main.png" width="400">The main window of Qtenv</picture>
     <note> If you are experiencing graphics glitches, unreadable text, or the desktop color scheme
-      you have set up is not suitable for Qtenv, you can disable the platform (Gtk+, KDE, Win32, etc.)
+      you have set up is not suitable for Qtenv, you can disable the platform
       integration style plugins of Qt by setting the [[QT_STYLE_OVERRIDE]] environment variable
       to [[fusion]]. This will make the widgets appear in a platform-independent manner, as shown above.
     </note>
@@ -43,20 +43,19 @@
     <itemizedlist>
       <listitem>
         ``Toolbar'': The toolbar lets you access the most frequently used functions,
-        such as stepping, running and stopping the simulation. It also has buttons for
-        other actions to customize the interface or open various dialogs.
+        such as stepping, running and stopping the simulation.
       </listitem>
       <!-- anim info/ctrl dialog? -->
       <listitem>
         ``Animation speed'': The slider on the end of the toolbar lets you scale
-        the speed of the built-in message and methodcall animations, as well as
+        the speed of the built-in animations, as well as
         the playback speed of the custom animations added by the model.
       </listitem>
       <listitem>
         ``Event Number and Simulation Time'': These two labels on the right end of
-        the toolbar display the event number ot the last executed or the next future
-        event, and the current simulation time. Their appearance can be adjusted by
-        right clicking on them.
+        the toolbar display the event number of the last executed or the next future
+        event, and the current simulation time. The display format can be changed 
+        from context menu.
       </listitem>
       <listitem>
         ``Top status bar'': Three labels in a row that display either information
@@ -243,10 +242,10 @@
           The resulting video is also affected by the speed slider on the toolbar.
         </para>
         <note>
-          This built-in recording feature is able to create smooth and controlled output,
-          in contrast to external screen-capture utilities. This is because of all the
-          available information about the context that those tools don't have, and the
-          generally offline nature of the operation (the simulation can run at any speed).
+          This built-in recording feature is able to produce a smooth video,
+          in contrast to external screen-capture utilities. This is possible because it has
+          access to more information, and has more control over the process than external 
+          tools.
         </note>
       </sect3>
     </sect2>
@@ -269,7 +268,7 @@
         </para>
         <note> Some window managers might disable/hide the close button of floating inspectors.
           If this happens, you can still close them with a keyboard shortcut (most commonly
-          <keycap>Alt</keycap>+<keycap>F4</keycap>), or by right clicking on the title bar,
+          <keycap>Alt</keycap>+<keycap>F4</keycap>), or by right-clicking on the title bar,
           and choosing the Close option in the appearing menu.
         </note>
       </sect3>
@@ -347,8 +346,8 @@
     <title>Parts of the Qtenv UI</title>
     <sect2>
       <title>The Status Bars</title>
-      <para> The status bars show the simulation's progress. There is one row on the top
-        of the main window, and one on the bottom. The top one can be hidden using
+      <para> The status bars show the simulation's progress. There is one row at the top
+        of the main window, and one at the bottom. The top one can be hidden using
         the ``View | Status Details'' menu item.
       </para>
       <picture file="pictures/Qtenv-statusbar.png" width="400">The top status bar</picture>
@@ -955,26 +954,26 @@
           than Qtenv.)
         </listitem>
         <listitem>
-          [[-f fileName]]: Specifies the name of the configuration file. The default is [[omnetpp.ini]]. Multiple [[-f]]
+          [[-f filename]]: Specifies the name of the configuration file. The default is [[omnetpp.ini]]. Multiple [[-f]]
           switches can be given; this allows you to partition your configuration file. For example, one file can
           contain your general settings, another one most of the module parameters, and a third one the module
           parameters you change frequently. The [[-f]] switch is optional and can be omitted.
         </listitem>
         <listitem>
-          [[-l fileName]]: Loads a shared library ([[.so]] file on Unix, [[.dll]] on Windows,
+          [[-l filename]]: Loads a shared library ([[.so]] file on Unix, [[.dll]] on Windows,
           and [[.dylib]] on Mac OS X). Multiple [[-l]] switches are accepted. Shared libraries
           may contain simple modules and other, arbitrary code. File names may be specified without
           the file extension and the [[lib]] name prefix (i.e. [[foo]] instead of [[libfoo.so]]).
         </listitem>
         <listitem>
-          [[-n filePath]]: When present, overrides the [[NEDPATH]] environment variable and sets
+          [[-n filepath]]: When present, overrides the [[NEDPATH]] environment variable and sets
           the source locations for simulation NED files.
         </listitem>
         <listitem>
           [[-c configname]]: Selects an INI configuration for execution.
         </listitem>
         <listitem>
-          [[-r run-number]]: It has the same effect as (but takes priority over) the ``qtenv-default-run=''
+          [[-r runnumber]]: It has the same effect as (but takes priority over) the ``qtenv-default-run=''
           INI file configuration option. Run filters are also accepted. <!-- see details in some other chapter/section -->
           If there is more than one matching run, they are grouped to the top of the combobox.
         </listitem>
