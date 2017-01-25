@@ -118,6 +118,7 @@ P check_and_cast(T *p)
 
 MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
 { //     nedTypeName        cppTypeName        fromstring            tostring               emptyValue
+        {"bit",             "bit",             "bit(string2long($))","long2string($.get())","bit(0)"},
         {"bool",            "bool",            "string2bool($)",     "bool2string($)",      "false"},
         {"float",           "float",           "string2double($)",   "double2string($)",    "0"},
         {"double",          "double",          "string2double($)",   "double2string($)",    "0"},
