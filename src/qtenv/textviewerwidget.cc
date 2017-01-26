@@ -1052,6 +1052,9 @@ void TextViewerWidget::updateScrollbars()
     setVerticalScrollBarPolicy(vertNeeded ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(horizNeeded ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
 
+    if (!vertNeeded) verticalScrollOffset = 0;
+    if (!horizNeeded) horizontalScrollOffset = 0;
+
     // configure
     vsb->setMinimum(0);
     vsb->setMaximum(std::max(0, content->getLineCount() * lineSpacing - viewport()->height()));
@@ -1180,6 +1183,7 @@ void TextViewerWidget::onCaretBlinkTimer()
 void TextViewerWidget::onHeaderSectionResized(int logicalIndex, int oldSize, int newSize)
 {
     linePartOffsetCache.clear();
+    updateScrollbars();
     viewport()->update();
 }
 
