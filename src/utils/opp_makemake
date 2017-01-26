@@ -428,6 +428,7 @@ sub makemake()
     # determine subpath: the project-relative path of this folder
     my $subpath = cwd();
     $subpath =~ s|^\Q$projectDir\E||;
+    $subpath  =~ s/^[\/\\]//;  # remove the leading slash/backslash as this is a relative directory
 
     # collect source files
     if ($isDeep) {

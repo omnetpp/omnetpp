@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -29,9 +30,9 @@ import org.eclipse.core.runtime.Status;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.OmnetppDirs;
 
 /**
  * An opp_nmakemake implementation. May be invoked as a command-line tool
@@ -252,6 +253,7 @@ public class Makemake {
             sources.addAll(ccfiles);
         if (ccExt.equals("cpp"))
             sources.addAll(cppfiles);
+
         sources.addAll(msgfiles);
         sources.addAll(smfiles);
         if (!options.ignoreNedFiles)
@@ -469,6 +471,8 @@ public class Makemake {
         if (files != null)
             for (String name : files)
                 result.add(subFolder.equals(".") ? name : subFolder+"/"+name);
+
+        result.sort(String::compareToIgnoreCase);
         return result;
     }
 

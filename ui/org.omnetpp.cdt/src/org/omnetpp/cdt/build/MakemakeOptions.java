@@ -321,16 +321,16 @@ public class MakemakeOptions implements Cloneable {
      */
     public String[] toArgs() {
         List<String> result = new ArrayList<String>();
-        if (force)
-            add(result, "-f");
-        if (isDeep)
-            add(result, "--deep");
         if (type == Type.NOLINK)
             add(result, "--nolink");
         else if (type == Type.SHAREDLIB)
             add(result, "--make-so");
         else if (type == Type.STATICLIB)
             add(result, "--make-lib");
+        if (force)
+            add(result, "-f");
+        if (isDeep)
+            add(result, "--deep");
         if (!StringUtils.isEmpty(projectDir))
             add(result, "-P", projectDir);
         if (!StringUtils.isEmpty(target))
