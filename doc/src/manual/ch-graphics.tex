@@ -62,10 +62,10 @@ significant amount of CPU cycles.
 \label{sec:graphics:refreshdisplay-usage-and-semantics}
 
 Starting from {\opp} version 5.0, visualization code can be placed into a
-dedicated method. This method is called much more economically, that is, only
+dedicated method. It is called much more economically, that is, only
 when needed.
 
-This method is called \ffunc{refreshDisplay()}, and is declared on
+This method is \ffunc{refreshDisplay()}, and is declared on
 \cclass{cModule} as:
 
 \begin{cpp}
@@ -85,16 +85,29 @@ down to the following:
      and Tkenv. It is never invoked under Cmdenv.
 
 \item When invoked, it will be called on \textit{all} components of the
-      simulation. It does not matter a module has a graphical inspector
-      open or not.\footnote{This design decision simplifies the handling
+      simulation. It does not matter if a module has a graphical inspector
+      open or not. This design decision simplifies the handling
       of cross-module visualization dependencies. Runtime overhead is
-      still low, because display updates are practically only done at most
-      a few times per second, never in a tight loop.}
+      still not an issue, because display updates are only done at most
+      a few times per second in \textit{Express} mode, while in other modes,
+      raw event processing performance is of somewhat lesser importance.
+      \footnote{At any rate, only a small portion of components are expected to
+      have (nontrivial) \ffunc{refreshDisplay()} overrides in complex models.
+      If it still becomes too resource-consuming, local caching of related
+      data and the use of a \textit{displayInvalid} flag might help.}
 
 \item It is invoked right before display updates. This includes the following:
-      after network setup; in \textit{Step} and \textit{Run} modes after every event;
-      in \textit{Fast} and \textit{Express} modes, after every "batch" of events;
-      and after finalization.
+      after network setup; in \textit{Step} and \textit{Run} modes, before and
+      after every event; in \textit{Fast} and \textit{Express} modes, after
+      every "batch" of events; every time a new graphical inspector is opened,
+      zoomed, navigated in, or closed; after model data (cPar, cDisplayString
+      values, etc.) is edited, and after finalization.
+
+\item If smooth animation is used, it is invoked continuously with a
+      reasonably high frequency in \textit{Step} and \textit{Run} modes.
+      This can mean anything from many times between processing two consecutive
+      events to not even once until after the processing of a couple of events,
+      depending on the current animation speed and event density.
 
 \end{enumerate}
 
@@ -125,7 +138,7 @@ if (!getEnvir()->isExpressMode()) {
     // visualize current frame transmission
 }
 else {
-    // display throughtput statistics
+    // display throughput statistics
 }
 \end{cpp}
 
@@ -166,7 +179,7 @@ encourage this behavior.
 
 If visualization code makes use of internal caches or maintains some
 other mutable state, such data members can be declared \ttt{mutable}
-to allow \ffunc{refreshDisplay()} change them.
+to allow \ffunc{refreshDisplay()} to change them.
 
 
 \section{Display Strings}
