@@ -81,9 +81,9 @@ struct QtenvOptions : public EnvirOptions
     size_t extraStack;                     // per-module extra stack for activity() modules
     std::string defaultConfig;             // automatically set up this config at startup
     std::string runFilter;                 // groups the matching runs to the beginning of the list, or if only one matches, will set up that one automatically
-    bool printInitBanners = true;          // print "initializing..." banners ----------- FIXME DOES NOT WORK PROPERLY!!!
-    bool printEventBanners = true;         // print event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
-    bool shortBanners = false;             // controls detail of event banners ----------- FIXME DOES NOT WORK PROPERLY!!!
+    bool printInitBanners = true;          // print "initializing..." banners
+    bool printEventBanners = true;         // print event banners
+    bool shortBanners = false;             // controls detail of event banners
     bool animationEnabled = true;          // msg animation
     bool showNextEventMarkers = true;      // display next event marker (red frame around modules)
     bool showSendDirectArrows = true;      // flash arrows when doing sendDirect() animation
@@ -312,6 +312,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual void readOptions() override;
 
       virtual void setupNetwork(cModuleType *network) override;
+
       virtual void askParameter(cPar *par, bool unassigned) override;
       virtual void displayException(std::exception& e) override;
       virtual std::string getWindowTitle();

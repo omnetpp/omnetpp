@@ -174,19 +174,7 @@ void Qtenv::storeOptsInPrefs()
     setPref("stripnamespace", stripNamespaceString);
 
     setPref("logformat", opt->logFormat.c_str());
-
-    QString logLevelString;
-    switch (opt->logLevel) {
-        case LOGLEVEL_OFF:  logLevelString = "off";  break;
-        case LOGLEVEL_FATAL:  logLevelString = "fatal";  break;
-        case LOGLEVEL_ERROR:  logLevelString = "error";  break;
-        case LOGLEVEL_WARN:   logLevelString = "warn";   break;
-        case LOGLEVEL_INFO:   logLevelString = "info";   break;
-        case LOGLEVEL_DETAIL: logLevelString = "detail"; break;
-        case LOGLEVEL_DEBUG:  logLevelString = "debug";  break;
-        case LOGLEVEL_TRACE:  logLevelString = "trace";  break;
-    }
-    setPref("logLevel", logLevelString);
+    setPref("loglevel", cLog::getLogLevelName(opt->logLevel));
 
     setPref("scrollbacklimit", opt->scrollbackLimit);
     setPref("logbuffer_maxnumevents", logBuffer.getMaxNumEntries());
@@ -294,38 +282,11 @@ void Qtenv::restoreOptsFromPrefs()
         }
     }
 
-    pref = getPref("logformat");
-    if (pref.isValid())
-        opt->logFormat = pref.toString().toStdString().c_str();
-
-    pref = getPref("logLevel");
-    if (pref.isValid()) {
-        QString logLevelString = pref.toString();
-        if (logLevelString == "off") {
-            opt->logLevel = LOGLEVEL_OFF;
-        }
-        else if (logLevelString == "fatal") {
-            opt->logLevel = LOGLEVEL_FATAL;
-        }
-        else if (logLevelString == "error") {
-            opt->logLevel = LOGLEVEL_ERROR;
-        }
-        else if (logLevelString == "warn") {
-            opt->logLevel = LOGLEVEL_WARN;
-        }
-        else if (logLevelString == "info") {
-            opt->logLevel = LOGLEVEL_INFO;
-        }
-        else if (logLevelString == "detail") {
-            opt->logLevel = LOGLEVEL_DETAIL;
-        }
-        else if (logLevelString == "debug") {
-            opt->logLevel = LOGLEVEL_DEBUG;
-        }
-        else if (logLevelString == "trace") {
-            opt->logLevel = LOGLEVEL_TRACE;
-        }
-    }
+    // overriding opts from prefs, but using the current ones (factory defaults) as fallback if no pref was stored yet
+    opt->logFormat = getPref("logformat", opt->logFormat.c_str()).toString().toStdString();
+    try { // level is stored as string, so we have to convert there and back. also have to store in opt, also forward to cLog via setter
+        opt->logLevel = cLog::resolveLogLevel(getPref("loglevel", cLog::getLogLevelName(opt->logLevel)).toByteArray());
+    } catch (cRuntimeError &) { } // resolveLogLevel might throw, but we can ignore it, and not change the factory default
 
     pref = getPref("scrollbacklimit");
     if (pref.isValid())
@@ -608,6 +569,7 @@ void Qtenv::doRun()
         localPrefs = new QSettings(".qtenvrc", QSettings::IniFormat);
 
         restoreOptsFromPrefs();
+        setLogLevel(opt->logLevel); // we have to tell cLog the level we want
 
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
@@ -1482,9 +1444,8 @@ void Qtenv::displayException(std::exception& ex)
 void Qtenv::componentInitBegin(cComponent *component, int stage)
 {
     auto logLevel = getPref(QString("ComponentLogLevels/") + component->getFullPath().c_str());
-    if (logLevel.isValid() && logLevel.canConvert(QVariant::Int)) {
+    if (logLevel.isValid() && logLevel.canConvert(QVariant::Int))
         setComponentLogLevel(component, (LogLevel)logLevel.toInt());
-    }
 
     if (!opt->printInitBanners || runMode == RUNMODE_EXPRESS)
         return;
@@ -1664,7 +1625,7 @@ void Qtenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
-    if (loggingEnabled)
+    if (loggingEnabled && opt->printEventBanners)
         printEventBanner(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
     displayUpdateController->simulationEvent(event);

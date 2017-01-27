@@ -41,21 +41,30 @@ PreferencesDialog::PreferencesDialog(int defaultPage, QWidget *parent) :
     init();
 }
 
+// TODO: use default values passed to getPref, and store ref to opt or ptr to env
 void PreferencesDialog::init()
 {
     // General tab
     QVariant variant;
     variant = getQtenv()->getPref("confirm-exit");
     ui->confirmExit->setChecked(variant.isValid() ? variant.value<bool>() : true);
+    ui->express->setText(QString::number(getQtenv()->opt->updateFreqExpress));
+
+    // XXX This conversion is fragile, it depends on the order of
+    // both the enum values, and the items in the checkbox.
+    ui->hideNameSpace->setCurrentIndex(getQtenv()->opt->stripNamespace);
+
+    // Logs tab
     ui->initBanners->setChecked(getQtenv()->opt->printInitBanners);
     ui->eventBanners->setChecked(getQtenv()->opt->printEventBanners);
     ui->shortBanners->setChecked(getQtenv()->opt->shortBanners);
     ui->logPrefix->setText(getQtenv()->opt->logFormat.c_str());
-    ui->express->setText(QString::number(getQtenv()->opt->updateFreqExpress));
     ui->scrollback->setText(QString::number(getQtenv()->opt->scrollbackLimit));
     ui->overall->setText(QString::number(getQtenv()->getLogBuffer()->getMaxNumEntries()));
-    ui->logLevel->setCurrentIndex(getQtenv()->opt->logLevel);
-    ui->hideNameSpace->setCurrentIndex(getQtenv()->opt->stripNamespace);
+
+    for (int i = 0; i < ui->logLevel->count(); ++i)
+        ui->logLevel->setItemData(i, cLog::resolveLogLevel(ui->logLevel->itemText(i).toLatin1()));
+    ui->logLevel->setCurrentIndex(ui->logLevel->findData(getQtenv()->opt->logLevel));
 
     // Layouting tab
     switch(getQtenv()->opt->layouterChoice) {
@@ -158,8 +167,7 @@ void PreferencesDialog::accept()
     getQtenv()->setLogFormat(logFormat.c_str());
     getQtenv()->opt->logFormat = logFormat.c_str();
 
-    // TODO: this conversion is fragile, it depends on the order of the enum which might change
-    LogLevel logLevel = LogLevel(ui->logLevel->currentIndex());
+    LogLevel logLevel = LogLevel(ui->logLevel->currentData().toInt());
     getQtenv()->opt->logLevel = logLevel;
     getQtenv()->setLogLevel(logLevel);
 
@@ -183,6 +191,8 @@ void PreferencesDialog::accept()
     getQtenv()->opt->arrangeVectorConnections = ui->arrange->isChecked();
     getQtenv()->opt->showBubbles = ui->showBubbles->isChecked();
     getQtenv()->setPref("confirm-exit", ui->confirmExit->isChecked());
+
+    // TODO: this conversion is fragile, it depends on the order of the enum which might change
     getQtenv()->opt->stripNamespace = StripNamespace(ui->hideNameSpace->currentIndex());
     getQtenv()->setPref("layout-may-change-zoom", ui->allowZoom->isChecked());
     getQtenv()->setPref("timeline-wantselfmsgs", ui->selfMsg->isChecked());
