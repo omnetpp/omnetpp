@@ -971,9 +971,12 @@ QLineF DeliveryAnimation::getLine(ModuleInspector *mi) const
     QPointF destCenterPos = mi->getSubmodCoords(dest);
     QPointF fromEdgeToCenter = destCenterPos - connLine.p2();
     double length = std::sqrt(fromEdgeToCenter.x() * fromEdgeToCenter.x() + fromEdgeToCenter.y() * fromEdgeToCenter.y());
-    ASSERT(length > 0.0);  // there is a minimum bounding box size on the modules, so the edge can't be in the center
 
-    QPointF destPos = connLine.p2() + fromEdgeToCenter / length * std::min(length, msgEndCreep);
+    QPointF destPos = connLine.p2()
+            + (length > 0.0
+               ? fromEdgeToCenter / length * std::min(length, msgEndCreep)
+               : QPointF());
+
     return QLineF(srcPos, destPos);
 }
 
