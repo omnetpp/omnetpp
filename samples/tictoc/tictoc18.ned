@@ -14,22 +14,22 @@ simple Txc18 extends Txc16
 network TicToc18
 {
     parameters:
-        int numberOfCentralNodes = default(2);
+        int numCentralNodes = default(2);
     types:
         channel Channel extends ned.DelayChannel {
             delay = 100ms;
         }
     submodules:
-        tic[numberOfCentralNodes+4]: Txc18;
+        tic[numCentralNodes+4]: Txc18;
     connections:
         // connect the 2 nodes in one side to the central nodes
         tic[0].gate++ <--> Channel <--> tic[2].gate++;
         tic[1].gate++ <--> Channel <--> tic[2].gate++;
         // connect the central nodes together
-        for i=2..numberOfCentralNodes+1 {
+        for i=2..numCentralNodes+1 {
             tic[i].gate++ <--> Channel <--> tic[i+1].gate++;
         }
         // connect the 2 nodes on the other side to the central nodes
-        tic[numberOfCentralNodes+2].gate++ <--> Channel <--> tic[numberOfCentralNodes+1].gate++;
-        tic[numberOfCentralNodes+3].gate++ <--> Channel <--> tic[numberOfCentralNodes+1].gate++;
+        tic[numCentralNodes+2].gate++ <--> Channel <--> tic[numCentralNodes+1].gate++;
+        tic[numCentralNodes+3].gate++ <--> Channel <--> tic[numCentralNodes+1].gate++;
 }
