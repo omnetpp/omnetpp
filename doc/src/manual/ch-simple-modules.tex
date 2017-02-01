@@ -4785,6 +4785,13 @@ As an alternative to \fprop{@statisticTemplate} and \ffunc{addResultRecorders()}
 it is also possible to set up result recording programmatically, by creating and
 attaching result filters and recorders to the desired signals.
 
+\begin{note}
+It is important to know that \ttt{@statistic} implements warmup period 
+support by including a special \textit{warmup period filter} at the
+front of the filter/recorder chain. When adding result filters and recorders
+manually, you need to add this filter manually as well.
+\end{note}
+
 The following code example sets up recording to an output vector after
 removing duplicate values, and is essentially equivalent to the following
 \ttt{@statistic} line:
@@ -4799,17 +4806,19 @@ The C++ code:
 \begin{cpp}
 simsignal_t signal = registerSignal("qlen");
 
+cResultFilter *warmupFilter =
+        cResultFilterType::get("warmup")->create();
 cResultFilter *removeRepeatsFilter = 
         cResultFilterType::get("removeRepeats")->create();
 cResultRecorder *vectorRecorder = 
-
         cResultRecorderType::get("vector")->create();
 opp_string_map *attrs = new opp_string_map;
 (*attrs)["title"] = "Queue Length";
 (*attrs)["unit"] = "packets";
 vectorRecorder->init(this, "queueLength", "vector", nullptr, attrs);
 
-subscribe(signal, removeRepeatsFilter);
+subscribe(signal, warmupFilter);
+warmupFilter->addDelegate(removeRepeatsFilter);
 removeRepeatsFilter->addDelegate(vectorRecorder);
 \end{cpp}
 

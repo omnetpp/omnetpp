@@ -23,6 +23,7 @@ namespace omnetpp {
 using namespace omnetpp::common;  // Expression
 
 // note: we don't register WarmupPeriodFilter and ExpressionFilter
+Register_ResultFilter("warmup", WarmupPeriodFilter);
 Register_ResultFilter("count", CountFilter);
 Register_ResultFilter("constant0", Constant0Filter);
 Register_ResultFilter("constant1", Constant1Filter);

@@ -78,10 +78,9 @@ HSB format (\textit{@hhssbb}), or a valid SVG color name.
 Size given as width and height.
 
 \item[FigureType]: \\
-One of the built-in figure types (\ttt{line}, \ttt{arc}, etc.), or
-\ttt{custom:\textit{<type>}}. In the latter case, {\opp} looks for
-a registered C++ class named \ttt{\textit{<type>}Figure} or
-\ttt{c\textit{<type>}Figure} to instantiate.
+One of the built-in figure types (e.g. \ttt{line} or \ttt{arc}, see
+\ref{sec:figure-definitions:figure-types}), or a figure type registered
+with \fmac{Register\_Figure()}.
 
 \item[FillRule]: \\
 \ttt{evenodd} or \ttt{nonzero}.
