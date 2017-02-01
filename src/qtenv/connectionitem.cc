@@ -26,7 +26,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate, bool twoWay)
+void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate, bool showArrowhead)
 {
     cChannel *chan = gate->getChannel();
 
@@ -71,8 +71,10 @@ void ConnectionItemUtil::setupFromDisplayString(ConnectionItem *ci, cGate *gate,
 
     ci->setTextColor(parseColor(ds.getTagArg("t", 2), QColor("#005030")));
 
+    bool twoWay = isTwoWayConnection(gate);
+
     // no need for arrowheads on a bidirectional connection
-    ci->setArrowEnabled(!twoWay);
+    ci->setArrowEnabled(!twoWay && showArrowhead);
     // only drawing the line from one side if the connection is bidirectional
     ci->setHalfLength(twoWay);
 }

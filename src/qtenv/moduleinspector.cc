@@ -98,14 +98,12 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     connect(showModuleNamesAction, SIGNAL(triggered(bool)), this, SLOT(showLabels(bool)));
     showModuleNamesAction->setShortcut(Qt::CTRL | Qt::Key_L);
     showModuleNamesAction->setCheckable(true);
-    showModuleNamesAction->setChecked(getPref(PREF_SHOWLABELS, true).toBool());
     addAction(showModuleNamesAction);
 
     showArrowheadsAction = new QAction("Show Arrowheads", this);
     connect(showArrowheadsAction, SIGNAL(triggered(bool)), this, SLOT(showArrowheads(bool)));
     showArrowheadsAction->setShortcut(Qt::CTRL | Qt::Key_A);
     showArrowheadsAction->setCheckable(true);
-    showArrowheadsAction->setChecked(getPref(PREF_SHOWARROWHEADS, true).toBool());
     addAction(showArrowheadsAction);
 
     increaseIconSizeAction = new QAction("Increase Icon Size", this);
@@ -258,8 +256,8 @@ void ModuleInspector::doSetObject(cObject *obj)
             canvasViewer->redraw();
             canvasViewer->setZoomFactor(getPref(PREF_ZOOMFACTOR, 1).toDouble());
             canvasViewer->setImageSizeFactor(getPref(PREF_ICONSCALE, 1).toDouble());
-            canvasViewer->setShowModuleNames(getPref(PREF_SHOWLABELS, true).toBool());
-            canvasViewer->setShowArrowheads(getPref(PREF_SHOWARROWHEADS, true).toBool());
+            showLabels(getPref(PREF_SHOWLABELS, true).toBool());
+            showArrowheads(getPref(PREF_SHOWARROWHEADS, true).toBool());
         }
         catch (std::exception& e) {
             QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
@@ -746,6 +744,7 @@ void ModuleInspector::showLabels(bool show)
         return;
 
     setPref(PREF_SHOWLABELS, show);
+    showModuleNamesAction->setChecked(show);
     canvasViewer->setShowModuleNames(show);
     update();
 }
@@ -756,6 +755,7 @@ void ModuleInspector::showArrowheads(bool show)
         return;
 
     setPref(PREF_SHOWARROWHEADS, show);
+    showArrowheadsAction->setChecked(show);
     canvasViewer->setShowArrowheads(show);
     update();
 }

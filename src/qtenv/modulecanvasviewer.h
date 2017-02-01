@@ -74,8 +74,8 @@ private:
 
     double zoomFactor = 1;
     double imageSizeFactor = 1;
-    bool showModuleNames;
-    bool showArrowHeads;
+    bool showModuleNames = true;
+    bool showArrowHeads = true;
 
     ZoomLabel *zoomLabel;
 

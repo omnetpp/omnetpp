@@ -510,36 +510,11 @@ void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
 
 void ModuleCanvasViewer::drawConnection(cGate *gate)
 {
-    cModule *mod = gate->getOwnerModule();
-    cGate *destGate = gate->getNextGate();
-
-    // check if this is a two way connection (an other connection is pointing back
-    // to the this gate's pair from the next gate's pair)
-    bool twoWayConnection = false;
-    // check if this gate is really part of an in/out gate pair
-    // gate      o-------------------->o dest_gate
-    // gate_pair o<--------------------o dest_gate_pair
-    if (gate->getNameSuffix()[0]) {
-        const cGate *gatePair = mod->gateHalf(gate->getBaseName(),
-                    gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
-                    gate->isVector() ? gate->getIndex() : -1);
-
-        if (destGate->getNameSuffix()[0]) {
-            const cGate *destGatePair = destGate->getOwnerModule()->gateHalf(destGate->getBaseName(),
-                        destGate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
-                        destGate->isVector() ? destGate->getIndex() : -1);
-            twoWayConnection = destGatePair == gatePair->getPreviousGate();
-        }
-    }
-
     auto item = new ConnectionItem(submoduleLayer);
     item->setLine(getConnectionLine(gate));
-    ConnectionItemUtil::setupFromDisplayString(item, gate, twoWayConnection);
+    ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
     connectionGraphicsItems[gate] = item;
     item->setZValue(-1);
-    // The !twoWayConnection is a tiny bit of duplicated
-    // logic with setupFromDisplayString, but oh well...
-    item->setArrowEnabled(!twoWayConnection && showArrowHeads);
 }
 
 QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
@@ -700,7 +675,7 @@ void ModuleCanvasViewer::refreshConnection(cGate *gate)
 {
     if (connectionGraphicsItems.count(gate)) {
         ConnectionItem *item = connectionGraphicsItems[gate];
-        ConnectionItemUtil::setupFromDisplayString(item, gate, item->isHalfLength());
+        ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
         item->setLine(getConnectionLine(gate));
     }
 }
@@ -810,10 +785,7 @@ void ModuleCanvasViewer::setShowArrowheads(bool show)
 {
     if (showArrowHeads != show) {
         showArrowHeads = show;
-        for (auto i : connectionGraphicsItems) {
-            // not enabling arrowheads on two-way connections
-            i.second->setArrowEnabled(show && !i.second->isHalfLength());
-        }
+        refreshConnections();
     }
 }
 

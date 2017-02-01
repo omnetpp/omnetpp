@@ -31,7 +31,7 @@ class ConnectionItem;
 class QTENV_API ConnectionItemUtil {
 public:
     // only stylistic tags are handled here (color, width, style, etc), positioning is in the ModuleCanvasViewer
-    static void setupFromDisplayString(ConnectionItem *ci, cGate *gate, bool twoWay);
+    static void setupFromDisplayString(ConnectionItem *ci, cGate *gate, bool showArrowhead);
 };
 
 class QTENV_API ConnectionItem : public QGraphicsObject
