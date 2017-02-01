@@ -335,29 +335,40 @@ void MessageItem::updateLineItem()
 
     double width = (shapeWidth + shapeHeight) / 4;
 
-    QPointF offset = width / 2 * line.normalVector().unitVector().translated(-line.p1()).p2();
+    // to make it go on the right side of the connection
+    QPointF sideOffset = width / 2 * line.normalVector().unitVector().translated(-line.p1()).p2();
 
     QPen pen(shapeFillColor, width, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
     pen.setMiterLimit(width*10);
 
-    auto l = line.translated(offset-pos());
-    lineItem->setLine(l);
+    bool showAsLine = !line.isNull();
+
+    // relative to pos, center is always in origin
+    auto localLine = line.translated(-pos());
+
+    // if shorter than wide, extend it to a square
+    if (localLine.length() < 1) {
+        localLine.setLength(1);
+        localLine.translate(-localLine.pointAt(0.5));
+    }
+
+    localLine = localLine.translated(sideOffset);
+
+    lineItem->setLine(localLine);
     lineItem->setPen(pen);
 
-    arrowheadItem->setEndPoints(l.p2(), l.p1());
+    arrowheadItem->setEndPoints(localLine.p2(), localLine.p1());
     arrowheadItem->setPen(pen);
     arrowheadItem->setBrush(shapeFillColor);
     arrowheadItem->setSizeForPenWidth(width, 1.0, 0.0);
 
-    bool isLine = line.length() > width;
-
-    lineItem->setVisible(isLine);
+    lineItem->setVisible(showAsLine);
     arrowheadItem->setVisible(arrowheadEnabled && (line.length() > width * 4));
 
     if (shapeItem)
-        shapeItem->setVisible(!isLine);
+        shapeItem->setVisible(!showAsLine);
     if (imageItem)
-        imageItem->setVisible(!isLine);
+        imageItem->setVisible(!showAsLine);
 }
 
 }  // namespace qtenv
