@@ -79,8 +79,8 @@ $html =~ s|`\\opp`|$product|seg;
 $html =~ s|(<h[0-9]>)(.*?)(</h[0-9]>)\s*<a name="(.*?)"></a>|$1<a name="$4"/>$2<a class="headerlink" href="#$4" title="Permalink to this headline">¶</a>$3|gi;
 
 # check for missing section labels
-if ($html =~ /(\<h[0-9]\>)([^<])/) {
-   die "missing section label";
+if ($html =~ /(\<h[0-9]\>)([^<]+)/) {
+   die "missing section label near '$1$2'";
 }
 
 #

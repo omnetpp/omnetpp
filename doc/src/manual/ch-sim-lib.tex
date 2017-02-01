@@ -258,7 +258,7 @@ the error (just before the exception is thrown) and use a C++ debugger to
 look at the stack trace and examine variables. Enabling the
 \fconfig{debug-on-errors} or the \fconfig{debugger-attach-on-error}
 configuration option lets you do that -- check it in section
-\ref{sec:run-sim:controlling}.
+\ref{sec:run-sim:debugging-support}.
 
 
 \section{Logging from Modules}
@@ -2140,7 +2140,9 @@ The format and processing of output vector files is described in section
 
 You can configure output vectors from \ffilename{omnetpp.ini}:
 you can disable individual vectors, or limit recording to certain
-simulation time intervals (section \ref{sec:ana-sim:vector-config}).
+simulation time intervals (see sections 
+\ref{sec:ana-sim:disabling-result-items},
+\ref{sec:ana-sim:vector-recording-intervals}).
 
 If the output vector object is disabled or the simulation time is
 outside the specified interval, \ffunc{record()} doesn't write
