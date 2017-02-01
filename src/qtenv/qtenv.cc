@@ -1381,48 +1381,52 @@ void Qtenv::updateStatusDisplay()
     mainWindow->updateStatusDisplay();
 }
 
-void Qtenv::printEventBanner(cEvent *event)
+void Qtenv::addEventToLog(cEvent *event)
 {
     cObject *target = event->getTargetObject();
     cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : nullptr;
     cModule *module = msg ? msg->getArrivalModule() : nullptr;
 
-    // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
-    char *p = banner;
-    p += sprintf(p, "** Event #%" LL "d  t=%s  ",
-                getSimulation()->getEventNumber(),
-                SIMTIME_STR(getSimulation()->getSimTime()));
+    banner[0] = '\0';
 
-    if (opt->shortBanners) {
-        // just object names
-        if (target)
-            p += sprintf(p, "%s ", target->getFullPath().c_str());
-        p += sprintf(p, "on %s", event->getFullName());
+    // produce banner text if enabled
+    if (opt->printEventBanners) {
+        char *p = banner;
+        p += sprintf(p, "** Event #%" LL "d  t=%s  ",
+                    getSimulation()->getEventNumber(),
+                    SIMTIME_STR(getSimulation()->getSimTime()));
+
+        if (opt->shortBanners) {
+            // just object names
+            if (target)
+                p += sprintf(p, "%s ", target->getFullPath().c_str());
+            p += sprintf(p, "on %s", event->getFullName());
+        }
+        else {
+            // print event and module type names and IDs, too
+            if (module)
+                p += sprintf(p, "%s (%s, id=%d) ",
+                            module->getFullPath().c_str(),
+                            module->getComponentType()->getName(),
+                            module->getId());
+            else if (target)
+                p += sprintf(p, "%s (%s) ",
+                            target->getFullPath().c_str(),
+                            target->getClassName());
+            if (msg)
+                p += sprintf(p, " on %s%s (%s, id=%ld)",
+                            msg->isSelfMessage() ? "selfmsg " : "",
+                            msg->getFullName(),
+                            msg->getClassName(),
+                            msg->getId());
+            else
+                p += sprintf(p, " on %s (%s)",
+                            event->getFullName(),
+                            event->getClassName());
+        }
+        strcpy(p, "\n");
     }
-    else {
-        // print event and module type names and IDs, too
-        if (module)
-            p += sprintf(p, "%s (%s, id=%d) ",
-                        module->getFullPath().c_str(),
-                        module->getComponentType()->getName(),
-                        module->getId());
-        else if (target)
-            p += sprintf(p, "%s (%s) ",
-                        target->getFullPath().c_str(),
-                        target->getClassName());
-        if (msg)
-            p += sprintf(p, " on %s%s (%s, id=%ld)",
-                        msg->isSelfMessage() ? "selfmsg " : "",
-                        msg->getFullName(),
-                        msg->getClassName(),
-                        msg->getId());
-        else
-            p += sprintf(p, " on %s (%s)",
-                        event->getFullName(),
-                        event->getClassName());
-    }
-    strcpy(p, "\n");
 
     // insert into log buffer
     logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
@@ -1625,8 +1629,8 @@ void Qtenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
-    if (loggingEnabled && opt->printEventBanners)
-        printEventBanner(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
+    if (loggingEnabled)
+        addEventToLog(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
     displayUpdateController->simulationEvent(event);
 

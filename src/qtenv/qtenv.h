@@ -387,7 +387,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
                        const char *checkboxLabel, const char *defaultValue,
                        std::string& outResult, bool& inoutCheckState);
 
-      void printEventBanner(cEvent *event);
+      void addEventToLog(cEvent *event);
 
       std::string getLocalPackage()      {return getSimulation()->getNedPackageForFolder(opt->inifileNetworkDir.c_str());}
       const char *getIniFileName()       {return getConfigEx()->getFileName();}
