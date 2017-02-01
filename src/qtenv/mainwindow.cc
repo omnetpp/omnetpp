@@ -258,7 +258,7 @@ void MainWindow::updateEventNumLabel()
             break;
     }
 
-    double showNextEvent = env->getDisplayUpdateController()->rightBeforeEvent();
+    double showNextEvent = env->getDisplayUpdateController()->rightBeforeEvent() && env->getSimulationRunMode() == RUNMODE_NOT_RUNNING;
 
     eventnumber_t numToShow = getSimulation()->getEventNumber() + (showNextEvent ? 1 : 0);
     const char *prefix = showNextEvent ? "next: " : "last: ";
