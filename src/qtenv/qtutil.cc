@@ -550,5 +550,35 @@ QDebug& operator<<(QDebug& d, const SimTime& t)
     return d << t.format(SimTime::getScaleExp(), ".", "'", true);
 }
 
+bool isTwoWayConnection(cGate *gate)
+{
+    if (!gate)
+        return false;
+
+    cModule *mod = gate->getOwnerModule();
+    cGate *destGate = gate->getNextGate();
+
+    if (!destGate)
+        return false;
+
+    // check if this gate is really part of an in/out gate pair
+    // gate      o-------------------->o dest_gate
+    // gate_pair o<--------------------o dest_gate_pair
+    if (gate->getNameSuffix()[0]) {
+        const cGate *gatePair = mod->gateHalf(gate->getBaseName(),
+                    gate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
+                    gate->isVector() ? gate->getIndex() : -1);
+
+        if (destGate->getNameSuffix()[0]) {
+            const cGate *destGatePair = destGate->getOwnerModule()->gateHalf(destGate->getBaseName(),
+                        destGate->getType() == cGate::INPUT ? cGate::OUTPUT : cGate::INPUT,
+                        destGate->isVector() ? destGate->getIndex() : -1);
+            return destGatePair == gatePair->getPreviousGate();
+        }
+    }
+
+    return false;
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
