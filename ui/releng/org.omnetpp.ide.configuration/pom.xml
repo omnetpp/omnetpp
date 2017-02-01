@@ -12,6 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <repo.url>http://download.eclipse.org/releases/neon</repo.url>
     <update-repo.url>http://download.eclipse.org/eclipse/updates/4.6</update-repo.url>
+    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.2</cdt-repo.url>
   </properties>
 
   <pluginRepositories>
@@ -34,6 +35,11 @@
     <repository>
       <id>update</id>
       <url>${update-repo.url}</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>cdt</id>
+      <url>${cdt-repo.url}</url>
       <layout>p2</layout>
     </repository>
   </repositories>
