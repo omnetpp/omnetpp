@@ -218,6 +218,7 @@ class cModule extends cComponent
     bool isVector @getter(isVector) @group(fields) @hint("Whether this module is part of a module vector");
     int index @group(fields) @hint("If vector: index of this module in its module vector");
     int size @getter(size) @group(fields) @hint("If vector: size of module vector this module belongs to");
+    bool builtinAnimationsAllowed @editable @group(fields) @hint("Whether built-in animations are enabled on this module's graphical inspector");
     cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI") @editable @setter(setDisplayString) @fromstring($) @tostring(.str()) @getter(getDisplayString);
     cGate *gate[] @sizeGetter(gateCount) @getter(gateByOrdinal) @group(parameters, gates) @label(gates) @hint("Module gates");
     cCanvas *canvas @getter(getCanvasIfExists) @group(fields) @hint("Built-in canvas instance");
