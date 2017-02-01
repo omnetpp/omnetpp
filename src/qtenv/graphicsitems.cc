@@ -21,7 +21,6 @@
 #include <QPainter>
 #include <QDebug>
 #include "qtenv.h"
-#include "common/colorutil.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -430,25 +429,6 @@ void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 }
 
 //---- end of BubbleItem ----
-
-QColor parseColor(const QString& name, const QColor& fallbackColor)
-{
-    if (name.isEmpty())
-        return fallbackColor;
-
-    if (name == "-")
-        return QColor("transparent");
-
-    try {
-        uint8_t r, g, b;
-        omnetpp::common::parseColor(name.toStdString().c_str(), r, g, b);
-        return QColor(r, g, b);
-    }
-    catch (std::runtime_error& e) {
-        qDebug() << "Failed to parse color" << name << "because:" << e.what();
-        return fallbackColor;
-    }
-}
 
 }  // namespace qtenv
 }  // namespace omnetpp

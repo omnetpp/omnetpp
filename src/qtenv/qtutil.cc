@@ -28,6 +28,7 @@
 #include <QDebug>
 
 #include "common/stringutil.h"
+#include "common/colorutil.h"
 #include "common/opp_ctype.h"
 #include "common/patternmatcher.h"
 #include "common/ver.h"
@@ -57,6 +58,25 @@ namespace omnetpp {
 namespace qtenv {
 
 #define INSPECTORLISTBOX_MAX_ITEMS    100000
+
+QColor parseColor(const QString& name, const QColor& fallbackColor)
+{
+    if (name.isEmpty())
+        return fallbackColor;
+
+    if (name == "-")
+        return QColor("transparent");
+
+    try {
+        uint8_t r, g, b;
+        omnetpp::common::parseColor(name.toStdString().c_str(), r, g, b);
+        return QColor(r, g, b);
+    }
+    catch (std::runtime_error& e) {
+        qDebug() << "Failed to parse color" << name << "because:" << e.what();
+        return fallbackColor;
+    }
+}
 
 //----------------------------------------------------------------------
 
