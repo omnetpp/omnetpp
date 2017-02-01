@@ -209,7 +209,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      *
      * See also class cWatch and the WATCH() macro.
      */
-    virtual bool snapshot(cObject *obj=nullptr, const char *label=nullptr);
+    virtual void snapshot(cObject *obj=nullptr, const char *label=nullptr);
     //@}
 
     /** @name Message sending. */
@@ -218,71 +218,71 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Sends a message through the gate given with its ID.
      */
-    virtual int send(cMessage *msg, int gateid)  {return sendDelayed(msg, SIMTIME_ZERO, gateid);}
+    virtual void send(cMessage *msg, int gateid)  {return sendDelayed(msg, SIMTIME_ZERO, gateid);}
 
     /**
      * Sends a message through the gate given with its name and index
      * (if multiple gate).
      */
-    virtual int send(cMessage *msg, const char *gatename, int gateindex=-1)  {return sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
+    virtual void send(cMessage *msg, const char *gatename, int gateindex=-1)  {return sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
 
     /**
      * Sends a message through the gate given with its pointer.
      */
-    virtual int send(cMessage *msg, cGate *outputgate)  {return sendDelayed(msg, SIMTIME_ZERO, outputgate);}
+    virtual void send(cMessage *msg, cGate *outputgate)  {return sendDelayed(msg, SIMTIME_ZERO, outputgate);}
 
     /**
      * Delayed sending. Sends a message through the gate given with
      * its index as if it was sent delay seconds later.
      */
-    virtual int sendDelayed(cMessage *msg, simtime_t delay, int gateid);
+    virtual void sendDelayed(cMessage *msg, simtime_t delay, int gateid);
 
     /**
      * Delayed sending. Sends a message through the gate given with
      * its name and index (if multiple gate) as if it was sent delay
      * seconds later.
      */
-    virtual int sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex=-1);
+    virtual void sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex=-1);
 
     /**
      * Sends a message through the gate given with its pointer as if
      * it was sent delay seconds later.
      */
-    virtual int sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate);
+    virtual void sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate);
 
     /**
      * Sends a message directly to another module, with zero propagation delay
      * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
      * for a more detailed description.
      */
-    virtual int sendDirect(cMessage *msg, cModule *mod, const char *inputGateName, int gateIndex=-1);
+    virtual void sendDirect(cMessage *msg, cModule *mod, const char *inputGateName, int gateIndex=-1);
 
     /**
      * Sends a message directly to another module, with zero propagation delay
      * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
      * for a more detailed description.
      */
-    virtual int sendDirect(cMessage *msg, cModule *mod, int inputGateId);
+    virtual void sendDirect(cMessage *msg, cModule *mod, int inputGateId);
 
     /**
      * Sends a message directly to another module, with zero propagation delay
      * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
      * for a more detailed description.
      */
-    virtual int sendDirect(cMessage *msg, cGate *inputGate);
+    virtual void sendDirect(cMessage *msg, cGate *inputGate);
 
     /**
      * Sends a message directly to another module.
      * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
      * detailed description.
      */
-    virtual int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, const char *inputGateName, int gateIndex=-1);
+    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, const char *inputGateName, int gateIndex=-1);
 
     /**
      * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
      * detailed description.
      */
-    virtual int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int inputGateId);
+    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int inputGateId);
 
     /**
      * Send a message directly to another module.
@@ -323,7 +323,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * For messages that are not packets (i.e. not subclassed from cPacket),
      * the duration parameter must be zero.
      */
-    virtual int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
+    virtual void sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
     //@}
 
     /** @name Self-messages. */

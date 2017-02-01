@@ -545,7 +545,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * textual snapshot file.
      * This method is called internally from cSimpleModule's snapshot().
      */
-    bool snapshot(cObject *obj, const char *label);
+    void snapshot(cObject *obj, const char *label);
 
     /**
      * Returns the object used for fingerprint calculation. It returns nullptr

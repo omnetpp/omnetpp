@@ -328,21 +328,21 @@ void cSimpleModule::deleteModule()
 
 #define TRY(code, msgprefix)    try { code; } catch (cRuntimeError& e) { e.prependMessage(msgprefix); throw; }
 
-int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gateName, int gateIndex)
+void cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gateName, int gateIndex)
 {
     cGate *outGate;
     TRY(outGate = gate(gateName, gateIndex), "send()/sendDelayed()");
-    return sendDelayed(msg, delay, outGate);
+    sendDelayed(msg, delay, outGate);
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int gateId)
+void cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int gateId)
 {
     cGate *outGate;
     TRY(outGate = gate(gateId), "send()/sendDelayed()");
-    return sendDelayed(msg, delay, outGate);
+    sendDelayed(msg, delay, outGate);
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
+void cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
 {
     // error checking:
     if (outGate == nullptr)
@@ -402,44 +402,43 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outGate)
     else {
         EVCB.endSend(msg);
     }
-    return 0;
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, cModule *mod, const char *gateName, int gateIndex)
+void cSimpleModule::sendDirect(cMessage *msg, cModule *mod, const char *gateName, int gateIndex)
 {
-    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateName, gateIndex);
+    sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateName, gateIndex);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, cModule *mod, int gateId)
+void cSimpleModule::sendDirect(cMessage *msg, cModule *mod, int gateId)
 {
-    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateId);
+    sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateId);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, cGate *toGate)
+void cSimpleModule::sendDirect(cMessage *msg, cGate *toGate)
 {
-    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, toGate);
+    sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, toGate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
+void cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
         cModule *mod, const char *gateName, int gateIndex)
 {
     if (!mod)
         throw cRuntimeError("sendDirect(): Destination module pointer is nullptr");
     cGate *toGate;
     TRY(toGate = mod->gate(gateName, gateIndex), "sendDirect()");
-    return sendDirect(msg, propagationDelay, duration, toGate);
+    sendDirect(msg, propagationDelay, duration, toGate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int gateId)
+void cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int gateId)
 {
     if (!mod)
         throw cRuntimeError("sendDirect(): Destination module pointer is nullptr");
     cGate *toGate;
     TRY(toGate = mod->gate(gateId), "sendDirect()");
-    return sendDirect(msg, propagationDelay, duration, toGate);
+    sendDirect(msg, propagationDelay, duration, toGate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *toGate)
+void cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *toGate)
 {
     // Note: it is permitted to send to an output gate. It is especially useful
     // with several submodules sending to a single output gate of their parent module.
@@ -498,7 +497,6 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtime
         delete msg;  //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
     else
         EVCB.endSend(msg);
-    return 0;
 }
 
 void cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
@@ -713,9 +711,9 @@ void cSimpleModule::endSimulation()
     throw cTerminationException(E_ENDSIM);
 }
 
-bool cSimpleModule::snapshot(cObject *object, const char *label)
+void cSimpleModule::snapshot(cObject *object, const char *label)
 {
-    return getSimulation()->snapshot(object ? object : getSimulation(), label);
+    getSimulation()->snapshot(object ? object : getSimulation(), label);
 }
 
 bool cSimpleModule::hasStackOverflow() const

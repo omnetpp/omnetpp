@@ -185,7 +185,7 @@ class cSnapshotWriterVisitor : public cVisitor
     }
 };
 
-bool cSimulation::snapshot(cObject *object, const char *label)
+void cSimulation::snapshot(cObject *object, const char *label)
 {
     if (!object)
         throw cRuntimeError("snapshot(): Object pointer is nullptr");
@@ -211,10 +211,8 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 
     bool success = !os.fail();
     getEnvir()->releaseStreamForSnapshot(&os);
-
     if (!success)
         throw cRuntimeError("Could not write snapshot");
-    return success;
 }
 
 void cSimulation::setScheduler(cScheduler *sch)
