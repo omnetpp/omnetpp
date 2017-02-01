@@ -1190,7 +1190,7 @@ proc ModuleInspector:drawMessage {c msgptr x y} {
     #set dispstr "i=handset2_s"
 
     if {$dispstr=="" && [opp_getsimoption penguin_mode]} {
-        set dispstr "i=penguin"
+        set dispstr "i=old/penguin"
     }
 
     if {$dispstr==""} {
