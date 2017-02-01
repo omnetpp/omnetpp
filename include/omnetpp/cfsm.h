@@ -85,7 +85,7 @@ namespace omnetpp {
         ((__i&1)==0 && __savedstate!=(fsm).getState() &&  \
          (throw cRuntimeError(E_STATECHG,(fsm).getStateName()),0)),  \
          __savedstate=(fsm).getState(),++__i)  \
-     switch (FSM_Print(fsm,__i&1),(((fsm).getState()<<1)|(__i&1)))
+     switch (FSM_Print(fsm,__i&1),(((fsm).getState()*2)|(__i&1)))
 
 /**
  * @brief Declares a transient state; to be used in enum which declares states.
@@ -119,16 +119,6 @@ namespace omnetpp {
 #define FSM_Steady(state)      (state)
 
 /**
- * @brief Create state for FSM_Enter and FSM_Exit.
- *
- * Handling signed (transient) flag with shift value operation correctly.
- *
- * @hideinitializer
- * @see FSM_Switch
- */
-#define FSM_EnterExit(state)  ( ((state)<0) ? -((-state)<<1) : (state)<<1 )
-
-/**
  * @brief Within an FSM_Switch() case branch, declares code to be executed
  * on entering the given state.
  *
@@ -137,7 +127,7 @@ namespace omnetpp {
  * @hideinitializer
  * @see FSM_Switch
  */
-#define FSM_Enter(state)  (FSM_EnterExit(state)|0)
+#define FSM_Enter(state)  (2*(state))
 
 /**
  * @brief Within an FSM_Switch() case branch, declares code to be executed
@@ -146,7 +136,7 @@ namespace omnetpp {
  * @hideinitializer
  * @see FSM_Switch
  */
-#define FSM_Exit(state)   (FSM_EnterExit(state)|1)
+#define FSM_Exit(state)   (2*(state)|1)
 
 /**
  * @brief To be used in state exit code, to transition to another state.
