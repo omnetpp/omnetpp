@@ -26,6 +26,8 @@
 namespace omnetpp {
 namespace qtenv {
 
+//---- ArrowheadItem implementation ----
+
 void ArrowheadItem::updatePolygon()
 {
     QPolygonF polygon;
@@ -71,11 +73,6 @@ QPainterPath ArrowheadItem::shape() const
 
     result += s.createStroke(result);
     return result;
-}
-
-QRectF ArrowheadItem::boundingRect() const
-{
-    return isVisible() ? QGraphicsPolygonItem::boundingRect() : QRectF();
 }
 
 void ArrowheadItem::setEndPoints(const QPointF& start, const QPointF& end, double addAngle)
@@ -137,6 +134,8 @@ void ArrowheadItem::setSizeForPenWidth(double penWidth, double scale, double add
     setArrowWidth(size);
     setArrowLength(size);
 }
+
+//---- end of ArrowheadItem ----
 
 //---- GraphicsLayer implementation ----
 

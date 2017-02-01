@@ -45,7 +45,6 @@ public:
     ArrowheadItem(QGraphicsItem *parent);
 
     QPainterPath shape() const override;
-    QRectF boundingRect() const override;
 
     // Sets the size of the arrow so it fits
     // a line of penWidth width well.
