@@ -526,30 +526,42 @@ void AbstractImageFigureRenderer::setImageTransform(cAbstractImageFigure *figure
         height = naturalHeight;
 
     cFigure::Point pos = figure->getPosition();
-    QPointF offset = getAnchorOffset(figure->getAnchor(), width, height);
 
-    QTransform qTrans;
+    QTransform trans;
+    QTransform selfTrans;
+
     if (translateOnly) {
-        cFigure::Point p = figure->getTransform().applyTo(pos) * zoom;
-        offset.rx() += p.x;
-        offset.ry() += p.y;
+        // figure is an icon, so the zooming transformation will not position it right
+        // because of the ItemIgnoresTransformations flag, this is why we have to
+        // multiply the coordinates with the zoom level, and not apply the
+        // transformation
+        pos = figure->getTransform().applyTo(pos);
+        pos = pos * zoom;
+
+        // XXX: is this needed?
+        // makes the child coordinate system follow zoom, but cancels it out for this item
+        trans.scale(zoom, zoom);
+        selfTrans.scale(1.0/zoom, 1.0/zoom);
     } else {
-        qTrans = QTransform(transform.a, transform.b, 0,
+        // item doesn't ignore transformations, zoom will be done by that, and
+        // we have the use the transformation
+        trans = QTransform(transform.a, transform.b, 0,
                             transform.c, transform.d, 0,
                             transform.t1, transform.t2, 1);
-        offset.rx() += pos.x;
-        offset.ry() += pos.y;
     }
 
+    QPointF anchorOffset = getAnchorOffset(figure->getAnchor(), width, height);
     QPointF scale(width / naturalWidth, height / naturalHeight);
 
-    QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem *>(item);
+    SelfTransformingPixmapItem *pixmapItem = dynamic_cast<SelfTransformingPixmapItem *>(item);
     ASSERT(pixmapItem);
 
-    qTrans.translate(offset.x(), offset.y());
-    qTrans.scale(scale.x(), scale.y());
+    // anchoring, positioning and width / height must not affect the coordinate system of the children
+    selfTrans.translate(anchorOffset.x() + pos.x, anchorOffset.y() + pos.y);
+    selfTrans.scale(scale.x(), scale.y());
 
-    pixmapItem->setTransform(qTrans);
+    pixmapItem->setTransform(trans);
+    pixmapItem->setSelfTransform(selfTrans);
 }
 
 void AbstractImageFigureRenderer::refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints)
@@ -1105,6 +1117,7 @@ void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Figu
     cPathFigure *pathFigure = static_cast<cPathFigure *>(figure);
     QGraphicsPathItem *shapeItem = static_cast<QGraphicsPathItem *>(item);
 
+    shapeItem->setCacheMode(QGraphicsItem::NoCache);
     QPainterPath painter = shapeItem->path();
     if (pathFigure->getFillRule() == cFigure::FILL_EVENODD)
         painter.setFillRule(Qt::WindingFill);
@@ -1237,14 +1250,14 @@ void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIt
     QImage *image = getQtenv()->icons.getImage(imageFigure->getImageName(), "");
     if (image->isNull())
         qDebug() << "ImageFigureRenderer::setItemGeometryProperties: Image file not found.";
-    QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
+    SelfTransformingPixmapItem *imageItem = static_cast<SelfTransformingPixmapItem *>(item);
     imageItem->setPixmap(QPixmap::fromImage(*image));
 }
 
 void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
-    QGraphicsPixmapItem *imageItem = static_cast<QGraphicsPixmapItem *>(item);
+    SelfTransformingPixmapItem *imageItem = static_cast<SelfTransformingPixmapItem *>(item);
 
     imageItem->setTransformationMode(
         imageFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
@@ -1271,13 +1284,15 @@ void ImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item,
 
 QGraphicsItem *ImageFigureRenderer::newItem()
 {
-    return new QGraphicsPixmapItem();
+    auto item = new SelfTransformingPixmapItem();
+ //   item->setCacheMode(QGraphicsItem::ItemCoordinateCache);
+    return item;
 }
 
 void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cPixmapFigure *pixmapFigure = dynamic_cast<cPixmapFigure *>(figure);
-    QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem *>(item);
+    SelfTransformingPixmapItem *pixmapItem = dynamic_cast<SelfTransformingPixmapItem *>(item);
     ASSERT(pixmapFigure);
     ASSERT(pixmapItem);
 
