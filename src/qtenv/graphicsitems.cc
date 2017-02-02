@@ -440,6 +440,11 @@ void SelfTransformingPixmapItem::setSelfTransform(const QTransform& transform)
     }
 }
 
+QPainterPath SelfTransformingPixmapItem::shape() const
+{
+    return selfTransform.map(QGraphicsPixmapItem::shape());
+}
+
 QRectF SelfTransformingPixmapItem::boundingRect() const
 {
     return selfTransform.mapRect(QGraphicsPixmapItem::boundingRect());

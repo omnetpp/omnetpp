@@ -1284,9 +1284,7 @@ void ImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item,
 
 QGraphicsItem *ImageFigureRenderer::newItem()
 {
-    auto item = new SelfTransformingPixmapItem();
- //   item->setCacheMode(QGraphicsItem::ItemCoordinateCache);
-    return item;
+    return new SelfTransformingPixmapItem();
 }
 
 void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
