@@ -56,6 +56,7 @@ void OsgEarthScene::initialize()
     // set up viewer
     builtinOsgCanvas->setViewerStyle(cOsgCanvas::STYLE_EARTH);
     builtinOsgCanvas->setClearColor(cOsgCanvas::Color("black"));
+    // unit is meters
     builtinOsgCanvas->setZNear(100000);
     builtinOsgCanvas->setZFar(1000000000);
 
@@ -77,6 +78,9 @@ void OsgEarthScene::initialize()
     mapNode->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
     builtinOsgCanvas->setScene(scene);
+
+    // one hour in the simulation will be one second in reality (with 1.0 playback speed)
+    getParentModule()->getCanvas()->setAnimationSpeed(360, this);
 }
 
 OsgEarthScene *OsgEarthScene::getInstance()

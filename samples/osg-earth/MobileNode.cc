@@ -114,6 +114,9 @@ void MobileNode::initialize(int stage)
         // add the locator node to the scene
         mapNode->getModelLayerGroup()->addChild(locatorNode);
 
+        // this will make the animation smoother, and the playback speed slider effective
+        getParentModule()->getCanvas()->setAnimationSpeed(10, this);
+
         // schedule first move
         cMessage *timer = new cMessage("move");
         scheduleAt(par("startTime"), timer);
