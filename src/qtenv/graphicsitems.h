@@ -179,6 +179,27 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
 
+// This item has the ability to apply a transformation to itself
+// without affecting the coordinate system of its children.
+// It is needed to make image figures scale with different ratios
+// in both dimensions without it affecting their children.
+// This is in combined with the regular, inherited transformation.
+class QTENV_API SelfTransformingPixmapItem : public QGraphicsPixmapItem {
+    QTransform selfTransform;
+
+public:
+    using QGraphicsPixmapItem::QGraphicsPixmapItem;
+
+    // needed to avoid the internal Qt fast path for painting pixmap
+    // type items that made paint() useless (it was not called at all)
+    int type() const override { return UserType; }
+
+    void setSelfTransform(const QTransform& transform);
+
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+};
+
 }  // namespace qtenv
 }  // namespace omnetpp
 
