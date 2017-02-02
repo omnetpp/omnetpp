@@ -1,3 +1,13 @@
+2017-01-30  Rudolf Hornig
+
+	* Fix: don't show warning on macOS after starting the ide the second time
+
+2017-01-26  Rudolf Hornig
+
+	* opp_makemake: the IDE now generates exactly the same makefile as opp_makemake.
+	This allows easier switching between IDE and command line without rebuilding 
+	the model
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-19  Rudolf Hornig

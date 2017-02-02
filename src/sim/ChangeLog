@@ -1,3 +1,47 @@
+2017-02-01  Andras Varga
+
+	* Fix #823: added setBuiltinAnimationsAllowed() to sim_std.msg
+
+2017-02-01  Andras Varga
+
+	* Follow change: return type of send() and snapshot() methods changed
+	to 'void'
+
+2017-02-01  Andras Varga
+
+	* Register WarmpuPeriodFilter to make it accessible from user code
+
+2017-01-16  Andras Varga
+
+	* Implemented opp_get_monotonic_clock_usecs()
+
+2017-01-02  Andras Varga
+
+	* Follow cFigure API change related to parse(),	getAllowedPropertyKeys()
+
+2017-01-02  Andras Varga
+
+	* Follow API change: Canvas: added insertBelow() / insertAbove(), 
+	removed insertChild()
+
+2017-01-18  Rudolf Hornig
+
+	* Fixed build error if WITH_PARSIM=no
+
+2017-01-06  Attila Torok
+
+	* Fix cChannel::forEachChild bug (wrong superclass).
+
+2017-01-04  Attila Torok
+
+	* Don't notify about cDisplayString change if it didn't change.
+	Also corrected (negated) the value of a state variable. The meaning
+	inverted when it was renamed, but the usage stayed the same.
+
+2016-10-06  Zoltan Bojthe
+
+	* cPacket: use getBitLength() instead of bitLength member
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-19  Andras Varga

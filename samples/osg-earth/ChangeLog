@@ -1,8 +1,24 @@
+2017-01-19  Attila Torok
+
+	* Added an offline tile source package, and corresponding omnetpp.ini 
+	configurations. Levels 16, 17 and 18 are to be added in later to 
+	release builds from an overlay zip.
+
+2016-12-20  Attila Torok
+
+	* Create the transmission animation procedurally.
+
+	It is no longer loaded from bubble.osgb. That file has been deleted
+	because there were many issues loading it, with different versions of
+	OSG, especially finding the animation in it. The spheres are now faded
+	too, and are animated manually in simulation time rather than "real"
+	(wall-clock) time by osgAnimaion.
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-21  Attila Torok
 
-        * Transmission animations are no longer loaded from a file, but created from code instead.
+	* Transmission animations are no longer loaded from a file, but created from code instead.
 
 2016-12-21  Rudolf Hornig
 

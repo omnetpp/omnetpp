@@ -1,3 +1,42 @@
+2017-02-01  Rudolf Hornig
+
+	* Added CDT repo so plugins can be installed from there directly (It
+	was required to add LLDB debugger support as it is not part of the main
+	repo.
+
+2017-01-27  Andras Varga
+
+	* "New empty project" wizard: do NOT generate package.ned. Change fixes
+	the TicToc tutorial.
+
+2017-01-27  Rudolf Hornig
+
+	* Added lldb support plugins
+
+2017-01-27  Rudolf Hornig
+
+	* Upgraded to Eclipse 4.6.2
+
+2017-01-26  Rudolf Hornig
+
+	* The IDE now generates exactly the same makefile as the opp_makemake
+	tool. This allows easier switching between IDE and command line without
+	rebuilding the model.
+
+2017-01-16  Andras Varga
+
+	* Fix tri-state checkboxes. Affects launch dialog and Analysis tool chart
+	properties dialog.
+
+2017-01-11  Rudolf Hornig
+
+	* neddoc: made the doxy file path relative to the project. This fixes the
+	issue in windows.
+
+2016-11-21  Levente Mészáros
+
+	* Debug launch: GDB init file changed from python2 to python3 syntax
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-19  Andras Varga

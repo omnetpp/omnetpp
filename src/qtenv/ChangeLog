@@ -1,3 +1,205 @@
+2017-01-31  Attila Torok
+
+	* Avoid assertion failure with degenerate connection lines.
+
+2017-02-01  Attila Torok
+
+	* Fixed logging when "Print event banners" is disabled.
+
+2017-01-20  Attila Torok
+
+	* Object Inspector: Field editor positioning improved
+
+2017-01-19  Attila Torok
+
+	* Fix double-click zoom
+
+2017-01-18  Attila Torok
+
+	* Fix passing events from Qt to OSG; this fixes some camera manipulator
+	mouse problems.
+
+2017-01-16  Attila Torok
+
+	* Apply figure tag filters instantly. Also, make the dialog a child of 
+	the Inspector. This way it won't appear	on the taskbar and similar gadgets.
+
+2017-01-27  Attila Torok
+
+	* Fixed/streamlined applying and storing log level.
+
+2017-01-16  Attila Torok
+
+	* Indent the "Short event banners" checkbox in the Preferencesdialog.
+
+2017-01-16  Attila Torok
+
+	* Added build-time Qt version check to qtenvdefs.h.
+
+2017-01-18  Attila Torok
+
+	* Module Inspector: Reduce painting glitches by calling update() in a
+	few more places. This should fix the glitches when switching 
+	connection arrowhead drawing on/off, or between OSG and 2D mode.
+
+2017-01-13  Attila Torok
+
+	* Object tree text and tooltip formatting made prettier.
+
+2017-01-26  Attila Torok
+
+	* Log viewer: Update scrollbars on header resize, zero out offset if
+	they are hidden.
+
+2017-01-23  Attila Torok
+
+	* Log viewer: Fixed copying single line selection, added copying to
+	primary buffer.
+
+2017-01-13  Attila Torok
+
+	* Always store object IDs as 'long'
+
+2017-01-09  Attila Torok
+
+	* A few pointer checks added to OsgViewer.
+
+2017-01-10  Attila Torok
+
+	* Fixed OsgViewers getting stuck when the simulation is restarted.
+	The key is the removeView call. Calling viewer->realise no longer seems
+	necessary.
+
+2017-01-05  Attila Torok
+
+	* Do not immediately redraw the module when its layout changed, only
+	set a flag.
+
+2017-01-05  Attila Torok
+
+	* Clear animations also when switching from normal Run to Fast mode.
+
+2017-01-05  Attila Torok
+
+	* Submodule positions are now updated if their DisplayString changes.
+	And we only run the layouter if there are any submodules without a
+	position.
+
+2017-01-04  Attila Torok
+
+	* TextViewerWidget header/toolbar layout changed.
+	The toolbar is no longer laid out as a child of the viewport, but the
+	header and the toolbar are both children of the viewer widget itself, in
+	a grid layout. This reduces flickering in some corner cases.
+
+2016-11-22  Attila Torok
+
+	* TextViewerWidget can be scrolled vertically with pixel
+	granularity. Also, there should be no more infinite scrollbar 
+	configuration show/hide	loops.
+
+2017-01-06  Attila Torok
+
+	* Perform holding animations at the end too when animating until the
+	next event.
+
+	This should fix the ASSERT failure in chopHoldingTail (from >
+	currentPart). Also do not move the next event marker until they are done.
+	For example in the routing example, the final part of the animation
+	between to nodes (inside the receiving node) is a holding one, but
+	follows a nonholding anim. To truly arrive right before delivery, we have
+	to do that too, right after the first two parts.
+
+2017-01-06  Attila Torok
+
+	* Clear message delivery animations when the simulation is stopped.
+	It looked really weird when the event was already done, and the next
+	event marker moved on, but after starting again, the delivery was still
+	animated.
+
+2017-01-05  Attila Torok
+
+	* Fix crash when drawing unconnected gates with "Arrange connections
+	on vector gates parallel..." enabled.
+
+2017-01-03  Attila Torok
+
+	* Remove workaround for Qt4 on Mac from ModuleInspector.
+	The floating toolbar could not paint over the OpenGL widget
+	(OsgViewer), but with Qt5 this is no longer an issue.
+
+2017-01-11  Attila Torok
+
+	* Don't strip namespaces for internal uses like storing inspector 
+	windows and preferences, and appending to the message filter. 
+	This should fix the bug when the "exclude messages like
+	this from animation" appended to the filter with the class name stripped
+	according to the user setting in the preferences dialog, but the filter
+	engine did not accept it that way. Also a small, now redundant idMatches
+	function was removed.
+
+2017-01-11  Attila Torok
+
+	* Added namespace stripping mode parameter to getShortObjectTypeName().
+
+2017-01-11  Attila Torok
+
+	* MessageFilter: Fixed message name sanitization.
+
+2017-01-12  Attila Torok
+
+	* Added icon resource file aliases to make their references shorter.
+
+2017-01-12  Attila Torok
+
+	* Call refreshDisplay() after editing in the object inspector.
+
+	Also some slightly related random formatting...
+
+2017-01-12  Attila Torok
+
+	* The "View | Show Status Details" menu item is now checkable.
+
+2017-01-12  Attila Torok
+
+	* Don't put duplicate objects into the context menu of the timeline.
+
+2017-01-11  Attila Torok
+
+	* Made the "STOP" dialog in Express mode more responsive.
+
+	Before even input events were only handled with the frequency of
+	inspector updates. This still does not make it significantly slower.
+
+2017-01-06  Attila Torok
+
+	* Added 'Canvases, figures' category to 'Find objects' dialog
+
+2017-01-03  Attila Torok
+
+	* Changed the end year in copyright headers to 2017.
+
+2016-12-21  Attila Torok
+
+	* Renamed a few classes related to object search.
+
+	Namely:	InspectorListBox -> ObjectListModel; InspectorListBoxView ->
+	ObjectListView (they had nothing to do with inspectors); 
+	FilteredObjectListDialog -> FindObjectsDialog
+
+	And some data members and local variables too.
+
+2016-12-22  Attila Torok
+
+	* Fix: Single / double click events were swapped when passing them to OSG.
+
+2016-12-22  Attila Torok
+
+	* Pass event timestamps from Qt to OSG in OsgViewer.
+
+	This should resolve the issue where "flicking" the camera using the
+	"Earth" manipulator made it spin with an insane speed.
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-19  Attila Torok

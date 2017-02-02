@@ -1,3 +1,58 @@
+2017-02-01  Andras Varga
+
+	* Fix #362: return type of send() and snapshot() methods changed to
+	'void'
+
+2017-02-01  Andras Varga
+
+	* Fix #633, right-shift on negative numbers is undefined behavior in C/C++
+
+	Simply use *2 instead of <<1. "Given that this is mostly calculated at
+	compile time there is no runtime difference and even the runtime
+	calculation would probably converted to a shift by the compiler."
+	Also reverted earlier bogus commit that introduced nonsense FSM_EnterExit()
+	macro.
+
+2017-01-23  Andras Varga
+
+	* Fix #984 error "#include <platdep/sockets.h> must precede
+	<omnetpp.h> (and <platdep/timeutil.h> if present)" not possible in
+	msg-files
+
+	Solution: don't define timeval ourself, just pull in <winsock2.h>.
+
+2017-01-16  Andras Varga
+
+	* Added opp_get_monotonic_clock_usecs(). This should be used for 
+	measuring wall-clock intervals instead of gettimeofday() which is
+	not monitonic.
+
+2017-01-12  Andras Varga
+
+	* Canvas: more doxygen comments
+
+2017-01-02  Andras Varga
+
+	* cFigure: official API for custom figures: parse(), getAllowedPropertyKeys()
+
+2017-01-03  Andras Varga
+
+	* Register_Figure() change: first arg now must be quoted
+
+2017-01-02  Andras Varga
+
+	* Canvas: added insertBelow() / insertAbove()
+	
+	* Canvas: insertChild() was redundant (nearly same as addFigure()), removed
+
+2017-01-06  Attila Torok
+
+	* Fix cChannel::forEachChild bug (wrong superclass).
+
+2016-12-22  Andras Varga
+
+	* OppErrorCode renamed to ErrorCode; fix related C++ undefined behaviour
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-06  Andras Varga

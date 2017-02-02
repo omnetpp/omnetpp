@@ -1,3 +1,12 @@
+2017-01-06  Andras Varga
+
+	* Command line: '-h' to respect 'verbose' flag; added '-h configvars'
+
+2017-01-02  Andras Varga
+
+	* Command line: fix "-h figures" (take the list from the place 
+	Register_Figure() stores it)
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-19  Andras Varga

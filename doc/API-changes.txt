@@ -21,6 +21,26 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.1 preview 3
+~~~~~~~~~~~~~~~~~~~~~
+
+(+)     cFigure: added insertBelow() / insertAbove().
+
+(+)     cFigure: parse(cProperty*) and getAllowedPropertyKeys() are now
+        public API.
+
+(+)     Added opp_get_monotonic_clock_usecs(). This should be used for 
+        measuring wall-clock intervals instead of gettimeofday() which is
+        not monitonic.
+
+(!)     Change on Register_Figure() introduced in Preview 2: first argument
+        now must be quoted
+
+(!)     Return type of send() and snapshot() methods changed to 'void'
+
+(!)     OppErrorCode renamed to ErrorCode
+
+
 OMNeT++ 5.1 preview 2
 ~~~~~~~~~~~~~~~~~~~~~
 

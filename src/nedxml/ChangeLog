@@ -1,3 +1,25 @@
+2017-01-13  Rudolf Hornig
+
+	* nedtool: fix #809/2: Escape '@' characters in doxygen comments in 
+	generated C++ code.
+
+2017-01-12  Rudolf Hornig
+
+	* nedtool: fix #809 - generated message headers and C++ files no longer
+	produce warnings even on pedantic setting. This was achieved by
+	disabling expected warnings in the generated C++ files using pragmas,
+	for GCC and CLANG.
+
+	On GCC, generated code now builds without warnings with:
+	-Wall -Wpedantic -Wunused -Wextra -Winit-self
+	-Wswitch-enum -Wuninitialized -Wfloat-equal -Wsuggest-attribute=pure
+	-Wsuggest-attribute=const -Wsuggest-attribute=noreturn
+	-Wsuggest-attribute=format -Wconversion -Wuseless-cast -Wshadow
+
+2016-11-30  Levente Mészáros
+
+	* nedtool: Added missing override declarations to msg compiler.
+
 2016-12-23  ------ omnetpp-5.1pre2 released ------
 
 2016-12-16  Rudolf Hornig
