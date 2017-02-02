@@ -804,13 +804,13 @@ void Qtenv::setSimulationRunUntilModule(cModule *until_module)
     runUntil.module = until_module;
 }
 
-// note: also updates "since" (sets it to the current time) if answer is "true"
-inline bool elapsed(long millis, struct timeval& since)
+// note: if restart is true and the interval did elapse, also updates "since" (sets it to the current time)
+inline bool elapsed(long millis, struct timeval& since, bool restart)
 {
     struct timeval now;
     gettimeofday(&now, nullptr);
     bool ret = timeval_diff_usec(now, since) > 1000*millis;
-    if (ret)
+    if (ret && restart)
         since = now;
     return ret;
 }
@@ -964,11 +964,12 @@ bool Qtenv::doRunSimulationExpress()
         getSimulation()->executeEvent(event);
 
         // only on every 256. event to make it fast
-        if ((getSimulation()->getEventNumber()&0xff) == 0) {
+        if ((getSimulation()->getEventNumber() & 0xff) == 0) {
             // to make the stopDialog more responsive
-            QApplication::processEvents();
+            if (elapsed(100, last_update, false))
+                QApplication::processEvents();
 
-            if (elapsed(opt->updateFreqExpress, last_update)) {
+            if (elapsed(opt->updateFreqExpress, last_update, true)) {
                 speedometer.beginNewInterval();  // should precede updateStatusDisplay()
                 if (opt->autoupdateInExpress) {
                     callRefreshDisplay();
