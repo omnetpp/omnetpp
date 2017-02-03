@@ -701,8 +701,7 @@ void SendOnConnAnimation::update()
 
         for (auto p : messageItems) {
             QLineF line = p.first->getConnectionLine(gate);
-            line = QLineF(line.pointAt(t1), line.pointAt(t2));
-            p.second->setLine(line);
+            p.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), !trans.isZero());
             p.second->setArrowheadEnabled(t1 < 1.0);
         }
     }
@@ -857,7 +856,7 @@ void SendDirectAnimation::update()
                     dest = QPointF(src.x() + src.y() / 4 + 4, -16);
 
                 QLineF line(src, dest);
-                m.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)));
+                m.second->setLine(QLineF(line.pointAt(t1), line.pointAt(t2)), !trans.isZero());
                 m.second->setArrowheadEnabled(t1 < 1.0);
             }
     }

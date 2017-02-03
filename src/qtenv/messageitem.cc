@@ -24,13 +24,10 @@
 namespace omnetpp {
 namespace qtenv {
 
-QVector<QColor> MessageItemUtil::msgKindColors;
+QVector<QColor> MessageItemUtil::msgKindColors = {"red", "green", "blue", "white", "yellow", "cyan", "magenta", "black"};
 
 void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, double imageSizeFactor)
 {
-    if (msgKindColors.isEmpty())
-        msgKindColors << "red" << "green" << "blue" << "white" << "yellow" << "cyan" << "magenta" << "black";
-
     cDisplayString ds = msg->getDisplayString();
 
     mi->setData(ITEMDATA_COBJECT, QVariant::fromValue((cObject *)msg));
@@ -121,7 +118,7 @@ MessageItem::MessageItem(QGraphicsItem *parent) :
     lineItem = new QGraphicsLineItem(this);
     arrowheadItem = new ArrowheadItem(this);
     arrowheadItem->setFillRatio(1);
-    arrowheadItem->setArrowSkew(1);
+    arrowheadItem->setPen(Qt::NoPen);
 
     textItem->setZValue(1);
 
@@ -232,12 +229,13 @@ void MessageItem::setImageColorPercentage(int percent)
     }
 }
 
-void MessageItem::setLine(const QLineF& line)
+void MessageItem::setLine(const QLineF& line, bool showAsLine)
 {
-    if (this->line != line) {
+    if (this->line != line || this->showAsLine != showAsLine) {
         this->line = line;
-        lineItem->setLine(line);
+        this->showAsLine = showAsLine;
         setPos(line.pointAt(0.5));
+        updateLineItem();
         updateShapeItem();
     }
 }
@@ -333,37 +331,40 @@ void MessageItem::updateLineItem()
 {
     setPos(line.pointAt(0.5));
 
-    double width = (shapeWidth + shapeHeight) / 4;
+    double width = 6;
 
-    // to make it go on the right side of the connection
-    QPointF sideOffset = width / 2 * line.normalVector().unitVector().translated(-line.p1()).p2();
+    // to make it go on the right side of the connection, with a bit of spacing
+    QPointF sideOffset = (width / 2 + 2) * line.normalVector().unitVector().translated(-line.p1()).p2();
 
-    QPen pen(shapeFillColor, width, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
-    pen.setMiterLimit(width*10);
-
-    bool showAsLine = !line.isNull();
+    QPen pen(shapeFillColor, width, Qt::SolidLine, Qt::FlatCap);
 
     // relative to pos, center is always in origin
     auto localLine = line.translated(-pos());
+    localLine = QLineF(localLine.p2(), localLine.p1());
 
-    // if shorter than wide, extend it to a square
-    if (localLine.length() < 1) {
-        localLine.setLength(1);
+    double arrowheadLength = arrowheadEnabled ? width : 0;
+
+    // don't let it get too short (1 px for the line, 1 for the arrowhead, why not...)
+    if (localLine.length() < 2) {
+        localLine.setLength(2);
         localLine.translate(-localLine.pointAt(0.5));
     }
 
+    arrowheadLength = std::min(arrowheadLength, localLine.length()/2);
+
     localLine = localLine.translated(sideOffset);
+    arrowheadItem->setEndPoints(localLine.p1(), localLine.p2());
+    localLine.setLength(localLine.length()-arrowheadLength);
 
     lineItem->setLine(localLine);
     lineItem->setPen(pen);
 
-    arrowheadItem->setEndPoints(localLine.p2(), localLine.p1());
-    arrowheadItem->setPen(pen);
     arrowheadItem->setBrush(shapeFillColor);
-    arrowheadItem->setSizeForPenWidth(width, 1.0, 0.0);
+    arrowheadItem->setArrowWidth(width);
+    arrowheadItem->setArrowLength(arrowheadLength + 0.5); // +0.5 is just to make it "watertight" (AA and imprecision and stuff)
 
     lineItem->setVisible(showAsLine);
-    arrowheadItem->setVisible(arrowheadEnabled && (line.length() > width * 4));
+    arrowheadItem->setVisible(showAsLine && arrowheadEnabled);
 
     if (shapeItem)
         shapeItem->setVisible(!showAsLine);

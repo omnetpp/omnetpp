@@ -59,6 +59,7 @@ protected:
     Shape shapeType = SHAPE_OVAL;
     QString text;
     QLineF line;
+    bool showAsLine = false;
     bool arrowheadEnabled = true;
 
     OutlinedTextItem *textItem;
@@ -96,7 +97,7 @@ public:
     void setImageColor(const QColor &color);
     void setImageColorPercentage(int percent);
 
-    void setLine(const QLineF& line);
+    void setLine(const QLineF& line, bool showAsLine);
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
