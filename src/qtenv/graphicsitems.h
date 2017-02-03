@@ -60,36 +60,6 @@ public:
     void setLineWidth(double width);
 };
 
-// does something similar to QGraphicsColorizeEffect,
-// but in a way that matches the Tkenv colorization,
-// and also preserves smooth scaling of pixmaps
-class QTENV_API ColorizeEffect : public QGraphicsEffect {
-    QColor color = QColor(255, 0, 0); // alpha is ignored
-    double weight = 0; // [0..1]
-
-    // if true, chachedImage has to be recomputed before the next draw
-    bool changed = true;
-    // we store the colorized pixels here, so we won't have to colorize every frame
-    QImage cachedImage;
-    QPoint offset;
-    bool smooth = false;
-
-public:
-    QColor getColor() { return color; }
-    void setColor(const QColor &color);
-
-    double getWeight() { return weight; }
-    void setWeight(double weight);
-
-    bool getSmooth() { return smooth; }
-    void setSmooth(double smooth);
-
-protected:
-    void draw(QPainter *painter) override;
-    void sourceChanged(ChangeFlags flags) override;
-};
-
-
 // used in the ModuleInspector and some related classes
 class QTENV_API GraphicsLayer : public QGraphicsObject {
     Q_OBJECT

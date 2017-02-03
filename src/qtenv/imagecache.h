@@ -38,6 +38,10 @@ private:
     void doLoadImage(const QString& fileName, const std::string& imageName);
     void doLoadImages(const char *dir, const char *prefix = "");
 
+    // This should only be used for images that are loaded by this ImageCache,
+    // since it uses the image pointer as part of the key.
+    QPixmap makeTintedPixmapCached(QImage *image, const QColor &tintColor, double tintAmount);
+
     // The one with the red questionmarks, from the icons.qrc file.
     // This is returned when no image is found with the given name.
     QImage *unknownImage;
@@ -58,6 +62,11 @@ public:
     QImage *getImage(const char *name, const char *size);
     QImage *getImage(const char *name, IconSize size);
     QImage *getImage(const char *nameWithSize);
+
+    QPixmap makeTintedPixmap(QImage *image, const QColor& tintColor, double tintAmount);
+
+    QPixmap getTintedPixmap(const char *name, const char *size, const QColor& tintColor, double tintAmount);
+    QPixmap getTintedPixmap(const char *nameWithSize, const QColor& tintColor, double tintAmount);
 };
 
 } // namespace qtenv

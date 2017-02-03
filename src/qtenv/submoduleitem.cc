@@ -84,32 +84,30 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         imageName = SubmoduleItem::DEFAULT_ICON;
 
     if (imageName[0]) {
-        auto image = getQtenv()->icons.getImage(imageName, ds.getTagArg("is", 0));
-        si->setImage(image);
-
         const char *imageColor = ds.getTagArg("i", 1);
-        si->setImageColor(parseColor(imageColor));
-        si->setImageColorPercentage((ds.getNumArgs("i") == 2 && strlen(ds.getTagArg("i", 1)) > 0)
+        double tintAmount = ((ds.getNumArgs("i") == 2 && strlen(ds.getTagArg("i", 1)) > 0)
                 ? 30  // color given, but no percentage
-                : QString(ds.getTagArg("i", 2)).toDouble());
+                : QString(ds.getTagArg("i", 2)).toDouble()) / 100.0;
+
+        si->setIcon(getQtenv()->icons.getTintedPixmap(
+                        imageName, ds.getTagArg("is", 0), parseColor(imageColor), tintAmount));
     }
     else {
-        si->setImage(nullptr);
+        si->setIcon(QPixmap());
     }
 
     const char *decoratorImageName = ds.getTagArg("i2", 0);
     if (decoratorImageName[0]) {
-        auto decoratorImage = getQtenv()->icons.getImage(decoratorImageName);
-        si->setDecoratorImage(decoratorImage);
-
         const char *decoratorImageColor = ds.getTagArg("i2", 1);
-        si->setDecoratorImageColor(parseColor(decoratorImageColor));
-        si->setDecoratorImageColorPercentage((ds.getNumArgs("i2") == 2 && strlen(ds.getTagArg("i2", 1)) > 0)
+        double tintAmount = ((ds.getNumArgs("i2") == 2 && strlen(ds.getTagArg("i2", 1)) > 0)
                 ? 30  // color given, but no percentage
-                : QString(ds.getTagArg("i2", 2)).toDouble());
+                : QString(ds.getTagArg("i2", 2)).toDouble()) / 100.0;
+
+        si->setDecoratorIcon(getQtenv()->icons.getTintedPixmap(
+                                 decoratorImageName, parseColor(decoratorImageColor), tintAmount));
     }
     else {
-        si->setDecoratorImage(nullptr);
+        si->setDecoratorIcon(QPixmap());
     }
 
     const char *text = ds.getTagArg("t", 0);
@@ -382,74 +380,43 @@ void SubmoduleItem::setOutlineWidth(double width)
     }
 }
 
-void SubmoduleItem::setImage(QImage *image)
+void SubmoduleItem::setIcon(QPixmap icon)
 {
-    if (this->image != image) {
-        this->image = image;
+    if (icon.isNull()) {
         delete imageItem;
         imageItem = nullptr;
-        colorizeEffect = nullptr;
-        if (image) {
-            imageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*image), this);
-            imageItem->setOffset(-image->width() / 2.0f, -image->height() / 2.0f);
-            imageItem->setZValue(1); // icon always on top of shape
-            colorizeEffect = new ColorizeEffect();
-            imageItem->setGraphicsEffect(colorizeEffect);
-            colorizeEffect->setSmooth(true);
-            imageItem->setScale(imageSizeFactor);
-        }
-        updateNameItem();
-        realignAnchoredItems();
+        return;
     }
+
+    if (!imageItem)
+        imageItem = new QGraphicsPixmapItem(this);
+
+    imageItem->setPixmap(icon);
+    imageItem->setTransformationMode(Qt::SmoothTransformation);
+    imageItem->setOffset(-icon.width() / 2.0f, -icon.height() / 2.0f);
+    imageItem->setZValue(1); // icon always on top of shape
+    imageItem->setScale(imageSizeFactor);
+
+    realignAnchoredItems();
 }
 
-void SubmoduleItem::setImageColor(const QColor& color)
+void SubmoduleItem::setDecoratorIcon(QPixmap icon)
 {
-    if (colorizeEffect) {
-        colorizeEffect->setColor(color);
-    }
-}
-
-void SubmoduleItem::setImageColorPercentage(int percent)
-{
-    if (colorizeEffect) {
-        colorizeEffect->setWeight(percent / 100.0);
-    }
-}
-
-void SubmoduleItem::setDecoratorImage(QImage *decoratorImage)
-{
-    if (this->decoratorImage != decoratorImage) {
-        this->decoratorImage = decoratorImage;
+    if (icon.isNull()) {
         delete decoratorImageItem;
         decoratorImageItem = nullptr;
-        decoratorColorizeEffect = nullptr;
-        if (decoratorImage) {
-            decoratorImageItem = new QGraphicsPixmapItem(QPixmap::fromImage(*decoratorImage), this);
-            // It is easier to position using its (almost) upper right corner.
-            // The 2 pixel offset moves it a bit to the right and up.
-            decoratorImageItem->setOffset(-decoratorImage->width() + 2, -2);
-            decoratorImageItem->setZValue(2); // decorator icon always on top of icon
-            decoratorColorizeEffect = new ColorizeEffect();
-            decoratorColorizeEffect->setSmooth(true);
-            decoratorImageItem->setGraphicsEffect(decoratorColorizeEffect);
-        }
-        realignAnchoredItems();
+        return;
     }
-}
 
-void SubmoduleItem::setDecoratorImageColor(const QColor& color)
-{
-    if (decoratorColorizeEffect) {
-        decoratorColorizeEffect->setColor(color);
-    }
-}
+    if (!decoratorImageItem)
+        decoratorImageItem = new QGraphicsPixmapItem(this);
 
-void SubmoduleItem::setDecoratorImageColorPercentage(int percent)
-{
-    if (decoratorColorizeEffect) {
-        decoratorColorizeEffect->setWeight(percent / 100.0);
-    }
+    decoratorImageItem->setPixmap(icon);
+    decoratorImageItem->setTransformationMode(Qt::SmoothTransformation);
+    decoratorImageItem->setOffset(-icon.width() + 2, -2);
+    decoratorImageItem->setZValue(2); // decorator icon always on top of icon
+
+    realignAnchoredItems();
 }
 
 void SubmoduleItem::setName(const QString& text)

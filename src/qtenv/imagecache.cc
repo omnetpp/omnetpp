@@ -20,6 +20,7 @@
 #include <QDir>
 #include <QImage>
 #include <QPixmap>
+#include <QPixmapCache>
 #include <QRegularExpression>
 #include <QDebug>
 
@@ -139,6 +140,61 @@ const char *ImageCache::sizePostfix(IconSize size)
     }
 }
 
+QPixmap ImageCache::makeTintedPixmapCached(QImage *image, const QColor &tintColor, double tintAmount)
+{
+    QString key;
+    QTextStream stream(&key);
+    stream.setRealNumberNotation(QTextStream::FixedNotation);
+    stream.setRealNumberPrecision(2);
+    stream << image << "|" << tintColor.name() << "|" << tintAmount;
+
+    QPixmap pixmap;
+
+    if (QPixmapCache::find(key, &pixmap))
+        return pixmap;
+
+    pixmap = makeTintedPixmap(image, tintColor, tintAmount);
+
+    QPixmapCache::insert(key, pixmap);
+
+    return pixmap;
+}
+
+QPixmap ImageCache::makeTintedPixmap(QImage *image, const QColor &tintColor, double tintAmount)
+{
+    ASSERT(image);
+
+    if (tintAmount == 0.0)
+        return QPixmap::fromImage(*image);
+
+    QImage tintedImage = image->copy();
+
+    double rdest = tintColor.redF();
+    double gdest = tintColor.greenF();
+    double bdest = tintColor.blueF();
+
+    for (int y = 0; y < tintedImage.height(); y++) {
+        QRgb *scanLine = reinterpret_cast<QRgb *>(tintedImage.scanLine(y));
+        for (int x = 0; x < tintedImage.width(); x++) {
+            QRgb& pixel = scanLine[x];
+
+            int r = qRed(pixel);
+            int g = qGreen(pixel);
+            int b = qBlue(pixel);
+
+            // transform - code taken from tkenv/tkcmd.cc (colorizeImage_cmd)
+            int lum = (int)(0.2126*r + 0.7152*g + 0.0722*b);
+            r = (int)((1-tintAmount)*r + tintAmount*lum*rdest);
+            g = (int)((1-tintAmount)*g + tintAmount*lum*gdest);
+            b = (int)((1-tintAmount)*b + tintAmount*lum*bdest);
+
+            pixel = qRgba(r, g, b, qAlpha(pixel));
+        }
+    }
+
+    return QPixmap::fromImage(tintedImage);
+}
+
 QImage *ImageCache::getImage(const char *name, const char *size)
 {
     static QRegularExpression revs("v.*s.*", QRegularExpression::OptimizeOnFirstUsageOption);
@@ -173,6 +229,17 @@ QImage *ImageCache::getImage(const char *nameWithSize)
     auto i = imagesWithSize.find(nameWithSize);
     return i != imagesWithSize.end() ? i->second : unknownImage;
 }
+
+QPixmap ImageCache::getTintedPixmap(const char *name, const char *size, const QColor &tintColor, double tintAmount)
+{
+    return makeTintedPixmapCached(getImage(name, size), tintColor, tintAmount);
+}
+
+QPixmap ImageCache::getTintedPixmap(const char *nameWithSize, const QColor &tintColor, double tintAmount)
+{
+     return makeTintedPixmapCached(getImage(nameWithSize), tintColor, tintAmount);
+}
+
 
 }  // namespace qtenv
 }  // namespace omnetpp

@@ -30,7 +30,6 @@ class cDisplayString;
 namespace qtenv {
 
 class OutlinedTextItem;
-class ColorizeEffect;
 class GraphicsLayer;
 
 class SubmoduleItem;
@@ -101,8 +100,6 @@ protected:
     QColor shapeFillColor;
     QColor shapeOutlineColor;
     double shapeOutlineWidth = 2;
-    QImage *image = nullptr; // not owned
-    QImage *decoratorImage = nullptr; // not owned
     QString text;
     TextPos textPos = TEXTPOS_TOP;
     QColor textColor;
@@ -113,9 +110,7 @@ protected:
 
     QAbstractGraphicsShapeItem *shapeItem = nullptr;
     QGraphicsPixmapItem *imageItem = nullptr;
-    ColorizeEffect *colorizeEffect = nullptr; // owned by the image item
     QGraphicsPixmapItem *decoratorImageItem = nullptr;
-    ColorizeEffect *decoratorColorizeEffect = nullptr; // owned by the decorator image item
 
     OutlinedTextItem *nameItem = nullptr; // includes the vector index
     OutlinedTextItem *textItem = nullptr;
@@ -137,13 +132,8 @@ public:
     void setOutlineColor(const QColor &color);
     void setOutlineWidth(double width);
 
-    void setImage(QImage *image);
-    void setImageColor(const QColor &color);
-    void setImageColorPercentage(int percent);
-
-    void setDecoratorImage(QImage *image);
-    void setDecoratorImageColor(const QColor &color);
-    void setDecoratorImageColorPercentage(int percent);
+    void setIcon(QPixmap icon);
+    void setDecoratorIcon(QPixmap icon);
 
     void setName(const QString &text);
     void setNameVisible(bool visible);

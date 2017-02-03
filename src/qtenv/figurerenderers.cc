@@ -1247,11 +1247,11 @@ void LabelFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item,
 void ImageFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     cImageFigure *imageFigure = static_cast<cImageFigure *>(figure);
-    QImage *image = getQtenv()->icons.getImage(imageFigure->getImageName(), "");
-    if (image->isNull())
-        qDebug() << "ImageFigureRenderer::setItemGeometryProperties: Image file not found.";
     SelfTransformingPixmapItem *imageItem = static_cast<SelfTransformingPixmapItem *>(item);
-    imageItem->setPixmap(QPixmap::fromImage(*image));
+
+    cFigure::Color color = imageFigure->getTintColor();
+    QColor tintColor(color.red, color.green, color.blue);
+    imageItem->setPixmap(getQtenv()->icons.getTintedPixmap(imageFigure->getImageName(), "", tintColor, imageFigure->getTintAmount()));
 }
 
 void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1263,14 +1263,8 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
         imageFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
         ? Qt::FastTransformation : Qt::SmoothTransformation);
 
-    imageItem->setOpacity(imageFigure->getOpacity());
-
-    ColorizeEffect *colorizeEffect = new ColorizeEffect();
-    cFigure::Color color = imageFigure->getTintColor();
-    colorizeEffect->setColor(QColor(color.red, color.green, color.blue));
-    colorizeEffect->setWeight(imageFigure->getTintAmount());
-    colorizeEffect->setSmooth(imageFigure->getInterpolation() != cFigure::INTERPOLATION_NONE);
-    imageItem->setGraphicsEffect(colorizeEffect);
+    // to set the tinting and pixmap together
+    setItemGeometryProperties(figure, item, hints);
 }
 
 void ImageFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -1298,7 +1292,9 @@ void PixmapFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsI
     const cFigure::Pixmap& pixmap = pixmapFigure->getPixmap();
     QImage image(pixmap.buffer(), pixmap.getWidth(), pixmap.getHeight(), QImage::Format_RGBA8888);
 
-    pixmapItem->setPixmap(QPixmap::fromImage(image));
+    cFigure::Color color = pixmapFigure->getTintColor();
+    QColor tintColor(color.red, color.green, color.blue);
+    pixmapItem->setPixmap(getQtenv()->icons.makeTintedPixmap(&image, tintColor, pixmapFigure->getTintAmount()));
 }
 
 void PixmapFigureRenderer::refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
