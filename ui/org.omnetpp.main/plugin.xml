@@ -49,7 +49,7 @@
     </property>
     <property
           name="windowImages"
-          value="icons/logo16.png,icons/logo32.png,icons/logo48.png,icons/logo64.png,icons/logo128.png">
+          value="icons/logo256.png">
     </property>
     <property
           name="aboutText"

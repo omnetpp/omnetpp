@@ -7,8 +7,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>0.25.0</tycho.version>
-    <tycho.extras.version>0.25.0</tycho.extras.version>
+    <tycho.version>0.26.0</tycho.version>
+    <tycho.extras.version>0.26.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <repo.url>http://download.eclipse.org/releases/neon</repo.url>
     <update-repo.url>http://download.eclipse.org/eclipse/updates/4.6</update-repo.url>
