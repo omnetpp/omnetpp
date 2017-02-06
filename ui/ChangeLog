@@ -1,3 +1,5 @@
+2017-02-06  ------ omnetpp-5.1pre3 released ------
+
 2017-02-01  Rudolf Hornig
 
 	* Added CDT repo so plugins can be installed from there directly (It
