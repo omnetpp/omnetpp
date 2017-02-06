@@ -37,7 +37,8 @@ class HistogramInspectorFactory : public InspectorFactory
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new HistogramInspector(parent, isTopLevel, this); }
 };
 
-Register_InspectorFactory(HistogramInspectorFactory);
+// TODO: uncomment when the inspector implementation in the topic branch is completed and merged.
+//Register_InspectorFactory(HistogramInspectorFactory);
 
 HistogramInspector::HistogramInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {

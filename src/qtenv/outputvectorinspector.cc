@@ -37,7 +37,8 @@ class OutputVectorInspectorFactory : public InspectorFactory
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new OutputVectorInspector(parent, isTopLevel, this); }
 };
 
-Register_InspectorFactory(OutputVectorInspectorFactory);
+// TODO: uncomment when the inspector implementation in the topic branch is completed and merged.
+//Register_InspectorFactory(OutputVectorInspectorFactory);
 
 CircBuffer::CircBuffer(int size)
 {
