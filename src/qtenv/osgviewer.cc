@@ -209,7 +209,7 @@ public:
 
         // Well except of course on Mac it has to be done differently...
         #ifdef Q_OS_MAC
-            v->context()->swapBuffers(v->context()->surface());
+            viewer->context()->swapBuffers(viewer->context()->surface());
         #endif
 
         viewer->update();
