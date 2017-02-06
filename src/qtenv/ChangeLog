@@ -1,3 +1,66 @@
+2017-02-02  Attila Torok
+
+	* Replace ColorizeEffect with cached pixmap tinting.
+	The effect made child figures of image figures colorized
+	and pixelated, this was undesirable.
+	Also, this should be faster in most cases.
+
+2017-02-02  Attila Torok
+
+	* MessageItem: Different arrowhead (small triangle), explicit line mode, fixed width.
+
+2017-02-02  Attila Torok
+
+	* Fix mouse selection of SelfTransformingPixmapItem.
+	And a tiny simplification in usage.
+
+2017-02-02  Attila Torok
+
+	* Disable HistogramInspector and OutputVectorInspector skeletons.
+	Temporarily, until they are completed, and work well enough.
+
+2017-02-01  Attila Torok
+
+	* Only show next event number if simulation is not running.
+	When running, always show the number of the last event to avoid
+	oscillation between the two in some situations.
+
+2017-02-01  Attila Torok
+
+	* Fixed image figure anchoring/resizing/transformation.
+	When anchored and/or resized (with width/height) it
+	messed up the coordinate system for child figures.
+
+2017-02-01  Attila Torok
+
+	* Added SelfTransformingPixmapFigure.
+
+2017-02-01  Attila Torok
+
+	* parseColor() implementation moved to the right place.
+
+2017-02-01  Attila Torok
+
+	* Only process Qt events once in a while in Express mode.
+	Should improve Ev/Sec performance, while keeping the Stop dialog responsive.
+
+2017-02-01  Attila Torok
+
+	* ArrowheadItem painting glitches fixed.
+
+2017-02-01  Attila Torok
+
+	* ModuleInspector: Arrowhead and module name preferences made more consistent and cleaner.
+
+2017-02-01  Attila Torok
+
+	* Added isTwoWayConnection utility function.
+
+2017-02-01  Attila Torok
+
+	* msgitem: Don't switch to "non-line" mode if too short.
+	Clamp length to at least width instead.
+
 2017-01-31  Attila Torok
 
 	* Avoid assertion failure with degenerate connection lines.
