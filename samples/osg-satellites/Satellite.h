@@ -10,13 +10,13 @@
 #ifndef __MOBILENODE_H__
 #define __MOBILENODE_H__
 
+#include <omnetpp.h>
+#include "OsgEarthScene.h"
+
 #include <osgEarth/MapNode>
 #include <osgEarthAnnotation/CircleNode>
 #include <osgEarthAnnotation/FeatureNode>
 #include <osgEarthUtil/ObjectLocator>
-
-#include <omnetpp.h>
-#include "OsgEarthScene.h"
 
 using namespace omnetpp;
 

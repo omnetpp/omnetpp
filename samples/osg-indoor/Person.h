@@ -10,8 +10,8 @@
 #ifndef __PERSON_H__
 #define __PERSON_H__
 
-#include <osg/PositionAttitudeTransform>
 #include <omnetpp.h>
+#include <osg/PositionAttitudeTransform>
 
 using namespace omnetpp;
 

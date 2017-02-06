@@ -8,6 +8,10 @@
 //
 
 #if defined(WITH_OSG) && defined(WITH_OSGEARTH)
+
+#include "OsgEarthScene.h"
+#include "ChannelController.h"
+
 #include <osgDB/ReadFile>
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Viewpoint>
@@ -20,9 +24,6 @@
 #else
     #include <osgEarthUtil/SkyNode>
 #endif
-
-#include "OsgEarthScene.h"
-#include "ChannelController.h"
 
 using namespace osgEarth;
 using namespace osgEarth::Annotation;

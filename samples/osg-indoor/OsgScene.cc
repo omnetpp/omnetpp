@@ -8,8 +8,8 @@
 //
 
 #ifdef WITH_OSG
-#include <osgDB/ReadFile>
 #include "OsgScene.h"
+#include <osgDB/ReadFile>
 
 using namespace omnetpp;
 

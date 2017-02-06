@@ -8,7 +8,10 @@
 //
 
 #if defined(WITH_OSG) && defined(WITH_OSGEARTH)
+
 #include "Satellite.h"
+#include "OsgEarthScene.h"
+#include "ChannelController.h"
 
 #include <sstream>
 #include <iomanip>
@@ -25,9 +28,6 @@
 #include <osgEarthAnnotation/LabelNode>
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
-
-#include "OsgEarthScene.h"
-#include "ChannelController.h"
 
 using namespace omnetpp;
 

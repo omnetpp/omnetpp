@@ -10,6 +10,8 @@
 #ifndef __CHANNELCONTROLLER_H_
 #define __CHANNELCONTROLLER_H_
 
+#include <omnetpp.h>
+
 #include <osg/Node>
 #include <osgEarth/MapNode>
 #include <osgEarthAnnotation/FeatureNode>
@@ -17,7 +19,6 @@
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
 
-#include <omnetpp.h>
 #include "OsgEarthScene.h"
 #include "MobileNode.h"
 

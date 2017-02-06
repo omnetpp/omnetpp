@@ -19,8 +19,9 @@
 
 #ifdef WITH_OSG
 
-#include <osgGA/OrbitManipulator>
 #include "qtenvdefs.h"
+
+#include <osgGA/OrbitManipulator>
 
 namespace omnetpp {
 namespace qtenv {

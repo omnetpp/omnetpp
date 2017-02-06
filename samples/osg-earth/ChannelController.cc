@@ -8,10 +8,11 @@
 //
 
 #if defined(WITH_OSG) && defined(WITH_OSGEARTH)
+#include "ChannelController.h"
+
 #include <osg/PositionAttitudeTransform>
 #include <osgEarthUtil/ObjectLocator>
 
-#include "ChannelController.h"
 
 using namespace osgEarth;
 using namespace osgEarth::Annotation;

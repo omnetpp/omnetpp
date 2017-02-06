@@ -16,6 +16,11 @@
 
 #ifdef WITH_OSG
 
+#include "osgviewer.h"
+#include "omnetpp/osgutil.h"
+#include "inspectorutil.h"
+#include "cameramanipulators.h"
+
 #include <QDebug>
 #include <QToolTip>
 #include <QMenu>
@@ -42,10 +47,6 @@
 #include <osg/Depth>
 #include <osg/DeleteHandler>
 #include <osg/Version>
-#include "omnetpp/osgutil.h"
-#include "inspectorutil.h"
-#include "osgviewer.h"
-#include "cameramanipulators.h"
 
 namespace omnetpp {
 namespace qtenv {

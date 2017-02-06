@@ -10,6 +10,12 @@
 #ifndef __CHANNELCONTROLLER_H_
 #define __CHANNELCONTROLLER_H_
 
+#include <omnetpp.h>
+
+#include "OsgEarthScene.h"
+#include "GroundStation.h"
+#include "Satellite.h"
+
 #include <osg/Node>
 #include <osgEarth/MapNode>
 #include <osgEarthAnnotation/FeatureNode>
@@ -19,11 +25,6 @@
 #include <osgEarthSymbology/Style>
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
-
-#include <omnetpp.h>
-#include "OsgEarthScene.h"
-#include "GroundStation.h"
-#include "Satellite.h"
 
 using namespace omnetpp;
 

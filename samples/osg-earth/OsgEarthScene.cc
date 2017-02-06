@@ -8,12 +8,13 @@
 //
 
 #if defined(WITH_OSG) && defined(WITH_OSGEARTH)
+#include "OsgEarthScene.h"
+
 #include <osgDB/ReadFile>
 #include <osgEarth/Viewpoint>
 #include <osgEarth/MapNode>
 #include <osgEarth/Capabilities>
 #include <osgEarthAnnotation/RectangleNode>
-#include "OsgEarthScene.h"
 
 using namespace omnetpp;
 using namespace osgEarth;

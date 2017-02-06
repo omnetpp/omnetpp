@@ -8,13 +8,15 @@
 //
 
 #if defined(WITH_OSG) && defined(WITH_OSGEARTH)
+
+#include "ChannelController.h"
+
 #include <osgEarthUtil/ObjectLocator>
 #include <osgEarthUtil/LinearLineOfSight>
 #include <osgUtil/UpdateVisitor>
 #include <osg/ValueObject>
 #include <osg/LineWidth>
 #include <osg/Depth>
-#include "ChannelController.h"
 
 using namespace osgEarth;
 using namespace osgEarth::Annotation;

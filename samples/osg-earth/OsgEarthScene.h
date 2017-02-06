@@ -11,6 +11,7 @@
 #define __OSGEARTHSCENE_H__
 
 #include <omnetpp.h>
+
 #include <osg/Node>
 #include <osgEarth/MapNode>
 

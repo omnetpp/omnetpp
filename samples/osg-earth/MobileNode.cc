@@ -8,16 +8,16 @@
 //
 
 #if defined(WITH_OSG) && defined(WITH_OSGEARTH)
+#include "MobileNode.h"
+#include "OsgEarthScene.h"
+#include "ChannelController.h"
+
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
 #include <osgEarth/Capabilities>
 #include <osgEarthAnnotation/LabelNode>
 #include <osgEarthSymbology/Geometry>
 #include <osgEarthFeatures/Feature>
-
-#include "MobileNode.h"
-#include "OsgEarthScene.h"
-#include "ChannelController.h"
 
 using namespace omnetpp;
 
