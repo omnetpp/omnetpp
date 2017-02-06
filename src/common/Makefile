@@ -93,7 +93,7 @@ matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
 $O/sqlite3.o: sqlite3.c
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CC) -c $(COPTS) -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1  -o $@ $<
+	$(Q)$(CC) -c $(COPTS) -Wno-deprecated-declarations -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1  -o $@ $<
 
 clean:
 	$(qecho) Cleaning...
