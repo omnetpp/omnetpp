@@ -221,6 +221,7 @@ class SIM_API cFigure : public cOwnedObject
             Transform(const Transform& t) : a(t.a), b(t.b), c(t.c), d(t.d), t1(t.t1), t2(t.t2) {}
             Transform& operator=(const Transform& t) {a=t.a; b=t.b; c=t.c; d=t.d; t1=t.t1; t2=t.t2; return *this;}
             Transform& translate(double dx, double dy);
+            Transform& translate(const Point& p) {return translate(p.x, p.y);}
             Transform& scale(double s) {return scale(s,s);}
             Transform& scale(double sx, double sy);
             Transform& scale(double sx, double sy, double cx, double cy);
@@ -459,6 +460,12 @@ class SIM_API cFigure : public cOwnedObject
          * translate(), scale(), rotate(), skewx()/skewy() methods.
          */
         virtual void setTransform(const Transform& transform);
+
+        /**
+         * Convenience method: sets the transformation to identity
+         * transform.
+         */
+        virtual void resetTransform() {setTransform(Transform());}
 
         /**
          * Returns the Z-index of the figure.
