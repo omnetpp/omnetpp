@@ -1263,6 +1263,8 @@ void ImageFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, Fig
         imageFigure->getInterpolation() == cFigure::INTERPOLATION_NONE
         ? Qt::FastTransformation : Qt::SmoothTransformation);
 
+    imageItem->setOpacity(imageFigure->getOpacity());
+
     // to set the tinting and pixmap together
     setItemGeometryProperties(figure, item, hints);
 }
