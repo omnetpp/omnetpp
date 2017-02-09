@@ -23,10 +23,8 @@ fi
 
 #set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
-# workaround for KDE bug: https://bugs.kde.org/show_bug.cgi?id=316012
-export OXYGEN_DISABLE_INNER_SHADOWS_HACK=1
-# workaround for bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=419830
-export UBUNTU_MENUPROXY=0
+# workaround for corruped maouse + missing tristate bitmaps: https://bugs.eclipse.org/bugs/show_bug.cgi?id=467983
+export SWT_GTK3=0
 # arguments needed to initially correctly show the default 'samples' workspace
 DEFAULT_WORKSPACE_ARGS="-vmargs -Dosgi.instance.area.default=$IDEDIR/../samples"
 
