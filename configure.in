@@ -1007,7 +1007,7 @@ case $host in
     # we do not have to test for the DLL if we are cross-compiling because the DLL is obviously not installed
     # on the build system (as it is a non-windows architecture).
     if test "$cross_compiling" = no ; then
-        OPP_CHECK_AND_RUN_LIB(WinPCAP, windows.h, return LoadLibrary("wpcap.dll")==NULL ? 1 : 0, $CFLAGS, , wpcap_dll)
+        OPP_CHECK_AND_RUN_LIB(wpcap.dll, windows.h, return LoadLibrary("wpcap.dll")==NULL ? 1 : 0, $CFLAGS, , wpcap_dll)
     else
         wpcap_dll=notneeded
     fi
@@ -1019,13 +1019,18 @@ esac
 
 if test $wpcap_dll = "no"; then
     pcap_ok=no
-    AC_MSG_NOTICE([WinPCAP not found -- if you need packet capture functionality in your models, install it from winpcap.org])
+    AC_MSG_NOTICE([wpcap.dll not found or cannot be started -- if you need packet capture functionality in your models, install it from win10pcap.org (or execute wpcap-install in tools/win64/mingw64/bin)])
 else
     if test -n "$PCAP_LIBS"; then
         OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
     else
         PCAP_LIBS="-lpcap"
         OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), $CFLAGS $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+        if test "$pcap_ok" = no ; then
+            PCAP_CFLAGS="-DWIN32 -DPCAP_DONT_INCLUDE_PCAP_BPF_H"
+            PCAP_LIBS="-lwpcap"
+            OPP_CHECK_LIB(PCAP, pcap.h, pcap_lib_version(), -x c $CFLAGS $PCAP_CFLAGS, $PCAP_LIBS, pcap_ok)
+        fi
     fi
 fi
 
