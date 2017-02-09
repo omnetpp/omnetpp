@@ -51,8 +51,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.util.ActionExt;
@@ -137,9 +137,12 @@ public class ModuleParametersView extends AbstractModuleView {
                         case 0: return res.fullPath + "." + res.paramDeclaration.getName();
                         case 1: return InifileUtils.getParamValue(res, inifileDocument);
                         case 2: return InifileUtils.getParamRemark(res, inifileDocument);
+                        default: throw new RuntimeException();
                     }
                 }
-                return columnIndex==0 ? element.toString() : "";
+                if (element == null)
+                    InifileEditorPlugin.logError(new RuntimeException("element should not be null"));
+                return columnIndex == 0 && element != null ? element.toString() : "";
             }
 
             @Override

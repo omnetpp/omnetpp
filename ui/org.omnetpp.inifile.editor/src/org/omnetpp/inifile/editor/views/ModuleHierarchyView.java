@@ -48,6 +48,7 @@ import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.ActionExt;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.ITimeout;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
@@ -66,6 +67,7 @@ import org.omnetpp.ned.core.NedTreeTraversal;
 import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedModelPlugin;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
@@ -338,8 +340,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
                 }
                 else if (element instanceof ParamResolution)
                     return getLabelFor((ParamResolution) element, inifileDocument, !(node instanceof ParamAssignmentGroupElementNode));
-                else
+                else if (element != null)
                     return element.toString();
+                else {
+                    InifileEditorPlugin.logError(new RuntimeException("element should not be null"));
+                    return "";
+                }
             }
         });
         treeViewer.setContentProvider(new GenericTreeContentProvider());

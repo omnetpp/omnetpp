@@ -16,6 +16,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedModelPlugin;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -62,8 +63,10 @@ public class NedModelLabelProvider extends LabelProvider {
         if (obj instanceof INedTypeInfo)
             obj = ((INedTypeInfo)obj).getNedElement();
 
-        if (!(obj instanceof INedElement))
-            return obj.toString();
+        if (!(obj instanceof INedElement)) {
+            NedModelPlugin.log(new RuntimeException("obj should not be null"));
+            return obj != null ? obj.toString() : "null";
+        }
 
         INedElement model = (INedElement)obj;
         String label = "???";
