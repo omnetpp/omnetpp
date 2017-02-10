@@ -40,7 +40,7 @@ class  cOsgCanvas;
  *
  * For navigating the module tree, see:
  * getParentModule(), getSubmodule(), cModule::SubmoduleIterator,
- * getModuleByRelativePath(), cSimulation::getModuleByPath().
+ * cModule::getModuleByPath(), cSimulation::getModuleByPath().
  *
  * @ingroup SimCore
  */
