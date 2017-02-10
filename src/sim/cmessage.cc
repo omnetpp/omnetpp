@@ -43,7 +43,6 @@ cMessage::cMessage(const cMessage& msg) : cEvent(msg)
     parList = nullptr;
     controlInfo = nullptr;
     heapIndex = -1;
-    tags = nullptr;
     copy(msg);
 
     messageId = nextMessageId++;
@@ -65,7 +64,6 @@ cMessage::cMessage(const char *name, short k) : cEvent(name)
     contextPointer = nullptr;
     controlInfo = nullptr;
     srcProcId = -1;
-    tags = nullptr;
 
     senderModuleId = senderGateId = -1;
     targetModuleId = targetGateId = -1;
@@ -86,8 +84,6 @@ cMessage::cMessage(const char *name, short k) : cEvent(name)
 cMessage::~cMessage()
 {
     EVCB.messageDeleted(this);
-
-    clearTags();
 
     if (parList)
         dropAndDelete(parList);
@@ -150,11 +146,6 @@ void cMessage::forEachChild(cVisitor *v)
         v->visit(parList);
     if (controlInfo)
         v->visit(controlInfo);
-    if (tags) {
-        int n = tags->size();
-        for (int i = 0; i < n; i++)
-            v->visit((*tags)[i]);
-    }
 }
 
 void cMessage::parsimPack(cCommBuffer *buffer) const
@@ -164,8 +155,8 @@ void cMessage::parsimPack(cCommBuffer *buffer) const
 #else
     cEvent::parsimPack(buffer);
 
-    if (contextPointer || controlInfo || tags)
-        throw cRuntimeError(this,"parsimPack(): Cannot pack object with contextPointer, controlInfo or tags set");
+    if (contextPointer || controlInfo)
+        throw cRuntimeError(this,"parsimPack(): Cannot pack object with contextPointer or controlInfo set");
 
     buffer->pack(messageKind);
     buffer->pack(timestamp);
@@ -227,18 +218,6 @@ void cMessage::copy(const cMessage& msg)
         take(parList = (cArray *)msg.parList->dup());
     else
         parList = nullptr;
-
-    clearTags();
-    if (msg.tags) {
-        int n = msg.tags->size();
-        tags = new std::vector<cObject*>(n);
-        for (int i = 0; i < n; i++) {
-            cObject *tag = (*msg.tags)[i]->dup();
-            if (tag->isOwnedObject())
-                take(static_cast<cOwnedObject *>(tag));
-            (*tags)[i] = tag;
-        }
-    }
 
     contextPointer = msg.contextPointer;
 
@@ -371,62 +350,6 @@ bool cMessage::isStale()
 void cMessage::execute()
 {
     throw new cRuntimeError("Illegal call to cMessage::execute()");
-}
-
-void cMessage::doAddTag(cObject *tag)
-{
-    if (tag->isOwnedObject())
-        take(static_cast<cOwnedObject *>(tag));
-    if (!tags) {
-        tags = new std::vector<cObject*>;
-        tags->reserve(16);
-    }
-    tags->push_back(tag);
-}
-
-cObject *cMessage::doRemoveTag(int i)
-{
-    cObject *tag = (*tags)[i];
-    tags->erase(tags->begin()+i);
-    if (tag->isOwnedObject())
-        drop(static_cast<cOwnedObject *>(tag));
-    return tag;
-}
-
-cObject *cMessage::getTag(int i) const
-{
-    return (!tags || i < 0 || i >= (int)tags->size()) ? nullptr : (*tags)[i];
-}
-
-void cMessage::clearTags()
-{
-    if (tags) {
-        int n = tags->size();
-        for (int i = 0; i < n; i++) {
-            cObject *tag = (*tags)[i];
-            if (tag->isOwnedObject())
-                drop(static_cast<cOwnedObject *>(tag));
-            delete tag;
-        }
-        delete tags;
-        tags = nullptr;
-    }
-}
-
-void cMessage::transferTagsFrom(cMessage *msg)
-{
-    if (tags)
-        throw cRuntimeError(this, "Message already has tags, refusing to overwrite them with tags from another message");
-    tags = msg->tags;
-    msg->tags = nullptr;
-    if (tags) {
-        int n = tags->size();
-        for (int i = 0; i < n; i++) {
-            cObject *tag = (*tags)[i];
-            if (tag->isOwnedObject())
-                take(static_cast<cOwnedObject *>(tag));
-        }
-    }
 }
 
 }  // namespace omnetpp

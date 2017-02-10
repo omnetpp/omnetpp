@@ -257,7 +257,6 @@ void cPacket::encapsulate(cPacket *msg)
         ASSERT(encapsulatedPacket->shareCount == 0);
 #endif
         bitLength += encapsulatedPacket->getBitLength();
-        transferTagsFrom(msg);
     }
 }
 
@@ -277,7 +276,6 @@ cPacket *cPacket::decapsulate()
             encapsulatedPacket->owner = nullptr;
         cPacket *msg = encapsulatedPacket->dup();
         encapsulatedPacket = nullptr;
-        msg->transferTagsFrom(this);
         return msg;
     }
     encapsulatedPacket->owner = this;
@@ -285,7 +283,6 @@ cPacket *cPacket::decapsulate()
     cPacket *msg = encapsulatedPacket;
     encapsulatedPacket = nullptr;
     drop(msg);
-    msg->transferTagsFrom(this);
     return msg;
 }
 

@@ -104,7 +104,6 @@ class SIM_API cMessage : public cEvent
     cArray *parList;           // ptr to list of parameters
     cObject *controlInfo;      // ptr to "control info"
     void *contextPointer;      // a stored pointer -- user-defined meaning, used with self-messages
-    std::vector<cObject*> *tags; // extra data attached to the message
 
     int senderModuleId;        // sender module ID -- set internally
     int senderGateId;          // source gate ID -- set internally
@@ -131,13 +130,7 @@ class SIM_API cMessage : public cEvent
     // internal: used by LogBuffer for creating an *exact* copy of a message
     void setId(long id) {messageId = id;}
 
-    void doAddTag(cObject *tag);
-    cObject *doRemoveTag(int n);
-    template<typename T> int findTag();
-
   public:
-    void transferTagsFrom(cMessage *msg);
-
     // internal: create an exact clone (including msgid) that doesn't show up in the statistics
     cMessage *privateDup() const;
 
@@ -154,16 +147,6 @@ class SIM_API cMessage : public cEvent
 
     // internal: returns the parameter list object, or nullptr if it hasn't been used yet
     cArray *getParListPtr()  {return parList;}
-
-    // experimental tags support -- may be changed or removed without notice
-    template<typename T> T *ensureTag();
-    template<typename T> T *getTag();
-    template<typename T> T *getMandatoryTag();
-    template<typename T> T *removeTag();
-    template<typename T> T *removeMandatoryTag();
-    virtual int getNumTags() const  {return !tags ? 0 : tags->size();}
-    virtual cObject *getTag(int i) const;
-    virtual void clearTags();
 
   private: // hide cEvent methods from the cMessage API
 
@@ -657,61 +640,6 @@ class SIM_API cMessage : public cEvent
     static void resetMessageCounters()  {totalMsgCount=liveMsgCount=0;}
     //@}
 };
-
-template<typename T>
-inline T *cMessage::ensureTag()
-{
-    T *tag = getTag<T>();
-    if (!tag)
-        doAddTag(tag = new T());
-    return tag;
-}
-
-template<typename T>
-inline int cMessage::findTag()
-{
-    if (!tags)
-        return -1;
-    int n = tags->size();
-    for (int i = 0; i < n; i++) {
-        cObject *tag = (*tags)[i];
-        if (typeid(T) == typeid(*tag))   //TODO this could be regular (non-template) method and go out-of-line if it took typeid(T) as parameter
-            return i;
-    }
-    return -1;
-}
-
-template<typename T>
-inline T *cMessage::getTag()
-{
-    int i = findTag<T>();
-    return i == -1 ? nullptr : (T*)(*tags)[i];
-}
-
-template<typename T>
-inline T *cMessage::getMandatoryTag()
-{
-    int i = findTag<T>();
-    if (i == -1)
-        throw cRuntimeError(this, E_MISSINGTAG, opp_typename(typeid(T)));
-    return (T*)(*tags)[i];
-}
-
-template<typename T>
-inline T *cMessage::removeTag()
-{
-    int i = findTag<T>();
-    return (i == -1) ? nullptr : (T*)doRemoveTag(i);
-}
-
-template<typename T>
-inline T *cMessage::removeMandatoryTag()
-{
-    int i = findTag<T>();
-    if (i == -1)
-        throw cRuntimeError(this, E_MISSINGTAG, opp_typename(typeid(T)));
-    return (T*)doRemoveTag(i);
-}
 
 }  // namespace omnetpp
 
