@@ -113,16 +113,15 @@ inline const char *getRunParam(const ResultItem& d, const std::string& paramName
 
 inline std::string ResultItemField::getFieldValue(const ResultItem& d) const
 {
-    switch(id)
-    {
-    case FILE_ID:       return d.fileRunRef->fileRef->filePath;
-    case RUN_ID:        return d.fileRunRef->runRef->runName;
-    case MODULE_ID:     return *d.moduleNameRef;
-    case NAME_ID:       return *d.nameRef;
-    case ATTR_ID:       return getAttribute(d, name);
-    case RUN_ATTR_ID:   return getRunAttribute(d, name);
-    case RUN_PARAM_ID:  return getRunParam(d, name);
-    default:            return "";
+    switch(id) {
+        case FILE_ID:       return d.fileRunRef->fileRef->filePath;
+        case RUN_ID:        return d.fileRunRef->runRef->runName;
+        case MODULE_ID:     return *d.moduleNameRef;
+        case NAME_ID:       return *d.nameRef;
+        case ATTR_ID:       return getAttribute(d, name);
+        case RUN_ATTR_ID:   return getRunAttribute(d, name);
+        case RUN_PARAM_ID:  return getRunParam(d, name);
+        default:            return "";
     }
 }
 
@@ -134,16 +133,15 @@ inline int strcmpFIXME(const char *str1, const char *str2)
 
 inline bool ResultItemField::equal(const ResultItem& d1, const ResultItem& d2) const
 {
-    switch (id)
-    {
-    case FILE_ID:       return d1.fileRunRef->fileRef == d2.fileRunRef->fileRef;
-    case RUN_ID:        return d1.fileRunRef->runRef == d2.fileRunRef->runRef;
-    case MODULE_ID:     return d1.moduleNameRef == d2.moduleNameRef;
-    case NAME_ID:       return d1.nameRef == d2.nameRef;
-                        // KLUDGE using strcmp() here causes an INTERNAL COMPILER ERROR with MSVC71, i don't know why
-    case ATTR_ID:       return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
-    case RUN_ATTR_ID:   return strcmpFIXME(getRunAttribute(d1, name), getRunAttribute(d2, name)) == 0;
-    case RUN_PARAM_ID:  return strcmpFIXME(getRunParam(d1, name), getRunParam(d2, name)) == 0;
+    switch (id) {
+        case FILE_ID:       return d1.fileRunRef->fileRef == d2.fileRunRef->fileRef;
+        case RUN_ID:        return d1.fileRunRef->runRef == d2.fileRunRef->runRef;
+        case MODULE_ID:     return d1.moduleNameRef == d2.moduleNameRef;
+        case NAME_ID:       return d1.nameRef == d2.nameRef;
+                            // KLUDGE using strcmp() here causes an INTERNAL COMPILER ERROR with MSVC71, i don't know why
+        case ATTR_ID:       return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
+        case RUN_ATTR_ID:   return strcmpFIXME(getRunAttribute(d1, name), getRunAttribute(d2, name)) == 0;
+        case RUN_PARAM_ID:  return strcmpFIXME(getRunParam(d1, name), getRunParam(d2, name)) == 0;
     }
     // not reached
     return true;
@@ -152,27 +150,15 @@ inline bool ResultItemField::equal(const ResultItem& d1, const ResultItem& d2) c
 inline int ResultItemField::compare(const ResultItem& d1, const ResultItem& d2) const
 {
     using omnetpp::common::strdictcmp;
-    switch (id)
-    {
-    case FILE_ID:
-        return strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(),
-                          d2.fileRunRef->fileRef->filePath.c_str());
-    case RUN_ID:
-        return strdictcmp(d1.fileRunRef->runRef->runName.c_str(),
-                          d2.fileRunRef->runRef->runName.c_str());
-    case MODULE_ID:
-        return strdictcmp(d1.moduleNameRef->c_str(),
-                          d2.moduleNameRef->c_str());
-    case NAME_ID:
-        return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str());
-    case ATTR_ID:
-        return strdictcmp(getAttribute(d1, name), getAttribute(d2, name));
-    case RUN_ATTR_ID:
-        return strdictcmp(getRunAttribute(d1, name), getRunAttribute(d2, name));
-    case RUN_PARAM_ID:
-        return strdictcmp(getRunParam(d1, name), getRunParam(d2, name));
-    default:
-        return false;
+    switch (id) {
+        case FILE_ID:       return strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str());
+        case RUN_ID:        return strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
+        case MODULE_ID:     return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str());
+        case NAME_ID:       return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str());
+        case ATTR_ID:       return strdictcmp(getAttribute(d1, name), getAttribute(d2, name));
+        case RUN_ATTR_ID:   return strdictcmp(getRunAttribute(d1, name), getRunAttribute(d2, name));
+        case RUN_PARAM_ID:  return strdictcmp(getRunParam(d1, name), getRunParam(d2, name));
+        default: return false;
     }
 }
 
@@ -216,8 +202,7 @@ struct IDFieldsEqual : public std::binary_function<ID,ID,bool>
 {
     ResultItemFields fields;
     ResultFileManager *manager;
-    IDFieldsEqual(const ResultItemFields& fields, ResultFileManager *manager)
-        : fields(fields), manager(manager) {}
+    IDFieldsEqual(const ResultItemFields& fields, ResultFileManager *manager) : fields(fields), manager(manager) {}
     bool operator()(ID id1, ID id2) const { return fields.equal(id1, id2, manager); }
 };
 
@@ -236,8 +221,7 @@ struct IDFieldsLess : public std::binary_function<ID,ID,bool>
 {
     ResultItemFields fields;
     ResultFileManager *manager;
-    IDFieldsLess(const ResultItemFields& fields, ResultFileManager *manager)
-        : fields(fields), manager(manager) {}
+    IDFieldsLess(const ResultItemFields& fields, ResultFileManager *manager) : fields(fields), manager(manager) {}
     bool operator()(ID id1, ID id2) const { return fields.less(id1, id2, manager); }
 };
 #endif
