@@ -268,16 +268,16 @@ static string runStr(const Run *run, RunDisplayMode mode)
     case RUNDISPLAY_RUNID:
         return run->runName;
     case RUNDISPLAY_CONFIG_RUNNUMBER:
-        return string(opp_emptytodefault(run->getAttribute("configname"), "null")) + "\t" +
-                opp_emptytodefault(run->getAttribute("runnumber"), "null");
+        return string(opp_emptytodefault(run->getAttribute("configname").c_str(), "null")) + "\t" +
+                opp_emptytodefault(run->getAttribute("runnumber").c_str(), "null");
     case RUNDISPLAY_CONFIG_ITERVARS_REPETITION:
-        return string(opp_emptytodefault(run->getAttribute("configname"), "null")) + "\t" +
-                opp_emptytodefault(run->getAttribute("iterationvars"), "null") + "\t" +
-                opp_emptytodefault(run->getAttribute("repetition"), "null");
+        return string(opp_emptytodefault(run->getAttribute("configname").c_str(), "null")) + "\t" +
+                opp_emptytodefault(run->getAttribute("iterationvars").c_str(), "null") + "\t" +
+                opp_emptytodefault(run->getAttribute("repetition").c_str(), "null");
     case RUNDISPLAY_EXPERIMENT_MEASUREMENT_REPLICATION:
-        return string(opp_emptytodefault(run->getAttribute("experiment"), "null")) + "\t" +
-                opp_emptytodefault(run->getAttribute("measurement"), "null") + "\t" +
-                opp_emptytodefault(run->getAttribute("replication"), "null");
+        return string(opp_emptytodefault(run->getAttribute("experiment").c_str(), "null")) + "\t" +
+                opp_emptytodefault(run->getAttribute("measurement").c_str(), "null") + "\t" +
+                opp_emptytodefault(run->getAttribute("replication").c_str(), "null");
     default:
         Assert(false); return "???";
     }

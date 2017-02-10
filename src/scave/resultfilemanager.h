@@ -41,6 +41,11 @@
 namespace omnetpp {
 namespace scave {
 
+/**
+ * Returned by reference for missing values. It has value "".
+ */
+extern const std::string NULLSTRING;
+
 struct Run;
 struct ResultFile;
 struct FileRun;
@@ -82,9 +87,9 @@ struct SCAVE_API ResultItem
     ResultItem& operator=(const ResultItem& rhs);
     virtual ~ResultItem() { delete computation; }
 
-    const char *getAttribute(const char *attrName) const {
+    const std::string& getAttribute(const std::string& attrName) const {
         StringMap::const_iterator it = attributes.find(attrName);
-        return it==attributes.end() ? nullptr : it->second.c_str();
+        return it==attributes.end() ? NULLSTRING : it->second;
     }
 
     /**
@@ -193,7 +198,7 @@ struct SCAVE_API Run
     // various attributes of the run are stored in a string map.
     // keys include: runNumber, networkName, datetime, experiment, measurement, replication
     StringMap attributes;
-    int runNumber; // this is stored separately as well, for convenience
+    int runNumber = -1; // this is stored separately as well, for convenience
 
     // module parameters: maps wildcard pattern to value
     StringMap moduleParams;
@@ -202,15 +207,14 @@ struct SCAVE_API Run
 
     Run(bool computed, ResultFileManager *manager) : resultFileManager(manager), computed(computed) {}
 
-    // utility methods to non-disruptive access to the maps (note that evaluating
-    // attributes["nonexisting-key"] would create a blank entry with that key!)
-    const char *getAttribute(const char *attrName) const {
+    const std::string& getAttribute(const std::string& attrName) const {
+        // note: we use find() instead of operator[], because latter creates blank entry if key is not contained in the map
         StringMap::const_iterator it = attributes.find(attrName);
-        return it==attributes.end() ? nullptr : it->second.c_str();
+        return it==attributes.end() ? NULLSTRING : it->second;
     }
-    const char *getModuleParam(const char *paramName) const {
+    const std::string& getModuleParam(const std::string& paramName) const {
         StringMap::const_iterator it = moduleParams.find(paramName);
-        return it==moduleParams.end() ? nullptr : it->second.c_str();
+        return it==moduleParams.end() ? NULLSTRING : it->second;
     }
 };
 

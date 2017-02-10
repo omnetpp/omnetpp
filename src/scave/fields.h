@@ -55,7 +55,7 @@ class SCAVE_API ResultItemField
         ResultItemField(const std::string& fieldName);
         int getID() const { return id; }
         const std::string& getName() const { return name; };
-        std::string getFieldValue(const ResultItem& d) const ;
+        const std::string& getFieldValue(const ResultItem& d) const ;
         bool equal(const ResultItem& d1, const ResultItem& d2) const;
         int compare(const ResultItem& d1, const ResultItem& d2) const;
 };
@@ -93,25 +93,22 @@ class SCAVE_API RunAttribute
         static bool isAttributeName(const std::string& name);
 };
 
-inline const char *getAttribute(const ResultItem& d, const std::string& attrName)
+inline const std::string& getAttribute(const ResultItem& d, const std::string& attrName)
 {
-    const char *value = d.getAttribute(attrName.c_str());
-    return value ? value : "";
+    return d.getAttribute(attrName);
 }
 
-inline const char *getRunAttribute(const ResultItem &d, const std::string& attrName)
+inline const std::string& getRunAttribute(const ResultItem &d, const std::string& attrName)
 {
-    const char *value = d.fileRunRef->runRef->getAttribute(attrName.c_str());
-    return value ? value : "";
+    return d.fileRunRef->runRef->getAttribute(attrName);
 }
 
-inline const char *getRunParam(const ResultItem& d, const std::string& paramName)
+inline const std::string& getRunParam(const ResultItem& d, const std::string& paramName)
 {
-    const char *value = d.fileRunRef->runRef->getModuleParam(paramName.c_str());
-    return value ? value : "";
+    return d.fileRunRef->runRef->getModuleParam(paramName);
 }
 
-inline std::string ResultItemField::getFieldValue(const ResultItem& d) const
+inline const std::string& ResultItemField::getFieldValue(const ResultItem& d) const
 {
     switch(id) {
         case FILE_ID:       return d.fileRunRef->fileRef->filePath;
@@ -121,15 +118,9 @@ inline std::string ResultItemField::getFieldValue(const ResultItem& d) const
         case ATTR_ID:       return getAttribute(d, name);
         case RUN_ATTR_ID:   return getRunAttribute(d, name);
         case RUN_PARAM_ID:  return getRunParam(d, name);
-        default:            return "";
+        default: throw opp_runtime_error("unknown result item");
     }
 }
-
-inline int strcmpFIXME(const char *str1, const char *str2)
-{
-    return strcmp(str1, str2);
-}
-
 
 inline bool ResultItemField::equal(const ResultItem& d1, const ResultItem& d2) const
 {
@@ -138,13 +129,11 @@ inline bool ResultItemField::equal(const ResultItem& d1, const ResultItem& d2) c
         case RUN_ID:        return d1.fileRunRef->runRef == d2.fileRunRef->runRef;
         case MODULE_ID:     return d1.moduleNameRef == d2.moduleNameRef;
         case NAME_ID:       return d1.nameRef == d2.nameRef;
-                            // KLUDGE using strcmp() here causes an INTERNAL COMPILER ERROR with MSVC71, i don't know why
-        case ATTR_ID:       return strcmpFIXME(getAttribute(d1, name), getAttribute(d2, name)) == 0;
-        case RUN_ATTR_ID:   return strcmpFIXME(getRunAttribute(d1, name), getRunAttribute(d2, name)) == 0;
-        case RUN_PARAM_ID:  return strcmpFIXME(getRunParam(d1, name), getRunParam(d2, name)) == 0;
+        case ATTR_ID:       return getAttribute(d1, name) == getAttribute(d2, name);
+        case RUN_ATTR_ID:   return getRunAttribute(d1, name) == getRunAttribute(d2, name);
+        case RUN_PARAM_ID:  return getRunParam(d1, name) == getRunParam(d2, name);
+        default: throw opp_runtime_error("unknown result item");
     }
-    // not reached
-    return true;
 }
 
 inline int ResultItemField::compare(const ResultItem& d1, const ResultItem& d2) const
@@ -155,10 +144,10 @@ inline int ResultItemField::compare(const ResultItem& d1, const ResultItem& d2) 
         case RUN_ID:        return strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
         case MODULE_ID:     return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str());
         case NAME_ID:       return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str());
-        case ATTR_ID:       return strdictcmp(getAttribute(d1, name), getAttribute(d2, name));
-        case RUN_ATTR_ID:   return strdictcmp(getRunAttribute(d1, name), getRunAttribute(d2, name));
-        case RUN_PARAM_ID:  return strdictcmp(getRunParam(d1, name), getRunParam(d2, name));
-        default: return false;
+        case ATTR_ID:       return strdictcmp(getAttribute(d1, name).c_str(), getAttribute(d2, name).c_str());
+        case RUN_ATTR_ID:   return strdictcmp(getRunAttribute(d1, name).c_str(), getRunAttribute(d2, name).c_str());
+        case RUN_PARAM_ID:  return strdictcmp(getRunParam(d1, name).c_str(), getRunParam(d2, name).c_str());
+        default: throw opp_runtime_error("unknown result item");
     }
 }
 

@@ -51,11 +51,13 @@
 #define WRITER_MUTEX
 #endif
 
+using namespace std;
 using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace scave {
 
+const std::string NULLSTRING = "";
 
 ResultItem& ResultItem::operator=(const ResultItem& rhs)
 {
@@ -317,8 +319,8 @@ StringSet *ResultFileManager::getUniqueAttributeValues(const IDList& ids, const 
     READER_MUTEX
     StringSet *values = new StringSet;
     for (int i = 0; i < ids.size(); ++i) {
-        const char *value = getItem(ids.get(i)).getAttribute(attrName);
-        if (value != nullptr)
+        const string& value = getItem(ids.get(i)).getAttribute(attrName);
+        if (&value != &NULLSTRING)
             values->insert(value);
     }
     return values;
@@ -329,8 +331,8 @@ StringSet *ResultFileManager::getUniqueRunAttributeValues(const RunList& runList
     READER_MUTEX
     StringSet *values = new StringSet;
     for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef) {
-        const char *value = (*runRef)->getAttribute(attrName);
-        if (value != nullptr)
+        const string& value = (*runRef)->getAttribute(attrName);
+        if (&value != &NULLSTRING)
             values->insert(value);
     }
 
@@ -342,8 +344,8 @@ StringSet *ResultFileManager::getUniqueModuleParamValues(const RunList& runList,
     READER_MUTEX
     StringSet *values = new StringSet;
     for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef) {
-        const char *value = (*runRef)->getModuleParam(paramName);
-        if (value != nullptr)
+        const string& value = (*runRef)->getModuleParam(paramName);
+        if (&value != &NULLSTRING)
             values->insert(value);
     }
 
@@ -571,11 +573,8 @@ RunList ResultFileManager::filterRunList(const RunList& runList,
             continue;
         bool matches = true;
         for (int j = 0; j < (int)attrNames.size() && matches; j++) {
-            const char *attrValue = run->getAttribute(attrNames[j].c_str());
-            if (attrValue == nullptr)
-                attrValue = "";
-
-            if (!attrValues[j].matches(attrValue)) {
+            const string& attrValue = run->getAttribute(attrNames[j]);
+            if (!attrValues[j].matches(attrValue.c_str())) {
                 matches = false;
                 break;
             }
@@ -735,9 +734,9 @@ class MatchableResultItem : public MatchExpression::Matchable
         const char *getModuleName() const { return item.moduleNameRef->c_str(); }
         const char *getFileName() const { return item.fileRunRef->fileRef->filePath.c_str(); }
         const char *getRunName() const { return item.fileRunRef->runRef->runName.c_str(); }
-        const char *getResultItemAttribute(const char *attrName) const { return item.getAttribute(attrName); }
-        const char *getRunAttribute(const char *attrName) const { return item.fileRunRef->runRef->getAttribute(attrName); }
-        const char *getModuleParam(const char *paramName) const { return item.fileRunRef->runRef->getModuleParam(paramName); }
+        const char *getResultItemAttribute(const char *attrName) const { return item.getAttribute(attrName).c_str(); }
+        const char *getRunAttribute(const char *attrName) const { return item.fileRunRef->runRef->getAttribute(attrName).c_str(); }
+        const char *getModuleParam(const char *paramName) const { return item.fileRunRef->runRef->getModuleParam(paramName).c_str(); }
 };
 
 const char *MatchableResultItem::getAsString() const
@@ -1341,7 +1340,7 @@ bool ResultFileManager::hasStaleID(const IDList& ids) const
 
 const char *ResultFileManager::getRunAttribute(ID id, const char *attribute) const
 {
-    return getItem(id).fileRunRef->runRef->getAttribute(attribute);
+    return getItem(id).fileRunRef->runRef->getAttribute(attribute).c_str();
 }
 
 }  // namespace scave

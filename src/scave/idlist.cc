@@ -252,9 +252,9 @@ class RunAttributeLess : public CmpBase {
         RunAttributeLess(ResultFileManager* m, const char* attrName)
             : CmpBase(m), attrName(attrName) {}
         bool operator()(ID a, ID b) {
-            const char* aValue = uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
-            const char* bValue = uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
-            return ((aValue && bValue) ? less(aValue, bValue) : aValue!=nullptr);
+            const std::string& aValue = uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
+            const std::string& bValue = uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
+            return less(aValue, bValue);
         }
 };
 
