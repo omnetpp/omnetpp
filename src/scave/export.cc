@@ -84,7 +84,7 @@ void ScaveExport::saveVectors(const string& name, const string& description,
     saveTable(table, 0, table.getNumRows());
 }
 
-void ScaveExport::saveScalars(const string& name, const string& description, const IDList& scalars, ResultItemFields groupBy, ResultFileManager& manager)
+void ScaveExport::saveScalars(const string& name, const string& description, const IDList& scalars, const ResultItemFields& groupBy, ResultFileManager& manager)
 {
     const ScalarDataTable table(name, description, scalars, groupBy, manager);
     saveTable(table, 0, table.getNumRows());
@@ -92,9 +92,9 @@ void ScaveExport::saveScalars(const string& name, const string& description, con
 
 void ScaveExport::saveScalars(const string& name, const string& description,
         const IDList& scalars, const string& moduleName, const string& scalarName,
-        ResultItemFields columnFields,
+        const ResultItemFields& columnFields,
         const std::vector<std::string>& isoModuleNames, const StringVector& isoScalarNames,
-        ResultItemFields isoFields, ResultFileManager& manager)
+        const ResultItemFields& isoFields, ResultFileManager& manager)
 {
     DataSorter sorter(&manager);
     StringVector rowFields;

@@ -135,7 +135,7 @@ class SCAVE_API ScalarDataTable : public DataTable
         ResultFileManager& manager;
     public:
         ScalarDataTable(const std::string& name, const std::string& description,
-            const IDList& idlist, ResultItemFields groupBy, ResultFileManager& manager);
+            const IDList& idlist, const ResultItemFields& groupBy, ResultFileManager& manager);
 
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;

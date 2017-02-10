@@ -65,13 +65,13 @@ class SCAVE_API ScaveExport
                                      const IDList& vectors, const std::vector<XYArray*> xyarrays,
                                      const ResultFileManager& manager);
         virtual void saveScalars(const std::string& name, const std::string& description,
-                                    const IDList& scalars, ResultItemFields groupBy, ResultFileManager& manager);
+                                    const IDList& scalars, const ResultItemFields& groupBy, ResultFileManager& manager);
 
         virtual void saveScalars(const std::string& name, const std::string& description,
                                     const IDList& scalars, const std::string& moduleName, const std::string& scalarName,
-                                    ResultItemFields columnFields,
+                                    const ResultItemFields& columnFields,
                                     const std::vector<std::string>& isoModuleNames, const StringVector& isoScalarNames,
-                                    ResultItemFields isoFields, ResultFileManager& manager);
+                                    const ResultItemFields& isoFields, ResultFileManager& manager);
 
         virtual void saveHistograms(const std::string& name, const std::string& description,
                                     const IDList& histograms, ResultFileManager& manager);

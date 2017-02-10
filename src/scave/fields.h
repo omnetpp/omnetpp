@@ -216,7 +216,7 @@ struct IDFieldsEqual : public std::binary_function<ID,ID,bool>
 {
     ResultItemFields fields;
     ResultFileManager *manager;
-    IDFieldsEqual(ResultItemFields fields, ResultFileManager *manager)
+    IDFieldsEqual(const ResultItemFields& fields, ResultFileManager *manager)
         : fields(fields), manager(manager) {}
     bool operator()(ID id1, ID id2) const { return fields.equal(id1, id2, manager); }
 };
@@ -228,7 +228,7 @@ struct ResultItemFieldsLess : public std::binary_function<ResultItem, ResultItem
 {
     ResultItemFields fields;
     ResultItemFieldsLess() {}
-    ResultItemFieldsLess(const ResultItemFields fields) : fields(fields) {}
+    ResultItemFieldsLess(const ResultItemFields& fields) : fields(fields) {}
     bool operator()(const ResultItem& d1, const ResultItem& d2) const { return fields.less(d1, d2); }
 };
 
@@ -236,7 +236,7 @@ struct IDFieldsLess : public std::binary_function<ID,ID,bool>
 {
     ResultItemFields fields;
     ResultFileManager *manager;
-    IDFieldsLess(ResultItemFields fields, ResultFileManager *manager)
+    IDFieldsLess(const ResultItemFields& fields, ResultFileManager *manager)
         : fields(fields), manager(manager) {}
     bool operator()(ID id1, ID id2) const { return fields.less(id1, id2, manager); }
 };

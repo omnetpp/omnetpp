@@ -159,7 +159,7 @@ double ScatterDataTable::getDoubleValue(int row, int col) const
  *          Scalars
  *================================*/
 ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& description,
-        const IDList& idlist, ResultItemFields groupBy, ResultFileManager& manager)
+        const IDList& idlist, const ResultItemFields& groupBy, ResultFileManager& manager)
     : DataTable(name, description), manager(manager)
 {
     DataSorter sorter(&manager);

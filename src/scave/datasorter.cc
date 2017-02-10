@@ -279,12 +279,12 @@ void DataSorter::sortAndAlign(IDVectorVector& vv, LessFn less, EqualFn equal)
     }
 }
 
-IDVectorVector DataSorter::groupByFields(const IDList& idlist, ResultItemFields fields)
+IDVectorVector DataSorter::groupByFields(const IDList& idlist, const ResultItemFields& fields)
 {
     return doGrouping(idlist, ResultItemFieldsEqual(fields));
 }
 
-IDVectorVector DataSorter::groupAndAlign(const IDList& idlist, ResultItemFields fields)
+IDVectorVector DataSorter::groupAndAlign(const IDList& idlist, const ResultItemFields& fields)
 {
     IDVectorVector vv = doGrouping(idlist, ResultItemFieldsEqual(fields));
 
@@ -311,7 +311,7 @@ static bool isMissing(const IDVectorVector& vv, int j)
     return !foundY;
 }
 
-XYDataset DataSorter::groupAndAggregate(const IDList& scalars, ResultItemFields rowFields, ResultItemFields columnFields)
+XYDataset DataSorter::groupAndAggregate(const IDList& scalars, const ResultItemFields& rowFields, const ResultItemFields& columnFields)
 {
     Assert(scalars.areAllScalars());
 
@@ -407,7 +407,7 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
 }
 
 XYDataset DataSorter::prepareScatterPlot2(const IDList& scalars, const char *moduleName, const char *scalarName,
-        ResultItemFields rowFields, ResultItemFields columnFields)
+        const ResultItemFields& rowFields, const ResultItemFields& columnFields)
 {
     Assert(scalars.areAllScalars());
 
@@ -444,12 +444,12 @@ struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
 
     IsoGroupingFn() {}
     IDList init(const IDList& idlist, const StringVector& moduleNames, const StringVector& scalarNames,
-            ResultItemFields fields, ResultFileManager *manager);
+            const ResultItemFields& fields, ResultFileManager *manager);
     bool operator()(const ResultItem& d1, const ResultItem& d2) const;
 };
 
 IDList IsoGroupingFn::init(const IDList& idlist, const StringVector& moduleNames, const StringVector& scalarNames,
-        ResultItemFields fields, ResultFileManager *manager)
+        const ResultItemFields& fields, ResultFileManager *manager)
 {
     this->fields = fields;
 
@@ -517,8 +517,8 @@ bool IsoGroupingFn::operator()(const ResultItem& d1, const ResultItem& d2) const
 }
 
 XYDatasetVector DataSorter::prepareScatterPlot3(const IDList& scalars, const char *moduleName, const char *scalarName,
-        ResultItemFields rowFields, ResultItemFields columnFields,
-        const StringVector& isoModuleNames, const StringVector& isoScalarNames, ResultItemFields isoFields)
+        const ResultItemFields& rowFields, const ResultItemFields& columnFields,
+        const StringVector& isoModuleNames, const StringVector& isoScalarNames, const ResultItemFields& isoFields)
 {
     Assert(scalars.areAllScalars());
 

@@ -59,7 +59,7 @@ class SCAVE_API XYDataset
         std::vector<int> columnOrder;      // permutation of a subset of columns
     public:
         XYDataset() {};
-        XYDataset(ResultItemFields rowFields, ResultItemFields columnFields)
+        XYDataset(const ResultItemFields& rowFields, const ResultItemFields& columnFields)
             : rowFields(rowFields), columnFields(columnFields),
             rowKeyToIndexMap(ResultItemFieldsLess(rowFields)),
             columnKeyToIndexMap(ResultItemFieldsLess(columnFields)) {};
@@ -71,8 +71,8 @@ class SCAVE_API XYDataset
 
         int getRowCount() const { return rowOrder.size(); }
         int getColumnCount() const { return columnOrder.size(); }
-        ResultItemFields getRowFields() const { return rowFields; }
-        ResultItemFields getColumnFields() const { return columnFields; }
+        const ResultItemFields& getRowFields() const { return rowFields; }
+        const ResultItemFields& getColumnFields() const { return columnFields; }
         std::string getRowField(int row, ResultItemField field) const;
         std::string getRowFieldNoCheck(int row, ResultItemField field) const;
         std::string getColumnField(int column, ResultItemField field) const;
@@ -162,7 +162,7 @@ class SCAVE_API DataSorter
     /**
      * Form groups (IDVectors) by the specified fields.
      */
-    IDVectorVector groupByFields(const IDList& idlist, ResultItemFields fields);
+    IDVectorVector groupByFields(const IDList& idlist, const ResultItemFields& fields);
 
     /**
      * Form groups (IDVectors) by the specified fields.
@@ -170,7 +170,7 @@ class SCAVE_API DataSorter
      * so that every group is of same length, and the same indices contain
      * the same values of the non-grouping fields.
      */
-    IDVectorVector groupAndAlign(const IDList& idlist, ResultItemFields fields);
+    IDVectorVector groupAndAlign(const IDList& idlist, const ResultItemFields& fields);
 
     /**
      * Form rows from data of given idlist by grouping according to rowFields.
@@ -178,7 +178,7 @@ class SCAVE_API DataSorter
      * Compute the mean of the values in each cell and align the cells into a table.
      * If no data for a row/column combination, NaN will be inserted into the cell.
      */
-    XYDataset groupAndAggregate(const IDList& idlist, ResultItemFields rowFields, ResultItemFields columnFields);
+    XYDataset groupAndAggregate(const IDList& idlist, const ResultItemFields& rowFields, const ResultItemFields& columnFields);
 
     /**
      * Group and align data for a scatter plot. The first vector will contain the
@@ -193,14 +193,14 @@ class SCAVE_API DataSorter
      * by x coordinate. For missing points in y1, y2, etc, the row contains NaN.
      */
     XYDataset prepareScatterPlot2(const IDList& idlist, const char *xModuleName, const char *xScalarName,
-            ResultItemFields rowFields, ResultItemFields columnFields);
+            const ResultItemFields& rowFields, const ResultItemFields& columnFields);
 
     /**
      *
      */
     XYDatasetVector prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
-            ResultItemFields rowFields, ResultItemFields columnFields,
-            const StringVector& isoModuleNames, const StringVector& isoScalarNames, ResultItemFields isoFields);
+            const ResultItemFields& rowFields, const ResultItemFields& columnFields,
+            const StringVector& isoModuleNames, const StringVector& isoScalarNames, const ResultItemFields& isoFields);
 
 
     /**
