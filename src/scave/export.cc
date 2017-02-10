@@ -32,9 +32,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-// XXX unfortunately, VC8.0 doesn't like the following lines, so Column needs to be fully qualified in the source...
-// using DataTable::Column;
-// using DataTable::ColumnType;
+typedef DataTable::Column Column;  // shorthand
 
 ScaveExport::~ScaveExport()
 {
@@ -210,7 +208,7 @@ void MatlabScriptExport::writeDescriptionField(const DataTable& table, const str
 void MatlabScriptExport::writeColumnFields(const DataTable& table, int startRow, int endRow, const string& tableName)
 {
     for (int col = 0; col < table.getNumColumns(); ++col) {
-        DataTable::Column column = table.getColumn(col);
+        Column column = table.getColumn(col);
 
         out << tableName + "." + makeIdentifier(column.name) << "=[" << '\n';
         switch (column.type) {
@@ -297,7 +295,7 @@ void OctaveTextExport::writeDescriptionField(const DataTable& table)
 void OctaveTextExport::writeColumnFields(const DataTable& table, int startRow, int endRow)
 {
     for (int col = 0; col < table.getNumColumns(); ++col) {
-        DataTable::Column column = table.getColumn(col);
+        Column column = table.getColumn(col);
         switch (column.type) {
             case DataTable::DOUBLE:
                 writeDoubleColumn(table, col, startRow, endRow);
@@ -316,7 +314,7 @@ void OctaveTextExport::writeColumnFields(const DataTable& table, int startRow, i
 
 void OctaveTextExport::writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow)
 {
-    DataTable::Column column = table.getColumn(col);
+    Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -343,7 +341,7 @@ void OctaveTextExport::writeDoubleColumn(const DataTable& table, int col, int st
 
 void OctaveTextExport::writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow)
 {
-    DataTable::Column column = table.getColumn(col);
+    Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -360,7 +358,7 @@ void OctaveTextExport::writeBigDecimalColumn(const DataTable& table, int col, in
 
 void OctaveTextExport::writeStringColumn(const DataTable& table, int col, int startRow, int endRow)
 {
-    DataTable::Column column = table.getColumn(col);
+    Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -440,7 +438,7 @@ void CsvExport::writeHeader(const DataTable& table)
         for (int col = 0; col < table.getNumColumns(); ++col) {
             if (col > 0)
                 out << separator;
-            DataTable::Column column = table.getColumn(col);
+            Column column = table.getColumn(col);
             writeString(column.name);
         }
         out << eol;
@@ -450,7 +448,7 @@ void CsvExport::writeHeader(const DataTable& table)
 void CsvExport::writeRow(const DataTable& table, int row)
 {
     for (int col = 0; col < table.getNumColumns(); ++col) {
-        DataTable::Column column = table.getColumn(col);
+        Column column = table.getColumn(col);
         if (col > 0)
             out << separator;
         if (!table.isNull(row, col)) {
