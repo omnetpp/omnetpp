@@ -35,7 +35,7 @@ namespace scave {
 #define VECFILEREADER_BUFSIZE  (64*1024)
 
 // shared with indexedvectorfilereadernode
-Datum parseColumns(char **tokens, int numtokens, const std::string &columns, const char* file, int64_t lineno, file_offset_t offset);
+Datum parseColumns(char **tokens, int numtokens, const std::string& columns, const char* file, int64_t lineno, file_offset_t offset);
 
 /**
  * Producer node which reads an output vector file.
@@ -58,7 +58,7 @@ class SCAVE_API VectorFileReaderNode : public FileReaderNode
         VectorFileReaderNode(const char *filename, size_t bufferSize = VECFILEREADER_BUFSIZE);
         virtual ~VectorFileReaderNode();
 
-        Port *addVector(const VectorResult &vector);
+        Port *addVector(const VectorResult& vector);
 
         virtual bool isReady() const override;
         virtual void process() override;

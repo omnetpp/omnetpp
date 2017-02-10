@@ -63,7 +63,7 @@ class SCAVE_API SqliteVectorReaderNode : public ReaderNode
         SqliteVectorReaderNode(const char *filename, bool allowIndexing, size_t bufferSize = SQLITEVECFILEREADER_BUFSIZE);
         virtual ~SqliteVectorReaderNode();
 
-        Port *addVector(const VectorResult &vector);
+        Port *addVector(const VectorResult& vector);
 
         virtual bool isReady() const override;
         virtual void process() override;

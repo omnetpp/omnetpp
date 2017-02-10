@@ -100,7 +100,7 @@ class SCAVE_API NodeType
          * Maps input vector attributes to output vector attributes.
          * This method is called for filter nodes only.
          */
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap& attrs, /*out*/StringVector& warnings) const;
 };
 
 

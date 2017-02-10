@@ -544,7 +544,7 @@ string CsvExport::makeIdentifier(const string& name)
     return name;
 }
 
-ScaveExport *ExporterFactory::createExporter(const string format)
+ScaveExport *ExporterFactory::createExporter(const string& format)
 {
     if (format == "octave")
         return new OctaveTextExport;

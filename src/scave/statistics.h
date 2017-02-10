@@ -42,7 +42,7 @@ class SCAVE_API Statistics
         Statistics() : _count(0), _min(POSITIVE_INFINITY), _max(NEGATIVE_INFINITY), _sum(0.0), _sumSqr(0.0) {}
         Statistics(long count, double min, double max, double sum, double sumSqr)
             :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
-        Statistics(const Statistics &s) : _count(s._count), _min(s._min), _max(s._max), _sum(s._sum), _sumSqr(s._sumSqr) {}
+        Statistics(const Statistics& s) : _count(s._count), _min(s._min), _max(s._max), _sum(s._sum), _sumSqr(s._sumSqr) {}
 
         long getCount() const { return _count; }
         double getMin() const { return _min; }
@@ -54,7 +54,7 @@ class SCAVE_API Statistics
         double getVariance() const;
 
         void collect(double value);
-        void adjoin(const Statistics &other);
+        void adjoin(const Statistics& other);
 };
 
 inline double Statistics::getVariance() const
@@ -77,7 +77,7 @@ inline void Statistics::collect(double value)
     _sumSqr += value * value;
 }
 
-inline void Statistics::adjoin(const Statistics &other)
+inline void Statistics::adjoin(const Statistics& other)
 {
     _count += other._count;
     _min = (_min < other._min ? _min : other._min);

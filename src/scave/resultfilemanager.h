@@ -54,11 +54,11 @@ struct SCAVE_API IComputation {
     IComputation() {}
     virtual ~IComputation() {}
     virtual IComputation *dup() = 0;
-    virtual bool operator==(const IComputation &other) const = 0;
-    virtual bool operator!=(const IComputation &other) const { return !(*this == other);}
+    virtual bool operator==(const IComputation& other) const = 0;
+    virtual bool operator!=(const IComputation& other) const { return !(*this == other);}
 private:
     IComputation(const IComputation &); // unimplemented
-    IComputation &operator=(const IComputation &); // unimplemented
+    IComputation& operator=(const IComputation &); // unimplemented
 };
 
 /**
@@ -76,10 +76,10 @@ struct SCAVE_API ResultItem
     IComputation *computation;
 
     ResultItem() : fileRunRef(nullptr), moduleNameRef(nullptr), nameRef(nullptr), computation(nullptr) {}
-    ResultItem(const ResultItem &o)
+    ResultItem(const ResultItem& o)
         : fileRunRef(o.fileRunRef), moduleNameRef(o.moduleNameRef), nameRef(o.nameRef),
           attributes(o.attributes), computation(o.computation ? o.computation->dup() : nullptr) {}
-    ResultItem& operator=(const ResultItem &rhs);
+    ResultItem& operator=(const ResultItem& rhs);
     virtual ~ResultItem() { delete computation; }
 
     const char *getAttribute(const char *attrName) const {
@@ -305,13 +305,13 @@ class SCAVE_API ResultFileManager
 
     int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value, bool isField);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
-    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap &attrs);
+    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap& attrs);
 
     ResultFile *getFileForID(ID id) const; // checks for nullptr
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
     template <class T>
-    void collectIDs(IDList &result, std::vector<T> ResultFile::* vec, int type, bool includeComputed = false, bool includeFields = true) const;
+    void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeComputed = false, bool includeFields = true) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
@@ -355,10 +355,10 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueModuleNames(const IDList& ids) const;
     StringSet *getUniqueNames(const IDList& ids) const;
     StringSet *getUniqueModuleAndResultNamePairs(const IDList& ids) const;
-    StringSet *getUniqueAttributeNames(const IDList &ids) const;
+    StringSet *getUniqueAttributeNames(const IDList& ids) const;
     StringSet *getUniqueRunAttributeNames(const RunList *runList) const;
     StringSet *getUniqueModuleParamNames(const RunList *runList) const;
-    StringSet *getUniqueAttributeValues(const IDList &ids, const char *attrName) const;
+    StringSet *getUniqueAttributeValues(const IDList& ids, const char *attrName) const;
     StringSet *getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
     StringSet *getUniqueModuleParamValues(const RunList& runList, const char *paramName) const;
 
@@ -382,21 +382,21 @@ class SCAVE_API ResultFileManager
                         const char *moduleFilter,
                         const char *nameFilter) const;
 
-    IDList filterIDList(const IDList &idlist, const char *pattern) const;
+    IDList filterIDList(const IDList& idlist, const char *pattern) const;
 
     /**
      * Get a filtered subset of the input set.
      * All three filter parameters may be null, if given they are
      * matched exactly.
      */
-    IDList filterIDList(const IDList &idlist, const Run *run, const char *moduleName, const char *name) const;
+    IDList filterIDList(const IDList& idlist, const Run *run, const char *moduleName, const char *name) const;
 
     /**
      * Get a filtered subset of the input set.
      * All three filter parameters may be null, if given they are
      * matched exactly.
      */
-    IDList filterIDList(const IDList &idlist, const char *runName, const char *moduleName, const char *name) const;
+    IDList filterIDList(const IDList& idlist, const char *runName, const char *moduleName, const char *name) const;
 
     /**
      * Checks that the given pattern is syntactically correct.
@@ -407,11 +407,11 @@ class SCAVE_API ResultFileManager
 
     // computed vectors
     ID getComputedID(ComputationID computationID, ID inputID) const;
-    ID addComputedVector(int vectorId, const char *name, const char *file, const StringMap &attributes, ComputationID computationID, ID inputID, IComputation *node);
+    ID addComputedVector(int vectorId, const char *name, const char *file, const StringMap& attributes, ComputationID computationID, ID inputID, IComputation *node);
     // computedScalars
     ResultFile *getComputedScalarFile() const { return computedScalarFile; }
     IDList getComputedScalarIDs(const IComputation *node) const;
-    ID addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap &attributes, IComputation *node);
+    ID addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap& attributes, IComputation *node);
     void clearComputedScalars();
 
     /**
@@ -440,13 +440,13 @@ class SCAVE_API ResultFileManager
     //void dump(ResultFile *fileRef, std::ostream& out) const;
 
     StringVector *getFileAndRunNumberFilterHints(const IDList& idlist) const;
-    StringVector *getFilePathFilterHints(const ResultFileList &fileList) const;
-    StringVector *getRunNameFilterHints(const RunList &runList) const;
+    StringVector *getFilePathFilterHints(const ResultFileList& fileList) const;
+    StringVector *getRunNameFilterHints(const RunList& runList) const;
     StringVector *getModuleFilterHints(const IDList& idlist) const;
     StringVector *getNameFilterHints(const IDList& idlist)const;
-    StringVector *getResultItemAttributeFilterHints(const IDList &idlist, const char *attrName) const;
-    StringVector *getRunAttributeFilterHints(const RunList &runList, const char *attrName) const;
-    StringVector *getModuleParamFilterHints(const RunList &runList, const char * paramName) const;
+    StringVector *getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const;
+    StringVector *getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
+    StringVector *getModuleParamFilterHints(const RunList& runList, const char * paramName) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;
 

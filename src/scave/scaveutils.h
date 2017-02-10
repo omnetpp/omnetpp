@@ -28,11 +28,11 @@
 namespace omnetpp {
 namespace scave {
 
-SCAVE_API bool parseInt(const char *str, int &dest);
-SCAVE_API bool parseLong(const char *str, long &dest);
-SCAVE_API bool parseInt64(const char *str, int64_t &dest);
-SCAVE_API bool parseDouble(const char *str, double &dest);
-SCAVE_API bool parseSimtime(const char *str, simultime_t &dest);
+SCAVE_API bool parseInt(const char *str, int& dest);
+SCAVE_API bool parseLong(const char *str, long& dest);
+SCAVE_API bool parseInt64(const char *str, int64_t& dest);
+SCAVE_API bool parseDouble(const char *str, double& dest);
+SCAVE_API bool parseSimtime(const char *str, simultime_t& dest);
 SCAVE_API std::string unquoteString(const char *str);
 
 // simple profiling macro

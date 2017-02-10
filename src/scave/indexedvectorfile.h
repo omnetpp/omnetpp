@@ -64,7 +64,7 @@ class SCAVE_API IndexedVectorFileReader
         ~IndexedVectorFileReader();
     protected:
         /** reads a block from the vector file */
-        void loadBlock(const Block &block);
+        void loadBlock(const Block& block);
     public:
         /**
          * Returns the number of entries in the vector.
@@ -95,12 +95,12 @@ class SCAVE_API IndexedVectorFileReader
          * Adds output vector entries in the [startTime,endTime] interval to
          * the specified vector. Returns the number of entries added.
          */
-        long collectEntriesInSimtimeInterval(simultime_t startTime, simultime_t endTime, Entries &out);
+        long collectEntriesInSimtimeInterval(simultime_t startTime, simultime_t endTime, Entries& out);
         /**
          * Adds output vector entries in the [startTime,endTime] interval to
          * the specified vector. Returns the number of entries added.
          */
-        long collectEntriesInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Entries &out);
+        long collectEntriesInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Entries& out);
 };
 
 /**
@@ -147,10 +147,10 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
         virtual ~IndexedVectorFileWriterNode();
 
         Port *addVector(int vectorId, const char *module, const char *name, const char *columns);
-        Port *addVector(const VectorResult &vector);
+        Port *addVector(const VectorResult& vector);
         void setPrecision(int prec) {this->prec = prec;}
-        void setHeader(const std::string &header) { fileHeader = header; }
-        void setRun(const char *runName, const StringMap &attributes, const StringMap &parameters)
+        void setHeader(const std::string& header) { fileHeader = header; }
+        void setRun(const char *runName, const StringMap& attributes, const StringMap& parameters)
             { run.runName = runName; run.attributes = attributes; run.moduleParams = parameters; };
         std::string getFilename() const {return fileName;}
 

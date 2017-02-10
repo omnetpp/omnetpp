@@ -83,7 +83,7 @@ class SCAVE_API ExpressionFilterNodeType : public FilterNodeType
         virtual const char *getDescription() const override;
         virtual void getAttributes(StringMap& attrs) const override;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap& attrs, /*out*/StringVector& warnings) const override;
 };
 
 } // namespace scave

@@ -144,7 +144,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
         /**
          * Maps attributes of the input vector to attributes of the output vector.
          */
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap& attrs, /*out*/StringVector& warnings) const override;
         //@}
 };
 

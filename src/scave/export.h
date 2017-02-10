@@ -58,29 +58,29 @@ class SCAVE_API ScaveExport
         void setPrecision(int prec) { this->prec = prec; }
         void setBaseFileName(const std::string baseFileName) { this->baseFileName = baseFileName; }
 
-        virtual void saveVector(const std::string &name, const std::string &description,
-                        ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
+        virtual void saveVector(const std::string& name, const std::string& description,
+                        ID vectorID, bool computed, const XYArray *vec, ResultFileManager& manager,
                         int startIndex=0, int endIndex=-1);
-        virtual void saveVectors(const std::string &name, const std::string &description,
-                                     const IDList &vectors, const std::vector<XYArray*> xyarrays,
-                                     const ResultFileManager &manager);
-        virtual void saveScalars(const std::string &name, const std::string &description,
-                                    const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
+        virtual void saveVectors(const std::string& name, const std::string& description,
+                                     const IDList& vectors, const std::vector<XYArray*> xyarrays,
+                                     const ResultFileManager& manager);
+        virtual void saveScalars(const std::string& name, const std::string& description,
+                                    const IDList& scalars, ResultItemFields groupBy, ResultFileManager& manager);
 
-        virtual void saveScalars(const std::string &name, const std::string &description,
-                                    const IDList &scalars, const std::string &moduleName, const std::string &scalarName,
+        virtual void saveScalars(const std::string& name, const std::string& description,
+                                    const IDList& scalars, const std::string& moduleName, const std::string& scalarName,
                                     ResultItemFields columnFields,
-                                    const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
-                                    ResultItemFields isoFields, ResultFileManager &manager);
+                                    const std::vector<std::string>& isoModuleNames, const StringVector& isoScalarNames,
+                                    ResultItemFields isoFields, ResultFileManager& manager);
 
-        virtual void saveHistograms(const std::string &name, const std::string &description,
-                                    const IDList &histograms, ResultFileManager &manager);
+        virtual void saveHistograms(const std::string& name, const std::string& description,
+                                    const IDList& histograms, ResultFileManager& manager);
 
-        const std::string &getLastFileName() const { return fileName; }
+        const std::string& getLastFileName() const { return fileName; }
     protected:
-        std::string makeUniqueIdentifier(const std::string &name);
-        virtual std::string makeIdentifier(const std::string &name) = 0;
-        virtual void saveTable(const DataTable &table, int startIndex, int endIndex) = 0;
+        std::string makeUniqueIdentifier(const std::string& name);
+        virtual std::string makeIdentifier(const std::string& name) = 0;
+        virtual void saveTable(const DataTable& table, int startIndex, int endIndex) = 0;
 };
 
 /**
@@ -90,8 +90,8 @@ class MatlabStructExport : public ScaveExport
 {
     protected:
         void writeDouble(double value);
-        virtual std::string makeIdentifier(const std::string &name) override;
-        static std::string quoteString(const std::string &str);
+        virtual std::string makeIdentifier(const std::string& name) override;
+        static std::string quoteString(const std::string& str);
 };
 
 /**
@@ -111,13 +111,13 @@ class SCAVE_API MatlabScriptExport : public MatlabStructExport
 {
     protected:
         virtual std::string makeFileName(const std::string name) override;
-        virtual void saveTable(const DataTable &table, int startRow, int endRow) override;
+        virtual void saveTable(const DataTable& table, int startRow, int endRow) override;
     private:
-        void writeDescriptionField(const DataTable &rows, const std::string tableName);
-        void writeColumnFields(const DataTable &rows, int startRow, int endRow, const std::string tableName);
-        void writeDoubleColumn(const DataTable &table, int col, int startRow, int endRow);
-        void writeBigDecimalColumn(const DataTable &table, int col, int startRow, int endRow);
-        void writeStringColumn(const DataTable &table, int col, int startRow, int endRow);
+        void writeDescriptionField(const DataTable& rows, const std::string tableName);
+        void writeColumnFields(const DataTable& rows, int startRow, int endRow, const std::string tableName);
+        void writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow);
+        void writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow);
+        void writeStringColumn(const DataTable& table, int col, int startRow, int endRow);
 };
 
 /**
@@ -150,14 +150,14 @@ class SCAVE_API OctaveTextExport : public MatlabStructExport
 {
     protected:
         virtual std::string makeFileName(const std::string name) override;
-        virtual void saveTable(const DataTable &table, int startRow, int endRow) override;
+        virtual void saveTable(const DataTable& table, int startRow, int endRow) override;
     private:
-        void writeStructHeader(const DataTable &table);
-        void writeDescriptionField(const DataTable &table);
-        void writeColumnFields(const DataTable &table, int startRow, int endRow);
-        void writeDoubleColumn(const DataTable &table, int col, int startRow, int endRow);
-        void writeBigDecimalColumn(const DataTable &table, int col, int startRow, int endRow);
-        void writeStringColumn(const DataTable &table, int col, int startRow, int endRow);
+        void writeStructHeader(const DataTable& table);
+        void writeDescriptionField(const DataTable& table);
+        void writeColumnFields(const DataTable& table, int startRow, int endRow);
+        void writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow);
+        void writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow);
+        void writeStringColumn(const DataTable& table, int col, int startRow, int endRow);
 };
 
 /**
@@ -178,27 +178,27 @@ class SCAVE_API CsvExport : public ScaveExport
     public:
         CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE),
                         columnNames(true), fileNameSuffix(0) {}
-        virtual void saveVector(const std::string &name, const std::string &description,
-                        ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
+        virtual void saveVector(const std::string& name, const std::string& description,
+                        ID vectorID, bool computed, const XYArray *vec, ResultFileManager& manager,
                         int startIndex=0, int endIndex=-1) override;
     protected:
         virtual std::string makeFileName(const std::string name) override;
-        virtual std::string makeIdentifier(const std::string &name) override;
-        virtual void saveTable(const DataTable &table, int startRow, int endRow) override;
+        virtual std::string makeIdentifier(const std::string& name) override;
+        virtual void saveTable(const DataTable& table, int startRow, int endRow) override;
     private:
-        void writeHeader(const DataTable &table);
-        void writeRow(const DataTable &table, int row);
+        void writeHeader(const DataTable& table);
+        void writeRow(const DataTable& table, int row);
         void writeDouble(double value);
         void writeBigDecimal(BigDecimal value);
-        void writeString(const std::string &value);
-        bool needsQuote(const std::string &value);
+        void writeString(const std::string& value);
+        bool needsQuote(const std::string& value);
         void writeChar(char ch);
 };
 
 class SCAVE_API ExporterFactory
 {
     public:
-        static ScaveExport *createExporter(const std::string format);
+        static ScaveExport *createExporter(const std::string& format);
 };
 
 } // namespace scave

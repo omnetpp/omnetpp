@@ -67,15 +67,15 @@ class SCAVE_API DataTable
                 int getColumn() const { return column; }
                 void resetRow() { row = 0; }
                 void nextRow() { row++; }
-                bool operator<(const CellPtr &other) const;
+                bool operator<(const CellPtr& other) const;
         };
     public:
         const std::string name;
         const std::string description;
     protected:
         std::vector<Column> header;
-        DataTable(const std::string &name, const std::string &description) : name(name), description(description) {}
-        void addColumn(const Column &column) { header.push_back(column); }
+        DataTable(const std::string& name, const std::string& description) : name(name), description(description) {}
+        void addColumn(const Column& column) { header.push_back(column); }
     public:
         virtual ~DataTable() {}
         int getNumColumns() const { return header.size(); }
@@ -100,8 +100,8 @@ class SCAVE_API XYDataTable : public DataTable
     private:
         const XYArray *vec;
     public:
-        XYDataTable(const std::string &name, const std::string &description,
-            const std::string &xColumnName, const std::string &yColumnName, const XYArray *vec);
+        XYDataTable(const std::string& name, const std::string& description,
+            const std::string& xColumnName, const std::string& yColumnName, const XYArray *vec);
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
         virtual double getDoubleValue(int row, int col) const override;
@@ -115,9 +115,9 @@ class SCAVE_API XYDataTable : public DataTable
 class SCAVE_API ScatterDataTable : public DataTable
 {
     private:
-        const XYDataset &dataset;
+        const XYDataset& dataset;
     public:
-        ScatterDataTable(const std::string &name, const std::string &description, const XYDataset &data);
+        ScatterDataTable(const std::string& name, const std::string& description, const XYDataset& data);
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
         virtual double getDoubleValue(int row, int col) const override;
@@ -132,10 +132,10 @@ class SCAVE_API ScalarDataTable : public DataTable
 {
     private:
         IDVectorVector scalars;
-        ResultFileManager &manager;
+        ResultFileManager& manager;
     public:
         ScalarDataTable(const std::string name, const std::string description,
-            const IDList &idlist, ResultItemFields groupBy, ResultFileManager &manager);
+            const IDList& idlist, ResultItemFields groupBy, ResultFileManager& manager);
 
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
@@ -152,7 +152,7 @@ class SCAVE_API HistogramDataTable : public DataTable
     private:
         const HistogramResult *histResult;
     public:
-        HistogramDataTable(const std::string &name, const std::string &description, const HistogramResult *histogramResult);
+        HistogramDataTable(const std::string& name, const std::string& description, const HistogramResult *histogramResult);
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
         virtual double getDoubleValue(int row, int col) const override;
@@ -174,7 +174,7 @@ class SCAVE_API JoinedDataTable : public DataTable
                      //   implemented as a two dimensional array (has rowCount*tableCount elements)
     public:
         JoinedDataTable(const std::string name, const std::string description,
-            const std::vector<DataTable*> &joinedTables, int joinOnColumn);
+            const std::vector<DataTable*>& joinedTables, int joinOnColumn);
         virtual ~JoinedDataTable();
 
         virtual int getNumRows() const override;
@@ -183,11 +183,11 @@ class SCAVE_API JoinedDataTable : public DataTable
         virtual BigDecimal getBigDecimalValue(int row, int col) const override;
         virtual std::string getStringValue(int row, int col) const override;
     private:
-        void addColumn(const Column &column, int tableIndex, int colIndex);
-        void mapTableCell(int row, int column, DataTable *&table, int &tableRow, int &tableCol) const;
+        void addColumn(const Column& column, int tableIndex, int colIndex);
+        void mapTableCell(int row, int column, DataTable *&table, int& tableRow, int& tableCol) const;
 };
 
-inline void JoinedDataTable::addColumn(const Column &column, int tableIndex, int colIndex)
+inline void JoinedDataTable::addColumn(const Column& column, int tableIndex, int colIndex)
 {
     header.push_back(column); //addColumn(column);
     columnMap.push_back(std::make_pair(tableIndex, colIndex));

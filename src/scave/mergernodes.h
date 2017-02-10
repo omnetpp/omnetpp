@@ -87,7 +87,7 @@ class SCAVE_API AggregatorNode : public Node
         Port out;
         PortVector ports;
     public:
-        AggregatorNode(const std::string &function);
+        AggregatorNode(const std::string& function);
         virtual ~AggregatorNode() {}
 
         Port *addPort();

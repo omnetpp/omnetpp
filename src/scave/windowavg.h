@@ -49,7 +49,7 @@ class SCAVE_API WindowAverageNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const override;
         virtual void getAttrDefaults(StringMap& attrs) const override;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap& attrs, /*out*/StringVector& warnings) const override;
 };
 
 /**
@@ -62,10 +62,10 @@ class SCAVE_API TimeWindowAverageNode : public FilterNode
         simultime_t win_end;
         double sum;
         long count;
-        void collect(const Datum &d) { sum += d.y; count++; }
+        void collect(const Datum& d) { sum += d.y; count++; }
         void outputWindowAverage();
-        bool inCurrentWindow(const Datum &d) const { return (!d.xp.isNil() && d.xp < win_end) || d.x < win_end.dbl(); }
-        void moveWindow(const Datum &d);
+        bool inCurrentWindow(const Datum& d) const { return (!d.xp.isNil() && d.xp < win_end) || d.x < win_end.dbl(); }
+        void moveWindow(const Datum& d);
 
     public:
         TimeWindowAverageNode(simultime_t windowSize);
@@ -89,7 +89,7 @@ inline void TimeWindowAverageNode::outputWindowAverage()
     }
 }
 
-inline void TimeWindowAverageNode::moveWindow(const Datum &d)
+inline void TimeWindowAverageNode::moveWindow(const Datum& d)
 {
     BigDecimal x = d.xp.isNil() ? BigDecimal(d.x) : d.xp;
     if (x < win_end + winsize)
@@ -109,7 +109,7 @@ class SCAVE_API TimeWindowAverageNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const override;
         virtual void getAttrDefaults(StringMap& attrs) const override;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap& attrs, /*out*/StringVector& warnings) const override;
 };
 
 

@@ -46,7 +46,7 @@ class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
         virtual void getAttributes(StringMap& attrs) const override;
         virtual void getAttrDefaults(StringMap& attrs) const override;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const override;
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const override;
+        virtual void mapVectorAttributes(/*inout*/StringMap& attrs, /*out*/StringVector& warnings) const override;
 };
 
 } // namespace scave

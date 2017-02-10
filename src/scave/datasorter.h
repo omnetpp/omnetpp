@@ -63,7 +63,7 @@ class SCAVE_API XYDataset
             : rowFields(rowFields), columnFields(columnFields),
             rowKeyToIndexMap(ResultItemFieldsLess(rowFields)),
             columnKeyToIndexMap(ResultItemFieldsLess(columnFields)) {};
-        void add(const ScalarResult &d);
+        void add(const ScalarResult& d);
         void swapRows(int row1, int row2);
         void sortColumnsAccordingToFirstRowMean();
         void sortRows();
@@ -200,7 +200,7 @@ class SCAVE_API DataSorter
      */
     XYDatasetVector prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
             ResultItemFields rowFields, ResultItemFields columnFields,
-            const StringVector &isoModuleNames, const StringVector &isoScalarNames, ResultItemFields isoFields);
+            const StringVector& isoModuleNames, const StringVector& isoScalarNames, ResultItemFields isoFields);
 
 
     /**

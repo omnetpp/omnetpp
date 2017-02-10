@@ -105,7 +105,7 @@ struct VectorData {
     /**
      * Adds the block statistics to the vector statistics.
      */
-    void collect(const Block &block)
+    void collect(const Block& block)
     {
         if (getCount() == 0)
         {
@@ -119,7 +119,7 @@ struct VectorData {
             blockSize = block.size;
     }
 
-    void addBlock(const Block &block) { blocks.push_back(block); collect(block); }
+    void addBlock(const Block& block) { blocks.push_back(block); collect(block); }
 
     /**
      * Returns true if the vector contains the specified column.
@@ -151,14 +151,14 @@ struct VectorData {
      * containing entries in the [startTime,endTime] interval (both inclusive).
      * Returns the number of blocks found.
      */
-    Blocks::size_type getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
+    Blocks::size_type getBlocksInSimtimeInterval(simultime_t startTime, simultime_t endTime, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const;
 
     /**
      * Finds the start (inclusive) and end (exclusive) indeces of the range of blocks,
      * containing entries in the [startEventNum,endEventNum] interval (both inclusive).
      * Returns the number of blocks found.
      */
-    Blocks::size_type getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
+    Blocks::size_type getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type& startIndex, Blocks::size_type& endIndex) const;
 };
 
 typedef std::vector<VectorData> Vectors;
@@ -210,7 +210,7 @@ public:
         return vectors.size();
     }
 
-    void addVector(const VectorData &vector)
+    void addVector(const VectorData& vector)
     {
         map[vector.vectorId] = vectors.size();
         vectors.push_back(vector);
@@ -219,13 +219,13 @@ public:
     const VectorData *getVectorAt(int index) const
     {
         Assert(0 <= index && index < (int)vectors.size());
-        return &vectors[index];
+        return& vectors[index];
     }
 
     VectorData *getVectorAt(int index)
     {
         Assert(0 <= index && index < (int)vectors.size());
-        return &vectors[index];
+        return& vectors[index];
     }
 
     VectorData *getVectorById(int vectorId)
@@ -316,7 +316,7 @@ class SCAVE_API IndexFileWriter
         /**
          * Writes out the run attributes.
          */
-        void writeRun(const RunData &run);
+        void writeRun(const RunData& run);
         /**
          * Writes out the index of one vector (declaration+blocks).
          */
@@ -332,7 +332,7 @@ class SCAVE_API IndexFileWriter
         /**
          * Writes out a block of the specified vector.
          */
-        void writeBlock(const VectorData &vector, const Block& block);
+        void writeBlock(const VectorData& vector, const Block& block);
     protected:
         /** Opens the index file. */
         void openFile();

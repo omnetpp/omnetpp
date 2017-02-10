@@ -55,9 +55,9 @@ class SCAVE_API ResultItemField
         ResultItemField(const std::string fieldName);
         int getID() const { return id; }
         const std::string getName() const { return name; };
-        std::string getFieldValue(const ResultItem &d) const ;
-        bool equal(const ResultItem &d1, const ResultItem &d2) const;
-        int compare(const ResultItem &d1, const ResultItem &d2) const;
+        std::string getFieldValue(const ResultItem& d) const ;
+        bool equal(const ResultItem& d1, const ResultItem& d2) const;
+        int compare(const ResultItem& d1, const ResultItem& d2) const;
 };
 
 class SCAVE_API ResultItemAttribute
@@ -93,7 +93,7 @@ class SCAVE_API RunAttribute
         static bool isAttributeName(const std::string name);
 };
 
-inline const char *getAttribute(const ResultItem &d, const std::string attrName)
+inline const char *getAttribute(const ResultItem& d, const std::string attrName)
 {
     const char *value = d.getAttribute(attrName.c_str());
     return value ? value : "";
@@ -111,7 +111,7 @@ inline const char *getRunParam(const ResultItem &d, const std::string paramName)
     return value ? value : "";
 }
 
-inline std::string ResultItemField::getFieldValue(const ResultItem &d) const
+inline std::string ResultItemField::getFieldValue(const ResultItem& d) const
 {
     switch(id)
     {
@@ -132,7 +132,7 @@ inline int strcmpFIXME(const char *str1, const char *str2)
 }
 
 
-inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) const
+inline bool ResultItemField::equal(const ResultItem& d1, const ResultItem& d2) const
 {
     switch (id)
     {
@@ -149,7 +149,7 @@ inline bool ResultItemField::equal(const ResultItem &d1, const ResultItem &d2) c
     return true;
 }
 
-inline int ResultItemField::compare(const ResultItem &d1, const ResultItem &d2) const
+inline int ResultItemField::compare(const ResultItem& d1, const ResultItem& d2) const
 {
     using omnetpp::common::strdictcmp;
     switch (id)
@@ -188,7 +188,7 @@ class SCAVE_API ResultItemFields
         ResultItemFields() {};
         ResultItemFields(ResultItemField field);
         ResultItemFields(const std::string fieldName);
-        ResultItemFields(const StringVector &fieldNames);
+        ResultItemFields(const StringVector& fieldNames);
 
         ResultItemFields complement() const;
         bool hasField(ResultItemField field) const;
@@ -196,7 +196,7 @@ class SCAVE_API ResultItemFields
         const_iterator begin() const { return fields.begin(); };
         const_iterator end() const { return fields.end(); };
         bool less(ID id1, ID id2, ResultFileManager *manager) const;
-        bool less(const ResultItem &d1, const ResultItem &d2) const;
+        bool less(const ResultItem& d1, const ResultItem& d2) const;
         bool equal(ID id1, ID id2, ResultFileManager *manager) const;
         bool equal(const ResultItem& d1, const ResultItem& d2) const;
 };
@@ -209,7 +209,7 @@ struct ResultItemFieldsEqual : public std::binary_function<ResultItem, ResultIte
 {
     ResultItemFields fields;
     ResultItemFieldsEqual(const ResultItemFields fields) : fields(fields) {}
-    bool operator()(const ResultItem &d1, const ResultItem &d2) const { return fields.equal(d1, d2); }
+    bool operator()(const ResultItem& d1, const ResultItem& d2) const { return fields.equal(d1, d2); }
 };
 
 struct IDFieldsEqual : public std::binary_function<ID,ID,bool>
@@ -229,7 +229,7 @@ struct ResultItemFieldsLess : public std::binary_function<ResultItem, ResultItem
     ResultItemFields fields;
     ResultItemFieldsLess() {}
     ResultItemFieldsLess(const ResultItemFields fields) : fields(fields) {}
-    bool operator()(const ResultItem &d1, const ResultItem &d2) const { return fields.less(d1, d2); }
+    bool operator()(const ResultItem& d1, const ResultItem& d2) const { return fields.less(d1, d2); }
 };
 
 struct IDFieldsLess : public std::binary_function<ID,ID,bool>
