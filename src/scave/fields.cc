@@ -21,6 +21,7 @@
 #include <cassert>
 #include "common/commonutil.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "fields.h"
 
 using namespace std;
@@ -35,11 +36,9 @@ namespace scave {
 const char *const ResultItemAttribute::TYPE = "type";
 const char *const ResultItemAttribute::ENUM = "enum";
 
-StringVector ResultItemAttribute::getAttributeNames()
+const StringVector& ResultItemAttribute::getAttributeNames()
 {
-    StringVector names = StringVector();
-    names.push_back(TYPE);
-    names.push_back(ENUM);
+    static StringVector names { TYPE, ENUM };
     return names;
 }
 
@@ -68,23 +67,12 @@ const char * const RunAttribute::SEEDSET     = "seedset";
 const char * const RunAttribute::ITERATIONVARS = "iterationvars";
 const char * const RunAttribute::ITERATIONVARS2 = "iterationvars2";
 
-StringVector RunAttribute::getAttributeNames()
+const StringVector& RunAttribute::getAttributeNames()
 {
-    StringVector names = StringVector();
-    names.push_back(INIFILE);
-    names.push_back(CONFIGNAME);
-    names.push_back(RUNNUMBER);
-    names.push_back(NETWORK);
-    names.push_back(EXPERIMENT);
-    names.push_back(MEASUREMENT);
-    names.push_back(REPLICATION);
-    names.push_back(DATETIME);
-    names.push_back(PROCESSID);
-    names.push_back(RESULTDIR);
-    names.push_back(REPETITION);
-    names.push_back(SEEDSET);
-    names.push_back(ITERATIONVARS);
-    names.push_back(ITERATIONVARS2);
+    static StringVector names {
+        INIFILE, CONFIGNAME, RUNNUMBER, NETWORK, EXPERIMENT, MEASUREMENT, REPLICATION,
+        DATETIME, PROCESSID, RESULTDIR, REPETITION, SEEDSET, ITERATIONVARS, ITERATIONVARS2
+    };
     return names;
 }
 
@@ -133,17 +121,14 @@ int ResultItemField::getFieldID(const string& fieldName)
  *              ResultItemFields
  *----------------------------------------*/
 
-StringVector ResultItemFields::getFieldNames()
+const StringVector& ResultItemFields::getFieldNames()
 {
-    StringVector names = StringVector();
-    names.push_back(ResultItemField::FILE);
-    names.push_back(ResultItemField::RUN);
-    names.push_back(ResultItemField::MODULE);
-    names.push_back(ResultItemField::NAME);
-    StringVector attrNames = ResultItemAttribute::getAttributeNames();
-    names.insert(names.end(), attrNames.begin(), attrNames.end());
-    attrNames = RunAttribute::getAttributeNames();
-    names.insert(names.end(), attrNames.begin(), attrNames.end());
+    static StringVector names;
+    if (names.empty()) {
+        addAll(names, StringVector { ResultItemField::FILE, ResultItemField::RUN, ResultItemField::MODULE, ResultItemField::NAME });
+        addAll(names, ResultItemAttribute::getAttributeNames());
+        addAll(names, RunAttribute::getAttributeNames());
+    }
     return names;
 }
 

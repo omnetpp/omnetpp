@@ -66,7 +66,7 @@ class SCAVE_API ResultItemAttribute
         static const char * const TYPE;
         static const char * const ENUM;
 
-        static StringVector getAttributeNames();
+        static const StringVector& getAttributeNames();
         static bool isAttributeName(const std::string& name);
 };
 
@@ -89,7 +89,7 @@ class SCAVE_API RunAttribute
         static const char * const ITERATIONVARS;
         static const char * const ITERATIONVARS2;
 
-        static StringVector getAttributeNames();
+        static const StringVector& getAttributeNames();
         static bool isAttributeName(const std::string& name);
 };
 
@@ -105,7 +105,7 @@ inline const char *getRunAttribute(const ResultItem &d, const std::string& attrN
     return value ? value : "";
 }
 
-inline const char *getRunParam(const ResultItem &d, const std::string& paramName)
+inline const char *getRunParam(const ResultItem& d, const std::string& paramName)
 {
     const char *value = d.fileRunRef->runRef->getModuleParam(paramName.c_str());
     return value ? value : "";
@@ -183,7 +183,7 @@ class SCAVE_API ResultItemFields
     public:
         typedef std::vector<ResultItemField>::const_iterator const_iterator;
 
-        static StringVector getFieldNames();
+        static const StringVector& getFieldNames();
 
         ResultItemFields() {};
         ResultItemFields(ResultItemField field);

@@ -21,11 +21,29 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <algorithm>
 #include "commonutil.h"  // Assert()
 
 namespace omnetpp {
 namespace common {
+
+template<typename T>
+typename std::vector<T>& addAll(std::vector<T>& v, const std::vector<T>& w) {
+    v.insert(v.end(), w.begin(), w.end());
+    return v;
+}
+
+template<typename T>
+typename std::set<T>& addAll(std::set<T>& s, const std::set<T>& t) {
+    s.insert(t.begin(), t.end());
+    return s;
+}
+
+template<typename K, typename V>
+inline std::map<K,V>& addAll(std::map<K,V>& m, const std::map<K,V>& n) {
+    m.insert(n.begin(), n.end());
+}
 
 template<typename T>
 typename std::vector<T>::iterator find(std::vector<T>& v, const T& a) {
