@@ -43,7 +43,7 @@ StringVector ResultItemAttribute::getAttributeNames()
     return names;
 }
 
-bool ResultItemAttribute::isAttributeName(const string name)
+bool ResultItemAttribute::isAttributeName(const string& name)
 {
     return name == TYPE || name == ENUM;
 }
@@ -88,7 +88,7 @@ StringVector RunAttribute::getAttributeNames()
     return names;
 }
 
-bool RunAttribute::isAttributeName(const string name)
+bool RunAttribute::isAttributeName(const string& name)
 {
     return name == INIFILE || name == CONFIGNAME || name == RUNNUMBER || name == NETWORK ||
            name == EXPERIMENT || name == MEASUREMENT || name == REPLICATION ||
@@ -105,13 +105,13 @@ const char * const ResultItemField::RUN    = "run";
 const char * const ResultItemField::MODULE = "module";
 const char * const ResultItemField::NAME   = "name";
 
-ResultItemField::ResultItemField(const string fieldName)
+ResultItemField::ResultItemField(const string& fieldName)
 {
     this->id = getFieldID(fieldName);
     this->name = fieldName;
 }
 
-int ResultItemField::getFieldID(const string fieldName)
+int ResultItemField::getFieldID(const string& fieldName)
 {
     if (fieldName == ResultItemField::FILE)
         return ResultItemField::FILE_ID;
@@ -152,7 +152,7 @@ ResultItemFields::ResultItemFields(ResultItemField field)
     this->fields.push_back(field);
 }
 
-ResultItemFields::ResultItemFields(const string fieldName)
+ResultItemFields::ResultItemFields(const string& fieldName)
 {
     this->fields.push_back(ResultItemField(fieldName));
 }
@@ -168,7 +168,7 @@ bool ResultItemFields::hasField(ResultItemField field) const
     return hasField(field.getName());
 }
 
-bool ResultItemFields::hasField(const string fieldName) const
+bool ResultItemFields::hasField(const string& fieldName) const
 {
     for (vector<ResultItemField>::const_iterator field = fields.begin(); field != fields.end(); ++field)
         if (field->getName() == fieldName)

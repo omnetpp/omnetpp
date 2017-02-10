@@ -51,7 +51,7 @@ class SCAVE_API DataTable
         {
             std::string name;
             ColumnType  type;
-            Column(const std::string name, ColumnType type) : name(name), type(type) {}
+            Column(const std::string& name, ColumnType type) : name(name), type(type) {}
         };
 
         class CellPtr {
@@ -134,7 +134,7 @@ class SCAVE_API ScalarDataTable : public DataTable
         IDVectorVector scalars;
         ResultFileManager& manager;
     public:
-        ScalarDataTable(const std::string name, const std::string description,
+        ScalarDataTable(const std::string& name, const std::string& description,
             const IDList& idlist, ResultItemFields groupBy, ResultFileManager& manager);
 
         virtual int getNumRows() const override;
@@ -173,7 +173,7 @@ class SCAVE_API JoinedDataTable : public DataTable
         int* rowMap; // maps (row,tableIndex) -> tableRow
                      //   implemented as a two dimensional array (has rowCount*tableCount elements)
     public:
-        JoinedDataTable(const std::string name, const std::string description,
+        JoinedDataTable(const std::string& name, const std::string& description,
             const std::vector<DataTable*>& joinedTables, int joinOnColumn);
         virtual ~JoinedDataTable();
 

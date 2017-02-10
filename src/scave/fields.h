@@ -50,11 +50,11 @@ class SCAVE_API ResultItemField
     private:
         int id;
         std::string name; // constant names above + attribute/param names
-        static int getFieldID(const std::string fieldName);
+        static int getFieldID(const std::string& fieldName);
     public:
-        ResultItemField(const std::string fieldName);
+        ResultItemField(const std::string& fieldName);
         int getID() const { return id; }
-        const std::string getName() const { return name; };
+        const std::string& getName() const { return name; };
         std::string getFieldValue(const ResultItem& d) const ;
         bool equal(const ResultItem& d1, const ResultItem& d2) const;
         int compare(const ResultItem& d1, const ResultItem& d2) const;
@@ -67,7 +67,7 @@ class SCAVE_API ResultItemAttribute
         static const char * const ENUM;
 
         static StringVector getAttributeNames();
-        static bool isAttributeName(const std::string name);
+        static bool isAttributeName(const std::string& name);
 };
 
 
@@ -90,22 +90,22 @@ class SCAVE_API RunAttribute
         static const char * const ITERATIONVARS2;
 
         static StringVector getAttributeNames();
-        static bool isAttributeName(const std::string name);
+        static bool isAttributeName(const std::string& name);
 };
 
-inline const char *getAttribute(const ResultItem& d, const std::string attrName)
+inline const char *getAttribute(const ResultItem& d, const std::string& attrName)
 {
     const char *value = d.getAttribute(attrName.c_str());
     return value ? value : "";
 }
 
-inline const char *getRunAttribute(const ResultItem &d, const std::string attrName)
+inline const char *getRunAttribute(const ResultItem &d, const std::string& attrName)
 {
     const char *value = d.fileRunRef->runRef->getAttribute(attrName.c_str());
     return value ? value : "";
 }
 
-inline const char *getRunParam(const ResultItem &d, const std::string paramName)
+inline const char *getRunParam(const ResultItem &d, const std::string& paramName)
 {
     const char *value = d.fileRunRef->runRef->getModuleParam(paramName.c_str());
     return value ? value : "";
@@ -187,12 +187,12 @@ class SCAVE_API ResultItemFields
 
         ResultItemFields() {};
         ResultItemFields(ResultItemField field);
-        ResultItemFields(const std::string fieldName);
+        ResultItemFields(const std::string& fieldName);
         ResultItemFields(const StringVector& fieldNames);
 
         ResultItemFields complement() const;
         bool hasField(ResultItemField field) const;
-        bool hasField(const std::string fieldName) const;
+        bool hasField(const std::string& fieldName) const;
         const_iterator begin() const { return fields.begin(); };
         const_iterator end() const { return fields.end(); };
         bool less(ID id1, ID id2, ResultFileManager *manager) const;

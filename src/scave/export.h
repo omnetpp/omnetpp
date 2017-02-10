@@ -49,14 +49,14 @@ class SCAVE_API ScaveExport
     protected:
         void open();
         void close();
-        virtual std::string makeFileName(const std::string name) = 0;
+        virtual std::string makeFileName(const std::string& name) = 0;
 
     public:
         ScaveExport() : prec(DEFAULT_RESULT_PRECISION) {}
         virtual ~ScaveExport();
 
         void setPrecision(int prec) { this->prec = prec; }
-        void setBaseFileName(const std::string baseFileName) { this->baseFileName = baseFileName; }
+        void setBaseFileName(const std::string& baseFileName) { this->baseFileName = baseFileName; }
 
         virtual void saveVector(const std::string& name, const std::string& description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager& manager,
@@ -110,11 +110,11 @@ class MatlabStructExport : public ScaveExport
 class SCAVE_API MatlabScriptExport : public MatlabStructExport
 {
     protected:
-        virtual std::string makeFileName(const std::string name) override;
+        virtual std::string makeFileName(const std::string& name) override;
         virtual void saveTable(const DataTable& table, int startRow, int endRow) override;
     private:
-        void writeDescriptionField(const DataTable& rows, const std::string tableName);
-        void writeColumnFields(const DataTable& rows, int startRow, int endRow, const std::string tableName);
+        void writeDescriptionField(const DataTable& rows, const std::string& tableName);
+        void writeColumnFields(const DataTable& rows, int startRow, int endRow, const std::string& tableName);
         void writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow);
         void writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow);
         void writeStringColumn(const DataTable& table, int col, int startRow, int endRow);
@@ -149,7 +149,7 @@ class SCAVE_API MatlabScriptExport : public MatlabStructExport
 class SCAVE_API OctaveTextExport : public MatlabStructExport
 {
     protected:
-        virtual std::string makeFileName(const std::string name) override;
+        virtual std::string makeFileName(const std::string& name) override;
         virtual void saveTable(const DataTable& table, int startRow, int endRow) override;
     private:
         void writeStructHeader(const DataTable& table);
@@ -182,7 +182,7 @@ class SCAVE_API CsvExport : public ScaveExport
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager& manager,
                         int startIndex=0, int endIndex=-1) override;
     protected:
-        virtual std::string makeFileName(const std::string name) override;
+        virtual std::string makeFileName(const std::string& name) override;
         virtual std::string makeIdentifier(const std::string& name) override;
         virtual void saveTable(const DataTable& table, int startRow, int endRow) override;
     private:

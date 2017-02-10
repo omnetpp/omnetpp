@@ -158,7 +158,7 @@ double ScatterDataTable::getDoubleValue(int row, int col) const
 /*================================
  *          Scalars
  *================================*/
-ScalarDataTable::ScalarDataTable(const std::string name, const std::string description,
+ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& description,
         const IDList& idlist, ResultItemFields groupBy, ResultFileManager& manager)
     : DataTable(name, description), manager(manager)
 {
@@ -360,7 +360,7 @@ void DataTableIterator::next()
     }
 }
 
-JoinedDataTable::JoinedDataTable(const string name, const string description,
+JoinedDataTable::JoinedDataTable(const string& name, const string& description,
         const vector<DataTable *>& joinedTables, int joinOnColumn)
     : DataTable(name, description), joinedTables(joinedTables), rowMap(nullptr)
 {

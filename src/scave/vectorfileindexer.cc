@@ -38,13 +38,13 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-static inline bool existsFile(const string fileName)
+static inline bool existsFile(const string& fileName)
 {
     struct stat s;
     return stat(fileName.c_str(), &s) == 0;
 }
 
-static string createTempFileName(const string baseFileName)
+static string createTempFileName(const string& baseFileName)
 {
     string prefix = baseFileName;
     prefix.append(".temp");

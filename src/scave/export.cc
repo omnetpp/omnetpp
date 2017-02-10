@@ -184,7 +184,7 @@ void MatlabStructExport::writeDouble(double value)
         out << value;
 }
 
-string MatlabScriptExport::makeFileName(const string name)
+string MatlabScriptExport::makeFileName(const string& name)
 {
     string fileName = name;
     if (fileName.empty())
@@ -202,12 +202,12 @@ void MatlabScriptExport::saveTable(const DataTable& table, int startRow, int end
     writeColumnFields(table, startRow, endRow, tableName);
 }
 
-void MatlabScriptExport::writeDescriptionField(const DataTable& table, const string tableName)
+void MatlabScriptExport::writeDescriptionField(const DataTable& table, const string& tableName)
 {
     out << tableName << ".description=" << quoteString(table.description) << '\n';
 }
 
-void MatlabScriptExport::writeColumnFields(const DataTable& table, int startRow, int endRow, const string tableName)
+void MatlabScriptExport::writeColumnFields(const DataTable& table, int startRow, int endRow, const string& tableName)
 {
     for (int col = 0; col < table.getNumColumns(); ++col) {
         DataTable::Column column = table.getColumn(col);
@@ -257,7 +257,7 @@ void MatlabScriptExport::writeBigDecimalColumn(const DataTable& table, int col, 
 /*===============================
  *           Octave
  *===============================*/
-string OctaveTextExport::makeFileName(const string name)
+string OctaveTextExport::makeFileName(const string& name)
 {
     string fileName = name;
     if (fileName.empty())
@@ -382,7 +382,7 @@ void OctaveTextExport::writeStringColumn(const DataTable& table, int col, int st
 /**
  * Generate a new filename for each table by appending '-1','-2',... suffixes to the base filename.
  */
-string CsvExport::makeFileName(const string name)
+string CsvExport::makeFileName(const string& name)
 {
     string file(name), extension(".csv");
     stringstream suffix;
