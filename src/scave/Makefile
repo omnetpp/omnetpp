@@ -34,7 +34,8 @@ OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/scaveexception.o $O/enumtype.o $O/export.o $O/teenode.o \
       $O/indexedvectorfilereader.o $O/xyarray.o $O/fields.o \
       $O/sqlitevectorreader.o $O/vectorreaderbyfiletype.o \
-      $O/indexedvectorfilereader2.o $O/sqliteresultfileutils.o
+      $O/indexedvectorfilereader2.o $O/sqliteresultfileutils.o \
+      $O/datatable.o
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DSCAVE_EXPORT
