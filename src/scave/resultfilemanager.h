@@ -50,7 +50,12 @@ struct Run;
 struct ResultFile;
 struct FileRun;
 class ResultFileManager;
+class CmpBase;
+class OmnetppResultFileLoader;
+class SqliteResultFileLoader;
 
+typedef std::vector<std::string> StringVector;
+typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringMap;
 
 typedef int64_t ComputationID;
@@ -131,7 +136,7 @@ struct SCAVE_API VectorResult : public ResultItem
 
     VectorResult() : vectorId(-1), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
-    Statistics getStatistics() const { return stat; }
+    const Statistics& getStatistics() const { return stat; }
 
     /**
      * Returns the value of the "interpolation-mode" attribute as an InterpolationMode,
@@ -150,7 +155,7 @@ struct SCAVE_API HistogramResult : public ResultItem
     std::vector<double> bins;
     std::vector<double> values;
 
-    Statistics getStatistics() const { return stat; }
+    const Statistics& getStatistics() const { return stat; }
 
     void addBin(double lower_bound, double value);
 };
@@ -234,15 +239,7 @@ struct SCAVE_API FileRun
     Run *runRef;
 };
 
-typedef std::set<std::string> StringSet;
-typedef std::vector<std::string> StringVector;
-
 typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
-
-class CmpBase;
-
-class OmnetppResultFileLoader;
-class SqliteResultFileLoader;
 
 /**
  * Loads and efficiently stores OMNeT++ output scalar files and output
@@ -258,6 +255,8 @@ class SCAVE_API ResultFileManager
 {
     friend class IDList;  // _type()
     friend class CmpBase; // uncheckedGet...()
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
   private:
     // List of files loaded. This vector can have holes (NULLs) in it due to
     // unloaded files. The "id" field of ResultFile is the index into this vector.
@@ -453,9 +452,6 @@ class SCAVE_API ResultFileManager
     StringVector *getModuleParamFilterHints(const RunList& runList, const char * paramName) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;
-
-    friend class OmnetppResultFileLoader;
-    friend class SqliteResultFileLoader;
 };
 
 inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
