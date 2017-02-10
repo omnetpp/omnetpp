@@ -76,38 +76,10 @@ class SCAVE_API XYDataset
         std::string getRowField(int row, ResultItemField field) const;
         std::string getRowFieldNoCheck(int row, ResultItemField field) const;
         std::string getColumnField(int column, ResultItemField field) const;
-        Statistics getValue(int row, int column) const;
+        const Statistics& getValue(int row, int column) const;
 };
 
 typedef std::vector<XYDataset> XYDatasetVector;
-
-inline std::string XYDataset::getRowField(int row, ResultItemField field) const
-{
-    if (row < 0 || row >= getRowCount() || !rowFields.hasField(field))
-        return "";
-    return field.getFieldValue(rowKeys[rowOrder[row]]);
-}
-
-inline std::string XYDataset::getRowFieldNoCheck(int row, ResultItemField field) const
-{
-    if (row < 0 || row >= getRowCount())
-        return "";
-    return field.getFieldValue(rowKeys[rowOrder[row]]);
-}
-
-inline std::string XYDataset::getColumnField(int column, ResultItemField field) const
-{
-    if (column < 0 || column >= getColumnCount() || !columnFields.hasField(field))
-        return "";
-    return field.getFieldValue(columnKeys[columnOrder[column]]);
-}
-
-inline Statistics XYDataset::getValue(int row, int column) const
-{
-    if (row < 0 || column < 0 || row >= getRowCount() || column >= getColumnCount())
-        return Statistics();
-    return values.at(rowOrder[row]).at(columnOrder[column]);
-}
 
 /**
  * Helps to organize scalars in a ResultFileManager into bar charts,

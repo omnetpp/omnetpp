@@ -120,6 +120,35 @@ void XYDataset::sortColumnsAccordingToFirstRowMean()
     }
 }
 
+std::string XYDataset::getRowField(int row, ResultItemField field) const
+{
+    if (row < 0 || row >= getRowCount() || !rowFields.hasField(field))
+        return "";
+    return field.getFieldValue(rowKeys[rowOrder[row]]);
+}
+
+std::string XYDataset::getRowFieldNoCheck(int row, ResultItemField field) const
+{
+    if (row < 0 || row >= getRowCount())
+        return "";
+    return field.getFieldValue(rowKeys[rowOrder[row]]);
+}
+
+std::string XYDataset::getColumnField(int column, ResultItemField field) const
+{
+    if (column < 0 || column >= getColumnCount() || !columnFields.hasField(field))
+        return "";
+    return field.getFieldValue(columnKeys[columnOrder[column]]);
+}
+
+const Statistics& XYDataset::getValue(int row, int column) const
+{
+    static Statistics empty;
+    if (row < 0 || column < 0 || row >= getRowCount() || column >= getColumnCount())
+        return empty;
+    return values.at(rowOrder[row]).at(columnOrder[column]);
+}
+
 /*
  * Grouping functions
  */
