@@ -27,9 +27,9 @@ public class InputFilesPanel extends TreeWithButtonsPanel {
     private void initialize() {
         Composite buttonPanel = getButtonPanel();
         FormToolkit toolkit = getFormToolkit();
-        addFileButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
         addWildcardButton = toolkit.createButton(buttonPanel, "Add wildcard...", SWT.NONE);
-        editButton = toolkit.createButton(buttonPanel, "Edit", SWT.NONE);
+        addFileButton = toolkit.createButton(buttonPanel, "Add file...", SWT.NONE);
+        editButton = toolkit.createButton(buttonPanel, "Edit...", SWT.NONE);
         removeFileButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
     }
 

@@ -212,8 +212,8 @@ public class ScaveEditorPage extends Composite {
     private static void doConfigureButton(final Button button, final IScaveAction action) {
         button.setText(action.getText());
         button.setToolTipText(action.getToolTipText());
-        if (action.getImageDescriptor() != null)
-            button.setImage(action.getImageDescriptor().createImage());
+        //if (action.getImageDescriptor() != null)
+        //    button.setImage(action.getImageDescriptor().createImage());
 
         button.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {

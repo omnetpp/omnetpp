@@ -25,7 +25,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class AddWildcardResultFileAction extends AbstractScaveAction {
     public AddWildcardResultFileAction() {
-        setText("Wildcard...");
+        setText("Add Wildcard...");
         setToolTipText("Use wildcards to specify a set of scalar or vector files");
     }
 
@@ -49,7 +49,7 @@ public class AddWildcardResultFileAction extends AbstractScaveAction {
         InputValidator inputValidator = new InputValidator();
         InputDialog dialog = new InputDialog(editor.getSite().getShell(), "Add files with wildcard",
                 "Enter the file name. You can use ? and * wildcards to specify multiple files.",
-                "*.vec, *.sca", inputValidator);
+                "results/*.vec, results/*.sca", inputValidator);
         if (dialog.open() == Window.OK) {
             String text = dialog.getValue();
 
