@@ -79,7 +79,7 @@ public class ResultFileManagerTreeContentProvider {
 
     public void setLevels(Class<? extends Node>[] levels) {
         if (debug)
-            System.out.println("setLevels(): " + levels);
+            Debug.println("setLevels(): " + levels);
         this.levels = levels;
         rootNodes = null;
     }

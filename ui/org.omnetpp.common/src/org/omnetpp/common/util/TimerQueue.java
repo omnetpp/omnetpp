@@ -10,13 +10,13 @@ package org.omnetpp.common.util;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 
 /**
  * Manages a list of timers and executes them using timerExec.
  * This class is not thread safe and meant to be called from the GUI thread only.
  */
 public class TimerQueue implements Runnable {
-    // TODO: use log4j or something similar
     private static boolean debug = false;
 
     /**
@@ -45,7 +45,7 @@ public class TimerQueue implements Runnable {
 
     public void addTimer(Timer timer) {
         if (debug)
-            System.out.println("Adding timer: " + timer);
+            Debug.println("Adding timer: " + timer);
 
         timers.add(timer);
 
@@ -55,7 +55,7 @@ public class TimerQueue implements Runnable {
 
     public void removeTimer(Timer timer) {
         if (debug)
-            System.out.println("Removing timer: " + timer);
+            Debug.println("Removing timer: " + timer);
 
         Timer firstTimer = getFirstTimer();
         timers.remove(timer);
@@ -70,7 +70,7 @@ public class TimerQueue implements Runnable {
 
     public void resetTimer(Timer timer) {
         if (debug)
-            System.out.println("Resetting timer: " + timer);
+            Debug.println("Resetting timer: " + timer);
 
         timer.reset();
 
@@ -80,7 +80,7 @@ public class TimerQueue implements Runnable {
 
     public void start() {
         if (debug)
-            System.out.println("Starting timer queue");
+            Debug.println("Starting timer queue");
 
         running = true;
         scheduleTimer();
@@ -88,7 +88,7 @@ public class TimerQueue implements Runnable {
 
     public void stop() {
         if (debug)
-            System.out.println("Stopping timer queue");
+            Debug.println("Stopping timer queue");
 
         running = false;
         Display.getDefault().timerExec(-1, this);
@@ -113,7 +113,7 @@ public class TimerQueue implements Runnable {
 
         if (firstTimer != null) {
             if (debug)
-                System.out.println("Running timer: " + firstTimer);
+                Debug.println("Running timer: " + firstTimer);
 
             firstTimer.execute();
 
@@ -135,7 +135,7 @@ public class TimerQueue implements Runnable {
                 nextExecutionSleepTime < 0)
             {
                 if (debug)
-                    System.out.println("Scheduling timer: " + firstTimer + " at: " + currentTime + " to: " + firstTimer.getNextExecutionTime());
+                    Debug.println("Scheduling timer: " + firstTimer + " at: " + currentTime + " to: " + firstTimer.getNextExecutionTime());
 
                 if (nextExecutionSleepTime < 0) {
                     if (firstTimer.isAllowSkipping())

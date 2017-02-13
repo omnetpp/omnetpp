@@ -721,7 +721,6 @@ public final class InifileAnalyzer {
                 int count = 0;
                 while (values.hasNext() && count < 100) {
                     String v = values.next();
-                    //System.out.format("Validating: %s%n", v);
                     validateParamKey(section, key, v);
                     count++;
                 }

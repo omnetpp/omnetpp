@@ -24,11 +24,7 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
-import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.simulation.AbstractSimulationProcess;
 import org.omnetpp.common.util.StringUtils;
@@ -113,7 +109,7 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             boolean stopOnError = configuration.getAttribute(IOmnetppLaunchConstants.OPP_STOP_BATCH_ON_ERROR, "false").equals("true"); //XXX similar ini setting won't take effect here
 
             List<List<Integer>> batches = splitIntoBatches(runNumbers, batchSize);
-            System.out.println(batches);
+            Debug.println(batches.toString());
 
             String[] batchRunFilters = batches.stream().map(batch -> StringUtils.join(batch, ",")).collect(Collectors.toList()).toArray(new String[]{});
             Job job = new BatchedSimulationLauncherJob(configuration, launch, batchRunFilters, numConcurrentProcesses, stopOnError);
@@ -142,7 +138,7 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
                     try {
                         jobGroup.join(0, monitor);
                     } catch (OperationCanceledException | InterruptedException e) {
-                        System.out.println("Cancelling group");
+                        Debug.println("Cancelling group");
                         jobGroup.cancel();
                         return Status.CANCEL_STATUS;
                     }

@@ -188,23 +188,22 @@ public class MakefileTools {
 //
 //            ICLanguageSetting languageSetting = null;
 //            for (ICLanguageSetting l : languageSettings) {
-//                System.out.println("name:" + l.getName() + " langsettingid:" + l.getId() + " parentid:" + l.getParent().toString() + " langID:" + l.getLanguageId());
+//                Debug.println("name:" + l.getName() + " langsettingid:" + l.getId() + " parentid:" + l.getParent().toString() + " langID:" + l.getLanguageId());
 //                List<ICLanguageSettingEntry> list = l.getSettingEntriesList(ICSettingEntry.INCLUDE_PATH);
 //                //list.add(new CIncludePathEntry("/hello/bubu", ICSettingEntry.VALUE_WORKSPACE_PATH | ICSettingEntry.READONLY | ICSettingEntry.BUILTIN));
 //                //list.add(new CIncludePathEntry("/hello/bubu"+System.currentTimeMillis(), ~0));
 //                list.add(new CIncludePathEntry("/hello/syspath"+System.currentTimeMillis(), ICSettingEntry.READONLY | ICSettingEntry.BUILTIN));
 //                for (ICLanguageSettingEntry e : list)
-//                    System.out.println("   " + e);
+//                    Debug.println("   " + e);
 //                // possible flags: BUILTIN, READONLY, LOCAL (??), VALUE_WORKSPACE_PATH, RESOLVED
 //                l.setSettingEntries(ICSettingEntry.INCLUDE_PATH, list); // ===> DOES NOT WORK, BUILTIN/READONLY FLAGS GET CLEARED BY CDT
 //
-//                System.out.println("UTANA:");
 //                List<ICLanguageSettingEntry> list2 = l.getSettingEntriesList(ICSettingEntry.INCLUDE_PATH);
 //                for (ICLanguageSettingEntry e : list2) {
 //                    if (e instanceof CIncludePathEntry) {
 //                        ReflectionUtils.setFieldValue(e, "fFlags", e.getFlags() | ICSettingEntry.READONLY);
 //                    }
-//                    System.out.println("   " + e);
+//                    Debug.println("   " + e);
 //                }
 //            }
 //            // remove existing include paths
@@ -219,14 +218,14 @@ public class MakefileTools {
 //        ICProject cproject = CoreModel.getDefault().getCModel().getCProject(project.getName());
 //        IPathEntry[] rawPathEntries = CoreModel.getRawPathEntries(cproject);
 //        for (IPathEntry e : rawPathEntries)
-//            System.out.println("** ENTRY: " + e);
+//            Debug.println("** ENTRY: " + e);
 //        IncludeEntry newEntry = new IncludeEntry(new Path(""), new Path(""), new Path(""), new Path("/someproj/inc-"+System.currentTimeMillis()), true, new IPath[]{}, false);
 //        rawPathEntries = (IPathEntry[])ArrayUtils.add(rawPathEntries, newEntry);
 //        CoreModel.setRawPathEntries(cproject, rawPathEntries, null);
 //
 //        // random test code...
 //        IDiscoveredPathInfo discoveredInfo = MakeCorePlugin.getDefault().getDiscoveryManager().getDiscoveredInfo(project);
-//        System.out.println(discoveredInfo);
+//        Debug.println(discoveredInfo);
 //    }
 
 }
