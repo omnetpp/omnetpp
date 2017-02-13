@@ -202,14 +202,11 @@ void cTopology::extractFromNetwork(bool (*predicate)(cModule *, void *), void *d
     for (int k = 0; k < (int)nodes.size(); k++) {
         // Loop through all its gates and find those which come
         // from or go to modules included in the topology.
-
         Node *node = nodes[k];
         cModule *module = getSimulation()->getModule(node->moduleId);
 
         for (cModule::GateIterator it(module); !it.end(); ++it) {
             cGate *gate = *it;
-            if (gate->getType() != cGate::OUTPUT)
-                continue;
 
             // follow path
             cGate *srcGate = gate;
