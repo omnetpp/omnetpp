@@ -20,8 +20,8 @@ network Net5
     types:
         channel C extends DatarateChannel
         {
-            delay = uniform(0.1ms, 1ms);
-            datarate = 1Mbps;
+            delay = uniform(0.01ms, 1s);
+            datarate = uniform(1kbps, 100kbps);
         }
     submodules:
         rte[5]: Node {

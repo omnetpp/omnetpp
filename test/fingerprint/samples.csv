@@ -111,14 +111,14 @@
 /samples/queuenet/,                  -f omnetpp.ini -c CQN -r 2,                   5000s,         7c5c-2489/tplx
 
 /samples/routing/,                   -f omnetpp.ini -c Net60 -r 0,                  500s,         7e5a-d008/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net60Bursty -r 0,            500s,         3b9b-40e1/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net60a -r 0,                 500s,         2cd0-d20d/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net5 -r 0,                   500s,         cd1a-457f/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net10 -r 0,                  500s,         c0e3-9472/tplx
-/samples/routing/,                   -f omnetpp.ini -c RandomGraph -r 0,            500s,         315e-6916/tplx
-/samples/routing/,                   -f omnetpp.ini -c Mesh -r 0,                   500s,         8aed-8569/tplx
-/samples/routing/,                   -f omnetpp.ini -c RandomMesh -r 0,             500s,         15ec-b991/tplx
-/samples/routing/,                   -f omnetpp.ini -c NetBuilder -r 0,             500s,         c9fc-e8fd/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net60Bursty -r 0,            500s,         02be-97d1/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net60a -r 0,                 500s,         a7ea-21b9/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net5 -r 0,                   500s,         1a67-a11e/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net10 -r 0,                  500s,         ee4e-8276/tplx
+/samples/routing/,                   -f omnetpp.ini -c RandomGraph -r 0,            500s,         4c70-120d/tplx
+/samples/routing/,                   -f omnetpp.ini -c Mesh -r 0,                   500s,         9da2-1ccf/tplx
+/samples/routing/,                   -f omnetpp.ini -c RandomMesh -r 0,             500s,         4e72-de2e/tplx
+/samples/routing/,                   -f omnetpp.ini -c NetBuilder -r 0,             500s,         7b5b-d2e2/tplx
 # /samples/routing/parsim/,            -f omnetpp.ini -c Net60-parsim -r 0,          5000s,         0000-0000           # Parallel simulation
 # /samples/routing/parsim/,            -f omnetpp.ini -c Net10-parsim -r 0,          5000s,         0000-0000           # Parallel simulation
 

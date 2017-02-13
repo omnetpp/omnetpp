@@ -6,6 +6,18 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.1 (February 2017)
+------------------------------------
+
+This is the final version of OMNeT++ 5.1
+
+Samples:
+
+ - The routing example was modified to demonstrate the new, built-in packet
+   animation in Qtenv. Packets are displayed as arrows along the connection
+   showing the actual packet length on the wire.
+
+
 OMNeT++ 5.1 Preview 3 (February 2017)
 ------------------------------------
 

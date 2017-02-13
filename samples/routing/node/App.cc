@@ -98,6 +98,7 @@ void App::handleMessage(cMessage *msg)
 
         Packet *pk = new Packet(pkname);
         pk->setByteLength(packetLengthBytes->longValue());
+        pk->setKind(intuniform(0, 7));
         pk->setSrcAddr(myAddress);
         pk->setDestAddr(destAddress);
         send(pk, "out");
