@@ -109,7 +109,6 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
-import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
 import org.omnetpp.ned.editor.graph.actions.CutAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
@@ -503,10 +502,6 @@ public class GraphicalNedEditor
 
         action = new NedSelectAllAction(this);
         registry.registerAction(action);
-
-        action = new ConvertToNewFormatAction(this);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
 
         if (IConstants.IS_COMMERCIAL) {
             action = new ExportImageAction(this);

@@ -92,11 +92,6 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         if (action.isEnabled())
             manager.appendToGroup(GROUP_EDIT, action);
 
-        // add convert menu ONLY if its meaningful
-        action = ar.getAction(ConvertToNewFormatAction.ID);
-        if (action.isEnabled())
-            manager.appendToGroup(GROUP_EDIT, action);
-
         action = ar.getAction(ActionFactory.CUT.getId());
         manager.appendToGroup(GROUP_COPY, action);
 

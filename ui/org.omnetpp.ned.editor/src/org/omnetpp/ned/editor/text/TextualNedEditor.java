@@ -51,7 +51,6 @@ import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
 import org.omnetpp.ned.editor.text.actions.DistributeAllGateLabelsAction;
 import org.omnetpp.ned.editor.text.actions.FindTextInNedFilesActionDelegate;
@@ -236,10 +235,6 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
         a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
 
-        a = new ConvertToNewFormatAction(this);
-        setAction(a.getId(), a);
-        markAsContentDependentAction(a.getId(), true);
-
         a = new FormatSourceAction(this);
         setAction(a.getId(), a);
         markAsContentDependentAction(a.getId(), true);
@@ -280,7 +275,6 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, CorrectIndentationAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, FormatSourceAction.ID);
-        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ConvertToNewFormatAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, OrganizeImportsAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, InferAllGateLabelsAction.ID);

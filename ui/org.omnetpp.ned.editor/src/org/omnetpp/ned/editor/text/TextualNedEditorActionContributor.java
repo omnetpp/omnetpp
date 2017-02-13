@@ -18,7 +18,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 
-import org.omnetpp.ned.editor.text.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.text.actions.CorrectIndentationAction;
 import org.omnetpp.ned.editor.text.actions.FindTextInNedFilesActionDelegate;
 import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
@@ -34,7 +33,6 @@ import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
  */
 public class TextualNedEditorActionContributor extends TextEditorActionContributor {
     private RetargetTextEditorAction fContentAssistProposal;
-    private RetargetTextEditorAction fConvertToNewFormatAction;
     private RetargetTextEditorAction fFormatSourceAction;
     private RetargetTextEditorAction fGotoDeclarationAction;
     private RetargetTextEditorAction fOrganizeImportsAction;
@@ -51,7 +49,6 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
         fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.");
         fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 
-        fConvertToNewFormatAction = createRetargetAction(ConvertToNewFormatAction.ID);
         fFormatSourceAction = createRetargetAction(FormatSourceAction.ID);
         fGotoDeclarationAction = createRetargetAction(GotoDeclarationAction.ID);
         fOrganizeImportsAction = createRetargetAction(OrganizeImportsAction.ID);
@@ -79,7 +76,6 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
 
         // retarget the actions to the current editor
         fContentAssistProposal.setAction(getAction(editor, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS));
-        fConvertToNewFormatAction.setAction(getAction(editor, ConvertToNewFormatAction.ID));
         fFormatSourceAction.setAction(getAction(editor, FormatSourceAction.ID));
         fGotoDeclarationAction.setAction(getAction(editor, GotoDeclarationAction.ID));
         fOrganizeImportsAction.setAction(getAction(editor, OrganizeImportsAction.ID));
@@ -99,7 +95,6 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
         sourceMenu.add(new Separator());
         sourceMenu.add(fCorrectIndentationAction);
         sourceMenu.add(fFormatSourceAction);
-        sourceMenu.add(fConvertToNewFormatAction);
         sourceMenu.add(new Separator());
         sourceMenu.add(fOrganizeImportsAction);
         sourceMenu.add(new Separator());
