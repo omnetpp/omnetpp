@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -58,7 +57,6 @@ import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileConverter;
 import org.omnetpp.inifile.editor.model.InifileDocument;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
@@ -224,9 +222,6 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
                     InifileEditorPlugin.logError(e);
                 }
 
-                // if the file is in the old format, offer upgrading it
-                convertOldInifile();
-
                 // publish an initial selection (select first section)
                 String[] sectionNames = doc.getSectionNames();
                 if (sectionNames.length > 0)
@@ -355,26 +350,6 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
      */
     public boolean isFormPageDisplayed() {
         return getActivePage()==FORMEDITOR_PAGEINDEX;
-    }
-
-    /**
-     * Detect when the file is in the old format, and offer converting it.
-     */
-    protected void convertOldInifile() {
-        IDocument doc = textEditor.getDocumentProvider().getDocument(getEditorInput());
-        if (InifileConverter.needsConversion(doc.get())) {
-            String fileName = getEditorInput().getName();
-            if (MessageDialog.openQuestion(getSite().getShell(), "Old Ini File Format",
-                    "File \""+fileName+"\" is in the old (3.x) format, and needs to be converted. " +
-                    "This includes renaming some sections and configuration keys. " +
-                    "Do you want to convert the editor contents now?")) {
-                String newText = InifileConverter.convert(doc.get());
-                doc.set(newText);
-            }
-            else {
-                setActivePage(1);  // activate the text editor so that user can see the errors
-            }
-        }
     }
 
     @Override
