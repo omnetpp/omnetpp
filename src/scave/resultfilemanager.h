@@ -311,7 +311,6 @@ class SCAVE_API ResultFileManager
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap& attrs);
 
     ResultFile *getFileForID(ID id) const; // checks for nullptr
-    void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
     template <class T>
     void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeComputed = false, bool includeFields = true) const;
