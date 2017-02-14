@@ -32,24 +32,24 @@ namespace scave {
 class SCAVE_API Statistics
 {
     private:
-        long _count;
-        double _min;
-        double _max;
-        double _sum;
-        double _sumSqr;
+        long count;
+        double min;
+        double max;
+        double sum;
+        double sumSqr;
 
     public:
-        Statistics() : _count(0), _min(POSITIVE_INFINITY), _max(NEGATIVE_INFINITY), _sum(0.0), _sumSqr(0.0) {}
+        Statistics() : count(0), min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0) {}
         Statistics(long count, double min, double max, double sum, double sumSqr)
-            :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
-        Statistics(const Statistics& s) : _count(s._count), _min(s._min), _max(s._max), _sum(s._sum), _sumSqr(s._sumSqr) {}
+            :count(count), min(min), max(max), sum(sum), sumSqr(sumSqr) {}
+        Statistics(const Statistics& s) : count(s.count), min(s.min), max(s.max), sum(s.sum), sumSqr(s.sumSqr) {}
 
-        long getCount() const { return _count; }
-        double getMin() const { return _min; }
-        double getMax() const { return _max; }
-        double getSum() const { return _sum; }
-        double getSumSqr() const { return _sumSqr; }
-        double getMean() const { return _count == 0 ? NaN : _sum / _count; }
+        long getCount() const { return count; }
+        double getMin() const { return min; }
+        double getMax() const { return max; }
+        double getSum() const { return sum; }
+        double getSumSqr() const { return sumSqr; }
+        double getMean() const { return count == 0 ? NaN : sum / count; }
         double getStddev() const { return sqrt(getVariance()); }
         double getVariance() const;
 
@@ -59,31 +59,30 @@ class SCAVE_API Statistics
 
 inline double Statistics::getVariance() const
 {
-    if (_count >= 1)
-    {
-        double var = (_sumSqr - _sum*_sum/_count)/(_count-1);
+    if (count == 0)
+        return NaN;
+    else {
+        double var = (sumSqr - sum*sum/count) / (count-1);
         return var < 0 ? 0 : var;
     }
-    else
-        return NaN;
 }
 
 inline void Statistics::collect(double value)
 {
-    _count++;
-    _min = (_min < value ? _min : value);
-    _max = (_max > value ? _max : value);
-    _sum += value;
-    _sumSqr += value * value;
+    count++;
+    min = (min < value ? min : value);
+    max = (max > value ? max : value);
+    sum += value;
+    sumSqr += value * value;
 }
 
 inline void Statistics::adjoin(const Statistics& other)
 {
-    _count += other._count;
-    _min = (_min < other._min ? _min : other._min);
-    _max = (_max > other._max ? _max : other._max);
-    _sum += other._sum;
-    _sumSqr += other._sumSqr;
+    count += other.count;
+    min = (min < other.min ? min : other.min);
+    max = (max > other.max ? max : other.max);
+    sum += other.sum;
+    sumSqr += other.sumSqr;
 }
 
 } // namespace scave
