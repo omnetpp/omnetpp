@@ -309,14 +309,14 @@ Event *EventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind mat
             if (it != eventNumberToEventMap.end()) {
                 Event *event = it->second->getNextEvent();
                 // the file might be filtered
-                return event->getEventNumber() == eventNumber ? event : nullptr;
+                return event && event->getEventNumber() == eventNumber ? event : nullptr;
             }
 
             it = eventNumberToEventMap.find(eventNumber + 1);
             if (it != eventNumberToEventMap.end()) {
                 Event *event = it->second->getPreviousEvent();
                 // the file might be filtered
-                return event->getEventNumber() == eventNumber ? event : nullptr;
+                return event && event->getEventNumber() == eventNumber ? event : nullptr;
             }
         }
     }
