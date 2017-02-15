@@ -332,15 +332,14 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     }
 
     private String getWorkspacePathFromURI(URI uri) {
-        if (uri.isFile())
-        {
-            IPath path = new Path(uri.path());
+        if (uri.isFile()) {
+            IPath path = new Path(uri.toFileString());
             IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
             IFile file = root.getFileForLocation(path);
             return file != null ? file.getFullPath().toString() : null;
         }
         else if (uri.isPlatformResource())
-            return uri.toPlatformString(false);
+            return uri.toPlatformString(true);
         else
             return null;
     }
