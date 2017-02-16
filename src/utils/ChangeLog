@@ -1,3 +1,8 @@
+2017-02-16  Rudolf Hornig
+
+	* The configure script no longer detects and tests for the presence of the 'pcap' library.
+	If models need it, they have to implement their own method to detect and configure it.
+
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 
 2017-01-30  Rudolf Hornig
