@@ -699,6 +699,7 @@ namespace omnetpp { namespace scave {
 %ignore ScalarDataTable;
 %ignore ScatterDataTable;
 %ignore JoinedDataTable;
+%ignore HistogramDataTable;
 %ignore MatlabStructExport;
 %ignore MatlabScriptExport;
 %ignore OctaveTextExport;
