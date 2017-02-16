@@ -17,7 +17,7 @@ INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 COPTS=-Wno-unused-function $(CFLAGS) $(INCL_FLAGS)
 IMPLIBS=
 
-OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
+OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o $O/csvwriter.o \
       $O/stringpool.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
       $O/expression.o $O/lex.expressionyy.o $O/expression.tab.o \
       $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \

@@ -1,0 +1,123 @@
+%description:
+Tests CsvWriter.
+
+%includes:
+
+#include <common/commonutil.h>
+#include <common/bigdecimal.h>
+#include <common/csvwriter.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void writeTable(CsvWriter& csv) 
+{
+    EV_STATICCONTEXT;
+    EV << "OPTIONS:";
+    EV << "  quoting: " << (csv.getQuoteEscapingMethod()==CsvWriter::DOUBLING ? "DOUBLING" : "BACKSLASH");
+    EV << "  sep: {" << csv.getSeparator() << "}"; 
+    EV << "  quotechar: {" << csv.getQuoteChar() << "}";
+    EV << endl;
+
+    csv.writeInt(42); csv.writeInt(-100); csv.writeInt(INT64_MAX); csv.writeInt(INT64_MIN); csv.writeNewLine(); 
+    csv.writeDouble(0); csv.writeDouble(3.1415); csv.writeDouble(-3.15e-200); csv.writeNewLine();
+    csv.writeDouble(POSITIVE_INFINITY); csv.writeDouble(NEGATIVE_INFINITY); csv.writeDouble(NaN); csv.writeNewLine();
+    csv.writeBigDecimal(BigDecimal::Zero); csv.writeBigDecimal(BigDecimal::One); csv.writeBigDecimal(BigDecimal::MinusOne); csv.writeNewLine();
+    csv.writeBigDecimal(BigDecimal::PositiveInfinity); csv.writeBigDecimal(BigDecimal::NegativeInfinity); csv.writeBigDecimal(BigDecimal::NaN); csv.writeBigDecimal(BigDecimal::Nil); csv.writeNewLine();
+    csv.writeString("Foo"); csv.writeString("Hello World"); csv.writeString("Good morning, Sir!"); csv.writeNewLine();
+    csv.writeString("qu\"o\"te"); csv.writeString("apos'"); csv.writeString("T-\tA-\tB"); csv.writeString("line-\nbreak"); csv.writeNewLine();
+    csv.writeBlank(); csv.writeInt(2); csv.writeBlank(); csv.writeBlank(); csv.writeInt(5); csv.writeInt(6); csv.writeBlank(); csv.writeNewLine(); 
+    EV << "---------\n\n";
+}
+
+%activity:
+
+// DEFAULT
+
+CsvWriter csv(std::cout);
+csv.setSeparator(',');
+writeTable(csv);
+
+// SEPARATOR TESTS
+
+csv.setSeparator('\t');
+writeTable(csv);
+
+csv.setSeparator(' ');
+writeTable(csv);
+
+// QUOTING TESTS
+
+csv.setSeparator(',');
+csv.setQuoteChar('\'');
+writeTable(csv);
+
+csv.setQuoteChar('"');
+csv.setQuoteEscapingMethod(CsvWriter::BACKSLASH);
+writeTable(csv);
+
+EV << ".\n";
+
+%contains: stdout
+OPTIONS:  quoting: DOUBLING  sep: {,}  quotechar: {"}
+42,-100,9223372036854775807,-9223372036854775808
+0,3.1415,-3.15e-200
+Inf,-Inf,NaN
+0,1,-1
++Inf,-Inf,NaN,Nil
+Foo,Hello World,"Good morning, Sir!"
+"qu""o""te",apos',T-	A-	B,"line-
+break"
+,2,,,5,6,
+---------
+
+OPTIONS:  quoting: DOUBLING  sep: {	}  quotechar: {"}
+42	-100	9223372036854775807	-9223372036854775808
+0	3.1415	-3.15e-200
+Inf	-Inf	NaN
+0	1	-1
++Inf	-Inf	NaN	Nil
+Foo	Hello World	Good morning, Sir!
+"qu""o""te"	apos'	"T-	A-	B"	"line-
+break"
+	2			5	6	
+---------
+
+OPTIONS:  quoting: DOUBLING  sep: { }  quotechar: {"}
+42 -100 9223372036854775807 -9223372036854775808
+0 3.1415 -3.15e-200
+Inf -Inf NaN
+0 1 -1
++Inf -Inf NaN Nil
+Foo "Hello World" "Good morning, Sir!"
+"qu""o""te" apos' T-	A-	B "line-
+break"
+ 2   5 6
+---------
+
+OPTIONS:  quoting: DOUBLING  sep: {,}  quotechar: {'}
+42,-100,9223372036854775807,-9223372036854775808
+0,3.1415,-3.15e-200
+Inf,-Inf,NaN
+0,1,-1
++Inf,-Inf,NaN,Nil
+Foo,Hello World,'Good morning, Sir!'
+qu"o"te,'apos''',T-	A-	B,'line-
+break'
+,2,,,5,6,
+---------
+
+OPTIONS:  quoting: BACKSLASH  sep: {,}  quotechar: {"}
+42,-100,9223372036854775807,-9223372036854775808
+0,3.1415,-3.15e-200
+Inf,-Inf,NaN
+0,1,-1
++Inf,-Inf,NaN,Nil
+Foo,Hello World,"Good morning, Sir!"
+"qu\"o\"te",apos',T-	A-	B,"line-
+break"
+,2,,,5,6,
+---------
+
+.
+
