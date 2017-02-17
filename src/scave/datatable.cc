@@ -194,15 +194,15 @@ ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& des
             const ScalarResult& scalar = manager.getScalar(id);
             string name;
             if (!groupBy.hasField(ResultItemField::FILE))
-                name += scalar.fileRunRef->fileRef->filePath+"_";
+                name += scalar.fileRunRef->fileRef->filePath+" ";
             if (!groupBy.hasField(ResultItemField::RUN))
-                name += scalar.fileRunRef->runRef->runName+"_";
+                name += scalar.fileRunRef->runRef->runName+" ";
             if (!groupBy.hasField(ResultItemField::MODULE))
-                name += *scalar.moduleNameRef+"_";
+                name += *scalar.moduleNameRef+" ";
             if (!groupBy.hasField(ResultItemField::NAME))
-                name += *scalar.nameRef+"_";
+                name += *scalar.nameRef+" ";
             if (!name.empty())
-                name.erase(name.end()-1);  // remove last '_'
+                name.erase(name.end()-1);  // remove last ' '
             header.push_back(Column(name, DOUBLE));
         }
         else {
