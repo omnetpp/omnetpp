@@ -135,10 +135,9 @@ class SIM_API cMessage : public cEvent
     cObject *doRemoveTag(int n);
     template<typename T> int findTag();
 
-  protected:
+  public:
     void transferTagsFrom(cMessage *msg);
 
-  public:
     // internal: create an exact clone (including msgid) that doesn't show up in the statistics
     cMessage *privateDup() const;
 
