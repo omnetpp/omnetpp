@@ -478,13 +478,32 @@ std::string opp_join(const char *separator, const char *s1, const char *s2)
         return std::string(s1) + separator + s2;
 }
 
-std::string opp_join(const char **strings, const char *separator)
+std::string opp_join(const char **strings, const char *separator, char quoteChar)
 {
     std::stringstream os;
     for (const char **stringPtr = strings; *stringPtr; stringPtr++) {
         if (stringPtr != strings)
             os << separator;
-        os << *stringPtr;
+        if (quoteChar)
+            os << quoteChar << *stringPtr << quoteChar;
+        else
+            os << *stringPtr;
+    }
+    return os.str();
+}
+
+std::string opp_join(const std::vector<std::string>& strings, const char *separator, char quoteChar)
+{
+    bool first = true;
+    std::stringstream os;
+    for (auto item : strings) {
+        if (!first)
+            os << separator;
+        if (quoteChar)
+            os << quoteChar << item << quoteChar;
+        else
+            os << item;
+        first = false;
     }
     return os.str();
 }
