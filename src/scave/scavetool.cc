@@ -571,7 +571,7 @@ void ScaveTool::vectorCommand(int argc, char **argv)
     // options
     string opt_filterExpression;
     string opt_outputFileName = "out";
-    string opt_outputFormat = "vec";  // TBD vec, splitvec, octave, split octave (and for octave: x, y, both),...
+    string opt_outputFormat = "vec";
     string opt_readerNodeType = "vectorreaderbyfiletype";
     vector<string> opt_filterList;
     vector<string> opt_fileNames;

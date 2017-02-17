@@ -19,8 +19,6 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.wizard.AbstractExportWizard;
 import org.omnetpp.scave.wizard.CsvExportWizard;
-import org.omnetpp.scave.wizard.MatlabExportWizard;
-import org.omnetpp.scave.wizard.OctaveExportWizard;
 
 /**
  * Exports the selected result items in various formats.
@@ -30,12 +28,9 @@ import org.omnetpp.scave.wizard.OctaveExportWizard;
 public class ExportDataAction extends AbstractScaveAction {
 
     /** output formats */
-    public static final String
-        CSV     = "csv",
-        MATLAB  = "matlab",
-        OCTAVE  = "octave";
+    public static final  String CSV = "csv";
 
-    public static final String[] FORMATS = {CSV, OCTAVE };  // We do not provide MATLAB format
+    public static final String[] FORMATS = { CSV };
 
     String format;
 
@@ -45,14 +40,6 @@ public class ExportDataAction extends AbstractScaveAction {
             setText("CSV...");
             setToolTipText("Exports selected data in CSV format.");
         }
-        else if (MATLAB.equals(format)) {
-            setText("Matlab...");
-            setToolTipText("Exports selected data as a Matlab script.");
-        }
-        else if (OCTAVE.equals(format)) {
-            setText("Octave...");
-            setToolTipText("Exports selected data in Octave text format.");
-        }
     }
 
     @Override
@@ -61,6 +48,7 @@ public class ExportDataAction extends AbstractScaveAction {
             final IWorkbenchWizard wizard = createWizard();
             if (wizard != null) {
                 ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
+                    @Override
                     public Object call() throws Exception {
                         wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
                         return null;
@@ -84,10 +72,6 @@ public class ExportDataAction extends AbstractScaveAction {
     private AbstractExportWizard createWizard() {
         if (CSV.equals(format))
             return new CsvExportWizard();
-        else if (MATLAB.equals(format))
-            return new MatlabExportWizard();
-        else if (OCTAVE.equals(format))
-            return new OctaveExportWizard();
         else
             return null;
     }
