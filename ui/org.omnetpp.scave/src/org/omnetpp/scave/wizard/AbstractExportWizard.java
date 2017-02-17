@@ -17,7 +17,7 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ScaveExport;
+import org.omnetpp.scave.engine.OldScaveExport;
 import org.omnetpp.scave.jobs.ExportJob;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
@@ -48,6 +48,7 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
     /**
      * Sets the IDs of data to be exported and the ResultFileManager that owns them.
      */
+    @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         // XXX use the selection of the active Scave editor instead passed parameter
 
@@ -86,7 +87,7 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
         if (page != null && manager != null) {
             try {
                 // export the data
-                ScaveExport exporter = createExporter();
+                OldScaveExport exporter = createExporter();
                 exporter.setPrecision(page.getPrecision());
                 exporter.setBaseFileName(page.getFileName());
                 ExportJob job = new ExportJob(exporter,
@@ -105,7 +106,7 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
         return false;
     }
 
-    protected abstract ScaveExport createExporter();
+    protected abstract OldScaveExport createExporter();
 
     protected void saveDialogSettings() {
         if (page != null)

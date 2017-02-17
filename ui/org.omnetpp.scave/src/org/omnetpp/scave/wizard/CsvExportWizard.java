@@ -23,9 +23,9 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.FileSelectionPanel;
-import org.omnetpp.scave.engine.CsvExport;
-import org.omnetpp.scave.engine.ScaveExport;
-import org.omnetpp.scave.engine.CsvExport.QuoteMethod;
+import org.omnetpp.scave.engine.OldCsvExport;
+import org.omnetpp.scave.engine.OldScaveExport;
+import org.omnetpp.scave.engine.OldCsvExport.QuoteMethod;
 
 /**
  * Export the selected result items in CSV format.
@@ -57,10 +57,10 @@ public class CsvExportWizard extends AbstractExportWizard {
     }
 
     @Override
-    protected ScaveExport createExporter() {
-        CsvExport exporter = new CsvExport();
+    protected OldScaveExport createExporter() {
+        OldCsvExport exporter = new OldCsvExport();
         exporter.setSeparator(getPage().getSeparator());
-        exporter.setEOL(getPage().getEOL());
+        exporter.setEol(getPage().getEOL());
         exporter.setQuoteChar(getPage().getQuoteChar());
         exporter.setQuoteMethod(QuoteMethod.DOUBLE);
         exporter.setColumnNames(getPage().getHeader());
@@ -110,6 +110,7 @@ public class CsvExportWizard extends AbstractExportWizard {
             label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
             fileSelectionPanel.addPropertyChangeListener(new IPropertyChangeListener() {
+                @Override
                 public void propertyChange(PropertyChangeEvent event) {
                     if (FileSelectionPanel.PROP_FILENAME.equals(event.getProperty()))
                         updatePageCompletion();

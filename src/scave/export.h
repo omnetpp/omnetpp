@@ -32,10 +32,15 @@
 namespace omnetpp {
 namespace scave {
 
+//
+// IMPORTANT: STUFF IN THIS CLASSES ARE DEPRECATED, AND WILL BE REMOVED IN A FUTURE
+// OMNeT++ VERSION. USE THE NEW EXPORTER CLASSES INSTEAD (see exporter.h).
+//
+
 /**
  * Base class for scalar/vector exporters.
  */
-class SCAVE_API ScaveExport
+class SCAVE_API OldScaveExport
 {
     private:
         std::set<std::string> identifiers;
@@ -52,8 +57,8 @@ class SCAVE_API ScaveExport
         virtual std::string makeFileName(const std::string& name) = 0;
 
     public:
-        ScaveExport() : prec(DEFAULT_RESULT_PRECISION) {}
-        virtual ~ScaveExport();
+        OldScaveExport() : prec(DEFAULT_RESULT_PRECISION) {}
+        virtual ~OldScaveExport();
 
         void setPrecision(int prec) { this->prec = prec; }
         void setBaseFileName(const std::string& baseFileName) { this->baseFileName = baseFileName; }
@@ -86,7 +91,7 @@ class SCAVE_API ScaveExport
 /**
  * Common base class for formats that creates a matlab structure when loaded.
  */
-class MatlabStructExport : public ScaveExport
+class OldMatlabStructExport : public OldScaveExport
 {
     protected:
         void writeDouble(double value);
@@ -107,7 +112,7 @@ class MatlabStructExport : public ScaveExport
  *
  * FIXME: BigDecimals always written out with maximal precision (19 digit), prec is ignored.
  */
-class SCAVE_API MatlabScriptExport : public MatlabStructExport
+class SCAVE_API OldMatlabScriptExport : public OldMatlabStructExport
 {
     protected:
         virtual std::string makeFileName(const std::string& name) override;
@@ -146,7 +151,7 @@ class SCAVE_API MatlabScriptExport : public MatlabStructExport
  *
  * FIXME: BigDecimals always written out with maximal precision (19 digit), prec is ignored.
  */
-class SCAVE_API OctaveTextExport : public MatlabStructExport
+class SCAVE_API OldOctaveTextExport : public OldMatlabStructExport
 {
     protected:
         virtual std::string makeFileName(const std::string& name) override;
@@ -164,7 +169,7 @@ class SCAVE_API OctaveTextExport : public MatlabStructExport
  * Export data in various CSV formats.
  * With default parameters the format is the same as described in RFC 4180.
  */
-class SCAVE_API CsvExport : public ScaveExport
+class SCAVE_API OldCsvExport : public OldScaveExport
 {
     public: // options
         typedef enum {DOUBLE, ESCAPE} QuoteMethod;
@@ -176,7 +181,7 @@ class SCAVE_API CsvExport : public ScaveExport
         // state
         int fileNameSuffix; // zero = do not add suffix, otherwise incremented when writing a new table
     public:
-        CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE),
+        OldCsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE),
                         columnNames(true), fileNameSuffix(0) {}
         virtual void saveVector(const std::string& name, const std::string& description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager& manager,
@@ -195,10 +200,10 @@ class SCAVE_API CsvExport : public ScaveExport
         void writeChar(char ch);
 };
 
-class SCAVE_API ExporterFactory
+class SCAVE_API OldExporterFactory
 {
     public:
-        static ScaveExport *createExporter(const std::string& format);
+        static OldScaveExport *createExporter(const std::string& format);
 };
 
 } // namespace scave

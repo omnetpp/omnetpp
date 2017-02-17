@@ -34,12 +34,12 @@ namespace scave {
 
 typedef DataTable::Column Column;  // shorthand
 
-ScaveExport::~ScaveExport()
+OldScaveExport::~OldScaveExport()
 {
     close();
 }
 
-void ScaveExport::open()
+void OldScaveExport::open()
 {
     if (!out.is_open()) {
         fileName = makeFileName(baseFileName);
@@ -49,14 +49,14 @@ void ScaveExport::open()
     }
 }
 
-void ScaveExport::close()
+void OldScaveExport::close()
 {
     if (out.is_open()) {
         out.close();
     }
 }
 
-void ScaveExport::saveVector(const string& name, const string& description,
+void OldScaveExport::saveVector(const string& name, const string& description,
         ID vectorID, bool computed, const XYArray *xyarray, ResultFileManager& manager,
         int startIndex, int endIndex)
 {
@@ -66,7 +66,7 @@ void ScaveExport::saveVector(const string& name, const string& description,
     saveTable(table, startIndex, endIndex);
 }
 
-void ScaveExport::saveVectors(const string& name, const string& description,
+void OldScaveExport::saveVectors(const string& name, const string& description,
         const IDList& vectors, const vector<XYArray *> xyArrays, const ResultFileManager& manager)
 {
     Assert((int)vectors.size() == (int)xyArrays.size());
@@ -82,13 +82,13 @@ void ScaveExport::saveVectors(const string& name, const string& description,
     saveTable(table, 0, table.getNumRows());
 }
 
-void ScaveExport::saveScalars(const string& name, const string& description, const IDList& scalars, const ResultItemFields& groupBy, ResultFileManager& manager)
+void OldScaveExport::saveScalars(const string& name, const string& description, const IDList& scalars, const ResultItemFields& groupBy, ResultFileManager& manager)
 {
     const ScalarDataTable table(name, description, scalars, groupBy, manager);
     saveTable(table, 0, table.getNumRows());
 }
 
-void ScaveExport::saveScalars(const string& name, const string& description,
+void OldScaveExport::saveScalars(const string& name, const string& description,
         const IDList& scalars, const string& moduleName, const string& scalarName,
         const ResultItemFields& columnFields,
         const std::vector<std::string>& isoModuleNames, const StringVector& isoScalarNames,
@@ -112,7 +112,7 @@ void ScaveExport::saveScalars(const string& name, const string& description,
     saveTable(table, 0, table.getNumRows());
 }
 
-void ScaveExport::saveHistograms(const std::string& name, const std::string& description,
+void OldScaveExport::saveHistograms(const std::string& name, const std::string& description,
         const IDList& histograms, ResultFileManager& manager)
 {
     for (int i = 0; i < (int)histograms.size(); ++i) {
@@ -122,7 +122,7 @@ void ScaveExport::saveHistograms(const std::string& name, const std::string& des
     }
 }
 
-string ScaveExport::makeUniqueIdentifier(const string& name)
+string OldScaveExport::makeUniqueIdentifier(const string& name)
 {
     string result = makeIdentifier(name);
 
@@ -144,7 +144,7 @@ string ScaveExport::makeUniqueIdentifier(const string& name)
 /*===============================
  *           Matlab
  *===============================*/
-string MatlabStructExport::makeIdentifier(const string& name)
+string OldMatlabStructExport::makeIdentifier(const string& name)
 {
     string result(name);
     for (string::iterator it = result.begin(); it != result.end(); ++it)
@@ -156,7 +156,7 @@ string MatlabStructExport::makeIdentifier(const string& name)
     return result;
 }
 
-string MatlabStructExport::quoteString(const string& str)
+string OldMatlabStructExport::quoteString(const string& str)
 {
     string result;
     result.push_back('\'');
@@ -170,7 +170,7 @@ string MatlabStructExport::quoteString(const string& str)
     return result;
 }
 
-void MatlabStructExport::writeDouble(double value)
+void OldMatlabStructExport::writeDouble(double value)
 {
     if (isNaN(value))
         out << "NaN";
@@ -182,7 +182,7 @@ void MatlabStructExport::writeDouble(double value)
         out << value;
 }
 
-string MatlabScriptExport::makeFileName(const string& name)
+string OldMatlabScriptExport::makeFileName(const string& name)
 {
     string fileName = name;
     if (fileName.empty())
@@ -192,7 +192,7 @@ string MatlabScriptExport::makeFileName(const string& name)
     return fileName;
 }
 
-void MatlabScriptExport::saveTable(const DataTable& table, int startRow, int endRow)
+void OldMatlabScriptExport::saveTable(const DataTable& table, int startRow, int endRow)
 {
     open();
     string tableName = makeUniqueIdentifier(table.name);
@@ -200,12 +200,12 @@ void MatlabScriptExport::saveTable(const DataTable& table, int startRow, int end
     writeColumnFields(table, startRow, endRow, tableName);
 }
 
-void MatlabScriptExport::writeDescriptionField(const DataTable& table, const string& tableName)
+void OldMatlabScriptExport::writeDescriptionField(const DataTable& table, const string& tableName)
 {
     out << tableName << ".description=" << quoteString(table.description) << '\n';
 }
 
-void MatlabScriptExport::writeColumnFields(const DataTable& table, int startRow, int endRow, const string& tableName)
+void OldMatlabScriptExport::writeColumnFields(const DataTable& table, int startRow, int endRow, const string& tableName)
 {
     for (int col = 0; col < table.getNumColumns(); ++col) {
         Column column = table.getColumn(col);
@@ -228,14 +228,14 @@ void MatlabScriptExport::writeColumnFields(const DataTable& table, int startRow,
     }
 }
 
-void MatlabScriptExport::writeStringColumn(const DataTable& table, int col, int startRow, int endRow)
+void OldMatlabScriptExport::writeStringColumn(const DataTable& table, int col, int startRow, int endRow)
 {
     for (int row = startRow; row < endRow; ++row) {
         out << quoteString(table.getStringValue(row, col)) << ";\n";
     }
 }
 
-void MatlabScriptExport::writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow)
+void OldMatlabScriptExport::writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow)
 {
     out.precision(prec);
     for (int row = startRow; row < endRow; ++row) {
@@ -244,7 +244,7 @@ void MatlabScriptExport::writeDoubleColumn(const DataTable& table, int col, int 
     }
 }
 
-void MatlabScriptExport::writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow)
+void OldMatlabScriptExport::writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow)
 {
     // TODO: precision
     for (int row = startRow; row < endRow; ++row) {
@@ -255,7 +255,7 @@ void MatlabScriptExport::writeBigDecimalColumn(const DataTable& table, int col, 
 /*===============================
  *           Octave
  *===============================*/
-string OctaveTextExport::makeFileName(const string& name)
+string OldOctaveTextExport::makeFileName(const string& name)
 {
     string fileName = name;
     if (fileName.empty())
@@ -264,7 +264,7 @@ string OctaveTextExport::makeFileName(const string& name)
         return fileName;
 }
 
-void OctaveTextExport::saveTable(const DataTable& table, int startIndex, int endIndex)
+void OldOctaveTextExport::saveTable(const DataTable& table, int startIndex, int endIndex)
 {
     open();
     writeStructHeader(table);
@@ -272,14 +272,14 @@ void OctaveTextExport::saveTable(const DataTable& table, int startIndex, int end
     writeColumnFields(table, startIndex, endIndex);
 }
 
-void OctaveTextExport::writeStructHeader(const DataTable& table)
+void OldOctaveTextExport::writeStructHeader(const DataTable& table)
 {
     out << "# name: " << makeUniqueIdentifier(table.name) << "\n"
            "# type: struct\n"
            "# length: " << table.getNumColumns() + 1 << "\n";  // description + columns
 }
 
-void OctaveTextExport::writeDescriptionField(const DataTable& table)
+void OldOctaveTextExport::writeDescriptionField(const DataTable& table)
 {
     out << "# name: description\n"
            "# type: cell\n"
@@ -292,7 +292,7 @@ void OctaveTextExport::writeDescriptionField(const DataTable& table)
         << table.description << "\n";
 }
 
-void OctaveTextExport::writeColumnFields(const DataTable& table, int startRow, int endRow)
+void OldOctaveTextExport::writeColumnFields(const DataTable& table, int startRow, int endRow)
 {
     for (int col = 0; col < table.getNumColumns(); ++col) {
         Column column = table.getColumn(col);
@@ -312,7 +312,7 @@ void OctaveTextExport::writeColumnFields(const DataTable& table, int startRow, i
     }
 }
 
-void OctaveTextExport::writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow)
+void OldOctaveTextExport::writeDoubleColumn(const DataTable& table, int col, int startRow, int endRow)
 {
     Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
@@ -339,7 +339,7 @@ void OctaveTextExport::writeDoubleColumn(const DataTable& table, int col, int st
     }
 }
 
-void OctaveTextExport::writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow)
+void OldOctaveTextExport::writeBigDecimalColumn(const DataTable& table, int col, int startRow, int endRow)
 {
     Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
@@ -356,7 +356,7 @@ void OctaveTextExport::writeBigDecimalColumn(const DataTable& table, int col, in
     }
 }
 
-void OctaveTextExport::writeStringColumn(const DataTable& table, int col, int startRow, int endRow)
+void OldOctaveTextExport::writeStringColumn(const DataTable& table, int col, int startRow, int endRow)
 {
     Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
@@ -380,7 +380,7 @@ void OctaveTextExport::writeStringColumn(const DataTable& table, int col, int st
 /**
  * Generate a new filename for each table by appending '-1','-2',... suffixes to the base filename.
  */
-string CsvExport::makeFileName(const string& name)
+string OldCsvExport::makeFileName(const string& name)
 {
     string file(name), extension(".csv");
     stringstream suffix;
@@ -402,7 +402,7 @@ string CsvExport::makeFileName(const string& name)
     return file + suffix.str() + extension;
 }
 
-void CsvExport::saveVector(const string& name, const string& description,
+void OldCsvExport::saveVector(const string& name, const string& description,
         ID vectorID, bool computed, const XYArray *xyarray, ResultFileManager& manager,
         int startIndex, int endIndex)
 {
@@ -422,7 +422,7 @@ void CsvExport::saveVector(const string& name, const string& description,
     saveTable(table, startIndex, endIndex);
 }
 
-void CsvExport::saveTable(const DataTable& table, int startRow, int endRow)
+void OldCsvExport::saveTable(const DataTable& table, int startRow, int endRow)
 {
     open();
     writeHeader(table);
@@ -432,7 +432,7 @@ void CsvExport::saveTable(const DataTable& table, int startRow, int endRow)
         close();
 }
 
-void CsvExport::writeHeader(const DataTable& table)
+void OldCsvExport::writeHeader(const DataTable& table)
 {
     if (columnNames) {
         for (int col = 0; col < table.getNumColumns(); ++col) {
@@ -445,7 +445,7 @@ void CsvExport::writeHeader(const DataTable& table)
     }
 }
 
-void CsvExport::writeRow(const DataTable& table, int row)
+void OldCsvExport::writeRow(const DataTable& table, int row)
 {
     for (int col = 0; col < table.getNumColumns(); ++col) {
         Column column = table.getColumn(col);
@@ -470,7 +470,7 @@ void CsvExport::writeRow(const DataTable& table, int row)
     out << eol;
 }
 
-void CsvExport::writeDouble(double value)
+void OldCsvExport::writeDouble(double value)
 {
     if (isNaN(value))
         out << "NaN";
@@ -482,12 +482,12 @@ void CsvExport::writeDouble(double value)
         out << value;
 }
 
-void CsvExport::writeBigDecimal(BigDecimal value)
+void OldCsvExport::writeBigDecimal(BigDecimal value)
 {
     out << value.str();
 }
 
-void CsvExport::writeString(const string& value)
+void OldCsvExport::writeString(const string& value)
 {
     if (needsQuote(value)) {
         out << quoteChar;
@@ -500,7 +500,7 @@ void CsvExport::writeString(const string& value)
     }
 }
 
-bool CsvExport::needsQuote(const string& value)
+bool OldCsvExport::needsQuote(const string& value)
 {
     switch (quoteMethod) {
         case ESCAPE:
@@ -520,7 +520,7 @@ bool CsvExport::needsQuote(const string& value)
     }
 }
 
-void CsvExport::writeChar(char ch)
+void OldCsvExport::writeChar(char ch)
 {
     switch (quoteMethod) {
         case ESCAPE:
@@ -537,19 +537,19 @@ void CsvExport::writeChar(char ch)
     }
 }
 
-string CsvExport::makeIdentifier(const string& name)
+string OldCsvExport::makeIdentifier(const string& name)
 {
     return name;
 }
 
-ScaveExport *ExporterFactory::createExporter(const string& format)
+OldScaveExport *OldExporterFactory::createExporter(const string& format)
 {
     if (format == "octave")
-        return new OctaveTextExport;
+        return new OldOctaveTextExport;
     else if (format == "matlab")
-        return new MatlabScriptExport;
+        return new OldMatlabScriptExport;
     else if (format == "csv")
-        return new CsvExport;
+        return new OldCsvExport;
     else
         return nullptr;
 }

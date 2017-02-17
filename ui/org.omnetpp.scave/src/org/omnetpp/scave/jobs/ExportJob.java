@@ -22,7 +22,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemFields;
-import org.omnetpp.scave.engine.ScaveExport;
+import org.omnetpp.scave.engine.OldScaveExport;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model.Dataset;
@@ -36,14 +36,14 @@ import org.omnetpp.scave.model2.DatasetManager;
  */
 public class ExportJob extends WorkspaceJob
 {
-    private ScaveExport exporter;
+    private OldScaveExport exporter;
     private ResultFileManager manager;
     private IDList scalars, vectors, histograms;
     private Dataset dataset;
     private DatasetItem datasetItem;
     private ResultItemFields scalarsGroupBy;
 
-    public ExportJob(ScaveExport exporter,
+    public ExportJob(OldScaveExport exporter,
             IDList scalars, IDList vectors, IDList histograms,
             Dataset dataset, DatasetItem datasetItem,
             ResultItemFields scalarsGroupBy, ResultFileManager manager) {
@@ -71,6 +71,7 @@ public class ExportJob extends WorkspaceJob
             monitor.beginTask("Exporting", calculateTotalWork());
 
             status = ResultFileManager.callWithReadLock(manager, new Callable<IStatus>() {
+                @Override
                 public IStatus call() throws Exception {
                     IStatus status = exportVectors(exporter, monitor);
                     if (status.getSeverity() != IStatus.OK)
@@ -126,7 +127,7 @@ public class ExportJob extends WorkspaceJob
         return work;
     }
 
-    protected IStatus exportScalars(ScaveExport exporter, IProgressMonitor monitor) {
+    protected IStatus exportScalars(OldScaveExport exporter, IProgressMonitor monitor) {
         if (scalars != null && scalars.size() > 0) {
             if (monitor.isCanceled())
                 return Status.CANCEL_STATUS;
@@ -136,7 +137,7 @@ public class ExportJob extends WorkspaceJob
         return Status.OK_STATUS;
     }
 
-    protected IStatus exportVectors(ScaveExport exporter, IProgressMonitor monitor) {
+    protected IStatus exportVectors(OldScaveExport exporter, IProgressMonitor monitor) {
         XYArray[] data = null;
         IProgressMonitor subMonitor = new SubProgressMonitor(monitor, vectors.size());
         if (dataset != null) {
@@ -164,7 +165,7 @@ public class ExportJob extends WorkspaceJob
         return Status.OK_STATUS;
     }
 
-    protected IStatus exportHistograms(ScaveExport exporter, IProgressMonitor monitor) {
+    protected IStatus exportHistograms(OldScaveExport exporter, IProgressMonitor monitor) {
         if (histograms != null && histograms.size() > 0) {
             if (monitor.isCanceled())
                 return Status.CANCEL_STATUS;

@@ -737,7 +737,7 @@ void ScaveTool::vectorCommand(int argc, char **argv)
     dataflowManager.execute();
 
     if (opt_outputFormat != "vec") {
-        ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
+        OldScaveExport *exporter = OldExporterFactory::createExporter(opt_outputFormat);
         if (!exporter)
             throw opp_runtime_error("Unknown output file format '%s'", opt_outputFormat.c_str());
 
@@ -865,7 +865,7 @@ void ScaveTool::scalarCommand(int argc, char **argv)
         cout << "done collecting inputs" << endl << endl;
 
     if (!scalarIDList.isEmpty()) {
-        ScaveExport *exporter = ExporterFactory::createExporter(opt_outputFormat);
+        OldScaveExport *exporter = OldExporterFactory::createExporter(opt_outputFormat);
         if (!exporter)
             throw opp_runtime_error("Unknown output file format '%s'", opt_outputFormat.c_str());
         try {

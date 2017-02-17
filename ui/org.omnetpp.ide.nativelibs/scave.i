@@ -700,12 +700,12 @@ namespace omnetpp { namespace scave {
 %ignore ScatterDataTable;
 %ignore JoinedDataTable;
 %ignore HistogramDataTable;
-%ignore MatlabStructExport;
-%ignore MatlabScriptExport;
-%ignore OctaveTextExport;
-%ignore ScaveExport::saveVectors;
+%ignore OldMatlabStructExport;
+%ignore OldMatlabScriptExport;
+%ignore OldOctaveTextExport;
+%ignore OldScaveExport::saveVectors;
 %rename(EOL)    CsvExport::eol;
-%newobject ExporterFactory::createExporter;
+%newobject OldExporterFactory::createExporter;
 } } // namespaces
 
 %include "scave/export.h"
