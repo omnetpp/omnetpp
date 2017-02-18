@@ -23,7 +23,8 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \
       $O/patternmatcher.o $O/unitconversion.o $O/displaystring.o $O/fileglobber.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
-      $O/enumstr.o $O/stringtokenizer2.o $O/colorutil.o $O/sqlite3.o
+      $O/enumstr.o $O/stringtokenizer2.o $O/colorutil.o $O/sqlite3.o \
+      $O/formattedprinter.o
 
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.hh matchexpression.tab.cc
