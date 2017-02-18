@@ -31,6 +31,7 @@ private:
     std::ostream& out;
     int margin = 80;
     int optionsWidth = 22;
+    int columnSpacing = 2; // for tables
 public:
     FormattedPrinter(std::ostream& out) : out(out) {}
     void setMargin(int n) {margin = n;}
@@ -39,6 +40,7 @@ public:
     void para(const std::string& paragraph); // wrapped, blank line after
     void indentPara(const std::string& paragraph); // indented, wrapped, blank line after
     void option(const std::string& option, const std::string& description);
+    void table(const std::string& text, const std::vector<int>& userColumnWidths=std::vector<int>());
 };
 
 } // namespace common

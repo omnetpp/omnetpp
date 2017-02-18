@@ -49,6 +49,11 @@ void FormattedPrinter::option(const string& option, const string& description)
     out << opp_trim(opp_indentlines(opp_breaklines(description, margin-optionsWidth), indent)) << endl;
 }
 
+void FormattedPrinter::table(const std::string& text, const std::vector<int>& userColumnWidths)
+{
+    out << opp_formattable(text, columnSpacing, userColumnWidths);
+}
+
 } // namespace common
 } // namespace omnetpp
 
