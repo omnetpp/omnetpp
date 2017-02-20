@@ -113,7 +113,7 @@ void LogBuffer::beginSend(cMessage *msg)
 {
     if (entries.empty()) {
         // this is likely the initialize() phase -- hence no banner
-        addEvent(0, SIMTIME_ZERO, nullptr, "{}");
+        addEvent(0, SIMTIME_ZERO, nullptr, nullptr);
         Entry *entry = entries.back();
         entry->componentId = -1;
     }
