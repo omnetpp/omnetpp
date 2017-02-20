@@ -164,6 +164,9 @@ ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& des
 {
     DataSorter sorter(&manager);
     scalars = sorter.groupAndAlign(idlist, groupBy);
+    if (idlist.isEmpty())
+        return; // otherwise we can't set up columns from scalars[0]
+
     // add a column for each grouping field
     if (groupBy.hasField(ResultItemField::FILE))
         header.push_back(Column("File", STRING));
@@ -183,7 +186,8 @@ ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& des
         header.push_back(Column("Name", STRING));
 
     // add a column for each column in scalars headed by the non-grouping fields
-    const IDVector firstRow = scalars[0];  // XXX empty idlist?
+    assert(!scalars.empty());
+    const IDVector firstRow = scalars[0];
     for (int col = 0; col < (int)firstRow.size(); ++col) {
         ID id = -1;
         for (int row = 0; row < (int)scalars.size(); ++row)
