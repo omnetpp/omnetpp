@@ -7,7 +7,7 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
 OMNeT++ 5.1 (February 2017)
-------------------------------------
+---------------------------
 
 This is the final version of OMNeT++ 5.1
 
@@ -24,7 +24,7 @@ Samples:
 
 
 OMNeT++ 5.1 Preview 3 (February 2017)
-------------------------------------
+-------------------------------------
 
 This version is expected to be last preview version before releasing
 OMNeT++ 5.1 final.
