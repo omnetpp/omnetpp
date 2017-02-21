@@ -18,7 +18,7 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.OldScaveExport;
-import org.omnetpp.scave.jobs.ExportJob;
+import org.omnetpp.scave.jobs.OldExportJob;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.ResultType;
@@ -30,7 +30,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-public abstract class AbstractExportWizard extends Wizard implements IExportWizard {
+public abstract class OldAbstractExportWizard extends Wizard implements IExportWizard {
 
     protected IDList selectedScalars = IDList.EMPTY;
     protected IDList selectedVectors = IDList.EMPTY;
@@ -38,10 +38,10 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
     protected Dataset selectedDataset;
     protected DatasetItem selectedDatasetItem;
     protected ResultFileManager manager;
-    protected ExportWizardPage page;
+    protected OldExportWizardPage page;
 
 
-    protected AbstractExportWizard() {
+    protected OldAbstractExportWizard() {
         setWindowTitle("Export");
     }
 
@@ -90,7 +90,7 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
                 OldScaveExport exporter = createExporter();
                 exporter.setPrecision(page.getPrecision());
                 exporter.setBaseFileName(page.getFileName());
-                ExportJob job = new ExportJob(exporter,
+                OldExportJob job = new OldExportJob(exporter,
                                         selectedScalars, selectedVectors, selectedHistograms,
                                         selectedDataset, selectedDatasetItem,
                                         page.getGroupBy(), manager);

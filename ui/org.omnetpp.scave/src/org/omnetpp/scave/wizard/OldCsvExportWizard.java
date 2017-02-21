@@ -32,7 +32,7 @@ import org.omnetpp.scave.engine.OldCsvExport.QuoteMethod;
  *
  * @author tomi
  */
-public class CsvExportWizard extends AbstractExportWizard {
+public class OldCsvExportWizard extends OldAbstractExportWizard {
 
     public static final String ID = "org.omnetpp.scave.wizard.CsvExportWizard";
 
@@ -42,7 +42,7 @@ public class CsvExportWizard extends AbstractExportWizard {
         QUOTECHAR_KEY   = "quoteChar",
         HEADER_KEY      = "header";
 
-    public CsvExportWizard() {
+    public OldCsvExportWizard() {
         setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
     }
 
@@ -73,7 +73,7 @@ public class CsvExportWizard extends AbstractExportWizard {
      *        Pages
      *---------------------*/
 
-    static class CsvExportPage extends ExportWizardPage
+    static class CsvExportPage extends OldExportWizardPage
     {
         private Combo separatorCombo;
         private Combo eolCombo;

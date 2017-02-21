@@ -38,7 +38,7 @@ import org.omnetpp.scave.engine.StringVector;
  *
  * @author tomi
  */
-public abstract class ExportWizardPage extends WizardPage {
+public abstract class OldExportWizardPage extends WizardPage {
 
     private Button[] groupByCheckboxes;
     private Combo precisionCombo;
@@ -49,7 +49,7 @@ public abstract class ExportWizardPage extends WizardPage {
     private static final String PRECISION_KEY = "precision";
     private static final String DATA_KEY = "org.omnetpp.scave.wizard.ExportWizardPage";
 
-    protected ExportWizardPage(String pageName, String title,
+    protected OldExportWizardPage(String pageName, String title,
             ImageDescriptor titleImage) {
         super(pageName, title, titleImage);
     }
@@ -145,8 +145,8 @@ public abstract class ExportWizardPage extends WizardPage {
 
     protected void updateDescription() {
         IWizard wizard = getWizard();
-        if (wizard instanceof AbstractExportWizard) {
-            AbstractExportWizard exportWizard = (AbstractExportWizard)wizard;
+        if (wizard instanceof OldAbstractExportWizard) {
+            OldAbstractExportWizard exportWizard = (OldAbstractExportWizard)wizard;
             int scalars = (int)exportWizard.selectedScalars.size();
             int vectors = (int)exportWizard.selectedVectors.size();
             int histograms = (int)exportWizard.selectedHistograms.size();

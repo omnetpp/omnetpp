@@ -17,8 +17,8 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.wizard.AbstractExportWizard;
-import org.omnetpp.scave.wizard.CsvExportWizard;
+import org.omnetpp.scave.wizard.OldAbstractExportWizard;
+import org.omnetpp.scave.wizard.OldCsvExportWizard;
 
 /**
  * Exports the selected result items in various formats.
@@ -69,9 +69,9 @@ public class ExportDataAction extends AbstractScaveAction {
                   selection.getFirstElement() instanceof DatasetItem));
     }
 
-    private AbstractExportWizard createWizard() {
+    private OldAbstractExportWizard createWizard() {
         if (CSV.equals(format))
-            return new CsvExportWizard();
+            return new OldCsvExportWizard();
         else
             return null;
     }

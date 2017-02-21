@@ -34,7 +34,7 @@ import org.omnetpp.scave.model2.DatasetManager;
  *
  * @author tomi
  */
-public class ExportJob extends WorkspaceJob
+public class OldExportJob extends WorkspaceJob
 {
     private OldScaveExport exporter;
     private ResultFileManager manager;
@@ -43,7 +43,7 @@ public class ExportJob extends WorkspaceJob
     private DatasetItem datasetItem;
     private ResultItemFields scalarsGroupBy;
 
-    public ExportJob(OldScaveExport exporter,
+    public OldExportJob(OldScaveExport exporter,
             IDList scalars, IDList vectors, IDList histograms,
             Dataset dataset, DatasetItem datasetItem,
             ResultItemFields scalarsGroupBy, ResultFileManager manager) {
