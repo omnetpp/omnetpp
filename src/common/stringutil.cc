@@ -380,6 +380,68 @@ std::string opp_indentlines(const std::string& text, const std::string& indent)
     return tmp;
 }
 
+std::vector<std::string> opp_split(const std::string& text, const std::string& separator)
+{
+    std::vector<std::string> items;
+    int itemStart = 0;
+    while (true) {
+        size_t separatorPos = text.find(separator, itemStart);
+        if (separatorPos == text.npos) {
+            items.push_back(text.substr(itemStart));
+            break;
+        }
+        else {
+            items.push_back(text.substr(itemStart, separatorPos - itemStart));
+            itemStart = separatorPos + separator.length();
+        }
+    }
+    return items;
+}
+
+// helper for opp_formattable()
+static std::vector<int> computeMaxColumnWidths(const std::string& text)
+{
+    std::vector<int> widths;
+    std::vector<std::string> lines = opp_split(text, "\n");
+    for (auto line : lines) {
+        std::vector<std::string> items = opp_split(line, "\t");
+        if (items.size() < 2)
+            continue;  // not part of a table
+        int col = 0;
+        for (auto item : items) {
+            int width = item.length();
+            if ((int)widths.size() <= col)
+                widths.push_back(width);
+            else if (widths[col] < width)
+                widths[col] = width;
+            col++;
+        }
+    }
+    return widths;
+}
+
+std::string opp_formattable(const std::string& text, int spacing, const std::vector<int>& userColumnWidths)
+{
+    std::vector<int> columnWidths = computeMaxColumnWidths(text);
+    for (size_t i = 0; i < std::min(userColumnWidths.size(), columnWidths.size()); i++)
+        if (userColumnWidths[i] > 0)
+            columnWidths[i] = userColumnWidths[i]; // take over user's settings
+
+    std::stringstream out;
+    std::vector<std::string> lines = opp_split(text, "\n");  //TODO cumulate overflows
+    for (auto line : lines) {
+        std::vector<std::string> items = opp_split(line, "\t");
+        int col = 0;
+        for (auto item : items) {
+            int padding = std::max(spacing, (int)(columnWidths[col] + spacing - item.length()));
+            out << item << std::setw(padding) << "";
+            col++;
+        }
+        out << std::endl;
+    }
+    return out.str();
+}
+
 bool opp_stringbeginswith(const char *s, const char *prefix)
 {
     return strlen(s) >= strlen(prefix) && strncmp(s, prefix, strlen(prefix)) == 0;

@@ -201,6 +201,19 @@ COMMON_API std::string opp_breaklines(const std::string& text, int maxLineLength
 COMMON_API std::string opp_indentlines(const std::string& text, const std::string& indent);
 
 /**
+ * Split a string into parts separated by the give separator.
+ */
+COMMON_API std::vector<std::string> opp_split(const std::string& text, const std::string& separator);
+
+/**
+ * Aligns columns of a table. Table columns should be separated by tab.
+ * Columns widths are automatically determined, but can be overridden
+ * by specifying positive numbers at the respective indices in userColumnWidths[]
+ * (i.e. specify 0 or -1 in the array to use automatic width.)
+ */
+COMMON_API std::string opp_formattable(const std::string& text, int spacing=2, const std::vector<int>& userColumnWidths=std::vector<int>());
+
+/**
  * Returns true if the first string begins with the second string.
  */
 COMMON_API bool opp_stringbeginswith(const char *s, const char *prefix);
