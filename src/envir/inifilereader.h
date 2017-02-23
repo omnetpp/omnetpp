@@ -75,6 +75,7 @@ class ENVIR_API InifileReader : public cConfigurationReader
     int getOrCreateSection(const char *sectionName); // returns index into sections[]
     static const char *findEndContent(const char *line, const char *filename, int lineNumber);
     static std::string trim(const char *start, const char *end);
+    static void rtrim(std::string& str);
 
   public:
     InifileReader();

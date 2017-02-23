@@ -134,7 +134,8 @@ void InifileReader::internalReadFile(const char *filename, int currentSectionInd
 
     std::string rawLine;
     while (std::getline(in, rawLine)) {
-        ASSERT(rawLine.empty() || (*(rawLine.end()-1) != '\r' && *(rawLine.end()-1) != '\n'));
+        // chop off trailing whitespace (e.g. garbage CR when processing Windows file on Linux)
+        rtrim(rawLine);
 
         // join continued lines
         lineNumber++;
@@ -255,6 +256,15 @@ const char *InifileReader::findEndContent(const char *line, const char *filename
         }
     }
     return s;
+}
+
+void InifileReader::rtrim(std::string& str)
+{
+    int endPos = str.length()-1;
+    while (endPos > 0 && opp_isspace(str[endPos]))
+        endPos--;
+    if (endPos != (int)str.length()-1)
+        str = str.substr(0, endPos+1);
 }
 
 std::string InifileReader::trim(const char *start, const char *end)
