@@ -465,7 +465,7 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
             for (;;) {
                 RunInfo runInfo;
                 runInfo.info = scenario.str();
-                StringMap variables = computeVariables(configName, result.size(), sectionChain, &scenario, locationToVarName);
+                StringMap variables = computeVariables(configName, result.size(), sectionChain, &scenario, locationToVarNameMap);
                 runInfo.runAttrs = variables;
 
                 // collect entries that contain ${..}
