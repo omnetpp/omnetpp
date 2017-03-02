@@ -94,8 +94,8 @@ Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
 Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
-Register_PerObjectConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
-Register_PerObjectConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION)
+Register_PerObjectConfigOption(ID, NAME, KIND, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register_PerObjectConfigOptionU(ID, NAME, KIND, UNIT, DEFAULTVALUE, DESCRIPTION)
 \end{cpp}
 
 Config options come in three flavors, as indicated by the macro names:
@@ -106,22 +106,34 @@ Config options come in three flavors, as indicated by the macro names:
       \ttt{[Config <name>]} sections)
   \item \textit{Per-Run} options can be specified in any section
       (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
-      They are specific to a particular section. Their names always contain
-      a hyphen (-) character.
+      They affect the configuration they occur in.
   \item \textit{Per-Object} options can be specified in any section
       (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
-      They are specific to an object or group of objects and their name must
-      not contain a hypen (-) character.
+      They are specific to an object or group of objects. Their names
+      must always contain a hyphen (-) character so that they can be
+      distinguished from module/channel parameter assignments when they
+      occur in ini files.
 \end{itemize}
 
 The macro arguments are as follows:
 \begin{itemize}
-  \item \textit{ID} is a C++ identifier that lets one refer to the
-        configuration option in \cclass{cConfiguration} member functions.
-        (It is actually pointer to a \cclass{cConfigOption} object that
-        the macro creates.)
+  \item \textit{ID} is a C++ identifier that becomes the name of a global
+        variable, a pointer to a \cclass{cConfigOption} object that the
+        macro creates. It lets you refer to the configuration option, 
+        e.g. when querying its value using \cclass{cConfiguration}'s member 
+        functions.
   \item \textit{NAME} is the name of the option (a string).
-  \item \textit{TYPE} is the data type of the option; it must be one of:
+  \item \textit{KIND} applies to per-object configuration options, and 
+        clarifies what kind of objects the option applies to. Its value 
+        must be one of: \ttt{KIND\_COMPONENT} (module or channel),
+        \ttt{KIND\_CHANNEL}, \ttt{KIND\_MODULE} (simple or compound module),
+        \ttt{KIND\_SIMPLE\_MODULE}, \ttt{KIND\_PARAMETER} (module or channel
+        parameter), \ttt{KIND\_STATISTIC} (statistic declared in NED
+        via \fprop{@statistic}), \ttt{KIND\_SCALAR} (output scalar),
+        \ttt{KIND\_VECTOR} (output vector), \ttt{KIND\_UNSPECIFIED\_TYPE}
+        (only used for the \fconfig{typename} option), \ttt{KIND\_OTHER}
+        (anything else).
+  \item \textit{TYPE} is the data type of the config option; it must be one of:
         \ttt{CFG\_BOOL}, \ttt{CFG\_INT}, \ttt{CFG\_DOUBLE}, \ttt{CFG\_STRING},
         \ttt{CFG\_FILENAME}, \ttt{CFG\_FILENAMES}, \ttt{CFG\_PATH}, \ttt{CFG\_CUSTOM}.
         The most significant difference between filesystem-related types

@@ -17,15 +17,15 @@
 
 #include "oppmysqlutils.h"
 
-Register_PerObjectConfigOption(CFGID_MYSQL_HOST,       "mysql-host",         KIND_NONE, CFG_STRING,   "\"\"",  "Hostname of mysql server");
-Register_PerObjectConfigOption(CFGID_MYSQL_USER,       "mysql-user",         KIND_NONE, CFG_STRING,   "\"\"",  "User name for mysql server");
-Register_PerObjectConfigOption(CFGID_MYSQL_PASSWD,     "mysql-password",     KIND_NONE, CFG_STRING,   "\"\"",  "Password for mysql server");
-Register_PerObjectConfigOption(CFGID_MYSQL_DB,         "mysql-database",     KIND_NONE, CFG_STRING,   "\"\"",  "Database name");
-Register_PerObjectConfigOption(CFGID_MYSQL_PORT,       "mysql-port",         KIND_NONE, CFG_INT,      "0",     "Port of mysql server");
-Register_PerObjectConfigOption(CFGID_MYSQL_SOCKET,     "mysql-socket",       KIND_NONE, CFG_STRING,   "\"\"",  "Socket of mysql server");
-Register_PerObjectConfigOption(CFGID_MYSQL_CLIENTFLAG, "mysql-clientflag",   KIND_NONE, CFG_INT,      "0",     "??? for mysql server");
-Register_PerObjectConfigOption(CFGID_MYSQL_USE_PIPE,   "mysql-use-pipe",     KIND_NONE, CFG_BOOL,     "0",     "??? for mysql server");
-Register_PerObjectConfigOption(CFGID_MYSQL_OPT_FILE,   "mysql-options-file", KIND_NONE, CFG_FILENAME, "",      "Options file for mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_HOST,       "mysql-host",         KIND_OTHER, CFG_STRING,   "\"\"",  "Hostname of mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_USER,       "mysql-user",         KIND_OTHER, CFG_STRING,   "\"\"",  "User name for mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_PASSWD,     "mysql-password",     KIND_OTHER, CFG_STRING,   "\"\"",  "Password for mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_DB,         "mysql-database",     KIND_OTHER, CFG_STRING,   "\"\"",  "Database name");
+Register_PerObjectConfigOption(CFGID_MYSQL_PORT,       "mysql-port",         KIND_OTHER, CFG_INT,      "0",     "Port of mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_SOCKET,     "mysql-socket",       KIND_OTHER, CFG_STRING,   "\"\"",  "Socket of mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_CLIENTFLAG, "mysql-clientflag",   KIND_OTHER, CFG_INT,      "0",     "??? for mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_USE_PIPE,   "mysql-use-pipe",     KIND_OTHER, CFG_BOOL,     "0",     "??? for mysql server");
+Register_PerObjectConfigOption(CFGID_MYSQL_OPT_FILE,   "mysql-options-file", KIND_OTHER, CFG_FILENAME, "",      "Options file for mysql server");
 
 
 void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *cfgobj)
