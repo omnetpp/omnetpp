@@ -128,6 +128,10 @@ public class TextFieldEditor extends FieldEditor {
 
     @Override
     public void reread() {
+        // if the editor has been modified since the last commit, refuse overwriting the user's edits and do nothing
+        if (isEdited)
+            return;
+
         // update text and reset button
         String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
         String value = getValueFromFile(GENERAL, key);
@@ -143,7 +147,6 @@ public class TextFieldEditor extends FieldEditor {
             textField.setForeground(null);
             resetButton.setEnabled(true);
         }
-        isEdited = false;
 
         // update problem decoration
         IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
