@@ -664,7 +664,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     }
 
     /**
-     * Returns all the configuration names found in the supplied inifiles
+     * Returns all the configuration names found in the supplied inifiles, together 
+     * with their descriptions (extends, network, description, etc.)
      */
     private String[] getConfigNames(IFile[] inifiles) {
         Map<String,OmnetppLaunchUtils.ConfigEnumeratorCallback.Section> sections = new LinkedHashMap<>();
@@ -695,17 +696,14 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         return StringUtils.substringBefore(fConfigCombo.getText(), "--").trim();
     }
 
-    /**
-     * @param name The config name that should be selected from the drop down. If no match found
-     * the first empty line will be selected
-     */
     private void setConfigName(String name) {
         fConfigCombo.setText("");
-        for (String line : fConfigCombo.getItems())
-            if (line.startsWith(name)) {
+        for (String line : fConfigCombo.getItems()) {
+            if (line.equals(name) || line.startsWith(name+" ")) {
                 fConfigCombo.setText(line);
                 return;
             }
+        }
     }
 
     private static String envirToComboString(String value) {
