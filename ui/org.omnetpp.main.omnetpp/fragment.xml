@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <fragment>
+  <extension point="org.eclipse.epp.logging.aeri.ide.servers">
+    <server id="org.example.aer.opp"
+      name="OMNeT++"
+      description="Discrete Event Simulation Framework - Integrated Development Environment"
+      class="org.eclipse.epp.internal.logging.aeri.ide.server.mars.ServerConnection"
+      icon16="icons/logo16.png"
+      icon32="icons/logo32.png">
 
+      <link rel="provider"
+        title="OpenSim Ltd."
+        href="https://omnetpp.org"/>
+
+      <!-- The discovery URL of your Ctrlflow Automated Error Reporting service. -->
+      <link rel="discovery"
+        title="Discovery URL"
+        href="https://aer.ctrlflow.com/opp/community/discovery"/>
+    </server>
+  </extension> 
 </fragment>

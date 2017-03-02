@@ -45,6 +45,8 @@
    </plugins>
 
    <features>
+      <feature id="org.eclipse.epp.logging.aeri.feature"/>
+      <feature id="org.eclipse.mylyn.commons.notifications"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.linuxtools.valgrind"/>
       <feature id="org.omnetpp.ide.academic"/>
@@ -57,6 +59,7 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
    </configurations>
 
    <preferencesInfo>
