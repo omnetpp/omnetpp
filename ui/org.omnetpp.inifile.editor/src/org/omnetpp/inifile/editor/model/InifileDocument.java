@@ -259,10 +259,16 @@ public class InifileDocument implements IInifileDocument {
                 Section currentSection = null; // can point into the parent file
                 SectionHeadingLine currentSectionHeading = null; // points into current file
                 IFile currentFile;
+                IFile[] includeStack;
 
                 public Callback(IFile file, Section currentSection) {
+                    this(file, currentSection, new IFile[0]);
+                }
+
+                private Callback(IFile file, Section currentSection, IFile[] includeStack) {
                     this.currentFile = file;
                     this.currentSection = currentSection;
+                    this.includeStack = ArrayUtils.add(includeStack, currentFile);
                 }
 
                 public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
@@ -335,9 +341,13 @@ public class InifileDocument implements IInifileDocument {
                         // recursively parse the included file
                         try {
                             IFile file = currentFile.getParent().getFile(new Path(line.includedFile));
-                            includedFiles.add(file);
-                            markers.register(file);
-                            new InifileParser().parse(file, new Callback(file, currentSection));
+                            if (ArrayUtils.contains(includeStack, file))
+                                parseError(lineNumber, numLines, "Recursive include");
+                            else {
+                                includedFiles.add(file);
+                                markers.register(file);
+                                new InifileParser().parse(file, new Callback(file, currentSection, includeStack));
+                            }
                         } catch (CoreException e) {
                             markers.addError(currentFile, lineNumber, e.getMessage());
                         }

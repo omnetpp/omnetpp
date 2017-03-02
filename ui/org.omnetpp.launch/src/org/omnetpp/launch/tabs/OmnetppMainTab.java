@@ -7,7 +7,6 @@
 
 package org.omnetpp.launch.tabs;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -70,7 +69,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.InifileParser;
-import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
@@ -674,12 +672,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
                 InifileParser iparser = new InifileParser();
                 try {
                     iparser.parse(inifile, new OmnetppLaunchUtils.ConfigEnumeratorCallback(inifile, sections));
-                } catch (ParseException e) {
-                    setErrorMessage("Error reading inifile: "+e.getMessage());
                 } catch (CoreException e) {
-                    setErrorMessage("Error reading inifile: "+e.getMessage());
-                } catch (IOException e) {
-                    setErrorMessage("Error reading inifile: "+e.getMessage());
+                    setErrorMessage("Error reading inifile: " + e.getMessage());
                 }
             }
         List<String> result = new ArrayList<>();

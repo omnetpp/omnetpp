@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
@@ -88,10 +89,16 @@ public class OmnetppLaunchUtils {
         IFile currentFile;
         Section currentSection;
         Map<String, Section> result;
+        IFile[] includeStack;
 
         public ConfigEnumeratorCallback(IFile file, Map<String, Section> result) {
+            this(file, result, new IFile[0]);
+        }
+
+        protected ConfigEnumeratorCallback(IFile file, Map<String, Section> result, IFile[] includeStack) {
             this.currentFile = file;
             this.result = result;
+            this.includeStack = ArrayUtils.add(includeStack, currentFile);
         }
 
         @Override
@@ -100,10 +107,11 @@ public class OmnetppLaunchUtils {
                 // recursively parse the included file
                 try {
                     IFile file = currentFile.getParent().getFile(new Path(args));
-                    new InifileParser().parse(file, new ConfigEnumeratorCallback(file, result));
+                    if (!ArrayUtils.contains(includeStack, file)) // ignore recursive include
+                        new InifileParser().parse(file, new ConfigEnumeratorCallback(file, result, includeStack));
                 }
-                catch (Exception e) {
-                    LaunchPlugin.logError("Error reading inifile: ", e);
+                catch (CoreException e) {
+                    LaunchPlugin.logError("Error reading inifile", e);
                 }
             }
         }
