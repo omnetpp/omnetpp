@@ -108,7 +108,8 @@ public abstract class FieldEditor extends Composite {
     protected void removeFromFile(String section, String key) {
         Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getName()) : key.equals(entry.getName()));
         try {
-            inifile.removeKey(section, key);
+            if (inifile.containsKey(section, key))  // ==false e.g. with new entry and yet-uncommitted editor
+                inifile.removeKey(section, key);
         }
         catch (RuntimeException e) {
             showErrorDialog(e);
@@ -199,7 +200,7 @@ public abstract class FieldEditor extends Composite {
     public abstract void commit();
 
     public void resetToDefault() {
-        removeFromFile(GENERAL, entry.isPerObject() ? "**."+entry.getName() : entry.getName());  //XXX
+        removeFromFile(GENERAL, entry.isPerObject() ? "**."+entry.getName() : entry.getName());
         reread();
     }
 
