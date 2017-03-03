@@ -60,7 +60,6 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
-import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
@@ -431,9 +430,8 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     result.addAll(interestingSections);
                 }
             }
-            catch (ParseException e) { }
-            catch (CoreException e) { }
-            catch (IOException e) { }
+            catch (IOException|CoreException e) { 
+            }
 
         }
         return result;
@@ -463,7 +461,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
      * entries into a map. The "Config " prefix is stripped from section names.
      */
     //TODO should resolve includes, and process them too
-    protected Map<String,IniSection> parseInifile(String inifileText, final IFile iniFile) throws ParseException, IOException {
+    protected Map<String,IniSection> parseInifile(String inifileText, final IFile iniFile) throws CoreException {
         final Map<String, IniSection> sections = new HashMap<String, IniSection>();
         InifileParser inifileParser = new InifileParser();
         inifileParser.parse(inifileText, new InifileParser.ParserAdapter() {

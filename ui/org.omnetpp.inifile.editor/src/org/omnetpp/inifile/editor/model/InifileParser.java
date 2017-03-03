@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.common.Debug;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 
 /**
  * Parses an ini file. Parse results are passed back via a callback.
@@ -73,106 +74,111 @@ public class InifileParser {
     /**
      * Parses an IFile.
      */
-    public void parse(IFile file, ParserCallback callback) throws CoreException, IOException, ParseException {
+    public void parse(IFile file, ParserCallback callback) throws CoreException {
         parse(new InputStreamReader(file.getContents()), callback);
     }
 
     /**
      * Parses a multi-line string.
      */
-    public void parse(String text, ParserCallback callback) throws IOException, ParseException {
+    public void parse(String text, ParserCallback callback) throws CoreException {
         parse(new StringReader(text), callback);
     }
 
     /**
      * Parses a stream.
      */
-    public void parse(Reader streamReader, ParserCallback callback) throws IOException {
-        LineNumberReader reader = new LineNumberReader(streamReader);
+    public void parse(Reader streamReader, ParserCallback callback) throws CoreException {
+        try {
+            LineNumberReader reader = new LineNumberReader(streamReader);
 
-        String rawLine;
-        while ((rawLine=reader.readLine()) != null) {
-            int lineNumber = reader.getLineNumber();
-            int numLines = 1;
+            String rawLine;
+            while ((rawLine=reader.readLine()) != null) {
+                int lineNumber = reader.getLineNumber();
+                int numLines = 1;
 
-            // join continued lines
-            String line = rawLine;
-            if (rawLine.endsWith("\\")) {
-                StringBuilder concatenatedLines = new StringBuilder();
-                while (rawLine != null && rawLine.endsWith("\\")) {
-                    concatenatedLines.append(rawLine, 0, rawLine.length()-1);
-                    rawLine = reader.readLine();
-                    numLines++;
+                // join continued lines
+                String line = rawLine;
+                if (rawLine.endsWith("\\")) {
+                    StringBuilder concatenatedLines = new StringBuilder();
+                    while (rawLine != null && rawLine.endsWith("\\")) {
+                        concatenatedLines.append(rawLine, 0, rawLine.length()-1);
+                        rawLine = reader.readLine();
+                        numLines++;
+                    }
+                    if (rawLine == null)
+                        callback.parseError(lineNumber, numLines, "Stray backslash at end of file");
+                    else
+                        concatenatedLines.append(rawLine);
+                    line = concatenatedLines.toString();
                 }
-                if (rawLine == null)
-                    callback.parseError(lineNumber, numLines, "Stray backslash at end of file");
-                else
-                    concatenatedLines.append(rawLine);
-                line = concatenatedLines.toString();
-            }
 
-            // process the line
-            line = line.trim();
-            char lineStart = line.length()==0 ? 0 : line.charAt(0);
-            if (line.length()==0) {
-                // blank line
-                callback.blankOrCommentLine(lineNumber, numLines, rawLine, "");
-            }
-            else if (lineStart=='#') {
-                // comment line
-                callback.blankOrCommentLine(lineNumber, numLines, rawLine, line);
-            }
-            else if (lineStart==';') {
-                // obsolete comment line
-                callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
-            }
-            else if (lineStart=='i' && line.matches("include\\s.*")) {
-                // include directive
-                String directive = "include";
-                String rest = line.substring(directive.length());
-                int endPos = findEndContent(rest, 0);
-                if (endPos == -1) {
-                    callback.parseError(lineNumber, numLines, "Unterminated string constant");
-                    continue;
+                // process the line
+                line = line.trim();
+                char lineStart = line.length()==0 ? 0 : line.charAt(0);
+                if (line.length()==0) {
+                    // blank line
+                    callback.blankOrCommentLine(lineNumber, numLines, rawLine, "");
                 }
-                String args = rest.substring(0, endPos).trim();
-                String rawComment = rest.substring(endPos);
-                callback.directiveLine(lineNumber, numLines, rawLine, directive, args, rawComment);
+                else if (lineStart=='#') {
+                    // comment line
+                    callback.blankOrCommentLine(lineNumber, numLines, rawLine, line);
+                }
+                else if (lineStart==';') {
+                    // obsolete comment line
+                    callback.parseError(lineNumber, numLines, "Semicolon is no longer a comment start character, please use hashmark ('#')");
+                }
+                else if (lineStart=='i' && line.matches("include\\s.*")) {
+                    // include directive
+                    String directive = "include";
+                    String rest = line.substring(directive.length());
+                    int endPos = findEndContent(rest, 0);
+                    if (endPos == -1) {
+                        callback.parseError(lineNumber, numLines, "Unterminated string constant");
+                        continue;
+                    }
+                    String args = rest.substring(0, endPos).trim();
+                    String rawComment = rest.substring(endPos);
+                    callback.directiveLine(lineNumber, numLines, rawLine, directive, args, rawComment);
+                }
+                else if (lineStart=='[') {
+                    // section heading
+                    Matcher m = Pattern.compile("\\[([^#\"]+)\\]\\s*?(\\s*#.*)?").matcher(line);
+                    if (!m.matches()) {
+                        callback.parseError(lineNumber, numLines, "Syntax error in section heading");
+                        continue;
+                    }
+                    String sectionName = m.group(1).trim();
+                    String rawComment = m.groupCount()>1 ? m.group(2) : "";
+                    if (rawComment == null) rawComment = "";
+                    callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
+                }
+                else {
+                    // key = value
+                    int endPos = findEndContent(line, 0);
+                    if (endPos == -1) {
+                        callback.parseError(lineNumber, numLines, "Unterminated string constant");
+                        continue;
+                    }
+                    String rawComment = line.substring(endPos);
+                    String keyValue = line.substring(0, endPos);
+                    int equalSignPos = keyValue.indexOf('=');
+                    if (equalSignPos == -1) {
+                        callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
+                        continue;
+                    }
+                    String key = keyValue.substring(0, equalSignPos).trim();
+                    if (key.length()==0) {
+                        callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
+                        continue;
+                    }
+                    String value = keyValue.substring(equalSignPos+1).trim();
+                    callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
+                }
             }
-            else if (lineStart=='[') {
-                // section heading
-                Matcher m = Pattern.compile("\\[([^#\"]+)\\]\\s*?(\\s*#.*)?").matcher(line);
-                if (!m.matches()) {
-                    callback.parseError(lineNumber, numLines, "Syntax error in section heading");
-                    continue;
-                }
-                String sectionName = m.group(1).trim();
-                String rawComment = m.groupCount()>1 ? m.group(2) : "";
-                if (rawComment == null) rawComment = "";
-                callback.sectionHeadingLine(lineNumber, numLines, rawLine, sectionName, rawComment);
-            }
-            else {
-                // key = value
-                int endPos = findEndContent(line, 0);
-                if (endPos == -1) {
-                    callback.parseError(lineNumber, numLines, "Unterminated string constant");
-                    continue;
-                }
-                String rawComment = line.substring(endPos);
-                String keyValue = line.substring(0, endPos);
-                int equalSignPos = keyValue.indexOf('=');
-                if (equalSignPos == -1) {
-                    callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
-                    continue;
-                }
-                String key = keyValue.substring(0, equalSignPos).trim();
-                if (key.length()==0) {
-                    callback.parseError(lineNumber, numLines, "Line must be in the form key=value");
-                    continue;
-                }
-                String value = keyValue.substring(equalSignPos+1).trim();
-                callback.keyValueLine(lineNumber, numLines, rawLine, key, value, rawComment);
-            }
+        } 
+        catch (IOException e) {
+            throw InifileEditorPlugin.wrapIntoCoreException(e);
         }
     }
 

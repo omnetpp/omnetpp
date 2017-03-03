@@ -7,7 +7,6 @@
 
 package org.omnetpp.inifile.editor.model;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -339,11 +338,6 @@ public class InifileDocument implements IInifileDocument {
                             includedFiles.add(file);
                             markers.register(file);
                             new InifileParser().parse(file, new Callback(file, currentSection));
-                        }
-                        catch (ParseException e) {
-                            markers.addError(currentFile, e.getLineNumber(), e.getMessage());
-                        } catch (IOException e) {
-                            markers.addError(currentFile, lineNumber, e.getMessage());
                         } catch (CoreException e) {
                             markers.addError(currentFile, lineNumber, e.getMessage());
                         }
@@ -358,11 +352,8 @@ public class InifileDocument implements IInifileDocument {
             try {
                 new InifileParser().parse(streamReader, new Callback(documentFile, null));
             }
-            catch (IOException e) {
-                // cannot happen with string input
-            }
-            catch (ParseException e) {
-                markers.addError(documentFile, e.getLineNumber(), e.getMessage());
+            catch (CoreException e) {
+                markers.addError(documentFile, 1, e.getMessage());
             }
             Debug.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 

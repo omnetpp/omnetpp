@@ -7,12 +7,12 @@
 
 package org.omnetpp.inifile.editor.text;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -21,11 +21,11 @@ import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.editor.text.FoldingRegionSynchronizer;
+import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileParser;
-import org.omnetpp.inifile.editor.model.ParseException;
 
 /**
  * This class has one instance per editor. It performs
@@ -120,10 +120,8 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
             new InifileParser().parse(streamReader, callback);
             callback.done();
         }
-        catch (IOException e) {
-            // cannot happen with string input
-        }
-        catch (ParseException e) {
+        catch (CoreException e) {
+            InifileEditorPlugin.logError(e);
         }
 
         // synchronize with the text editor
