@@ -7,20 +7,39 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
 OMNeT++ 5.1 (March 2017)
----------------------------
+------------------------
 
-This is the final version of OMNeT++ 5.1
+This is the final version of OMNeT++ 5.1. This release significantly improves
+and builds upon functionality introduced in version 5.0, and also raises the
+bar in other areas.
+
+Highlights:
+
+ - A much-improved Qtenv that now replaces Tkenv as the default runtime GUI.
+ - Support for smooth custom animation and video recording.
+ - Better support for simulation campaigns in managing and performing a large
+   number of runs and in result recording/processing.
+ - Experimental support for SQLite-based result files.
+ - Updated toolchain and libraries on Windows including 64-bit Windows support.
+ - Updated Eclipse base for the IDE.
+
+For further details see the preview version announcements below.
+
+Changes since OMNeT++ 5.1 Preview 3:
 
 Build:
 
- - The configure script no longer detects and tests for the presence of the 'pcap' library.
-   If models need it, they have to implement their own method to detect and configure it.
+ - The configure script no longer detects and tests for the presence of the
+   'pcap' library. If models need it, they have to implement their own method
+   to detect and configure it.
 
 Samples:
 
  - The routing example was modified to demonstrate the new, built-in packet
    animation in Qtenv. Packets are displayed as arrows along the connection
    showing the actual packet length on the wire.
+
+Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
 
 
 OMNeT++ 5.1 Preview 3 (February 2017)
