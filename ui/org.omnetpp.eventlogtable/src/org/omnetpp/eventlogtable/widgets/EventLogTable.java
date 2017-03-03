@@ -502,11 +502,13 @@ public class EventLogTable
         else
             scrollToBegin();
 
-        // XXX avoid iteration over the elements of the selection
-        Iterator<EventLogEntryReference> iterator = selectionElements.iterator();
-        while (iterator.hasNext())
-            if (eventLog.getEventForEventNumber(iterator.next().getEventNumber()) == null)
-                iterator.remove();
+        selectionElements.clear();
+        // TODO: avoid iteration over the elements of the selection
+        // FIXME: this causes NPE when filtering an eventlog and the original selection is not present in the result
+//        Iterator<EventLogEntryReference> iterator = selectionElements.iterator();
+//        while (iterator.hasNext())
+//            if (eventLog.getEventForEventNumber(iterator.next().getEventNumber()) == null)
+//                iterator.remove();
 
         eventLogTableContributor.update();
         redraw();
