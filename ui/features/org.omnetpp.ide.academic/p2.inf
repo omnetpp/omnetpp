@@ -1,7 +1,0 @@
-instructions.configure=\
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,location:http${#58}//omnetpp.org/update/omnetpp/4.3,name:OMNeT++ Updates);\
-org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,location:http${#58}//omnetpp.org/update/omnetpp/4.3,name:OMNeT++ Updates);
-
-instructions.unconfigure=\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:0,location:http${#58}//omnetpp.org/update/omnetpp/4.3);\
-org.eclipse.equinox.p2.touchpoint.eclipse.removeRepository(type:1,location:http${#58}//omnetpp.org/update/omnetpp/4.3);
