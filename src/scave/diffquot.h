@@ -8,7 +8,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2005-2015 Andras Varga
+  Copyright (C) 2005-2017 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.

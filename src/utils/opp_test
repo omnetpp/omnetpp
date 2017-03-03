@@ -17,7 +17,7 @@ sub cwd {
 #
 # If no args, print usage
 #
-$Usage = 'opp_test - OMNeT++/OMNEST Regression Test Tool, (C) 2002-2015 OpenSim Ltd.
+$Usage = 'opp_test - OMNeT++/OMNEST Regression Test Tool, (C) 2002-2017 OpenSim Ltd.
 See the license for distribution terms and warranty disclaimer.
 
 Syntax: opp_test [gen|run|check] [<options>] <testcase-file> ...

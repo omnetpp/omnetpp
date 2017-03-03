@@ -59,7 +59,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace qtenv {
 
-QString MainWindow::aboutText = "OMNeT++/OMNEST\nDiscrete Event Simulation Framework\n\n(C) 2015-2016 OpenSim Ltd.\n\
+QString MainWindow::aboutText = "OMNeT++/OMNEST\nDiscrete Event Simulation Framework\n\n(C) 2015-2017 OpenSim Ltd.\n\
         Release: " + QString(OMNETPP_RELEASE) + ", build: " + OMNETPP_BUILDID + "\n" + OMNETPP_EDITION + "\n\n"
         "Qtenv was compiled with Qt " + QT_VERSION_STR + ", is running with Qt " + qVersion() + "\n\n"
         "NO WARRANTY -- see license for details.";

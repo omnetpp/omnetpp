@@ -2,7 +2,7 @@
 #
 # opp_featuretool: This script manipulates omnetpp project features.
 #
-# Copyright (C) 2016 OpenSim Ltd.
+# Copyright (C) 2017 OpenSim Ltd.
 # Author: Zoltan Bojthe
 #
 # TODO: add a new flag (-f) to the 'defines' command to be able to generate a file

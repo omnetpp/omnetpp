@@ -9,8 +9,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2015 Andras Varga
-  Copyright (C) 2006-2015 OpenSim Ltd.
+  Copyright (C) 2002-2017 Andras Varga
+  Copyright (C) 2006-2017 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -81,7 +81,7 @@ FilesElement *outputtree;
 void printUsage()
 {
     fprintf(stderr,
-       "nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2015 Andras Varga, OpenSim Ltd.\n"
+       "nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 Andras Varga, OpenSim Ltd.\n"
        "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
        "Usage: nedtool [options] <file1> <file2> ...\n"

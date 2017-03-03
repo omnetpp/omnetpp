@@ -8,7 +8,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
+  Copyright (C) 2006-2017 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -58,7 +58,7 @@ void ScaveTool::printHelpPage(const std::string& page)
 {
     FormattedPrinter help(cout);
     if (page == "options") {
-        help.line("scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2016 OpenSim Ltd.");
+        help.line("scavetool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 OpenSim Ltd.");
         help.line("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION);
         help.line();
         help.para("Usage: scavetool <command> [<options>] <files>...");
