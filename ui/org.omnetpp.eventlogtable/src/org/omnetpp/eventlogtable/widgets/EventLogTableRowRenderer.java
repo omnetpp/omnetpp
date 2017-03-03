@@ -545,7 +545,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                 @Override
                 public void applyStyles(TextStyle textStyle) {
                     style.applyStyles(textStyle);
-                    textStyle.foreground = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
+                    if (eventLogTable.getCanvas().isFocusControl())
+                        textStyle.foreground = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
                 }
             };
         }
