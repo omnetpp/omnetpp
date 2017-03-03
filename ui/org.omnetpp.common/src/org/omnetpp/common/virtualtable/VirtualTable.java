@@ -519,7 +519,8 @@ public class VirtualTable<T>
                 try {
                     isSelectionChangeInProgress = true;
                     setSelectionElements(virtualTableSelection.getElements());
-                    revealFocus();
+                    if (!selectionElements.isEmpty())
+                        reveal(selectionElements.iterator().next());
                 }
                 finally {
                     isSelectionChangeInProgress = false;
@@ -555,7 +556,7 @@ public class VirtualTable<T>
     }
 
     /**
-     * Selects the given elements, and goes to the first one.
+     * Selects the given elements.
      */
     public void setSelectionElements(IRangeSet<T> elements) {
         selectionElements = elements;
