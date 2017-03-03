@@ -1,3 +1,40 @@
+2017-03-03  ------ omnetpp-5.1 released ------
+
+2017-03-03  Levente Meszaros
+
+	* SequenceChart: Changed selection marks to be more apparent.
+
+	* SequenceChart: Fixed revealing selected element in VirtualTable.
+
+	* SequenceChart: Fixed foreground color for EventLogTable when the widget is not
+	focused.
+
+2017-03-02  Andras Varga
+
+	* Fix #941: Recursively including ini file makes OMNeT workspace
+	unusable
+
+	* Launcher fix: debug-on-errors did not take effect on a fresh launch
+	config
+
+	* Launch dialog page: fix: config name "Gen" could not be restored.
+	"General" was chosen instead, because code used simple startsWith() call
+	to test, and "General" came before "Gen" in the list...
+
+	* Ini editor fix: edits lost when typing too quickly after hitting
+	Enter
+
+	* Fix #1001: Ini form editor: "Reset to default" button pops up "No
+	such entry" error dialog
+
+2017-03-03  Rudolf Hornig
+
+	* Added default eclipse repositories as update sites
+
+	* Added automatic Eclipse reporting support to OMNeT++ (not to OMNEST)
+
+	* Removed dummy MSVC toolchain definition
+
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 
 2017-02-01  Rudolf Hornig
