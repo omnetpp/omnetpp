@@ -599,6 +599,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             wc.setAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, configName);
         if (resourceToAssociateWith != null)
             wc.setMappedResources(new IResource[] {resourceToAssociateWith});
+        wc.setAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, "true");
 
         return wc.doSave();
     }

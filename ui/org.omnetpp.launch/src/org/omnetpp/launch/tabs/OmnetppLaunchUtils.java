@@ -424,7 +424,7 @@ public class OmnetppLaunchUtils {
         }
 
         // debug-on-errors: use setting in DEBUG mode, let omnetpp.ini setting through in RUN mode (maybe user wants to use external debugger with a RUN-mode launch)
-        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getName(), isDebugLaunch ? config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, "") : "");
+        args += getOptionalConfigOptionArg(ConfigRegistry.CFGID_DEBUG_ON_ERRORS.getName(), isDebugLaunch ? config.getAttribute(IOmnetppLaunchConstants.OPP_DEBUGMODE_DEBUG_ON_ERRORS, "true") : "");
 
         if (config.getAttribute(IOmnetppLaunchConstants.OPP_SILENT, false))
             args += " -s ";
