@@ -2924,11 +2924,9 @@ public class SequenceChart
 
             if (!selectedEventNumbers.isEmpty()) {
                 graphics.setAntialias(SWT.ON);
-                graphics.setLineStyle(SWT.LINE_SOLID);
-                graphics.setForegroundColor(EVENT_SELECTION_COLOR);
                 for (long eventNumber = startEventNumber; eventNumber <= endEventNumber; eventNumber++)
                     if (selectedEventNumbers.contains(eventNumber))
-                        drawEventMark(graphics, eventLog.getEventForEventNumber(eventNumber));
+                        drawEventMark(graphics, EVENT_SELECTION_COLOR, eventLog.getEventForEventNumber(eventNumber));
             }
         }
     }
@@ -2940,8 +2938,10 @@ public class SequenceChart
         if (selectedTimelineCoordinate != null) {
             int x = (int)getViewportCoordinateForTimelineCoordinate(selectedTimelineCoordinate);
             graphics.setLineStyle(SWT.LINE_SOLID);
+            graphics.setLineWidth(2);
             graphics.setForegroundColor(EVENT_SELECTION_COLOR);
             graphics.drawLine(x, 0, x, getViewportHeight());
+            graphics.setLineWidth(1);
         }
     }
 
@@ -2961,9 +2961,6 @@ public class SequenceChart
                     long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
                     long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
 
-                    graphics.setLineStyle(SWT.LINE_SOLID);
-                    graphics.setForegroundColor(EVENT_BOOKMARK_COLOR);
-
                     for (int i = 0; i < markers.length; i++) {
                         long eventNumber = Long.parseLong(markers[i].getAttribute("EventNumber", "-1"));
 
@@ -2971,7 +2968,7 @@ public class SequenceChart
                             IEvent bookmarkedEvent = eventLog.getEventForEventNumber(eventNumber);
 
                             if (bookmarkedEvent != null)
-                                drawEventMark(graphics, bookmarkedEvent);
+                                drawEventMark(graphics, EVENT_BOOKMARK_COLOR, bookmarkedEvent);
                         }
                     }
                 }
@@ -2985,7 +2982,7 @@ public class SequenceChart
     /**
      * Draws a mark around the given event, handles initialize event.
      */
-    private void drawEventMark(Graphics graphics, IEvent event) {
+    private void drawEventMark(Graphics graphics, Color color, IEvent event) {
         int x = (int)getEventXViewportCoordinate(event.getCPtr());
 
         if (isInitializationEvent(event)) {
@@ -2993,20 +2990,33 @@ public class SequenceChart
             for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
                 long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
                 int y = getInitializationEventYViewportCoordinate(consequencePtr);
-                drawEventMark(graphics, x, y);
+                drawEventMark(graphics, color, x, y);
             }
         }
         else {
             int y = getEventYViewportCoordinate(event.getCPtr());
-            drawEventMark(graphics, x, y);
+            drawEventMark(graphics, color, x, y);
         }
     }
 
     /**
      * Draws a single mark at the given coordinates.
      */
-    private void drawEventMark(Graphics graphics, int x, int y) {
-        graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
+    private void drawEventMark(Graphics graphics, Color color, int x, int y) {
+        x -= EVENT_SELECTION_RADIUS;
+        y -= EVENT_SELECTION_RADIUS;
+        int w = EVENT_SELECTION_RADIUS * 2 + 1;
+        int h = EVENT_SELECTION_RADIUS * 2 + 1;
+        graphics.setAlpha(128);
+        graphics.setForegroundColor(ColorFactory.WHITE);
+        graphics.setLineStyle(SWT.LINE_SOLID);
+        graphics.setLineWidth(6);
+        graphics.drawOval(x, y, w, h);
+        graphics.setAlpha(255);
+        graphics.setForegroundColor(color);
+        graphics.setLineWidth(2);
+        graphics.drawOval(x, y, w, h);
+        graphics.setLineWidth(1);
     }
 
     /**
