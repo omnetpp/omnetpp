@@ -28,9 +28,10 @@
 
 #include "common/exception.h"
 #include "common/commonutil.h"
+#include "common/statistics.h"
+#include "common/histogram.h"
 #include "idlist.h"
 #include "enumtype.h"
-#include "statistics.h"
 #include "scaveutils.h"
 #include "enums.h"
 
@@ -57,6 +58,9 @@ class SqliteResultFileLoader;
 typedef std::vector<std::string> StringVector;
 typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringMap;
+
+using omnetpp::common::Statistics;
+using omnetpp::common::Histogram;
 
 typedef int64_t ComputationID;
 
@@ -151,13 +155,15 @@ struct SCAVE_API VectorResult : public ResultItem
 // TODO: there's a missing superclass between vectors and histograms that provides statistics, see the various sort<foo>By<bar> methods we need to make it work
 struct SCAVE_API HistogramResult : public ResultItem
 {
-    Statistics stat;
+    Statistics stat; //TODO weighted
     std::vector<double> bins;
     std::vector<double> values;
 
     const Statistics& getStatistics() const { return stat; }
+    Histogram getBins() const; // TODO: const Histogram& getBins() const {return bins;}
 
     void addBin(double lower_bound, double value);
+
 };
 
 typedef std::vector<ScalarResult> ScalarResults;

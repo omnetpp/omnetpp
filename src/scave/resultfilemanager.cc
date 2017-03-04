@@ -138,6 +138,15 @@ void HistogramResult::addBin(double lower_bound, double value)
     values.push_back(value);
 }
 
+Histogram HistogramResult::getBins() const
+{
+    Histogram result;
+    int n = bins.size();
+    for (int i=0; i<n; i++)
+        result.addBin(bins[i], values[i]);
+    return result;
+}
+
 ResultFileManager::ResultFileManager()
 {
     computedScalarFile = nullptr;

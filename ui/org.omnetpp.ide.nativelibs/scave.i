@@ -8,14 +8,15 @@
 #%javaconst(1);
 
 %{
+#include "common/statistics.h"
+#include "common/histogram.h"
+#include "common/stringutil.h"   // strdictcmp
 #include "scave/scavedefs.h"
 #include "scave/enumtype.h"
-#include "scave/statistics.h"
 #include "scave/idlist.h"
 #include "scave/resultfilemanager.h"
 #include "scave/fields.h"
 #include "scave/datasorter.h"
-#include "common/stringutil.h"   // strdictcmp
 #include "scave/indexfile.h"
 #include "scave/commonnodes.h"
 #include "scave/indexedvectorfile.h"
@@ -344,11 +345,11 @@ int strdictcmp(const char *s1, const char *s2);
 } } // namespaces
 
 /* ------------- statistics.h  ----------------- */
-namespace omnetpp { namespace scave {
+namespace omnetpp { namespace common {
 %ignore Statistics::operator=;
 } } // namespaces
 
-%include "scave/statistics.h"
+%include "common/statistics.h"
 
 /* ------------- idlist.h  ----------------- */
 %include "idlist.i"
@@ -359,6 +360,7 @@ namespace omnetpp { namespace scave {
 %ignore ResultFileManager::dump;
 %ignore VectorResult::stat;
 %ignore HistogramResult::stat;
+%ignore HistogramResult::getBins; //TODO temporary
 %ignore ResultFile::id;
 %ignore ResultFile::scalarResults;
 %ignore ResultFile::vectorResults;

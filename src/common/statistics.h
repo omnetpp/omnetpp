@@ -15,21 +15,21 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_SCAVE_STATISTICS_H
-#define __OMNETPP_SCAVE_STATISTICS_H
+#ifndef __OMNETPP_COMMON_STATISTICS_H
+#define __OMNETPP_COMMON_STATISTICS_H
 
 #include <cfloat>
-#include "scavedefs.h"
-#include "scaveutils.h"
+#include <cmath>
+#include "commondefs.h"
+#include "commonutil.h"
 
 namespace omnetpp {
-namespace scave {
+namespace common {
 
 /**
- * Class for collecting statistical data of the result
- * used in several places in Scave.
+ * Class for collecting basic statistical data.
  */
-class SCAVE_API Statistics
+class COMMON_API Statistics
 {
     private:
         long count;
@@ -39,9 +39,9 @@ class SCAVE_API Statistics
         double sumSqr;
 
     public:
-        Statistics() : count(0), min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0) {}
+        Statistics() { reset(); }
         Statistics(long count, double min, double max, double sum, double sumSqr)
-            :count(count), min(min), max(max), sum(sum), sumSqr(sumSqr) {}
+            : count(count), min(min), max(max), sum(sum), sumSqr(sumSqr) {}
         Statistics(const Statistics& s) : count(s.count), min(s.min), max(s.max), sum(s.sum), sumSqr(s.sumSqr) {}
 
         long getCount() const { return count; }
@@ -53,6 +53,7 @@ class SCAVE_API Statistics
         double getStddev() const { return sqrt(getVariance()); }
         double getVariance() const;
 
+        void reset() { count = 0; min = POSITIVE_INFINITY; max = NEGATIVE_INFINITY; sum = 0.0; sumSqr = 0.0; }
         void collect(double value);
         void adjoin(const Statistics& other);
 };
@@ -85,7 +86,7 @@ inline void Statistics::adjoin(const Statistics& other)
     sumSqr += other.sumSqr;
 }
 
-} // namespace scave
+}  // namespace common
 }  // namespace omnetpp
 
 

@@ -26,9 +26,9 @@
 #include <cassert>
 #include "common/commonutil.h"
 #include "common/patternmatcher.h"
+#include "common/statistics.h"
 #include "resultfilemanager.h"
 #include "scaveutils.h"
-#include "statistics.h"
 #include "fields.h"
 
 namespace omnetpp {
@@ -37,6 +37,8 @@ namespace scave {
 typedef std::vector<ID> IDVector;
 typedef std::vector<IDVector> IDVectorVector;
 typedef std::vector<std::string> StringVector;
+
+using omnetpp::common::Statistics;
 
 /**
  * Values arranged in a two dimensional array.

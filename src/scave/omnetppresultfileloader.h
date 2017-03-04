@@ -29,9 +29,9 @@
 
 #include "common/exception.h"
 #include "common/commonutil.h"
+#include "common/statistics.h"
 #include "idlist.h"
 #include "enumtype.h"
-#include "statistics.h"
 #include "scaveutils.h"
 #include "enums.h"
 
@@ -43,6 +43,8 @@
 
 namespace omnetpp {
 namespace scave {
+
+using omnetpp::common::Statistics;
 
 class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
 {

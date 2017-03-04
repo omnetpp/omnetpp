@@ -21,12 +21,14 @@
 #include <map>
 #include <vector>
 #include "common/commonutil.h"
+#include "common/statistics.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "scavedefs.h"
-#include "statistics.h"
 
 namespace omnetpp {
 namespace scave {
+
+using omnetpp::common::Statistics;
 
 /**
  * Data of one block stored in the index file.
