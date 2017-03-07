@@ -316,6 +316,17 @@ COMMON_API char *opp_i64toa(char *buf, int64_t d);
 COMMON_API char *opp_dtoa(char *buf, const char *format, double d);
 
 /**
+ * Utility function to convert a 64-bit fixed point number into a string
+ * buffer. scaleexp must be in the -18..0 range, and the buffer must be
+ * at least 64 bytes long. A pointer to the result string will be
+ * returned. A pointer to the terminating '\\0' will be returned in endp.
+ *
+ * ATTENTION: For performance reasons, the returned pointer will point
+ * *somewhere* into the buffer, but NOT necessarily at the beginning.
+ */
+COMMON_API char *opp_ttoa(char *buf, int64_t t, int scaleexp, char *& endp);
+
+/**
  * Like the standard strtol(), but throws opp_runtime_error if an overflow
  * occurs during conversion. Accepts decimal and C-style hexadecimal
  * notation, but not octal (leading zeroes are simply discarded and the number

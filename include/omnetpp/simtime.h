@@ -346,7 +346,7 @@ class SIM_API SimTime
     /**
      * Converts to string.
      */
-    std::string str() const;
+    std::string str() const {char buf[64]; return str(buf);}
 
     /**
      * Converts to a string. Use this variant over str() where performance is

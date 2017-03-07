@@ -16,6 +16,7 @@
 #include <sstream>
 #include "common/opp_ctype.h"
 #include "common/unitconversion.h"
+#include "common/stringutil.h"
 #include "omnetpp/simtime.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cpar.h"
@@ -213,58 +214,9 @@ double operator/(const cPar& p, const SimTime& x)
     return p.doubleValue() / x.dbl();
 }
 
-std::string SimTime::str() const
-{
-    // delegate to operator<<
-    std::stringstream out;
-    out << *this;
-    return out.str();
-}
-
 char *SimTime::ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
 {
-    ASSERT(scaleexp <= 0 && scaleexp >= -18);
-
-    // prepare for conversion
-    endp = buf + 63;  //19+19+5 should be enough, but play it safe
-    *endp = '\0';
-    char *s = endp;
-    if (t == 0) {
-        *--s = '0';
-        return s;
-    }
-
-    // convert digits
-    bool negative = t < 0;
-    if (!negative)
-        t = -t;  // make t negative! otherwise we can't handle INT64_MIN (as it has no positive equivalent)
-
-    bool skipzeros = true;
-    int decimalplace = scaleexp;
-    do {
-        int64_t res = t / 10;
-        int digit = 10*res - t;  // note: t is negative!
-
-        if (skipzeros && (digit != 0 || decimalplace >= 0))
-            skipzeros = false;
-        if (decimalplace++ == 0 && s != endp)
-            *--s = '.';
-        if (!skipzeros)
-            *--s = '0' + digit;
-        t = res;
-    } while (t);
-
-    // add leading zeros, decimal point, etc if needed
-    if (decimalplace <= 0) {
-        while (decimalplace++ < 0)
-            *--s = '0';
-        *--s = '.';
-        *--s = '0';
-    }
-
-    if (negative)
-        *--s = '-';
-    return s;
+    return opp_ttoa(buf, t, scaleexp, endp);
 }
 
 std::string SimTime::format(int prec, const char *decimalSep, const char *digitSep, bool addUnits, const char *beforeUnit, const char *afterUnit) const
