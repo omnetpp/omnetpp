@@ -90,10 +90,10 @@ class SourceExpressionResolver : public Expression::Resolver
         simsignal_t signalID;
         parseSignalPath(varname, signalSourceComponent, signalID);
         if (!needWarmupPeriodFilter)
-            return new SignalSourceReference(SignalSource(context, signalID));
+            return new SignalSourceReference(SignalSource(signalSourceComponent, signalID));
         else {
             WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
-            context->subscribe(signalID, warmupFilter);
+            signalSourceComponent->subscribe(signalID, warmupFilter);
             return new SignalSourceReference(SignalSource(warmupFilter));
         }
     }

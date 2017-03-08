@@ -1,0 +1,47 @@
+%description:
+Tests recording of submodule statistics (source= keys that contain signal names
+qualified with submodule paths) in @statistic() properties.
+
+Check that statistic is recorded to the module of the @statistic property,
+not to the source submodule.
+
+%file: test.ned
+
+simple UDP extends testlib.SignalSource
+{
+    @signal[sentPk](type="long");
+    
+    script = xml("<root>\
+       <e at='init' name='sentPk' type='long' value='23'/> \
+       <e at='init' name='sentPk' type='long' value='42'/> \
+       <e at='init' name='sentPk' type='long' value='19'/> \
+    </root>");
+}
+
+module Host
+{
+    submodules:
+        udp: UDP;
+}
+
+network Test
+{
+    parameters:
+        @statistic[host1Sent](source=host1.udp.sentPk; record=count);
+    submodules:
+        host1: Host;
+        host2: Host;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+output-scalar-file = test.sca
+
+%contains: test.sca
+scalar Test 	host1Sent:count 	3
+attr source  host1.udp.sentPk
+

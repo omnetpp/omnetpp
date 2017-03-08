@@ -1,0 +1,86 @@
+%description:
+Tests recording of submodule statistics (source= keys that contain signal names
+qualified with submodule paths) in @statistic() properties.
+
+Check that listener is added to the submodule, not to the module of the @statistic property.
+
+%file: test.ned
+
+module App
+{
+}
+
+module UDP
+{
+}
+
+module Host
+{
+    parameters:
+        @statistic[appSent](source=app.sentPk; record=count);
+        @statistic[appSentx2](source=2*app.sentPk; record=count);
+        @statistic[appTotal](source=app.sentPk + app.rcvdPk; record=count);
+    submodules:
+        app: App;
+        udp: UDP;
+}
+
+network Test
+{
+    parameters:
+        @statistic[host1Sent](source=host1.udp.sentPk; record=count);
+        @statistic[host1Sentx2](source=2*host1.udp.sentPk; record=count);
+        @statistic[host1Total](source=host1.udp.sentPk + host1.udp.rcvdPk; record=count);
+    submodules:
+        host1: Host;
+        host2: Host;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%subst: /omnetpp:://
+%contains: stdout
+Setting up network "Test"...
+Test.host1.app (App):
+    "rcvdPk" (signalID=3):
+        IdentityFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                CountRecorder ==> appTotal:count
+    "sentPk" (signalID=2):
+        CountRecorder ==> appSent:count
+        2 * <signalvalue> (UnaryExpressionFilter)
+            CountRecorder ==> appSentx2:count
+        IdentityFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                CountRecorder ==> appTotal:count
+Test.host1.udp (UDP):
+    "rcvdPk" (signalID=3):
+        IdentityFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                CountRecorder ==> host1Total:count
+    "sentPk" (signalID=2):
+        CountRecorder ==> host1Sent:count
+        2 * <signalvalue> (UnaryExpressionFilter)
+            CountRecorder ==> host1Sentx2:count
+        IdentityFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                CountRecorder ==> host1Total:count
+Test.host2.app (App):
+    "rcvdPk" (signalID=3):
+        IdentityFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                CountRecorder ==> appTotal:count
+    "sentPk" (signalID=2):
+        CountRecorder ==> appSent:count
+        2 * <signalvalue> (UnaryExpressionFilter)
+            CountRecorder ==> appSentx2:count
+        IdentityFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                CountRecorder ==> appTotal:count
+Initializing...
+
