@@ -25,19 +25,14 @@ StringPool::StringPool()
 
 StringPool::~StringPool()
 {
-    for (StringSet::iterator it = pool.begin(); it != pool.end(); ++it)
-        delete[] *it;
-    // XXX this one may be faster, test:
-    // while (pool.size()>0) {
-    //    delete [] *pool.begin();
-    //    pool.erase(pool.begin());
-    // }
+    for (char *str : pool)
+        delete[] str;
 }
 
 void StringPool::clear()
 {
-    for (StringSet::iterator it = pool.begin(); it != pool.end(); ++it)
-        delete[] *it;
+    for (char *str : pool)
+        delete[] str;
     pool.clear();
 }
 

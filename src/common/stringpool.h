@@ -37,9 +37,13 @@ class COMMON_API StringPool
   protected:
     struct strless {
         bool operator()(const char *s1, const char *s2) const {
-            int d0 = *s1 - *s2;
-            if (d0<0) return true; else if (d0>0) return false;
-            return strcmp(s1, s2)<0;
+            int diff = *s1 - *s2;
+            if (diff < 0)
+                return true;
+            else if (diff > 0)
+                return false;
+            else
+                return strcmp(s1, s2)<0;
         }
     };
     typedef std::set<char *,strless> StringSet;
