@@ -39,76 +39,81 @@ namespace omnetpp {
 class SIM_API opp_string
 {
   private:
-    char *str;
+    char *buf;
 
   public:
     /**
      * Constructor.
      */
-    opp_string()  {str = nullptr;}
+    opp_string()  {buf = nullptr;}
 
     /**
      * Constructor.
      */
-    opp_string(const char *s)  {str = opp_strdup(s);}
+    opp_string(const char *s)  {buf = opp_strdup(s);}
 
     /**
      * Constructor.
      */
-    opp_string(const char *s, int n)  {str = new char[n+1]; strncpy(str, s?s:"", n); str[n] = '\0';}
+    opp_string(const char *s, int n)  {buf = new char[n+1]; strncpy(buf, s?s:"", n); buf[n] = '\0';}
 
     /**
      * Constructor.
      */
-    opp_string(const std::string& s)  {str = opp_strdup(s.c_str());}
+    opp_string(const std::string& s)  {buf = opp_strdup(s.c_str());}
 
     /**
      * Copy constructor.
      */
-    opp_string(const opp_string& s)  {str = opp_strdup(s.str);}
+    opp_string(const opp_string& s)  {buf = opp_strdup(s.buf);}
 
     /**
      * Destructor.
      */
-    ~opp_string()  {delete [] str;}
+    ~opp_string()  {delete [] buf;}
 
     /**
      * Return pointer to the string.
      */
-    const char *c_str() const  {return str ? str : "";}
+    const char *c_str() const  {return buf ? buf : "";}
+
+    /**
+     * Convert to std::string.
+     */
+    std::string str() const  {return buf ? buf : "";}
 
     /**
      * Null (empty) string or not.
      */
-    bool empty() const  {return !str || !str[0];}
+    bool empty() const  {return !buf || !buf[0];}
 
     /**
      * Returns pointer to the internal buffer where the string is stored.
      * It is allowed to write into the string via this pointer, but the
      * length of the string should not be exceeded.
      */
-    char *buffer()  {return str;}
+    char *buffer()  {return buf;}
 
     /**
      * Returns the length of the string.
      */
-    int size() const {return str ? strlen(str) : 0;}
+    int size() const {return buf ? strlen(buf) : 0;}
 
     /**
      * Allocates a buffer of the given size.
      */
-    char *reserve(unsigned size)  {delete[] str;str=new char[size];return str;}
+    char *reserve(unsigned size)  {delete[] buf;buf=new char[size];return buf;}
 
     /**
      * Deletes the old value and opp_strdup()'s the new value
      * to create the object's own copy.
      */
-    const char *operator=(const char *s)  {delete[] str;str=opp_strdup(s);return str;}
+    const char *operator=(const char *s)  {delete[] buf;buf=opp_strdup(s);return buf;}
 
     /**
      * Assignment.
      */
-    opp_string& operator=(const opp_string& s)  {operator=(s.str); return *this;}
+    opp_string& operator=(const opp_string& s)  {operator=(s.buf); return *this;}
 
     /**
      * Assignment.
@@ -118,17 +123,17 @@ class SIM_API opp_string
     /**
      * Comparison.
      */
-    bool operator<(const opp_string& s) const  {return opp_strcmp(str,s.str) < 0;}
+    bool operator<(const opp_string& s) const  {return opp_strcmp(buf,s.buf) < 0;}
 
     /**
      * Concatenation
      */
-    opp_string& operator+=(const char *s) {return operator=(std::string(str).append(s));}
+    opp_string& operator+=(const char *s) {return operator=(std::string(buf).append(s));}
 
     /**
      * Concatenation
      */
-    opp_string& operator+=(const opp_string& s) {operator+=(s.str); return *this;}
+    opp_string& operator+=(const opp_string& s) {operator+=(s.buf); return *this;}
 
     /**
      * Concatenation
@@ -138,7 +143,7 @@ class SIM_API opp_string
     /**
      * Concatenation
      */
-    opp_string operator+(const char *s) {return opp_string((std::string(str)+s).c_str());}
+    opp_string operator+(const char *s) {return opp_string((std::string(buf)+s).c_str());}
 
     /**
      * Concatenation
