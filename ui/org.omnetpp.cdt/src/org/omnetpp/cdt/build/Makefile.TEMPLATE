@@ -178,9 +178,8 @@ smheaders: {sourcedirs?$(SMFILES:.sm=_sm.h)}
 clean:
 	$(qecho) Cleaning...
 	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
-	$(Q)-rm -f {target} {target}.exe lib{target}.so lib{target}.a lib{target}.dll lib{target}.dylib
-{@dir:sourcedirs}	$(Q)-rm -f {dir}/*_m.{cc} {dir}/*_m.h {dir}/*_sm.{cc} {dir}/*_sm.h
-{/@}
+	$(Q)-rm -f $(TARGET)
+	$(Q)-rm -f $(call opp_rwildcard, . , *_m.{cc} *_m.h *_sm.{cc} *_sm.h)
 {@i:submakedirs}	-$(Q)cd {i} && $(MAKE) clean
 {/@}
 

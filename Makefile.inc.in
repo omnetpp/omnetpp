@@ -99,6 +99,9 @@ else
   qecho = @echo
 endif
 
+# Recursive wildcard function. Call like: $(call opp_rwildcard, src/, *.c *.h)
+opp_rwildcard=$(foreach d,$(wildcard $1*),$(call opp_rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+
 #
 # tools, libraries and compiler flags detected by ./configure
 #
