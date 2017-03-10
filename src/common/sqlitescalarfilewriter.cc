@@ -82,14 +82,14 @@ static const char SQL_CREATE_TABLES[] =
             "statWeightedSqrSum   REAL "
         "); "
         ""
-        "CREATE TABLE IF NOT EXISTS histattr "  //TODO statisticattr
+        "CREATE TABLE IF NOT EXISTS statisticattr "
         "( "
             "statId        INTEGER  NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, "
             "attrName      TEXT NOT NULL, "
             "attrValue     TEXT NOT NULL "
         "); "
         ""
-        "CREATE TABLE IF NOT EXISTS histbin "   //TODO histogrambin
+        "CREATE TABLE IF NOT EXISTS histbin "
         "( "
             "statId        INTEGER  NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, "
             "baseValue     NUMERIC NOT NULL, "
@@ -254,7 +254,7 @@ void SqliteScalarFileWriter::prepareStatements()
             "statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum"
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-    prepareStatement(add_statistic_attr_stmt, "INSERT INTO histattr (statId, attrName, attrValue) VALUES (?, ?, ?);");
+    prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticattr (statId, attrName, attrValue) VALUES (?, ?, ?);");
     prepareStatement(add_statistic_bin_stmt, "INSERT INTO histbin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
 }
 

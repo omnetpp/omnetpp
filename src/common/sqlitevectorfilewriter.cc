@@ -90,7 +90,7 @@ static const char SQL_CREATE_TABLES[] =
             "statWeightedSqrSum   REAL "
         "); "
         ""
-        "CREATE TABLE IF NOT EXISTS histattr "
+        "CREATE TABLE IF NOT EXISTS statisticattr "
         "( "
             "statId        INTEGER  NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, "
             "attrName      TEXT NOT NULL, "
