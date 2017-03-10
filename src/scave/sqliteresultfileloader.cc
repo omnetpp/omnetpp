@@ -263,7 +263,7 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT statId, runId, attrName, attrValue FROM histattr JOIN statistic USING (statId) ORDER BY runId, statId;");
+    prepareStatement("SELECT statId, runId, attrName, attrValue FROM statisticattr JOIN statistic USING (statId) ORDER BY runId, statId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_ROW) {
@@ -273,7 +273,7 @@ void SqliteResultFileLoader::loadHistograms()
             std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
             SqliteHistogramIdToHistogramIdx::iterator it = sqliteHistogramIdToHistogramIdx.find(statId);
             if (it == sqliteHistogramIdToHistogramIdx.end())
-                error("Invalid statId in histattr table");
+                error("Invalid statId in statisticattr table");
             HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(statId));
             hist.attributes[attrName] = attrValue;
         }
