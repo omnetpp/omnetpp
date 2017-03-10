@@ -22,7 +22,8 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.scave.model,
  org.omnetpp.scave.builder,
  org.omnetpp.ide.nativelibs,
- org.eclipse.draw2d
+ org.eclipse.draw2d,
+ org.swtworkbench.xswt
 Export-Package: org.omnetpp.scave,
  org.omnetpp.scave.charting,
  org.omnetpp.scave.model2,

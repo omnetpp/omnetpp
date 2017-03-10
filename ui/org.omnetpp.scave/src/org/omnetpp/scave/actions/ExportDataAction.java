@@ -14,38 +14,32 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.wizard.OldAbstractExportWizard;
-import org.omnetpp.scave.wizard.OldCsvExportWizard;
+import org.omnetpp.scave.wizard.ScaveExportWizard;
 
 /**
  * Exports the selected result items in various formats.
  *
- * @author tomi
+ * @author tomi, andras
  */
 public class ExportDataAction extends AbstractScaveAction {
 
-    /** output formats */
-    public static final  String CSV = "csv";
+    public static final String[] FORMATS = ExporterFactory.getSupportedFormats().toArray();
 
-    public static final String[] FORMATS = { CSV };
-
-    String format;
+    private String format;
 
     public ExportDataAction(String format) {
         this.format = format;
-        if (CSV.equals(format)) {
-            setText("CSV...");
-            setToolTipText("Exports selected data in CSV format.");
-        }
+        setText(ExporterFactory.getByFormat(format).getDisplayName() + "...");
     }
 
     @Override
     protected void doRun(final ScaveEditor scaveEditor, final IStructuredSelection selection) {
         if (selection != null) {
-            final IWorkbenchWizard wizard = createWizard();
+            final IWorkbenchWizard wizard = new ScaveExportWizard(format);
             if (wizard != null) {
                 ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
                     @Override
@@ -67,12 +61,5 @@ public class ExportDataAction extends AbstractScaveAction {
                 (selection instanceof IStructuredSelection &&
                  (selection.getFirstElement() instanceof Dataset ||
                   selection.getFirstElement() instanceof DatasetItem));
-    }
-
-    private OldAbstractExportWizard createWizard() {
-        if (CSV.equals(format))
-            return new OldCsvExportWizard();
-        else
-            return null;
     }
 }

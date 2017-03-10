@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+//TODO ez a class is kidobhato
 public class FileSelectionPanel extends Composite {
 
     public static final String PROP_FILENAME = "FileName";

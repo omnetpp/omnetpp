@@ -16,16 +16,12 @@ public class XSWTException extends Exception {
     }
 
     public XSWTException(String string, int lineNumber, int columnNumber) {
-        super(string);
+        super(string + (lineNumber > 0 ? " at " + lineNumber + ":" + columnNumber : ""));
         this.row = lineNumber;
         this.column = columnNumber;
     }
 
     public XSWTException(Throwable cause) {
         super(cause.getMessage());
-    }
-
-    public String toString() {
-        return ((this.row > 0) ? super.toString() + "\nRow:" + this.row + ", Column:" + this.column : super.toString());
     }
 }

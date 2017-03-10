@@ -35,6 +35,10 @@ import org.omnetpp.common.color.ColorFactory;
  */
 public class SWTFactory {
 
+    public static int FILL_BOTH = GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL;
+    public static int GRAB_AND_FILL_BOTH = GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL| GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL;
+    public static int GRAB_AND_FILL_HORIZONTAL = GridData.VERTICAL_ALIGN_BEGINNING | GridData.HORIZONTAL_ALIGN_FILL| GridData.GRAB_HORIZONTAL;
+
     /**
      * Returns a width hint for a button control.
      */
@@ -429,6 +433,7 @@ public class SWTFactory {
      * @param width the desired width of the styled text widget
      * @param height the desired height of the styled text widget
      * @param fill the fill style for the widget
+     *        (you may use SWTFactory.FILL_BOTH or SWTFactory.GRAB_AND_FILL_BOTH for convenience)
      * @return the new styled text widget
      * @since 3.9
      */
@@ -469,6 +474,7 @@ public class SWTFactory {
      * @param columns the number of columns within the group
      * @param hspan the horizontal span the group should take up on the parent
      * @param fill the style for how this composite should fill into its parent
+     *        (you may use SWTFactory.FILL_BOTH or SWTFactory.GRAB_AND_FILL_BOTH for convenience)
      * @return the new group
      * @since 3.2
      *
@@ -491,6 +497,7 @@ public class SWTFactory {
      * @param columns the number of columns within the composite
      * @param hspan the horizontal span the composite should take up on the parent
      * @param fill the style for how this composite should fill into its parent
+     *        (you may use SWTFactory.FILL_BOTH or SWTFactory.GRAB_AND_FILL_BOTH for convenience)
      * @return the new group
      * @since 3.3
      */
@@ -531,6 +538,7 @@ public class SWTFactory {
      * @param columns the number of columns the composite should have
      * @param hspan the horizontal span the new composite should take up in the parent
      * @param fill the fill style of the composite {@link GridData}
+     *        (you may use SWTFactory.FILL_BOTH or SWTFactory.GRAB_AND_FILL_BOTH for convenience)
      * @return a new composite with a grid layout
      *
      * @since 3.3
@@ -585,6 +593,7 @@ public class SWTFactory {
      * @param columns the number of columns within the composite
      * @param hspan the horizontal span the composite should take up on the parent
      * @param fill the style for how this composite should fill into its parent
+     *        (you may use SWTFactory.FILL_BOTH or SWTFactory.GRAB_AND_FILL_BOTH for convenience)
      * @param marginwidth the width of the margin to place on the sides of the composite (default is 5, specified by GridLayout)
      * @param marginheight the height of the margin to place o the top and bottom of the composite
      * @return the new composite
@@ -636,6 +645,7 @@ public class SWTFactory {
      * @param columns the number of columns within the composite
      * @param hspan the horizontal span the composite should take up on the parent
      * @param fill the style for how this composite should fill into its parent
+     *        (you may use SWTFactory.FILL_BOTH or SWTFactory.GRAB_AND_FILL_BOTH for convenience)
      * @param marginwidth the width of the margin to place on the sides of the composite (default is 5, specified by GridLayout)
      * @param marginheight the height of the margin to place o the top and bottom of the composite
      * @return the new composite
