@@ -78,14 +78,14 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.line("Usage: scavetool query [<mode-option>] [<options>] <output-vector-and-scalar-files>");
         help.para("Query the contents of result files.");
         help.line("Mode options (mutually exclusive):");
-        help.option("-S, --print-summary", "Report the number of result items. (This is the default.)");
-        help.option("-L, --list-results", "List result items");
-        help.option("-A, --list-runattrs", "List run attributes");
-        help.option("-N, --list-names", "List unique result (vector, scalar, etc) names");
-        help.option("-M, --list-modules", "List unique module names");
-        help.option("-E  --list-qnames", "List unique result names qualified with the module names they occur with");
-        help.option("-R, --list-runs", "List unique runs");
-        help.option("-C, --list-configs", "List unique configuration names");
+        help.option("-s, --print-summary", "Report the number of result items. (This is the default.)");
+        help.option("-l, --list-results", "List result items");
+        help.option("-a, --list-runattrs", "List run attributes");
+        help.option("-n, --list-names", "List unique result (vector, scalar, etc) names");
+        help.option("-m, --list-modules", "List unique module names");
+        help.option("-e  --list-qnames", "List unique result names qualified with the module names they occur with");
+        help.option("-r, --list-runs", "List unique runs");
+        help.option("-c, --list-configs", "List unique configuration names");
         help.line();
         help.line("Options:");
         help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).");
@@ -312,21 +312,21 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_fileNames.push_back(argv[i]);
         else if (opt == "--")
             endOpts = true;
-        else if (opt == "-S" || opt == "--print-summary")
+        else if (opt == "-s" || opt == "--print-summary")
             opt_mode = PRINT_SUMMARY;
-        else if (opt == "-L" || opt == "--list-results")
+        else if (opt == "-l" || opt == "--list-results")
             opt_mode = LIST_RESULTS;
-        else if (opt == "-A" || opt == "--list-runattrs")
+        else if (opt == "-a" || opt == "--list-runattrs")
             opt_mode = LIST_RUNATTRS;
-        else if (opt == "-N" || opt == "--list-names")
+        else if (opt == "-n" || opt == "--list-names")
             opt_mode = LIST_NAMES;
-        else if (opt == "-M" || opt == "--list-modules")
+        else if (opt == "-m" || opt == "--list-modules")
             opt_mode = LIST_MODULES;
-        else if (opt == "-E" || opt == "--list-qnames")
+        else if (opt == "-e" || opt == "--list-qnames")
             opt_mode = LIST_MODULE_AND_NAME_PAIRS;
-        else if (opt == "-R" || opt == "--list-runs")
+        else if (opt == "-r" || opt == "--list-runs")
             opt_mode = LIST_RUNS;
-        else if (opt == "-C" || opt == "--list-configs")
+        else if (opt == "-c" || opt == "--list-configs")
             opt_mode = LIST_CONFIGS;
         else if ((opt == "-T" || opt == "--type") && i != argc-1)
             opt_resultTypeFilterStr = unquoteString(argv[++i]);
