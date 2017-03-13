@@ -70,6 +70,13 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     zoomLabelLayer = new GraphicsLayer();
 
     moduleScene = new QGraphicsScene();
+
+    // This avoids a crash inside Qt when traversing the tree.
+    // The proper solution would be to pedantically call
+    // prepareGeometryChange() in every custom item when needed.
+    // However, this might also improve performance.
+    moduleScene->setItemIndexMethod(QGraphicsScene::NoIndex);
+
     setScene(moduleScene);
     moduleScene->addItem(backgroundLayer);
     moduleScene->addItem(figureLayer);
