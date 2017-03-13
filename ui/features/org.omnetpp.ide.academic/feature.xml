@@ -272,10 +272,6 @@ POSSIBILITY OF SUCH DAMAGES.
                      END OF TERMS AND CONDITIONS
    </license>
 
-   <url>
-      <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp/5.1"/>
-   </url>
-
    <includes
          id="org.omnetpp.ide"
          version="0.0.0"
