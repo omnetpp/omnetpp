@@ -845,7 +845,10 @@ bool Qtenv::doRunSimulation()
         displayUpdateController->setRunMode(runMode);
         bool reached = displayUpdateController->animateUntilNextEvent();
         performAnimations();
-        if (!reached || messageAnimator->isHoldActive())
+
+        // if there is no event, we have to let the control through to
+        // takeNextEvent, and it will terminate the simulation with an exception.
+        if ((!reached || messageAnimator->isHoldActive()) && sim->guessNextEvent())
             break;
 
         if (uiUpdateTimer.elapsed() > 100) {
@@ -853,8 +856,8 @@ bool Qtenv::doRunSimulation()
             uiUpdateTimer.restart();
         }
 
-        // if there is no event, we have to let the control through, so we will try to do it
-        // then terminate the simulation with an exception.
+        // if there is no event, we have to let the control through to
+        // takeNextEvent, and it will terminate the simulation with an exception.
         if (runMode == RUNMODE_STEP && !doNextEventInStep && sim->guessNextEvent())
             break;
 
