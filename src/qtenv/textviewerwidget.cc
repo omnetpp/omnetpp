@@ -287,9 +287,14 @@ int TextViewerWidget::getMaxVisibleLineWidth()
 
 int TextViewerWidget::getMaxVisibleLineWidth(int contentPixelBegin, int contentPixelEnd)
 {
+    ASSERT(contentPixelBegin <= contentPixelEnd);
+
+    if (contentPixelBegin == contentPixelEnd)
+        return 0; // the viewport is 0 pixels tall
+
     auto metrics = QFontMetrics(font, viewport());
     int firstLine = (int)std::floor(contentPixelBegin / (float)lineSpacing);
-    int lastLine = (int)std::floor((contentPixelEnd-1) / (float)lineSpacing); // inclusive
+    int lastLine = (int)std::floor((contentPixelEnd-1) / (float)lineSpacing); // -1 is to make it inclusive
 
     firstLine = clip(0, content->getLineCount() - 1, firstLine);
     lastLine = clip(0, content->getLineCount() - 1, lastLine);
