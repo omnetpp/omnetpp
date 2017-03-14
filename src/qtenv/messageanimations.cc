@@ -51,6 +51,9 @@ static PathVec findDirectPath(cModule *srcmod, cModule *destmod)
 {
     PathVec path;
 
+    if (!srcmod || !destmod)
+        return path;
+
     // for animation purposes, we assume that the message travels up
     // in the module hierarchy until it finds the first compound module
     // that also contains the destination module (possibly somewhere deep),
@@ -764,15 +767,13 @@ QString SendOnConnAnimation::str() const {
 // --------  SendDirectAnimation functions  --------
 
 SendDirectAnimation::SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest)
-    : MessageAnimation(msg, 1.0), src(src), dest(dest)
+    : MessageAnimation(msg, 1.0), srcModuleId(src->getId()), dest(dest)
 {
-    path = findDirectPath(src, dest->getOwnerModule());
 }
 
 SendDirectAnimation::SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest, SimTime start, SimTime prop, SimTime trans)
-    : MessageAnimation(msg), src(src), dest(dest), start(start), prop(prop), trans(trans)
+    : MessageAnimation(msg), srcModuleId(src->getId()), dest(dest), start(start), prop(prop), trans(trans)
 {
-    path = findDirectPath(src, dest->getOwnerModule());
 }
 
 void SendDirectAnimation::init()
@@ -796,6 +797,8 @@ void SendDirectAnimation::begin()
 void SendDirectAnimation::update()
 {
     MessageAnimation::update();
+
+    auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
 
     double t1, t2;
 
@@ -875,6 +878,8 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
     if (!msgToUse())
         return;
 
+    auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
+
     for (size_t i = 0; i < path.size(); ++i) {
         cModule *from = path[i].from;
         cModule *to = path[i].to;
@@ -946,8 +951,9 @@ void SendDirectAnimation::removeFromInspector(Inspector *insp)
 
 QString SendDirectAnimation::str() const
 {
+    cModule *src = getSimulation()->getModule(srcModuleId);
     return QString("SendDirect ") + (msgToUse() ? msgToUse()->getName() : "NULL") +
-            + "from: " + src->getFullPath().c_str() + " to: " + dest->getFullPath().c_str()
+            + "from: " + (src ? src->getFullPath().c_str() : "<deleted>") + " to: " + dest->getFullPath().c_str()
             + " state: " + stateText[state];
 }
 

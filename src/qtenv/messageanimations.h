@@ -315,11 +315,10 @@ public:
 
 class QTENV_API SendDirectAnimation : public MessageAnimation
 {
-    cModule *src;
+    int srcModuleId;
     cGate *dest;
     SimTime start, prop, trans;
 
-    PathVec path;
     std::map<ModuleInspector *, ConnectionItem *> connectionItems;
 
 public:
