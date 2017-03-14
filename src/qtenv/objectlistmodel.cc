@@ -68,6 +68,18 @@ void ObjectListModel::sort(int i, Qt::SortOrder order)
     endResetModel();
 }
 
+void ObjectListModel::removeObject(cObject *object)
+{
+    for (int i = 0; i < objects.size(); ++i) {
+        if (objects[i] == object) {
+            beginRemoveRows(QModelIndex(), i, i);
+            objects.remove(i, 1);
+            endRemoveRows();
+            --i;
+        }
+    }
+}
+
 QVariant ObjectListModel::data(const QModelIndex& index, int role) const
 {
     if (objects.size() < index.row())

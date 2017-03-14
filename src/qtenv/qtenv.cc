@@ -1619,6 +1619,9 @@ void Qtenv::objectDeleted(cObject *object)
             confirm(INFO, "Message to run until has just been deleted.");
     }
 
+    emit objectDeletedSignal(object);
+
+    // TODO: use signals
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
         InspectorList::iterator next = it;
         ++next;

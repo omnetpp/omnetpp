@@ -163,6 +163,7 @@ FindObjectsDialog::FindObjectsDialog(cObject *ptr, QWidget *parent) :
     listModel = new ObjectListModel();
     listView = new ObjectListView();
     listView->setModel(listModel);
+    connect(getQtenv(), SIGNAL(objectDeletedSignal(cObject*)), listModel, SLOT(removeObject(cObject*)));
 
     int sortColumn = getPref("sortcolumn", 0).toInt();
     Qt::SortOrder sortOrder = getPref("sortorder", 0).value<Qt::SortOrder>();

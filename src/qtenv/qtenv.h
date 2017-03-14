@@ -274,6 +274,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
   signals:
       void fontChanged();
+      void objectDeletedSignal(cObject *object); // eh, name collisions
 
   public slots:
       // on single click, only shows the object in the GenericObjectInspector

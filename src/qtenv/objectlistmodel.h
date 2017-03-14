@@ -39,6 +39,7 @@ private:
 
 public slots:
     void sort(int i, Qt::SortOrder order) override;
+    void removeObject(cObject *object);
 
 public:
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
