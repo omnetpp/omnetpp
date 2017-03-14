@@ -50,7 +50,7 @@ namespace omnetpp {
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
     static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, omnetpp::CodeFragments::STARTUP); \
-  };
+  }
 
 /**
  * @brief Allows code fragments to be collected in global scope which will then be
@@ -65,7 +65,7 @@ namespace omnetpp {
   namespace { \
     void __ONSTARTUP_FUNC() {CODE;} \
     static omnetpp::CodeFragments __ONSTARTUP_OBJ(__ONSTARTUP_FUNC, omnetpp::CodeFragments::SHUTDOWN); \
-  };
+  }
 
 /**
  * @brief Supporting class for the EXECUTE_ON_STARTUP and EXECUTE_ON_SHUTDOWN macros.
