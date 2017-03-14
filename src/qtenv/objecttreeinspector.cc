@@ -36,7 +36,7 @@ class ObjectTreeInspectorFactory : public InspectorFactory
     ObjectTreeInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *) override { return false; }
-    int getInspectorType() override { return INSP_OBJECTTREE; }
+    InspectorType getInspectorType() override { return INSP_OBJECTTREE; }
     double getQualityAsDefault(cObject *) override { return 0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new ObjectTreeInspector(parent, isTopLevel, this); }
 };

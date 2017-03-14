@@ -54,7 +54,7 @@ class LogInspectorFactory : public InspectorFactory
     LogInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) override { return dynamic_cast<cComponent *>(obj) != nullptr; }
-    int getInspectorType() override { return INSP_MODULEOUTPUT; }
+    InspectorType getInspectorType() override { return INSP_LOG; }
     double getQualityAsDefault(cObject *object) override { return 0.5; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new LogInspector(parent, isTopLevel, this); }
 };

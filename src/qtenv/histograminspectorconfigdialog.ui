@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HistogramInspectorConfigDialog</class>
+ <widget class="QDialog" name="HistogramInspectorConfigDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>270</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Histogram Options</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <property name="formAlignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <item row="2" column="0">
+      <widget class="QLabel" name="yMinLabel">
+       <property name="text">
+        <string>Y min</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="yMinLineEdit">
+       <property name="toolTip">
+        <string>Leave empty for default</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="yMaxLabel">
+       <property name="text">
+        <string>Y max</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="yMaxLineEdit">
+       <property name="toolTip">
+        <string>Leave empty for default</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="styleLabel">
+       <property name="text">
+        <string>Style</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="styleComboBox">
+       <item>
+        <property name="text">
+         <string>Filled Rectangles</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Empy Rectangles</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="xMaxLineEdit">
+       <property name="toolTip">
+        <string>Leave empty for default</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="xMinLineEdit">
+       <property name="toolTip">
+        <string>Leave empty for default</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="xMaxLabel">
+       <property name="text">
+        <string>X max</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="xMinLabel">
+       <property name="text">
+        <string>X min</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>xMinLineEdit</tabstop>
+  <tabstop>xMaxLineEdit</tabstop>
+  <tabstop>yMinLineEdit</tabstop>
+  <tabstop>yMaxLineEdit</tabstop>
+  <tabstop>styleComboBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>HistogramInspectorConfigDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>HistogramInspectorConfigDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

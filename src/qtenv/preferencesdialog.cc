@@ -24,14 +24,14 @@
 namespace omnetpp {
 namespace qtenv {
 
-PreferencesDialog::PreferencesDialog(int defaultPage, QWidget *parent) :
+PreferencesDialog::PreferencesDialog(eTab defaultPage, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PreferencesDialog)
 {
     ui->setupUi(this);
     setFont(getQtenv()->getBoldFont());
 
-    if (defaultPage == InspectorUtil::TAB_NOTDEFINED) {
+    if (defaultPage == TAB_NOTDEFINED) {
         QVariant variant = getQtenv()->getPref("preferences-dialog-page");
         ui->tabWidget->setCurrentIndex(variant.isValid() ? variant.value<int>() : 0);
     }

@@ -31,6 +31,7 @@
 #include "common/stlutil.h"
 #include "omnetpp/cobject.h"
 #include "qtenv.h"
+#include "qtenvdefs.h"
 #include "qtutil.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
@@ -52,7 +53,7 @@ const char *insptypeNameFromCode(int code)
         CASE(INSP_DEFAULT);
         CASE(INSP_OBJECT);
         CASE(INSP_GRAPHICAL);
-        CASE(INSP_MODULEOUTPUT);
+        CASE(INSP_LOG);
         CASE(INSP_OBJECTTREE);
         default: return "?";
     }
@@ -65,7 +66,7 @@ int insptypeCodeFromName(const char *name)
     CASE(INSP_DEFAULT);
     CASE(INSP_OBJECT);
     CASE(INSP_GRAPHICAL);
-    CASE(INSP_MODULEOUTPUT);
+    CASE(INSP_LOG);
     CASE(INSP_OBJECTTREE);
     return -1;
 #undef CASE
@@ -128,7 +129,7 @@ void Inspector::createInspectDropdownMenu()
         QString label = InspectorUtil::getInspectMenuLabel(type);
         QAction *action = inspectDropdownMenu->addAction(label, getQtenv(), SLOT(inspect()));
         action->setDisabled(state);
-        action->setData(QVariant::fromValue(ActionDataPair(object, type)));
+        action->setData(QVariant::fromValue(InspectActionData{object, type}));
     }
 }
 
@@ -139,17 +140,17 @@ void Inspector::createCopyDropdownMenu()
 
     copyDropdownMenu->clear();
     QAction *action = copyDropdownMenu->addAction("Copy Pointer With Cast (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_PTRWITHCAST)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_PTRWITHCAST}));
     action = copyDropdownMenu->addAction("Copy Pointer Value (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_PTR)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_PTR}));
     copyDropdownMenu->addSeparator();
 
     action = copyDropdownMenu->addAction("Copy Full Path", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_FULLPATH)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_FULLPATH}));
     action = copyDropdownMenu->addAction("Copy Name", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_FULLNAME)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_FULLNAME}));
     action = copyDropdownMenu->addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, InspectorUtil::COPY_CLASSNAME)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_CLASSNAME}));
 }
 
 void Inspector::doSetObject(cObject *obj)

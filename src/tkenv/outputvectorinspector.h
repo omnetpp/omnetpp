@@ -28,7 +28,7 @@ class CircBuffer
    public:
       struct CBEntry {
         simtime_t t;
-        double value1, value2;
+        double value;
       };
    protected:
       CBEntry *buf;
@@ -36,7 +36,7 @@ class CircBuffer
    public:
       CircBuffer( int size );
       ~CircBuffer();
-      void add(simtime_t t, double value1, double value2);
+      void add(simtime_t t, double value);
       int headPos() {return head;}
       int tailPos() {return (head-n+1+siz)%siz;}
       int items() {return n;}

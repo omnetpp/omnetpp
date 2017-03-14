@@ -19,6 +19,7 @@
 
 #include <QDialog>
 #include "qtenvdefs.h"
+#include "inspectorutiltypes.h"
 
 namespace Ui {
 class PreferencesDialog;
@@ -32,7 +33,7 @@ class QTENV_API PreferencesDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PreferencesDialog(int defaultPage = -1, QWidget *parent = 0);
+    explicit PreferencesDialog(eTab defaultPage = TAB_NOTDEFINED, QWidget *parent = 0);
     ~PreferencesDialog();
 
 private slots:

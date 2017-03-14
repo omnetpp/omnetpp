@@ -33,10 +33,10 @@
 namespace omnetpp {
 namespace qtenv {
 
-QVector<int> InspectorUtil::supportedInspTypes(cObject *object)
+QVector<InspectorType> InspectorUtil::supportedInspTypes(cObject *object)
 {
     using namespace qtenv;
-    QVector<int> insp_types;
+    QVector<InspectorType> insp_types;
     cRegistrationList *a = inspectorfactories.getInstance();
     for (int i = 0; i < a->size(); i++) {
         InspectorFactory *ifc = static_cast<InspectorFactory *>(a->get(i));
@@ -76,29 +76,30 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
                 ->setData(QVariant::fromValue(object));
         }
 
-        menu->addAction("View '" + name + "' in Object Inspector", getQtenv()->getMainObjectInspector(), SLOT(goUpInto()))
-            ->setData(QVariant::fromValue(object));
+        if (insp != getQtenv()->getMainObjectInspector())
+            menu->addAction("View '" + name + "' in Object Inspector", getQtenv()->getMainObjectInspector(), SLOT(goUpInto()))
+                ->setData(QVariant::fromValue(object));
 
         menu->addSeparator();
     }
 
     // add inspector types supported by the object
-    for (int type : supportedInspTypes(object)) {
+    for (InspectorType type : supportedInspTypes(object)) {
         QString label = getInspectMenuLabel(type);
         if (label.isEmpty())
             qDebug() << "Unsupported inspector type " << type << " in context menu";
         label += QString(" for '") + name + "'";
         QAction *action = menu->addAction(label, getQtenv(), SLOT(inspect()));
-        action->setData(QVariant::fromValue(ActionDataPair(object, type)));
+        action->setData(QVariant::fromValue(InspectActionData{object, type}));
     }
 
     // add "run until" menu items
     if (dynamic_cast<cSimpleModule *>(object) || dynamic_cast<cModule *>(object)) {
         menu->addSeparator();
         QAction *action = menu->addAction(QString("Run Until Next Event in Module '") + name + "'", getQtenv(), SLOT(runUntilModule()));
-        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, RUNMODE_NORMAL), insp)));
+        action->setData(QVariant::fromValue(RunUntilNextEventActionData{object, RUNMODE_NORMAL, insp}));
         action = menu->addAction(QString("Fast Run Until Next Event in Module '") + name + "'", getQtenv(), SLOT(runUntilModule()));
-        action->setData(QVariant::fromValue(ActionDataTriplet(ActionDataPair(object, RUNMODE_FAST), insp)));
+        action->setData(QVariant::fromValue(RunUntilNextEventActionData{object, RUNMODE_FAST, insp}));
     }
 
     cMessage *msg = dynamic_cast<cMessage *>(object);
@@ -107,11 +108,11 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
         if (msg->isScheduled()) {
             menu->addSeparator();
             action = menu->addAction(QString("Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-            action->setData(QVariant::fromValue(ActionDataPair(object, RUNMODE_NORMAL)));
+            action->setData(QVariant::fromValue(RunUntilActionData{object, RUNMODE_NORMAL}));
             action = menu->addAction(QString("Fast Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-            action->setData(QVariant::fromValue(ActionDataPair(object, RUNMODE_FAST)));
+            action->setData(QVariant::fromValue(RunUntilActionData{object, RUNMODE_FAST}));
             action = menu->addAction(QString("Express Run Until Delivery of Message '") + name + "'", getQtenv(), SLOT(runUntilMessage()));
-            action->setData(QVariant::fromValue(ActionDataPair(object, RUNMODE_EXPRESS)));
+            action->setData(QVariant::fromValue(RunUntilActionData{object, RUNMODE_EXPRESS}));
         }
         menu->addSeparator();
         action = menu->addAction(QString("Exclude Messages Like '") + name + "' From Animation", getQtenv(), SLOT(excludeMessage()));
@@ -139,29 +140,28 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
     menu->addSeparator();
     QMenu *subMenu = menu->addMenu(QString("Utilities for '") + name + "'");
     QAction *action = subMenu->addAction("Copy Pointer With Cast (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, COPY_PTRWITHCAST)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_PTRWITHCAST}));
     action = subMenu->addAction("Copy Pointer Value (for Debugger)", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, COPY_PTR)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_PTR}));
     subMenu->addSeparator();
 
     action = subMenu->addAction("Copy Full Path", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLPATH)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_FULLPATH}));
     action = subMenu->addAction("Copy Name", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, COPY_FULLNAME)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_FULLNAME}));
     action = subMenu->addAction("Copy Class Name", getQtenv(), SLOT(utilitiesSubMenu()));
-    action->setData(QVariant::fromValue(ActionDataPair(object, COPY_CLASSNAME)));
+    action->setData(QVariant::fromValue(CopyActionData{object, COPY_CLASSNAME}));
 
     menu->addSeparator();
     menu->addAction("Find Objects in '" + name + "'", getQtenv()->getMainWindow(), SLOT(on_actionFindInspectObjects_triggered()))
             ->setData(QVariant::fromValue(object));
-
 }
 
 void InspectorUtil::addLoglevel(LogLevel level, QString levelInStr, cComponent *comp, QActionGroup *logLevelActionGroup,
                                 QMenu *subMenu)
 {
     QAction *action = subMenu->addAction(levelInStr, getQtenv(), SLOT(setComponentLogLevel()));
-    action->setData(QVariant::fromValue(ActionDataPair(comp, level)));
+    action->setData(QVariant::fromValue(ComponentLogActionData{comp, level}));
     action->setCheckable(true);
     action->setChecked(comp->getLogLevel() == level);
     action->setActionGroup(logLevelActionGroup);
@@ -180,7 +180,6 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject *> objects, Ins
     QFont font = getQtenv()->getBoldFont();
     menu->setStyleSheet("font: " + QString::number(font.pointSize()) + "pt \"" + font.family() + "\"");
 
-    // TODO Is it needed?
     // If there are more than one ptrs, remove the inspector object's own ptr:
     // when someone right-clicks a submodule icon, we don't want the compound
     // module to be in the list.
@@ -252,10 +251,10 @@ QMenu *InspectorUtil::createInspectorContextMenu(QVector<cObject *> objects, Ins
     return menu;
 }
 
-void InspectorUtil::copyToClipboard(cObject *object, int what)
+void InspectorUtil::copyToClipboard(cObject *object, eCopy what)
 {
     switch (what) {
-        case InspectorUtil::COPY_PTR: {
+        case COPY_PTR: {
             void *address = static_cast<void *>(object);
             std::stringstream ss;
             ss << address;
@@ -263,7 +262,7 @@ void InspectorUtil::copyToClipboard(cObject *object, int what)
             break;
         }
 
-        case InspectorUtil::COPY_PTRWITHCAST: {
+        case COPY_PTRWITHCAST: {
             void *address = static_cast<void *>(object);
             std::stringstream ss;
             ss << address;
@@ -271,15 +270,15 @@ void InspectorUtil::copyToClipboard(cObject *object, int what)
             break;
         }
 
-        case InspectorUtil::COPY_FULLPATH:
+        case COPY_FULLPATH:
             setClipboard(object->getFullPath().c_str());
             break;
 
-        case InspectorUtil::COPY_FULLNAME:
+        case COPY_FULLNAME:
             setClipboard(object->getFullName());
             break;
 
-        case InspectorUtil::COPY_CLASSNAME:
+        case COPY_CLASSNAME:
             setClipboard(object->getClassName());
             break;
     }
@@ -299,16 +298,32 @@ void InspectorUtil::preferencesDialog(eTab defaultPage)
     delete prefDialog;
 }
 
-QString InspectorUtil::getInspectMenuLabel(int typeCode)
+QString InspectorUtil::getInspectMenuLabel(InspectorType type)
 {
-    switch(typeCode) {
+    switch(type) {
         case INSP_DEFAULT: return "Open Best View";
         case INSP_OBJECT: return "Open Details";
         case INSP_GRAPHICAL: return "Open Graphical View";
-        case INSP_MODULEOUTPUT: return "Open Component Log";
+        case INSP_LOG: return "Open Component Log";
         case INSP_OBJECTTREE: return "Open Object Tree";
         default: return "";
     }
+}
+
+QString InspectorUtil::doubleToQString(double num, int maxPrecision)
+{
+    QString str = QString::number(num, 'f', maxPrecision);
+    int trailingZeros = 0;
+    int decimalPoint = 0;
+    for(int i = str.size() - 1; i >= 0 && (str[i] == '0' || str[i] == '.'); --i, ++trailingZeros)
+        if (str[i] == '.')
+        {
+            decimalPoint = 1;
+            break;
+        }
+
+    str = str.left(str.size() - trailingZeros - decimalPoint);
+    return str;
 }
 
 }  // namespace qtenv

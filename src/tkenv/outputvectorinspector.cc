@@ -53,21 +53,20 @@ CircBuffer::~CircBuffer()
     delete[] buf;
 }
 
-void CircBuffer::add(simtime_t t, double value1, double value2)
+void CircBuffer::add(simtime_t t, double value)
 {
     head = (head+1)%siz;
     CBEntry& p = buf[head];
     p.t = t;
-    p.value1 = value1;
-    p.value2 = value2;
+    p.value = value;
     if (n < siz)
         n++;
 }
 
-static void record_in_insp(void *data, simtime_t t, double val1, double val2)
+static void record_in_insp(void *data, simtime_t t, double val)
 {
     OutputVectorInspector *insp = (OutputVectorInspector *)data;
-    insp->circbuf.add(t, val1, val2);
+    insp->circbuf.add(t, val);
 }
 
 OutputVectorInspector::OutputVectorInspector(InspectorFactory *f) : Inspector(f), circbuf(100)
@@ -167,13 +166,13 @@ void OutputVectorInspector::refresh()
 
         // determine miny and maxy
         int pos = circbuf.headPos();
-        miny = maxy = circbuf.entry(circbuf.headPos()).value1;
+        miny = maxy = circbuf.entry(circbuf.headPos()).value;
         for (int i = 0; i < circbuf.items(); i++) {
             CircBuffer::CBEntry& p = circbuf.entry(pos);
-            if (p.value1 < miny)
-                miny = p.value1;
-            if (p.value1 > maxy)
-                maxy = p.value1;
+            if (p.value < miny)
+                miny = p.value;
+            if (p.value > maxy)
+                maxy = p.value;
             pos = (pos-1+circbuf.size())%circbuf.size();
         }
         if (miny == maxy) {
@@ -223,8 +222,7 @@ void OutputVectorInspector::refresh()
             nextPos = (nextPos+1)%circbuf.size();
             CircBuffer::CBEntry& p = circbuf.entry(nextPos);
             next_x = X(p.t);
-            next_y1 = Y(p.value1);
-            next_y2 = Y(p.value2);
+            next_y1 = Y(p.value);
         }
 
         if (x >= 0) {
@@ -339,13 +337,13 @@ void OutputVectorInspector::generalInfo(char *buf)
     }
 
     CircBuffer::CBEntry& p = circbuf.entry(circbuf.headPos());
-    sprintf(buf, "Last value: t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
+    sprintf(buf, "Last value: t=%s  value=%g", SIMTIME_STR(p.t), p.value);
 }
 
 void OutputVectorInspector::valueInfo(char *buf, int valueindex)
 {
     CircBuffer::CBEntry& p = circbuf.entry(valueindex);
-    sprintf(buf, "t=%s  value=%g", SIMTIME_STR(p.t), p.value1);
+    sprintf(buf, "t=%s  value=%g", SIMTIME_STR(p.t), p.value);
 
     hairlineTime = SIMTIME_DBL(p.t);
 }

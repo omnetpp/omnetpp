@@ -1,0 +1,114 @@
+%description:
+Tests the ChartTickDecimal class
+
+%includes:
+#include <qtenv/charttickdecimal.h>
+
+%global:
+using namespace omnetpp::qtenv;
+
+%activity:
+
+#define T(x) (EV << #x << " " << x.str2() << std::endl)
+#define TB(x) (EV << #x << " " << x << std::endl)
+
+EV << "\n";
+
+T(ChartTickDecimal(0.0));
+T(ChartTickDecimal(9.0));
+T(ChartTickDecimal(10.0));
+T(ChartTickDecimal(1337.420));
+T(ChartTickDecimal(-1337.420));
+
+T(ChartTickDecimal(1e30));
+T(ChartTickDecimal(-1e30));
+
+T(ChartTickDecimal(1e-30));
+T(ChartTickDecimal(-1e-30));
+
+
+
+T(ChartTickDecimal(1e60));
+T(ChartTickDecimal(-1e60));
+
+T(ChartTickDecimal(1e-60));
+T(ChartTickDecimal(-1e-60));
+
+/*
+T(ChartTickDecimal(1e300));
+T(ChartTickDecimal(-1e300));
+
+T(ChartTickDecimal(1e-300));
+T(ChartTickDecimal(-1e-300));
+*/
+
+ChartTickDecimal pi(31415, -4);
+ChartTickDecimal minuspi(-31415, -4);
+
+// positive cases
+T(ChartTickDecimal(1, 0).over2());
+T(ChartTickDecimal(1, 0).over5());
+T(ChartTickDecimal(1, 0).over10());
+
+T(ChartTickDecimal(123456789012345678, -9));
+
+T(pi);
+T(pi.floor(2));
+T(pi.ceil(2));
+T(pi.floor(0));
+T(pi.ceil(0));
+
+
+T(pi.floor(-2));
+T(pi.ceil(-2));
+
+T(pi.floor(30));
+T(pi.ceil(30));
+
+
+T(minuspi);
+T(minuspi.floor(2));
+T(minuspi.ceil(2));
+T(minuspi.floor(0));
+T(minuspi.ceil(0));
+
+
+T(minuspi.floor(-2));
+T(minuspi.ceil(-2));
+
+ChartTickDecimal zero = pi;
+zero += minuspi;
+T(zero);
+
+T(zero.ceil(0));
+T(zero.floor(0));
+
+
+T(zero.ceil(10));
+T(zero.floor(10));
+
+T(zero.ceil(-10));
+T(zero.floor(-10));
+
+T(pi.over2());
+
+TB(ChartTickDecimal(1,10).multipleOf(ChartTickDecimal(1,2)));
+TB(ChartTickDecimal(1,2).multipleOf(ChartTickDecimal(1,10)));
+TB(ChartTickDecimal(1,10).multipleOf(ChartTickDecimal(1,-5)));
+TB(ChartTickDecimal(1,-5).multipleOf(ChartTickDecimal(1,10)));
+TB(ChartTickDecimal(1,-20).multipleOf(ChartTickDecimal(1,20)));
+TB(ChartTickDecimal(1,-5).multipleOf(ChartTickDecimal(1,10)));
+TB(ChartTickDecimal(1,-6).multipleOf(ChartTickDecimal(1,10)));
+TB(ChartTickDecimal(1,-7).multipleOf(ChartTickDecimal(1,10)));
+TB(ChartTickDecimal(1,-8).multipleOf(ChartTickDecimal(1,10)));
+TB(ChartTickDecimal(1,-9).multipleOf(ChartTickDecimal(1,10)));
+TB(ChartTickDecimal(1,-10).multipleOf(ChartTickDecimal(1,10)));
+
+
+
+
+EV << ".\n";
+
+%contains: stdout
+'xxx'
+.

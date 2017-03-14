@@ -27,7 +27,7 @@ cGlobalRegistrationList inspectorfactories;
 
 EXECUTE_ON_SHUTDOWN(inspectorfactories.clear());
 
-InspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
+InspectorFactory *findInspectorFactoryFor(cObject *obj, InspectorType type)
 {
     InspectorFactory *best = nullptr;
     double bestweight = 0;

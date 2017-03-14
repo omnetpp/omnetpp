@@ -24,9 +24,11 @@
 #include <QRegularExpression>
 #include <QDebug>
 
+#include "omnetpp/cexception.h"
 #include "common/fileutil.h"
 #include "common/stringtokenizer.h"
 #include "imagecache.h"
+
 
 using namespace omnetpp::common;
 

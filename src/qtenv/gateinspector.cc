@@ -40,7 +40,7 @@ class GateInspectorFactory : public InspectorFactory
     GateInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) override { return dynamic_cast<cGate *>(obj) != nullptr; }
-    int getInspectorType() override { return INSP_GRAPHICAL; }
+    InspectorType getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new GateInspector(parent, isTopLevel, this); }
 };

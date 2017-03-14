@@ -108,7 +108,14 @@ SOURCES += mainwindow.cc \
     modulelayouter.cc \
     objectlistmodel.cc \
     objectlistview.cc \
-    findobjectsdialog.cc
+    findobjectsdialog.cc \
+    outputvectorinspectorconfigdialog.cc \
+    outputvectorview.cc \
+    histogramview.cc \
+    histograminspectorconfigdialog.cc \
+    chartgriditem.cc \
+    vectorplotitem.cc \
+    charttickdecimal.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -166,7 +173,15 @@ HEADERS += mainwindow.h \
     modulelayouter.h \
     objectlistmodel.h \
     objectlistview.h \
-    findobjectsdialog.h
+    findobjectsdialog.h \
+    outputvectorinspectorconfigdialog.h \
+    outputvectorview.h \
+    histogramview.h \
+    inspectorutiltypes.h \
+    histograminspectorconfigdialog.h \
+    chartgriditem.h \
+    vectorplotitem.h \
+    charttickdecimal.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
@@ -185,7 +200,9 @@ FORMS += mainwindow.ui \
     layersdialog.ui \
     fileeditor.ui \
     animationcontrollerdialog.ui \
-    findobjectsdialog.ui
+    findobjectsdialog.ui \
+    outputvectorinspectorconfigdialog.ui \
+    histograminspectorconfigdialog.ui
 
 RESOURCES += \
     icons.qrc

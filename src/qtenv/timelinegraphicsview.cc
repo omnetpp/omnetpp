@@ -241,7 +241,7 @@ void TimeLineGraphicsView::updateMinExponent(simtime_t now, QVector<cMessage *> 
 
     if (isSetCurrentMinTime) {
         double currentMinDelta = (currentMinTime - now).dbl();
-        int currentMinExponent = (int)floor(log10(currentMinDelta));
+        int currentMinExponent = (int)std::floor(log10(currentMinDelta));
         if (minExponent > currentMinExponent)
             minExponent = currentMinExponent;
     }
@@ -256,7 +256,7 @@ void TimeLineGraphicsView::updateMaxExponent(simtime_t now, QVector<cMessage *> 
     simtime_t currentMaxTime = messages[messages.size()-1]->getArrivalTime();
     if (currentMaxTime > now) {
         double currentMaxDelta = (currentMaxTime - now).dbl();
-        int currentMaxExponent = (int)ceil(log10(currentMaxDelta));
+        int currentMaxExponent = (int)std::ceil(log10(currentMaxDelta));
         if (maxExponent < currentMaxExponent)
             maxExponent = currentMaxExponent;
     }

@@ -1,5 +1,5 @@
 //==========================================================================
-//  OBJECTLISTVIEW.H - part of
+//  INSPECTORUTILTYPES.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,37 +14,47 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_OBJECTLISTVIEW_H
-#define __OMNETPP_QTENV_OBJECTLISTVIEW_H
-
-#include <QTableView>
-#include "qtenvdefs.h"
+#ifndef __OMNETPP_QTENV_INSPECTORUTILTYPES_H
+#define __OMNETPP_QTENV_INSPECTORUTILTYPES_H
 
 namespace omnetpp {
-
-class cObject;
-
 namespace qtenv {
 
-class ObjectListModel;
+/**
+ * Inspector types
+ */
+enum InspectorType {
+    INSP_DEFAULT,
+    INSP_OBJECT,
+    INSP_GRAPHICAL,
+    INSP_LOG,
+    INSP_OBJECTTREE,
+    NUM_INSPECTORTYPES   // this must be the last one
+};
 
-class QTENV_API ObjectListView : public QTableView
+
+enum eCopy
 {
-    Q_OBJECT
-private:
-    bool isSetColumnWidth;
-    cObject *object;
+    COPY_PTR,
+    COPY_PTRWITHCAST,
+    COPY_FULLPATH,
+    COPY_FULLNAME,
+    COPY_CLASSNAME
+};
 
-protected:
-    void contextMenuEvent(QContextMenuEvent *event);
-
-public:
-    ObjectListView(QWidget *parent = nullptr);
-
-    void setModel(QAbstractItemModel *model) override;
+enum eTab
+{
+    TAB_GENERAL = 0,
+    TAB_LOGS = 1,
+    TAB_LAYOUTING = 2,
+    TAB_ANIMATION = 3,
+    TAB_FILTERING = 4,
+    TAB_FONTS = 5,
+    TAB_NOTDEFINED = -1
 };
 
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // __OMNETPP_QTENV_OBJECTLISTVIEW_H
+#endif
+

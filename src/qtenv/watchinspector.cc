@@ -44,7 +44,7 @@ class WatchInspectorFactory : public InspectorFactory
         return dynamic_cast<cWatchBase *>(obj) && !dynamic_cast<cStdVectorWatcherBase *>(obj);
     }
 
-    int getInspectorType() override { return INSP_OBJECT; }
+    InspectorType getInspectorType() override { return INSP_OBJECT; }
     double getQualityAsDefault(cObject *object) override { return 2.0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new WatchInspector(parent, isTopLevel, this); }
 };

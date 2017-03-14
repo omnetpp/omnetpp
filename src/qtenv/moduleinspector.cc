@@ -66,7 +66,7 @@ class ModuleInspectorFactory : public InspectorFactory
     ModuleInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) override { return dynamic_cast<cModule *>(obj) != nullptr; }
-    int getInspectorType() override { return INSP_GRAPHICAL; }
+    InspectorType getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override {
         cModule *mod = dynamic_cast<cModule *>(object);
         return mod && mod->hasSubmodules() ? 3.0 : 0.9;
@@ -705,11 +705,11 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
 
     menu->addSeparator();
     menu->addAction("Layouting Settings...", this, SLOT(runPreferencesDialog()))
-            ->setData(InspectorUtil::TAB_LAYOUTING);
+            ->setData(QVariant::fromValue(TAB_LAYOUTING));
     menu->addAction("Animation Settings...", this, SLOT(runPreferencesDialog()))
-            ->setData(InspectorUtil::TAB_ANIMATION);
+            ->setData(QVariant::fromValue(TAB_ANIMATION));
     menu->addAction("Animation Filter...", this, SLOT(runPreferencesDialog()))
-            ->setData(InspectorUtil::TAB_FILTERING);
+            ->setData(QVariant::fromValue(TAB_FILTERING));
 
     menu->addSeparator();
     menu->addAction("Export to PDF...", canvasViewer, SLOT(exportToPdf()));
@@ -723,7 +723,7 @@ void ModuleInspector::runPreferencesDialog()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid())
-        InspectorUtil::preferencesDialog((InspectorUtil::eTab)variant.value<int>());
+        InspectorUtil::preferencesDialog(variant.value<eTab>());
 }
 
 void ModuleInspector::layers()

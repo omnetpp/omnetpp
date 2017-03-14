@@ -49,6 +49,7 @@
 #include "omnetpp/cdisplaystring.h"
 #include "qtenv.h"
 #include "qtutil.h"
+#include "charttickdecimal.h"
 #include "moduleinspector.h"
 #include "loginspector.h"
 
@@ -548,7 +549,7 @@ QString makeObjectTooltip(cObject *obj)
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
 {
-    if (insp->getObject() != mod || insp->getType() != INSP_MODULEOUTPUT)
+    if (insp->getObject() != mod || insp->getType() != INSP_LOG)
         return nullptr;
     return dynamic_cast<LogInspector *>(insp);
 }
@@ -600,5 +601,41 @@ bool isTwoWayConnection(cGate *gate)
     return false;
 }
 
-}  // namespace qtenv
-}  // namespace omnetpp
+std::vector<std::pair<ChartTickDecimal, bool>> getLinearTicks(double start, double end, double approxDelta)
+{
+    int scale = std::ceil(log10(approxDelta));
+
+    ChartTickDecimal bdStart = ChartTickDecimal(start).floor(-scale);
+    ChartTickDecimal bdEnd = ChartTickDecimal(end).ceil(-scale);
+    ChartTickDecimal spacing(approxDelta);
+    ChartTickDecimal delta(1, scale);
+
+    ChartTickDecimal majorTickDelta;
+    if (delta.over5() > spacing) {
+        // use 2, 4, 6, 8, etc. if possible
+        majorTickDelta = delta.over5();
+        delta = delta.over10();
+    }
+    else if (delta.over2() > spacing) {
+        // use 5, 10, 15, 20, etc. if possible
+        majorTickDelta = delta.over2();
+        delta = delta.over10();
+    }
+    else {
+        majorTickDelta = delta;
+        delta = delta.over5();
+    }
+
+    std::vector<std::pair<ChartTickDecimal, bool>> ticks;
+    for (ChartTickDecimal current = bdStart; current <= bdEnd; current += delta) {
+        bool isMajorTick = current.multipleOf(majorTickDelta);
+        ticks.push_back(std::pair<ChartTickDecimal, bool>(current, isMajorTick));
+    }
+
+    return ticks;
+}
+
+
+} // namespace qtenv
+} // namespace omnetpp
+

@@ -189,7 +189,7 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 
     // pass data to inspector
     if (recordInInspector)
-        recordInInspector(dataForInspector, t, value, 0.0);
+        recordInInspector(dataForInspector, t, value);
 
     if (!isEnabled())
         return false;

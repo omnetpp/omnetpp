@@ -31,6 +31,7 @@
 #include "imagecache.h"
 #include "modulelayouter.h"
 #include "inspector.h"
+#include "charttickdecimal.h"
 #include <QSettings>
 #include <QSet>
 #include <QString>
@@ -65,14 +66,6 @@ enum LayouterChoice
     LAYOUTER_FAST,
     LAYOUTER_ADVANCED,
     LAYOUTER_AUTO
-};
-
-enum RunMode {
-    RUNMODE_NORMAL = 1,
-    RUNMODE_FAST = 2,
-    RUNMODE_EXPRESS = 3,
-    RUNMODE_STEP = 4,
-    RUNMODE_NOT_RUNNING = 5
 };
 
 struct QtenvOptions : public EnvirOptions
@@ -355,9 +348,9 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       double computeModelAnimationSpeedRequest();
       double computeModelHoldEndTime();
 
-      Inspector *inspect(cObject *obj, int type=INSP_DEFAULT, bool ignoreEmbedded=false);
+      Inspector *inspect(cObject *obj, InspectorType type=INSP_DEFAULT, bool ignoreEmbedded=false);
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
-      Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);
+      Inspector *findFirstInspector(cObject *obj, InspectorType type, bool ignoreEmbedded=false);
       void deleteInspector(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 

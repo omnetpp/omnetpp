@@ -18,8 +18,9 @@
 #define __OMNETPP_QTENV_INSPECTORUTIL_H
 
 #include <QVector>
-
 #include "logbuffer.h"
+#include "qtenvdefs.h"
+#include "inspectorutiltypes.h"
 
 class QMenu;
 class QActionGroup;
@@ -38,18 +39,19 @@ private:
     static void addLoglevel(LogLevel level, QString levelInStr, cComponent *comp, QActionGroup *logLevelActionGroup, QMenu *subMenu);
 
 public:
-    enum eCopy { COPY_PTR, COPY_PTRWITHCAST, COPY_FULLPATH, COPY_FULLNAME, COPY_CLASSNAME };
-    enum eTab { TAB_GENERAL, TAB_LOGS, TAB_LAYOUTING, TAB_ANIMATION, TAB_FILTERING, TAB_FONTS, TAB_NOTDEFINED };
-
     static void fillInspectorContextMenu(QMenu *menu, cObject *object, Inspector *insp);
-    static QVector<int> supportedInspTypes(cObject *object);
+    static QVector<InspectorType> supportedInspTypes(cObject *object);
     static Inspector *getContainingInspector(QWidget *widget);
     static QMenu *createInspectorContextMenu(QVector<cObject *> objects, Inspector *insp = nullptr);
     static QMenu *createInspectorContextMenu(cObject* object, Inspector *insp = nullptr);
-    static void copyToClipboard(cObject *object, int what);
+    static void copyToClipboard(cObject *object, eCopy what);
     static void setClipboard(QString str);
     static void preferencesDialog(eTab defaultPage = TAB_NOTDEFINED);
-    static QString getInspectMenuLabel(int typeCode);
+    static QString getInspectMenuLabel(InspectorType type);
+
+    // Convert a double to QString in standard notation with maxPrecision and delete
+    // trailing zeros
+    static QString doubleToQString(double num, int maxPrecision = 6);
 };
 
 } // namespace qtenv

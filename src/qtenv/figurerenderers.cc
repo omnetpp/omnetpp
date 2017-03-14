@@ -236,7 +236,7 @@ void FigureRenderer::arcToUsingBezier(QPainterPath& painter, double currentX, do
         }
 
         case ARC_ARC: {
-            int segments = (int)ceil(fabs(sweepLength/(M_PI/2.0)));
+            int segments = (int)std::ceil(std::fabs(sweepLength/(M_PI/2.0)));
             double delta = sweepLength/segments;
             double t = 8.0/3.0 * sin(delta/4.0) * sin(delta/4.0) / sin(delta/2.0);
 
@@ -279,14 +279,14 @@ void FigureRenderer::calcSmoothBezierCP(QPainterPath& painter, char prevCommand,
 {
     if (tolower(prevCommand) == 'q' || tolower(prevCommand) == 't') {
         if (cpx < currentX)
-            cpx = currentX + fabs(currentX - cpx);
+            cpx = currentX + std::fabs(currentX - cpx);
         else
-            cpx = currentX - fabs(currentX - cpx);
+            cpx = currentX - std::fabs(currentX - cpx);
 
         if (cpy < currentY)
-            cpy = currentY + fabs(currentY - cpy);
+            cpy = currentY + std::fabs(currentY - cpy);
         else
-            cpy = currentY - fabs(currentY - cpy);
+            cpy = currentY - std::fabs(currentY - cpy);
     }
     else {
         cpx = currentX;
@@ -305,14 +305,14 @@ void FigureRenderer::calcSmoothQuadBezierCP(QPainterPath& painter, char prevComm
 {
     if (tolower(prevCommand) == 's' || tolower(prevCommand) == 'c') {
         if (prevCpx < currentX)
-            prevCpx = currentX + fabs(currentX - prevCpx);
+            prevCpx = currentX + std::fabs(currentX - prevCpx);
         else
-            prevCpx = currentX - fabs(currentX - prevCpx);
+            prevCpx = currentX - std::fabs(currentX - prevCpx);
 
         if (prevCpy < currentY)
-            prevCpy = currentY + fabs(currentY - prevCpy);
+            prevCpy = currentY + std::fabs(currentY - prevCpy);
         else
-            prevCpy = currentY - fabs(currentY - prevCpy);
+            prevCpy = currentY - std::fabs(currentY - prevCpy);
     }
     else {
         prevCpx = currentX;

@@ -28,7 +28,7 @@ namespace omnetpp {
  * interfaces when values are recorded to an output vector (see cOutVector).
  * @ingroup Statistics
  */
-typedef void (*RecordFunc)(void *, simtime_t, double, double);
+typedef void (*RecordFunc)(void *, simtime_t, double);
 
 class cEnum;
 

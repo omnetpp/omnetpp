@@ -17,6 +17,7 @@
 #include <cstring>
 #include <cmath>
 #include "omnetpp/cregistrationlist.h"
+#include "common/stringutil.h"
 #include "qtenv.h"
 #include "inspectorfactory.h"
 #include "moduleinspector.h"
@@ -36,6 +37,8 @@
 
 #define emit
 
+using namespace omnetpp::common;
+
 namespace omnetpp {
 namespace qtenv {
 
@@ -47,7 +50,7 @@ class GenericObjectInspectorFactory : public InspectorFactory
     GenericObjectInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) override { return true; }
-    int getInspectorType() override { return INSP_OBJECT; }
+    InspectorType getInspectorType() override { return INSP_OBJECT; }
     double getQualityAsDefault(cObject *object) override { return 1.0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new GenericObjectInspector(parent, isTopLevel, this); }
 };
@@ -192,7 +195,16 @@ void GenericObjectInspector::closeEvent(QCloseEvent *event)
 void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
 {
     auto object = model->getCObjectPointer(index);
-    if (object)
+    InspectorFactory *factory = findInspectorFactoryFor(object, INSP_DEFAULT);
+    if (!factory) {
+        getQtenv()->confirm(Qtenv::INFO, opp_stringf("Class '%s' has no associated inspectors.", object->getClassName()).c_str());
+        return;
+    }
+
+    int preferredType = factory->getInspectorType();
+    if (preferredType != INSP_OBJECT)
+        getQtenv()->inspect(object);
+    else
         setObject(object);
 }
 

@@ -33,7 +33,7 @@ class OsgCanvasInspectorFactory : public InspectorFactory
     OsgCanvasInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) override { return dynamic_cast<cOsgCanvas *>(obj) != nullptr; }
-    int getInspectorType() override { return INSP_GRAPHICAL; }
+    InspectorType getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new OsgCanvasInspector(parent, isTopLevel, this); }
 };

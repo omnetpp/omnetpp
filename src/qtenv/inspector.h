@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_INSPECTOR_H
 
 #include "envir/envirbase.h"
+#include "inspectorutiltypes.h"
 #include "qtutil.h"
 #include <QObject>
 #include <QLayout>
@@ -33,18 +34,6 @@ namespace omnetpp {
 namespace qtenv {
 
 class InspectorFactory;
-
-/**
- * Inspector types
- */
-enum {
-    INSP_DEFAULT,
-    INSP_OBJECT,
-    INSP_GRAPHICAL,
-    INSP_MODULEOUTPUT, //TODO rename to INSP_LOG
-    INSP_OBJECTTREE,
-    NUM_INSPECTORTYPES   // this must be the last one
-};
 
 
 // utility functions
@@ -65,7 +54,7 @@ class QTENV_API Inspector : public QWidget
    protected:
       InspectorFactory *factory; // meta-object that describes this inspector class
       cObject *object;        // the inspected object or nullptr if inspector is empty
-      int type;               // INSP_OBJECT, etc.
+      InspectorType type;
       bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       std::vector<cObject*> historyBack;
       std::vector<cObject*> historyForward;
@@ -117,14 +106,12 @@ class QTENV_API Inspector : public QWidget
       void inspectedObjectChanged(cObject *newObject, cObject *oldObject);
 
    public:
-      typedef QPair<omnetpp::cObject*, int> ActionDataPair;
-
       Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *factory);
       virtual ~Inspector();
       virtual const char *getClassName() const;
       virtual bool supportsObject(cObject *object) const;
 
-      virtual int getType() const {return type;}
+      virtual InspectorType getType() const {return type;}
       virtual bool isToplevel() const {return isToplevelWindow;}
 
       virtual cObject *getObject() const {return object;}

@@ -20,65 +20,77 @@
 #include "envir/envirbase.h"
 #include "inspector.h"
 
+class QStatusBar;
+
 namespace omnetpp {
 namespace qtenv {
 
+class OutputVectorView;
+class OutputVectorInspectorConfigDialog;
+
+// TODO: use existing circular_buffer<T> instead
 class QTENV_API CircBuffer
 {
-   public:
-      struct CBEntry {
+  public:
+    struct CBEntry {
         simtime_t t;
-        double value1, value2;
-      };
-   protected:
-      CBEntry *buf;
-      int siz, n, head;
-   public:
-      CircBuffer( int size );
-      ~CircBuffer();
-      void add(simtime_t t, double value1, double value2);
-      int headPos() {return head;}
-      int tailPos() {return (head-n+1+siz)%siz;}
-      int items() {return n;}
-      int size() {return siz;}
-      CBEntry& entry(int k) {return buf[k];}
+        double value;
+    };
+
+  protected:
+    CBEntry *buf;
+    int siz, n, head;
+
+  public:
+    CircBuffer(int size);
+    ~CircBuffer();
+    void add(simtime_t t, double value);
+    int headPos() const { return head; }
+    int tailPos() const { return (head-n+1+siz)%siz; }
+    int items() const { return n; }
+    int size() const { return siz; }
+    CBEntry& entry(int k) const { return buf[k]; }
 };
 
 class QTENV_API OutputVectorInspector : public Inspector
 {
-   public:
-      CircBuffer circbuf;
+    Q_OBJECT
 
-   protected:
-      char canvas[64];
+  public:
+    CircBuffer circbuf;
 
-      // configuration
-      enum {DRAW_DOTS, DRAW_BARS, DRAW_PINS, DRAW_SAMPLEHOLD, DRAW_LINES, NUM_DRAWINGMODES};
-      bool autoscale;
-      int drawingMode;
-      double miny, maxy;
-      double timeScale; // x scaling: secs/10 pixel
-      simtime_t hairlineTime;   // t position of moving axis
+  protected:
+    OutputVectorView *view;
+    QStatusBar *statusBar;
+    OutputVectorInspectorConfigDialog *configDialog;
 
-   public:
-      OutputVectorInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
-      ~OutputVectorInspector();
-      virtual void doSetObject(cObject *obj) override;
-      virtual void refresh() override;
+    // configuration
+    bool isMinYAutoscaled;
+    bool isMaxYAutoscaled;
+    bool isTimeScaleAutoscaled;
+    double minY, maxY, timeScale;
 
-      // return textual information in general or about a value/value pair
-      void generalInfo( char *buf );
-      void valueInfo( char *buf, int valueindex );
+    void resizeEvent(QResizeEvent *event) override;
 
-      // configuration get (text form) / set
-      void getConfig( char *buf );
-      void setConfig( bool autoscale, double timef, double miny, double maxy, const char *mode);
+    // return textual information in general or about a value/value pair
+    QString generalInfo();
+    void yRangeCorrection();
+    void setConfig();
+
+  protected slots:
+    void onOptionsDialogTriggerd();
+    void onCustomContextMenuRequested(QPoint pos);
+    void onClickApply();
+
+  public:
+    OutputVectorInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
+    ~OutputVectorInspector();
+    virtual void doSetObject(cObject *obj) override;
+    virtual void refresh() override;
 };
 
-} // namespace qtenv
-} // namespace omnetpp
-
+}  // namespace qtenv
+}  // namespace omnetpp
 
 #endif
-
 

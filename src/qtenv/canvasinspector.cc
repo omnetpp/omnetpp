@@ -49,7 +49,7 @@ class CanvasInspectorFactory : public InspectorFactory
     CanvasInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *obj) override { return dynamic_cast<cCanvas *>(obj) != nullptr; }
-    int getInspectorType() override { return INSP_GRAPHICAL; }
+    InspectorType getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new CanvasInspector(parent, isTopLevel, this); }
 };
@@ -170,7 +170,7 @@ void CanvasInspector::zoomBy(double mult)
             double m = mult < 1 ? 1.0/mult : mult;
             double a = 1 - 0.9*(1 - 1.0/m);
             double b = 1 + 0.9*(m - 1);
-            if(zoomFactor > a && zoomFactor < b)
+            if (zoomFactor > a && zoomFactor < b)
                 newZoomFactor = 1;
         }*/
 

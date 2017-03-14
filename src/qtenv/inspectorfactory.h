@@ -58,7 +58,7 @@ class QTENV_API InspectorFactory : public cNoncopyableOwnedObject
     /**
      * Returns type of inspector created by this factory (INSP_* constants).
      */
-    virtual int getInspectorType() = 0;
+    virtual InspectorType getInspectorType() = 0;
 
     /**
      * Returns "how good" this inspector is as default inspector for this object;
@@ -90,7 +90,7 @@ extern cGlobalRegistrationList inspectorfactories;
 /**
  * Find a cInspectorFactory.
  */
-InspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
+InspectorFactory *findInspectorFactoryFor(cObject *obj, InspectorType type);
 
 } // namespace qtenv
 } // namespace omnetpp

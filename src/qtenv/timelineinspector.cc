@@ -33,7 +33,7 @@ class TimeLineInspectorFactory : public InspectorFactory
     TimeLineInspectorFactory(const char *name) : InspectorFactory(name) {}
 
     bool supportsObject(cObject *) override { return false; }
-    int getInspectorType() override { return INSP_MODULEOUTPUT; }
+    InspectorType getInspectorType() override { return INSP_LOG; }
     double getQualityAsDefault(cObject *) override { return 0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new TimeLineInspector(parent, isTopLevel, this); }
 };
@@ -95,7 +95,7 @@ void TimeLineInspector::refresh()
 
 void TimeLineInspector::runPreferencesDialog()
 {
-    InspectorUtil::preferencesDialog(InspectorUtil::TAB_FILTERING);
+    InspectorUtil::preferencesDialog(TAB_FILTERING);
 }
 
 double TimeLineInspector::getInitHeight()

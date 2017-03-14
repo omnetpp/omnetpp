@@ -320,6 +320,7 @@ void Qtenv::storeInspectors(bool closeThem)
             localPrefs->setValue("object", obj->getFullPath().c_str());
             localPrefs->setValue("classname", getObjectShortTypeName(obj, STRIPNAMESPACE_NONE));
             localPrefs->setValue("id", QVariant::fromValue(getObjectId(obj)));
+            // TODO use qRegisterMetaTypeStreamOperators to set operator which can serialize InspectorType
             localPrefs->setValue("type", insp->getType());
             localPrefs->setValue("geom", insp->geometry());
             localPrefs->setValue("fullscreen", insp->windowState().testFlag(Qt::WindowFullScreen));
@@ -367,7 +368,7 @@ void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
 
             v = localPrefs->value("type");
             ok = ok && v.canConvert<int>();
-            int type = v.value<int>();
+            InspectorType type = (InspectorType)v.value<int>();
 
             if (!ok) {
                 localPrefs->endGroup();
@@ -411,7 +412,7 @@ void Qtenv::restoreInspectors()
 
             v = localPrefs->value("type");
             ok = ok && v.canConvert<int>();
-            int type = v.value<int>();
+            InspectorType type = (InspectorType)v.value<int>();
 
             v = localPrefs->value("geom");
             ok = ok && v.canConvert<QRect>();
@@ -1198,7 +1199,7 @@ void Qtenv::setupNetwork(cModuleType *network)
     // mainwindow->getObjectTree()->collapseAll();
 }
 
-Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
+Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
 {
     // first, try finding and displaying existing inspector
     Inspector *inspector = findFirstInspector(obj, type, ignoreEmbedded);
@@ -1213,7 +1214,7 @@ Inspector *Qtenv::inspect(cObject *obj, int type, bool ignoreEmbedded)
         return nullptr;
     }
 
-    int actualType = factory->getInspectorType();
+    InspectorType actualType = factory->getInspectorType();
     inspector = findFirstInspector(obj, actualType, ignoreEmbedded);
     if (inspector) {
         inspector->showWindow();
@@ -1253,7 +1254,7 @@ Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *paren
     return insp;
 }
 
-Inspector *Qtenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded)
+Inspector *Qtenv::findFirstInspector(cObject *obj, InspectorType type, bool ignoreEmbedded)
 {
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
         Inspector *insp = *it;
@@ -2232,8 +2233,8 @@ void Qtenv::inspect()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        inspect(objTypePair.first, objTypePair.second, true);
+        auto data = variant.value<InspectActionData>();
+        inspect(data.object, data.type, true);
     }
 }
 
@@ -2241,8 +2242,8 @@ void Qtenv::runUntilModule()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        ActionDataTriplet objTypePair = variant.value<ActionDataTriplet>();
-        runSimulationLocal((RunMode)objTypePair.first.second, objTypePair.first.first, objTypePair.second);
+        RunUntilNextEventActionData data = variant.value<RunUntilNextEventActionData>();
+        runSimulationLocal(data.runMode, data.object, data.insp);
     }
 }
 
@@ -2250,8 +2251,8 @@ void Qtenv::runUntilMessage()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
-        QPair<cObject *, int> objTypePair = variant.value<QPair<cObject *, int> >();
-        getQtenv()->getMainWindow()->runUntilMsg(static_cast<cMessage *>(objTypePair.first), (RunMode)objTypePair.second);
+        auto data = variant.value<RunUntilActionData>();
+        getQtenv()->getMainWindow()->runUntilMsg(static_cast<cMessage *>(data.object), data.runMode);
     }
 }
 
@@ -2266,10 +2267,10 @@ void Qtenv::utilitiesSubMenu()
 {
     auto action = dynamic_cast<QAction *>(sender());
     if (action) {
-        auto data = action->data();
-        if (data.isValid()) {
-            ActionDataPair objTypePair = data.value<ActionDataPair>();
-            InspectorUtil::copyToClipboard(static_cast<cMessage *>(objTypePair.first), objTypePair.second);
+        auto variant = action->data();
+        if (variant.isValid()) {
+            CopyActionData data = variant.value<CopyActionData>();
+            InspectorUtil::copyToClipboard(static_cast<cMessage *>(data.object), data.copy);
         }
     }
 }
@@ -2278,11 +2279,10 @@ void Qtenv::setComponentLogLevel()
 {
     auto action = dynamic_cast<QAction *>(sender());
     if (action) {
-        auto data = action->data();
-        if (data.isValid() && data.canConvert<ActionDataPair>()) {
-            auto pair = data.value<ActionDataPair>();
-            auto component = dynamic_cast<cComponent *>(pair.first);
-            setComponentLogLevel(component, (LogLevel)pair.second, true);
+        auto variant = action->data();
+        if (variant.isValid() && variant.canConvert<ComponentLogActionData>()) {
+            auto data = variant.value<ComponentLogActionData>();
+            setComponentLogLevel(data.component, data.logLevel, true);
         }
     }
 }

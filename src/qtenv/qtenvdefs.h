@@ -26,6 +26,9 @@
 #include "omnetpp/cobject.h"
 #include "omnetpp/cmessage.h"
 
+#include "inspectorutiltypes.h"
+#include "omnetpp/clog.h"
+
 // Require QT_NO_EMIT to prevent the definition of "emit" as a macro. It is needed
 // because OMNeT++ uses "emit" as a function name. If you want to use "emit" the
 // Qt way, define "emit" as empty, like in <qobjectdefs.h>.
@@ -34,13 +37,17 @@
 #endif
 
 #include <QMetaType>
-#include <QPair>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
 #error Qtenv requires Qt 5.4 or later.
 #endif
 
 namespace omnetpp {
+
+class cObject;
+class cComponent;
+class cMessage;
+
 namespace qtenv {
 class Inspector;
 }
@@ -53,11 +60,62 @@ Q_DECLARE_OPAQUE_POINTER(omnetpp::qtenv::Inspector*)
 Q_DECLARE_METATYPE(omnetpp::cObject*)
 Q_DECLARE_METATYPE(omnetpp::cMessage*)
 
-typedef QPair<omnetpp::cObject*, int> ActionDataPair;
-typedef QPair<ActionDataPair, omnetpp::qtenv::Inspector*> ActionDataTriplet;
 
-Q_DECLARE_METATYPE(ActionDataPair)
-Q_DECLARE_METATYPE(ActionDataTriplet)
+namespace omnetpp {
+namespace qtenv {
+
+enum RunMode {
+    RUNMODE_NORMAL = 1,
+    RUNMODE_FAST = 2,
+    RUNMODE_EXPRESS = 3,
+    RUNMODE_STEP = 4,
+    RUNMODE_NOT_RUNNING = 5
+};
+
+// Custom types for QVariant
+struct InspectActionData
+{
+    cObject *object;
+    InspectorType type;
+};
+
+struct RunUntilActionData
+{
+    cObject *object;
+    RunMode runMode;
+};
+
+struct RunUntilNextEventActionData
+{
+    cObject *object;
+    RunMode runMode;
+    Inspector *insp;
+};
+
+struct CopyActionData
+{
+    cObject *object;
+    eCopy copy;
+};
+
+struct ComponentLogActionData
+{
+    cComponent *component;
+    LogLevel logLevel;
+};
+
+} // namespace qtenv
+} // namespace omnetpp
+
+// In case of enum always use QVariant::fromValue method instead of implicit cast
+// because it cause int cast and thus QVariant::value<enumtype> will give wrong value.
+Q_DECLARE_METATYPE(omnetpp::qtenv::eTab)
+Q_DECLARE_METATYPE(omnetpp::qtenv::InspectorType)
+Q_DECLARE_METATYPE(omnetpp::qtenv::ComponentLogActionData)
+Q_DECLARE_METATYPE(omnetpp::qtenv::InspectActionData)
+Q_DECLARE_METATYPE(omnetpp::qtenv::CopyActionData)
+Q_DECLARE_METATYPE(omnetpp::qtenv::RunUntilActionData)
+Q_DECLARE_METATYPE(omnetpp::qtenv::RunUntilNextEventActionData)
 
 #if defined(QTENV_EXPORT)
 #  define QTENV_API OPP_DLLEXPORT
@@ -68,4 +126,3 @@ Q_DECLARE_METATYPE(ActionDataTriplet)
 #endif
 
 #endif
-

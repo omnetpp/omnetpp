@@ -20,6 +20,7 @@
 #include "envir/visitor.h"
 #include "omnetpp/cobject.h"
 #include "qtenvdefs.h"
+#include "charttickdecimal.h"
 #include <QIcon>
 #include <QTimer>
 #include <QFont>
@@ -146,6 +147,12 @@ const char *substituteDisplayStringParamRefs(const char *dispstr, std::string& b
 bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultValue);
 long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue);
 double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
+
+/**
+ * Get linear ticks. This vector contains minor and major ticks.
+ * Major ticks' second parameter is true.
+ */
+std::vector<std::pair<ChartTickDecimal, bool>> getLinearTicks(double start, double end, double approxDelta);
 
 
 inline double clip(double min, double v, double max)

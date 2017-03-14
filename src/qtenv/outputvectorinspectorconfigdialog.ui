@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OutputVectorInspectorConfigDialog</class>
+ <widget class="QDialog" name="OutputVectorInspectorConfigDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>313</width>
+    <height>219</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Plotting Options</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="manualAxisSettingsGroupBox">
+     <property name="title">
+      <string>Axis settings:</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="timeScaleLabel">
+        <property name="text">
+         <string>Time span (sec):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="yMinLabel">
+        <property name="text">
+         <string>Y min:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="yMaxLabel">
+        <property name="text">
+         <string>Y max:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="timeScaleLineEdit">
+        <property name="toolTip">
+         <string>Leave empty for default</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="yMinLineEdit">
+        <property name="toolTip">
+         <string>Leave empty for default</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="yMaxLineEdit">
+        <property name="toolTip">
+         <string>Leave empty for default</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="styleLayout">
+     <item>
+      <widget class="QLabel" name="styleLabel">
+       <property name="text">
+        <string>Plotting mode:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="styleComboBox">
+       <item>
+        <property name="text">
+         <string>Dots</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Points</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Pins</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bars</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sample-hold</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Backward Sample-hold</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Linear</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="okCancelButtonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>OutputVectorInspectorConfigDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>241</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>OutputVectorInspectorConfigDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>295</x>
+     <y>247</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
