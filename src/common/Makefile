@@ -24,7 +24,9 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/patternmatcher.o $O/unitconversion.o $O/displaystring.o $O/fileglobber.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o $O/stringtokenizer2.o $O/colorutil.o $O/sqlite3.o \
-      $O/formattedprinter.o $O/csvwriter.o $O/jsonwriter.o
+      $O/formattedprinter.o $O/csvwriter.o $O/jsonwriter.o \
+      $O/sqlitescalarfilewriter.o  $O/sqlitevectorfilewriter.o \
+      $O/omnetppscalarfilewriter.o $O/omnetppvectorfilewriter.o
 
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.hh matchexpression.tab.cc
