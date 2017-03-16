@@ -13,11 +13,12 @@ namespace omnetpp { namespace scave {
 %ignore IDList::dup;
 %ignore IDList::sortByFileAndRun;
 %ignore IDList::sortByRunAndFile;
-%ignore IDList::getItemTypes;
 %ignore IDList::reverse;
 %ignore IDList::toByteArray;
 %ignore IDList::fromByteArray;
 %ignore IDList::getSubsetByIndeces;
+%ignore IDList::begin;
+%ignore IDList::end;
 
 
 %typemap(javaimports) IDList %{

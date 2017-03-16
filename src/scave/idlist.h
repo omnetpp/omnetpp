@@ -85,7 +85,12 @@ class SCAVE_API IDList
         bool areAllVectors() const;
         bool areAllHistograms() const;
 
+        // support for range-based for loops
+        V::const_iterator begin() const {return v->begin();}
+        V::const_iterator end() const {return v->end();}
+
         // filtering
+        int countByTypes(int typeMask) const;
         IDList filterByTypes(int typeMask) const;
 
         // sorting

@@ -529,6 +529,15 @@ IDList IDList::filterByTypes(int typeMask) const
     return result;
 }
 
+int IDList::countByTypes(int typeMask) const
+{
+    int count = 0;
+    for (V::const_iterator i = v->begin(); i != v->end(); ++i)
+        if ((ResultFileManager::_type(*i) & typeMask) != 0)
+            count++;
+    return count;
+}
+
 void IDList::toByteArray(char *array, int n) const
 {
     checkV();
