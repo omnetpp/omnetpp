@@ -40,9 +40,12 @@
 #include "filesnapshotmgr.h"
 #include "eventlogfilemgr.h"
 #include "indexedfileoutvectormgr.h"
+#include "fileoutvectormgr_merged.h"
 #include "akaroarng.h"
 #include "akoutvectormgr.h"
 #include "matchableobject.h"
+#include "omnetppoutscalarmgr.h"
+#include "omnetppoutvectormgr.h"
 
 using namespace omnetpp::common;
 
@@ -284,17 +287,23 @@ void env_dummy_function()
     cRNG *rng = nullptr;
     exponential(rng, 1.0);
     Speedometer a;
-    cFileOutputVectorManager ovm;
-    cFileOutputScalarManager osm;
+    cFileOutputScalarManager fosm;
+    cFileOutputVectorManager fovm;
+    cIndexedFileOutputVectorManager ifovm;
+    cFileOutputVectorManager_merged fovmm;
+    OmnetppOutputScalarManager oosm;
+    OmnetppOutputVectorManager oovm;
     cFileSnapshotManager sm;
-    cIndexedFileOutputVectorManager iovm;
     MatchableObjectAdapter moa;
     EventlogFileManager elfm;
     (void)a;
-    (void)ovm;
-    (void)osm;
+    (void)fosm;
+    (void)fovm;
+    (void)ifovm;
+    (void)fovmm;
+    (void)oosm;
+    (void)oovm;
     (void)sm;
-    (void)iovm;
     (void)moa;  // eliminate 'unused var' warnings
     (void)elfm;
 #ifdef WITH_AKAROA
