@@ -15,12 +15,14 @@
 *--------------------------------------------------------------*/
 
 #include <sstream>
+#include <iomanip>
 #include "common/ver.h"
 #include "common/fileutil.h"
 #include "common/linetokenizer.h"
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/formattedprinter.h"
+#include "common/stlutil.h"
 #include "resultfilemanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
@@ -36,6 +38,7 @@
 #include "fields.h"
 #include "scaveutils.h"
 #include "sqliteresultfileutils.h"
+#include "exporter.h"
 
 #include "scavetool.h"
 
@@ -46,7 +49,6 @@ namespace omnetpp {
 namespace scave {
 
 //TODO change "histogram" to "statistic"
-//TODO support exporting in sca files
 
 void ScaveTool::helpCommand(int argc, char **argv)
 {
@@ -65,12 +67,11 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.para("For processing result files written by simulations: vector files (.vec) and scalar files (.sca).");
         help.line("Commands:");
         help.option("q, query", "Query the contents of result files");
-        help.option("v, vector", "Export vector results");
-        help.option("s, scalar", "Export scalar results");
+        help.option("x, export", "Export results in various formats");
         help.option("i, index", "Generate index files (.vci) for vector files");
-
         help.option("h, help", "Print this help text");
         help.line();
+        help.para("There are two additional commands, 'vector' and 'scalar', which have been deprecated. The replacement for both is 'export'.");
         help.para("The default command is 'query'.");
         help.para("To get help, use scavetool help <topic>. Available help topics: any command name, 'filter', and 'operations'.");
     }
@@ -93,6 +94,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-p, --per-run", "Per-run reporting (where applicable)");
         help.option("-b, --bare", "Suppress labels (more suitable for machine processing)");
         help.option("-g, --grep-friendly", "Grep-friendly: with -p, put run names at the start of each line, not above groups as headings.");
+        help.option("    --tabs", "Use tabs in tables instead of padding with spaces.");
         help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
         help.option("-D, --rundisplay <format>", "Display format for run; <format> can be any of:\n"
                     "  'runid'       Displays ${runid} (this is the default)\n"
@@ -104,8 +106,44 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.line();
         help.para("See also the following help topics: 'filter'");
     }
+    else if (page == "x" || page == "export") {
+        help.para("Usage: scavetool export [<options>] <output-vector-and-scalar-files>");
+        help.para("Export results in various formats.");
+        help.line("Options:");
+        help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).");
+        help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms) matched by filter expression (try 'help filter')");
+        help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
+        help.option("-o <filename>", "Output file name, or '-' for the standard output. This option is mandatory.");
+        help.option("-F <format>", "Selects the exporter. The exporter's operation may further be customized via -x options.");
+        help.option("-x <key>=<value>", "Option for the exporter. This option may occur multiple times.");
+        help.option("-k, --no-indexing", "Disallow automatic indexing of vector files");
+        help.option("-v, --verbose", "Print info about progress (verbose)");
+        help.line();
+        help.para("Supported export formats: " + opp_join(ExporterFactory::getSupportedFormats(), ", ", '\''));
+        help.para("See the 'exporters' help topic for the list of available options for each export format.");
+        help.para("See also the following help topics: 'filter'");
+    }
+    else if (page == "exporters") {
+        help.para("Scavetool can export data the following formats:");
+        help.indentPara(opp_join(ExporterFactory::getSupportedFormats(), ", ", '\''));
+        for (string format : ExporterFactory::getSupportedFormats()) {
+            ExporterType *exporter = ExporterFactory::getByFormat(format);
+            help.para("'" + format + "' (" + exporter->getDisplayName() + ")");
+            help.indentPara(exporter->getDescription());
+            help.indentPara("Options:");
+            auto options = ExporterFactory::getByFormat(format)->getSupportedOptions();
+            if (options.empty())
+                help.option("None", "");
+            else
+                for (auto pair : options)
+                    help.option(pair.first, pair.second);
+            help.line();
+        }
+        help.line();
+    }
     else if (page == "v" || page == "vector") {
         help.para("Usage: scavetool vector [<options>] <output-vector-files>");
+        help.para("IMPORTANT: THIS COMMAND HAS BEEN DEPRECATED, USE export INSTEAD!");
         help.para("Export vector data.");
         help.line("Options:");
         help.option("-p <filter>", "Filter for vectors matched by the filter expression");
@@ -122,6 +160,7 @@ void ScaveTool::printHelpPage(const std::string& page)
     }
     else if (page == "s" || page == "scalar") {
         help.para("Usage: scavetool scalar [<options>] <output-scalar-files>");
+        help.para("IMPORTANT: THIS COMMAND HAS BEEN DEPRECATED, USE export INSTEAD!");
         help.para("Export scalar data.");
         help.line("Options:");
         help.option("-p <filter>", "Filter for scalars matched by filter expression (try 'help filter')");
@@ -141,8 +180,8 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.para("Usage: scavetool index [<options>] <output-vector-files>");
         help.para("Generate index files (.vci) for vector files. Note that this command is usually not needed, as other scavetool commands automatically create indices for loaded vector files if they are missing or out of date, unless indexing is explicitly disabled.");
         help.line("Options:");
-        help.option("-r", "Rebuild vector files (rearrange their content into blocks) in addition to indexing them");
-        help.option("-V", "Print info about progress (verbose)");
+        help.option("-r, --rebuild", "Rebuild vector files (rearrange their content into blocks) in addition to indexing them");
+        help.option("-v, --verbose", "Print info about progress (verbose)");
         help.line();
     }
     else if (page == "filter") {
@@ -182,21 +221,17 @@ void ScaveTool::printHelpPage(const std::string& page)
             if (nodeType->isHidden())
                 continue;
 
-            // print name(parameters,...)
-            cout << nodeType->getName();
+            // query parameters
             StringMap attrs, attrDefaults;
             nodeType->getAttributes(attrs);
             nodeType->getAttrDefaults(attrDefaults);
-            cout << "(";
-            for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it)
-                cout << (it != attrs.begin() ? ", " : "") << it->first;
-            cout << ")\n";
 
-            // print filter description and parameter descriptions
-            cout << opp_indentlines(opp_breaklines(nodeType->getDescription(), 76), "  ") << "\n";
-            for (StringMap::iterator it = attrs.begin(); it != attrs.end(); ++it)
-                cout << "    - " << it->first << ": " << it->second << "\n";
-            cout << "\n";
+            help.para((string)nodeType->getName() + "(" + opp_join(keys(attrs), ", ") + ")");
+            help.indentPara(nodeType->getDescription());
+            for (auto pair : attrs)
+                help.option(pair.first, pair.second);
+            if (!attrs.empty())
+                help.line();
         }
     }
     else {
@@ -301,6 +336,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     bool opt_bare = false;
     bool opt_perRun = false;
     bool opt_grepFriendly = false;
+    bool opt_useTabs = false;
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
 
@@ -346,6 +382,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_bare = true;
         else if (opt == "-g" || opt == "--grep-friendly")
             opt_grepFriendly = true;
+        else if (opt == "--tabs")
+            opt_useTabs = true;
         else if (opt == "-k" || opt == "--no-indexing")
             opt_indexingAllowed = false;
         else if (opt == "-v" || opt == "--verbose")
@@ -449,7 +487,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
 #undef L
     case LIST_RESULTS: {
         // note: we ignore opt_perRun, as it makes no sense here
-        ostream& out = cout;
+        stringstream buffer;
+        ostream& out = opt_useTabs ? cout : buffer;
         for (Run *run : *runs) {
             string runName = runStr(run, opt_runDisplayMode);
             string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
@@ -467,7 +506,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
 
             for (int i = 0; i < runVectors.size(); i++) {
                 const VectorResult& v = resultFileManager.getVector(runVectors.get(i));
-                cout << maybeRunColumnWithTab << "vector\t" << *v.moduleNameRef << "\t" << *v.nameRef << L(vectorId) << v.vectorId;
+                out << maybeRunColumnWithTab << "vector\t" << *v.moduleNameRef << "\t" << *v.nameRef << L(vectorId) << v.vectorId;
                 const Statistics& s = v.getStatistics();
                 if (s.getCount() >= 0) // information is valid, i.e. index file exists
                     out << L(count) << s.getCount() << L(mean) << s.getMean() << L(min) << s.getMin()  << L(max) << s.getMax();
@@ -481,6 +520,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             }
             out << endl;
         }
+        if (&out == &buffer)
+            cout << opp_formattable(buffer.str());
         break;
     }
 #undef L
@@ -566,8 +607,151 @@ void ScaveTool::queryCommand(int argc, char **argv)
     delete runs;
 }
 
+inline void pushCountIfPositive(vector<string>& v, int count, const string& noun)
+{
+    if (count > 0) {
+        stringstream os;
+        os << count << " " << noun << (count > 1 ? "s" : "");
+        v.push_back(os.str());
+    }
+}
+
+void ScaveTool::exportCommand(int argc, char **argv)
+{
+    vector<string> opt_fileNames;
+    string opt_filterExpression;
+    string opt_resultTypeFilterStr;
+    int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::HISTOGRAM;
+    bool opt_verbose = false;
+    bool opt_indexingAllowed = true;
+    bool opt_includeFields = true;
+    string opt_fileName;
+    string opt_exporter;
+    vector<string> opt_exporterOptions;
+
+    // parse options
+    bool endOpts = false;
+    for (int i = 0; i < argc; i++) {
+        string opt = argv[i];
+        if (endOpts)
+            opt_fileNames.push_back(argv[i]);
+        else if (opt == "--")
+            endOpts = true;
+        else if ((opt == "-T" || opt == "--type") && i != argc-1)
+            opt_resultTypeFilterStr = unquoteString(argv[++i]);
+        else if (opt.substr(0,2) == "-T")
+            opt_resultTypeFilterStr = opt.substr(2);
+        else if ((opt == "-f" || opt == "--filter") && i != argc-1)
+            opt_filterExpression = unquoteString(argv[++i]);
+        else if (opt == "-w" || opt == "--fields-as-scalars")
+            opt_includeFields = true;
+        else if (opt == "-o" && i != argc-1)
+            opt_fileName = argv[++i];
+        else if (opt == "-F" && i != argc-1)
+            opt_exporter = argv[++i];
+        else if (opt == "-x" && i != argc-1)
+            opt_exporterOptions.push_back(argv[++i]);
+        else if (opt.substr(0,2) == "-x")
+            opt_exporterOptions.push_back(opt.substr(2));
+        else if (opt == "-k" || opt == "--no-indexing")
+            opt_indexingAllowed = false;
+        else if (opt == "-v" || opt == "--verbose")
+            opt_verbose = true;
+        else if (opt[0] != '-')
+            opt_fileNames.push_back(argv[i]);
+        else
+            throw opp_runtime_error("Unknown option '%s'", opt.c_str());
+    }
+
+    // resolve filename and exporter
+    if (opt_fileName == "")
+        throw opp_runtime_error("Output file name must be specified (-o option)");
+    if (opt_exporter == "") {
+        opt_exporter = ExporterFactory::getFormatFromOutputFileName(opt_fileName);
+        if (opt_verbose && opt_exporter != "")
+            cout << "inferred export format from file name: " << opt_exporter << endl;
+    }
+    if (opt_exporter == "")
+        throw opp_runtime_error("Exporter type could not be deduced from file name, must be specified (-F option)");
+    Exporter *exporter = ExporterFactory::createExporter(opt_exporter);
+    if (!exporter)
+        throw opp_runtime_error("Unrecognized export format '%s'", opt_exporter.c_str());
+
+    // convert exporter options from vector to map
+    map<string,string> exporterOptions;
+    for (string item : opt_exporterOptions) {
+        if (item.find("=") == item.npos)
+            throw opp_runtime_error("Invalid exporter option '%s': <option>=<value> expected", item.c_str());
+        exporterOptions[opp_substringbefore(item, "=")] = opp_substringafter(item, "=");
+    }
+
+    // resolve -T, filter by result type
+    //TODO duplicated code, factor out!
+    if (opt_resultTypeFilterStr != "") {
+        opt_resultTypeFilter = 0;
+        if (opt_resultTypeFilterStr.length() <= 3) {
+            // short form
+            for (char c : opt_resultTypeFilterStr) {
+                switch(c) {
+                case 's': opt_resultTypeFilter |= ResultFileManager::SCALAR; break;
+                case 'v': opt_resultTypeFilter |= ResultFileManager::VECTOR; break;
+                case 'h': opt_resultTypeFilter |= ResultFileManager::HISTOGRAM; break;
+                default: throw opp_runtime_error("Invalid result type '%c' in '-T' option", c);
+                }
+            }
+        }
+        else {
+            // long form
+            for (string token : StringTokenizer(opt_resultTypeFilterStr.c_str(), ",").asVector()) {
+                if (token == "scalars")
+                    opt_resultTypeFilter |= ResultFileManager::SCALAR;
+                else if (token == "vectors")
+                    opt_resultTypeFilter |= ResultFileManager::VECTOR;
+                else if (token == "histograms")
+                    opt_resultTypeFilter |= ResultFileManager::HISTOGRAM;
+                else
+                    throw opp_runtime_error("Invalid result type '%s' in '-T' option", token.c_str());
+            }
+        }
+    }
+
+    // load files
+    ResultFileManager resultFileManager;
+    loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
+
+    // filter statistics
+    IDList results = resultFileManager.getAllItems(true, opt_includeFields);
+    results.set(results.filterByTypes(opt_resultTypeFilter));
+    results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
+
+    // check items are supported by the format
+    int itemTypes = results.getItemTypes();
+    int supportedTypes = ExporterFactory::getByFormat(opt_exporter)->getSupportedResultTypes();
+    int unsupportedItemTypes = itemTypes & ~supportedTypes;
+    if (unsupportedItemTypes != 0)
+        throw opp_runtime_error("Data set contains items of type not supported by the export format, use -T option to filter");
+
+    // export
+    exporter->setOptions(exporterOptions);
+    exporter->saveResults(opt_fileName, &resultFileManager, results);
+
+    // report summary
+    if (opt_fileName != "-") {
+        vector<string> v;
+        pushCountIfPositive(v, results.countByTypes(ResultFileManager::SCALAR), "scalar");
+        pushCountIfPositive(v, results.countByTypes(ResultFileManager::VECTOR), "vector");
+        pushCountIfPositive(v, results.countByTypes(ResultFileManager::HISTOGRAM), "histogram");
+        cout << "Exported " << (results.isEmpty() ? "empty data set" : opp_join(v, ", ")) << endl;
+    }
+
+    delete exporter;
+}
+
 void ScaveTool::vectorCommand(int argc, char **argv)
 {
+    // issue warning
+    cerr << "scavetool: Warning: deprecated command 'vector', use 'export' instead" << endl;
+
     // options
     string opt_filterExpression;
     string opt_outputFileName = "out";
@@ -815,6 +999,9 @@ void ScaveTool::parseScalarFunction(const string& functionCall,  /*out*/ string&
 
 void ScaveTool::scalarCommand(int argc, char **argv)
 {
+    // issue warning
+    cerr << "scavetool: Warning: deprecated command 'scalar', use 'export' instead" << endl;
+
     // options
     string opt_filterExpression;
     string opt_outputFileName = "out";
@@ -937,9 +1124,9 @@ void ScaveTool::indexCommand(int argc, char **argv)
     vector<string> opt_fileNames;
     for (int i = 0; i < argc; i++) {
         string opt = argv[i];
-        if (opt == "-V")
+        if (opt == "-v" || opt == "--verbose")
             opt_verbose = true;
-        else if (opt == "-r")
+        else if (opt == "-r" || opt == "--rebuild")
             opt_rebuild = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
@@ -979,9 +1166,11 @@ int ScaveTool::main(int argc, char **argv)
             printHelpPage(command);
         else if (command == "q" || command == "query")
             queryCommand(argc-2, argv+2);
-        else if (command == "v" || command == "vector")
+        else if (command == "x" || command == "export")
+            exportCommand(argc-2, argv+2);
+        else if (command == "v" || command == "vector")  // deprecated command
             vectorCommand(argc-2, argv+2);
-        else if (command == "s" || command == "scalar")
+        else if (command == "s" || command == "scalar")  // deprecated command
             scalarCommand(argc-2, argv+2);
         else if (command == "i" || command == "index")
             indexCommand(argc-2, argv+2);

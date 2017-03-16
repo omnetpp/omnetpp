@@ -1,0 +1,107 @@
+//==========================================================================
+//  EXPORTER.CC - part of
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//  Author: Andras Varga
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2015 Andras Varga
+  Copyright (C) 2006-2015 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#include "common/stringutil.h"
+#include "common/stlutil.h"
+#include "exporter.h"
+#include "csvexporter.h"
+#include "pythonexporter.h"
+#include "omnetppscalarfileexporter.h"
+#include "omnetppvectorfileexporter.h"
+#include "sqlitescalarfileexporter.h"
+#include "sqlitevectorfileexporter.h"
+
+using namespace omnetpp::common;
+
+namespace omnetpp {
+namespace scave {
+
+
+ExporterType::~ExporterType()
+{
+
+}
+
+//----
+
+void Exporter::checkOptionKey(ExporterType *desc, const std::string& key)
+{
+    const StringMap& options = desc->getSupportedOptions();
+    if (options.find(key) == options.end())
+        throw opp_runtime_error("Exporter: unknown option \"%s\", accepted ones are: %s", key.c_str(), opp_join(keys(options), ", ", '"').c_str());
+}
+
+void Exporter::setOptions(const StringMap& options)
+{
+    for (auto pair : options)
+        setOption(pair.first, pair.second);
+}
+
+//----
+
+static std::vector<ExporterType*> exporters;
+
+void ExporterFactory::ensureInitialized()
+{
+    if (exporters.empty()) {
+        exporters.push_back(CsvExporter::getDescription());
+        exporters.push_back(PythonExporter::getDescription());
+        exporters.push_back(OmnetppScalarFileExporter::getDescription());
+        exporters.push_back(OmnetppVectorFileExporter::getDescription());
+        exporters.push_back(SqliteScalarFileExporter::getDescription());
+        exporters.push_back(SqliteVectorFileExporter::getDescription());
+    }
+}
+
+StringVector ExporterFactory::getSupportedFormats()
+{
+    ensureInitialized();
+    StringVector result;
+    for (ExporterType *exporter : exporters)
+        result.push_back(exporter->getFormatName());
+    return result;
+}
+
+ExporterType *ExporterFactory::getByFormat(const std::string& format)
+{
+    ensureInitialized();
+    for (ExporterType *exporter : exporters)
+        if (exporter->getFormatName() == format)
+            return exporter;
+    throw opp_runtime_error("Unknown exporter '%s'", format.c_str());
+}
+
+std::string ExporterFactory::getFormatFromOutputFileName(const std::string& fileName)
+{
+    //TODO obey PREFER_SQLITE option (for sca and vec extensions)
+    ensureInitialized();
+    std::string extension = opp_substringafterlast(fileName, ".");
+    for (ExporterType *exporter : exporters)
+        if (extension == exporter->getFileExtension())
+            return exporter->getFormatName();
+    return "";
+}
+
+Exporter *ExporterFactory::createExporter(const std::string& format)
+{
+    ExporterType *e = getByFormat(format);
+    return e->create();
+}
+
+}  // namespace scave
+}  // namespace omnetpp
+
