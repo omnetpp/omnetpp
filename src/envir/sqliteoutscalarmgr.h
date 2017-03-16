@@ -23,13 +23,15 @@
 #include "envir/envirdefs.h"
 #include "envir/runattributes.h"
 
-#include "common/sqlite3.h"
+#include "common/sqlitescalarfilewriter.h"
 
 namespace omnetpp {
 namespace envir {
 
+using omnetpp::common::SqliteScalarFileWriter;
+
 /**
- * A cIOutputScalarManager that uses a line-oriented text file as output.
+ * A cIOutputScalarManager that uses an SQLite database as output.
  *
  * @ingroup Envir
  */
@@ -37,38 +39,16 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
 {
   protected:
     bool initialized;    // true after first call to initialize(), even if it failed
-    RunData run;         // holds data of the current run
-    std::string fname;   // output file name
-    sqlite_int64 runId;  // runId in sqlite database
-    sqlite3 *db;         // sqlite database, nullptr before initialization and after error
-    sqlite3_stmt *stmt;
-    sqlite3_stmt *add_scalar_stmt;
-    sqlite3_stmt *add_scalar_attr_stmt;
-    sqlite3_stmt *add_statistic_stmt;
-    sqlite3_stmt *add_statistic_attr_stmt;
-    sqlite3_stmt *add_statistic_bin_stmt;
-
-    int commitFreq; // we COMMIT after every commitFreq INSERT statements
-    int insertCount;
+    std::string fname;
+    SqliteScalarFileWriter writer;
 
   protected:
+    void openDb();
+    void closeDb();
+    void writeRunData();
     virtual void initialize();
-    virtual void openDb();
-    virtual void closeDb();
-    virtual void cleanupDb();  // MUST NOT THROW
-    virtual void commitAndBeginNew();
-    virtual void writeRunData();
-    virtual sqlite_int64 writeScalar(const std::string &componentFullPath, const char *name, double value);
-    virtual void writeScalarAttr(sqlite_int64 scalarId, const char *name, size_t nameLength, const char *value, size_t valueLength);
     virtual void recordNumericIterationVariableAsScalar(const char *name, const char *value); // i.e. write *if* numeric
-    virtual void writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value);
-    virtual void writeStatisticBin(sqlite_int64 statisticId, double basePoint, unsigned long cellValue);
-    void prepareStatement(sqlite3_stmt *&stmt, const char *sql);
-    void finalizeStatement(sqlite3_stmt *&stmt);
-    bool isBad() {return initialized && db == nullptr;}
-    void checkOK(int sqlite3_result);
-    void checkDone(int sqlite3_result);
-    void error(const char *errmsg);
+    bool isBad() {return initialized && !writer.isOpen();}
 
   public:
     /** @name Constructors, destructor */
