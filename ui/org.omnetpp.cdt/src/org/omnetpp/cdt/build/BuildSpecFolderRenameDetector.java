@@ -128,7 +128,7 @@ public class BuildSpecFolderRenameDetector implements IResourceChangeListener {
             boolean changed = false;
             for (IFolder folder : removedFolders.toArray(new IFolder[0])) {
                 if (folder.getProject().equals(project)) {
-                    if (buildSpec.getFolderMakeType(folder) != BuildSpecification.NONE) {
+                    if (buildSpec != null && buildSpec.getFolderMakeType(folder) != BuildSpecification.NONE) {
                         buildSpec.setFolderMakeType(folder, BuildSpecification.NONE);
                         changed = true;
                     }
