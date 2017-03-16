@@ -1,5 +1,11 @@
 2017-03-03  ------ omnetpp-5.1 released ------
 
+2017-03-16  Rudolf Hornig
+
+	* Minor changes in StartupChecker to improve the reliability of
+	'release mode detection' on Windows 7 machines where GetProcAddress() was
+	behaving unpredictably with certain big models (i.e. INET)
+
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 
 2017-02-01  Andras Varga

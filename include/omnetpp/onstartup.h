@@ -37,6 +37,9 @@ namespace omnetpp {
 // helper
 #define __FILEUNIQUENAME__  MAKE_UNIQUE_WITHIN_FILE(__uniquename_)
 
+// magic number for identifying a release build.
+#define RELEASE_OPPSIM_MAGIC_NUMBER 0x12345678
+
 /**
  * @brief Allows code fragments to be collected in global scope which will
  * then be executed from main() right after program startup. This is

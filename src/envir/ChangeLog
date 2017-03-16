@@ -1,5 +1,16 @@
 2017-03-03  ------ omnetpp-5.1 released ------
 
+2017-03-16  Rudolf Hornig
+
+	* Detecting whether the loaded model is using release or debug mode
+	libraries is now safer as we are not just testing for the presence
+	of a symbol that is available only in the release mode, but also checking
+	for the actual value of that variable. This was necessary because on
+	Windows 7 the GetProcAddress() function sometimes returned a non-null
+	pointer for a symbol even if the symbol was not present in the process.
+	This bug made the opp_run executable think that both release and debug
+	versions of the omnetpp kernel was loaded.
+
 2017-03-02  Andras Varga
 
 	* envir: SectionBasedConfig: fix bug in unrollConfig()

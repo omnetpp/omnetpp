@@ -22,8 +22,8 @@
 namespace omnetpp {
 
 #if NDEBUG
-extern "C" SIM_API bool __is_release_oppsim__;
-bool __is_release_oppsim__ = true;
+extern "C" SIM_API uint32_t __release_oppsim_magic_number__;
+uint32_t __release_oppsim_magic_number__ = RELEASE_OPPSIM_MAGIC_NUMBER;
 #endif
 
 // Checks whether an other instance of the shared library has already been loaded.

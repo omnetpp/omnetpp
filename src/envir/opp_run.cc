@@ -39,8 +39,8 @@
  * To be able to start both debug and release models with the same 'opp_run'
  * command, we first try to detect whether the models provided on the command
  * line are linked with the release or debug simulation library. This is done
- * by dynamically loading the models and then checking for the
- * __is_release_oppsim__ symbol (which is present only in release-mode
+ * by dynamically loading the models and then checking for the value of
+ * __release_oppsim_magic_number__ symbol (which is present only in release-mode
  * simkernel). If we find that all the models were linked in debug mode, we
  * pass all command line options to evMain() and let OMNeT++ load the
  * libraries. If we find that the models are linked with release-mode simulation
@@ -74,6 +74,8 @@
 #include <cstring>
 #include <cerrno>
 #include <iostream>
+#include <cstdint>
+#include "omnetpp/onstartup.h"
 #include "omnetpp/platdep/platdefs.h"
 
 #ifdef NDEBUG
@@ -293,10 +295,16 @@ bool needsDebugSimkernel(int argc, char *argv[])
                 warn() << "opp_run: Cannot check library " << libname << ": " << lastLoadLibError << endl << endl;  // double endl to separate message from subsequent OMNeT++ startup banner
 
             // Detect whether oppsim is release. If it was not loaded correctly, assume it is debug.
-            if (handle && getSymbol(handle, "__is_release_oppsim__")) {
-                // Release kernel. oppsim must be reloaded later by opp_run_release
-                putenv((char *)"__OPPSIM_LOADED__=no");
-                return false;
+            if (handle) {
+                uint32_t *releaseOppsimMagicPtr = (uint32_t *)getSymbol(handle, "__release_oppsim_magic_number__");
+                if (releaseOppsimMagicPtr && *releaseOppsimMagicPtr == RELEASE_OPPSIM_MAGIC_NUMBER) {
+                    // Release kernel. oppsim must be reloaded later by opp_run_release
+                    // Note that we MUST check for the value stored in __release_oppsim_magic_number__ because getSymbol() sometimes
+                    // returns an address of an unrelated symbol on Windows 7 causing an incorrect detection of release mode
+                    // even if we are actually using debug libraries.
+                    putenv((char *)"__OPPSIM_LOADED__=no");
+                    return false;
+                }
             }
         }
     }

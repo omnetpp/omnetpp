@@ -103,13 +103,13 @@ ifeq ("$(MODE)","debug")
 opp_run_executable: $O/opp_run$(EXE_SUFFIX)
 $O/opp_run$(EXE_SUFFIX) : install
 	$(qecho) "Creating executable: $@"
-	$(Q)$(CXX) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) opp_run.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS) $(PSAPI_LIB)
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) opp_run.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS) $(PSAPI_LIB)
 	$(Q)cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 else
 opp_run_executable: $O/opp_run_release$(EXE_SUFFIX)
 $O/opp_run_release$(EXE_SUFFIX) : install
 	$(qecho) "Creating executable: $@"
-	$(Q)$(CXX) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) main.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) main.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
 	$(Q)cp $O/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	$(Q)cp $O/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
 endif
