@@ -244,7 +244,8 @@ public class ProjectFeaturesManager {
 
         // save the file if its content differs
         byte[] bytes = content.getBytes();
-        MakefileTools.ensureFileContent(definesFile, bytes, null);
+        if (definesFile != null)
+            MakefileTools.ensureFileContent(definesFile, bytes, null);
     }
 
     protected String makeDefinesFileContent(Map<String, String> defines) {
@@ -593,7 +594,8 @@ public class ProjectFeaturesManager {
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
 
         // fix up defines file
-        saveDefinesFile(enabledFeatures);
+        if (definesFile != null)
+            saveDefinesFile(enabledFeatures);
     }
 
     /**
@@ -949,7 +951,7 @@ public class ProjectFeaturesManager {
     }
 
     protected boolean areDefinesFilesEqual(String content1, String content2) {
-        // make comparison insensitive to comment, whitespace and order differences 
+        // make comparison insensitive to comment, whitespace and order differences
         String short1 = shortenDefinesFile(content1);
         String short2 = shortenDefinesFile(content2);
         return short1.equals(short2);
