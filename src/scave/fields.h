@@ -52,7 +52,7 @@ class SCAVE_API ResultItemField
         std::string name; // constant names above + attribute/param names
         static int getFieldID(const std::string& fieldName);
     public:
-        ResultItemField(const std::string& fieldName);
+        explicit ResultItemField(const std::string& fieldName);
         int getID() const { return id; }
         const std::string& getName() const { return name; };
         const std::string& getFieldValue(const ResultItem& d) const ;
@@ -161,9 +161,9 @@ class SCAVE_API ResultItemFields
         static const StringVector& getFieldNames();
 
         ResultItemFields() {};
-        ResultItemFields(ResultItemField field);
-        ResultItemFields(const std::string& fieldName);
-        ResultItemFields(const StringVector& fieldNames);
+        explicit ResultItemFields(ResultItemField field);
+        explicit ResultItemFields(const std::string& fieldName);
+        explicit ResultItemFields(const StringVector& fieldNames);
 
         ResultItemFields complement() const;
         bool hasField(ResultItemField field) const;

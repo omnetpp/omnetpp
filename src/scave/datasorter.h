@@ -48,13 +48,13 @@ class SCAVE_API XYDataset
         typedef std::map<Key, int, ResultItemFieldsLess> KeyToIndexMap;
         typedef std::vector<Statistics> Row;
 
-        ResultItemFields rowFields;            // data in each row has the same value of these fields
-        ResultItemFields columnFields;         // data in each column has the same value of these fields
+        ResultItemFields rowFields;        // data in each row has the same value of these fields
+        ResultItemFields columnFields;     // data in each column has the same value of these fields
         KeyToIndexMap rowKeyToIndexMap;    // row field values -> row index
         KeyToIndexMap columnKeyToIndexMap; // column field values -> column index
         std::vector<Key> rowKeys;
         std::vector<Key> columnKeys;
-        std::vector<Row> values; // index by row/column
+        std::vector<Row> values;           // index by row/column
         std::vector<int> rowOrder;         // permutation of a subset of rows
         std::vector<int> columnOrder;      // permutation of a subset of columns
     public:
