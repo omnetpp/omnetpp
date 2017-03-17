@@ -29,13 +29,12 @@ namespace omnetpp {
 namespace common {
 
 #ifdef NDEBUG
-#  define Assert(x)
-#  define DBG(x)
+#  define Assert(x) ((void)0)
+#  define DBG(x)    ((void)0)
 #else
 #  define Assert(expr)  ((void) ((expr) ? 0 : (throw opp_runtime_error("Assert: Condition '%s' does not hold in function '%s' at %s:%d", \
                         #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
-//#  define DBG(x)  printf x
-#  define DBG(x)
+#  define DBG(x)    ((void)0)  //or if needed: printf x
 #endif
 
 
