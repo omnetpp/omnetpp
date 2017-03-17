@@ -114,19 +114,6 @@ $O/opp_run_release$(EXE_SUFFIX) : install
 	$(Q)cp $O/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
 endif
 
-# TODO remove these
-$O/opp_run.o : opp_run.cc
-	@# Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
-	@mkdir -p $O
-	$(qecho) "$<"
-	$(Q)$(CXX) $(COPTS) $(IMPORT_DEFINES) -c $(INCL_FLAGS) -o$O/opp_run.o opp_run.cc
-
-$O/main.o : main.cc
-	@# Note: not in OBJS because main.cc must be compiled *without* -DENVIR_EXPORT
-	@mkdir -p $O
-	$(qecho) "$<"
-	$(Q)$(CXX) $(COPTS) $(IMPORT_DEFINES) -c $(INCL_FLAGS) -o$O/main.o main.cc
-
 else
 opp_run_executable:
 	@echo "Note: We don't create opp_run.exe when building static libs"
