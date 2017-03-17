@@ -80,8 +80,7 @@ bool XYDataTable::isNull(int row, int col) const
 
 string XYDataTable::getStringValue(int row, int col) const
 {
-    // no string column
-    return "";
+    throw opp_runtime_error("no such column with string type");
 }
 
 BigDecimal XYDataTable::getBigDecimalValue(int row, int col) const
@@ -91,7 +90,7 @@ BigDecimal XYDataTable::getBigDecimalValue(int row, int col) const
         return xp.isNil() ? BigDecimal(vec->getX(row)) : xp;
     }
     else
-        return BigDecimal::NaN;
+        return BigDecimal::NaN; //TODO throw opp_runtime_error("no such column with BigDecimal type");
 }
 
 double XYDataTable::getDoubleValue(int row, int col) const
@@ -99,7 +98,7 @@ double XYDataTable::getDoubleValue(int row, int col) const
     if (col == 1)
         return vec->getY(row);
     else
-        return NaN;
+        return NaN; //TODO throw opp_runtime_error("no such column with double type");
 }
 
 static string createNameForXYDatasetRow(const XYDataset& data, int row, const string& separator = "/")
@@ -140,8 +139,7 @@ bool ScatterDataTable::isNull(int row, int col) const
 
 string ScatterDataTable::getStringValue(int row, int col) const
 {
-    // no string column
-    return "";
+    throw opp_runtime_error("no such column with string type");
 }
 
 BigDecimal ScatterDataTable::getBigDecimalValue(int row, int col) const
@@ -235,13 +233,12 @@ double ScalarDataTable::getDoubleValue(int row, int col) const
             return scalar.value;
         }
     }
-    return NaN;
+    return NaN; //TODO throw opp_runtime_error("no such column with double type");
 }
 
 BigDecimal ScalarDataTable::getBigDecimalValue(int row, int col) const
 {
-    // no BigDecimal scalars yet
-    return BigDecimal::NaN;
+    throw opp_runtime_error("no such column with BigDecimal type");
 }
 
 std::string ScalarDataTable::getStringValue(int row, int col) const
@@ -268,7 +265,7 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
                 return scalar.fileRunRef->runRef->getAttribute(opp_substringafter(c.name, ":"));
         }
     }
-    return "";
+    throw opp_runtime_error("no such column with string type");
 }
 
 /*=====================
@@ -295,13 +292,13 @@ bool HistogramDataTable::isNull(int row, int col) const
 string HistogramDataTable::getStringValue(int row, int col) const
 {
     // no string column
-    return "";
+    throw opp_runtime_error("no such column with string type");
 }
 
 BigDecimal HistogramDataTable::getBigDecimalValue(int row, int col) const
 {
     // no big decimal column
-    return BigDecimal::NaN;
+    throw opp_runtime_error("no such column with BigDecimal type");
 }
 
 double HistogramDataTable::getDoubleValue(int row, int col) const
@@ -314,7 +311,7 @@ double HistogramDataTable::getDoubleValue(int row, int col) const
     else if (col == 2)
         return histResult->values[row];
     else
-        return NaN;
+        throw opp_runtime_error("no such column with double type");
 }
 
 /*=====================
@@ -443,7 +440,7 @@ string JoinedDataTable::getStringValue(int row, int col) const
     mapTableCell(row, col, table, tableRow, tableCol);
     if (table)
         return table->getStringValue(tableRow, tableCol);
-    return "";
+    throw opp_runtime_error("no such column with that type");
 }
 
 BigDecimal JoinedDataTable::getBigDecimalValue(int row, int col) const
@@ -463,7 +460,7 @@ double JoinedDataTable::getDoubleValue(int row, int col) const
     mapTableCell(row, col, table, tableRow, tableCol);
     if (table)
         return table->getDoubleValue(tableRow, tableCol);
-    return NaN;
+    throw opp_runtime_error("no such column with double type");
 }
 
 void JoinedDataTable::mapTableCell(int row, int col, DataTable *& table, int& tableRow, int& tableCol) const
