@@ -21,7 +21,7 @@ Highlights:
    number of runs and in result recording/processing.
  - Experimental support for SQLite-based result files.
  - Updated toolchain and libraries on Windows including 64-bit Windows support.
- - Updated Eclipse base for the IDE.
+ - Updated Eclipse base for the IDE (Eclipse v4.6.3).
 
 For further details see the preview version announcements below.
 
@@ -561,6 +561,9 @@ Samples:
  - resultfiles: Result files were renamed to reflect the new default naming
    scheme (i.e. configname-itervars-#repetition).
 
+ - Note: The systemc-embedding, sockets and cqn/parsim examples are NOT working 
+   currently in the Qtenv runtime environment. If you want to run those examples
+   please run them in either Tkenv or Cmdenv ('-u Tkenv' or '-u Cmdenv').
 
 OMNeT++ 5.1 Preview 1 (September 2016)
 --------------------------------------
