@@ -1,3 +1,121 @@
+2017-03-10  Andras Varga
+
+	* Analysis Tool: switch to using the new exporters in the scave library
+	and new Export dialog.
+
+2017-02-21  Andras Varga
+
+	* Analysis Tool: Old export wizard renamed
+
+2017-03-04  Andras Varga
+
+	* nativelibs: tweak SWIG wrapping to accomodate changes in the scave library
+
+2017-03-16  Andras Varga
+
+	* nativelibs: tweak SWIG wrapping to accomodate changes in the scave library
+
+2017-02-17  Andras Varga
+
+	* Analysis Tool: remove octave and matlab export from the IDE
+
+	Reasons:
+
+	1. poor data representation chosen in the output file, esp. for vector
+	   (one time vector, and one value vector per OMNeT++ output vector,
+	   where most values were NaN due to the common T vector!
+	   2-column matrices for each vector would have been a better choice.)
+
+	2. We don't want to promote Matlab/Octave use for result analysis.
+	   Matlab/Octave users should use CSV export.
+
+	Note: octaveexport.cc/h were unused (not in build).
+
+2017-03-10  Andras Varga
+
+	* nativelibs: allow C++11 (compiler flag comes from CXXFLAGS)
+
+2017-02-16  Andras Varga
+
+	* nativelibs: added missing %ignore
+
+2017-03-16  Andras Varga
+
+	* Fix NPE when deleting folder in a non-C++ project
+
+2017-03-13  Rudolf Hornig
+
+	* build: use Eclipse 4.6.3 milestone builds
+
+2017-03-17  Rudolf Hornig
+
+	* NPE and logging fixes
+
+2017-03-09  Rudolf Hornig
+
+	* Makefile generation: follow opp_makemake change: improved the "clean" 
+	target in the generated makefiles (recursive wildcard; delete only the 
+	actual target)
+
+2017-03-03  Levente Mészáros
+
+	* Sequence Chart: Eventlog view: selection handling fixes
+	   - Temporariliy disabled reusing selection (due to NPE) after filtering
+	     the eventlog
+	   - Fixed dangling focusElement on input change.
+	   - Changed selection marks to be more apparent.
+	   - Fixed revealing selected element in VirtualTable.
+
+2017-03-03  Levente Mészáros
+
+	* Sequence Chart: Eventlog view: Fixed foreground color when the table 
+	widget is not focused.
+
+2017-03-02  Andras Varga
+
+	* Inifile Editor: fix #941: Recursively including ini file makes 
+	OMNeT++ workspace unusable
+
+2017-03-03  Andras Varga
+
+	* Inifile Editor: parser: ParseException is never used, eliminated.
+	Also: wrap IOException into CoreException
+
+2017-03-03  Andras Varga
+
+	* Launch dialog fix: debug-on-errors did not take effect for DEBUG
+	launch on a fresh launch config. Just opening and closing the Debug
+	dialog fixed it (it wrote the setting into the launch config).
+
+2017-03-02  Andras Varga
+
+	* Launch dialog page: fix: config name "Gen" could not be restored.
+
+	"General" was chosen instead, because code used simple startsWith() call
+	to test, and "General" came before "Gen" in the list (??).
+
+2017-03-02  Andras Varga
+
+	* Inifile Editor: fix: form edits were lost when typing too quickly 
+	after hitting Enter. Cause: reread() overwrote user's edits.
+
+2017-03-02  Andras Varga
+
+	* Inifile Editor: Fix #1001: form editor: "Reset to default" button 
+	pops up "No such entry" error dialog
+
+2017-03-03  Rudolf Hornig
+
+	* Added default Eclipse repositories as update sites
+
+2017-03-02  Rudolf Hornig
+
+	* Added automatic Eclipse reporting support to OMNeT++ (not to OMNEST)
+
+2017-03-02  Rudolf Hornig
+
+	* Removed dummy MSVC toolchain definition
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-03-03  Levente Meszaros
@@ -292,7 +410,7 @@
 
 2016-07-05  Andras Varga
 
-	* test/ide: added IDE test projects for testing the linker/compiler
+	* test/* added IDE test projects for testing the linker/compiler
 	options, include path etc. [Rudi]
 
 	Exercises the following IDE build features:

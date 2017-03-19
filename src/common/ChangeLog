@@ -1,3 +1,64 @@
+2017-03-16  Andras Varga
+
+	* Added result file writer classes: 
+	OmnetppScalarFileWriter, OmnetppVectorFileWriter,
+	SqliteScalarFileWriter, SqliteVectorFileWriter.
+
+	Factored out from envir's result file manager classes.
+
+	This is needed so that the sim kernel, scavetool and the IDE can
+	share the same code for writing result files.
+
+2017-03-04  Andras Varga
+
+	* Added the Statistics and Histogram classes, factored out from the
+	scave library. Needed by the result file writers, see next change.
+
+2017-03-07  Andras Varga
+
+	* stringutil.h: added opp_ttoa(), factored out from the sim library
+	(SimTime::ttoa()).
+
+2017-03-17  Andras Varga
+
+	* Assert() macro:
+	   - fix: qualify opp_runtime_error with namespace
+	   - fix: expand to ((void)0) in release mode
+	   - error message edited for clarity
+
+2017-02-18  Andras Varga
+
+	* Added FormattedPrinter class (useful for printing help in command-line
+	programs)
+
+2017-02-21  Andras Varga
+
+	* stringutil.h: Added opp_split(), opp_formatTable()
+
+2017-02-17  Andras Varga
+
+	* stringutil.h:  added opp_join() for vectors, added quoteChar arg
+
+2017-03-16  Andras Varga
+
+	* Added JsonWriter class (needed for Python export in the scave library)
+
+2017-02-16  Andras Varga
+
+	* Added CsvWriter class (needed for CSV export in the scave library)
+
+2017-02-10  Andras Varga
+
+	* stlutil.h: addAll() functions
+
+2017-03-19  Andras Varga
+
+	* UnitConversion: added missing kW, MW, GW
+
+2017-03-08  Andras Varga
+
+	* StringPool: cosmetics
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------

@@ -1,9 +1,15 @@
+2017-03-09  Rudolf Hornig
+
+	* opp_makemake: improved the "clean" target in the generated makefiles
+	(use recursive wildcard; delete only the actual target)
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-16  Rudolf Hornig
 
-	* The configure script no longer detects and tests for the presence of the 'pcap' library.
-	If models need it, they have to implement their own method to detect and configure it.
+	* configure: the script no longer detects and tests for the presence 
+	of the 'pcap' library. If models need it, they have to implement their
+	own method to detect and configure it.
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 
@@ -14,7 +20,7 @@
 2017-01-26  Rudolf Hornig
 
 	* opp_makemake: the IDE now generates exactly the same makefile as opp_makemake.
-	This allows easier switching between IDE and command line without rebuilding 
+	This allows easier switching between IDE and command line without rebuilding
 	the model
 
 2016-12-23  ------ omnetpp-5.1pre2 released ------

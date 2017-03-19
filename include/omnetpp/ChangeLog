@@ -1,3 +1,15 @@
+2017-03-04  Andras Varga
+
+	* ASSERT() macros: error message edited for clarity
+
+2017-03-08  Andras Varga
+
+	* opp_string: added str() method
+
+2017-03-14  Attila Torok
+
+	* Remove a few unnecessary semicolons in macros.
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
@@ -27,7 +39,7 @@
 
 2017-01-16  Andras Varga
 
-	* Added opp_get_monotonic_clock_usecs(). This should be used for 
+	* Added opp_get_monotonic_clock_usecs(). This should be used for
 	measuring wall-clock intervals instead of gettimeofday() which is
 	not monitonic.
 
@@ -46,7 +58,7 @@
 2017-01-02  Andras Varga
 
 	* Canvas: added insertBelow() / insertAbove()
-	
+
 	* Canvas: insertChild() was redundant (nearly same as addFigure()), removed
 
 2017-01-06  Attila Torok

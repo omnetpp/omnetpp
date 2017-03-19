@@ -1,3 +1,22 @@
+2017-03-07  Andras Varga
+
+	* SimTime: code of ttoa() moved into the common library as opp_ttoa(), 
+	for reusability. (SimTime::ttoa() now delegates to opp_ttoa()).
+
+	* SimTime: str() made more efficient (bypass std::stringstream and op<<)
+
+2017-03-16  Rudolf Hornig
+
+	* onstartup.cc: Detection of release vs. debug mode collision is now safer
+	on Windows 7: __is_release_oppsim__ changed to __release_oppsim_magic_number__
+
+2017-03-08  Andras Varga
+
+	* statisticparsing.cc: Fix in @statistics processing: 
+	module in source=<modulepath>.<signal> attr did not take effect.
+	Listener was mistakenly added to the module of the @statistic, not to the
+	submodule.
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-03-16  Rudolf Hornig
@@ -19,7 +38,7 @@
 
 2017-02-01  Andras Varga
 
-	* Register WarmpuPeriodFilter to make it accessible from user code
+	* Register the WarmupPeriodFilter class to make it accessible from user code
 
 2017-01-16  Andras Varga
 
@@ -31,7 +50,7 @@
 
 2017-01-02  Andras Varga
 
-	* Follow API change: Canvas: added insertBelow() / insertAbove(), 
+	* Follow API change: Canvas: added insertBelow() / insertAbove(),
 	removed insertChild()
 
 2017-01-18  Rudolf Hornig

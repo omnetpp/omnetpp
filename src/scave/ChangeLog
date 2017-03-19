@@ -1,3 +1,101 @@
+2017-03-16  Andras Varga
+
+	* New Exporter framework and exporters: CSV, Python Source, OMNeT++ and
+	SQLite Scalar/Vector exporter. The new exporter interface allows much more
+	flexibility (arbitrary formats, not only table-based ones), and also allows
+	for defining new exporters (including their UI) without any change to
+	scavetool or the Analysis Tool in the IDE.
+
+	In scavetool, the new 'export' command replaces the now-deprecated the 
+	'vector' and 'scalar' commands.
+
+	New classes: Exporter, ExporterFactory (framework); CsvExporter, 
+	PythonExporter, OmnetppScalarFileExporter, OmnetppVectorFileExporter,
+	SqliteScalarFileExporter, SqliteVectorFileExporter (concrete exporters)
+
+2017-03-04  Andras Varga
+
+	* Refactoring: the Statistics class has been moved the common library,
+	so it can also be used by the result file writers.
+
+2017-03-16  Andras Varga
+
+	* IDList, XYArray: new methods; return BigDecimal by const ref
+
+2017-02-20  Andras Varga
+
+	* Fix: Scalar export crashed for empty result set
+
+2017-02-17  Andras Varga
+
+	* CSV export: use space as separator within table column names instead of "_"
+
+2017-02-17  Andras Varga
+
+	* Prefix class names of obsolete exporter classes with "Old".
+	Old exporter class interface is completely broken, we'll make
+	a fresh start.
+
+2017-02-17  Andras Varga
+
+	* Removed Octave and Matlab export.
+
+	Reasons:
+
+	1. poor data representation chosen in the output file, esp. for vector
+	  (one time vector, and one value vector per OMNeT++ output vector,
+	  where most values were NaN due to the common T vector!
+	  2-column matrices for each vector would have been a better choice.)
+
+	2. We don't want to promote Matlab/Octave use for result analysis.
+	  Matlab/Octave users should use CSV export.
+
+	Note: octaveexport.cc/h were unused (not in build).
+
+2017-02-14  Andras Varga
+
+	* Code style: Statistics: refactoring: drop "_" from data member names
+
+2017-02-10  Andras Varga
+
+	* Refactoring: less conversion between std::string and const char*
+
+2017-02-10  Andras Varga
+
+	* fields.h: reindent switch statements
+
+2017-02-10  Andras Varga
+
+	* Refactoring: spare some more unnecessary copying
+
+2017-02-10  Andras Varga
+
+	* Refactoring: use typedef for shorthand
+
+2017-02-10  Andras Varga
+
+	* Refactoring: methods moved out of line; return Statistics as const ref
+
+2017-02-10  Andras Varga
+
+	* Refactoring: pass around ResultItemFields as const ref
+
+2017-02-10  Andras Varga
+
+	* Refactoring: Take std::strings by const ref
+
+2017-02-10  Andras Varga
+
+	* Code formatting ('&' to gravitate left)
+
+2017-02-10  Andras Varga
+
+	* datatable.cc/h split from export.cc/h
+
+2017-03-10  Andras Varga
+
+	* scavetool: "query" subcommand's mode switches changed to lowercase
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
