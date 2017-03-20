@@ -1,7 +1,7 @@
 version 2
-run PureAlohaExperiment-14-20161207-15:18:35-24790
+run PureAlohaExperiment-14-20170320-10:50:30-10353
 attr configname PureAlohaExperiment
-attr datetime 20161207-15:18:35
+attr datetime 20170320-10:50:30
 attr experiment PureAlohaExperiment
 attr inifile omnetpp.ini
 attr iterationvars "$numHosts=15, $mean=1"
@@ -10,7 +10,7 @@ attr mean 1
 attr measurement "$numHosts=15, $mean=1"
 attr network Aloha
 attr numHosts 15
-attr processid 24790
+attr processid 10353
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -28,8 +28,8 @@ param Aloha.numHosts 20
 param Aloha.slotTime 0
 param Aloha.txRate 9.6kbps
 
-scalar . 	mean 	1
-scalar . 	numHosts 	15
+scalar _runattrs_ 	mean 	1
+scalar _runattrs_ 	numHosts 	15
 scalar Aloha.server 	duration 	5400
 statistic Aloha.server 	collisionLength:histogram
 field count 14727

@@ -1,8 +1,8 @@
 E # 0 t 0 m 1 ce -1 msg -1
-SB v 1027 rid PureAloha2-0-20121123-14:04:39-12241 b 1000
+SB v 1281 rid PureAloha2-0-20170320-11:14:54-11186 b 1000
 KF p -1 c "" s ""
-MC id 1 c cCompoundModule t Aloha n Aloha cm 1
-MS id 1 d bgi=background/terrain,s
+MC id 1 c omnetpp::cModule t Aloha n Aloha cm 1
+MS id 1 d bgi=background/terrain,s;bgb=1000,1000
 MC id 2 c aloha::Server t Server pid 1 n server
 GC m 2 g 0 n in o 0
 MS id 2 d i=device/antennatower_l
@@ -47,1113 +47,355 @@ MS id 21 d i=device/pc_s
 MC id 22 c aloha::Host t Host pid 1 n host[19]
 MS id 22 d i=device/pc_s
 MB sm 1 tm 2 m initialize(0)
-CM id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe -1
-MS id 2 d i2=x_off;i=device/antennatower_l
+CM id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe -1
+MS id 2 d p=548;i=device/antennatower_l
+MS id 2 d p=548,592;i=device/antennatower_l
 ME
 MB sm 1 tm 3 m initialize(0)
-CM id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe -1
-MS id 3 d t=,,#808000;i=device/pc_s
-BS id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe 0
-ES t 4.775247027394
+CM id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n send/endTx pe -1
+MS id 3 d p=715;i=device/pc_s
+MS id 3 d p=715,844;i=device/pc_s
+BS id 1 tid 1 eid 1 etid 1 c omnetpp::cMessage n send/endTx pe 0
+ES t 9.631437342369
 ME
 MB sm 1 tm 4 m initialize(0)
-CM id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe -1
-MS id 4 d t=,,#808000;i=device/pc_s
-BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 0
-ES t 5.391362330903
+CM id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n send/endTx pe -1
+MS id 4 d p=602;i=device/pc_s
+MS id 4 d p=602,857;i=device/pc_s
+BS id 2 tid 2 eid 2 etid 2 c omnetpp::cMessage n send/endTx pe 0
+ES t 9.684012449355
 ME
 MB sm 1 tm 5 m initialize(0)
-CM id 3 tid 3 eid 3 etid 3 c cMessage n send/endTx pe -1
-MS id 5 d t=,,#808000;i=device/pc_s
-BS id 3 tid 3 eid 3 etid 3 c cMessage n send/endTx pe 0
-ES t 7.535584548284
+CM id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe -1
+MS id 5 d p=544;i=device/pc_s
+MS id 5 d p=544,847;i=device/pc_s
+BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe 0
+ES t 3.71357675776
 ME
 MB sm 1 tm 6 m initialize(0)
-CM id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe -1
-MS id 6 d t=,,#808000;i=device/pc_s
-BS id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe 0
-ES t 11.157625272448
+CM id 4 tid 4 eid 4 etid 4 c omnetpp::cMessage n send/endTx pe -1
+MS id 6 d p=423;i=device/pc_s
+MS id 6 d p=423,623;i=device/pc_s
+BS id 4 tid 4 eid 4 etid 4 c omnetpp::cMessage n send/endTx pe 0
+ES t 4.409786527139
 ME
 MB sm 1 tm 7 m initialize(0)
-CM id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe -1
-MS id 7 d t=,,#808000;i=device/pc_s
-BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 0
-ES t 5.539338788824
+CM id 5 tid 5 eid 5 etid 5 c omnetpp::cMessage n send/endTx pe -1
+MS id 7 d p=645;i=device/pc_s
+MS id 7 d p=645,384;i=device/pc_s
+BS id 5 tid 5 eid 5 etid 5 c omnetpp::cMessage n send/endTx pe 0
+ES t 9.099215843941
 ME
 MB sm 1 tm 8 m initialize(0)
-CM id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe -1
-MS id 8 d t=,,#808000;i=device/pc_s
-BS id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe 0
-ES t 11.709272015306
+CM id 6 tid 6 eid 6 etid 6 c omnetpp::cMessage n send/endTx pe -1
+MS id 8 d p=437;i=device/pc_s
+MS id 8 d p=437,297;i=device/pc_s
+BS id 6 tid 6 eid 6 etid 6 c omnetpp::cMessage n send/endTx pe 0
+ES t 6.815633650261
 ME
 MB sm 1 tm 9 m initialize(0)
-CM id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe -1
-MS id 9 d t=,,#808000;i=device/pc_s
-BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 0
-ES t 4.723206839891
+CM id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe -1
+MS id 9 d p=891;i=device/pc_s
+MS id 9 d p=891,56;i=device/pc_s
+BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe 0
+ES t 0.755246456628
 ME
 MB sm 1 tm 10 m initialize(0)
-CM id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe -1
-MS id 10 d t=,,#808000;i=device/pc_s
-BS id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 0
-ES t 11.273784325216
+CM id 8 tid 8 eid 8 etid 8 c omnetpp::cMessage n send/endTx pe -1
+MS id 10 d p=963;i=device/pc_s
+MS id 10 d p=963,272;i=device/pc_s
+BS id 8 tid 8 eid 8 etid 8 c omnetpp::cMessage n send/endTx pe 0
+ES t 7.651366213342
 ME
 MB sm 1 tm 11 m initialize(0)
-CM id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe -1
-MS id 11 d t=,,#808000;i=device/pc_s
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 0
-ES t 3.306290920021
+CM id 9 tid 9 eid 9 etid 9 c omnetpp::cMessage n send/endTx pe -1
+MS id 11 d p=383;i=device/pc_s
+MS id 11 d p=383,477;i=device/pc_s
+BS id 9 tid 9 eid 9 etid 9 c omnetpp::cMessage n send/endTx pe 0
+ES t 6.128591246095
 ME
 MB sm 1 tm 12 m initialize(0)
-CM id 10 tid 10 eid 10 etid 10 c cMessage n send/endTx pe -1
-MS id 12 d t=,,#808000;i=device/pc_s
-BS id 10 tid 10 eid 10 etid 10 c cMessage n send/endTx pe 0
-ES t 5.86203855836
+CM id 10 tid 10 eid 10 etid 10 c omnetpp::cMessage n send/endTx pe -1
+MS id 12 d p=791;i=device/pc_s
+MS id 12 d p=791,812;i=device/pc_s
+BS id 10 tid 10 eid 10 etid 10 c omnetpp::cMessage n send/endTx pe 0
+ES t 5.233927170253
 ME
 MB sm 1 tm 13 m initialize(0)
-CM id 11 tid 11 eid 11 etid 11 c cMessage n send/endTx pe -1
-MS id 13 d t=,,#808000;i=device/pc_s
-BS id 11 tid 11 eid 11 etid 11 c cMessage n send/endTx pe 0
-ES t 6.228955803983
+CM id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe -1
+MS id 13 d p=528;i=device/pc_s
+MS id 13 d p=528,479;i=device/pc_s
+BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe 0
+ES t 0.928378083
 ME
 MB sm 1 tm 14 m initialize(0)
-CM id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe -1
-MS id 14 d t=,,#808000;i=device/pc_s
-BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 0
-ES t 2.910768982329
+CM id 12 tid 12 eid 12 etid 12 c omnetpp::cMessage n send/endTx pe -1
+MS id 14 d p=568;i=device/pc_s
+MS id 14 d p=568,392;i=device/pc_s
+BS id 12 tid 12 eid 12 etid 12 c omnetpp::cMessage n send/endTx pe 0
+ES t 4.625007950804
 ME
 MB sm 1 tm 15 m initialize(0)
-CM id 13 tid 13 eid 13 etid 13 c cMessage n send/endTx pe -1
-MS id 15 d t=,,#808000;i=device/pc_s
-BS id 13 tid 13 eid 13 etid 13 c cMessage n send/endTx pe 0
-ES t 3.453115181297
+CM id 13 tid 13 eid 13 etid 13 c omnetpp::cMessage n send/endTx pe -1
+MS id 15 d p=925;i=device/pc_s
+MS id 15 d p=925,836;i=device/pc_s
+BS id 13 tid 13 eid 13 etid 13 c omnetpp::cMessage n send/endTx pe 0
+ES t 17.366522867922
 ME
 MB sm 1 tm 16 m initialize(0)
-CM id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe -1
-MS id 16 d t=,,#808000;i=device/pc_s
-BS id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe 0
-ES t 2.118954834825
+CM id 14 tid 14 eid 14 etid 14 c omnetpp::cMessage n send/endTx pe -1
+MS id 16 d p=71;i=device/pc_s
+MS id 16 d p=71,337;i=device/pc_s
+BS id 14 tid 14 eid 14 etid 14 c omnetpp::cMessage n send/endTx pe 0
+ES t 8.528188080562
 ME
 MB sm 1 tm 17 m initialize(0)
-CM id 15 tid 15 eid 15 etid 15 c cMessage n send/endTx pe -1
-MS id 17 d t=,,#808000;i=device/pc_s
-BS id 15 tid 15 eid 15 etid 15 c cMessage n send/endTx pe 0
-ES t 13.341146532217
+CM id 15 tid 15 eid 15 etid 15 c omnetpp::cMessage n send/endTx pe -1
+MS id 17 d p=87;i=device/pc_s
+MS id 17 d p=87,648;i=device/pc_s
+BS id 15 tid 15 eid 15 etid 15 c omnetpp::cMessage n send/endTx pe 0
+ES t 4.426963750535
 ME
 MB sm 1 tm 18 m initialize(0)
-CM id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe -1
-MS id 18 d t=,,#808000;i=device/pc_s
-BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 0
-ES t 0.350308014558
+CM id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe -1
+MS id 18 d p=20;i=device/pc_s
+MS id 18 d p=20,368;i=device/pc_s
+BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe 0
+ES t 0.671676963796
 ME
 MB sm 1 tm 19 m initialize(0)
-CM id 17 tid 17 eid 17 etid 17 c cMessage n send/endTx pe -1
-MS id 19 d t=,,#808000;i=device/pc_s
-BS id 17 tid 17 eid 17 etid 17 c cMessage n send/endTx pe 0
-ES t 19.889473679569
+CM id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe -1
+MS id 19 d p=832;i=device/pc_s
+MS id 19 d p=832,957;i=device/pc_s
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 0
+ES t 3.213394321367
 ME
 MB sm 1 tm 20 m initialize(0)
-CM id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe -1
-MS id 20 d t=,,#808000;i=device/pc_s
-BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 0
-ES t 1.91013684505
+CM id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe -1
+MS id 20 d p=778;i=device/pc_s
+MS id 20 d p=778,140;i=device/pc_s
+BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe 0
+ES t 3.850168212187
 ME
 MB sm 1 tm 21 m initialize(0)
-CM id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe -1
-MS id 21 d t=,,#808000;i=device/pc_s
-BS id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe 0
-ES t 2.90161262969
+CM id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe -1
+MS id 21 d p=870;i=device/pc_s
+MS id 21 d p=870,870;i=device/pc_s
+BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe 0
+ES t 1.843682112915
 ME
 MB sm 1 tm 22 m initialize(0)
-CM id 20 tid 20 eid 20 etid 20 c cMessage n send/endTx pe -1
-MS id 22 d t=,,#808000;i=device/pc_s
-BS id 20 tid 20 eid 20 etid 20 c cMessage n send/endTx pe 0
-ES t 3.896678089505
+CM id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe -1
+MS id 22 d p=978;i=device/pc_s
+MS id 22 d p=978,473;i=device/pc_s
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 0
+ES t 1.237219692183
 ME
 
-E # 1 t 0.350308014558 m 18 ce 0 msg 16
-- generating packet pk-18-#0
-MS id 18 d t=,,#808000;i=device/pc_s,yellow
-MS id 18 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 21 tid 21 eid 21 etid 21 c cMessage n pk-18-#0 pe -1
-BS id 21 tid 21 eid 21 etid 21 c cPacket n pk-18-#0 l 952 pe 1
-SD sm 18 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 0.360308014558 is 1
-BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 1
-ES t 0.449474681224
-
-E # 2 t 0.360308014558 m 2 ce 1 msg 21
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 0
-ES t 0.459474681224
-MS id 2 d i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 21 tid 21 eid 21 etid 21 c cMessage n pk-18-#0 pe 2
-
-E # 3 t 0.449474681224 m 18 ce 1 msg 16
-BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 3
-ES t 9.862851386962
-MS id 18 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 18 d t=,,#808000;i=device/pc_s
-
-E # 4 t 0.459474681224 m 2 ce 2 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 5 t 1.91013684505 m 20 ce 0 msg 18
-- generating packet pk-20-#0
-MS id 20 d t=,,#808000;i=device/pc_s,yellow
-MS id 20 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 22 tid 22 eid 22 etid 22 c cMessage n pk-20-#0 pe -1
-BS id 22 tid 22 eid 22 etid 22 c cPacket n pk-20-#0 l 952 pe 5
-SD sm 20 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 1.92013684505 is 1
-BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 5
-ES t 2.009303511716
-
-E # 6 t 1.92013684505 m 2 ce 5 msg 22
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 4
-ES t 2.019303511716
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 22 tid 22 eid 22 etid 22 c cMessage n pk-20-#0 pe 6
-
-E # 7 t 2.009303511716 m 20 ce 5 msg 18
-BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 7
-ES t 12.042570713665
-MS id 20 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 20 d t=,,#808000;i=device/pc_s
-
-E # 8 t 2.019303511716 m 2 ce 6 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 9 t 2.118954834825 m 16 ce 0 msg 14
-- generating packet pk-16-#0
-MS id 16 d t=,,#808000;i=device/pc_s,yellow
-MS id 16 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 23 tid 23 eid 23 etid 23 c cMessage n pk-16-#0 pe -1
-BS id 23 tid 23 eid 23 etid 23 c cPacket n pk-16-#0 l 952 pe 9
-SD sm 16 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 2.128954834825 is 1
-BS id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe 9
-ES t 2.218121501491
-
-E # 10 t 2.128954834825 m 2 ce 9 msg 23
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 8
-ES t 2.228121501491
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 23 tid 23 eid 23 etid 23 c cMessage n pk-16-#0 pe 10
-
-E # 11 t 2.218121501491 m 16 ce 9 msg 14
-BS id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe 11
-ES t 6.734166181367
-MS id 16 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 16 d t=,,#808000;i=device/pc_s
-
-E # 12 t 2.228121501491 m 2 ce 10 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 13 t 2.90161262969 m 21 ce 0 msg 19
-- generating packet pk-21-#0
-MS id 21 d t=,,#808000;i=device/pc_s,yellow
-MS id 21 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 24 tid 24 eid 24 etid 24 c cMessage n pk-21-#0 pe -1
-BS id 24 tid 24 eid 24 etid 24 c cPacket n pk-21-#0 l 952 pe 13
-SD sm 21 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 2.91161262969 is 1
-BS id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe 13
-ES t 3.000779296356
-
-E # 14 t 2.910768982329 m 14 ce 0 msg 12
-- generating packet pk-14-#0
-MS id 14 d t=,,#808000;i=device/pc_s,yellow
-MS id 14 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 25 tid 25 eid 25 etid 25 c cMessage n pk-14-#0 pe -1
-BS id 25 tid 25 eid 25 etid 25 c cPacket n pk-14-#0 l 952 pe 14
-SD sm 14 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 2.920768982329 is 1
-BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 14
-ES t 3.009935648995
-
-E # 15 t 2.91161262969 m 2 ce 13 msg 24
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 12
-ES t 3.010779296356
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 24 tid 24 eid 24 etid 24 c cMessage n pk-21-#0 pe 15
-
-E # 16 t 2.920768982329 m 2 ce 14 msg 25
-- another frame arrived while receiving -- collision!
-CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 15
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 16
-ES t 3.019935648995
-MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
-BU id 2 txt "Collision! (2 frames)"
-DM id 25 tid 25 eid 25 etid 25 c cMessage n pk-14-#0 pe 16
-
-E # 17 t 3.000779296356 m 21 ce 13 msg 19
-BS id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe 17
-ES t 6.924074699682
-MS id 21 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 21 d t=,,#808000;i=device/pc_s
-
-E # 18 t 3.009935648995 m 14 ce 14 msg 12
-BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 18
-ES t 8.046532766396
-MS id 14 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 14 d t=,,#808000;i=device/pc_s
-
-E # 19 t 3.019935648995 m 2 ce 16 msg 0
-- reception finished
-MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
-
-E # 20 t 3.306290920021 m 11 ce 0 msg 9
-- generating packet pk-11-#0
-MS id 11 d t=,,#808000;i=device/pc_s,yellow
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 26 tid 26 eid 26 etid 26 c cMessage n pk-11-#0 pe -1
-BS id 26 tid 26 eid 26 etid 26 c cPacket n pk-11-#0 l 952 pe 20
-SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 3.316290920021 is 1
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 20
-ES t 3.405457586687
-
-E # 21 t 3.316290920021 m 2 ce 20 msg 26
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 19
-ES t 3.415457586687
-MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 26 tid 26 eid 26 etid 26 c cMessage n pk-11-#0 pe 21
-
-E # 22 t 3.405457586687 m 11 ce 20 msg 9
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 22
-ES t 6.398689640782
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 11 d t=,,#808000;i=device/pc_s
-
-E # 23 t 3.415457586687 m 2 ce 21 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 24 t 3.453115181297 m 15 ce 0 msg 13
-- generating packet pk-15-#0
-MS id 15 d t=,,#808000;i=device/pc_s,yellow
-MS id 15 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 27 tid 27 eid 27 etid 27 c cMessage n pk-15-#0 pe -1
-BS id 27 tid 27 eid 27 etid 27 c cPacket n pk-15-#0 l 952 pe 24
-SD sm 15 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 3.463115181297 is 1
-BS id 13 tid 13 eid 13 etid 13 c cMessage n send/endTx pe 24
-ES t 3.552281847963
-
-E # 25 t 3.463115181297 m 2 ce 24 msg 27
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 23
-ES t 3.562281847963
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 27 tid 27 eid 27 etid 27 c cMessage n pk-15-#0 pe 25
-
-E # 26 t 3.552281847963 m 15 ce 24 msg 13
-BS id 13 tid 13 eid 13 etid 13 c cMessage n send/endTx pe 26
-ES t 19.141806363056
-MS id 15 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 15 d t=,,#808000;i=device/pc_s
-
-E # 27 t 3.562281847963 m 2 ce 25 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 28 t 3.896678089505 m 22 ce 0 msg 20
-- generating packet pk-22-#0
-MS id 22 d t=,,#808000;i=device/pc_s,yellow
-MS id 22 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 28 tid 28 eid 28 etid 28 c cMessage n pk-22-#0 pe -1
-BS id 28 tid 28 eid 28 etid 28 c cPacket n pk-22-#0 l 952 pe 28
-SD sm 22 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 3.906678089505 is 1
-BS id 20 tid 20 eid 20 etid 20 c cMessage n send/endTx pe 28
-ES t 3.995844756171
-
-E # 29 t 3.906678089505 m 2 ce 28 msg 28
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 27
-ES t 4.005844756171
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 28 tid 28 eid 28 etid 28 c cMessage n pk-22-#0 pe 29
-
-E # 30 t 3.995844756171 m 22 ce 28 msg 20
-BS id 20 tid 20 eid 20 etid 20 c cMessage n send/endTx pe 30
-ES t 14.84606034182
-MS id 22 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 22 d t=,,#808000;i=device/pc_s
-
-E # 31 t 4.005844756171 m 2 ce 29 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 32 t 4.723206839891 m 9 ce 0 msg 7
-- generating packet pk-9-#0
-MS id 9 d t=,,#808000;i=device/pc_s,yellow
-MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 29 tid 29 eid 29 etid 29 c cMessage n pk-9-#0 pe -1
-BS id 29 tid 29 eid 29 etid 29 c cPacket n pk-9-#0 l 952 pe 32
-SD sm 9 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 4.733206839891 is 1
-BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 32
-ES t 4.822373506557
-
-E # 33 t 4.733206839891 m 2 ce 32 msg 29
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 31
-ES t 4.832373506557
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 29 tid 29 eid 29 etid 29 c cMessage n pk-9-#0 pe 33
-
-E # 34 t 4.775247027394 m 3 ce 0 msg 1
-- generating packet pk-3-#0
-MS id 3 d t=,,#808000;i=device/pc_s,yellow
-MS id 3 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 30 tid 30 eid 30 etid 30 c cMessage n pk-3-#0 pe -1
-BS id 30 tid 30 eid 30 etid 30 c cPacket n pk-3-#0 l 952 pe 34
-SD sm 3 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 4.785247027394 is 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe 34
-ES t 4.87441369406
-
-E # 35 t 4.785247027394 m 2 ce 34 msg 30
-- another frame arrived while receiving -- collision!
-CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 33
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 35
-ES t 4.88441369406
-MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
-BU id 2 txt "Collision! (2 frames)"
-DM id 30 tid 30 eid 30 etid 30 c cMessage n pk-3-#0 pe 35
-
-E # 36 t 4.822373506557 m 9 ce 32 msg 7
-BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 36
-ES t 5.264485639347
-MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 9 d t=,,#808000;i=device/pc_s
-
-E # 37 t 4.87441369406 m 3 ce 34 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe 37
-ES t 7.343881671515
-MS id 3 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 3 d t=,,#808000;i=device/pc_s
-
-E # 38 t 4.88441369406 m 2 ce 35 msg 0
-- reception finished
-MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
-
-E # 39 t 5.264485639347 m 9 ce 36 msg 7
-- generating packet pk-9-#1
-MS id 9 d t=,,#808000;i=device/pc_s,yellow
-MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 31 tid 31 eid 31 etid 31 c cMessage n pk-9-#1 pe -1
-BS id 31 tid 31 eid 31 etid 31 c cPacket n pk-9-#1 l 952 pe 39
-SD sm 9 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 5.274485639347 is 1
-BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 39
-ES t 5.363652306013
-
-E # 40 t 5.274485639347 m 2 ce 39 msg 31
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 38
-ES t 5.373652306013
-MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 31 tid 31 eid 31 etid 31 c cMessage n pk-9-#1 pe 40
-
-E # 41 t 5.363652306013 m 9 ce 39 msg 7
-BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 41
-ES t 5.910618462758
-MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 9 d t=,,#808000;i=device/pc_s
-
-E # 42 t 5.373652306013 m 2 ce 40 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 43 t 5.391362330903 m 4 ce 0 msg 2
-- generating packet pk-4-#0
-MS id 4 d t=,,#808000;i=device/pc_s,yellow
-MS id 4 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 32 tid 32 eid 32 etid 32 c cMessage n pk-4-#0 pe -1
-BS id 32 tid 32 eid 32 etid 32 c cPacket n pk-4-#0 l 952 pe 43
-SD sm 4 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 5.401362330903 is 1
-BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 43
-ES t 5.490528997569
-
-E # 44 t 5.401362330903 m 2 ce 43 msg 32
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 42
-ES t 5.500528997569
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 32 tid 32 eid 32 etid 32 c cMessage n pk-4-#0 pe 44
-
-E # 45 t 5.490528997569 m 4 ce 43 msg 2
-BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 45
-ES t 11.758204047417
-MS id 4 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 4 d t=,,#808000;i=device/pc_s
-
-E # 46 t 5.500528997569 m 2 ce 44 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 47 t 5.539338788824 m 7 ce 0 msg 5
-- generating packet pk-7-#0
-MS id 7 d t=,,#808000;i=device/pc_s,yellow
-MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 33 tid 33 eid 33 etid 33 c cMessage n pk-7-#0 pe -1
-BS id 33 tid 33 eid 33 etid 33 c cPacket n pk-7-#0 l 952 pe 47
-SD sm 7 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 5.549338788824 is 1
-BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 47
-ES t 5.63850545549
-
-E # 48 t 5.549338788824 m 2 ce 47 msg 33
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 46
-ES t 5.64850545549
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 33 tid 33 eid 33 etid 33 c cMessage n pk-7-#0 pe 48
-
-E # 49 t 5.63850545549 m 7 ce 47 msg 5
-BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 49
-ES t 5.761058985884
-MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 7 d t=,,#808000;i=device/pc_s
-
-E # 50 t 5.64850545549 m 2 ce 48 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 51 t 5.761058985884 m 7 ce 49 msg 5
-- generating packet pk-7-#1
-MS id 7 d t=,,#808000;i=device/pc_s,yellow
-MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 34 tid 34 eid 34 etid 34 c cMessage n pk-7-#1 pe -1
-BS id 34 tid 34 eid 34 etid 34 c cPacket n pk-7-#1 l 952 pe 51
-SD sm 7 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 5.771058985884 is 1
-BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 51
-ES t 5.86022565255
-
-E # 52 t 5.771058985884 m 2 ce 51 msg 34
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 50
-ES t 5.87022565255
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 34 tid 34 eid 34 etid 34 c cMessage n pk-7-#1 pe 52
-
-E # 53 t 5.86022565255 m 7 ce 51 msg 5
-BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 53
-ES t 8.615714476081
-MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 7 d t=,,#808000;i=device/pc_s
-
-E # 54 t 5.86203855836 m 12 ce 0 msg 10
-- generating packet pk-12-#0
-MS id 12 d t=,,#808000;i=device/pc_s,yellow
-MS id 12 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 35 tid 35 eid 35 etid 35 c cMessage n pk-12-#0 pe -1
-BS id 35 tid 35 eid 35 etid 35 c cPacket n pk-12-#0 l 952 pe 54
-SD sm 12 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 5.87203855836 is 1
-BS id 10 tid 10 eid 10 etid 10 c cMessage n send/endTx pe 54
-ES t 5.961205225026
-
-E # 55 t 5.87022565255 m 2 ce 52 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 56 t 5.87203855836 m 2 ce 54 msg 35
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 55
-ES t 5.971205225026
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 35 tid 35 eid 35 etid 35 c cMessage n pk-12-#0 pe 56
-
-E # 57 t 5.910618462758 m 9 ce 41 msg 7
-- generating packet pk-9-#2
-MS id 9 d t=,,#808000;i=device/pc_s,yellow
-MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 36 tid 36 eid 36 etid 36 c cMessage n pk-9-#2 pe -1
-BS id 36 tid 36 eid 36 etid 36 c cPacket n pk-9-#2 l 952 pe 57
-SD sm 9 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 5.920618462758 is 1
-BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 57
-ES t 6.009785129424
-
-E # 58 t 5.920618462758 m 2 ce 57 msg 36
-- another frame arrived while receiving -- collision!
-CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 56
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 58
-ES t 6.019785129424
-MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
-BU id 2 txt "Collision! (2 frames)"
-DM id 36 tid 36 eid 36 etid 36 c cMessage n pk-9-#2 pe 58
-
-E # 59 t 5.961205225026 m 12 ce 54 msg 10
-BS id 10 tid 10 eid 10 etid 10 c cMessage n send/endTx pe 59
-ES t 16.686131205657
-MS id 12 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 12 d t=,,#808000;i=device/pc_s
-
-E # 60 t 6.009785129424 m 9 ce 57 msg 7
-BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 60
-ES t 24.910804701479
-MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 9 d t=,,#808000;i=device/pc_s
-
-E # 61 t 6.019785129424 m 2 ce 58 msg 0
-- reception finished
-MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
-
-E # 62 t 6.228955803983 m 13 ce 0 msg 11
-- generating packet pk-13-#0
-MS id 13 d t=,,#808000;i=device/pc_s,yellow
-MS id 13 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 37 tid 37 eid 37 etid 37 c cMessage n pk-13-#0 pe -1
-BS id 37 tid 37 eid 37 etid 37 c cPacket n pk-13-#0 l 952 pe 62
-SD sm 13 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 6.238955803983 is 1
-BS id 11 tid 11 eid 11 etid 11 c cMessage n send/endTx pe 62
-ES t 6.328122470649
-
-E # 63 t 6.238955803983 m 2 ce 62 msg 37
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 61
-ES t 6.338122470649
-MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 37 tid 37 eid 37 etid 37 c cMessage n pk-13-#0 pe 63
-
-E # 64 t 6.328122470649 m 13 ce 62 msg 11
-BS id 11 tid 11 eid 11 etid 11 c cMessage n send/endTx pe 64
-ES t 15.362828022473
-MS id 13 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 13 d t=,,#808000;i=device/pc_s
-
-E # 65 t 6.338122470649 m 2 ce 63 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 66 t 6.398689640782 m 11 ce 22 msg 9
-- generating packet pk-11-#1
-MS id 11 d t=,,#808000;i=device/pc_s,yellow
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 38 tid 38 eid 38 etid 38 c cMessage n pk-11-#1 pe -1
-BS id 38 tid 38 eid 38 etid 38 c cPacket n pk-11-#1 l 952 pe 66
-SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 6.408689640782 is 1
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 66
-ES t 6.497856307448
-
-E # 67 t 6.408689640782 m 2 ce 66 msg 38
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 65
-ES t 6.507856307448
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 38 tid 38 eid 38 etid 38 c cMessage n pk-11-#1 pe 67
-
-E # 68 t 6.497856307448 m 11 ce 66 msg 9
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 68
-ES t 7.405241429437
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 11 d t=,,#808000;i=device/pc_s
-
-E # 69 t 6.507856307448 m 2 ce 67 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 70 t 6.734166181367 m 16 ce 11 msg 14
-- generating packet pk-16-#1
-MS id 16 d t=,,#808000;i=device/pc_s,yellow
-MS id 16 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 39 tid 39 eid 39 etid 39 c cMessage n pk-16-#1 pe -1
-BS id 39 tid 39 eid 39 etid 39 c cPacket n pk-16-#1 l 952 pe 70
-SD sm 16 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 6.744166181367 is 1
-BS id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe 70
-ES t 6.833332848033
-
-E # 71 t 6.744166181367 m 2 ce 70 msg 39
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 69
-ES t 6.843332848033
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 39 tid 39 eid 39 etid 39 c cMessage n pk-16-#1 pe 71
-
-E # 72 t 6.833332848033 m 16 ce 70 msg 14
-BS id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe 72
-ES t 19.075218395684
-MS id 16 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 16 d t=,,#808000;i=device/pc_s
-
-E # 73 t 6.843332848033 m 2 ce 71 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 74 t 6.924074699682 m 21 ce 17 msg 19
-- generating packet pk-21-#1
-MS id 21 d t=,,#808000;i=device/pc_s,yellow
-MS id 21 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 40 tid 40 eid 40 etid 40 c cMessage n pk-21-#1 pe -1
-BS id 40 tid 40 eid 40 etid 40 c cPacket n pk-21-#1 l 952 pe 74
-SD sm 21 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 6.934074699682 is 1
-BS id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe 74
-ES t 7.023241366348
-
-E # 75 t 6.934074699682 m 2 ce 74 msg 40
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 73
-ES t 7.033241366348
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 40 tid 40 eid 40 etid 40 c cMessage n pk-21-#1 pe 75
-
-E # 76 t 7.023241366348 m 21 ce 74 msg 19
-BS id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe 76
-ES t 19.268594661818
-MS id 21 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 21 d t=,,#808000;i=device/pc_s
-
-E # 77 t 7.033241366348 m 2 ce 75 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 78 t 7.343881671515 m 3 ce 37 msg 1
-- generating packet pk-3-#1
-MS id 3 d t=,,#808000;i=device/pc_s,yellow
-MS id 3 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 41 tid 41 eid 41 etid 41 c cMessage n pk-3-#1 pe -1
-BS id 41 tid 41 eid 41 etid 41 c cPacket n pk-3-#1 l 952 pe 78
-SD sm 3 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 7.353881671515 is 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe 78
-ES t 7.443048338181
-
-E # 79 t 7.353881671515 m 2 ce 78 msg 41
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 77
-ES t 7.453048338181
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 41 tid 41 eid 41 etid 41 c cMessage n pk-3-#1 pe 79
-
-E # 80 t 7.405241429437 m 11 ce 68 msg 9
-- generating packet pk-11-#2
-MS id 11 d t=,,#808000;i=device/pc_s,yellow
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 42 tid 42 eid 42 etid 42 c cMessage n pk-11-#2 pe -1
-BS id 42 tid 42 eid 42 etid 42 c cPacket n pk-11-#2 l 952 pe 80
-SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 7.415241429437 is 1
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 80
-ES t 7.504408096103
-
-E # 81 t 7.415241429437 m 2 ce 80 msg 42
-- another frame arrived while receiving -- collision!
-CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 79
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 81
-ES t 7.514408096103
-MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
-BU id 2 txt "Collision! (2 frames)"
-DM id 42 tid 42 eid 42 etid 42 c cMessage n pk-11-#2 pe 81
-
-E # 82 t 7.443048338181 m 3 ce 78 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe 82
-ES t 30.514379553032
-MS id 3 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 3 d t=,,#808000;i=device/pc_s
-
-E # 83 t 7.504408096103 m 11 ce 80 msg 9
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 83
-ES t 11.354663132171
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 11 d t=,,#808000;i=device/pc_s
-
-E # 84 t 7.514408096103 m 2 ce 81 msg 0
-- reception finished
-MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
-
-E # 85 t 7.535584548284 m 5 ce 0 msg 3
-- generating packet pk-5-#0
-MS id 5 d t=,,#808000;i=device/pc_s,yellow
-MS id 5 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 43 tid 43 eid 43 etid 43 c cMessage n pk-5-#0 pe -1
-BS id 43 tid 43 eid 43 etid 43 c cPacket n pk-5-#0 l 952 pe 85
-SD sm 5 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 7.545584548284 is 1
-BS id 3 tid 3 eid 3 etid 3 c cMessage n send/endTx pe 85
-ES t 7.63475121495
-
-E # 86 t 7.545584548284 m 2 ce 85 msg 43
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 84
-ES t 7.64475121495
-MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 43 tid 43 eid 43 etid 43 c cMessage n pk-5-#0 pe 86
-
-E # 87 t 7.63475121495 m 5 ce 85 msg 3
-BS id 3 tid 3 eid 3 etid 3 c cMessage n send/endTx pe 87
-ES t 17.266188557319
-MS id 5 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 5 d t=,,#808000;i=device/pc_s
-
-E # 88 t 7.64475121495 m 2 ce 86 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 89 t 8.046532766396 m 14 ce 18 msg 12
-- generating packet pk-14-#1
-MS id 14 d t=,,#808000;i=device/pc_s,yellow
-MS id 14 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 44 tid 44 eid 44 etid 44 c cMessage n pk-14-#1 pe -1
-BS id 44 tid 44 eid 44 etid 44 c cPacket n pk-14-#1 l 952 pe 89
-SD sm 14 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 8.056532766396 is 1
-BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 89
-ES t 8.145699433062
-
-E # 90 t 8.056532766396 m 2 ce 89 msg 44
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 88
-ES t 8.155699433062
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 44 tid 44 eid 44 etid 44 c cMessage n pk-14-#1 pe 90
-
-E # 91 t 8.145699433062 m 14 ce 89 msg 12
-BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 91
-ES t 17.829711882417
-MS id 14 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 14 d t=,,#808000;i=device/pc_s
-
-E # 92 t 8.155699433062 m 2 ce 90 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 93 t 8.615714476081 m 7 ce 53 msg 5
-- generating packet pk-7-#2
-MS id 7 d t=,,#808000;i=device/pc_s,yellow
-MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 45 tid 45 eid 45 etid 45 c cMessage n pk-7-#2 pe -1
-BS id 45 tid 45 eid 45 etid 45 c cPacket n pk-7-#2 l 952 pe 93
-SD sm 7 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 8.625714476081 is 1
-BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 93
-ES t 8.714881142747
-
-E # 94 t 8.625714476081 m 2 ce 93 msg 45
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 92
-ES t 8.724881142747
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 45 tid 45 eid 45 etid 45 c cMessage n pk-7-#2 pe 94
-
-E # 95 t 8.714881142747 m 7 ce 93 msg 5
-BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 95
-ES t 12.428457900507
-MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 7 d t=,,#808000;i=device/pc_s
-
-E # 96 t 8.724881142747 m 2 ce 94 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 97 t 9.862851386962 m 18 ce 3 msg 16
-- generating packet pk-18-#1
-MS id 18 d t=,,#808000;i=device/pc_s,yellow
-MS id 18 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 46 tid 46 eid 46 etid 46 c cMessage n pk-18-#1 pe -1
-BS id 46 tid 46 eid 46 etid 46 c cPacket n pk-18-#1 l 952 pe 97
-SD sm 18 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 9.872851386962 is 1
-BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 97
-ES t 9.962018053628
-
-E # 98 t 9.872851386962 m 2 ce 97 msg 46
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 96
-ES t 9.972018053628
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 46 tid 46 eid 46 etid 46 c cMessage n pk-18-#1 pe 98
-
-E # 99 t 9.962018053628 m 18 ce 97 msg 16
-BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 99
-ES t 14.371804580766
-MS id 18 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 18 d t=,,#808000;i=device/pc_s
-
-E # 100 t 9.972018053628 m 2 ce 98 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 101 t 11.157625272448 m 6 ce 0 msg 4
-- generating packet pk-6-#0
-MS id 6 d t=,,#808000;i=device/pc_s,yellow
-MS id 6 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 47 tid 47 eid 47 etid 47 c cMessage n pk-6-#0 pe -1
-BS id 47 tid 47 eid 47 etid 47 c cPacket n pk-6-#0 l 952 pe 101
-SD sm 6 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 11.167625272448 is 1
-BS id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe 101
-ES t 11.256791939114
-
-E # 102 t 11.167625272448 m 2 ce 101 msg 47
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 100
-ES t 11.266791939114
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 47 tid 47 eid 47 etid 47 c cMessage n pk-6-#0 pe 102
-
-E # 103 t 11.256791939114 m 6 ce 101 msg 4
-BS id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe 103
-ES t 20.356007783055
-MS id 6 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 6 d t=,,#808000;i=device/pc_s
-
-E # 104 t 11.266791939114 m 2 ce 102 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 105 t 11.273784325216 m 10 ce 0 msg 8
-- generating packet pk-10-#0
-MS id 10 d t=,,#808000;i=device/pc_s,yellow
-MS id 10 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 48 tid 48 eid 48 etid 48 c cMessage n pk-10-#0 pe -1
-BS id 48 tid 48 eid 48 etid 48 c cPacket n pk-10-#0 l 952 pe 105
-SD sm 10 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 11.283784325216 is 1
-BS id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 105
-ES t 11.372950991882
-
-E # 106 t 11.283784325216 m 2 ce 105 msg 48
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 104
-ES t 11.382950991882
-MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 48 tid 48 eid 48 etid 48 c cMessage n pk-10-#0 pe 106
-
-E # 107 t 11.354663132171 m 11 ce 83 msg 9
-- generating packet pk-11-#3
-MS id 11 d t=,,#808000;i=device/pc_s,yellow
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 49 tid 49 eid 49 etid 49 c cMessage n pk-11-#3 pe -1
-BS id 49 tid 49 eid 49 etid 49 c cPacket n pk-11-#3 l 952 pe 107
-SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 11.364663132171 is 1
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 107
-ES t 11.453829798837
-
-E # 108 t 11.364663132171 m 2 ce 107 msg 49
-- another frame arrived while receiving -- collision!
-CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 106
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 108
-ES t 11.463829798837
-MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
-BU id 2 txt "Collision! (2 frames)"
-DM id 49 tid 49 eid 49 etid 49 c cMessage n pk-11-#3 pe 108
-
-E # 109 t 11.372950991882 m 10 ce 105 msg 8
-BS id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 109
-ES t 18.188584642143
-MS id 10 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 10 d t=,,#808000;i=device/pc_s
-
-E # 110 t 11.453829798837 m 11 ce 107 msg 9
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 110
-ES t 12.209076255465
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 11 d t=,,#808000;i=device/pc_s
-
-E # 111 t 11.463829798837 m 2 ce 108 msg 0
-- reception finished
-MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
-
-E # 112 t 11.709272015306 m 8 ce 0 msg 6
-- generating packet pk-8-#0
-MS id 8 d t=,,#808000;i=device/pc_s,yellow
-MS id 8 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 50 tid 50 eid 50 etid 50 c cMessage n pk-8-#0 pe -1
-BS id 50 tid 50 eid 50 etid 50 c cPacket n pk-8-#0 l 952 pe 112
-SD sm 8 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 11.719272015306 is 1
-BS id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe 112
-ES t 11.808438681972
-
-E # 113 t 11.719272015306 m 2 ce 112 msg 50
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 111
-ES t 11.818438681972
-MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 50 tid 50 eid 50 etid 50 c cMessage n pk-8-#0 pe 113
-
-E # 114 t 11.758204047417 m 4 ce 45 msg 2
-- generating packet pk-4-#1
-MS id 4 d t=,,#808000;i=device/pc_s,yellow
-MS id 4 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 51 tid 51 eid 51 etid 51 c cMessage n pk-4-#1 pe -1
-BS id 51 tid 51 eid 51 etid 51 c cPacket n pk-4-#1 l 952 pe 114
-SD sm 4 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 11.768204047417 is 1
-BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 114
-ES t 11.857370714083
-
-E # 115 t 11.768204047417 m 2 ce 114 msg 51
-- another frame arrived while receiving -- collision!
-CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 113
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 115
-ES t 11.867370714083
-MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
-MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
-BU id 2 txt "Collision! (2 frames)"
-DM id 51 tid 51 eid 51 etid 51 c cMessage n pk-4-#1 pe 115
-
-E # 116 t 11.808438681972 m 8 ce 112 msg 6
-BS id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe 116
-ES t 19.459804895313
-MS id 8 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 8 d t=,,#808000;i=device/pc_s
-
-E # 117 t 11.857370714083 m 4 ce 114 msg 2
-BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 117
-ES t 17.985961960178
-MS id 4 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 4 d t=,,#808000;i=device/pc_s
-
-E # 118 t 11.867370714083 m 2 ce 115 msg 0
-- reception finished
-MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
-
-E # 119 t 12.042570713665 m 20 ce 7 msg 18
-- generating packet pk-20-#1
-MS id 20 d t=,,#808000;i=device/pc_s,yellow
-MS id 20 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 52 tid 52 eid 52 etid 52 c cMessage n pk-20-#1 pe -1
-BS id 52 tid 52 eid 52 etid 52 c cPacket n pk-20-#1 l 952 pe 119
-SD sm 20 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 12.052570713665 is 1
-BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 119
-ES t 12.141737380331
-
-E # 120 t 12.052570713665 m 2 ce 119 msg 52
-- started receiving
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 118
-ES t 12.151737380331
-MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
-MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
-DM id 52 tid 52 eid 52 etid 52 c cMessage n pk-20-#1 pe 120
-
-E # 121 t 12.141737380331 m 20 ce 119 msg 18
-BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 121
-ES t 17.375664550583
-MS id 20 d t=TRANSMIT,,#808000;i=device/pc_s
-MS id 20 d t=,,#808000;i=device/pc_s
-
-E # 122 t 12.151737380331 m 2 ce 120 msg 0
-- reception finished
-MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
-MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-
-E # 123 t 12.209076255465 m 11 ce 110 msg 9
-- generating packet pk-11-#4
-MS id 11 d t=,,#808000;i=device/pc_s,yellow
-MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 53 tid 53 eid 53 etid 53 c cMessage n pk-11-#4 pe -1
-BS id 53 tid 53 eid 53 etid 53 c cPacket n pk-11-#4 l 952 pe 123
-SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
-ES t 12.219076255465 is 1
-BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 123
-ES t 12.308242922131
-SE e 0 c 9 m "The user has finished the simulation at event #124, t=12.209076255465."
-- duration: 12.209076255465
+E # 1 t 0.671676963796 m 18 ce 0 msg 16
+CM id 21 tid 21 eid 21 etid 21 c omnetpp::cMessage n pk-18-#0 pe -1
+BS id 21 tid 21 eid 21 etid 21 c omnetpp::cPacket n pk-18-#0 l 952 pe 1
+SD sm 18 dm 2 dg 0 pd 0.000001915771 td 0.099166666667
+ES t 0.671678879567 is 1
+BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe 1
+ES t 0.770843630463
+
+E # 2 t 0.671678879567 m 2 ce 1 msg 21
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 0
+ES t 0.770845546234
+DM id 21 tid 21 eid 21 etid 21 c omnetpp::cMessage n pk-18-#0 pe 2
+
+E # 3 t 0.755246456628 m 9 ce 0 msg 7
+CM id 22 tid 22 eid 22 etid 22 c omnetpp::cMessage n pk-9-#0 pe -1
+BS id 22 tid 22 eid 22 etid 22 c omnetpp::cPacket n pk-9-#0 l 952 pe 3
+SD sm 9 dm 2 dg 0 pd 0.000002122942 td 0.099166666667
+ES t 0.75524857957 is 1
+BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe 3
+ES t 0.854413123295
+
+E # 4 t 0.75524857957 m 2 ce 3 msg 22
+CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 2
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 4
+ES t 0.854415246237
+DM id 22 tid 22 eid 22 etid 22 c omnetpp::cMessage n pk-9-#0 pe 4
+
+E # 5 t 0.770843630463 m 18 ce 1 msg 16
+BS id 16 tid 16 eid 16 etid 16 c omnetpp::cMessage n send/endTx pe 5
+ES t 9.700372584973
+
+E # 6 t 0.854413123295 m 9 ce 3 msg 7
+BS id 7 tid 7 eid 7 etid 7 c omnetpp::cMessage n send/endTx pe 6
+ES t 8.866154231039
+
+E # 7 t 0.854415246237 m 2 ce 4 msg 0
+
+E # 8 t 0.928378083 m 13 ce 0 msg 11
+CM id 23 tid 23 eid 23 etid 23 c omnetpp::cMessage n pk-13-#0 pe -1
+BS id 23 tid 23 eid 23 etid 23 c omnetpp::cPacket n pk-13-#0 l 952 pe 8
+SD sm 13 dm 2 dg 0 pd 0.000000382303 td 0.099166666667
+ES t 0.928378465303 is 1
+BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe 8
+ES t 1.027544749667
+
+E # 9 t 0.928378465303 m 2 ce 8 msg 23
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 7
+ES t 1.02754513197
+DM id 23 tid 23 eid 23 etid 23 c omnetpp::cMessage n pk-13-#0 pe 9
+
+E # 10 t 1.027544749667 m 13 ce 8 msg 11
+BS id 11 tid 11 eid 11 etid 11 c omnetpp::cMessage n send/endTx pe 10
+ES t 4.682039288765
+
+E # 11 t 1.02754513197 m 2 ce 9 msg 0
+
+E # 12 t 1.237219692183 m 22 ce 0 msg 20
+CM id 24 tid 24 eid 24 etid 24 c omnetpp::cMessage n pk-22-#0 pe -1
+BS id 24 tid 24 eid 24 etid 24 c omnetpp::cPacket n pk-22-#0 l 952 pe 12
+SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667
+ES t 1.237221180004 is 1
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 12
+ES t 1.33638635885
+
+E # 13 t 1.237221180004 m 2 ce 12 msg 24
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 11
+ES t 1.336387846671
+DM id 24 tid 24 eid 24 etid 24 c omnetpp::cMessage n pk-22-#0 pe 13
+
+E # 14 t 1.33638635885 m 22 ce 12 msg 20
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 14
+ES t 2.800677303269
+
+E # 15 t 1.336387846671 m 2 ce 13 msg 0
+
+E # 16 t 1.843682112915 m 21 ce 0 msg 19
+CM id 25 tid 25 eid 25 etid 25 c omnetpp::cMessage n pk-21-#0 pe -1
+BS id 25 tid 25 eid 25 etid 25 c omnetpp::cPacket n pk-21-#0 l 952 pe 16
+SD sm 21 dm 2 dg 0 pd 0.000001415319 td 0.099166666667
+ES t 1.843683528234 is 1
+BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe 16
+ES t 1.942848779582
+
+E # 17 t 1.843683528234 m 2 ce 16 msg 25
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 15
+ES t 1.942850194901
+DM id 25 tid 25 eid 25 etid 25 c omnetpp::cMessage n pk-21-#0 pe 17
+
+E # 18 t 1.942848779582 m 21 ce 16 msg 19
+BS id 19 tid 19 eid 19 etid 19 c omnetpp::cMessage n send/endTx pe 18
+ES t 6.984857013255
+
+E # 19 t 1.942850194901 m 2 ce 17 msg 0
+
+E # 20 t 2.800677303269 m 22 ce 14 msg 20
+CM id 26 tid 26 eid 26 etid 26 c omnetpp::cMessage n pk-22-#1 pe -1
+BS id 26 tid 26 eid 26 etid 26 c omnetpp::cPacket n pk-22-#1 l 952 pe 20
+SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667
+ES t 2.80067879109 is 1
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 20
+ES t 2.899843969936
+
+E # 21 t 2.80067879109 m 2 ce 20 msg 26
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 19
+ES t 2.899845457757
+DM id 26 tid 26 eid 26 etid 26 c omnetpp::cMessage n pk-22-#1 pe 21
+
+E # 22 t 2.899843969936 m 22 ce 20 msg 20
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 22
+ES t 3.771512133689
+
+E # 23 t 2.899845457757 m 2 ce 21 msg 0
+
+E # 24 t 3.213394321367 m 19 ce 0 msg 17
+CM id 27 tid 27 eid 27 etid 27 c omnetpp::cMessage n pk-19-#0 pe -1
+BS id 27 tid 27 eid 27 etid 27 c omnetpp::cPacket n pk-19-#0 l 952 pe 24
+SD sm 19 dm 2 dg 0 pd 0.000001540431 td 0.099166666667
+ES t 3.213395861798 is 1
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 24
+ES t 3.312560988034
+
+E # 25 t 3.213395861798 m 2 ce 24 msg 27
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 23
+ES t 3.312562528465
+DM id 27 tid 27 eid 27 etid 27 c omnetpp::cMessage n pk-19-#0 pe 25
+
+E # 26 t 3.312560988034 m 19 ce 24 msg 17
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 26
+ES t 3.426372403241
+
+E # 27 t 3.312562528465 m 2 ce 25 msg 0
+
+E # 28 t 3.426372403241 m 19 ce 26 msg 17
+CM id 28 tid 28 eid 28 etid 28 c omnetpp::cMessage n pk-19-#1 pe -1
+BS id 28 tid 28 eid 28 etid 28 c omnetpp::cPacket n pk-19-#1 l 952 pe 28
+SD sm 19 dm 2 dg 0 pd 0.000001540431 td 0.099166666667
+ES t 3.426373943672 is 1
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 28
+ES t 3.525539069908
+
+E # 29 t 3.426373943672 m 2 ce 28 msg 28
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 27
+ES t 3.525540610339
+DM id 28 tid 28 eid 28 etid 28 c omnetpp::cMessage n pk-19-#1 pe 29
+
+E # 30 t 3.525539069908 m 19 ce 28 msg 17
+BS id 17 tid 17 eid 17 etid 17 c omnetpp::cMessage n send/endTx pe 30
+ES t 5.876163933968
+
+E # 31 t 3.525540610339 m 2 ce 29 msg 0
+
+E # 32 t 3.71357675776 m 5 ce 0 msg 3
+CM id 29 tid 29 eid 29 etid 29 c omnetpp::cMessage n pk-5-#0 pe -1
+BS id 29 tid 29 eid 29 etid 29 c omnetpp::cPacket n pk-5-#0 l 952 pe 32
+SD sm 5 dm 2 dg 0 pd 0.000000848712 td 0.099166666667
+ES t 3.713577606472 is 1
+BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe 32
+ES t 3.812743424427
+
+E # 33 t 3.713577606472 m 2 ce 32 msg 29
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 31
+ES t 3.812744273139
+DM id 29 tid 29 eid 29 etid 29 c omnetpp::cMessage n pk-5-#0 pe 33
+
+E # 34 t 3.771512133689 m 22 ce 22 msg 20
+CM id 30 tid 30 eid 30 etid 30 c omnetpp::cMessage n pk-22-#2 pe -1
+BS id 30 tid 30 eid 30 etid 30 c omnetpp::cPacket n pk-22-#2 l 952 pe 34
+SD sm 22 dm 2 dg 0 pd 0.000001487821 td 0.099166666667
+ES t 3.77151362151 is 1
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 34
+ES t 3.870678800356
+
+E # 35 t 3.77151362151 m 2 ce 34 msg 30
+CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 33
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 35
+ES t 3.870680288177
+DM id 30 tid 30 eid 30 etid 30 c omnetpp::cMessage n pk-22-#2 pe 35
+
+E # 36 t 3.812743424427 m 5 ce 32 msg 3
+BS id 3 tid 3 eid 3 etid 3 c omnetpp::cMessage n send/endTx pe 36
+ES t 9.581029058822
+
+E # 37 t 3.850168212187 m 20 ce 0 msg 18
+CM id 31 tid 31 eid 31 etid 31 c omnetpp::cMessage n pk-20-#0 pe -1
+BS id 31 tid 31 eid 31 etid 31 c omnetpp::cPacket n pk-20-#0 l 952 pe 37
+SD sm 20 dm 2 dg 0 pd 0.000001692157 td 0.099166666667
+ES t 3.850169904344 is 1
+BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe 37
+ES t 3.949334878854
+
+E # 38 t 3.850169904344 m 2 ce 37 msg 31
+CE id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 35
+BS id 0 tid 0 eid 0 etid 0 c omnetpp::cMessage n end-reception pe 38
+ES t 3.949336571011
+DM id 31 tid 31 eid 31 etid 31 c omnetpp::cMessage n pk-20-#0 pe 38
+
+E # 39 t 3.870678800356 m 22 ce 34 msg 20
+BS id 20 tid 20 eid 20 etid 20 c omnetpp::cMessage n send/endTx pe 39
+ES t 4.843497737032
+
+E # 40 t 3.949334878854 m 20 ce 37 msg 18
+BS id 18 tid 18 eid 18 etid 18 c omnetpp::cMessage n send/endTx pe 40
+ES t 9.631314941904
+
+E # 41 t 3.949336571011 m 2 ce 38 msg 0
+SE e 0 c 38 m "Simulation time limit reached -- at t=4s, event #42"
+- [INFO]	duration: 4

@@ -1,0 +1,44 @@
+version 2
+run Fifo1-0-20170320-10:56:53-10571
+attr configname Fifo1
+attr datetime 20170320-10:56:53
+attr experiment Fifo1
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network FifoNet
+attr processid 10571
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param **.fifo.serviceTime 0.01s
+param **.gen.sendIaTime exponential(0.2s)
+
+scalar FifoNet.fifo 	queueingTime:mean 	0.00011519788062097
+attr interpolationmode  none
+attr title  "queueing time at dequeue, mean"
+attr unit  s
+scalar FifoNet.fifo 	queueingTime:max 	0.00620628616
+attr interpolationmode  none
+attr title  "queueing time at dequeue, max"
+attr unit  s
+scalar FifoNet.fifo 	busy:timeavg 	0.0496
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar FifoNet.fifo 	qlen:timeavg 	0.00057138148788
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar FifoNet.fifo 	qlen:max 	1
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar FifoNet.sink 	lifetime:mean 	0.010115197880621
+attr interpolationmode  none
+attr title  "lifetime of arrived jobs, mean"
+attr unit  s
+scalar FifoNet.sink 	lifetime:max 	0.01620628616
+attr interpolationmode  none
+attr title  "lifetime of arrived jobs, max"
+attr unit  s
