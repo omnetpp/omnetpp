@@ -61,7 +61,8 @@ void L2Queue::initialize()
     queue.setName("queue");
     endTransmissionEvent = new cMessage("endTxEvent");
 
-    gate("line$i")->setDeliverOnReceptionStart(true);
+    if (par("useCutThroughSwitching"))
+        gate("line$i")->setDeliverOnReceptionStart(true);
 
     frameCapacity = par("frameCapacity");
 
