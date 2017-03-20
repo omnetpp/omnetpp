@@ -16,11 +16,9 @@ import org.omnetpp.scave.engine.ResultFile;
 public class ResultFilePropertySource extends FilePropertySource {
     // display labels as well as property IDs
     public static final String PROP_COMPUTED = "Computed";
-    public static final String PROP_NUM_LINES = "Number of lines";
-    public static final String PROP_NUM_UNRECOGNIZED_LINES = "Unrecognized lines";
 
     public static final String[] MAIN_PROPERTY_IDS = {
-        PROP_COMPUTED, PROP_NUM_LINES, PROP_NUM_UNRECOGNIZED_LINES
+        PROP_COMPUTED,
     };
 
     protected static final IPropertyDescriptor[] MAIN_PROPERTY_DESCS = makeDescriptors(MAIN_PROPERTY_IDS, "", "Main");
@@ -41,14 +39,12 @@ public class ResultFilePropertySource extends FilePropertySource {
 
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
-        return (IPropertyDescriptor[])ArrayUtils.addAll(MAIN_PROPERTY_DESCS, super.getPropertyDescriptors());
+        return ArrayUtils.addAll(MAIN_PROPERTY_DESCS, super.getPropertyDescriptors());
     }
 
     @Override
     public Object getPropertyValue(Object propertyId) {
         if (propertyId.equals(PROP_COMPUTED)) return resultFile.getComputed();
-        if (propertyId.equals(PROP_NUM_LINES)) return resultFile.getNumLines();
-        if (propertyId.equals(PROP_NUM_UNRECOGNIZED_LINES)) return resultFile.getNumUnrecognizedLines();
 
         return super.getPropertyValue(propertyId);
     }

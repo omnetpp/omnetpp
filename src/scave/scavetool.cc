@@ -261,12 +261,9 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
 
         if (verbose)
             cout << "reading " << fileName << "...\n";
-        ResultFile *f = manager.loadFile(fileName);
+        manager.loadFile(fileName);
         if (verbose)
             cout << "done\n";
-        Assert(f); // or exception
-        if (f->fileType == ResultFile::FILETYPE_TEXT && f->numUnrecognizedLines > 0)
-            cerr << "scavetool: Warning: " << fileName << ": " << f->numUnrecognizedLines << " invalid/incomplete lines out of " << f->numLines << "\n";
     }
     if (verbose)
         cout << manager.getFiles().size() << " file(s) loaded\n";

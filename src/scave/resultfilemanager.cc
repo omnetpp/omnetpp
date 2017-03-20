@@ -812,8 +812,6 @@ ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSys
     splitFileName(file->filePath.c_str(), file->directory, file->fileName);
     file->fileType = fileType;
     file->computed = computed;
-    file->numLines = 0;
-    file->numUnrecognizedLines = 0;
     return file;
 }
 

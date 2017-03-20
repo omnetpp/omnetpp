@@ -267,8 +267,6 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
         ResultFile *f = resultFileManager.loadFile(vectorFileName);
         if (!f)
             throw opp_runtime_error("Cannot load %s", vectorFileName);
-        else if (f->numUnrecognizedLines > 0)
-            fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", vectorFileName, f->numUnrecognizedLines, f->numLines);
 
         IDList vectorIDList = resultFileManager.getAllVectors();
         if (vectorIDList.isEmpty()) {

@@ -192,8 +192,6 @@ struct SCAVE_API ResultFile
     ScalarResults scalarResults;
     VectorResults vectorResults;
     HistogramResults histogramResults;
-    int numLines;
-    int numUnrecognizedLines;
 };
 
 /**

@@ -304,8 +304,6 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
                 char **tokens = tokenizer.tokens();
                 processLine(tokens, numTokens, ctx);
             }
-
-            fileRef->numLines = ctx.lineNo;  // freader.getNumReadLines();
         }
     }
     catch (std::exception&) {
