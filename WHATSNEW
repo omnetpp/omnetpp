@@ -27,6 +27,25 @@ For further details see the preview version announcements below.
 
 Changes since OMNeT++ 5.1 Preview 3:
 
+Result Analysis:
+
+ - Data export functionality in scavetool and the IDE has been reimplemented.
+   Currently the following export formats are available: CSV, Python source,
+   OMNeT++ scalar/vector files, SQLite scalar/vector files. The new exporter
+   interface allows for defining new exporters (including UI) without any
+   change to scavetool or the Analysis Tool in the IDE, and for more flexible
+   output formats.
+
+   In scavetool, the new 'export' command replaces the now-deprecated 'vector'
+   and 'scalar' commands.
+
+Qtenv:
+
+ - Added graphical inspectors for output vectors and histograms. They are
+   enabled for cOutVector and cStatistic-based histogram objects, i.e. they
+   are currently not available for @statistic-based output vectors and
+   histograms.
+
 Build:
 
  - The configure script no longer detects and tests for the presence of the
@@ -37,7 +56,9 @@ Samples:
 
  - The routing example was modified to demonstrate the new, built-in packet
    animation in Qtenv. Packets are displayed as arrows along the connection
-   showing the actual packet length on the wire.
+   showing the actual packet length on the wire. Added parameter to be able
+   to switch between cut-through switching and store-and-forward. Also added
+   a parameter study into its omnetpp.ini.
 
 Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
 
@@ -561,7 +582,7 @@ Samples:
  - resultfiles: Result files were renamed to reflect the new default naming
    scheme (i.e. configname-itervars-#repetition).
 
- - Note: The systemc-embedding, sockets and cqn/parsim examples are NOT working 
+ - Note: The systemc-embedding, sockets and cqn/parsim examples are NOT working
    currently in the Qtenv runtime environment. If you want to run those examples
    please run them in either Tkenv or Cmdenv ('-u Tkenv' or '-u Cmdenv').
 
