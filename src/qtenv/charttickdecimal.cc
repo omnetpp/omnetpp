@@ -17,8 +17,9 @@
 #include "charttickdecimal.h"
 
 #include <iostream>
-#include <common/exception.h>
-#include <common/commonutil.h>
+#include "common/exception.h"
+#include "common/commonutil.h"
+#include "omnetpp/opp_string.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -152,13 +153,14 @@ ChartTickDecimal::ChartTickDecimal(double val)
 
 std::string ChartTickDecimal::str() const
 {
-    char buf[64];
+    int bufSize = abs(exponent) + 24;  // 24: max number of digits in an int64, plus sign, NUL and some slack
+    opp_string tmp(nullptr, bufSize);
 
     int64_t intVal = mantissa;
     int scale = exponent;
 
     // prepare for conversion
-    char *endp = buf+63;  // 19+19+5 should be enough, but play it safe
+    char *endp = tmp.buffer() + bufSize - 1;
     *endp = '\0';
     char *s = endp;
     if (intVal == 0) {
