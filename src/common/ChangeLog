@@ -1,3 +1,5 @@
+2017-03-20  ------ omnetpp-5.1 released ------
+
 2017-03-16  Andras Varga
 
 	* Added result file writer classes:
@@ -58,8 +60,6 @@
 2017-03-08  Andras Varga
 
 	* StringPool: cosmetics
-
-2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 

@@ -1,3 +1,5 @@
+2017-03-20  ------ omnetpp-5.1 released ------
+
 2017-03-14  Attila Torok
 
 	* cOutVector: Removed remains of support for recording a pair of 
@@ -21,8 +23,6 @@
 	module in source=<modulepath>.<signal> attr did not take effect.
 	Listener was mistakenly added to the module of the @statistic, not to the
 	submodule.
-
-2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-03-16  Rudolf Hornig
 

@@ -1,3 +1,5 @@
+2017-03-20  ------ omnetpp-5.1 released ------
+
 2017-03-16  Andras Varga
 
 	* New Exporter framework and exporters: CSV, Python Source, OMNeT++ and
@@ -95,8 +97,6 @@
 2017-03-10  Andras Varga
 
 	* scavetool: "query" subcommand's mode switches changed to lowercase
-
-2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 

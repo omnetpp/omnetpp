@@ -1,3 +1,5 @@
+2017-03-20  ------ omnetpp-5.1 released ------
+
 2017-03-10  Andras Varga
 
 	* Analysis Tool: switch to using the new exporters in the scave library
@@ -115,8 +117,6 @@
 2017-03-02  Rudolf Hornig
 
 	* Removed dummy MSVC toolchain definition
-
-2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-03-03  Levente Meszaros
 

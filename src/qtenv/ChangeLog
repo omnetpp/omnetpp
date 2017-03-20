@@ -1,3 +1,5 @@
+2017-03-20  ------ omnetpp-5.1 released ------
+
 2017-03-14  Attila Torok
 
 	* Fix: Always recompute module path in SendDirectAnimation because 
@@ -41,8 +43,6 @@
 	* Make graphical inspectors pop up when double clicking in the
 	general object inspector. This will make the Histogram and OutVector
 	inspectors easily discoverable.
-
-2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 

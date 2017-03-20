@@ -1,3 +1,5 @@
+2017-03-20  ------ omnetpp-5.1 released ------
+
 2017-03-16  Andras Varga
 
 	* Added new classes OmnetppOutputScalarManager, OmnetppOutputVectorManager
@@ -37,8 +39,6 @@
 	* Fix #995: Assert condition fails for ini files with CRLF line
 	terminators in inifilereader. Cause: right-trimming of the line was lost
 	when converting from FILE* I/O to iostream in late last year for 5.1pre2.
-
-2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-03-16  Rudolf Hornig
 
