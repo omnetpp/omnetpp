@@ -16,6 +16,7 @@
 
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QToolTip>
 #include <QStyledItemDelegate>
 #include <QTextLayout>
 #include <QTimer>
@@ -611,6 +612,9 @@ void MainWindow::onSliderValueChanged(int value)
             slider->setValue(valueOne);
             speed = snapToSpeed;
         }
+
+        if (env->getAnimationSpeed() == 0)
+            QToolTip::showText(QCursor::pos(), "Playback speed has no effect: set animation speed!", slider);
     }
 
     slider->setToolTip(QString::number(speed, 'f', 2));
