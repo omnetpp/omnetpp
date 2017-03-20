@@ -61,7 +61,7 @@ class ChartTickDecimal
     // Will (de|over)?normalize the parameters so that they have the same exponent.
     // Precision loss can occur, and if they are many (close to 20 or more) orders
     // of magnitude apart, the smaller one might diminish to zero.
-    static void match(ChartTickDecimal& a, ChartTickDecimal& b);
+    static bool match(ChartTickDecimal& a, ChartTickDecimal& b);
 
   public:
 
@@ -69,10 +69,12 @@ class ChartTickDecimal
     ChartTickDecimal(int64_t man, int exp);
     explicit ChartTickDecimal(double val);
 
+    int64_t getMantissa() const { return mantissa; }
+    int64_t getExponent() const { return exponent; }
+
     double dbl() const { return mantissa * std::pow(10, exponent); }
 
     std::string str() const;
-    std::string str2() const;
 
     ChartTickDecimal over2() const;
     ChartTickDecimal over5() const;

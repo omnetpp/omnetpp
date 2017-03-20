@@ -26,6 +26,9 @@ namespace qtenv {
 
 int64_t ChartTickDecimal::pow10(int exponent)
 {
+    Assert(exponent >= 0);
+    Assert(exponent <= 19);
+
     int64_t result = 1;
 
     while (exponent-- > 0)
@@ -69,11 +72,7 @@ bool ChartTickDecimal::overnormalize(int factor)
             break;
         }
     }
-/*
-    if (loss)
-        qDebug() << "HugeDecimal: precision lost while overnormalizing,"
-                 << "the result is" << str2();
- */
+
     return loss;
 }
 
@@ -90,11 +89,6 @@ int ChartTickDecimal::denormalize(int factor)
         exponent -= 1;
     }
 
-//    if (steps != factor)
-//        qDebug() << "HugeDecimal: couldn't fully denormalize,"
-//                 << "(" << steps << "steps instead of" << factor << "),"
-//                 << "the result is" << str2();
-
     return steps;
 }
 
@@ -110,30 +104,34 @@ void ChartTickDecimal::setExponent(int newExp)
         overnormalize(newExp - exponent);
 }
 
-void ChartTickDecimal::match(ChartTickDecimal& a, ChartTickDecimal& b)
+bool ChartTickDecimal::match(ChartTickDecimal& a, ChartTickDecimal& b)
 {
     if (a.exponent == b.exponent)
-        return;
+        return false;
 
     a.normalize();
     b.normalize();
 
     // they might have been unnormalized before
     if (a.exponent == b.exponent)
-        return;
+        return false;
+
+    bool lossy = false;
 
     if (a.exponent < b.exponent) {
         b.denormalize(b.exponent - a.exponent);
         // If b's mantissa couldn't be made large enough, we
         // must make a's smaller, losing precision.
-        a.overnormalize(b.exponent - a.exponent);
+        lossy |= a.overnormalize(b.exponent - a.exponent);
     }
     else {  // (b.exponent < a.exponent)
         a.denormalize(a.exponent - b.exponent);
         // If a's mantissa couldn't be made large enough, we
         // must make b's smaller, losing precision.
-        b.overnormalize(a.exponent - b.exponent);
+        lossy |= b.overnormalize(a.exponent - b.exponent);
     }
+
+    return lossy;
 }
 
 ChartTickDecimal::ChartTickDecimal(int64_t man, int exp)
@@ -175,6 +173,10 @@ std::string ChartTickDecimal::str() const
 
     bool skipzeros = true;
     int decimalplace = scale;
+
+    for (int i = 0; i < decimalplace; ++i)
+        *--s = '0';
+
     do {
         int64_t res = intVal / 10;
         int digit = intVal - (10*res);
@@ -200,13 +202,6 @@ std::string ChartTickDecimal::str() const
         *--s = '-';
 
     return s;
-}
-
-std::string ChartTickDecimal::str2() const
-{
-    std::stringstream ss;
-    ss << str() << " (=" << mantissa << "e" << exponent << ")";
-    return ss.str();
 }
 
 ChartTickDecimal ChartTickDecimal::over2() const
@@ -264,7 +259,10 @@ bool ChartTickDecimal::multipleOf(ChartTickDecimal base) const
     clone.mantissa = mantissa;  // not using the ctor to avoid one unnecessary
     clone.exponent = exponent;  // (and potentially harmful (to perf only)) call to normalize
 
-    match(clone, base);
+    bool lossy = match(clone, base);
+
+    if (lossy)
+        return false;
 
     if (base.mantissa == 0)
         return clone.mantissa == 0;
@@ -280,10 +278,18 @@ ChartTickDecimal ChartTickDecimal::floor(int precision) const
     if (exponentDiff <= 0)
         return *this;
 
-    int64_t scale = pow10(exponentDiff);
-    int64_t newMantissa = mantissa / scale;
+    int64_t newMantissa;
+    bool lossOccurred;
 
-    bool lossOccurred = newMantissa * scale != mantissa;
+    if (exponentDiff <= 19) {
+        int64_t scale = pow10(exponentDiff);
+        newMantissa = mantissa / scale;
+
+        lossOccurred = newMantissa * scale != mantissa;
+    } else {
+        newMantissa = 0;
+        lossOccurred = true;
+    }
 
     if (lossOccurred && mantissa < 0)
         newMantissa -= 1;
@@ -299,10 +305,18 @@ ChartTickDecimal ChartTickDecimal::ceil(int precision) const
     if (exponentDiff <= 0)
         return *this;
 
-    int64_t scale = pow10(exponentDiff);
-    int64_t newMantissa = mantissa / scale;
+    int64_t newMantissa;
+    bool lossOccurred;
 
-    bool lossOccurred = newMantissa * scale != mantissa;
+    if (exponentDiff <= 19) {
+        int64_t scale = pow10(exponentDiff);
+        newMantissa = mantissa / scale;
+
+        lossOccurred = newMantissa * scale != mantissa;
+    } else {
+        newMantissa = 0;
+        lossOccurred = true;
+    }
 
     if (lossOccurred && mantissa > 0)
         newMantissa += 1;

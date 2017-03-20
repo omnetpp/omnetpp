@@ -1,0 +1,256 @@
+%description:
+Tests the ChartTickDecimal class
+
+%includes:
+#include <qtenv/charttickdecimal.h>
+
+%global:
+using namespace omnetpp::qtenv;
+
+std::string str2(const ChartTickDecimal& dec)
+{
+    std::stringstream ss;
+    ss << dec.str() << " (" << dec.getMantissa() << "e" << dec.getExponent() << ")";
+    return ss.str();
+}
+
+%activity:
+
+#define T(x) (EV << #x << " " << str2(x) << std::endl)
+#define TCTOR(x) (EV << #x << " --> " << str2(ChartTickDecimal(x)) << std::endl)
+#define TCTOR2(m, e) (EV << #m << ", " << #e << " --> " << str2(ChartTickDecimal(m, e)) << std::endl)
+#define TB(x) (EV << #x << " " << x << std::endl)
+
+EV << "\n";
+
+
+EV << "Construction from double:\n";
+
+TCTOR(0.0);
+TCTOR(-0.0);
+
+TCTOR(1.0);
+TCTOR(-1.0);
+
+TCTOR(0.001);
+TCTOR(-0.001);
+
+TCTOR(100.0);
+TCTOR(-100.0);
+
+TCTOR(1.0e10);
+TCTOR(-1.0e10);
+
+TCTOR(1.0e-10);
+TCTOR(-1.0e-10);
+
+TCTOR(420.1337);
+TCTOR(-420.1337);
+
+TCTOR(3.14);
+TCTOR(3.1415);
+TCTOR(3.14159265);
+
+TCTOR(1.0e100);
+TCTOR(-1.0e100);
+
+TCTOR(1.0e-100);
+TCTOR(-1.0e-100);
+
+TCTOR(1.23456789012345e100);
+TCTOR(-1.23456789012345e100);
+
+TCTOR(1.23456789012345e-100);
+TCTOR(-1.23456789012345e-100);
+
+EV << "Construction from mantissa and exponent:\n";
+
+TCTOR2(0, 0);
+
+TCTOR2(0, 10);
+TCTOR2(0, -10);
+
+TCTOR2(3141592, -6);
+TCTOR2(-3141592, -6);
+
+TCTOR2(3141592, 10);
+TCTOR2(3141592, -10);
+
+EV << "Division operators:\n";
+
+ChartTickDecimal zero(0);
+ChartTickDecimal one(1);
+ChartTickDecimal n100(-100);
+
+ChartTickDecimal pi(31415, -4);
+
+T(zero.over2());
+T(zero.over5());
+T(zero.over10());
+
+T(one.over2());
+T(one.over5());
+T(one.over10());
+
+T(pi.over2());
+T(pi.over5());
+T(pi.over10());
+
+T(n100.over2());
+T(n100.over5());
+T(n100.over10());
+
+
+EV << "Floor and ceil:\n";
+
+ChartTickDecimal minuspi(-31415, -4);
+
+T(pi.floor(2));
+T(pi.ceil(2));
+
+T(pi.floor(0));
+T(pi.ceil(0));
+
+T(pi.floor(-2));
+T(pi.ceil(-2));
+
+T(pi.floor(30));
+T(pi.ceil(30));
+
+T(pi.floor(-30));
+T(pi.ceil(-30));
+
+
+T(minuspi.floor(2));
+T(minuspi.ceil(2));
+
+T(minuspi.floor(0));
+T(minuspi.ceil(0));
+
+T(minuspi.floor(-2));
+T(minuspi.ceil(-2));
+
+T(minuspi.floor(30));
+T(minuspi.ceil(30));
+
+T(minuspi.floor(-30));
+T(minuspi.ceil(-30));
+
+
+T(ChartTickDecimal(123456789, 50).ceil(30));
+T(ChartTickDecimal(123456789, 50).floor(30));
+
+T(ChartTickDecimal(123456789, 50).ceil(-30));
+T(ChartTickDecimal(123456789, 50).floor(-30));
+
+
+T(ChartTickDecimal(123456789, 50).ceil(45));
+T(ChartTickDecimal(123456789, 50).floor(45));
+
+T(ChartTickDecimal(123456789, 50).ceil(-45));
+T(ChartTickDecimal(123456789, 50).floor(-45));
+
+
+
+T(ChartTickDecimal(123456789, -50).ceil(30));
+T(ChartTickDecimal(123456789, -50).floor(30));
+
+T(ChartTickDecimal(123456789, -50).ceil(-30));
+T(ChartTickDecimal(123456789, -50).floor(-30));
+
+
+T(ChartTickDecimal(123456789, -50).ceil(45));
+T(ChartTickDecimal(123456789, -50).floor(45));
+
+T(ChartTickDecimal(123456789, -50).ceil(-45));
+T(ChartTickDecimal(123456789, -50).floor(-45));
+
+
+EV << ".\n";
+
+%contains: stdout
+Construction from double:
+0.0 --> 0 (0e0)
+-0.0 --> 0 (0e0)
+1.0 --> 1 (1e0)
+-1.0 --> -1 (-1e0)
+0.001 --> 0.001 (1e-3)
+-0.001 --> -0.001 (-1e-3)
+100.0 --> 100 (1e2)
+-100.0 --> -100 (-1e2)
+1.0e10 --> 10000000000 (1e10)
+-1.0e10 --> -10000000000 (-1e10)
+1.0e-10 --> 0.0000000001 (1e-10)
+-1.0e-10 --> -0.0000000001 (-1e-10)
+420.1337 --> 420.1337 (4201337e-4)
+-420.1337 --> -420.1337 (-4201337e-4)
+3.14 --> 3.14 (314e-2)
+3.1415 --> 3.1415 (31415e-4)
+3.14159265 --> 3.14159265 (314159265e-8)
+1.0e100 --> 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 (1e100)
+-1.0e100 --> -10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 (-1e100)
+1.0e-100 --> 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 (1e-100)
+-1.0e-100 --> -0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 (-1e-100)
+1.23456789012345e100 --> 12345678901234500000000000000000000000000000000000000000000000000000000000000000000000000000000000000 (123456789012345e86)
+-1.23456789012345e100 --> -12345678901234500000000000000000000000000000000000000000000000000000000000000000000000000000000000000 (-123456789012345e86)
+1.23456789012345e-100 --> 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123456789012345 (123456789012345e-114)
+-1.23456789012345e-100 --> -0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123456789012345 (-123456789012345e-114)
+Construction from mantissa and exponent:
+0, 0 --> 0 (0e0)
+0, 10 --> 0 (0e0)
+0, -10 --> 0 (0e0)
+3141592, -6 --> 3.141592 (3141592e-6)
+-3141592, -6 --> -3.141592 (-3141592e-6)
+3141592, 10 --> 31415920000000000 (3141592e10)
+3141592, -10 --> 0.0003141592 (3141592e-10)
+Division operators:
+zero.over2() 0 (0e0)
+zero.over5() 0 (0e0)
+zero.over10() 0 (0e0)
+one.over2() 0.5 (5e-1)
+one.over5() 0.2 (2e-1)
+one.over10() 0.1 (1e-1)
+pi.over2() 1.57075 (157075e-5)
+pi.over5() 0.6283 (6283e-4)
+pi.over10() 0.31415 (31415e-5)
+n100.over2() -50 (-5e1)
+n100.over5() -20 (-2e1)
+n100.over10() -10 (-1e1)
+Floor and ceil:
+pi.floor(2) 3.14 (314e-2)
+pi.ceil(2) 3.15 (315e-2)
+pi.floor(0) 3 (3e0)
+pi.ceil(0) 4 (4e0)
+pi.floor(-2) 0 (0e0)
+pi.ceil(-2) 100 (1e2)
+pi.floor(30) 3.1415 (31415e-4)
+pi.ceil(30) 3.1415 (31415e-4)
+pi.floor(-30) 0 (0e0)
+pi.ceil(-30) 1000000000000000000000000000000 (1e30)
+minuspi.floor(2) -3.15 (-315e-2)
+minuspi.ceil(2) -3.14 (-314e-2)
+minuspi.floor(0) -4 (-4e0)
+minuspi.ceil(0) -3 (-3e0)
+minuspi.floor(-2) -100 (-1e2)
+minuspi.ceil(-2) 0 (0e0)
+minuspi.floor(30) -3.1415 (-31415e-4)
+minuspi.ceil(30) -3.1415 (-31415e-4)
+minuspi.floor(-30) -1000000000000000000000000000000 (-1e30)
+minuspi.ceil(-30) 0 (0e0)
+ChartTickDecimal(123456789, 50).ceil(30) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, 50).floor(30) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, 50).ceil(-30) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, 50).floor(-30) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, 50).ceil(45) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, 50).floor(45) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, 50).ceil(-45) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, 50).floor(-45) 12345678900000000000000000000000000000000000000000000000000 (123456789e50)
+ChartTickDecimal(123456789, -50).ceil(30) 0.000000000000000000000000000001 (1e-30)
+ChartTickDecimal(123456789, -50).floor(30) 0 (0e0)
+ChartTickDecimal(123456789, -50).ceil(-30) 1000000000000000000000000000000 (1e30)
+ChartTickDecimal(123456789, -50).floor(-30) 0 (0e0)
+ChartTickDecimal(123456789, -50).ceil(45) 0.000000000000000000000000000000000000000001235 (1235e-45)
+ChartTickDecimal(123456789, -50).floor(45) 0.000000000000000000000000000000000000000001234 (1234e-45)
+ChartTickDecimal(123456789, -50).ceil(-45) 1000000000000000000000000000000000000000000000 (1e45)
+ChartTickDecimal(123456789, -50).floor(-45) 0 (0e0)
+.
