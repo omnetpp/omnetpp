@@ -1,0 +1,6 @@
+#! /bin/sh
+
+HERE=$(cd $(dirname $0); pwd)
+
+(cd ../aloha; rm -f $HERE/aloha/* results/*; opp_runall ./aloha -u Cmdenv -c PureAlohaExperiment && cp results/*.sca $HERE/aloha)
+(cd ../routing; rm -f $HERE/routing/* results/*; opp_runall ./routing -u Cmdenv -c Net10Experiment && cp results/*.sca $HERE/routing)

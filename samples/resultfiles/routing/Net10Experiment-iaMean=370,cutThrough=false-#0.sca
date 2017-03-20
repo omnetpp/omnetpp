@@ -1,0 +1,4222 @@
+version 2
+run Net10Experiment-40-20170320-15:27:02-19203
+attr configname Net10Experiment
+attr cutThrough false
+attr datetime 20170320-15:27:02
+attr experiment Net10Experiment
+attr iaMean 370
+attr inifile omnetpp.ini
+attr iterationvars "$iaMean=370, $cutThrough=false"
+attr iterationvarsf iaMean=370,cutThrough=false-
+attr measurement "$iaMean=370, $cutThrough=false"
+attr network networks.Net10
+attr processid 19203
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 40
+attr seedset 40
+param **.app.packetLength "4096 bytes"
+param **.app.sendIaTime "exponential(370 ms)"
+param **.appType "\"App\""
+param **.destAddresses "\"1\""
+param **.queue[*].frameCapacity 100
+param **.queue[*].useCutThroughSwitching false
+
+scalar _runattrs_ 	iaMean 	370
+scalar Net10.rte[0].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[0].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[0].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[0].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[0].routing 	outputIf:histogram
+field count 16226
+field mean 0
+field stddev 0
+field sum 0
+field sqrsum 0
+field min 0
+field max 0
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	16226
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[0].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[0].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[0].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[0].queue[0] 	txBytes:count 	16226
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[0] 	txBytes:sum 	66461696
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[0].queue[0] 	txBytes:histogram
+field count 16226
+field mean 4096
+field stddev 0
+field sum 66461696
+field sqrsum 272227106816
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	16226
+bin	4097	0
+scalar Net10.rte[0].queue[0] 	busy:timeavg 	0.44307797333325
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[0].queue[0] 	qlen:timeavg 	0.082123539744285
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[0].queue[0] 	qlen:max 	5
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[0].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[0].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[0].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[0].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[0].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[0].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[0].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[0].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[0].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[0].queue[2] 	rxBytes:count 	12958
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[2] 	rxBytes:sum 	53075968
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[0].queue[2] 	rxBytes:histogram
+field count 12958
+field mean 4096
+field stddev 0
+field sum 53075968
+field sqrsum 217399164928
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	12958
+bin	4097	0
+scalar Net10.rte[0].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[0].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[0].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[0].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[0].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[0].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[0].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[1].app 	hopCount:mean 	1.995945323299
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[1].app 	hopCount:max 	4
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[1].app 	endToEndDelay:mean 	0.075509721489047
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[1].app 	endToEndDelay:max 	0.314962995558
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[1].routing 	outputIf:histogram
+field count 32555
+field mean -1
+field stddev 0
+field sum -32555
+field sqrsum 32555
+field min -1
+field max -1
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	-2	0
+bin	-1	32555
+bin	0	0
+scalar Net10.rte[1].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[1].queue[0] 	rxBytes:count 	16226
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[0] 	rxBytes:sum 	66461696
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[1].queue[0] 	rxBytes:histogram
+field count 16226
+field mean 4096
+field stddev 0
+field sum 66461696
+field sqrsum 272227106816
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	16226
+bin	4097	0
+scalar Net10.rte[1].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[1].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[1].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[1].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[1].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[1].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[1].queue[1] 	rxBytes:count 	3245
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[1] 	rxBytes:sum 	13291520
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[1].queue[1] 	rxBytes:histogram
+field count 3245
+field mean 4096
+field stddev 0
+field sum 13291520
+field sqrsum 54442065920
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3245
+bin	4097	0
+scalar Net10.rte[1].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[1].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[1].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[1].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[1].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[1].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[1].queue[2] 	rxBytes:count 	9817
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[2] 	rxBytes:sum 	40210432
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[1].queue[2] 	rxBytes:histogram
+field count 9817
+field mean 4096
+field stddev 0
+field sum 40210432
+field sqrsum 164701929472
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	9817
+bin	4097	0
+scalar Net10.rte[1].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[1].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[1].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[1].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[1].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[1].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[1].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[2].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[2].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[2].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[2].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[2].routing 	outputIf:histogram
+field count 9818
+field mean 4
+field stddev 0
+field sum 39272
+field sqrsum 157088
+field min 4
+field max 4
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	3	0
+bin	4	9818
+bin	5	0
+scalar Net10.rte[2].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[2].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[2].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[2].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[2].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[2].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[2].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[2].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[2].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[2].queue[2] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[2] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[2] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[2].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[2].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[2].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[2].queue[3] 	rxBytes:count 	6560
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[3] 	rxBytes:sum 	26869760
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[3] 	rxBytes:histogram
+field count 6560
+field mean 4096
+field stddev 0
+field sum 26869760
+field sqrsum 110058536960
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	6560
+bin	4097	0
+scalar Net10.rte[2].queue[3] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[3] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[3] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[3] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[2].queue[3] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[2].queue[3] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[2].queue[3] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[3] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[2].queue[4] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[4] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[4] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[2].queue[4] 	txBytes:count 	9818
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[4] 	txBytes:sum 	40214528
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[2].queue[4] 	txBytes:histogram
+field count 9818
+field mean 4096
+field stddev 0
+field sum 40214528
+field sqrsum 164718706688
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	9818
+bin	4097	0
+scalar Net10.rte[2].queue[4] 	busy:timeavg 	0.26809022444155
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[2].queue[4] 	qlen:timeavg 	0.030121090053423
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[2].queue[4] 	qlen:max 	4
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[2].queue[4] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[2].queue[4] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[3].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[3].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[3].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[3].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[3].routing 	outputIf:histogram
+field count 3245
+field mean 1
+field stddev 0
+field sum 3245
+field sqrsum 3245
+field min 1
+field max 1
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	0	0
+bin	1	3245
+bin	2	0
+scalar Net10.rte[3].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[3].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[3].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[3].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[3].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[3].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[3].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[3].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[3].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[3].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[3].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[3].queue[1] 	txBytes:count 	3245
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[1] 	txBytes:sum 	13291520
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[3].queue[1] 	txBytes:histogram
+field count 3245
+field mean 4096
+field stddev 0
+field sum 13291520
+field sqrsum 54442065920
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3245
+bin	4097	0
+scalar Net10.rte[3].queue[1] 	busy:timeavg 	0.088610133333336
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[3].queue[1] 	qlen:timeavg 	0.0039404620124175
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[3].queue[1] 	qlen:max 	2
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[3].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[3].queue[2] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[2] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[3].queue[2] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[3].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[3].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[3].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[3].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[3].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[3].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[3].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[4].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[4].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[4].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[4].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[4].routing 	outputIf:histogram
+field count 6560
+field mean 2
+field stddev 0
+field sum 13120
+field sqrsum 26240
+field min 2
+field max 2
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	1	0
+bin	2	6560
+bin	3	0
+scalar Net10.rte[4].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[4].queue[0] 	rxBytes:count 	3214
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[0] 	rxBytes:sum 	13164544
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[0] 	rxBytes:histogram
+field count 3214
+field mean 4096
+field stddev 0
+field sum 13164544
+field sqrsum 53921972224
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3214
+bin	4097	0
+scalar Net10.rte[4].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[4].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[4].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[4].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[4].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[4].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[4].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[4].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[4].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[4].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[4].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[4].queue[2] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[2] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[2] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[4].queue[2] 	txBytes:count 	6560
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[2] 	txBytes:sum 	26869760
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[2] 	txBytes:histogram
+field count 6560
+field mean 4096
+field stddev 0
+field sum 26869760
+field sqrsum 110058536960
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	6560
+bin	4097	0
+scalar Net10.rte[4].queue[2] 	busy:timeavg 	0.17913173333335
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[4].queue[2] 	qlen:timeavg 	0.015285706504598
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[4].queue[2] 	qlen:max 	3
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[4].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[4].queue[3] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[3] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[3] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[4].queue[3] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[3] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[4].queue[3] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[4].queue[3] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[4].queue[3] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[4].queue[3] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[4].queue[3] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[4].queue[3] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[5].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[5].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[5].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[5].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[5].routing 	outputIf:histogram
+field count 12959
+field mean 3
+field stddev 0
+field sum 38877
+field sqrsum 116631
+field min 3
+field max 3
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	2	0
+bin	3	12959
+bin	4	0
+scalar Net10.rte[5].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[5].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[5].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[5].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[5].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[5].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[5].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[5].queue[1] 	rxBytes:count 	3255
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[1] 	rxBytes:sum 	13332480
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[1] 	rxBytes:histogram
+field count 3255
+field mean 4096
+field stddev 0
+field sum 13332480
+field sqrsum 54609838080
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3255
+bin	4097	0
+scalar Net10.rte[5].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[5].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[5].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[5].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[5].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[5].queue[2] 	rxBytes:count 	6476
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[2] 	rxBytes:sum 	26525696
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[2] 	rxBytes:histogram
+field count 6476
+field mean 4096
+field stddev 0
+field sum 26525696
+field sqrsum 108649250816
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	6476
+bin	4097	0
+scalar Net10.rte[5].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[5].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[5].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[5].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[5].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[5].queue[3] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[3] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[3] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[5].queue[3] 	txBytes:count 	12959
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[3] 	txBytes:sum 	53080064
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[5].queue[3] 	txBytes:histogram
+field count 12959
+field mean 4096
+field stddev 0
+field sum 53080064
+field sqrsum 217415942144
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	12959
+bin	4097	0
+scalar Net10.rte[5].queue[3] 	busy:timeavg 	0.35385721976591
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[5].queue[3] 	qlen:timeavg 	0.075881144166803
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[5].queue[3] 	qlen:max 	5
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[5].queue[3] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[5].queue[3] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[6].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[6].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[6].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[6].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[6].routing 	outputIf:histogram
+field count 6477
+field mean 4
+field stddev 0
+field sum 25908
+field sqrsum 103632
+field min 4
+field max 4
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	3	0
+bin	4	6477
+bin	5	0
+scalar Net10.rte[6].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[6].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[6].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[6].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[6].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[6].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[6].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[6].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[6].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[6].queue[2] 	rxBytes:count 	3229
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[2] 	rxBytes:sum 	13225984
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[2] 	rxBytes:histogram
+field count 3229
+field mean 4096
+field stddev 0
+field sum 13225984
+field sqrsum 54173630464
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3229
+bin	4097	0
+scalar Net10.rte[6].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[6].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[6].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[6].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[6].queue[3] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[3] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[3] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[3] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[3] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[3] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[3] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[6].queue[3] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[6].queue[3] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[6].queue[3] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[3] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[6].queue[4] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[4] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[4] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[6].queue[4] 	txBytes:count 	6477
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[4] 	txBytes:sum 	26529792
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[6].queue[4] 	txBytes:histogram
+field count 6477
+field mean 4096
+field stddev 0
+field sum 26529792
+field sqrsum 108666028032
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	6477
+bin	4097	0
+scalar Net10.rte[6].queue[4] 	busy:timeavg 	0.17686495714822
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[6].queue[4] 	qlen:timeavg 	0.015150034176703
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[6].queue[4] 	qlen:max 	2
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[6].queue[4] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[6].queue[4] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[7].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[7].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[7].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[7].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[7].routing 	outputIf:histogram
+field count 3255
+field mean 0
+field stddev 0
+field sum 0
+field sqrsum 0
+field min 0
+field max 0
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	3255
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[7].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[7].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[7].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[7].queue[0] 	txBytes:count 	3255
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[0] 	txBytes:sum 	13332480
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[7].queue[0] 	txBytes:histogram
+field count 3255
+field mean 4096
+field stddev 0
+field sum 13332480
+field sqrsum 54609838080
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3255
+bin	4097	0
+scalar Net10.rte[7].queue[0] 	busy:timeavg 	0.088883200000002
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[7].queue[0] 	qlen:timeavg 	0.0042319637376092
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[7].queue[0] 	qlen:max 	2
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[7].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[7].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[7].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[7].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[7].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[7].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[7].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[7].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[7].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[7].queue[2] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[2] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[7].queue[2] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[7].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[7].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[7].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[7].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[7].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[7].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[7].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[8].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[8].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[8].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[8].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[8].routing 	outputIf:histogram
+field count 3214
+field mean 1
+field stddev 0
+field sum 3214
+field sqrsum 3214
+field min 1
+field max 1
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	0	0
+bin	1	3214
+bin	2	0
+scalar Net10.rte[8].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[8].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[8].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[8].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[8].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[8].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[8].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[8].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[8].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[8].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[8].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[8].queue[1] 	txBytes:count 	3214
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[1] 	txBytes:sum 	13164544
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[8].queue[1] 	txBytes:histogram
+field count 3214
+field mean 4096
+field stddev 0
+field sum 13164544
+field sqrsum 53921972224
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3214
+bin	4097	0
+scalar Net10.rte[8].queue[1] 	busy:timeavg 	0.087763626666669
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[8].queue[1] 	qlen:timeavg 	0.0037605536731833
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[8].queue[1] 	qlen:max 	2
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[8].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[8].queue[2] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[2] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[8].queue[2] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[8].queue[2] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[2] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[8].queue[2] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[8].queue[2] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[8].queue[2] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[8].queue[2] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[8].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[8].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[9].app 	hopCount:mean 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, mean"
+scalar Net10.rte[9].app 	hopCount:max 	-nan
+attr interpolationmode  none
+attr title  "hop count of arrived packets, max"
+scalar Net10.rte[9].app 	endToEndDelay:mean 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, mean"
+attr unit  s
+scalar Net10.rte[9].app 	endToEndDelay:max 	-nan
+attr interpolationmode  none
+attr title  "end-to-end delay of arrived packets, max"
+attr unit  s
+statistic Net10.rte[9].routing 	outputIf:histogram
+field count 3229
+field mean 2
+field stddev 0
+field sum 6458
+field sqrsum 12916
+field min 2
+field max 2
+attr interpolationmode  none
+attr title  "output interface for each routed packet, histogram"
+bin	-INF	0
+bin	1	0
+bin	2	3229
+bin	3	0
+scalar Net10.rte[9].routing 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].routing 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[9].queue[0] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[0] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[9].queue[0] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[9].queue[0] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[0] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[9].queue[0] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[9].queue[0] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[9].queue[0] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[9].queue[0] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[9].queue[0] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[0] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[9].queue[1] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[1] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[9].queue[1] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[9].queue[1] 	txBytes:count 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[1] 	txBytes:sum 	0
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[9].queue[1] 	txBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[9].queue[1] 	busy:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[9].queue[1] 	qlen:timeavg 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[9].queue[1] 	qlen:max 	0
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[9].queue[1] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[1] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes
+scalar Net10.rte[9].queue[2] 	rxBytes:count 	0
+attr interpolationmode  none
+attr title  "received packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[2] 	rxBytes:sum 	0
+attr interpolationmode  none
+attr title  "received packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[9].queue[2] 	rxBytes:histogram
+field count 0
+field mean -nan
+field stddev -nan
+field sum 0
+field sqrsum 0
+field min -nan
+field max -nan
+attr interpolationmode  none
+attr title  "received packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	-0.5	0
+bin	-0.46666666666667	0
+bin	-0.43333333333333	0
+bin	-0.4	0
+bin	-0.36666666666667	0
+bin	-0.33333333333333	0
+bin	-0.3	0
+bin	-0.26666666666667	0
+bin	-0.23333333333333	0
+bin	-0.2	0
+bin	-0.16666666666667	0
+bin	-0.13333333333333	0
+bin	-0.1	0
+bin	-0.066666666666667	0
+bin	-0.033333333333333	0
+bin	0	0
+bin	0.033333333333333	0
+bin	0.066666666666667	0
+bin	0.1	0
+bin	0.13333333333333	0
+bin	0.16666666666667	0
+bin	0.2	0
+bin	0.23333333333333	0
+bin	0.26666666666667	0
+bin	0.3	0
+bin	0.33333333333333	0
+bin	0.36666666666667	0
+bin	0.4	0
+bin	0.43333333333333	0
+bin	0.46666666666667	0
+bin	0.5	0
+scalar Net10.rte[9].queue[2] 	txBytes:count 	3229
+attr interpolationmode  none
+attr title  "transmitting packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[2] 	txBytes:sum 	13225984
+attr interpolationmode  none
+attr title  "transmitting packet byte length, sum"
+attr unit  bytes
+statistic Net10.rte[9].queue[2] 	txBytes:histogram
+field count 3229
+field mean 4096
+field stddev 0
+field sum 13225984
+field sqrsum 54173630464
+field min 4096
+field max 4096
+attr interpolationmode  none
+attr title  "transmitting packet byte length, histogram"
+attr unit  bytes
+bin	-INF	0
+bin	4095	0
+bin	4096	3229
+bin	4097	0
+scalar Net10.rte[9].queue[2] 	busy:timeavg 	0.088173226666669
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar Net10.rte[9].queue[2] 	qlen:timeavg 	0.0050766151920475
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar Net10.rte[9].queue[2] 	qlen:max 	3
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar Net10.rte[9].queue[2] 	drop:count 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, count"
+attr unit  bytes
+scalar Net10.rte[9].queue[2] 	drop:sum 	0
+attr interpolationmode  none
+attr title  "dropped packet byte length, sum"
+attr unit  bytes

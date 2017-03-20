@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/resultfiles/routing/Net10Experiment-*.vec"/>
+    <inputs name="/resultfiles/routing/Net10Experiment-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="X">
+      <items xsi:type="scave:Add" filterPattern="name(endToEndDelay:mean) and module(*.rte[1].app) "/>
+      <items xsi:type="scave:Add" filterPattern="name(iaMean) "/>
+      <items xsi:type="scave:ScatterChart" name="CutThrough vs Store and Forward" xDataPattern="module(_runattrs_) AND name(iaMean)">
+        <isoDataPattern>cutThrough(*)</isoDataPattern>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2"/>
+  </chartSheets>
+</scave:Analysis>

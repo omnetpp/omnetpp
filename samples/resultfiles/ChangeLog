@@ -2,8 +2,9 @@
 
 2017-03-20  Rudolf Hornig
 
-	* Re-generated all files
+	* Regenerated all files
 	* Renamed/updated OneFifo to Fifo1
+	* Added experiment from the routing example
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 

@@ -87,10 +87,10 @@
 
 /samples/osg-indoor/,                -f omnetpp.ini -c Office -r 0,                5000s,         69f4-5a68/tplx
 
-/samples/osg-intro/,                 -f omnetpp.ini -c Simple3DModel -r 0,         5000s,         0000-0000
-/samples/osg-intro/,                 -f omnetpp.ini -c OpenStreetMapGlobe -r 0,    5000s,         0000-0000
-/samples/osg-intro/,                 -f omnetpp.ini -c OpenStreetMapFlat -r 0,     5000s,         0000-0000
-/samples/osg-intro/,                 -f omnetpp.ini -c ReadyMapWithElevation -r 0, 5000s,         0000-0000
+#/samples/osg-intro/,                 -f omnetpp.ini -c Simple3DModel -r 0,         5000s,         0000-0000
+#/samples/osg-intro/,                 -f omnetpp.ini -c OpenStreetMapGlobe -r 0,    5000s,         0000-0000
+#/samples/osg-intro/,                 -f omnetpp.ini -c OpenStreetMapFlat -r 0,     5000s,         0000-0000
+#/samples/osg-intro/,                 -f omnetpp.ini -c ReadyMapWithElevation -r 0, 5000s,         0000-0000
 
 /samples/osg-satellites/,            -f omnetpp.ini -c RandomOrbits -r 0,          5000s,         7adf-31e0/tplx
 /samples/osg-satellites/,            -f omnetpp.ini -c Geostationary -r 0,         5000s,         7adf-31e0/tplx
@@ -110,15 +110,16 @@
 /samples/queuenet/,                  -f omnetpp.ini -c CQN -r 1,                   5000s,         cd2b-60bc/tplx
 /samples/queuenet/,                  -f omnetpp.ini -c CQN -r 2,                   5000s,         7c5c-2489/tplx
 
-/samples/routing/,                   -f omnetpp.ini -c Net60 -r 0,                  500s,         7e5a-d008/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net60Bursty -r 0,            500s,         02be-97d1/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net60a -r 0,                 500s,         a7ea-21b9/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net5 -r 0,                   500s,         1a67-a11e/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net10 -r 0,                  500s,         ee4e-8276/tplx
-/samples/routing/,                   -f omnetpp.ini -c RandomGraph -r 0,            500s,         4c70-120d/tplx
-/samples/routing/,                   -f omnetpp.ini -c Mesh -r 0,                   500s,         9da2-1ccf/tplx
-/samples/routing/,                   -f omnetpp.ini -c RandomMesh -r 0,             500s,         4e72-de2e/tplx
-/samples/routing/,                   -f omnetpp.ini -c NetBuilder -r 0,             500s,         7b5b-d2e2/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net60StoreAndForward -r 0,   1s,         2300-8c3d/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net60CutThrough -r 0,        1s,         5fff-a24d/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net60Bursty -r 0,            100s,         9944-16d5/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net60a -r 0,                 100s,         3189-8898/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net5 -r 0,                   100s,         eea2-02ed/tplx
+/samples/routing/,                   -f omnetpp.ini -c Net10 -r 0,                  100s,         0d50-ba0d/tplx
+/samples/routing/,                   -f omnetpp.ini -c RandomGraph -r 0,            100s,         c269-5faa/tplx
+/samples/routing/,                   -f omnetpp.ini -c Mesh -r 0,                   100s,         c193-28a7/tplx
+/samples/routing/,                   -f omnetpp.ini -c RandomMesh -r 0,             100s,         3ffa-c408/tplx
+/samples/routing/,                   -f omnetpp.ini -c NetBuilder -r 0,             100s,         1b25-73f9/tplx
 # /samples/routing/parsim/,            -f omnetpp.ini -c Net60-parsim -r 0,          5000s,         0000-0000           # Parallel simulation
 # /samples/routing/parsim/,            -f omnetpp.ini -c Net10-parsim -r 0,          5000s,         0000-0000           # Parallel simulation
 
