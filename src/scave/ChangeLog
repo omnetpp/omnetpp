@@ -6,10 +6,10 @@
 	for defining new exporters (including their UI) without any change to
 	scavetool or the Analysis Tool in the IDE.
 
-	In scavetool, the new 'export' command replaces the now-deprecated the 
+	In scavetool, the new 'export' command replaces the now-deprecated the
 	'vector' and 'scalar' commands.
 
-	New classes: Exporter, ExporterFactory (framework); CsvExporter, 
+	New classes: Exporter, ExporterFactory (framework); CsvExporter,
 	PythonExporter, OmnetppScalarFileExporter, OmnetppVectorFileExporter,
 	SqliteScalarFileExporter, SqliteVectorFileExporter (concrete exporters)
 

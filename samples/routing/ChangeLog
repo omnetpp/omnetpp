@@ -1,9 +1,18 @@
+2017-03-20  Rudolf Hornig
+
+	* Added parameter to be able to switch between cut-through and
+	store-and-forward routing. Default is store-and-forward.
+	
+	* Refined the simulation configurations in omnetpp.ini
+	
+	* Added parameter study to omnetpp.ini, to be used in samples/resultfiles
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-13  Attila Torok
 
 	* Sample modified to better show the packet animation on limited darate channel.
-	  The routers are immediately forwarding the packets without storing them. 
+	  The routers are immediately forwarding the packets without storing them.
 	  This allows showing the packets as arrows showing the actual length of the packet.
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
@@ -89,5 +98,3 @@
 2004-01-21  Andras Varga
 
 	* Samples revisited
-
-

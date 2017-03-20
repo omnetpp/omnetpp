@@ -53,8 +53,8 @@
 
 2017-03-09  Rudolf Hornig
 
-	* Makefile generation: follow opp_makemake change: improved the "clean" 
-	target in the generated makefiles (recursive wildcard; delete only the 
+	* Makefile generation: follow opp_makemake change: improved the "clean"
+	target in the generated makefiles (recursive wildcard; delete only the
 	actual target)
 
 2017-03-03  Levente Mészáros
@@ -68,12 +68,12 @@
 
 2017-03-03  Levente Mészáros
 
-	* Sequence Chart: Eventlog view: Fixed foreground color when the table 
+	* Sequence Chart: Eventlog view: Fixed foreground color when the table
 	widget is not focused.
 
 2017-03-02  Andras Varga
 
-	* Inifile Editor: fix #941: Recursively including ini file makes 
+	* Inifile Editor: fix #941: Recursively including ini file makes
 	OMNeT++ workspace unusable
 
 2017-03-03  Andras Varga
@@ -96,12 +96,12 @@
 
 2017-03-02  Andras Varga
 
-	* Inifile Editor: fix: form edits were lost when typing too quickly 
+	* Inifile Editor: fix: form edits were lost when typing too quickly
 	after hitting Enter. Cause: reread() overwrote user's edits.
 
 2017-03-02  Andras Varga
 
-	* Inifile Editor: Fix #1001: form editor: "Reset to default" button 
+	* Inifile Editor: Fix #1001: form editor: "Reset to default" button
 	pops up "No such entry" error dialog
 
 2017-03-03  Rudolf Hornig

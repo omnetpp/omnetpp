@@ -1,6 +1,6 @@
 2017-03-16  Andras Varga
 
-	* Added result file writer classes: 
+	* Added result file writer classes:
 	OmnetppScalarFileWriter, OmnetppVectorFileWriter,
 	SqliteScalarFileWriter, SqliteVectorFileWriter.
 

@@ -1,6 +1,11 @@
+2017-03-14  Attila Torok
+
+	* cOutVector: Removed remains of support for recording a pair of 
+	doubles in an output vector.
+
 2017-03-07  Andras Varga
 
-	* SimTime: code of ttoa() moved into the common library as opp_ttoa(), 
+	* SimTime: code of ttoa() moved into the common library as opp_ttoa(),
 	for reusability. (SimTime::ttoa() now delegates to opp_ttoa()).
 
 	* SimTime: str() made more efficient (bypass std::stringstream and op<<)
@@ -12,7 +17,7 @@
 
 2017-03-08  Andras Varga
 
-	* statisticparsing.cc: Fix in @statistics processing: 
+	* statisticparsing.cc: Fix in @statistics processing:
 	module in source=<modulepath>.<signal> attr did not take effect.
 	Listener was mistakenly added to the module of the @statistic, not to the
 	submodule.

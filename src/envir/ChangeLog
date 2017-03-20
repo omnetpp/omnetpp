@@ -3,9 +3,9 @@
 	* Added new classes OmnetppOutputScalarManager, OmnetppOutputVectorManager
 	which rely on result file writer classes in envir. These classes are not
 	activated yet (the old classes cIndexedFileOutVectorManager and
-	cFileOutScalarManager are still the default result recorder classes.) 
+	cFileOutScalarManager are still the default result recorder classes.)
 
-	* Added the cFileOutputVectorManager_merged class, which is 
+	* Added the cFileOutputVectorManager_merged class, which is
 	an intermediate state (cIndexedFileOutVectorManager and its
 	base class merged.)
 
@@ -29,13 +29,13 @@
 
 2017-03-02  Andras Varga
 
-	* SectionBasedConfig: fix bug in unrollConfig(). When doing "-q runs", 
+	* SectionBasedConfig: fix bug in unrollConfig(). When doing "-q runs",
 	seed-set=${10,20,30} caused assertion failure near sectionbasedconfig.cc:650.
 
 2017-02-23  Andras Varga
 
 	* Fix #995: Assert condition fails for ini files with CRLF line
-	terminators in inifilereader. Cause: right-trimming of the line was lost 
+	terminators in inifilereader. Cause: right-trimming of the line was lost
 	when converting from FILE* I/O to iostream in late last year for 5.1pre2.
 
 2017-03-03  ------ omnetpp-5.1 released ------

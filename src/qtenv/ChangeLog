@@ -1,3 +1,47 @@
+2017-03-14  Attila Torok
+
+	* Fix: Always recompute module path in SendDirectAnimation because 
+	the modules referenced in it might have been deleted. Fixes a
+	crash in the dyna sample, when a process in the server ends, while a
+	graphical inspector is open for the server.
+
+2017-03-14  Attila Torok
+
+	* Remove deleted objects from the FindObjectDialog.
+
+2017-03-13  Attila Torok
+
+	* TextViewerWidget: Allow 0 height viewport.
+
+	This happens mostly when a new inspector is opened, and output is
+	appended to the backing buffer at the same time. Without this shortcut,
+	the ASSERT a few lines below could fail.
+
+2017-03-13  Attila Torok
+
+	* Disable BSP cache for ModuleCanvasViewer.
+
+	This avoids a crash inside Qt when traversing the tree. The proper
+	solution would be to pedantically call prepareGeometryChange() in every
+	custom item when needed. However, this might also improve performance.
+
+2017-03-13  Attila Torok
+
+	* Terminate the simulation right away when we run out of events.
+
+	Instead of just stopping and terminating later, when the user tries to
+	continue simulating. This relies on guessNextEvent too much. It really
+	shouldn't.
+
+2017-03-14  Attila Torok
+
+	* Implement and enable HistogramInspector and OutVectorInspector
+	[author Mihaly Palenik; refinements by Attila Török].
+
+	* Make graphical inspectors pop up when double clicking in the
+	general object inspector. This will make the Histogram and OutVector
+	inspectors easily discoverable.
+
 2017-03-03  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
@@ -88,7 +132,7 @@
 
 2017-01-16  Attila Torok
 
-	* Apply figure tag filters instantly. Also, make the dialog a child of 
+	* Apply figure tag filters instantly. Also, make the dialog a child of
 	the Inspector. This way it won't appear	on the taskbar and similar gadgets.
 
 2017-01-27  Attila Torok
@@ -106,7 +150,7 @@
 2017-01-18  Attila Torok
 
 	* Module Inspector: Reduce painting glitches by calling update() in a
-	few more places. This should fix the glitches when switching 
+	few more places. This should fix the glitches when switching
 	connection arrowhead drawing on/off, or between OSG and 2D mode.
 
 2017-01-13  Attila Torok
@@ -162,7 +206,7 @@
 2016-11-22  Attila Torok
 
 	* TextViewerWidget can be scrolled vertically with pixel
-	granularity. Also, there should be no more infinite scrollbar 
+	granularity. Also, there should be no more infinite scrollbar
 	configuration show/hide	loops.
 
 2017-01-06  Attila Torok
@@ -197,8 +241,8 @@
 
 2017-01-11  Attila Torok
 
-	* Don't strip namespaces for internal uses like storing inspector 
-	windows and preferences, and appending to the message filter. 
+	* Don't strip namespaces for internal uses like storing inspector
+	windows and preferences, and appending to the message filter.
 	This should fix the bug when the "exclude messages like
 	this from animation" appended to the filter with the class name stripped
 	according to the user setting in the preferences dialog, but the filter
@@ -251,7 +295,7 @@
 	* Renamed a few classes related to object search.
 
 	Namely:	InspectorListBox -> ObjectListModel; InspectorListBoxView ->
-	ObjectListView (they had nothing to do with inspectors); 
+	ObjectListView (they had nothing to do with inspectors);
 	FilteredObjectListDialog -> FindObjectsDialog
 
 	And some data members and local variables too.
