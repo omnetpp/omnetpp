@@ -49,9 +49,8 @@ public:
     static void preferencesDialog(eTab defaultPage = TAB_NOTDEFINED);
     static QString getInspectMenuLabel(InspectorType type);
 
-    // Convert a double to QString in standard notation with maxPrecision and delete
-    // trailing zeros
-    static QString doubleToQString(double num, int maxPrecision = 6);
+    // like QString::number, only better
+    static QString formatDouble(double num);
 };
 
 } // namespace qtenv

@@ -17,15 +17,15 @@
 #include "outputvectorinspectorconfigdialog.h"
 #include "ui_outputvectorinspectorconfigdialog.h"
 #include <QPushButton>
+#include <QMessageBox>
+#include "common/stringutil.h"
 #include "qtenv.h"
 #include "inspectorutil.h"
 
 #define emit
 
-static int DOUBLE_MAX_PRECISION = 12;
-static QColor ERROR_COLOR(216, 108, 112);
-
 namespace omnetpp {
+using namespace common;
 namespace qtenv {
 
 OutputVectorInspectorConfigDialog::OutputVectorInspectorConfigDialog(VectorPlotItem::PlottingMode plottingMode, QWidget *parent) :
@@ -34,16 +34,6 @@ OutputVectorInspectorConfigDialog::OutputVectorInspectorConfigDialog(VectorPlotI
 {
     ui->setupUi(this);
     ui->styleComboBox->setCurrentIndex(plottingMode);
-
-    QDoubleValidator *validator = new QDoubleValidator();
-    validator->setNotation(QDoubleValidator::StandardNotation);
-    validator->setBottom(0);
-    ui->timeScaleLineEdit->setValidator(validator);
-
-    validator = new QDoubleValidator();
-    validator->setNotation(QDoubleValidator::StandardNotation);
-    ui->yMinLineEdit->setValidator(validator);
-    ui->yMaxLineEdit->setValidator(validator);
 
     connect(ui->yMinLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged()));
     connect(ui->yMaxLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged()));
@@ -77,12 +67,12 @@ bool OutputVectorInspectorConfigDialog::hasMinY() const
 
 double OutputVectorInspectorConfigDialog::getMinY() const
 {
-    return ui->yMinLineEdit->text().toDouble();
+    return opp_atof(ui->yMinLineEdit->text().toLatin1());
 }
 
 void OutputVectorInspectorConfigDialog::setMinY(const double minY)
 {
-    ui->yMinLineEdit->setText(InspectorUtil::doubleToQString(minY, DOUBLE_MAX_PRECISION));
+    ui->yMinLineEdit->setText(InspectorUtil::formatDouble(minY));
 }
 
 bool OutputVectorInspectorConfigDialog::hasMaxY() const
@@ -92,12 +82,12 @@ bool OutputVectorInspectorConfigDialog::hasMaxY() const
 
 double OutputVectorInspectorConfigDialog::getMaxY() const
 {
-    return ui->yMaxLineEdit->text().toDouble();
+    return opp_atof(ui->yMaxLineEdit->text().toLatin1());
 }
 
 void OutputVectorInspectorConfigDialog::setMaxY(const double maxY)
 {
-    ui->yMaxLineEdit->setText(InspectorUtil::doubleToQString(maxY, DOUBLE_MAX_PRECISION));
+    ui->yMaxLineEdit->setText(InspectorUtil::formatDouble(maxY));
 }
 
 bool OutputVectorInspectorConfigDialog::hasTimeScale() const
@@ -107,47 +97,58 @@ bool OutputVectorInspectorConfigDialog::hasTimeScale() const
 
 double OutputVectorInspectorConfigDialog::getTimeScale() const
 {
-    return ui->timeScaleLineEdit->text().toDouble();
+    return opp_atof(ui->timeScaleLineEdit->text().toLatin1());
 }
 
 void OutputVectorInspectorConfigDialog::setTimeScale(const double timeScale)
 {
-    ui->timeScaleLineEdit->setText(InspectorUtil::doubleToQString(timeScale, DOUBLE_MAX_PRECISION));
+    ui->timeScaleLineEdit->setText(InspectorUtil::formatDouble(timeScale));
 }
 
 void OutputVectorInspectorConfigDialog::onApplyButtonClicked()
 {
-    if (inputCheck())
+    if (checkInput())
         emit applyButtonClicked();
 }
 
 void OutputVectorInspectorConfigDialog::accept()
 {
-    if (inputCheck())
+    if (checkInput())
         QDialog::accept();
 }
 
-bool OutputVectorInspectorConfigDialog::inputCheck()
+bool OutputVectorInspectorConfigDialog::checkInput()
 {
-    QPalette pal;
-    pal.setColor(QPalette::Base, Qt::white);
-    ui->timeScaleLineEdit->setPalette(pal);
-    ui->yMaxLineEdit->setPalette(pal);
-    ui->yMinLineEdit->setPalette(pal);
-
-    pal.setColor(QPalette::Base, ERROR_COLOR);
     bool ok = true;
 
-    if (hasTimeScale() && getTimeScale() == 0) {
-        ui->timeScaleLineEdit->setPalette(pal);
+    std::string message;
+
+    try {
+        bool hasMinY = this->hasMinY();
+        double minY = hasMinY ? getMinY() : 0.0;
+        bool hasMaxY = this->hasMaxY();
+        double maxY = hasMaxY ? getMaxY() : 0.0;
+
+        bool hasTimeScale = this->hasTimeScale();
+        double timeScale = hasTimeScale ? getTimeScale() : 0.0;
+
+        if (maxY && minY && maxY <= minY) {
+            message = "Y range: max must be greater than min";
+            ok = false;
+        }
+
+        if (hasTimeScale && timeScale < 0) {
+            message = "Time span must be positive";
+            ok = false;
+        }
+
+    } catch (opp_runtime_error& e) {
+        message = e.what();
         ok = false;
     }
 
-    if (hasMinY() && hasMaxY() && (getMinY() >= getMaxY())) {
-        ui->yMaxLineEdit->setPalette(pal);
-        ui->yMinLineEdit->setPalette(pal);
-        ok = false;
-    }
+    if (!ok)
+        QMessageBox::critical(this, "Invalid input", message.c_str());
 
     return ok;
 }

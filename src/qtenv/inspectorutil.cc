@@ -18,6 +18,7 @@
 #include <QMenu>
 #include <QApplication>
 #include <QClipboard>
+#include <common/stringutil.h>
 #include <omnetpp/cobject.h>
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/cmodule.h>
@@ -31,6 +32,7 @@
 #include "mainwindow.h"
 
 namespace omnetpp {
+using namespace common;
 namespace qtenv {
 
 QVector<InspectorType> InspectorUtil::supportedInspTypes(cObject *object)
@@ -310,20 +312,11 @@ QString InspectorUtil::getInspectMenuLabel(InspectorType type)
     }
 }
 
-QString InspectorUtil::doubleToQString(double num, int maxPrecision)
+QString InspectorUtil::formatDouble(double num)
 {
-    QString str = QString::number(num, 'f', maxPrecision);
-    int trailingZeros = 0;
-    int decimalPoint = 0;
-    for(int i = str.size() - 1; i >= 0 && (str[i] == '0' || str[i] == '.'); --i, ++trailingZeros)
-        if (str[i] == '.')
-        {
-            decimalPoint = 1;
-            break;
-        }
-
-    str = str.left(str.size() - trailingZeros - decimalPoint);
-    return str;
+    // Don't use 'g' format because it ignores precision for the scientific notation.
+    // The other two formats don't omit trailing zeroes.
+    return QString::asprintf("%.16g", num);
 }
 
 }  // namespace qtenv

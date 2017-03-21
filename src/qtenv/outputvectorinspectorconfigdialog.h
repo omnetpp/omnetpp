@@ -64,7 +64,7 @@ class OutputVectorInspectorConfigDialog : public QDialog
   private:
     Ui::OutputVectorInspectorConfigDialog *ui;
 
-    bool inputCheck();
+    bool checkInput();
 };
 
 }  // namespace qtenv

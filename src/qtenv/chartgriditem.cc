@@ -59,8 +59,8 @@ QRectF ChartGridItem::boundingRect() const
     rect.setY(-getTextHeight() / 2);
     rect.setHeight(rect.height() + getTextHeight() / 2);
     // This is just an estimate
-    rect.setX(-getTextWidth(InspectorUtil::doubleToQString(minX)) / 2);
-    rect.setWidth(rect.width() + getTextWidth(InspectorUtil::doubleToQString(minX)) / 2);
+    rect.setX(-getTextWidth(QString::number(minX)) / 2);
+    rect.setWidth(rect.width() + getTextWidth(QString::number(minX)) / 2);
 
     return rect;
 }

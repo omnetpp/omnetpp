@@ -18,14 +18,14 @@
 #include "ui_histograminspectorconfigdialog.h"
 #include <QPushButton>
 #include <QDebug>
+#include <QMessageBox>
+#include "common/stringutil.h"
 #include "inspectorutil.h"
-
-static int DOUBLE_MAX_PRECISION = 12;
-static QColor ERROR_COLOR(216, 108, 112);
 
 #define emit
 
 namespace omnetpp {
+using namespace common;
 namespace qtenv {
 
 HistogramInspectorConfigDialog::HistogramInspectorConfigDialog(HistogramView::DrawingStyle style, QWidget *parent) :
@@ -36,18 +36,6 @@ HistogramInspectorConfigDialog::HistogramInspectorConfigDialog(HistogramView::Dr
 
     ui->styleComboBox->setCurrentIndex(style);
 
-    QDoubleValidator *validator = new QDoubleValidator();
-    validator->setNotation(QDoubleValidator::StandardNotation);
-    ui->yMinLineEdit->setValidator(validator);
-    ui->yMaxLineEdit->setValidator(validator);
-    ui->xMaxLineEdit->setValidator(validator);
-    ui->xMinLineEdit->setValidator(validator);
-
-    connect(ui->yMinLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged()));
-    connect(ui->yMaxLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged()));
-    connect(ui->xMinLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged()));
-    connect(ui->xMaxLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged()));
-
     QPushButton *applyButton = ui->buttonBox->button(QDialogButtonBox::Apply);
     connect(applyButton, SIGNAL(clicked(bool)), this, SLOT(onApplyButtonClicked()));
 }
@@ -55,13 +43,6 @@ HistogramInspectorConfigDialog::HistogramInspectorConfigDialog(HistogramView::Dr
 HistogramInspectorConfigDialog::~HistogramInspectorConfigDialog()
 {
     delete ui;
-}
-
-void HistogramInspectorConfigDialog::onTextChanged()
-{
-    QPalette pal;
-    pal.setColor(QPalette::Base, Qt::white);
-    static_cast<QWidget *>(sender())->setPalette(pal);
 }
 
 void HistogramInspectorConfigDialog::onApplyButtonClicked()
@@ -82,12 +63,12 @@ bool HistogramInspectorConfigDialog::hasMinY() const
 
 double HistogramInspectorConfigDialog::getMinY() const
 {
-    return ui->yMinLineEdit->text().toDouble();
+    return opp_atof(ui->yMinLineEdit->text().toLatin1());
 }
 
 void HistogramInspectorConfigDialog::setMinY(const double minY)
 {
-    ui->yMinLineEdit->setText(InspectorUtil::doubleToQString(minY, DOUBLE_MAX_PRECISION));
+    ui->yMinLineEdit->setText(InspectorUtil::formatDouble(minY));
 }
 
 bool HistogramInspectorConfigDialog::hasMaxY() const
@@ -97,12 +78,12 @@ bool HistogramInspectorConfigDialog::hasMaxY() const
 
 double HistogramInspectorConfigDialog::getMaxY() const
 {
-    return ui->yMaxLineEdit->text().toDouble();
+    return opp_atof(ui->yMaxLineEdit->text().toLatin1());
 }
 
 void HistogramInspectorConfigDialog::setMaxY(const double maxY)
 {
-    ui->yMaxLineEdit->setText(InspectorUtil::doubleToQString(maxY, DOUBLE_MAX_PRECISION));
+    ui->yMaxLineEdit->setText(InspectorUtil::formatDouble(maxY));
 }
 
 bool HistogramInspectorConfigDialog::hasMinX() const
@@ -112,12 +93,12 @@ bool HistogramInspectorConfigDialog::hasMinX() const
 
 double HistogramInspectorConfigDialog::getMinX() const
 {
-    return ui->xMinLineEdit->text().toDouble();
+    return opp_atof(ui->xMinLineEdit->text().toLatin1());
 }
 
 void HistogramInspectorConfigDialog::setMinX(const double minX)
 {
-    ui->xMinLineEdit->setText(InspectorUtil::doubleToQString(minX, DOUBLE_MAX_PRECISION));
+    ui->xMinLineEdit->setText(InspectorUtil::formatDouble(minX));
 }
 
 bool HistogramInspectorConfigDialog::hasMaxX() const
@@ -127,12 +108,12 @@ bool HistogramInspectorConfigDialog::hasMaxX() const
 
 double HistogramInspectorConfigDialog::getMaxX() const
 {
-    return ui->xMaxLineEdit->text().toDouble();
+    return opp_atof(ui->xMaxLineEdit->text().toLatin1());
 }
 
 void HistogramInspectorConfigDialog::setMaxX(const double maxX)
 {
-    ui->xMaxLineEdit->setText(InspectorUtil::doubleToQString(maxX, DOUBLE_MAX_PRECISION));
+    ui->xMaxLineEdit->setText(InspectorUtil::formatDouble(maxX));
 }
 
 void HistogramInspectorConfigDialog::accept()
@@ -144,23 +125,37 @@ void HistogramInspectorConfigDialog::accept()
 bool HistogramInspectorConfigDialog::checkInput()
 {
     bool ok = true;
-    if (hasMaxY() && hasMinY() && getMaxY() <= getMinY()) {
-        QPalette pal;
-        pal.setColor(QPalette::Base, ERROR_COLOR);
-        ui->yMinLineEdit->setPalette(pal);
-        ui->yMaxLineEdit->setPalette(pal);
 
+    std::string message;
+
+    try {
+        bool hasMinX = this->hasMinX();
+        double minX = hasMinX ? getMinX() : 0.0;
+        bool hasMaxX = this->hasMaxX();
+        double maxX = hasMaxX ? getMaxX() : 0.0;
+
+        bool hasMinY = this->hasMinY();
+        double minY = hasMinY ? getMinY() : 0.0;
+        bool hasMaxY = this->hasMaxY();
+        double maxY = hasMaxY ? getMaxY() : 0.0;
+
+        if (maxY && minY && maxY <= minY) {
+            message = "Y range: max must be greater than min";
+            ok = false;
+        }
+
+        if (maxX && minX && maxX <= minX) {
+            message = "X range: max must be greater than min";
+            ok = false;
+        }
+
+    } catch (opp_runtime_error& e) {
+        message = e.what();
         ok = false;
     }
 
-    if (hasMaxX() && hasMinX() && getMaxX() <= getMinX()) {
-        QPalette pal;
-        pal.setColor(QPalette::Base, ERROR_COLOR);
-        ui->xMinLineEdit->setPalette(pal);
-        ui->xMaxLineEdit->setPalette(pal);
-
-        ok = false;
-    }
+    if (!ok)
+        QMessageBox::critical(this, "Invalid input", message.c_str());
 
     return ok;
 }

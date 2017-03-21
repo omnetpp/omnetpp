@@ -6,55 +6,39 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>270</width>
-    <height>200</height>
+    <width>282</width>
+    <height>195</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Histogram Options</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>9</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="topMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
    <item>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="formAlignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-     </property>
-     <item row="2" column="0">
-      <widget class="QLabel" name="yMinLabel">
-       <property name="text">
-        <string>Y min</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="yMinLineEdit">
-       <property name="toolTip">
-        <string>Leave empty for default</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="yMaxLabel">
-       <property name="text">
-        <string>Y max</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="yMaxLineEdit">
-       <property name="toolTip">
-        <string>Leave empty for default</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
+    <layout class="QHBoxLayout" name="styleLayout">
+     <item>
       <widget class="QLabel" name="styleLabel">
        <property name="text">
         <string>Style</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item>
       <widget class="QComboBox" name="styleComboBox">
        <item>
         <property name="text">
@@ -68,35 +52,99 @@
        </item>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="xMaxLineEdit">
+    </layout>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="rangeLayout" columnstretch="1,2,2">
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="yMinLineEdit">
+       <property name="toolTip">
+        <string>Leave empty for default</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QLineEdit" name="yMaxLineEdit">
        <property name="toolTip">
         <string>Leave empty for default</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
+      <widget class="QLabel" name="minLabel">
+       <property name="text">
+        <string>min</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="xLabel">
+       <property name="text">
+        <string>x</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLineEdit" name="xMaxLineEdit">
+       <property name="toolTip">
+        <string>Leave empty for default</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="maxLabel">
+       <property name="text">
+        <string>max</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
       <widget class="QLineEdit" name="xMinLineEdit">
        <property name="toolTip">
         <string>Leave empty for default</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="xMaxLabel">
+     <item row="2" column="0">
+      <widget class="QLabel" name="yLabel">
        <property name="text">
-        <string>X max</string>
+        <string>y</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="xMinLabel">
+      <widget class="QLabel" name="rangeLabel">
        <property name="text">
-        <string>X min</string>
+        <string>Range</string>
        </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <spacer name="bottomSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -111,11 +159,11 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>styleComboBox</tabstop>
   <tabstop>xMinLineEdit</tabstop>
   <tabstop>xMaxLineEdit</tabstop>
   <tabstop>yMinLineEdit</tabstop>
   <tabstop>yMaxLineEdit</tabstop>
-  <tabstop>styleComboBox</tabstop>
  </tabstops>
  <resources/>
  <connections>

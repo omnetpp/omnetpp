@@ -61,7 +61,6 @@ class HistogramInspectorConfigDialog : public QDialog
     void accept() override;
 
   private slots:
-    void onTextChanged();
     void onApplyButtonClicked();
 
   private:
