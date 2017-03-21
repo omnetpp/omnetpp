@@ -139,13 +139,15 @@ void HistogramInspector::refresh()
     if (minYVal >= maxYVal)
         yRangeCorrection(minYVal, maxYVal, isMinYAutoscaled, isMaxYAutoscaled);
 
-    if (lastMaxY < 0)
-        lastMaxY = maxYVal / 0.85;
+    if (isMaxYAutoscaled) {
+        if (lastMaxY < 0)
+            lastMaxY = maxYVal / 0.85;
 
-    if ((maxYVal < 0.75 * lastMaxY) || (maxYVal > 0.95 * lastMaxY))
-        maxYVal = maxYVal / 0.85;
-    else
-        maxYVal = lastMaxY;
+        if ((maxYVal < 0.75 * lastMaxY) || (maxYVal > 0.95 * lastMaxY))
+            maxYVal = maxYVal / 0.85;
+        else
+            maxYVal = lastMaxY;
+    }
 
     lastMaxY = maxYVal;
 
