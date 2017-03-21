@@ -46,7 +46,12 @@ IndexedVectorFileReaderNode::~IndexedVectorFileReaderNode()
 
 Port *IndexedVectorFileReaderNode::addVector(const VectorResult& vector)
 {
-    PortData& portdata = ports[vector.vectorId];
+    return addVector(vector.getVectorId());
+}
+
+Port *IndexedVectorFileReaderNode::addVector(int vectorId)
+{
+    PortData& portdata = ports[vectorId];
     portdata.ports.push_back(Port(this));
     Port& port = portdata.ports.back();
     return &port;
@@ -188,10 +193,10 @@ Port *IndexedVectorFileReaderNodeType::getPort(Node *node, const char *portname)
 {
     // vector id is used as port name
     IndexedVectorFileReaderNode *node1 = dynamic_cast<IndexedVectorFileReaderNode *>(node);
-    VectorResult vector;
-    if (!parseInt(portname, vector.vectorId))
+    int vectorId;
+    if (!parseInt(portname, vectorId))
         throw opp_runtime_error("Indexed file reader node: Port should be a vector id, received: %s", portname);
-    return node1->addVector(vector);
+    return node1->addVector(vectorId);
 }
 
 }  // namespace scave

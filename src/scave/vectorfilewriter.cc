@@ -52,7 +52,7 @@ VectorFileWriterNode::~VectorFileWriterNode()
 
 Port *VectorFileWriterNode::addVector(const VectorResult& vector)
 {
-    ports.push_back(Pair(vector.vectorId, vector.moduleNameRef->c_str(), vector.nameRef->c_str(), vector.columns.c_str(), this));
+    ports.push_back(Pair(vector.getVectorId(), vector.getModuleName().c_str(), vector.getName().c_str(), vector.getColumns().c_str(), this));
     return &(ports.back().port);
 }
 
@@ -185,15 +185,18 @@ Node *VectorFileWriterNodeType::create(DataflowManager *mgr, StringMap& attrs) c
 
 Port *VectorFileWriterNodeType::getPort(Node *node, const char *portname) const
 {
+/*FIXME THIS CODE IS COMPLETELY BROKEN --ANDRAS
     // vector id is used as port name
     VectorFileWriterNode *node1 = dynamic_cast<VectorFileWriterNode *>(node);
     VectorResult vector;
     std::string moduleName = "n/a", name = "n/a";
     vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
-    vector.moduleNameRef = &moduleName;
-    vector.nameRef = &name;
+    vector.getModuleName() = &moduleName;
+    vector.getName() = &name;
     vector.columns = "TV";  // old vector file format
     return node1->addVector(vector);
+*/
+    return nullptr;
 }
 
 }  // namespace scave

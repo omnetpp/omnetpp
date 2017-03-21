@@ -74,7 +74,7 @@ inline void SqliteResultFileLoader::checkOK(int sqlite3_result)
 
 void SqliteResultFileLoader::error(const char *errmsg)
 {
-    throw opp_runtime_error("Cannot read SQLite result file '%s': %s", fileRef->fileName.c_str(), errmsg);
+    throw opp_runtime_error("Cannot read SQLite result file '%s': %s", fileRef->getFileName().c_str(), errmsg);
 }
 
 void SqliteResultFileLoader::prepareStatement(const char *sql)
@@ -102,8 +102,7 @@ void SqliteResultFileLoader::loadRuns()
             Run *runRef = resultFileManager->getRunByName(runName.c_str());
             if (!runRef) {
                 // not yet: add it
-                runRef = resultFileManager->addRun(false);
-                runRef->runName = runName;
+                runRef = resultFileManager->addRun(runName);
             }
             // associate Run with this file
             if (resultFileManager->getFileRun(fileRef, runRef) != nullptr)
@@ -133,11 +132,11 @@ void SqliteResultFileLoader::loadRunAttrs()
             std::string attrValue = (const char *) sqlite3_column_text(stmt, 2);
 
             FileRun *fileRunRef = fileRunMap.at(runId);
-            StringMap& attributes = fileRunRef->runRef->attributes;
-            StringMap::iterator oldPairRef = attributes.find(attrName);
+            const StringMap& attributes = fileRunRef->runRef->getAttributes();
+            StringMap::const_iterator oldPairRef = attributes.find(attrName);
             if (oldPairRef != attributes.end() && oldPairRef->second != attrValue)
                 error("Value of run attribute conflicts with previously loaded value");
-            attributes[attrName] = attrValue;
+            fileRunRef->runRef->setAttribute(attrName, attrValue);
 
             // the "runNumber" attribute is also stored separately
             if (attrName == "runNumber")
@@ -197,7 +196,7 @@ void SqliteResultFileLoader::loadScalars()
             if (it == sqliteScalarIdToScalarIdx.end())
                 error("Invalid scalarId in scalarattr table");
             ScalarResult& sca = fileRunMap.at(runId)->fileRef->scalarResults.at(sqliteScalarIdToScalarIdx.at(scalarId));
-            sca.attributes[attrName] = attrValue;
+            sca.setAttribute(attrName, attrValue);
         }
         else if (resultCode == SQLITE_DONE) {
             break;
@@ -275,7 +274,7 @@ void SqliteResultFileLoader::loadHistograms()
             if (it == sqliteHistogramIdToHistogramIdx.end())
                 error("Invalid statId in statisticattr table");
             HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteHistogramIdToHistogramIdx.at(statId));
-            hist.attributes[attrName] = attrValue;
+            hist.setAttribute(attrName, attrValue);
         }
         else if (resultCode == SQLITE_DONE) {
             break;
@@ -342,6 +341,7 @@ void SqliteResultFileLoader::loadVectors()
             vec.endEventNum = endEventNum;
             vec.startTime = simultime_t(startSimtimeRaw, simtimeExp);
             vec.endTime = simultime_t(endSimtimeRaw, simtimeExp);
+            //TODO vector attributes
         }
         else if (resultCode == SQLITE_DONE) {
             break;

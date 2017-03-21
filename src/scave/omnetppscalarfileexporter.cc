@@ -109,17 +109,17 @@ void OmnetppScalarFileExporter::saveResults(const std::string& fileName, ResultF
     std::unique_ptr<RunList> tmp(runList);
 
     for (Run *run : *runList) {
-        writer.beginRecordingForRun(run->runName, run->attributes, run->moduleParams);
+        writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getModuleParams());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
         for (int i=0; i<filteredList.size(); i++) {
             ID id = filteredList.get(i);
             if (ResultFileManager::getTypeOf(id) == ResultFileManager::SCALAR) {
                 const ScalarResult& scalar = manager->getScalar(id);
-                writer.recordScalar(*scalar.moduleNameRef, *scalar.nameRef, scalar.value, scalar.attributes);
+                writer.recordScalar(scalar.getModuleName(), scalar.getName(), scalar.getValue(), scalar.getAttributes());
             }
             else if (ResultFileManager::getTypeOf(id) == ResultFileManager::HISTOGRAM) {
                 const HistogramResult& histogram = manager->getHistogram(id);
-                writer.recordHistogram(*histogram.moduleNameRef, *histogram.nameRef, histogram.getStatistics(), histogram.getBins(), histogram.attributes);
+                writer.recordHistogram(histogram.getModuleName(), histogram.getName(), histogram.getStatistics(), histogram.getHistogram(), histogram.getAttributes());
             }
         }
         writer.endRecordingForRun();

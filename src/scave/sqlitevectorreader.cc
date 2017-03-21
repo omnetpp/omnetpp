@@ -57,8 +57,13 @@ inline void SqliteVectorReaderNode::checkOK(int sqlite3_result)
 
 Port *SqliteVectorReaderNode::addVector(const VectorResult& vector)
 {
-    DEBUG(("registering vector %d\n", (int)vector.vectorId));
-    PortData& portData = ports[vector.vectorId];
+    return addVector(vector.getVectorId());
+}
+
+Port *SqliteVectorReaderNode::addVector(int vectorId)
+{
+    DEBUG(("registering vector %d\n", (int)getVectorId()));
+    PortData& portData = ports[vectorId];
     portData.ports.push_back(Port(this));
     Port& port = portData.ports.back();
     return &port;
@@ -121,7 +126,7 @@ bool SqliteVectorReaderNode::readNextBlock(int vectorId, PortData& portData)
     checkOK(sqlite3_reset(get_vector_data_stmt));
     checkOK(sqlite3_bind_int64(get_vector_data_stmt, 1, vectorId));
     checkOK(sqlite3_bind_int64(get_vector_data_stmt, 2, portData.currentRowId));
-    DEBUG(("vectorId=%d, rowId=%ld\n", vectorId, (long)portData.currentRowId));
+    DEBUG(("vectorId=%d, rowId=%ld\n", getVectorId(), (long)portData.currentRowId));
 
     for (size_t i=0; i < bufferSize; i++) {
         int resultCode = sqlite3_step(get_vector_data_stmt);
@@ -186,10 +191,10 @@ Port *SqliteVectorReaderNodeType::getPort(Node *node, const char *portname) cons
     SqliteVectorReaderNode *node1 = dynamic_cast<SqliteVectorReaderNode *>(node);
     if (node1 == nullptr)
         throw opp_runtime_error("node type should be 'SqliteVectorReaderNode'");
-    VectorResult vector;
-    if (!parseInt(portname, vector.vectorId))
+    int vectorId;
+    if (!parseInt(portname, vectorId))
         throw opp_runtime_error("port should be a vector id, received: %s", portname);
-    return node1->addVector(vector);
+    return node1->addVector(vectorId);
 }
 
 }  // namespace scave

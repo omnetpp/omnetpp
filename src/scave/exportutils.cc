@@ -54,7 +54,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
     StringMap attrs;
     for (int i = 0; i < (int)filteredVectorFileList->size(); i++) {
         ResultFile *resultFile = filteredVectorFileList->at(i);
-        attrs["filename"] = resultFile->fileSystemFilePath;
+        attrs["filename"] = resultFile->getFileSystemFilePath();
         attrs["allowindexing"] = "true";
         Node *readerNode = readerNodeType->create(&dataflowManager, attrs);
         vectorFileReaders[resultFile] = readerNode;
@@ -67,9 +67,9 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
         // create a port for each vector on its reader node
         char portName[30];
         const VectorResult& vector = manager->getVector(idlist.get(i));
-        Assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
-        sprintf(portName, "%d", vector.vectorId);
-        Node *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
+        Assert(vectorFileReaders.find(vector.getFile()) != vectorFileReaders.end());
+        sprintf(portName, "%d", vector.getVectorId());
+        Node *readerNode = vectorFileReaders[vector.getFile()];
         Port *outPort = readerNodeType->getPort(readerNode, portName);
 
         // add filters

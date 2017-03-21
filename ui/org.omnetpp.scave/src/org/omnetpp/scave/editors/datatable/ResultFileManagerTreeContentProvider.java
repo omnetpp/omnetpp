@@ -224,10 +224,10 @@ public class ResultFileManagerTreeContentProvider {
                                     nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(stat.getMean())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
-                                    DoubleVector bins = histogram.getBins();
-                                    DoubleVector values = histogram.getValues();
+                                    DoubleVector bins = histogram.getBinLowerBounds();
+                                    DoubleVector values = histogram.getBinValues();
                                     if (bins != null && values != null && bins.size() > 0 && values.size() > 0) {
-                                        ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(histogram.getBins().size()));
+                                        ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(histogram.getBinLowerBounds().size()));
                                         List<Node> list = new ArrayList<Node>();
                                         for (int j = 0; j < bins.size(); j++) {
                                             double lowerBound = bins.get(j);

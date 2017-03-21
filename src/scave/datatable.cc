@@ -196,13 +196,13 @@ ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& des
             const ScalarResult& scalar = manager.getScalar(id);
             string name;
             if (!groupBy.hasField(ResultItemField::FILE))
-                name += scalar.fileRunRef->fileRef->filePath+" ";
+                name += scalar.getFile()->getFilePath()+" ";
             if (!groupBy.hasField(ResultItemField::RUN))
-                name += scalar.fileRunRef->runRef->runName+" ";
+                name += scalar.getRun()->getRunName()+" ";
             if (!groupBy.hasField(ResultItemField::MODULE))
-                name += *scalar.moduleNameRef+" ";
+                name += scalar.getModuleName()+" ";
             if (!groupBy.hasField(ResultItemField::NAME))
-                name += *scalar.nameRef+" ";
+                name += scalar.getName()+" ";
             if (!name.empty())
                 name.erase(name.end()-1);  // remove last ' '
             header.push_back(Column(name, DOUBLE));
@@ -230,7 +230,7 @@ double ScalarDataTable::getDoubleValue(int row, int col) const
         ID id = r[col-(header.size() - r.size())];
         if (id != -1) {
             const ScalarResult& scalar = manager.getScalar(id);
-            return scalar.value;
+            return scalar.getValue();
         }
     }
     return NaN; //TODO throw opp_runtime_error("no such column with double type");
@@ -254,15 +254,15 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
             const ScalarResult& scalar = manager.getScalar(id);
             Column c = getColumn(col);
             if (c.name == "File")
-                return scalar.fileRunRef->fileRef->filePath;
+                return scalar.getFile()->getFilePath();
             else if (c.name == "Run")
-                return scalar.fileRunRef->runRef->runName;
+                return scalar.getRun()->getRunName();
             else if (c.name == "Module")
-                return *scalar.moduleNameRef;
+                return scalar.getModuleName();
             else if (c.name == "Name")
-                return *scalar.nameRef;
+                return scalar.getName();
             else if (opp_stringbeginswith(c.name.c_str(), "runattr:"))
-                return scalar.fileRunRef->runRef->getAttribute(opp_substringafter(c.name, ":"));
+                return scalar.getRun()->getAttribute(opp_substringafter(c.name, ":"));
         }
     }
     throw opp_runtime_error("no such column with string type");
@@ -281,7 +281,7 @@ HistogramDataTable::HistogramDataTable(const string& name, const string& descrip
 
 int HistogramDataTable::getNumRows() const
 {
-    return histResult->values.size();
+    return histResult->getBinValues().size();
 }
 
 bool HistogramDataTable::isNull(int row, int col) const
@@ -304,12 +304,12 @@ BigDecimal HistogramDataTable::getBigDecimalValue(int row, int col) const
 double HistogramDataTable::getDoubleValue(int row, int col) const
 {
     if (col == 0)
-        return histResult->bins[row];
+        return histResult->getBinLowerBounds()[row];
     else if (col == 1)
         // use the next lower bound as the upper bound for this bin
-        return row < (int)histResult->bins.size()-1 ? histResult->bins[row+1] : POSITIVE_INFINITY;
+        return row < (int)histResult->getBinLowerBounds().size()-1 ? histResult->getBinLowerBounds()[row+1] : POSITIVE_INFINITY;
     else if (col == 2)
-        return histResult->values[row];
+        return histResult->getBinValues()[row];
     else
         throw opp_runtime_error("no such column with double type");
 }

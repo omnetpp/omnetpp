@@ -219,14 +219,14 @@ class FileAndRunLess : public CmpBase {
     public:
         FileAndRunLess(ResultFileManager *m) : CmpBase(m) {}
         bool operator()(ID a, ID b) { // implements operator<
-            const FileRun *da = uncheckedGetItem(a).fileRunRef;
-            const FileRun *db = uncheckedGetItem(b).fileRunRef;
+            const FileRun *da = uncheckedGetItem(a).getFileRun();
+            const FileRun *db = uncheckedGetItem(b).getFileRun();
             if (da==db)
                 return false;
             else if (da->fileRef==db->fileRef)
-                return da->runRef->runName < db->runRef->runName;
+                return da->runRef->getRunName() < db->runRef->getRunName();
             else
-                return da->fileRef->filePath < db->fileRef->filePath;
+                return da->fileRef->getFilePath() < db->fileRef->getFilePath();
         }
 };
 
@@ -234,14 +234,14 @@ class RunAndFileLess : public CmpBase {
     public:
         RunAndFileLess(ResultFileManager *m) : CmpBase(m) {}
         bool operator()(ID a, ID b) { // implements operator<
-            const FileRun *da = uncheckedGetItem(a).fileRunRef;
-            const FileRun *db = uncheckedGetItem(b).fileRunRef;
+            const FileRun *da = uncheckedGetItem(a).getFileRun();
+            const FileRun *db = uncheckedGetItem(b).getFileRun();
             if (da==db)
                 return false;
             else if (da->runRef==db->runRef)
-                return da->fileRef->filePath < db->fileRef->filePath;
+                return da->fileRef->getFilePath() < db->fileRef->getFilePath();
             else
-                return da->runRef->runName < db->runRef->runName;
+                return da->runRef->getRunName() < db->runRef->getRunName();
         }
 };
 
@@ -252,8 +252,8 @@ class RunAttributeLess : public CmpBase {
         RunAttributeLess(ResultFileManager* m, const char* attrName)
             : CmpBase(m), attrName(attrName) {}
         bool operator()(ID a, ID b) {
-            const std::string& aValue = uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
-            const std::string& bValue = uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
+            const std::string& aValue = uncheckedGetItem(a).getRun()->getAttribute(attrName);
+            const std::string& bValue = uncheckedGetItem(b).getRun()->getAttribute(attrName);
             return less(aValue, bValue);
         }
 };
@@ -264,27 +264,27 @@ class RunAttributeLess : public CmpBase {
         bool operator()(const ID a, const ID b) {return method;} \
     };
 
-CMP(DirectoryLess, less(uncheckedGetItem(a).fileRunRef->fileRef->directory, uncheckedGetItem(b).fileRunRef->fileRef->directory))
-CMP(FileNameLess, less(uncheckedGetItem(a).fileRunRef->fileRef->fileName, uncheckedGetItem(b).fileRunRef->fileRef->fileName))
-CMP(RunLess, less(uncheckedGetItem(a).fileRunRef->runRef->runName, uncheckedGetItem(b).fileRunRef->runRef->runName))
-CMP(ModuleLess, less(*(uncheckedGetItem(a).moduleNameRef), *(uncheckedGetItem(b).moduleNameRef)))
-CMP(NameLess, less(*(uncheckedGetItem(a).nameRef), *(uncheckedGetItem(b).nameRef)))
-CMP(ValueLess, uncheckedGetScalar(a).value < uncheckedGetScalar(b).value)
-CMP(VectorIdLess, uncheckedGetVector(a).vectorId < uncheckedGetVector(b).vectorId)
-CMP(VectorCountLess, uncheckedGetVector(a).stat.getCount() < uncheckedGetVector(b).stat.getCount())
-CMP(VectorMeanLess, uncheckedGetVector(a).stat.getMean() < uncheckedGetVector(b).stat.getMean())
-CMP(VectorStddevLess, uncheckedGetVector(a).stat.getStddev() < uncheckedGetVector(b).stat.getStddev())
-CMP(VectorMinLess, uncheckedGetVector(a).stat.getMin() < uncheckedGetVector(b).stat.getMin())
-CMP(VectorMaxLess, uncheckedGetVector(a).stat.getMax() < uncheckedGetVector(b).stat.getMax())
-CMP(VectorVarianceLess, uncheckedGetVector(a).stat.getVariance() < uncheckedGetVector(b).stat.getVariance())
-CMP(StartTimeLess, uncheckedGetVector(a).startTime < uncheckedGetVector(b).startTime)
-CMP(EndTimeLess, uncheckedGetVector(a).endTime < uncheckedGetVector(b).endTime)
-CMP(HistogramCountLess, uncheckedGetHistogram(a).stat.getCount() < uncheckedGetHistogram(b).stat.getCount())
-CMP(HistogramMeanLess, uncheckedGetHistogram(a).stat.getMean() < uncheckedGetHistogram(b).stat.getMean())
-CMP(HistogramStddevLess, uncheckedGetHistogram(a).stat.getStddev() < uncheckedGetHistogram(b).stat.getStddev())
-CMP(HistogramMinLess, uncheckedGetHistogram(a).stat.getMin() < uncheckedGetHistogram(b).stat.getMin())
-CMP(HistogramMaxLess, uncheckedGetHistogram(a).stat.getMax() < uncheckedGetHistogram(b).stat.getMax())
-CMP(HistogramVarianceLess, uncheckedGetHistogram(a).stat.getVariance() < uncheckedGetHistogram(b).stat.getVariance())
+CMP(DirectoryLess, less(uncheckedGetItem(a).getFile()->getDirectory(), uncheckedGetItem(b).getFile()->getDirectory()))
+CMP(FileNameLess, less(uncheckedGetItem(a).getFile()->getFileName(), uncheckedGetItem(b).getFile()->getFileName()))
+CMP(RunLess, less(uncheckedGetItem(a).getRun()->getRunName(), uncheckedGetItem(b).getRun()->getRunName()))
+CMP(ModuleLess, less(uncheckedGetItem(a).getModuleName(), uncheckedGetItem(b).getModuleName()))
+CMP(NameLess, less(uncheckedGetItem(a).getName(), uncheckedGetItem(b).getName()))
+CMP(ValueLess, uncheckedGetScalar(a).getValue() < uncheckedGetScalar(b).getValue())
+CMP(VectorIdLess, uncheckedGetVector(a).getVectorId() < uncheckedGetVector(b).getVectorId())
+CMP(VectorCountLess, uncheckedGetVector(a).getStatistics().getCount() < uncheckedGetVector(b).getStatistics().getCount())
+CMP(VectorMeanLess, uncheckedGetVector(a).getStatistics().getMean() < uncheckedGetVector(b).getStatistics().getMean())
+CMP(VectorStddevLess, uncheckedGetVector(a).getStatistics().getStddev() < uncheckedGetVector(b).getStatistics().getStddev())
+CMP(VectorMinLess, uncheckedGetVector(a).getStatistics().getMin() < uncheckedGetVector(b).getStatistics().getMin())
+CMP(VectorMaxLess, uncheckedGetVector(a).getStatistics().getMax() < uncheckedGetVector(b).getStatistics().getMax())
+CMP(VectorVarianceLess, uncheckedGetVector(a).getStatistics().getVariance() < uncheckedGetVector(b).getStatistics().getVariance())
+CMP(StartTimeLess, uncheckedGetVector(a).getStartTime() < uncheckedGetVector(b).getStartTime())
+CMP(EndTimeLess, uncheckedGetVector(a).getEndTime() < uncheckedGetVector(b).getEndTime())
+CMP(HistogramCountLess, uncheckedGetHistogram(a).getStatistics().getCount() < uncheckedGetHistogram(b).getStatistics().getCount())
+CMP(HistogramMeanLess, uncheckedGetHistogram(a).getStatistics().getMean() < uncheckedGetHistogram(b).getStatistics().getMean())
+CMP(HistogramStddevLess, uncheckedGetHistogram(a).getStatistics().getStddev() < uncheckedGetHistogram(b).getStatistics().getStddev())
+CMP(HistogramMinLess, uncheckedGetHistogram(a).getStatistics().getMin() < uncheckedGetHistogram(b).getStatistics().getMin())
+CMP(HistogramMaxLess, uncheckedGetHistogram(a).getStatistics().getMax() < uncheckedGetHistogram(b).getStatistics().getMax())
+CMP(HistogramVarianceLess, uncheckedGetHistogram(a).getStatistics().getVariance() < uncheckedGetHistogram(b).getStatistics().getVariance())
 
 template<class T>
 void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)

@@ -307,13 +307,13 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
                 dynamic_cast<IndexedVectorFileWriterNode *>(writerNodeType->create(&dataflowManager, writerAttrs));
             if (!writerNode)
                 throw opp_runtime_error("Cannot create the indexedvectorfilewriternode.");
-            writerNode->setRun(runPtr->runName.c_str(), runPtr->attributes, runPtr->moduleParams);
+            writerNode->setRun(runPtr->getRunName().c_str(), runPtr->getAttributes(), runPtr->getModuleParams());
 
             // create a ports
             for (int i = 0; i < vectorIDList.size(); i++) {
                 char portName[30];
                 const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-                sprintf(portName, "%d", vector.vectorId);
+                sprintf(portName, "%d", vector.getVectorId());
                 Port *outPort = readerNodeType->getPort(readerNode, portName);
                 Port *inPort = writerNode->addVector(vector);
                 dataflowManager.connect(outPort, inPort);

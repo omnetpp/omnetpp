@@ -359,10 +359,16 @@ namespace omnetpp { namespace common {
 namespace omnetpp { namespace scave {
 %ignore IComputation;
 %ignore ResultFileManager::dump;
+%ignore Run::runName;
+%ignore VectorResult::columns;
 %ignore VectorResult::stat;
 %ignore HistogramResult::stat;
 %ignore HistogramResult::getBins; //TODO temporary
 %ignore ResultFile::id;
+%ignore ResultFile::filePath;
+%ignore ResultFile::directory;
+%ignore ResultFile::fileName;
+%ignore ResultFile::fileSystemFilePath;
 %ignore ResultFile::scalarResults;
 %ignore ResultFile::vectorResults;
 %ignore ResultFile::histogramResults;
@@ -477,18 +483,18 @@ namespace omnetpp { namespace scave {
   }
 %}
 
-FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
-FIX_STRING_MEMBER(ResultFile, directory, Directory);
-FIX_STRING_MEMBER(ResultFile, fileName, FileName);
-FIX_STRING_MEMBER(ResultFile, fileSystemFilePath, FileSystemFilePath);
+//FIX_STRING_MEMBER(ResultFile, filePath, FilePath);
+//FIX_STRING_MEMBER(ResultFile, directory, Directory);
+//FIX_STRING_MEMBER(ResultFile, fileName, FileName);
+//FIX_STRING_MEMBER(ResultFile, fileSystemFilePath, FileSystemFilePath);
 //FIX_STRING_MEMBER(Run, networkName, NetworkName);
 //FIX_STRING_MEMBER(Run, date, Date);
-FIX_STRING_MEMBER(Run, runName, RunName);
+//FIX_STRING_MEMBER(Run, runName, RunName);
 //FIX_STRING_MEMBER(Run, fileAndRunName, FileAndRunName);
 //FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
 //FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
 //FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
-FIX_STRING_MEMBER(VectorResult, columns, Columns);
+//FIX_STRING_MEMBER(VectorResult, columns, Columns);
 
 ADD_CPTR_EQUALS_AND_HASHCODE(ResultFile);
 ADD_CPTR_EQUALS_AND_HASHCODE(Run);

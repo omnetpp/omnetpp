@@ -40,7 +40,12 @@ VectorFileReaderNode::~VectorFileReaderNode()
 
 Port *VectorFileReaderNode::addVector(const VectorResult& vector)
 {
-    PortVector& portvec = ports[vector.vectorId];
+    return addVector(vector.getVectorId());
+}
+
+Port *VectorFileReaderNode::addVector(int vectorId)
+{
+    PortVector& portvec = ports[vectorId];
     portvec.push_back(Port(this));
     Port& port = portvec.back();
     return &port;
@@ -200,9 +205,8 @@ Port *VectorFileReaderNodeType::getPort(Node *node, const char *portname) const
 {
     // vector id is used as port name
     VectorFileReaderNode *node1 = dynamic_cast<VectorFileReaderNode *>(node);
-    VectorResult vector;
-    vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
-    return node1->addVector(vector);
+    int vectorId = atoi(portname);  // FIXME check it's numeric at all
+    return node1->addVector(vectorId);
 }
 
 }  // namespace scave

@@ -64,6 +64,7 @@ class SCAVE_API SqliteVectorReaderNode : public ReaderNode
         virtual ~SqliteVectorReaderNode();
 
         Port *addVector(const VectorResult& vector);
+        Port *addVector(int vectorId);
 
         virtual bool isReady() const override;
         virtual void process() override;

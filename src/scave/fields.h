@@ -100,21 +100,21 @@ inline const std::string& getAttribute(const ResultItem& d, const std::string& a
 
 inline const std::string& getRunAttribute(const ResultItem &d, const std::string& attrName)
 {
-    return d.fileRunRef->runRef->getAttribute(attrName);
+    return d.getRun()->getAttribute(attrName);
 }
 
 inline const std::string& getRunParam(const ResultItem& d, const std::string& paramName)
 {
-    return d.fileRunRef->runRef->getModuleParam(paramName);
+    return d.getRun()->getModuleParam(paramName);
 }
 
 inline const std::string& ResultItemField::getFieldValue(const ResultItem& d) const
 {
     switch(id) {
-        case FILE_ID:       return d.fileRunRef->fileRef->filePath;
-        case RUN_ID:        return d.fileRunRef->runRef->runName;
-        case MODULE_ID:     return *d.moduleNameRef;
-        case NAME_ID:       return *d.nameRef;
+        case FILE_ID:       return d.getFile()->getFilePath();
+        case RUN_ID:        return d.getRun()->getRunName();
+        case MODULE_ID:     return d.getModuleName();
+        case NAME_ID:       return d.getName();
         case ATTR_ID:       return getAttribute(d, name);
         case RUN_ATTR_ID:   return getRunAttribute(d, name);
         case RUN_PARAM_ID:  return getRunParam(d, name);
@@ -125,10 +125,10 @@ inline const std::string& ResultItemField::getFieldValue(const ResultItem& d) co
 inline bool ResultItemField::equal(const ResultItem& d1, const ResultItem& d2) const
 {
     switch (id) {
-        case FILE_ID:       return d1.fileRunRef->fileRef == d2.fileRunRef->fileRef;
-        case RUN_ID:        return d1.fileRunRef->runRef == d2.fileRunRef->runRef;
-        case MODULE_ID:     return d1.moduleNameRef == d2.moduleNameRef;
-        case NAME_ID:       return d1.nameRef == d2.nameRef;
+        case FILE_ID:       return d1.getFile() == d2.getFile();
+        case RUN_ID:        return d1.getRun() == d2.getRun();
+        case MODULE_ID:     return d1.getModuleName() == d2.getModuleName();
+        case NAME_ID:       return d1.getName() == d2.getName();
         case ATTR_ID:       return getAttribute(d1, name) == getAttribute(d2, name);
         case RUN_ATTR_ID:   return getRunAttribute(d1, name) == getRunAttribute(d2, name);
         case RUN_PARAM_ID:  return getRunParam(d1, name) == getRunParam(d2, name);
@@ -140,10 +140,10 @@ inline int ResultItemField::compare(const ResultItem& d1, const ResultItem& d2) 
 {
     using omnetpp::common::strdictcmp;
     switch (id) {
-        case FILE_ID:       return strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str());
-        case RUN_ID:        return strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
-        case MODULE_ID:     return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str());
-        case NAME_ID:       return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str());
+        case FILE_ID:       return strdictcmp(d1.getFile()->getFilePath().c_str(), d2.getFile()->getFilePath().c_str());
+        case RUN_ID:        return strdictcmp(d1.getRun()->getRunName().c_str(), d2.getRun()->getRunName().c_str());
+        case MODULE_ID:     return strdictcmp(d1.getModuleName().c_str(), d2.getModuleName().c_str());
+        case NAME_ID:       return strdictcmp(d1.getName().c_str(), d2.getName().c_str());
         case ATTR_ID:       return strdictcmp(getAttribute(d1, name).c_str(), getAttribute(d2, name).c_str());
         case RUN_ATTR_ID:   return strdictcmp(getRunAttribute(d1, name).c_str(), getRunAttribute(d2, name).c_str());
         case RUN_PARAM_ID:  return strdictcmp(getRunParam(d1, name).c_str(), getRunParam(d2, name).c_str());

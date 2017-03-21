@@ -262,11 +262,11 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
     std::unique_ptr<RunList> tmp(runList);
 
     for (Run *run : *runList) {
-        writer.openObject(run->runName);
+        writer.openObject(run->getRunName());
 
         // run metadata
-        writeStringMap("attributes", run->attributes);
-        writeStringMap("moduleparams", run->moduleParams);
+        writeStringMap("attributes", run->getAttributes());
+        writeStringMap("moduleparams", run->getModuleParams());
 
         // scalars
         IDList scalars = idlist.filterByTypes(ResultFileManager::SCALAR);
@@ -275,11 +275,11 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
             for (ID id : scalars) {
                 const ScalarResult& scalar = manager->getScalar(id);
                 writer.openObject();
-                writer.writeString("module", *scalar.moduleNameRef);
-                writer.writeString("name", *scalar.nameRef);
-                writer.writeDouble("value", scalar.value);
-                if (!skipResultAttributes && !scalar.attributes.empty())
-                    writeStringMap("attributes", scalar.attributes);
+                writer.writeString("module", scalar.getModuleName());
+                writer.writeString("name", scalar.getName());
+                writer.writeDouble("value", scalar.getValue());
+                if (!skipResultAttributes && !scalar.getAttributes().empty())
+                    writeStringMap("attributes", scalar.getAttributes());
                 writer.closeObject();
             }
             writer.closeArray();
@@ -292,10 +292,10 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
             for (ID id : histograms) {
                 const HistogramResult& histogram = manager->getHistogram(id);
                 writer.openObject();
-                writer.writeString("module", *histogram.moduleNameRef);
-                writer.writeString("name", *histogram.nameRef);
-                if (!skipResultAttributes && !histogram.attributes.empty())
-                    writeStringMap("attributes", histogram.attributes);
+                writer.writeString("module", histogram.getModuleName());
+                writer.writeString("name", histogram.getName());
+                if (!skipResultAttributes && !histogram.getAttributes().empty())
+                    writeStringMap("attributes", histogram.getAttributes());
 
                 const Statistics& stat = histogram.getStatistics();
                 writer.writeDouble("count", stat.getCount());
@@ -307,7 +307,7 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
                 writer.writeDouble("max", stat.getMax());
                 //TODO weighted?
 
-                const Histogram& bins = histogram.getBins();
+                const Histogram& bins = histogram.getHistogram();
                 writer.startRawValue("histbins"); writeVector(bins.getBinLowerBounds());
                 writer.startRawValue("histcounts"); writeVector(bins.getBinValues());
                 writer.closeObject();
@@ -328,10 +328,10 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
                 ID id = vectors.get(i);
                 const VectorResult& vector = manager->getVector(id);
                 writer.openObject();
-                writer.writeString("module", *vector.moduleNameRef);
-                writer.writeString("name", *vector.nameRef);
-                if (!skipResultAttributes && !vector.attributes.empty())
-                    writeStringMap("attributes", vector.attributes);
+                writer.writeString("module", vector.getModuleName());
+                writer.writeString("name", vector.getName());
+                if (!skipResultAttributes && !vector.getAttributes().empty())
+                    writeStringMap("attributes", vector.getAttributes());
 
                 XYArray *array = xyArrays[i];
                 writer.startRawValue("time"); writeX(array);

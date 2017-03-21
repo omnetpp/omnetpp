@@ -235,9 +235,9 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
             XYArray *data = xyArrays[i];
 
             // time row
-            csv.writeString(vector.fileRunRef->runRef->runName); //TODO
-            csv.writeString(*vector.moduleNameRef);
-            csv.writeString(*vector.nameRef);
+            csv.writeString(vector.getRun()->getRunName()); //TODO
+            csv.writeString(vector.getModuleName());
+            csv.writeString(vector.getName());
             csv.writeString("TIME");
             for (int j = 0; j < data->length(); j++) {
                 if (data->hasPreciseX())
@@ -248,9 +248,9 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
             csv.writeNewLine();
 
             // value row
-            csv.writeString(vector.fileRunRef->runRef->runName); //TODO
-            csv.writeString(*vector.moduleNameRef);
-            csv.writeString(*vector.nameRef);
+            csv.writeString(vector.getRun()->getRunName()); //TODO
+            csv.writeString(vector.getModuleName());
+            csv.writeString(vector.getName());
             csv.writeString("VALUE");
             for (int j = 0; j < data->length(); j++)
                 csv.writeBigDecimal(data->getY(j));
@@ -262,7 +262,7 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
         if (columnNames) {
             for (int i = 0; i < numVectors; ++i) {
                 const VectorResult& vector = manager->getVector(idlist.get(i));
-                std::string columnTitle = *vector.nameRef + " " + *vector.moduleNameRef + " (" + vector.fileRunRef->runRef->runName + ")"; // trying to come up with something usable when viewed from spreadsheets; should be customizable via a format string
+                std::string columnTitle = vector.getName() + " " + vector.getModuleName() + " (" + vector.getRun()->getRunName() + ")"; // trying to come up with something usable when viewed from spreadsheets; should be customizable via a format string
                 csv.writeString(columnTitle); // time column
                 csv.writeBlank(); // value column
             }
@@ -299,7 +299,7 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
         vector<DataTable *> tables;
         for (int i = 0; i < numVectors; ++i) {
             const VectorResult& vector = manager->getVector(idlist.get(i));
-            std::string yColumnName = *vector.moduleNameRef + "." + *vector.nameRef;
+            std::string yColumnName = vector.getModuleName() + "." + vector.getName();
             tables.push_back(new XYDataTable("unused", "unused", "t", yColumnName, xyArrays[i]));
         }
 
@@ -331,19 +331,19 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
     // write histograms, two lines each ("bins" and "counters" lines)
     for (int i = 0; i < (int)idlist.size(); ++i) {
         const HistogramResult& histogram = manager->getHistogram(idlist.get(i));
-        csv.writeString(histogram.fileRunRef->runRef->runName);
-        csv.writeString(*histogram.moduleNameRef);
-        csv.writeString(*histogram.nameRef);
+        csv.writeString(histogram.getRun()->getRunName());
+        csv.writeString(histogram.getModuleName());
+        csv.writeString(histogram.getName());
         csv.writeString("bins");
-        for (double d : histogram.bins)
+        for (double d : histogram.getBinLowerBounds())
             csv.writeDouble(d);
         csv.writeNewLine();
 
-        csv.writeString(histogram.fileRunRef->runRef->runName);
-        csv.writeString(*histogram.moduleNameRef);
-        csv.writeString(*histogram.nameRef);
+        csv.writeString(histogram.getRun()->getRunName());
+        csv.writeString(histogram.getModuleName());
+        csv.writeString(histogram.getName());
         csv.writeString("counters");
-        for (double d : histogram.values)
+        for (double d : histogram.getBinValues())
             csv.writeDouble(d);
         csv.writeNewLine();
     }

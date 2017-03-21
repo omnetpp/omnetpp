@@ -61,17 +61,17 @@ Port *VectorReaderByFileTypeNodeType::getPort(Node *node, const char *portname) 
 {
     // vector id is used as port name
     if (SqliteVectorReaderNode *node1 = dynamic_cast<SqliteVectorReaderNode *>(node)) {
-        VectorResult vector;
-        if (!parseInt(portname, vector.vectorId))
+        int vectorId;
+        if (!parseInt(portname, vectorId))
             throw opp_runtime_error("indexed file reader node: port should be a vector id, received: %s", portname);
-        return node1->addVector(vector);
+        return node1->addVector(vectorId);
     }
 
     if (IndexedVectorFileReaderNode *node1 = dynamic_cast<IndexedVectorFileReaderNode *>(node)) {
-        VectorResult vector;
-        if (!parseInt(portname, vector.vectorId))
+        int vectorId;
+        if (!parseInt(portname, vectorId))
             throw opp_runtime_error("indexed file reader node: port should be a vector id, received: %s", portname);
-        return node1->addVector(vector);
+        return node1->addVector(vectorId);
     }
 
     throw opp_runtime_error("SqliteVectorReaderNode or IndexedVectorFileReaderNode expected");

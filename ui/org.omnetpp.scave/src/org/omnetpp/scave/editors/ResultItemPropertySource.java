@@ -112,7 +112,7 @@ public class ResultItemPropertySource implements IPropertySource {
                 IPropertyDescriptor[] bins = null;
                 if (item instanceof HistogramResult) {
                     HistogramResult histogram = (HistogramResult)item;
-                    DoubleVector binBounds = histogram.getBins();
+                    DoubleVector binBounds = histogram.getBinLowerBounds();
                     bins = new IPropertyDescriptor[(int)binBounds.size()];
                     for (int i = 0; i < binBounds.size(); i++) {
                         double bin1 = binBounds.get(i);
@@ -141,7 +141,7 @@ public class ResultItemPropertySource implements IPropertySource {
                 // histogram bin
                 if (resultItem instanceof HistogramResult && propertyId instanceof String && propertyId.toString().charAt(0)=='%') {
                     int i = Integer.parseInt(propertyId.toString().substring(1));
-                    double value = ((HistogramResult)resultItem).getValues().get(i);
+                    double value = ((HistogramResult)resultItem).getBinValues().get(i);
                     double valueFloor = Math.floor(value);
                     return value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value);
                 }

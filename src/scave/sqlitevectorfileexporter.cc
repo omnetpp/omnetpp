@@ -128,7 +128,7 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
     std::unique_ptr<RunList> tmp(runList);
 
     for (Run *run : *runList) {
-        writer.beginRecordingForRun(run->runName, simtimeScaleExp, run->attributes, run->moduleParams);
+        writer.beginRecordingForRun(run->getRunName(), simtimeScaleExp, run->getAttributes(), run->getModuleParams());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
 
         // register all vectors
@@ -136,7 +136,7 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
         for (int i=0; i<filteredList.size(); i++) {
             ID id = filteredList.get(i);
             const VectorResult& vector = manager->getVector(id);
-            vectorHandles[i] = writer.registerVector(*vector.moduleNameRef, *vector.nameRef, vector.attributes, perVectorMemoryLimit);
+            vectorHandles[i] = writer.registerVector(vector.getModuleName(), vector.getName(), vector.getAttributes(), perVectorMemoryLimit);
         }
 
         // write data for all vectors
@@ -157,7 +157,7 @@ void SqliteVectorFileExporter::saveResults(const std::string& fileName, ResultFi
                 else if (!skipSpecialValues) {
                     ID id = filteredList.get(i);
                     const VectorResult& vector = manager->getVector(id);
-                    std::string vectorName = *vector.moduleNameRef + "." + *vector.nameRef;
+                    std::string vectorName = vector.getModuleName() + "." + vector.getName();
                     throw opp_runtime_error("Illegal value (NaN of Inf) encountered as time while exporting vector %s; "
                             "use skipSpecialValues=true to turn off this error message", vectorName.c_str());
                 }

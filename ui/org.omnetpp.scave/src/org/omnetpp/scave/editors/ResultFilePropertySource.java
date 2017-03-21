@@ -44,7 +44,7 @@ public class ResultFilePropertySource extends FilePropertySource {
 
     @Override
     public Object getPropertyValue(Object propertyId) {
-        if (propertyId.equals(PROP_COMPUTED)) return resultFile.getComputed();
+        if (propertyId.equals(PROP_COMPUTED)) return resultFile.isComputed();
 
         return super.getPropertyValue(propertyId);
     }

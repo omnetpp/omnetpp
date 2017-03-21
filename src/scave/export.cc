@@ -74,7 +74,7 @@ void OldScaveExport::saveVectors(const string& name, const string& description,
     vector<DataTable *> tables;
     for (int i = 0; i < (int)xyArrays.size(); ++i) {
         const VectorResult& vector = manager.getVector(vectors.get(i));
-        std::string yColumnName = makeUniqueIdentifier(*vector.moduleNameRef + "/" + *vector.nameRef);
+        std::string yColumnName = makeUniqueIdentifier(vector.getModuleName() + "/" + vector.getName());
 
         tables.push_back(new XYDataTable(name, description, "X", yColumnName, xyArrays[i]));
     }
@@ -414,7 +414,7 @@ void OldCsvExport::saveVector(const string& name, const string& description,
     else {
         const VectorResult& vector = manager.getVector(vectorID);
         xColumn = "time";
-        yColumn = *vector.moduleNameRef + "." + *vector.nameRef;
+        yColumn = vector.getModuleName() + "." + vector.getName();
     }
     const XYDataTable table(name, description, xColumn, yColumn, xyarray);
     if (endIndex == -1)

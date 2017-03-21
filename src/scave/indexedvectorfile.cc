@@ -263,9 +263,9 @@ Port *IndexedVectorFileWriterNode::addVector(int vectorId, const char *module, c
 
 Port *IndexedVectorFileWriterNode::addVector(const VectorResult& vector)
 {
-    VectorInputPort *inputport = new VectorInputPort(vector.vectorId, vector.moduleNameRef->c_str(), vector.nameRef->c_str(),
-                vector.columns.c_str(), blockSize, this);
-    inputport->vector.attributes = vector.attributes;
+    VectorInputPort *inputport = new VectorInputPort(vector.getVectorId(), vector.getModuleName().c_str(), vector.getName().c_str(),
+                vector.getColumns().c_str(), blockSize, this);
+    inputport->vector.attributes = vector.getAttributes();
     ports.push_back(inputport);
     return inputport;
 }

@@ -47,9 +47,9 @@ namespace scave {
  */
 extern const std::string NULLSTRING;
 
-struct Run;
-struct ResultFile;
-struct FileRun;
+class Run;
+class ResultFile;
+class FileRun;
 class ResultFileManager;
 class CmpBase;
 class OmnetppResultFileLoader;
@@ -76,25 +76,58 @@ private:
 };
 
 /**
+ * Represents a run in a result file. Such item is needed because
+ * result files and runs are in many-to-many relationship: a result file
+ * may contain more than one runs (.sca file), and during a simulation run
+ * (represented by class Run) more than one result files are written into
+ * (namely, a .vec and a .sca file, or sometimes many of them).
+ * And ResultItems refer to a FileRun instead of a ResultFile and a Run,
+ * to conserve memory.
+ */
+class SCAVE_API FileRun
+{
+public: //TODO private
+    ResultFile *fileRef;
+    Run *runRef;
+};
+
+/**
  * Item in an output scalar or output vector file. Represents common properties
  * of an output vector or output scalar.
  */
-struct SCAVE_API ResultItem
+class SCAVE_API ResultItem
 {
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
+    friend class ResultFileManager;
+
+  public:
     enum Type { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
 
+  protected:
     FileRun *fileRunRef; // backref to containing FileRun
-    const std::string *moduleNameRef; // points into ResultFileManager's StringSet
-    const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
+    const std::string *moduleNameRef; // points into ResultFileManager'strptr StringSet
+    const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager'strptr StringSet
     StringMap attributes; // metadata in key/value form
     IComputation *computation;
 
-    ResultItem() : fileRunRef(nullptr), moduleNameRef(nullptr), nameRef(nullptr), computation(nullptr) {}
+  public:
+    ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name);
     ResultItem(const ResultItem& o)
         : fileRunRef(o.fileRunRef), moduleNameRef(o.moduleNameRef), nameRef(o.nameRef),
           attributes(o.attributes), computation(o.computation ? o.computation->dup() : nullptr) {}
     ResultItem& operator=(const ResultItem& rhs);
     virtual ~ResultItem() { delete computation; }
+
+    const std::string& getName() const {return *nameRef;}
+    const std::string& getModuleName() const {return *moduleNameRef;}
+
+    FileRun *getFileRun() const {return fileRunRef;} //TODO return const
+    ResultFile *getFile() const {return fileRunRef->fileRef;} //TODO return const
+    Run *getRun() const {return fileRunRef->runRef;}  //TODO return const
+
+    const StringMap& getAttributes() const {return attributes;}
+    IComputation *getComputation() const {return computation;}
 
     const std::string& getAttribute(const std::string& attrName) const {
         StringMap::const_iterator it = attributes.find(attrName);
@@ -114,15 +147,25 @@ struct SCAVE_API ResultItem
     EnumType* getEnum() const;
 
     bool isComputed() const { return computation != nullptr; }
+
+    void setAttributes(const StringMap& attrs) {attributes = attrs;}
+    void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
 };
 
 /**
  * Represents an output scalar
  */
-struct SCAVE_API ScalarResult : public ResultItem
+class SCAVE_API ScalarResult : public ResultItem
 {
+  private:
     double value;
-    bool isField;
+    bool isField_; // whether this scalar was created by exploding a "statistic" to its fields
+
+  public:
+    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, double value, bool isField) :
+        ResultItem(fileRun, moduleName, name), value(value), isField_(isField) {}
+    double getValue() const {return value;}
+    bool isField() const {return isField_;}
 };
 
 /**
@@ -130,17 +173,30 @@ struct SCAVE_API ScalarResult : public ResultItem
  * actual vector data are not kept in memory.
  */
 // TODO: there's a missing superclass between vectors and histograms that provides statistics, see the various sort<foo>By<bar> methods we need to make it work
-struct SCAVE_API VectorResult : public ResultItem
+class SCAVE_API VectorResult : public ResultItem
 {
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
+    friend class ResultFileManager;
+
+  private:
     int vectorId;
     std::string columns;
     eventnumber_t startEventNum, endEventNum;
     simultime_t startTime, endTime;
     Statistics stat;
 
-    VectorResult() : vectorId(-1), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
+  public:
+    VectorResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, int vectorId, const std::string& columns) :
+        ResultItem(fileRun, moduleName, name), vectorId(vectorId), columns(columns), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
-    const Statistics& getStatistics() const { return stat; }
+    int getVectorId() const {return vectorId;}
+    const std::string& getColumns() const {return columns;}
+    const Statistics& getStatistics() const {return stat;}
+    eventnumber_t getStartEventNum() const {return startEventNum;}
+    eventnumber_t getEndEventNum() const {return endEventNum;}
+    simultime_t getStartTime() const {return startTime;}
+    simultime_t getEndTime() const {return endTime;}
 
     /**
      * Returns the value of the "interpolation-mode" attribute as an InterpolationMode,
@@ -153,14 +209,21 @@ struct SCAVE_API VectorResult : public ResultItem
  * Represents a histogram.
  */
 // TODO: there's a missing superclass between vectors and histograms that provides statistics, see the various sort<foo>By<bar> methods we need to make it work
-struct SCAVE_API HistogramResult : public ResultItem
+class SCAVE_API HistogramResult : public ResultItem
 {
+  private:
     Statistics stat; //TODO weighted
     std::vector<double> bins;
     std::vector<double> values;
 
+  public:
+    HistogramResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const Statistics& stat) :
+        ResultItem(fileRun, moduleName, name), stat(stat) {}
+
     const Statistics& getStatistics() const { return stat; }
-    Histogram getBins() const; // TODO: const Histogram& getBins() const {return bins;}
+    Histogram getHistogram() const;
+    const std::vector<double>& getBinLowerBounds() const {return bins;}
+    const std::vector<double>& getBinValues() const {return values;}
 
     void addBin(double lower_bound, double value);
 
@@ -177,21 +240,37 @@ typedef std::vector<FileRun *> FileRunList;
 /**
  * Represents a loaded scalar or vector file.
  */
-struct SCAVE_API ResultFile
+class SCAVE_API ResultFile
 {
-    enum FileType { FILETYPE_TEXT, FILETYPE_SQLITE };
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
+    friend class ResultFileManager;
+    friend class DataSorter; // due to ScalarResults[] etc
 
+  public:
+    enum FileType { FILETYPE_OMNETPP, FILETYPE_SQLITE };
+
+  private:
     int id;  // position in fileList
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
-    std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
     std::string directory; // directory's location in the Eclipse workspace
     std::string fileName; // file name
     std::string filePath; // workspace directory + fileName
+    std::string fileSystemFilePath; // directory+fileName of underlying file (for fopen())
     FileType fileType;
     bool computed;
     ScalarResults scalarResults;
     VectorResults vectorResults;
     HistogramResults histogramResults;
+
+  public:
+    ResultFileManager *getResultFileManager() const {return resultFileManager;}
+    const std::string& getDirectory() const {return directory;}
+    const std::string& getFileName() const {return fileName;}
+    const std::string& getFilePath() const {return filePath;}
+    const std::string& getFileSystemFilePath() const {return fileSystemFilePath;}
+    FileType getFileType() const {return fileType;}
+    bool isComputed() const {return computed;}
 };
 
 /**
@@ -199,49 +278,51 @@ struct SCAVE_API ResultFile
  * the same run (i.e. runName is the same), they will share
  * the same Run object.
  */
-struct SCAVE_API Run
+class SCAVE_API Run
 {
+    friend OmnetppResultFileLoader;
+    friend SqliteResultFileLoader;
+
+  private:
     std::string runName; // unique identifier for the run, "runId"
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
 
     // various attributes of the run are stored in a string map.
     // keys include: runNumber, networkName, datetime, experiment, measurement, replication
     StringMap attributes;
-    int runNumber = -1; // this is stored separately as well, for convenience
+    int runNumber = 0; // this is stored separately as well, for convenience
 
     // module parameters: maps wildcard pattern to value
     StringMap moduleParams;
 
     bool computed;
 
-    Run(bool computed, ResultFileManager *manager) : resultFileManager(manager), computed(computed) {}
+  public:
+    Run(const std::string& runName, bool computed, ResultFileManager *manager) : runName(runName), resultFileManager(manager), computed(computed) {}
+
+    ResultFileManager *getResultFileManager() const {return resultFileManager;}
+    const std::string& getRunName() const {return runName;}
+    const StringMap& getAttributes() const {return attributes;}
+    const StringMap& getModuleParams() const {return moduleParams;} //FIXME this should not be a map, because order is important
+    int getRunNumber() const {return runNumber;}
+    bool isComputed() const {return computed;}
 
     const std::string& getAttribute(const std::string& attrName) const {
         // note: we use find() instead of operator[], because latter creates blank entry if key is not contained in the map
         StringMap::const_iterator it = attributes.find(attrName);
         return it==attributes.end() ? NULLSTRING : it->second;
     }
+
     const std::string& getModuleParam(const std::string& paramName) const {
         StringMap::const_iterator it = moduleParams.find(paramName);
         return it==moduleParams.end() ? NULLSTRING : it->second;
     }
+
+    void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
+    void setModuleParam(const std::string& paramName, const std::string& value) {moduleParams[paramName] = value;}
+
 };
 
-
-/**
- * Represents a run in a result file. Such item is needed because
- * result files and runs are in many-to-many relationship: a result file
- * may contain more than one runs (.sca file), and during a simulation run
- * (represented by struct Run) more than one result files are written into
- * (namely, a .vec and a .sca file, or sometimes many of them).
- * And ResultItems refer to a FileRun instead of a ResultFile and a Run,
- * to conserve memory.
- */
-struct SCAVE_API FileRun
-{
-    ResultFile *fileRef;
-    Run *runRef;
-};
 
 typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
 
@@ -257,6 +338,7 @@ typedef std::map<std::pair<ComputationID, ID> , ID> ComputedIDCache;
  */
 class SCAVE_API ResultFileManager
 {
+    friend class ResultItem; // moduleNames, names
     friend class IDList;  // _type()
     friend class CmpBase; // uncheckedGet...()
     friend class OmnetppResultFileLoader;
@@ -264,7 +346,7 @@ class SCAVE_API ResultFileManager
   private:
     // List of files loaded. This vector can have holes (NULLs) in it due to
     // unloaded files. The "id" field of ResultFile is the index into this vector.
-    // It is not allowed to move elements, because IDs contain the file's index in them.
+    // It is not allowed to move elements, because IDs contain the file'strptr index in them.
     ResultFileList fileList;
 
     // List of unique runs in the files. If several files contain the same runName,
@@ -307,12 +389,12 @@ class SCAVE_API ResultFileManager
 
     // utility functions called while loading a result file
     ResultFile *addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType, bool computed);
-    Run *addRun(bool computed);
+    Run *addRun(const std::string& runName, bool computed=false);
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
     int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value, bool isField);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
-    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap& attrs);
+    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const StringMap& attrs);
 
     ResultFile *getFileForID(ID id) const; // checks for nullptr
 

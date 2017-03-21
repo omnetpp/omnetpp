@@ -49,12 +49,12 @@ public class HistogramDataset implements IHistogramDataset {
             long id = idlist.get(i);
             HistogramResult histogram = manager.getHistogram(id);
             boolean isIntegerType = histogram.getType() == ResultItem.Type.TYPE_INT;
-            DoubleVector bins = histogram.getBins();
+            DoubleVector bins = histogram.getBinLowerBounds();
             int size = (int)bins.size();
             double[] cellBreaks = new double[size+1];
             System.arraycopy(bins.toArray(), 0, cellBreaks, 0, size);
             cellBreaks[size] = Double.POSITIVE_INFINITY;
-            double[] cellValues = histogram.getValues().toArray();
+            double[] cellValues = histogram.getBinValues().toArray();
             Statistics stat = histogram.getStatistics();
             histograms[i] = new HistogramData(keys[i], isIntegerType, stat.getCount(), stat.getMin(), stat.getMax(), cellBreaks, cellValues);
         }

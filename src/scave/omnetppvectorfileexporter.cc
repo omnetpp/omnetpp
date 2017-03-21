@@ -130,7 +130,7 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
     std::unique_ptr<RunList> tmp(runList);
 
     for (Run *run : *runList) {
-        writer.beginRecordingForRun(run->runName, run->attributes, run->moduleParams);
+        writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getModuleParams());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
 
         // register all vectors
@@ -138,8 +138,8 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
         for (int i = 0; i < filteredList.size(); i++) {
             ID id = filteredList.get(i);
             const VectorResult& vector = manager->getVector(id);
-            bool hasEventNumbers = vector.columns=="ETV";
-            vectorHandles[i] = writer.registerVector(*vector.moduleNameRef, *vector.nameRef, vector.attributes, perVectorMemoryLimit, hasEventNumbers);
+            bool hasEventNumbers = vector.getColumns()=="ETV";
+            vectorHandles[i] = writer.registerVector(vector.getModuleName(), vector.getName(), vector.getAttributes(), perVectorMemoryLimit, hasEventNumbers);
         }
 
         // write data for all vectors
@@ -158,7 +158,7 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
                 else if (!skipSpecialValues) {
                     ID id = filteredList.get(i);
                     const VectorResult& vector = manager->getVector(id);
-                    std::string vectorName = *vector.moduleNameRef + "." + *vector.nameRef;
+                    std::string vectorName = vector.getModuleName() + "." + vector.getName();
                     throw opp_runtime_error("Illegal value (NaN of Inf) encountered as time while exporting vector %s; "
                             "use skipSpecialValues=true to turn off this error message", vectorName.c_str());
                 }

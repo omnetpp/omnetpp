@@ -61,7 +61,7 @@ namespace scave {
 
 
 OmnetppResultFileLoader::ParseContext::ParseContext(ResultFile* fileRef) :
-        fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0), fileRunRef(nullptr),
+        fileRef(fileRef), fileName(fileRef->getFilePath().c_str()), lineNo(0), fileRunRef(nullptr),
         lastResultItemType(0), lastResultItemIndex(-1), count(0),
         min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0)
 {
@@ -95,8 +95,7 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         Run *runRef = resultFileManager->getRunByName(vec[1]);
         if (!runRef) {
             // not yet: add it
-            runRef = resultFileManager->addRun(false);
-            runRef->runName = vec[1];
+            runRef = resultFileManager->addRun(vec[1]);
         }
         // associate Run with this file
         CHECK(resultFileManager->getFileRun(ctx.fileRef, runRef) == nullptr, "non-unique runId in the file");
@@ -118,7 +117,7 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
     // if we haven't seen a "run" line yet (as with old vector files), add a default run
     if (ctx.fileRunRef == nullptr) {
         // fake a new Run
-        Run *runRef = resultFileManager->addRun(false);
+        Run *runRef = resultFileManager->addRun("unnamed", false);
         ctx.fileRunRef = resultFileManager->addFileRun(ctx.fileRef, runRef);
         runRef->runNumber = 0;
 
@@ -208,7 +207,7 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
             Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
             const ScalarResults& scalars = ctx.fileRef->scalarResults;
             const StringMap& attrs = ctx.lastResultItemIndex < (int)scalars.size() ?
-                scalars[ctx.lastResultItemIndex].attributes : StringMap();
+                scalars[ctx.lastResultItemIndex].getAttributes() : StringMap();
             ctx.lastResultItemType = ResultFileManager::HISTOGRAM;
             ctx.lastResultItemIndex = resultFileManager->addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat, attrs);
         }
@@ -242,15 +241,15 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         else if (ctx.lastResultItemIndex >= 0) {  // resultItem attribute
             if (ctx.lastResultItemType == ResultFileManager::SCALAR)
                 for (int i = ctx.lastResultItemIndex; i < (int)ctx.fileRef->scalarResults.size(); ++i) {
-                    ctx.fileRef->scalarResults[i].attributes[attrName] = attrValue;
+                    ctx.fileRef->scalarResults[i].setAttribute(attrName, attrValue);
                 }
             else if (ctx.lastResultItemType == ResultFileManager::VECTOR)
                 for (int i = ctx.lastResultItemIndex; i < (int)ctx.fileRef->vectorResults.size(); ++i) {
-                    ctx.fileRef->vectorResults[i].attributes[attrName] = attrValue;
+                    ctx.fileRef->vectorResults[i].setAttribute(attrName, attrValue);
                 }
             else if (ctx.lastResultItemType == ResultFileManager::HISTOGRAM)
                 for (int i = ctx.lastResultItemIndex; i < (int)ctx.fileRef->histogramResults.size(); ++i) {
-                    ctx.fileRef->histogramResults[i].attributes[attrName] = attrValue;
+                    ctx.fileRef->histogramResults[i].setAttribute(attrName, attrValue);
                 }
         }
     }
@@ -285,7 +284,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
     ResultFile *fileRef = nullptr;
 
     try {
-        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_TEXT, false);
+        fileRef = resultFileManager->addFile(fileName, fileSystemFileName, ResultFile::FILETYPE_OMNETPP, false);
 
         // if vector file and has index, load vectors from the index file
         if (IndexFile::isExistingVectorFile(fileSystemFileName) && IndexFile::isIndexFileUpToDate(fileSystemFileName)) {
@@ -330,8 +329,7 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
 
     Run *runRef = resultFileManager->getRunByName(index->run.runName.c_str());
     if (!runRef) {
-        runRef = resultFileManager->addRun(false);
-        runRef->runName = index->run.runName;
+        runRef = resultFileManager->addRun(index->run.runName);
     }
     runRef->runNumber = index->run.runNumber;
     runRef->attributes = index->run.attributes;
@@ -342,13 +340,8 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
         const VectorData *vectorRef = index->getVectorAt(i);
         assert(vectorRef);
 
-        VectorResult vectorResult;
-        vectorResult.fileRunRef = fileRunRef;
-        vectorResult.attributes = StringMap(vectorRef->attributes);
-        vectorResult.vectorId = vectorRef->vectorId;
-        vectorResult.moduleNameRef = resultFileManager->moduleNames.insert(vectorRef->moduleName);
-        vectorResult.nameRef = resultFileManager->names.insert(vectorRef->name);
-        vectorResult.columns = vectorRef->columns;
+        VectorResult vectorResult(fileRunRef, vectorRef->moduleName, vectorRef->name, vectorRef->vectorId, vectorRef->columns);
+        vectorResult.setAttributes(vectorRef->attributes);
         vectorResult.startEventNum = vectorRef->startEventNum;
         vectorResult.endEventNum = vectorRef->endEventNum;
         vectorResult.startTime = vectorRef->startTime;

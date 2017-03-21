@@ -63,6 +63,7 @@ class SCAVE_API IndexedVectorFileReaderNode2 : public FileReaderNode
         virtual ~IndexedVectorFileReaderNode2();
 
         Port *addVector(const VectorResult& vector);
+        Port *addVector(int vectorId);
 
         virtual bool isReady() const override;
         virtual void process() override;

@@ -66,7 +66,7 @@ void XYDataset::add(const ScalarResult& d)
         columnOrder.push_back(column);
     }
 
-    values.at(row).at(column).collect(d.value);
+    values.at(row).at(column).collect(d.getValue());
 }
 
 void XYDataset::swapRows(int row1, int row2)
@@ -154,17 +154,17 @@ const Statistics& XYDataset::getValue(int row, int column) const
  */
 bool DataSorter::sameGroupFileRunScalar(const ResultItem& d1, const ResultItem& d2)
 {
-    return d1.fileRunRef == d2.fileRunRef && d1.nameRef == d2.nameRef;
+    return d1.getFileRun() == d2.getFileRun() && d1.getName() == d2.getName();
 }
 
 bool DataSorter::sameGroupModuleScalar(const ResultItem& d1, const ResultItem& d2)
 {
-    return d1.moduleNameRef == d2.moduleNameRef && d1.nameRef == d2.nameRef;
+    return d1.getModuleName() == d2.getModuleName() && d1.getName() == d2.getName();
 }
 
 bool DataSorter::sameGroupFileRunModule(const ResultItem& d1, const ResultItem& d2)
 {
-    return d1.fileRunRef == d2.fileRunRef && d1.moduleNameRef == d2.moduleNameRef;
+    return d1.getFileRun() == d2.getFileRun() && d1.getModuleName() == d2.getModuleName();
 }
 
 /*
@@ -176,7 +176,7 @@ bool DataSorter::lessByModuleRef(ID id1, ID id2)
         return id2 != -1;  // -1 is the smallest
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
-    return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0;
+    return strdictcmp(d1.getModuleName().c_str(), d2.getModuleName().c_str()) < 0;
 }
 
 bool DataSorter::equalByModuleRef(ID id1, ID id2)
@@ -185,7 +185,7 @@ bool DataSorter::equalByModuleRef(ID id1, ID id2)
         return id1 == id2;
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
-    return d1.moduleNameRef == d2.moduleNameRef;
+    return d1.getModuleName() == d2.getModuleName();
 }
 
 bool DataSorter::lessByFileAndRun(ID id1, ID id2)
@@ -196,10 +196,10 @@ bool DataSorter::lessByFileAndRun(ID id1, ID id2)
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
 
     // compare first by file, then by run
-    int cmpFile = strdictcmp(d1.fileRunRef->fileRef->filePath.c_str(), d2.fileRunRef->fileRef->filePath.c_str());
+    int cmpFile = strdictcmp(d1.getFile()->getFilePath().c_str(), d2.getFile()->getFilePath().c_str());
     if (cmpFile != 0)
         return cmpFile < 0;
-    int cmpRun = strdictcmp(d1.fileRunRef->runRef->runName.c_str(), d2.fileRunRef->runRef->runName.c_str());
+    int cmpRun = strdictcmp(d1.getRun()->getRunName().c_str(), d2.getRun()->getRunName().c_str());
     return cmpRun < 0;
 }
 
@@ -209,7 +209,7 @@ bool DataSorter::equalByFileAndRun(ID id1, ID id2)
         return id1 == id2;
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
-    return d1.fileRunRef == d2.fileRunRef;
+    return d1.getFileRun() == d2.getFileRun();
 }
 
 bool DataSorter::lessByName(ID id1, ID id2)
@@ -218,7 +218,7 @@ bool DataSorter::lessByName(ID id1, ID id2)
         return id2 != -1;  // -1 is the smallest
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
-    return strdictcmp(d1.nameRef->c_str(), d2.nameRef->c_str()) < 0;
+    return strdictcmp(d1.getName().c_str(), d2.getName().c_str()) < 0;
 }
 
 bool DataSorter::equalByName(ID id1, ID id2)
@@ -227,7 +227,7 @@ bool DataSorter::equalByName(ID id1, ID id2)
         return id1 == id2;
     const ResultItem& d1 = tmpResultFileMgr->getItem(id1);
     const ResultItem& d2 = tmpResultFileMgr->getItem(id2);
-    return d1.nameRef == d2.nameRef;
+    return d1.getName() == d2.getName();
 }
 
 bool DataSorter::lessByValue(ID id1, ID id2)
@@ -236,7 +236,7 @@ bool DataSorter::lessByValue(ID id1, ID id2)
         return id2 != -1;  // -1 is the smallest
     const ScalarResult& d1 = tmpResultFileMgr->getScalar(id1);
     const ScalarResult& d2 = tmpResultFileMgr->getScalar(id2);
-    return d1.value < d2.value;
+    return d1.getValue() < d2.getValue();
 }
 
 /*----------------------------------------
@@ -380,7 +380,7 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
         if (id == -1)
             continue;
         const ScalarResult& d = resultFileMgr->getScalar(id);
-        if (*d.moduleNameRef == moduleName && *d.nameRef == scalarName) {
+        if (d.getModuleName() == moduleName && d.getName() == scalarName) {
             xpos = i-vv.begin();
             break;
         }
@@ -498,16 +498,16 @@ IDList IsoGroupingFn::init(const IDList& idlist, const StringVector& moduleNames
     for (int i = 0; i < sz; ++i) {
         ID id = idlist.get(i);
         const ScalarResult& scalar = manager->getScalar(id);
-        pair<string, string> key = make_pair(*scalar.moduleNameRef, *scalar.nameRef);
+        pair<string, string> key = make_pair(scalar.getModuleName(), scalar.getName());
         IsoAttrIndexMap::iterator it = indexMap.find(key);
         if (it != indexMap.end()) {
             int index = it->second;
-            Run *run = scalar.fileRunRef->runRef;
+            Run *run = scalar.getRun();
             RunIsoValueMap::iterator it2 = isoMap.find(run);
             if (it2 == isoMap.end()) {
                 it2 = isoMap.insert(make_pair(run, vector<double>(numOfIsoValues, NaN))).first;
             }
-            it2->second[index] = scalar.value;
+            it2->second[index] = scalar.getValue();
         }
         else
             result.add(id);
@@ -518,7 +518,7 @@ IDList IsoGroupingFn::init(const IDList& idlist, const StringVector& moduleNames
 
 bool IsoGroupingFn::operator()(const ResultItem& d1, const ResultItem& d2) const
 {
-    if (d1.fileRunRef->runRef == d2.fileRunRef->runRef)
+    if (d1.getRun() == d2.getRun())
         return true;
 
     if (!fields.equal(d1, d2))
@@ -527,8 +527,8 @@ bool IsoGroupingFn::operator()(const ResultItem& d1, const ResultItem& d2) const
     if (isoMap.empty())
         return true;
 
-    RunIsoValueMap::const_iterator it1 = isoMap.find(d1.fileRunRef->runRef);
-    RunIsoValueMap::const_iterator it2 = isoMap.find(d2.fileRunRef->runRef);
+    RunIsoValueMap::const_iterator it1 = isoMap.find(d1.getRun());
+    RunIsoValueMap::const_iterator it2 = isoMap.find(d2.getRun());
     if (it1 == isoMap.end() || it2 == isoMap.end())
         return false;
 
@@ -588,7 +588,7 @@ IDList DataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcount)
         int outSize = out.size();
         for (i = 0; i < outSize; i++) {
             const ResultItem& vd = resultFileMgr->getItem(out.get(i));
-            if (d.moduleNameRef == vd.moduleNameRef && d.nameRef == vd.nameRef)
+            if (d.getModuleName() == vd.getModuleName() && d.getName() == vd.getName())
                 break;
         }
 
