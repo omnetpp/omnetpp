@@ -40,7 +40,8 @@ void OmnetppScalarFileWriter::open(const char *filename)   //TODO create/append
     f = fopen(fname.c_str(), "a");
     if (f == nullptr)
         throw opp_runtime_error("Cannot open output scalar file '%s'", fname.c_str());
-    check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));   //TODO only if at start of file
+    if (opp_ftell(f) == 0)
+        check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
 }
 
 void OmnetppScalarFileWriter::close()

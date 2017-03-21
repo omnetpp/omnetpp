@@ -112,7 +112,8 @@ void cFileOutputScalarManager::endRun()
 void cFileOutputScalarManager::initialize()
 {
     openFile();
-    check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
+    if (opp_ftell(f) == 0)
+        check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
 
     run.initRun();
     run.writeRunData(f, fname);
