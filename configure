@@ -6056,6 +6056,8 @@ rm -f core conftest.err conftest.$ac_objext \
   if test $mpi_ok = yes; then
      DEFINES="$DEFINES -DWITH_MPI"
   else
+     MPI_LIBS=""
+     MPI_CFLAGS=""
      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Optional package MPI (needed for parallel simulation) not found." >&5
 $as_echo "$as_me: WARNING: Optional package MPI (needed for parallel simulation) not found." >&2;}

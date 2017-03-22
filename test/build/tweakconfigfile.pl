@@ -54,7 +54,7 @@ elsif ($command eq 'setoradd')
 elsif ($command eq 'assert')
 {
     print "In $fname, asserting $variable=$value...\n" if $verbose;
-    if ($config =~ /^ *$variable *= *(.*?) *$/m) {
+    if ($config =~ /^ *$variable *\??= *(.*?) *$/m) {
         if ($1 ne $value) {die "$fname: wrong setting $variable=$1 (should be $value);";}
     } else {
         die "$fname doesn't contain $variable;";
@@ -63,7 +63,7 @@ elsif ($command eq 'assert')
 elsif ($command eq 'assert_contains')
 {
     print "In $fname, asserting $variable=$value...\n" if $verbose;
-    if ($config =~ /^ *$variable *= *(.*?) *$/m) {
+    if ($config =~ /^ *$variable *\??= *(.*?) *$/m) {
         if (index($1,$value)) {die "$fname: wrong setting $variable=$1 (should be $value);";}
     } else {
         die "$fname doesn't contain $variable;";
