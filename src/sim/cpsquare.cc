@@ -310,11 +310,11 @@ void cPSquare::loadFromFile(FILE *f)
     int i;
     freadvarsf(f, "#= n[]");
     for (i = 0; i < numCells+2; i++)
-        freadvarsf(f, " %d", n+i);
+        freadvarsf(f, " %d", &n[i]);
 
     freadvarsf(f, "#= q[]");
     for (i = 0; i < numCells+2; i++)
-        freadvarsf(f, " %lg", q+i);
+        freadvarsf(f, " %lg", &q[i]);
 }
 
 }  // namespace omnetpp

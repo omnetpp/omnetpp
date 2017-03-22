@@ -157,15 +157,15 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
     do {
         fgets(line, 101, f);
         // chop CR/LF
-        char *end = line + strlen(line) - 1;
-        while (end >= line && (*end == '\n' || *end == '\r'))
-            *end-- = '\0';
-    } while (line[0] == '\0' || line[0] == '#');
+        char *lastp = line + strlen(line) - 1;
+        while (lastp >= line && (*lastp == '\n' || *lastp == '\r'))
+            *lastp-- = '\0';
+    } while (line[0] == '\0' || (line[0] == '#' && line[1] != '='));
 
     // match '#=' tags
-    const char *fmt_comment = strstr(fmt, "#=");
-    const char *line_comment = strstr(line, "#=");
-    if (fmt_comment && line_comment && strcmp(fmt_comment, line_comment) != 0)
+    const char *fmtComment = strstr(fmt, "#=");
+    const char *lineComment = strstr(line, "#=");
+    if (opp_strcmp(fmtComment, lineComment) != 0)
         throw cRuntimeError(this, "Bad file format in loadFromFile(): Expected '%s' and got '%s'", fmt, line);
 
     // actual read
