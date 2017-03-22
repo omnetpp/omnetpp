@@ -48,6 +48,7 @@
 
 #if defined(__MINGW32__)
 #include <unistd.h>  // getpid(), getcwd(), usleep() etc.
+#include <sys/stat.h>
 #endif
 
 #define opp_mkdir(x,y) _mkdir(x)
