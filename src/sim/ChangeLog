@@ -1,8 +1,16 @@
+2017-03-22  Andras Varga
+
+	* fix cStatistic::freadvarsf()
+
+	samples/histograms caused error when reading saved hist.dat, because
+	cPSquare::loadFromFile() read too much when reading the n[] and q[]
+	arrays from file
+
 2017-03-20  ------ omnetpp-5.1 released ------
 
 2017-03-14  Attila Torok
 
-	* cOutVector: Removed remains of support for recording a pair of 
+	* cOutVector: Removed remains of support for recording a pair of
 	doubles in an output vector.
 
 2017-03-07  Andras Varga

@@ -2,7 +2,7 @@
 
 2017-03-14  Attila Torok
 
-	* Fix: Always recompute module path in SendDirectAnimation because 
+	* Fix: Always recompute module path in SendDirectAnimation because
 	the modules referenced in it might have been deleted. Fixes a
 	crash in the dyna sample, when a process in the server ends, while a
 	graphical inspector is open for the server.
