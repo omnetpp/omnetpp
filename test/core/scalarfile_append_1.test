@@ -1,0 +1,40 @@
+%description:
+Test that output-scalar-file-append = true works.
+
+%file: test.ned
+
+simple Node {
+    @isNetwork;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule
+{
+  public:
+    virtual void finish() override { recordScalar("foo", 5); recordScalar("bar", 7); }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Node
+output-scalar-file = "results/General.sca"
+output-scalar-file-append = true
+repeat = 3
+
+%prerun-command: rm -f results/General.sca
+%postrun-command: scavetool results/General.sca
+
+%contains: postrun-command(1).out
+runs: 3 	scalars: 6	vectors: 0	histograms: 0
+
