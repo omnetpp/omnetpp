@@ -39,7 +39,7 @@ case $PLATFORM in
 	# remove the quarantine extended bit so the IDE will not be copied to a private dir on macOS sierra and later
 	xattr -d com.apple.quarantine $IDEDIR/${LAUNCHER}.app 2>/dev/null
 	# starting the executable directly allows to avoid unsigned app warnings showing up
-	$IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log
+	$IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} $* $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *)
 	echo OMNeT++ IDE is supported only on: Linux, Windows and macOS
