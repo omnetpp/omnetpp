@@ -89,7 +89,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-c, --list-configs", "List unique configuration names");
         help.line();
         help.line("Options:");
-        help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).");
+        help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, h=histogram).");
         help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms) matched by filter expression (try 'help filter')");
         help.option("-p, --per-run", "Per-run reporting (where applicable)");
         help.option("-b, --bare", "Suppress labels (more suitable for machine processing)");
