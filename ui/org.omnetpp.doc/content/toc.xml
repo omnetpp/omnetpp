@@ -36,8 +36,8 @@
    </topic>
    <topic href="content/WhatsNew.html" label="What&apos;s New in This Version">
    </topic>
-   <topic href="content/visual-changelog/visual-changelog.html" label="Visual ChangeLog">
-   </topic>
+<!--   <topic href="content/visual-changelog/visual-changelog.html" label="Visual ChangeLog">
+   </topic>-->
    <anchor id="omnetpp"/>
    <topic href="content/License.html" label="License">
    </topic>
