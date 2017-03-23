@@ -11,10 +11,8 @@
     <tycho.extras.version>0.26.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <repo.url>http://download.eclipse.org/releases/neon</repo.url>
-<!--    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.6</update-repo.url> -->
-    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.6-M-builds/</update-repo.url>
-<!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.2</cdt-repo.url>-->
-    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/neon/milestones</cdt-repo.url>
+    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.6</update-repo.url>
+    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.2</cdt-repo.url>
   </properties>
 
   <pluginRepositories>
