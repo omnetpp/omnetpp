@@ -1,0 +1,595 @@
+%description:
+Test saveToFile()/loadFromFile() for various histogram classes.
+
+%activity:
+int numCells = 10;
+int numFirstVals = 100;
+double rangeExtFactor = 1.3;
+
+cDoubleHistogram dblhist("DoubleHistogram", numCells);
+cLongHistogram longhist("LongHistogram", numCells);
+cVarHistogram varhist("VarHistogram", numCells, cVarHistogram::HIST_TR_AUTO_EPC_DBL);
+cPSquare psquare("PSquare", numCells);
+cKSplit ksplit("K-Split");
+
+dblhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+longhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+ksplit.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+
+for (int i = 0; i < 1000; i++) {
+	double d = (intrand(2) == 0) ? exponential(30) : normal(80, 10);
+	longhist.collect(d);
+	dblhist.collect(d);
+	psquare.collect(d);
+	ksplit.collect(d);
+	varhist.collect(d);
+}
+
+FILE *f = fopen("pass1.txt", "w");
+longhist.saveToFile(f);
+dblhist.saveToFile(f);
+psquare.saveToFile(f);
+varhist.saveToFile(f);
+ksplit.saveToFile(f);
+fclose(f);
+
+f = fopen("pass1.txt", "r");
+longhist.loadFromFile(f);
+dblhist.loadFromFile(f);
+psquare.loadFromFile(f);
+varhist.loadFromFile(f);
+ksplit.loadFromFile(f);
+fclose(f);
+
+f = fopen("pass2.txt", "w");
+longhist.saveToFile(f);
+dblhist.saveToFile(f);
+psquare.saveToFile(f);
+varhist.saveToFile(f);
+ksplit.saveToFile(f);
+fclose(f);
+
+%% files must be the same
+%postrun-command: diff pass1.txt pass2.txt
+
+%contains: pass1.txt
+#
+# (omnetpp::cLongHistogram) Test.LongHistogram
+#
+1000	 #= num_vals
+0 217	 #= min, max
+55149	 #= sum
+4.16791e+06	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1.3	 #= range_ext_factor
+0 160	 #= range
+0 1	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 207
+ 116
+ 70
+ 55
+ 269
+ 226
+ 41
+ 11
+ 1
+ 3
+16	 #= cellsize
+
+#
+# (omnetpp::cDoubleHistogram) Test.DoubleHistogram
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1.3	 #= range_ext_factor
+0 151.771	 #= range
+0 1	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 197
+ 120
+ 69
+ 45
+ 190
+ 280
+ 78
+ 12
+ 4
+ 4
+15.1771	 #= cellsize
+
+#
+# (omnetpp::cPSquare) Test.PSquare
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+0	 #= range_mode
+2	 #= range_ext_factor
+0 0	 #= range
+0 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= numcells
+1000	 #= numobs
+#= n[]
+ 0
+ 1
+ 101
+ 200
+ 300
+ 400
+ 500
+ 600
+ 700
+ 801
+ 900
+ 1000
+#= q[]
+ -1.79769e+308
+ 0.0415294
+ 7.66721
+ 15.1703
+ 26.9537
+ 50.6354
+ 68.315
+ 74.8863
+ 79.112
+ 84.5245
+ 92.1503
+ 217.004
+
+#
+# (omnetpp::cVarHistogram) Test.VarHistogram
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+4	 #= range_mode
+2	 #= range_ext_factor
+0.569057 116.747	 #= range
+6 9	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 112
+ 71
+ 97
+ 43
+ 119
+ 93
+ 160
+ 115
+ 96
+ 79
+1	 #= transform_type
+10	 #= max_num_cells
+1	 #= bin_bounds[] exists
+ 0.569057
+ 8.62231
+ 14.6567
+ 25.4766
+ 33.0254
+ 64.2744
+ 71.5244
+ 79.0794
+ 85.6448
+ 91.7368
+ 116.747
+
+#
+# (omnetpp::cKSplit) Test.K-Split
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1.3	 #= range_ext_factor
+0 303.542	 #= range
+0 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+19	 #= num_cells
+24	 #= gridv_size
+18	 #= rootgrid
+18	 #= lastgrid
+1	 #= gridv_exists
+# grid 1
+18	 #= parent
+0	 #= reldepth
+999	 #= total
+0	 #= mother
+-2 -3	 #= cells[0], cells[1]
+# grid 2
+1	 #= parent
+1	 #= reldepth
+621	 #= total
+0	 #= mother
+-4 -6	 #= cells[0], cells[1]
+# grid 3
+1	 #= parent
+1	 #= reldepth
+378	 #= total
+0	 #= mother
+-5 13	 #= cells[0], cells[1]
+# grid 4
+2	 #= parent
+2	 #= reldepth
+356	 #= total
+0	 #= mother
+-7 -8	 #= cells[0], cells[1]
+# grid 5
+3	 #= parent
+2	 #= reldepth
+365	 #= total
+0	 #= mother
+-9 -15	 #= cells[0], cells[1]
+# grid 6
+2	 #= parent
+2	 #= reldepth
+265	 #= total
+0	 #= mother
+-13 -10	 #= cells[0], cells[1]
+# grid 7
+4	 #= parent
+3	 #= reldepth
+236	 #= total
+0	 #= mother
+-11 -14	 #= cells[0], cells[1]
+# grid 8
+4	 #= parent
+3	 #= reldepth
+120	 #= total
+16	 #= mother
+60 44	 #= cells[0], cells[1]
+# grid 9
+5	 #= parent
+3	 #= reldepth
+315	 #= total
+26	 #= mother
+-12 -16	 #= cells[0], cells[1]
+# grid 10
+6	 #= parent
+3	 #= reldepth
+205	 #= total
+16	 #= mother
+53 -17	 #= cells[0], cells[1]
+# grid 11
+7	 #= parent
+4	 #= reldepth
+126	 #= total
+32	 #= mother
+58 36	 #= cells[0], cells[1]
+# grid 12
+9	 #= parent
+4	 #= reldepth
+174	 #= total
+32	 #= mother
+86 56	 #= cells[0], cells[1]
+# grid 13
+6	 #= parent
+3	 #= reldepth
+60	 #= total
+16	 #= mother
+28 16	 #= cells[0], cells[1]
+# grid 14
+7	 #= parent
+4	 #= reldepth
+110	 #= total
+32	 #= mother
+40 38	 #= cells[0], cells[1]
+# grid 15
+5	 #= parent
+3	 #= reldepth
+50	 #= total
+16	 #= mother
+30 4	 #= cells[0], cells[1]
+# grid 16
+9	 #= parent
+4	 #= reldepth
+115	 #= total
+32	 #= mother
+52 31	 #= cells[0], cells[1]
+# grid 17
+10	 #= parent
+4	 #= reldepth
+136	 #= total
+32	 #= mother
+46 58	 #= cells[0], cells[1]
+# grid 18
+0	 #= parent
+-1	 #= reldepth
+1000	 #= total
+0	 #= mother
+-1 1	 #= cells[0], cells[1]
+
+
+
+%contains: pass2.txt
+#
+# (omnetpp::cLongHistogram) Test.LongHistogram
+#
+1000	 #= num_vals
+0 217	 #= min, max
+55149	 #= sum
+4.16791e+06	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1.3	 #= range_ext_factor
+0 160	 #= range
+0 1	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 207
+ 116
+ 70
+ 55
+ 269
+ 226
+ 41
+ 11
+ 1
+ 3
+16	 #= cellsize
+
+#
+# (omnetpp::cDoubleHistogram) Test.DoubleHistogram
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1.3	 #= range_ext_factor
+0 151.771	 #= range
+0 1	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 197
+ 120
+ 69
+ 45
+ 190
+ 280
+ 78
+ 12
+ 4
+ 4
+15.1771	 #= cellsize
+
+#
+# (omnetpp::cPSquare) Test.PSquare
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+0	 #= range_mode
+2	 #= range_ext_factor
+0 0	 #= range
+0 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= numcells
+1000	 #= numobs
+#= n[]
+ 0
+ 1
+ 101
+ 200
+ 300
+ 400
+ 500
+ 600
+ 700
+ 801
+ 900
+ 1000
+#= q[]
+ -1.79769e+308
+ 0.0415294
+ 7.66721
+ 15.1703
+ 26.9537
+ 50.6354
+ 68.315
+ 74.8863
+ 79.112
+ 84.5245
+ 92.1503
+ 217.004
+
+#
+# (omnetpp::cVarHistogram) Test.VarHistogram
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+4	 #= range_mode
+2	 #= range_ext_factor
+0.569057 116.747	 #= range
+6 9	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 112
+ 71
+ 97
+ 43
+ 119
+ 93
+ 160
+ 115
+ 96
+ 79
+1	 #= transform_type
+10	 #= max_num_cells
+1	 #= bin_bounds[] exists
+ 0.569057
+ 8.62231
+ 14.6567
+ 25.4766
+ 33.0254
+ 64.2744
+ 71.5244
+ 79.0794
+ 85.6448
+ 91.7368
+ 116.747
+
+#
+# (omnetpp::cKSplit) Test.K-Split
+#
+1000	 #= num_vals
+0.0415294 217.004	 #= min, max
+55653.6	 #= sum
+4.22383e+06	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1.3	 #= range_ext_factor
+0 303.542	 #= range
+0 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+19	 #= num_cells
+24	 #= gridv_size
+18	 #= rootgrid
+18	 #= lastgrid
+1	 #= gridv_exists
+# grid 1
+18	 #= parent
+0	 #= reldepth
+999	 #= total
+0	 #= mother
+-2 -3	 #= cells[0], cells[1]
+# grid 2
+1	 #= parent
+1	 #= reldepth
+621	 #= total
+0	 #= mother
+-4 -6	 #= cells[0], cells[1]
+# grid 3
+1	 #= parent
+1	 #= reldepth
+378	 #= total
+0	 #= mother
+-5 13	 #= cells[0], cells[1]
+# grid 4
+2	 #= parent
+2	 #= reldepth
+356	 #= total
+0	 #= mother
+-7 -8	 #= cells[0], cells[1]
+# grid 5
+3	 #= parent
+2	 #= reldepth
+365	 #= total
+0	 #= mother
+-9 -15	 #= cells[0], cells[1]
+# grid 6
+2	 #= parent
+2	 #= reldepth
+265	 #= total
+0	 #= mother
+-13 -10	 #= cells[0], cells[1]
+# grid 7
+4	 #= parent
+3	 #= reldepth
+236	 #= total
+0	 #= mother
+-11 -14	 #= cells[0], cells[1]
+# grid 8
+4	 #= parent
+3	 #= reldepth
+120	 #= total
+16	 #= mother
+60 44	 #= cells[0], cells[1]
+# grid 9
+5	 #= parent
+3	 #= reldepth
+315	 #= total
+26	 #= mother
+-12 -16	 #= cells[0], cells[1]
+# grid 10
+6	 #= parent
+3	 #= reldepth
+205	 #= total
+16	 #= mother
+53 -17	 #= cells[0], cells[1]
+# grid 11
+7	 #= parent
+4	 #= reldepth
+126	 #= total
+32	 #= mother
+58 36	 #= cells[0], cells[1]
+# grid 12
+9	 #= parent
+4	 #= reldepth
+174	 #= total
+32	 #= mother
+86 56	 #= cells[0], cells[1]
+# grid 13
+6	 #= parent
+3	 #= reldepth
+60	 #= total
+16	 #= mother
+28 16	 #= cells[0], cells[1]
+# grid 14
+7	 #= parent
+4	 #= reldepth
+110	 #= total
+32	 #= mother
+40 38	 #= cells[0], cells[1]
+# grid 15
+5	 #= parent
+3	 #= reldepth
+50	 #= total
+16	 #= mother
+30 4	 #= cells[0], cells[1]
+# grid 16
+9	 #= parent
+4	 #= reldepth
+115	 #= total
+32	 #= mother
+52 31	 #= cells[0], cells[1]
+# grid 17
+10	 #= parent
+4	 #= reldepth
+136	 #= total
+32	 #= mother
+46 58	 #= cells[0], cells[1]
+# grid 18
+0	 #= parent
+-1	 #= reldepth
+1000	 #= total
+0	 #= mother
+-1 1	 #= cells[0], cells[1]
+
+
