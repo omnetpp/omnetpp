@@ -1,0 +1,277 @@
+%description:
+Test scavetool's query command
+
+%file: test.ned
+
+simple Node extends testlib.StatNode
+{
+    @statistic[foo](source=foo; record=mean,last,stats,histogram,vector);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+repeat = 2
+
+%prerun-command: rm -f results/*
+%postrun-command: bash ./testscript.sh
+
+%file: testscript.sh
+
+#
+# Replace datetime and processId with "xxxx" in the result files, as they are different all the time
+#
+for f in results/*; do
+    perl -i -pe 's/(run General-.)-.*/\1-xxxx/' $f
+    perl -i -pe 's/(attr datetime ).*/\1 xxxx/' $f
+    perl -i -pe 's/(attr processid ).*/\1 xxxx/' $f
+done
+
+#
+# scavetool wrapper, for output, error handling and shorter command lines
+#
+run() {
+    echo "------------------------"
+    echo "$ scavetool $* <files>"
+    scavetool "$@" ../results/General-*.sca ../results/General-*.vec 2>&1 || echo ERROR
+}
+
+rm -rf export
+mkdir export
+cd export
+
+#
+#  List brief content of files, just for reference
+#
+
+run q
+run q -l
+
+#
+# Plain invocations (format is deduced from file name)
+#
+
+run export   # -> error, -o is mandatory
+run x        # -> error, -o is mandatory
+
+#
+#  -o <filename>       Output file name, or '-' for the standard output. This option is mandatory.
+#
+
+run x -o out.csv -x allowMixed=true
+run x -o out.py
+run x -o out.vec -Tv
+run x -o out.sca -Tsh
+
+#
+#  -F <format>   Selects the exporter.
+#
+
+#  Smoke-test the known export formats
+run x -o out-F.csv -F CSV -x allowMixed=true
+run x -o out-F.py  -F Python
+run x -o out-F.vec -F OmnetppVectorFile -Tv
+run x -o out-F.sca -F OmnetppScalarFile -Tsh
+run x -o out-F-sqlite.vec -F SqliteVectorFile -Tv
+run x -o out-F-sqlite.sca -F SqliteScalarFile -Tsh
+
+#
+#  -T, --type <types>  Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).
+#
+
+run x -o out-Ts.csv -Ts
+run x -o out-Th.csv -Th
+run x -o out-Tv.csv -Tv
+run x -o out-Tsh1.csv -Tsh -x allowMixed=true
+run x -o out-Tsv2.csv -T scalars,vectors -x allowMixed=true
+run x -o out-Tsh3.csv --type sh -x allowMixed=true
+run x -o out-Tsv4.csv --type scalars,vectors -x allowMixed=true
+
+#
+#  -f, --filter <filter>   Filter for result items (vectors, scalars, statistics, histograms) matched by filter expression
+#
+
+run x -o out-f1.csv --filter '*:vector'
+run x -o out-f2.csv -f '*:vector'
+
+#
+#  -w, --add-fields-as-scalars  Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars
+#
+
+run x -o out-w1.csv -Ts --add-fields-as-scalars
+run x -o out-w2.csv -Ts -w
+
+#
+#  -x <key>=<value>    Option for the exporter. This option may occur multiple times.
+#
+
+run x -o out-x.csv -x allowMixed=true -x separator=tab -x quoteEscaping=backslash
+
+#
+#  -k, --no-indexing   Disallow automatic indexing of vector files
+#
+
+run x -o out-k1.vec -Tv -k
+run x -o out-k2.vec -Tv --no-indexing
+
+#
+#  -v, --verbose       Print info about progress (verbose)
+#
+run x -o out-v1.py -v
+run x -o out-v2.py --verbose
+
+#
+# Crude check: verify that the exported files are well-formed
+#
+echo ===============================================================
+echo '$ scavetool' *.sca *.vec
+scavetool *.sca *.vec 2>&1 || echo ERROR
+for f in *.py; do
+  echo '$ python' $f
+  python $f 2>&1 || echo ERROR
+done
+echo .
+
+
+%contains: postrun-command(1).out
+------------------------
+$ scavetool q <files>
+runs: 2 	scalars: 4	vectors: 2	histograms: 2
+------------------------
+$ scavetool q -l <files>
+General-0-xxxx:
+
+scalar     Test.node  foo:mean       19.84
+scalar     Test.node  foo:last       17
+vector     Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
+histogram  Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=34
+
+General-1-xxxx:
+
+scalar     Test.node  foo:mean       19.65
+scalar     Test.node  foo:last       19
+vector     Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13  max=27
+histogram  Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
+
+
+------------------------
+$ scavetool export <files>
+scavetool: Output file name must be specified (-o option)
+ERROR
+------------------------
+$ scavetool x <files>
+scavetool: Output file name must be specified (-o option)
+ERROR
+------------------------
+$ scavetool x -o out.csv -x allowMixed=true <files>
+Exported 4 scalars, 2 vectors, 2 histograms
+------------------------
+$ scavetool x -o out.py <files>
+Exported 4 scalars, 2 vectors, 2 histograms
+------------------------
+$ scavetool x -o out.vec -Tv <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out.sca -Tsh <files>
+Exported 4 scalars, 2 histograms
+------------------------
+$ scavetool x -o out-F.csv -F CSV -x allowMixed=true <files>
+Exported 4 scalars, 2 vectors, 2 histograms
+------------------------
+$ scavetool x -o out-F.py -F Python <files>
+Exported 4 scalars, 2 vectors, 2 histograms
+------------------------
+$ scavetool x -o out-F.vec -F OmnetppVectorFile -Tv <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out-F.sca -F OmnetppScalarFile -Tsh <files>
+Exported 4 scalars, 2 histograms
+------------------------
+$ scavetool x -o out-F-sqlite.vec -F SqliteVectorFile -Tv <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out-F-sqlite.sca -F SqliteScalarFile -Tsh <files>
+Exported 4 scalars, 2 histograms
+------------------------
+$ scavetool x -o out-Ts.csv -Ts <files>
+Exported 4 scalars
+------------------------
+$ scavetool x -o out-Th.csv -Th <files>
+Exported 2 histograms
+------------------------
+$ scavetool x -o out-Tv.csv -Tv <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out-Tsh1.csv -Tsh -x allowMixed=true <files>
+Exported 4 scalars, 2 histograms
+------------------------
+$ scavetool x -o out-Tsv2.csv -T scalars,vectors -x allowMixed=true <files>
+Exported 4 scalars, 2 vectors
+------------------------
+$ scavetool x -o out-Tsh3.csv --type sh -x allowMixed=true <files>
+Exported 4 scalars, 2 histograms
+------------------------
+$ scavetool x -o out-Tsv4.csv --type scalars,vectors -x allowMixed=true <files>
+Exported 4 scalars, 2 vectors
+------------------------
+$ scavetool x -o out-f1.csv --filter *:vector <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out-f2.csv -f *:vector <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out-w1.csv -Ts --add-fields-as-scalars <files>
+Exported 32 scalars
+------------------------
+$ scavetool x -o out-w2.csv -Ts -w <files>
+Exported 32 scalars
+------------------------
+$ scavetool x -o out-x.csv -x allowMixed=true -x separator=tab -x quoteEscaping=backslash <files>
+Exported 4 scalars, 2 vectors, 2 histograms
+------------------------
+$ scavetool x -o out-k1.vec -Tv -k <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out-k2.vec -Tv --no-indexing <files>
+Exported 2 vectors
+------------------------
+$ scavetool x -o out-v1.py -v <files>
+inferred export format from file name: Python
+reading ../results/General-#0.sca...
+done
+reading ../results/General-#1.sca...
+done
+reading ../results/General-#0.vec...
+done
+reading ../results/General-#1.vec...
+done
+4 file(s) loaded
+Exported 4 scalars, 2 vectors, 2 histograms
+------------------------
+$ scavetool x -o out-v2.py --verbose <files>
+inferred export format from file name: Python
+reading ../results/General-#0.sca...
+done
+reading ../results/General-#1.sca...
+done
+reading ../results/General-#0.vec...
+done
+reading ../results/General-#1.vec...
+done
+4 file(s) loaded
+Exported 4 scalars, 2 vectors, 2 histograms
+===============================================================
+$ scavetool out-F.sca out-F-sqlite.sca out.sca out-F-sqlite.vec out-F.vec out-k1.vec out-k2.vec out.vec
+runs: 3 	scalars: 12	vectors: 10	histograms: 6
+$ python out-F.py
+$ python out.py
+$ python out-v1.py
+$ python out-v2.py
+.
+
