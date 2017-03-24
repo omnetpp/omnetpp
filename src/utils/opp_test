@@ -616,8 +616,10 @@ sub testcase_run()
             close IN;
 
             # do substitutions on it
+            my $havesubst = 0;
             foreach my $key2 (keys(%values)) {
                 if ($key2 =~ /^subst/) {
+                    $havesubst = 1;
                     my $rule = $values{$key2};  # something like "/foo/bar/"
                     my $sep = substr($rule, 0, 1);  # typically "/"
                     if (!($rule =~ /^\Q$sep\E(.*?)\Q$sep\E(.*?)\Q$sep\E(.*)$/)) {
@@ -646,6 +648,10 @@ sub testcase_run()
                         return;
                     }
                 }
+            }
+            if ($havesubst) {
+                # write out substitution result for debugging purposes
+                writefile($workdir."/".$testname."/".$infname.".subst", $txt);
             }
 
             # get pattern
