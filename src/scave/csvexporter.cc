@@ -130,7 +130,7 @@ StringMap CsvExporterType::getSupportedOptions() const
         {"allowMixed", "Whether to allow mixed content (e.g. vectors and scalars in the same file). Values: 'true', 'false'"},
         {"separator", "Separator character. Values: 'tab', 'comma', 'semicolon', 'colon'"},
         {"quoteChar", "Quote character. Values: 'doublequote', 'singlequote'"},
-        {"quoteEscaping", "How to escape the quote character within quoted values. Values: 'double', 'escape'"},
+        {"quoteEscaping", "How to escape the quote character within quoted values. Values: 'doubling', 'backslash'"},
         {"scalarsGroupBy", "Group scalars by the given fields. Accepts a comma-separated list of field names: 'file', 'run', 'module', 'name', etc."},
         {"vectorFilters", "A semicolon-separated list of operations to be applied to the vectors to be exported. See the 'operations' help page. Example value: 'winavg(10);mean'"},
         {"vectorLayout", "The layout (format) in which vectors are exported. Values: 'horizontal','vertical', 'vertical-joined'"},
