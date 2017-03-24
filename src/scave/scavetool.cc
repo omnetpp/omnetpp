@@ -374,7 +374,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_runDisplayModeStr = unquoteString(argv[++i]);
         else if (opt.substr(0,2) == "-D")
             opt_runDisplayModeStr = opt.substr(2);
-        else if (opt == "-w" || opt == "--fields-as-scalars")
+        else if (opt == "-w" || opt == "--add-fields-as-scalars")
             opt_includeFields = true;
         else if (opt == "-p" || opt == "--per-run")
             opt_perRun = true;
@@ -643,7 +643,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
             opt_resultTypeFilterStr = opt.substr(2);
         else if ((opt == "-f" || opt == "--filter") && i != argc-1)
             opt_filterExpression = unquoteString(argv[++i]);
-        else if (opt == "-w" || opt == "--fields-as-scalars")
+        else if (opt == "-w" || opt == "--add-fields-as-scalars")
             opt_includeFields = true;
         else if (opt == "-o" && i != argc-1)
             opt_fileName = argv[++i];
