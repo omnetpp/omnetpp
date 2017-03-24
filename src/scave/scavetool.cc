@@ -624,7 +624,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::HISTOGRAM;
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
-    bool opt_includeFields = true;
+    bool opt_includeFields = false;
     string opt_fileName;
     string opt_exporter;
     vector<string> opt_exporterOptions;
