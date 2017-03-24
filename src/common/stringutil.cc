@@ -428,13 +428,16 @@ std::string opp_formattable(const std::string& text, int spacing, const std::vec
             columnWidths[i] = userColumnWidths[i]; // take over user's settings
 
     std::stringstream out;
-    std::vector<std::string> lines = opp_split(text, "\n");  //TODO cumulate overflows
+    std::vector<std::string> lines = opp_split(text, "\n");
     for (auto line : lines) {
         std::vector<std::string> items = opp_split(line, "\t");
         int col = 0;
         for (auto item : items) {
-            int padding = std::max(spacing, (int)(columnWidths[col] + spacing - item.length()));
-            out << item << std::setw(padding) << "";
+            out << item;  //TODO if too long, cumulate overflows
+            if (col != (int)items.size()-1) { // don't pad last item on line
+                int padding = std::max(spacing, (int)(columnWidths[col] + spacing - item.length()));
+                out << std::setw(padding) << "";
+            }
             col++;
         }
         out << std::endl;
