@@ -118,13 +118,6 @@ namespace envir {
 
 using std::ostream;
 
-#define CREATE_BY_CLASSNAME(var, classname, baseclass, description) \
-  do { \
-    cObject *var ## _tmp = createOne(classname); \
-    var = dynamic_cast<baseclass *>(var ## _tmp); \
-    if (!var) \
-        throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname); \
-  } while(false)
 
 Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Specifies the maximum memory for `activity()` simple module stacks. You need to increase this value if you get a \"Cannot allocate coroutine stack\" error.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
@@ -185,6 +178,18 @@ Register_PerObjectConfigOption(CFGID_VECTOR_RECORD_EVENTNUMBERS, "vector-record-
 Register_PerObjectConfigOption(CFGID_VECTOR_RECORDING_INTERVALS, "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, nullptr, "Allows one to restrict recording of an output vector to one or more simulation time intervals. Usage: `<module-full-path>.<vector-name>.vector-recording-intervals=<intervals>`. The syntax for `<intervals>` is: `[<from>]..[<to>],...` That is, both start and end of an interval are optional, and intervals are separated by comma.\nExample: `**.roundTripTime:vector.vector-recording-intervals=..100, 200..400, 900..`");
 Register_PerRunConfigOptionU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_OUTPUT_VECTOR_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later. There is also a per-vector limit, see `**.vector-buffer`.");
 Register_PerObjectConfigOptionU(CFGID_VECTOR_BUFFER, "vector-buffer", KIND_VECTOR, "B", DEFAULT_VECTOR_BUFFER, "For output vectors: the maximum per-vector buffer space used for storing values before writing them out as a block into the output vector file. There is also a total limit, see `output-vectors-memory-limit`.\nUsage: `<module-full-path>.<vector-name>.vector-buffer=<amount>`.");
+
+
+template<class T>
+T *createByClassName(const char *className, const char *what) {
+    cObject *obj = createOneIfClassIsKnown(className);
+    if (obj == nullptr)
+        throw cRuntimeError("Cannot create %s: class \"%s\" not found", what, className);
+    T *result = dynamic_cast<T *>(obj);
+    if (result == nullptr)
+        throw cRuntimeError("Cannot create %s: class \"%s\" is not subclassed from %s", what, className, opp_typename(typeid(T)));
+    return result;
+}
 
 
 #define STRINGIZE0(x)    #x
@@ -538,39 +543,36 @@ bool EnvirBase::setup()
         xmlCache = new cXMLDocCache();
 
         // install eventlog manager
-        CREATE_BY_CLASSNAME(eventlogManager, opt->eventlogManagerClass.c_str(), cIEventlogManager, "eventlog manager");
+        eventlogManager = createByClassName<cIEventlogManager>(opt->eventlogManagerClass.c_str(), "eventlog manager");
 
         // install output vector manager
-        CREATE_BY_CLASSNAME(outvectorManager, opt->outputVectorManagerClass.c_str(), cIOutputVectorManager, "output vector manager");
+        outvectorManager = createByClassName<cIOutputVectorManager>(opt->outputVectorManagerClass.c_str(), "output vector manager");
         addLifecycleListener(outvectorManager);
 
         // install output scalar manager
-        CREATE_BY_CLASSNAME(outScalarManager, opt->outputScalarManagerClass.c_str(), cIOutputScalarManager, "output scalar manager");
+        outScalarManager = createByClassName<cIOutputScalarManager>(opt->outputScalarManagerClass.c_str(), "output scalar manager");
         addLifecycleListener(outScalarManager);
 
         // install snapshot manager
-        CREATE_BY_CLASSNAME(snapshotManager, opt->snapshotmanagerClass.c_str(), cISnapshotManager, "snapshot manager");
+        snapshotManager = createByClassName<cISnapshotManager>(opt->snapshotmanagerClass.c_str(), "snapshot manager");
         addLifecycleListener(snapshotManager);
 
         // install FES
-        cFutureEventSet *fes;
-        CREATE_BY_CLASSNAME(fes, opt->futureeventsetClass.c_str(), cFutureEventSet, "FES");
+        cFutureEventSet *fes = createByClassName<cFutureEventSet>(opt->futureeventsetClass.c_str(), "FES");
         getSimulation()->setFES(fes);
 
         // set up for sequential or distributed execution
         if (!opt->parsim) {
             // sequential
-            cScheduler *scheduler;
-            CREATE_BY_CLASSNAME(scheduler, opt->schedulerClass.c_str(), cScheduler, "event scheduler");
+            cScheduler *scheduler = createByClassName<cScheduler>(opt->schedulerClass.c_str(), "event scheduler");
             getSimulation()->setScheduler(scheduler);
         }
         else {
 #ifdef WITH_PARSIM
             // parsim: create components
-            CREATE_BY_CLASSNAME(parsimComm, opt->parsimcommClass.c_str(), cParsimCommunications, "parallel simulation communications layer");
+            parsimComm = createByClassName<cParsimCommunications>(opt->parsimcommClass.c_str(), "parallel simulation communications layer");
             parsimPartition = new cParsimPartition();
-            cParsimSynchronizer *parsimSynchronizer;
-            CREATE_BY_CLASSNAME(parsimSynchronizer, opt->parsimsynchClass.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
+            cParsimSynchronizer *parsimSynchronizer = createByClassName<cParsimSynchronizer>(opt->parsimsynchClass.c_str(), "parallel simulation synchronization layer");
             addLifecycleListener(parsimPartition);
 
             // wire them together (note: 'parsimSynchronizer' is also the scheduler for 'simulation')
@@ -1401,10 +1403,10 @@ void EnvirBase::readPerRunOptions()
         // create calculator
 #ifdef USE_OMNETPP4x_FINGERPRINTS
         std::string fingerprintClass = "omnetpp::cOmnetpp4xFingerprintCalculator";
-        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprintCalculator, "fingerprint calculator");
+        fingerprint = createByClassName<cFingerprintCalculator>(fingerprintClass.c_str(), "fingerprint calculator");
 #else
         std::string fingerprintClass = cfg->getAsString(CFGID_FINGERPRINTER_CLASS);
-        CREATE_BY_CLASSNAME(fingerprint, fingerprintClass.c_str(), cFingerprintCalculator, "fingerprint calculator");
+        fingerprint = createByClassName<cFingerprintCalculator>(fingerprintClass.c_str(), "fingerprint calculator");
         if (expectedFingerprints.find(',') != expectedFingerprints.npos)
             fingerprint = new cMultiFingerprintCalculator(fingerprint);
 #endif
@@ -1415,10 +1417,9 @@ void EnvirBase::readPerRunOptions()
     cComponent::setCheckSignals(opt->checkSignals);
 
     // run RNG self-test on RNG class selected for this run
-    cRNG *testrng;
-    CREATE_BY_CLASSNAME(testrng, opt->rngClass.c_str(), cRNG, "random number generator");
-    testrng->selfTest();
-    delete testrng;
+    cRNG *testRng = createByClassName<cRNG>(opt->rngClass.c_str(), "random number generator");
+    testRng->selfTest();
+    delete testRng;
 
     // set up RNGs
     for (int i = 0; i < numRNGs; i++)
@@ -1428,9 +1429,7 @@ void EnvirBase::readPerRunOptions()
     numRNGs = opt->numRNGs;
     rngs = new cRNG *[numRNGs];
     for (int i = 0; i < numRNGs; i++) {
-        cRNG *rng;
-        CREATE_BY_CLASSNAME(rng, opt->rngClass.c_str(), cRNG, "random number generator");
-        rngs[i] = rng;
+        rngs[i] = createByClassName<cRNG>(opt->rngClass.c_str(), "random number generator");
         rngs[i]->initialize(opt->seedset, i, numRNGs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
