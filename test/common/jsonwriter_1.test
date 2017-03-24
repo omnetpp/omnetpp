@@ -1,0 +1,217 @@
+%description:
+Tests JsonWriter.
+
+%includes:
+
+#include <common/commonutil.h>
+#include <common/bigdecimal.h>
+#include <common/jsonwriter.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void writeDoc(JsonWriter& writer) 
+{
+    EV_STATICCONTEXT;
+    EV << "OPTIONS:";
+    EV << "  precision: " << writer.getPrecision();
+    EV << "  indentSize: " << writer.getIndentSize();
+    EV << "  usePythonSyntax: " << writer.getUsePythonSyntax();
+    EV << "  nakedNan: " << writer.getNakedNan();
+    EV << endl;
+
+    writer.openObject(); 
+    {
+        writer.writeString("s1", "Space inside");
+        writer.writeString("s2", "Quote inside: \"");
+        writer.writeString("s3", "Backslash inside: \\");
+        writer.writeString("s4", "Backslash+quote inside: \\\"");
+        writer.writeDouble("pi", 3.14159265359);
+        writer.writeDouble("pi*1e50", 3.14159265359e50);
+        writer.writeBool("bool1", true);
+        writer.writeBool("bool2", false);
+        writer.writeInt("int", ((int64_t)1) << 40);
+        if (writer.getUsePythonSyntax()) {
+            writer.writeDouble("inf", POSITIVE_INFINITY);
+            writer.writeDouble("-inf", NEGATIVE_INFINITY);
+            writer.writeDouble("nan", NaN);
+        }
+
+        writer.openArray("some-array");
+        {
+            writer.openObject(true);   // oneliner
+            {
+                writer.writeString("name", "Jack");
+                writer.writeDouble("age", 42);
+            }
+            writer.closeObject();
+            writer.openObject(true);   // oneliner
+            {
+                writer.writeString("name", "Jill");
+                writer.writeDouble("age", 21);
+            }
+            writer.closeObject();
+        }
+        writer.closeArray();
+        
+        writer.openObject("some-object");
+        {
+            writer.openArray("ones", true);   // oneliner
+            {
+                writer.writeInt(1);
+                writer.writeInt(3);
+                writer.writeInt(5);
+            }
+            writer.closeArray();
+            writer.openArray("tens", true);   // oneliner
+            {
+                writer.writeInt(10);
+                writer.writeInt(30);
+                writer.writeInt(50);
+            }
+            writer.closeArray();
+        }
+        writer.closeObject();
+    }
+    writer.closeObject(); 
+    EV << "---------\n\n";
+}
+
+%activity:
+
+JsonWriter writer(std::cout);
+writeDoc(writer);
+
+writer.setIndentSize(8);
+writeDoc(writer);
+
+writer.setPrecision(3);
+writeDoc(writer);
+
+writer.setUsePythonSyntax(true);
+writeDoc(writer);
+
+writer.setNakedNan(true);
+writeDoc(writer);
+
+EV << ".\n";
+
+%contains: stdout
+OPTIONS:  precision: 14  indentSize: 4  usePythonSyntax: 0  nakedNan: 0
+{
+    "s1" : "Space inside",
+    "s2" : "Quote inside: \"",
+    "s3" : "Backslash inside: \\",
+    "s4" : "Backslash+quote inside: \\\"",
+    "pi" : 3.14159265359,
+    "pi*1e50" : 3.14159265359e+50,
+    "bool1" : true,
+    "bool2" : false,
+    "int" : 1099511627776,
+    "some-array" : [
+        { "name" : "Jack", "age" : 42 },
+        { "name" : "Jill", "age" : 21 }
+    ],
+    "some-object" : {
+        "ones" : [ 1, 3, 5 ],
+        "tens" : [ 10, 30, 50 ]
+    }
+}
+---------
+
+OPTIONS:  precision: 14  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
+{
+        "s1" : "Space inside",
+        "s2" : "Quote inside: \"",
+        "s3" : "Backslash inside: \\",
+        "s4" : "Backslash+quote inside: \\\"",
+        "pi" : 3.14159265359,
+        "pi*1e50" : 3.14159265359e+50,
+        "bool1" : true,
+        "bool2" : false,
+        "int" : 1099511627776,
+        "some-array" : [
+                { "name" : "Jack", "age" : 42 },
+                { "name" : "Jill", "age" : 21 }
+        ],
+        "some-object" : {
+                "ones" : [ 1, 3, 5 ],
+                "tens" : [ 10, 30, 50 ]
+        }
+}
+---------
+
+OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
+{
+        "s1" : "Space inside",
+        "s2" : "Quote inside: \"",
+        "s3" : "Backslash inside: \\",
+        "s4" : "Backslash+quote inside: \\\"",
+        "pi" : 3.14,
+        "pi*1e50" : 3.14e+50,
+        "bool1" : true,
+        "bool2" : false,
+        "int" : 1099511627776,
+        "some-array" : [
+                { "name" : "Jack", "age" : 42 },
+                { "name" : "Jill", "age" : 21 }
+        ],
+        "some-object" : {
+                "ones" : [ 1, 3, 5 ],
+                "tens" : [ 10, 30, 50 ]
+        }
+}
+---------
+
+OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 1  nakedNan: 0
+{
+        "s1" : "Space inside",
+        "s2" : "Quote inside: \"",
+        "s3" : "Backslash inside: \\",
+        "s4" : "Backslash+quote inside: \\\"",
+        "pi" : 3.14,
+        "pi*1e50" : 3.14e+50,
+        "bool1" : True,
+        "bool2" : False,
+        "int" : 1099511627776,
+        "inf" : float('inf'),
+        "-inf" : float('-inf'),
+        "nan" : float('nan'),
+        "some-array" : [
+                { "name" : "Jack", "age" : 42 },
+                { "name" : "Jill", "age" : 21 }
+        ],
+        "some-object" : {
+                "ones" : [ 1, 3, 5 ],
+                "tens" : [ 10, 30, 50 ]
+        }
+}
+---------
+
+OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 1  nakedNan: 1
+{
+        "s1" : "Space inside",
+        "s2" : "Quote inside: \"",
+        "s3" : "Backslash inside: \\",
+        "s4" : "Backslash+quote inside: \\\"",
+        "pi" : 3.14,
+        "pi*1e50" : 3.14e+50,
+        "bool1" : True,
+        "bool2" : False,
+        "int" : 1099511627776,
+        "inf" : inf,
+        "-inf" : -inf,
+        "nan" : nan,
+        "some-array" : [
+                { "name" : "Jack", "age" : 42 },
+                { "name" : "Jill", "age" : 21 }
+        ],
+        "some-object" : {
+                "ones" : [ 1, 3, 5 ],
+                "tens" : [ 10, 30, 50 ]
+        }
+}
+---------
+
+.
+
