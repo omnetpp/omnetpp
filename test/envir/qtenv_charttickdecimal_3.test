@@ -1,0 +1,430 @@
+%description:
+Tests the ChartTickDecimal class
+
+%includes:
+#include <qtenv/charttickdecimal.h>
+
+%global:
+using namespace omnetpp::qtenv;
+
+std::string str2(const ChartTickDecimal& dec)
+{
+    std::stringstream ss;
+    ss << dec.str() << " (" << dec.getMantissa() << "e" << dec.getExponent() << ")";
+    return ss.str();
+}
+
+%activity:
+
+const ChartTickDecimal numbers1[] = {
+  ChartTickDecimal(0, 0),
+
+  ChartTickDecimal(1, 0),
+  ChartTickDecimal(-1, 0),
+  ChartTickDecimal(1, 1),
+  ChartTickDecimal(-1, 1),
+  ChartTickDecimal(1, -1),
+  ChartTickDecimal(-1, -1),
+};
+
+const ChartTickDecimal numbers2[] = {
+  ChartTickDecimal(1, 30),
+  ChartTickDecimal(-1, 30),
+  ChartTickDecimal(1, -30),
+  ChartTickDecimal(-1, -30),
+
+  ChartTickDecimal(5, 29),
+  ChartTickDecimal(-5, 29),
+  ChartTickDecimal(5, -29),
+  ChartTickDecimal(-5, -29),
+
+  ChartTickDecimal(2, 30),
+  ChartTickDecimal(-2, 30),
+  ChartTickDecimal(2, -30),
+  ChartTickDecimal(-2, -30),
+
+  ChartTickDecimal(1, 31),
+  ChartTickDecimal(-1, 31),
+  ChartTickDecimal(1, -31),
+  ChartTickDecimal(-1, -31),
+};
+
+const ChartTickDecimal numbers3[] = {
+  ChartTickDecimal(1337420, 20),
+  ChartTickDecimal(-1337420, 20),
+  ChartTickDecimal(1337420, -20),
+  ChartTickDecimal(-1337420, -20),
+
+  ChartTickDecimal(3.14159265),
+  ChartTickDecimal(-3.14159265),
+};
+
+#define FOREACH_PAIR(nums, f) { \
+    EV << std::endl << #f << std::endl; \
+    for (auto a : nums) for (auto b : nums) { \
+        EV << "a = " << str2(a) << " \t, b = " << str2(b) << " \t| "; \
+        [this](ChartTickDecimal a, ChartTickDecimal b) { f }(a, b); \
+        EV << std::endl; \
+    }\
+}
+
+EV << "\n";
+
+EV << "Less than:\n";
+
+FOREACH_PAIR(numbers1, { EV << "a < b : " << ((a < b) ? "true" : "false"); })
+FOREACH_PAIR(numbers2, { EV << "a < b : " << ((a < b) ? "true" : "false"); })
+FOREACH_PAIR(numbers3, { EV << "a < b : " << ((a < b) ? "true" : "false"); })
+
+EV << ".\n";
+
+%contains: stdout
+Less than:
+
+{ EV << "a < b : " << ((a < b) ? "true" : "false"); }
+a = 0 (0e0) 	, b = 0 (0e0) 	| a < b : false
+a = 0 (0e0) 	, b = 1 (1e0) 	| a < b : true
+a = 0 (0e0) 	, b = -1 (-1e0) 	| a < b : false
+a = 0 (0e0) 	, b = 10 (1e1) 	| a < b : true
+a = 0 (0e0) 	, b = -10 (-1e1) 	| a < b : false
+a = 0 (0e0) 	, b = 0.1 (1e-1) 	| a < b : true
+a = 0 (0e0) 	, b = -0.1 (-1e-1) 	| a < b : false
+a = 1 (1e0) 	, b = 0 (0e0) 	| a < b : false
+a = 1 (1e0) 	, b = 1 (1e0) 	| a < b : false
+a = 1 (1e0) 	, b = -1 (-1e0) 	| a < b : false
+a = 1 (1e0) 	, b = 10 (1e1) 	| a < b : true
+a = 1 (1e0) 	, b = -10 (-1e1) 	| a < b : false
+a = 1 (1e0) 	, b = 0.1 (1e-1) 	| a < b : false
+a = 1 (1e0) 	, b = -0.1 (-1e-1) 	| a < b : false
+a = -1 (-1e0) 	, b = 0 (0e0) 	| a < b : true
+a = -1 (-1e0) 	, b = 1 (1e0) 	| a < b : true
+a = -1 (-1e0) 	, b = -1 (-1e0) 	| a < b : false
+a = -1 (-1e0) 	, b = 10 (1e1) 	| a < b : true
+a = -1 (-1e0) 	, b = -10 (-1e1) 	| a < b : false
+a = -1 (-1e0) 	, b = 0.1 (1e-1) 	| a < b : true
+a = -1 (-1e0) 	, b = -0.1 (-1e-1) 	| a < b : true
+a = 10 (1e1) 	, b = 0 (0e0) 	| a < b : false
+a = 10 (1e1) 	, b = 1 (1e0) 	| a < b : false
+a = 10 (1e1) 	, b = -1 (-1e0) 	| a < b : false
+a = 10 (1e1) 	, b = 10 (1e1) 	| a < b : false
+a = 10 (1e1) 	, b = -10 (-1e1) 	| a < b : false
+a = 10 (1e1) 	, b = 0.1 (1e-1) 	| a < b : false
+a = 10 (1e1) 	, b = -0.1 (-1e-1) 	| a < b : false
+a = -10 (-1e1) 	, b = 0 (0e0) 	| a < b : true
+a = -10 (-1e1) 	, b = 1 (1e0) 	| a < b : true
+a = -10 (-1e1) 	, b = -1 (-1e0) 	| a < b : true
+a = -10 (-1e1) 	, b = 10 (1e1) 	| a < b : true
+a = -10 (-1e1) 	, b = -10 (-1e1) 	| a < b : false
+a = -10 (-1e1) 	, b = 0.1 (1e-1) 	| a < b : true
+a = -10 (-1e1) 	, b = -0.1 (-1e-1) 	| a < b : true
+a = 0.1 (1e-1) 	, b = 0 (0e0) 	| a < b : false
+a = 0.1 (1e-1) 	, b = 1 (1e0) 	| a < b : true
+a = 0.1 (1e-1) 	, b = -1 (-1e0) 	| a < b : false
+a = 0.1 (1e-1) 	, b = 10 (1e1) 	| a < b : true
+a = 0.1 (1e-1) 	, b = -10 (-1e1) 	| a < b : false
+a = 0.1 (1e-1) 	, b = 0.1 (1e-1) 	| a < b : false
+a = 0.1 (1e-1) 	, b = -0.1 (-1e-1) 	| a < b : false
+a = -0.1 (-1e-1) 	, b = 0 (0e0) 	| a < b : true
+a = -0.1 (-1e-1) 	, b = 1 (1e0) 	| a < b : true
+a = -0.1 (-1e-1) 	, b = -1 (-1e0) 	| a < b : false
+a = -0.1 (-1e-1) 	, b = 10 (1e1) 	| a < b : true
+a = -0.1 (-1e-1) 	, b = -10 (-1e1) 	| a < b : false
+a = -0.1 (-1e-1) 	, b = 0.1 (1e-1) 	| a < b : true
+a = -0.1 (-1e-1) 	, b = -0.1 (-1e-1) 	| a < b : false
+
+{ EV << "a < b : " << ((a < b) ? "true" : "false"); }
+a = 1e30 (1e30) 	, b = 1e30 (1e30) 	| a < b : false
+a = 1e30 (1e30) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 1e30 (1e30) 	, b = 1e-30 (1e-30) 	| a < b : false
+a = 1e30 (1e30) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 1e30 (1e30) 	, b = 5e29 (5e29) 	| a < b : false
+a = 1e30 (1e30) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 1e30 (1e30) 	, b = 5e-29 (5e-29) 	| a < b : false
+a = 1e30 (1e30) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 1e30 (1e30) 	, b = 2e30 (2e30) 	| a < b : true
+a = 1e30 (1e30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 1e30 (1e30) 	, b = 2e-30 (2e-30) 	| a < b : false
+a = 1e30 (1e30) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 1e30 (1e30) 	, b = 1e31 (1e31) 	| a < b : true
+a = 1e30 (1e30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 1e30 (1e30) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 1e30 (1e30) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -1e30 (-1e30) 	, b = 1e30 (1e30) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -1e30 (-1e30) 	| a < b : false
+a = -1e30 (-1e30) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -1e-30 (-1e-30) 	| a < b : true
+a = -1e30 (-1e30) 	, b = 5e29 (5e29) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -5e29 (-5e29) 	| a < b : true
+a = -1e30 (-1e30) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -5e-29 (-5e-29) 	| a < b : true
+a = -1e30 (-1e30) 	, b = 2e30 (2e30) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = -1e30 (-1e30) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -2e-30 (-2e-30) 	| a < b : true
+a = -1e30 (-1e30) 	, b = 1e31 (1e31) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -1e30 (-1e30) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -1e30 (-1e30) 	, b = -1e-31 (-1e-31) 	| a < b : true
+a = 1e-30 (1e-30) 	, b = 1e30 (1e30) 	| a < b : true
+a = 1e-30 (1e-30) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = 1e-30 (1e-30) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = 5e29 (5e29) 	| a < b : true
+a = 1e-30 (1e-30) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = 1e-30 (1e-30) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = 2e30 (2e30) 	| a < b : true
+a = 1e-30 (1e-30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = 1e-30 (1e-30) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = 1e31 (1e31) 	| a < b : true
+a = 1e-30 (1e-30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 1e-30 (1e-30) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 1e30 (1e30) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -1e30 (-1e30) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 5e29 (5e29) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -5e29 (-5e29) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 2e30 (2e30) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 1e31 (1e31) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -1e-30 (-1e-30) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -1e-30 (-1e-30) 	, b = -1e-31 (-1e-31) 	| a < b : true
+a = 5e29 (5e29) 	, b = 1e30 (1e30) 	| a < b : true
+a = 5e29 (5e29) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 5e29 (5e29) 	, b = 1e-30 (1e-30) 	| a < b : false
+a = 5e29 (5e29) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 5e29 (5e29) 	, b = 5e29 (5e29) 	| a < b : false
+a = 5e29 (5e29) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 5e29 (5e29) 	, b = 5e-29 (5e-29) 	| a < b : false
+a = 5e29 (5e29) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 5e29 (5e29) 	, b = 2e30 (2e30) 	| a < b : true
+a = 5e29 (5e29) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 5e29 (5e29) 	, b = 2e-30 (2e-30) 	| a < b : false
+a = 5e29 (5e29) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 5e29 (5e29) 	, b = 1e31 (1e31) 	| a < b : true
+a = 5e29 (5e29) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 5e29 (5e29) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 5e29 (5e29) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -5e29 (-5e29) 	, b = 1e30 (1e30) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -1e30 (-1e30) 	| a < b : false
+a = -5e29 (-5e29) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -1e-30 (-1e-30) 	| a < b : true
+a = -5e29 (-5e29) 	, b = 5e29 (5e29) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -5e29 (-5e29) 	| a < b : false
+a = -5e29 (-5e29) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -5e-29 (-5e-29) 	| a < b : true
+a = -5e29 (-5e29) 	, b = 2e30 (2e30) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -2e30 (-2e30) 	| a < b : false
+a = -5e29 (-5e29) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -2e-30 (-2e-30) 	| a < b : true
+a = -5e29 (-5e29) 	, b = 1e31 (1e31) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -5e29 (-5e29) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -5e29 (-5e29) 	, b = -1e-31 (-1e-31) 	| a < b : true
+a = 5e-29 (5e-29) 	, b = 1e30 (1e30) 	| a < b : true
+a = 5e-29 (5e-29) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = 1e-30 (1e-30) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = 5e29 (5e29) 	| a < b : true
+a = 5e-29 (5e-29) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = 5e-29 (5e-29) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = 2e30 (2e30) 	| a < b : true
+a = 5e-29 (5e-29) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = 2e-30 (2e-30) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = 1e31 (1e31) 	| a < b : true
+a = 5e-29 (5e-29) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 5e-29 (5e-29) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -5e-29 (-5e-29) 	, b = 1e30 (1e30) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -1e30 (-1e30) 	| a < b : false
+a = -5e-29 (-5e-29) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -1e-30 (-1e-30) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = 5e29 (5e29) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -5e29 (-5e29) 	| a < b : false
+a = -5e-29 (-5e-29) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = -5e-29 (-5e-29) 	, b = 2e30 (2e30) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -2e30 (-2e30) 	| a < b : false
+a = -5e-29 (-5e-29) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -2e-30 (-2e-30) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = 1e31 (1e31) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -5e-29 (-5e-29) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -5e-29 (-5e-29) 	, b = -1e-31 (-1e-31) 	| a < b : true
+a = 2e30 (2e30) 	, b = 1e30 (1e30) 	| a < b : false
+a = 2e30 (2e30) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 2e30 (2e30) 	, b = 1e-30 (1e-30) 	| a < b : false
+a = 2e30 (2e30) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 2e30 (2e30) 	, b = 5e29 (5e29) 	| a < b : false
+a = 2e30 (2e30) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 2e30 (2e30) 	, b = 5e-29 (5e-29) 	| a < b : false
+a = 2e30 (2e30) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 2e30 (2e30) 	, b = 2e30 (2e30) 	| a < b : false
+a = 2e30 (2e30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 2e30 (2e30) 	, b = 2e-30 (2e-30) 	| a < b : false
+a = 2e30 (2e30) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 2e30 (2e30) 	, b = 1e31 (1e31) 	| a < b : true
+a = 2e30 (2e30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 2e30 (2e30) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 2e30 (2e30) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -2e30 (-2e30) 	, b = 1e30 (1e30) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -1e30 (-1e30) 	| a < b : true
+a = -2e30 (-2e30) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -1e-30 (-1e-30) 	| a < b : true
+a = -2e30 (-2e30) 	, b = 5e29 (5e29) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -5e29 (-5e29) 	| a < b : true
+a = -2e30 (-2e30) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -5e-29 (-5e-29) 	| a < b : true
+a = -2e30 (-2e30) 	, b = 2e30 (2e30) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = -2e30 (-2e30) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -2e-30 (-2e-30) 	| a < b : true
+a = -2e30 (-2e30) 	, b = 1e31 (1e31) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -2e30 (-2e30) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -2e30 (-2e30) 	, b = -1e-31 (-1e-31) 	| a < b : true
+a = 2e-30 (2e-30) 	, b = 1e30 (1e30) 	| a < b : true
+a = 2e-30 (2e-30) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = 1e-30 (1e-30) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = 5e29 (5e29) 	| a < b : true
+a = 2e-30 (2e-30) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = 2e-30 (2e-30) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = 2e30 (2e30) 	| a < b : true
+a = 2e-30 (2e-30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = 2e-30 (2e-30) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = 1e31 (1e31) 	| a < b : true
+a = 2e-30 (2e-30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 2e-30 (2e-30) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -2e-30 (-2e-30) 	, b = 1e30 (1e30) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -1e30 (-1e30) 	| a < b : false
+a = -2e-30 (-2e-30) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -1e-30 (-1e-30) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = 5e29 (5e29) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -5e29 (-5e29) 	| a < b : false
+a = -2e-30 (-2e-30) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = -2e-30 (-2e-30) 	, b = 2e30 (2e30) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -2e30 (-2e30) 	| a < b : false
+a = -2e-30 (-2e-30) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = -2e-30 (-2e-30) 	, b = 1e31 (1e31) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -2e-30 (-2e-30) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -2e-30 (-2e-30) 	, b = -1e-31 (-1e-31) 	| a < b : true
+a = 1e31 (1e31) 	, b = 1e30 (1e30) 	| a < b : false
+a = 1e31 (1e31) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 1e31 (1e31) 	, b = 1e-30 (1e-30) 	| a < b : false
+a = 1e31 (1e31) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 1e31 (1e31) 	, b = 5e29 (5e29) 	| a < b : false
+a = 1e31 (1e31) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 1e31 (1e31) 	, b = 5e-29 (5e-29) 	| a < b : false
+a = 1e31 (1e31) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 1e31 (1e31) 	, b = 2e30 (2e30) 	| a < b : false
+a = 1e31 (1e31) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 1e31 (1e31) 	, b = 2e-30 (2e-30) 	| a < b : false
+a = 1e31 (1e31) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 1e31 (1e31) 	, b = 1e31 (1e31) 	| a < b : false
+a = 1e31 (1e31) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 1e31 (1e31) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 1e31 (1e31) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -1e31 (-1e31) 	, b = 1e30 (1e30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -1e30 (-1e30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -1e-30 (-1e-30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = 5e29 (5e29) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -5e29 (-5e29) 	| a < b : true
+a = -1e31 (-1e31) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -5e-29 (-5e-29) 	| a < b : true
+a = -1e31 (-1e31) 	, b = 2e30 (2e30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -2e30 (-2e30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -2e-30 (-2e-30) 	| a < b : true
+a = -1e31 (-1e31) 	, b = 1e31 (1e31) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -1e31 (-1e31) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -1e31 (-1e31) 	, b = -1e-31 (-1e-31) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = 1e30 (1e30) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = -1e30 (-1e30) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = 5e29 (5e29) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = -5e29 (-5e29) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = 2e30 (2e30) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = -2e30 (-2e30) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = 1e31 (1e31) 	| a < b : true
+a = 1e-31 (1e-31) 	, b = -1e31 (-1e31) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = 1e-31 (1e-31) 	| a < b : false
+a = 1e-31 (1e-31) 	, b = -1e-31 (-1e-31) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 1e30 (1e30) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -1e30 (-1e30) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 1e-30 (1e-30) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -1e-30 (-1e-30) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 5e29 (5e29) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -5e29 (-5e29) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 5e-29 (5e-29) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -5e-29 (-5e-29) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 2e30 (2e30) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -2e30 (-2e30) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 2e-30 (2e-30) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -2e-30 (-2e-30) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 1e31 (1e31) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -1e31 (-1e31) 	| a < b : false
+a = -1e-31 (-1e-31) 	, b = 1e-31 (1e-31) 	| a < b : true
+a = -1e-31 (-1e-31) 	, b = -1e-31 (-1e-31) 	| a < b : false
+
+{ EV << "a < b : " << ((a < b) ? "true" : "false"); }
+a = 1.33742e26 (133742e21) 	, b = 1.33742e26 (133742e21) 	| a < b : false
+a = 1.33742e26 (133742e21) 	, b = -1.33742e26 (-133742e21) 	| a < b : false
+a = 1.33742e26 (133742e21) 	, b = 1.33742e-14 (133742e-19) 	| a < b : false
+a = 1.33742e26 (133742e21) 	, b = -1.33742e-14 (-133742e-19) 	| a < b : false
+a = 1.33742e26 (133742e21) 	, b = 3.14159265 (314159265e-8) 	| a < b : false
+a = 1.33742e26 (133742e21) 	, b = -3.14159265 (-314159265e-8) 	| a < b : false
+a = -1.33742e26 (-133742e21) 	, b = 1.33742e26 (133742e21) 	| a < b : true
+a = -1.33742e26 (-133742e21) 	, b = -1.33742e26 (-133742e21) 	| a < b : false
+a = -1.33742e26 (-133742e21) 	, b = 1.33742e-14 (133742e-19) 	| a < b : true
+a = -1.33742e26 (-133742e21) 	, b = -1.33742e-14 (-133742e-19) 	| a < b : true
+a = -1.33742e26 (-133742e21) 	, b = 3.14159265 (314159265e-8) 	| a < b : true
+a = -1.33742e26 (-133742e21) 	, b = -3.14159265 (-314159265e-8) 	| a < b : true
+a = 1.33742e-14 (133742e-19) 	, b = 1.33742e26 (133742e21) 	| a < b : true
+a = 1.33742e-14 (133742e-19) 	, b = -1.33742e26 (-133742e21) 	| a < b : false
+a = 1.33742e-14 (133742e-19) 	, b = 1.33742e-14 (133742e-19) 	| a < b : false
+a = 1.33742e-14 (133742e-19) 	, b = -1.33742e-14 (-133742e-19) 	| a < b : false
+a = 1.33742e-14 (133742e-19) 	, b = 3.14159265 (314159265e-8) 	| a < b : true
+a = 1.33742e-14 (133742e-19) 	, b = -3.14159265 (-314159265e-8) 	| a < b : false
+a = -1.33742e-14 (-133742e-19) 	, b = 1.33742e26 (133742e21) 	| a < b : true
+a = -1.33742e-14 (-133742e-19) 	, b = -1.33742e26 (-133742e21) 	| a < b : false
+a = -1.33742e-14 (-133742e-19) 	, b = 1.33742e-14 (133742e-19) 	| a < b : true
+a = -1.33742e-14 (-133742e-19) 	, b = -1.33742e-14 (-133742e-19) 	| a < b : false
+a = -1.33742e-14 (-133742e-19) 	, b = 3.14159265 (314159265e-8) 	| a < b : true
+a = -1.33742e-14 (-133742e-19) 	, b = -3.14159265 (-314159265e-8) 	| a < b : false
+a = 3.14159265 (314159265e-8) 	, b = 1.33742e26 (133742e21) 	| a < b : true
+a = 3.14159265 (314159265e-8) 	, b = -1.33742e26 (-133742e21) 	| a < b : false
+a = 3.14159265 (314159265e-8) 	, b = 1.33742e-14 (133742e-19) 	| a < b : false
+a = 3.14159265 (314159265e-8) 	, b = -1.33742e-14 (-133742e-19) 	| a < b : false
+a = 3.14159265 (314159265e-8) 	, b = 3.14159265 (314159265e-8) 	| a < b : false
+a = 3.14159265 (314159265e-8) 	, b = -3.14159265 (-314159265e-8) 	| a < b : false
+a = -3.14159265 (-314159265e-8) 	, b = 1.33742e26 (133742e21) 	| a < b : true
+a = -3.14159265 (-314159265e-8) 	, b = -1.33742e26 (-133742e21) 	| a < b : false
+a = -3.14159265 (-314159265e-8) 	, b = 1.33742e-14 (133742e-19) 	| a < b : true
+a = -3.14159265 (-314159265e-8) 	, b = -1.33742e-14 (-133742e-19) 	| a < b : true
+a = -3.14159265 (-314159265e-8) 	, b = 3.14159265 (314159265e-8) 	| a < b : true
+a = -3.14159265 (-314159265e-8) 	, b = -3.14159265 (-314159265e-8) 	| a < b : false
+.

@@ -1,0 +1,430 @@
+%description:
+Tests the ChartTickDecimal class
+
+%includes:
+#include <qtenv/charttickdecimal.h>
+
+%global:
+using namespace omnetpp::qtenv;
+
+std::string str2(const ChartTickDecimal& dec)
+{
+    std::stringstream ss;
+    ss << dec.str() << " (" << dec.getMantissa() << "e" << dec.getExponent() << ")";
+    return ss.str();
+}
+
+%activity:
+
+const ChartTickDecimal numbers1[] = {
+  ChartTickDecimal(0, 0),
+
+  ChartTickDecimal(1, 0),
+  ChartTickDecimal(-1, 0),
+  ChartTickDecimal(1, 1),
+  ChartTickDecimal(-1, 1),
+  ChartTickDecimal(1, -1),
+  ChartTickDecimal(-1, -1),
+};
+
+const ChartTickDecimal numbers2[] = {
+  ChartTickDecimal(1, 5),
+  ChartTickDecimal(-1, 5),
+  ChartTickDecimal(1, -5),
+  ChartTickDecimal(-1, -5),
+
+  ChartTickDecimal(5, 5),
+  ChartTickDecimal(-5, 4),
+  ChartTickDecimal(5, -4),
+  ChartTickDecimal(-5, -4),
+
+  ChartTickDecimal(2, 5),
+  ChartTickDecimal(-2, 5),
+  ChartTickDecimal(2, -5),
+  ChartTickDecimal(-2, -5),
+
+  ChartTickDecimal(1, 6),
+  ChartTickDecimal(-1, 6),
+  ChartTickDecimal(1, -6),
+  ChartTickDecimal(-1, -6),
+};
+
+const ChartTickDecimal numbers3[] = {
+  ChartTickDecimal(1337420, 4),
+  ChartTickDecimal(-1337420, 4),
+  ChartTickDecimal(1337420, -4),
+  ChartTickDecimal(-1337420, -4),
+
+  ChartTickDecimal(3.14159265),
+  ChartTickDecimal(-3.14159265),
+};
+
+#define FOREACH_PAIR(nums, f) { \
+    EV << std::endl << #f << std::endl; \
+    for (auto a : nums) for (auto b : nums) { \
+        EV << "a = " << str2(a) << " \t, b = " << str2(b) << " \t| "; \
+        [this](ChartTickDecimal a, ChartTickDecimal b) { f }(a, b); \
+        EV << std::endl; \
+    }\
+}
+
+EV << "\n";
+
+EV << "MultipleOf:\n";
+
+FOREACH_PAIR(numbers1, { EV << "a multipleOf b : " << (a.multipleOf(b) ? "true" : "false"); })
+FOREACH_PAIR(numbers2, { EV << "a multipleOf b : " << (a.multipleOf(b) ? "true" : "false"); })
+FOREACH_PAIR(numbers3, { EV << "a multipleOf b : " << (a.multipleOf(b) ? "true" : "false"); })
+
+EV << ".\n";
+
+%contains: stdout
+MultipleOf:
+
+{ EV << "a multipleOf b : " << (a.multipleOf(b) ? "true" : "false"); }
+a = 0 (0e0) 	, b = 0 (0e0) 	| a multipleOf b : true
+a = 0 (0e0) 	, b = 1 (1e0) 	| a multipleOf b : true
+a = 0 (0e0) 	, b = -1 (-1e0) 	| a multipleOf b : true
+a = 0 (0e0) 	, b = 10 (1e1) 	| a multipleOf b : true
+a = 0 (0e0) 	, b = -10 (-1e1) 	| a multipleOf b : true
+a = 0 (0e0) 	, b = 0.1 (1e-1) 	| a multipleOf b : true
+a = 0 (0e0) 	, b = -0.1 (-1e-1) 	| a multipleOf b : true
+a = 1 (1e0) 	, b = 0 (0e0) 	| a multipleOf b : false
+a = 1 (1e0) 	, b = 1 (1e0) 	| a multipleOf b : true
+a = 1 (1e0) 	, b = -1 (-1e0) 	| a multipleOf b : true
+a = 1 (1e0) 	, b = 10 (1e1) 	| a multipleOf b : false
+a = 1 (1e0) 	, b = -10 (-1e1) 	| a multipleOf b : false
+a = 1 (1e0) 	, b = 0.1 (1e-1) 	| a multipleOf b : true
+a = 1 (1e0) 	, b = -0.1 (-1e-1) 	| a multipleOf b : true
+a = -1 (-1e0) 	, b = 0 (0e0) 	| a multipleOf b : false
+a = -1 (-1e0) 	, b = 1 (1e0) 	| a multipleOf b : true
+a = -1 (-1e0) 	, b = -1 (-1e0) 	| a multipleOf b : true
+a = -1 (-1e0) 	, b = 10 (1e1) 	| a multipleOf b : false
+a = -1 (-1e0) 	, b = -10 (-1e1) 	| a multipleOf b : false
+a = -1 (-1e0) 	, b = 0.1 (1e-1) 	| a multipleOf b : true
+a = -1 (-1e0) 	, b = -0.1 (-1e-1) 	| a multipleOf b : true
+a = 10 (1e1) 	, b = 0 (0e0) 	| a multipleOf b : false
+a = 10 (1e1) 	, b = 1 (1e0) 	| a multipleOf b : true
+a = 10 (1e1) 	, b = -1 (-1e0) 	| a multipleOf b : true
+a = 10 (1e1) 	, b = 10 (1e1) 	| a multipleOf b : true
+a = 10 (1e1) 	, b = -10 (-1e1) 	| a multipleOf b : true
+a = 10 (1e1) 	, b = 0.1 (1e-1) 	| a multipleOf b : true
+a = 10 (1e1) 	, b = -0.1 (-1e-1) 	| a multipleOf b : true
+a = -10 (-1e1) 	, b = 0 (0e0) 	| a multipleOf b : false
+a = -10 (-1e1) 	, b = 1 (1e0) 	| a multipleOf b : true
+a = -10 (-1e1) 	, b = -1 (-1e0) 	| a multipleOf b : true
+a = -10 (-1e1) 	, b = 10 (1e1) 	| a multipleOf b : true
+a = -10 (-1e1) 	, b = -10 (-1e1) 	| a multipleOf b : true
+a = -10 (-1e1) 	, b = 0.1 (1e-1) 	| a multipleOf b : true
+a = -10 (-1e1) 	, b = -0.1 (-1e-1) 	| a multipleOf b : true
+a = 0.1 (1e-1) 	, b = 0 (0e0) 	| a multipleOf b : false
+a = 0.1 (1e-1) 	, b = 1 (1e0) 	| a multipleOf b : false
+a = 0.1 (1e-1) 	, b = -1 (-1e0) 	| a multipleOf b : false
+a = 0.1 (1e-1) 	, b = 10 (1e1) 	| a multipleOf b : false
+a = 0.1 (1e-1) 	, b = -10 (-1e1) 	| a multipleOf b : false
+a = 0.1 (1e-1) 	, b = 0.1 (1e-1) 	| a multipleOf b : true
+a = 0.1 (1e-1) 	, b = -0.1 (-1e-1) 	| a multipleOf b : true
+a = -0.1 (-1e-1) 	, b = 0 (0e0) 	| a multipleOf b : false
+a = -0.1 (-1e-1) 	, b = 1 (1e0) 	| a multipleOf b : false
+a = -0.1 (-1e-1) 	, b = -1 (-1e0) 	| a multipleOf b : false
+a = -0.1 (-1e-1) 	, b = 10 (1e1) 	| a multipleOf b : false
+a = -0.1 (-1e-1) 	, b = -10 (-1e1) 	| a multipleOf b : false
+a = -0.1 (-1e-1) 	, b = 0.1 (1e-1) 	| a multipleOf b : true
+a = -0.1 (-1e-1) 	, b = -0.1 (-1e-1) 	| a multipleOf b : true
+
+{ EV << "a multipleOf b : " << (a.multipleOf(b) ? "true" : "false"); }
+a = 100000 (1e5) 	, b = 100000 (1e5) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = -100000 (-1e5) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = 100000 (1e5) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = 100000 (1e5) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = 100000 (1e5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = 100000 (1e5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = 100000 (1e5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 100000 (1e5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = 100000 (1e5) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = -100000 (-1e5) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = -100000 (-1e5) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = -100000 (-1e5) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = -100000 (-1e5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = -100000 (-1e5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = -100000 (-1e5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -100000 (-1e5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = 0.00001 (1e-5) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = 0.00001 (1e-5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = 0.00001 (1e-5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = 0.00001 (1e-5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 0.00001 (1e-5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -0.00001 (-1e-5) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = -0.00001 (-1e-5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = -0.00001 (-1e-5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = -0.00001 (-1e-5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -0.00001 (-1e-5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = 100000 (1e5) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = -100000 (-1e5) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = 500000 (5e5) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = 500000 (5e5) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = 500000 (5e5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = 500000 (5e5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = 500000 (5e5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 500000 (5e5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = -50000 (-5e4) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = -50000 (-5e4) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = -50000 (-5e4) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = -50000 (-5e4) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = -50000 (-5e4) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = -50000 (-5e4) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = -50000 (-5e4) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -50000 (-5e4) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = 0.0005 (5e-4) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 0.0005 (5e-4) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = -0.0005 (-5e-4) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -0.0005 (-5e-4) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = 100000 (1e5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = -100000 (-1e5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = 200000 (2e5) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = 200000 (2e5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = -200000 (-2e5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = 200000 (2e5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = 200000 (2e5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 200000 (2e5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = 100000 (1e5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = -100000 (-1e5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = -200000 (-2e5) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = 200000 (2e5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = -200000 (-2e5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = -200000 (-2e5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = -200000 (-2e5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -200000 (-2e5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = 0.00002 (2e-5) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = 0.00002 (2e-5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = 0.00002 (2e-5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = 0.00002 (2e-5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = 0.00002 (2e-5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = 0.00002 (2e-5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 0.00002 (2e-5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -0.00002 (-2e-5) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = -0.00002 (-2e-5) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = -0.00002 (-2e-5) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = 0.0005 (5e-4) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = -0.00002 (-2e-5) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = -0.00002 (-2e-5) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = -0.00002 (-2e-5) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -0.00002 (-2e-5) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 100000 (1e5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -100000 (-1e5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 500000 (5e5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 200000 (2e5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -200000 (-2e5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 1000000 (1e6) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -1000000 (-1e6) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 1000000 (1e6) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 100000 (1e5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -100000 (-1e5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 0.00001 (1e-5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 500000 (5e5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -50000 (-5e4) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 0.0005 (5e-4) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 200000 (2e5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -200000 (-2e5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 0.00002 (2e-5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 1000000 (1e6) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -1000000 (-1e6) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -1000000 (-1e6) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = 0.000001 (1e-6) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = 0.00001 (1e-5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = 0.0005 (5e-4) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = 0.00002 (2e-5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = 0.000001 (1e-6) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = 0.000001 (1e-6) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+a = -0.000001 (-1e-6) 	, b = 100000 (1e5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = -100000 (-1e5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = 0.00001 (1e-5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = -0.00001 (-1e-5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = 500000 (5e5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = -50000 (-5e4) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = 0.0005 (5e-4) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = -0.0005 (-5e-4) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = 200000 (2e5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = -200000 (-2e5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = 0.00002 (2e-5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = -0.00002 (-2e-5) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = 1000000 (1e6) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = -1000000 (-1e6) 	| a multipleOf b : false
+a = -0.000001 (-1e-6) 	, b = 0.000001 (1e-6) 	| a multipleOf b : true
+a = -0.000001 (-1e-6) 	, b = -0.000001 (-1e-6) 	| a multipleOf b : true
+
+{ EV << "a multipleOf b : " << (a.multipleOf(b) ? "true" : "false"); }
+a = 13374200000 (133742e5) 	, b = 13374200000 (133742e5) 	| a multipleOf b : true
+a = 13374200000 (133742e5) 	, b = -13374200000 (-133742e5) 	| a multipleOf b : true
+a = 13374200000 (133742e5) 	, b = 133.742 (133742e-3) 	| a multipleOf b : true
+a = 13374200000 (133742e5) 	, b = -133.742 (-133742e-3) 	| a multipleOf b : true
+a = 13374200000 (133742e5) 	, b = 3.14159265 (314159265e-8) 	| a multipleOf b : false
+a = 13374200000 (133742e5) 	, b = -3.14159265 (-314159265e-8) 	| a multipleOf b : false
+a = -13374200000 (-133742e5) 	, b = 13374200000 (133742e5) 	| a multipleOf b : true
+a = -13374200000 (-133742e5) 	, b = -13374200000 (-133742e5) 	| a multipleOf b : true
+a = -13374200000 (-133742e5) 	, b = 133.742 (133742e-3) 	| a multipleOf b : true
+a = -13374200000 (-133742e5) 	, b = -133.742 (-133742e-3) 	| a multipleOf b : true
+a = -13374200000 (-133742e5) 	, b = 3.14159265 (314159265e-8) 	| a multipleOf b : false
+a = -13374200000 (-133742e5) 	, b = -3.14159265 (-314159265e-8) 	| a multipleOf b : false
+a = 133.742 (133742e-3) 	, b = 13374200000 (133742e5) 	| a multipleOf b : false
+a = 133.742 (133742e-3) 	, b = -13374200000 (-133742e5) 	| a multipleOf b : false
+a = 133.742 (133742e-3) 	, b = 133.742 (133742e-3) 	| a multipleOf b : true
+a = 133.742 (133742e-3) 	, b = -133.742 (-133742e-3) 	| a multipleOf b : true
+a = 133.742 (133742e-3) 	, b = 3.14159265 (314159265e-8) 	| a multipleOf b : false
+a = 133.742 (133742e-3) 	, b = -3.14159265 (-314159265e-8) 	| a multipleOf b : false
+a = -133.742 (-133742e-3) 	, b = 13374200000 (133742e5) 	| a multipleOf b : false
+a = -133.742 (-133742e-3) 	, b = -13374200000 (-133742e5) 	| a multipleOf b : false
+a = -133.742 (-133742e-3) 	, b = 133.742 (133742e-3) 	| a multipleOf b : true
+a = -133.742 (-133742e-3) 	, b = -133.742 (-133742e-3) 	| a multipleOf b : true
+a = -133.742 (-133742e-3) 	, b = 3.14159265 (314159265e-8) 	| a multipleOf b : false
+a = -133.742 (-133742e-3) 	, b = -3.14159265 (-314159265e-8) 	| a multipleOf b : false
+a = 3.14159265 (314159265e-8) 	, b = 13374200000 (133742e5) 	| a multipleOf b : false
+a = 3.14159265 (314159265e-8) 	, b = -13374200000 (-133742e5) 	| a multipleOf b : false
+a = 3.14159265 (314159265e-8) 	, b = 133.742 (133742e-3) 	| a multipleOf b : false
+a = 3.14159265 (314159265e-8) 	, b = -133.742 (-133742e-3) 	| a multipleOf b : false
+a = 3.14159265 (314159265e-8) 	, b = 3.14159265 (314159265e-8) 	| a multipleOf b : true
+a = 3.14159265 (314159265e-8) 	, b = -3.14159265 (-314159265e-8) 	| a multipleOf b : true
+a = -3.14159265 (-314159265e-8) 	, b = 13374200000 (133742e5) 	| a multipleOf b : false
+a = -3.14159265 (-314159265e-8) 	, b = -13374200000 (-133742e5) 	| a multipleOf b : false
+a = -3.14159265 (-314159265e-8) 	, b = 133.742 (133742e-3) 	| a multipleOf b : false
+a = -3.14159265 (-314159265e-8) 	, b = -133.742 (-133742e-3) 	| a multipleOf b : false
+a = -3.14159265 (-314159265e-8) 	, b = 3.14159265 (314159265e-8) 	| a multipleOf b : true
+a = -3.14159265 (-314159265e-8) 	, b = -3.14159265 (-314159265e-8) 	| a multipleOf b : true
+.

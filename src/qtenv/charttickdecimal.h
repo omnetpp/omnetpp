@@ -35,6 +35,7 @@ class ChartTickDecimal
     static const int64_t maxDenormalizableMantissa = 922337203685477580L;
 
     static int64_t pow10(int exponent);
+    static int magnitudeOf(int64_t x);  // floor(log10(abs(x))), i.e. number of digits (but zero for 0)
 
     // Makes the mantissa as small as possible by increasing the exponent.
     // This is a harmless, lossless operation, it can't fail.
@@ -60,12 +61,13 @@ class ChartTickDecimal
 
     // Will (de|over)?normalize the parameters so that they have the same exponent.
     // Precision loss can occur, and if they are many (close to 20 or more) orders
-    // of magnitude apart, the smaller one might diminish to zero.
+    // of magnitude apart, the smaller one (in absolute value) might diminish to zero.
     static bool match(ChartTickDecimal& a, ChartTickDecimal& b);
 
   public:
 
     ChartTickDecimal() = default;
+    ChartTickDecimal(const ChartTickDecimal& other) = default;
     ChartTickDecimal(int64_t man, int exp);
     explicit ChartTickDecimal(double val);
 
@@ -74,7 +76,10 @@ class ChartTickDecimal
 
     double dbl() const { return mantissa * std::pow(10, exponent); }
 
-    std::string str() const;
+    std::string str() const;  // choose either strE() or strF(), based on exponent of the data
+    std::string strE() const; // scientific notation
+    std::string strF() const; // common notation
+    std::string strR() const; // raw form of stored integers
 
     ChartTickDecimal over2() const;
     ChartTickDecimal over5() const;

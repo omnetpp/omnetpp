@@ -17,12 +17,16 @@
 #include "charttickdecimal.h"
 
 #include <iostream>
+#include <cinttypes>
 #include "common/exception.h"
 #include "common/commonutil.h"
+#include "common/stringutil.h"
 #include "omnetpp/opp_string.h"
 
 namespace omnetpp {
 namespace qtenv {
+
+using namespace omnetpp::common;
 
 int64_t ChartTickDecimal::pow10(int exponent)
 {
@@ -149,7 +153,82 @@ ChartTickDecimal::ChartTickDecimal(double val)
     normalize();
 }
 
+int ChartTickDecimal::magnitudeOf(int64_t x)
+{
+    int count = 0;
+    while (x != 0) {
+        x = x / 10;  // not too efficient, too many divisions; could use lookup table
+        count++;
+    }
+    return count;
+}
+
 std::string ChartTickDecimal::str() const
+{
+    // Note: This function decides based on the magnitude of the number alone
+    // and ignores the number of trailing zeroes in the mantissa.
+    // This is intentionally different from the "choose the shorter representation
+    // of the two". The current behavior is more suite to chart ticks, where we
+    // don't want tick labels on the same axis to mix notations.
+    int magnitude = magnitudeOf(mantissa) + exponent;
+    return (magnitude <= -6 || magnitude > 19) ? strE() : strF();
+}
+
+std::string ChartTickDecimal::strE() const
+{
+    if (mantissa == 0)
+        return "0e0";
+
+    char buf[32];  // covers sign, max 18 digits, "E" + sign plus 3-digit exponent plus NUL
+
+    int64_t intVal = mantissa;
+
+    // prepare for conversion
+    char *endp = buf + sizeof(buf) - 1;
+    char *s = endp;
+
+    s -= 6; // leave room for exponent part
+    char *expPos = s;
+    *expPos = 0;
+
+    // check if negative
+    bool negative = intVal < 0;
+    if (!negative)
+        intVal = -intVal;  // make t negative, otherwise we can't handle INT64_MIN which has no positive equivalent
+
+    // convert digits
+    bool skipZeros = true;
+    int numDigits = 0;
+    do {
+        int64_t res = intVal / 10;
+        int digit = 10*res - intVal;  // note: intVal is negative!
+        if (skipZeros && digit != 0)
+            skipZeros = false;
+        if (!skipZeros)
+            *--s = '0' + digit;
+        intVal = res;
+        numDigits++;
+    } while (intVal);
+
+    // insert decimal point between first and second digit (if it exists)
+    if (*(s+1)) {
+        char firstDigit = *s;
+        *s = '.';
+        *--s = firstDigit;
+    }
+
+    if (negative)
+        *--s = '-';
+
+    // print exponent at the end
+    int scale = exponent + numDigits - 1;
+    *expPos++ = 'e';
+    opp_itoa(expPos, scale);
+
+    return s;
+}
+
+std::string ChartTickDecimal::strF() const
 {
     int bufSize = abs(exponent) + 24;  // 24: max number of digits in an int64, plus sign, NUL and some slack
     opp_string tmp(nullptr, bufSize);
@@ -166,33 +245,33 @@ std::string ChartTickDecimal::str() const
         return s;
     }
 
-    // convert digits
+    // check if negative
     bool negative = intVal < 0;
-    if (negative)
-        intVal = -intVal;
+    if (!negative)
+        intVal = -intVal;  // make t negative, otherwise we can't handle INT64_MIN which has no positive equivalent
 
-    bool skipzeros = true;
-    int decimalplace = scale;
-
-    for (int i = 0; i < decimalplace; ++i)
+    // add trailing zeroes
+    for (int i = 0; i < scale; ++i)
         *--s = '0';
 
+    // convert digits
+    bool skipZeros = true;
+    int decimalPlace = scale;
     do {
         int64_t res = intVal / 10;
-        int digit = intVal - (10*res);
-
-        if (skipzeros && (digit != 0 || decimalplace >= 0))
-            skipzeros = false;
-        if (decimalplace++ == 0 && s != endp)
+        int digit = 10*res - intVal;  // note: intVal is negative!
+        if (skipZeros && (digit != 0 || decimalPlace >= 0))
+            skipZeros = false;
+        if (decimalPlace++ == 0 && s != endp)
             *--s = '.';
-        if (!skipzeros)
-            *--s = '0'+digit;
+        if (!skipZeros)
+            *--s = '0' + digit;
         intVal = res;
     } while (intVal);
 
     // add leading zeros, decimal point, etc if needed
-    if (decimalplace <= 0) {
-        while (decimalplace++ < 0)
+    if (decimalPlace <= 0) {
+        while (decimalPlace++ < 0)
             *--s = '0';
         *--s = '.';
         *--s = '0';
@@ -202,6 +281,11 @@ std::string ChartTickDecimal::str() const
         *--s = '-';
 
     return s;
+}
+
+std::string ChartTickDecimal::strR() const
+{
+    return opp_stringf("%" PRIi64 "e%d", mantissa, exponent);
 }
 
 ChartTickDecimal ChartTickDecimal::over2() const
@@ -250,24 +334,36 @@ bool ChartTickDecimal::multipleOf(ChartTickDecimal base) const
     if (base.mantissa == 0)
         return mantissa == 0;
 
-    bool mantissaMultiple = (mantissa % base.mantissa) == 0;
+    ChartTickDecimal clone(*this), baseClone(base);
 
-    if (mantissaMultiple && (exponent >= base.exponent))
+    bool lossy = match(clone, baseClone);
+
+    if (!lossy) // this is the easy case
+        return (clone.mantissa % baseClone.mantissa) == 0;
+
+    // even if we couldn't bring them to the _same_ exponent
+    // in a lossless way, if this has a bigger exponent than
+    // base, and the mantissa is divisible by base's mantissa, we win
+    ChartTickDecimal clone2(*this);
+
+    bool mantissaMultiple = (clone2.mantissa % base.mantissa) == 0;
+    if (mantissaMultiple && (clone2.exponent >= base.exponent))
         return true;
 
-    ChartTickDecimal clone;
-    clone.mantissa = mantissa;  // not using the ctor to avoid one unnecessary
-    clone.exponent = exponent;  // (and potentially harmful (to perf only)) call to normalize
+    // and just as a last chance, try a different ratio of mantissas and exponents...
+    // (this could be done one step at a time, in some other smarter way
+    // to increase the chance of success)
+    clone2.denormalize(100); // inflate the mantissa as much as we can
+    base.normalize();
 
-    bool lossy = match(clone, base);
+    mantissaMultiple = (clone2.mantissa % base.mantissa) == 0;
+    if (mantissaMultiple && (clone2.exponent >= base.exponent))
+        return true;
 
-    if (lossy)
-        return false;
+    // if nothing worked so far, let's give up...
+    throw opp_runtime_error("ChartTickDecimal::multipleOf: Unhandled case. Numbers cannot be brought to the same exponent.");
 
-    if (base.mantissa == 0)
-        return clone.mantissa == 0;
-
-    return (clone.mantissa % base.mantissa) == 0;
+    return false;
 }
 
 ChartTickDecimal ChartTickDecimal::floor(int precision) const
@@ -328,6 +424,7 @@ ChartTickDecimal& ChartTickDecimal::operator+=(ChartTickDecimal inc)
 {
     match(*this, inc);
     mantissa += inc.mantissa;
+    normalize();
     return *this;
 }
 
