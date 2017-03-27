@@ -1,0 +1,39 @@
+#! /bin/bash
+#
+# Invocation: cd samples/aloha; ../../test/resultrecorders ./aloha -c PureAloha1 --sim-time-limit=60s
+#
+ERROR() { echo '*** ERROR ***' ; exit 1 ; }
+shout() { echo "\$ $@" ; "$@" ; }
+
+CMD=$@
+rm -rf results
+$CMD -u Cmdenv --outputvectormanager-class=omnetpp::envir::cIndexedFileOutputVectorManager --outputscalarmanager-class=omnetpp::envir::cFileOutputScalarManager --result-dir=results-old || ERROR
+$CMD -u Cmdenv --outputvectormanager-class=omnetpp::envir::OmnetppOutputVectorManager --outputscalarmanager-class=omnetpp::envir::OmnetppOutputScalarManager --result-dir=results-new || ERROR
+$CMD -u Cmdenv --outputvectormanager-class=omnetpp::envir::SqliteOutputVectorManager --outputscalarmanager-class=omnetpp::envir::SqliteOutputScalarManager --result-dir=results-sql || ERROR
+echo
+echo ================================================================================================================
+echo DIFF RESULT FILES PRODUCED BY OLD AND NEW RECORDERS:
+for f in $(cd results-old; echo *.sca *.vec); do
+    shout diff -u1 results-old/$f results-new/$f
+    echo ----------------------------------------------------------------------------------------------------------------
+done
+echo
+echo ================================================================================================================
+echo SCAVETOOL SUMMARY REPORT OF EACH FILE:
+for f in results-*/*.vec results-*/*.sca; do
+    printf '%s\t' $f
+    scavetool -p --no-indexing $f || ERROR
+done
+
+echo ================================================================================================================
+echo DIFF FILE CONTENTS VIA PYTHON EXPORT:
+for f in results-*/*.vec results-*/*.sca; do
+    scavetool x $f -o $f.py || ERROR
+done
+for f in $(cd results-old; echo *.sca *.vec); do
+    shout diff -u1 results-old/$f.py results-new/$f.py
+    echo ----------------------------------------------------------------------------------------------------------------
+    shout diff -u1 results-new/$f.py results-sql/$f.py
+    echo ----------------------------------------------------------------------------------------------------------------
+done
+

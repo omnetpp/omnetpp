@@ -1,0 +1,5 @@
+#! /bin/bash
+
+CHECK=$(pwd)/checkresultfiles
+cd ../../samples/aloha && $CHECK ./aloha -c PureAloha1 --sim-time-limit=60s
+
