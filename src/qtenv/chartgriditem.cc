@@ -20,6 +20,7 @@
 #include <QPen>
 #include <QPainter>
 #include <QDebug>
+#include <QGraphicsScene>
 
 static const int MINOR_TICK_LENGTH = 4;
 static const int MAJOR_TICK_LENGTH = 6;
@@ -43,7 +44,6 @@ ChartGridItem::ChartGridItem(QGraphicsItem *parent) :
     isYAxisChanged(true),
     isXAxisChanged(true)
 {
-    font.setPixelSize(FONT_PIXEL_SIZE);
     frame = new QGraphicsRectItem(this);
     frame->setFlag(QGraphicsItem::ItemClipsChildrenToShape);
 }
@@ -186,13 +186,14 @@ double ChartGridItem::getYLabelWidth()
 
 inline int ChartGridItem::getTextWidth(const QString& text) const
 {
-    QFontMetrics m(font);
-    return m.width(text);
+    QFontMetrics m(scene()->font());
+    int w = m.width(text);
+    return w;
 }
 
 inline int ChartGridItem::getTextHeight() const
 {
-    QFontMetrics m(font);
+    QFontMetrics m(scene()->font());
     return m.lineSpacing();
 }
 
@@ -283,7 +284,6 @@ void ChartGridItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
         return;
 
     painter->setPen(QPen(Qt::black));
-    painter->setFont(font);
     paintXAxis(painter);
     paintYAxis(painter);
 }

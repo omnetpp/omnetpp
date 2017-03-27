@@ -34,7 +34,6 @@ class ChartGridItem : public QGraphicsItem
     bool isYAxisChanged, isXAxisChanged;
     QRectF boundingRectangle;
     std::vector<std::pair<ChartTickDecimal, bool> > xTicks, yTicks;
-    QFont font;
 
     void updateRect();
     void paintXAxis(QPainter *painter);
