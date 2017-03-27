@@ -141,10 +141,11 @@ void HistogramInspector::refresh()
 
     if (isMaxYAutoscaled) {
         if (lastMaxY < 0)
-            lastMaxY = maxYVal / 0.85;
+            lastMaxY = minYVal + (maxYVal - minYVal) / 0.85;
 
-        if ((maxYVal < 0.75 * lastMaxY) || (maxYVal > 0.95 * lastMaxY))
-            maxYVal = maxYVal / 0.85;
+        if ((maxYVal < minYVal + (0.75 * (lastMaxY - minYVal)))
+                || (maxYVal > minYVal + 0.95 * (lastMaxY - minYVal)))
+            maxYVal = minYVal + (maxYVal - minYVal) / 0.85;
         else
             maxYVal = lastMaxY;
     }

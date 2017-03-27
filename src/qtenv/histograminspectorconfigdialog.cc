@@ -139,12 +139,12 @@ bool HistogramInspectorConfigDialog::checkInput()
         bool hasMaxY = this->hasMaxY();
         double maxY = hasMaxY ? getMaxY() : 0.0;
 
-        if (maxY && minY && maxY <= minY) {
+        if (hasMaxY && hasMinY && maxY <= minY) {
             message = "Y range: max must be greater than min";
             ok = false;
         }
 
-        if (maxX && minX && maxX <= minX) {
+        if (hasMaxX && hasMinX && maxX <= minX) {
             message = "X range: max must be greater than min";
             ok = false;
         }
