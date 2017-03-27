@@ -106,12 +106,13 @@ void OmnetppOutputVectorManager::startRun()
     //vectors.clear(); TODO clearing the remaining vector SHOULD be done after deleteNetwork()! because endRun may not be called at all
     //close();
 
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
-
     bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
     if (shouldAppend)
         throw cRuntimeError("%s does not support append mode", getClassName());
+
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+    removeFile(fname.c_str(), "old output vector file");
 
     int prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
     writer.setPrecision(prec);
