@@ -124,7 +124,7 @@ void VectorPlotItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, 
                 break;
 
             case DRAW_POINTS:
-                painter->drawLine(x, y, x, y);
+                painter->drawPoint(x, y);
                 break;
 
             case DRAW_PINS:

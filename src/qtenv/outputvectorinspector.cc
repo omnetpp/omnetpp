@@ -32,7 +32,7 @@ namespace qtenv {
 
 static const double SNAP_Y_AXIS_TO_ZERO_FACTOR = 0.3;
 static const double Y_RANGE = 1;  // use when  minY>=maxY
-static const QColor BACKGROUND_COLOR("#FED766");  // ORANGE-YELLOW
+static const QColor BACKGROUND_COLOR("#FAF3D2");
 
 void _dummy_for_outputvectorinspector() {}
 

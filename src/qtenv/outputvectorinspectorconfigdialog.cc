@@ -132,7 +132,7 @@ bool OutputVectorInspectorConfigDialog::checkInput()
         bool hasTimeScale = this->hasTimeScale();
         double timeScale = hasTimeScale ? getTimeScale() : 0.0;
 
-        if (maxY && minY && maxY <= minY) {
+        if (hasMaxY && hasMinY && maxY <= minY) {
             message = "Y range: max must be greater than min";
             ok = false;
         }
