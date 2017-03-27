@@ -74,8 +74,32 @@ int insptypeCodeFromName(const char *name)
 
 //----
 
+// About the WindowType of toplevel inspectors:
+//
+// For quite a while, we used Qt::Dialog. This had a few problems:
+//   - With certain window managers, all buttons on the title bar were missing.
+//     (see https://dev.omnetpp.org/bugs/view.php?id=953 )
+//   - On macOS, they weren't always kept on top of the MainWindow.
+//
+// Adding Qt::WindowStaysOnTopHint to a Qt::Dialog isn't a solution either,
+// because on macOS, they will stay on top of _all_ the windows at all times,
+// not just the MainWindow.
+//
+// With Qt::Tool, they have thinner border, and disappear on Mac when the
+// MainWindow loses focus (the Qt::WA_MacAlwaysShowToolWindow flag does
+// the same as above, not what we want), but this is the closest we ould get...
+//
+// We have also tried a few others (Drawer, Popup, etc...), but none were quite right.
+//
+// Tkenv does something else, it puts the Inspector windows on a so-called
+// Utility Level, so they work best (and move with the MainWindow on Mac),
+// but we couldn't find a way to do that without ugly ObjC code.
+//
+// This is a well-known and seemingly unsolved issue, see
+// http://stackoverflow.com/questions/32216498 as well.
+//
 Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
-    : QWidget(parent, isTopLevel ? Qt::Dialog : Qt::Widget) // Qt::Tool? Qt::Popup? CustomizeWindowFlagsHint? WindowStaysOnTopHint?
+    : QWidget(parent, isTopLevel ? Qt::Tool : Qt::Widget)
 {
     inspectDropdownMenu = new QMenu(this);
     copyDropdownMenu = new QMenu(this);
