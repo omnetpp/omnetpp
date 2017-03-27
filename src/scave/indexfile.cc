@@ -185,15 +185,13 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
 
 void RunData::writeToFile(FILE *file, const char *filename) const
 {
-    if (runName.size() > 0) {
+    if (runName.size() > 0)
         CHECK(fprintf(file, "run %s\n", runName.c_str()));
-    }
-    for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it) {
+    for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
         CHECK(fprintf(file, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
-    }
-    for (StringMap::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it) {
+    for (StringMap::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it)
         CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
-    }
+    CHECK(fprintf(file, "\n"));
 }
 
 //=========================================================================
@@ -512,7 +510,7 @@ void IndexFileWriter::writeVector(const VectorData& vector)
 
 void IndexFileWriter::writeVectorDeclaration(const VectorData& vector)
 {
-    CHECK(fprintf(file, "vector %d  %s  %s  %s\n",
+    CHECK(fprintf(file, "vector %d %s %s %s\n",
                     vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
 }
 

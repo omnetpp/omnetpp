@@ -170,12 +170,12 @@ void *OmnetppVectorFileWriter::registerVector(const std::string& componentFullPa
 
 
     const char *columns = vp->recordEventNumbers ? "ETV" : "TV";
-    check(fprintf(f, "vector %d  %s  %s  %s\n", vp->id, QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), columns));
+    check(fprintf(f, "vector %d %s %s %s\n", vp->id, QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), columns));
     for (auto pair : attributes)
         check(fprintf(f, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
 
     // write vector declaration and vector attributes to the index file too
-    checki(fprintf(fi, "vector %d  %s  %s  %s\n", vp->id, QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), columns));
+    checki(fprintf(fi, "vector %d %s %s %s\n", vp->id, QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), columns));
     for (auto pair : attributes)
         checki(fprintf(fi, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
 
