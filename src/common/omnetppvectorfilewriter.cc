@@ -115,18 +115,26 @@ void OmnetppVectorFileWriter::beginRecordingForRun(const std::string& runName, c
     Assert(vectors.size() == 0);
     bufferedSamples = 0;
 
+    // note: we write everything twice, once in .vec and once in .vci
+
     // save run
     check(fprintf(f, "run %s\n", QUOTE(runName.c_str())));
+    checki(fprintf(fi, "run %s\n", QUOTE(runName.c_str())));
 
     // save run attributes
-    for (auto pair : attributes)
+    for (auto pair : attributes) {
         check(fprintf(f, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        checki(fprintf(fi, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+    }
 
     // save run params
-    for (auto pair : moduleParams)
+    for (auto pair : moduleParams) {
         check(fprintf(f, "param %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        checki(fprintf(fi, "param %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+    }
 
     check(fprintf(f, "\n"));
+    checki(fprintf(fi, "\n"));
 }
 
 void OmnetppVectorFileWriter::finalizeVector(VectorData *vp)
