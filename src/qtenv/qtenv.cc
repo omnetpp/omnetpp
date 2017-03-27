@@ -1540,6 +1540,16 @@ void Qtenv::initialSetUpConfiguration()
             // defaultConfig and runFilter are what were specified in either the omnetpp.ini file or as a command line argument
             RunSelectionDialog dialog(conf, opt->defaultConfig, opt->runFilter, mainWindow);
 
+#ifdef QT_OS_MAC
+            // Makes the Apple Menu work on Mac (together with TransformProcessType) right
+            // after launch even if there is no need to actually pick a configuration.
+            // Even if the dialog doesn't really appear on the screen (in fact I hope it
+            // doesn't, that would cause flickering), if shown first, it will do some
+            // magic with window focus passing when destroyed, which is similar to
+            // switching apps, which then makes the global menu work for some reason.
+            dialog.show();
+#endif
+
             // only show if needed, but if cancelled, stop.
             if (dialog.needsShowing() && !dialog.exec())
                 return;
