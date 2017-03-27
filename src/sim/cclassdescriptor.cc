@@ -96,9 +96,7 @@ bool cClassDescriptor::string2bool(const char *s)
 
 std::string cClassDescriptor::double2string(double d)
 {
-    char buf[32];
-    sprintf(buf, "%f", d);
-    return buf;
+    return opp_stringf("%.16g", d);
 }
 
 double cClassDescriptor::string2double(const char *s)
