@@ -149,12 +149,12 @@ inline std::string opp_quotestr_ifneeded(const std::string& txt)
 #define QUOTE(txt)   (opp_needsquotes(txt) ? opp_quotestr(txt).c_str() : (txt))
 
 /**
- * Create a string using printf-like formatting. Limit: 1023 chars.
+ * Create a string using printf-like formatting. Allocates storage dynamically.
  */
 COMMON_API std::string opp_stringf(const char *fmt, ...);
 
 /**
- * Create a string using printf-like formatting. Limit: 1023 chars.
+ * Create a string using printf-like formatting. Allocates storage dynamically.
  */
 COMMON_API std::string opp_vstringf(const char *fmt, va_list& args);
 

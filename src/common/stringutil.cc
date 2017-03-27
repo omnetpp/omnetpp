@@ -174,24 +174,36 @@ bool opp_needsquotes(const char *txt)
     return false;
 }
 
-#define BUFLEN    1024
-
 std::string opp_stringf(const char *fmt, ...)
 {
-    char buf[BUFLEN];
-    VSNPRINTF(buf, BUFLEN, fmt);
-    return buf;
+    va_list args;
+    va_start(args, fmt);
+    return opp_vstringf(fmt, args);
 }
 
 std::string opp_vstringf(const char *fmt, va_list& args)
 {
-    char buf[BUFLEN];
-    vsnprintf(buf, BUFLEN, fmt, args);
-    buf[BUFLEN-1] = '\0';
+    va_list args_copy;
+    va_copy(args_copy, args);
+
+    const int initSize = 32;
+
+    std::string buf(initSize, '\0');
+
+    int len = vsnprintf(&buf.front(), initSize, fmt, args);
+    va_end(args);
+
+    // the content didn't fit in the buffer (len doesn't include the trailing zero)
+    if (len >= initSize) {
+        buf.resize(len + 1); // vsnprintf will write a trailing zero
+        len = vsnprintf(&buf.front(), len + 1, fmt, args_copy);
+    }
+    va_end(args_copy);
+
+    buf.resize(len);
+
     return buf;
 }
-
-#undef BUFLEN
 
 int opp_vsscanf(const char *s, const char *fmt, va_list va)
 {
