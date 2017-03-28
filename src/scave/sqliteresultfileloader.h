@@ -66,6 +66,7 @@ class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
     void finalizeStatement();
     static double sqlite3ColumnDouble(sqlite3_stmt *stmt, int fieldIdx);  // sqlite3_column_double(stmt, fieldIdx), but converts sql NULL value to NaN double value
     void checkOK(int sqlite3_result);
+    void checkRow(int sqlite3_result);
     void error(const char *errmsg);
 
   public:
