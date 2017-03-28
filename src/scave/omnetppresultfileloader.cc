@@ -106,7 +106,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         ctx.clearHistogram();
         return;
     }
-    else if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0) {
+
+    if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0) {
         int version;
         CHECK(numTokens == 2, "incorrect 'version' line -- version <number> expected");
         CHECK(parseInt(vec[1], version), "version is not a number");
@@ -114,21 +115,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         return;
     }
 
-    // if we haven't seen a "run" line yet (as with old vector files), add a default run
-    if (ctx.fileRunRef == nullptr) {
-        // fake a new Run
-        Run *runRef = resultFileManager->addRun("unnamed", false);
-        ctx.fileRunRef = resultFileManager->addFileRun(ctx.fileRef, runRef);
-        runRef->runNumber = 0;
-
-        /*
-           // make up a unique runName
-           std::stringstream os;
-           static int counter=1000;
-           os << fileRef->fileName << ":" << lineNum << "-#n/a-" <<++counter;
-           runRef->runName = os.str();
-         */
-    }
+    // anything else is within runs
+    CHECK(ctx.fileRunRef != nullptr, "line must be preceded by a 'run' line");
 
     if (vec[0][0] == 's' && !strcmp(vec[0], "scalar")) {
         // syntax: "scalar <module> <scalarname> <value>"
