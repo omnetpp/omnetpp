@@ -132,21 +132,21 @@ void SqliteScalarFileWriter::finalizeStatement(sqlite3_stmt *&stmt)
 void SqliteScalarFileWriter::prepareStatements()
 {
     prepareStatement(add_scalar_stmt, "INSERT INTO scalar (runId, moduleName, scalarName, scalarValue) VALUES (?, ?, ?, ?);");
-    prepareStatement(add_scalar_attr_stmt, "INSERT INTO scalarattr (scalarId, attrName, attrValue) VALUES (?, ?, ?);");
+    prepareStatement(add_scalar_attr_stmt, "INSERT INTO scalarAttr (scalarId, attrName, attrValue) VALUES (?, ?, ?);");
     prepareStatement(add_statistic_stmt,
             "INSERT INTO statistic (runId, moduleName, statName, "
             "statCount, "
             "statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum"
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-    prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticattr (statId, attrName, attrValue) VALUES (?, ?, ?);");
-    prepareStatement(add_statistic_bin_stmt, "INSERT INTO histbin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
+    prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticAttr (statId, attrName, attrValue) VALUES (?, ?, ?);");
+    prepareStatement(add_statistic_bin_stmt, "INSERT INTO histBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
 }
 
 void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& moduleParams)
 {
     // save run
-    prepareStatement(stmt, "INSERT INTO run (runname, simTimeExp) VALUES (?, ?);");
+    prepareStatement(stmt, "INSERT INTO run (runName, simTimeExp) VALUES (?, ?);");
     checkOK(sqlite3_bind_text(stmt, 1, runName.c_str(), runName.size(), SQLITE_STATIC));
     checkOK(sqlite3_bind_int(stmt, 2, simtimeScaleExp));
     checkDone(sqlite3_step(stmt));
@@ -155,7 +155,7 @@ void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, in
     finalizeStatement(stmt);
 
     // save run attributes
-    prepareStatement(stmt, "INSERT INTO runattr (runid, attrname, attrvalue) VALUES (?, ?, ?);");
+    prepareStatement(stmt, "INSERT INTO runAttr (runId, attrName, attrValue) VALUES (?, ?, ?);");
     for (auto it = attributes.begin(); it != attributes.end(); ++it) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));
@@ -167,7 +167,7 @@ void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, in
     finalizeStatement(stmt);
 
     // save run params
-    prepareStatement(stmt, "INSERT INTO runparam (runid, parname, parvalue) VALUES (?, ?, ?);");
+    prepareStatement(stmt, "INSERT INTO runParam (runId, parName, parValue) VALUES (?, ?, ?);");
     for (auto it = moduleParams.begin(); it != moduleParams.end(); ++it) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));

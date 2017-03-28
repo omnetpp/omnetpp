@@ -92,7 +92,7 @@ void SqliteResultFileLoader::finalizeStatement()
 
 void SqliteResultFileLoader::loadRuns()
 {
-    prepareStatement("SELECT runid, runname FROM run;");
+    prepareStatement("SELECT runId, runName FROM run;");
 
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
@@ -122,7 +122,7 @@ void SqliteResultFileLoader::loadRuns()
 
 void SqliteResultFileLoader::loadRunAttrs()
 {
-    prepareStatement("SELECT runId, attrName, attrValue FROM runattr;");
+    prepareStatement("SELECT runId, attrName, attrValue FROM runAttr;");
 
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step (stmt);
@@ -184,7 +184,7 @@ void SqliteResultFileLoader::loadScalars()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT scalarId, runId, attrName, attrValue FROM scalarattr JOIN scalar USING (scalarId) ORDER BY runId, scalarId;");
+    prepareStatement("SELECT scalarId, runId, attrName, attrValue FROM scalarAttr JOIN scalar USING (scalarId) ORDER BY runId, scalarId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_ROW) {
@@ -194,7 +194,7 @@ void SqliteResultFileLoader::loadScalars()
             std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
             SqliteScalarIdToScalarIdx::iterator it = sqliteScalarIdToScalarIdx.find(scalarId);
             if (it == sqliteScalarIdToScalarIdx.end())
-                error("Invalid scalarId in scalarattr table");
+                error("Invalid scalarId in scalarAttr table");
             ScalarResult& sca = fileRunMap.at(runId)->fileRef->scalarResults.at(sqliteScalarIdToScalarIdx.at(scalarId));
             sca.setAttribute(attrName, attrValue);
         }
@@ -262,7 +262,7 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT statId, runId, attrName, attrValue FROM statisticattr JOIN statistic USING (statId) ORDER BY runId, statId;");
+    prepareStatement("SELECT statId, runId, attrName, attrValue FROM statisticAttr JOIN statistic USING (statId) ORDER BY runId, statId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_ROW) {
@@ -285,7 +285,7 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT statId, runId, baseValue, cellValue FROM histbin JOIN statistic USING (statId) ORDER BY runId, statId;");
+    prepareStatement("SELECT statId, runId, baseValue, cellValue FROM histBin JOIN statistic USING (statId) ORDER BY runId, statId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_ROW) {

@@ -125,7 +125,7 @@ void SqliteVectorFileWriter::cleanup()  // MUST NOT THROW
 
 void SqliteVectorFileWriter::createVectorIndex()
 {
-    executeSql("CREATE INDEX IF NOT EXISTS vectordata_idx ON vectordata (vectorId);");
+    executeSql("CREATE INDEX IF NOT EXISTS vectorData_idx ON vectorData (vectorId);");
 }
 
 void SqliteVectorFileWriter::executeSql(const char *sql)
@@ -146,9 +146,9 @@ void SqliteVectorFileWriter::finalizeStatement(sqlite3_stmt *&stmt)
 
 void SqliteVectorFileWriter::prepareStatements()
 {
-    prepareStatement(add_vector_stmt, "INSERT INTO vector (runid, moduleName, vectorName) VALUES (?, ?, ?);");
-    prepareStatement(add_vector_attr_stmt, "INSERT INTO vectorattr (vectorId, attrname, attrvalue) VALUES (?, ?, ?);");
-    prepareStatement(add_vector_data_stmt, "INSERT INTO vectordata (vectorId, eventNumber, simtimeRaw, value) VALUES (?, ?, ?, ?);");
+    prepareStatement(add_vector_stmt, "INSERT INTO vector (runId, moduleName, vectorName) VALUES (?, ?, ?);");
+    prepareStatement(add_vector_attr_stmt, "INSERT INTO vectorAttr (vectorId, attrName, attrValue) VALUES (?, ?, ?);");
+    prepareStatement(add_vector_data_stmt, "INSERT INTO vectorData (vectorId, eventNumber, simtimeRaw, value) VALUES (?, ?, ?, ?);");
 }
 
 void SqliteVectorFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& moduleParams)
@@ -157,7 +157,7 @@ void SqliteVectorFileWriter::beginRecordingForRun(const std::string& runName, in
     bufferedSamples = 0;
 
     // save run
-    prepareStatement(stmt, "INSERT INTO run (runname, simTimeExp) VALUES (?, ?);");
+    prepareStatement(stmt, "INSERT INTO run (runName, simTimeExp) VALUES (?, ?);");
     checkOK(sqlite3_bind_text(stmt, 1, runName.c_str(), runName.size(), SQLITE_STATIC));
     checkOK(sqlite3_bind_int(stmt, 2, simtimeScaleExp));
     checkDone(sqlite3_step(stmt));
@@ -166,7 +166,7 @@ void SqliteVectorFileWriter::beginRecordingForRun(const std::string& runName, in
     finalizeStatement(stmt);
 
     // save run attributes
-    prepareStatement(stmt, "INSERT INTO runattr (runid, attrname, attrvalue) VALUES (?, ?, ?);");
+    prepareStatement(stmt, "INSERT INTO runAttr (runId, attrName, attrValue) VALUES (?, ?, ?);");
     for (auto it = attributes.begin(); it != attributes.end(); ++it) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));
@@ -178,7 +178,7 @@ void SqliteVectorFileWriter::beginRecordingForRun(const std::string& runName, in
     finalizeStatement(stmt);
 
     // save run params
-    prepareStatement(stmt, "INSERT INTO runparam (runid, parname, parvalue) VALUES (?, ?, ?);");
+    prepareStatement(stmt, "INSERT INTO runParam (runId, parName, parValue) VALUES (?, ?, ?);");
     for (auto it = moduleParams.begin(); it != moduleParams.end(); ++it) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));
