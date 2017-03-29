@@ -65,11 +65,11 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     @Override @SuppressWarnings({ "rawtypes" })
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
         try {
-            markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             checkProjectFeatures();
             checkOrderOfProjectBuilders();
             checkActiveCDTConfiguration();
 
+            markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             buildSpec = BuildSpecification.readBuildSpecFile(getProject());
             if (buildSpec == null)
                 buildSpec = BuildSpecification.createBlank(getProject());

@@ -508,6 +508,7 @@ public class InifileUtils {
             return result.toArray(new IMarker[]{});
         }
         catch (CoreException e) {
+            InifileEditorPlugin.logError(e);
             return new IMarker[0];
         }
     }
