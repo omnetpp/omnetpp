@@ -39,7 +39,7 @@ const char SQL_CREATE_TABLES[] =
         "CREATE TABLE IF NOT EXISTS runParam "  //TODO this is inifile contents, so should be ordered!!! (or one single blob); TODO rename to config, and store not only params?
         "( "
             "runId       INTEGER  NOT NULL REFERENCES run(runId) ON DELETE CASCADE, "
-            "parName     TEXT NOT NULL, "
+            "parName     TEXT NOT NULL, "  //TODO "parPattern"
             "parValue    TEXT NOT NULL "
         "); "
         ""
@@ -85,7 +85,7 @@ const char SQL_CREATE_TABLES[] =
             "attrValue     TEXT NOT NULL "
         "); "
         ""
-        "CREATE TABLE IF NOT EXISTS histBin "
+        "CREATE TABLE IF NOT EXISTS histBin "  //TODO histogramBin
         "( "
             "statId        INTEGER NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, "
             "baseValue     NUMERIC NOT NULL, "

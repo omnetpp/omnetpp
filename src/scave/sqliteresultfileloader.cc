@@ -1,9 +1,9 @@
 //=========================================================================
-//  RESULTFILEMANAGER.CC - part of
+//  SQLITERESULTFILELOADER.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//  Author: Andras Varga, Tamas Borbely, Zoltan Bojthe
+//  Author: Zoltan Bojthe, Andras Varga
 //
 //=========================================================================
 
@@ -15,41 +15,11 @@
    `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <cmath>  // NAN
-#include <cstdlib>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <memory>
-#include <algorithm>
 #include <utility>
-#include <functional>
-
+#include "omnetpp/platdep/platdefs.h"
+#include "common/bigdecimal.h"
+#include "common/histogram.h"
 #include "sqliteresultfileloader.h"
-
-#include "common/opp_ctype.h"
-#include "common/matchexpression.h"
-#include "common/patternmatcher.h"
-#include "common/filereader.h"
-#include "common/linetokenizer.h"
-#include "common/stringtokenizer.h"
-#include "common/filereader.h"
-#include "common/fileutil.h"
-#include "common/commonutil.h"
-#include "common/stringutil.h"
-#include "omnetpp/platdep/platmisc.h"
-#include "indexfile.h"
-#include "scaveutils.h"
-#include "scaveexception.h"
-
-
-#ifdef THREADED
-#define READER_MUTEX    Mutex __reader_mutex_(getReadLock());
-#define WRITER_MUTEX    Mutex __writer_mutex_(getWriteLock());
-#else
-#define READER_MUTEX
-#define WRITER_MUTEX
-#endif
 
 using namespace omnetpp::common;
 
@@ -149,6 +119,25 @@ void SqliteResultFileLoader::loadRunAttrs()
     finalizeStatement();
 }
 
+void SqliteResultFileLoader::loadRunParams()
+{
+    prepareStatement("SELECT runId, parName, parValue FROM runParam;");
+
+    for (int row=1; ; row++) {
+        int resultCode = sqlite3_step (stmt);
+        if (resultCode == SQLITE_DONE)
+            break;
+        checkRow(resultCode);
+        sqlite3_int64 runId = sqlite3_column_int64(stmt, 0);
+        std::string parName = (const char *) sqlite3_column_text(stmt, 1);
+        std::string parValue = (const char *) sqlite3_column_text(stmt, 2);
+
+        FileRun *fileRunRef = fileRunMap.at(runId);
+        fileRunRef->runRef->setModuleParam(parName, parValue);
+    }
+    finalizeStatement();
+}
+
 double SqliteResultFileLoader::sqlite3ColumnDouble(sqlite3_stmt *stmt, int fieldIdx)
 {
     return (sqlite3_column_type(stmt, fieldIdx) != SQLITE_NULL) ? sqlite3_column_double(stmt, fieldIdx) : NAN;
@@ -192,10 +181,7 @@ void SqliteResultFileLoader::loadScalars()
         sca.setAttribute(attrName, attrValue);
     }
     finalizeStatement();
-
-    loadHistograms();
 }
-
 
 void SqliteResultFileLoader::loadHistograms()
 {
@@ -281,6 +267,8 @@ void SqliteResultFileLoader::loadHistograms()
 
 void SqliteResultFileLoader::loadVectors()
 {
+    std::map<sqlite3_int64,int> sqliteVectorIdToVectorIdx;
+
     prepareStatement(
             "SELECT vectorId, runId, moduleName, vectorName, "
             "    vectorCount, vectorMin, vectorMax, vectorSum, vectorSumSqr, "
@@ -307,13 +295,31 @@ void SqliteResultFileLoader::loadVectors()
         sqlite3_int64 endSimtimeRaw = sqlite3_column_int64(stmt, 12);
         int simtimeExp = sqlite3_column_int(stmt, 13);
         int i = resultFileManager->addVector(fileRunMap.at(runId), vectorId, moduleName.c_str(), vectorName.c_str(), "ETV");
+        sqliteVectorIdToVectorIdx[vectorId] = i;
         VectorResult& vec = fileRunMap.at(runId)->fileRef->vectorResults.at(i);
         vec.stat = Statistics(count, vmin, vmax, vsum, vsumsqr);
         vec.startEventNum = startEventNum;
         vec.endEventNum = endEventNum;
         vec.startTime = simultime_t(startSimtimeRaw, simtimeExp);
         vec.endTime = simultime_t(endSimtimeRaw, simtimeExp);
-        //TODO vector attributes
+    }
+    finalizeStatement();
+
+    prepareStatement("SELECT vectorId, runId, attrName, attrValue FROM vectorAttr JOIN vector USING (vectorId) ORDER BY runId, vectorId;");
+    for (int row=1; ; row++) {
+        int resultCode = sqlite3_step(stmt);
+        if (resultCode == SQLITE_DONE)
+            break;
+        checkRow(resultCode);
+        sqlite3_int64 vectorId = sqlite3_column_int64(stmt, 0);
+        sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
+        std::string attrName = (const char *)sqlite3_column_text(stmt, 2);
+        std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
+        auto it = sqliteVectorIdToVectorIdx.find(vectorId);
+        if (it == sqliteVectorIdToVectorIdx.end())
+            error("Invalid vectorId in vectorAttr table");
+        VectorResult& vec = fileRunMap.at(runId)->fileRef->vectorResults.at(sqliteVectorIdToVectorIdx.at(vectorId));
+        vec.setAttribute(attrName, attrValue);
     }
     finalizeStatement();
 }
@@ -335,8 +341,10 @@ ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *f
         checkOK(sqlite3_open_v2(fileSystemFileName, &db, SQLITE_OPEN_READONLY, 0));
         loadRuns();
         loadRunAttrs();
+        loadRunParams();
         loadScalars();
         loadVectors();
+        loadHistograms();
     }
     catch (std::exception&) {
         cleanupDb();

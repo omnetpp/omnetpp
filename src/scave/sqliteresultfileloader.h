@@ -1,9 +1,9 @@
 //=========================================================================
-//  RESULTFILEMANAGER.H - part of
+//  SQLITERESULTFILELOADER.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//  Author: Andras Varga, Tamas Borbely, Zoltan Bojthe
+//  Author: Zoltan Bojthe, Andras Varga
 //
 //=========================================================================
 
@@ -58,6 +58,7 @@ class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
   protected:
     virtual void loadRuns();
     virtual void loadRunAttrs();
+    virtual void loadRunParams();
     virtual void loadScalars();
     virtual void loadHistograms();
     virtual void loadVectors();
