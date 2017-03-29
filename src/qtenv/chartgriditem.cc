@@ -24,7 +24,6 @@
 
 static const int MINOR_TICK_LENGTH = 4;
 static const int MAJOR_TICK_LENGTH = 6;
-static const int FONT_PIXEL_SIZE = 15;
 static const int VERT_TEXT_DISTANCE = 5;
 static const int MINIMUM_DIAGRAM_SIZE = 10;
 static const double DASHED_LINE_OPACITY = 0.3;
