@@ -1,9 +1,9 @@
 //==========================================================================
-//  FILEOUTPUTVECTORMGR.CC - part of
+//  OMNETPPOUTVECTORMGR.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Authors: Andras Varga
+//  Author: Andras Varga
 //
 //==========================================================================
 

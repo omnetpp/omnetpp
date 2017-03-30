@@ -1,5 +1,5 @@
 //==========================================================================
-//  FILEOUTPUTSCALARMGR.CC - part of
+//  OMNETPPOUTSCALARMGR.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
