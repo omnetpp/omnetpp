@@ -41,7 +41,7 @@ class PythonExporterType : public ExporterType
         virtual std::string getFormatName() const {return "Python";}
         virtual std::string getDisplayName() const {return "Python Source File";}
         virtual std::string getDescription() const {return "Export results as Python source file containing a JSON-like data structure, optionally with NumPy arrays.";}
-        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::HISTOGRAM;}
+        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "py"; }
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
@@ -135,6 +135,18 @@ void PythonExporter::writeStringMap(const std::string& key, const StringMap& att
     for (auto pair : attrs)
         writer.writeString(pair.first, pair.second);
     writer.closeObject();
+}
+
+void PythonExporter::writeStatisticsFields(const Statistics& stat)
+{
+    writer.writeDouble("count", stat.getCount());
+    writer.writeDouble("mean", stat.getMean());
+    writer.writeDouble("stddev", stat.getStddev());
+    writer.writeDouble("sum", stat.getSum());
+    writer.writeDouble("sqrsum", stat.getSumSqr());
+    writer.writeDouble("min", stat.getMin());
+    writer.writeDouble("max", stat.getMax());
+    //TODO weighted?
 }
 
 void PythonExporter::writeVector(const std::vector<double>& v)
@@ -285,6 +297,23 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
             writer.closeArray();
         }
 
+        // statistics
+        IDList statistics = idlist.filterByTypes(ResultFileManager::STATISTICS);
+        if (!statistics.isEmpty()) {
+            writer.openArray("statistics");
+            for (ID id : statistics) {
+                const StatisticsResult& stats = manager->getStatistics(id);
+                writer.openObject();
+                writer.writeString("module", stats.getModuleName());
+                writer.writeString("name", stats.getName());
+                if (!skipResultAttributes && !stats.getAttributes().empty())
+                    writeStringMap("attributes", stats.getAttributes());
+                writeStatisticsFields(stats.getStatistics());
+                writer.closeObject();
+            }
+            writer.closeArray();
+        }
+
         // histograms
         IDList histograms = idlist.filterByTypes(ResultFileManager::HISTOGRAM);
         if (!histograms.isEmpty()) {
@@ -296,16 +325,7 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
                 writer.writeString("name", histogram.getName());
                 if (!skipResultAttributes && !histogram.getAttributes().empty())
                     writeStringMap("attributes", histogram.getAttributes());
-
-                const Statistics& stat = histogram.getStatistics();
-                writer.writeDouble("count", stat.getCount());
-                writer.writeDouble("mean", stat.getMean());
-                writer.writeDouble("stddev", stat.getStddev());
-                writer.writeDouble("sum", stat.getSum());
-                writer.writeDouble("sqrsum", stat.getSumSqr());
-                writer.writeDouble("min", stat.getMin());
-                writer.writeDouble("max", stat.getMax());
-                //TODO weighted?
+                writeStatisticsFields(histogram.getStatistics());
 
                 const Histogram& bins = histogram.getHistogram();
                 writer.startRawValue("histbins"); writeVector(bins.getBinLowerBounds());

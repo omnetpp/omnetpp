@@ -134,11 +134,10 @@ void SqliteScalarFileWriter::prepareStatements()
     prepareStatement(add_scalar_stmt, "INSERT INTO scalar (runId, moduleName, scalarName, scalarValue) VALUES (?, ?, ?, ?);");
     prepareStatement(add_scalar_attr_stmt, "INSERT INTO scalarAttr (scalarId, attrName, attrValue) VALUES (?, ?, ?);");
     prepareStatement(add_statistic_stmt,
-            "INSERT INTO statistic (runId, moduleName, statName, "
-            "statCount, "
-            "statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
+            "INSERT INTO statistic (runId, moduleName, statName, isHistogram, "
+            "statCount, statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum"
-            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticAttr (statId, attrName, attrValue) VALUES (?, ?, ?);");
     prepareStatement(add_statistic_bin_stmt, "INSERT INTO histBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
 }
@@ -221,25 +220,26 @@ void SqliteScalarFileWriter::recordScalar(const std::string& componentFullPath, 
     }
 }
 
-sqlite_int64 SqliteScalarFileWriter::writeStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic)
+sqlite_int64 SqliteScalarFileWriter::writeStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, bool isHistogram)
 {
     checkOK(sqlite3_reset(add_statistic_stmt));
     checkOK(sqlite3_bind_int64(add_statistic_stmt, 1, runId));
     checkOK(sqlite3_bind_text(add_statistic_stmt, 2, componentFullPath.c_str(), componentFullPath.size(), SQLITE_STATIC));
     checkOK(sqlite3_bind_text(add_statistic_stmt, 3, name.c_str(), name.size(), SQLITE_STATIC));
-    checkOK(sqlite3_bind_int64(add_statistic_stmt, 4, statistic.getCount()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 5, statistic.getMean()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 6, statistic.getStddev()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 7, statistic.getSum()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 8, statistic.getSumSqr()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 9, statistic.getMin()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 10, statistic.getMax()));
+    checkOK(sqlite3_bind_int(add_statistic_stmt, 4, (int)isHistogram));
+    checkOK(sqlite3_bind_int64(add_statistic_stmt, 5, statistic.getCount()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 6, statistic.getMean()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 7, statistic.getStddev()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 8, statistic.getSum()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 9, statistic.getSumSqr()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 10, statistic.getMin()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 11, statistic.getMax()));
 //TODO
 //    if (statistic->isWeighted()) {
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 11, statistic->getWeights()));
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 12, statistic->getWeightedSum()));
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 13, statistic->getSqrSumWeights()));
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 14, statistic->getWeightedSqrSum()));
+//        checkOK(sqlite3_bind_double(add_statistic_stmt, 12, statistic->getWeights()));
+//        checkOK(sqlite3_bind_double(add_statistic_stmt, 13, statistic->getWeightedSum()));
+//        checkOK(sqlite3_bind_double(add_statistic_stmt, 14, statistic->getSqrSumWeights()));
+//        checkOK(sqlite3_bind_double(add_statistic_stmt, 15, statistic->getWeightedSqrSum()));
 //    }
     checkDone(sqlite3_step(add_statistic_stmt));
     sqlite3_int64 statisticId = sqlite3_last_insert_rowid(db);
@@ -250,7 +250,7 @@ sqlite_int64 SqliteScalarFileWriter::writeStatistic(const std::string& component
 void SqliteScalarFileWriter::recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes)
 {
     Assert(runId != -1); // ensure run data has been written out
-    sqlite3_int64 statisticId = writeStatistic(componentFullPath, name, statistic);
+    sqlite3_int64 statisticId = writeStatistic(componentFullPath, name, statistic, false);
     for (auto it = attributes.begin(); it != attributes.end(); ++it)
         writeStatisticAttr(statisticId, it->first.c_str(), it->second.c_str());
 }
@@ -258,7 +258,7 @@ void SqliteScalarFileWriter::recordStatistic(const std::string& componentFullPat
 void SqliteScalarFileWriter::recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes)
 {
     Assert(runId != -1); // ensure run data has been written out
-    sqlite3_int64 statisticId = writeStatistic(componentFullPath, name, statistic);
+    sqlite3_int64 statisticId = writeStatistic(componentFullPath, name, statistic, true);
     for (auto it = attributes.begin(); it != attributes.end(); ++it)
         writeStatisticAttr(statisticId, it->first.c_str(), it->second.c_str());
     for (auto bin : bins.getBins())

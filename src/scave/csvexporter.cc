@@ -45,7 +45,7 @@ class CsvExporterType : public ExporterType
         virtual std::string getFormatName() const {return "CSV";}
         virtual std::string getDisplayName() const {return "CSV";}
         virtual std::string getDescription() const {return "Export results in CSV format.";}
-        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::HISTOGRAM;}
+        virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "csv"; }
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
@@ -174,12 +174,13 @@ void CsvExporter::setOption(const std::string& key, const std::string& value)
 void CsvExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     int itemTypes = idlist.getItemTypes();
-    bool mixedContent = itemTypes != 0 && itemTypes != ResultFileManager::SCALAR &&
-            itemTypes != ResultFileManager::VECTOR && itemTypes != ResultFileManager::HISTOGRAM;
+    bool mixedContent = itemTypes != 0 &&
+            itemTypes != ResultFileManager::SCALAR && itemTypes != ResultFileManager::VECTOR &&
+            itemTypes != ResultFileManager::STATISTICS && itemTypes != ResultFileManager::HISTOGRAM;
 
     if (mixedContent && !allowMixedContent)
         throw opp_runtime_error("CSV exporter: homogeneous results expected (all scalars, all vectors, "
-                "or all histograms); set allowMixed=true to allow mixed content");
+                "all statistics or all histograms); set allowMixed=true to allow mixed content");
 
     if (fileName == "-")
         csv.setOut(std::cout);
@@ -193,6 +194,10 @@ void CsvExporter::saveResults(const std::string& fileName, ResultFileManager *ma
     if ((itemTypes & ResultFileManager::VECTOR) != 0) {
         if (mixedContent) {csv.writeString("*** VECTORS ***"); csv.writeNewLine();}
         saveVectors(manager, idlist.filterByTypes(ResultFileManager::VECTOR), monitor);
+    }
+    if ((itemTypes & ResultFileManager::STATISTICS) != 0) {
+        if (mixedContent) {csv.writeString("*** SUMMARY STATISTICS ***"); csv.writeNewLine();}
+        saveStatistics(manager, idlist.filterByTypes(ResultFileManager::STATISTICS), monitor);
     }
     if ((itemTypes & ResultFileManager::HISTOGRAM) != 0) {
         if (mixedContent) {csv.writeString("*** HISTOGRAMS ***"); csv.writeNewLine();}
@@ -314,7 +319,7 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
         delete xyArray;
 }
 
-void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+void CsvExporter::saveStatistics(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO use monitor
 
@@ -323,6 +328,54 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
         csv.writeString("run");
         csv.writeString("module");
         csv.writeString("name");
+        csv.writeString("count");
+        csv.writeString("mean");
+        csv.writeString("stddev");
+        csv.writeString("sum");
+        csv.writeString("sqrsum");
+        csv.writeString("min");
+        csv.writeString("max");
+        csv.writeNewLine();
+    }
+
+    // write statistics
+    for (int i = 0; i < (int)idlist.size(); ++i) {
+        const StatisticsResult& statistics = manager->getStatistics(idlist.get(i));
+        csv.writeString(statistics.getRun()->getRunName());
+        csv.writeString(statistics.getModuleName());
+        csv.writeString(statistics.getName());
+        const Statistics& stat = statistics.getStatistics();
+        csv.writeDouble(stat.getCount());
+        csv.writeDouble(stat.getMean());
+        csv.writeDouble(stat.getStddev());
+        csv.writeDouble(stat.getSum());
+        csv.writeDouble(stat.getSumSqr());
+        csv.writeDouble(stat.getMin());
+        csv.writeDouble(stat.getMax());
+        csv.writeNewLine();
+    }
+}
+
+void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+{
+    //TODO use monitor
+
+    bool includeHistogramStatistics = true; //TODO add to options
+
+    // header
+    if (columnNames) {
+        csv.writeString("run");
+        csv.writeString("module");
+        csv.writeString("name");
+        if (includeHistogramStatistics) {
+            csv.writeString("count");
+            csv.writeString("mean");
+            csv.writeString("stddev");
+            csv.writeString("sum");
+            csv.writeString("sqrsum");
+            csv.writeString("min");
+            csv.writeString("max");
+        }
         csv.writeString("row type");
         csv.writeString("data...");
         csv.writeNewLine();
@@ -334,6 +387,16 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
         csv.writeString(histogram.getRun()->getRunName());
         csv.writeString(histogram.getModuleName());
         csv.writeString(histogram.getName());
+        if (includeHistogramStatistics) {
+            const Statistics& stat = histogram.getStatistics();
+            csv.writeDouble(stat.getCount());
+            csv.writeDouble(stat.getMean());
+            csv.writeDouble(stat.getStddev());
+            csv.writeDouble(stat.getSum());
+            csv.writeDouble(stat.getSumSqr());
+            csv.writeDouble(stat.getMin());
+            csv.writeDouble(stat.getMax());
+        }
         csv.writeString("bins");
         for (double d : histogram.getBinLowerBounds())
             csv.writeDouble(d);
@@ -342,6 +405,9 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
         csv.writeString(histogram.getRun()->getRunName());
         csv.writeString(histogram.getModuleName());
         csv.writeString(histogram.getName());
+        if (includeHistogramStatistics)
+            for (int i = 0; i < 7; i++)
+                csv.writeBlank();
         csv.writeString("counters");
         for (double d : histogram.getBinValues())
             csv.writeDouble(d);

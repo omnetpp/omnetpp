@@ -65,6 +65,7 @@ const char SQL_CREATE_TABLES[] =
             "runId         INTEGER NOT NULL REFERENCES run(runId) ON DELETE CASCADE, "
             "moduleName    TEXT NOT NULL, "
             "statName      TEXT NOT NULL, "
+            "isHistogram   INTEGER NOT NULL, "  //actually, BOOL
             "statCount     INTEGER NOT NULL, "
             "statMean      REAL, "
             "statStddev    REAL, "  //TODO why store computed fields? why the "stat" prefix?

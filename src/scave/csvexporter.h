@@ -73,6 +73,7 @@ class SCAVE_API CsvExporter : public Exporter
     protected:
         virtual void saveScalars(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
         virtual void saveVectors(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
+        virtual void saveStatistics(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
         virtual void saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
 };
 

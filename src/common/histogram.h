@@ -36,6 +36,7 @@ class COMMON_API Histogram {
     public:
         Histogram() {}
         Histogram(const Histogram& other) : bins(other.bins) {}
+        void clear() {bins.clear();}
 
         void reserveBins(int expectedNumberOfBins) {bins.reserve(expectedNumberOfBins);}
         void addBin(double lowerBound, double count = 0);

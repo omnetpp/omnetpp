@@ -50,26 +50,25 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
 {
   protected:
     struct ParseContext {
-        ResultFile *fileRef; /*in*/
-        const char *fileName; /*in*/
-        int64_t lineNo; /*inout*/
-        FileRun *fileRunRef; /*inout*/
-        // references to the result items which attributes should be added to
-        int lastResultItemType; /*inout*/
-        int lastResultItemIndex; /*inout*/
-        // collected fields of the histogram to be created when the
-        // first 'bin' is parsed
-        std::string moduleName;
-        std::string statisticName;
-        long count;
-        double min, max, sum, sumSqr;
+        ResultFile *fileRef = nullptr;
+        const char *fileName = nullptr;
+        int64_t lineNo = 0;
+        FileRun *fileRunRef = nullptr;
 
-        ParseContext(ResultFile* fileRef);
-        void clearHistogram();
+        enum {NONE, RUN, SCALAR, VECTOR, STATISTICS, HISTOGRAM} currentItemType = NONE;
+        std::string moduleName;
+        std::string resultName;
+        StringMap attrs;
+        int vectorId = -1;
+        std::string vectorColumns; //TODO switch to 'bool hasEventNumber'
+        double scalarValue;
+        Statistics stats;
+        Histogram bins;
     };
   protected:
     void processLine(char **vec, int numTokens, ParseContext& ctx);
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
+    void flush(ParseContext& ctx);
   public:
     OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar) : IResultFileLoader(resultFileManagerPar) {}
     virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) override;

@@ -83,6 +83,7 @@ class SCAVE_API IDList
         int getItemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllVectors() const;
+        bool areAllStatistics() const;
         bool areAllHistograms() const;
 
         // support for range-based for loops

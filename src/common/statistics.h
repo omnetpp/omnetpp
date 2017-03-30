@@ -53,6 +53,12 @@ class COMMON_API Statistics
         double getStddev() const { return sqrt(getVariance()); }
         double getVariance() const;
 
+        void setCount(long count) {this->count = count;}
+        void setMax(double max) {this->max = max;}
+        void setMin(double min) {this->min = min;}
+        void setSum(double sum) {this->sum = sum;}
+        void setSumSqr(double sumSqr) {this->sumSqr = sumSqr;}
+
         void reset() { count = 0; min = POSITIVE_INFINITY; max = NEGATIVE_INFINITY; sum = 0.0; sumSqr = 0.0; }
         void collect(double value);
         void adjoin(const Statistics& other);

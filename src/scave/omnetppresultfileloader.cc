@@ -60,24 +60,6 @@ namespace scave {
 #define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, ctx.fileName, ctx.lineNo);
 
 
-OmnetppResultFileLoader::ParseContext::ParseContext(ResultFile* fileRef) :
-        fileRef(fileRef), fileName(fileRef->getFilePath().c_str()), lineNo(0), fileRunRef(nullptr),
-        lastResultItemType(0), lastResultItemIndex(-1), count(0),
-        min(POSITIVE_INFINITY), max(NEGATIVE_INFINITY), sum(0.0), sumSqr(0.0)
-{
-}
-
-void OmnetppResultFileLoader::ParseContext::clearHistogram()
-{
-    moduleName.clear();
-    statisticName.clear();
-    count = 0;
-    min = POSITIVE_INFINITY;
-    max = NEGATIVE_INFINITY;
-    sum = 0.0;
-    sumSqr = 0.0;
-}
-
 void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContext& ctx)
 {
     ++ctx.lineNo;
@@ -88,6 +70,8 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
 
     // process "run" lines
     if (vec[0][0] == 'r' && !strcmp(vec[0], "run")) {
+        flush(ctx); // last result item in previous run
+
         CHECK(numTokens == 2, "incorrect 'run' line -- run <runID> expected");
 
         // "run" line, format: run <runName>
@@ -97,13 +81,11 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
             // not yet: add it
             runRef = resultFileManager->addRun(vec[1]);
         }
+
         // associate Run with this file
         CHECK(resultFileManager->getFileRun(ctx.fileRef, runRef) == nullptr, "non-unique runId in the file");
+        ctx.currentItemType = ParseContext::RUN;
         ctx.fileRunRef = resultFileManager->addFileRun(ctx.fileRef, runRef);
-
-        ctx.lastResultItemType = 0;
-        ctx.lastResultItemIndex = -1;
-        ctx.clearHistogram();
         return;
     }
 
@@ -119,89 +101,80 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
     CHECK(ctx.fileRunRef != nullptr, "line must be preceded by a 'run' line");
 
     if (vec[0][0] == 's' && !strcmp(vec[0], "scalar")) {
+        flush(ctx);
+
         // syntax: "scalar <module> <scalarname> <value>"
+        CHECK(ctx.currentItemType != ParseContext::NONE, "stray 'scalar' line, must be under a 'run'");
         CHECK(numTokens == 4, "incorrect 'scalar' line -- scalar <module> <scalarname> <value> expected");
 
         double value;
         CHECK(parseDouble(vec[3], value), "invalid value column");
 
-        ctx.lastResultItemType = ResultFileManager::SCALAR;
-        ctx.lastResultItemIndex = resultFileManager->addScalar(ctx.fileRunRef, vec[1], vec[2], value, false);
-        ctx.clearHistogram();
+        ctx.currentItemType = ParseContext::SCALAR;
+        ctx.moduleName = vec[1];
+        ctx.resultName = vec[2];
+        ctx.scalarValue = value;
     }
     else if (vec[0][0] == 'v' && !strcmp(vec[0], "vector")) {
+        flush(ctx);
+
         // syntax: "vector <id> <module> <vectorname> [<columns>]"
+        CHECK(ctx.currentItemType != ParseContext::NONE, "stray 'vector' line, must be under a 'run'");
         CHECK(numTokens == 4 || numTokens == 5, "incorrect 'vector' line -- vector <id> <module> <vectorname> [<columns>] expected");
+
         int vectorId;
         CHECK(parseInt(vec[1], vectorId), "invalid vector id in vector definition");
         const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
 
-        ctx.lastResultItemType = ResultFileManager::VECTOR;
-        ctx.lastResultItemIndex = resultFileManager->addVector(ctx.fileRunRef, vectorId, vec[2], vec[3], columns);
-        ctx.clearHistogram();
+        ctx.currentItemType = ParseContext::VECTOR;
+        ctx.moduleName = vec[2];
+        ctx.resultName = vec[3];
+        ctx.vectorColumns = columns;
     }
     else if (vec[0][0] == 's' && !strcmp(vec[0], "statistic")) {
+        flush(ctx);
+
         // syntax: "statistic <module> <statisticname>"
+        CHECK(ctx.currentItemType != ParseContext::NONE, "stray 'statistic' line, must be under a 'run'");
         CHECK(numTokens == 3, "incorrect 'statistic' line -- statistic <module> <statisticname> expected");
 
-        ctx.clearHistogram();
+        ctx.currentItemType = ParseContext::STATISTICS;
         ctx.moduleName = vec[1];
-        ctx.statisticName = vec[2];
-        ctx.lastResultItemType = ResultFileManager::SCALAR;  // add scalars first
-        ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size();
-
-        CHECK(!ctx.moduleName.empty(), "missing module name");
-        CHECK(!ctx.statisticName.empty(), "missing statistics name");
+        ctx.resultName = vec[2];
     }
     else if (vec[0][0] == 'f' && !strcmp(vec[0], "field")) {
         // syntax: "field <name> <value>"
+        CHECK(ctx.currentItemType == ParseContext::STATISTICS, "stray 'field' line, must be under a 'statistic'");
         CHECK(numTokens == 3, "incorrect 'field' line -- field <name> <value> expected");
 
         std::string fieldName = vec[1];
         double value;
         CHECK(parseDouble(vec[2], value), "invalid scalar file: invalid field value");
 
-        CHECK(!ctx.moduleName.empty() && !ctx.statisticName.empty(),
-                "invalid scalar file: missing statistics declaration");
-        std::string scalarName = ctx.statisticName + ":" + fieldName;
-
-        // set statistics field in the current histogram
-        bool isField = true;
         if (fieldName == "count")
-            ctx.count = (long)value;
+            ctx.stats.setCount((long)value);
         else if (fieldName == "min")
-            ctx.min = value;
+            ctx.stats.setMin(value);
         else if (fieldName == "max")
-            ctx.max = value;
+            ctx.stats.setMax(value);
         else if (fieldName == "sum")
-            ctx.sum = value;
+            ctx.stats.setSum(value);
         else if (fieldName == "sqrsum")
-            ctx.sumSqr = value;
-        else if (fieldName != "mean" && fieldName != "stddev")
-            isField = false;
-
-        resultFileManager->addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), scalarName.c_str(), value, isField);
+            ctx.stats.setSumSqr(value);
     }
     else if (vec[0][0] == 'b' && !strcmp(vec[0], "bin")) {
         // syntax: "bin <lower_bound> <value>"
+        if (ctx.currentItemType == ParseContext::STATISTICS)
+            ctx.currentItemType = ParseContext::HISTOGRAM;
+        CHECK(ctx.currentItemType == ParseContext::HISTOGRAM, "stray 'bin' line, must be under a 'statistic'");
         CHECK(numTokens == 3, "incorrect 'bin' line -- bin <lowerBound> <value> expected");
-        double lower_bound, value;
-        CHECK(parseDouble(vec[1], lower_bound), "invalid lower bound");
+
+        double lowerBound, value;
+        CHECK(parseDouble(vec[1], lowerBound), "invalid lower bound");
         CHECK(parseDouble(vec[2], value), "invalid bin value");
 
-        if (ctx.lastResultItemType != ResultFileManager::HISTOGRAM) {
-            CHECK(ctx.lastResultItemType == ResultFileManager::SCALAR && !ctx.moduleName.empty() && !ctx.statisticName.empty(),
-                    "stray 'bin' line (not preceded by a 'statistic' line)");
-            Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
-            const ScalarResults& scalars = ctx.fileRef->scalarResults;
-            const StringMap& attrs = ctx.lastResultItemIndex < (int)scalars.size() ?
-                scalars[ctx.lastResultItemIndex].getAttributes() : StringMap();
-            ctx.lastResultItemType = ResultFileManager::HISTOGRAM;
-            ctx.lastResultItemIndex = resultFileManager->addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat, attrs);
-        }
-        HistogramResult& histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
         try {
-            histogram.addBin(lower_bound, value);
+            ctx.bins.addBin(lowerBound, value);
         }
         catch (std::exception& e) {
             throw ResultFileFormatException(e.what(), ctx.fileName, ctx.lineNo);
@@ -209,49 +182,35 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
     }
     else if (vec[0][0] == 'a' && !strcmp(vec[0], "attr")) {
         // syntax: "attr <name> <value>"
+        CHECK(ctx.currentItemType != ParseContext::NONE, "stray 'attr' line");
         CHECK(numTokens == 3, "incorrect 'attr' line -- attr <name> <value> expected");
+        Assert(ctx.fileRunRef != nullptr);
 
         std::string attrName = vec[1];
         std::string attrValue = vec[2];
 
-        if (ctx.lastResultItemType == 0) {  // run attribute
+        if (ctx.currentItemType == ParseContext::RUN) {
             // store attribute
             StringMap& attributes = ctx.fileRunRef->runRef->attributes;
-            StringMap::iterator oldPairRef = attributes.find(attrName);
-            CHECK(oldPairRef == attributes.end() || oldPairRef->second == attrValue,
-                    "Value of run attribute conflicts with previously loaded value");
             attributes[attrName] = attrValue;
 
             // the "runNumber" attribute is also stored separately
             if (attrName == "runNumber")
                 CHECK(parseInt(vec[2], ctx.fileRunRef->runRef->runNumber), "invalid result file: int value expected as runNumber");
         }
-        else if (ctx.lastResultItemIndex >= 0) {  // resultItem attribute
-            if (ctx.lastResultItemType == ResultFileManager::SCALAR)
-                for (int i = ctx.lastResultItemIndex; i < (int)ctx.fileRef->scalarResults.size(); ++i) {
-                    ctx.fileRef->scalarResults[i].setAttribute(attrName, attrValue);
-                }
-            else if (ctx.lastResultItemType == ResultFileManager::VECTOR)
-                for (int i = ctx.lastResultItemIndex; i < (int)ctx.fileRef->vectorResults.size(); ++i) {
-                    ctx.fileRef->vectorResults[i].setAttribute(attrName, attrValue);
-                }
-            else if (ctx.lastResultItemType == ResultFileManager::HISTOGRAM)
-                for (int i = ctx.lastResultItemIndex; i < (int)ctx.fileRef->histogramResults.size(); ++i) {
-                    ctx.fileRef->histogramResults[i].setAttribute(attrName, attrValue);
-                }
+        else {
+            ctx.attrs[attrName] = attrValue;
         }
     }
     else if (vec[0][0] == 'p' && !strcmp(vec[0], "param")) {
         // syntax: "param <namePattern> <value>"
+        CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'param' line, must be under a 'run' line");
         CHECK(numTokens == 3, "incorrect 'param' line -- param <namePattern> <value> expected");
 
         // store module param
         std::string paramName = vec[1];
         std::string paramValue = vec[2];
         StringMap& params = ctx.fileRunRef->runRef->moduleParams;
-        StringMap::iterator oldPairRef = params.find(paramName);
-        CHECK(oldPairRef == params.end() || oldPairRef->second == paramValue,
-                "Value of module parameter conflicts with previously loaded value");
         params[paramName] = paramValue;
     }
     else if (opp_isdigit(vec[0][0]) && numTokens >= 3) {
@@ -261,9 +220,45 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
     }
     else {
         // ignore unknown lines and vector data lines
-        // ctx.fileRef->numUnrecognizedLines++; -- counter not used any more
         CHECK(false, "unrecognized line");
     }
+}
+
+void OmnetppResultFileLoader::flush(ParseContext& ctx)
+{
+    // add item to results
+    switch (ctx.currentItemType) {
+    case ParseContext::NONE:
+        break;
+    case ParseContext::RUN:
+        //TODO bring it here too
+        break;
+    case ParseContext::SCALAR:
+        resultFileManager->addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.scalarValue, false);
+        break;
+    case ParseContext::VECTOR:
+        resultFileManager->addVector(ctx.fileRunRef, ctx.vectorId,ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.vectorColumns.c_str());
+        break;
+    case ParseContext::STATISTICS:
+        resultFileManager->addStatistics(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.stats, ctx.attrs);
+        break;
+    case ParseContext::HISTOGRAM:
+        resultFileManager->addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.stats, ctx.bins, ctx.attrs);
+        break;
+    default:
+        throw opp_runtime_error("invalid result type");
+    }
+
+    // reset
+    if (ctx.currentItemType != ParseContext::NONE)
+        ctx.currentItemType = ParseContext::RUN;
+    ctx.moduleName.clear();
+    ctx.resultName.clear();
+    ctx.vectorId = -1;
+    ctx.scalarValue = NaN;
+    ctx.attrs.clear();
+    ctx.stats.reset();
+    ctx.bins.clear();
 }
 
 ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
@@ -284,13 +279,16 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
             FileReader freader(fileSystemFileName);
             char *line;
             LineTokenizer tokenizer;
-            ParseContext ctx(fileRef);
+            ParseContext ctx;
+            ctx.fileRef = fileRef;
+            ctx.fileName = fileRef->getFilePath().c_str();
             while ((line = freader.getNextLineBufferPointer()) != nullptr) {
                 int len = freader.getCurrentLineLength();
                 int numTokens = tokenizer.tokenize(line, len);
                 char **tokens = tokenizer.tokens();
                 processLine(tokens, numTokens, ctx);
             }
+            flush(ctx); // last result item
         }
     }
     catch (std::exception&) {
@@ -324,11 +322,12 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
     runRef->moduleParams = index->run.moduleParams;
     FileRun *fileRunRef = resultFileManager->addFileRun(fileRef, runRef);
 
+    const StringMap emptyAttrs;
     for (int i = 0; i < numOfVectors; ++i) {
         const VectorData *vectorRef = index->getVectorAt(i);
         assert(vectorRef);
 
-        VectorResult vectorResult(fileRunRef, vectorRef->moduleName, vectorRef->name, vectorRef->vectorId, vectorRef->columns);
+        VectorResult vectorResult(fileRunRef, vectorRef->moduleName, vectorRef->name, emptyAttrs, vectorRef->vectorId, vectorRef->columns);
         vectorResult.setAttributes(vectorRef->attributes);
         vectorResult.startEventNum = vectorRef->startEventNum;
         vectorResult.endEventNum = vectorRef->endEventNum;

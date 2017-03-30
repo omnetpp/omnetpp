@@ -147,6 +147,7 @@ void SqliteResultFileLoader::loadScalars()
 {
     typedef std::map<sqlite3_int64,int> SqliteScalarIdToScalarIdx;
     SqliteScalarIdToScalarIdx sqliteScalarIdToScalarIdx;
+    const StringMap emptyAttrs;
 
     prepareStatement("SELECT scalarId, runId, moduleName, scalarName, scalarValue FROM scalar;");
     for (int row=1; ; row++) {
@@ -159,7 +160,7 @@ void SqliteResultFileLoader::loadScalars()
         std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
         std::string scalarName = (const char *)sqlite3_column_text(stmt, 3);
         double scalarValue = sqlite3ColumnDouble(stmt,4);        // converts NULL to NaN
-        int i = resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), scalarName.c_str(), scalarValue, false);
+        int i = resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), scalarName.c_str(), emptyAttrs, scalarValue, false);
         sqliteScalarIdToScalarIdx[scalarId] = i;
     }
     finalizeStatement();
@@ -185,11 +186,11 @@ void SqliteResultFileLoader::loadScalars()
 
 void SqliteResultFileLoader::loadHistograms()
 {
-    Statistics stat;
-    StringMap attrs;
+    std::map<sqlite3_int64,int> sqliteStatIdToStatisticsIdx;
     std::map<sqlite3_int64,int> sqliteStatIdToHistogramIdx;
+    const StringMap emptyAttrs;
 
-    prepareStatement("SELECT statId, runId, moduleName, statName, statCount, "
+    prepareStatement("SELECT statId, runId, moduleName, statName, isHistogram, statCount, "
             "statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum "
             "FROM statistic;");
@@ -202,29 +203,25 @@ void SqliteResultFileLoader::loadHistograms()
         sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
         std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
         std::string statName = (const char *)sqlite3_column_text(stmt, 3);
-        sqlite3_int64 statCount = sqlite3_column_int64(stmt, 4);
-        double statMean = sqlite3ColumnDouble(stmt, 5); // can be computed from the others
-        double statStddev = sqlite3ColumnDouble(stmt, 6); // can be computed from the others
-        double statSum = sqlite3ColumnDouble(stmt, 7);
-        double statSqrsum = sqlite3ColumnDouble(stmt, 8);
-        double statMin = sqlite3ColumnDouble(stmt, 9);
-        double statMax = sqlite3ColumnDouble(stmt, 10);
+        int isHistogram = sqlite3_column_int(stmt, 4);
+        sqlite3_int64 statCount = sqlite3_column_int64(stmt, 5);
+        double statMean = sqlite3ColumnDouble(stmt, 6); // can be computed from the others
+        double statStddev = sqlite3ColumnDouble(stmt, 7); // can be computed from the others
+        double statSum = sqlite3ColumnDouble(stmt, 8);
+        double statSqrsum = sqlite3ColumnDouble(stmt, 9);
+        double statMin = sqlite3ColumnDouble(stmt, 10);
+        double statMax = sqlite3ColumnDouble(stmt, 11);
         //TODO make Scave understand weighted statistics:
-        //double statWeights = sqlite3ColumnDouble(stmt, 11);
-        //double statWeightedsum = sqlite3ColumnDouble(stmt, 12);
-        //double statSqrSumWeights = sqlite3ColumnDouble(stmt, 13);
-        //double statWeightedSqrSum = sqlite3ColumnDouble(stmt, 14);
+        //double statWeights = sqlite3ColumnDouble(stmt, 12);
+        //double statWeightedsum = sqlite3ColumnDouble(stmt, 13);
+        //double statSqrSumWeights = sqlite3ColumnDouble(stmt, 14);
+        //double statWeightedSqrSum = sqlite3ColumnDouble(stmt, 15);
 
         Statistics stat(statCount, statMin, statMax, statSum, statSqrsum);
-        sqliteStatIdToHistogramIdx[statId] = resultFileManager->addHistogram(fileRunMap.at(runId), moduleName.c_str(), statName.c_str(), stat, StringMap());
-
-        resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":count").c_str(), statCount, true);
-        resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":sum").c_str(), statSum, true);
-        resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":sqrsum").c_str(), statSqrsum, true);
-        resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":min").c_str(), statMin, true);
-        resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":max").c_str(), statMax, true);
-        resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":mean").c_str(), statMean, true);
-        resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), (statName+":stddev").c_str(), statStddev, true);
+        if (isHistogram)
+            sqliteStatIdToHistogramIdx[statId] = resultFileManager->addHistogram(fileRunMap.at(runId), moduleName.c_str(), statName.c_str(), stat, Histogram(), emptyAttrs);
+        else
+            sqliteStatIdToStatisticsIdx[statId] = resultFileManager->addStatistics(fileRunMap.at(runId), moduleName.c_str(), statName.c_str(), stat, emptyAttrs);
     }
     finalizeStatement();
 
@@ -238,11 +235,20 @@ void SqliteResultFileLoader::loadHistograms()
         sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
         std::string attrName = (const char *)sqlite3_column_text(stmt, 2);
         std::string attrValue = (const char *)sqlite3_column_text(stmt, 3);
+
         auto it = sqliteStatIdToHistogramIdx.find(statId);
-        if (it == sqliteStatIdToHistogramIdx.end())
-            error("Invalid statId in statisticAttr table");
-        HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteStatIdToHistogramIdx.at(statId));
-        hist.setAttribute(attrName, attrValue);
+        if (it != sqliteStatIdToHistogramIdx.end()) {
+            HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteStatIdToHistogramIdx.at(statId));
+            hist.setAttribute(attrName, attrValue);
+            continue;
+        }
+        it = sqliteStatIdToStatisticsIdx.find(statId);
+        if (it != sqliteStatIdToStatisticsIdx.end()) {
+            StatisticsResult& stats = fileRunMap.at(runId)->fileRef->statisticsResults.at(sqliteStatIdToStatisticsIdx.at(statId));
+            stats.setAttribute(attrName, attrValue);
+            continue;
+        }
+        error("Invalid statId in statisticAttr table");
     }
     finalizeStatement();
 
@@ -275,6 +281,7 @@ void SqliteResultFileLoader::loadVectors()
             "    startEventNum, endEventNum, startSimtimeRaw, endSimtimeRaw, simtimeExp "
             "FROM vector LEFT JOIN run USING (runId);");
 
+    const StringMap emptyAttrs;
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
@@ -294,7 +301,7 @@ void SqliteResultFileLoader::loadVectors()
         sqlite3_int64 startSimtimeRaw = sqlite3_column_int64(stmt, 11);
         sqlite3_int64 endSimtimeRaw = sqlite3_column_int64(stmt, 12);
         int simtimeExp = sqlite3_column_int(stmt, 13);
-        int i = resultFileManager->addVector(fileRunMap.at(runId), vectorId, moduleName.c_str(), vectorName.c_str(), "ETV");
+        int i = resultFileManager->addVector(fileRunMap.at(runId), vectorId, moduleName.c_str(), vectorName.c_str(), emptyAttrs, "ETV");
         sqliteVectorIdToVectorIdx[vectorId] = i;
         VectorResult& vec = fileRunMap.at(runId)->fileRef->vectorResults.at(i);
         vec.stat = Statistics(count, vmin, vmax, vsum, vsumsqr);

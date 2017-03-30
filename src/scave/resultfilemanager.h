@@ -97,9 +97,8 @@ public: //TODO private
  */
 class SCAVE_API ResultItem
 {
-    friend class OmnetppResultFileLoader;
-    friend class SqliteResultFileLoader;
     friend class ResultFileManager;
+    friend class SqliteResultFileLoader;
 
   public:
     enum Type { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
@@ -111,8 +110,12 @@ class SCAVE_API ResultItem
     StringMap attributes; // metadata in key/value form
     IComputation *computation;
 
+  protected:
+    ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs);
+    void setAttributes(const StringMap& attrs) {attributes = attrs;}
+    void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
+
   public:
-    ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name);
     ResultItem(const ResultItem& o)
         : fileRunRef(o.fileRunRef), moduleNameRef(o.moduleNameRef), nameRef(o.nameRef),
           attributes(o.attributes), computation(o.computation ? o.computation->dup() : nullptr) {}
@@ -147,9 +150,6 @@ class SCAVE_API ResultItem
     EnumType* getEnum() const;
 
     bool isComputed() const { return computation != nullptr; }
-
-    void setAttributes(const StringMap& attrs) {attributes = attrs;}
-    void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
 };
 
 /**
@@ -157,13 +157,14 @@ class SCAVE_API ResultItem
  */
 class SCAVE_API ScalarResult : public ResultItem
 {
+    friend class ResultFileManager;
   private:
     double value;
     bool isField_; // whether this scalar was created by exploding a "statistic" to its fields
-
+  protected:
+    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, bool isField) :
+        ResultItem(fileRun, moduleName, name, attrs), value(value), isField_(isField) {}
   public:
-    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, double value, bool isField) :
-        ResultItem(fileRun, moduleName, name), value(value), isField_(isField) {}
     double getValue() const {return value;}
     bool isField() const {return isField_;}
 };
@@ -172,24 +173,21 @@ class SCAVE_API ScalarResult : public ResultItem
  * Represents an output vector. This is only the declaration,
  * actual vector data are not kept in memory.
  */
-// TODO: there's a missing superclass between vectors and histograms that provides statistics, see the various sort<foo>By<bar> methods we need to make it work
 class SCAVE_API VectorResult : public ResultItem
 {
+    friend class ResultFileManager;
     friend class OmnetppResultFileLoader;
     friend class SqliteResultFileLoader;
-    friend class ResultFileManager;
-
   private:
     int vectorId;
     std::string columns;
     eventnumber_t startEventNum, endEventNum;
     simultime_t startTime, endTime;
     Statistics stat;
-
+  protected:
+    VectorResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, int vectorId, const std::string& columns) :
+        ResultItem(fileRun, moduleName, name, attrs), vectorId(vectorId), columns(columns), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
   public:
-    VectorResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, int vectorId, const std::string& columns) :
-        ResultItem(fileRun, moduleName, name), vectorId(vectorId), columns(columns), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
-
     int getVectorId() const {return vectorId;}
     const std::string& getColumns() const {return columns;}
     const Statistics& getStatistics() const {return stat;}
@@ -206,31 +204,46 @@ class SCAVE_API VectorResult : public ResultItem
 };
 
 /**
- * Represents a histogram.
+ * Represents summary statistics of variable
  */
 // TODO: there's a missing superclass between vectors and histograms that provides statistics, see the various sort<foo>By<bar> methods we need to make it work
-class SCAVE_API HistogramResult : public ResultItem
+class SCAVE_API StatisticsResult : public ResultItem
 {
+    friend class ResultFileManager;
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
   private:
     Statistics stat; //TODO weighted
-    std::vector<double> bins;
-    std::vector<double> values;
-
+  protected:
+    StatisticsResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, const Statistics& stat) :
+        ResultItem(fileRun, moduleName, name, attrs), stat(stat) {}
   public:
-    HistogramResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const Statistics& stat) :
-        ResultItem(fileRun, moduleName, name), stat(stat) {}
+    const Statistics& getStatistics() const {return stat;}
+};
 
-    const Statistics& getStatistics() const { return stat; }
-    Histogram getHistogram() const;
-    const std::vector<double>& getBinLowerBounds() const {return bins;}
-    const std::vector<double>& getBinValues() const {return values;}
-
-    void addBin(double lower_bound, double value);
-
+/**
+ * Represents a histogram.
+ */
+class SCAVE_API HistogramResult : public StatisticsResult
+{
+    friend class ResultFileManager;
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
+  private:
+    Histogram bins;
+  protected:
+    HistogramResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, const Statistics& stat, const Histogram& bins) :
+        StatisticsResult(fileRun, moduleName, name, attrs, stat), bins(bins) {}
+    void addBin(double lowerBound, double count);
+  public:
+    const Histogram& getHistogram() const {return bins;}
+    const std::vector<double> getBinLowerBounds() const {return bins.getBinLowerBounds();}
+    const std::vector<double> getBinValues() const {return bins.getBinValues();}
 };
 
 typedef std::vector<ScalarResult> ScalarResults;
 typedef std::vector<VectorResult> VectorResults;
+typedef std::vector<StatisticsResult> StatisticsResults;
 typedef std::vector<HistogramResult> HistogramResults;
 
 typedef std::vector<Run*> RunList;
@@ -261,6 +274,7 @@ class SCAVE_API ResultFile
     bool computed;
     ScalarResults scalarResults;
     VectorResults vectorResults;
+    StatisticsResults statisticsResults;
     HistogramResults histogramResults;
 
   public:
@@ -373,7 +387,7 @@ class SCAVE_API ResultFileManager
 #endif
 
   public:
-    enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
+    enum ResultType {SCALAR=1, VECTOR=2, STATISTICS=4, HISTOGRAM=8}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
     // ID: 1 bit computed, 1 bit field, 6 bit type, 24 bit fileid, 32 bit pos
@@ -392,9 +406,11 @@ class SCAVE_API ResultFileManager
     Run *addRun(const std::string& runName, bool computed=false);
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
-    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value, bool isField);
-    int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
-    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const StringMap& attrs);
+    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, const StringMap& attrs, double value, bool isField);
+    int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns);
+    int addStatistics(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat, const StringMap& attrs);
+    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
+    void addStatisticsFieldsAsScalars(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat);
 
     ResultFile *getFileForID(ID id) const; // checks for nullptr
 
@@ -405,6 +421,7 @@ class SCAVE_API ResultFileManager
     const ResultItem& uncheckedGetItem(ID id) const;
     const ScalarResult& uncheckedGetScalar(ID id) const;
     const VectorResult& uncheckedGetVector(ID id) const;
+    const StatisticsResult& uncheckedGetStatistics(ID id) const;
     const HistogramResult& uncheckedGetHistogram(ID id) const;
 
   public:
@@ -429,8 +446,9 @@ class SCAVE_API ResultFileManager
     const ResultItem& getItem(ID id) const;
     const ScalarResult& getScalar(ID id) const;
     const VectorResult& getVector(ID id) const;
+    const StatisticsResult& getStatistics(ID id) const;
     const HistogramResult& getHistogram(ID id) const;
-    static int getTypeOf(ID id) {return _type(id);} // SCALAR/VECTOR/HISTOGRAM
+    static int getTypeOf(ID id) {return _type(id);} // SCALAR/VECTOR/STATISTICS/HISTOGRAM
 
     bool isStaleID(ID id) const;
     bool hasStaleID(const IDList& ids) const;
@@ -453,10 +471,12 @@ class SCAVE_API ResultFileManager
     // getting lists of data items
     IDList getAllScalars(bool includeComputed = false, bool includeFields = true) const;
     IDList getAllVectors(bool includeComputed = false) const;
+    IDList getAllStatistics(bool includeComputed = false) const;
     IDList getAllHistograms(bool includeComputed = false) const;
     IDList getAllItems(bool includeComputed = false, bool includeFields = true) const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
+    IDList getStatisticsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
 
     /**
@@ -499,7 +519,7 @@ class SCAVE_API ResultFileManager
     // computedScalars
     ResultFile *getComputedScalarFile() const { return computedScalarFile; }
     IDList getComputedScalarIDs(const IComputation *node) const;
-    ID addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap& attributes, IComputation *node);
+    ID addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap& runAttributes, IComputation *node);
     void clearComputedScalars();
 
     /**
@@ -545,6 +565,7 @@ inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
     {
         case SCALAR: return fileList[_fileid(id)]->scalarResults[_pos(id)];
         case VECTOR: return fileList[_fileid(id)]->vectorResults[_pos(id)];
+        case STATISTICS: return fileList[_fileid(id)]->statisticsResults[_pos(id)];
         case HISTOGRAM: return fileList[_fileid(id)]->histogramResults[_pos(id)];
         default: throw opp_runtime_error("ResultFileManager: invalid ID: wrong type");
     }
@@ -558,6 +579,11 @@ inline const ScalarResult& ResultFileManager::uncheckedGetScalar(ID id) const
 inline const VectorResult& ResultFileManager::uncheckedGetVector(ID id) const
 {
     return fileList[_fileid(id)]->vectorResults[_pos(id)];
+}
+
+inline const StatisticsResult& ResultFileManager::uncheckedGetStatistics(ID id) const
+{
+    return fileList[_fileid(id)]->statisticsResults[_pos(id)];
 }
 
 inline const HistogramResult& ResultFileManager::uncheckedGetHistogram(ID id) const

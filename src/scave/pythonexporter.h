@@ -42,6 +42,7 @@ class SCAVE_API PythonExporter : public Exporter
 
     protected:
         void writeStringMap(const std::string& key, const StringMap& attrs);
+        void writeStatisticsFields(const Statistics& stat);
         void writeVector(const std::vector<double>& v);
         void writeX(XYArray *array);
         void writeY(XYArray *array);

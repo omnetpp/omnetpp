@@ -210,6 +210,7 @@ class CmpBase : public std::binary_function<ID, ID, bool> {
        const ResultItem& uncheckedGetItem(ID id) const { return mgr->uncheckedGetItem(id); }
        const ScalarResult& uncheckedGetScalar(ID id) const { return mgr->uncheckedGetScalar(id); }
        const VectorResult& uncheckedGetVector(ID id) const { return mgr->uncheckedGetVector(id); }
+       const StatisticsResult& uncheckedGetStatistics(ID id) const { return mgr->uncheckedGetStatistics(id); }
        const HistogramResult& uncheckedGetHistogram(ID id) const { return mgr->uncheckedGetHistogram(id); }
     public:
         CmpBase(ResultFileManager *m) {mgr = m;}
@@ -269,7 +270,8 @@ CMP(FileNameLess, less(uncheckedGetItem(a).getFile()->getFileName(), uncheckedGe
 CMP(RunLess, less(uncheckedGetItem(a).getRun()->getRunName(), uncheckedGetItem(b).getRun()->getRunName()))
 CMP(ModuleLess, less(uncheckedGetItem(a).getModuleName(), uncheckedGetItem(b).getModuleName()))
 CMP(NameLess, less(uncheckedGetItem(a).getName(), uncheckedGetItem(b).getName()))
-CMP(ValueLess, uncheckedGetScalar(a).getValue() < uncheckedGetScalar(b).getValue())
+CMP(ScalarValueLess, uncheckedGetScalar(a).getValue() < uncheckedGetScalar(b).getValue())
+
 CMP(VectorIdLess, uncheckedGetVector(a).getVectorId() < uncheckedGetVector(b).getVectorId())
 CMP(VectorCountLess, uncheckedGetVector(a).getStatistics().getCount() < uncheckedGetVector(b).getStatistics().getCount())
 CMP(VectorMeanLess, uncheckedGetVector(a).getStatistics().getMean() < uncheckedGetVector(b).getStatistics().getMean())
@@ -279,6 +281,14 @@ CMP(VectorMaxLess, uncheckedGetVector(a).getStatistics().getMax() < uncheckedGet
 CMP(VectorVarianceLess, uncheckedGetVector(a).getStatistics().getVariance() < uncheckedGetVector(b).getStatistics().getVariance())
 CMP(StartTimeLess, uncheckedGetVector(a).getStartTime() < uncheckedGetVector(b).getStartTime())
 CMP(EndTimeLess, uncheckedGetVector(a).getEndTime() < uncheckedGetVector(b).getEndTime())
+
+CMP(StatisticsCountLess, uncheckedGetStatistics(a).getStatistics().getCount() < uncheckedGetStatistics(b).getStatistics().getCount())
+CMP(StatisticsMeanLess, uncheckedGetStatistics(a).getStatistics().getMean() < uncheckedGetStatistics(b).getStatistics().getMean())
+CMP(StatisticsStddevLess, uncheckedGetStatistics(a).getStatistics().getStddev() < uncheckedGetStatistics(b).getStatistics().getStddev())
+CMP(StatisticsMinLess, uncheckedGetStatistics(a).getStatistics().getMin() < uncheckedGetStatistics(b).getStatistics().getMin())
+CMP(StatisticsMaxLess, uncheckedGetStatistics(a).getStatistics().getMax() < uncheckedGetStatistics(b).getStatistics().getMax())
+CMP(StatisticsVarianceLess, uncheckedGetStatistics(a).getStatistics().getVariance() < uncheckedGetStatistics(b).getStatistics().getVariance())
+
 CMP(HistogramCountLess, uncheckedGetHistogram(a).getStatistics().getCount() < uncheckedGetHistogram(b).getStatistics().getCount())
 CMP(HistogramMeanLess, uncheckedGetHistogram(a).getStatistics().getMean() < uncheckedGetHistogram(b).getStatistics().getMean())
 CMP(HistogramStddevLess, uncheckedGetHistogram(a).getStatistics().getStddev() < uncheckedGetHistogram(b).getStatistics().getStddev())
@@ -386,7 +396,7 @@ void IDList::sortByName(ResultFileManager *mgr, bool ascending)
 
 void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending)
 {
-    ValueLess compare(mgr);
+    ScalarValueLess compare(mgr);
     sortScalarsBy(mgr, ascending, compare);
 }
 
@@ -511,6 +521,12 @@ bool IDList::areAllVectors() const
 {
     int types = getItemTypes();
     return !types || types == ResultFileManager::VECTOR;
+}
+
+bool IDList::areAllStatistics() const
+{
+    int types = getItemTypes();
+    return !types || types == ResultFileManager::STATISTICS;
 }
 
 bool IDList::areAllHistograms() const

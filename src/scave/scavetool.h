@@ -29,6 +29,8 @@ class ScaveTool
 protected:
     void loadFiles(ResultFileManager& manager, const std::vector<std::string>& fileNames, bool indexingAllowed, bool verbose);
     std::string rebuildCommandLine(int argc, char **argv);
+    int resolveResultTypeFilter(const std::string& filter);
+
     void helpCommand(int argc, char **argv);
     void printHelpPage(const std::string& page);
     void queryCommand(int argc, char **argv);
