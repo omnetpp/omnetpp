@@ -86,7 +86,7 @@ const char SQL_CREATE_TABLES[] =
             "attrValue     TEXT NOT NULL "
         "); "
         ""
-        "CREATE TABLE IF NOT EXISTS histBin "  //TODO histogramBin
+        "CREATE TABLE IF NOT EXISTS histogramBin "
         "( "
             "statId        INTEGER NOT NULL REFERENCES statistic(statId) ON DELETE CASCADE, "
             "baseValue     NUMERIC NOT NULL, "

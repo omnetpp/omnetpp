@@ -252,7 +252,7 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT statId, runId, baseValue, cellValue FROM histBin JOIN statistic USING (statId) ORDER BY runId, statId;");
+    prepareStatement("SELECT statId, runId, baseValue, cellValue FROM histogramBin JOIN statistic USING (statId) ORDER BY runId, statId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
@@ -264,7 +264,7 @@ void SqliteResultFileLoader::loadHistograms()
         sqlite3_int64 cellValue = sqlite3_column_int64(stmt, 3);
         auto it = sqliteStatIdToHistogramIdx.find(statId);
         if (it == sqliteStatIdToHistogramIdx.end())
-            error("Invalid statId in histBin table, or isHistogram field in the corresponding statistic table record is not set");
+            error("Invalid statId in histogramBin table, or isHistogram field in the corresponding statistic table record is not set");
         HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteStatIdToHistogramIdx.at(statId));
         hist.addBin(baseValue, cellValue);
     }

@@ -139,7 +139,7 @@ void SqliteScalarFileWriter::prepareStatements()
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum"
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticAttr (statId, attrName, attrValue) VALUES (?, ?, ?);");
-    prepareStatement(add_statistic_bin_stmt, "INSERT INTO histBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
+    prepareStatement(add_statistic_bin_stmt, "INSERT INTO histogramBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
 }
 
 void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& moduleParams)
