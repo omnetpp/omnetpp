@@ -22,8 +22,8 @@
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"
-#include "runattributes.h"
 #include "common/omnetppscalarfilewriter.h"
+#include "resultfileutils.h"
 
 namespace omnetpp {
 namespace envir {

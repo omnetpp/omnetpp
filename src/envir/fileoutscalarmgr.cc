@@ -100,7 +100,6 @@ void cFileOutputScalarManager::startRun()
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
         removeFile(fname.c_str(), "old output scalar file");
-    run.reset();
 }
 
 void cFileOutputScalarManager::endRun()
@@ -115,8 +114,7 @@ void cFileOutputScalarManager::initialize()
     if (opp_ftell(f) == 0)
         check(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
 
-    run.initRun();
-    run.writeRunData(f, fname);
+    ResultFileUtils::writeRunData(f, fname.c_str());
 
     // save numeric iteration variables as scalars as well, after saving them as run attributes (TODO this should not be necessary)
     std::vector<const char *> v = getEnvir()->getConfigEx()->getIterationVariableNames();

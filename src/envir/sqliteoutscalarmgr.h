@@ -21,9 +21,8 @@
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
 #include "envir/envirdefs.h"
-#include "envir/runattributes.h"
-
 #include "common/sqlitescalarfilewriter.h"
+#include "resultfileutils.h"
 
 namespace omnetpp {
 namespace envir {

@@ -1,9 +1,9 @@
 //==========================================================================
-//  RUNATTRIBUTES.H - part of
+//  RESULTFILEUTILS.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//  Author: Tamas Borbely
+//  Author: Tamas Borbely, Andras Varga
 //
 //==========================================================================
 
@@ -15,28 +15,28 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_RUNATTRIBUTES_H
-#define __OMNETPP_ENVIR_RUNATTRIBUTES_H
+#ifndef __OMNETPP_ENVIR_RESULTFILEUTILS_H
+#define __OMNETPP_ENVIR_RESULTFILEUTILS_H
 
 #include <cstdio>
+#include <string>
+#include <map>
+#include <vector>
 #include "envirdefs.h"
 
 namespace omnetpp {
 namespace envir {
 
-/**
- * Collects and writes the run attributes and parameters.
- *
- * @ingroup Envir
- */
-struct RunData {
-   opp_string runId;        // id of the run
-   opp_string_map attributes;    // attributes of the run
-   opp_string_map moduleParams;  // module parameters in the current run
+typedef std::map<std::string, std::string> StringMap;
+typedef StringMap OrderedKeyValueList; //TODO typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
 
-   void initRun();
-   void reset();
-   void writeRunData(FILE *f, opp_string fname);
+class ResultFileUtils {
+  public:
+    static std::string getRunId();
+    static StringMap getRunAttributes();
+    static OrderedKeyValueList getParamAssignments();
+    static OrderedKeyValueList getConfigEntries();
+    static void writeRunData(FILE *f, const char *fname); //TODO remove this
 };
 
 } // namespace envir

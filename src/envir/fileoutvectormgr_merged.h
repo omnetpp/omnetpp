@@ -23,8 +23,8 @@
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"
-#include "runattributes.h"
 #include "intervals.h"
+#include "resultfileutils.h"
 
 namespace omnetpp {
 namespace envir {
@@ -89,7 +89,6 @@ class ENVIR_API cFileOutputVectorManager_merged : public cIOutputVectorManager
     typedef std::vector<Vector*> Vectors;
 
     bool initialized;  // true after first call to initialize(), even if it failed
-    RunData run;       // holds data of the current run
     int nextid;        // holds next free ID for output vectors
     std::string fname; // output file name
     FILE *f;           // file ptr of output file

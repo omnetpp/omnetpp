@@ -28,8 +28,8 @@
 #include "omnetpp/platdep/timeutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
-#include "runattributes.h"
 #include "omnetppoutvectormgr.h"
+#include "resultfileutils.h"
 
 using namespace omnetpp::common;
 
@@ -92,10 +92,7 @@ inline StringMap convertMap(const opp_string_map *m) {
 
 void OmnetppOutputVectorManager::writeRunData()
 {
-    RunData run;
-    run.initRun();
-
-    writer.beginRecordingForRun(run.runId.c_str(), convertMap(&run.attributes), convertMap(&run.moduleParams));
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getParamAssignments());
 }
 
 void OmnetppOutputVectorManager::startRun()

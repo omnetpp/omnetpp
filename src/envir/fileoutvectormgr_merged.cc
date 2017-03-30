@@ -171,9 +171,6 @@ void cFileOutputVectorManager_merged::startRun()
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
-    // clear run data
-    run.reset();
-
     closeIndexFile();
     ifname = createIndexFileName(fname);
     removeFile(ifname.c_str(), "old index file");
@@ -316,8 +313,7 @@ bool cFileOutputVectorManager_merged::record(void *vectorhandle, simtime_t t, do
 void cFileOutputVectorManager_merged::writeRunData()
 {
     // write run attributes to the vector file
-    run.initRun();
-    run.writeRunData(f, fname);
+    ResultFileUtils::writeRunData(f, fname.c_str());
 
     // and to the index file
     if (!fi) {
@@ -325,7 +321,7 @@ void cFileOutputVectorManager_merged::writeRunData()
         checki(fprintf(fi, "version %d\n", INDEX_FILE_VERSION));
     }
 
-    run.writeRunData(fi, ifname);
+    ResultFileUtils::writeRunData(fi, ifname.c_str());
 }
 
 // empties all buffer

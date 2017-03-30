@@ -231,7 +231,7 @@ void cIndexedFileOutputVectorManager::writeRunData()
         CHECK(fprintf(fi, "version %d\n", INDEX_FILE_VERSION), ifname);
     }
 
-    run.writeRunData(fi, ifname);
+    ResultFileUtils::writeRunData(fi, ifname.c_str());
 }
 
 // empties all buffer

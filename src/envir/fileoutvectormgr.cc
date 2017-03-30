@@ -93,8 +93,7 @@ void cFileOutputVectorManager::check(int fprintfResult)
 
 void cFileOutputVectorManager::writeRunData()
 {
-    run.initRun();
-    run.writeRunData(f, fname);
+    ResultFileUtils::writeRunData(f, fname.c_str());
 }
 
 void cFileOutputVectorManager::initVector(VectorData *vp)
@@ -127,9 +126,6 @@ void cFileOutputVectorManager::startRun()
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
-
-    // clear run data
-    run.reset();
 }
 
 void cFileOutputVectorManager::endRun()

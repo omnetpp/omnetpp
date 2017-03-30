@@ -117,10 +117,7 @@ inline StringMap convertMap(const opp_string_map *m) {
 
 void SqliteOutputVectorManager::writeRunData()
 {
-    RunData run;
-    run.initRun();
-
-    writer.beginRecordingForRun(run.runId.c_str(), SimTime::getScaleExp(), convertMap(&run.attributes), convertMap(&run.moduleParams));
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getParamAssignments());
 }
 
 void SqliteOutputVectorManager::startRun()

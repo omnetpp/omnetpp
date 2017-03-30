@@ -22,9 +22,9 @@
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
 #include "envir/envirdefs.h"
-#include "envir/runattributes.h"
 #include "envir/intervals.h"
 #include "common/sqlitevectorfilewriter.h"
+#include "resultfileutils.h"
 
 namespace omnetpp {
 namespace envir {
