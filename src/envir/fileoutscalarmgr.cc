@@ -134,7 +134,7 @@ void cFileOutputScalarManager::recordNumericIterationVariableAsScalar(const char
     (void)strtod(value, &e);
     if (*e == '\0') {
         // plain number - just record as it is
-        check(fprintf(f, "scalar _runattrs_ %s %s\n", name, value));
+        check(fprintf(f, "scalar _runattrs_ \t%s \t%s\n", name, value));
     }
     else if (e != value) {
         // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
@@ -148,9 +148,9 @@ void cFileOutputScalarManager::recordNumericIterationVariableAsScalar(const char
         catch (std::exception& e) {
         }
         if (parsedOK) {
-            check(fprintf(f, "scalar _runattrs_ %s %.*g\n", name, prec, d));
+            check(fprintf(f, "scalar _runattrs_ \t%s \t%.*g\n", name, prec, d));
             if (!unit.empty())
-                check(fprintf(f, "attr unit %s\n", QUOTE(unit.c_str())));
+                check(fprintf(f, "attr unit  %s\n", QUOTE(unit.c_str())));
         }
     }
 }
@@ -172,10 +172,10 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (!f)
         return;
 
-    check(fprintf(f, "scalar %s %s %.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
+    check(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
     if (attributes)
         for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
-            check(fprintf(f, "attr %s %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+            check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 }
 
 void cFileOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
@@ -211,7 +211,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     //   bin 20 19
     //   ...
     // In Scave, fields are read as separate scalars.
-    check(fprintf(f, "statistic %s %s\n", QUOTE(component->getFullPath().c_str()), QUOTE(name)));
+    check(fprintf(f, "statistic %s \t%s\n", QUOTE(component->getFullPath().c_str()), QUOTE(name)));
     writeStatisticField("count", statistic->getCount());
     writeStatisticField("mean", statistic->getMean());
     writeStatisticField("stddev", statistic->getStddev());
@@ -228,7 +228,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
     if (attributes)
         for (opp_string_map::iterator it = attributes->begin(); it != attributes->end(); ++it)
-            check(fprintf(f, "attr %s %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+            check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
 
     if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {
@@ -240,7 +240,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
             int n = histogram->getNumCells();
             if (n > 0) {
-                check(fprintf(f, "bin\t-inf\t%lu\n", histogram->getUnderflowCell()));
+                check(fprintf(f, "bin\t-INF\t%lu\n", histogram->getUnderflowCell()));
                 for (int i = 0; i < n; i++)
                     check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBasepoint(i), prec, histogram->getCellValue(i)));
                 check(fprintf(f, "bin\t%.*g\t%lu\n", prec, histogram->getBasepoint(n), histogram->getOverflowCell()));

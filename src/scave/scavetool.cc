@@ -1150,7 +1150,7 @@ void ScaveTool::indexCommand(int argc, char **argv)
     if (opt_verbose)
         cout << "done\n";
 
-    cout << (opt_rebuild ? "Rebuilt and indexed " : "Indexed ") << count << " file(s)\n";
+    cout << (opt_rebuild ? "Rebuilt and indexed " : "Indexed ") << count << " files\n";
 }
 
 int ScaveTool::main(int argc, char **argv)

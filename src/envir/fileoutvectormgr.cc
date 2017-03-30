@@ -106,9 +106,9 @@ void cFileOutputVectorManager::initVector(VectorData *vp)
         writeRunData();
     }
 
-    check(fprintf(f, "vector %d %s %s %s\n", vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
+    check(fprintf(f, "vector %d  %s  %s  %s\n", vp->id, QUOTE(vp->moduleName.c_str()), QUOTE(vp->vectorName.c_str()), vp->getColumns()));
     for (opp_string_map::iterator it = vp->attributes.begin(); it != vp->attributes.end(); ++it)
-        check(fprintf(f, "attr %s %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+        check(fprintf(f, "attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
     vp->initialized = true;
 }

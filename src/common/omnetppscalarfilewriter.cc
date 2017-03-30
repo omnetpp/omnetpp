@@ -117,20 +117,20 @@ void OmnetppScalarFileWriter::endRecordingForRun()
 
 void OmnetppScalarFileWriter::recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes)
 {
-    check(fprintf(f, "scalar %s %s %.*g\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), prec, value));
+    check(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), prec, value));
     writeAttributes(attributes);
 }
 
 void OmnetppScalarFileWriter::recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes)
 {
-    check(fprintf(f, "statistic %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str())));
+    check(fprintf(f, "statistic %s \t%s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str())));
     writeStatisticFields(statistic);
     writeAttributes(attributes);
 }
 
 void OmnetppScalarFileWriter::recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes)
 {
-    check(fprintf(f, "statistic %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str())));
+    check(fprintf(f, "statistic %s \t%s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str())));
     writeStatisticFields(statistic);
     writeAttributes(attributes);
     for (auto bin : bins.getBins())
