@@ -49,7 +49,6 @@ varhist.saveToFile(f);
 ksplit.saveToFile(f);
 fclose(f);
 
-%% files must be the same
 %postrun-command: diff pass1.txt pass2.txt
 
 %contains: pass1.txt
