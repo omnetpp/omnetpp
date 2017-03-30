@@ -52,13 +52,13 @@ EV << ObjectPrinter(nullptr, "*:declaredOn(@TESTNAME@::TestMessage)").printObjec
 isBufferEmpty:1
 class @TESTNAME@::TestMessage {
     int i = 23
-    double d = 3.140000
+    double d = 3.14
     string s = Hello
     int iv[0] = 100
     int iv[1] = 200
     int iv[2] = 300
-    double dv[0] = 1.230000
-    double dv[1] = 2.660000
+    double dv[0] = 1.23
+    double dv[1] = 2.66
     string sv[0] = first
     string sv[1] = second
 }
