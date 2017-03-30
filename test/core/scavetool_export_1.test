@@ -268,7 +268,7 @@ done
 Exported 4 scalars, 2 vectors, 2 histograms
 ===============================================================
 $ scavetool out-F.sca out-F-sqlite.sca out.sca out-F-sqlite.vec out-F.vec out-k1.vec out-k2.vec out.vec
-runs: 3 	scalars: 12	vectors: 10	histograms: 6
+runs: 2 	scalars: 12	vectors: 10	histograms: 6
 $ python out-F.py
 $ python out.py
 $ python out-v1.py
