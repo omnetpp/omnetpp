@@ -70,6 +70,7 @@ USE_COMMON_ENGINE_ILOCK();
 %include "std_list.i"    // our custom version
 %include "std_vector.i"
 %include "std_map.i"
+%include "std_pair.i"
 
 namespace std {
    %typemap(javacode) vector<string> %{
@@ -174,6 +175,8 @@ namespace std {
    %template(FileRunList) vector<omnetpp::scave::FileRun*>;
    %template(DoubleVector) vector<double>;
    %template(XYDatasetVector) vector<omnetpp::scave::XYDataset>;
+   %template(StringPair) pair<string,string>;
+   %template(OrderedKeyValueList) vector< pair<string,string> >;
 };
 
 //

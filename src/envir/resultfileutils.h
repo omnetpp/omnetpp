@@ -28,7 +28,7 @@ namespace omnetpp {
 namespace envir {
 
 typedef std::map<std::string, std::string> StringMap;
-typedef StringMap OrderedKeyValueList; //TODO typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
+typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
 
 class ResultFileUtils {
   public:

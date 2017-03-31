@@ -58,6 +58,7 @@ class SqliteResultFileLoader;
 typedef std::vector<std::string> StringVector;
 typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringMap;
+typedef std::vector< std::pair<std::string, std::string> > OrderedKeyValueList;
 
 using omnetpp::common::Statistics;
 using omnetpp::common::Histogram;
@@ -294,47 +295,36 @@ class SCAVE_API ResultFile
  */
 class SCAVE_API Run
 {
-    friend OmnetppResultFileLoader;
-    friend SqliteResultFileLoader;
+    friend class ResultFileManager;
+    friend class OmnetppResultFileLoader;
+    friend class SqliteResultFileLoader;
 
   private:
     std::string runName; // unique identifier for the run, "runId"
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
-
-    // various attributes of the run are stored in a string map.
-    // keys include: runNumber, networkName, datetime, experiment, measurement, replication
-    StringMap attributes;
-    int runNumber = 0; // this is stored separately as well, for convenience
-
-    // module parameters: maps wildcard pattern to value
-    StringMap moduleParams;
-
+    StringMap attributes;  // run attributes, such as configname, runnumber, network, datetime, processid, etc.
+    int runNumber = 0; // this run attribute is stored separately as well, for convenience
+    OrderedKeyValueList paramAssignments; // module parameter assignments from the ini file and command line
+    //TODO: OrderedKeyValueList configEntries; // configuration entries from the ini file and command line
     bool computed;
 
-  public:
+  private:
     Run(const std::string& runName, bool computed, ResultFileManager *manager) : runName(runName), resultFileManager(manager), computed(computed) {}
+    void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
+    void addParamAssignmentEntry(const std::string& key, const std::string& value) {paramAssignments.push_back(std::make_pair(key,value));}
+    //TODO void addConfigEntry(const std::string& key, const std::string& value) {configEntries.push_back(std::make_pair(key,value));}
 
+  public:
     ResultFileManager *getResultFileManager() const {return resultFileManager;}
     const std::string& getRunName() const {return runName;}
     const StringMap& getAttributes() const {return attributes;}
-    const StringMap& getModuleParams() const {return moduleParams;} //FIXME this should not be a map, because order is important
+    const std::string& getAttribute(const std::string& attrName) const;
+    const OrderedKeyValueList& getParamAssignments() const {return paramAssignments;}
+    const std::string& getParamAssignment(const std::string& key) const;
+    //TODO const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
+    //TODO const std::string& getConfigOption(const std::string& key) const;
     int getRunNumber() const {return runNumber;}
     bool isComputed() const {return computed;}
-
-    const std::string& getAttribute(const std::string& attrName) const {
-        // note: we use find() instead of operator[], because latter creates blank entry if key is not contained in the map
-        StringMap::const_iterator it = attributes.find(attrName);
-        return it==attributes.end() ? NULLSTRING : it->second;
-    }
-
-    const std::string& getModuleParam(const std::string& paramName) const {
-        StringMap::const_iterator it = moduleParams.find(paramName);
-        return it==moduleParams.end() ? NULLSTRING : it->second;
-    }
-
-    void setAttribute(const std::string& attrName, const std::string& value) {attributes[attrName] = value;}
-    void setModuleParam(const std::string& paramName, const std::string& value) {moduleParams[paramName] = value;}
-
 };
 
 
@@ -387,7 +377,7 @@ class SCAVE_API ResultFileManager
 #endif
 
   public:
-    enum ResultType {SCALAR=1, VECTOR=2, STATISTICS=4, HISTOGRAM=8}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
+    enum {SCALAR=1, VECTOR=2, STATISTICS=4, HISTOGRAM=8}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
     // ID: 1 bit computed, 1 bit field, 6 bit type, 24 bit fileid, 32 bit pos
@@ -462,11 +452,11 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueNames(const IDList& ids) const;
     StringSet *getUniqueModuleAndResultNamePairs(const IDList& ids) const;
     StringSet *getUniqueAttributeNames(const IDList& ids) const;
-    StringSet *getUniqueRunAttributeNames(const RunList *runList) const;
-    StringSet *getUniqueModuleParamNames(const RunList *runList) const;
     StringSet *getUniqueAttributeValues(const IDList& ids, const char *attrName) const;
+    StringSet *getUniqueRunAttributeNames(const RunList *runList) const;
     StringSet *getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
-    StringSet *getUniqueModuleParamValues(const RunList& runList, const char *paramName) const;
+    StringSet *getUniqueParamAssignmentKeys(const RunList *runList) const;
+    StringSet *getUniqueParamAssignmentValues(const RunList& runList, const char *key) const;
 
     // getting lists of data items
     IDList getAllScalars(bool includeComputed = false, bool includeFields = true) const;
@@ -554,7 +544,7 @@ class SCAVE_API ResultFileManager
     StringVector *getNameFilterHints(const IDList& idlist)const;
     StringVector *getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const;
     StringVector *getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
-    StringVector *getModuleParamFilterHints(const RunList& runList, const char * paramName) const;
+    StringVector *getParamAssignmentFilterHints(const RunList& runList, const char *key) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;
 };

@@ -142,7 +142,7 @@ void SqliteScalarFileWriter::prepareStatements()
     prepareStatement(add_statistic_bin_stmt, "INSERT INTO histogramBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
 }
 
-void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& moduleParams)
+void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const OrderedKeyValueList& paramAssignments)
 {
     // save run
     prepareStatement(stmt, "INSERT INTO run (runName, simTimeExp) VALUES (?, ?);");
@@ -155,23 +155,25 @@ void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, in
 
     // save run attributes
     prepareStatement(stmt, "INSERT INTO runAttr (runId, attrName, attrValue) VALUES (?, ?, ?);");
-    for (auto it = attributes.begin(); it != attributes.end(); ++it) {
+    for (auto& p : attributes) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));
-        checkOK(sqlite3_bind_text(stmt, 2, it->first.c_str(), it->first.size(), SQLITE_STATIC));
-        checkOK(sqlite3_bind_text(stmt, 3, it->second.c_str(), it->second.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_text(stmt, 2, p.first.c_str(), p.first.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_text(stmt, 3, p.second.c_str(), p.second.size(), SQLITE_STATIC));
         checkDone(sqlite3_step(stmt));
         checkOK(sqlite3_clear_bindings(stmt));
     }
     finalizeStatement(stmt);
 
-    // save run params
-    prepareStatement(stmt, "INSERT INTO runParam (runId, parName, parValue) VALUES (?, ?, ?);");
-    for (auto it = moduleParams.begin(); it != moduleParams.end(); ++it) {
+    // save param assignments
+    prepareStatement(stmt, "INSERT INTO runParam (runId, paramKey, paramValue, paramOrder) VALUES (?, ?, ?, ?);");
+    int i = 0;
+    for (auto& p : paramAssignments) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));
-        checkOK(sqlite3_bind_text(stmt, 2, it->first.c_str(), it->first.size(), SQLITE_STATIC));
-        checkOK(sqlite3_bind_text(stmt, 3, it->second.c_str(), it->second.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_text(stmt, 2, p.first.c_str(), p.first.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_text(stmt, 3, p.second.c_str(), p.second.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_int(stmt, 4, i++));
         checkDone(sqlite3_step(stmt));
         checkOK(sqlite3_clear_bindings(stmt));
     }

@@ -68,27 +68,6 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
     if (numTokens == 0 || vec[0][0] == '#')
         return;
 
-    // process "run" lines
-    if (vec[0][0] == 'r' && !strcmp(vec[0], "run")) {
-        flush(ctx); // last result item in previous run
-
-        CHECK(numTokens == 2, "incorrect 'run' line -- run <runID> expected");
-
-        // "run" line, format: run <runName>
-        // find out if we have that run already
-        Run *runRef = resultFileManager->getRunByName(vec[1]);
-        if (!runRef) {
-            // not yet: add it
-            runRef = resultFileManager->addRun(vec[1]);
-        }
-
-        // associate Run with this file
-        CHECK(resultFileManager->getFileRun(ctx.fileRef, runRef) == nullptr, "non-unique runId in the file");
-        ctx.currentItemType = ParseContext::RUN;
-        ctx.fileRunRef = resultFileManager->addFileRun(ctx.fileRef, runRef);
-        return;
-    }
-
     if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0) {
         int version;
         CHECK(numTokens == 2, "incorrect 'version' line -- version <number> expected");
@@ -97,8 +76,17 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         return;
     }
 
-    // anything else is within runs
-    CHECK(ctx.fileRunRef != nullptr, "line must be preceded by a 'run' line");
+    // process "run" lines
+    if (vec[0][0] == 'r' && !strcmp(vec[0], "run")) {
+        flush(ctx); // last result item in previous run
+
+        // "run" line, format: run <runName>
+        CHECK(numTokens == 2, "incorrect 'run' line -- run <runID> expected");
+
+        ctx.currentItemType = ParseContext::RUN;
+        ctx.runName = vec[1];
+        return;
+    }
 
     if (vec[0][0] == 's' && !strcmp(vec[0], "scalar")) {
         flush(ctx);
@@ -184,34 +172,19 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         // syntax: "attr <name> <value>"
         CHECK(ctx.currentItemType != ParseContext::NONE, "stray 'attr' line");
         CHECK(numTokens == 3, "incorrect 'attr' line -- attr <name> <value> expected");
-        Assert(ctx.fileRunRef != nullptr);
 
         std::string attrName = vec[1];
         std::string attrValue = vec[2];
-
-        if (ctx.currentItemType == ParseContext::RUN) {
-            // store attribute
-            StringMap& attributes = ctx.fileRunRef->runRef->attributes;
-            attributes[attrName] = attrValue;
-
-            // the "runNumber" attribute is also stored separately
-            if (attrName == "runNumber")
-                CHECK(parseInt(vec[2], ctx.fileRunRef->runRef->runNumber), "invalid result file: int value expected as runNumber");
-        }
-        else {
-            ctx.attrs[attrName] = attrValue;
-        }
+        ctx.attrs[attrName] = attrValue;
     }
     else if (vec[0][0] == 'p' && !strcmp(vec[0], "param")) {
         // syntax: "param <namePattern> <value>"
         CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'param' line, must be under a 'run' line");
         CHECK(numTokens == 3, "incorrect 'param' line -- param <namePattern> <value> expected");
 
-        // store module param
         std::string paramName = vec[1];
         std::string paramValue = vec[2];
-        StringMap& params = ctx.fileRunRef->runRef->moduleParams;
-        params[paramName] = paramValue;
+        ctx.moduleParams.push_back(std::make_pair(paramName, paramValue));
     }
     else if (opp_isdigit(vec[0][0]) && numTokens >= 3) {
         // this looks like a vector data line, skip it this time
@@ -226,13 +199,32 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
 
 void OmnetppResultFileLoader::flush(ParseContext& ctx)
 {
+    if (ctx.fileRunRef == nullptr && ctx.currentItemType != ParseContext::NONE && ctx.currentItemType != ParseContext::RUN)
+        CHECK(false, "line must be preceded by a 'run' line");
+
     // add item to results
     switch (ctx.currentItemType) {
     case ParseContext::NONE:
         break;
-    case ParseContext::RUN:
-        //TODO bring it here too
+    case ParseContext::RUN: {
+        // find out if we have that run already
+        Run *runRef = resultFileManager->getRunByName(ctx.runName.c_str());
+        bool isNewRun = (runRef == nullptr);
+        if (runRef == nullptr)
+            runRef = resultFileManager->addRun(ctx.runName.c_str());
+        ctx.fileRunRef = resultFileManager->addFileRun(ctx.fileRef, runRef); //TODO check non-unique runId in this file
+        if (!isNewRun)
+            break; // already loaded, don't add attrs, itervars etc again; TODO check consistency
+
+        runRef->attributes = ctx.attrs;
+        runRef->paramAssignments = ctx.moduleParams;
+
+        // the "runNumber" attribute is also stored separately
+        auto it = runRef->attributes.find("runNumber");
+        if (it != runRef->attributes.end())
+            CHECK(parseInt(it->second.c_str(), ctx.fileRunRef->runRef->runNumber), "invalid result file: int value expected as runNumber");
         break;
+    }
     case ParseContext::SCALAR:
         resultFileManager->addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.scalarValue, false);
         break;
@@ -319,7 +311,7 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
     }
     runRef->runNumber = index->run.runNumber;
     runRef->attributes = index->run.attributes;
-    runRef->moduleParams = index->run.moduleParams;
+    runRef->paramAssignments = index->run.paramAssignments;
     FileRun *fileRunRef = resultFileManager->addFileRun(fileRef, runRef);
 
     const StringMap emptyAttrs;

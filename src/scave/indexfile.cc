@@ -159,7 +159,7 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
 {
     if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0) {
         CHECK(numTokens >= 3, "'attr <name> <value>' expected");
-        this->attributes[tokens[1]] = tokens[2];
+        attributes[tokens[1]] = tokens[2];
         // the "runNumber" attribute is also stored separately
         if (strcmp(tokens[1], "runNumber") == 0) {
             CHECK(parseInt(tokens[2], this->runNumber), "runNumber: an integer expected");
@@ -168,12 +168,12 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
     }
     else if (tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0) {
         CHECK(numTokens >= 3, "'param <namePattern> <value>' expected");
-        this->moduleParams[tokens[1]] = tokens[2];
+        paramAssignments.push_back(std::make_pair(tokens[1], tokens[2]));
         return true;
     }
     else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0) {
         CHECK(numTokens >= 2, "missing run name");
-        this->runName = tokens[1];
+        runName = tokens[1];
         return true;
     }
 
@@ -187,9 +187,9 @@ void RunData::writeToFile(FILE *file, const char *filename) const
 {
     if (runName.size() > 0)
         CHECK(fprintf(file, "run %s\n", runName.c_str()));
-    for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+    for (auto it = attributes.begin(); it != attributes.end(); ++it)
         CHECK(fprintf(file, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
-    for (StringMap::const_iterator it = moduleParams.begin(); it != moduleParams.end(); ++it)
+    for (auto it = paramAssignments.begin(); it != paramAssignments.end(); ++it)
         CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     CHECK(fprintf(file, "\n"));
 }

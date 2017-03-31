@@ -172,7 +172,7 @@ struct RunData {
     std::string runName;
     int runNumber;
     StringMap attributes;
-    StringMap moduleParams;
+    OrderedKeyValueList paramAssignments;
 
     RunData() : runNumber(0) {}
 

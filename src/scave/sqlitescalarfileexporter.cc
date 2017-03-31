@@ -110,7 +110,7 @@ void SqliteScalarFileExporter::saveResults(const std::string& fileName, ResultFi
     std::unique_ptr<RunList> tmp(runList);
 
     for (Run *run : *runList) {
-        writer.beginRecordingForRun(run->getRunName(), simtimeScaleExp, run->getAttributes(), run->getModuleParams());
+        writer.beginRecordingForRun(run->getRunName(), simtimeScaleExp, run->getAttributes(), run->getParamAssignments());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
         for (int i=0; i<filteredList.size(); i++) {
             ID id = filteredList.get(i);

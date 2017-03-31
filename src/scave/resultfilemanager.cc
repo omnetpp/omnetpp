@@ -143,6 +143,20 @@ void HistogramResult::addBin(double lowerBound, double count)
     bins.addBin(lowerBound, count);
 }
 
+const std::string& Run::getAttribute(const std::string& attrName) const
+{
+    auto it = attributes.find(attrName);
+    return it==attributes.end() ? NULLSTRING : it->second;
+}
+
+const std::string& Run::getParamAssignment(const std::string& key) const
+{
+    for (auto& p : paramAssignments)  // TODO some kind of ordered map would be better (e.g. std::map plus an std::vector<string> to store the order)
+        if (p.first == key)
+            return p.second;
+    return NULLSTRING;
+}
+
 //------
 
 ResultFileManager::ResultFileManager()
@@ -298,30 +312,6 @@ StringSet *ResultFileManager::getUniqueAttributeNames(const IDList& ids) const
     return set;
 }
 
-StringSet *ResultFileManager::getUniqueRunAttributeNames(const RunList *runList) const
-{
-    READER_MUTEX
-    StringSet *set = new StringSet;
-    for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef) {
-        const StringMap& attributes = (*runRef)->getAttributes();
-        for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-            set->insert(it->first);
-    }
-    return set;
-}
-
-StringSet *ResultFileManager::getUniqueModuleParamNames(const RunList *runList) const
-{
-    READER_MUTEX
-    StringSet *set = new StringSet;
-    for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef) {
-        const StringMap& params = (*runRef)->getModuleParams();
-        for (StringMap::const_iterator it = params.begin(); it != params.end(); ++it)
-            set->insert(it->first);
-    }
-    return set;
-}
-
 StringSet *ResultFileManager::getUniqueAttributeValues(const IDList& ids, const char *attrName) const
 {
     READER_MUTEX
@@ -332,6 +322,18 @@ StringSet *ResultFileManager::getUniqueAttributeValues(const IDList& ids, const 
             values->insert(value);
     }
     return values;
+}
+
+StringSet *ResultFileManager::getUniqueRunAttributeNames(const RunList *runList) const
+{
+    READER_MUTEX
+    StringSet *set = new StringSet;
+    for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef) {
+        const StringMap& attributes = (*runRef)->getAttributes();
+        for (StringMap::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+            set->insert(it->first);
+    }
+    return set;
 }
 
 StringSet *ResultFileManager::getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const
@@ -347,12 +349,23 @@ StringSet *ResultFileManager::getUniqueRunAttributeValues(const RunList& runList
     return values;
 }
 
-StringSet *ResultFileManager::getUniqueModuleParamValues(const RunList& runList, const char *paramName) const
+StringSet *ResultFileManager::getUniqueParamAssignmentKeys(const RunList *runList) const
+{
+    READER_MUTEX
+    StringSet *set = new StringSet;
+    for (auto runRef : *runList)
+        for (auto& p : runRef->getParamAssignments())
+            set->insert(p.first);
+    return set;
+}
+
+
+StringSet *ResultFileManager::getUniqueParamAssignmentValues(const RunList& runList, const char *key) const
 {
     READER_MUTEX
     StringSet *values = new StringSet;
-    for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef) {
-        const string& value = (*runRef)->getModuleParam(paramName);
+    for (auto runRef : runList) {
+        const string& value = runRef->getParamAssignment(key);
         if (&value != &NULLSTRING)
             values->insert(value);
     }
@@ -781,7 +794,7 @@ class MatchableResultItem : public MatchExpression::Matchable
         const char *getRunName() const { return item.getRun()->getRunName().c_str(); }
         const char *getResultItemAttribute(const char *attrName) const { return item.getAttribute(attrName).c_str(); }
         const char *getRunAttribute(const char *attrName) const { return item.getRun()->getAttribute(attrName).c_str(); }
-        const char *getModuleParam(const char *paramName) const { return item.getRun()->getModuleParam(paramName).c_str(); }
+        const char *getParamAssignment(const char *key) const { return item.getRun()->getParamAssignment(key).c_str(); }
 };
 
 const char *MatchableResultItem::getAsString() const
@@ -802,7 +815,7 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
     else if (strncasecmp("attr:", attribute, 5) == 0)
         return getRunAttribute(attribute+5);
     else if (strncasecmp("param:", attribute, 6) == 0)
-        return getModuleParam(attribute+6);
+        return getParamAssignment(attribute+6);
     else
         return getResultItemAttribute(attribute);
 }
@@ -1355,10 +1368,10 @@ StringVector *ResultFileManager::getRunAttributeFilterHints(const RunList& runLi
     return filterHints;
 }
 
-StringVector *ResultFileManager::getModuleParamFilterHints(const RunList& runList, const char *paramName) const
+StringVector *ResultFileManager::getParamAssignmentFilterHints(const RunList& runList, const char *key) const
 {
     READER_MUTEX
-    StringSet *paramValues = getUniqueModuleParamValues(runList, paramName);
+    StringSet *paramValues = getUniqueParamAssignmentValues(runList, key);
     StringVector *filterHints = new StringVector(paramValues->begin(), paramValues->end());
     std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");

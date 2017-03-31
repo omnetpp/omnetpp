@@ -36,6 +36,7 @@ class COMMON_API OmnetppVectorFileWriter
 {
   public:
     typedef std::map<std::string, std::string> StringMap;
+    typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
     typedef int64_t eventnumber_t;
     typedef int64_t rawsimtime_t;
 
@@ -115,7 +116,7 @@ class COMMON_API OmnetppVectorFileWriter
     void setOverallMemoryLimit(size_t limit) {bufferedSamplesLimit = limit / sizeof(Sample);}
     size_t getOverallMemoryLimit() const {return bufferedSamplesLimit * sizeof(Sample);}
 
-    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& moduleParams);
+    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const OrderedKeyValueList& paramAssignments);
     void endRecordingForRun();
     void *registerVector(const std::string& componentFullPath, const std::string& name, const StringMap& attributes, size_t bufferSize, bool recordEventNumbers);
     void deregisterVector(void *vechandle);

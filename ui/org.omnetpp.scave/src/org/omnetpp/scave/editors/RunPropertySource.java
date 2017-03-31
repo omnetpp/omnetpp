@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.engine.OrderedKeyValueList;
 import org.omnetpp.scave.engine.Run;
 
 /**
@@ -35,19 +36,31 @@ public class RunPropertySource implements IPropertySource {
         this.run = run;
     }
 
+    @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         IPropertyDescriptor[] attrs = makeDescriptors(run.getAttributes().keys().toArray(), "@", "Attributes");
-        IPropertyDescriptor[] moduleParams = makeDescriptors(run.getModuleParams().keys().toArray(), "%", "Attributes");
-        return (IPropertyDescriptor[])ArrayUtils.addAll(MAIN_PROPERTY_DESCS, ArrayUtils.addAll(attrs, moduleParams));
+        IPropertyDescriptor[] itervars = makeDescriptors(run.getIterationVariables().keys().toArray(), "$", "Iteration Variables");
+        IPropertyDescriptor[] moduleParams = makeDescriptors(getParamAssignmentKeys(run), "%", "Parameter Assignments");
+        return ArrayUtils.addAll(MAIN_PROPERTY_DESCS, ArrayUtils.addAll(attrs, ArrayUtils.addAll(itervars, moduleParams)));
     }
 
+    private static String[] getParamAssignmentKeys(Run run) {
+        OrderedKeyValueList paramAssignments = run.getParamAssignments();
+        int n = (int)paramAssignments.size();
+        String[] result = new String[n];
+        for (int i = 0; i < n; i++)
+            result[i] = paramAssignments.get(i).getFirst();
+        return result;
+    }
+
+    @Override
     public Object getPropertyValue(Object propertyId) {
-        // run attribute
         if (propertyId instanceof String && propertyId.toString().charAt(0)=='@')
             return run.getAttribute(propertyId.toString().substring(1));
-        // module params
+        if (propertyId instanceof String && propertyId.toString().charAt(0)=='$')
+            return run.getIterationVariable(propertyId.toString().substring(1));
         if (propertyId instanceof String && propertyId.toString().charAt(0)=='%')
-            return run.getModuleParam(propertyId.toString().substring(1));
+            return run.getParamAssignment(propertyId.toString().substring(1));
 
         if (propertyId.equals(PROP_RUN_NAME)) return run.getRunName();
         if (propertyId.equals(PROP_RUN_NUMBER)) return run.getRunNumber();
@@ -55,16 +68,20 @@ public class RunPropertySource implements IPropertySource {
         return null;
     }
 
+    @Override
     public boolean isPropertySet(Object id) {
         return false;
     }
 
+    @Override
     public void resetPropertyValue(Object id) {
     }
 
+    @Override
     public void setPropertyValue(Object id, Object value) {
     }
 
+    @Override
     public Object getEditableValue() {
         return null; // not editable
     }

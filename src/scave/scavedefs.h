@@ -17,7 +17,11 @@
 #ifndef __OMNETPP_SCAVE_SCAVEDEFS_H
 #define __OMNETPP_SCAVE_SCAVEDEFS_H
 
-#include <cstdint> // for int64_t, our equivalent of Java's "long" type
+#include <cstdint>
+#include <string>
+#include <map>
+#include <set>
+#include <vector>
 #include "common/bigdecimal.h"
 #include "common/commonutil.h"
 #include "omnetpp/platdep/platdefs.h"
@@ -32,6 +36,11 @@ namespace scave {
 #else
 #  define SCAVE_API
 #endif
+
+typedef std::vector<std::string> StringVector;
+typedef std::set<std::string> StringSet;
+typedef std::map<std::string, std::string> StringMap;
+typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
 
 #define DEFAULT_RESULT_PRECISION  14
 

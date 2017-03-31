@@ -132,9 +132,20 @@ void PythonExporter::setOption(const std::string& key, const std::string& value)
 void PythonExporter::writeStringMap(const std::string& key, const StringMap& attrs)
 {
     writer.openObject(key);
-    for (auto pair : attrs)
+    for (auto& pair : attrs)
         writer.writeString(pair.first, pair.second);
     writer.closeObject();
+}
+
+void PythonExporter::writeOrderedKeyValueList(const std::string& key, const OrderedKeyValueList& list)
+{
+    writer.openArray(key);
+    for (auto& pair : list) {
+        writer.openObject(true);
+        writer.writeString(pair.first, pair.second);
+        writer.closeObject();
+    }
+    writer.closeArray();
 }
 
 void PythonExporter::writeStatisticsFields(const Statistics& stat)
@@ -278,7 +289,7 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
 
         // run metadata
         writeStringMap("attributes", run->getAttributes());
-        writeStringMap("moduleparams", run->getModuleParams());
+        writeOrderedKeyValueList("moduleparams", run->getParamAssignments());
 
         // scalars
         IDList scalars = idlist.filterByTypes(ResultFileManager::SCALAR);

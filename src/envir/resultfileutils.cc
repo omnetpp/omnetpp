@@ -59,7 +59,7 @@ OrderedKeyValueList ResultFileUtils::getParamAssignments()
     std::vector<const char *> params = cfg->getParameterKeyValuePairs();
     OrderedKeyValueList result;
     for (int i = 0; i < (int)params.size(); i += 2)
-        result.insert(std::make_pair(params[i], params[i+1]));
+        result.push_back(std::make_pair(params[i], params[i+1]));
     return result;
 }
 
@@ -69,7 +69,7 @@ OrderedKeyValueList ResultFileUtils::getConfigEntries()
     std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
     OrderedKeyValueList result;
     for (const char *key : keys)
-        result.insert(std::make_pair(key, cfg->getConfigValue(key)));
+        result.push_back(std::make_pair(key, cfg->getConfigValue(key)));
     return result;
 }
 

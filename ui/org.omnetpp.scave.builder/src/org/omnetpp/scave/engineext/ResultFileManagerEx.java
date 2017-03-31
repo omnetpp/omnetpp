@@ -311,10 +311,9 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public StringVector getModuleParamFilterHints(RunList runList,
-            String paramName) {
+    public StringVector getParamAssignmentFilterHints(RunList runList, String key) {
         checkReadLock();
-        return super.getModuleParamFilterHints(runList, paramName);
+        return super.getParamAssignmentFilterHints(runList, key);
     }
 
     @Override
@@ -410,9 +409,9 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public StringSet getUniqueModuleParamNames(RunList runList) {
+    public StringSet getUniqueParamAssignmentKeys(RunList runList) {
         checkReadLock();
-        return super.getUniqueModuleParamNames(runList);
+        return super.getUniqueParamAssignmentKeys(runList);
     }
 
     @Override

@@ -130,7 +130,7 @@ void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultF
     std::unique_ptr<RunList> tmp(runList);
 
     for (Run *run : *runList) {
-        writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getModuleParams());
+        writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getParamAssignments());
         IDList filteredList = manager->filterIDList(idlist, run, nullptr, nullptr);
 
         // register all vectors

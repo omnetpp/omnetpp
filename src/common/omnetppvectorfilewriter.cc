@@ -110,7 +110,7 @@ void OmnetppVectorFileWriter::cleanup()  // MUST NOT THROW
         fclose(fi);
 }
 
-void OmnetppVectorFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& moduleParams)
+void OmnetppVectorFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const OrderedKeyValueList& paramAssignments)
 {
     Assert(vectors.size() == 0);
     bufferedSamples = 0;
@@ -122,13 +122,13 @@ void OmnetppVectorFileWriter::beginRecordingForRun(const std::string& runName, c
     checki(fprintf(fi, "run %s\n", QUOTE(runName.c_str())));
 
     // save run attributes
-    for (auto pair : attributes) {
+    for (auto& pair : attributes) {
         check(fprintf(f, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
         checki(fprintf(fi, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
     }
 
     // save run params
-    for (auto pair : moduleParams) {
+    for (auto& pair : paramAssignments) {
         check(fprintf(f, "param %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
         checki(fprintf(fi, "param %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
     }
@@ -148,7 +148,7 @@ void OmnetppVectorFileWriter::endRecordingForRun()
     Assert(f != nullptr);
 
     for (VectorData *vp : vectors)
-        finalizeVector(vp); //TODO currently these all go in separate transactions
+        finalizeVector(vp);
 
     check(fprintf(f, "\n"));
     check(fprintf(fi, "\n"));

@@ -42,6 +42,7 @@ public class FilterHints {
 
     public FilterHints(final ResultFileManager manager, final ResultType type) {
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 fillAllFields(manager, ScaveModelUtil.getAllIDs(manager, type));
                 return null;
@@ -51,6 +52,7 @@ public class FilterHints {
 
     public FilterHints(final ResultFileManager manager, final IDList idlist) {
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 fillAllFields(manager, idlist);
                 return null;
@@ -61,6 +63,7 @@ public class FilterHints {
     public void addHints(final FilterField field, final ResultFileManager manager, final IDList idlist)
     {
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 fillOneField(manager, idlist, field);
                 return null;
@@ -81,8 +84,8 @@ public class FilterHints {
             setHints(Kind.ItemField, attrName, manager.getResultItemAttributeFilterHints(idlist, attrName).toArray());
         for (String attrName : manager.getUniqueRunAttributeNames(runList).keys().toArray())
             setHints(Kind.RunAttribute, attrName, manager.getRunAttributeFilterHints(runList, attrName).toArray());
-        for (String paramName : manager.getUniqueModuleParamNames(runList).keys().toArray())
-            setHints(Kind.ModuleParam, paramName, manager.getModuleParamFilterHints(runList, paramName).toArray());
+        for (String key : manager.getUniqueParamAssignmentKeys(runList).keys().toArray())
+            setHints(Kind.ModuleParam, key, manager.getParamAssignmentFilterHints(runList, key).toArray());
     }
 
     private void fillOneField(ResultFileManager manager, IDList idlist, FilterField field) {
@@ -117,7 +120,7 @@ public class FilterHints {
         else if (field.getKind() == FilterField.Kind.ModuleParam)
         {
             RunList runList = manager.getUniqueRuns(idlist);
-            setHints(Kind.ModuleParam, field.getName(), manager.getModuleParamFilterHints(runList, field.getName()).toArray());
+            setHints(Kind.ModuleParam, field.getName(), manager.getParamAssignmentFilterHints(runList, field.getName()).toArray());
         }
     }
 

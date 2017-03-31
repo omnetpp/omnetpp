@@ -19,6 +19,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include "statistics.h"
 #include "histogram.h"
 
@@ -32,6 +33,7 @@ class COMMON_API OmnetppScalarFileWriter
 {
   public:
     typedef std::map<std::string, std::string> StringMap;
+    typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
 
   protected:
     std::string fname;  // output file name
@@ -56,7 +58,7 @@ class COMMON_API OmnetppScalarFileWriter
     void setPrecision(int p) {prec = p;}
     int getPrecision() const {return prec;}
 
-    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& moduleParams);
+    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const OrderedKeyValueList& paramAssignments);
     void endRecordingForRun();
     void recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes);
     void recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes);

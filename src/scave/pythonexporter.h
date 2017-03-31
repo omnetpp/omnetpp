@@ -18,8 +18,12 @@
 #ifndef __OMNETPP_SCAVE_PYTHONEXPORTER_H
 #define __OMNETPP_SCAVE_PYTHONEXPORTER_H
 
+#include <string>
+#include <vector>
+
 #include "common/jsonwriter.h"
 #include "exporter.h"
+#include "idlist.h"
 
 namespace omnetpp {
 namespace scave {
@@ -42,6 +46,7 @@ class SCAVE_API PythonExporter : public Exporter
 
     protected:
         void writeStringMap(const std::string& key, const StringMap& attrs);
+        void writeOrderedKeyValueList(const std::string& key, const OrderedKeyValueList& list);
         void writeStatisticsFields(const Statistics& stat);
         void writeVector(const std::vector<double>& v);
         void writeX(XYArray *array);

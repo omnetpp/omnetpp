@@ -121,7 +121,7 @@ void SqliteResultFileLoader::loadRunAttrs()
 
 void SqliteResultFileLoader::loadRunParams()
 {
-    prepareStatement("SELECT runId, parName, parValue FROM runParam;");
+    prepareStatement("SELECT runId, paramKey, paramValue FROM runParam ORDER BY paramOrder ASC;");
 
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step (stmt);
@@ -129,11 +129,11 @@ void SqliteResultFileLoader::loadRunParams()
             break;
         checkRow(resultCode);
         sqlite3_int64 runId = sqlite3_column_int64(stmt, 0);
-        std::string parName = (const char *) sqlite3_column_text(stmt, 1);
-        std::string parValue = (const char *) sqlite3_column_text(stmt, 2);
+        std::string paramKey = (const char *) sqlite3_column_text(stmt, 1);
+        std::string paramValue = (const char *) sqlite3_column_text(stmt, 2);
 
         FileRun *fileRunRef = fileRunMap.at(runId);
-        fileRunRef->runRef->setModuleParam(parName, parValue);
+        fileRunRef->runRef->addParamAssignmentEntry(paramKey, paramValue); //FIXME if not already exists
     }
     finalizeStatement();
 }

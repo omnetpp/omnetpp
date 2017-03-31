@@ -307,7 +307,7 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
                 dynamic_cast<IndexedVectorFileWriterNode *>(writerNodeType->create(&dataflowManager, writerAttrs));
             if (!writerNode)
                 throw opp_runtime_error("Cannot create the indexedvectorfilewriternode.");
-            writerNode->setRun(runPtr->getRunName().c_str(), runPtr->getAttributes(), runPtr->getModuleParams());
+            writerNode->setRun(runPtr->getRunName().c_str(), runPtr->getAttributes(), runPtr->getParamAssignments());
 
             // create a ports
             for (int i = 0; i < vectorIDList.size(); i++) {
