@@ -1,11 +1,11 @@
+2017-03-31  ------ omnetpp-5.1 released ------
+
 2017-03-27  Andras Varga
 
 	* result file recording: minimize space differences between
 	implementations
 
 	* OmnetppOutputVectorManager fix: did not delete old file
-
-2017-03-23  ------ omnetpp-5.1 released ------
 
 2017-03-21  Andras Varga
 

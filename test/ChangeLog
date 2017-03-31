@@ -1,3 +1,5 @@
+2017-03-31  ------ omnetpp-5.1 released ------
+
 2017-03-30  Andras Varga
 
 	* updated msg_pack_1.test output
@@ -13,8 +15,6 @@
 
 	* added cStatistic_file_1.test (for saveToFile()/loadFromFile() of
 	all statisical classes)
-
-2017-03-23  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 
