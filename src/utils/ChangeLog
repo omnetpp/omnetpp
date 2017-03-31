@@ -1,3 +1,7 @@
+2017-03-24  Andras Varga
+
+	* opp_test: write out substitution result (useful for test debugging)
+
 2017-03-23  ------ omnetpp-5.1 released ------
 
 2017-03-09  Rudolf Hornig

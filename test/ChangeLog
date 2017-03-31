@@ -1,5 +1,20 @@
-2017-03-23  ------ omnetpp-5.1 released ------
+2017-03-30  Andras Varga
 
+	* updated msg_pack_1.test output
+
+	Output changed due to recent change in cClassDescriptor::double2string()
+
+	* scavetool_export_1.test: fix test output
+
+2017-03-25  Andras Varga
+
+	* added chart inspector test, jsonwriter_1.test, scavetool_export_1.test
+    scavetool_query_1.test scalarfile_append_1.test
+
+	* added cStatistic_file_1.test (for saveToFile()/loadFromFile() of
+	all statisical classes)
+
+2017-03-23  ------ omnetpp-5.1 released ------
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------
 
