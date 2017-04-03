@@ -1,18 +1,5 @@
 2017-03-31  ------ omnetpp-5.1 released ------
 
-2017-03-27  Andras Varga
-
-	* result file recording: minimize space differences between
-	implementations
-
-2017-03-24  Andras Varga
-
-	* fix CSV exporter: fix in help text
-
-	* fix export: --add-fields-as-scalars was implicit
-
-	* fix mistyped long arg name
-
 2017-03-16  Andras Varga
 
 	* New Exporter framework and exporters: CSV, Python Source, OMNeT++ and

@@ -1,6 +1,6 @@
 2017-03-31  ------ omnetpp-5.1 released ------
 
-2017-03-27  TÖRÖK Attila
+2017-03-27  Attila Torok
 
 	* fix cClassDescriptor::double2string stack corruption fixed with long
 	numbers.

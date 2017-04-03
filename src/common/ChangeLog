@@ -1,21 +1,8 @@
 2017-03-31  ------ omnetpp-5.1 released ------
 
-2017-03-27  TÖRÖK Attila
+2017-03-27  Attila Torok
 
 	* opp_stringf buffer size limit removed.
-
-	* result file recording: minimize space differences between
-	implementations
-
-	* OmnetppVectorFileWriter fix (run header was missing)
-
-2017-03-24  Andras Varga
-
-	* opp_formatTable(): don't pad last item
-
-2017-03-21  Andras Varga
-
-	* Fix: using append=true mode generated invalid scalar file
 
 2017-03-16  Andras Varga
 
