@@ -95,13 +95,17 @@ void OmnetppScalarFileWriter::writeStatisticFields(const Statistics& statistic)
 //    }
 }
 
-void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const OrderedKeyValueList& paramAssignments)
+void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments)
 {
     // save run
     check(fprintf(f, "run %s\n", QUOTE(runName.c_str())));
 
     // save run attributes
     writeAttributes(attributes);
+
+    // save itervars
+    for (auto pair : itervars)
+        check(fprintf(f, "itervar %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
 
     // save run params
     for (auto& pair : paramAssignments)

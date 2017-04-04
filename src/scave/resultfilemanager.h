@@ -303,6 +303,7 @@ class SCAVE_API Run
     std::string runName; // unique identifier for the run, "runId"
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
     StringMap attributes;  // run attributes, such as configname, runnumber, network, datetime, processid, etc.
+    StringMap itervars;  // iteration variables (${} notation in omnetpp.ini)
     int runNumber = 0; // this run attribute is stored separately as well, for convenience
     OrderedKeyValueList paramAssignments; // module parameter assignments from the ini file and command line
     //TODO: OrderedKeyValueList configEntries; // configuration entries from the ini file and command line
@@ -319,6 +320,8 @@ class SCAVE_API Run
     const std::string& getRunName() const {return runName;}
     const StringMap& getAttributes() const {return attributes;}
     const std::string& getAttribute(const std::string& attrName) const;
+    const StringMap& getIterationVariables() const {return itervars;}
+    const std::string& getIterationVariable(const std::string& name) const;
     const OrderedKeyValueList& getParamAssignments() const {return paramAssignments;}
     const std::string& getParamAssignment(const std::string& key) const;
     //TODO const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
@@ -445,7 +448,9 @@ class SCAVE_API ResultFileManager
 
     // the following are needed for filter combos
     // Note: their return value is allocated with new and callers should delete them
-    ResultFileList *getUniqueFiles(const IDList& ids) const; //XXX why returns pointer?
+    //FIXME why these functions return bloody pointers???
+    //TODO move these group down, next to the getXXXFilterHints() methods
+    ResultFileList *getUniqueFiles(const IDList& ids) const;
     RunList *getUniqueRuns(const IDList& ids) const;
     FileRunList *getUniqueFileRuns(const IDList& ids) const;
     StringSet *getUniqueModuleNames(const IDList& ids) const;
@@ -455,6 +460,8 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueAttributeValues(const IDList& ids, const char *attrName) const;
     StringSet *getUniqueRunAttributeNames(const RunList *runList) const;
     StringSet *getUniqueRunAttributeValues(const RunList& runList, const char *attrName) const;
+    StringSet *getUniqueIterationVariableNames(const RunList *runList) const;
+    StringSet *getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const;
     StringSet *getUniqueParamAssignmentKeys(const RunList *runList) const;
     StringSet *getUniqueParamAssignmentValues(const RunList& runList, const char *key) const;
 
@@ -544,6 +551,7 @@ class SCAVE_API ResultFileManager
     StringVector *getNameFilterHints(const IDList& idlist)const;
     StringVector *getResultItemAttributeFilterHints(const IDList& idlist, const char *attrName) const;
     StringVector *getRunAttributeFilterHints(const RunList& runList, const char *attrName) const;
+    StringVector *getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const;
     StringVector *getParamAssignmentFilterHints(const RunList& runList, const char *key) const;
 
     const char *getRunAttribute(ID id, const char *attribute) const;

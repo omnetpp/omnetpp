@@ -180,6 +180,8 @@ public class FilterUtil {
             String value = entry.getValue();
             if (name.startsWith("attr:"))
                 name = name.substring(5);
+            if (name.startsWith("itervar:"))
+                name = name.substring(8);
             else if (name.startsWith("param:"))
                 name = name.substring(6);
             setField(name, value);

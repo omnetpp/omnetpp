@@ -166,6 +166,11 @@ bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int6
         }
         return true;
     }
+    else if (tokens[0][0] == 'i' && strcmp(tokens[0], "itervar") == 0) {
+        CHECK(numTokens >= 3, "'itervar <name> <value>' expected");
+        itervars[tokens[1]] = tokens[2];
+        return true;
+    }
     else if (tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0) {
         CHECK(numTokens >= 3, "'param <namePattern> <value>' expected");
         paramAssignments.push_back(std::make_pair(tokens[1], tokens[2]));
@@ -189,6 +194,8 @@ void RunData::writeToFile(FILE *file, const char *filename) const
         CHECK(fprintf(file, "run %s\n", runName.c_str()));
     for (auto it = attributes.begin(); it != attributes.end(); ++it)
         CHECK(fprintf(file, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
+    for (auto it = itervars.begin(); it != itervars.end(); ++it)
+        CHECK(fprintf(file, "itervar %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     for (auto it = paramAssignments.begin(); it != paramAssignments.end(); ++it)
         CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     CHECK(fprintf(file, "\n"));

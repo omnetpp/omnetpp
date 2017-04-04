@@ -92,7 +92,7 @@ inline StringMap convertMap(const opp_string_map *m) {
 
 void OmnetppOutputVectorManager::writeRunData()
 {
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getParamAssignments());
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getParamAssignments());
 }
 
 void OmnetppOutputVectorManager::startRun()

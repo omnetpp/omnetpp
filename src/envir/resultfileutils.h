@@ -34,6 +34,7 @@ class ResultFileUtils {
   public:
     static std::string getRunId();
     static StringMap getRunAttributes();
+    static StringMap getIterationVariables();
     static OrderedKeyValueList getParamAssignments();
     static OrderedKeyValueList getConfigEntries();
     static void writeRunData(FILE *f, const char *fname); //TODO remove this

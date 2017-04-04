@@ -21,7 +21,8 @@ public class FilterField implements Comparable<FilterField> {
     {
         ItemField,
         RunAttribute,
-        ModuleParam,
+        IterationVariable,
+        ParamAssignment,
     }
 
     public static final FilterField
@@ -53,7 +54,8 @@ public class FilterField implements Comparable<FilterField> {
         switch (kind) {
         case ItemField:     return name;
         case RunAttribute:  return "attr:" + name;
-        case ModuleParam:   return "param:" + name;
+        case IterationVariable:  return "itervar:" + name;
+        case ParamAssignment:   return "param:" + name;
         }
         Assert.isTrue(false, "Never happens.");
         return name;

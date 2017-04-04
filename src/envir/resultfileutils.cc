@@ -45,13 +45,19 @@ StringMap ResultFileUtils::getRunAttributes()
     for (const char *key : keys)
         if (strcmp(key, CFGVAR_RUNID) != 0)  // skip runId
             attrs[key] = cfg->getVariable(key);
-
-    std::vector<const char *> keys2 = cfg->getIterationVariableNames();
-    for (const char *key : keys2)
-        attrs[key] = cfg->getVariable(key);
-
     return attrs;
 }
+
+StringMap ResultFileUtils::getIterationVariables()
+{
+    cConfigurationEx *cfg = getEnvir()->getConfigEx();
+    StringMap itervars;
+    std::vector<const char *> keys2 = cfg->getIterationVariableNames();
+    for (const char *key : keys2)
+        itervars[key] = cfg->getVariable(key);
+    return itervars;
+}
+
 
 OrderedKeyValueList ResultFileUtils::getParamAssignments()
 {
@@ -80,13 +86,17 @@ OrderedKeyValueList ResultFileUtils::getConfigEntries()
 
 void ResultFileUtils::writeRunData(FILE *f, const char *fname)
 {
+    // note: this method is only for the "legacy" result recorders
     std::string runId = getRunId();
     StringMap attributes = getRunAttributes();
+    StringMap itervars = getIterationVariables();
     OrderedKeyValueList moduleParams = getParamAssignments();
 
     CHECK(fprintf(f, "run %s\n", QUOTE(runId.c_str())));
     for (auto& p : attributes)
         CHECK(fprintf(f, "attr %s %s\n", p.first.c_str(), QUOTE(p.second.c_str())));
+    for (auto& p : itervars)
+        CHECK(fprintf(f, "itervar %s %s\n", p.first.c_str(), QUOTE(p.second.c_str())));
     for (auto& p : moduleParams)
         CHECK(fprintf(f, "param %s %s\n", p.first.c_str(), QUOTE(p.second.c_str())));
     CHECK(fprintf(f, "\n"));

@@ -289,6 +289,7 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
 
         // run metadata
         writeStringMap("attributes", run->getAttributes());
+        writeStringMap("itervars", run->getIterationVariables());
         writeOrderedKeyValueList("moduleparams", run->getParamAssignments());
 
         // scalars

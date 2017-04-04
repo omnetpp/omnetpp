@@ -2,4 +2,4 @@
 
 CHECK=$(pwd)/checkresultfiles
 cd ../../samples/aloha && $CHECK ./aloha -c PureAloha1 --sim-time-limit=60s
-
+cd ../../samples/aloha && $CHECK ./aloha -c PureAlohaExperiment -r 5

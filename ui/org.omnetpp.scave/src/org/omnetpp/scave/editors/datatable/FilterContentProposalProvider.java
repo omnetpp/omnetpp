@@ -31,6 +31,7 @@ class FilterContentProposalProvider extends MatchExpressionContentProposalProvid
 {
     private static ContentProposal[] fieldPrefixProposals = new ContentProposal[] {
         new ContentProposal("attr:"),
+        new ContentProposal("itervar:"),
         new ContentProposal("param:")
     };
 

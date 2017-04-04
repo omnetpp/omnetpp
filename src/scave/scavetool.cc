@@ -82,6 +82,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-s, --print-summary", "Report the number of result items. (This is the default.)");
         help.option("-l, --list-results", "List result items");
         help.option("-a, --list-runattrs", "List run attributes");
+        help.option("-i, --list-itervars", "List iteration variables");
         help.option("-n, --list-names", "List unique result (vector, scalar, etc) names");
         help.option("-m, --list-modules", "List unique module names");
         help.option("-e  --list-qnames", "List unique result names qualified with the module names they occur with");
@@ -351,7 +352,7 @@ static string runStr(const Run *run, RunDisplayMode mode)
 void ScaveTool::queryCommand(int argc, char **argv)
 {
     enum QueryMode {
-        PRINT_SUMMARY, LIST_RESULTS, LIST_RUNATTRS, LIST_MODULES, LIST_NAMES,
+        PRINT_SUMMARY, LIST_RESULTS, LIST_RUNATTRS, LIST_ITERVARS, LIST_MODULES, LIST_NAMES,
         LIST_MODULE_AND_NAME_PAIRS, LIST_RUNS, LIST_CONFIGS
     };
 
@@ -384,6 +385,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_mode = LIST_RESULTS;
         else if (opt == "-a" || opt == "--list-runattrs")
             opt_mode = LIST_RUNATTRS;
+        else if (opt == "-i" || opt == "--list-itervars")
+            opt_mode = LIST_ITERVARS;
         else if (opt == "-n" || opt == "--list-names")
             opt_mode = LIST_NAMES;
         else if (opt == "-m" || opt == "--list-modules")
@@ -553,6 +556,19 @@ void ScaveTool::queryCommand(int argc, char **argv)
                 out << runName << ":" << endl << endl;
             for (auto& runAttr : run->getAttributes())
                 out << maybeRunColumnWithTab << runAttr.first << "\t" << runAttr.second << std::endl;
+            out << endl;
+        }
+        break;
+    }
+    case LIST_ITERVARS: {
+        // note: we ignore opt_perRun, as it makes no sense here
+        for (Run *run : *runs) {
+            string runName = runStr(run, opt_runDisplayMode);
+            string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
+            if (!opt_grepFriendly)
+                out << runName << ":" << endl << endl;
+            for (auto& pair : run->getIterationVariables())
+                out << maybeRunColumnWithTab << pair.first << "\t" << pair.second << std::endl;
             out << endl;
         }
         break;

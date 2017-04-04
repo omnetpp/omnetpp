@@ -149,6 +149,12 @@ const std::string& Run::getAttribute(const std::string& attrName) const
     return it==attributes.end() ? NULLSTRING : it->second;
 }
 
+const std::string& Run::getIterationVariable(const std::string& name) const
+{
+    auto it = itervars.find(name);
+    return it==itervars.end() ? NULLSTRING : it->second;
+}
+
 const std::string& Run::getParamAssignment(const std::string& key) const
 {
     for (auto& p : paramAssignments)  // TODO some kind of ordered map would be better (e.g. std::map plus an std::vector<string> to store the order)
@@ -348,6 +354,32 @@ StringSet *ResultFileManager::getUniqueRunAttributeValues(const RunList& runList
 
     return values;
 }
+
+StringSet *ResultFileManager::getUniqueIterationVariableNames(const RunList *runList) const
+{
+    READER_MUTEX
+    StringSet *set = new StringSet;
+    for (RunList::const_iterator runRef = runList->begin(); runRef != runList->end(); ++runRef) {
+        const StringMap& itervars = (*runRef)->getIterationVariables();
+        for (StringMap::const_iterator it = itervars.begin(); it != itervars.end(); ++it)
+            set->insert(it->first);
+    }
+    return set;
+}
+
+StringSet *ResultFileManager::getUniqueIterationVariableValues(const RunList& runList, const char *itervarName) const
+{
+    READER_MUTEX
+    StringSet *values = new StringSet;
+    for (RunList::const_iterator runRef = runList.begin(); runRef != runList.end(); ++runRef) {
+        const string& value = (*runRef)->getIterationVariable(itervarName);
+        if (&value != &NULLSTRING)
+            values->insert(value);
+    }
+
+    return values;
+}
+
 
 StringSet *ResultFileManager::getUniqueParamAssignmentKeys(const RunList *runList) const
 {
@@ -794,6 +826,7 @@ class MatchableResultItem : public MatchExpression::Matchable
         const char *getRunName() const { return item.getRun()->getRunName().c_str(); }
         const char *getResultItemAttribute(const char *attrName) const { return item.getAttribute(attrName).c_str(); }
         const char *getRunAttribute(const char *attrName) const { return item.getRun()->getAttribute(attrName).c_str(); }
+        const char *getIterationVariable(const char *name) const { return item.getRun()->getIterationVariable(name).c_str(); }
         const char *getParamAssignment(const char *key) const { return item.getRun()->getParamAssignment(key).c_str(); }
 };
 
@@ -814,6 +847,8 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
         return getRunName();
     else if (strncasecmp("attr:", attribute, 5) == 0)
         return getRunAttribute(attribute+5);
+    else if (strncasecmp("itervar:", attribute, 5) == 0)
+        return getIterationVariable(attribute+8);
     else if (strncasecmp("param:", attribute, 6) == 0)
         return getParamAssignment(attribute+6);
     else
@@ -1365,6 +1400,17 @@ StringVector *ResultFileManager::getRunAttributeFilterHints(const RunList& runLi
     std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");
     delete attrValues;
+    return filterHints;
+}
+
+StringVector *ResultFileManager::getIterationVariableFilterHints(const RunList& runList, const char *itervarName) const
+{
+    READER_MUTEX
+    StringSet *values = getUniqueIterationVariableValues(runList, itervarName);
+    StringVector *filterHints = new StringVector(values->begin(), values->end());
+    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
+    filterHints->insert(filterHints->begin(), "*");
+    delete values;
     return filterHints;
 }
 

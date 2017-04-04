@@ -142,7 +142,7 @@ void SqliteScalarFileWriter::prepareStatements()
     prepareStatement(add_statistic_bin_stmt, "INSERT INTO histogramBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
 }
 
-void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const OrderedKeyValueList& paramAssignments)
+void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments)
 {
     // save run
     prepareStatement(stmt, "INSERT INTO run (runName, simTimeExp) VALUES (?, ?);");
@@ -156,6 +156,18 @@ void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, in
     // save run attributes
     prepareStatement(stmt, "INSERT INTO runAttr (runId, attrName, attrValue) VALUES (?, ?, ?);");
     for (auto& p : attributes) {
+        checkOK(sqlite3_reset(stmt));
+        checkOK(sqlite3_bind_int64(stmt, 1, runId));
+        checkOK(sqlite3_bind_text(stmt, 2, p.first.c_str(), p.first.size(), SQLITE_STATIC));
+        checkOK(sqlite3_bind_text(stmt, 3, p.second.c_str(), p.second.size(), SQLITE_STATIC));
+        checkDone(sqlite3_step(stmt));
+        checkOK(sqlite3_clear_bindings(stmt));
+    }
+    finalizeStatement(stmt);
+
+    // save itervars
+    prepareStatement(stmt, "INSERT INTO runItervar (runId, itervarName, itervarValue) VALUES (?, ?, ?);");
+    for (auto& p : itervars) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));
         checkOK(sqlite3_bind_text(stmt, 2, p.first.c_str(), p.first.size(), SQLITE_STATIC));

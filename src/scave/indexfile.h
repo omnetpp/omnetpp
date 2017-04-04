@@ -172,6 +172,7 @@ struct RunData {
     std::string runName;
     int runNumber;
     StringMap attributes;
+    StringMap itervars;
     OrderedKeyValueList paramAssignments;
 
     RunData() : runNumber(0) {}
@@ -259,7 +260,7 @@ class SCAVE_API IndexFile
 /**
  * Reader for an index file.
  */
-class SCAVE_API IndexFileReader
+class SCAVE_API IndexFileReader  //TODO this class should share the reader/parser with OmnetppResultFileLoader!!!
 {
    private:
         /** The name of the index file. */

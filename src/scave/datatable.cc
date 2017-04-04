@@ -172,7 +172,7 @@ ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& des
         header.push_back(Column("Run", STRING));
 
     RunList *runList = manager.getUniqueRuns(idlist);
-    StringSet *runAttrNames = manager.getUniqueRunAttributeNames(runList);
+    StringSet *runAttrNames = manager.getUniqueRunAttributeNames(runList); //TODO save configuration, itervars and repetition instead
     for (auto name : *runAttrNames)
         header.push_back(Column((std::string)"runattr:"+name, STRING));
     delete runAttrNames;

@@ -113,8 +113,10 @@ int ResultItemField::getFieldID(const string& fieldName)
         return ResultItemField::ATTR_ID;
     else if (fieldName.find_first_of('.') != string::npos)
         return ResultItemField::RUN_PARAM_ID;
-    else
+    else if (RunAttribute::isAttributeName(fieldName))
         return ResultItemField::RUN_ATTR_ID;
+    else
+        return ResultItemField::RUN_ITERVAR_ID;
 }
 
 /*----------------------------------------

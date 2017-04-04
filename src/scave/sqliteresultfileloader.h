@@ -58,6 +58,7 @@ class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
   protected:
     virtual void loadRuns();
     virtual void loadRunAttrs();
+    virtual void loadRunItervars();
     virtual void loadRunParams();
     virtual void loadScalars();
     virtual void loadHistograms();

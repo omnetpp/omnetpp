@@ -84,43 +84,42 @@ public class FilterHints {
             setHints(Kind.ItemField, attrName, manager.getResultItemAttributeFilterHints(idlist, attrName).toArray());
         for (String attrName : manager.getUniqueRunAttributeNames(runList).keys().toArray())
             setHints(Kind.RunAttribute, attrName, manager.getRunAttributeFilterHints(runList, attrName).toArray());
+        for (String varName : manager.getUniqueIterationVariableNames(runList).keys().toArray())
+            setHints(Kind.IterationVariable, varName, manager.getIterationVariableFilterHints(runList, varName).toArray());
         for (String key : manager.getUniqueParamAssignmentKeys(runList).keys().toArray())
-            setHints(Kind.ModuleParam, key, manager.getParamAssignmentFilterHints(runList, key).toArray());
+            setHints(Kind.ParamAssignment, key, manager.getParamAssignmentFilterHints(runList, key).toArray());
     }
 
     private void fillOneField(ResultFileManager manager, IDList idlist, FilterField field) {
         manager.checkReadLock();
-        if (field.equals(RUN))
-        {
+        if (field.equals(RUN)) {
             RunList runList = manager.getUniqueRuns(idlist);
             setHints(RUN, manager.getRunNameFilterHints(runList).toArray());
         }
-        else if (field.equals(FILE))
-        {
+        else if (field.equals(FILE)) {
             ResultFileList fileList = manager.getUniqueFiles(idlist);
             setHints(FILE, manager.getFilePathFilterHints(fileList).toArray());
         }
-        else if (field.equals(MODULE))
-        {
+        else if (field.equals(MODULE)) {
             setHints(MODULE, manager.getModuleFilterHints(idlist).toArray());
         }
-        else if (field.equals(NAME))
-        {
+        else if (field.equals(NAME)) {
             setHints(NAME, manager.getNameFilterHints(idlist).toArray());
         }
-        else if (field.getKind() == FilterField.Kind.ItemField)
-        {
+        else if (field.getKind() == FilterField.Kind.ItemField) {
             setHints(Kind.ItemField, field.getName(), manager.getResultItemAttributeFilterHints(idlist, field.getName()).toArray());
         }
-        else if (field.getKind() == FilterField.Kind.RunAttribute)
-        {
+        else if (field.getKind() == FilterField.Kind.RunAttribute) {
             RunList runList = manager.getUniqueRuns(idlist);
             setHints(Kind.RunAttribute, field.getName(), manager.getRunAttributeFilterHints(runList, field.getName()).toArray());
         }
-        else if (field.getKind() == FilterField.Kind.ModuleParam)
-        {
+        else if (field.getKind() == FilterField.Kind.IterationVariable) {
             RunList runList = manager.getUniqueRuns(idlist);
-            setHints(Kind.ModuleParam, field.getName(), manager.getParamAssignmentFilterHints(runList, field.getName()).toArray());
+            setHints(Kind.RunAttribute, field.getName(), manager.getIterationVariableFilterHints(runList, field.getName()).toArray());
+        }
+        else if (field.getKind() == FilterField.Kind.ParamAssignment) {
+            RunList runList = manager.getUniqueRuns(idlist);
+            setHints(Kind.ParamAssignment, field.getName(), manager.getParamAssignmentFilterHints(runList, field.getName()).toArray());
         }
     }
 

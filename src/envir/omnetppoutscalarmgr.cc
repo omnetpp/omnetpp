@@ -115,7 +115,7 @@ void OmnetppOutputScalarManager::initialize()
 
 void OmnetppOutputScalarManager::writeRunData()
 {
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getParamAssignments());
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getParamAssignments());
 
     // save numeric iteration variables as scalars as well, after saving them as run attributes (TODO this should not be necessary)
     std::vector<const char *> names = getEnvir()->getConfigEx()->getIterationVariableNames();

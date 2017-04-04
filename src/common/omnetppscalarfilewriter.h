@@ -58,7 +58,7 @@ class COMMON_API OmnetppScalarFileWriter
     void setPrecision(int p) {prec = p;}
     int getPrecision() const {return prec;}
 
-    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const OrderedKeyValueList& paramAssignments);
+    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments);
     void endRecordingForRun();
     void recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes);
     void recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes);

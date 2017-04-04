@@ -61,6 +61,7 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
         std::string moduleName;
         std::string resultName;
         StringMap attrs;
+        StringMap itervars;
         int vectorId = -1;
         std::string vectorColumns; //TODO switch to 'bool hasEventNumber'
         double scalarValue;
@@ -71,6 +72,7 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
     void processLine(char **vec, int numTokens, ParseContext& ctx);
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
     void flush(ParseContext& ctx);
+    void separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars);
   public:
     OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar) : IResultFileLoader(resultFileManagerPar) {}
     virtual ResultFile *loadFile(const char *fileName, const char *fileSystemFileName=nullptr, bool reload=false) override;

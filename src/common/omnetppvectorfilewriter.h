@@ -116,7 +116,7 @@ class COMMON_API OmnetppVectorFileWriter
     void setOverallMemoryLimit(size_t limit) {bufferedSamplesLimit = limit / sizeof(Sample);}
     size_t getOverallMemoryLimit() const {return bufferedSamplesLimit * sizeof(Sample);}
 
-    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const OrderedKeyValueList& paramAssignments);
+    void beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments);
     void endRecordingForRun();
     void *registerVector(const std::string& componentFullPath, const std::string& name, const StringMap& attributes, size_t bufferSize, bool recordEventNumbers);
     void deregisterVector(void *vechandle);

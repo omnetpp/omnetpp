@@ -177,6 +177,15 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         std::string attrValue = vec[2];
         ctx.attrs[attrName] = attrValue;
     }
+    else if (vec[0][0] == 'i' && !strcmp(vec[0], "itervar")) {
+        // syntax: "itervar <name> <value>"
+        CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'itervar' line, must be under a 'run' line");
+        CHECK(numTokens == 3, "incorrect 'itervar' line -- itervar <name> <value> expected");
+
+        std::string name = vec[1];
+        std::string value = vec[2];
+        ctx.itervars[name] = value;
+    }
     else if (vec[0][0] == 'p' && !strcmp(vec[0], "param")) {
         // syntax: "param <namePattern> <value>"
         CHECK(ctx.currentItemType == ParseContext::RUN, "stray 'param' line, must be under a 'run' line");
@@ -216,7 +225,10 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
         if (!isNewRun)
             break; // already loaded, don't add attrs, itervars etc again; TODO check consistency
 
+        separateItervarsFromAttrs(ctx.attrs, ctx.itervars);
+
         runRef->attributes = ctx.attrs;
+        runRef->itervars = ctx.itervars;
         runRef->paramAssignments = ctx.moduleParams;
 
         // the "runNumber" attribute is also stored separately
@@ -251,6 +263,22 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     ctx.attrs.clear();
     ctx.stats.reset();
     ctx.bins.clear();
+}
+
+void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars)
+{
+    // Old file don't have itervar lines, but iteration variables are saved as run attributes.
+    // This method identifies iteration variables, and moves them from the attrs stringmap
+    // into itervars.
+    if (itervars.empty() && attrs["iterationvars"] != "") {
+        for (auto part : opp_split(attrs["iterationvars"], ", ")) {
+            std::string varName = opp_substringafter(opp_substringbefore(part, "="), "$");
+            if (attrs.find(varName) != attrs.end()) {
+                itervars[varName] = attrs[varName];
+                attrs.erase(varName);
+            }
+        }
+    }
 }
 
 ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *fileSystemFileName, bool reload)
@@ -306,11 +334,14 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
     }
 
     Run *runRef = resultFileManager->getRunByName(index->run.runName.c_str());
-    if (!runRef) {
+    if (!runRef)
         runRef = resultFileManager->addRun(index->run.runName);
-    }
+
+    separateItervarsFromAttrs(index->run.attributes, index->run.itervars);
+
     runRef->runNumber = index->run.runNumber;
     runRef->attributes = index->run.attributes;
+    runRef->itervars = index->run.itervars;
     runRef->paramAssignments = index->run.paramAssignments;
     FileRun *fileRunRef = resultFileManager->addFileRun(fileRef, runRef);
 

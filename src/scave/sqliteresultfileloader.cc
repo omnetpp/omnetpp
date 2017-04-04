@@ -119,6 +119,29 @@ void SqliteResultFileLoader::loadRunAttrs()
     finalizeStatement();
 }
 
+void SqliteResultFileLoader::loadRunItervars()
+{
+    prepareStatement("SELECT runId, itervarName, itervarValue FROM runItervar;");
+
+    for (int row=1; ; row++) {
+        int resultCode = sqlite3_step (stmt);
+        if (resultCode == SQLITE_DONE)
+            break;
+        checkRow(resultCode);
+        sqlite3_int64 runId = sqlite3_column_int64(stmt, 0);
+        std::string itervarName = (const char *) sqlite3_column_text(stmt, 1);
+        std::string itervarValue = (const char *) sqlite3_column_text(stmt, 2);
+
+        FileRun *fileRunRef = fileRunMap.at(runId);
+        const StringMap& itervars = fileRunRef->runRef->getIterationVariables();
+        StringMap::const_iterator oldPairRef = itervars.find(itervarName);
+        if (oldPairRef != itervars.end() && oldPairRef->second != itervarValue)
+            error("Value of iteration variable conflicts with previously loaded value");
+        fileRunRef->runRef->itervars[itervarName] = itervarValue;
+    }
+    finalizeStatement();
+}
+
 void SqliteResultFileLoader::loadRunParams()
 {
     prepareStatement("SELECT runId, paramKey, paramValue FROM runParam ORDER BY paramOrder ASC;");
@@ -349,6 +372,7 @@ ResultFile *SqliteResultFileLoader::loadFile(const char *fileName, const char *f
         loadRuns();
         loadRunAttrs();
         loadRunParams();
+        loadRunItervars();
         loadScalars();
         loadVectors();
         loadHistograms();

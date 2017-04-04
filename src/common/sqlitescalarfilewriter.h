@@ -76,7 +76,7 @@ class COMMON_API SqliteScalarFileWriter
     void close();
     bool isOpen() const {return db != nullptr;} // IMPORTANT: db will be closed when an error occurs
 
-    void beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const OrderedKeyValueList& paramAssignments);
+    void beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments);
     void endRecordingForRun();
     void recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes);
     void recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes);
