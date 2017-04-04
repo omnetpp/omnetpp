@@ -51,7 +51,7 @@ void FormattedPrinter::option(const string& option, const string& description)
 
 void FormattedPrinter::table(const std::string& text, const std::vector<int>& userColumnWidths)
 {
-    out << opp_formattable(text, columnSpacing, userColumnWidths);
+    out << opp_formatTable(text, columnSpacing, userColumnWidths);
 }
 
 } // namespace common

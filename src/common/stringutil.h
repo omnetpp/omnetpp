@@ -211,7 +211,7 @@ COMMON_API std::vector<std::string> opp_split(const std::string& text, const std
  * by specifying positive numbers at the respective indices in userColumnWidths[]
  * (i.e. specify 0 or -1 in the array to use automatic width.)
  */
-COMMON_API std::string opp_formattable(const std::string& text, int spacing=2, const std::vector<int>& userColumnWidths=std::vector<int>());
+COMMON_API std::string opp_formatTable(const std::string& text, int spacing=2, const std::vector<int>& userColumnWidths=std::vector<int>());
 
 /**
  * Returns true if the first string begins with the second string.

@@ -432,7 +432,7 @@ static std::vector<int> computeMaxColumnWidths(const std::string& text)
     return widths;
 }
 
-std::string opp_formattable(const std::string& text, int spacing, const std::vector<int>& userColumnWidths)
+std::string opp_formatTable(const std::string& text, int spacing, const std::vector<int>& userColumnWidths)
 {
     std::vector<int> columnWidths = computeMaxColumnWidths(text);
     for (size_t i = 0; i < std::min(userColumnWidths.size(), columnWidths.size()); i++)
@@ -441,7 +441,8 @@ std::string opp_formattable(const std::string& text, int spacing, const std::vec
 
     std::stringstream out;
     std::vector<std::string> lines = opp_split(text, "\n");
-    for (auto line : lines) {
+    int lineNum = 0;
+    for (auto& line : lines) {
         std::vector<std::string> items = opp_split(line, "\t");
         int col = 0;
         for (auto item : items) {
@@ -452,7 +453,8 @@ std::string opp_formattable(const std::string& text, int spacing, const std::vec
             }
             col++;
         }
-        out << std::endl;
+        if (lineNum++ != lines.size()-1) // except for last line
+            out << std::endl;
     }
     return out.str();
 }

@@ -623,7 +623,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     } // switch
 
     if (&out == &buffer)
-        cout << opp_formattable(buffer.str());
+        cout << opp_formatTable(buffer.str());
 
     delete runs;
 }
