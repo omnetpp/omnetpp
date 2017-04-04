@@ -313,11 +313,11 @@ string ScaveTool::rebuildCommandLine(int argc, char **argv)
     return result;
 }
 
-static void printAndDelete(StringSet *strings, const string& prefix = "")
+static void printAndDelete(std::ostream& out, StringSet *strings, const string& prefix = "")
 {
     if (strings != nullptr) {
         for (StringSet::iterator it = strings->begin(); it != strings->end(); ++it)
-            cout << prefix << *it << "\n";
+            out << prefix << *it << "\n";
         delete strings;
     }
 }
@@ -457,41 +457,44 @@ void ScaveTool::queryCommand(int argc, char **argv)
     IDList statistics = results.filterByTypes(ResultFileManager::STATISTICS);
     IDList histograms = results.filterByTypes(ResultFileManager::HISTOGRAM);
 
+    stringstream buffer;
+    ostream& out = opt_useTabs ? cout : buffer;
+
     switch (opt_mode) {
     case PRINT_SUMMARY: {
 #define L(label) (opt_bare ? "\t" : label)
         if (!opt_perRun) {
-            cout << L("runs: ") << runs->size() << " ";
+            out << L("runs: ") << runs->size() << " ";
             if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0)
-                cout << L("\tscalars: ") << scalars.size();
+                out << L("\tscalars: ") << scalars.size();
             if ((opt_resultTypeFilter & ResultFileManager::VECTOR) != 0)
-                cout << L("\tvectors: ") << vectors.size();
+                out << L("\tvectors: ") << vectors.size();
             if ((opt_resultTypeFilter & ResultFileManager::STATISTICS) != 0)
-                cout << L("\tstatistics: ") << statistics.size();
+                out << L("\tstatistics: ") << statistics.size();
             if ((opt_resultTypeFilter & ResultFileManager::HISTOGRAM) != 0)
-                cout << L("\thistograms: ") << histograms.size();
-            cout << endl;
+                out << L("\thistograms: ") << histograms.size();
+            out << endl;
         }
         else {
             for (Run *run : *runs) {
-                cout << runStr(run, opt_runDisplayMode);
+                out << runStr(run, opt_runDisplayMode);
                 if ((opt_resultTypeFilter & ResultFileManager::SCALAR) != 0) {
                     IDList runScalars = resultFileManager.filterIDList(scalars, run, nullptr, nullptr);
-                    cout << L("\tscalars: ") << runScalars.size();
+                    out << L("\tscalars: ") << runScalars.size();
                 }
                 if ((opt_resultTypeFilter & ResultFileManager::VECTOR) != 0) {
                     IDList runVectors = resultFileManager.filterIDList(vectors, run, nullptr, nullptr);
-                    cout << L("\tvectors: ") << runVectors.size();
+                    out << L("\tvectors: ") << runVectors.size();
                 }
                 if ((opt_resultTypeFilter & ResultFileManager::STATISTICS) != 0) {
                     IDList runStatistics = resultFileManager.filterIDList(statistics, run, nullptr, nullptr);
-                    cout << L("\tstatistics: ") << runStatistics.size();
+                    out << L("\tstatistics: ") << runStatistics.size();
                 }
                 if ((opt_resultTypeFilter & ResultFileManager::HISTOGRAM) != 0) {
                     IDList runHistograms = resultFileManager.filterIDList(histograms, run, nullptr, nullptr);
-                    cout << L("\thistograms: ") << runHistograms.size();
+                    out << L("\thistograms: ") << runHistograms.size();
                 }
-                cout << endl;
+                out << endl;
             }
         }
         break;
@@ -499,8 +502,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
 #undef L
     case LIST_RESULTS: {
         // note: we ignore opt_perRun, as it makes no sense here
-        stringstream buffer;
-        ostream& out = opt_useTabs ? cout : buffer;
         for (Run *run : *runs) {
             string runName = runStr(run, opt_runDisplayMode);
             string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
@@ -539,8 +540,6 @@ void ScaveTool::queryCommand(int argc, char **argv)
             }
             out << endl;
         }
-        if (&out == &buffer)
-            cout << opp_formattable(buffer.str());
         break;
     }
 #undef L
@@ -550,54 +549,54 @@ void ScaveTool::queryCommand(int argc, char **argv)
             string runName = runStr(run, opt_runDisplayMode);
             string maybeRunColumnWithTab = opt_grepFriendly ? runName + "\t" : "";
             if (!opt_grepFriendly)
-                cout << runName << ":" << endl << endl;
+                out << runName << ":" << endl << endl;
             for (auto& runAttr : run->getAttributes())
-                cout << maybeRunColumnWithTab << runAttr.first << "\t" << runAttr.second << std::endl;
-            cout << endl;
+                out << maybeRunColumnWithTab << runAttr.first << "\t" << runAttr.second << std::endl;
+            out << endl;
         }
         break;
     }
     case LIST_NAMES: {
         if (!opt_perRun)
-            printAndDelete(resultFileManager.getUniqueNames(results));
+            printAndDelete(out, resultFileManager.getUniqueNames(results));
         else {
             for (Run *run : *runs) {
                 string runName = runStr(run, opt_runDisplayMode);
                 if (!opt_grepFriendly)
-                    cout << runName << ":" << endl << endl;
+                    out << runName << ":" << endl << endl;
                 IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
-                printAndDelete(resultFileManager.getUniqueNames(runResults), opt_grepFriendly ? runName + "\t" : "");
-                cout << endl;
+                printAndDelete(out, resultFileManager.getUniqueNames(runResults), opt_grepFriendly ? runName + "\t" : "");
+                out << endl;
             }
         }
         break;
     }
     case LIST_MODULES: {
         if (!opt_perRun)
-            printAndDelete(resultFileManager.getUniqueModuleNames(results));
+            printAndDelete(out, resultFileManager.getUniqueModuleNames(results));
         else {
             for (Run *run : *runs) {
                 string runName = runStr(run, opt_runDisplayMode);
                 if (!opt_grepFriendly)
-                    cout << runName << ":" << endl << endl;
+                    out << runName << ":" << endl << endl;
                 IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
-                printAndDelete(resultFileManager.getUniqueModuleNames(runResults), opt_grepFriendly ? runName + "\t" : "");
-                cout << endl;
+                printAndDelete(out, resultFileManager.getUniqueModuleNames(runResults), opt_grepFriendly ? runName + "\t" : "");
+                out << endl;
             }
         }
         break;
     }
     case LIST_MODULE_AND_NAME_PAIRS: {
         if (!opt_perRun)
-            printAndDelete(resultFileManager.getUniqueModuleAndResultNamePairs(results));
+            printAndDelete(out, resultFileManager.getUniqueModuleAndResultNamePairs(results));
         else {
             for (Run *run : *runs) {
                 string runName = runStr(run, opt_runDisplayMode);
                 if (!opt_grepFriendly)
-                    cout << runName << ":" << endl << endl;
+                    out << runName << ":" << endl << endl;
                 IDList runResults = resultFileManager.filterIDList(results, run, nullptr, nullptr);
-                printAndDelete(resultFileManager.getUniqueModuleAndResultNamePairs(runResults), opt_grepFriendly ? runName + "\t" : "");
-                cout << endl;
+                printAndDelete(out, resultFileManager.getUniqueModuleAndResultNamePairs(runResults), opt_grepFriendly ? runName + "\t" : "");
+                out << endl;
             }
         }
         break;
@@ -609,19 +608,22 @@ void ScaveTool::queryCommand(int argc, char **argv)
             string runName = runStr(run, opt_runDisplayMode);
             uniqueRunNames->insert(runName);
         }
-        printAndDelete(uniqueRunNames);
+        printAndDelete(out, uniqueRunNames);
         break;
     }
     case LIST_CONFIGS: {
         // note: we ignore opt_perRun, as it makes no sense here
         StringSet *uniqueConfigNames = resultFileManager.getUniqueRunAttributeValues(*runs, RunAttribute::CONFIGNAME);
-        printAndDelete(uniqueConfigNames);
+        printAndDelete(out, uniqueConfigNames);
         break;
     }
     default: {
         Assert(false);
     }
     } // switch
+
+    if (&out == &buffer)
+        cout << opp_formattable(buffer.str());
 
     delete runs;
 }
