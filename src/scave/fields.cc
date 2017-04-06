@@ -65,7 +65,7 @@ const char * const RunAttribute::RESULTDIR   = "resultdir";
 const char * const RunAttribute::REPETITION  = "repetition";
 const char * const RunAttribute::SEEDSET     = "seedset";
 const char * const RunAttribute::ITERATIONVARS = "iterationvars";
-const char * const RunAttribute::ITERATIONVARS2 = "iterationvars2";
+const char * const RunAttribute::ITERATIONVARS2 = "iterationvars2"; // obsolete, no longer generated
 
 const StringVector& RunAttribute::getAttributeNames()
 {

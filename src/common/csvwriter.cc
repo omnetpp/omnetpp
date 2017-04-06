@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <cmath>
 #include "commonutil.h"
 #include "bigdecimal.h"
 #include "opp_ctype.h"
@@ -35,7 +36,7 @@ void CsvWriter::open(const char *filename, std::ios::openmode mode)
     if (!fileStream.is_open())
         throw opp_runtime_error("cannot open '%s' for write", filename);
     outp = &fileStream;
-    atLineStart = true;
+    lineNumber = columnNumber = 0;
 }
 
 void CsvWriter::close()
@@ -52,31 +53,31 @@ std::ostream& CsvWriter::out()
 
 void CsvWriter::writeInt(int64_t value)
 {
+    Assert(!insideRaw);
     writeSep();
     out() << value;
+    columnNumber++;
 }
 
 void CsvWriter::writeDouble(double value)
 {
+    Assert(!insideRaw);
     writeSep();
-    if (isNaN(value))
-        out() << "NaN";
-    else if (isPositiveInfinity(value))
-        out() << "Inf";
-    else if (isNegativeInfinity(value))
-        out() << "-Inf";
-    else
-        out() << std::setprecision(prec) << value;
+    doWriteDouble(value);
+    columnNumber++;
 }
 
 void CsvWriter::writeBigDecimal(const BigDecimal& value)
 {
+    Assert(!insideRaw);
     writeSep();
     out() << value.str();
+    columnNumber++;
 }
 
 void CsvWriter::writeString(const std::string& value)
 {
+    Assert(!insideRaw);
     writeSep();
     if (needsQuote(value)) {
         out() << quoteChar;
@@ -87,24 +88,67 @@ void CsvWriter::writeString(const std::string& value)
     else {
         out() << value;
     }
+    columnNumber++;
 }
 
 void CsvWriter::writeBlank()
 {
+    Assert(!insideRaw);
     writeSep();
+    columnNumber++;
 }
 
 void CsvWriter::writeNewLine()
 {
+    Assert(!insideRaw);
     out() << std::endl;
-    atLineStart = true;
+    lineNumber++;
+    columnNumber = 0;
+}
+
+void CsvWriter::beginRaw()
+{
+    Assert(!insideRaw); // cannot nest beginRaw() calls
+    writeSep();
+    insideRaw = true;
+}
+
+void CsvWriter::endRaw()
+{
+    Assert(insideRaw);  // missing beginRaw()
+    insideRaw = false;
+    columnNumber++;
+}
+
+void CsvWriter::writeRawDouble(double value)
+{
+    Assert(insideRaw);
+    doWriteDouble(value);
+}
+
+void CsvWriter::writeRawQuotedStringBody(const std::string& value)
+{
+    Assert(insideRaw);
+    for (char c : value)
+        writeChar(c);
 }
 
 void CsvWriter::writeSep()
 {
-    if (!atLineStart)
+    if (columnNumber != 0)
         out() << separator;
-    atLineStart = false;
+}
+
+void CsvWriter::doWriteDouble(double value)
+{
+    if (std::isfinite(value))
+        out() << std::setprecision(prec) << value;
+    else if (isPositiveInfinity(value))
+        out() << "Inf";
+    else if (isNegativeInfinity(value))
+        out() << "-Inf";
+    else
+        out() << "NaN";
 }
 
 bool CsvWriter::needsQuote(const std::string& value)

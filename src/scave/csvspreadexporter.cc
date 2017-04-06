@@ -1,5 +1,5 @@
 //==========================================================================
-//  CSVEXPORTER.CC - part of
+//  CSVSPREADEXPORTER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -20,12 +20,13 @@
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/stlutil.h"
+#include "common/fileutil.h"
+#include "csvspreadexporter.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"
 #include "datatable.h"
 #include "exportutils.h"
-#include "csvexporter.h"
 
 using namespace std;
 using namespace omnetpp::common;
@@ -37,22 +38,22 @@ static const std::map<std::string,CsvWriter::QuoteEscapingMethod> QUOTEMETHODS =
 static const std::map<std::string,char> SEPARATORS = {{"tab", '\t'}, {"comma", ','}, {"semicolon", ';'}, {"colon", ':'}};
 static const std::map<std::string,char> QUOTECHARS = {{"doublequote", '"'}, {"singlequote", '\''}};
 static const std::map<std::string,bool> BOOLS = {{"true", true}, {"false", false}};
-static const std::map<std::string,CsvExporter::VectorLayout> VECTORLAYOUTS = {{"horizontal", CsvExporter::HORIZONTAL}, {"vertical", CsvExporter::VERTICAL}, {"vertical-joined", CsvExporter::JOINED_VERTICAL}};
+static const std::map<std::string,CsvForSpreadsheetExporter::VectorLayout> VECTORLAYOUTS = {{"horizontal", CsvForSpreadsheetExporter::HORIZONTAL}, {"vertical", CsvForSpreadsheetExporter::VERTICAL}, {"vertical-joined", CsvForSpreadsheetExporter::JOINED_VERTICAL}};
 
-class CsvExporterType : public ExporterType
+class CsvForSpreadsheetExporterType : public ExporterType
 {
     public:
-        virtual std::string getFormatName() const {return "CSV";}
-        virtual std::string getDisplayName() const {return "CSV";}
-        virtual std::string getDescription() const {return "Export results in CSV format.";}
+        virtual std::string getFormatName() const {return "CSV-S";}
+        virtual std::string getDisplayName() const {return "CSV for Spreadsheets";}
+        virtual std::string getDescription() const {return "Export results in a CSV format best suited for processing in spreadsheets.";}
         virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
         virtual std::string getFileExtension() {return "csv"; }
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
-        virtual Exporter *create() const {return new CsvExporter();}
+        virtual Exporter *create() const {return new CsvForSpreadsheetExporter();}
 };
 
-string CsvExporterType::getXswtForm() const
+string CsvForSpreadsheetExporterType::getXswtForm() const
 {
     return
             "<?xml version='1.0' encoding='UTF-8'?>\n"
@@ -66,12 +67,17 @@ string CsvExporterType::getXswtForm() const
             "  </import>\n"
             "  <layout x:class='GridLayout' numColumns='2'/>\n"
             "  <x:children>\n"
-            "    <!-- allowMixed TODO -->\n"
-            "    <group text='CSV Options'>\n"
-            "      <layoutData x:class='GridData' horizontalSpan='2' horizontalAlignment='FILL' grabExcessHorizontalSpace='true'/>\n"
+            "    <group text='Options'>\n"
+            "      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/>\n"
             "      <layout x:class='GridLayout' numColumns='2'/>\n"
             "      <x:children>\n"
-            "         <label text='Scalar arrangement:'/>\n"
+            "         <button x:id='columnNames' text='Add header row' x:style='CHECK' selection='true'>\n"
+            "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
+            "         </button>\n"
+            "         <button x:id='allowMixed' text='Allow mixed content' x:style='CHECK' selection='true'>\n"
+            "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
+            "         </button>\n"
+            "         <label text='Expand to columns (scalars only):'/>\n"
             "         <combo x:id='scalarsGroupBy' x:style='BORDER|READ_ONLY'>\n"
             "           <add x:p0=''/>\n"
             "           <add x:p0='name'/>\n"
@@ -86,17 +92,17 @@ string CsvExporterType::getXswtForm() const
             "           <add x:p0='vertical-joined'/>\n"
             "           <text x:p0='vertical'/>\n"
             "         </combo>\n"
-            "         <button x:id='allowMixed' text='Allow mixed content (i.e. scalars + vectors)' x:style='CHECK' selection='true'>\n"
-            "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
-            "         </button>\n"
-            "         <button x:id='columnNames' text='Add header row' x:style='CHECK' selection='true'>\n"
-            "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
-            "         </button>\n"
             "         <label text='Data precision:'/>\n"
             "         <spinner x:id='precision' x:style='BORDER' minimum='1' maximum='16' textLimit='2' selection='14'>\n"
             "           <layoutData x:class='GridData' widthHint='100'/>\n"
             "         </spinner>\n"
-            "         <label text='CSV separator:'/>\n"
+            "      </x:children>\n"
+            "    </group>\n"
+            "    <group text='CSV'>\n"
+            "      <layoutData x:class='GridData' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true'/>\n"
+            "      <layout x:class='GridLayout' numColumns='2'/>\n"
+            "      <x:children>\n"
+            "         <label text='Separator:'/>\n"
             "         <combo x:id='separator' x:style='BORDER|READ_ONLY'>\n"
             "           <add x:p0='tab'/>\n"
             "           <add x:p0='comma'/>\n"
@@ -104,13 +110,13 @@ string CsvExporterType::getXswtForm() const
             "           <add x:p0='colon'/>\n"
             "           <text x:p0='comma'/>\n"
             "         </combo>\n"
-            "         <label text='CSV quoting:'/>\n"
+            "         <label text='Quoting:'/>\n"
             "         <combo x:id='quoteChar' x:style='BORDER|READ_ONLY'>\n"
             "           <add x:p0='doublequote'/>\n"
             "           <add x:p0='singlequote'/>\n"
             "           <text x:p0='doublequote'/>\n"
             "         </combo>\n"
-            "         <label text='CSV quote escaping:'/>\n"
+            "         <label text='Quote escaping:'/>\n"
             "         <combo x:id='quoteEscaping' x:style='BORDER|READ_ONLY'>\n"
             "           <add x:p0='doubling'/>\n"
             "           <add x:p0='backslash'/>\n"
@@ -122,7 +128,7 @@ string CsvExporterType::getXswtForm() const
             "</xswt>\n";
 }
 
-StringMap CsvExporterType::getSupportedOptions() const
+StringMap CsvForSpreadsheetExporterType::getSupportedOptions() const
 {
     StringMap options {
         {"precision", "The number of significant digits for floating-point values (double). The maximum value is ~15."},
@@ -140,13 +146,13 @@ StringMap CsvExporterType::getSupportedOptions() const
 
 //---
 
-ExporterType *CsvExporter::getDescription()
+ExporterType *CsvForSpreadsheetExporter::getDescription()
 {
-    static CsvExporterType desc;
+    static CsvForSpreadsheetExporterType desc;
     return &desc;
 }
 
-void CsvExporter::setOption(const std::string& key, const std::string& value)
+void CsvForSpreadsheetExporter::setOption(const std::string& key, const std::string& value)
 {
     checkOptionKey(getDescription(), key);
     if (key == "precision")
@@ -171,12 +177,14 @@ void CsvExporter::setOption(const std::string& key, const std::string& value)
         throw opp_runtime_error("Exporter: unhandled option '%s'", key.c_str());
 }
 
-void CsvExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+void CsvForSpreadsheetExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     int itemTypes = idlist.getItemTypes();
     bool mixedContent = itemTypes != 0 &&
-            itemTypes != ResultFileManager::SCALAR && itemTypes != ResultFileManager::VECTOR &&
-            itemTypes != ResultFileManager::STATISTICS && itemTypes != ResultFileManager::HISTOGRAM;
+            itemTypes != ResultFileManager::SCALAR &&
+            itemTypes != ResultFileManager::VECTOR &&
+            itemTypes != ResultFileManager::STATISTICS &&
+            itemTypes != ResultFileManager::HISTOGRAM;
 
     if (mixedContent && !allowMixedContent)
         throw opp_runtime_error("CSV exporter: homogeneous results expected (all scalars, all vectors, "
@@ -188,19 +196,19 @@ void CsvExporter::saveResults(const std::string& fileName, ResultFileManager *ma
         csv.open(fileName.c_str());
 
     if ((itemTypes & ResultFileManager::SCALAR) != 0) {
-        if (mixedContent) {csv.writeString("*** SCALARS ***"); csv.writeNewLine();}
+        if (mixedContent) {csv.writeNewLine(); csv.writeString("**** SCALARS ****"); csv.writeNewLine();}
         saveScalars(manager, idlist.filterByTypes(ResultFileManager::SCALAR), monitor);
     }
     if ((itemTypes & ResultFileManager::VECTOR) != 0) {
-        if (mixedContent) {csv.writeString("*** VECTORS ***"); csv.writeNewLine();}
+        if (mixedContent) {csv.writeNewLine(); csv.writeString("**** VECTORS ****"); csv.writeNewLine();}
         saveVectors(manager, idlist.filterByTypes(ResultFileManager::VECTOR), monitor);
     }
     if ((itemTypes & ResultFileManager::STATISTICS) != 0) {
-        if (mixedContent) {csv.writeString("*** SUMMARY STATISTICS ***"); csv.writeNewLine();}
+        if (mixedContent) {csv.writeNewLine(); csv.writeString("**** STATISTICS ****"); csv.writeNewLine();}
         saveStatistics(manager, idlist.filterByTypes(ResultFileManager::STATISTICS), monitor);
     }
     if ((itemTypes & ResultFileManager::HISTOGRAM) != 0) {
-        if (mixedContent) {csv.writeString("*** HISTOGRAMS ***"); csv.writeNewLine();}
+        if (mixedContent) {csv.writeNewLine(); csv.writeString("**** HISTOGRAMS ****"); csv.writeNewLine();}
         saveHistograms(manager, idlist.filterByTypes(ResultFileManager::HISTOGRAM), monitor);
     }
 
@@ -208,16 +216,61 @@ void CsvExporter::saveResults(const std::string& fileName, ResultFileManager *ma
         csv.close();
 }
 
-void CsvExporter::saveScalars(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+void CsvForSpreadsheetExporter::collectItervars(ResultFileManager *manager, const IDList& idlist)
 {
-    //TODO use monitor
-    const ScalarDataTable table(idlist, scalarsGroupBy.complement(), *manager);
-    saveTable(csv, table, columnNames);
+    itervarNames.clear();
+    RunList *runs = manager->getUniqueRuns(idlist);
+    StringSet *names = manager->getUniqueIterationVariableNames(runs);
+    for (std::string name : *names)
+        itervarNames.push_back(name);
+    delete names;
+    delete runs;
 }
 
-void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+void CsvForSpreadsheetExporter::writeRunColumnNames()
+{
+    csv.writeString("run");
+    for (std::string name : itervarNames)
+        csv.writeString(name);
+    csv.writeString(RunAttribute::REPETITION);
+}
+
+void CsvForSpreadsheetExporter::writeRunColumns(Run *run)
+{
+    csv.writeString(run->getRunName());
+    for (std::string name : itervarNames)
+        csv.writeString(run->getIterationVariable(name));
+    csv.writeString(run->getAttribute(RunAttribute::REPETITION));
+}
+
+void CsvForSpreadsheetExporter::saveScalars(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO use monitor
+    collectItervars(manager, idlist);
+    const ScalarDataTable table(idlist, scalarsGroupBy.complement(), *manager);
+
+    // write header
+    if (columnNames) {
+        writeRunColumnNames();
+        for (int col = 0; col < table.getNumColumns(); ++col)
+            csv.writeString(table.getColumn(col).name);
+        csv.writeNewLine();
+    }
+
+    // write data
+    for (int row = 0; row < table.getNumRows(); ++row) {
+        writeRunColumns(table.getAnyScalarInRow(row).getRun());
+        for (int col = 0; col < table.getNumColumns(); ++col)
+            writeTableCell(csv, table, row, col);
+        csv.writeNewLine();
+    }
+}
+
+
+void CsvForSpreadsheetExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+{
+    //TODO use monitor
+    collectItervars(manager, idlist);
     std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, idlist, vectorFilters);
     assert((int)xyArrays.size() == idlist.size());
 
@@ -226,11 +279,11 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
     if (vectorLayout == HORIZONTAL) {
         // write header row
         if (columnNames) {
-            csv.writeString("Run");
-            csv.writeString("Module");
-            csv.writeString("Name");
-            csv.writeString("Row type");
-            csv.writeString("Data...");
+            writeRunColumnNames();
+            csv.writeString("module");
+            csv.writeString("name");
+            csv.writeString("rowtype");
+            csv.writeString("data...");
             csv.writeNewLine();
         }
 
@@ -240,7 +293,7 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
             XYArray *data = xyArrays[i];
 
             // time row
-            csv.writeString(vector.getRun()->getRunName()); //TODO
+            writeRunColumns(vector.getRun());
             csv.writeString(vector.getModuleName());
             csv.writeString(vector.getName());
             csv.writeString("TIME");
@@ -253,7 +306,7 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
             csv.writeNewLine();
 
             // value row
-            csv.writeString(vector.getRun()->getRunName()); //TODO
+            writeRunColumns(vector.getRun());
             csv.writeString(vector.getModuleName());
             csv.writeString(vector.getName());
             csv.writeString("VALUE");
@@ -267,7 +320,7 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
         if (columnNames) {
             for (int i = 0; i < numVectors; ++i) {
                 const VectorResult& vector = manager->getVector(idlist.get(i));
-                std::string columnTitle = vector.getName() + " " + vector.getModuleName() + " (" + vector.getRun()->getRunName() + ")"; // trying to come up with something usable when viewed from spreadsheets; should be customizable via a format string
+                std::string columnTitle = vector.getName() + " " + vector.getModuleName() + " (" + makeRunTag(vector.getRun()) + ")";
                 csv.writeString(columnTitle); // time column
                 csv.writeBlank(); // value column
             }
@@ -304,7 +357,7 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
         vector<DataTable *> tables;
         for (int i = 0; i < numVectors; ++i) {
             const VectorResult& vector = manager->getVector(idlist.get(i));
-            std::string yColumnName = vector.getModuleName() + "." + vector.getName();
+            std::string columnTitle = vector.getName() + " " + vector.getModuleName() + "(" + makeRunTag(vector.getRun()) +")";
             tables.push_back(new XYDataTable("t", columnTitle, xyArrays[i]));
         }
 
@@ -319,13 +372,14 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
         delete xyArray;
 }
 
-void CsvExporter::saveStatistics(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+void CsvForSpreadsheetExporter::saveStatistics(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO use monitor
+    collectItervars(manager, idlist);
 
     // header
     if (columnNames) {
-        csv.writeString("run");
+        writeRunColumnNames();
         csv.writeString("module");
         csv.writeString("name");
         csv.writeString("count");
@@ -341,7 +395,7 @@ void CsvExporter::saveStatistics(ResultFileManager *manager, const IDList& idlis
     // write statistics
     for (int i = 0; i < (int)idlist.size(); ++i) {
         const StatisticsResult& statistics = manager->getStatistics(idlist.get(i));
-        csv.writeString(statistics.getRun()->getRunName());
+        writeRunColumns(statistics.getRun());
         csv.writeString(statistics.getModuleName());
         csv.writeString(statistics.getName());
         const Statistics& stat = statistics.getStatistics();
@@ -356,15 +410,25 @@ void CsvExporter::saveStatistics(ResultFileManager *manager, const IDList& idlis
     }
 }
 
-void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+std::string CsvForSpreadsheetExporter::makeRunTag(Run *run)
+{
+    //TODO use experiment - measurement - replication instead?
+    const std::string& iterationvars = run->getAttribute(RunAttribute::ITERATIONVARS);
+    if (iterationvars.empty())
+        return std::string("#") + run->getAttribute(RunAttribute::REPETITION) + " - " + run->getRunName();
+    else
+        return iterationvars + ", #" + run->getAttribute(RunAttribute::REPETITION) + " - " + run->getRunName();
+}
+
+void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO use monitor
-
-    bool includeHistogramStatistics = true; //TODO add to options
+    collectItervars(manager, idlist);
+    bool includeHistogramStatistics = true; // could be added to options
 
     // header
     if (columnNames) {
-        csv.writeString("run");
+        writeRunColumnNames();
         csv.writeString("module");
         csv.writeString("name");
         if (includeHistogramStatistics) {
@@ -376,7 +440,7 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
             csv.writeString("min");
             csv.writeString("max");
         }
-        csv.writeString("row type");
+        csv.writeString("rowtype");
         csv.writeString("data...");
         csv.writeNewLine();
     }
@@ -384,7 +448,7 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
     // write histograms, two lines each ("bins" and "counters" lines)
     for (int i = 0; i < (int)idlist.size(); ++i) {
         const HistogramResult& histogram = manager->getHistogram(idlist.get(i));
-        csv.writeString(histogram.getRun()->getRunName());
+        writeRunColumns(histogram.getRun());
         csv.writeString(histogram.getModuleName());
         csv.writeString(histogram.getName());
         if (includeHistogramStatistics) {
@@ -402,7 +466,7 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
             csv.writeDouble(d);
         csv.writeNewLine();
 
-        csv.writeString(histogram.getRun()->getRunName());
+        writeRunColumns(histogram.getRun());
         csv.writeString(histogram.getModuleName());
         csv.writeString(histogram.getName());
         if (includeHistogramStatistics)
@@ -414,6 +478,7 @@ void CsvExporter::saveHistograms(ResultFileManager *manager, const IDList& idlis
         csv.writeNewLine();
     }
 }
+
 
 }  // namespace scave
 }  // namespace omnetpp

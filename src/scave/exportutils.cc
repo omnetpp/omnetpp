@@ -24,7 +24,6 @@
 #include "resultfilemanager.h"
 #include "datasorter.h"
 #include "datatable.h"
-#include "csvexporter.h"
 #include "dataflowmanager.h"
 #include "nodetype.h"
 #include "nodetyperegistry.h"
@@ -33,6 +32,8 @@
 #include "exportutils.h"
 
 #include "exportutils.h"
+
+#include "csvrecexporter.h"
 
 using namespace std;
 

@@ -18,8 +18,10 @@
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "exporter.h"
-#include "csvexporter.h"
-#include "pythonexporter.h"
+
+#include "csvrecexporter.h"
+#include "csvspreadexporter.h"
+#include "jsonexporter.h"
 #include "omnetppscalarfileexporter.h"
 #include "omnetppvectorfileexporter.h"
 #include "sqlitescalarfileexporter.h"
@@ -58,8 +60,9 @@ static std::vector<ExporterType*> exporters;
 void ExporterFactory::ensureInitialized()
 {
     if (exporters.empty()) {
-        exporters.push_back(CsvExporter::getDescription());
-        exporters.push_back(PythonExporter::getDescription());
+        exporters.push_back(CsvRecordsExporter::getDescription());  // IMPORTANT: this must precede CsvForSpreadsheetExporter so .csv resolves to this one
+        exporters.push_back(CsvForSpreadsheetExporter::getDescription());
+        exporters.push_back(JsonExporter::getDescription());
         exporters.push_back(OmnetppScalarFileExporter::getDescription());
         exporters.push_back(OmnetppVectorFileExporter::getDescription());
         exporters.push_back(SqliteScalarFileExporter::getDescription());

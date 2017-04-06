@@ -58,10 +58,7 @@ std::ostream& JsonWriter::out()
 
 void JsonWriter::doWriteBool(bool b)
 {
-    if (usePythonSyntax)
-        out() << (b ? "True" : "False");
-    else
-        out() << (b ? "true" : "false");
+    out() << (b ? trueStr :falseStr);
 }
 
 void JsonWriter::doWriteInt(int64_t value)
@@ -69,45 +66,29 @@ void JsonWriter::doWriteInt(int64_t value)
     out() << value;
 }
 
-#define Q(nan)  (nakedNan ? #nan : "float('" #nan "')")
-
 void JsonWriter::doWriteDouble(double value)
 {
     if (std::isfinite(value))
         out() << std::setprecision(prec) << value;
-    else if (!usePythonSyntax)
-        throw opp_runtime_error("Special floating-point values (NaN, Inf) cannot be represented in JSON");
-    else {
-        if (isNaN(value))
-            out() << Q(nan);
-        else if (isPositiveInfinity(value))
-            out() << Q(inf);
-        else if (isNegativeInfinity(value))
-            out() << Q(-inf);
-        else
-            Assert(false);
-    }
+    else if (isPositiveInfinity(value))
+        out() << infStr;
+    else if (isNegativeInfinity(value))
+        out() << negInfStr;
+    else
+        out() << nanStr;
 }
 
 void JsonWriter::doWriteBigDecimal(const BigDecimal& value)
 {
     if (!value.isSpecial())
         out() << value.str();
-    else if (!usePythonSyntax)
-        throw opp_runtime_error("Special floating-point values (NaN, Inf) cannot be represented in JSON");
-    else {
-        if (value.isNaN())
-            out() << Q(nan);
-        else if (value.isPositiveInfinity())
-            out() << Q(inf);
-        else if (value.isNegativeInfinity())
-            out() << Q(-inf);
-        else
-            Assert(false);
-    }
+    else if (value.isPositiveInfinity())
+        out() << infStr;
+    else if (value.isNegativeInfinity())
+        out() << negInfStr;
+    else
+        out() << nanStr;
 }
-
-#undef Q
 
 void JsonWriter::doWriteString(const std::string& value)
 {

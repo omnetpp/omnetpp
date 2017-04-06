@@ -45,12 +45,14 @@ private:
 
     std::ostream *outp = nullptr;
     std::ofstream fileStream;
-    bool atLineStart = true;
+    int lineNumber = 0, columnNumber = 0;
+    bool insideRaw = false;
 
 private:
     bool needsQuote(const std::string& value);
     void writeChar(char ch);
     void writeSep();
+    void doWriteDouble(double value);
 
 public:
     // creation, opening
@@ -59,7 +61,7 @@ public:
     CsvWriter(const char *filename, std::ios::openmode mode=std::ios::out) {open(filename, mode);}
     CsvWriter(std::ostream& out) {setOut(out);}
     void open(const char* filename, std::ios::openmode mode=std::ios::out);
-    void setOut(std::ostream& out) {outp = &out; atLineStart = true;}
+    void setOut(std::ostream& out) {outp = &out;}
     void close(); // only needed when using file output
     std::ostream& out();
 
@@ -80,6 +82,13 @@ public:
     void writeString(const std::string& value);
     void writeBlank();
     void writeNewLine();
+    void beginRaw();
+    void endRaw();
+    void writeRawDouble(double value); // omits separator
+    void writeRawQuotedStringBody(const std::string& value);  // omits separator and quote chars
+
+    int getLine() const {return lineNumber;}
+    int getColumn() const {return columnNumber;}
 };
 
 } // namespace common

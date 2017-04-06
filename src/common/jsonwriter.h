@@ -36,10 +36,10 @@ class BigDecimal;
 class COMMON_API JsonWriter
 {
 private:
-    int prec = 14;     // number of significant digits when writing doubles
-    int indentSize = 4;    // number of spaces to indent with
-    bool usePythonSyntax = false; // write True/False instead of true/false, etc.
-    bool nakedNan = false;  // assume nan and inf exist as Python variables
+    int prec = 14;  // number of significant digits when writing doubles
+    int indentSize = 4;  // number of spaces to indent with
+    std::string trueStr = "true", falseStr = "false";  // representation of bool constants
+    std::string nanStr = "null", infStr = "\"inf\"", negInfStr = "\"-inf\"";  // representation of special numeric values (note: such values are not covered in the JSON spec)
 
     std::ostream *outp = nullptr;
     std::ofstream fileStream;
@@ -68,10 +68,17 @@ public:
     int getPrecision() const {return prec;}
     void setIndentSize(int n) {indentSize = n;}
     int getIndentSize() const {return indentSize;}
-    void setUsePythonSyntax(bool b) {usePythonSyntax = b;}
-    bool getUsePythonSyntax() const {return usePythonSyntax;}
-    void setNakedNan(bool b) {nakedNan = b;}
-    bool getNakedNan() const {return nakedNan;}
+
+    void setTrueString(const char *s) {trueStr = s;}
+    const char *getTrueString() const {return trueStr.c_str();}
+    void setFalseString(const char *s) {falseStr = s;}
+    const char *getFalseString() const {return falseStr.c_str();}
+    void setNanString(const char *s) {nanStr = s;}
+    const char *getNanString() const {return nanStr.c_str();}
+    void setInfString(const char *s) {infStr = s;}
+    const char *getInfString() const {return infStr.c_str();}
+    void setNegInfString(const char *s) {negInfStr = s;}
+    const char *getNegInfString() const {return negInfStr.c_str();}
 
     // objects
     void openObject(bool isOneliner=false); // in array

@@ -424,9 +424,12 @@ const VectorResult& ResultFileManager::getVector(ID id) const
 const StatisticsResult& ResultFileManager::getStatistics(ID id) const
 {
     READER_MUTEX
-    if (_type(id) != STATISTICS)
-        throw opp_runtime_error("ResultFileManager::getStatistics(id): This item is not a summary statistics");
-    return getFileForID(id)->statisticsResults.at(_pos(id));
+    if (_type(id) == STATISTICS)
+        return getFileForID(id)->statisticsResults.at(_pos(id));
+    else if (_type(id) == HISTOGRAM)
+        return getFileForID(id)->histogramResults.at(_pos(id));
+    else
+        throw opp_runtime_error("ResultFileManager::getStatistics(id): This item is not a summary statistics or a histogram");
 }
 
 const HistogramResult& ResultFileManager::getHistogram(ID id) const

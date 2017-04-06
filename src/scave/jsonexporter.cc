@@ -1,5 +1,5 @@
 //==========================================================================
-//  PYTHONEXPORTER.CC - part of
+//  JSONEXPORTER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,6 +16,8 @@
 *--------------------------------------------------------------*/
 
 
+#include "jsonexporter.h"
+
 #include <cstdio>
 #include <memory>
 #include "common/stringutil.h"
@@ -25,7 +27,6 @@
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "exportutils.h"
-#include "pythonexporter.h"
 
 using namespace std;
 using namespace omnetpp::common;
@@ -38,14 +39,14 @@ static const std::map<std::string,bool> BOOLS = {{"true", true}, {"false", false
 class PythonExporterType : public ExporterType
 {
     public:
-        virtual std::string getFormatName() const {return "Python";}
-        virtual std::string getDisplayName() const {return "Python Source File";}
-        virtual std::string getDescription() const {return "Export results as Python source file containing a JSON-like data structure, optionally with NumPy arrays.";}
+        virtual std::string getFormatName() const {return "JSON";}
+        virtual std::string getDisplayName() const {return "JSON";}
+        virtual std::string getDescription() const {return "Export results as JSON (optionally with Python flavour).";}
         virtual int getSupportedResultTypes() {return ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;}
-        virtual std::string getFileExtension() {return "py"; }
+        virtual std::string getFileExtension() {return "json"; }
         virtual StringMap getSupportedOptions() const;
         virtual std::string getXswtForm() const;
-        virtual Exporter *create() const {return new PythonExporter();}
+        virtual Exporter *create() const {return new JsonExporter();}
 };
 
 string PythonExporterType::getXswtForm() const
@@ -66,13 +67,13 @@ string PythonExporterType::getXswtForm() const
             "      <layoutData x:class='GridData' horizontalSpan='2' horizontalAlignment='FILL' grabExcessHorizontalSpace='true'/>\n"
             "      <layout x:class='GridLayout' numColumns='2'/>\n"
             "      <x:children>\n"
+            "         <button x:id='pythonFlavoured' text='Python-flavoured JSON' x:style='CHECK' selection='false'>\n"
+            "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
+            "         </button>\n"
+            "         <button x:id='useNumpy' text='Use NumPy arrays the output' x:style='CHECK' selection='true'>\n"
+            "           <layoutData x:class='GridData' horizontalSpan='2' horizontalIndent='16'/>\n"
+            "         </button>\n"
             "         <button x:id='skipResultAttributes' text='Skip result attributes' x:style='CHECK' selection='false'>\n"
-            "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
-            "         </button>\n"
-            "         <button x:id='useNumpy' text='Use NumPy arrays in generated code' x:style='CHECK' selection='true'>\n"
-            "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
-            "         </button>\n"
-            "         <button x:id='nakedNan' text='Use nan and inf variables in generated code instead of float(&quot;nan&quot;) forms' x:style='CHECK' selection='true'>\n"
             "           <layoutData x:class='GridData' horizontalSpan='2'/>\n"
             "         </button>\n"
             "         <label text='Data precision:'/>\n"
@@ -93,8 +94,8 @@ StringMap PythonExporterType::getSupportedOptions() const
 {
     StringMap options {
         {"precision", "The number of significant digits for floating-point values (double). The maximum value is ~15."},
-        {"useNumpy", "Generate code that relies on NumPy data structures."},
-        {"nakedNan", "Generate code that defines 'nan' and 'inf' variables and uses them in the generated code instead of the longer 'float(\"nan\")' / 'float(\"inf\")' forms"},
+        {"pythonFlavoured", "Generate Python-flavoured JSON."},
+        {"useNumpy", "Use NumPy arrays in the output."},
         {"indentSize", "Number of spaces to indent with. Set to 0 or 1 to reduce file size."},
         {"skipResultAttributes", "Do not export result attributes."},
         {"vectorFilters", "A semicolon-separated list of operations to be applied to the vectors to be exported. See the 'operations' help page. Example value: 'winavg(10);mean'"},
@@ -104,21 +105,21 @@ StringMap PythonExporterType::getSupportedOptions() const
 
 //---
 
-ExporterType *PythonExporter::getDescription()
+ExporterType *JsonExporter::getDescription()
 {
     static PythonExporterType desc;
     return &desc;
 }
 
-void PythonExporter::setOption(const std::string& key, const std::string& value)
+void JsonExporter::setOption(const std::string& key, const std::string& value)
 {
     checkOptionKey(getDescription(), key);
     if (key == "precision")
         setPrecision(opp_atol(value.c_str()));
+    else if (key == "pythonFlavoured")
+        setPythonFlavoured(translateOptionValue(BOOLS,value));
     else if (key == "useNumpy")
         setUseNumpy(translateOptionValue(BOOLS,value));
-    else if (key == "nakedNan")
-        setNakedNan(translateOptionValue(BOOLS,value));
     else if (key == "indentSize")
         setIndentSize(opp_atol(value.c_str()));
     else if (key == "skipResultAttributes")
@@ -129,7 +130,7 @@ void PythonExporter::setOption(const std::string& key, const std::string& value)
         throw opp_runtime_error("Exporter: unhandled option '%s'", key.c_str());
 }
 
-void PythonExporter::writeStringMap(const std::string& key, const StringMap& attrs)
+void JsonExporter::writeStringMap(const std::string& key, const StringMap& attrs)
 {
     writer.openObject(key);
     for (auto& pair : attrs)
@@ -137,7 +138,7 @@ void PythonExporter::writeStringMap(const std::string& key, const StringMap& att
     writer.closeObject();
 }
 
-void PythonExporter::writeOrderedKeyValueList(const std::string& key, const OrderedKeyValueList& list)
+void JsonExporter::writeOrderedKeyValueList(const std::string& key, const OrderedKeyValueList& list)
 {
     writer.openArray(key);
     for (auto& pair : list) {
@@ -148,7 +149,7 @@ void PythonExporter::writeOrderedKeyValueList(const std::string& key, const Orde
     writer.closeArray();
 }
 
-void PythonExporter::writeStatisticsFields(const Statistics& stat)
+void JsonExporter::writeStatisticsFields(const Statistics& stat)
 {
     writer.writeDouble("count", stat.getCount());
     writer.writeDouble("mean", stat.getMean());
@@ -160,7 +161,7 @@ void PythonExporter::writeStatisticsFields(const Statistics& stat)
     //TODO weighted?
 }
 
-void PythonExporter::writeVector(const std::vector<double>& v)
+void JsonExporter::writeVector(const std::vector<double>& v)
 {
     std::ostream& out = writer.out();
     writeVectorProlog();
@@ -177,7 +178,7 @@ void PythonExporter::writeVector(const std::vector<double>& v)
     writeVectorEpilog();
 }
 
-void PythonExporter::writeX(XYArray *array)
+void JsonExporter::writeX(XYArray *array)
 {
     std::ostream& out = writer.out();
     writeVectorProlog();
@@ -198,7 +199,7 @@ void PythonExporter::writeX(XYArray *array)
     writeVectorEpilog();
 }
 
-void PythonExporter::writeY(XYArray *array)
+void JsonExporter::writeY(XYArray *array)
 {
     std::ostream& out = writer.out();
     writeVectorProlog();
@@ -215,7 +216,7 @@ void PythonExporter::writeY(XYArray *array)
     writeVectorEpilog();
 }
 
-void PythonExporter::writeEventNumbers(XYArray *array)
+void JsonExporter::writeEventNumbers(XYArray *array)
 {
     std::ostream& out = writer.out();
     writeVectorProlog();
@@ -232,7 +233,7 @@ void PythonExporter::writeEventNumbers(XYArray *array)
     writeVectorEpilog();
 }
 
-void PythonExporter::writeVectorProlog()
+void JsonExporter::writeVectorProlog()
 {
     std::ostream& out = writer.out();
     if (useNumpy)
@@ -240,7 +241,7 @@ void PythonExporter::writeVectorProlog()
     out << "[";
 }
 
-void PythonExporter::writeVectorEpilog()
+void JsonExporter::writeVectorEpilog()
 {
     std::ostream& out = writer.out();
     out << "]";
@@ -248,14 +249,7 @@ void PythonExporter::writeVectorEpilog()
         out << ",  dtype=np.float64)";
 }
 
-static std::string filenameOf(const std::string path)
-{
-    std::string filename, dir;
-    splitFileName(path.c_str(), dir, filename);
-    return filename;
-}
-
-void PythonExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
+void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO progress reporting
 
@@ -264,21 +258,28 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
     else
         writer.open(fileName.c_str());
 
-    writer.setUsePythonSyntax(true);
+    if (!pythonFlavoured)
+        useNumpy = false;
 
-    std::string shortFilename = (fileName == "-") ? "exported.py" : filenameOf(fileName);
-    writer.out() << "#\n";
-    writer.out() << "# OMNeT++ simulation results exported as Python data structure.\n";
-    writer.out() << "#\n";
-    writer.out() << "# Hint: Use the following command:\n";
-    writer.out() << "#   exec(open('" << shortFilename << "').read())\n";
-    writer.out() << "# It will leave the data in the 'opp_results' local variable.\n";
-    writer.out() << "#\n\n";
-    if (useNumpy)
-        writer.out() << "import numpy as np\n\n";
-    if (writer.getNakedNan())
-        writer.out() << "nan = float('nan')\ninf = float('inf')\n\n";
-    writer.out() << "opp_results = ";
+    if (pythonFlavoured) {
+        // configure writer
+        writer.setTrueString("True");
+        writer.setFalseString("False");
+        if (useNumpy) {
+            writer.setNanString("np.nan");
+            writer.setInfString("np.inf");
+            writer.setNegInfString("-np.inf");
+        }
+        else {
+            writer.setNanString("float('nan')");
+            writer.setInfString("float('inf')");
+            writer.setNegInfString("float('-inf')");
+        }
+
+        // write banner comment
+        writer.out() << "# To load into Python, use: " << (useNumpy ? "import numpy as np; " : "") << "results = eval(open(filename).read())\n";
+    }
+
     writer.openObject();
 
     RunList *runList = manager->getUniqueRuns(idlist);
@@ -340,8 +341,8 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
                 writeStatisticsFields(histogram.getStatistics());
 
                 const Histogram& bins = histogram.getHistogram();
-                writer.startRawValue("histbins"); writeVector(bins.getBinLowerBounds());
-                writer.startRawValue("histcounts"); writeVector(bins.getBinValues());
+                writer.startRawValue("binedges"); writeVector(bins.getBinLowerBounds());
+                writer.startRawValue("binvalues"); writeVector(bins.getBinValues());
                 writer.closeObject();
             }
             writer.closeArray();
@@ -351,7 +352,7 @@ void PythonExporter::saveResults(const std::string& fileName, ResultFileManager 
         IDList vectors = idlist.filterByTypes(ResultFileManager::VECTOR);
         if (!vectors.isEmpty()) {
             // compute vector data
-            std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectors, vectorFilters); //TODO rather: set up vectorFileWriter as consumer in the dataflow network
+            std::vector<XYArray *> xyArrays = readVectorsIntoArrays(manager, vectors, vectorFilters);
             Assert((int)xyArrays.size() == vectors.size());
 
             // export

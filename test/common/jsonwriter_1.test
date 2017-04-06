@@ -16,8 +16,11 @@ static void writeDoc(JsonWriter& writer)
     EV << "OPTIONS:";
     EV << "  precision: " << writer.getPrecision();
     EV << "  indentSize: " << writer.getIndentSize();
-    EV << "  usePythonSyntax: " << writer.getUsePythonSyntax();
-    EV << "  nakedNan: " << writer.getNakedNan();
+    EV << "  trueString: " << writer.getTrueString();
+    EV << "  falseString: " << writer.getFalseString();
+    EV << "  nanString: " << writer.getNanString();
+    EV << "  infString: " << writer.getInfString();
+    EV << "  negInfString: " << writer.getNegInfString();
     EV << endl;
 
     writer.openObject(); 
@@ -31,11 +34,9 @@ static void writeDoc(JsonWriter& writer)
         writer.writeBool("bool1", true);
         writer.writeBool("bool2", false);
         writer.writeInt("int", ((int64_t)1) << 40);
-        if (writer.getUsePythonSyntax()) {
-            writer.writeDouble("inf", POSITIVE_INFINITY);
-            writer.writeDouble("-inf", NEGATIVE_INFINITY);
-            writer.writeDouble("nan", NaN);
-        }
+        writer.writeDouble("inf", POSITIVE_INFINITY);
+        writer.writeDouble("-inf", NEGATIVE_INFINITY);
+        writer.writeDouble("nan", NaN);
 
         writer.openArray("some-array");
         {
@@ -88,16 +89,17 @@ writeDoc(writer);
 writer.setPrecision(3);
 writeDoc(writer);
 
-writer.setUsePythonSyntax(true);
-writeDoc(writer);
-
-writer.setNakedNan(true);
+writer.setTrueString("True");
+writer.setFalseString("False");
+writer.setNanString("np.nan");
+writer.setInfString("np.inf");
+writer.setNegInfString("-np.inf");
 writeDoc(writer);
 
 EV << ".\n";
 
 %contains: stdout
-OPTIONS:  precision: 14  indentSize: 4  usePythonSyntax: 0  nakedNan: 0
+OPTIONS:  precision: 14  indentSize: 4  trueString: true  falseString: false  nanString: null  infString: "inf"  negInfString: "-inf"
 {
     "s1" : "Space inside",
     "s2" : "Quote inside: \"",
@@ -108,6 +110,9 @@ OPTIONS:  precision: 14  indentSize: 4  usePythonSyntax: 0  nakedNan: 0
     "bool1" : true,
     "bool2" : false,
     "int" : 1099511627776,
+    "inf" : "inf",
+    "-inf" : "-inf",
+    "nan" : null,
     "some-array" : [
         { "name" : "Jack", "age" : 42 },
         { "name" : "Jill", "age" : 21 }
@@ -119,7 +124,7 @@ OPTIONS:  precision: 14  indentSize: 4  usePythonSyntax: 0  nakedNan: 0
 }
 ---------
 
-OPTIONS:  precision: 14  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
+OPTIONS:  precision: 14  indentSize: 8  trueString: true  falseString: false  nanString: null  infString: "inf"  negInfString: "-inf"
 {
         "s1" : "Space inside",
         "s2" : "Quote inside: \"",
@@ -130,6 +135,9 @@ OPTIONS:  precision: 14  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
         "bool1" : true,
         "bool2" : false,
         "int" : 1099511627776,
+        "inf" : "inf",
+        "-inf" : "-inf",
+        "nan" : null,
         "some-array" : [
                 { "name" : "Jack", "age" : 42 },
                 { "name" : "Jill", "age" : 21 }
@@ -141,7 +149,7 @@ OPTIONS:  precision: 14  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
 }
 ---------
 
-OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
+OPTIONS:  precision: 3  indentSize: 8  trueString: true  falseString: false  nanString: null  infString: "inf"  negInfString: "-inf"
 {
         "s1" : "Space inside",
         "s2" : "Quote inside: \"",
@@ -152,6 +160,9 @@ OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
         "bool1" : true,
         "bool2" : false,
         "int" : 1099511627776,
+        "inf" : "inf",
+        "-inf" : "-inf",
+        "nan" : null,
         "some-array" : [
                 { "name" : "Jack", "age" : 42 },
                 { "name" : "Jill", "age" : 21 }
@@ -163,7 +174,7 @@ OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 0  nakedNan: 0
 }
 ---------
 
-OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 1  nakedNan: 0
+OPTIONS:  precision: 3  indentSize: 8  trueString: True  falseString: False  nanString: np.nan  infString: np.inf  negInfString: -np.inf
 {
         "s1" : "Space inside",
         "s2" : "Quote inside: \"",
@@ -174,34 +185,9 @@ OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 1  nakedNan: 0
         "bool1" : True,
         "bool2" : False,
         "int" : 1099511627776,
-        "inf" : float('inf'),
-        "-inf" : float('-inf'),
-        "nan" : float('nan'),
-        "some-array" : [
-                { "name" : "Jack", "age" : 42 },
-                { "name" : "Jill", "age" : 21 }
-        ],
-        "some-object" : {
-                "ones" : [ 1, 3, 5 ],
-                "tens" : [ 10, 30, 50 ]
-        }
-}
----------
-
-OPTIONS:  precision: 3  indentSize: 8  usePythonSyntax: 1  nakedNan: 1
-{
-        "s1" : "Space inside",
-        "s2" : "Quote inside: \"",
-        "s3" : "Backslash inside: \\",
-        "s4" : "Backslash+quote inside: \\\"",
-        "pi" : 3.14,
-        "pi*1e50" : 3.14e+50,
-        "bool1" : True,
-        "bool2" : False,
-        "int" : 1099511627776,
-        "inf" : inf,
-        "-inf" : -inf,
-        "nan" : nan,
+        "inf" : np.inf,
+        "-inf" : -np.inf,
+        "nan" : np.nan,
         "some-array" : [
                 { "name" : "Jack", "age" : 42 },
                 { "name" : "Jill", "age" : 21 }

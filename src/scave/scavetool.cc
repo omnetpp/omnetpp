@@ -716,7 +716,9 @@ void ScaveTool::exportCommand(int argc, char **argv)
         cout << "Exported " << (results.isEmpty() ? "empty data set" : opp_join(v, ", ")) << endl;
     }
 
-    delete exporter;
+    delete exporter; //TODO don't leak exporter in case of exception!
+
+    //TODO delete output file in case of exception?
 }
 
 void ScaveTool::indexCommand(int argc, char **argv)

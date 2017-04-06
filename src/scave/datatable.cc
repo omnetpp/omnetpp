@@ -160,18 +160,18 @@ ScalarDataTable::ScalarDataTable(const IDList& idlist, const ResultItemFields& g
     if (idlist.isEmpty())
         return; // otherwise we can't set up columns from scalars[0]
 
-    // add a column for each grouping field
-    if (groupBy.hasField(ResultItemField::FILE))
-        header.push_back(Column("File", STRING));
-    if (groupBy.hasField(ResultItemField::RUN))
-        header.push_back(Column("Run", STRING));
+//    // add a column for each grouping field
+//    if (groupBy.hasField(ResultItemField::FILE))
+//        header.push_back(Column("File", STRING));
+//    if (groupBy.hasField(ResultItemField::RUN))
+//        header.push_back(Column("Run", STRING));
 
-    RunList *runList = manager.getUniqueRuns(idlist);
-    StringSet *runAttrNames = manager.getUniqueRunAttributeNames(runList); //TODO save configuration, itervars and repetition instead
-    for (auto name : *runAttrNames)
-        header.push_back(Column((std::string)"runattr:"+name, STRING));
-    delete runAttrNames;
-    delete runList;
+//    RunList *runList = manager.getUniqueRuns(idlist);
+//    StringSet *runAttrNames = manager.getUniqueRunAttributeNames(runList); //TODO save configuration, itervars and repetition instead
+//    for (auto name : *runAttrNames)
+//        header.push_back(Column((std::string)"runattr:"+name, STRING));
+//    delete runAttrNames;
+//    delete runList;
 
     if (groupBy.hasField(ResultItemField::MODULE))
         header.push_back(Column("Module", STRING));
@@ -190,10 +190,10 @@ ScalarDataTable::ScalarDataTable(const IDList& idlist, const ResultItemFields& g
         if (id != -1) {
             const ScalarResult& scalar = manager.getScalar(id);
             string name;
-            if (!groupBy.hasField(ResultItemField::FILE))
-                name += scalar.getFile()->getFilePath()+" ";
-            if (!groupBy.hasField(ResultItemField::RUN))
-                name += scalar.getRun()->getRunName()+" ";
+//            if (!groupBy.hasField(ResultItemField::FILE))
+//                name += scalar.getFile()->getFilePath()+" ";
+//            if (!groupBy.hasField(ResultItemField::RUN))
+//                name += scalar.getRun()->getRunName()+" ";
             if (!groupBy.hasField(ResultItemField::MODULE))
                 name += scalar.getModuleName()+" ";
             if (!groupBy.hasField(ResultItemField::NAME))
@@ -236,30 +236,34 @@ BigDecimal ScalarDataTable::getBigDecimalValue(int row, int col) const
     throw opp_runtime_error("no such column with BigDecimal type");
 }
 
-std::string ScalarDataTable::getStringValue(int row, int col) const
+const ScalarResult& ScalarDataTable::getAnyScalarInRow(int row) const
 {
-    if (row >= 0 && row < getNumRows() && col >= 0 && col < getNumColumns()) {
+    if (row >= 0 && row < getNumRows()) {
         IDVector r = scalars[row];
         ID id = -1;
         for (int i = 0; i < getNumColumns(); ++i)
             if ((id = r[i]) != -1)
                 break;
-
-        if (id != -1) {
-            const ScalarResult& scalar = manager.getScalar(id);
-            Column c = getColumn(col);
-            if (c.name == "File")
-                return scalar.getFile()->getFilePath();
-            else if (c.name == "Run")
-                return scalar.getRun()->getRunName();
-            else if (c.name == "Module")
-                return scalar.getModuleName();
-            else if (c.name == "Name")
-                return scalar.getName();
-            else if (opp_stringbeginswith(c.name.c_str(), "runattr:"))
-                return scalar.getRun()->getAttribute(opp_substringafter(c.name, ":"));
-        }
+        if (id != -1)
+            return manager.getScalar(id);
     }
+    throw opp_runtime_error("row/col out of bounds, or row contains no data");
+}
+
+std::string ScalarDataTable::getStringValue(int row, int col) const
+{
+    const ScalarResult& scalar = getAnyScalarInRow(row);
+    Column c = getColumn(col);
+    if (c.name == "File")
+        return scalar.getFile()->getFilePath();
+    else if (c.name == "Run")
+        return scalar.getRun()->getRunName();
+    else if (c.name == "Module")
+        return scalar.getModuleName();
+    else if (c.name == "Name")
+        return scalar.getName();
+    else if (opp_stringbeginswith(c.name.c_str(), "runattr:"))
+        return scalar.getRun()->getAttribute(opp_substringafter(c.name, ":"));
     throw opp_runtime_error("no such column with string type");
 }
 

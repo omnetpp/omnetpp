@@ -132,6 +132,7 @@ class SCAVE_API ScalarDataTable : public DataTable
     public:
         ScalarDataTable(const IDList& idlist, const ResultItemFields& groupBy, ResultFileManager& manager);
 
+        const ScalarResult& getAnyScalarInRow(int row) const;
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
         virtual double getDoubleValue(int row, int col) const override;

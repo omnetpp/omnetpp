@@ -1,5 +1,5 @@
 //=========================================================================
-//  PYTHONEXPORTER.H - part of
+//  JSONEXPORTER.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_SCAVE_PYTHONEXPORTER_H
-#define __OMNETPP_SCAVE_PYTHONEXPORTER_H
+#ifndef __OMNETPP_SCAVE_JSONEXPORTER_H
+#define __OMNETPP_SCAVE_JSONEXPORTER_H
 
 #include <string>
 #include <vector>
@@ -31,16 +31,16 @@ namespace scave {
 using common::JsonWriter;
 
 /**
- * Export data in Python source file format. The generated code
- * defines a variable that contains the data in a JSON-like
- * data structure that closely corresponds to the structure
- * of OMNeT++ result files.
+ * Export data in JSON format. The exported data structure closely corresponds
+ * to the structure of OMNeT++ result files. Python-flavoured JSON that can be
+ * "parsed" with a simple eval() call can also be exported.
  */
-class SCAVE_API PythonExporter : public Exporter
+class SCAVE_API JsonExporter : public Exporter
 {
     private:
         JsonWriter writer;
         std::vector<std::string> vectorFilters;
+        bool pythonFlavoured = false;
         bool useNumpy = true;
         bool skipResultAttributes = false;
 
@@ -56,14 +56,14 @@ class SCAVE_API PythonExporter : public Exporter
         void writeVectorEpilog();
 
     public:
-        PythonExporter() {writer.setNakedNan(true);}
+        JsonExporter() {}
 
         void setPrecision(int prec) {writer.setPrecision(prec);}
         int getPrecision() const {return writer.getPrecision();}
+        void setPythonFlavoured(bool b) {pythonFlavoured = b;}
+        bool isPythonFlavoured() const {return pythonFlavoured;}
         void setUseNumpy(bool b) {useNumpy = b;}
         bool getUseNumpy() const {return useNumpy;}
-        void setNakedNan(bool b) {writer.setNakedNan(b);}
-        bool getNakedNan() const {return writer.getNakedNan();}
         void setIndentSize(int n) {writer.setIndentSize(n);}
         int getIndentSize() const {return writer.getIndentSize();}
         void setSkipResultAttributes(bool b) {skipResultAttributes = b;}

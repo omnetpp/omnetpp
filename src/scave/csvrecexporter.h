@@ -1,5 +1,5 @@
 //=========================================================================
-//  CSVEXPORTER.H - part of
+//  CSVRECEXPORTER.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_SCAVE_CSVEXPORTER_H
-#define __OMNETPP_SCAVE_CSVEXPORTER_H
+#ifndef __OMNETPP_SCAVE_CSVRECEXPORTER_H
+#define __OMNETPP_SCAVE_CSVRECEXPORTER_H
 
 #include "exporter.h"
 #include "common/csvwriter.h"
@@ -30,21 +30,16 @@ using common::CsvWriter;
  * Export data in various CSV formats.
  * With default parameters the format is the same as described in RFC 4180.
  */
-class SCAVE_API CsvExporter : public Exporter
+class SCAVE_API CsvRecordsExporter : public Exporter
 {
-    public:
-        enum VectorLayout {HORIZONTAL, VERTICAL, JOINED_VERTICAL};
-
     private:
         CsvWriter csv;
         bool columnNames = true;
-        bool allowMixedContent = false;
-        ResultItemFields scalarsGroupBy;
+        bool omitBlankColumns = true;
         std::vector<std::string> vectorFilters;
-        VectorLayout vectorLayout = VERTICAL;
 
     public:
-        CsvExporter() {}
+        CsvRecordsExporter() {}
 
         void setPrecision(int prec) {csv.setPrecision(prec);}
         int getPrecision() const {return csv.getPrecision();}
@@ -56,12 +51,8 @@ class SCAVE_API CsvExporter : public Exporter
         CsvWriter::QuoteEscapingMethod getQuoteEscapingMethod() const {return csv.getQuoteEscapingMethod();}
         void setColumnNames(bool b) {columnNames = b;}
         bool getColumnNames() {return columnNames;}
-        void setMixedContentAllowed(bool b) {allowMixedContent = b;}
-        bool getMixedContentAllowed() const {return allowMixedContent;}
-        void setScalarsGroupBy(const ResultItemFields& fields) {scalarsGroupBy=fields;}
-        const ResultItemFields& getScalarsGroupBy() const {return scalarsGroupBy;}
-        void setVectorLayout(VectorLayout d) {vectorLayout = d;}
-        VectorLayout getVectorLayout() {return vectorLayout;}
+        void setOmitBlankColumns(bool b) {omitBlankColumns = b;}
+        bool getOmitBlankColumns() const {return omitBlankColumns;}
         void setVectorFilters(const std::vector<std::string>& filters) {vectorFilters = filters;}
         const std::vector<std::string>& getVectorFilters() const {return vectorFilters;}
 
@@ -71,10 +62,14 @@ class SCAVE_API CsvExporter : public Exporter
         static ExporterType *getDescription();
 
     protected:
-        virtual void saveScalars(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
-        virtual void saveVectors(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
-        virtual void saveStatistics(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
-        virtual void saveHistograms(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
+        virtual void saveResultsAsRecords(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor);
+        virtual void writeRunAttrRecord(const std::string& runId, const char *type, const std::string& attrName, const std::string& value, int numColumns);
+        virtual void writeResultAttrRecords(const ResultItem& result, int numColumns);
+        virtual void writeResultItemBase(const ResultItem& result, const char *type, int numColumns);
+        virtual void writeAsString(const std::vector<double>& data);
+        virtual void writeXAsString(const XYArray *data);
+        virtual void writeYAsString(const XYArray *data);
+        virtual void finishRecord(int numColumns);
 };
 
 } // namespace scave
