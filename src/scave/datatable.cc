@@ -60,9 +60,7 @@ bool DataTable::CellPtr::operator<(const DataTable::CellPtr& other) const
 /*=====================
  *       Vectors
  *=====================*/
-XYDataTable::XYDataTable(const string& name, const string& description,
-        const string& xColumnName, const string& yColumnName, const XYArray *vec)
-    : DataTable(name, description), vec(vec)
+XYDataTable::XYDataTable(const string& xColumnName, const string& yColumnName, const XYArray *vec) : vec(vec)
 {
     header.push_back(Column(xColumnName, BIGDECIMAL));
     header.push_back(Column(yColumnName, DOUBLE));
@@ -118,8 +116,7 @@ static string createNameForXYDatasetRow(const XYDataset& data, int row, const st
 /*=====================
  *     Scatter plots
  *=====================*/
-ScatterDataTable::ScatterDataTable(const string& name, const string& description, const XYDataset& data)
-    : DataTable(name, description), dataset(data)
+ScatterDataTable::ScatterDataTable(const XYDataset& data) : dataset(data)
 {
     for (int row = 0; row < data.getRowCount(); ++row) {
         string columnName = createNameForXYDatasetRow(data, row);
@@ -156,9 +153,7 @@ double ScatterDataTable::getDoubleValue(int row, int col) const
 /*================================
  *          Scalars
  *================================*/
-ScalarDataTable::ScalarDataTable(const std::string& name, const std::string& description,
-        const IDList& idlist, const ResultItemFields& groupBy, ResultFileManager& manager)
-    : DataTable(name, description), manager(manager)
+ScalarDataTable::ScalarDataTable(const IDList& idlist, const ResultItemFields& groupBy, ResultFileManager& manager) : manager(manager)
 {
     DataSorter sorter(&manager);
     scalars = sorter.groupAndAlign(idlist, groupBy);
@@ -271,8 +266,7 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
 /*=====================
  *       Histograms
  *=====================*/
-HistogramDataTable::HistogramDataTable(const string& name, const string& description, const HistogramResult *histogramResult)
-    : DataTable(name, description), histResult(histogramResult)
+HistogramDataTable::HistogramDataTable(const HistogramResult *histogramResult) : histResult(histogramResult)
 {
     header.push_back(Column("bin_lower", DOUBLE));
     header.push_back(Column("bin_upper", DOUBLE));
@@ -361,9 +355,8 @@ void DataTableIterator::next()
     }
 }
 
-JoinedDataTable::JoinedDataTable(const string& name, const string& description,
-        const vector<DataTable *>& joinedTables, int joinOnColumn)
-    : DataTable(name, description), joinedTables(joinedTables), rowMap(nullptr)
+JoinedDataTable::JoinedDataTable(const vector<DataTable *>& joinedTables, int joinOnColumn)
+    : joinedTables(joinedTables), rowMap(nullptr)
 {
     tableCount = joinedTables.size();
     // checks
@@ -381,11 +374,8 @@ JoinedDataTable::JoinedDataTable(const string& name, const string& description,
         int numColumns = table->getNumColumns();
         for (int col = 0; col < numColumns; ++col) {
             Column column = table->getColumn(col);
-            if (col != joinOnColumn) {
-                if (!table-name.empty())
-                    column.name = table->name + "/" + column.name;
+            if (col != joinOnColumn)
                 addColumn(column, tableIndex, col);
-            }
         }
     }
 

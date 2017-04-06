@@ -35,9 +35,6 @@ protected:
     void printHelpPage(const std::string& page);
     void queryCommand(int argc, char **argv);
     void exportCommand(int argc, char **argv);
-    void vectorCommand(int argc, char **argv);
-    void parseScalarFunction(const std::string& functionCall,  /*out*/ std::string& name,  /*out*/ std::vector<std::string>& params);
-    void scalarCommand(int argc, char **argv);
     void indexCommand(int argc, char **argv);
 public:
     int main(int argc, char **argv);

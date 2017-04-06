@@ -69,12 +69,9 @@ class SCAVE_API DataTable
                 void nextRow() { row++; }
                 bool operator<(const CellPtr& other) const;
         };
-    public:
-        const std::string name;
-        const std::string description;
     protected:
         std::vector<Column> header;
-        DataTable(const std::string& name, const std::string& description) : name(name), description(description) {}
+        DataTable() {}
         void addColumn(const Column& column) { header.push_back(column); }
     public:
         virtual ~DataTable() {}
@@ -100,8 +97,7 @@ class SCAVE_API XYDataTable : public DataTable
     private:
         const XYArray *vec;
     public:
-        XYDataTable(const std::string& name, const std::string& description,
-            const std::string& xColumnName, const std::string& yColumnName, const XYArray *vec);
+        XYDataTable(const std::string& xColumnName, const std::string& yColumnName, const XYArray *vec);
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
         virtual double getDoubleValue(int row, int col) const override;
@@ -117,7 +113,7 @@ class SCAVE_API ScatterDataTable : public DataTable
     private:
         const XYDataset& dataset;
     public:
-        ScatterDataTable(const std::string& name, const std::string& description, const XYDataset& data);
+        ScatterDataTable(const XYDataset& data);
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
         virtual double getDoubleValue(int row, int col) const override;
@@ -134,8 +130,7 @@ class SCAVE_API ScalarDataTable : public DataTable
         IDVectorVector scalars;
         ResultFileManager& manager;
     public:
-        ScalarDataTable(const std::string& name, const std::string& description,
-            const IDList& idlist, const ResultItemFields& groupBy, ResultFileManager& manager);
+        ScalarDataTable(const IDList& idlist, const ResultItemFields& groupBy, ResultFileManager& manager);
 
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
@@ -152,7 +147,7 @@ class SCAVE_API HistogramDataTable : public DataTable
     private:
         const HistogramResult *histResult;
     public:
-        HistogramDataTable(const std::string& name, const std::string& description, const HistogramResult *histogramResult);
+        HistogramDataTable(const HistogramResult *histogramResult);
         virtual int getNumRows() const override;
         virtual bool isNull(int row, int col) const override;
         virtual double getDoubleValue(int row, int col) const override;
@@ -161,7 +156,8 @@ class SCAVE_API HistogramDataTable : public DataTable
 };
 
 /**
- * Computes the outer join of DataTables.
+ * Computes the outer join of DataTables. Note: if there are conflicting
+ * column names, they should be renamed beforehand.
  */
 class SCAVE_API JoinedDataTable : public DataTable
 {
@@ -170,11 +166,9 @@ class SCAVE_API JoinedDataTable : public DataTable
         int tableCount;
         int rowCount;
         std::vector<std::pair<int,int> > columnMap; // maps column -> (tableIndex,tableColumn)
-        int* rowMap; // maps (row,tableIndex) -> tableRow
-                     //   implemented as a two dimensional array (has rowCount*tableCount elements)
+        int* rowMap = nullptr; // maps (row,tableIndex) -> tableRow; implemented as a two dimensional array (has rowCount*tableCount elements)
     public:
-        JoinedDataTable(const std::string& name, const std::string& description,
-            const std::vector<DataTable*>& joinedTables, int joinOnColumn);
+        JoinedDataTable(const std::vector<DataTable*>& joinedTables, int joinOnColumn);
         virtual ~JoinedDataTable();
 
         virtual int getNumRows() const override;

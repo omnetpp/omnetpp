@@ -52,8 +52,6 @@ using omnetpp::common::NEGATIVE_INFINITY;
 
 // simulation time
 typedef BigDecimal simultime_t;
-#define SIMTIME_MIN BigDecimal::NegativeInfinity
-#define SIMTIME_MAX BigDecimal::PositiveInfinity
 typedef int64_t eventnumber_t;
 
 

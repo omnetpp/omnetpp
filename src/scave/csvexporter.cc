@@ -211,7 +211,7 @@ void CsvExporter::saveResults(const std::string& fileName, ResultFileManager *ma
 void CsvExporter::saveScalars(ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO use monitor
-    const ScalarDataTable table("unused", "unused", idlist, scalarsGroupBy.complement(), *manager);
+    const ScalarDataTable table(idlist, scalarsGroupBy.complement(), *manager);
     saveTable(csv, table, columnNames);
 }
 
@@ -305,11 +305,11 @@ void CsvExporter::saveVectors(ResultFileManager *manager, const IDList& idlist, 
         for (int i = 0; i < numVectors; ++i) {
             const VectorResult& vector = manager->getVector(idlist.get(i));
             std::string yColumnName = vector.getModuleName() + "." + vector.getName();
-            tables.push_back(new XYDataTable("unused", "unused", "t", yColumnName, xyArrays[i]));
+            tables.push_back(new XYDataTable("t", columnTitle, xyArrays[i]));
         }
 
         // join them on the time column
-        JoinedDataTable table("unused", "unused", tables, 0);
+        JoinedDataTable table(tables, 0);
 
         // save the result
         saveTable(csv, table, columnNames);

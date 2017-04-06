@@ -25,7 +25,6 @@
 #include "scave/indexedvectorfilereader.h"
 #include "scave/sqlitevectorreader.h"
 #include "scave/scaveexception.h"
-#include "scave/export.h"
 #include "scave/exporter.h"
 #include "scave/sqliteresultfileutils.h"
 
@@ -703,24 +702,6 @@ namespace omnetpp { namespace scave {
 /* ------------------ datasorter.h --------------------- */
 %include "scave/datasorter.h"
 
-/* ------------------ export.h ----------------------- */
-namespace omnetpp { namespace scave {
-%ignore Column;
-%ignore DataTable;
-%ignore XYDataTable;
-%ignore ScalarDataTable;
-%ignore ScatterDataTable;
-%ignore JoinedDataTable;
-%ignore HistogramDataTable;
-%ignore OldMatlabStructExport;
-%ignore OldMatlabScriptExport;
-%ignore OldOctaveTextExport;
-%ignore OldScaveExport::saveVectors;
-%rename(EOL)    CsvExport::eol;
-%newobject OldExporterFactory::createExporter;
-} } // namespaces
-
-%include "scave/export.h"
 
 /* ------------------ exporter.h ----------------------- */
 namespace omnetpp { namespace scave {
