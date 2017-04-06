@@ -33,6 +33,11 @@ AnimationControllerDialog::AnimationControllerDialog(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::Tool);
 
+    ui->profileComboBox->addItems({"Step/Run", "Fast"});
+    ui->profileComboBox->setItemData(0, RUNMODE_NORMAL);
+    ui->profileComboBox->setItemData(1, RUNMODE_FAST);
+
+    switchToRunMode(getQtenv()->getSimulationRunMode());
     displayMetrics();
 
     adjustSize();
@@ -42,20 +47,34 @@ AnimationControllerDialog::AnimationControllerDialog(QWidget *parent) :
     setGeometry(geom);
 
     // well, this is disgusting.
-    connect(ui->minFpsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int value) {
-        if (ui->maxFpsSpinBox->value() < value)
-            ui->maxFpsSpinBox->setValue(value);
-        duc->setMinFps(ui->minFpsSpinBox->value());
+    connect(ui->minSpeedSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        auto selectedProfile = getSelectedProfile();
+
+        double speed = getMinAnimSpeed();
+        selectedProfile->minAnimationSpeed = speed;
+
+        if (getMaxAnimSpeed() < speed)
+            ui->maxSpeedSpinBox->adjust(value, true);
+
+        displayMetrics();
     });
 
-    connect(ui->maxFpsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int value) {
-        if (ui->minFpsSpinBox->value() > value)
-            ui->minFpsSpinBox->setValue(value);
-        duc->setMaxFps(ui->maxFpsSpinBox->value());
+    connect(ui->maxSpeedSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        auto selectedProfile = getSelectedProfile();
+
+        double speed = getMaxAnimSpeed();
+        selectedProfile->maxAnimationSpeed = speed;
+
+        if (getMinAnimSpeed() > speed)
+            ui->minSpeedSpinBox->adjust(value, true);
+
+        displayMetrics();
     });
 
     connect(ui->playbackSpeedSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             duc, &DisplayUpdateController::setPlaybackSpeed);
+
+    connect(ui->profileComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(displayControlValues()));
 }
 
 AnimationControllerDialog::~AnimationControllerDialog()
@@ -63,39 +82,69 @@ AnimationControllerDialog::~AnimationControllerDialog()
     delete ui;
 }
 
+RunModeProfile *AnimationControllerDialog::getSelectedProfile() {
+    switch (ui->profileComboBox->currentData().toInt()) {
+        case RUNMODE_NORMAL: return duc->getStepRunProfile(); break;
+        case RUNMODE_FAST:   return duc->getFastProfile(); break;
+        default: ASSERT(false);
+    }
+    return nullptr; // just to silence a warning
+}
+
+double AnimationControllerDialog::getMinAnimSpeed()
+{
+    double value = ui->minSpeedSpinBox->value();
+    return value == ui->minSpeedSpinBox->minimum() ? std::nan("") : value;
+}
+
+double AnimationControllerDialog::getMaxAnimSpeed()
+{
+    double value = ui->maxSpeedSpinBox->value();
+    return value == ui->maxSpeedSpinBox->minimum() ? std::nan("") : value;
+}
+
+void AnimationControllerDialog::switchToRunMode(RunMode mode)
+{
+    auto cb = ui->profileComboBox;
+
+    int runIndex = cb->findData(RUNMODE_NORMAL);
+    int fastIndex = cb->findData(RUNMODE_FAST);
+
+    cb->setItemText(runIndex, QString("Step/Run") +
+                    ((mode == RUNMODE_NORMAL || mode == RUNMODE_STEP) ? " [active]" : ""));
+    cb->setItemText(fastIndex, QString("Fast") +
+                    ((mode == RUNMODE_FAST) ? " [active]" : ""));
+
+    if (mode == RUNMODE_FAST)
+        cb->setCurrentIndex(cb->findData(RUNMODE_FAST));
+
+    if (mode == RUNMODE_NORMAL || mode == RUNMODE_STEP)
+        cb->setCurrentIndex(cb->findData(RUNMODE_NORMAL));
+
+    displayControlValues();
+}
+
 void AnimationControllerDialog::displayMetrics()
 {
     auto env = getQtenv();
 
-    ui->minFpsSpinBox->setValue(duc->getMinFps());
-    ui->maxFpsSpinBox->setValue(duc->getMaxFps());
-
-    ui->targetFpsValueLabel->setText(QString::number(duc->getTargetFps(), 'f', 0));
     ui->currentFpsValueLabel->setText(QString::number(duc->getCurrentFps(), 'f', 0));
-
     ui->animationTimeValueLabel->setText(QString::number(duc->getAnimationTime(), 'f', 2));
     ui->holdTimeValueLabel->setText(QString::number(env->getRemainingAnimationHoldTime(), 'f', 2));
-
     ui->animationSpeedValueLabel->setText(QString::number(duc->getAnimationSpeed(), 'g', 2));
-
-    // don't want to influence the speed here programatically through the valueChanged signal
-    bool blocked = ui->playbackSpeedSpinBox->blockSignals(true);
-
-    // making it kindof exponential
-    int magnitude = std::ceil(std::log10(duc->getPlaybackSpeed()*1.0001));
-    ui->playbackSpeedSpinBox->setSingleStep(duc->getPlaybackSpeed() / 10);
-    // the ifs are here to keep it spinning (except when magnitude changes...)
-    if (ui->playbackSpeedSpinBox->decimals() != (4 -magnitude))
-        ui->playbackSpeedSpinBox->setDecimals(4 - magnitude);
-    if (ui->playbackSpeedSpinBox->minimum() != duc->getMinPlaybackSpeed())
-        ui->playbackSpeedSpinBox->setMinimum(duc->getMinPlaybackSpeed());
-    if (ui->playbackSpeedSpinBox->maximum() != duc->getMaxPlaybackSpeed())
-        ui->playbackSpeedSpinBox->setMaximum(duc->getMaxPlaybackSpeed());
-    ui->playbackSpeedSpinBox->setValue(duc->getPlaybackSpeed());
-
-    ui->playbackSpeedSpinBox->blockSignals(blocked);
-
     ui->refreshDisplayCountValueLabel->setText(QString::number(env->getRefreshDisplayCount()));
+}
+
+void AnimationControllerDialog::displayControlValues()
+{
+    auto cb = ui->profileComboBox;
+    cb->setCurrentText(cb->itemText(cb->currentIndex()));
+
+    auto selectedProfile = getSelectedProfile();
+
+    ui->minSpeedSpinBox->adjust(selectedProfile->minAnimationSpeed);
+    ui->maxSpeedSpinBox->adjust(selectedProfile->maxAnimationSpeed);
+    ui->playbackSpeedSpinBox->adjust(selectedProfile->playbackSpeed);
 }
 
 } // namespace qtenv

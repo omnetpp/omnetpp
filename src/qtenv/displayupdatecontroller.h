@@ -33,11 +33,10 @@ struct QTENV_API RunModeProfile {
 
     double targetAnimationCpuUsage;
     double minFps, maxFps; // these limit the adaptive mechanism
+    double minAnimationSpeed, maxAnimationSpeed; // bound the value coming from the user/msganim, or NaN if not
 
     double minPlaybackSpeed, maxPlaybackSpeed;
     double playbackSpeed;
-
-    double minAnimationSpeed, maxAnimationSpeed;
 
     void setPlaybackSpeed(double speed) {
         playbackSpeed = clip(minPlaybackSpeed, speed, maxPlaybackSpeed);
@@ -54,11 +53,11 @@ class QTENV_API DisplayUpdateController : public QObject
     MessageAnimator *msgAnim = qtenv->getMessageAnimator();
 
     // factory defaults
-    RunModeProfile runProfile  = {0.8,   2.0, 60.0, 1e-2, 1e2, 1,    1e-15, 1e6};
-    RunModeProfile fastProfile = {0.05, 10.0, 30.0, 1e0,  1e6, 1000, 1e-3,  1e12};
+    RunModeProfile runProfile  = {0.8,   2.0, 60.0, std::nan(""), std::nan(""), 1e-2, 1e2, 1};
+    RunModeProfile fastProfile = {0.05, 10.0, 30.0, std::nan(""), std::nan(""), 1e0,  1e6, 1000 };
     RunModeProfile *currentProfile = &runProfile;
 
-    RunMode runMode = RUNMODE_NORMAL;
+    RunMode runMode = RUNMODE_NOT_RUNNING;
 
     AnimationControllerDialog *dialog = nullptr;
 
@@ -101,6 +100,7 @@ class QTENV_API DisplayUpdateController : public QObject
 
 signals:
     void playbackSpeedChanged(double speed);
+    void runModeChanged(RunMode mode);
 
 public slots:
     void setPlaybackSpeed(double speed);
@@ -136,21 +136,21 @@ public:
     void showDialog(QAction *action);
     void hideDialog();
 
+    RunModeProfile *getCurrentProfile() { return currentProfile; }
+    RunModeProfile *getStepRunProfile() { return &runProfile; }
+    RunModeProfile *getFastProfile() { return &fastProfile; }
+
     double getMinPlaybackSpeed() { return currentProfile->minPlaybackSpeed; }
     double getMaxPlaybackSpeed() { return currentProfile->maxPlaybackSpeed; }
     double getPlaybackSpeed() { return currentProfile->playbackSpeed; }
 
-    double getMinFps() const { return currentProfile->minFps; }
-    void setMinFps(double value) { currentProfile->minFps = value; setTargetFps(targetFps); }
+    void setMinAnimSpeed(double value) { currentProfile->minAnimationSpeed = value; }
 
-    double getMaxFps() const { return currentProfile->maxFps; }
-    void setMaxFps(double value) { currentProfile->maxFps = value; setTargetFps(targetFps); }
+    void setMaxAnimSpeed(double value) { currentProfile->maxAnimationSpeed = value; }
 
     int getFrameCount() const { return frameCount; }
 
-    double getTargetFps() const { return targetFps; }
     double getCurrentFps() const { return currentFps; }
-    double getMaxPossibleFps() const { return maxPossibleFps; }
 
     void simulationEvent(cEvent *event);
 

@@ -173,12 +173,18 @@ double DisplayUpdateController::getAnimationSpeed() const
     if (animSpeed == 0.0)
         animSpeed = modelSpeed;
 
-    if (animSpeed == 0.0)
-        return 0;
+    double computedSpeed = std::min(animSpeed, modelSpeed);
 
-    return clip(currentProfile->minAnimationSpeed,
-                std::min(animSpeed, modelSpeed),
-                currentProfile->maxAnimationSpeed);
+    double minSpeed = currentProfile->minAnimationSpeed;
+    double maxSpeed = currentProfile->maxAnimationSpeed;
+
+    if (!std::isnan(minSpeed))
+        computedSpeed = std::max(minSpeed, computedSpeed);
+
+    if (!std::isnan(maxSpeed))
+        computedSpeed = std::min(maxSpeed, computedSpeed);
+
+    return computedSpeed;
 }
 
 double DisplayUpdateController::getAnimationHoldEndTime() const
@@ -189,6 +195,7 @@ double DisplayUpdateController::getAnimationHoldEndTime() const
 
 void DisplayUpdateController::setRunMode(RunMode value)
 {
+    auto oldMode = runMode;
     runMode = value;
     currentProfile = &runProfile;
 
@@ -213,8 +220,8 @@ void DisplayUpdateController::setRunMode(RunMode value)
             break;
     }
 
-    if (dialog)
-        dialog->displayMetrics();
+    if (oldMode != runMode)
+        emit runModeChanged(runMode);
 
     emit playbackSpeedChanged(getPlaybackSpeed());
 }
@@ -391,6 +398,8 @@ void DisplayUpdateController::showDialog(QAction *action)
             dialog = nullptr;
             action->setChecked(false);
         });
+        connect(this, &DisplayUpdateController::runModeChanged,
+                dialog, &AnimationControllerDialog::switchToRunMode);
     }
 }
 
@@ -405,8 +414,10 @@ void DisplayUpdateController::hideDialog()
 void DisplayUpdateController::setPlaybackSpeed(double speed)
 {
     currentProfile->setPlaybackSpeed(speed);
-    if (dialog)
+    if (dialog) {
+        dialog->displayControlValues();
         dialog->displayMetrics();
+    }
 
     emit playbackSpeedChanged(speed);
 }
@@ -424,7 +435,7 @@ void DisplayUpdateController::reset()
     currentProfile = &runProfile;
     setTargetFps(maxPossibleFps * currentProfile->targetAnimationCpuUsage);
 
-    runMode = RUNMODE_NORMAL;
+    runMode = RUNMODE_NOT_RUNNING;
     hideDialog();
 
     animationTime = 0; // this is The Animation Time

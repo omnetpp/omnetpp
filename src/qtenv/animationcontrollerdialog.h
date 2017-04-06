@@ -28,6 +28,7 @@ namespace omnetpp {
 namespace qtenv {
 
 class DisplayUpdateController;
+struct RunModeProfile;
 
 class QTENV_API AnimationControllerDialog : public QDialog
 {
@@ -36,12 +37,18 @@ class QTENV_API AnimationControllerDialog : public QDialog
     Ui::AnimationControllerDialog *ui;
     DisplayUpdateController *duc;
 
+    RunModeProfile *getSelectedProfile(); // based on the combobox
+    double getMinAnimSpeed(); // from the spinbox, NAN if "none"
+    double getMaxAnimSpeed(); // from the spinbox, NAN if "none"
+
 public:
     explicit AnimationControllerDialog(QWidget *parent = 0);
     ~AnimationControllerDialog();
 
 public slots:
+    void switchToRunMode(RunMode mode);
     void displayMetrics();
+    void displayControlValues();
 };
 
 } // namespace qtenv

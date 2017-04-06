@@ -115,7 +115,8 @@ SOURCES += mainwindow.cc \
     histograminspectorconfigdialog.cc \
     chartgriditem.cc \
     vectorplotitem.cc \
-    charttickdecimal.cc
+    charttickdecimal.cc \
+    exponentialspinbox.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -181,7 +182,8 @@ HEADERS += mainwindow.h \
     histograminspectorconfigdialog.h \
     chartgriditem.h \
     vectorplotitem.h \
-    charttickdecimal.h
+    charttickdecimal.h \
+    exponentialspinbox.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
