@@ -84,7 +84,7 @@ class QTENV_API DisplayUpdateController : public QObject
     bool recordingVideo = false; // a simple state variable
 
     int frameCount = 0; // this will be the sequence number of the next recorded frame
-    simtime_t lastRecordedFrame = 0; // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
+    simtime_t lastRecordedFrame = -SimTime::getMaxTime(); // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
 
     std::string filenameBase = "frames/"; // the prefix of the frame files' path
 

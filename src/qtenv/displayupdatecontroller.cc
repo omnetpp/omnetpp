@@ -243,8 +243,6 @@ void DisplayUpdateController::startVideoRecording()
 {
     animationTimer.restart();
     recordingVideo = true;
-    lastRecordedFrame = simTime();
-    // XXX maybe record a frame right here?
 }
 
 void DisplayUpdateController::stopVideoRecording()
@@ -300,7 +298,16 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             }
 
             SimTime nextEvent = sim->guessNextSimtime();
-            SimTime nextFrame = lastRecordedFrame + frameDelta * animationSpeed * currentProfile->playbackSpeed;
+            SimTime frameDeltaSimTime = frameDelta * animationSpeed * currentProfile->playbackSpeed;
+
+            if (lastRecordedFrame < simTime() - frameDeltaSimTime) {
+                // there was a skip. most likely the recording was disabled for a while,
+                // or has just been enabled for the first time
+                lastRecordedFrame = simTime();
+                renderFrame(true);
+            }
+
+            SimTime nextFrame = lastRecordedFrame + frameDeltaSimTime;
 
             // simTime can be moved forward even without event (skipping, etc...)
             if (simTime() > nextFrame)
@@ -439,7 +446,7 @@ void DisplayUpdateController::reset()
     recordingVideo = false; // a simple state variable
 
     frameCount = 0; // this will be the sequence number of the next recorded frame
-    lastRecordedFrame = 0; // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
+    lastRecordedFrame = -SimTime::getMaxTime(); // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
 
     filenameBase = "frames/"; // the prefix of the frame files' path
 
