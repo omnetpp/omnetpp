@@ -79,15 +79,13 @@ static void verifyIntTypes()
     VERIFY(uint64_t, 8);
 #undef VERIFY
 
-#define LL    INT64_PRINTF_FORMAT
     char buf[32];
     int64_t a = 1, b = 2;
-    sprintf(buf, "%" LL "d %" LL "d", a, b);
+    sprintf(buf, "%" PRId64 " %" PRId64, a, b);
     if (strcmp(buf, "1 2") != 0) {
-        printf("INTERNAL ERROR: INT64_PRINTF_FORMAT incorrectly defined in include/inttypes.h, please report this bug!\n\n");
+        printf("INTERNAL ERROR: PRId64 is incorrectly defined, please report this bug!\n\n");
         abort();
     }
-#undef LL
 }
 
 static bool useStderr = false;

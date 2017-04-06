@@ -44,8 +44,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace qtenv {
 
-#define LL    INT64_PRINTF_FORMAT
-
 void _dummy_for_loginspector() {}
 
 class LogInspectorFactory : public InspectorFactory

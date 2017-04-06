@@ -75,11 +75,11 @@ while (<FILE>)
       }
       elsif ($fieldType eq "int64_t")
       {
-         $fieldPrintfType = '%" LL "d';
+         $fieldPrintfType = '%" PRId64 "';
       }
       elsif ($fieldType eq "eventnumber_t")
       {
-         $fieldPrintfType = '%" LL "d';
+         $fieldPrintfType = '%" PRId64 "';
       }
       elsif ($fieldType eq "simtime_t")
       {
@@ -192,8 +192,6 @@ print CC "
 #undef CHECK
 #endif
 #define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError(\"Cannot write event log file, disk full?\");
-
-#define LL    INT64_PRINTF_FORMAT
 
 namespace omnetpp {
 namespace envir {

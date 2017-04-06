@@ -119,8 +119,6 @@ extern "C" QTENV_API void qtenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" QTENV_API void _qtenv_lib() {}
 
-#define LL    INT64_PRINTF_FORMAT
-
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "80KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_STRING, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. A run filter is also accepted. The default is to ask the user.");
@@ -935,7 +933,7 @@ bool Qtenv::doRunSimulationExpress()
     //
 
     char info[128];
-    sprintf(info, "** Running in Express mode from event #%" LL "d  t=%s ...\n",
+    sprintf(info, "** Running in Express mode from event #%" PRId64 "  t=%s ...\n",
             getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
@@ -1002,7 +1000,7 @@ bool Qtenv::doRunSimulationExpress()
 
     inspectorsFresh = false;
 
-    sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
+    sprintf(info, "** Leaving Express mode at event #%" PRId64 "  t=%s\n",
             getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
@@ -1411,7 +1409,7 @@ void Qtenv::addEventToLog(cEvent *event)
     // produce banner text if enabled
     if (opt->printEventBanners) {
         char *p = banner;
-        p += sprintf(p, "** Event #%" LL "d  t=%s  ",
+        p += sprintf(p, "** Event #%" PRId64 "  t=%s  ",
                     getSimulation()->getEventNumber(),
                     SIMTIME_STR(getSimulation()->getSimTime()));
 

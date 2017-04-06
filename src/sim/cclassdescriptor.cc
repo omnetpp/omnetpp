@@ -20,6 +20,7 @@
 #include <cstdio>  // sprintf
 #include <cstdlib>
 #include <cstring>
+#include <climits> // INT_MIN
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "omnetpp/cclassdescriptor.h"
@@ -27,14 +28,12 @@
 #include "omnetpp/cenum.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cobjectfactory.h"  // createOne()
-#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h"  // PRId64
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 
-
-#define LL  INT64_PRINTF_FORMAT  /* abbreviation */
 
 std::string cClassDescriptor::long2string(long l)
 {
@@ -63,7 +62,7 @@ unsigned long cClassDescriptor::string2ulong(const char *s)
 std::string cClassDescriptor::int642string(int64_t l)
 {
     char buf[32];
-    sprintf(buf, "%" LL "d", l);
+    sprintf(buf, "%" PRId64, l);
     return buf;
 }
 
@@ -75,7 +74,7 @@ int64_t cClassDescriptor::string2int64(const char *s)
 std::string cClassDescriptor::uint642string(uint64_t l)
 {
     char buf[32];
-    sprintf(buf, "%" LL "u", l);
+    sprintf(buf, "%" PRId64 "u", l);
     return buf;
 }
 

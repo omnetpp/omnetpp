@@ -23,8 +23,6 @@ namespace omnetpp {
 namespace common {
 
 #define SCALAR_FILE_VERSION    2
-#define LL  INT64_PRINTF_FORMAT
-
 
 OmnetppScalarFileWriter::OmnetppScalarFileWriter()
 {
@@ -70,7 +68,7 @@ void OmnetppScalarFileWriter::writeAttributes(const StringMap& attributes)
 
 void OmnetppScalarFileWriter::writeStatisticField(const char *name, int64_t value)
 {
-    check(fprintf(f, "field %s %" LL "d\n", QUOTE(name), value));
+    check(fprintf(f, "field %s %" PRId64 "\n", QUOTE(name), value));
 }
 
 void OmnetppScalarFileWriter::writeStatisticField(const char *name, double value)

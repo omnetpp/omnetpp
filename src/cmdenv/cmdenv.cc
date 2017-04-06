@@ -53,7 +53,6 @@
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/platdep/timeutil.h"
-#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
 #include "cmddefs.h"
 #include "cmdenv.h"
 
@@ -90,8 +89,6 @@ Register_OmnetApp("Cmdenv", Cmdenv, 10, "command-line user interface");
 extern "C" CMDENV_API void cmdenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" CMDENV_API void _cmdenv_lib() {}
-
-#define LL  INT64_PRINTF_FORMAT
 
 bool Cmdenv::sigintReceived;
 
@@ -664,7 +661,7 @@ void Cmdenv::debug(const char *fmt, ...) //FIXME apparently only for HTTP
     time_t t = (time_t)tv.tv_sec;
     struct tm tm = *localtime(&t);
 
-    ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" LL "d %s] ",
+    ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%" PRId64 " %s] ",
             tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
             getSimulation()->getEventNumber(), "");
     va_list va;

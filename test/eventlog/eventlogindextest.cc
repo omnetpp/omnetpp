@@ -18,8 +18,6 @@
 #include <common/filereader.h>
 #include <eventlog/eventlogindex.h>
 
-#define LL    INT64_PRINTF_FORMAT
-
 using namespace omnetpp;
 
 bool getReadForward(MatchKind matchKind)
@@ -45,14 +43,14 @@ void checkOffset(EventLogIndex& eventLogIndex, file_offset_t offset)
 
     file_offset_t endOffset = eventLogIndex.getEndOffsetForBeginOffset(offset);
     if (endOffset == -1)
-        throw opp_runtime_error("*** No end offset for begin offset: %" LL "d\n", offset);
+        throw opp_runtime_error("*** No end offset for begin offset: %" PRId64 "\n", offset);
 
     file_offset_t beginOffset = eventLogIndex.getBeginOffsetForEndOffset(endOffset);
     if (beginOffset == -1)
-        throw opp_runtime_error("*** No begin offset for end offset: %" LL "d\n", endOffset);
+        throw opp_runtime_error("*** No begin offset for end offset: %" PRId64 "\n", endOffset);
 
     if (offset != beginOffset)
-        throw opp_runtime_error("*** Inconsistent begin and end offsets for offset: %" LL "d\n", offset);
+        throw opp_runtime_error("*** Inconsistent begin and end offsets for offset: %" PRId64 "\n", offset);
 }
 
 void checkEventNumberOffset(EventLogIndex& eventLogIndex, file_offset_t offset, MatchKind matchKind, eventnumber_t eventNumber)
@@ -72,7 +70,7 @@ void checkEventNumberOffset(EventLogIndex& eventLogIndex, file_offset_t offset, 
 
             if ((!forward || eventNumber > checkEventNumber) &&
                 (forward || eventNumber < checkEventNumber))
-                throw opp_runtime_error("*** Found wrong offset for event number: %" LL "d\n", eventNumber);
+                throw opp_runtime_error("*** Found wrong offset for event number: %" PRId64 "\n", eventNumber);
         }
     }
 }
@@ -114,13 +112,13 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
     file_offset_t lastEventOffset = eventLogIndex.getLastEventOffset();
 
     if ((firstEventNumber == -1 || lastEventNumber == -1) && firstEventNumber != lastEventNumber)
-        throw opp_runtime_error("*** Inconsistent first and last event numbers: %" LL "d, %" LL "d\n", firstEventNumber, lastEventNumber);
+        throw opp_runtime_error("*** Inconsistent first and last event numbers: %" PRId64 ", %" PRId64 "\n", firstEventNumber, lastEventNumber);
 
     if (lastEventNumber != -1) {
         while (numberOfOffsetLookups--) {
             // seek to random event number
             eventnumber_t eventNumber = random.next01() * lastEventNumber;
-            printf("Seeking for event number: %" LL "d\n", eventNumber);
+            printf("Seeking for event number: %" PRId64 "\n", eventNumber);
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(eventNumber, EXACT);
             file_offset_t firstOrPreviousOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_PREVIOUS);
             file_offset_t firstOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_NEXT);
@@ -128,13 +126,13 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
             file_offset_t lastOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, LAST_OR_NEXT);
 
             if (firstOrPreviousOffset > lastOrNextOffset)
-                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for event number: %" LL "d\n", eventNumber);
+                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for event number: %" PRId64 "\n", eventNumber);
 
             if (firstOrNextOffset < firstOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for event number: %" LL "d\n", eventNumber);
+                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for event number: %" PRId64 "\n", eventNumber);
 
             if (lastOrNextOffset < lastOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for event number: %" LL "d\n", eventNumber);
+                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for event number: %" PRId64 "\n", eventNumber);
 
             checkEventNumberOffset(eventLogIndex, offset, EXACT, eventNumber);
             checkEventNumberOffset(eventLogIndex, firstOrPreviousOffset, FIRST_OR_PREVIOUS, eventNumber);

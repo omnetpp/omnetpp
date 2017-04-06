@@ -667,7 +667,7 @@ char *opp_ltoa(char *buf, long d)
 
 char *opp_i64toa(char *buf, int64_t d)
 {
-    sprintf(buf, "%" INT64_PRINTF_FORMAT "d", d);
+    sprintf(buf, "%" PRId64, d);
     return buf;
 }
 

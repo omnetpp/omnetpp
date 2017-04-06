@@ -29,7 +29,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-#define LL  INT64_PRINTF_FORMAT
 #define VECTOR_FILE_VERSION 2
 
 //=========================================================================
@@ -62,7 +61,7 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 #define CHECK(cond, msg, block, line) \
             if (!(cond))\
             {\
-                throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %" LL "d, line in block %d", \
+                throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %" PRId64 ", line in block %d", \
                                         msg, fname.c_str(), (int64_t)block.startOffset, line);\
             }
 
@@ -379,9 +378,9 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
                 writeBufferToFile(port);
             if (a.xp.isNil())
-                bufferPrintf(port, "%d\t%" LL "d\t%.*g\t%.*g\n", vectorId, a.eventNumber, prec, a.x, prec, a.y);
+                bufferPrintf(port, "%d\t%" PRId64 "\t%.*g\t%.*g\n", vectorId, a.eventNumber, prec, a.x, prec, a.y);
             else
-                bufferPrintf(port, "%d\t%" LL "d\t%s\t%.*g\n", vectorId, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
+                bufferPrintf(port, "%d\t%" PRId64 "\t%s\t%.*g\n", vectorId, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
             port->bufferNumOfRecords++;
             port->vector.blocks.back().collect(a.eventNumber, a.x, a.y);
         }
@@ -405,7 +404,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
                         break;
 
                     case 'E':
-                        bufferPrintf(port, "%" LL "d", a.eventNumber);
+                        bufferPrintf(port, "%" PRId64, a.eventNumber);
                         break;
 
                     default:

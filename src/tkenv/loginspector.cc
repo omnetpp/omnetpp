@@ -31,8 +31,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace tkenv {
 
-#define LL    INT64_PRINTF_FORMAT
-
 void _dummy_for_loginspector() {}
 
 class LogInspectorFactory : public InspectorFactory
@@ -233,7 +231,7 @@ void LogInspector::addBookmarkIfNeeded(const LogBuffer::Entry *entry)
 {
     if (!bookmarkAdded) {
         char bookmark[64];
-        sprintf(bookmark, "event-%" LL "d", entry->eventNumber);
+        sprintf(bookmark, "event-%" PRId64, entry->eventNumber);
         textWidgetSetBookmark(bookmark, "I-1li");  // beginning of previous line
         bookmarkAdded = true;
     }
@@ -318,7 +316,7 @@ void LogInspector::redisplay()
             }
             if (entryProducedOutput) {
                 char bookmark[64];
-                sprintf(bookmark, "event-%" LL "d", entry->eventNumber);
+                sprintf(bookmark, "event-%" PRId64, entry->eventNumber);
                 textWidgetSetBookmark(bookmark, "1.0");
 
                 textWidgetGotoBeginning();  // for next entry
@@ -444,7 +442,7 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
     if (!entry->eventNumber)
         strcpy(buf, "-\t");
     else
-        sprintf(buf, "#%" LL "d\t", entry->eventNumber);
+        sprintf(buf, "#%" PRId64 "\t", entry->eventNumber);
     textWidgetInsert(buf, repeatedEvent ? "repeatedeventnumcol" : "eventnumcol");
 
     // Add msghop bookmark at the START of the line. IMPORTANT:
@@ -452,7 +450,7 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
     //  (2) may only be inserted after the line already contains some text (here, eventnum),
     //      otherwise the text will be inserted BEFORE the mark!
     char bookmark[80];
-    sprintf(bookmark, "msghop#%" LL "d:%d", entry->eventNumber, msgIndex);
+    sprintf(bookmark, "msghop#%" PRId64 ":%d", entry->eventNumber, msgIndex);
     textWidgetSetBookmark(bookmark, "I linestart");
 
     // add time

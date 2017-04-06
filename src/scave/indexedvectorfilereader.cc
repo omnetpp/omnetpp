@@ -29,8 +29,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-#define LL    INT64_PRINTF_FORMAT
-
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
     FileReaderNode(filename, bufferSize), index(nullptr), currentBlockIndex(0)
 {
@@ -117,7 +115,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
     const char *file = filename.c_str();
     file_offset_t offset;
-#define CHECK(cond, msg) {if (!(cond)) throw opp_runtime_error(msg ", file %s, offset %" LL "d", file, (int64_t)offset); }
+#define CHECK(cond, msg) {if (!(cond)) throw opp_runtime_error(msg ", file %s, offset %" PRId64, file, (int64_t)offset); }
 
     VectorData *vector = portDataPtr->vector;
     file_offset_t startOffset = blockPtr->startOffset;

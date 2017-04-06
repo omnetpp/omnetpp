@@ -18,7 +18,7 @@
 #define __OMNETPP_PLATMISC_H
 
 #include <stdint.h>  // int64_t
-#include <climits>   // __WORDSIZE
+#include <cinttypes> // PRId64
 #include "platdefs.h"
 
 //
@@ -175,30 +175,6 @@ typedef int64_t file_offset_t;  // off_t on Linux
   #define opp_stat_t stat64
   #define opp_stat stat64
   #define opp_fstat fstat64
-#endif
-
-//
-// printf type specifier for int64_t.
-//
-// Note: %I64d is only used with VC++ 7.1 and MinGW gcc 3.4.x; once we
-// drop support for these compilers, this macro can be dropped altogether
-//
-// Note2: on 64-bit platforms, gcc defines int64_t to be long, so
-// we need to use %ld (%lld generates warnings). We recognize 64-bit
-// platforms by __WORDSIZE (from <bits/wordsize.h>, #included by <limits.h>)
-// (except MinGW-w64 where wordsize is not defined as 64 and long is only 32-bit,
-// so we need 'll' there
-//
-// Note3: It would be probably better to use the PRId64 macro here which is available
-// in C++11. See: http://en.cppreference.com/w/cpp/types/integer
-//
-#if defined(_MSC_VER) || (defined(__MINGW32__) && !defined(__MINGW64__))
-#   define INT64_PRINTF_FORMAT   "I64"
-#elif __WORDSIZE == 64 && !defined(__APPLE__)
-#   define INT64_PRINTF_FORMAT   "l"
-#   define INT64_IS_SAME_AS_LONG
-#else
-#   define INT64_PRINTF_FORMAT   "ll"
 #endif
 
 #ifndef M_PI

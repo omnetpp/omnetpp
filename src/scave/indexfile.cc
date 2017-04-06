@@ -26,8 +26,6 @@
 #include "scaveexception.h"
 #include "indexfile.h"
 
-#define LL    INT64_PRINTF_FORMAT
-
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -488,7 +486,7 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 
     file_offset_t saveOffset = opp_ftell(file);
     opp_fseek(file, 0, SEEK_SET);
-    CHECK(fprintf(file, "file %" LL "d %" LL "d", fingerprint.fileSize, fingerprint.lastModified));
+    CHECK(fprintf(file, "file %" PRId64 " %" PRId64, fingerprint.fileSize, fingerprint.lastModified));
     opp_fseek(file, saveOffset, SEEK_SET);
 }
 
@@ -534,9 +532,9 @@ void IndexFileWriter::writeBlock(const VectorData& vector, const Block& block)
     char *e;
 
     if (block.getCount() > 0) {
-        CHECK(fprintf(file, "%d\t%" LL "d %" LL "d", vector.vectorId, (int64_t)block.startOffset, (int64_t)block.size));
+        CHECK(fprintf(file, "%d\t%" PRId64 " %" PRId64, vector.vectorId, (int64_t)block.startOffset, (int64_t)block.size));
         if (vector.hasColumn('E')) {
-            CHECK(fprintf(file, " %" LL "d %" LL "d", block.startEventNum, block.endEventNum));
+            CHECK(fprintf(file, " %" PRId64 " %" PRId64, block.startEventNum, block.endEventNum));
         }
         if (vector.hasColumn('T')) {
             CHECK(fprintf(file, " %s %s",
@@ -545,7 +543,7 @@ void IndexFileWriter::writeBlock(const VectorData& vector, const Block& block)
         }
         if (vector.hasColumn('V')) {
             const Statistics& stat = block.stat;
-            CHECK(fprintf(file, " %" LL "d %.*g %.*g %.*g %.*g",
+            CHECK(fprintf(file, " %" PRId64 " %.*g %.*g %.*g %.*g",
                             block.getCount(), precision, stat.getMin(), precision, stat.getMax(),
                             precision, stat.getSum(), precision, stat.getSumSqr()));
         }

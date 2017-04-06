@@ -770,7 +770,6 @@ int findObjectByFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
     return TCL_OK;
 }
 
-#define LL    INT64_PRINTF_FORMAT
 int getStatusVar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc != 2) {
@@ -1052,7 +1051,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
     else if (!strcmp(field, "length")) {
         if (cPacket *packet = dynamic_cast<cPacket *>(object)) {
             char buf[20];
-            sprintf(buf, "%" INT64_PRINTF_FORMAT "d", packet->getBitLength());
+            sprintf(buf, "%" PRId64, packet->getBitLength());
             Tcl_SetResult(interp, buf, TCL_VOLATILE);
         }
         else if (cQueue *queue = dynamic_cast<cQueue *>(object)) {

@@ -22,7 +22,7 @@
 #include "common/linetokenizer.h"
 #include "common/filereader.h"
 #include "omnetpp/platdep/platmisc.h"
-#include "omnetpp/platdep/platmisc.h" // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h" // PRId64
 #include "eventlogdefs.h"
 #include "enums.h"
 

@@ -238,15 +238,13 @@ LogBuffer::Entry *LogBuffer::getEntryByEventNumber(eventnumber_t eventNumber)
     return i == -1 ? nullptr : entries[i];
 }
 
-#define LL    INT64_PRINTF_FORMAT
-
 void LogBuffer::dump() const
 {
     printf("LogBuffer: %d entries\n", (int)entries.size());
 
     for (int i = 0; i < entries.size(); i++) {
         const Entry *entry = entries[i];
-        printf("[%d] #%" LL "d t=%s componentId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
+        printf("[%d] #%" PRId64 " t=%s componentId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
         for (const auto & line : entry->lines)
             printf("\t[l%d]:%s%s", i, line.prefix, line.line);
     }

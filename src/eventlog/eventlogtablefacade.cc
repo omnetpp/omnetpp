@@ -23,8 +23,6 @@
 namespace omnetpp {
 namespace eventlog {
 
-#define LL    INT64_PRINTF_FORMAT
-
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     setCustomFilter("*");
@@ -256,7 +254,7 @@ EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
         }
     }
 
-    throw opp_runtime_error("No event log entry with index: %d in event: %" INT64_PRINTF_FORMAT "d", index, event->getEventNumber());
+    throw opp_runtime_error("No event log entry with index: %d in event: %" PRId64, index, event->getEventNumber());
 }
 
 int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
@@ -276,7 +274,7 @@ int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
         }
     }
 
-    throw opp_runtime_error("No event log entry found in event: %" INT64_PRINTF_FORMAT "d", event->getEventNumber());
+    throw opp_runtime_error("No event log entry found in event: %" PRId64, event->getEventNumber());
 }
 
 eventnumber_t EventLogTableFacade::getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, eventnumber_t limit)

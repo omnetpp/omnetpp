@@ -86,7 +86,7 @@ while (<FILE>)
       }
       elsif ($fieldType eq "int64_t")
       {
-         $fieldPrintfType = "%\" INT64_PRINTF_FORMAT \"d";
+         $fieldPrintfType = "%\" PRId64 \"";
          $fieldDefault = "-1";
       }
       elsif ($fieldType eq "eventnumber_t")

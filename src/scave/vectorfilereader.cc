@@ -162,7 +162,7 @@ void VectorFileReaderNode::process()
                 for (PortVector::iterator p = portvec->second.begin(); p != portvec->second.end(); ++p)
                     p->getChannel()->write(&a, 1);
 
-                // DBG(("vectorfilereader: written id=%d (%" LL "d,%g,%g)\n", vectorId, a.eventNumber, a.x, a.y));
+                // DBG(("vectorfilereader: written id=%d (%" PRId64 ",%g,%g)\n", vectorId, a.eventNumber, a.x, a.y));
             }
         }
     }

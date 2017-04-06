@@ -26,7 +26,6 @@ namespace common {
 
 #define VECTOR_FILE_VERSION    2
 #define INDEX_FILE_VERSION 2
-#define LL  INT64_PRINTF_FORMAT
 
 using std::ostream;
 using std::ofstream;
@@ -93,7 +92,7 @@ void OmnetppVectorFileWriter::close()
         struct opp_stat_t s;
         if (opp_stat(fname.c_str(), &s) == 0) {
             opp_fseek(fi, 0, SEEK_SET);
-            fprintf(fi, "file %" LL "d %" LL "d", (int64_t)s.st_size, (int64_t)s.st_mtime);
+            fprintf(fi, "file %" PRId64 " %" PRId64, (int64_t)s.st_size, (int64_t)s.st_mtime);
         }
 
         fclose(fi);
@@ -248,7 +247,7 @@ void OmnetppVectorFileWriter::writeBlock(VectorData *vp)
 
     if (vp->recordEventNumbers) {
         for (auto sample : vp->buffer)
-            check(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, sample.eventNumber, sample.time.ttoa(buf), prec, sample.value));
+            check(fprintf(f, "%d\t%" PRId64 "\t%s\t%.*g\n", vp->id, sample.eventNumber, sample.time.ttoa(buf), prec, sample.value));
     }
     else {
         for (auto sample : vp->buffer)
@@ -265,14 +264,14 @@ void OmnetppVectorFileWriter::writeBlock(VectorData *vp)
     fflush(f);
 
     if (vp->recordEventNumbers) {
-        checki(fprintf(fi, "%d\t%" LL "d %" LL "d %" LL "d %" LL "d %s %s %" LL "d %.*g %.*g %.*g %.*g\n",
+        checki(fprintf(fi, "%d\t%" PRId64 " %" PRId64 " %" PRId64 " %" PRId64 " %s %s %" PRId64 " %.*g %.*g %.*g %.*g\n",
                 vp->id, block.offset, block.size,
                 block.startEventNum, block.endEventNum,
                 block.startTime.ttoa(buf), block.endTime.ttoa(buf2),
                 stats.getCount(), prec, stats.getMin(), prec, stats.getMax(), prec, stats.getSum(), prec, stats.getSumSqr()));
     }
     else {
-        checki(fprintf(fi, "%d\t%" LL "d %" LL "d %s %s %" LL "d %.*g %.*g %.*g %.*g\n",
+        checki(fprintf(fi, "%d\t%" PRId64 " %" PRId64 " %s %s %" PRId64 " %.*g %.*g %.*g %.*g\n",
                 vp->id, block.offset, block.size,
                 block.startTime.ttoa(buf), block.endTime.ttoa(buf2),
                 stats.getCount(), prec, stats.getMin(), prec, stats.getMax(), prec, stats.getSum(), prec, stats.getSumSqr()));

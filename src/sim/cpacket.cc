@@ -19,7 +19,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cpacket.h"
 #include "omnetpp/csimplemodule.h"
-#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h"  // PRId64
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -228,7 +228,7 @@ const char *cPacket::getDisplayString() const
 void cPacket::setBitLength(int64_t l)
 {
     if (l < 0)
-        throw cRuntimeError(this, "setBitLength(): Negative length %" INT64_PRINTF_FORMAT "d", l);
+        throw cRuntimeError(this, "setBitLength(): Negative length %" PRId64, l);
     bitLength = l;
 }
 
@@ -236,7 +236,7 @@ void cPacket::addBitLength(int64_t l)
 {
     bitLength += l;
     if (bitLength < 0)
-        throw cRuntimeError(this, "addBitLength(): Length became negative (%" INT64_PRINTF_FORMAT "d) after adding %" INT64_PRINTF_FORMAT "d", bitLength, l);
+        throw cRuntimeError(this, "addBitLength(): Length became negative (%" PRId64 ") after adding %" PRId64, bitLength, l);
 }
 
 void cPacket::encapsulate(cPacket *msg)

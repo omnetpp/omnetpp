@@ -45,7 +45,6 @@ namespace envir {
 
 #define VECTOR_FILE_VERSION    2
 #define INDEX_FILE_VERSION 2
-#define LL  INT64_PRINTF_FORMAT
 
 using std::ostream;
 using std::ofstream;
@@ -134,7 +133,7 @@ void cFileOutputVectorManager_merged::closeIndexFile()
         struct opp_stat_t s;
         if (opp_stat(fname.c_str(), &s) == 0) {
             opp_fseek(fi, 0, SEEK_SET);
-            fprintf(fi, "file %" LL "d %" LL "d", (int64_t)s.st_size, (int64_t)s.st_mtime);
+            fprintf(fi, "file %" PRId64 " %" PRId64, (int64_t)s.st_size, (int64_t)s.st_mtime);
         }
 
         fclose(fi);
@@ -346,7 +345,7 @@ void cFileOutputVectorManager_merged::writeBlock(Vector *vp)
 
     if (vp->recordEventNumbers) {
         for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-            check(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, it->eventNumber, it->simtime.str(buff), prec, it->value));
+            check(fprintf(f, "%d\t%" PRId64 "\t%s\t%.*g\n", vp->id, it->eventNumber, it->simtime.str(buff), prec, it->value));
     }
     else {
         for (std::vector<Sample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
@@ -374,14 +373,14 @@ void cFileOutputVectorManager_merged::writeBlockToIndexFile(Vector *vp)
         fflush(f);
 
         if (vp->recordEventNumbers) {
-            checki(fprintf(fi, "%d\t%" LL "d %" LL "d %" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
+            checki(fprintf(fi, "%d\t%" PRId64 " %" PRId64 " %" PRId64 " %" PRId64 " %s %s %ld %.*g %.*g %.*g %.*g\n",
                             vp->id, block.offset, block.size,
                             block.startEventNum, block.endEventNum,
                             block.startTime.str(buff1), block.endTime.str(buff2),
                             block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr));
         }
         else {
-            checki(fprintf(fi, "%d\t%" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
+            checki(fprintf(fi, "%d\t%" PRId64 " %" PRId64 " %s %s %ld %.*g %.*g %.*g %.*g\n",
                             vp->id, block.offset, block.size,
                             block.startTime.str(buff1), block.endTime.str(buff2),
                             block.count, prec, block.min, prec, block.max, prec, block.sum, prec, block.sumSqr));

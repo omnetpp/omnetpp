@@ -25,8 +25,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace eventlog {
 
-#define LL    INT64_PRINTF_FORMAT
-
 static bool isEventNumber(eventnumber_t eventNumber)
 {
     return true;
@@ -243,7 +241,7 @@ file_offset_t EventLogIndex::getOffsetForEventNumber(eventnumber_t eventNumber, 
     file_offset_t offset = searchForOffset(eventNumberToCacheEntryMap, eventNumber, matchKind);
 
     if (PRINT_DEBUG_MESSAGES)
-        printf("Found event number: %" LL "d for match kind: %d at offset: %" LL "d\n", eventNumber, matchKind, offset);
+        printf("Found event number: %" PRId64 " for match kind: %d at offset: %" PRId64 "\n", eventNumber, matchKind, offset);
 
     return offset;
 }
@@ -254,7 +252,7 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
     file_offset_t offset = searchForOffset(simulationTimeToCacheEntryMap, simulationTime, matchKind);
 
     if (PRINT_DEBUG_MESSAGES)
-        printf("Found simulation time: %.*g for match kind: %d at offset: %" LL "d\n", 12, simulationTime.dbl(), matchKind, offset);
+        printf("Found simulation time: %.*g for match kind: %d at offset: %" PRId64 "\n", 12, simulationTime.dbl(), matchKind, offset);
 
     return offset;
 }
@@ -560,7 +558,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     char *line;
 
     if (PRINT_DEBUG_MESSAGES)
-        printf("Reading to first event line from offset: %" LL "d in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
+        printf("Reading to first event line from offset: %" PRId64 " in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
 
     // find first "E" line, return false if none found
     while (true) {
@@ -631,12 +629,12 @@ void EventLogIndex::dump()
     printf("eventNumberToCacheEntryMap:\n");
 
     for (auto & it : eventNumberToCacheEntryMap)
-        printf("  #%" LL "d --> offset %" LL "d (0x%" LL "x)\n", it.first, it.second.beginOffset, it.second.beginOffset);
+        printf("  #%" PRId64 " --> offset %" PRId64 " (0x%" PRId64 "x)\n", it.first, it.second.beginOffset, it.second.beginOffset);
 
     printf("simulationTimeToCacheEntryMap:\n");
 
     for (auto & it : simulationTimeToCacheEntryMap)
-        printf("  %.*g --> offset %" LL "d (0x%" LL "x)\n", 12, it.first.dbl(), it.second.beginOffset, it.second.beginOffset);
+        printf("  %.*g --> offset %" PRId64 " (0x%" PRId64 "x)\n", 12, it.first.dbl(), it.second.beginOffset, it.second.beginOffset);
 }
 
 } // namespace eventlog

@@ -760,7 +760,7 @@ void EventlogFileManager::recordKeyframe()
         file_offset_t newPreviousKeyframeFileOffset = opp_ftell(feventlog);
         fprintf(feventlog, "KF");
         // previousKeyframeFileOffset
-        fprintf(feventlog, " p %" INT64_PRINTF_FORMAT "d", previousKeyframeFileOffset);
+        fprintf(feventlog, " p %" PRId64, previousKeyframeFileOffset);
         previousKeyframeFileOffset = newPreviousKeyframeFileOffset;
         // consequenceLookahead
         fprintf(feventlog, " c ");
@@ -768,7 +768,7 @@ void EventlogFileManager::recordKeyframe()
         bool empty = true;
         for (eventnumber_t & consequenceLookaheadLimit : consequenceLookaheadLimits) {
             if (consequenceLookaheadLimit) {
-                fprintf(feventlog, "%" INT64_PRINTF_FORMAT "d:%" INT64_PRINTF_FORMAT "d,", (eventnumber_t)keyframeBlockSize * i, consequenceLookaheadLimit);
+                fprintf(feventlog, "%" PRId64 ":%" PRId64 ",", (eventnumber_t)keyframeBlockSize * i, consequenceLookaheadLimit);
                 empty = false;
                 consequenceLookaheadLimit = 0;
             }

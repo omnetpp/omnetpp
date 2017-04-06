@@ -26,8 +26,6 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-#define LL    INT64_PRINTF_FORMAT
-
 int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64_t SimTime::dscale;
 double SimTime::fscale;
@@ -94,7 +92,7 @@ void SimTime::rangeErrorInt64(double i64)
 
 void SimTime::rangeErrorSeconds(int64_t sec)
 {
-    throw cRuntimeError("Cannot convert % " LL "D to simtime_t: Out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("Cannot convert % " PRId64 "D to simtime_t: Out of range %s, allowed by scale exponent %d",
             sec, range().c_str(), scaleexp);
 }
 
@@ -121,7 +119,7 @@ void SimTime::overflowNegating()
 SimTime::SimTime(int64_t value, SimTimeUnit unit)
 {
     if (scaleexp == SCALEEXP_UNINITIALIZED)
-        throw cRuntimeError("Global simtime_t variable found, initialized with SimTime(%" LL "d, %d). "
+        throw cRuntimeError("Global simtime_t variable found, initialized with SimTime(%" PRId64 ", %d). "
                 "Global simtime_t variables are forbidden, because scale exponent is not yet known "
                 "at the time they are initialized. Please use double or const_simtime_t instead", value, unit);
 
@@ -132,7 +130,7 @@ SimTime::SimTime(int64_t value, SimTimeUnit unit)
         int64_t mul = exp10(-expdiff);
         int64_t tmp = t / mul;
         if (mul == -1 || tmp * mul != t)
-            throw cRuntimeError("simtime_t: %" LL "d*10^%d cannot be represented precisely using the current scale exponent %d, "
+            throw cRuntimeError("simtime_t: %" PRId64 "*10^%d cannot be represented precisely using the current scale exponent %d, "
                     "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
                     value, exponent, scaleexp);
         t = tmp;
@@ -141,7 +139,7 @@ SimTime::SimTime(int64_t value, SimTimeUnit unit)
         int64_t mul = exp10(expdiff);
         t *= mul;
         if (mul == -1 || t / mul != value)
-            throw cRuntimeError("simtime_t overflow: Cannot represent %" LL "d*10^%d, out of range %s allowed by scale exponent %d",
+            throw cRuntimeError("simtime_t overflow: Cannot represent %" PRId64 "*10^%d, out of range %s allowed by scale exponent %d",
                     value, exponent, range().c_str(), scaleexp);
     }
 }
@@ -154,7 +152,7 @@ void SimTime::checkedMul(int64_t x)
         return;
     }
 
-    throw cRuntimeError("simtime_t overflow multiplying %s by %" LL "d: Result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t overflow multiplying %s by %" PRId64 ": Result is out of range %s, allowed by scale exponent %d",
         str().c_str(), x, range().c_str(), scaleexp);
 }
 
@@ -235,7 +233,7 @@ std::string SimTime::format(int prec, const char *decimalSep, const char *digitS
         out << "-";
 
     char digits[32];
-    sprintf(digits, "%" LL "d", t<0 ? -t : t);
+    sprintf(digits, "%" PRId64, t<0 ? -t : t);
     int numDigits = strlen(digits);
 
     int startDecimal = scaleexp + numDigits - 1;

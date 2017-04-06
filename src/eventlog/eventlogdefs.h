@@ -54,7 +54,7 @@ namespace eventlog {
 typedef uintptr_t ptr_t;
 
 typedef int64_t eventnumber_t;
-#define EVENTNUMBER_PRINTF_FORMAT INT64_PRINTF_FORMAT
+#define EVENTNUMBER_PRINTF_FORMAT PRId64
 inline int64_t abs64(int64_t a)
 {
    return a < 0 ? -a : a;

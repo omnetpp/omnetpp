@@ -30,7 +30,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cconfiguration.h"
-#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT and DEBUG_TRAP
+#include "omnetpp/platdep/platmisc.h"  // PRId64 and DEBUG_TRAP
 
 using namespace omnetpp::common;
 
@@ -39,8 +39,6 @@ namespace omnetpp {
 #define BUFLEN 1024
 static char buffer[BUFLEN];
 static char buffer2[BUFLEN];
-
-#define LL  INT64_PRINTF_FORMAT
 
 cException::cException() : std::exception()
 {
@@ -181,7 +179,7 @@ std::string cException::getFormattedMessage() const
         case CTX_NONE: when = ""; break;
         case CTX_BUILD: when = " during network setup"; break; // note leading spaces
         case CTX_INITIALIZE: when = " during network initialization"; break;
-        case CTX_EVENT: when = opp_stringf(" at t=%ss, event #%" LL "d", SIMTIME_STR(getSimtime()), getEventNumber()); break;
+        case CTX_EVENT: when = opp_stringf(" at t=%ss, event #%" PRId64, SIMTIME_STR(getSimtime()), getEventNumber()); break;
         case CTX_FINISH: when = " during finalization"; break;
         case CTX_CLEANUP: when = " during network cleanup"; break;
     }

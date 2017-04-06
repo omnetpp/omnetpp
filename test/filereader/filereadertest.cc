@@ -25,8 +25,6 @@
 #define _setmode(a, b)
 #endif
 
-#define LL    INT64_PRINTF_FORMAT
-
 using namespace omnetpp;
 
 int parseLineNumber(char *line)
@@ -51,7 +49,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
         else
             offset = random.next01() * fileSize;
 
-        printf("Seeking to offset: %" LL "d\n", offset);
+        printf("Seeking to offset: %" PRId64 "\n", offset);
         fileReader.seekTo(offset);
 
         int j = numberOfReadLines;

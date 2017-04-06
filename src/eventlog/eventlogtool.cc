@@ -212,21 +212,21 @@ void offsets(Options options)
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT "d --> file offset %" INT64_PRINTF_FORMAT "d (0x%" INT64_PRINTF_FORMAT "x)\n", *it, offset, offset);
+                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT "d --> file offset %" PRId64 " (0x%" PRId64 "x)\n", *it, offset, offset);
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
                 fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getCurrentLineLength(), fileReader->getNextLineBufferPointer());
             }
 
-            fprintf(options.outputFile, "%" INT64_PRINTF_FORMAT "d\n", offset);
+            fprintf(options.outputFile, "%" PRId64 "\n", offset);
         }
     }
 
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing offsets for %d events while reading %" INT64_PRINTF_FORMAT "d lines and %" INT64_PRINTF_FORMAT "d bytes from log file %s completed in %g seconds\n", (int)options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing offsets for %d events while reading %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", (int)options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void events(Options options)
@@ -244,7 +244,7 @@ void events(Options options)
             IEvent *event = eventLog.getEventForBeginOffset(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT "d found at file offset %" INT64_PRINTF_FORMAT "d (0x%" INT64_PRINTF_FORMAT "x)\n", event->getEventNumber(), *it, *it);
+                fprintf(stdout, "# Event #%" EVENTNUMBER_PRINTF_FORMAT "d found at file offset %" PRId64 " (0x%" PRId64 "x)\n", event->getEventNumber(), *it, *it);
 
             event->print(options.outputFile);
         }
@@ -253,7 +253,7 @@ void events(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing events for %d offsets while reading %" INT64_PRINTF_FORMAT "d lines and %" INT64_PRINTF_FORMAT "d bytes from log file %s completed in %g seconds\n", (int)options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing events for %d offsets while reading %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", (int)options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void ranges(Options options)
@@ -283,7 +283,7 @@ void ranges(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing continuous ranges while reading %" INT64_PRINTF_FORMAT "d lines and %" INT64_PRINTF_FORMAT "d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing continuous ranges while reading %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void echo(Options options)
@@ -299,7 +299,7 @@ void echo(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Echoing of %" EVENTNUMBER_PRINTF_FORMAT "d events, %" INT64_PRINTF_FORMAT "d lines and %" INT64_PRINTF_FORMAT "d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Echoing of %" EVENTNUMBER_PRINTF_FORMAT "d events, %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }
@@ -318,7 +318,7 @@ void cat(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Cating of %" INT64_PRINTF_FORMAT "d lines and %" INT64_PRINTF_FORMAT "d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Cating of %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void filter(Options options)
@@ -337,7 +337,7 @@ void filter(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Filtering of %" EVENTNUMBER_PRINTF_FORMAT "d events, %" INT64_PRINTF_FORMAT "d lines and %" INT64_PRINTF_FORMAT "d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Filtering of %" EVENTNUMBER_PRINTF_FORMAT "d events, %" PRId64 " lines and %" PRId64 " bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }

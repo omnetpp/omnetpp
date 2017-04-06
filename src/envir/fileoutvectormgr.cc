@@ -41,8 +41,6 @@ Register_Class(cFileOutputVectorManager);
 
 #define VECTOR_FILE_VERSION    2
 
-#define LL  INT64_PRINTF_FORMAT
-
 // global options
 extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE;
 extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_FILE_APPEND;
@@ -194,7 +192,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
 
         ASSERT(f != nullptr);
         if (vp->recordEventNumbers)
-            check(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), t.str(buff), prec, value));
+            check(fprintf(f, "%d\t%" PRId64 "\t%s\t%.*g\n", vp->id, getSimulation()->getEventNumber(), t.str(buff), prec, value));
         else
             check(fprintf(f, "%d\t%s\t%.*g\n", vp->id, t.str(buff), prec, value));
         return true;

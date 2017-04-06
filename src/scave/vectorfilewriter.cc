@@ -19,13 +19,11 @@
 #include <clocale>
 
 #include "common/stringutil.h"
-#include "omnetpp/platdep/platmisc.h"  // INT64_PRINTF_FORMAT
+#include "omnetpp/platdep/platmisc.h"  // PRId64
 #include "channel.h"
 #include "vectorfilewriter.h"
 
 #define VECTOR_FILE_VERSION    2
-
-#define LL  INT64_PRINTF_FORMAT  /* abbreviation */
 
 #ifdef CHECK
 #undef CHECK
@@ -109,10 +107,10 @@ void VectorFileWriterNode::process()
             for (int i = 0; i < n; i++) {
                 chan->read(&a, 1);
                 if (a.xp.isNil()) {
-                    CHECK(fprintf(f, "%d\t%" LL "d\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
+                    CHECK(fprintf(f, "%d\t%" PRId64 "\t%.*g\t%.*g\n", it->id, a.eventNumber, prec, a.x, prec, a.y));
                 }
                 else {
-                    CHECK(fprintf(f, "%d\t%" LL "d\t%s\t%.*g\n", it->id, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
+                    CHECK(fprintf(f, "%d\t%" PRId64 "\t%s\t%.*g\n", it->id, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y));
                 }
             }
         }
@@ -137,7 +135,7 @@ void VectorFileWriterNode::process()
                             break;
 
                         case 'E':
-                            CHECK(fprintf(f, "%" LL "d", a.eventNumber));
+                            CHECK(fprintf(f, "%" PRId64, a.eventNumber));
                             break;
 
                         default:

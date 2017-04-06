@@ -84,8 +84,6 @@ extern "C" TKENV_API void tkenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" TKENV_API void _tkenv_lib() {}
 
-#define LL  INT64_PRINTF_FORMAT
-
 Register_GlobalConfigOptionU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Tkenv.");
 Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, nullptr, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_TKENV_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see `tkenv-default-config`) Tkenv should set up automatically on startup. The default is to ask the user.");
@@ -585,7 +583,7 @@ bool Tkenv::doRunSimulationExpress()
     //
 
     char info[128];
-    sprintf(info, "** Running in Express mode from event #%" LL "d  t=%s ...\n",
+    sprintf(info, "** Running in Express mode from event #%" PRId64 "  t=%s ...\n",
             getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
@@ -636,7 +634,7 @@ bool Tkenv::doRunSimulationExpress()
              (runUntil.eventNumber <= 0 || getSimulation()->getEventNumber() + 1 < runUntil.eventNumber)
              );
 
-    sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
+    sprintf(info, "** Leaving Express mode at event #%" PRId64 "  t=%s\n",
             getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
@@ -972,7 +970,7 @@ void Tkenv::printEventBanner(cEvent *event)
     // produce banner text
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
     char *p = banner;
-    p += sprintf(p, "** Event #%" LL "d  t=%s  ",
+    p += sprintf(p, "** Event #%" PRId64 "  t=%s  ",
                 getSimulation()->getEventNumber(),
                 SIMTIME_STR(getSimulation()->getSimTime()));
 

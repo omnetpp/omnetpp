@@ -86,9 +86,9 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
         void print(FILE *file)
         {
             if (beginEntryIndex == endEntryIndex)
-                fprintf(file, "%" INT64_PRINTF_FORMAT "d:%d", eventNumber, beginEntryIndex);
+                fprintf(file, "%" PRId64 ":%d", eventNumber, beginEntryIndex);
             else
-                fprintf(file, "%" INT64_PRINTF_FORMAT "d:%d-%d", eventNumber, beginEntryIndex, endEntryIndex);
+                fprintf(file, "%" PRId64 ":%d-%d", eventNumber, beginEntryIndex, endEntryIndex);
         }
     };
 
