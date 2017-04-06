@@ -44,8 +44,8 @@ void cStringPool::dump() const
 {
     if (!pool.empty()) {
         printf("contents of stringpool \"%s\":\n", name.c_str());
-        for (StringIntMap::const_iterator it = pool.begin(); it != pool.end(); ++it)
-            printf("  \"%s\" %p, %d ref(s)\n", it->first, it->first, it->second);
+        for (const auto & it : pool)
+            printf("  \"%s\" %p, %d ref(s)\n", it.first, it.first, it.second);
     }
 }
 

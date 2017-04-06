@@ -60,8 +60,8 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
     StringTokenizer tokenizer(objectFieldMatcherPattern, "|");  // TODO: use ; when it does not mean comment anymore
     std::vector<std::string> patterns = tokenizer.asVector();
 
-    for (int i = 0; i < (int)patterns.size(); i++) {
-        char *objectPattern = (char *)patterns[i].c_str();
+    for (auto & pattern : patterns) {
+        char *objectPattern = (char *)pattern.c_str();
         char *fieldNamePattern = strchr(objectPattern, ':');
 
         if (fieldNamePattern) {
@@ -70,8 +70,8 @@ ObjectPrinter::ObjectPrinter(ObjectPrinterRecursionPredicate recursionPredicate,
             std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
             std::vector<MatchExpression *> fieldNameMatchExpressions;
 
-            for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                fieldNameMatchExpressions.push_back(new MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
+            for (auto & fieldNamePattern : fieldNamePatterns)
+                fieldNameMatchExpressions.push_back(new MatchExpression(fieldNamePattern.c_str(), false, true, true));
 
             fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
         }
@@ -96,8 +96,8 @@ ObjectPrinter::~ObjectPrinter()
     for (int i = 0; i < (int)objectMatchExpressions.size(); i++) {
         delete objectMatchExpressions[i];
         std::vector<MatchExpression *>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
-        for (int j = 0; j < (int)fieldNameMatchExpressions.size(); j++)
-            delete fieldNameMatchExpressions[j];
+        for (auto & fieldNameMatchExpression : fieldNameMatchExpressions)
+            delete fieldNameMatchExpression;
     }
 }
 
@@ -225,8 +225,7 @@ bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
         if (objectMatchExpression->matches(&matchableObject)) {
             std::vector<MatchExpression *>& fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
 
-            for (int j = 0; j < (int)fieldNameMatchExpressions.size(); j++) {
-                MatchExpression *fieldNameMatchExpression = fieldNameMatchExpressions[j];
+            for (auto fieldNameMatchExpression : fieldNameMatchExpressions) {
                 const MatchableFieldAdapter matchableField(object, fieldIndex);
 
                 if (fieldNameMatchExpression->matches(&matchableField))

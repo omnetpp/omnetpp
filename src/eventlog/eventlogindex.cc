@@ -630,13 +630,13 @@ void EventLogIndex::dump()
 {
     printf("eventNumberToCacheEntryMap:\n");
 
-    for (EventNumberToCacheEntryMap::iterator it = eventNumberToCacheEntryMap.begin(); it != eventNumberToCacheEntryMap.end(); ++it)
-        printf("  #%" LL "d --> offset %" LL "d (0x%" LL "x)\n", it->first, it->second.beginOffset, it->second.beginOffset);
+    for (auto & it : eventNumberToCacheEntryMap)
+        printf("  #%" LL "d --> offset %" LL "d (0x%" LL "x)\n", it.first, it.second.beginOffset, it.second.beginOffset);
 
     printf("simulationTimeToCacheEntryMap:\n");
 
-    for (SimulationTimeToCacheEntryMap::iterator it = simulationTimeToCacheEntryMap.begin(); it != simulationTimeToCacheEntryMap.end(); ++it)
-        printf("  %.*g --> offset %" LL "d (0x%" LL "x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
+    for (auto & it : simulationTimeToCacheEntryMap)
+        printf("  %.*g --> offset %" LL "d (0x%" LL "x)\n", 12, it.first.dbl(), it.second.beginOffset, it.second.beginOffset);
 }
 
 } // namespace eventlog

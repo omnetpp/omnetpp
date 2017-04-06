@@ -129,11 +129,11 @@ void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::
     ASSERT(activeConfig.empty()); // only allow setCommandLineConfigOptions() during setup
     commandLineOptions.clear();
     const std::string *basedirRef = getPooledBaseDir(baseDir);
-    for (StringMap::const_iterator it = options.begin(); it != options.end(); ++it) {
+    for (const auto & it : options) {
         // validate the key, then store the option
         // XXX we should better use the code in the validate() method...
-        const char *key = it->first.c_str();
-        const char *value = it->second.c_str();
+        const char *key = it.first.c_str();
+        const char *value = it.second.c_str();
         const char *option = strchr(key, '.') ? strrchr(key, '.')+1 : key;  // check only the part after the last dot, i.e. recognize per-object keys as well
         cConfigOption *e = lookupConfigOption(option);
         if (!e)
@@ -266,8 +266,8 @@ std::vector<std::string> SectionBasedConfiguration::getConfigChain(const char *c
 {
     std::vector<std::string> result;
     std::vector<int> sectionIds = resolveSectionChain(configName);
-    for (std::vector<int>::iterator it = sectionIds.begin(); it != sectionIds.end(); ++it) {
-        const char *section = ini->getSectionName(*it);
+    for (int & sectionId : sectionIds) {
+        const char *section = ini->getSectionName(sectionId);
         if (strcmp(section, "General") == 0)
             result.push_back(section);
         else if (strncmp(section, "Config ", 7) == 0)
@@ -293,8 +293,7 @@ int SectionBasedConfiguration::resolveConfigName(const char *configName) const
 void SectionBasedConfiguration::activateGlobalConfig()
 {
     clear();
-    for (int i = 0; i < (int)commandLineOptions.size(); i++) {
-        Entry& e = commandLineOptions[i];
+    for (auto & e : commandLineOptions) {
         std::string value = e.getValue(); // note: no substituteVariables(), too early for that
         const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
         addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
@@ -347,14 +346,12 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     // walk the list of fallback sections, and add entries to our tables
     // (config[] and params[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
-    for (int i = 0; i < (int)commandLineOptions.size(); i++) {
-        Entry& e = commandLineOptions[i];
+    for (auto & e : commandLineOptions) {
         std::string value = substituteVariables(e.getValue());
         const std::string *basedirRef = getPooledBaseDir(e.getBaseDirectory());
         addEntry(Entry(basedirRef, e.getKey(), value.c_str()));
     }
-    for (int i = 0; i < (int)sectionChain.size(); i++) {
-        int sectionId = sectionChain[i];
+    for (int sectionId : sectionChain) {
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             // add entry to our tables
             const auto& e = ini->getEntry(sectionId, entryId);
@@ -470,8 +467,7 @@ std::vector<cConfiguration::RunInfo> SectionBasedConfiguration::unrollConfig(con
 
                 // collect entries that contain ${..}
                 std::string tmp;
-                for (int i = 0; i < (int)sectionChain.size(); i++) {
-                    int sectionId = sectionChain[i];
+                for (int sectionId : sectionChain) {
                     for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
                         const auto& entry = ini->getEntry(sectionId, entryId);
                         if (strstr(entry.getValue(), "${") != nullptr) {
@@ -500,8 +496,7 @@ std::vector<Scenario::IterationVariable> SectionBasedConfiguration::collectItera
     std::vector<Scenario::IterationVariable> v;
     int unnamedCount = 0;
     outLocationToNameMap.clear();
-    for (int i = 0; i < (int)sectionChain.size(); i++) {
-        int sectionId = sectionChain[i];
+    for (int sectionId : sectionChain) {
         for (int entryId = 0; entryId < ini->getNumEntries(sectionId); entryId++) {
             const auto& entry = ini->getEntry(sectionId, entryId);
             const char *pos = entry.getValue();
@@ -518,8 +513,8 @@ std::vector<Scenario::IterationVariable> SectionBasedConfiguration::collectItera
                     // store variable
                     if (!iterVar.varName.empty()) {
                         // check it does not conflict with other iteration variables or predefined variables
-                        for (int j = 0; j < (int)v.size(); j++)
-                            if (v[j].varName == iterVar.varName)
+                        for (auto & j : v)
+                            if (j.varName == iterVar.varName)
                                 throw cRuntimeError("Scenario generator: Redefinition of iteration variable ${%s} in the configuration", iterVar.varName.c_str());
 
                         if (isPredefinedVariable(iterVar.varName.c_str()))
@@ -682,9 +677,9 @@ const char *SectionBasedConfiguration::getVariable(const char *varname) const
 std::vector<const char *> SectionBasedConfiguration::getIterationVariableNames() const
 {
     std::vector<const char *> result;
-    for (StringMap::const_iterator it = variables.begin(); it != variables.end(); ++it)
-        if (opp_isalphaext(it->first[0]) && !isPredefinedVariable(it->first.c_str()))  // skip unnamed and predefined ones
-            result.push_back(it->first.c_str());
+    for (const auto & variable : variables)
+        if (opp_isalphaext(variable.first[0]) && !isPredefinedVariable(variable.first.c_str()))  // skip unnamed and predefined ones
+            result.push_back(variable.first.c_str());
 
     return result;
 }
@@ -906,9 +901,9 @@ void SectionBasedConfiguration::addEntry(const Entry& entry)
                 SuffixGroup& group = suffixGroups[suffix];
 
                 // initialize group with matching wildcard keys seen so far
-                for (int k = 0; k < (int)wildcardSuffixGroup.entries.size(); k++)
-                    if (wildcardSuffixGroup.entries[k].suffixPattern->matches(suffix.c_str()))
-                        group.entries.push_back(wildcardSuffixGroup.entries[k]);
+                for (auto & wildcardEntry : wildcardSuffixGroup.entries)
+                    if (wildcardEntry.suffixPattern->matches(suffix.c_str()))
+                        group.entries.push_back(wildcardEntry);
             }
             suffixGroups[suffix].entries.push_back(entry2);
         }
@@ -919,9 +914,9 @@ void SectionBasedConfiguration::addEntry(const Entry& entry)
             // but causes no harm, because getPerObjectConfigEntry() won't look into the
             // wildcard group
             wildcardSuffixGroup.entries.push_back(entry2);
-            for (std::map<std::string, SuffixGroup>::iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it)
-                if (entry2.suffixPattern->matches(it->first.c_str()))
-                    (it->second).entries.push_back(entry2);
+            for (auto & suffixGroup : suffixGroups)
+                if (entry2.suffixPattern->matches(suffixGroup.first.c_str()))
+                    (suffixGroup.second).entries.push_back(entry2);
         }
     }
 }
@@ -1004,13 +999,12 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
     if (outEntryIdPtr)
         *outEntryIdPtr = -1;
 
-    for (int i = 0; i < (int)commandLineOptions.size(); i++)
-        if (strcmp(key, commandLineOptions[i].getKey()) == 0)
-            return commandLineOptions[i].getValue();
+    for (const auto & commandLineOption : commandLineOptions)
+        if (strcmp(key, commandLineOption.getKey()) == 0)
+            return commandLineOption.getValue();
 
 
-    for (int i = 0; i < (int)sectionChain.size(); i++) {
-        int sectionId = sectionChain[i];
+    for (int sectionId : sectionChain) {
         int entryId = internalFindEntry(sectionId, key);
         if (entryId != -1) {
             if (outSectionIdPtr)
@@ -1058,8 +1052,8 @@ static int findCycle(SectionGraph& graph)
 static bool visit(SectionGraph& graph, SectionGraphNode& node)
 {
     node.color = GREY;
-    for (std::vector<int>::iterator nodeId = node.nextNodes.begin(); nodeId != node.nextNodes.end(); ++nodeId) {
-        SectionGraphNode& node2 = graph[*nodeId];
+    for (int & nextNode : node.nextNodes) {
+        SectionGraphNode& node2 = graph[nextNode];
         if (node2.color == GREY || (node2.color == WHITE && visit(graph, node2)))
             return true;
     }
@@ -1254,9 +1248,9 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
     PatternMatcher matcher(pattern, true, true, true);
 
     // iterate over the map -- this is going to be sloooow...
-    for (std::map<std::string, Entry>::const_iterator it = config.begin(); it != config.end(); ++it)
-        if (matcher.matches(it->first.c_str()))
-            result.push_back(it->first.c_str());
+    for (const auto & it : config)
+        if (matcher.matches(it.first.c_str()))
+            result.push_back(it.first.c_str());
     return result;
 }
 
@@ -1273,8 +1267,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
     const SuffixGroup *group = it == suffixGroups.end() ? &wildcardSuffixGroup : &it->second;
 
     // find first match in the group
-    for (int i = 0; i < (int)group->entries.size(); i++) {
-        const MatchableEntry& entry = group->entries[i];
+    for (const auto & entry : group->entries) {
         if (entryMatches(entry, moduleFullPath, paramName))
             if (hasDefaultValue || entry.value != "default")
                 return entry;
@@ -1298,8 +1291,7 @@ bool SectionBasedConfiguration::entryMatches(const MatchableEntry& entry, const 
 std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs() const
 {
     std::vector<const char *> result;
-    for (int i = 0; i < (int)entries.size(); i++) {
-        const Entry& entry = entries[i];
+    for (const auto & entry : entries) {
         result.push_back(entry.getKey());
         result.push_back(entry.getValue());
     }
@@ -1309,8 +1301,7 @@ std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs() const
 std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs() const
 {
     std::vector<const char *> result;
-    for (int i = 0; i < (int)entries.size(); i++) {
-        const Entry& entry = entries[i];
+    for (const auto & entry : entries) {
         const char *lastDotPos = strrchr(entry.getKey(), '.');
         bool containsHyphen = lastDotPos && strchr(lastDotPos, '-') != nullptr;
         if (lastDotPos && !containsHyphen) {
@@ -1339,8 +1330,7 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
     const SuffixGroup *suffixGroup = &it->second;
 
     // find first match in the group
-    for (int i = 0; i < (int)suffixGroup->entries.size(); i++) {
-        const MatchableEntry& entry = suffixGroup->entries[i];
+    for (const auto & entry : suffixGroup->entries) {
         if (entryMatches(entry, objectFullPath, keySuffix))
             return entry;  // found value
     }
@@ -1365,16 +1355,15 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 
     // check all suffix groups whose name matches the pattern
     PatternMatcher suffixMatcher(keySuffixPattern, true, true, true);
-    for (std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it) {
-        const char *suffix = it->first.c_str();
+    for (const auto & suffixGroup : suffixGroups) {
+        const char *suffix = suffixGroup.first.c_str();
         if (suffixMatcher.matches(suffix)) {
             // find all matching entries from this suffix group.
             // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=nullptr);
             // there we'd have to determine whether two *patterns* match. We resolve this
             // by checking whether one pattern matches the other one as string, and vica versa.
-            const SuffixGroup& group = it->second;
-            for (int i = 0; i < (int)group.entries.size(); i++) {
-                const MatchableEntry& entry = group.entries[i];
+            const SuffixGroup& group = suffixGroup.second;
+            for (const auto & entry : group.entries) {
                 if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
                     &&
                     (entry.suffixPattern == nullptr ||
@@ -1389,28 +1378,28 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 
 std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const
 {
-    std::vector<const char *> result = getMatchingPerObjectConfigKeys(objectFullPath, keySuffixPattern);
-    for (int i = 0; i < (int)result.size(); i++)
-        result[i] = partAfterLastDot(result[i]);
-    return result;
+    std::vector<const char *> keys = getMatchingPerObjectConfigKeys(objectFullPath, keySuffixPattern);
+    for (auto & key : keys)
+        key = partAfterLastDot(key);
+    return keys;
 }
 
 void SectionBasedConfiguration::dump() const
 {
     printf("Config:\n");
-    for (std::map<std::string, Entry>::const_iterator it = config.begin(); it != config.end(); ++it)
-        printf("  %s = %s\n", it->first.c_str(), it->second.value.c_str());
+    for (const auto & it : config)
+        printf("  %s = %s\n", it.first.c_str(), it.second.value.c_str());
 
-    for (std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.begin(); it != suffixGroups.end(); ++it) {
-        const std::string& suffix = it->first;
-        const SuffixGroup& group = it->second;
+    for (const auto & suffixGroup : suffixGroups) {
+        const std::string& suffix = suffixGroup.first;
+        const SuffixGroup& group = suffixGroup.second;
         printf("Suffix Group %s:\n", suffix.c_str());
-        for (int i = 0; i < (int)group.entries.size(); i++)
-            printf("  %s = %s\n", group.entries[i].key.c_str(), group.entries[i].value.c_str());
+        for (const auto & entry : group.entries)
+            printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
     }
     printf("Wildcard Suffix Group:\n");
-    for (int i = 0; i < (int)wildcardSuffixGroup.entries.size(); i++)
-        printf("  %s = %s\n", wildcardSuffixGroup.entries[i].key.c_str(), wildcardSuffixGroup.entries[i].value.c_str());
+    for (const auto & entry : wildcardSuffixGroup.entries)
+        printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
 }
 
 }  // namespace envir

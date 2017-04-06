@@ -65,8 +65,8 @@ void FilteredEventLog::clearInternalState()
 
 void FilteredEventLog::deleteAllocatedObjects()
 {
-    for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); ++it)
-        delete it->second;
+    for (auto & it : eventNumberToFilteredEventMap)
+        delete it.second;
     eventNumberToFilteredEventMap.clear();
     eventNumberToFilterMatchesFlagMap.clear();
     eventNumberToTraceableEventFlagMap.clear();
@@ -84,8 +84,8 @@ void FilteredEventLog::synchronize(FileReader::FileChangedState change)
                 clearInternalState();
                 break;
             case FileReader::APPENDED:
-                for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); ++it)
-                    it->second->synchronize(change);
+                for (auto & it : eventNumberToFilteredEventMap)
+                    it.second->synchronize(change);
                 if (lastMatchingEvent) {
                     eventnumber_t eventNumber = lastMatchingEvent->getEventNumber();
                     eventNumberToFilteredEventMap.erase(eventNumber);
@@ -158,9 +158,9 @@ void FilteredEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnum
 
 void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher>& patternMatchers, std::vector<std::string>& patterns, bool dottedPath)
 {
-    for (std::vector<std::string>::iterator it = patterns.begin(); it != patterns.end(); ++it) {
+    for (auto & pattern : patterns) {
         PatternMatcher matcher;
-        matcher.setPattern((*it).c_str(), dottedPath, true, false);
+        matcher.setPattern(pattern.c_str(), dottedPath, true, false);
         patternMatchers.push_back(matcher);
     }
 }
@@ -297,15 +297,15 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
                     // check if the event has a cause or consequence referring
                     // outside the matching compound module
                     IMessageDependencyList *causes = event->getCauses();
-                    for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it) {
-                        IEvent *causeEvent = (*it)->getCauseEvent();
+                    for (auto & cause : *causes) {
+                        IEvent *causeEvent = cause->getCauseEvent();
                         if (causeEvent && !isAncestorModuleCreatedEntry(moduleCreatedEntry, causeEvent->getModuleCreatedEntry()))
                             goto MATCHES;
                     }
 
                     IMessageDependencyList *consequences = event->getConsequences();
-                    for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); ++it) {
-                        IEvent *consequenceEvent = (*it)->getConsequenceEvent();
+                    for (auto & consequence : *consequences) {
+                        IEvent *consequenceEvent = consequence->getConsequenceEvent();
                         if (consequenceEvent && !isAncestorModuleCreatedEntry(moduleCreatedEntry, consequenceEvent->getModuleCreatedEntry()))
                             goto MATCHES;
                     }
@@ -393,8 +393,8 @@ bool FilteredEventLog::matchesPatterns(std::vector<PatternMatcher>& patterns, co
     if (patterns.empty())
         return false;
 
-    for (std::vector<PatternMatcher>::iterator it = patterns.begin(); it != patterns.end(); ++it)
-        if ((*it).matches(str))
+    for (auto & pattern : patterns)
+        if (pattern.matches(str))
             return true;
 
 
@@ -642,8 +642,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *causeEvent)
         IEvent *unseenTracedEventCauseEvent = eventLog->getEventForEventNumber(unseenTracedEventCauseEventNumber);
         if (unseenTracedEventCauseEvent) {
             IMessageDependencyList *causes = unseenTracedEventCauseEvent->getCauses();
-            for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it) {
-                IMessageDependency *messageDependency = *it;
+            for (auto messageDependency : *causes) {
                 IEvent *newUnseenTracedEventCauseEvent = messageDependency->getCauseEvent();
                 if (newUnseenTracedEventCauseEvent &&
                     (traceSelfMessages || !newUnseenTracedEventCauseEvent->isSelfMessageProcessingEvent()) &&
@@ -683,8 +682,7 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequenceEvent)
         IEvent *unseenTracedEventConsequenceEvent = eventLog->getEventForEventNumber(unseenTracedEventConsequenceEventNumber);
         if (unseenTracedEventConsequenceEvent) {
             IMessageDependencyList *consequences = unseenTracedEventConsequenceEvent->getConsequences();
-            for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); ++it) {
-                IMessageDependency *messageDependency = *it;
+            for (auto messageDependency : *consequences) {
                 IEvent *newUnseenTracedEventConsequenceEvent = messageDependency->getConsequenceEvent();
                 if (newUnseenTracedEventConsequenceEvent &&
                     (traceSelfMessages || !newUnseenTracedEventConsequenceEvent->isSelfMessageProcessingEvent()) &&

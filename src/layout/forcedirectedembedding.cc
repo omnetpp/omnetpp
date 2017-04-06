@@ -36,14 +36,14 @@ ForceDirectedEmbedding::ForceDirectedEmbedding()
 
 ForceDirectedEmbedding::~ForceDirectedEmbedding()
 {
-    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); ++it)
-        delete *it;
+    for (auto & variable : variables)
+        delete variable;
 
-    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); ++it)
-        delete *it;
+    for (auto & forceProvider : forceProviders)
+        delete forceProvider;
 
-    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); ++it)
-        delete *it;
+    for (auto & body : bodies)
+        delete body;
 }
 
 ForceDirectedParameters ForceDirectedEmbedding::getParameters(int32_t seed)
@@ -116,12 +116,12 @@ void ForceDirectedEmbedding::reinitialize()
     tvn = createPtArray();
 
     // reinitialize parts
-    for (std::vector<Variable *>::iterator it = variables.begin(); it != variables.end(); ++it)
-        (*it)->reinitialize();
-    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); ++it)
-        (*it)->reinitialize();
-    for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); ++it)
-        (*it)->reinitialize();
+    for (auto & variable : variables)
+        variable->reinitialize();
+    for (auto & forceProvider : forceProviders)
+        forceProvider->reinitialize();
+    for (auto & body : bodies)
+        body->reinitialize();
 
     // reinitialize positions and velocities
     for (int i = 0; i < (int)variables.size(); i++) {
@@ -129,12 +129,9 @@ void ForceDirectedEmbedding::reinitialize()
         pn[i].assign(variable->getPosition());
         vn[i].assign(variable->getVelocity());
         double variableMass = 0;
-        for (std::vector<IBody *>::iterator it = bodies.begin(); it != bodies.end(); ++it) {
-            IBody *body = *it;
-            if (body->getVariable() == variable) {
+        for (auto body : bodies)
+            if (body->getVariable() == variable)
                 variableMass += body->getMass();
-            }
-        }
         variable->setMass(variableMass);
         totalMass += variable->getMass();
     }
@@ -261,10 +258,10 @@ void ForceDirectedEmbedding::embed()
         increment(vn, dvn);
 
         // Maximize velocity
-        for (int i = 0; i < (int)vn.size(); i++) {
-            if (vn[i].getLength() > parameters.maxVelocity) {
-                vn[i].normalize();
-                vn[i].multiply(parameters.maxVelocity);
+        for (auto & vi : vn) {
+            if (vi.getLength() > parameters.maxVelocity) {
+                vi.normalize();
+                vi.multiply(parameters.maxVelocity);
             }
         }
 
@@ -337,8 +334,8 @@ void ForceDirectedEmbedding::a(std::vector<Pt>& an, const std::vector<Pt>& pn, c
     }
 
     // calculate forces
-    for (std::vector<IForceProvider *>::iterator it = forceProviders.begin(); it != forceProviders.end(); ++it)
-        (*it)->applyForces();
+    for (auto & forceProvider : forceProviders)
+        forceProvider->applyForces();
 
     // return accelerations
     for (int i = 0; i < (int)variables.size(); i++) {
@@ -359,9 +356,7 @@ Rc ForceDirectedEmbedding::getBoundingRectangle()
     double left = DBL_MAX, right = DBL_MIN;
 
     const std::vector<IBody *>& bodies = getBodies();
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
-
+    for (auto body : bodies) {
         if (!dynamic_cast<WallBody *>(body)) {
             top = std::min(top, body->getTop());
             bottom = std::max(bottom, body->getBottom());

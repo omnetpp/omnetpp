@@ -224,8 +224,8 @@ void SqliteScalarFileWriter::recordScalar(const std::string& componentFullPath, 
 {
     Assert(runId != -1); // ensure run data has been written out
     sqlite3_int64 scalarId = writeScalar(componentFullPath, name, value);
-    for (auto it = attributes.begin(); it != attributes.end(); ++it)
-        writeScalarAttr(scalarId, it->first.c_str(), it->first.size(), it->second.c_str(), it->second.size());
+    for (const auto & attribute : attributes)
+        writeScalarAttr(scalarId, attribute.first.c_str(), attribute.first.size(), attribute.second.c_str(), attribute.second.size());
 
     // commit every once in a while
     if (++insertCount >= commitFreq) {
@@ -267,16 +267,16 @@ void SqliteScalarFileWriter::recordStatistic(const std::string& componentFullPat
 {
     Assert(runId != -1); // ensure run data has been written out
     sqlite3_int64 statisticId = writeStatistic(componentFullPath, name, statistic, false);
-    for (auto it = attributes.begin(); it != attributes.end(); ++it)
-        writeStatisticAttr(statisticId, it->first.c_str(), it->second.c_str());
+    for (const auto & attribute : attributes)
+        writeStatisticAttr(statisticId, attribute.first.c_str(), attribute.second.c_str());
 }
 
 void SqliteScalarFileWriter::recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes)
 {
     Assert(runId != -1); // ensure run data has been written out
     sqlite3_int64 statisticId = writeStatistic(componentFullPath, name, statistic, true);
-    for (auto it = attributes.begin(); it != attributes.end(); ++it)
-        writeStatisticAttr(statisticId, it->first.c_str(), it->second.c_str());
+    for (const auto & attribute : attributes)
+        writeStatisticAttr(statisticId, attribute.first.c_str(), attribute.second.c_str());
     for (auto bin : bins.getBins())
         writeStatisticBin(statisticId, bin.lowerBound, bin.count);
 }

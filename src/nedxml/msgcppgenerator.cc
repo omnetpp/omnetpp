@@ -747,8 +747,8 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->enumqname = "";
             CC << "\n\n/*\n Undeclared enum: " << it->enumname << "\n";
             CC << "  Declared enums:\n";
-            for (std::map<std::string, std::string>::iterator x = enumType.begin(); x != enumType.end(); ++x)
-                CC << "    " << x->first << " : " << x->second << "\n";
+            for (auto & x : enumType)
+                CC << "    " << x.first << " : " << x.second << "\n";
             CC << "\n*/\n\n";
         }
         else {
@@ -1046,8 +1046,8 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         baseclassSepar = ", ";
     }
 
-    for (StringVector::const_iterator it = info.implements.begin(); it != info.implements.end(); ++it) {
-        H << baseclassSepar << "public " << *it;
+    for (const auto & impl : info.implements) {
+        H << baseclassSepar << "public " << impl;
         baseclassSepar = ", ";
     }
 
@@ -1183,37 +1183,37 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == COBJECT);
     // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == CNAMEDOBJECT);
     // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == COWNEDOBJECT);
-    for (ClassInfo::Fieldlist::const_iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it) {
-        std::string capfieldname = it->fname;
+    for (const auto & it : info.baseclassFieldlist) {
+        std::string capfieldname = it.fname;
         capfieldname[0] = toupper(capfieldname[0]);
         std::string setter = "set" + capfieldname;
         // FIXME setter function name - ezt a base class leirobol kellene venni
-        CC << "    this->" << setter << "(" << it->fval << ");\n";
+        CC << "    this->" << setter << "(" << it.fval << ");\n";
     }
     if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
         CC << "\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (!it->fisabstract) {
-            if (it->fisarray && !it->farraysize.empty()) {
-                if (it->fisprimitivetype && !it->fval.empty()) {
-                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                    CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
+    for (const auto & it : info.fieldlist) {
+        if (!it.fisabstract) {
+            if (it.fisarray && !it.farraysize.empty()) {
+                if (it.fisprimitivetype && !it.fval.empty()) {
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                    CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
                 }
-                if (it->classtype == COWNEDOBJECT) {
-                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                    CC << "        take(&(this->" << it->var << "[i]));\n";
+                if (it.classtype == COWNEDOBJECT) {
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                    CC << "        take(&(this->" << it.var << "[i]));\n";
                 }
             }
-            else if (it->fisarray && it->farraysize.empty()) {
-                CC << "    " << it->varsize << " = 0;\n";
-                CC << "    this->" << it->var << " = 0;\n";
+            else if (it.fisarray && it.farraysize.empty()) {
+                CC << "    " << it.varsize << " = 0;\n";
+                CC << "    this->" << it.var << " = 0;\n";
             }
             else {
-                if (!it->fval.empty()) {
-                    CC << "    this->" << it->var << " = " << it->fval << ";\n";
+                if (!it.fval.empty()) {
+                    CC << "    this->" << it.var << " = " << it.fval << ";\n";
                 }
-                if (it->classtype == COWNEDOBJECT) {
-                    CC << "    take(&(this->" << it->var << "));\n";
+                if (it.classtype == COWNEDOBJECT) {
+                    CC << "    take(&(this->" << it.var << "));\n";
                 }
             }
         }
@@ -1225,20 +1225,20 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         CC << " : ::" << info.msgbaseclass << "(other)";
     }
     CC << "\n{\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (!it->fisabstract) {
-            if (it->fisarray && !it->farraysize.empty()) {
-                if (it->classtype == COWNEDOBJECT) {
-                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                    CC << "        take(&(this->" << it->var << "[i]));\n";
+    for (const auto & it : info.fieldlist) {
+        if (!it.fisabstract) {
+            if (it.fisarray && !it.farraysize.empty()) {
+                if (it.classtype == COWNEDOBJECT) {
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                    CC << "        take(&(this->" << it.var << "[i]));\n";
                 }
             }
-            else if (it->fisarray && it->farraysize.empty()) {
-                CC << "    " << it->varsize << " = 0;\n";
-                CC << "    this->" << it->var << " = 0;\n";
+            else if (it.fisarray && it.farraysize.empty()) {
+                CC << "    " << it.varsize << " = 0;\n";
+                CC << "    this->" << it.var << " = 0;\n";
             }
-            else if (!it->fisarray && it->classtype == COWNEDOBJECT) {
-                CC << "    take(&(this->" << it->var << "));\n";
+            else if (!it.fisarray && it.classtype == COWNEDOBJECT) {
+                CC << "    take(&(this->" << it.var << "));\n";
             }
         }
     }
@@ -1247,23 +1247,23 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
     CC << "" << info.msgclass << "::~" << info.msgclass << "()\n";
     CC << "{\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (!it->fisabstract) {
-            if (it->classtype == COWNEDOBJECT) {
-                if (!it->fisarray) {
-                    CC << "    drop(&(this->" << it->var << "));\n";
+    for (const auto & it : info.fieldlist) {
+        if (!it.fisabstract) {
+            if (it.classtype == COWNEDOBJECT) {
+                if (!it.fisarray) {
+                    CC << "    drop(&(this->" << it.var << "));\n";
                 }
-                else if (!it->farraysize.empty()) {
-                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                    CC << "        drop(&(this->" << it->var << "[i]));\n";
+                else if (!it.farraysize.empty()) {
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                    CC << "        drop(&(this->" << it.var << "[i]));\n";
                 }
                 else {
-                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->varsize << "; i++)\n";
-                    CC << "        drop(&(this->" << it->var << "[i]));\n";
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
+                    CC << "        drop(&(this->" << it.var << "[i]));\n";
                 }
             }
-            if (it->fisarray && it->farraysize.empty()) {
-                CC << "    delete [] this->" << it->var << ";\n";
+            if (it.fisarray && it.farraysize.empty()) {
+                CC << "    delete [] this->" << it.var << ";\n";
             }
         }
     }
@@ -1281,36 +1281,36 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
     CC << "void " << info.msgclass << "::copy(const " << info.msgclass << "& other)\n";
     CC << "{\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (!it->fisabstract) {
-            if (it->fisarray && !it->farraysize.empty()) {
-                CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                CC << "        this->" << it->var << "[i] = other." << it->var << "[i];\n";
-                if (it->classtype == COWNEDOBJECT) {
-                    CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                    CC << "        this->" << it->var << "[i].setName(other." << it->var << "[i].getName());\n";
+    for (const auto & it : info.fieldlist) {
+        if (!it.fisabstract) {
+            if (it.fisarray && !it.farraysize.empty()) {
+                CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
+                if (it.classtype == COWNEDOBJECT) {
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                    CC << "        this->" << it.var << "[i].setName(other." << it.var << "[i].getName());\n";
                 }
             }
-            else if (it->fisarray && it->farraysize.empty()) {
-                CC << "    delete [] this->" << it->var << ";\n";
-                CC << "    this->" << it->var << " = (other." << it->varsize << "==0) ? nullptr : new " << it->datatype << "[other." << it->varsize << "];\n";
-                CC << "    " << it->varsize << " = other." << it->varsize << ";\n";
-                CC << "    for (" << it->fsizetype << " i=0; i<" << it->varsize << "; i++)\n";
-                if (it->classtype == COWNEDOBJECT) {
+            else if (it.fisarray && it.farraysize.empty()) {
+                CC << "    delete [] this->" << it.var << ";\n";
+                CC << "    this->" << it.var << " = (other." << it.varsize << "==0) ? nullptr : new " << it.datatype << "[other." << it.varsize << "];\n";
+                CC << "    " << it.varsize << " = other." << it.varsize << ";\n";
+                CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
+                if (it.classtype == COWNEDOBJECT) {
                     CC << "    {\n";
-                    CC << "        take(&(this->" << it->var << "[i]));\n";
-                    CC << "        this->" << it->var << "[i] = other." << it->var << "[i];\n";
-                    CC << "        this->" << it->var << "[i].setName(other." << it->var << "[i].getName());\n";
+                    CC << "        take(&(this->" << it.var << "[i]));\n";
+                    CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
+                    CC << "        this->" << it.var << "[i].setName(other." << it.var << "[i].getName());\n";
                     CC << "    }\n";
                 }
                 else {
-                    CC << "        this->" << it->var << "[i] = other." << it->var << "[i];\n";
+                    CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
                 }
             }
             else {
-                CC << "    this->" << it->var << " = other." << it->var << ";\n";
-                if (!it->fisarray && (it->classtype == COWNEDOBJECT || it->classtype == CNAMEDOBJECT)) {
-                    CC << "    this->" << it->var << ".setName(other." << it->var << ".getName());\n";
+                CC << "    this->" << it.var << " = other." << it.var << ";\n";
+                if (!it.fisarray && (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT)) {
+                    CC << "    this->" << it.var << ".setName(other." << it.var << ".getName());\n";
                 }
             }
         }
@@ -1333,23 +1333,23 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "    doParsimPacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (it->fnopack) {
+    for (const auto & it : info.fieldlist) {
+        if (it.fnopack) {
             // @nopack specified
         }
-        else if (it->fisabstract) {
-            CC << "    // field " << it->fname << " is abstract -- please do packing in customized class\n";
+        else if (it.fisabstract) {
+            CC << "    // field " << it.fname << " is abstract -- please do packing in customized class\n";
         }
         else {
-            if (it->fisarray && !it->farraysize.empty()) {
-                CC << "    doParsimArrayPacking(b,this->" << it->var << "," << it->farraysize << ");\n";
+            if (it.fisarray && !it.farraysize.empty()) {
+                CC << "    doParsimArrayPacking(b,this->" << it.var << "," << it.farraysize << ");\n";
             }
-            else if (it->fisarray && it->farraysize.empty()) {
-                CC << "    b->pack(" << it->varsize << ");\n";
-                CC << "    doParsimArrayPacking(b,this->" << it->var << "," << it->varsize << ");\n";
+            else if (it.fisarray && it.farraysize.empty()) {
+                CC << "    b->pack(" << it.varsize << ");\n";
+                CC << "    doParsimArrayPacking(b,this->" << it.var << "," << it.varsize << ");\n";
             }
             else {
-                CC << "    doParsimPacking(b,this->" << it->var << ");\n";
+                CC << "    doParsimPacking(b,this->" << it.var << ");\n";
             }
         }
     }
@@ -1366,29 +1366,29 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "    doParsimUnpacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (it->fnopack) {
+    for (const auto & it : info.fieldlist) {
+        if (it.fnopack) {
             // @nopack specified
         }
-        else if (it->fisabstract) {
-            CC << "    // field " << it->fname << " is abstract -- please do unpacking in customized class\n";
+        else if (it.fisabstract) {
+            CC << "    // field " << it.fname << " is abstract -- please do unpacking in customized class\n";
         }
         else {
-            if (it->fisarray && !it->farraysize.empty()) {
-                CC << "    doParsimArrayUnpacking(b,this->" << it->var << "," << it->farraysize << ");\n";
+            if (it.fisarray && !it.farraysize.empty()) {
+                CC << "    doParsimArrayUnpacking(b,this->" << it.var << "," << it.farraysize << ");\n";
             }
-            else if (it->fisarray && it->farraysize.empty()) {
-                CC << "    delete [] this->" << it->var << ";\n";
-                CC << "    b->unpack(" << it->varsize << ");\n";
-                CC << "    if (" << it->varsize << "==0) {\n";
-                CC << "        this->" << it->var << " = 0;\n";
+            else if (it.fisarray && it.farraysize.empty()) {
+                CC << "    delete [] this->" << it.var << ";\n";
+                CC << "    b->unpack(" << it.varsize << ");\n";
+                CC << "    if (" << it.varsize << "==0) {\n";
+                CC << "        this->" << it.var << " = 0;\n";
                 CC << "    } else {\n";
-                CC << "        this->" << it->var << " = new " << it->datatype << "[" << it->varsize << "];\n";
-                CC << "        doParsimArrayUnpacking(b,this->" << it->var << "," << it->varsize << ");\n";
+                CC << "        this->" << it.var << " = new " << it.datatype << "[" << it.varsize << "];\n";
+                CC << "        doParsimArrayUnpacking(b,this->" << it.var << "," << it.varsize << ");\n";
                 CC << "    }\n";
             }
             else {
-                CC << "    doParsimUnpacking(b,this->" << it->var << ");\n";
+                CC << "    doParsimUnpacking(b,this->" << it.var << ");\n";
             }
         }
     }
@@ -1481,10 +1481,10 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     }
     H << "{\n";
     H << "    " << info.msgclass << "();\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        H << "    " << it->datatype << " " << it->var;
-        if (it->fisarray) {
-            H << "[" << it->farraysize << "]";
+    for (const auto & it : info.fieldlist) {
+        H << "    " << it.datatype << " " << it.var;
+        if (it.fisarray) {
+            H << "[" << it.farraysize << "]";
         }
         H << ";\n";
     }
@@ -1501,28 +1501,28 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     CC << "" << info.msgclass << "::" << info.msgclass << "()\n";
     CC << "{\n";
     // override baseclass fields initial value
-    for (ClassInfo::Fieldlist::const_iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it) {
-        CC << "    this->" << it->var << " = " << it->fval << ";\n";
+    for (const auto & it : info.baseclassFieldlist) {
+        CC << "    this->" << it.var << " = " << it.fval << ";\n";
     }
     if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
         CC << "\n";
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (it->fisabstract)
+    for (const auto & it : info.fieldlist) {
+        if (it.fisabstract)
             throw NEDException("Abstract fields are not supported in a struct");
-        if (it->classtype == COWNEDOBJECT)
+        if (it.classtype == COWNEDOBJECT)
             throw NEDException("cOwnedObject fields are not supported in a struct");
-        if (it->fisarray && it->farraysize.empty())
+        if (it.fisarray && it.farraysize.empty())
             throw NEDException("Dynamic arrays are not supported in a struct");
-        if (it->fisarray && !it->farraysize.empty()) {
-            if (it->fisprimitivetype && !it->fval.empty()) {
-                CC << "    for (" << it->fsizetype << " i=0; i<" << it->farraysize << "; i++)\n";
-                CC << "        this->" << it->var << "[i] = " << it->fval << ";\n";
+        if (it.fisarray && !it.farraysize.empty()) {
+            if (it.fisprimitivetype && !it.fval.empty()) {
+                CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
             }
         }
         else {
-            if (!it->fval.empty()) {
-                CC << "    this->" << it->var << " = " << it->fval << ";\n";
+            if (!it.fval.empty()) {
+                CC << "    this->" << it.var << " = " << it.fval << ";\n";
             }
         }
     }
@@ -1535,12 +1535,12 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         CC << "    doParsimPacking(b,(::" << info.msgbaseclass << "&)a);\n";
     }
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (it->fisarray) {
-            CC << "    doParsimArrayPacking(b,a." << it->var << "," << it->farraysize << ");\n";
+    for (const auto & it : info.fieldlist) {
+        if (it.fisarray) {
+            CC << "    doParsimArrayPacking(b,a." << it.var << "," << it.farraysize << ");\n";
         }
         else {
-            CC << "    doParsimPacking(b,a." << it->var << ");\n";
+            CC << "    doParsimPacking(b,a." << it.var << ");\n";
         }
     }
     CC << "}\n\n";
@@ -1551,12 +1551,12 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
         CC << "    doParsimUnpacking(b,(::" << info.msgbaseclass << "&)a);\n";
     }
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (it->fisarray) {
-            CC << "    doParsimArrayUnpacking(b,a." << it->var << "," << it->farraysize << ");\n";
+    for (const auto & it : info.fieldlist) {
+        if (it.fisarray) {
+            CC << "    doParsimArrayUnpacking(b,a." << it.var << "," << it.farraysize << ");\n";
         }
         else {
-            CC << "    doParsimUnpacking(b,a." << it->var << ");\n";
+            CC << "    doParsimUnpacking(b,a." << it.var << ");\n";
         }
     }
     CC << "}\n\n";
@@ -1622,8 +1622,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "{\n";
     CC << "    if (!propertynames) {\n";
     CC << "        static const char *names[] = { ";
-    for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
-        CC << opp_quotestr(key->first) << ", ";
+    for (const auto & prop : info.props) {
+        CC << opp_quotestr(prop.first) << ", ";
     }
     CC << " nullptr };\n";
     CC << "        omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
@@ -1637,8 +1637,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     // getProperty()
     CC << "const char *" << info.msgdescclass << "::getProperty(const char *propertyname) const\n";
     CC << "{\n";
-    for (Properties::const_iterator key = info.props.begin(); key != info.props.end(); ++key) {
-        CC << "    if (!strcmp(propertyname,"<< opp_quotestr(key->first) << ")) return " << opp_quotestr(key->second) << ";\n";
+    for (const auto & prop : info.props) {
+        CC << "    if (!strcmp(propertyname,"<< opp_quotestr(prop.first) << ")) return " << opp_quotestr(prop.second) << ";\n";
     }
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    return basedesc ? basedesc->getProperty(propertyname) : nullptr;\n";
@@ -1713,8 +1713,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     }
     else {
         CC << "    static const char *fieldNames[] = {\n";
-        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-            CC << "        \"" << it->fname << "\",\n";
+        for (const auto & it : info.fieldlist) {
+            CC << "        \"" << it.fname << "\",\n";
         }
         CC << "    };\n";
         CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldNames[field] : nullptr;\n";
@@ -1752,8 +1752,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     }
     else {
         CC << "    static const char *fieldTypeStrings[] = {\n";
-        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-            CC << "        \"" << it->ftype << "\",\n";  // note: NOT $fieldtypeqname! that's getFieldStructName()
+        for (const auto & it : info.fieldlist) {
+            CC << "        \"" << it.ftype << "\",\n";  // note: NOT $fieldtypeqname! that's getFieldStructName()
         }
         CC << "    };\n";
         CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeStrings[field] : nullptr;\n";
@@ -1776,8 +1776,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         if (!ref.empty()) {
             CC << "        case " << i << ": {\n";
             CC << "            static const char *names[] = { ";
-            for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
-                CC << opp_quotestr(it->first) << ", ";
+            for (const auto & it : ref) {
+                CC << opp_quotestr(it.first) << ", ";
             }
             CC << " nullptr };\n";
             CC << "            return names;\n";
@@ -1805,9 +1805,9 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         const Properties& ref = field.fprops;
         if (!ref.empty()) {
             CC << "        case " << i << ":\n";
-            for (Properties::const_iterator it = ref.begin(); it != ref.end(); ++it) {
-                std::string prop = opp_quotestr(it->second);
-                CC << "            if (!strcmp(propertyname,\"" << it->first << "\")) return " << prop << ";\n";
+            for (const auto & it : ref) {
+                std::string prop = opp_quotestr(it.second);
+                CC << "            if (!strcmp(propertyname,\"" << it.first << "\")) return " << prop << ";\n";
             }
             CC << "            return nullptr;\n";
         }
@@ -2089,8 +2089,8 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     CC << "    omnetpp::cEnum *e = omnetpp::cEnum::find(\"" << enumInfo.enumQName << "\");\n";
     CC << "    if (!e) omnetpp::enums.getInstance()->add(e = new omnetpp::cEnum(\"" << enumInfo.enumQName << "\"));\n";
     // enum inheritance: we should add fields from base enum as well, but that could only be done when importing is in place
-    for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldlist.begin(); it != enumInfo.fieldlist.end(); ++it) {
-        CC << "    e->insert(" << it->name << ", \"" << it->name << "\");\n";
+    for (const auto & it : enumInfo.fieldlist) {
+        CC << "    e->insert(" << it.name << ", \"" << it.name << "\");\n";
     }
     CC << ")\n\n";
 }

@@ -145,10 +145,10 @@ XMLDocCache::XMLDocCache()
 
 XMLDocCache::~XMLDocCache()
 {
-    for (XMLDocMap::iterator i = documentCache.begin(); i != documentCache.end(); ++i)
-        delete i->second;
-    for (XMLDocMap::iterator i = contentCache.begin(); i != contentCache.end(); ++i)
-        delete i->second;
+    for (auto & i : documentCache)
+        delete i.second;
+    for (auto & i : contentCache)
+        delete i.second;
 }
 
 cXMLElement *XMLDocCache::parseDocument(const char *filename)
@@ -239,15 +239,15 @@ void XMLDocCache::forgetParsed(const char *content)
 
 void XMLDocCache::flushDocumentCache()
 {
-    for (XMLDocMap::iterator i = documentCache.begin(); i != documentCache.end(); ++i)
-        delete i->second;
+    for (auto & i : documentCache)
+        delete i.second;
     documentCache.clear();
 }
 
 void XMLDocCache::flushParsedContentCache()
 {
-    for (XMLDocMap::iterator i = contentCache.begin(); i != contentCache.end(); ++i)
-        delete i->second;
+    for (auto & i : contentCache)
+        delete i.second;
     contentCache.clear();
 }
 

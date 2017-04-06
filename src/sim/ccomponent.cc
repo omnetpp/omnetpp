@@ -55,7 +55,7 @@ simsignal_t POST_MODEL_CHANGE = cComponent::registerSignal("POST_MODEL_CHANGE");
 
 EXECUTE_ON_SHUTDOWN(cComponent::clearSignalRegistrations());
 
-std::vector<int> cComponent::signalListenerCount;
+std::vector<int> cComponent::signalListenerCounts;
 
 // Calling registerSignal in static initializers of runtime loaded dynamic
 // libraries would cause an assertion failure without this:
@@ -414,8 +414,8 @@ simsignal_t cComponent::registerSignal(const char *name)
         signalNameMapping->signalNameToID[name] = signalID;
         signalNameMapping->signalIDToName[signalID] = name;
         if (cStaticFlag::insideMain()) { // otherwise signalListenerCount[] may not have been initialized by C++ yet
-            signalListenerCount.push_back(0);
-            ASSERT((int)signalListenerCount.size() == lastSignalID+1);
+            signalListenerCounts.push_back(0);
+            ASSERT((int)signalListenerCounts.size() == lastSignalID+1);
         }
         return signalID;
     }
@@ -437,9 +437,9 @@ void cComponent::clearSignalState()
     // note: registered signals remain intact
 
     // reset listener counts
-    signalListenerCount.resize(lastSignalID+1);
-    for (unsigned int i = 0; i < signalListenerCount.size(); i++)
-        signalListenerCount[i] = 0;
+    signalListenerCounts.resize(lastSignalID+1);
+    for (int & listenerCount : signalListenerCounts)
+        listenerCount = 0;
 
     // clear notification stack
     notificationSP = 0;
@@ -646,7 +646,7 @@ void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
     checkNotFiring(signalID, listenerList->listeners);
     if (!listenerList->addListener(listener))
         throw cRuntimeError(this, "subscribe(): Listener already subscribed, signalID=%d (%s)", signalID, getSignalName(signalID));
-    signalListenerCount[signalID]++;
+    signalListenerCounts[signalID]++;
     listener->subscribeCount++;
     listener->subscribedTo(this, signalID);
 }
@@ -668,9 +668,9 @@ void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
     if (!listenerList->hasListener())
         removeListenerList(signalID);
 
-    signalListenerCount[signalID]--;
+    signalListenerCounts[signalID]--;
     listener->subscribeCount--;
-    ASSERT(signalListenerCount[signalID] >= 0);
+    ASSERT(signalListenerCounts[signalID] >= 0);
     ASSERT(listener->subscribeCount >= 0);
     listener->unsubscribedFrom(this, signalID);
 }
@@ -700,8 +700,8 @@ std::vector<simsignal_t> cComponent::getLocalListenedSignals() const
 {
     std::vector<simsignal_t> result;
     if (signalTable)
-        for (int i = 0; i < (int)signalTable->size(); i++)
-            result.push_back((*signalTable)[i].signalID);
+        for (auto & listenerList : *signalTable)
+            result.push_back(listenerList.signalID);
     return result;
 }
 
@@ -761,9 +761,9 @@ void cComponent::releaseLocalListeners()
 const std::vector<cResultRecorder*>& cComponent::getResultRecorders() const
 {
     // return cached copy if exists
-    for (size_t i = 0; i < cachedResultRecorderLists.size(); i++)
-        if (cachedResultRecorderLists[i]->component == this)
-            return cachedResultRecorderLists[i]->recorders;
+    for (auto & cachedResultRecorderList : cachedResultRecorderLists)
+        if (cachedResultRecorderList->component == this)
+            return cachedResultRecorderList->recorders;
 
     // not found, create and cache it
     ResultRecorderList *recorderList =  new ResultRecorderList;

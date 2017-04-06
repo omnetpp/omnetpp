@@ -33,12 +33,12 @@ bool LogBuffer::Entry::isEvent()
 LogBuffer::Entry::~Entry()
 {
     delete[] banner;
-    for (int i = 0; i < (int)lines.size(); i++) {
-        delete[] lines[i].prefix;
-        delete[] lines[i].line;
+    for (auto & line : lines) {
+        delete[] line.prefix;
+        delete[] line.line;
     }
-    for (int i = 0; i < (int)msgs.size(); i++) {
-        delete msgs[i].msg;
+    for (auto & msg : msgs) {
+        delete msg.msg;
     }
 }
 
@@ -262,8 +262,8 @@ void LogBuffer::dump() const
     for (int i = 0; i < entries.size(); i++) {
         const Entry *entry = entries[i];
         printf("[%d] #%" LL "d t=%s componentId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
-        for (int j = 0; j < (int)entry->lines.size(); j++)
-            printf("\t[l%d]:%s%s", i, entry->lines[j].prefix, entry->lines[j].line);
+        for (const auto & line : entry->lines)
+            printf("\t[l%d]:%s%s", i, line.prefix, line.line);
     }
 }
 

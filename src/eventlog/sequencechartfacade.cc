@@ -539,17 +539,15 @@ std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_
         eventLog->progress();
         IMessageDependencyList *causes = event->getCauses();
 
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it) {
-            IMessageDependency *messageDependency = *it;
-
+        for (auto messageDependency : *causes) {
             if (messageDependency->getCauseEventNumber() < startEventNumber)
                 messageDependencies.insert((ptr_t)messageDependency);
         }
 
         IMessageDependencyList *consequences = event->getConsequences();
 
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); ++it)
-            messageDependencies.insert((ptr_t)*it);
+        for (auto & consequence : *consequences)
+            messageDependencies.insert((ptr_t)consequence);
 
         if (event == endEvent)
             break;
@@ -569,8 +567,8 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
     std::set<int> axisIndexSet;
     std::map<eventnumber_t, IEvent *> eventNumberToEventMap;
 
-    for (std::map<int, int>::iterator it = moduleIdToAxisIndexMap->begin(); it != moduleIdToAxisIndexMap->end(); ++it)
-        axisIndexSet.insert(it->second);
+    for (auto & it : *moduleIdToAxisIndexMap)
+        axisIndexSet.insert(it.second);
 
     int numberOfAxes = axisIndexSet.size();
     adjacencyMatrix.resize(numberOfAxes * numberOfAxes);
@@ -596,12 +594,11 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
         }
     }
 
-    for (std::map<eventnumber_t, IEvent *>::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); ++it) {
-        IEvent *event = it->second;
+    for (auto & it : eventNumberToEventMap) {
+        IEvent *event = it.second;
         IMessageDependencyList *causes = event->getCauses();
 
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it) {
-            IMessageDependency *messageDependency = *it;
+        for (auto messageDependency : *causes) {
             IEvent *causeEvent = messageDependency->getCauseEvent();
             IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
             int weight = 0;

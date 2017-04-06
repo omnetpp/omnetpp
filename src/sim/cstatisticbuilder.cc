@@ -83,10 +83,9 @@ void cStatisticBuilder::addResultRecorders(cComponent *component)
 {
     std::vector<const char *> statisticNames = component->getProperties()->getIndicesFor("statistic");
     std::string componentFullPath;
-    for (int i = 0; i < (int)statisticNames.size(); i++) {
+    for (auto statisticName : statisticNames) {
         if (componentFullPath.empty())
             componentFullPath = component->getFullPath();
-        const char *statisticName = statisticNames[i];
         cProperty *statisticProperty = component->getProperties()->get("statistic", statisticName);
         ASSERT(statisticProperty != nullptr);
         doAddResultRecorders(component, componentFullPath, statisticName, statisticProperty, SIMSIGNAL_NULL);
@@ -129,8 +128,8 @@ void cStatisticBuilder::doAddResultRecorders(cComponent *component, std::string&
         }
 
         // add result recorders
-        for (int j = 0; j < (int)modes.size(); j++)
-            doResultRecorder(source, modes[j].c_str(), component, statisticName, statisticProperty);
+        for (auto & mode : modes)
+            doResultRecorder(source, mode.c_str(), component, statisticName, statisticProperty);
     }
 }
 

@@ -63,9 +63,8 @@ std::string cXMLElement::str() const
 {
     std::stringstream os;
     os << "<" << getTagName();
-    cXMLAttributeMap map = getAttributes();
-    for (cXMLAttributeMap::iterator it = map.begin(); it != map.end(); ++it)
-        os << " " << it->first << "=\"" << opp_xmlQuote(it->second.c_str()) << "\"";
+    for (auto & attr : getAttributes())
+        os << " " << attr.first << "=\"" << opp_xmlQuote(attr.second.c_str()) << "\"";
     if (!*getNodeValue() && !getFirstChild())
         os << "/>";
     else
@@ -311,9 +310,8 @@ void cXMLElement::print(std::ostream& os, int indentLevel) const
     for (int i = 0; i < indentLevel; i++)
         os << "  ";
     os << "<" << getTagName();
-    cXMLAttributeMap map = getAttributes();
-    for (cXMLAttributeMap::iterator it = map.begin(); it != map.end(); ++it)
-        os << " " << it->first << "=\"" << opp_xmlQuote(it->second.c_str()) << "\"";
+    for (auto & attr : getAttributes())
+        os << " " << attr.first << "=\"" << opp_xmlQuote(attr.second.c_str()) << "\"";
     if (!*getNodeValue() && !getFirstChild()) {
         os << "/>\n";
         return;

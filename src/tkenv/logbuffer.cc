@@ -26,12 +26,12 @@ namespace tkenv {
 LogBuffer::Entry::~Entry()
 {
     delete[] banner;
-    for (int i = 0; i < (int)lines.size(); i++) {
-        delete[] lines[i].prefix;
-        delete[] lines[i].line;
+    for (auto & line : lines) {
+        delete[] line.prefix;
+        delete[] line.line;
     }
-    for (int i = 0; i < (int)msgs.size(); i++) {
-        delete msgs[i].msg;
+    for (auto & msg : msgs) {
+        delete msg.msg;
     }
 }
 
@@ -77,8 +77,8 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
     fillEntry(entry, e, t, mod, opp_strdup(banner));
     discardEventsIfLimitExceeded();
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logEntryAdded();
+    for (auto & listener : listeners)
+        listener->logEntryAdded();
 }
 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
@@ -94,8 +94,8 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, nullptr, opp_strdup(banner)));
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logLineAdded();
+    for (auto & listener : listeners)
+        listener->logLineAdded();
 }
 
 void LogBuffer::addLogLine(const char *prefix, const char *text)
@@ -118,8 +118,8 @@ void LogBuffer::addLogLine(const char *prefix, const char *text, int len)
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, opp_strdup(prefix), opp_strdup(text, len)));
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logLineAdded();
+    for (auto & listener : listeners)
+        listener->logLineAdded();
 }
 
 void LogBuffer::addInfo(const char *text)
@@ -135,8 +135,8 @@ void LogBuffer::addInfo(const char *text, int len)
     fillEntry(entry, 0, simTime(), nullptr, opp_strdup(text, len));
     discardEventsIfLimitExceeded();
 
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->logEntryAdded();
+    for (auto & listener : listeners)
+        listener->logEntryAdded();
 }
 
 void LogBuffer::beginSend(cMessage *msg)
@@ -187,8 +187,8 @@ void LogBuffer::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
 
 void LogBuffer::endSend(cMessage *msg)
 {
-    for (unsigned int i = 0; i < listeners.size(); i++)
-        listeners[i]->messageSendAdded();  // TODO but endSend() is not called when msg is discarded in the channel!
+    for (auto & listener : listeners)
+        listener->messageSendAdded();  // TODO but endSend() is not called when msg is discarded in the channel!
 }
 
 void LogBuffer::setMaxNumEntries(int limit)
@@ -247,8 +247,8 @@ void LogBuffer::dump() const
     for (int i = 0; i < entries.size(); i++) {
         const Entry *entry = entries[i];
         printf("[%d] #%" LL "d t=%s componentId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
-        for (int j = 0; j < (int)entry->lines.size(); j++)
-            printf("\t[l%d]:%s%s", i, entry->lines[j].prefix, entry->lines[j].line);
+        for (const auto & line : entry->lines)
+            printf("\t[l%d]:%s%s", i, line.prefix, line.line);
     }
 }
 

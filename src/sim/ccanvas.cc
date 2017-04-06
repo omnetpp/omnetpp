@@ -722,8 +722,8 @@ cFigure::Font cFigure::parseFont(const char *s)
         font.typeface = typeface;
     if (comma) {
         std::vector<std::string> items = cStringTokenizer(comma+1, "(), ").asVector();
-        for (int i = 0; i < (int)items.size(); i++) {
-            std::string item = opp_trim(items[i]);
+        for (auto item : items) {
+            item = opp_trim(item);
             if (opp_isdigit(item[0]))
                 font.pointSize = strtol(item.c_str(), nullptr, 10);
             else if (item == "bold")
@@ -824,8 +824,8 @@ cFigure::Anchor cFigure::parseAnchor(const char *s)
 
 cFigure::~cFigure()
 {
-    for (int i = 0; i < (int)children.size(); i++)
-        dropAndDelete(children[i]);
+    for (auto & child : children)
+        dropAndDelete(child);
     stringPool.release(tags);
 }
 
@@ -854,8 +854,7 @@ void cFigure::parse(cProperty *property)
 void cFigure::validatePropertyKeys(cProperty *property) const
 {
     const std::vector<const char *>& keys = property->getKeys();
-    for (int i = 0; i < (int)keys.size(); i++) {
-        const char *key = keys[i];
+    for (auto key : keys) {
         if (!*key && property->getNumValues(key) == 0)
             continue; // skip empty key added by extra semicolon
 
@@ -896,15 +895,15 @@ void cFigure::concatArrays(const char **dest, const char **first, const char **s
 void cFigure::callRefreshDisplay()
 {
     refreshDisplay();
-    for (int i = 0; i < (int)children.size(); i++)
-        children[i]->callRefreshDisplay();
+    for (auto & child : children)
+        child->callRefreshDisplay();
 }
 
 cFigure *cFigure::dupTree() const
 {
     cFigure *result = dup();
-    for (int i = 0; i < (int)children.size(); i++)
-        result->addFigure(children[i]->dupTree());
+    for (auto child : children)
+        result->addFigure(child->dupTree());
     return result;
 }
 
@@ -929,8 +928,8 @@ cFigure& cFigure::operator=(const cFigure& other)
 
 void cFigure::forEachChild(cVisitor *v)
 {
-    for (int i = 0; i < (int)children.size(); i++)
-        v->visit(children[i]);
+    for (auto & child : children)
+        v->visit(child);
 }
 
 std::string cFigure::str() const
@@ -1109,8 +1108,7 @@ cFigure *cFigure::getFigure(int pos) const
 
 cFigure *cFigure::getFigure(const char *name) const
 {
-    for (int i = 0; i < (int)children.size(); i++) {
-        cFigure *figure = children[i];
+    for (auto figure : children) {
         if (figure->isName(name))
             return figure;
     }
@@ -1121,8 +1119,8 @@ cFigure *cFigure::findFigureRecursively(const char *name) const
 {
     if (!strcmp(name, getFullName()))
         return const_cast<cFigure *>(this);
-    for (int i = 0; i < (int)children.size(); i++) {
-        cFigure *figure = children[i]->findFigureRecursively(name);
+    for (auto i : children) {
+        cFigure *figure = i->findFigureRecursively(name);
         if (figure)
             return figure;
     }
@@ -1187,8 +1185,8 @@ void cFigure::refreshTagBits()
     cCanvas *canvas = getCanvas();
     if (canvas) {
         tagBits = canvas->parseTags(getTags());
-        for (int i = 0; i < (int)children.size(); i++)
-            children[i]->refreshTagBits();
+        for (auto & child : children)
+            child->refreshTagBits();
     }
 }
 
@@ -1204,8 +1202,8 @@ void cFigure::fire(uint8_t flags)
 void cFigure::clearChangeFlags()
 {
     if (subtreeChanges)
-        for (int i = 0; i < (int)children.size(); i++)
-            children[i]->clearChangeFlags();
+        for (auto & child : children)
+            child->clearChangeFlags();
     localChanges = subtreeChanges = 0;
 }
 
@@ -1276,9 +1274,9 @@ void cFigure::raiseToTop()
         fireStructuralChange();
     }
     // figure needs to have a higher or equal Z-index than others
-    for (int i = 0; i < (int)children.size(); i++)
-        if (children[i]->getZIndex() > getZIndex())
-            setZIndex(children[i]->getZIndex());
+    for (auto & child : children)
+        if (child->getZIndex() > getZIndex())
+            setZIndex(child->getZIndex());
 }
 
 void cFigure::lowerToBottom()
@@ -1294,16 +1292,16 @@ void cFigure::lowerToBottom()
         fireStructuralChange();
     }
     // figure needs to have a lower or equal Z-index than others
-    for (int i = 0; i < (int)children.size(); i++)
-        if (children[i]->getZIndex() < getZIndex())
-            setZIndex(children[i]->getZIndex());
+    for (auto & child : children)
+        if (child->getZIndex() < getZIndex())
+            setZIndex(child->getZIndex());
 }
 
 void cFigure::move(double dx, double dy)
 {
     moveLocal(dx, dy);
-    for (int i = 0; i < (int)children.size(); i++)
-        children[i]->move(dx, dy);
+    for (auto & child : children)
+        child->move(dx, dy);
 }
 
 //----
@@ -1689,8 +1687,8 @@ cPolylineFigure& cPolylineFigure::operator=(const cPolylineFigure& other)
 std::string cPolylineFigure::str() const
 {
     std::stringstream os;
-    for (int i = 0; i < (int)points.size(); i++)
-        os << points[i] << " ";
+    for (auto point : points)
+        os << point << " ";
     return os.str();
 }
 
@@ -1719,9 +1717,9 @@ const char **cPolylineFigure::getAllowedPropertyKeys() const
 
 void cPolylineFigure::moveLocal(double dx, double dy)
 {
-    for (int i = 0; i < (int)points.size(); i++) {
-        points[i].x += dx;
-        points[i].y += dy;
+    for (auto & point : points) {
+        point.x += dx;
+        point.y += dy;
     }
     fireGeometryChange();
 }
@@ -2278,8 +2276,8 @@ cPolygonFigure& cPolygonFigure::operator=(const cPolygonFigure& other)
 std::string cPolygonFigure::str() const
 {
     std::stringstream os;
-    for (int i = 0; i < (int)points.size(); i++)
-        os << points[i] << " ";
+    for (auto point : points)
+        os << point << " ";
     return os.str();
 }
 
@@ -2310,9 +2308,9 @@ const char **cPolygonFigure::getAllowedPropertyKeys() const
 
 void cPolygonFigure::moveLocal(double dx, double dy)
 {
-    for (int i = 0; i < (int)points.size(); i++) {
-        points[i].x += dx;
-        points[i].y += dy;
+    for (auto & point : points) {
+        point.x += dx;
+        point.y += dy;
     }
     fireGeometryChange();
 }
@@ -2590,8 +2588,7 @@ const char *cPathFigure::getPath() const
 
     // else produce string and cache it
     std::stringstream os;
-    for (int i = 0; i < (int)path.size(); i++) {
-        PathItem *base = path[i];
+    for (auto base : path) {
         os << (char)base->code << " ";
         switch (base->code) {
             case 'M': {
@@ -2706,8 +2703,8 @@ void cPathFigure::addItem(PathItem *item)
 
 void cPathFigure::doClearPath()
 {
-    for (int i = 0; i < (int)path.size(); i++)
-        delete path[i];
+    for (auto & item : path)
+        delete item;
     path.clear();
     cachedPathString.clear();
 }
@@ -3632,8 +3629,8 @@ std::string cCanvas::getAllTags() const
 std::vector<std::string> cCanvas::getAllTagsAsVector() const
 {
     std::vector<std::string> result;
-    for (std::map<std::string, int>::const_iterator it = tagBitIndex.begin(); it != tagBitIndex.end(); ++it)
-        result.push_back(it->first);
+    for (const auto & it : tagBitIndex)
+        result.push_back(it.first);
     return result;
 }
 

@@ -32,8 +32,7 @@ typedef std::vector<Subscription> SubscriptionList;
 static void findListenerOccurences(cComponent *component, cIListener *listener, SubscriptionList& result)
 {
     std::vector<simsignal_t> signals = component->getLocalListenedSignals();
-    for (unsigned int i = 0; i < signals.size(); i++) {
-        simsignal_t signalID = signals[i];
+    for (int signalID : signals) {
         if (component->isSubscribed(signalID, listener)) {
             result.push_back(Subscription());
             result.back().component = component;
@@ -79,11 +78,11 @@ cIListener::~cIListener()
 
         // print components and signals where this listener is subscribed
         std::stringstream out;
-        SubscriptionList list;
-        findListenerOccurences(getSimulation()->getSystemModule(), this, list);
-        for (int i = 0; i < (int)list.size(); i++) {
-            out << "- signal \"" << cComponent::getSignalName(list[i].signalID) << "\" (id=" << list[i].signalID << ") ";
-            out << "at (" << list[i].component->getClassName() << ")" << list[i].component->getFullPath() << "\n";
+        SubscriptionList subscriptionList;
+        findListenerOccurences(getSimulation()->getSystemModule(), this, subscriptionList);
+        for (auto & subscription : subscriptionList) {
+            out << "- signal \"" << cComponent::getSignalName(subscription.signalID) << "\" (id=" << subscription.signalID << ") ";
+            out << "at (" << subscription.component->getClassName() << ")" << subscription.component->getFullPath() << "\n";
         }
         getEnvir()->printfmsg("Subscriptions for listener at address %p:\n%s", this, out.str().c_str());
     }

@@ -31,8 +31,8 @@ cProperties::cProperties()
 
 cProperties::~cProperties()
 {
-    for (int i = 0; i < (int)propv.size(); i++)
-        delete propv[i];
+    for (auto & property : properties)
+        delete property;
 }
 
 void cProperties::copy(const cProperties& other)
@@ -43,14 +43,14 @@ void cProperties::copy(const cProperties& other)
     // note: do NOT copy islocked flag
 
     // delete existing contents
-    for (int i = 0; i < (int)propv.size(); i++)
-        delete propv[i];
-    propv.clear();
+    for (auto & property : properties)
+        delete property;
+    properties.clear();
 
     // copy properties from other
-    for (int i = 0; i < (int)other.propv.size(); i++) {
-        cProperty *p = other.propv[i]->dup();
-        propv.push_back(p);
+    for (auto property : other.properties) {
+        cProperty *p = property->dup();
+        properties.push_back(p);
     }
 }
 
@@ -64,13 +64,13 @@ cProperties& cProperties::operator=(const cProperties& other)
 
 std::string cProperties::str() const
 {
-    if (propv.empty())
+    if (properties.empty())
         return "";
     std::stringstream out;
-    int numProperties = (int)propv.size();
+    int numProperties = (int)properties.size();
     int numDisplayed = std::min(3, numProperties);
     for (int i = 0; i < numDisplayed; i++)
-        out << (i == 0 ? "@" : ", @") << propv[i]->getFullName();
+        out << (i == 0 ? "@" : ", @") << properties[i]->getFullName();
     if (numDisplayed != numProperties)
         out << "... (and " << (numProperties - numDisplayed) << " more)";
     return out.str();
@@ -90,17 +90,16 @@ void cProperties::parsimUnpack(cCommBuffer *buffer)
 
 cProperty *cProperties::get(int k) const
 {
-    if (k < 0 || k >= (int)propv.size())
+    if (k < 0 || k >= (int)properties.size())
         throw cRuntimeError(this, "Property index %d out of range", k);
-    return propv[k];
+    return properties[k];
 }
 
 cProperty *cProperties::get(const char *name, const char *index) const
 {
-    for (int i = 0; i < (int)propv.size(); i++)
-        if (!strcmp(propv[i]->getName(), name) && !omnetpp::opp_strcmp(index, propv[i]->getIndex()))
-            return propv[i];
-
+    for (auto property : properties)
+        if (!strcmp(property->getName(), name) && !omnetpp::opp_strcmp(index, property->getIndex()))
+            return property;
     return nullptr;
 }
 
@@ -120,7 +119,7 @@ void cProperties::add(cProperty *p)
 {
     if (isLocked)
         throw cRuntimeError(this, E_LOCKED);
-    propv.push_back(p);
+    properties.push_back(p);
     p->setOwner(this);
 }
 
@@ -129,18 +128,18 @@ void cProperties::remove(int k)
     if (isLocked)
         throw cRuntimeError(this, E_LOCKED);
 
-    if (k < 0 || k >= (int)propv.size())
+    if (k < 0 || k >= (int)properties.size())
         throw cRuntimeError(this, "Property index %d out of range", k);
 
-    delete propv[k];
-    propv.erase(propv.begin() + k);
+    delete properties[k];
+    properties.erase(properties.begin() + k);
 }
 
 const std::vector<const char *> cProperties::getNames() const
 {
     std::vector<const char *> v;
-    for (int i = 0; i < (int)propv.size(); i++) {
-        const char *s = propv[i]->getName();
+    for (auto i : properties) {
+        const char *s = i->getName();
         if (std::find(v.begin(), v.end(), s) == v.end())
             v.push_back(s);
     }
@@ -150,9 +149,9 @@ const std::vector<const char *> cProperties::getNames() const
 std::vector<const char *> cProperties::getIndicesFor(const char *name) const
 {
     std::vector<const char *> v;
-    for (int i = 0; i < (int)propv.size(); i++) {
-        if (!strcmp(propv[i]->getName(), name)) {
-            const char *s = propv[i]->getIndex();
+    for (auto property : properties) {
+        if (!strcmp(property->getName(), name)) {
+            const char *s = property->getIndex();
             if (std::find(v.begin(), v.end(), s) == v.end())
                 v.push_back(s);
         }
@@ -163,8 +162,8 @@ std::vector<const char *> cProperties::getIndicesFor(const char *name) const
 void cProperties::lock()
 {
     isLocked = true;
-    for (int i = 0; i < (int)propv.size(); i++)
-        propv[i]->lock();
+    for (auto & property : properties)
+        property->lock();
 }
 
 }  // namespace omnetpp

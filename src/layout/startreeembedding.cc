@@ -50,8 +50,8 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
     else {
         vertex->starTreeCenter = Pt::getZero();
 
-        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it)
-            calculateCenterRecursive(*it);
+        for (auto & it : vertex->spanningTreeChildren)
+            calculateCenterRecursive(it);
 
         std::vector<Pt> pts;
         std::vector<Cc> circles;
@@ -63,9 +63,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 
             circles.push_back(Cc(Pt::getZero(), vertex->rc.rs.getDiagonalLength() / 2 + vertexSpacing + vertexChild->starTreeRadius));
 
-            for (std::vector<Vertex *>::iterator jt = vertex->spanningTreeChildren.begin(); jt != vertex->spanningTreeChildren.end(); jt++) {
-                Vertex *vertexPositioned = *jt;
-
+            for (auto vertexPositioned : vertex->spanningTreeChildren) {
                 if (vertexPositioned == vertexChild)
                     break;
 
@@ -80,8 +78,8 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 
                     std::vector<Pt> intersectingPts = circle1.basePlaneProjectionIntersect(circle2);
 
-                    for (std::vector<Pt>::iterator it = intersectingPts.begin(); it != intersectingPts.end(); ++it)
-                        pts.push_back(*it);
+                    for (auto & intersectingPt : intersectingPts)
+                        pts.push_back(intersectingPt);
                 }
 
             // Default points
@@ -94,10 +92,8 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
             }
 
             for (int j = 0; j < (int)pts.size(); j++) {
-                for (std::vector<Cc>::iterator kt = circles.begin(); kt != circles.end(); kt++) {
+                for (auto cc : circles) {
                     Pt pt = pts[j];
-                    Cc cc = *kt;
-
                     if (pt.getDistance(cc.origin) < cc.radius - 1) {
                         pts.erase(pts.begin() + j--);
                         break;
@@ -108,8 +104,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
             // Optimize cost function
             double costMin = POSITIVE_INFINITY;
 
-            for (std::vector<Pt>::iterator jt = pts.begin(); jt != pts.end(); jt++) {
-                Pt pt = *jt;
+            for (auto pt : pts) {
                 double cost = vertex->starTreeCenter.getDistance(pt);
 
                 if (cost < costMin) {
@@ -123,8 +118,7 @@ void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
         circles.clear();
         circles.push_back(Cc(Pt::getZero(), vertex->rc.rs.getDiagonalLength() / 2));
 
-        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
-            Vertex *vertexChild = *it;
+        for (auto vertexChild : vertex->spanningTreeChildren) {
             circles.push_back(Cc(vertexChild->starTreeCenter.copy().add(vertexChild->starTreeCircleCenter), vertexChild->starTreeRadius));
         }
 
@@ -184,8 +178,8 @@ void StarTreeEmbedding::rotateCenterRecursive(Vertex *vertex)
             }
         }
 
-        for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it)
-            rotateCenterRecursive(*it);
+        for (auto & it : vertex->spanningTreeChildren)
+            rotateCenterRecursive(it);
     }
 }
 
@@ -201,8 +195,7 @@ void StarTreeEmbedding::calculatePositionRecursive(Vertex *vertex, Pt pt)
     if (vertex->spanningTreeParent)
         vertex->starTreeCircleCenter.add(pt);
 
-    for (std::vector<Vertex *>::iterator it = vertex->spanningTreeChildren.begin(); it != vertex->spanningTreeChildren.end(); ++it) {
-        Vertex *child = *it;
+    for (auto child : vertex->spanningTreeChildren) {
         calculatePositionRecursive(child, pt.copy().add(child->starTreeCenter));
     }
 }

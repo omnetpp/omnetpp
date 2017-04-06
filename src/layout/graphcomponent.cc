@@ -52,14 +52,14 @@ GraphComponent::GraphComponent()
 GraphComponent::~GraphComponent()
 {
     if (owner) {
-        for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it)
-            delete *it;
+        for (auto & vertex : vertices)
+            delete vertex;
 
-        for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); ++it)
-            delete *it;
+        for (auto & edge : edges)
+            delete edge;
 
-        for (std::vector<GraphComponent *>::iterator it = connectedSubComponents.begin(); it != connectedSubComponents.end(); ++it)
-            delete *it;
+        for (auto & connectedSubComponent : connectedSubComponents)
+            delete connectedSubComponent;
     }
 }
 
@@ -91,9 +91,7 @@ int GraphComponent::indexOfVertex(Vertex *vertex)
 
 Vertex *GraphComponent::findVertex(void *identity)
 {
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        Vertex *vertex = *it;
-
+    for (auto vertex : vertices) {
         if (vertex->identity == identity)
             return vertex;
     }
@@ -106,9 +104,7 @@ Rc GraphComponent::getBoundingRectangle()
     double top = DBL_MAX, bottom = DBL_MIN;
     double left = DBL_MAX, right = DBL_MIN;
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        Vertex *vertex = *it;
-
+    for (auto vertex : vertices) {
         Pt pt = vertex->rc.pt;
         Rs rs = vertex->rc.rs;
 
@@ -126,9 +122,7 @@ void GraphComponent::calculateSpanningTree()
     Vertex *rootVertex = nullptr;
     spanningTreeVertices.clear();
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        Vertex *vertex = *it;
-
+    for (auto vertex : vertices) {
         if (rootVertex == nullptr || rootVertex->neighbours.size() < vertex->neighbours.size())
             rootVertex = vertex;
     }
@@ -141,8 +135,7 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex)
 {
     spanningTreeRoot = rootVertex;
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        Vertex *vertex = *it;
+    for (auto vertex : vertices) {
         vertex->spanningTreeChildren.clear();
         vertex->spanningTreeParent = nullptr;
         vertex->color = 0;
@@ -184,21 +177,17 @@ void GraphComponent::calculateConnectedSubComponents()
 {
     connectedSubComponents.clear();
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        Vertex *vertex = *it;
+    for (auto vertex : vertices) {
         vertex->color = 0;
     }
 
-    for (std::vector<Edge *>::iterator it = edges.begin(); it != edges.end(); ++it) {
-        Edge *edge = *it;
+    for (auto edge : edges) {
         edge->color = 0;
     }
 
     int color = 1;
 
-    for (std::vector<Vertex *>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        Vertex *vertex = *it;
-
+    for (auto vertex : vertices) {
         if (!vertex->color) {
             GraphComponent *childComponent = new GraphComponent();
             childComponent->owner = false;
@@ -215,9 +204,7 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
     vertex->connectedSubComponent = childComponent;
     childComponent->vertices.push_back(vertex);
 
-    for (std::vector<Edge *>::iterator it = vertex->edges.begin(); it != vertex->edges.end(); ++it) {
-        Edge *edge = *it;
-
+    for (auto edge : vertex->edges) {
         if (!edge->color) {
             edge->color = color;
             edge->connectedSubComponent = childComponent;
@@ -225,9 +212,7 @@ void GraphComponent::colorizeConnectedSubComponent(GraphComponent *childComponen
         }
     }
 
-    for (std::vector<Vertex *>::iterator it = vertex->neighbours.begin(); it != vertex->neighbours.end(); ++it) {
-        Vertex *neighbour = *it;
-
+    for (auto neighbour : vertex->neighbours) {
         if (!neighbour->color)
             colorizeConnectedSubComponent(childComponent, neighbour, color);
     }

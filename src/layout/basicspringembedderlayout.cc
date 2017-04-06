@@ -49,10 +49,10 @@ BasicSpringEmbedderLayout::BasicSpringEmbedderLayout()
 
 BasicSpringEmbedderLayout::~BasicSpringEmbedderLayout()
 {
-    for (AnchorList::iterator i = anchors.begin(); i != anchors.end(); ++i)
-        delete (*i);
-    for (NodeList::iterator j = nodes.begin(); j != nodes.end(); ++j)
-        delete (*j);
+    for (auto & anchor : anchors)
+        delete anchor;
+    for (auto & node : nodes)
+        delete node;
 }
 
 void BasicSpringEmbedderLayout::setEnvironment(GraphLayouterEnvironment *environment)
@@ -257,8 +257,8 @@ void BasicSpringEmbedderLayout::execute()
         //   - there are anchored nodes (their spacing must be preserved)
         double xfact = (width == 0 || x1 == x2 || haveAnchoredNode) ? 1.0 : (width-2*border) / (x2-x1);
         double yfact = (height == 0 || y1 == y2 || haveAnchoredNode) ? 1.0 : (height-2*border) / (y2-y1);
-        for (NodeList::iterator j = nodes.begin(); j != nodes.end(); ++j) {
-            Node& n = *(*j);
+        for (auto & node : nodes) {
+            Node& n = *node;
             n.x = border + (n.x-x1)*xfact;
             n.y = border + (n.y-y1)*yfact;
         }
@@ -277,8 +277,8 @@ void BasicSpringEmbedderLayout::execute()
         if (y1 < border)
             dy = border-y1;
 
-        for (NodeList::iterator j = nodes.begin(); j != nodes.end(); ++j) {
-            Node& n = *(*j);
+        for (auto & node : nodes) {
+            Node& n = *node;
             if (!n.connectedToFixed) {
                 n.x += dx;
                 n.y += dy;
@@ -341,8 +341,8 @@ void BasicSpringEmbedderLayout::assignInitialPositions()
     }
 
     // initialize variables (also randomize start positions over the initial area)
-    for (AnchorList::iterator l = anchors.begin(); l != anchors.end(); ++l) {
-        Anchor& a = *(*l);
+    for (auto & anchor : anchors) {
+        Anchor& a = *anchor;
         double nodesBBWidth = a.x2off - a.x1off;
         double nodesBBHeight = a.y2off - a.y1off;
         double nodesBBLeft = initialAreaOffsetX + std::max(0.0, initialAreaWidth-nodesBBWidth) * privRand01();
@@ -351,8 +351,8 @@ void BasicSpringEmbedderLayout::assignInitialPositions()
         a.y = nodesBBTop - a.y1off;
         a.vx = a.vy = 0;
     }
-    for (NodeList::iterator k = nodes.begin(); k != nodes.end(); ++k) {
-        Node& n = *(*k);
+    for (auto & node : nodes) {
+        Node& n = *node;
         if (n.fixed) {
             // nop
         }
@@ -415,15 +415,13 @@ void BasicSpringEmbedderLayout::markNodesConnectedToFixed(int numColors)
 {
     // compute the set of colors (connected graph partitions) that contain at least one fixed node
     std::set<int> colorsWithFixedNodes;
-    for (NodeList::iterator i = nodes.begin(); i != nodes.end(); ++i) {
-        Node *n = *i;
+    for (auto n : nodes) {
         if (n->fixed)
             colorsWithFixedNodes.insert(n->color);
     }
 
     //  set the connectedToFixed fields of nodes
-    for (NodeList::iterator i = nodes.begin(); i != nodes.end(); ++i) {
-        Node *n = *i;
+    for (auto n : nodes) {
         n->connectedToFixed = colorsWithFixedNodes.find(n->color) != colorsWithFixedNodes.end();
     }
 }
@@ -431,15 +429,15 @@ void BasicSpringEmbedderLayout::markNodesConnectedToFixed(int numColors)
 void BasicSpringEmbedderLayout::computeAnchorBoundingBoxes()
 {
     // fills in x1off, y1off, x2off, y2off fields of anchors
-    for (AnchorList::iterator i = anchors.begin(); i != anchors.end(); ++i) {
-        Anchor& a = *(*i);
+    for (auto & anchor : anchors) {
+        Anchor& a = *anchor;
         a.x1off = POSITIVE_INFINITY;
         a.y1off = POSITIVE_INFINITY;
         a.x2off = NEGATIVE_INFINITY, a.y2off = NEGATIVE_INFINITY;
     }
 
-    for (NodeList::iterator i = nodes.begin(); i != nodes.end(); ++i) {
-        Node& n = *(*i);
+    for (auto & node : nodes) {
+        Node& n = *node;
         if (n.anchor) {
             Anchor& a = *(n.anchor);
             if (n.offx-n.sx < a.x1off)
@@ -461,8 +459,8 @@ void BasicSpringEmbedderLayout::computeBoundingBox(double& x1, double& y1, doubl
     x2 = NEGATIVE_INFINITY;
     y2 = NEGATIVE_INFINITY;
 
-    for (NodeList::iterator i = nodes.begin(); i != nodes.end(); ++i) {
-        Node& n = *(*i);
+    for (auto & node : nodes) {
+        Node& n = *node;
         if (predicate(&n)) {
             if (n.x-n.sx < x1)
                 x1 = n.x-n.sx;
@@ -682,14 +680,13 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     const char *colors[] = {
         "black", "red", "blue", "green", "yellow", "cyan", "purple", "darkgreen"
     };
-    for (NodeList::iterator i = nodes.begin(); i != nodes.end(); ++i) {
-        Node& n = *(*i);
+    for (auto & node : nodes) {
+        Node& n = *node;
         const char *color = colors[n.color % (sizeof(colors)/sizeof(char *))];
         environment->drawRectangle(n.x-n.sx, n.y-n.sy, n.x+n.sx, n.y+n.sy, "{node bbox}", color);
     }
 
-    for (EdgeList::iterator j = edges.begin(); j != edges.end(); ++j) {
-        Edge& e = *j;
+    for (auto & e : edges) {
         const char *color = colors[e.src->color % (sizeof(colors)/sizeof(char *))];
         environment->drawLine(e.src->x, e.src->y, e.dest->x, e.dest->y, "{edge bbox}", color);
     }

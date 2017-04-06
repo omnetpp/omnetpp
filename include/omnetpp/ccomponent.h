@@ -108,7 +108,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     static int lastSignalID;
 
     // for hasListeners()/mayHaveListeners()
-    static std::vector<int> signalListenerCount;  // index: signalID, value: number of listeners anywhere
+    static std::vector<int> signalListenerCounts;  // index: signalID, value: number of listeners anywhere
 
     // stack of listener lists being notified, to detect concurrent modification
     static cIListener **notificationStack[];
@@ -921,7 +921,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     bool mayHaveListeners(simsignal_t signalID) const {
         if (signalID < 0 || signalID > lastSignalID)
             throwInvalidSignalID(signalID);
-        return signalListenerCount[signalID] > 0;
+        return signalListenerCounts[signalID] > 0;
     }
 
     /**

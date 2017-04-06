@@ -148,10 +148,10 @@ int cClassDescriptor::string2enum(const char *s, const char *enumName) const
         // if not found, try unique case insensitive substring match
         if (value == MISSING) {
             std::map<std::string,int> members = enump->getNameValueMap();
-            for (std::map<std::string,int>::iterator it = members.begin(); it != members.end(); ++it) {
-                if (opp_strnistr(it->first.c_str(), s, 0, false) != nullptr) {
+            for (auto & member : members) {
+                if (opp_strnistr(member.first.c_str(), s, 0, false) != nullptr) {
                     if (value == MISSING)
-                        value = it->second;
+                        value = member.second;
                     else
                         throw cRuntimeError("Name '%s' is ambiguous in enum '%s' (substring search)", s, enumName);
                 }

@@ -889,8 +889,8 @@ void PolygonFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
     else {
         path.moveTo(points[0].x, points[0].y);
 
-        for (size_t i = 0; i < points.size(); i++)
-            path.lineTo(points[i].x, points[i].y);
+        for (auto & point : points)
+            path.lineTo(point.x, point.y);
     }
 
     path.closeSubpath();

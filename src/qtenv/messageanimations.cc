@@ -880,9 +880,9 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
 
     auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
 
-    for (size_t i = 0; i < path.size(); ++i) {
-        cModule *from = path[i].from;
-        cModule *to = path[i].to;
+    for (auto & segment : path) {
+        cModule *from = segment.from;
+        cModule *to = segment.to;
 
         cModule *showIn;
 

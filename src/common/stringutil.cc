@@ -861,8 +861,7 @@ std::string opp_sanitizeFileName(const std::string& fileName)
 std::string opp_filenameencode(const std::string& src)
 {
     std::stringstream os;
-    for (std::string::const_iterator iter = src.begin(); iter != src.end(); ++iter) {
-        char c = *iter;
+    for (char c : src) {
         if (c == ' ')
             os << "_";
         else if (c == '_')

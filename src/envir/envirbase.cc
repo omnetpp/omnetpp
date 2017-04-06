@@ -374,8 +374,8 @@ bool EnvirBase::simulationRequired()
     // -a option: print all config names, and number of runs in them
     if (args->optionGiven('a')) {
         std::vector<std::string> configNames = cfg->getConfigNames();
-        for (int i = 0; i < (int)configNames.size(); i++)
-            out << "Config " << configNames[i] << ": " << cfg->getNumRunsInConfig(configNames[i].c_str()) << "" << endl;
+        for (auto & configName : configNames)
+            out << "Config " << configName << ": " << cfg->getNumRunsInConfig(configName.c_str()) << "" << endl;
         return false;
     }
 
@@ -500,8 +500,7 @@ void EnvirBase::printRunInfo(const char *configName, const char *runFilter, cons
         if (opt->verbose)
             out << endl;
         std::vector<std::string> configNames = cfg->getConfigChain(configName);
-        for (int i = 0; i < (int)configNames.size(); i++) {
-            std::string configName = configNames[i];
+        for (auto configName : configNames) {
             if (configName != "General")
                 configName = "Config " + configName;
             out << configName << endl;
@@ -1532,8 +1531,8 @@ void EnvirBase::setupRNGMapping(cComponent *component)
     // extract into tmpmap[]
     int mapsize = 0;
     int tmpmap[100];
-    for (int i = 0; i < (int)suffixes.size(); i++) {
-        const char *suffix = suffixes[i];  // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
+    for (auto suffix : suffixes) {
+        // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
         const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), suffix);
         ASSERT(value != nullptr);
         try {
@@ -1754,8 +1753,8 @@ void EnvirBase::notifyLifecycleListeners(SimulationLifecycleEventType eventType,
 {
     // make a copy of the listener list, to avoid problems from listeners getting added/removed during notification
     std::vector<cISimulationLifecycleListener *> copy = listeners;
-    for (int i = 0; i < (int)copy.size(); i++)
-        copy[i]->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
+    for (auto & listener : copy)
+        listener->lifecycleEvent(eventType, details);  // let exceptions through, because errors must cause exitCode!=0
 }
 
 //-------------------------------------------------------------

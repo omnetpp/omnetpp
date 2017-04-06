@@ -299,8 +299,7 @@ void cProperty::erase(const char *key)
 void cProperty::updateWith(const cProperty *property)
 {
     const std::vector<const char *>& keys = property->getKeys();
-    for (int i = 0; i < (int)keys.size(); i++) {
-        const char *key = keys[i];
+    for (auto key : keys) {
         if (!containsKey(key))
             addKey(key);
         int n = property->getNumValues(key);

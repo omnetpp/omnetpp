@@ -62,8 +62,8 @@ void EventLog::clearInternalState()
 
 void EventLog::deleteAllocatedObjects()
 {
-    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); ++it)
-        delete it->second;
+    for (auto & it : eventNumberToEventMap)
+        delete it.second;
 }
 
 void EventLog::synchronize(FileReader::FileChangedState change)
@@ -80,8 +80,8 @@ void EventLog::synchronize(FileReader::FileChangedState change)
                 parseKeyframes();
                 break;
             case FileReader::APPENDED:
-                for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); ++it)
-                    it->second->synchronize(change);
+                for (auto & it : eventNumberToEventMap)
+                    it.second->synchronize(change);
                 if (lastEvent) {
                     IEvent::unlinkNeighbourEvents(lastEvent);
                     eventNumberToEventMap.erase(lastEvent->getEventNumber());

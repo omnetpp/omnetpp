@@ -54,8 +54,8 @@ void Event::clearInternalState()
 void Event::deleteConsequences()
 {
     if (consequences) {
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); ++it)
-            delete *it;
+        for (auto & consequence : *consequences)
+            delete consequence;
         delete consequences;
         consequences = nullptr;
     }
@@ -68,14 +68,14 @@ void Event::deleteAllocatedObjects()
         cause = nullptr;
     }
     if (causes) {
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); ++it)
-            delete *it;
+        for (auto & cause : *causes)
+            delete cause;
         delete causes;
         causes = nullptr;
     }
     deleteConsequences();
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); ++it)
-        delete *it;
+    for (auto & eventLogEntry : eventLogEntries)
+        delete eventLogEntry;
     eventLogEntries.clear();
 }
 
@@ -191,8 +191,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
 void Event::print(FILE *file, bool outputEventLogMessages)
 {
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); ++it) {
-        EventLogEntry *eventLogEntry = *it;
+    for (auto eventLogEntry : eventLogEntries) {
         if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             eventLogEntry->print(file);
     }
@@ -202,8 +201,8 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
 {
     Assert(index >= 0);
 
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); ++it) {
-        EventLogMessageEntry *eventLogMessage = dynamic_cast<EventLogMessageEntry *>(*it);
+    for (auto & eventLogEntry : eventLogEntries) {
+        EventLogMessageEntry *eventLogMessage = dynamic_cast<EventLogMessageEntry *>(eventLogEntry);
 
         if (eventLogMessage) {
             if (index == 0)
@@ -364,8 +363,7 @@ IMessageDependencyList *Event::getConsequences()
                 consequences->push_back(new MessageSendDependency(eventLog, getEventNumber(), beginSendEntryNumber));
         }
         std::vector<MessageEntry *> messageEntries = eventLog->getMessageEntriesWithPreviousEventNumber(getEventNumber());
-        for (int i = 0; i < (int)messageEntries.size(); i++) {
-            MessageEntry *messageEntry = messageEntries[i];
+        for (auto messageEntry : messageEntries) {
             Assert(messageEntry->previousEventNumber == getEventNumber());
             consequences->push_back(new MessageReuseDependency(eventLog, messageEntry->getEvent()->getEventNumber(), messageEntry->getEntryIndex()));
         }

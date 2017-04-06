@@ -113,10 +113,10 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         processed = true;
         if (verbose)
             out << "Predefined variables that can be used in config values:\n";
-        std::vector<const char *> v = config->getPredefinedVariableNames();
-        for (int i = 0; i < (int)v.size(); i++) {
-            out << "${" << v[i] << "}\n";
-            const char *desc = config->getVariableDescription(v[i]);
+        std::vector<const char *> varNames = config->getPredefinedVariableNames();
+        for (const char *varName : varNames) {
+            out << "${" << varName << "}\n";
+            const char *desc = config->getVariableDescription(varName);
             out << opp_indentlines(opp_breaklines(desc, 75), "    ") << "\n";
         }
         out << "\n";
@@ -143,11 +143,11 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         out << "\\end{description}\n\n";
 
         out << "Predefined variables that can be used in config values:\n\n";
-        std::vector<const char *> v = config->getPredefinedVariableNames();
+        std::vector<const char *> varNames = config->getPredefinedVariableNames();
         out << "\\begin{description}\n";
-        for (int i = 0; i < (int)v.size(); i++) {
-            out << "\\item[\\$\\{" << v[i] << "\\}] : \\\\\n";
-            const char *desc = config->getVariableDescription(v[i]);
+        for (auto & varName : varNames) {
+            out << "\\item[\\$\\{" << varName << "\\}] : \\\\\n";
+            const char *desc = config->getVariableDescription(varName);
             out << opp_indentlines(opp_breaklines(opp_markup2Latex(opp_latexQuote(desc)), 75), "    ") << "\n";
         }
         out << "\\end{description}\n\n";
@@ -227,13 +227,13 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         }
         out << "\n";
 
-        std::vector<const char *> vars = config->getPredefinedVariableNames();
-        for (int i = 0; i < (int)vars.size(); i++) {
-            opp_string id = vars[i];
+        std::vector<const char *> varNames = config->getPredefinedVariableNames();
+        for (auto & varName : varNames) {
+            opp_string id = varName;
             opp_strupr(id.buffer());
-            const char *desc = config->getVariableDescription(vars[i]);
+            const char *desc = config->getVariableDescription(varName);
             out << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
-            out << "\"" << vars[i] << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
+            out << "\"" << varName << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
         }
         out << "\n";
     }
@@ -277,8 +277,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             cNEDMathFunction *mf = dynamic_cast<cNEDMathFunction *>(table->get(i));
             categories.insert(nf ? nf->getCategory() : mf ? mf->getCategory() : "???");
         }
-        for (std::set<std::string>::iterator ci = categories.begin(); ci != categories.end(); ++ci) {
-            std::string category = (*ci);
+        for (auto category : categories) {
             out << "\n Category \"" << category << "\":\n";
             for (int i = 0; i < table->size(); i++) {
                 cObject *obj = table->get(i);
@@ -313,8 +312,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             out << "no automatic conversion will be available for them):\n";
         }
         std::vector<const char *> units = UnitConversion::getAllUnits();
-        for (int i = 0; i < (int)units.size(); i++) {
-            const char *u = units[i];
+        for (auto u : units) {
             const char *bu = UnitConversion::getBaseUnit(u);
             out << "  " << u << "\t" << UnitConversion::getLongName(u);
             if (omnetpp::opp_strcmp(u, bu) != 0)
@@ -408,12 +406,11 @@ void EnvirUtils::dumpComponentResultRecorders(std::ostream& out, cComponent *com
 {
     bool componentPathPrinted = false;
     std::vector<simsignal_t> signals = component->getLocalListenedSignals();
-    for (unsigned int i = 0; i < signals.size(); i++) {
+    for (int signalID : signals) {
         bool signalNamePrinted = false;
-        simsignal_t signalID = signals[i];
         std::vector<cIListener *> listeners = component->getLocalSignalListeners(signalID);
-        for (unsigned int j = 0; j < listeners.size(); j++) {
-            if (dynamic_cast<cResultListener *>(listeners[j])) {
+        for (auto & listener : listeners) {
+            if (dynamic_cast<cResultListener *>(listener)) {
                 if (!componentPathPrinted) {
                     out << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
                     componentPathPrinted = true;
@@ -422,7 +419,7 @@ void EnvirUtils::dumpComponentResultRecorders(std::ostream& out, cComponent *com
                     out << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
                     signalNamePrinted = true;
                 }
-                dumpResultRecorderChain(out, (cResultListener *)listeners[j], 0);
+                dumpResultRecorderChain(out, (cResultListener *)listener, 0);
             }
         }
     }
@@ -445,8 +442,8 @@ void EnvirUtils::dumpResultRecorderChain(std::ostream& out, cResultListener *lis
 
     if (cResultFilter *resultFilter = dynamic_cast<cResultFilter *>(listener)) {
         std::vector<cResultListener *> delegates = resultFilter->getDelegates();
-        for (unsigned int i = 0; i < delegates.size(); i++)
-            dumpResultRecorderChain(out, delegates[i], depth+1);
+        for (auto & delegate : delegates)
+            dumpResultRecorderChain(out, delegate, depth+1);
     }
 }
 

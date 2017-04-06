@@ -51,8 +51,8 @@ void VectorRecorder::subscribedTo(cResultFilter *prev)
 
     handle = getEnvir()->registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
     ASSERT(handle != nullptr);
-    for (opp_string_map::iterator it = attributes.begin(); it != attributes.end(); ++it)
-        getEnvir()->setVectorAttribute(handle, it->first.c_str(), it->second.c_str());
+    for (auto & attribute : attributes)
+        getEnvir()->setVectorAttribute(handle, attribute.first.c_str(), attribute.second.c_str());
 }
 
 void VectorRecorder::collect(simtime_t_cref t, double value, cObject *details)

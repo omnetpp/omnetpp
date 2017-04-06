@@ -166,8 +166,8 @@ int setupUserInterface(int argc, char *argv[])
         for (int k = 0; (libName = args.optionValue('l', k)) != nullptr; k++)
             loadExtensionLibrary(libName);
         std::vector<std::string> libs = bootConfig->getAsFilenames(CFGID_LOAD_LIBS);
-        for (int k = 0; k < (int)libs.size(); k++)
-            loadExtensionLibrary(libs[k].c_str());
+        for (auto & lib : libs)
+            loadExtensionLibrary(lib.c_str());
 
         //
         // Create custom configuration object, if needed.
@@ -185,8 +185,8 @@ int setupUserInterface(int argc, char *argv[])
 
             // load libs from this config as well
             std::vector<std::string> libs = config->getAsFilenames(CFGID_LOAD_LIBS);
-            for (int k = 0; k < (int)libs.size(); k++)
-                loadExtensionLibrary(libs[k].c_str());
+            for (auto & lib : libs)
+                loadExtensionLibrary(lib.c_str());
         }
 
         // validate the configuration, but make sure we don't report cmdenv-* keys

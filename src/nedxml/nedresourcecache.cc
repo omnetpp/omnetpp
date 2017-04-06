@@ -43,10 +43,10 @@ NEDResourceCache::NEDResourceCache()
 
 NEDResourceCache::~NEDResourceCache()
 {
-    for (NEDFileMap::iterator i = files.begin(); i != files.end(); ++i)
-        delete i->second;
-    for (NEDTypeInfoMap::iterator i = nedTypes.begin(); i != nedTypes.end(); ++i)
-        delete i->second;
+    for (auto & file : files)
+        delete file.second;
+    for (auto & nedType : nedTypes)
+        delete nedType.second;
 }
 
 void NEDResourceCache::registerBuiltinDeclarations()
@@ -404,9 +404,9 @@ std::string NEDResourceCache::getNedSourceFolderForFolder(const char *folder) co
     // find NED source folder which is a prefix of folder.
     // note: this is unambiguous because nested NED source folders are not allowed
     std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
-    for (StringMap::const_iterator it = folderPackages.begin(); it != folderPackages.end(); ++it)
-        if (isPathPrefixOf(it->first.c_str(), folderName.c_str()))
-            return it->first;
+    for (const auto & folderPackage : folderPackages)
+        if (isPathPrefixOf(folderPackage.first.c_str(), folderName.c_str()))
+            return folderPackage.first;
 
     return "";
 }
@@ -475,9 +475,9 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
         // exactly imported type?
         // try a shortcut first: if the import doesn't contain wildcards
         std::string dot_nedtypename = std::string(".")+nedtypename;
-        for (int i = 0; i < (int)imports.size(); i++)
-            if (qnames->contains(imports[i]) && (opp_stringendswith(imports[i], dot_nedtypename.c_str()) || strcmp(imports[i], nedtypename) == 0))
-                return imports[i];
+        for (auto & import : imports)
+            if (qnames->contains(import) && (opp_stringendswith(import, dot_nedtypename.c_str()) || strcmp(import, nedtypename) == 0))
+                return import;
 
 
         // from the same package?
@@ -488,9 +488,9 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
             return qname;
 
         // try harder, using wildcards
-        for (int i = 0; i < (int)imports.size(); i++) {
-            if (PatternMatcher::containsWildcards(imports[i])) {
-                PatternMatcher importpattern(imports[i], true, true, true);
+        for (auto & import : imports) {
+            if (PatternMatcher::containsWildcards(import)) {
+                PatternMatcher importpattern(import, true, true, true);
                 for (int j = 0; j < qnames->size(); j++) {
                     const char *qname = qnames->get(j);
                     if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename) == 0))
@@ -514,8 +514,8 @@ const std::vector<std::string>& NEDResourceCache::getTypeNames() const
 {
     if (nedTypeNames.empty() && !nedTypes.empty()) {
         // fill in nedTypeNames vector
-        for (NEDTypeInfoMap::const_iterator i = nedTypes.begin(); i != nedTypes.end(); ++i)
-            nedTypeNames.push_back(i->first);
+        for (const auto & nedType : nedTypes)
+            nedTypeNames.push_back(nedType.first);
     }
     return nedTypeNames;
 }

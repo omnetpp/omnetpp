@@ -98,8 +98,8 @@ void NEDErrorStore::add(const char *location, int severity, const char *messagef
 
 bool NEDErrorStore::containsError() const
 {
-    for (int i = 0; i < (int)entries.size(); i++)
-        if (entries[i].severity == NED_SEVERITY_ERROR)
+    for (const auto & entry : entries)
+        if (entry.severity == NED_SEVERITY_ERROR)
             return true;
 
     return false;

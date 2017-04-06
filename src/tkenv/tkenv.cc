@@ -154,8 +154,8 @@ Tkenv::Tkenv() : opt((TkenvOptions *&)EnvirBase::opt)
 
 Tkenv::~Tkenv()
 {
-    for (int i = 0; i < (int)silentEventFilters.size(); i++)
-        delete silentEventFilters[i];
+    for (auto & silentEventFilter : silentEventFilters)
+        delete silentEventFilter;
 }
 
 static void signalHandler(int signum)
@@ -838,8 +838,7 @@ void Tkenv::addEmbeddedInspector(const char *widget, Inspector *insp)
 
 Inspector *Tkenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded)
 {
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
+    for (auto insp : inspectors) {
         if (insp->getObject() == obj && insp->getType() == type && (!ignoreEmbedded || insp->isToplevel()))
             return insp;
     }
@@ -848,8 +847,7 @@ Inspector *Tkenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded
 
 Inspector *Tkenv::findInspector(const char *widget)
 {
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
+    for (auto insp : inspectors) {
         if (strcmp(insp->getWindowName(), widget) == 0)
             return insp;
     }
@@ -882,8 +880,8 @@ void Tkenv::refreshInspectors()
     }
 
     // clear the change flags on all inspected canvases
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
-        (*it)->clearObjectChangeFlags();
+    for (auto & inspector : inspectors)
+        inspector->clearObjectChangeFlags();
 
     // update object tree
     CHK(Tcl_VarEval(interp, "treeManager:update", TCL_NULL));
@@ -898,8 +896,8 @@ void Tkenv::redrawInspectors()
     refreshInspectors();
 
     // redraw them
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
-        (*it)->redraw();
+    for (auto & inspector : inspectors)
+        inspector->redraw();
 }
 
 inline LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)
@@ -923,8 +921,7 @@ void Tkenv::createSnapshot(const char *label)
 
 void Tkenv::updateGraphicalInspectorsBeforeAnimation()
 {
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
+    for (auto insp : inspectors) {
         if (dynamic_cast<ModuleInspector *>(insp) && static_cast<ModuleInspector *>(insp)->needsRedraw()) {
             insp->refresh();
         }
@@ -1055,13 +1052,13 @@ void Tkenv::setSilentEventFilters(const char *filterLines)
         }
     }
     catch (std::exception& e) {  // parse error
-        for (int i = 0; i < (int)tmp.size(); i++)
-            delete tmp[i];
+        for (auto & matchExpr : tmp)
+            delete matchExpr;
         throw;
     }
     // parsing successful, store the result
-    for (int i = 0; i < (int)silentEventFilters.size(); i++)
-        delete silentEventFilters[i];
+    for (auto & silentEventFilter : silentEventFilters)
+        delete silentEventFilter;
     silentEventFilterLines = opp_trim(filterLines) + "\n";
     silentEventFilters = tmp;
 }
@@ -1069,8 +1066,8 @@ void Tkenv::setSilentEventFilters(const char *filterLines)
 bool Tkenv::isSilentEvent(cMessage *msg)
 {
     MatchableObjectAdapter wrappedMsg(MatchableObjectAdapter::FULLNAME, msg);
-    for (int i = 0; i < (int)silentEventFilters.size(); i++)
-        if (silentEventFilters[i]->matches(&wrappedMsg))
+    for (auto & silentEventFilter : silentEventFilters)
+        if (silentEventFilter->matches(&wrappedMsg))
             return true;
 
     return false;
@@ -1342,8 +1339,8 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             // animate ascent from source module
             cModule *mod = i->from;
             cModule *enclosingmod = mod->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            for (auto & inspector : inspectors) {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
                 if (insp) {
                     numinsp++;
                     insp->animateMethodcallAscent(mod, methodText);
@@ -1354,8 +1351,8 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             // animate descent towards destination module
             cModule *mod = i->to;
             cModule *enclosingmod = mod->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            for (auto & inspector : inspectors) {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
                 if (insp) {
                     numinsp++;
                     insp->animateMethodcallDescent(mod, methodText);
@@ -1364,8 +1361,8 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
         }
         else {
             cModule *enclosingmod = i->from->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            for (auto & inspector : inspectors) {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
                 if (insp) {
                     numinsp++;
                     insp->animateMethodcallHoriz(i->from, i->to, methodText);
@@ -1383,8 +1380,8 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
             cModule *mod = i->from ? i->from : i->to;
             cModule *enclosingmod = mod->getParentModule();
 
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            for (auto & inspector : inspectors) {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
                 if (insp)
                     insp->animateMethodcallCleanup();
             }
@@ -1403,8 +1400,8 @@ void Tkenv::moduleCreated(cModule *newmodule)
 
     cModule *mod = newmodule->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->submoduleCreated(newmodule);
     }
@@ -1418,8 +1415,8 @@ void Tkenv::moduleDeleted(cModule *module)
 
     cModule *mod = module->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->submoduleDeleted(module);
     }
@@ -1432,15 +1429,15 @@ void Tkenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
     componentHistory.componentReparented(module, oldParent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(oldParent, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(oldParent, inspector);
         if (insp)
             insp->submoduleDeleted(module);
     }
 
     cModule *mod = module->getParentModule();
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->submoduleCreated(module);
     }
@@ -1457,8 +1454,8 @@ void Tkenv::connectionCreated(cGate *srcgate)
     else
         notifymodule = srcgate->getOwnerModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
         if (insp)
             insp->connectionCreated(srcgate);
     }
@@ -1479,8 +1476,8 @@ void Tkenv::connectionDeleted(cGate *srcgate)
     else
         notifymodule = srcgate->getOwnerModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
         if (insp)
             insp->connectionDeleted(srcgate);
     }
@@ -1507,16 +1504,15 @@ void Tkenv::channelDisplayStringChanged(cChannel *channel)
     else
         notifymodule = gate->getOwnerModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
         if (insp)
             insp->displayStringChanged(gate);
     }
 
     // graphical gate inspector windows: normally a user doesn't have many such windows open
     // (typically, none at all), so we can afford simply refreshing all of them
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
+    for (auto insp : inspectors) {
         GateInspector *gateinsp = dynamic_cast<GateInspector *>(insp);
         if (gateinsp)
             gateinsp->displayStringChanged(gate);
@@ -1528,16 +1524,16 @@ void Tkenv::moduleDisplayStringChanged(cModule *module)
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(parentmodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(parentmodule, inspector);
         if (insp)
             insp->displayStringChanged(module);
     }
 
     // refresh inspector where this module is the parent (i.e. this is a
     // background display string change)
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(module, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(module, inspector);
         if (insp)
             insp->displayStringChanged();
     }
@@ -1551,8 +1547,8 @@ void Tkenv::animateSendHop(cMessage *msg, cGate *srcGate, bool isLastHop)
     cModule *mod = srcGate->getOwnerModule();
     if (srcGate->getType() == cGate::OUTPUT)
         mod = mod->getParentModule();
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->animateSendOnConn(srcGate, msg, (isLastHop ? ANIM_BEGIN : ANIM_THROUGH));
     }
@@ -1625,8 +1621,8 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate
             // ascent
             cModule *mod = i->from;
             cModule *enclosingmod = mod->getParentModule();
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            for (auto & inspector : inspectors) {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
                 if (insp)
                     insp->animateSenddirectAscent(mod, msg);
             }
@@ -1636,8 +1632,8 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate
             cModule *mod = i->to;
             cModule *enclosingmod = mod->getParentModule();
             bool isArrival = (mod == arrivalmod);
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            for (auto & inspector : inspectors) {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
                 if (insp)
                     insp->animateSenddirectDescent(mod, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
             }
@@ -1646,8 +1642,8 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate
             // level
             cModule *enclosingmod = i->from->getParentModule();
             bool isArrival = (i->to == arrivalmod);
-            for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+            for (auto & inspector : inspectors) {
+                ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
                 if (insp)
                     insp->animateSenddirectHoriz(i->from, i->to, msg, isArrival ? ANIM_BEGIN : ANIM_THROUGH);
             }
@@ -1659,8 +1655,8 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *srcModule, cGate *destGate
         cModule *mod = i->from ? i->from : i->to;
         cModule *enclosingmod = mod->getParentModule();
 
-        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+        for (auto & inspector : inspectors) {
+            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
             if (insp)
                 insp->animateSenddirectCleanup();
         }
@@ -1682,8 +1678,8 @@ void Tkenv::animateDelivery(cMessage *msg)
     if (g->getType() == cGate::OUTPUT)
         mod = mod->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->animateSendOnConn(g, msg, ANIM_END);
     }
@@ -1700,8 +1696,8 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
     cModule *destmod = g->getOwnerModule();
     cModule *mod = destmod->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->animateSenddirectDelivery(destmod, msg);
     }
@@ -1724,8 +1720,8 @@ void Tkenv::bubble(cComponent *component, const char *text)
 
     if (component->getParentModule()) {
         cModule *enclosingmod = component->getParentModule();
-        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+        for (auto & inspector : inspectors) {
+            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
             if (insp)
                 insp->bubble(component, text);
         }

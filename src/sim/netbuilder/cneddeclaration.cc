@@ -49,30 +49,30 @@ cNEDDeclaration::~cNEDDeclaration()
     // XXX printf("%s: %d cached expressions\n", getName(), parimplMap.size());
     clearSharedParImplMap(parimplMap);
 
-    for (int i = 0; i < (int)patterns.size(); i++)
-        delete patterns[i].matcher;
+    for (auto & pattern : patterns)
+        delete pattern.matcher;
 
-    for (StringPatternDataMap::iterator it = submodulePatterns.begin(); it != submodulePatterns.end(); ++it) {
-        std::vector<PatternData>& vec = it->second;
-        for (int i = 0; i < (int)vec.size(); i++)
-            delete vec[i].matcher;
+    for (auto & submodulePattern : submodulePatterns) {
+        std::vector<PatternData>& patternDataItems = submodulePattern.second;
+        for (auto & item : patternDataItems)
+            delete item.matcher;
     }
 }
 
 void cNEDDeclaration::clearPropsMap(StringPropsMap& propsMap)
 {
     // decrement refs in the props maps, and delete object if refcount reaches zero
-    for (StringPropsMap::iterator it = propsMap.begin(); it != propsMap.end(); ++it)
-        if (it->second->removeRef() == 0)
-            delete it->second;
+    for (auto & it : propsMap)
+        if (it.second->removeRef() == 0)
+            delete it.second;
 
     propsMap.clear();
 }
 
 void cNEDDeclaration::clearSharedParImplMap(SharedParImplMap& parimplMap)
 {
-    for (SharedParImplMap::iterator it = parimplMap.begin(); it != parimplMap.end(); ++it)
-        delete it->second;
+    for (auto & it : parimplMap)
+        delete it.second;
     parimplMap.clear();
 }
 

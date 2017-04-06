@@ -133,9 +133,7 @@ void ForceDirectedGraphLayouter::calculateExpectedMeasures()
     double expectedEmbeddingSize = 0;
     double averageBodyLength = 0;
 
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
-
+    for (auto body : bodies) {
         if (!dynamic_cast<WallBody *>(body)) {
             double length = body->getSize().getDiagonalLength();
             count++;
@@ -170,8 +168,8 @@ void ForceDirectedGraphLayouter::setRandomPositions()
 {
     // assign values to not yet assigned coordinates
     const std::vector<Variable *>& variables = embedding.getVariables();
-    for (int i = 0; i < (int)variables.size(); i++) {
-        Pt pt(variables[i]->getPosition());
+    for (auto variable : variables) {
+        Pt pt(variable->getPosition());
 
         if (isNaN(pt.x))
             pt.x = privUniform(border, expectedEmbeddingWidth - border);
@@ -182,7 +180,7 @@ void ForceDirectedGraphLayouter::setRandomPositions()
         if (isNaN(pt.z))
             pt.z = (privRand01() - 0.5) * sqrt(expectedEmbeddingWidth * expectedEmbeddingHeight) * threeDFactor;
 
-        variables[i]->assignPosition(pt);
+        variable->assignPosition(pt);
     }
 }
 
@@ -204,8 +202,7 @@ void ForceDirectedGraphLayouter::addBorderForceProviders()
 {
     // add electric repulsion to all bodies
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
+    for (auto body : bodies) {
         if (topBorder) {
             embedding.addForceProvider(new VerticalElectricRepulsion(topBorder, body));
             embedding.addForceProvider(new VerticalElectricRepulsion(bottomBorder, body));
@@ -243,9 +240,7 @@ void ForceDirectedGraphLayouter::setBorderPositions()
 
     if (!width || !height) {
         const std::vector<IBody *>& bodies = embedding.getBodies();
-        for (int i = 0; i < (int)bodies.size(); i++) {
-            IBody *body = bodies[i];
-
+        for (auto body : bodies) {
             if (!dynamic_cast<WallBody *>(body)) {
                 if (!height) {
                     top = std::min(top, body->getTop());
@@ -303,9 +298,7 @@ void ForceDirectedGraphLayouter::addElectricRepulsions()
 void ForceDirectedGraphLayouter::addBasePlaneSprings()
 {
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
-
+    for (auto body : bodies) {
         if (!dynamic_cast<WallBody *>(body))
             embedding.addForceProvider(new BasePlaneSpring(body, threeDCoefficient, 0));
     }
@@ -317,9 +310,7 @@ Rc ForceDirectedGraphLayouter::getBoundingBox()
     double left = DBL_MAX, right = DBL_MIN;
 
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
-
+    for (auto body : bodies) {
         if (!dynamic_cast<WallBody *>(body)) {
             top = std::min(top, body->getTop());
             bottom = std::max(bottom, body->getBottom());
@@ -334,15 +325,15 @@ Rc ForceDirectedGraphLayouter::getBoundingBox()
 void ForceDirectedGraphLayouter::scale(Pt pt)
 {
     const std::vector<Variable *>& variables = embedding.getVariables();
-    for (int i = 0; i < (int)variables.size(); i++)
-        variables[i]->assignPosition(Pt(variables[i]->getPosition()).multiply(pt));
+    for (auto variable : variables)
+        variable->assignPosition(Pt(variable->getPosition()).multiply(pt));
 }
 
 void ForceDirectedGraphLayouter::translate(Pt pt)
 {
     const std::vector<Variable *>& variables = embedding.getVariables();
-    for (int i = 0; i < (int)variables.size(); i++) {
-        variables[i]->assignPosition(Pt(variables[i]->getPosition()).add(pt));
+    for (auto variable : variables) {
+        variable->assignPosition(Pt(variable->getPosition()).add(pt));
     }
 }
 
@@ -422,8 +413,7 @@ void ForceDirectedGraphLayouter::executePreEmbedding()
     Vertex *childrenComponentsStarRoot = nullptr;
 
     // first pre embed all connected components, one by one
-    for (std::vector<GraphComponent *>::iterator it = graphComponent.connectedSubComponents.begin(); it != graphComponent.connectedSubComponents.end(); ++it) {
-        GraphComponent *childComponent = *it;
+    for (auto childComponent : graphComponent.connectedSubComponents) {
         childComponent->calculateSpanningTree();
 
         // use tree embedding if connected component is a tree
@@ -475,9 +465,7 @@ void ForceDirectedGraphLayouter::executePreEmbedding()
     double scaley = height / rc.rs.height;
 
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
-
+    for (auto body : bodies) {
         if (!dynamic_cast<WallBody *>(body)) {
             scalex = std::min(scalex, (width - border - body->getSize().width) / body->getLeft());
             scaley = std::min(scaley, (height - border - body->getSize().height) / body->getTop());
@@ -567,8 +555,7 @@ void ForceDirectedGraphLayouter::debugDraw()
 
     // draw bodies
     const std::vector<IBody *>& bodies = embedding.getBodies();
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        IBody *body = bodies[i];
+    for (auto body : bodies) {
         Pt pt(body->getPosition());
         Rs rs = body->getSize();
         pt.subtract(Pt(rs.width / 2, rs.height / 2, 0));
@@ -594,8 +581,8 @@ void ForceDirectedGraphLayouter::debugDraw()
 
     // draw springs
     const std::vector<IForceProvider *>& forceProviders = embedding.getForceProviders();
-    for (int i = 0; i < (int)forceProviders.size(); i++) {
-        Spring *spring = dynamic_cast<Spring *>(forceProviders[i]);
+    for (auto forceProvider : forceProviders) {
+        Spring *spring = dynamic_cast<Spring *>(forceProvider);
         if (spring) {
             const Pt& pt1 = spring->getBody1()->getPosition();
             const Pt& pt2 = spring->getBody2()->getPosition();
@@ -606,16 +593,14 @@ void ForceDirectedGraphLayouter::debugDraw()
     // draw forces
     double forceScale = 10;
     const std::vector<Variable *>& variables = embedding.getVariables();
-    for (int i = 0; i < (int)variables.size(); i++) {
-        Variable *variable = variables[i];
+    for (auto variable : variables) {
         const Pt& pt1 = variable->getPosition();
 
         if (showForces) {
             std::vector<Pt> forces = variable->getForces();
 
-            for (int j = 0; j < (int)forces.size(); j++) {
+            for (auto force : forces) {
                 Pt pt2(pt1);
-                Pt force(forces[j]);
                 force.multiply(forceScale);
                 pt2.add(force);
                 environment->drawLine(pt1.x, pt1.y, pt2.x, pt2.y, "force", "red");

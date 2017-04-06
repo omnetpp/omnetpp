@@ -74,8 +74,7 @@ bool MatchExpression::matches(const Matchable *object)
     bool stk[stksize];
 
     int tos = -1;
-    for (int i = 0; i < (int)elems.size(); i++) {
-        Elem& e = elems[i];
+    for (auto & e : elems) {
         const char *attr;
         switch (e.type) {
             case Elem::PATTERN:

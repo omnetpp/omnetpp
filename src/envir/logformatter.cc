@@ -110,8 +110,8 @@ void LogFormatter::addPart(FormatDirective directive, char *textBegin, char *tex
 
 bool LogFormatter::usesEventName()
 {
-    for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); ++it)
-        if (it->directive == EVENT_OBJECT_NAME || it->directive == EVENT_OBJECT)
+    for (auto & formatPart : formatParts)
+        if (formatPart.directive == EVENT_OBJECT_NAME || formatPart.directive == EVENT_OBJECT)
             return true;
     return false;
 }
@@ -124,8 +124,7 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
     cEnvir *ev = getEnvir();
     cSimulation *simulation = getSimulation();
     cComponent *contextComponent = simulation->getContext();
-    for (std::vector<FormatPart>::iterator it = formatParts.begin(); it != formatParts.end(); ++it) {
-        FormatPart& part = *it;
+    for (auto & part : formatParts) {
         if (part.directive == CONSTANT_TEXT && (!part.conditional || !lastPartEmpty))
             stream << part.text;
         lastPartEmpty = false;
@@ -429,8 +428,8 @@ std::string LogFormatter::formatPrefix(cLogEntry *entry)
 
 void LogFormatter::resetAdaptiveTabs()
 {
-    for (size_t i = 0; i < adaptiveTabColumns.size(); i++)
-        adaptiveTabColumns[i] = 0;
+    for (int & adaptiveTabColumn : adaptiveTabColumns)
+        adaptiveTabColumn = 0;
 }
 
 }  // namespace envir

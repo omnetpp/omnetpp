@@ -530,8 +530,8 @@ Qtenv::~Qtenv()
     delete messageAnimator;
     delete localPrefs;  // will sync it to disk
     delete globalPrefs;  // will sync it to disk
-    for (int i = 0; i < (int)silentEventFilters.size(); i++)
-        delete silentEventFilters[i];
+    for (auto & silentEventFilter : silentEventFilters)
+        delete silentEventFilter;
 }
 
 static void signalHandler(int signum)
@@ -1268,8 +1268,7 @@ Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *paren
 
 Inspector *Qtenv::findFirstInspector(cObject *obj, InspectorType type, bool ignoreEmbedded)
 {
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
+    for (auto insp : inspectors) {
         if (insp->getObject() == obj && insp->getType() == type && (!ignoreEmbedded || insp->isToplevelInspector()))
             return insp;
     }
@@ -1497,13 +1496,13 @@ void Qtenv::setSilentEventFilters(const char *filterLines)
         }
     }
     catch (std::exception& e) {  // parse error
-        for (int i = 0; i < (int)tmp.size(); i++)
-            delete tmp[i];
+        for (auto & i : tmp)
+            delete i;
         throw;
     }
     // parsing successful, store the result
-    for (int i = 0; i < (int)silentEventFilters.size(); i++)
-        delete silentEventFilters[i];
+    for (auto & silentEventFilter : silentEventFilters)
+        delete silentEventFilter;
     silentEventFilterLines = opp_trim(filterLines) + "\n";
     silentEventFilters = tmp;
 }
@@ -1511,8 +1510,8 @@ void Qtenv::setSilentEventFilters(const char *filterLines)
 bool Qtenv::isSilentEvent(cMessage *msg)
 {
     MatchableObjectAdapter wrappedMsg(MatchableObjectAdapter::FULLNAME, msg);
-    for (int i = 0; i < (int)silentEventFilters.size(); i++)
-        if (silentEventFilters[i]->matches(&wrappedMsg))
+    for (auto & silentEventFilter : silentEventFilters)
+        if (silentEventFilter->matches(&wrappedMsg))
             return true;
 
     return false;
@@ -1803,8 +1802,8 @@ void Qtenv::moduleCreated(cModule *newmodule)
 
     cModule *mod = newmodule->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->submoduleCreated(newmodule);
     }
@@ -1821,8 +1820,8 @@ void Qtenv::moduleDeleted(cModule *module)
 
     cModule *mod = module->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->submoduleDeleted(module);
     }
@@ -1835,15 +1834,15 @@ void Qtenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
     componentHistory.componentReparented(module, oldParent, oldId);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(oldParent, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(oldParent, inspector);
         if (insp)
             insp->submoduleDeleted(module);
     }
 
     cModule *mod = module->getParentModule();
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(mod, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(mod, inspector);
         if (insp)
             insp->submoduleCreated(module);
     }
@@ -1860,8 +1859,8 @@ void Qtenv::connectionCreated(cGate *srcgate)
     else
         notifymodule = srcgate->getOwnerModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
         if (insp)
             insp->connectionCreated(srcgate);
     }
@@ -1882,8 +1881,8 @@ void Qtenv::connectionDeleted(cGate *srcgate)
     else
         notifymodule = srcgate->getOwnerModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
         if (insp)
             insp->connectionDeleted(srcgate);
     }
@@ -2022,16 +2021,15 @@ void Qtenv::channelDisplayStringChanged(cChannel *channel)
     else
         notifymodule = gate->getOwnerModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
         if (insp)
             insp->displayStringChanged(gate);
     }
 
     // graphical gate inspector windows: normally a user doesn't have many such windows open
     // (typically, none at all), so we can afford simply refreshing all of them
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
+    for (auto insp : inspectors) {
         GateInspector *gateinsp = dynamic_cast<GateInspector *>(insp);
         if (gateinsp)
             gateinsp->displayStringChanged(gate);
@@ -2043,16 +2041,16 @@ void Qtenv::moduleDisplayStringChanged(cModule *module)
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->getParentModule();
 
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(parentmodule, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(parentmodule, inspector);
         if (insp)
             insp->displayStringChanged(module);
     }
 
     // refresh inspector where this module is the parent (i.e. this is a
     // background display string change)
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        ModuleInspector *insp = isModuleInspectorFor(module, *it);
+    for (auto & inspector : inspectors) {
+        ModuleInspector *insp = isModuleInspectorFor(module, inspector);
         if (insp)
             insp->displayStringChanged();
     }
@@ -2082,8 +2080,8 @@ void Qtenv::bubble(cComponent *component, const char *text)
 
     if (component->getParentModule()) {
         cModule *enclosingmod = component->getParentModule();
-        for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, *it);
+        for (auto & inspector : inspectors) {
+            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
             if (insp)
                 insp->bubble(component, text);
         }

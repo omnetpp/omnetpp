@@ -99,8 +99,8 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
 
     if (!isInterface) {
         // check that we have all parameters and gates required by the interfaces we support
-        for (int i = 0; i < (int)interfaceNames.size(); i++) {
-            NEDTypeInfo *interfaceDecl = getResolver()->lookup(interfaceNames[i].c_str());
+        for (auto & interfaceName : interfaceNames) {
+            NEDTypeInfo *interfaceDecl = getResolver()->lookup(interfaceName.c_str());
             Assert(interfaceDecl);
             checkComplianceToInterface(interfaceDecl);
         }
@@ -233,8 +233,8 @@ const char *NEDTypeInfo::getInterfaceName(int k) const
 bool NEDTypeInfo::supportsInterface(const char *qname)
 {
     // linear search is OK because #interfaces is typically just one or two
-    for (int i = 0; i < (int)interfaceNames.size(); i++)
-        if (interfaceNames[i] == qname)
+    for (auto & interfaceName : interfaceNames)
+        if (interfaceName == qname)
             return true;
 
     return false;
@@ -347,9 +347,9 @@ void NEDTypeInfo::addToElementMap(NameToElementMap& elementMap, NEDElement *node
 
 void NEDTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap)
 {
-    for (auto it = elementMap.begin(); it != elementMap.end(); ++it) {
-        const std::string& name = it->first;
-        NEDElement *node = it->second;
+    for (const auto & it : elementMap) {
+        const std::string& name = it.first;
+        NEDElement *node = it.second;
         if (containsKey(destMap, name))
             throw NEDException(node, "Name '%s' is not unique within its component", name.c_str());
         destMap[name] = node;

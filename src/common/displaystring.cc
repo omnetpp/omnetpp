@@ -240,8 +240,8 @@ int DisplayString::insertTag(const char *tagname, int atindex)
     // fill in new tag
     tags[atindex].name = opp_strdup(tagname);
     tags[atindex].numArgs = 0;
-    for (int i = 0; i < MAXARGS; i++)
-        tags[atindex].args[i] = nullptr;
+    for (auto & arg : tags[atindex].args)
+        arg = nullptr;
 
     // success
     assembledStringValid = true;
@@ -327,8 +327,8 @@ bool DisplayString::parse()
     numTags = 1;
     tags[0].name = buffer;
     tags[0].numArgs = 0;
-    for (int i = 0; i < MAXARGS; i++)
-        tags[0].args[i] = nullptr;
+    for (auto & arg : tags[0].args)
+        arg = nullptr;
 
     char *s, *d;
     for (s = assembledString, d = buffer; *s; s++, d++) {
@@ -344,8 +344,8 @@ bool DisplayString::parse()
             numTags++;
             tags[numTags-1].name = d+1;
             tags[numTags-1].numArgs = 0;
-            for (int i = 0; i < MAXARGS; i++)
-                tags[numTags-1].args[i] = nullptr;
+            for (auto & arg : tags[numTags-1].args)
+                arg = nullptr;
         }
         else if (*s == '=') {
             // first argument of new tag begins

@@ -232,8 +232,8 @@ void cSingleFingerprintCalculator::addEvent(cEvent *event)
 
             MatchableObject matchableModule(module);
             if (module == nullptr || moduleMatcher == nullptr || moduleMatcher->matches(&matchableModule)) {
-                for (std::string::iterator it = ingredients.begin(); it != ingredients.end(); ++it) {
-                    FingerprintIngredient ingredient = (FingerprintIngredient) *it;
+                for (char & ch : ingredients) {
+                    FingerprintIngredient ingredient = (FingerprintIngredient) ch;
                     if (!addEventIngredient(event, ingredient)) {
                         switch (ingredient) {
                             case EVENT_NUMBER:

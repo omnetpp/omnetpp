@@ -30,8 +30,8 @@ namespace omnetpp {
 
 cRegistrationList::~cRegistrationList()
 {
-    for (int i = 0; i < (int)vec.size(); i++)
-        dropAndDelete(vec[i]);
+    for (auto & obj : vec)
+        dropAndDelete(obj);
 }
 
 std::string cRegistrationList::str() const
@@ -45,8 +45,8 @@ std::string cRegistrationList::str() const
 
 void cRegistrationList::forEachChild(cVisitor *visitor)
 {
-    for (int i = 0; i < (int)vec.size(); i++)
-        visitor->visit(vec[i]);
+    for (auto & obj : vec)
+        visitor->visit(obj);
 }
 
 void cRegistrationList::add(cOwnedObject *obj)

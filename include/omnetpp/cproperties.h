@@ -36,7 +36,7 @@ class SIM_API cProperties : public cObject
   protected:
     bool isLocked;
     int refCount;
-    std::vector<cProperty *> propv;
+    std::vector<cProperty *> properties;
 
   private:
     void copy(const cProperties& other);
@@ -108,7 +108,7 @@ class SIM_API cProperties : public cObject
     /**
      * Returns the number of properties.
      */
-    virtual int getNumProperties() const  {return propv.size();}
+    virtual int getNumProperties() const  {return properties.size();}
 
     /**
      * Returns the names of cProperty object stored in this object.

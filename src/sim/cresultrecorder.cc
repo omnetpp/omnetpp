@@ -59,8 +59,7 @@ opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
 
     // fill result[] from the properties
     const std::vector<const char *>& keys = property->getKeys();
-    for (int i = 0; i < (int)keys.size(); i++) {
-        const char *key = keys[i];
+    for (auto key : keys) {
         if (!strcmp(key, "record"))
             continue;  // no need to save record= key
         int numValues = property->getNumValues(key);

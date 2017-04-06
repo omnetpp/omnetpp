@@ -176,11 +176,11 @@ void cKSplit::resetGrids(int grid)
 {
     Grid *g = &(gridv[grid]);
     g->total = g->mother = 0;
-    for (int i = 0; i < K; i++) {
-        if (g->cells[i] < 0)
-            resetGrids(-g->cells[i]);
+    for (int & cell : g->cells) {
+        if (cell < 0)
+            resetGrids(-cell);
         else
-            g->cells[i] = 0;
+            cell = 0;
     }
 }
 
@@ -233,8 +233,8 @@ void cKSplit::createRootGrid()
     gridv[1].reldepth = 0;
     gridv[1].total = 0;
     gridv[1].mother = 0;
-    for (int i = 0; i < K; i++)
-        gridv[1].cells[i] = 0;
+    for (int & cell : gridv[1].cells)
+        cell = 0;
 }
 
 void cKSplit::collectTransformed(double x)
@@ -335,8 +335,8 @@ void cKSplit::splitCell(int grid, int cell)
     subg.reldepth = g.reldepth+1;
     subg.mother = g.cells[cell];
     subg.total = subg.mother;
-    for (int i = 0; i < K; i++)
-        subg.cells[i] = 0;
+    for (int & cell : subg.cells)
+        cell = 0;
 
     g.cells[cell] = -(lastGridIndex+1);
 
@@ -377,8 +377,8 @@ void cKSplit::newRootGrids(double x)
         gridv[rootGridIndex].reldepth = gridv[old_rootgrid].reldepth-1;
         gridv[rootGridIndex].total = gridv[old_rootgrid].total;
         gridv[rootGridIndex].mother = 0;
-        for (int i = 0; i < K; i++)
-            gridv[rootGridIndex].cells[i] = 0;
+        for (int & cell : gridv[rootGridIndex].cells)
+            cell = 0;
 
         double gridsize = rangeMax - rangeMin;
         if (K == 2) {
@@ -481,17 +481,15 @@ int cKSplit::getTreeDepth() const
 
 int cKSplit::getTreeDepth(Grid& grid) const
 {
-    int d, maxd = 0;
-    double c;
-    for (int i = 0; i < K; i++) {
-        c = grid.cells[i];
-        if (c < 0) {
-            d = getTreeDepth(gridv[-(int)c]);
-            if (d > maxd)
-                maxd = d;
+    int maxDepth = 0;
+    for (int cell : grid.cells) {
+        if (cell < 0) {
+            int depth = getTreeDepth(gridv[-(int)cell]);
+            if (depth > maxDepth)
+                maxDepth = depth;
         }
     }
-    return maxd+1;
+    return maxDepth+1;
 }
 
 void cKSplit::printGrids() const
@@ -507,11 +505,11 @@ void cKSplit::printGrids() const
         EV << "  total=" << gridv[i].total;
         EV << "  mother=" << gridv[i].mother << "  (";
 
-        for (int j = 0; j < K; j++)
-            if (gridv[i].cells[j] < 0)
-                EV << " " << gridv[i].cells[j];
+        for (int cell : gridv[i].cells)
+            if (cell < 0)
+                EV << " " << cell;
             else
-                EV << " " << gridv[i].cells[j];
+                EV << " " << cell;
 
         EV << ")\n";
     }
@@ -715,8 +713,8 @@ void cKSplit::saveToFile(FILE *f) const
                 fprintf(f, "%d %d\t #= cells[0], cells[1]\n", gridv[i].cells[0], gridv[i].cells[1]);
             else {
                 fprintf(f, "#= cells[]\n");
-                for (int j = 0; j < K; j++)
-                    fprintf(f, " %d\n", gridv[i].cells[j]);
+                for (int cell : gridv[i].cells)
+                    fprintf(f, " %d\n", cell);
             }
         }
     }

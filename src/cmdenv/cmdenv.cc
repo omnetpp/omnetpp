@@ -202,9 +202,8 @@ void Cmdenv::doRun()
         numRuns = (int)runNumbers.size();
         runsTried = 0;
         int numErrors = 0;
-        for (int i = 0; i < numRuns; i++) {
+        for (int runNumber : runNumbers) {
             runsTried++;
-            int runNumber = runNumbers[i];
             bool finishedOK = false;
             bool networkSetupDone = false;
             bool startrunDone = false;

@@ -297,8 +297,7 @@ std::string FigureRenderer::polygonPath(const std::vector<cFigure::Point>& point
             const cFigure::Point& start = points[0];
             ss << "M " << PT(start);
 
-            for (int i = 0; i < (int)points.size(); i++) {
-                const cFigure::Point& p = points[i];
+            for (auto p : points) {
                 ss << " L " << PT(p);
             }
         }

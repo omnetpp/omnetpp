@@ -99,10 +99,10 @@ cTopology& cTopology::operator=(const cTopology&)
 
 void cTopology::clear()
 {
-    for (int i = 0; i < (int)nodes.size(); i++) {
-        for (int j = 0; j < (int)nodes[i]->outLinks.size(); j++)
-            delete nodes[i]->outLinks[j];  // delete links from their source side
-        delete nodes[i];
+    for (auto & node : nodes) {
+        for (int j = 0; j < (int)node->outLinks.size(); j++)
+            delete node->outLinks[j];  // delete links from their source side
+        delete node;
     }
     nodes.clear();
 }
@@ -112,10 +112,10 @@ void cTopology::clear()
 static bool selectByModulePath(cModule *mod, void *data)
 {
     // actually, this is selectByModuleFullPathPattern()
-    const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
+    const std::vector<std::string>& patterns = *(const std::vector<std::string> *)data;
     std::string path = mod->getFullPath();
-    for (int i = 0; i < (int)v.size(); i++)
-        if (PatternMatcher(v[i].c_str(), true, true, true).matches(path.c_str()))
+    for (const std::string & pattern : patterns)
+        if (PatternMatcher(pattern.c_str(), true, true, true).matches(path.c_str()))
             return true;
 
     return false;
@@ -123,8 +123,8 @@ static bool selectByModulePath(cModule *mod, void *data)
 
 static bool selectByNedTypeName(cModule *mod, void *data)
 {
-    const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
-    return std::find(v.begin(), v.end(), mod->getNedTypeName()) != v.end();
+    const std::vector<std::string>& typeNames = *(const std::vector<std::string> *)data;
+    return std::find(typeNames.begin(), typeNames.end(), mod->getNedTypeName()) != typeNames.end();
 }
 
 static bool selectByProperty(cModule *mod, void *data)
@@ -199,10 +199,9 @@ void cTopology::extractFromNetwork(bool (*predicate)(cModule *, void *), void *d
     }
 
     // Discover out neighbors too.
-    for (int k = 0; k < (int)nodes.size(); k++) {
+    for (auto node : nodes) {
         // Loop through all its gates and find those which come
         // from or go to modules included in the topology.
-        Node *node = nodes[k];
         cModule *module = getSimulation()->getModule(node->moduleId);
 
         for (cModule::GateIterator it(module); !it.end(); ++it) {
@@ -227,9 +226,9 @@ void cTopology::extractFromNetwork(bool (*predicate)(cModule *, void *), void *d
     }
 
     // fill inLinks vectors
-    for (int k = 0; k < (int)nodes.size(); k++) {
-        for (int l = 0; l < (int)nodes[k]->outLinks.size(); l++) {
-            cTopology::Link *link = nodes[k]->outLinks[l];
+    for (auto & node : nodes) {
+        for (int l = 0; l < (int)node->outLinks.size(); l++) {
+            cTopology::Link *link = node->outLinks[l];
             link->destNode->inLinks.push_back(link);
         }
     }
@@ -253,16 +252,14 @@ int cTopology::addNode(Node *node)
 void cTopology::deleteNode(Node *node)
 {
     // remove outgoing links
-    for (int i = 0; i < (int)node->outLinks.size(); i++) {
-        Link *link = node->outLinks[i];
+    for (auto link : node->outLinks) {
         unlinkFromDestNode(link);
         delete link;
     }
     node->outLinks.clear();
 
     // remove incoming links
-    for (int i = 0; i < (int)node->inLinks.size(); i++) {
-        Link *link = node->inLinks[i];
+    for (auto link : node->inLinks) {
         unlinkFromSourceNode(link);
         delete link;
     }
@@ -365,9 +362,9 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
         throw cRuntimeError(this, "..ShortestPathTo(): Target node is nullptr");
     target = _target;
 
-    for (int i = 0; i < (int)nodes.size(); i++) {
-        nodes[i]->dist = INFINITY;
-        nodes[i]->outPath = nullptr;
+    for (auto & node : nodes) {
+        node->dist = INFINITY;
+        node->outPath = nullptr;
     }
     target->dist = 0;
 
@@ -404,9 +401,9 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
     target = _target;
 
     // clean path infos
-    for (int i = 0; i < (int)nodes.size(); i++) {
-        nodes[i]->dist = INFINITY;
-        nodes[i]->outPath = nullptr;
+    for (auto & node : nodes) {
+        node->dist = INFINITY;
+        node->outPath = nullptr;
     }
 
     target->dist = 0;

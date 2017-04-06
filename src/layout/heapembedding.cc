@@ -38,8 +38,7 @@ void HeapEmbedding::embed()
         graphComponent->getVertex(i)->rc.pt = Pt::getNil();
 
     // go through vertices in spanning tree order
-    for (int i = 0; i < (int)graphComponent->spanningTreeVertices.size(); i++) {
-        Vertex *vertex = graphComponent->spanningTreeVertices[i];
+    for (auto vertex : graphComponent->spanningTreeVertices) {
         Rs rs = vertex->rc.rs;
 
         // find the best minimizing the distance cost function
@@ -47,9 +46,7 @@ void HeapEmbedding::embed()
         Rc bestRc;
 
         // for all candidate points
-        for (int j = 0; j < (int)pts.size(); j++) {
-            Pt pt = pts[j];
-
+        for (auto pt : pts) {
             // align vertex to candidate points with its various points
             for (int k = 0; k < 8; k++) {
                 Rc candidateRc;
@@ -92,8 +89,7 @@ void HeapEmbedding::embed()
 
                 // find an already positioned vertex which would intersect the candidate rectangle
                 bool intersects = false;
-                for (int l = 0; l < (int)rcs.size(); l++) {
-                    Rc rc = rcs[l];
+                for (auto rc : rcs) {
                     if (candidateRc.basePlaneProjectionIntersects(rc, true)) {
                         intersects = true;
                         break;
@@ -105,9 +101,7 @@ void HeapEmbedding::embed()
 
                 // calculate the distance sum to neighbours already positioned
                 double distance = 0;
-                for (int k = 0; k < (int)vertex->neighbours.size(); k++) {
-                    Vertex *neighbour = vertex->neighbours[k];
-
+                for (auto neighbour : vertex->neighbours) {
                     if (!neighbour->rc.pt.isNil())
                         distance += candidateRc.getCenterCenter().getDistance(neighbour->rc.getCenterCenter());
                 }
@@ -149,9 +143,7 @@ void HeapEmbedding::embed()
 
 void HeapEmbedding::pushPtUnlessRcsContains(std::vector<Pt>& pts, const std::vector<Rc>& rcs, const Pt& pt)
 {
-    for (int j = 0; j < (int)rcs.size(); j++) {
-        Rc rc = rcs[j];
-
+    for (auto rc : rcs) {
         if (rc.basePlaneProjectionContains(pt, true))
             return;
     }

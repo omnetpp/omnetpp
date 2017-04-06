@@ -375,8 +375,8 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
     std::vector<std::string> confignames = cfg->getConfigNames();
 
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-    for (int i = 0; i < (int)confignames.size(); i++)
-        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
+    for (auto & configname : confignames)
+        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(configname.c_str()), -1));
     Tcl_SetObjResult(interp, listobj);
     return TCL_OK;
 }
@@ -412,8 +412,8 @@ int getBaseConfigs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
     std::vector<std::string> confignames = cfg->getBaseConfigs(configname);
 
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-    for (int i = 0; i < (int)confignames.size(); i++)
-        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
+    for (auto & configname : confignames)
+        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(configname.c_str()), -1));
     Tcl_SetObjResult(interp, listobj);
     return TCL_OK;
     E_CATCH
@@ -1426,8 +1426,8 @@ int getComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
     collectTypes(mod, types);
 
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
-    for (std::set<cComponentType *>::iterator i = types.begin(); i != types.end(); i++)
-        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(*i), -1));
+    for (auto type : types)
+        Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(type), -1));
     Tcl_SetObjResult(interp, listobj);
     return TCL_OK;
 }
@@ -2351,8 +2351,7 @@ int getInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     Tkenv *app = getTkenv();
     Tcl_Obj *listobj = Tcl_NewListObj(0, nullptr);
     const std::list<Inspector *>& inspectors = app->getInspectors();
-    for (std::list<Inspector *>::const_iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
-        Inspector *insp = *it;
+    for (auto insp : inspectors) {
         if (!toplevelsOnly || insp->isToplevel())
             Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(TCLCONST(insp->getWindowName()), -1));
     }

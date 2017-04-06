@@ -82,10 +82,10 @@ cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qnam
 
 cComponentType::~cComponentType()
 {
-    for (StringToParMap::iterator it = sharedParMap.begin(); it != sharedParMap.end(); ++it)
-        delete it->second;
-    for (ParImplSet::iterator it = sharedParSet.begin(); it != sharedParSet.end(); ++it)
-        delete *it;
+    for (auto & it : sharedParMap)
+        delete it.second;
+    for (auto it : sharedParSet)
+        delete it;
 }
 
 cComponentType *cComponentType::find(const char *qname)

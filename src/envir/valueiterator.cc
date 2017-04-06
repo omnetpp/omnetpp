@@ -252,8 +252,8 @@ void ValueIterator::parse(const char *s)
 int ValueIterator::length() const
 {
     int n = 0;
-    for (int i = 0; i < (int)items.size(); i++)
-        n += items[i].getNumValues();
+    for (const auto & item : items)
+        n += item.getNumValues();
     return n;
 }
 
@@ -263,8 +263,7 @@ std::string ValueIterator::get(int index) const
         throw cRuntimeError("ValueIterator: Index %d out of bounds", index);
 
     int k = 0;
-    for (int i = 0; i < (int)items.size(); i++) {
-        const Item& item = items[i];
+    for (const auto & item : items) {
         int n = item.getNumValues();
         if (k <= index && index < k+n)
             return item.getValueAsString(index-k);
@@ -277,8 +276,8 @@ std::string ValueIterator::get(int index) const
 void ValueIterator::restart(const VariableMap& vars)
 {
     // substitute variables here
-    for (std::vector<Item>::iterator it = items.begin(); it != items.end(); ++it)
-        it->restart(vars);
+    for (auto & item : items)
+        item.restart(vars);
 
     pos = itemIndex = k = 0;
     while (itemIndex < (int)items.size() && items[itemIndex].getNumValues() == 0)
