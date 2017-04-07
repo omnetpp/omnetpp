@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Scalar / Vector Chart
+Bundle-SymbolicName: org.omnetpp.scave_orig;singleton:=true
+Bundle-Version: 5.1.0.qualifier
+Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.omnetpp.scave.ScavePlugin
+Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.views,
+ org.eclipse.ui.navigator,
+ org.omnetpp.common,
+ org.eclipse.jface.text,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.forms,
+ org.omnetpp.scave.builder,
+ org.omnetpp.ide.nativelibs,
+ org.eclipse.draw2d,
+ org.swtworkbench.xswt,
+ org.omnetpp.scave.model_orig
+Export-Package: org.omnetpp.scave,
+ org.omnetpp.scave.charting,
+ org.omnetpp.scave.model2,
+ org.omnetpp.scave.wizard

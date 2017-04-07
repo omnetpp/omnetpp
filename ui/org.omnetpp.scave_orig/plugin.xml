@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="OMNeT++ Analysis ORIG"
+            extensions="anf"
+            icon="icons/scavefile.png"
+            contributorClass="org.omnetpp.scave.editors.ScaveEditorContributor"
+            class="org.omnetpp.scave.editors.ScaveEditor"
+            id="org.omnetpp.scave.editors.ScaveEditor">
+      </editor>
+      <editor
+            default="true"
+            extensions="vci"
+            icon="icons/vcifile.png"
+            id="org.omnetpp.scave.editors.ResultFileOpener.vci"
+            launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
+            name="New Analysis (ORIG)"/>
+      <editor
+            default="true"
+            extensions="sca"
+            icon="icons/scafile.png"
+            id="org.omnetpp.scave.editors.ResultFileOpener.sca"
+            launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
+            name="New Analysis (ORIG)"/>
+      <editor
+            default="true"
+            extensions="vec"
+            icon="icons/vecfile.png"
+            id="org.omnetpp.scave.editors.ResultFileOpener.vec"
+            launcher="org.omnetpp.scave.editors.ResultFileEditorLauncher"
+            name="New Analysis (ORIG)"/>
+   </extension>
+
+   <extension
+         id="org.omnetpp.scave.content-types"
+         name="Scave content types"
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            file-extensions="sca"
+            id="org.omnetpp.scave.content-type.scalar"
+            name="Scalar result file"
+            priority="normal"/>
+      <content-type
+            file-extensions="vec"
+            id="org.omnetpp.scave.content-type.vector"
+            name="Vector result file"
+            priority="normal"/>
+      <content-type
+            file-extensions="vci"
+            id="org.omnetpp.scave.content-type.index"
+            name="Vector index file"
+            priority="normal"/>
+   </extension>
+
+  <extension
+        point="org.eclipse.ui.newWizards">
+     <wizard
+           category="org.omnetpp.wizards"
+           class="org.omnetpp.scave.wizard.ScaveModelWizard"
+           finalPerspective="org.omnetpp.main.OmnetppPerspective"
+           icon="icons/newscavefile.png"
+           id="org.omnetpp.scave.wizards.NewScaveFile"
+           name="Analysis File (anf)  (ORIG)"
+           preferredPerspectives="org.omnetpp.main.OmnetppPerspective, org.eclipse.cdt.ui.CPerspective">
+        <description>
+           Create a new Analysis file that describes how charts and plots are created from simulation results.
+        </description>
+     </wizard>
+  </extension>
+  <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+           <commonWizard
+                 associatedExtensionId="org.omnetpp.navigator.content"
+                 menuGroupId="org.eclipse.cdt.ui"
+                 type="new"
+                 wizardId="org.omnetpp.scave.wizards.NewScaveFile">
+              <enablement></enablement>
+           </commonWizard>
+  </extension>
+  <extension
+        point="org.eclipse.ui.views">
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.scave.views.VectorBrowserView"
+           icon="icons/full/eview16/outvector.png"
+           id="org.omnetpp.scave.VectorBrowserView"
+           name="Output Vector (ORIG)"/>
+     <view
+           category="org.omnetpp.views"
+           class="org.omnetpp.scave.views.DatasetView"
+           icon="icons/full/eview16/dataset.gif"
+           id="org.omnetpp.scave.DatasetView"
+           name="Dataset (ORIG)"/>
+  </extension>
+  <extension
+        id="product"
+        point="org.eclipse.core.runtime.products">
+     <product
+           application="org.eclipse.ui.ide.workbench"
+           name="OMNeT++ Result Analysis Tool  (ORIG)">
+        <property
+              name="preferenceCustomization"
+              value="plugin_customization.ini"/>
+        <property
+              name="windowImages"
+              value="icons/logo16.png,icons/logo32.png,icons/logo48.png,icons/logo64.png,icons/logo128.png"/>
+        <property
+              name="aboutText"
+              value="OMNeT++ Vector and Scalar Analyser tool. Part of the OMNeT++ IDE.&#x0A;See www.omnetpp.org."/>
+        <property
+              name="startupForegroundColor"
+              value="000000"/>
+        <property
+              name="startupProgressRect"
+              value="10,10,298,10"/>
+        <property
+              name="startupMessageRect"
+              value="10,20,500,25"/>
+        <property
+              name="appName"
+              value="OMNeT++ Result Analysis Tool">
+        </property>
+     </product>
+  </extension>
+  <extension
+        id="recourcefilter"
+        name="Scave Resource Filter"
+        point="org.eclipse.ui.ide.resourceFilters">
+     <filter
+           pattern="*.vci"
+           selected="false"/>
+  </extension>
+
+  <extension id="analysisfileproblem" point="org.eclipse.core.resources.markers" name="Analysis File Problem (ORIG)">
+    <super type="org.eclipse.core.resources.problemmarker"/>
+    <persistent value="false"/>
+  </extension>
+  <extension id="computescalarproblem" point="org.eclipse.core.resources.markers" name="Compute Scalars Problem (ORIG)">
+    <super type="org.omnetpp.scave.analysisfileproblem"/>
+    <persistent value="false"/>
+  </extension>
+
+  <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+     <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="org.omnetpp.scave.VectorBrowserView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+         <view
+               id="org.omnetpp.scave.DatasetView"
+               minimized="false"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+     </perspectiveExtension>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer
+           class="org.omnetpp.scave.preferences.ScavePreferenceInitializer">
+     </initializer>
+  </extension>
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           category="org.omnetpp.main.OmnetppPreferencePage"
+           class="org.omnetpp.scave.preferences.ScavePreferencePage"
+           id="org.omnetpp.scave.preferences.ScavePreferencePage"
+           name="Result Analysis  (ORIG)">
+     </page>
+  </extension>
+
+</plugin>

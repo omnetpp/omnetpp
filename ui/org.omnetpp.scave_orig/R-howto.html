@@ -1,0 +1,182 @@
+<html>
+<body>
+<h3>How to load a vector file in Octave text format into R?</h3>
+First load the library for import/export functions:
+<pre>library(foreign)</pre>
+
+Then you can use the <i>read.octave()</i> function:
+<pre>aloha <- read.octave("c:/Omnet/samples/aloha/data.octave")</pre>
+
+The data is read from the file and stored in the variable <i>aloha</i> as a data frame.
+The data frame contains the matrixes stored in the file. The content of the data frame
+can be investigated by the summary command:
+
+<pre>summary(aloha)
+
+                             Length Class  Mode
+channel_utilization_descr       1   -none- character
+channel_utilization          4348   -none- numeric
+collision_multiplicity_descr    1   -none- character
+collision_multiplicity        226   -none- numeric
+collision_length_descr          1   -none- character
+collision_length              226   -none- numeric
+</pre>
+
+The individual data items in the data frame can be accessed by the $ notation:
+
+<pre>aloha$collision_length
+
+             [,1]      [,2]
+  [1,]   20.43630 0.1341246
+  [2,]   23.40789 0.1008371
+  [3,]   27.14006 0.1413551
+  .
+  .
+  .
+[111,] 3451.10450 0.1203632
+[112,] 3468.30118 0.1153605
+[113,] 3471.44969 0.1866665
+ </pre>
+
+The value is a matrix whose first column contains the time and the second column
+contains the value of the <i>collision_length</i>.
+
+You can access the matrixes in the data frame mode easily by using
+the <i>attach()</i> function:
+
+<pre>attach(aloha)</pre>
+
+After this command, you can use the <i>channel_utilization</i>, <i>collision_length</i>,
+etc. names to access the variables without the <i>aloha$</i> prefix.
+
+<h3>How to load a vector file into R?</h3>
+
+The vector files can be read by the <i>read.table()</i> function.
+This expects the native format of R, so we need some preprocessing on the vector files
+to remove the vector headers:
+
+<pre>grep -v "vector" aloha.vec &gt;aloha.r</pre>
+
+Then we can use the following command to read the file as a data frame into a variable:
+
+<pre>aloha <- read.table("C:/Omnet/samples/aloha/aloha.r")</pre>
+
+The summary is
+<pre>summary(aloha)
+
+       V1              V2                  V3
+ Min.   :15.00   Min.   :   0.5919   Min.   :0.04019
+ 1st Qu.:17.00   1st Qu.: 904.5143   1st Qu.:0.05667
+ Median :17.00   Median :1866.0008   Median :0.05698
+ Mean   :16.86   Mean   :1815.9080   Mean   :0.15722
+ 3rd Qu.:17.00   3rd Qu.:2719.6075   3rd Qu.:0.05877
+ Max.   :17.00   Max.   :3596.3376   Max.   :3.00000
+</pre>
+
+The first column contain the vector ids, the second the time and the third is the
+value of the vector. There are some problems with this data frame:
+
+<ul>
+<li>The first column does not contain numeric data, but identifiers of the vectors.
+R provides a factor data type and functions that can group the elements of vectors
+according to their factor.
+<li>The column names should be more readable (e.g. 'id', 't', 'value')
+<li>The names of vectors and modules are stripped from the vector file,
+we should somehow add them to the dataset.
+</ul>
+
+We can specify the names and types of the columns as parameters of the <i>read.table()</i>
+function:
+
+<pre>aloha <- read.table("c:/Omnet/samples/aloha/aloha.r",col.names=c("id","t","value"),colClasses=c("factor","numeric","numeric"))
+summary(aloha)
+
+  id             t                 value
+ 15: 113   Min.   :   0.5919   Min.   :0.04019
+ 16: 113   1st Qu.: 904.5143   1st Qu.:0.05667
+ 17:2174   Median :1866.0008   Median :0.05698
+           Mean   :1815.9080   Mean   :0.15722
+           3rd Qu.:2719.6075   3rd Qu.:0.05877
+           Max.   :3596.3376   Max.   :3.00000
+
+</pre>
+
+Now we can apply functions to each group by the <i>tapply()</i> function:
+
+<pre>tapply(value,id,mean)
+        15         16         17
+2.07079646 0.14934737 0.05816487
+</pre>
+
+Or extract a specific vector to a new data frame:
+
+<pre>collision.length <- data.frame(t=t[id==16],value=value[id==16])</pre>
+
+Or convert the data frame to a wide format, where each vector have a
+separate column containing NA (null value) where the vector does not have value
+at that time:
+
+<pre>aloha.wide <- reshape(aloha,timevar="id",idvar="t",direction="wide")
+summary(aloha.wide)
+       t                value.17          value.15           value.16
+ Min.   :   0.5919   Min.   :0.04019   Min.   :   2.000   Min.   :   0.1008
+ 1st Qu.: 888.9211   1st Qu.:0.05664   1st Qu.:   2.000   1st Qu.:   0.1240
+ Median :1821.0937   Median :0.05691   Median :   2.000   Median :   0.1437
+ Mean   :1802.4315   Mean   :0.05816   Mean   :   2.071   Mean   :   0.1493
+ 3rd Qu.:2712.9278   3rd Qu.:0.05806   3rd Qu.:   2.000   3rd Qu.:   0.1735
+ Max.   :3596.3376   Max.   :0.16755   Max.   :   3.000   Max.   :   0.2390
+                                       NA's   :2061.000   NA's   :2061.0000
+</pre>
+
+<h3>How to compute confidence intervals for the expected values of vectors?</h3>
+
+We use the aloha data frame from the previous section:
+
+<pre>summary(aloha)
+
+  id             t                 value
+ 15: 113   Min.   :   0.5919   Min.   :0.04019
+ 16: 113   1st Qu.: 904.5143   1st Qu.:0.05667
+ 17:2174   Median :1866.0008   Median :0.05698
+           Mean   :1815.9080   Mean   :0.15722
+           3rd Qu.:2719.6075   3rd Qu.:0.05877
+           Max.   :3596.3376   Max.   :3.00000
+</pre>
+
+Means of the individual vectors can be computed by grouping the rows by the id
+and applying the <i>mean</i> function to values in the groups:
+
+<pre>attach(aloha)
+tapply(value,id,mean)
+        15         16         17
+2.07079646 0.14934737 0.05816487
+</pre>
+
+The standard deviations:
+<pre>tapply(value,id,sd)
+         15          16          17
+0.257627020 0.030192164 0.004114073
+</pre>
+
+For the confidence interval we define a function, which gives the half interval
+with a specified confidence level for one vector:
+
+<pre>conf <- function(v,level) qt(1-(1-level)/2,df=length(v)-1)*sd(v)/sqrt(length(v))</pre>
+
+And a specialized version for computing the confidence interval with 95% confidence:
+
+<pre>conf95 <- function(v) conf(v,0.95)</pre>
+
+Now we can apply it to the vectors in the data frame:
+
+<pre>tapply(value,id,conf95)
+          15           16           17
+0.0480195592 0.0056275712 0.0001730343
+</pre>
+
+
+Note: the <i>conf()</i> function can be used to calculate the confidence interval only if
+the elements of the vector are independent and have a normal distribution.
+Neither is likely true for the time series.
+</body>
+</html>
