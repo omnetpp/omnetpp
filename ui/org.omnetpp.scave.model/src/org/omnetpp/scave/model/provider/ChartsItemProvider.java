@@ -1,10 +1,5 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
+/**
+ */
 package org.omnetpp.scave.model.provider;
 
 
@@ -16,12 +11,7 @@ import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.common.util.ResourceLocator;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-
-import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.ecore.util.FeatureMapUtil;
 
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
@@ -32,17 +22,17 @@ import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 
-import org.omnetpp.scave.model.Datasets;
+import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * This is the item provider adapter for a {@link org.omnetpp.scave.model.Datasets} object.
+ * This is the item provider adapter for a {@link org.omnetpp.scave.model.Charts} object.
  * <!-- begin-user-doc -->
  * <!-- end-user-doc -->
  * @generated
  */
-public class DatasetsItemProvider
+public class ChartsItemProvider 
     extends ItemProviderAdapter
     implements
         IEditingDomainItemProvider,
@@ -56,7 +46,7 @@ public class DatasetsItemProvider
      * <!-- end-user-doc -->
      * @generated
      */
-    public DatasetsItemProvider(AdapterFactory adapterFactory) {
+    public ChartsItemProvider(AdapterFactory adapterFactory) {
         super(adapterFactory);
     }
 
@@ -87,7 +77,7 @@ public class DatasetsItemProvider
     public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
         if (childrenFeatures == null) {
             super.getChildrenFeatures(object);
-            childrenFeatures.add(ScaveModelPackage.Literals.DATASETS__DATASETS);
+            childrenFeatures.add(ScaveModelPackage.Literals.CHARTS__CHARTS);
         }
         return childrenFeatures;
     }
@@ -106,14 +96,14 @@ public class DatasetsItemProvider
     }
 
     /**
-     * This returns Datasets.gif.
+     * This returns Charts.gif.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
     public Object getImage(Object object) {
-        return overlayImage(object, getResourceLocator().getImage("full/obj16/Datasets"));
+        return overlayImage(object, getResourceLocator().getImage("full/obj16/Charts"));
     }
 
     /**
@@ -134,8 +124,9 @@ public class DatasetsItemProvider
      */
     @Override
     public String getText(Object object) {
-        return getString("_UI_Datasets_type");
+        return getString("_UI_Charts_type");
     }
+    
 
     /**
      * This handles model notifications by calling {@link #updateChildren} to update any cached
@@ -148,8 +139,8 @@ public class DatasetsItemProvider
     public void notifyChanged(Notification notification) {
         updateChildren(notification);
 
-        switch (notification.getFeatureID(Datasets.class)) {
-            case ScaveModelPackage.DATASETS__DATASETS:
+        switch (notification.getFeatureID(Charts.class)) {
+            case ScaveModelPackage.CHARTS__CHARTS:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
                 return;
         }
@@ -169,8 +160,23 @@ public class DatasetsItemProvider
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.DATASETS__DATASETS,
-                 ScaveModelFactory.eINSTANCE.createDataset()));
+                (ScaveModelPackage.Literals.CHARTS__CHARTS,
+                 ScaveModelFactory.eINSTANCE.createBarChart()));
+
+        newChildDescriptors.add
+            (createChildParameter
+                (ScaveModelPackage.Literals.CHARTS__CHARTS,
+                 ScaveModelFactory.eINSTANCE.createLineChart()));
+
+        newChildDescriptors.add
+            (createChildParameter
+                (ScaveModelPackage.Literals.CHARTS__CHARTS,
+                 ScaveModelFactory.eINSTANCE.createHistogramChart()));
+
+        newChildDescriptors.add
+            (createChildParameter
+                (ScaveModelPackage.Literals.CHARTS__CHARTS,
+                 ScaveModelFactory.eINSTANCE.createScatterChart()));
     }
 
     /**

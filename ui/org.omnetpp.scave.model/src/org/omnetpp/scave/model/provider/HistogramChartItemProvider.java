@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.provider;
 
@@ -20,14 +9,7 @@ import java.util.List;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
-import org.eclipse.emf.common.util.ResourceLocator;
-
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 
 import org.omnetpp.scave.model.HistogramChart;
 
@@ -37,8 +19,7 @@ import org.omnetpp.scave.model.HistogramChart;
  * <!-- end-user-doc -->
  * @generated
  */
-public class HistogramChartItemProvider
-    extends ChartItemProvider {
+public class HistogramChartItemProvider extends ChartItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
@@ -56,7 +37,7 @@ public class HistogramChartItemProvider
      * @generated
      */
     @Override
-                public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
+    public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
         if (itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
@@ -71,7 +52,7 @@ public class HistogramChartItemProvider
      * @generated
      */
     @Override
-                public Object getImage(Object object) {
+    public Object getImage(Object object) {
         return overlayImage(object, getResourceLocator().getImage("full/obj16/HistogramChart"));
     }
 
@@ -92,12 +73,13 @@ public class HistogramChartItemProvider
      * @generated
      */
     @Override
-                public String getText(Object object) {
+    public String getText(Object object) {
         String label = ((HistogramChart)object).getName();
         return label == null || label.length() == 0 ?
             getString("_UI_HistogramChart_type") :
             getString("_UI_HistogramChart_type") + " " + label;
     }
+    
 
     /**
      * This handles model notifications by calling {@link #updateChildren} to update any cached
@@ -107,7 +89,7 @@ public class HistogramChartItemProvider
      * @generated
      */
     @Override
-                public void notifyChanged(Notification notification) {
+    public void notifyChanged(Notification notification) {
         updateChildren(notification);
         super.notifyChanged(notification);
     }
@@ -120,7 +102,7 @@ public class HistogramChartItemProvider
      * @generated
      */
     @Override
-                protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
+    protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
     }
 

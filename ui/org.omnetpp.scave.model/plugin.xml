@@ -15,6 +15,34 @@
           org.eclipse.emf.edit.provider.IItemPropertySource" />
   </extension>
 
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated scave -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="org.omnetpp.scave.model.presentation.ScaveModelModelWizardID"
+            name="%_UI_ScaveModelModelWizard_label"
+            class="org.omnetpp.scave.model.presentation.ScaveModelModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/ScaveModelModelFile.gif">
+         <description>%_UI_ScaveModelModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated scave -->
+      <editor
+            id="org.omnetpp.scave.model.presentation.ScaveModelEditorID"
+            name="%_UI_ScaveModelEditor_label"
+            icon="icons/full/obj16/ScaveModelModelFile.gif"
+            extensions="scavemodel"
+            class="org.omnetpp.scave.model.presentation.ScaveModelEditor"
+            contributorClass="org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor">
+      </editor>
+   </extension>
+
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package
        uri = "null"

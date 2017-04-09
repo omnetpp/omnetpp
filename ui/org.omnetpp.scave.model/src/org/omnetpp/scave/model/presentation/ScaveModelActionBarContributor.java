@@ -1,21 +1,9 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.presentation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 
@@ -167,14 +155,6 @@ public class ScaveModelActionBarContributor
         loadResourceAction = new LoadResourceAction();
         validateAction = new ValidateAction();
         controlAction = new ControlAction();
-    }
-
-    public ScaveModelActionBarContributor(boolean createGlobalActions) {
-        if (createGlobalActions) {
-            loadResourceAction = new LoadResourceAction();
-            validateAction = new ValidateAction();
-            controlAction = new ControlAction();
-        }
     }
 
     /**
@@ -363,7 +343,7 @@ public class ScaveModelActionBarContributor
             }
         }
     }
-
+        
     /**
      * This removes from the specified <code>manager</code> all {@link org.eclipse.jface.action.ActionContributionItem}s
      * based on the {@link org.eclipse.jface.action.IAction}s contained in the <code>actions</code> collection.

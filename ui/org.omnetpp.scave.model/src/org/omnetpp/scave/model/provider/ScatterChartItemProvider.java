@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.provider;
 
@@ -20,21 +9,12 @@ import java.util.List;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
-import org.eclipse.emf.common.util.ResourceLocator;
-
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
-
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 
 import org.omnetpp.scave.model.ScatterChart;
-
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
@@ -43,8 +23,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * @generated
  */
-public class ScatterChartItemProvider
-    extends ChartItemProvider {
+public class ScatterChartItemProvider extends ChartItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
@@ -173,6 +152,7 @@ public class ScatterChartItemProvider
             getString("_UI_ScatterChart_type") :
             getString("_UI_ScatterChart_type") + " " + label;
     }
+    
 
     /**
      * This handles model notifications by calling {@link #updateChildren} to update any cached

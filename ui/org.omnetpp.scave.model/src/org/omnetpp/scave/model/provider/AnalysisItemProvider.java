@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.provider;
 
@@ -17,21 +6,13 @@ package org.omnetpp.scave.model.provider;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.UnexecutableCommand;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.common.util.ResourceLocator;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.ecore.util.FeatureMapUtil;
-
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
 import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
@@ -51,7 +32,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * @generated
  */
-public class AnalysisItemProvider
+public class AnalysisItemProvider 
     extends ItemProviderAdapter
     implements
         IEditingDomainItemProvider,
@@ -97,8 +78,7 @@ public class AnalysisItemProvider
         if (childrenFeatures == null) {
             super.getChildrenFeatures(object);
             childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__INPUTS);
-            childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__DATASETS);
-            childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__CHART_SHEETS);
+            childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__CHARTS);
         }
         return childrenFeatures;
     }
@@ -147,6 +127,7 @@ public class AnalysisItemProvider
     public String getText(Object object) {
         return getString("_UI_Analysis_type");
     }
+    
 
     /**
      * This handles model notifications by calling {@link #updateChildren} to update any cached
@@ -161,8 +142,7 @@ public class AnalysisItemProvider
 
         switch (notification.getFeatureID(Analysis.class)) {
             case ScaveModelPackage.ANALYSIS__INPUTS:
-            case ScaveModelPackage.ANALYSIS__DATASETS:
-            case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+            case ScaveModelPackage.ANALYSIS__CHARTS:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
                 return;
         }
@@ -187,13 +167,8 @@ public class AnalysisItemProvider
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.ANALYSIS__DATASETS,
-                 ScaveModelFactory.eINSTANCE.createDatasets()));
-
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.ANALYSIS__CHART_SHEETS,
-                 ScaveModelFactory.eINSTANCE.createChartSheets()));
+                (ScaveModelPackage.Literals.ANALYSIS__CHARTS,
+                 ScaveModelFactory.eINSTANCE.createCharts()));
     }
 
     /**

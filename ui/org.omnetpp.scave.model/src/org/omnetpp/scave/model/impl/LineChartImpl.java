@@ -1,22 +1,13 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -43,6 +34,7 @@ public class LineChartImpl extends ChartImpl implements LineChart {
      * @ordered
      */
     protected static final String LINE_NAME_FORMAT_EDEFAULT = null;
+
     /**
      * The cached value of the '{@link #getLineNameFormat() <em>Line Name Format</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -52,6 +44,7 @@ public class LineChartImpl extends ChartImpl implements LineChart {
      * @ordered
      */
     protected String lineNameFormat = LINE_NAME_FORMAT_EDEFAULT;
+
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -67,7 +60,7 @@ public class LineChartImpl extends ChartImpl implements LineChart {
      * @generated
      */
     @Override
-                protected EClass eStaticClass() {
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.LINE_CHART;
     }
 

@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.impl;
 
@@ -68,28 +57,15 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
     @Override
     public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
-            case ScaveModelPackage.DATASET: return createDataset();
-            case ScaveModelPackage.ADD: return createAdd();
-            case ScaveModelPackage.DISCARD: return createDiscard();
-            case ScaveModelPackage.EXCEPT: return createExcept();
-            case ScaveModelPackage.GROUP: return createGroup();
             case ScaveModelPackage.PROPERTY: return createProperty();
-            case ScaveModelPackage.PARAM: return createParam();
-            case ScaveModelPackage.CHART_SHEET: return createChartSheet();
             case ScaveModelPackage.ANALYSIS: return createAnalysis();
-            case ScaveModelPackage.SELECT: return createSelect();
-            case ScaveModelPackage.DESELECT: return createDeselect();
             case ScaveModelPackage.INPUTS: return createInputs();
             case ScaveModelPackage.INPUT_FILE: return createInputFile();
-            case ScaveModelPackage.CHART_SHEETS: return createChartSheets();
-            case ScaveModelPackage.DATASETS: return createDatasets();
-            case ScaveModelPackage.APPLY: return createApply();
-            case ScaveModelPackage.COMPUTE: return createCompute();
             case ScaveModelPackage.BAR_CHART: return createBarChart();
             case ScaveModelPackage.LINE_CHART: return createLineChart();
             case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
             case ScaveModelPackage.SCATTER_CHART: return createScatterChart();
-            case ScaveModelPackage.COMPUTE_SCALAR: return createComputeScalar();
+            case ScaveModelPackage.CHARTS: return createCharts();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -130,89 +106,9 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      * <!-- end-user-doc -->
      * @generated
      */
-    public Dataset createDataset() {
-        DatasetImpl dataset = new DatasetImpl();
-        return dataset;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Add createAdd() {
-        AddImpl add = new AddImpl();
-        return add;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Apply createApply() {
-        ApplyImpl apply = new ApplyImpl();
-        return apply;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Except createExcept() {
-        ExceptImpl except = new ExceptImpl();
-        return except;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public Property createProperty() {
         PropertyImpl property = new PropertyImpl();
         return property;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Group createGroup() {
-        GroupImpl group = new GroupImpl();
-        return group;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Discard createDiscard() {
-        DiscardImpl discard = new DiscardImpl();
-        return discard;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Param createParam() {
-        ParamImpl param = new ParamImpl();
-        return param;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public ChartSheet createChartSheet() {
-        ChartSheetImpl chartSheet = new ChartSheetImpl();
-        return chartSheet;
     }
 
     /**
@@ -230,26 +126,6 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      * <!-- end-user-doc -->
      * @generated
      */
-    public Select createSelect() {
-        SelectImpl select = new SelectImpl();
-        return select;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Deselect createDeselect() {
-        DeselectImpl deselect = new DeselectImpl();
-        return deselect;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public Inputs createInputs() {
         InputsImpl inputs = new InputsImpl();
         return inputs;
@@ -260,39 +136,9 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      * <!-- end-user-doc -->
      * @generated
      */
-    public ChartSheets createChartSheets() {
-        ChartSheetsImpl chartSheets = new ChartSheetsImpl();
-        return chartSheets;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Datasets createDatasets() {
-        DatasetsImpl datasets = new DatasetsImpl();
-        return datasets;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public InputFile createInputFile() {
         InputFileImpl inputFile = new InputFileImpl();
         return inputFile;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Compute createCompute() {
-        ComputeImpl compute = new ComputeImpl();
-        return compute;
     }
 
     /**
@@ -340,9 +186,9 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      * <!-- end-user-doc -->
      * @generated
      */
-    public ComputeScalar createComputeScalar() {
-        ComputeScalarImpl computeScalar = new ComputeScalarImpl();
-        return computeScalar;
+    public Charts createCharts() {
+        ChartsImpl charts = new ChartsImpl();
+        return charts;
     }
 
     /**

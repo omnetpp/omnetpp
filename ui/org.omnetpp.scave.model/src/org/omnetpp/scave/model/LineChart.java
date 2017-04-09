@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model;
 
@@ -31,7 +20,6 @@ package org.omnetpp.scave.model;
  * @generated
  */
 public interface LineChart extends Chart {
-
     /**
      * Returns the value of the '<em><b>Line Name Format</b></em>' attribute.
      * <!-- begin-user-doc -->
@@ -57,4 +45,5 @@ public interface LineChart extends Chart {
      * @generated
      */
     void setLineNameFormat(String value);
+
 } // LineChart

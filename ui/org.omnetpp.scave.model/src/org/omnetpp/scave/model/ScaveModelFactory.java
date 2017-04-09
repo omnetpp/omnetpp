@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model;
 
@@ -33,42 +22,6 @@ public interface ScaveModelFactory extends EFactory {
     ScaveModelFactory eINSTANCE = org.omnetpp.scave.model.impl.ScaveModelFactoryImpl.init();
 
     /**
-     * Returns a new object of class '<em>Dataset</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Dataset</em>'.
-     * @generated
-     */
-    Dataset createDataset();
-
-    /**
-     * Returns a new object of class '<em>Add</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Add</em>'.
-     * @generated
-     */
-    Add createAdd();
-
-    /**
-     * Returns a new object of class '<em>Apply</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Apply</em>'.
-     * @generated
-     */
-    Apply createApply();
-
-    /**
-     * Returns a new object of class '<em>Except</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Except</em>'.
-     * @generated
-     */
-    Except createExcept();
-
-    /**
      * Returns a new object of class '<em>Property</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -76,42 +29,6 @@ public interface ScaveModelFactory extends EFactory {
      * @generated
      */
     Property createProperty();
-
-    /**
-     * Returns a new object of class '<em>Group</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Group</em>'.
-     * @generated
-     */
-    Group createGroup();
-
-    /**
-     * Returns a new object of class '<em>Discard</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Discard</em>'.
-     * @generated
-     */
-    Discard createDiscard();
-
-    /**
-     * Returns a new object of class '<em>Param</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Param</em>'.
-     * @generated
-     */
-    Param createParam();
-
-    /**
-     * Returns a new object of class '<em>Chart Sheet</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Chart Sheet</em>'.
-     * @generated
-     */
-    ChartSheet createChartSheet();
 
     /**
      * Returns a new object of class '<em>Analysis</em>'.
@@ -123,24 +40,6 @@ public interface ScaveModelFactory extends EFactory {
     Analysis createAnalysis();
 
     /**
-     * Returns a new object of class '<em>Select</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Select</em>'.
-     * @generated
-     */
-    Select createSelect();
-
-    /**
-     * Returns a new object of class '<em>Deselect</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Deselect</em>'.
-     * @generated
-     */
-    Deselect createDeselect();
-
-    /**
      * Returns a new object of class '<em>Inputs</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -150,24 +49,6 @@ public interface ScaveModelFactory extends EFactory {
     Inputs createInputs();
 
     /**
-     * Returns a new object of class '<em>Chart Sheets</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Chart Sheets</em>'.
-     * @generated
-     */
-    ChartSheets createChartSheets();
-
-    /**
-     * Returns a new object of class '<em>Datasets</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Datasets</em>'.
-     * @generated
-     */
-    Datasets createDatasets();
-
-    /**
      * Returns a new object of class '<em>Input File</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -175,15 +56,6 @@ public interface ScaveModelFactory extends EFactory {
      * @generated
      */
     InputFile createInputFile();
-
-    /**
-     * Returns a new object of class '<em>Compute</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Compute</em>'.
-     * @generated
-     */
-    Compute createCompute();
 
     /**
      * Returns a new object of class '<em>Bar Chart</em>'.
@@ -222,13 +94,13 @@ public interface ScaveModelFactory extends EFactory {
     ScatterChart createScatterChart();
 
     /**
-     * Returns a new object of class '<em>Compute Scalar</em>'.
+     * Returns a new object of class '<em>Charts</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return a new object of class '<em>Compute Scalar</em>'.
+     * @return a new object of class '<em>Charts</em>'.
      * @generated
      */
-    ComputeScalar createComputeScalar();
+    Charts createCharts();
 
     /**
      * Returns the package supported by this factory.

@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.impl;
 
@@ -41,7 +30,7 @@ public class HistogramChartImpl extends ChartImpl implements HistogramChart {
      * @generated
      */
     @Override
-                protected EClass eStaticClass() {
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.HISTOGRAM_CHART;
     }
 

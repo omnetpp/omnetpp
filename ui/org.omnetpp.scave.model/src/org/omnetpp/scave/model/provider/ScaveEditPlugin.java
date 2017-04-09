@@ -1,21 +1,6 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.provider;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 import org.eclipse.emf.common.EMFPlugin;
 
@@ -37,7 +22,7 @@ public final class ScaveEditPlugin extends EMFPlugin {
      * @generated
      */
     public static final ScaveEditPlugin INSTANCE = new ScaveEditPlugin();
-
+    
     /**
      * Keep track of the singleton.
      * <!-- begin-user-doc -->
@@ -69,7 +54,7 @@ public final class ScaveEditPlugin extends EMFPlugin {
     public ResourceLocator getPluginResourceLocator() {
         return plugin;
     }
-
+    
     /**
      * Returns the singleton instance of the Eclipse plugin.
      * <!-- begin-user-doc -->
@@ -80,7 +65,7 @@ public final class ScaveEditPlugin extends EMFPlugin {
     public static Implementation getPlugin() {
         return plugin;
     }
-
+    
     /**
      * The actual implementation of the Eclipse <b>Plugin</b>.
      * <!-- begin-user-doc -->

@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.impl;
 
@@ -21,9 +10,9 @@ import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 
-import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
+import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -131,7 +120,7 @@ public class BarChartImpl extends ChartImpl implements BarChart {
      * @generated
      */
     @Override
-                protected EClass eStaticClass() {
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.BAR_CHART;
     }
 
@@ -241,7 +230,7 @@ public class BarChartImpl extends ChartImpl implements BarChart {
      * @generated
      */
     @SuppressWarnings("unchecked")
-        @Override
+    @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:

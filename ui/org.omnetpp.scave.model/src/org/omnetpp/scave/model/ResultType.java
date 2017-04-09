@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model;
 
@@ -28,8 +17,7 @@ import org.eclipse.emf.common.util.Enumerator;
  * @model
  * @generated
  */
-public enum ResultType implements Enumerator
-{
+public enum ResultType implements Enumerator {
     /**
      * The '<em><b>Scalar</b></em>' literal object.
      * <!-- begin-user-doc -->
@@ -39,6 +27,7 @@ public enum ResultType implements Enumerator
      * @ordered
      */
     SCALAR_LITERAL(1, "scalar", "SCALAR"),
+
     /**
      * The '<em><b>Vector</b></em>' literal object.
      * <!-- begin-user-doc -->
@@ -48,6 +37,7 @@ public enum ResultType implements Enumerator
      * @ordered
      */
     VECTOR_LITERAL(2, "vector", "VECTOR"),
+
     /**
      * The '<em><b>Statistics</b></em>' literal object.
      * <!-- begin-user-doc -->
@@ -56,7 +46,9 @@ public enum ResultType implements Enumerator
      * @generated
      * @ordered
      */
-    STATISTICS_LITERAL(3, "statistics", "STATISTICS"), /**
+    STATISTICS_LITERAL(3, "statistics", "STATISTICS"),
+
+    /**
      * The '<em><b>Histogram</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -65,6 +57,7 @@ public enum ResultType implements Enumerator
      * @ordered
      */
     HISTOGRAM_LITERAL(4, "histogram", "HISTOGRAM");
+
     /**
      * The '<em><b>Scalar</b></em>' literal value.
      * <!-- begin-user-doc -->
@@ -271,4 +264,5 @@ public enum ResultType implements Enumerator
     public String toString() {
         return literal;
     }
-}
+    
+} //ResultType

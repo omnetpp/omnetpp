@@ -1,15 +1,4 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2015 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
 /**
- * <copyright>
- * </copyright>
- *
- * $Id$
  */
 package org.omnetpp.scave.model.presentation;
 
@@ -52,6 +41,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 
 import org.eclipse.jface.util.LocalSelectionTransfer;
+
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -92,7 +82,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -131,8 +120,6 @@ import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EValidator;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -160,11 +147,11 @@ import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
-
 import org.eclipse.emf.edit.ui.provider.UnwrappingSelectionProvider;
-import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 
+import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 import org.eclipse.emf.edit.ui.util.EditUIUtil;
+
 import org.eclipse.emf.edit.ui.view.ExtendedPropertySheetPage;
 
 import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
@@ -764,7 +751,7 @@ public class ScaveModelEditor
      * <!-- end-user-doc -->
      * @generated
      */
-    @Override
+            @Override
     protected void firePropertyChange(int action) {
         super.firePropertyChange(action);
     }
@@ -812,25 +799,54 @@ public class ScaveModelEditor
      * @generated
      */
     public class ReverseAdapterFactoryContentProvider extends AdapterFactoryContentProvider {
+        /**
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
         public ReverseAdapterFactoryContentProvider(AdapterFactory adapterFactory) {
             super(adapterFactory);
         }
 
+        /**
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        @Override
         public Object [] getElements(Object object) {
             Object parent = super.getParent(object);
             return (parent == null ? Collections.EMPTY_SET : Collections.singleton(parent)).toArray();
         }
 
+        /**
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        @Override
         public Object [] getChildren(Object object) {
             Object parent = super.getParent(object);
             return (parent == null ? Collections.EMPTY_SET : Collections.singleton(parent)).toArray();
         }
 
+        /**
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        @Override
         public boolean hasChildren(Object object) {
             Object parent = super.getParent(object);
             return parent != null;
         }
 
+        /**
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        @Override
         public Object getParent(Object object) {
             return null;
         }
@@ -935,7 +951,7 @@ public class ScaveModelEditor
      * @generated
      */
     public void createModel() {
-        URI resourceURI = EditUIUtil.getURI(getEditorInput());
+        URI resourceURI = EditUIUtil.getURI(getEditorInput(), editingDomain.getResourceSet().getURIConverter());
         Exception exception = null;
         Resource resource = null;
         try {
@@ -963,10 +979,11 @@ public class ScaveModelEditor
      * @generated
      */
     public Diagnostic analyzeResourceProblems(Resource resource, Exception exception) {
-        if (!resource.getErrors().isEmpty() || !resource.getWarnings().isEmpty()) {
+        boolean hasErrors = !resource.getErrors().isEmpty();
+        if (hasErrors || !resource.getWarnings().isEmpty()) {
             BasicDiagnostic basicDiagnostic =
                 new BasicDiagnostic
-                    (Diagnostic.ERROR,
+                    (hasErrors ? Diagnostic.ERROR : Diagnostic.WARNING,
                      "org.omnetpp.scave.model",
                      0,
                      getString("_UI_CreateModelError_message", resource.getURI()),
@@ -1293,8 +1310,8 @@ public class ScaveModelEditor
      * <!-- end-user-doc -->
      * @generated
      */
-    @SuppressWarnings("unchecked")
-        @Override
+    @SuppressWarnings("rawtypes")
+    @Override
     public Object getAdapter(Class key) {
         if (key.equals(IContentOutlinePage.class)) {
             return showOutlineView() ? getContentOutlinePage() : null;
