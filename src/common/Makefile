@@ -96,7 +96,12 @@ matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
 $O/sqlite3.o: sqlite3.c
 	@mkdir -p $O
 	$(qecho) "$<"
-	$(Q)$(CC) -c $(COPTS) -Wno-deprecated-declarations -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1  -o $@ $<
+ifeq ($(TOOLCHAIN_NAME),clangc2)
+# On Windows Clang/C2 compiler we use cl for this C file because Clang/C2 crashes on the file (too big file :)
+	$(Q)cl -nologo -c -O2 "-DSQLITE_API=__declspec(dllexport)" -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1 -Fo: $@ $<
+else
+	$(Q)$(CC) -c $(COPTS) -Wno-deprecated-declarations -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1 -o $@ $<
+endif
 
 clean:
 	$(qecho) Cleaning...
