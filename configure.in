@@ -766,7 +766,9 @@ if test "$WITH_QTENV" = "yes"; then
         QT_INSTALL_LIBS=`$QMAKE -query QT_INSTALL_LIBS`
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS -isystem $QT_INSTALL_HEADERS/QtCore -isystem $QT_INSTALL_HEADERS/QtGui -isystem $QT_INSTALL_HEADERS/QtWidgets -isystem $QT_INSTALL_HEADERS/QtOpenGL -isystem $QT_INSTALL_HEADERS/QtPrintSupport"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS -Wl,-rpath=$QT_INSTALL_LIBS"}
-        QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
+	if test -z "$RPATH_UNSUPPORTED"; then
+            QTENV_LDFLAGS="-Wl,-rpath-link=$QT_INSTALL_LIBS"
+        fi
 
 QT_VERSIONCHECK_CODE=$(cat <<-EOT
     qVersion();
@@ -1314,8 +1316,9 @@ fi
 
 #----------------------
 # Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
+# (we do not care about this if we are using the clangc2 toolchan)
 #----------------------
-if test -n "$RPATH_UNSUPPORTED"; then
+if test -n "$RPATH_UNSUPPORTED" -a "$TOOLCHAIN_NAME" != "clangc2" ; then
 
     cat 1>&2 << EOT
 
