@@ -70,7 +70,7 @@ COMMON_API bool fileExists(const char *pathname);
  * Returns true if the given pathname exists in the file system and is a
  * regular file, and false otherwise.
  */
-bool isFile(const char *pathname);
+COMMON_API bool isFile(const char *pathname);
 
 /**
  * Returns true if the given pathname exists in the file system and is a directory,

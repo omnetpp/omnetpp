@@ -25,7 +25,7 @@ namespace common {
  * Formatted printing to a stream. Primarily intended for
  * printing help in command-line tools.
  */
-class FormattedPrinter
+class COMMON_API FormattedPrinter
 {
 private:
     std::ostream& out;

@@ -17,6 +17,7 @@
 
 
 #include <cstdio>
+#include <memory>
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/fileutil.h"
