@@ -38,30 +38,23 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.AddFilterToDatasetAction;
-import org.omnetpp.scave.actions.AddSelectedToDatasetAction;
 import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.CopyChartToClipboardAction;
 import org.omnetpp.scave.actions.CopyToClipboardAction;
-import org.omnetpp.scave.actions.CreateChartTemplateAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
-import org.omnetpp.scave.actions.GroupAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.OpenAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
-import org.omnetpp.scave.actions.RefreshComputedDataFileAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
-import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
-import org.omnetpp.scave.editors.ui.DatasetPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
@@ -93,11 +86,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     // generic actions
     private IAction openAction;
     private IAction editAction;
-    private IAction groupAction;
-    private IAction ungroupAction;
     private IScaveAction deleteAction; // action handler of deleteRetargetAction
     private IAction selectAllAction;
-    private IAction refreshComputedFilesAction;
     private IAction exportChartsAction;
 
     // ChartPage/ChartSheetPage actions
@@ -110,12 +100,9 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     private IAction switchChartToZoomModeAction;
     private IAction copyChartToClipboardAction;
     private IAction refreshChartAction;
-    private IAction createChartTemplateAction;
     private IAction gotoChartDefinitionAction;
 
     // BrowseDataPage actions
-    private IAction addFilterToDatasetAction;
-    private IAction addSelectedToDatasetAction;
     private IAction copyToClipboardAction;
     private IAction exportToSVGAction;
     private IAction createTempChartAction;
@@ -123,6 +110,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     private Map<String,IAction> exportActions;
 
     IPropertyChangeListener zoomListener = new IPropertyChangeListener() {
+        @Override
         public void propertyChange(PropertyChangeEvent event) {
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
                 ((ZoomChartAction)hzoomOutAction).updateEnabled();
@@ -151,18 +139,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
      * Creates a multi-page contributor.
      */
     public ScaveEditorContributor() {
-        super(false);
-        if (instance==null) instance = this;
+        if (instance==null)
+            instance = this;
     }
 
     @Override
     public void init(IActionBars bars, IWorkbenchPage page) {
         openAction = registerAction(page, new OpenAction());
         editAction = registerAction(page, new EditAction());
-        groupAction = registerAction(page, new GroupAction());
-        ungroupAction = registerAction(page, new UngroupAction());
         selectAllAction = registerAction(page, new SelectAllAction());
-        refreshComputedFilesAction = registerAction(page, new RefreshComputedDataFileAction());
         exportChartsAction = registerAction(page, new ExportChartsAction());
 
         // replacement of the inherited deleteAction
@@ -180,12 +165,9 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         switchChartToZoomModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
         copyChartToClipboardAction = registerAction(page, new CopyChartToClipboardAction());
         refreshChartAction = registerAction(page, new RefreshChartAction());
-        createChartTemplateAction = registerAction(page, new CreateChartTemplateAction());
         gotoChartDefinitionAction = registerAction(page, new GotoChartDefinitionAction());
 
         // BrowseDataPage actions
-        addFilterToDatasetAction = registerAction(page, new AddFilterToDatasetAction());
-        addSelectedToDatasetAction = registerAction(page, new AddSelectedToDatasetAction());
         exportActions = new HashMap<String,IAction>();
         for (String format : ExportDataAction.FORMATS) {
             IAction action = registerAction(page, new ExportDataAction(format));
@@ -212,6 +194,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
     private IScaveAction registerAction(IWorkbenchPage page, final IScaveAction action) {
         page.getWorkbenchWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
+            @Override
             public void selectionChanged(IWorkbenchPart part, ISelection selection) {
                 action.selectionChanged(selection);
             }
@@ -287,7 +270,6 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         manager.insertBefore("scavemodel-additions", vzoomOutAction);
         manager.insertBefore("scavemodel-additions", zoomToFitAction);
         manager.insertBefore("scavemodel-additions", refreshChartAction);
-        manager.insertBefore("scavemodel-additions", createChartTemplateAction);
     }
 
     @Override
@@ -317,9 +299,6 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         menuManager.insertBefore("additions", openAction);
         menuManager.insertBefore("additions", editAction);
 
-        menuManager.insertBefore("edit", refreshComputedFilesAction);
-        menuManager.insertBefore("edit", groupAction);
-        menuManager.insertBefore("edit", ungroupAction);
         menuManager.insertBefore("edit", new Separator());
         menuManager.insertBefore("edit", createExportMenu());
         menuManager.insertBefore("edit", exportChartsAction);
@@ -358,7 +337,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
         if (activeEditorPart instanceof ScaveEditor) {
             ScaveEditor scaveEditor = (ScaveEditor)activeEditorPart;
             ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-            visible = page instanceof DatasetsAndChartsPage || page instanceof DatasetPage;
+            visible = page instanceof DatasetsAndChartsPage;
         }
         showOptionalToolbarActions(visible);
     }
@@ -395,20 +374,11 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     public IAction getRefreshChartAction() {
         return refreshChartAction;
     }
-    public IAction getCreateChartTemplateAction() {
-        return createChartTemplateAction;
-    }
     public IAction getGotoChartDefinitionAction() {
         return gotoChartDefinitionAction;
     }
     public IAction getCopyChartToClipboardAction() {
         return copyChartToClipboardAction;
-    }
-    public IAction getAddFilterToDatasetAction() {
-        return addFilterToDatasetAction;
-    }
-    public IAction getAddSelectedToDatasetAction() {
-        return addSelectedToDatasetAction;
     }
     public IAction getCopyToClipboardAction() {
         return copyToClipboardAction;

@@ -16,8 +16,7 @@ import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.wizard.ScaveExportWizard;
 
 /**
@@ -55,11 +54,9 @@ public class ExportDataAction extends AbstractScaveAction {
     }
 
     @Override
-    protected boolean isApplicable(ScaveEditor editor,
-            IStructuredSelection selection) {
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
         return selection instanceof IDListSelection ||
                 (selection instanceof IStructuredSelection &&
-                 (selection.getFirstElement() instanceof Dataset ||
-                  selection.getFirstElement() instanceof DatasetItem));
+                        selection.getFirstElement() instanceof Chart);
     }
 }

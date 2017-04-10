@@ -12,7 +12,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -48,11 +47,8 @@ import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IndexFile;
-import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model2.ChartDataPoint;
 import org.omnetpp.scave.model2.ChartLine;
-import org.omnetpp.scave.model2.ComputedResultFileUpdater;
-import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
 import org.omnetpp.scave.model2.ResultItemRef;
 
 /**
@@ -160,8 +156,10 @@ public class VectorBrowserView extends ViewWithMessagePart {
 
     private void hookListeners() {
         selectionChangedListener = new INullSelectionListener() {
+            @Override
             public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
                 ResultFileManager.callWithReadLock(getResultFileManager(selection), new Callable<Object>() {
+                    @Override
                     public Object call() throws Exception {
                         if (part == activePart)
                             setViewerInput(selection);
@@ -174,11 +172,13 @@ public class VectorBrowserView extends ViewWithMessagePart {
 
         partListener = new IPartListener() {
 
+            @Override
             public void partActivated(IWorkbenchPart part) {
                 if (part instanceof ScaveEditor || part instanceof DatasetView)
                     activePart = part;
             }
 
+            @Override
             public void partClosed(IWorkbenchPart part) {
                 if (part == activePart) {
                     activePart = null;
@@ -186,8 +186,11 @@ public class VectorBrowserView extends ViewWithMessagePart {
                 }
             }
 
+            @Override
             public void partOpened(IWorkbenchPart part) {}
+            @Override
             public void partBroughtToTop(IWorkbenchPart part) {}
+            @Override
             public void partDeactivated(IWorkbenchPart part) {}
         };
         getSite().getPage().addPartListener(partListener);
@@ -261,48 +264,49 @@ public class VectorBrowserView extends ViewWithMessagePart {
         }
 
         // recompute computed files if needed
-        final ResultFileManager manager = selectedVector.getResultFileManager();
-        final ResultItemRef finalSelectedVector = selectedVector;
-        final int finalDataPointIndex = dataPointIndex;
-        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-            public Object call() throws Exception {
-                final VectorResult vector = (VectorResult)finalSelectedVector.resolve();
-                if (vector == null || !vector.isComputed() || !(vector.getComputation() instanceof ProcessingOp)) {
-                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
-                    return null;
-                }
-
-                ProcessingOp operation =  (ProcessingOp)vector.getComputation();
-                ResultItemRef origInput = (ResultItemRef)viewer.getInput();
-                VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
-                ComputedResultFileUpdater updater = ComputedResultFileUpdater.instance();
-                if (origVector != null && operation == origVector.getComputation() &&
-                        updater.isComputedFileUpToDate(operation, manager)) {
-                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
-                    return null;
-                }
-
-                setViewerInput((IDListSelection)null);
-                showMessage("Computing vectors...");
-
-                updater.ensureComputedFile(operation, manager,
-                    new ComputedResultFileUpdater.CompletionCallback() {
-                        public void completed(final CompletionEvent event) {
-                            runInUIThread(new Runnable() {
-                                public void run() {
-                                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-                                        public Object call() {
-                                            setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, event.getStatus());
-                                            return null;
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                return null;
-            }
-        });
+//TODO
+//        final ResultFileManager manager = selectedVector.getResultFileManager();
+//        final ResultItemRef finalSelectedVector = selectedVector;
+//        final int finalDataPointIndex = dataPointIndex;
+//        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+//            public Object call() throws Exception {
+//                final VectorResult vector = (VectorResult)finalSelectedVector.resolve();
+//                if (vector == null || !vector.isComputed() || !(vector.getComputation() instanceof ProcessingOp)) {
+//                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
+//                    return null;
+//                }
+//
+//                ProcessingOp operation =  (ProcessingOp)vector.getComputation();
+//                ResultItemRef origInput = (ResultItemRef)viewer.getInput();
+//                VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
+//                ComputedResultFileUpdater updater = ComputedResultFileUpdater.instance();
+//                if (origVector != null && operation == origVector.getComputation() &&
+//                        updater.isComputedFileUpToDate(operation, manager)) {
+//                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
+//                    return null;
+//                }
+//
+//                setViewerInput((IDListSelection)null);
+//                showMessage("Computing vectors...");
+//
+//                updater.ensureComputedFile(operation, manager,
+//                    new ComputedResultFileUpdater.CompletionCallback() {
+//                        public void completed(final CompletionEvent event) {
+//                            runInUIThread(new Runnable() {
+//                                public void run() {
+//                                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+//                                        public Object call() {
+//                                            setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, event.getStatus());
+//                                            return null;
+//                                        }
+//                                    });
+//                                }
+//                            });
+//                        }
+//                    });
+//                return null;
+//            }
+//        });
     }
 
     private static void runInUIThread(Runnable runnable) {
@@ -400,10 +404,12 @@ public class VectorBrowserView extends ViewWithMessagePart {
             setText("Copy to clipboard");
         }
 
+        @Override
         public boolean isEnabled() {
             return !table.getSelection().isEmpty();
         }
 
+        @Override
         public void run() {
             table.copySelectionToClipboard();
         }
@@ -431,8 +437,10 @@ public class VectorBrowserView extends ViewWithMessagePart {
             }
         }
 
+        @Override
         public void run() {
             IInputValidator validator = new IInputValidator() {
+                @Override
                 public String isValid(String text) {
                     if (text == null || text.length() == 0)
                         return " ";

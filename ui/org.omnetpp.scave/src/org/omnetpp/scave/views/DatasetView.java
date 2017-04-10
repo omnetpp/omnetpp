@@ -74,19 +74,13 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
-import org.omnetpp.scave.model.AddDiscardOp;
-import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.BarChart;
-import org.omnetpp.scave.model.Compute;
-import org.omnetpp.scave.model.ComputeScalar;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model2.ChartLine;
-import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -104,8 +98,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
     private boolean viewControlCreated;
 
     private ScaveEditor activeScaveEditor;
-    private Dataset selectedDataset;
-    private DatasetItem selectedItem;
+    private Chart selectedChart;
 
     private IAction selectAllAction;
     private IAction toggleFilterAction;
@@ -181,14 +174,17 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
             }
         });
         control.addMouseListener(new MouseListener() {
+            @Override
             public void mouseDoubleClick(MouseEvent e) {
                 if (e.getSource() instanceof IDataControl)
                     new CreateTempChartAction().run();
             }
 
+            @Override
             public void mouseDown(MouseEvent e) {
             }
 
+            @Override
             public void mouseUp(MouseEvent e) {
             }
         });
@@ -231,6 +227,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
             @Override
             public void widgetSelected(SelectionEvent e) {
                 ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
+                    @Override
                     public Object call() throws Exception {
                         setFilterAction.update(panel);
                         return null;
@@ -249,6 +246,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
     private void hookPageListeners() {
         selectionChangedListener = new ISelectionListener() {
+            @Override
             public void selectionChanged(IWorkbenchPart part, ISelection selection) {
                 workbechSelectionChanged(selection);
             }
@@ -256,6 +254,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
         getSite().getPage().addPostSelectionListener(selectionChangedListener);
 
         partListener = new IPartListener() {
+            @Override
             public void partActivated(IWorkbenchPart part) {
                 if (part instanceof ScaveEditor)
                     activeEditorChanged((ScaveEditor)part);
@@ -263,13 +262,17 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
                     activeEditorChanged(null);
             }
 
+            @Override
             public void partClosed(IWorkbenchPart part) {
                 if (part == activeScaveEditor)
                     activeEditorChanged(null);
             }
 
+            @Override
             public void partBroughtToTop(IWorkbenchPart part) {}
+            @Override
             public void partDeactivated(IWorkbenchPart part) {}
+            @Override
             public void partOpened(IWorkbenchPart part) {}
         };
         getSite().getPage().addPartListener(partListener);
@@ -282,6 +285,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
             ScaveEditor scaveEditor = (ScaveEditor)editor;
             scaveEditor.getResultFileManager().addChangeListener(resultFilesChangeListener =
                 new IResultFilesChangeListener() {
+                    @Override
                     public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
                         switch (event.getChangeType()) {
                         case LOAD:
@@ -289,6 +293,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
                         case COMPUTED_SCALARS_CLEARED:
                             if (scheduledUpdate == null) {
                                 scheduledUpdate = new Runnable() {
+                                    @Override
                                     public void run() {
                                         scheduledUpdate = null;
                                         updateDataControl();
@@ -302,8 +307,10 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
             IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
             notifier.addListener(modelChangeListener = new INotifyChangedListener() {
+                @Override
                 public void notifyChanged(Notification notification) {
                     Display.getDefault().asyncExec(new Runnable() {
+                        @Override
                         public void run() {
                             updateDataControl();
                         }
@@ -345,39 +352,38 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
     }
 
     private void workbechSelectionChanged(ISelection selection) {
-        Dataset dataset = null;
-        DatasetItem item = null;
-        ResultItemRef resultItem = null;
-
-        if (selection == this.selection)
-            return;
-
-        if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
-            EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
-            dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
-            item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
-            setInput(dataset, item);
-        }
-        else if (selection instanceof IStructuredSelection) {
-            Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-            if (selectedObject instanceof ChartLine) {
-                ChartLine selectedLine = (ChartLine)selectedObject;
-                item = selectedLine.getChart();
-                dataset = ScaveModelUtil.findEnclosingDataset(item);
-                resultItem = selectedLine.getResultItemRef();
-            }
-        }
-
-        if (dataset != null) {
-            setInput(dataset, item);
-            if (resultItem != null && resultItem.getID() != -1L) {
-                selectResultItem(resultItem);
-            }
-        }
-        else {
-            setInput(null, null);
-            showMessage("No dataset item selected.");
-        }
+//TODO
+//        ResultItemRef resultItem = null;
+//
+//        if (selection == this.selection)
+//            return;
+//
+//        if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
+//            EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
+//            dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
+//            item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
+//            setInput(dataset, item);
+//        }
+//        else if (selection instanceof IStructuredSelection) {
+//            Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
+//            if (selectedObject instanceof ChartLine) {
+//                ChartLine selectedLine = (ChartLine)selectedObject;
+//                item = selectedLine.getChart();
+//                dataset = ScaveModelUtil.findEnclosingDataset(item);
+//                resultItem = selectedLine.getResultItemRef();
+//            }
+//        }
+//
+//        if (dataset != null) {
+//            setInput(dataset, item);
+//            if (resultItem != null && resultItem.getID() != -1L) {
+//                selectResultItem(resultItem);
+//            }
+//        }
+//        else {
+//            setInput(null, null);
+//            showMessage("No dataset item selected.");
+//        }
     }
 
     private void selectResultItem(ResultItemRef item) {
@@ -410,48 +416,43 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
         }
     }
 
-    private void setInput(Dataset dataset, DatasetItem item) {
-        if (selectedDataset != dataset || selectedItem != item) {
-            selectedDataset = dataset;
-            selectedItem = item;
-            updateDataControl();
-            setActivePanel(item);
-            updateContentDescription();
-        }
-    }
+//TODO
+//    private void setInput(Dataset dataset, DatasetItem item) {
+//        if (selectedChart != dataset || selectedItem != item) {
+//            selectedChart = dataset;
+//            selectedItem = item;
+//            updateDataControl();
+//            setActivePanel(item);
+//            updateContentDescription();
+//        }
+//    }
 
-    private void setActivePanel(DatasetItem item) {
-        // determine type of selected item, if we can
-        ResultType type = null;
-        if (item instanceof AddDiscardOp)
-            type = ((AddDiscardOp)item).getType();
-        else if (item instanceof BarChart || item instanceof ScatterChart)
-            type = ResultType.SCALAR_LITERAL;
-        else if (item instanceof LineChart)
-            type = ResultType.VECTOR_LITERAL;
-        else if (item instanceof HistogramChart)
-            type = ResultType.HISTOGRAM_LITERAL;
-        else if (item instanceof Apply)
-            type = ResultType.VECTOR_LITERAL;
-        else if (item instanceof Compute)
-            type = ResultType.VECTOR_LITERAL;
-        else if (item instanceof ComputeScalar)
-            type = ResultType.SCALAR_LITERAL;
-
-        // if we figured out the type, switch to its tab, otherwise just stay on the current tab
-        if (type != null)
-            tabFolder.setActivePanel(type);
-    }
+//TODO
+//    private void setActivePanel(DatasetItem item) {
+//        // determine type of selected item, if we can
+//        ResultType type = null;
+//        if (item instanceof BarChart || item instanceof ScatterChart)
+//            type = ResultType.SCALAR_LITERAL;
+//        else if (item instanceof LineChart)
+//            type = ResultType.VECTOR_LITERAL;
+//        else if (item instanceof HistogramChart)
+//            type = ResultType.HISTOGRAM_LITERAL;
+//
+//        // if we figured out the type, switch to its tab, otherwise just stay on the current tab
+//        if (type != null)
+//            tabFolder.setActivePanel(type);
+//    }
 
     private void updateContentDescription() {
-        if (labelProvider != null && selectedDataset != null) {
-            String datasetName = labelProvider.getText(selectedDataset);
+        if (labelProvider != null && selectedChart != null) {
+            String datasetName = labelProvider.getText(selectedChart);
 
-            String desc;
-            if (selectedItem instanceof DatasetItem)
-                desc = "Data at '" + labelProvider.getText(selectedItem) + "' from " + datasetName;
-            else
-                desc = "Content of " + datasetName;
+            String desc = "TODO";
+//TODO
+//            if (selectedItem instanceof DatasetItem)
+//                desc = "Data at '" + labelProvider.getText(selectedItem) + "' from " + datasetName;
+//            else
+//                desc = "Content of " + datasetName;
 
             hideMessage();
             setContentDescription(desc);
@@ -485,16 +486,18 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
         final ResultFileManager manager = activeScaveEditor.getResultFileManager();
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            @Override
             public Object call() {
                 IDList all = IDList.EMPTY;
                 IDList scalars = IDList.EMPTY;
                 IDList vectors = IDList.EMPTY;
                 IDList histograms = IDList.EMPTY;
-                if (selectedDataset != null) {
-                    all = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, null);
-                    scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
-                    vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
-                    histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
+                if (selectedChart != null) {
+//TODO
+//                    all = DatasetManager.getIDListFromDataset(manager, selectedChart, selectedItem, null);
+//                    scalars = DatasetManager.getIDListFromDataset(manager, selectedChart, selectedItem, ResultType.SCALAR_LITERAL);
+//                    vectors = DatasetManager.getIDListFromDataset(manager, selectedChart, selectedItem, ResultType.VECTOR_LITERAL);
+//                    histograms = DatasetManager.getIDListFromDataset(manager, selectedChart, selectedItem, ResultType.HISTOGRAM_LITERAL);
                 }
                 tabFolder.getAllPanel().setIDList(all);
                 tabFolder.getScalarsPanel().setIDList(scalars);
@@ -589,10 +592,12 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
      * ISelectionProvider
      */
 
+    @Override
     public void addSelectionChangedListener(ISelectionChangedListener listener) {
         selectionChangeListeners.add(listener);
     }
 
+    @Override
     public void removeSelectionChangedListener(ISelectionChangedListener listener) {
         selectionChangeListeners.remove(listener);
     }
@@ -603,10 +608,12 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
             ((ISelectionChangedListener)listener).selectionChanged(event);
     }
 
+    @Override
     public ISelection getSelection() {
         return selection;
     }
 
+    @Override
     public void setSelection(ISelection selection) {
         if (selection != this.selection) {
             this.selection = selection;

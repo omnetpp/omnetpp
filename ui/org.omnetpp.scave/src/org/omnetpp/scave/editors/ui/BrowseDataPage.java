@@ -126,9 +126,6 @@ public class BrowseDataPage extends ScaveEditorPage {
         if (editorContributor != null) {
             contextMenuManager.add(editorContributor.getCreateTempChartAction());
             contextMenuManager.add(new Separator());
-            contextMenuManager.add(editorContributor.getAddFilterToDatasetAction());
-            contextMenuManager.add(editorContributor.getAddSelectedToDatasetAction());
-            contextMenuManager.add(new Separator());
             contextMenuManager.add(editorContributor.createExportMenu());
             contextMenuManager.add(editorContributor.getCopyToClipboardAction());
             contextMenuManager.add(new Separator());
@@ -157,6 +154,7 @@ public class BrowseDataPage extends ScaveEditorPage {
             }
         });
         control.addDataListener(new IDataListener() {
+            @Override
             public void contentChanged(IDataControl control) {
                 showStatusMessage(String.format("Selected %d out of %d rows", control.getSelectionCount(), control.getItemCount()));
             }
@@ -167,6 +165,7 @@ public class BrowseDataPage extends ScaveEditorPage {
         // asynchronously update the page contents on result file changes (ie. input file load/unload)
         if (fileChangeListener == null) {
             fileChangeListener = new IResultFilesChangeListener() {
+                @Override
                 public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
                     switch (event.getChangeType()) {
                     case LOAD:
@@ -174,10 +173,12 @@ public class BrowseDataPage extends ScaveEditorPage {
                         final ResultFileManager manager = event.getResultFileManager();
                         if (scheduledUpdate == null) {
                             scheduledUpdate = new Runnable() {
+                                @Override
                                 public void run() {
                                     scheduledUpdate = null;
                                     if (!isDisposed()) {
                                         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                                            @Override
                                             public Object call() {
                                                 refreshPage(manager);
                                                 return null;
@@ -203,6 +204,7 @@ public class BrowseDataPage extends ScaveEditorPage {
                     Object source = e.getSource();
                     if (source == panel.getDataControl() || source == tabFolder) {
                         ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
+                            @Override
                             public Object call() throws Exception {
                                 updateSelection();
                                 return null;

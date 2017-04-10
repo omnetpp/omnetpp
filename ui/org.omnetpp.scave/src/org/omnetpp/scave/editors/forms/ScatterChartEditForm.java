@@ -33,7 +33,6 @@ import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ScatterChartProperties;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -68,20 +67,16 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
         super(chart, parent, formParameters, manager);
         updateDataset(null);
-        Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-        if (dataset != null) {
-            IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-            idlist.merge(DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL));
-            xData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, false);
-            isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);
-        }
+        IDList idlist = DatasetManager.getIDListFromDataset(manager, chart, ResultType.SCALAR_LITERAL);
+        idlist.merge(DatasetManager.getIDListFromDataset(manager, chart, ResultType.VECTOR_LITERAL));
+        xData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, false);
+        isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);
     }
 
     protected void updateDataset(String formatString) {
         Line[] lines = NO_LINES;
         try {
-            Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-            xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
+            xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, manager, null);
         }
         catch (Exception e) {
             ScavePlugin.logError(e);
@@ -102,6 +97,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     /**
      * Returns the features edited on this form.
      */
+    @Override
     public EStructuralFeature[] getFeatures() {
         return scatterChartFeatures;
     }

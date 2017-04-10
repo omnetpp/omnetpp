@@ -31,8 +31,7 @@ public class AnalysisItemProvider extends
         ScaveModelPackage scavePackage = ScaveModelPackage.eINSTANCE;
         if (value == null &&
                 (feature == scavePackage.getAnalysis_Inputs() ||
-                        feature == scavePackage.getAnalysis_Datasets() ||
-                        feature == scavePackage.getAnalysis_ChartSheets()))
+                        feature == scavePackage.getAnalysis_Charts()))
             return UnexecutableCommand.INSTANCE;
         else
             return super.createSetCommand(domain, owner, feature, value);

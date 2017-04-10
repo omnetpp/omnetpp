@@ -8,6 +8,9 @@
 package org.omnetpp.scave.model2.provider;
 
 import org.eclipse.emf.common.notify.Adapter;
+import org.omnetpp.scave.model.provider.BarChartItemProvider;
+import org.omnetpp.scave.model.provider.HistogramChartItemProvider;
+import org.omnetpp.scave.model.provider.LineChartItemProvider;
 
 /**
  *
@@ -33,41 +36,6 @@ public class ScaveModelItemProviderAdapterFactory extends
         }
 
         return barChartItemProvider;
-    }
-
-    @Override
-    public Adapter createChartSheetAdapter() {
-        if (chartSheetItemProvider == null) {
-            chartSheetItemProvider = new ChartSheetItemProvider(this);
-        }
-
-        return chartSheetItemProvider;
-    }
-
-    @Override
-    public Adapter createDatasetAdapter() {
-        if (datasetItemProvider == null) {
-            datasetItemProvider = new DatasetItemProvider(this);
-        }
-
-        return datasetItemProvider;
-    }
-
-    @Override
-    public Adapter createDatasetsAdapter() {
-        if (datasetsItemProvider == null) {
-            datasetsItemProvider = new DatasetsItemProvider(this);
-        }
-
-        return datasetsItemProvider;
-    }
-
-    @Override
-    public Adapter createGroupAdapter() {
-        if (groupItemProvider == null) {
-            groupItemProvider = new GroupItemProvider(this);
-        }
-        return groupItemProvider;
     }
 
     @Override

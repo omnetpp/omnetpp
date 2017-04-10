@@ -16,14 +16,12 @@ import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * This class listens on changes in the model, and refreshes the chart accordingly.
@@ -37,6 +35,7 @@ public class ChartUpdater {
     private final IChartView view;
     private final ResultFileManager manager;
     private final DelayedJob startUpdateJob = new DelayedJob(CHART_UPDATE_DELAY_MS) {
+        @Override
         public void run() {
             updateDataset();
         }
@@ -83,7 +82,7 @@ public class ChartUpdater {
         // add/remove chart property
         if (notifier instanceof Chart && notifier == chart) {
             switch (notification.getFeatureID(Chart.class)) {
-            case ScaveModelPackage.CHART__FILTERS:
+            case ScaveModelPackage.CHART__INPUT:
                 scheduleDatasetUpdate();
                 break;
             case ScaveModelPackage.CHART__PROPERTIES:
@@ -152,20 +151,7 @@ public class ChartUpdater {
                 "name".equals(((EStructuralFeature)notification.getFeature()).getName())) {
             // ignore name changes
         }
-        // add/remove change in the dataset of the chart or in its base dataset
-        else {
-            Dataset changedDataset = ScaveModelUtil.findEnclosingOrSelf(notifier, Dataset.class);
-            if (changedDataset == null)
-                return;
-
-            Dataset chartDataset = ScaveModelUtil.findEnclosingDataset(chart);
-            while (chartDataset != null && chartDataset != changedDataset)
-                chartDataset = chartDataset.getBasedOn();
-
-            if (chartDataset == changedDataset) {
-                scheduleDatasetUpdate();
-            }
-        }
+        // TODO add/remove change in the dataset of the chart or in its base dataset
     }
 
     private void setChartProperty(String name, String value) {

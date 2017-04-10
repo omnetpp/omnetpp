@@ -29,7 +29,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.Markers;
-import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -56,6 +56,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         super.dispose();
     }
 
+    @Override
     public Image decorateImage(Image image, Object element) {
         int severity = -1;
         if (element instanceof InputFile) {
@@ -68,10 +69,10 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
                     severity = maxSeverityLevel((IFile)resource);
             }
         }
-        else if (element instanceof DatasetItem) {
-            DatasetItem datasetItem = (DatasetItem)element;
-            IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
-            if (file != null && hasError(file, datasetItem))
+        else if (element instanceof Chart) {
+            Chart item = (Chart)element;
+            IFile file = ScaveModelUtil.getFileOfEObject(item);
+            if (file != null && hasError(file, item))
                 severity = IMarker.SEVERITY_ERROR;
         }
 
@@ -84,10 +85,12 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         return null;
     }
 
+    @Override
     public String decorateText(String text, Object element) {
         return null;
     }
 
+    @Override
     public boolean isLabelProperty(Object element, String property) {
         return false;
     }
@@ -131,12 +134,14 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
             return null;
     }
 
+    @Override
     public void resourceChanged(IResourceChangeEvent event) {
         if (isListenerAttached()) {
             final boolean[] someMarkerChanged = new boolean[] {false};
             try {
                 event.getDelta().accept(
                         new IResourceDeltaVisitor() {
+                            @Override
                             public boolean visit(IResourceDelta delta) {
                                 // we are interested only in marker annotation changes
                                 if ((delta.getFlags() & IResourceDelta.MARKERS) != 0 &&
@@ -155,6 +160,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
 
             if (someMarkerChanged[0])
                 PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
                         fireLabelProviderChanged(new LabelProviderChangedEvent(ScaveModelLabelDecorator.this));
                     }

@@ -53,7 +53,7 @@ public class VectorChartProperties extends ChartProperties
     {
         IXYDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<IXYDataset>() {
             public IXYDataset call() {
-                return DatasetManager.createXYDataset(chart, null, false, manager, null);
+                return DatasetManager.createXYDataset(chart, false, manager, null);
             }
         });
 

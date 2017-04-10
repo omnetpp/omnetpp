@@ -37,8 +37,7 @@ public class ScaveWizardUtil {
         Analysis analysis = factory.createAnalysis();
         Inputs inputs = factory.createInputs();
         analysis.setInputs(inputs);
-        analysis.setDatasets(factory.createDatasets());
-        analysis.setChartSheets(factory.createChartSheets());
+        analysis.setCharts(factory.createCharts());
 
         if (initialInputFiles != null) {
             for (String fileName : initialInputFiles) {

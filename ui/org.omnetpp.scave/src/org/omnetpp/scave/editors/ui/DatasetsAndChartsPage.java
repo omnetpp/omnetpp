@@ -30,8 +30,7 @@ import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.ChartSheets;
-import org.omnetpp.scave.model.Datasets;
+import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -63,7 +62,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
         createChartSheetsSection();
         sashform.setWeights(new int[] {2,1});
 
-        Composite palette = createPalette(getContent(), true);
+        Composite palette = createPalette(getContent());
 
         // configure viewers
         scaveEditor.configureTreeViewer(getDatasetsTreeViewer());
@@ -71,8 +70,7 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 
         // set contents
         Analysis analysis = scaveEditor.getAnalysis();
-        getDatasetsTreeViewer().setInput(analysis.getDatasets());
-        getChartSheetsTreeViewer().setInput(analysis.getChartSheets());
+        getDatasetsTreeViewer().setInput(analysis.getCharts());
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
@@ -137,12 +135,8 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
     public boolean gotoObject(Object object) {
         if (object instanceof EObject) {
             EObject eobject = (EObject)object;
-            if (ScaveModelUtil.findEnclosingOrSelf(eobject, Datasets.class) != null) {
+            if (ScaveModelUtil.findEnclosingOrSelf(eobject, Charts.class) != null) {
                 getDatasetsTreeViewer().reveal(eobject);
-                return true;
-            }
-            else if (ScaveModelUtil.findEnclosingOrSelf(eobject, ChartSheets.class) != null) {
-                getChartSheetsTreeViewer().reveal(eobject);
                 return true;
             }
         }

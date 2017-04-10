@@ -7,11 +7,7 @@
 
 package org.omnetpp.scave.editors.treeproviders;
 
-import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -26,32 +22,15 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.Markers;
-import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
-import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartSheet;
-import org.omnetpp.scave.model.ChartSheets;
-import org.omnetpp.scave.model.Compute;
-import org.omnetpp.scave.model.ComputeScalar;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model.Datasets;
-import org.omnetpp.scave.model.Deselect;
-import org.omnetpp.scave.model.Discard;
-import org.omnetpp.scave.model.Except;
-import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.Param;
-import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.model.Select;
-import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -68,15 +47,18 @@ public class ScaveModelLabelProvider extends LabelProvider implements IColorProv
         this.fallback = fallback;
     }
 
+    @Override
     public void dispose() {
         if (fallback != null)
             fallback.dispose();
     }
 
+    @Override
     public Image getImage(Object element) {
         return fallback != null ? fallback.getImage(element) : null;
     }
 
+    @Override
     public String getText(Object element) {
         if (element instanceof Analysis) {
             return "Analysis";
@@ -87,98 +69,6 @@ public class ScaveModelLabelProvider extends LabelProvider implements IColorProv
         else if (element instanceof InputFile) {
             InputFile o = (InputFile) element;
             return "file "+defaultIfEmpty(o.getName(), "<nothing>");
-        }
-        else if (element instanceof ChartSheets) {
-            return "Chart Sheets";
-        }
-        else if (element instanceof ChartSheet) {
-            ChartSheet o = (ChartSheet) element;
-            return "chart sheet "+defaultIfEmpty(o.getName(), "<unnamed>")+" ("+o.getCharts().size()+" charts)";
-        }
-        else if (element instanceof Datasets) {
-            return "Datasets";
-        }
-        else if (element instanceof Dataset) {
-            Dataset o = (Dataset) element;
-            String res = "dataset "+defaultIfEmpty(o.getName(), "<unnamed>");
-            if (o.getBasedOn()!=null)
-                res += " based on dataset "+defaultIfEmpty(o.getBasedOn().getName(), "<unnamed>");
-            return res;
-        }
-        else if (element instanceof SetOperation) {
-            // Add, Discard, Select, Deselect
-            SetOperation o = (SetOperation) element;
-
-            // "select..."
-            String res = "";
-            if (element instanceof Add)
-                res = "add";
-            else if (element instanceof Discard)
-                res = "discard";
-            else if (element instanceof Select)
-                res = "select";
-            else if (element instanceof Deselect)
-                res = "deselect";
-            else if (element instanceof Except)
-                res = "except";
-            else
-                res = "???";
-
-            res += " " + (o.getType()==null ? "???" : o.getType().getName())+"s: ";
-            res += defaultIfEmpty(o.getFilterPattern(), "all");
-
-            if (o.getSourceDataset()!=null)
-                res += " from dataset "+defaultIfEmpty(o.getSourceDataset().getName(), "<unnamed>");
-
-            return res;
-        }
-        else if (element instanceof Except) {
-            Except o = (Except) element;
-            return "except " + defaultIfEmpty(o.getFilterPattern(), "all");
-        }
-        else if (element instanceof ProcessingOp) {
-            ProcessingOp o = (ProcessingOp) element;
-            StringBuilder sb = new StringBuilder();
-
-            if (element instanceof Apply)
-                sb.append("apply");
-            else if (element instanceof Compute)
-                sb.append("compute");
-            else
-                sb.append("<unknown operation>");
-
-            sb.append(' ').append(defaultIfEmpty(o.getOperation(), "<undefined>"));
-
-            List<Param> params = o.getParams();
-            if (!params.isEmpty()) sb.append('(');
-            boolean firstIteration = true;
-            for (Param param : params) {
-                if (!firstIteration)
-                    sb.append(',');
-                else
-                    firstIteration = false;
-                sb.append(defaultIfEmpty(param.getName(), "<undefined>")).append('=').append(defaultIfEmpty(param.getValue(), ""));
-            }
-            if (!params.isEmpty()) sb.append(')');
-
-
-            return sb.toString();
-        }
-        else if (element instanceof ComputeScalar) {
-            ComputeScalar o = (ComputeScalar) element;
-            StringBuilder sb = new StringBuilder();
-            sb.append("compute scalar: ");
-            if (!isEmpty(o.getScalarName()))
-                sb.append(o.getScalarName());
-            else
-                sb.append("<unnamed>");
-            if (!isEmpty(o.getValueExpr()))
-                sb.append(" = ").append(o.getValueExpr());
-            return abbreviate(sb.toString(), 200);
-        }
-        else if (element instanceof Group) {
-            Group o = (Group) element;
-            return isEmpty(o.getName()) ? "group" : "group "+o.getName();
         }
         else if (element instanceof BarChart) {
             Chart o = (Chart) element;
@@ -199,10 +89,6 @@ public class ScaveModelLabelProvider extends LabelProvider implements IColorProv
         else if (element instanceof Chart) {
             throw new IllegalArgumentException("unrecognized chart type");
         }
-        else if (element instanceof Param) {
-            Param o = (Param) element;
-            return defaultIfEmpty(o.getName(), "<undefined>")+" = "+defaultIfEmpty(o.getValue(), "");
-        }
         else if (element instanceof Property) {
             Property o = (Property) element;
             return defaultIfEmpty(o.getName(), "<undefined>")+" = "+defaultIfEmpty(o.getValue(), "");
@@ -214,25 +100,27 @@ public class ScaveModelLabelProvider extends LabelProvider implements IColorProv
     }
 
     public String getTooltipText(Object element) {
-        if (element instanceof DatasetItem) {
-            DatasetItem datasetItem = (DatasetItem)element;
-            IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
-            if (file != null && hasError(file, datasetItem))
+        if (element instanceof Chart) {
+            Chart item = (Chart)element;
+            IFile file = ScaveModelUtil.getFileOfEObject(item);
+            if (file != null && hasError(file, item))
                 return "Errors, see Problems View";
         }
         return null;
     }
 
+    @Override
     public Color getForeground(Object element) {
-        if (element instanceof DatasetItem) {
-            DatasetItem datasetItem = (DatasetItem)element;
-            IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
-            if (file != null && hasError(file, datasetItem))
+        if (element instanceof Chart) {
+            Chart item = (Chart)element;
+            IFile file = ScaveModelUtil.getFileOfEObject(item);
+            if (file != null && hasError(file, item))
                 return ColorFactory.RED;
         }
         return null;
     }
 
+    @Override
     public Color getBackground(Object element) {
         return null;
     }

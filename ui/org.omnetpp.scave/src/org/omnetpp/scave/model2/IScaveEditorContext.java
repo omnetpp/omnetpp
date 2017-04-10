@@ -2,7 +2,6 @@ package org.omnetpp.scave.model2;
 
 import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.omnetpp.scave.computed.ComputedScalarManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
@@ -18,11 +17,6 @@ public interface IScaveEditorContext {
      * Returns the ResultFileManager of the editor.
      */
     ResultFileManagerEx getResultFileManager();
-
-    /**
-     * Returns the ComputedScalarManager of the editor.
-     */
-    ComputedScalarManager getComputedScalarManager();
 
     /**
      * Returns the IChangeNotifier of the editor.

@@ -24,7 +24,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.Enumerator;
@@ -48,22 +47,15 @@ import org.omnetpp.scave.engine.NodeTypeRegistry;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
-import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
-import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartSheet;
-import org.omnetpp.scave.model.ChartSheets;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
@@ -80,31 +72,6 @@ public class ScaveModelUtil {
 
     private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
     private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-
-    public static ChartSheet createDefaultChartSheet() {
-        ChartSheet chartsheet = factory.createChartSheet();
-        chartsheet.setName(DEFAULT_CHARTSHEET_NAME);
-        return chartsheet;
-    }
-
-    public static Dataset createDataset(String name) {
-        Dataset dataset = factory.createDataset();
-        dataset.setName(name);
-        return dataset;
-    }
-
-    public static Dataset createDataset(String name, Filter filter, ResultType type) {
-        Dataset dataset = createDataset(name);
-        dataset.getItems().add(createAdd(filter, type));
-        return dataset;
-    }
-
-    public static Dataset createTemporaryDataset(String name, IDList ids, String[] runidFields, ResultFileManager manager) {
-        Assert.isNotNull(runidFields);
-        Dataset dataset = createDataset(name);
-        dataset.getItems().addAll(createAdds(ids, runidFields, manager, true));
-        return dataset;
-    }
 
     public static Chart createChart(String name, ResultType type) {
         if (type==ResultType.SCALAR_LITERAL)
@@ -134,60 +101,6 @@ public class ScaveModelUtil {
         HistogramChart chart = factory.createHistogramChart();
         chart.setName(name);
         return chart;
-    }
-
-    public static Add createAdd(String filterString, ResultType type) {
-        Add add = factory.createAdd();
-        add.setFilterPattern(filterString);
-        add.setType(type);
-        return add;
-    }
-
-    public static Add createAdd(Filter filter, ResultType type) {
-        return createAdd(filter.getFilterPattern(), type);
-    }
-
-    /**
-     * Generates an Add command with filter pattern to identify item.
-     * @param filterFields may be null (meaning run/module/name)
-     */
-    public static Add createAdd(ResultItem item, String[] filterFields) {
-        Assert.isNotNull(filterFields);
-        return createAdd(new FilterUtil(item,filterFields).getFilterPattern(), getTypeOf(item));
-    }
-
-    /**
-     * Generates Add commands with filter patterns that identify elements in items[].
-     * @param runidFields  may be null (meaning autoselect)
-     */
-    public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
-        Assert.isNotNull(runidFields);
-        return createAddsWithFields(items, getFilterFieldsFor(runidFields));
-    }
-
-    public static Collection<Add> createAdds(IDList ids, String[] runidFields, ResultFileManager manager, boolean cacheIDs) {
-        Assert.isNotNull(runidFields);
-        String[] filterFields = getFilterFieldsFor(runidFields);
-        List<Add> adds = new ArrayList<Add>(ids.size());
-        for (int i = 0; i < ids.size(); ++i) {
-            long id = ids.get(i);
-            Add add = createAdd(manager.getItem(id), filterFields);
-            if (cacheIDs) {
-                IDList cachedIDs = new IDList();
-                cachedIDs.add(id);
-                add.setCachedIDs(cachedIDs);
-            }
-            adds.add(add);
-        }
-        return adds;
-    }
-
-    public static Collection<Add> createAddsWithFields(ResultItem[] items, String[] filterFields) {
-        Assert.isNotNull(filterFields);
-        List<Add> adds = new ArrayList<Add>(items.length);
-        for (ResultItem item : items)
-            adds.add(createAdd(item, filterFields));
-        return adds;
     }
 
     private static String[] getFilterFieldsFor(String[] runidFields) {
@@ -255,14 +168,6 @@ public class ScaveModelUtil {
         return findEnclosingOrSelf(eobject, Analysis.class);
     }
 
-    public static ChartSheet getDefaultChartSheet(Resource resource) {
-        Analysis analysis = getAnalysis(resource);
-        for (ChartSheet chartsheet : (List<ChartSheet>)analysis.getChartSheets().getChartSheets())
-            if (DEFAULT_CHARTSHEET_NAME.equals(chartsheet.getName()))
-                return chartsheet;
-        return null;
-    }
-
     public static EObject getPreviousSibling(EObject eobject) {
         EObject parent = eobject.eContainer();
         EStructuralFeature feature = eobject.eContainingFeature();
@@ -276,27 +181,6 @@ public class ScaveModelUtil {
         return null;
     }
 
-    public static Dataset findEnclosingDataset(EObject eobject) {
-        EObject parent = eobject.eContainer();
-        while (parent != null && !(parent instanceof Dataset))
-            parent = parent.eContainer();
-        return (Dataset)parent;
-    }
-
-    /**
-     * Returns the datasets in the resource.
-     */
-    public static List<Dataset> findDatasets(EObject eobject) {
-        List<Dataset> result = new ArrayList<Dataset>();
-        Analysis analysis = getAnalysis(eobject);
-        if (analysis != null && analysis.getDatasets() != null) {
-            for (Object object : analysis.getDatasets().getDatasets()) {
-                Dataset dataset = (Dataset)object;
-                result.add(dataset);
-            }
-        }
-        return result;
-    }
 
     /**
      * Finds an enclosing object having type {@code type}.
@@ -343,18 +227,8 @@ public class ScaveModelUtil {
     public static List<Chart> collectCharts(Collection<?> items) {
         List<Chart> charts = new ArrayList<Chart>();
         for (Object item : items)
-            if (item instanceof Chart) {
+            if (item instanceof Chart)
                 charts.add((Chart)item);
-            }
-            else if (item instanceof Dataset || item instanceof Group) {
-                for (TreeIterator<EObject> iter = ((EObject)item).eAllContents(); iter.hasNext(); ) {
-                    Object object = iter.next();
-                    if (object instanceof Chart)
-                        charts.add((Chart)object);
-                    else if (!(object instanceof Dataset || object instanceof Group))
-                        iter.prune();
-                }
-            }
         return charts;
     }
 
@@ -390,9 +264,7 @@ public class ScaveModelUtil {
         @Override
         protected boolean containment(EObject eObject) {
             return eObject instanceof Resource ||
-                   eObject instanceof Analysis ||
-                   eObject instanceof ChartSheets ||
-                   eObject instanceof ChartSheet;
+                   eObject instanceof Analysis;
         }
     }
 
@@ -447,7 +319,7 @@ public class ScaveModelUtil {
     }
 
     public static ResultItem[] getResultItems(IDList idlist, ResultFileManager manager) {
-        int size = (int)idlist.size();
+        int size = idlist.size();
         ResultItem[] items = new ResultItem[size];
         for (int i = 0; i < size; ++i)
             items[i] = manager.getItem(idlist.get(i));
@@ -518,27 +390,6 @@ public class ScaveModelUtil {
     }
 
 
-    /**
-     * Returns the default chart sheet.
-     * When the resource did not contain default chart sheet a new one is created,
-     * and a AddCommand is appended to the <code>command</code>, that adds
-     * the new chart sheet to the resource.
-     */
-    public static ChartSheet getOrCreateDefaultChartSheet(EditingDomain ed, CompoundCommand command, Resource resource) {
-        ChartSheet chartsheet = getDefaultChartSheet(resource);
-        if (chartsheet == null) {
-            chartsheet = createDefaultChartSheet();
-            command.append(
-                AddCommand.create(
-                    ed,
-                    getAnalysis(resource).getChartSheets(),
-                    pkg.getChartSheets_ChartSheets(),
-                    chartsheet,
-                    0));
-        }
-        return chartsheet;
-    }
-
     public static void dumpIDList(String header, final IDList idlist, final ResultFileManager manager) {
         Debug.print(header);
         if (idlist.size() == 0)
@@ -546,6 +397,7 @@ public class ScaveModelUtil {
         else {
             Debug.println();
             ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                @Override
                 public Object call() {
                     for (int i = 0; i < idlist.size(); ++i) {
                         ResultItem r = manager.getItem(idlist.get(i));
@@ -605,11 +457,6 @@ public class ScaveModelUtil {
         }
     }
 
-    public static boolean isFilterOperation(ProcessingOp operation) {
-        String op = operation.getOperation();
-        return op != null && isFilterOperation(op);
-    }
-
     public static boolean isFilterOperation(String operation) {
         NodeType nodeType = getNodeType(operation);
         return nodeType != null && isFilterOperation(nodeType);
@@ -617,11 +464,6 @@ public class ScaveModelUtil {
 
     public static boolean isFilterOperation(NodeType nodeType) {
         return hasCategory(nodeType, "filter");
-    }
-
-    public static boolean isMergerOperation(ProcessingOp operation) {
-        String op = operation.getOperation();
-        return op != null && isMergerOperation(op);
     }
 
     public static boolean isMergerOperation(String operation) {
@@ -654,20 +496,6 @@ public class ScaveModelUtil {
 
     private static final StringVector MODULE_AND_NAME =
         StringVector.fromArray(new String[] {ResultItemField.MODULE, ResultItemField.NAME});
-
-    public static ResultItemFields getGroupByFields(ProcessingOp operation) {
-        if (isFilterOperation(operation)) {
-            Assert.isTrue(false, "Should not be called for filters.");
-        }
-        else if (isMergerOperation(operation)) {
-            List<String> groupBy = operation.getGroupBy();
-            StringVector fields = groupBy != null ? StringVector.fromArray(groupBy.toArray(new String[groupBy.size()])): MODULE_AND_NAME;
-            return new ResultItemFields(fields);
-        }
-
-        Assert.isTrue(false, "Unexpected operation: "+operation.getOperation());
-        return null; // not reached
-    }
 
     public static IScaveEditorContext getScaveEditorContextFor(EObject object)
     {

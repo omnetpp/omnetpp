@@ -134,7 +134,7 @@ public class ScaveEditorPage extends Composite {
     /**
      * Creates palette for model object creation
      */
-    protected Composite createPalette(Composite parent, boolean wantDatasetAndChartsheet) {
+    protected Composite createPalette(Composite parent) {
         ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
         scrolledComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, false, true));
         scrolledComposite.setBackground(PALETTE_BG_COLOR);
@@ -143,7 +143,7 @@ public class ScaveEditorPage extends Composite {
         toolbar.setLayout(new RowLayout(SWT.VERTICAL));
         ((RowLayout)toolbar.getLayout()).fill = true;
         toolbar.setBackground(PALETTE_BG_COLOR);
-        new ModelObjectPalette(toolbar, BUTTONS_BG_COLOR, true, scaveEditor, wantDatasetAndChartsheet);
+        new ModelObjectPalette(toolbar, BUTTONS_BG_COLOR, true, scaveEditor);
         toolbar.setSize(toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
         return scrolledComposite;
     }
@@ -161,14 +161,17 @@ public class ScaveEditorPage extends Composite {
 
         // add our listener to handle file transfer to the DropTarget
         dropTarget.addDropListener(new DropTargetAdapter() {
+            @Override
             public void dragEnter(DropTargetEvent event) {
                 if (event.detail == DND.DROP_DEFAULT)
                     event.detail = DND.DROP_COPY;
             }
+            @Override
             public void dragOperationChanged(DropTargetEvent event) {
                 if (event.detail == DND.DROP_DEFAULT)
                     event.detail = DND.DROP_COPY;
             }
+            @Override
             public void drop(DropTargetEvent event) {
                 if (event.data instanceof String[]) {
                     String [] fileNames = (String[])event.data;
@@ -216,11 +219,13 @@ public class ScaveEditorPage extends Composite {
         //    button.setImage(action.getImageDescriptor().createImage());
 
         button.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 action.run();
             }
         });
         final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 if (event.getProperty().equals(IAction.ENABLED)) {
                     if (!button.isDisposed())
@@ -230,6 +235,7 @@ public class ScaveEditorPage extends Composite {
         };
         action.addPropertyChangeListener(propertyChangeListener);
         button.addDisposeListener(new DisposeListener() {
+            @Override
             public void widgetDisposed(DisposeEvent e) {
                 action.removePropertyChangeListener(propertyChangeListener);
             }
@@ -249,6 +255,7 @@ public class ScaveEditorPage extends Composite {
         doConfigureButton(button, action);
         action.setViewer(viewer);
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 action.selectionChanged(event.getSelection());
             }
@@ -270,6 +277,7 @@ public class ScaveEditorPage extends Composite {
     public static void configureViewerDefaultAction(final TreeViewer viewer, final IScaveAction action) {
         action.setViewer(viewer);
         viewer.getTree().addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 action.run();
             }

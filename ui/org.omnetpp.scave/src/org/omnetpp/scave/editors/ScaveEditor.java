@@ -84,11 +84,8 @@ import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
-import org.omnetpp.scave.computed.ComputedScalarManager;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
-import org.omnetpp.scave.editors.ui.ChartSheetPage;
-import org.omnetpp.scave.editors.ui.DatasetPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
@@ -96,9 +93,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.ChartSheet;
-import org.omnetpp.scave.model.ComputeScalar;
-import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -134,11 +128,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      * Loads/unloads result files in manager, according to changes in the model and in the workspace.
      */
     private ResultFilesTracker tracker;
-
-    /**
-     *
-     */
-    private ComputedScalarManager computedScalarManager;
 
     /**
      * Updates pages when the model changed.
@@ -177,10 +166,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             return ScaveEditor.this.getResultFileManager();
         }
 
-        public ComputedScalarManager getComputedScalarManager() {
-            return ScaveEditor.this.getComputedScalarManager();
-        }
-
+        @Override
         public IChangeNotifier getChangeNotifier() {
             return (IChangeNotifier)ScaveEditor.this.getAdapterFactory();
         }
@@ -196,15 +182,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      * The constructor.
      */
     public ScaveEditor() {
-        computedScalarManager = new ComputedScalarManager();
     }
 
     public ResultFileManagerEx getResultFileManager() {
         return manager;
-    }
-
-    public ComputedScalarManager getComputedScalarManager() {
-        return computedScalarManager;
     }
 
     public InputsPage getInputsPage() {
@@ -222,6 +203,9 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     @Override
     public void init(IEditorSite site, IEditorInput editorInput)
         throws PartInitException {
+
+//        if (true)
+//            throw new PartInitException("NOT IMPL");
 
         if (!(editorInput instanceof IFileEditorInput))
             throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + editorInput.getName(),
@@ -260,9 +244,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
         if (tracker != null) adapterFactory.removeListener(tracker);
         adapterFactory.removeListener(pageUpdater);
-
-        computedScalarManager.removeMarkers();
-        computedScalarManager.dispose();
 
         if (manager != null) {
             // deactivate the tracker explicitly, because it might receive a notification
@@ -364,10 +345,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         Analysis analysis = getAnalysis();
         if (analysis.getInputs()==null)
             analysis.setInputs(factory.createInputs());
-        if (analysis.getDatasets()==null)
-            analysis.setDatasets(factory.createDatasets());
-        if (analysis.getChartSheets()==null)
-            analysis.setChartSheets(factory.createChartSheets());
+        if (analysis.getCharts()==null)
+            analysis.setCharts(factory.createCharts());
 
         // create resource for temporary charts and datasets
         tempResource = createTempResource();
@@ -387,8 +366,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         IFile inputFile = ((IFileEditorInput)getEditorInput()).getFile();
         tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
 
-        computedScalarManager.init(editorContextAdapter, inputFile);
-
         // listen to model changes
         adapterFactory.addListener(tracker);
         adapterFactory.addListener(pageUpdater);
@@ -404,8 +381,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         Resource resource = editingDomain.getResourceSet().createResource(resourceURI);
         Analysis analysis = factory.createAnalysis();
         analysis.setInputs(factory.createInputs());
-        analysis.setDatasets(factory.createDatasets());
-        analysis.setChartSheets(factory.createChartSheets());
+        analysis.setCharts(factory.createCharts());
         resource.getContents().add(analysis);
         return resource;
     }
@@ -546,16 +522,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     }
 
     /**
-     * Opens a new editor page for the {@code object} (Dataset, Chart or ChartSheet),
-     * or switches to it if already opened.
+     * Opens a new editor page for the object, or switches to it if already opened.
      */
     public ScaveEditorPage open(Object object) {
-        if (object instanceof Dataset)
-            return openDataset((Dataset)object);
-        else if (object instanceof Chart)
+        if (object instanceof Chart)
             return openChart((Chart)object);
-        else if (object instanceof ChartSheet)
-            return openChartSheet((ChartSheet)object);
         else
             return null;
     }
@@ -566,22 +537,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      */
     public ScaveEditorPage openChart(Chart chart) {
         return openClosablePage(chart);
-    }
-
-    /**
-     * Opens the given dataset on a new editor page, or switches to it
-     * if already opened.
-     */
-    public ScaveEditorPage openDataset(Dataset dataset) {
-        return openClosablePage(dataset);
-    }
-
-    /**
-     * Opens the given chart sheet on a new editor page, or switches to it
-     * if already opened.
-     */
-    public ScaveEditorPage openChartSheet(ChartSheet chartSheet) {
-        return openClosablePage(chartSheet);
     }
 
     /**
@@ -677,12 +632,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      */
     private int createClosablePage(EObject object) {
         ScaveEditorPage page;
-        if (object instanceof Dataset)
-            page = new DatasetPage(getContainer(), this, (Dataset)object);
-        else if (object instanceof Chart)
+        if (object instanceof Chart)
             page = new ChartPage(getContainer(), this, (Chart)object);
-        else if (object instanceof ChartSheet)
-            page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
         else
             throw new IllegalArgumentException("Cannot create editor page for " + object);
 
@@ -873,15 +824,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
                         TreeIterator<EObject> contents = ((EObject)object).eAllContents();
                         // iterate on contents including object
                         for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
-                            if (next instanceof Dataset) {
-                                closePage((Dataset)next);
-                            }
-                            else if (next instanceof Chart) {
+                            if (next instanceof Chart) {
                                 closePage((Chart)next);
-                                contents.prune();
-                            }
-                            else if (next instanceof ChartSheet) {
-                                closePage((ChartSheet)next);
                                 contents.prune();
                             }
                         }

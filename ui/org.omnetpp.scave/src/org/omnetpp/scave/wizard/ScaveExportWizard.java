@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -65,10 +64,7 @@ import org.omnetpp.scave.engine.ExporterFactory;
 import org.omnetpp.scave.engine.ExporterType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.DatasetItem;
-import org.omnetpp.scave.model2.DatasetManager;
-import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.model.Chart;
 
 import com.swtworkbench.community.xswt.XSWT;
 
@@ -79,8 +75,6 @@ import com.swtworkbench.community.xswt.XSWT;
  */
 public class ScaveExportWizard extends Wizard implements IExportWizard {
     protected IDList selectedIDs = IDList.EMPTY;
-    protected Dataset selectedDataset;
-    protected DatasetItem selectedDatasetItem;
     protected int selectionItemTypes;
     protected ResultFileManager resultFileManager;
     protected Page page;
@@ -107,15 +101,14 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             selectedIDs = idlistSelection.toIDList();
             resultFileManager = idlistSelection.getResultFileManager();
         }
-        else if (selection.size() == 1 && (selection.getFirstElement() instanceof Dataset || selection.getFirstElement() instanceof DatasetItem)) {
-            // get IDList from selected Dataset or DatasetItem
+        else if (selection.size() == 1 && selection.getFirstElement() instanceof Chart) {
+            // get IDList from selected Chart
             Object selected = selection.getFirstElement();
             ScaveEditor editor = ScaveEditor.getActiveScaveEditor(workbench);
-            if (editor != null && selected instanceof Dataset || selected instanceof DatasetItem) {
-                selectedDataset = ScaveModelUtil.findEnclosingOrSelf((EObject)selected, Dataset.class);
-                selectedDatasetItem = (selected instanceof DatasetItem) ? (DatasetItem)selected : null;
+            if (editor != null && selected instanceof Chart) {
                 resultFileManager = editor.getResultFileManager();
-                selectedIDs = DatasetManager.getIDListFromDataset(resultFileManager, selectedDataset, selectedDatasetItem, null);
+                selectedIDs = null; //TODO DatasetManager.getIDListFromDataset(resultFileManager, selectedDataset, selectedDatasetItem, null);
+                MessageDialog.openError(getShell(), "Error", "Exporting data from charts is not implemented yet");
             }
         }
         else {

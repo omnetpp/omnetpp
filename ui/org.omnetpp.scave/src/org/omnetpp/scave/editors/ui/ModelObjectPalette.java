@@ -37,12 +37,9 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.ChartSheet;
-import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.wizard.NewScaveObjectWizard;
@@ -62,7 +59,7 @@ public class ModelObjectPalette {
     /**
      * Adds palette buttons to the given toolbar, and configures them.
      */
-    public ModelObjectPalette(Composite parent, Color buttonBgColor, boolean showText, ScaveEditor editor, boolean wantDatasetAndChartsheet) {
+    public ModelObjectPalette(Composite parent, Color buttonBgColor, boolean showText, ScaveEditor editor) {
         this.editor = editor;
         this.buttonBgColor = buttonBgColor;
         this.showText = showText;
@@ -70,29 +67,10 @@ public class ModelObjectPalette {
         ILabelProvider labelProvider = new AdapterFactoryLabelProvider(editor.getAdapterFactory());
         ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
-        if (wantDatasetAndChartsheet) {
-            addToolItem(parent, factory.createDataset(), labelProvider);
-            addSeparator(parent);
-        }
-        addToolItem(parent, factory.createAdd(), labelProvider);
-        addToolItem(parent, factory.createDiscard(), labelProvider);
-        addToolItem(parent, factory.createApply(), labelProvider);
-        addToolItem(parent, factory.createCompute(), labelProvider);
-        addToolItem(parent, factory.createComputeScalar(), labelProvider);
-        addToolItem(parent, factory.createGroup(), labelProvider);
-        addSeparator(parent);
-        addToolItem(parent, factory.createSelect(), labelProvider);
-        addToolItem(parent, factory.createDeselect(), labelProvider);
-        addToolItem(parent, factory.createExcept(), labelProvider);
-        addSeparator(parent);
         addToolItem(parent, factory.createBarChart(), labelProvider);
         addToolItem(parent, factory.createLineChart(), labelProvider);
         addToolItem(parent, factory.createHistogramChart(), labelProvider);
         addToolItem(parent, factory.createScatterChart(), labelProvider);
-        if (wantDatasetAndChartsheet) {
-            addSeparator(parent);
-            addToolItem(parent, factory.createChartSheet(), labelProvider);
-        }
     }
 
 
@@ -109,8 +87,10 @@ public class ModelObjectPalette {
         toolButton.setToolTipText(hint + "\n" + desc);
 
         toolButton.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Object>() {
+                    @Override
                     public Object call() throws Exception {
                         addAsChildOrSibling(elementPrototype);
                         return null;
@@ -128,11 +108,14 @@ public class ModelObjectPalette {
 
         // modeled after EMF's ViewerDragAdapter
         dragSource.addDragListener(new DragSourceListener() {
+            @Override
             public void dragStart(DragSourceEvent event) {}
+            @Override
             public void dragFinished(DragSourceEvent event) {
                 LocalTransfer.getInstance().javaToNative(null, null);
             }
 
+            @Override
             public void dragSetData(DragSourceEvent event) {
                 if (LocalTransfer.getInstance().isSupportedType(event.dataType))
                     event.data = new StructuredSelection(EcoreUtil.copy(elementPrototype));
@@ -148,17 +131,15 @@ public class ModelObjectPalette {
     }
 
     protected void addAsChildOrSibling(EObject elementPrototype) {
-        ISelection sel = editor.getSelection();
-
-        // choose target: use the selected object, except if element is a Dataset
-        // or ChartSheet which have fixed places in the model
-        EObject target = null;
-        if (elementPrototype instanceof Dataset)
-            target = editor.getAnalysis().getDatasets();
-        else if (elementPrototype instanceof ChartSheet)
-            target = editor.getAnalysis().getChartSheets();
-        else if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject)
-            target = (EObject) ((IStructuredSelection) sel).getFirstElement();
+    	EObject target = editor.getAnalysis().getCharts();
+//XXX    	
+//        ISelection sel = editor.getSelection();
+//
+//        // choose target: use the selected object, except if element is a Dataset
+//        // or ChartSheet which have fixed places in the model
+//        EObject target = null;
+//        if (sel instanceof IStructuredSelection && ((IStructuredSelection)sel).getFirstElement() instanceof EObject)
+//            target = (EObject) ((IStructuredSelection) sel).getFirstElement();
 
         //XXX factor out common part
         if (target != null) {
@@ -195,6 +176,7 @@ public class ModelObjectPalette {
             // Note: must be in asyncExec(), otherwise setSelection() has no effect on the TreeViewers! (JFace bug?)
             if (element.eContainer() != null) {
                 Display.getDefault().asyncExec(new Runnable() {
+                    @Override
                     public void run() {
                         editor.setSelection(new StructuredSelection(element));
                     }
@@ -207,30 +189,10 @@ public class ModelObjectPalette {
         ScaveModelPackage e = ScaveModelPackage.eINSTANCE;
         if (c == e.getAnalysis())
             return "";
-
         if (c == e.getInputs())
             return "Contains the input files of the analysis.";
         if (c == e.getInputFile())
             return "Specifies a result file (output vector or scalar file), or a sets of files using wildcards, to be used as input for the analysis.";
-
-        if (c == e.getDatasets())
-            return "The Datasets object is a container for all datasets.";
-        if (c == e.getDataset())
-            return "In a Dataset you can choose a subset of input data, apply various processing steps, and create charts from them. " +
-                    "Operations within the dataset are evaluated one after another, like a program.";
-        if (c == e.getAdd())
-            return "Add operations add more scalars, vectors or histograms to the dataset.";
-        if (c == e.getDiscard())
-            return "Discard operations remove (a subset of) previously added scalars, vectors or histograms from the dataset.";
-        if (c == e.getApply())
-            return "An Apply operation replaces (a subset of the) vectors in the dataset with the result of some transformation.";
-        if (c == e.getCompute())
-            return "A Compute operation performs a calculation on (a subset of the) vectors in the dataset, and adds the result to the dataset.";
-        if (c == e.getComputeScalar())
-            return "A Compute Scalar operation performs a calculation on (a subset of the) data in the dataset, and adds the scalar results to the dataset";
-        if (c == e.getGroup())
-            return "A Group object creates a local copy of the dataset (conceptually), and lets you apply various processing steps without affecting the dataset's main flow.";
-
         if (c == e.getLineChart())
             return "A LineChart object creates a line chart from (a subset of the) the vector results in the dataset.";
         if (c == e.getBarChart())
@@ -240,25 +202,8 @@ public class ModelObjectPalette {
         if (c == e.getScatterChart())
             return "A ScatterChart object interprets scalars generated by different runs " +
                     "as (x,y) coordinates, and plots them on a line chart.";
-
-        if (c == e.getSelect())
-            return "A Select object refines the scope of a processing operation (Apply, Compute) or a chart. " +
-                    "It can only occur within those object types.";
-        if (c == e.getDeselect())
-            return "A Deselect object refines the scope of a processing operation (Apply, Compute) or a chart. " +
-                    "It may only occur within those object types.";
-        if (c == e.getExcept())
-            return "An Except object further refines a Select or Deselect object, and may only occur within those object types.";
-
-        if (c == e.getParam())
-            return "";
         if (c == e.getProperty())
             return "";
-
-        if (c == e.getChartSheets())
-            return "";
-        if (c == e.getChartSheet())
-            return "ChartSheet objects can be used to organize charts (themselves defined within Datasets) into groups.";
         return null;
     }
 
