@@ -30,9 +30,8 @@ public class GotoChartDefinitionAction extends AbstractScaveAction {
         if (chart == null || ScaveModelUtil.isTemporaryChart(chart, editor))
             return;
 
-
-        editor.showDatasetsPage();
-        editor.setSelection(new StructuredSelection(chart));
+        editor.showChartsPage();
+        editor.setSelection(new StructuredSelection(chart));  //TOOD chartsPage.setSelection() instead!
     }
 
     protected Chart getChart(ScaveEditor editor, IStructuredSelection selection) {

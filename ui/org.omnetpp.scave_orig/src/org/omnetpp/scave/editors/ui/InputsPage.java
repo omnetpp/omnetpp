@@ -252,6 +252,7 @@ public class InputsPage extends ScaveEditorPage {
 
     @Override
     public void selectionChanged(ISelection selection) {
+        System.out.println("SELECTION: " + selection);
         setViewerSelectionNoNotify(getInputFilesTreeViewer(), selection);
     }
 }

@@ -85,7 +85,7 @@ import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
-import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
+import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.views.DatasetView;
@@ -533,9 +533,9 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         if (activeEditorPart instanceof ScaveEditor) {
             ScaveEditor scaveEditor = (ScaveEditor)activeEditorPart;
             ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-            visible = page instanceof DatasetsAndChartsPage;
+            visible = page instanceof ChartsPage;
         }
-        showOptionalToolbarActions(visible);
+        showOptionalToolbarActions(visible); //TODO ???
     }
 
     public IAction getOpenAction() {

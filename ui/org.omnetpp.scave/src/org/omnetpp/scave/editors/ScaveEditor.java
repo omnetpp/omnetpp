@@ -143,7 +143,6 @@ import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartsPage;
-import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -176,7 +175,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
     private InputsPage inputsPage;
     private BrowseDataPage browseDataPage;
-    private DatasetsAndChartsPage datasetsPage;
     private ChartsPage chartsPage;
     private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
 
@@ -386,10 +384,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
     public BrowseDataPage getBrowseDataPage() {
         return browseDataPage;
-    }
-
-    public DatasetsAndChartsPage getDatasetsPage() {
-        return datasetsPage;
     }
 
     public ChartsPage getChartsPage() {
@@ -621,7 +615,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         createInputsPage();
         createBrowseDataPage();
-        createDatasetsPage();
         createChartsPage();
 
         // We can load the result files now.
@@ -816,10 +809,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         showPage(getBrowseDataPage());
     }
 
-    public void showDatasetsPage() {
-        showPage(getDatasetsPage());
-    }
-
     public void showChartsPage() {
         showPage(getChartsPage());
     }
@@ -870,11 +859,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private void createBrowseDataPage() {
         browseDataPage = new BrowseDataPage(getContainer(), this);
         addScaveEditorPage(browseDataPage);
-    }
-
-    private void createDatasetsPage() {
-        datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
-        addScaveEditorPage(datasetsPage);
     }
 
     private void createChartsPage() {
@@ -952,7 +936,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         inputsPage.selectionChanged(selection);
         browseDataPage.selectionChanged(selection);
-        datasetsPage.selectionChanged(selection);
         chartsPage.selectionChanged(selection);
         for (Control page : closablePages.values())
             ((ScaveEditorPage)page).selectionChanged(selection);
@@ -1175,8 +1158,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             return "Inputs";
         else if (page.equals(browseDataPage))
             return "BrowseData";
-        else if (page.equals(datasetsPage))
-            return "Datasets";
         else if (page.equals(chartsPage))
             return "Charts";
         else {
@@ -1203,10 +1184,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         else if (pageId.equals("BrowseData")) {
             setActivePage(findPage(browseDataPage));
             return browseDataPage;
-        }
-        else if (pageId.equals("Datasets")) {
-            setActivePage(findPage(datasetsPage));
-            return datasetsPage;
         }
         else if (pageId.equals("Charts")) {
             setActivePage(findPage(chartsPage));
@@ -1332,7 +1309,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         try {
             if (marker.getType().equals(Markers.COMPUTESCALAR_PROBLEMMARKER_ID)) {
                 Object object = marker.getAttribute(Markers.EOBJECT_MARKERATTR_ID);
-                if (object instanceof EObject && datasetsPage != null) {
+                if (object instanceof EObject && chartsPage != null) {
                     gotoObject(object);
                     setSelectionToViewer(Collections.singleton(editingDomain.getWrapper(object)));
                 }
