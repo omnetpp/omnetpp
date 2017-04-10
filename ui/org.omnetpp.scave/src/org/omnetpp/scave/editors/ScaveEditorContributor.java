@@ -281,6 +281,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
     public void menuAboutToShow(IMenuManager menuManager) {
         // This is called for context menus of the model tree viewers
         super.menuAboutToShow(menuManager);
+      
         // replace the inherited deleteAction with ours, that handle references and temp obects well
         IContributionItem deleteActionItem = null;
         for (IContributionItem item : menuManager.getItems())
@@ -296,12 +297,14 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
             menuManager.insertBefore("additions-end", deleteAction);
         }
 
-        menuManager.insertBefore("additions", openAction);
-        menuManager.insertBefore("additions", editAction);
+        menuManager.insertBefore("edit", openAction);
+        menuManager.insertBefore("edit", editAction);
 
-        menuManager.insertBefore("edit", new Separator());
-        menuManager.insertBefore("edit", createExportMenu());
-        menuManager.insertBefore("edit", exportChartsAction);
+        menuManager.insertAfter("additions-end", new Separator());
+        menuManager.insertAfter("additions-end", createExportMenu());
+        menuManager.insertAfter("additions-end", exportChartsAction);
+
+
     }
 
     @Override

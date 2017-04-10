@@ -74,7 +74,13 @@ public class DatasetManager {
         }
         
         String filterExpression = chart.getInput();
-        idList = manager.filterIDList(idList, filterExpression);
+        if (StringUtils.isBlank(filterExpression))
+        	idList = new IDList();
+        else {
+        	System.out.println("FILTER: '" + filterExpression + "'");
+        	idList = manager.filterIDList(idList, filterExpression);
+        	System.out.println("MATCHED " + idList.size() + " ITEMS");
+        }
         return idList;
     }
 

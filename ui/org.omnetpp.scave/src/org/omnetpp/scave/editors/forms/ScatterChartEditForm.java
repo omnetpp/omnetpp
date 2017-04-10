@@ -46,6 +46,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 
     private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
         pkg.getChart_Name(),
+        pkg.getChart_Input(),
         pkg.getScatterChart_XDataPattern(),
         pkg.getScatterChart_IsoDataPattern(),
         pkg.getScatterChart_AverageReplications(),

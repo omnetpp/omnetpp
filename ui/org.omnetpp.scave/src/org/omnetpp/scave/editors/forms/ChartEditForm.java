@@ -48,12 +48,14 @@ import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
+import org.omnetpp.scave.editors.datatable.FilterField;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ChartLine;
+import org.omnetpp.scave.model2.FilterHints;
 
 /**
  * Edit form of charts.
@@ -79,6 +81,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      */
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
         pkg.getChart_Name(),
+        pkg.getChart_Input(),
         pkg.getChart_Properties(),
     };
 
@@ -94,6 +97,9 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     // controls
     protected Group nameGroup;
     private Text nameText;
+    protected Group inputGroup;
+    private Text inputText;
+    private FilterField inputFilterField;
     protected Group optionsGroup;
     private Button antialiasCheckbox;
     private Button cachingCheckbox;
@@ -212,9 +218,13 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         Composite panel = (Composite)item.getControl();
 
         if (TAB_MAIN.equals(name)) {
-            nameGroup = createGroup("Names", panel);
+            nameGroup = createGroup("Name", panel);
             nameText = createTextField("Chart name:", nameGroup);
             nameText.setFocus();
+            inputGroup = createGroup("Input", panel);
+            inputText = createMultilineTextField("Result filter:", inputGroup);
+            inputFilterField = new FilterField(inputText);
+            inputFilterField.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
             optionsGroup = createGroup("Options", panel, 1);
             antialiasCheckbox = createCheckboxField("Use antialias", optionsGroup);
             antialiasCheckbox.setSelection(ChartDefaults.DEFAULT_ANTIALIAS);
@@ -368,6 +378,17 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         else {
             moveChildAfter(text, prevSibling);
         }
+        return text;
+    }
+
+    protected Text createMultilineTextField(String labelText, Composite parent) {
+        if (labelText != null) {
+            Label label = createLabel(labelText, parent);
+            label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+        }
+        Text text = new Text(parent, SWT.MULTI | SWT.BORDER);
+        text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData)text.getLayoutData()).heightHint = 100;
         return text;
     }
 
@@ -549,6 +570,8 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         switch (feature.getFeatureID()) {
         case ScaveModelPackage.CHART__NAME:
             return nameText.getText();
+        case ScaveModelPackage.CHART__INPUT:
+            return inputText.getText();
         case ScaveModelPackage.CHART__PROPERTIES:
             ChartProperties newProps = ChartProperties.createPropertySource(chart, new ArrayList<Property>(), manager);
             collectProperties(newProps);
@@ -565,6 +588,9 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         switch (feature.getFeatureID()) {
         case ScaveModelPackage.CHART__NAME:
             nameText.setText(value == null ? "" : (String)value);
+            break;
+        case ScaveModelPackage.CHART__INPUT:
+            inputText.setText(value == null ? "" : (String)value);
             break;
         case ScaveModelPackage.CHART__PROPERTIES:
             if (value != null) {

@@ -73,6 +73,7 @@ public class BarChartEditForm extends ChartEditForm {
 
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
         pkg.getChart_Name(),
+        pkg.getChart_Input(),
         pkg.getBarChart_GroupByFields(),
         pkg.getBarChart_BarFields(),
         pkg.getBarChart_AveragedFields(),
