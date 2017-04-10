@@ -18,7 +18,7 @@
   `license' for details on this and other legal matters.
  *--------------------------------------------------------------*/
 
-#include <stdint.h> // uint64_t
+#include <cstdint>
 
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN

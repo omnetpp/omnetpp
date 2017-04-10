@@ -18,7 +18,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
-#include <stdint.h>  // <cstdint> is C++11
+#include <cstdint>
 
 #include "common/opp_ctype.h"
 #include "common/fnamelisttokenizer.h"

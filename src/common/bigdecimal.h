@@ -20,7 +20,7 @@
 #include <string>
 #include <iostream>
 #include <cmath>
-#include <stdint.h> // <cstdint> is C++11
+#include <cstdint>
 #include <climits>
 #include "omnetpp/platdep/intlimits.h"
 #include "commondefs.h"

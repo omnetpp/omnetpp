@@ -18,7 +18,7 @@
 #define __OMNETPP_COMMON_COMMONUTIL_H
 
 #include <cassert>
-#include <stdint.h> // <cstdint> is C++11
+#include <cstdint>
 #include <iostream>
 #include <sstream>
 #include <iomanip>

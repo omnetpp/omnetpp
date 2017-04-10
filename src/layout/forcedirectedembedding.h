@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_LAYOUT_FORCEDIRECTEDEMBEDDING_H
 #define __OMNETPP_LAYOUT_FORCEDIRECTEDEMBEDDING_H
 
-#include <stdint.h> // <cstdint> is C++11
+#include <cstdint>
 #include <algorithm>
 #include <ctime>
 #include <iostream>

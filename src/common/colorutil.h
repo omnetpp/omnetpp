@@ -17,7 +17,7 @@
 #define __OMNETPP_COMMON_COLORUTIL_H
 
 #include "commondefs.h"
-#include <stdint.h> // should use cstdint, but that is C++11
+#include <cstdint>
 
 namespace omnetpp {
 namespace common {

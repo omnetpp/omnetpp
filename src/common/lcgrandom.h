@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_COMMON_LCGRANDOM_H
 #define __OMNETPP_COMMON_LCGRANDOM_H
 
-#include <stdint.h> // <cstdint> is C++11
+#include <cstdint>
 #include "commondefs.h"
 #include "exception.h"
 

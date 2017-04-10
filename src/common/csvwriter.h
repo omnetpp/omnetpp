@@ -19,7 +19,7 @@
 
 #include <fstream>
 #include <string>
-#include <stdint.h> // <cstdint> is C++11
+#include <cstdint>
 #include "commondefs.h"
 
 namespace omnetpp {

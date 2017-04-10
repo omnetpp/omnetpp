@@ -20,7 +20,7 @@
 #include <string>
 #include <set>
 #include <functional>
-#include <stdint.h>  // <cstdint> is C++11
+#include <cstdint>
 #include "common/commonutil.h"
 #include "scavedefs.h"
 
