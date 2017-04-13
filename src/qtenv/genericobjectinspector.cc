@@ -195,6 +195,9 @@ void GenericObjectInspector::closeEvent(QCloseEvent *event)
 void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
 {
     auto object = model->getCObjectPointer(index);
+    if (!object)
+        return;
+
     InspectorFactory *factory = findInspectorFactoryFor(object, INSP_DEFAULT);
     if (!factory) {
         getQtenv()->confirm(Qtenv::INFO, opp_stringf("Class '%s' has no associated inspectors.", object->getClassName()).c_str());
