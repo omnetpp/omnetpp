@@ -106,18 +106,18 @@ public class FilterHints {
         else if (field.equals(NAME)) {
             setHints(NAME, manager.getNameFilterHints(idlist).toArray());
         }
-        else if (field.getKind() == FilterField.Kind.ItemField) {
+        else if (field.getKind() == Kind.ItemField) {
             setHints(Kind.ItemField, field.getName(), manager.getResultItemAttributeFilterHints(idlist, field.getName()).toArray());
         }
-        else if (field.getKind() == FilterField.Kind.RunAttribute) {
+        else if (field.getKind() == Kind.RunAttribute) {
             RunList runList = manager.getUniqueRuns(idlist);
             setHints(Kind.RunAttribute, field.getName(), manager.getRunAttributeFilterHints(runList, field.getName()).toArray());
         }
-        else if (field.getKind() == FilterField.Kind.IterationVariable) {
+        else if (field.getKind() == Kind.IterationVariable) {
             RunList runList = manager.getUniqueRuns(idlist);
             setHints(Kind.RunAttribute, field.getName(), manager.getIterationVariableFilterHints(runList, field.getName()).toArray());
         }
-        else if (field.getKind() == FilterField.Kind.ParamAssignment) {
+        else if (field.getKind() == Kind.ParamAssignment) {
             RunList runList = manager.getUniqueRuns(idlist);
             setHints(Kind.ParamAssignment, field.getName(), manager.getParamAssignmentFilterHints(runList, field.getName()).toArray());
         }

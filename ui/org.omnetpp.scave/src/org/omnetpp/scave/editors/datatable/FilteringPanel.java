@@ -7,9 +7,7 @@
 
 package org.omnetpp.scave.editors.datatable;
 
-import static org.omnetpp.scave.model2.FilterField.MODULE;
-import static org.omnetpp.scave.model2.FilterField.NAME;
-import static org.omnetpp.scave.model2.FilterField.RUN;
+import static org.omnetpp.scave.model2.FilterField.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,8 +39,7 @@ import org.omnetpp.scave.model2.FilterUtil;
  */
 public class FilteringPanel extends Composite {
 
-    private final List<FilterField> simpleFilterFields = Collections.unmodifiableList(
-                                                            Arrays.asList(new FilterField[] {RUN, MODULE, NAME}));
+    private final List<FilterField> simpleFilterFields = Collections.unmodifiableList(Arrays.asList(new FilterField[] {EXPERIMENT, MEASUREMENT, REPLICATION, MODULE, NAME}));
 
     private Image IMG_BASICFILTER = ScavePlugin.getImage("icons/full/obj16/basicfilter.png");
     private Image IMG_ADVANCEDFILTER = ScavePlugin.getImage("icons/full/obj16/advancedfilter.png");
@@ -59,7 +56,9 @@ public class FilteringPanel extends Composite {
 
     // Combo boxes for the "Simple" mode
     private Composite simpleFilterPanel;
-    private Combo runCombo;
+    private Combo experimentCombo;
+    private Combo measurementCombo;
+    private Combo replicationCombo;
     private Combo moduleCombo;
     private Combo dataCombo;
 
@@ -80,6 +79,18 @@ public class FilteringPanel extends Composite {
         return simpleFilterFields;
     }
 
+    public Combo getExperimentCombo() {
+        return experimentCombo;
+    }
+
+    public Combo getMeasurementCombo() {
+        return measurementCombo;
+    }
+
+    public Combo getReplicationCombo() {
+        return replicationCombo;
+    }
+
     public Combo getModuleNameCombo() {
         return moduleCombo;
     }
@@ -88,14 +99,14 @@ public class FilteringPanel extends Composite {
         return dataCombo;
     }
 
-    public Combo getRunNameCombo() {
-        return runCombo;
-    }
-
     public Combo getFilterCombo(FilterField field)
     {
-        if (field.equals(RUN))
-            return runCombo;
+        if (field.equals(EXPERIMENT))
+            return experimentCombo;
+        else if (field.equals(MEASUREMENT))
+            return measurementCombo;
+        else if (field.equals(REPLICATION))
+            return replicationCombo;
         else if (field.equals(MODULE))
             return moduleCombo;
         else if (field.equals(NAME))
@@ -113,16 +124,16 @@ public class FilteringPanel extends Composite {
     }
 
     public void setFilterHints(FilterHints hints) {
-        setFilterHints(runCombo, hints.getHints(RUN));
+        setFilterHints(experimentCombo, hints.getHints(EXPERIMENT));
+        setFilterHints(measurementCombo, hints.getHints(MEASUREMENT));
+        setFilterHints(replicationCombo, hints.getHints(REPLICATION));
         setFilterHints(moduleCombo, hints.getHints(MODULE));
         setFilterHints(dataCombo, hints.getHints(NAME));
         advancedFilter.setFilterHints(hints);
     }
 
-    public void setFilterHintsOfCombos(FilterHints hints)
-    {
-        for (FilterField field : hints.getFields())
-        {
+    public void setFilterHintsOfCombos(FilterHints hints) {
+        for (FilterField field : hints.getFields()) {
             Combo combo = getFilterCombo(field);
             if (combo != null)
                 setFilterHints(combo, hints.getHints(field));
@@ -182,14 +193,16 @@ public class FilteringPanel extends Composite {
                 return false;  // user cancelled
         }
 
-        String[] supportedFields = new String[] {RUN.getName(), MODULE.getName(), NAME.getName()};
+        String[] supportedFields = new String[] {EXPERIMENT.getName(), MEASUREMENT.getName(), REPLICATION.getName(), MODULE.getName(), NAME.getName()};
         if (!filterUtil.containsOnly(supportedFields)) {
             boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
             if (!ok)
                 return false;  // user cancelled
         }
 
-        runCombo.setText(filterUtil.getField(RUN.getName()));
+        experimentCombo.setText(filterUtil.getField(EXPERIMENT.getName()));
+        measurementCombo.setText(filterUtil.getField(MEASUREMENT.getName()));
+        replicationCombo.setText(filterUtil.getField(REPLICATION.getName()));
         moduleCombo.setText(filterUtil.getField(MODULE.getName()));
         dataCombo.setText(filterUtil.getField(NAME.getName()));
 
@@ -303,11 +316,14 @@ public class FilteringPanel extends Composite {
         ((GridLayout)simpleFilterPanel.getLayout()).marginHeight = 0;
         ((GridLayout)simpleFilterPanel.getLayout()).marginWidth = 0;
 
-        Composite sashForm = new SashForm(simpleFilterPanel, SWT.SMOOTH);
+        SashForm sashForm = new SashForm(simpleFilterPanel, SWT.SMOOTH);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
-        runCombo = createFilterCombo(sashForm, "runID filter", "RunID Filter");
+        experimentCombo = createFilterCombo(sashForm, "experiment filter", "Experiment Filter");
+        measurementCombo = createFilterCombo(sashForm, "measurement filter", "Measurement Filter");
+        replicationCombo = createFilterCombo(sashForm, "replication filter", "Replication Filter");
         moduleCombo = createFilterCombo(sashForm, "module filter", "Module Filter");
-        dataCombo = createFilterCombo(sashForm, "statistic name filter", "Statistic Name Filter");
+        dataCombo = createFilterCombo(sashForm, "result name filter", "Result Name Filter");
+        sashForm.setWeights(new int[] {2,3,1,3,3});
 
         // Filter button
         filterButton = new Button(filterContainer, SWT.NONE);

@@ -9,6 +9,7 @@ package org.omnetpp.scave.model2;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.RunAttribute;
 
 /**
  * Fields can be used in filter strings (e.g. "file", "run", "attr:...").
@@ -17,8 +18,7 @@ import org.omnetpp.scave.engine.ResultItemField;
  */
 public class FilterField implements Comparable<FilterField> {
 
-    public enum Kind
-    {
+    public enum Kind {
         ItemField,
         RunAttribute,
         IterationVariable,
@@ -28,9 +28,11 @@ public class FilterField implements Comparable<FilterField> {
     public static final FilterField
         FILE = new FilterField(Kind.ItemField, ResultItemField.FILE),
         RUN = new FilterField(Kind.ItemField, ResultItemField.RUN),
+        EXPERIMENT = new FilterField(Kind.RunAttribute, RunAttribute.EXPERIMENT),
+        MEASUREMENT = new FilterField(Kind.RunAttribute, RunAttribute.MEASUREMENT),
+        REPLICATION = new FilterField(Kind.RunAttribute, RunAttribute.REPLICATION),
         MODULE = new FilterField(Kind.ItemField, ResultItemField.MODULE),
         NAME = new FilterField(Kind.ItemField, ResultItemField.NAME);
-
 
     private Kind kind;
     private String name;
@@ -77,6 +79,7 @@ public class FilterField implements Comparable<FilterField> {
         return kind.equals(otherField.kind) && name.equals(otherField.name);
     }
 
+    @Override
     public int compareTo(FilterField other) {
         int kindCmp = this.kind.compareTo(other.kind);
         return kindCmp == 0 ? this.name.compareTo(other.name) : kindCmp;
