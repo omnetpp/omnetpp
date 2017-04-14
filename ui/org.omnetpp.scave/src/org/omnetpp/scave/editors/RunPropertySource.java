@@ -15,11 +15,8 @@ import org.omnetpp.scave.engine.Run;
 public class RunPropertySource implements IPropertySource {
     // display labels as well as property IDs
     public static final String PROP_RUN_NAME = "Run Name";
-    public static final String PROP_RUN_NUMBER = "Run Number";
 
-    public static final String[] MAIN_PROPERTY_IDS = {
-        PROP_RUN_NAME, PROP_RUN_NUMBER
-    };
+    public static final String[] MAIN_PROPERTY_IDS = { PROP_RUN_NAME };
 
     protected static final IPropertyDescriptor[] MAIN_PROPERTY_DESCS = makeDescriptors(MAIN_PROPERTY_IDS, "", "Main");
 
@@ -61,10 +58,8 @@ public class RunPropertySource implements IPropertySource {
             return run.getIterationVariable(propertyId.toString().substring(1));
         if (propertyId instanceof String && propertyId.toString().charAt(0)=='%')
             return run.getParamAssignment(propertyId.toString().substring(1));
-
-        if (propertyId.equals(PROP_RUN_NAME)) return run.getRunName();
-        if (propertyId.equals(PROP_RUN_NUMBER)) return run.getAttribute("runnumber");
-
+        if (propertyId.equals(PROP_RUN_NAME))
+            return run.getRunName();
         return null;
     }
 
