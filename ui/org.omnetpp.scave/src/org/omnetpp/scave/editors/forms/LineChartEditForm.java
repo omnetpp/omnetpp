@@ -16,6 +16,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -55,8 +56,8 @@ public class LineChartEditForm extends BaseLineChartEditForm {
     protected void populateTabItem(final TabItem item) {
         super.populateTabItem(item);
         String name = item.getText();
-        if (TAB_MAIN.equals(name)) {
-            lineNamePattern = createTextField("Line names:", nameGroup);
+        if (TAB_CHART.equals(name)) {
+            lineNamePattern = createTextField("Line naming:", optionsGroup);
             new ResultItemNamePatternField(lineNamePattern);
         }
         else if (TAB_LINES.equals(name)) {

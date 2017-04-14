@@ -68,7 +68,7 @@ import org.omnetpp.scave.model2.FilterHints;
 // TODO use validator for font and number fields
 public class ChartEditForm extends BaseScaveObjectEditForm {
     public static final String TAB_MAIN = "Main";
-    public static final String TAB_TITLES = "Titles";
+    public static final String TAB_CHART = "Chart";
     public static final String TAB_AXES = "Axes";
     public static final String TAB_LEGEND = "Legend";
 
@@ -95,15 +95,12 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     protected ChartProperties properties;
 
     // controls
-    protected Group nameGroup;
     private Text nameText;
-    protected Group inputGroup;
     private Text inputText;
     private FilterField inputFilterField;
     protected Group optionsGroup;
     private Button antialiasCheckbox;
     private Button cachingCheckbox;
-    private Group colorGroup;
     private ColorEdit backgroundColor;
 
     protected Group axisTitlesGroup;
@@ -115,7 +112,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     private Text labelFontText;
     private Combo xLabelsRotateByCombo;
 
-    private Group axisBoundsGroup;
+    protected Group axisBoundsGroup;
     private Label maxBoundLabel;
     private Text yAxisMinText;
     private Text yAxisMaxText;
@@ -126,8 +123,8 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     private Button displayLegendCheckbox;
     private Button displayBorderCheckbox;
     private Text legendFontText;
-    private Button[] legendPositionRadios;
-    private Button[] legendAnchorRadios;
+    private Combo legendPositionCombo;
+    private Combo legendAnchorCombo;
 
 
     /**
@@ -204,7 +201,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      */
     protected void populateTabFolder(TabFolder tabfolder) {
         createTab(TAB_MAIN, tabfolder, 1);
-        createTab(TAB_TITLES, tabfolder, 1);
+        createTab(TAB_CHART, tabfolder, 1);
         createTab(TAB_AXES, tabfolder, 2);
         createTab(TAB_LEGEND, tabfolder, 1);
     }
@@ -218,54 +215,54 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         Composite panel = (Composite)item.getControl();
 
         if (TAB_MAIN.equals(name)) {
-            nameGroup = createGroup("Name", panel);
-            nameText = createTextField("Chart name:", nameGroup);
+            ((GridLayout)panel.getLayout()).numColumns = 2;
+            nameText = createTextField("Chart name:", panel);
             nameText.setFocus();
-            inputGroup = createGroup("Input", panel);
-            inputText = createMultilineTextField("Result filter:", inputGroup);
+            inputText = createMultilineTextField("Result filter:", panel);
+            ((GridLayout)panel.getLayout()).numColumns = 2;
             inputFilterField = new FilterField(inputText);
             inputFilterField.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
-            optionsGroup = createGroup("Options", panel, 1);
-            antialiasCheckbox = createCheckboxField("Use antialias", optionsGroup);
-            antialiasCheckbox.setSelection(ChartDefaults.DEFAULT_ANTIALIAS);
-            cachingCheckbox = createCheckboxField("Use caching", optionsGroup);
-            cachingCheckbox.setSelection(ChartDefaults.DEFAULT_CANVAS_CACHING);
-            colorGroup = createGroup("Colors", panel, 2);
-            backgroundColor = createColorField("Background color", colorGroup);
         }
-        else if (TAB_TITLES.equals(name)) {
-            group = createGroup("Graph title", panel);
-            graphTitleText = createTextField("Graph title:", group);
+        else if (TAB_CHART.equals(name)) {
+            group = createGroup("Title", panel);
+            graphTitleText = createTextField("Chart title:", group);
             new ResultItemNamePatternField(graphTitleText);
             graphTitleFontText = createFontField("Title font:", group);
-            axisTitlesGroup = createGroup("Axis titles", panel);
+            optionsGroup = createGroup("Options", panel, 2);
+            showGridCombo = createComboField("Show grid:", optionsGroup, ShowGrid.class, false);
+            backgroundColor = createColorField("Background color:", optionsGroup);
+            antialiasCheckbox = createCheckboxField("Use antialias", optionsGroup);
+            antialiasCheckbox.setSelection(ChartDefaults.DEFAULT_ANTIALIAS);
+            setColumnSpan(antialiasCheckbox, 2);
+            cachingCheckbox = createCheckboxField("Use caching", optionsGroup);
+            cachingCheckbox.setSelection(ChartDefaults.DEFAULT_CANVAS_CACHING);
+            setColumnSpan(cachingCheckbox, 2);
+        }
+        else if (TAB_AXES.equals(name)) {
+            axisTitlesGroup = createGroup("Titles", panel, 2);
             xAxisTitleText = createTextField("X axis title:", axisTitlesGroup);
             yAxisTitleText = createTextField("Y axis title:", axisTitlesGroup);
             axisTitleFontText = createFontField("Axis title font:", axisTitlesGroup);
             labelFontText = createFontField("Label font:", axisTitlesGroup);
             xLabelsRotateByCombo = createComboField("Rotate X labels by:", axisTitlesGroup, new String[] {"0", "30", "45", "60", "90"});
-        }
-        else if (TAB_AXES.equals(name)) {
-            axisBoundsGroup = createGroup("Axis bounds", panel, 3);
+            axisBoundsGroup = createGroup("Ranges", panel, 3);
             axisBoundsGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
             createLabel("", axisBoundsGroup);
             createLabel("Min", axisBoundsGroup);
             maxBoundLabel = createLabel("Max", axisBoundsGroup);
             yAxisMinText = createTextField("Y axis", axisBoundsGroup);
             yAxisMaxText = createTextField(null, axisBoundsGroup);
-            axisOptionsGroup = createGroup("Axis options", panel, 1);
-            yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", axisOptionsGroup);
-            group = createGroup("Grid", panel, 1);
-            showGridCombo = createComboField("Show grid", group, ShowGrid.class, false);
+            yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", axisBoundsGroup);
+            setColumnSpan(yAxisLogCheckbox, 2);
         }
         else if (TAB_LEGEND.equals(name)) {
             displayLegendCheckbox = createCheckboxField("Display legend", panel);
-            group = createGroup("Appearance", panel);
+            group = createGroup("Options", panel);
             displayBorderCheckbox = createCheckboxField("Border", group);
             displayBorderCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
             legendFontText = createFontField("Legend font:", group);
-            legendPositionRadios = createRadioGroup("Position", panel, 3, LegendPosition.class, false);
-            legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
+            legendPositionCombo = createComboField("Position:", group, LegendPosition.class, false);
+            legendAnchorCombo = createComboField("Anchoring:", group, LegendAnchor.class, false);
             displayLegendCheckbox.addSelectionListener(new SelectionAdapter() {
                 public void widgetSelected(SelectionEvent e) {
                     updateLegendPanelEnabled();
@@ -326,6 +323,10 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         group.setLayout(new GridLayout(numOfColumns, false));
         group.setText(text);
         return group;
+    }
+
+    protected void setColumnSpan(Control control, int hspan) {
+        ((GridData)control.getLayoutData()).horizontalSpan = hspan;
     }
 
     /**
@@ -475,6 +476,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         public ColorEdit(final Text text, final Label label) {
             this.text = text;
             this.label = label;
+            updateImageLabel();
             text.addModifyListener(new ModifyListener() {
                 public void modifyText(ModifyEvent e) {
                     updateImageLabel();
@@ -627,8 +629,8 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         newProps.setDisplayLegend(displayLegendCheckbox.getSelection());
         newProps.setLegendBorder(displayBorderCheckbox.getSelection());
         newProps.setLegendFont(Converter.stringToFontdata(legendFontText.getText()));
-        newProps.setLegendPosition(getSelection(legendPositionRadios, LegendPosition.class));
-        newProps.setLegendAnchoring(getSelection(legendAnchorRadios, LegendAnchor.class));
+        newProps.setLegendPosition(resolveEnum(legendPositionCombo.getText(), LegendPosition.class));
+        newProps.setLegendAnchoring(resolveEnum(legendAnchorCombo.getText(), LegendAnchor.class));
     }
 
     /**
@@ -676,8 +678,8 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         displayLegendCheckbox.setSelection(props.getDisplayLegend());
         displayBorderCheckbox.setSelection(props.getLegendBorder());
         legendFontText.setText(asString(props.getLegendFont()));
-        setSelection(legendPositionRadios, props.getLegendPosition());
-        setSelection(legendAnchorRadios, props.getLegendAnchoring());
+        legendPositionCombo.setText(props.getLegendPosition().toString());
+        legendAnchorCombo.setText(props.getLegendAnchoring().toString());
         updateLegendPanelEnabled();
     }
 

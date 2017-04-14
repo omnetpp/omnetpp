@@ -117,14 +117,13 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
         String name = item.getText();
         Composite panel = (Composite)item.getControl();
         if (TAB_AXES.equals(name)) {
-            Group group = getAxisOptionsGroup();
-            xAxisLogCheckbox = createCheckboxField("Logarithmic X axis", group, getYAxisLogCheckbox());
+            xAxisLogCheckbox = createCheckboxField("Logarithmic X axis", axisBoundsGroup, getYAxisLogCheckbox());
+            setColumnSpan(xAxisLogCheckbox, 2);
         }
         else if (TAB_CONTENT.equals(name)) {
             // x data
             Group group = createGroup("X data", panel, 2, 2);
-            createLabel("Select the scalar whose values displayed on the X axis.",
-                    group, 2);
+            createLabel("Select the scalar whose values displayed on the X axis.", group, 2);
             String[] items = new String [xData.length];
             for (int i = 0; i < items.length; ++i)
                 items[i] = xData[i].asListItem();
@@ -147,7 +146,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
             TreeItem attributes = new TreeItem(isoLineSelectionTree, SWT.NONE);
             attributes.setText("run attributes");
 
-            isoLineSelectionTreeItems = new ArrayList<TreeItem>();
+            isoLineSelectionTreeItems = new ArrayList<>();
             for (int i = 0; i < isoData.length; ++i) {
                 TreeItem parent = isoData[i].getModuleName() != null && isoData[i].getDataName() != null ?
                                     scalars : attributes;
@@ -185,7 +184,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
             int index = xModuleAndDataCombo.getSelectionIndex();
             return index >= 0 ? xData[index].asFilterPattern() : null;
         case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
-            List<String> patterns = new ArrayList<String>();
+            List<String> patterns = new ArrayList<>();
             for (TreeItem item : isoLineSelectionTreeItems) {
                 if (item.getChecked())
                     patterns.add((String)item.getData());

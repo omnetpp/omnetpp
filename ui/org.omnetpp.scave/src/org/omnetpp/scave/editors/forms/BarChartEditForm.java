@@ -115,8 +115,9 @@ public class BarChartEditForm extends ChartEditForm {
         super.populateTabItem(item);
         String name = item.getText();
         Composite panel = (Composite)item.getControl();
-        if (TAB_TITLES.equals(name)) {
-            wrapLabelsCheckbox = createCheckboxField("wrap labels", axisTitlesGroup);
+        if (TAB_AXES.equals(name)) {
+            wrapLabelsCheckbox = createCheckboxField("Wrap labels", axisTitlesGroup);
+            setColumnSpan(wrapLabelsCheckbox, 2);
             wrapLabelsCheckbox.setSelection(ChartDefaults.DEFAULT_WRAP_LABELS);
         }
         else if (TAB_CONTENT.equals(name)) {
@@ -143,8 +144,8 @@ public class BarChartEditForm extends ChartEditForm {
         }
         else if (TAB_BARS.equals(name)) {
             if (chart instanceof BarChart) {
-                baselineText = createTextField("Baseline", panel);
-                barPlacementCombo = createComboField("Bar placement", panel, BarPlacement.class, false);
+                baselineText = createTextField("Baseline:", panel);
+                barPlacementCombo = createComboField("Bar placement:", panel, BarPlacement.class, false);
             }
         }
     }
@@ -197,7 +198,7 @@ public class BarChartEditForm extends ChartEditForm {
                     if (event.doit && event.detail == DND.DROP_MOVE &&  dropTarget[0] != control) {
                         ISelection selection = viewer.getSelection();
                         if (selection instanceof IStructuredSelection) {
-                            List<String> input = new ArrayList<String>(getInput(viewer));
+                            List<String> input = new ArrayList<>(getInput(viewer));
                             input.removeAll(((IStructuredSelection)selection).toList());
                             viewer.setInput(input);
                         }
@@ -276,7 +277,7 @@ public class BarChartEditForm extends ChartEditForm {
     }
 
     private List<String> sortFields(Set<String> fields) {
-        List<String> result = new ArrayList<String>(fields.size());
+        List<String> result = new ArrayList<>(fields.size());
 
         for (String field : fieldNames) {
             if (fields.contains(field))
@@ -328,7 +329,7 @@ public class BarChartEditForm extends ChartEditForm {
 
     private void setContent(Viewer list, List<String> fields) {
         list.setInput(fields);
-        List<String> unusedFields = new ArrayList<String>(getInput(unusedFieldsList));
+        List<String> unusedFields = new ArrayList<>(getInput(unusedFieldsList));
         unusedFields.removeAll(fields);
         unusedFieldsList.setInput(unusedFields);
     }
