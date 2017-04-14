@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.actions;
 
-import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_PROPERTIES;
 import static org.omnetpp.scave.editors.forms.IScaveObjectEditForm.PARAM_SELECTED_OBJECT;
 
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreePath;
-import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.EditDialog;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -34,9 +33,9 @@ public class EditAction extends AbstractScaveAction {
      * Creates the action with an default title and icon, and without parameters.
      */
     public EditAction() {
-        setText("Properties...");
-        setToolTipText("Edit the properties of the selected item");
-        setImageDescriptor(ImageFactory.global().getDescriptor(TOOLBAR_IMAGE_PROPERTIES));
+        setText("Edit...");
+        setToolTipText("Edit Selected Item");
+        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/edit.png"));
     }
 
     /**
@@ -52,7 +51,7 @@ public class EditAction extends AbstractScaveAction {
 
     public void setFormParameter(String paramName, Object paramValue) {
         if (formParameters == null)
-            formParameters = new HashMap<String,Object>();
+            formParameters = new HashMap<>();
         formParameters.put(paramName, paramValue);
     }
 
