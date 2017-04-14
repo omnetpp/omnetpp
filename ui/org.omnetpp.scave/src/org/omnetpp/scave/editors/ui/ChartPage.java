@@ -25,6 +25,7 @@ import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
@@ -32,6 +33,7 @@ import org.omnetpp.scave.charting.IChartSelection;
 import org.omnetpp.scave.charting.IChartSelectionListener;
 import org.omnetpp.scave.charting.VectorChartSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.ScaveEditorMemento;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -53,6 +55,26 @@ public class ChartPage extends ScaveEditorPage {
         initialize();
         this.updater = new ChartUpdater(chart, chartView, scaveEditor.getResultFileManager());
         hookListeners();
+
+        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+        addToToolbar(contributor.getGotoChartDefinitionAction());
+        addToToolbar(contributor.getCopyChartToClipboardAction());
+        addToToolbar(contributor.getExportToSVGAction());
+        addSeparatorToToolbar();
+        addToToolbar(contributor.getSwitchChartToPanModeAction());
+        addToToolbar(contributor.getSwitchChartToZoomModeAction());
+        addSeparatorToToolbar();
+        addToToolbar(contributor.getZoomToFitAction());
+        addToToolbar(contributor.getZoomToFitAction());
+        addToToolbar(contributor.getHZoomInAction());
+        addToToolbar(contributor.getHZoomOutAction());
+        addToToolbar(contributor.getVZoomInAction());
+        addToToolbar(contributor.getVZoomOutAction());
+        addSeparatorToToolbar();
+        addToToolbar(contributor.getRefreshChartAction());
+        addSeparatorToToolbar();
+        addToToolbar(new ClosePageAction());
+        
     }
 
     @Override
