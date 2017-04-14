@@ -50,7 +50,7 @@ public class ResultFileManagerTreeContentProvider {
     public final static Class[] LEVELS2 = new Class[] { ExperimentMeasurementReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS3 = new Class[] { ConfigNode.class, RunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS4 = new Class[] { ConfigRunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
-    public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+    public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
 
     private static boolean debug = false;
@@ -902,6 +902,10 @@ public class ResultFileManagerTreeContentProvider {
         @Override
         public String getColumnText(int index) {
             return index == 0 ? fileName + " (file name)" : value;
+        }
+
+        public boolean isExpandedByDefault() {
+            return true;
         }
 
         @Override

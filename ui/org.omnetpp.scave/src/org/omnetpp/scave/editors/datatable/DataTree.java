@@ -292,8 +292,8 @@ public class DataTree extends Tree implements IDataControl {
         subMenuManager.add(new PredefinedLevelsAction("Experiment + Measurement + Replication", this, ResultFileManagerTreeContentProvider.LEVELS2));
         subMenuManager.add(new PredefinedLevelsAction("Config / Run Number", this, ResultFileManagerTreeContentProvider.LEVELS3));
         subMenuManager.add(new PredefinedLevelsAction("Config + Run Number", this, ResultFileManagerTreeContentProvider.LEVELS4));
-        subMenuManager.add(new PredefinedLevelsAction("File", this, ResultFileManagerTreeContentProvider.LEVELS5));
-        subMenuManager.add(new PredefinedLevelsAction("Run Id", this, ResultFileManagerTreeContentProvider.LEVELS6));
+        subMenuManager.add(new PredefinedLevelsAction("File / Run", this, ResultFileManagerTreeContentProvider.LEVELS5));
+        subMenuManager.add(new PredefinedLevelsAction("Run", this, ResultFileManagerTreeContentProvider.LEVELS6));
         subMenuManager.add(new Separator());
         subMenuManager.add(new CustomTreeLevelsAction(this));
         subMenuManager.addMenuListener(new IMenuListener() {
