@@ -87,7 +87,7 @@ public class IconGridViewer extends ContentViewer {
 
 
     public IconGridViewer(Composite parent) {
-        scrolledComposite = new ScrolledComposite(parent,  SWT.V_SCROLL);
+        scrolledComposite = new ScrolledComposite(parent,  SWT.V_SCROLL | SWT.BORDER);
         canvas = new Canvas(scrolledComposite, SWT.NONE);
         canvas.setSize(500, 1000);
         scrolledComposite.setContent(canvas);
@@ -113,6 +113,11 @@ public class IconGridViewer extends ContentViewer {
     public void setItemSize(int itemHeight, int itemWidth) {
         this.itemHeight = itemHeight;
         this.itemWidth = itemWidth;
+    }
+
+    public void setBackground(Color color) {
+        scrolledComposite.setBackground(color);
+        canvas.setBackground(color);
     }
 
     private void hookListeners() {
@@ -573,5 +578,4 @@ public class IconGridViewer extends ContentViewer {
         setSelectionToWidget();
         fireSelectionChanged();
     }
-
 }

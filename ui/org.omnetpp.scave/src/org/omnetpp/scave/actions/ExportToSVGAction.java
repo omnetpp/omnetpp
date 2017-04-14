@@ -19,12 +19,14 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 public class ExportToSVGAction extends AbstractScaveAction {
     public ExportToSVGAction() {
         setText("Export to SVG...");
+        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/exporttosvg.png"));
         setToolTipText("Export char to SVG format");
     }
 

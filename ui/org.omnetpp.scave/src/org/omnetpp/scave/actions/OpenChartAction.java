@@ -7,22 +7,20 @@
 
 package org.omnetpp.scave.actions;
 
-import static org.omnetpp.common.image.ImageFactory.TOOLBAR_IMAGE_OPEN;
-
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
 
 /**
- * Opens the selected chart in the editor.
+ * Opens the selected chart(s) in the editor.
  */
-public class OpenAction extends AbstractScaveAction {
-    public OpenAction() {
+public class OpenChartAction extends AbstractScaveAction {
+    public OpenChartAction() {
         setText("Open");
-        setImageDescriptor(ImageFactory.global().getDescriptor(TOOLBAR_IMAGE_OPEN));
-        setToolTipText("Open item in a separate page");
+        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/plot.png"));
+        setToolTipText("Open chart(s)");
     }
 
     @Override

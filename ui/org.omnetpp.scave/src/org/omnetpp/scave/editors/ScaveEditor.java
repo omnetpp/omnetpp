@@ -55,7 +55,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -86,6 +85,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
@@ -117,6 +117,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     private InputsPage inputsPage;
     private BrowseDataPage browseDataPage;
     private DatasetsAndChartsPage datasetsPage;
+    private ChartsPage chartsPage;
     private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
 
     /**
@@ -133,6 +134,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      * Updates pages when the model changed.
      */
     private INotifyChangedListener pageUpdater = new INotifyChangedListener() {
+        @Override
         public void notifyChanged(Notification notification) {
             updatePages(notification);
         }
@@ -162,6 +164,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      */
     class ScaveEditorContextAdapter extends AdapterImpl implements IScaveEditorContext
     {
+        @Override
         public ResultFileManagerEx getResultFileManager() {
             return ScaveEditor.this.getResultFileManager();
         }
@@ -171,6 +174,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             return (IChangeNotifier)ScaveEditor.this.getAdapterFactory();
         }
 
+        @Override
         public ILabelProvider getScaveModelLavelProvider() {
             return new AdapterFactoryLabelProvider(ScaveEditor.this.getAdapterFactory());
         }
@@ -200,6 +204,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         return datasetsPage;
     }
 
+    public ChartsPage getChartsPage() {
+        return chartsPage;
+    }
+
     @Override
     public void init(IEditorSite site, IEditorInput editorInput)
         throws PartInitException {
@@ -220,10 +228,15 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         // add part listener to save the editor state *before* it is disposed
         final IWorkbenchPage page = site.getPage();
         page.addPartListener(new IPartListener() {
+            @Override
             public void partActivated(IWorkbenchPart part) {}
+            @Override
             public void partBroughtToTop(IWorkbenchPart part) {}
+            @Override
             public void partDeactivated(IWorkbenchPart part) {}
+            @Override
             public void partOpened(IWorkbenchPart part) {}
+            @Override
             public void partClosed(IWorkbenchPart part) {
                 if (part == ScaveEditor.this) {
                     page.removePartListener(this);
@@ -405,6 +418,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
+        createChartsPage();
 
         // We can load the result files now.
         // The chart pages are not refreshed automatically when the result files change,
@@ -414,6 +428,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
         // now we can restore chart pages (and other closable pages)
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            @Override
             public Object call() throws Exception {
                 restoreState();
                 return null;
@@ -422,6 +437,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
         final CTabFolder tabfolder = getTabFolder();
         tabfolder.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 int newPageIndex = tabfolder.indexOf((CTabItem) e.item);
                 pageChangedByUser(newPageIndex);
@@ -572,6 +588,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         showPage(getDatasetsPage());
     }
 
+    public void showChartsPage() {
+        showPage(getChartsPage());
+    }
+
     public void showPage(ScaveEditorPage page) {
         int pageIndex = findPage(page);
         if (pageIndex >= 0)
@@ -623,6 +643,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     private void createDatasetsPage() {
         datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
         addScaveEditorPage(datasetsPage);
+    }
+
+    private void createChartsPage() {
+        chartsPage = new ChartsPage(getContainer(), this);
+        addScaveEditorPage(chartsPage);
     }
 
     /**
@@ -681,6 +706,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         inputsPage.selectionChanged(selection);
         browseDataPage.selectionChanged(selection);
         datasetsPage.selectionChanged(selection);
+        chartsPage.selectionChanged(selection);
         for (Control page : closablePages.values())
             ((ScaveEditorPage)page).selectionChanged(selection);
     }
@@ -694,6 +720,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             Tree tree = viewer.getTree();
             if (tree != null) {
                 tree.addSelectionListener(new SelectionAdapter () {
+                    @Override
                     public void widgetDefaultSelected(SelectionEvent e) {
                         if (e.item instanceof TreeItem) {
                             TreeItem item = (TreeItem)e.item;
@@ -712,6 +739,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             contentOutlinePage = new ScaveEditorContentOutlinePage();
             contentOutlinePage.addSelectionChangedListener(selectionChangedListener);
             contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
+                @Override
                 public void selectionChanged(SelectionChangedEvent event) {
                     contentOutlineSelectionChanged(event.getSelection());
                 }
@@ -880,6 +908,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             return "BrowseData";
         else if (page.equals(datasetsPage))
             return "Datasets";
+        else if (page.equals(chartsPage))
+            return "Charts";
         else {
             for (Map.Entry<EObject, ScaveEditorPage> entry : closablePages.entrySet()) {
                 EObject object = entry.getKey();
@@ -909,6 +939,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         else if (pageId.equals("Datasets")) {
             setActivePage(findPage(datasetsPage));
             return datasetsPage;
+        }
+        else if (pageId.equals("Charts")) {
+            setActivePage(findPage(chartsPage));
+            return chartsPage;
         }
         else {
             EObject object = null;
@@ -1007,10 +1041,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     /*
      * Navigation
      */
+    @Override
     public INavigationLocation createEmptyNavigationLocation() {
         return new ScaveNavigationLocation(this, true);
     }
 
+    @Override
     public INavigationLocation createNavigationLocation() {
         return new ScaveNavigationLocation(this, false);
     }

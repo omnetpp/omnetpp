@@ -43,8 +43,6 @@ import org.eclipse.emf.common.ui.editor.ProblemEditorPart;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EContentAdapter;
@@ -73,12 +71,16 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
+import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -89,6 +91,7 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -115,16 +118,22 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
+import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
-import org.omnetpp.scave.model.presentation.ScaveModelEditor;
+import org.omnetpp.scave.model.BarChart;
+import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.HistogramChart;
+import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
@@ -637,12 +646,16 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
      * This creates a context menu for the viewer and adds a listener as well registering the menu for extension.
      */
     protected void createContextMenuFor(StructuredViewer viewer) {
+        createContextMenuFor(viewer.getControl());
+    }
+    
+    protected void createContextMenuFor(Control control) {
         MenuManager contextMenu = new MenuManager("#PopUp");
         contextMenu.add(new Separator("additions"));
         contextMenu.setRemoveAllWhenShown(true);
         contextMenu.addMenuListener(this);
-        Menu menu = contextMenu.createContextMenu(viewer.getControl());
-        viewer.getControl().setMenu(menu);
+        Menu menu = contextMenu.createContextMenu(control);
+        control.setMenu(menu);
 
         // Note: don't register the context menu, otherwise "Run As", "Debug As", "Team", and other irrelevant menu items appear...
         //getSite().registerContextMenu(contextMenu, viewer);
@@ -781,6 +794,82 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
                 return null;
             }
         });
+    }
+
+    /**
+     * Utility class to add content and label providers, context menu etc to a TreeViewer
+     * that is used to edit the model.
+     */
+    public void configureIconGridViewer(IconGridViewer modelViewer) {
+//        ILabelProvider labelProvider =
+//            new DecoratingLabelProvider(
+//                new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)),
+//                new ScaveModelLabelDecorator());
+
+        ILabelProvider labelProvider = new LabelProvider() {
+            @Override
+            public Image getImage(Object element) {
+                if (element instanceof LineChart)
+                    return ScavePlugin.getImage("icons/full/obj/linechart.png");
+                else if (element instanceof BarChart)
+                    return ScavePlugin.getImage("icons/full/obj/barchart.png");
+                else if (element instanceof ScatterChart)
+                    return ScavePlugin.getImage("icons/full/obj/scatterchart.png");
+                else if (element instanceof HistogramChart)
+                    return ScavePlugin.getImage("icons/full/obj/histogramchart.png");
+                else 
+                    return null;
+            }
+            
+            @Override
+            public String getText(Object element) {
+                if (element instanceof Chart)
+                    return StringUtils.defaultIfBlank(((Chart) element).getName(), "<unnamed>");
+                else 
+                    return element == null ? "" : element.toString();
+            }
+        };
+        
+        modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
+        modelViewer.setLabelProvider(labelProvider);
+//        modelViewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
+        // new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
+
+        modelViewer.addSelectionChangedListener(selectionChangedListener);
+
+        createContextMenuFor(modelViewer.getControl());
+        createContextMenuFor(modelViewer.getCanvas());
+//        setupDragAndDropSupportFor(modelViewer);
+
+        // on double-click, open (the dataset or chart), or bring up the Properties dialog
+        modelViewer.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+                if (contributor != null) {
+                    if (contributor.getOpenAction().isEnabled())
+                        contributor.getOpenAction().run();
+                    else if (contributor.getEditAction().isEnabled())
+                        contributor.getEditAction().run();
+                }
+            }
+        });
+//
+//        new HoverSupport().adapt(modelViewer.getTree(), new IHoverInfoProvider() {
+//            @Override
+//            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
+//                Item item = modelViewer.getTree().getItem(new Point(x,y));
+//                Object element = item==null ? null : item.getData();
+//                if (element != null && modelViewer.getLabelProvider() instanceof DecoratingLabelProvider) {
+//                    ILabelProvider labelProvider = ((DecoratingLabelProvider)modelViewer.getLabelProvider()).getLabelProvider();
+//                    if (labelProvider instanceof ScaveModelLabelProvider) {
+//                        ScaveModelLabelProvider scaveLabelProvider = (ScaveModelLabelProvider)labelProvider;
+//                        return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(scaveLabelProvider.getTooltipText(element)));
+//                    }
+//                }
+//                return null;
+//            }
+//        });
     }
 
     /**

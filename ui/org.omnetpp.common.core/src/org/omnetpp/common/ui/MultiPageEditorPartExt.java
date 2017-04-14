@@ -46,6 +46,16 @@ public abstract class MultiPageEditorPartExt extends MultiPageEditorPart {
 
     }
 
+    public boolean isClosablePage(Control control) {
+        CTabFolder ctabFolder = (CTabFolder) control.getParent();
+        for (int i = 0; i < ctabFolder.getItemCount(); i++) {
+            CTabItem item = ctabFolder.getItem(i);
+            if (item.getControl() == control)
+                return item.getShowClose();
+        }
+        throw new RuntimeException("control is not an editor page: " + control.toString());
+    }
+    
     /**
      * Closes the page of the multi-page editor page which holds
      * the given control. The request is ignored if the control is

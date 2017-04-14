@@ -48,7 +48,7 @@ import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
-import org.omnetpp.scave.actions.OpenAction;
+import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.SelectAllAction;
@@ -145,7 +145,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
     @Override
     public void init(IActionBars bars, IWorkbenchPage page) {
-        openAction = registerAction(page, new OpenAction());
+        openAction = registerAction(page, new OpenChartAction());
         editAction = registerAction(page, new EditAction());
         selectAllAction = registerAction(page, new SelectAllAction());
         exportChartsAction = registerAction(page, new ExportChartsAction());
