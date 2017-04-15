@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.Histogram;
@@ -53,7 +54,19 @@ public class ResultFileManagerTreeContentProvider {
     public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
 
-    private static boolean debug = false;
+    private static final String IMG_EXPERIMENT = "icons/full/obj16/experiment.png";
+    private static final String IMG_MEASUREMENT = "icons/full/obj16/measurement.png";
+    private static final String IMG_REPLICATION = "icons/full/obj16/replication.png";
+    private static final String IMG_EXPERIMENT_MEASUREMENT_REPLICATION = "icons/full/obj16/run.png";
+    private static final String IMG_CONFIG = "icons/full/obj16/configuration.png";
+    private static final String IMG_RUNNUMBER = "icons/full/obj16/runnumber.png";
+    private static final String IMG_CONFIG_RUNNUMBER = "icons/full/obj16/run.png";
+    private static final String IMG_RUNID = "icons/full/obj16/run.png";
+    private static final String IMG_VECFILENAME = "icons/vecfile.png";
+    private static final String IMG_SCAFILENAME = "icons/vecfile.png";
+    private static final String IMG_FILENAME_RUNID = "icons/run.png";
+
+    private static boolean debug = true;
 
     protected ResultFileManagerEx manager;
 
@@ -439,9 +452,7 @@ public class ResultFileManagerTreeContentProvider {
             return false;
         }
 
-        public Image getImage() {
-            return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
-        }
+        public abstract Image getImage();
 
         public abstract String getColumnText(int index);
 
@@ -525,6 +536,10 @@ public class ResultFileManagerTreeContentProvider {
             return index == 0 ? name + " (experiment)" : value;
         }
 
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_EXPERIMENT);
+        }
+
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return name.equals(matchContext.getRunAttribute(RunAttribute.EXPERIMENT));
@@ -576,6 +591,10 @@ public class ResultFileManagerTreeContentProvider {
         @Override
         public String getColumnText(int index) {
             return index == 0 ? StringUtils.defaultIfEmpty(name, "default")  + " (measurement)" : value;
+        }
+
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_MEASUREMENT);
         }
 
         @Override
@@ -631,6 +650,10 @@ public class ResultFileManagerTreeContentProvider {
             return index == 0 ? name + " (replication)" : value;
         }
 
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_REPLICATION);
+        }
+
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return name.equals(matchContext.getRunAttribute(RunAttribute.REPLICATION));
@@ -683,6 +706,10 @@ public class ResultFileManagerTreeContentProvider {
         @Override
         public String getColumnText(int index) {
             return index == 0 ? experiment + (StringUtils.isEmpty(measurement) ? "" : " : " + measurement) + " : " + replication : value;
+        }
+
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_EXPERIMENT_MEASUREMENT_REPLICATION);
         }
 
         @Override
@@ -747,6 +774,10 @@ public class ResultFileManagerTreeContentProvider {
             return index == 0 ? name + " (config)" : value;
         }
 
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_CONFIG);
+        }
+
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(name);
@@ -800,6 +831,10 @@ public class ResultFileManagerTreeContentProvider {
             return index == 0 ? runNumber + " (run number)" : value;
         }
 
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_RUNNUMBER);
+        }
+
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return matchContext.getRunAttribute(RunAttribute.RUNNUMBER).equals(runNumber);
@@ -847,7 +882,11 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? config + " : " + runNumber : value;
+            return index == 0 ? config + " - #" + runNumber : value;
+        }
+
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_CONFIG_RUNNUMBER);
         }
 
         @Override
@@ -904,6 +943,10 @@ public class ResultFileManagerTreeContentProvider {
             return index == 0 ? fileName + " (file name)" : value;
         }
 
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(fileName.endsWith(".vec") ? IMG_VECFILENAME : IMG_SCAFILENAME);
+        }
+
         public boolean isExpandedByDefault() {
             return true;
         }
@@ -956,6 +999,10 @@ public class ResultFileManagerTreeContentProvider {
             return index == 0 ? runId + " (run id)" : value;
         }
 
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_RUNID);
+        }
+
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
             return matchContext.getRun().getRunName().equals(runId);
@@ -1005,6 +1052,10 @@ public class ResultFileManagerTreeContentProvider {
         @Override
         public String getColumnText(int index) {
             return index == 0 ? fileName + " : " + runId : value;
+        }
+
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(IMG_FILENAME_RUNID);
         }
 
         @Override
