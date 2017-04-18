@@ -2905,7 +2905,6 @@ void cPathFigure::setOffset(const Point& offset)
     if (!(this->offset == offset)) {
         this->offset = offset;
         fireGeometryChange();
-        fireTransformChange();
     }
 }
 
