@@ -158,7 +158,7 @@ QString ModuleCanvasViewer::gatherTooltips(const QRect& rect)
 {
     auto items = scene()->items(mapToScene(rect));
 
-    QString tip;
+    QStringList tip;
 
     // The individial items' setToolTip() method cannot be used
     // because that way they are stealing the ToolTip event,
@@ -176,14 +176,12 @@ QString ModuleCanvasViewer::gatherTooltips(const QRect& rect)
                 itemTip = makeObjectTooltip(itemObject);
         }
 
-        if (!itemTip.isEmpty()) {
-            if (!tip.isEmpty())
-                tip += "\n";
+        // skipping empties, deduplication
+        if (!itemTip.isEmpty() && !tip.contains(itemTip))
             tip += itemTip;
-        }
     }
 
-    return tip;
+    return tip.join("\n");
 }
 
 void ModuleCanvasViewer::setZoomLabelVisible(bool visible)

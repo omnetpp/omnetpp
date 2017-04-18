@@ -526,24 +526,37 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
 
 QString makeObjectTooltip(cObject *obj)
 {
+    // figures are handled specially
     if (auto fig = dynamic_cast<cFigure *>(obj)) {
+        // if the tooltip has a non-null tooltip, use it
+        if (const char *tt = fig->getTooltip())
+            return tt;
+
         cObject *assocObj = fig->getAssociatedObject();
         // If two figures are associated to each other,
         // we have to avoid the infinite recursion.
-        return (assocObj && !dynamic_cast<cFigure*>(assocObj))
-                ? makeObjectTooltip(assocObj)
-                : "";
+        if (assocObj && !dynamic_cast<cFigure*>(assocObj))
+            return makeObjectTooltip(assocObj);
+
+        // figures inherit the tooltip if they themselves don't have one
+        cFigure *parent = fig->getParentFigure();
+        return parent ? makeObjectTooltip(parent) : "";
+        // no other defaults for figures
     }
 
+    // for components, use the "tt" DisplayString key
+    // ("bgtt" is done by the ModuleCanvasViewer using ITEMDATA_TOOLTIP)
     if (auto comp = dynamic_cast<cComponent *>(obj)) {
         const char *userTooltip = comp->getDisplayString().getTagArg("tt", 0);
         if (!opp_isempty(userTooltip))
             return userTooltip;
     }
 
+    // if none of the above applies, showing some generic info
     QString tooltip = QString("(") + getObjectShortTypeName(obj) + ") " + obj->getFullName();
-    if (!obj->str().empty())
-        tooltip += QString(", ") + obj->str().c_str();
+    std::string objStr = obj->str();
+    if (!objStr.empty())
+        tooltip += QString(", ") + objStr.c_str();
     return tooltip;
 }
 

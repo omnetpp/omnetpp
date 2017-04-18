@@ -452,7 +452,6 @@ QGraphicsItem *FigureRenderer::render(cFigure *figure, GraphicsLayer *layer, Fig
 
     if (item) {
         item->setParentItem(layer);
-        item->setData(ITEMDATA_TOOLTIP, QString(figure->getTooltip()));
         item->setZValue(figure->getZIndex());
     }
 
@@ -496,7 +495,6 @@ void FigureRenderer::refreshGeometry(cFigure *figure, QGraphicsItem *item, Figur
 void FigureRenderer::refreshVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
 {
     createVisual(figure, item, hints);
-    item->setData(ITEMDATA_TOOLTIP, QString(figure->getTooltip()));
     item->setZValue(figure->getZIndex());
 }
 

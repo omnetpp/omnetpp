@@ -29,7 +29,7 @@ namespace qtenv {
 // these are the custom data "slot" indices used in QGraphicsItems
 constexpr int ITEMDATA_COBJECT = 1;
 // see modulecanvasviewer.cc for why this is necessary, and setToolTip isn't usable
-constexpr int ITEMDATA_TOOLTIP = 2;
+constexpr int ITEMDATA_TOOLTIP = 2; // not used for figures anymore!
 
 class QTENV_API ArrowheadItem : public QGraphicsPolygonItem
 {
