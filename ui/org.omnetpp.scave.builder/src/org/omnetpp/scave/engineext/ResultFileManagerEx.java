@@ -486,4 +486,12 @@ public class ResultFileManagerEx extends ResultFileManager {
     private IDList wrap(IDList obj) {
         return obj; // TODO eliminate wrap() calls
     }
+
+    public static int getRunNumber(Run run) {
+        try {
+            return Integer.parseInt(run.getAttribute("runnumber"));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }

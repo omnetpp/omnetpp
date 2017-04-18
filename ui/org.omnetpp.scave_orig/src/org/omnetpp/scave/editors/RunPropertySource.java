@@ -5,6 +5,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
  * Property source for run
@@ -38,7 +39,7 @@ public class RunPropertySource implements IPropertySource {
     @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         IPropertyDescriptor[] attrs = makeDescriptors(run.getAttributes().keys().toArray(), "@", "Attributes");
-        IPropertyDescriptor[] moduleParams = makeDescriptors(run.getParamAssigments().keys().toArray(), "%", "Attributes");
+        IPropertyDescriptor[] moduleParams = new IPropertyDescriptor[0]; //XXX makeDescriptors(run.getParamAssigments().keys().toArray(), "%", "Attributes");
         return ArrayUtils.addAll(MAIN_PROPERTY_DESCS, ArrayUtils.addAll(attrs, moduleParams));
     }
 
@@ -52,7 +53,7 @@ public class RunPropertySource implements IPropertySource {
             return run.getParamAssignment(propertyId.toString().substring(1));
 
         if (propertyId.equals(PROP_RUN_NAME)) return run.getRunName();
-        if (propertyId.equals(PROP_RUN_NUMBER)) return run.getRunNumber();
+        if (propertyId.equals(PROP_RUN_NUMBER)) return ResultFileManagerEx.getRunNumber(run);
 
         return null;
     }

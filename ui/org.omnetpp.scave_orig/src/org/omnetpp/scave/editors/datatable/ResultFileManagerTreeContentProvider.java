@@ -158,9 +158,9 @@ public class ResultFileManagerTreeContentProvider {
                             else if (nextLevelClass.equals(ConfigNode.class))
                                 nodeIdsMap.put(new ConfigNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME)), id);
                             else if (nextLevelClass.equals(RunNumberNode.class))
-                                nodeIdsMap.put(new RunNumberNode(matchContext.getRun().getRunNumber()), id);
+                                nodeIdsMap.put(new RunNumberNode(ResultFileManagerEx.getRunNumber(matchContext.getRun())), id);
                             else if (nextLevelClass.equals(ConfigRunNumberNode.class))
-                                nodeIdsMap.put(new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getRunNumber()), id);
+                                nodeIdsMap.put(new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), ResultFileManagerEx.getRunNumber(matchContext.getRun())), id);
                             else if (nextLevelClass.equals(FileNameNode.class))
                                 nodeIdsMap.put(new FileNameNode(matchContext.getResultFile().getFileName()), id);
                             else if (nextLevelClass.equals(RunIdNode.class))
@@ -782,7 +782,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRun().getRunNumber() == runNumber;
+            return ResultFileManagerEx.getRunNumber(matchContext.getRun()) == runNumber;
         }
 
         @Override
@@ -829,7 +829,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(config) && matchContext.getRun().getRunNumber() == runNumber;
+            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(config) && ResultFileManagerEx.getRunNumber(matchContext.getRun()) == runNumber;
         }
 
         @Override
