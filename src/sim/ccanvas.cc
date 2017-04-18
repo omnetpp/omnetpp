@@ -964,7 +964,7 @@ void cFigure::setTooltip(const char *tooltip)
         return;
     stringPool.release(this->tooltip);
     this->tooltip = stringPool.get(tooltip);
-    fire(CHANGE_VISUAL);
+    fireVisualChange();
 }
 
 void cFigure::setAssociatedObject(cObject *obj)
