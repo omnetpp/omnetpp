@@ -38,6 +38,7 @@ namespace qtenv {
 ImageCache::ImageCache(std::ostream& out): out(out)
 {
     unknownImage = new QImage(":/objects/unknown");
+    QPixmapCache::setCacheLimit(102400);
 }
 
 ImageCache::~ImageCache()
@@ -169,7 +170,15 @@ QPixmap ImageCache::makeTintedPixmap(QImage *image, const QColor &tintColor, dou
     if (tintAmount == 0.0)
         return QPixmap::fromImage(*image);
 
-    QImage tintedImage = image->copy();
+    // This copies the data itself if the format is not already as
+    // desired, but does not if it is. However, scanLine() will call
+    // detach, so we can be sure we won't mess up any other QImage.
+    // The conversion is necessary because with QImages created
+    // from the data of a cFigure::Pixmap, the red and blue channels
+    // got flipped by the colorization.
+    // (Format_ARGB32 is endianness-dependent, so it is really B-G-R-A
+    // in memory mapped to the R-G-B-A data of the Pixmap. I guess.)
+    QImage tintedImage = image->convertToFormat(QImage::Format_ARGB32);
 
     double rdest = tintColor.redF();
     double gdest = tintColor.greenF();
