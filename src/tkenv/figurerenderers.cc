@@ -522,7 +522,7 @@ void AbstractCanvasItemFigureRenderer::refresh(cFigure *figure, int8_t what, Tcl
     argv[argc++] = "itemconfig";
     argv[argc++] = tag;
     int savedArgc = argc;
-    if (what & cFigure::CHANGE_TRANSFORM)
+    if (what & (cFigure::CHANGE_TRANSFORM | cFigure::CHANGE_GEOMETRY)) // HACK: CHANGE_GEOMETRY is in there because path figure offset is a geometry change, but is implemented with transform
         addMatrix(figure, transform, argc, argv);
     addOptions(figure, what, interp, argc, argv, transform, hints);
     Assert(argc <= MAXARGC);
