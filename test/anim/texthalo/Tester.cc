@@ -41,12 +41,12 @@ void Tester::initialize()
     int n = par("numFigures").longValue();
 
     light = new cRectangleFigure("light");
-    light->setZIndex(-1);
+    light->setZIndex(-2);
     light->setBounds(cFigure::Rectangle(50, 100, 700, 100));
     canvas->addFigure(light);
 
     dark = new cRectangleFigure("dark");
-    dark->setZIndex(-1);
+    dark->setZIndex(-2);
     dark->setBounds(cFigure::Rectangle(50, 300, 700, 100));
     canvas->addFigure(dark);
 
@@ -58,6 +58,7 @@ void Tester::initialize()
         else
             figure = new cTextFigure(("figure-" + std::to_string(i)).c_str());
 
+        figure->setAnchor(cFigure::ANCHOR_W);
         figure->setText(makeString(par("textLength").longValue()).c_str());
         figure->setFont(cFigure::Font("Arial", par("fontSize").longValue()));
         figure->setPosition(cFigure::Point(100, 50 + (73*i) % 400));
@@ -80,7 +81,7 @@ void Tester::handleMessage(cMessage *msg)
     static int lightIndex = 0;
 
     figures[i % figures.size()]->setText(makeString(par("textLength").longValue()).c_str());
-    figures[i % figures.size()]->setFont(cFigure::Font("Arial", par("fontSize").longValue()));
+    //figures[i % figures.size()]->setFont(cFigure::Font("Arial", par("fontSize").longValue()));
 
     if ((i % 100) == 0) {
         dark->setFilled(true);
@@ -105,6 +106,7 @@ void Tester::refreshDisplay() const
         for (auto f : figures) {
             auto pos = f->getPosition();
             f->setPosition({100 + 20 * std::sin(simTime().dbl() - pos.y / 10.0), pos.y});
+            f->setZIndex(std::cos(simTime().dbl() - pos.y / 10.0));
         }
     }
 }
