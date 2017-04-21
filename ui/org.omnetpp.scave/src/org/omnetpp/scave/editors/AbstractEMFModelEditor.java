@@ -8,27 +8,18 @@
 package org.omnetpp.scave.editors;
 
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -37,15 +28,12 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.ui.MarkerHelper;
-import org.eclipse.emf.common.ui.editor.ProblemEditorPart;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -68,11 +56,8 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.ContentViewer;
-import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -89,13 +74,9 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
@@ -118,16 +99,12 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
-import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.HtmlHoverInfo;
-import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
-import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -197,10 +174,6 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
      */
     protected ISelection editorSelection = StructuredSelection.EMPTY;
 
-    /**
-     * The MarkerHelper is responsible for creating workspace resource markers presented
-     * in Eclipse's Problems View.
-     */
     protected MarkerHelper markerHelper = new EditUIMarkerHelper();
 
     /**
@@ -234,291 +207,10 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
             }
         };
 
-    /**
-     * Resources that have been removed since last activation.
-     */
-    protected Collection<Resource> removedResources = new ArrayList<Resource>();
 
-    /**
-     * Resources that have been changed since last activation.
-     */
-    protected Collection<Resource> changedResources = new ArrayList<Resource>();
-
-    /**
-     * Resources that have been saved.
-     */
-    protected Collection<Resource> savedResources = new ArrayList<Resource>();
-
-    /**
-     * Map to store the diagnostic associated with a resource.
-     */
-    protected Map<Resource, Diagnostic> resourceToDiagnosticMap = new LinkedHashMap<Resource, Diagnostic>();
-
-    /**
-     * Controls whether the problem indication should be updated.
-     */
-    protected boolean updateProblemIndication = true;
-
-    /**
-     * Adapter used to update the problem indication when resources are demanded loaded.
-     */
-    protected EContentAdapter problemIndicationAdapter =
-        new EContentAdapter() {
-            public void notifyChanged(Notification notification) {
-                if (notification.getNotifier() instanceof Resource) {
-                    switch (notification.getFeatureID(Resource.class)) {
-                        case Resource.RESOURCE__IS_LOADED:
-                        case Resource.RESOURCE__ERRORS:
-                        case Resource.RESOURCE__WARNINGS: {
-                            Resource resource = (Resource)notification.getNotifier();
-                            Diagnostic diagnostic = analyzeResourceProblems((Resource)notification.getNotifier(), null);
-                            if (diagnostic.getSeverity() != Diagnostic.OK) {
-                                resourceToDiagnosticMap.put(resource, diagnostic);
-                            }
-                            else {
-                                resourceToDiagnosticMap.remove(resource);
-                            }
-
-                            if (updateProblemIndication) {
-                                getSite().getShell().getDisplay().asyncExec
-                                    (new Runnable() {
-                                         public void run() {
-                                             updateProblemIndication();
-                                         }
-                                     });
-                            }
-                        }
-                    }
-                }
-                else {
-                    super.notifyChanged(notification);
-                }
-            }
-
-            protected void setTarget(Resource target) {
-                basicSetTarget(target);
-            }
-
-            protected void unsetTarget(Resource target) {
-                basicUnsetTarget(target);
-                resourceToDiagnosticMap.remove(target);
-                if (updateProblemIndication) {
-                    getSite().getShell().getDisplay().asyncExec
-                        (new Runnable() {
-                             public void run() {
-                                 updateProblemIndication();
-                             }
-                         });
-                }
-            }
-        };
-
-    /**
-     * This listens for workspace changes.
-     */
-    protected IResourceChangeListener resourceChangeListener =
-        new IResourceChangeListener() {
-            public void resourceChanged(IResourceChangeEvent event) {
-                // Only listening to these.
-                // if (event.getType() == IResourceDelta.POST_CHANGE)
-                {
-                    IResourceDelta delta = event.getDelta();
-                    try {
-                        class ResourceDeltaVisitor implements IResourceDeltaVisitor {
-                            protected ResourceSet resourceSet = editingDomain.getResourceSet();
-                            protected Collection<Resource> changedResources = new ArrayList<Resource>();
-                            protected Collection<Resource> removedResources = new ArrayList<Resource>();
-
-                            public boolean visit(IResourceDelta delta) {
-                                if (delta.getFlags() != IResourceDelta.MARKERS &&
-                                    delta.getResource().getType() == IResource.FILE) {
-                                    if ((delta.getKind() & (IResourceDelta.CHANGED | IResourceDelta.REMOVED)) != 0) {
-                                        Resource resource = resourceSet.getResource(URI.createURI(delta.getFullPath().toString()), false);
-                                        if (resource != null) {
-                                            if ((delta.getKind() & IResourceDelta.REMOVED) != 0) {
-                                                removedResources.add(resource);
-                                            }
-                                            else if (!savedResources.remove(resource)) {
-                                                changedResources.add(resource);
-                                            }
-                                        }
-                                    }
-                                    return false;
-                                }
-
-                                return true;
-                            }
-
-                            public Collection<Resource> getChangedResources() {
-                                return changedResources;
-                            }
-
-                            public Collection<Resource> getRemovedResources() {
-                                return removedResources;
-                            }
-                        }
-
-                        ResourceDeltaVisitor visitor = new ResourceDeltaVisitor();
-                        delta.accept(visitor);
-
-                        if (!visitor.getRemovedResources().isEmpty()) {
-                            removedResources.addAll(visitor.getRemovedResources());
-                            if (!isDirty()) {
-                                getSite().getShell().getDisplay().asyncExec
-                                    (new Runnable() {
-                                         public void run() {
-                                             getSite().getPage().closeEditor(AbstractEMFModelEditor.this, false);
-                                             AbstractEMFModelEditor.this.dispose();
-                                         }
-                                     });
-                            }
-                        }
-
-                        if (!visitor.getChangedResources().isEmpty()) {
-                            changedResources.addAll(visitor.getChangedResources());
-                            if (getSite().getPage().getActiveEditor() == AbstractEMFModelEditor.this) {
-                                getSite().getShell().getDisplay().asyncExec
-                                    (new Runnable() {
-                                         public void run() {
-                                             handleActivate();
-                                         }
-                                     });
-                            }
-                        }
-                    }
-                    catch (CoreException exception) {
-                        ScaveEditPlugin.INSTANCE.log(exception);
-                    }
-                }
-            }
-        };
-
-    /**
-     * Handles activation of the editor or it's associated views.
-     */
     protected void handleActivate() {
-        // Recompute the read only state.
-        //
-        if (editingDomain.getResourceToReadOnlyMap() != null) {
-          editingDomain.getResourceToReadOnlyMap().clear();
-
-          // Refresh any actions that may become enabled or disabled.
-          //
-          setSelection(getSelection());
-        }
-
-        if (!removedResources.isEmpty()) {
-            if (handleDirtyConflict()) {
-                getSite().getPage().closeEditor(AbstractEMFModelEditor.this, false);
-                AbstractEMFModelEditor.this.dispose();
-            }
-            else {
-                removedResources.clear();
-                changedResources.clear();
-                savedResources.clear();
-            }
-        }
-        else if (!changedResources.isEmpty()) {
-            changedResources.removeAll(savedResources);
-            handleChangedResources();
-            changedResources.clear();
-            savedResources.clear();
-        }
     }
-
-    /**
-     * Handles what to do with changed resources on activation.
-     */
-    protected void handleChangedResources() {
-        if (!changedResources.isEmpty() && (!isDirty() || handleDirtyConflict())) {
-            editingDomain.getCommandStack().flush();
-
-            updateProblemIndication = false;
-            for (Iterator<Resource> i = changedResources.iterator(); i.hasNext(); ) {
-                Resource resource = i.next();
-                if (resource.isLoaded()) {
-                    resource.unload();
-                    try {
-                        resource.load(Collections.EMPTY_MAP);
-                    }
-                    catch (IOException exception) {
-                        if (!resourceToDiagnosticMap.containsKey(resource)) {
-                            resourceToDiagnosticMap.put(resource, analyzeResourceProblems(resource, exception));
-                        }
-                    }
-                }
-            }
-            updateProblemIndication = true;
-            updateProblemIndication();
-        }
-    }
-
-    /**
-     * Updates the problems indication with the information described in the specified diagnostic.
-     */
-    protected void updateProblemIndication() {
-        if (updateProblemIndication) {
-            BasicDiagnostic diagnostic =
-                new BasicDiagnostic
-                    (Diagnostic.OK,
-                     "org.omnetpp.scave.model",
-                     0,
-                     null,
-                     new Object [] { editingDomain.getResourceSet() });
-            for (Iterator<Diagnostic> i = resourceToDiagnosticMap.values().iterator(); i.hasNext(); ) {
-                Diagnostic childDiagnostic = i.next();
-                if (childDiagnostic.getSeverity() != Diagnostic.OK) {
-                    diagnostic.add(childDiagnostic);
-                }
-            }
-
-            int lastEditorPage = getPageCount() - 1;
-            if (lastEditorPage >= 0 && getEditor(lastEditorPage) instanceof ProblemEditorPart) {
-                ((ProblemEditorPart)getEditor(lastEditorPage)).setDiagnostic(diagnostic);
-                if (diagnostic.getSeverity() != Diagnostic.OK) {
-                    setActivePage(lastEditorPage);
-                }
-            }
-            else if (diagnostic.getSeverity() != Diagnostic.OK) {
-                ProblemEditorPart problemEditorPart = new ProblemEditorPart();
-                problemEditorPart.setDiagnostic(diagnostic);
-                problemEditorPart.setMarkerHelper(markerHelper);
-                try {
-                    addPage(getPageCount(), problemEditorPart, getEditorInput());
-                    lastEditorPage++;
-                    setPageText(lastEditorPage, problemEditorPart.getPartName());
-                    setActivePage(lastEditorPage);
-                }
-                catch (PartInitException exception) {
-                    ScaveEditPlugin.INSTANCE.log(exception);
-                }
-            }
-
-            if (markerHelper.hasMarkers(editingDomain.getResourceSet())) {
-                markerHelper.deleteMarkers(editingDomain.getResourceSet());
-                if (diagnostic.getSeverity() != Diagnostic.OK) {
-                    try {
-                        markerHelper.createMarkers(diagnostic);
-                    }
-                    catch (CoreException exception) {
-                        ScaveEditPlugin.INSTANCE.log(exception);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Shows a dialog that asks if conflicting changes should be discarded.
-     */
-    protected boolean handleDirtyConflict() {
-        return
-            MessageDialog.openQuestion
-                (getSite().getShell(),
-                 getString("_UI_FileConflict_label"),
-                 getString("_WARN_FileConflict"));
-    }
-
+    
     /**
      * This creates a model editor.
      */
@@ -677,26 +369,15 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
      */
     public void createModel() {
         // Assumes that the input is a file object.
-        //
         IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
         URI resourceURI = URI.createPlatformResourceURI(modelFile.getFile().getFullPath().toString(), true);;
-        Exception exception = null;
-        Resource resource = null;
         try {
-            // Load the resource through the editing domain.
-            //
-            resource = editingDomain.getResourceSet().getResource(resourceURI, true);
+            editingDomain.getResourceSet().getResource(resourceURI, true);
         }
         catch (Exception e) {
-            exception = e;
-            resource = editingDomain.getResourceSet().getResource(resourceURI, false);
+            ScavePlugin.logError("coul not load resource", e);
+            //TODO dialog?
         }
-
-        Diagnostic diagnostic = analyzeResourceProblems(resource, exception);
-        if (diagnostic.getSeverity() != Diagnostic.OK) {
-            resourceToDiagnosticMap.put(resource,  diagnostic); //FIXME throw exception?
-        }
-        editingDomain.getResourceSet().eAdapters().add(problemIndicationAdapter);
     }
 
     /**
@@ -705,24 +386,13 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
      */
     public Diagnostic analyzeResourceProblems(Resource resource, Exception exception) {
         if (!resource.getErrors().isEmpty() || !resource.getWarnings().isEmpty()) {
-            BasicDiagnostic basicDiagnostic =
-                new BasicDiagnostic
-                    (Diagnostic.ERROR,
-                     "org.omnetpp.scave.model",
-                     0,
-                     getString("_UI_CreateModelError_message", resource.getURI()),
-                     new Object [] { exception == null ? (Object)resource : exception });
+            BasicDiagnostic basicDiagnostic = new BasicDiagnostic(Diagnostic.ERROR, "org.omnetpp.scave.model", 0, "Could not create model: " + resource.getURI(),
+                    new Object [] { exception == null ? (Object)resource : exception });
             basicDiagnostic.merge(EcoreUtil.computeDiagnostic(resource, true));
             return basicDiagnostic;
         }
         else if (exception != null) {
-            return
-                new BasicDiagnostic
-                    (Diagnostic.ERROR,
-                     "org.omnetpp.scave.model",
-                     0,
-                     getString("_UI_CreateModelError_message", resource.getURI()),
-                     new Object[] { exception });
+            return new BasicDiagnostic(Diagnostic.ERROR, "org.omnetpp.scave.model", 0, "Could not create model: " + resource.getURI(), new Object[] { exception });
         }
         else {
             return Diagnostic.OK_INSTANCE;
@@ -734,12 +404,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
      * This is the method used by the framework to install your own controls.
      */
     public void createPages() {
-        // Creates the model from the editor input
         createModel();
-        // do the real job
         doCreatePages();
-        // refresh
-        updateProblemIndication();
     }
 
     /**
@@ -796,10 +462,6 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
         });
     }
 
-    /**
-     * Utility class to add content and label providers, context menu etc to a TreeViewer
-     * that is used to edit the model.
-     */
     public void configureIconGridViewer(IconGridViewer modelViewer) {
 //        ILabelProvider labelProvider =
 //            new DecoratingLabelProvider(
@@ -1024,78 +686,40 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
         saveOptions.put(Resource.OPTION_LINE_DELIMITER, Resource.OPTION_LINE_DELIMITER_UNSPECIFIED);
 
         // Do the work within an operation because this is a long running activity that modifies the workbench.
-        //
         WorkspaceModifyOperation operation =
             new WorkspaceModifyOperation() {
                 // This is the method that gets invoked when the operation runs.
-                //
                 public void execute(IProgressMonitor monitor) {
                     // Save the resources to the file system.
-                    //
-                    boolean first = true;
-                    for (Resource resource : editingDomain.getResourceSet().getResources()) {
-                        if (!isSaveable(resource))
-                            continue;
-                        if ((first || !resource.getContents().isEmpty() || isPersisted(resource)) && !editingDomain.isReadOnly(resource)) {
-                            try {
-                                long timeStamp = resource.getTimeStamp();
-                                resource.save(saveOptions);
-                                if (resource.getTimeStamp() != timeStamp) {
-                                    savedResources.add(resource);
-                                }
-                            }
-                            catch (Exception exception) {
-                                resourceToDiagnosticMap.put(resource, analyzeResourceProblems(resource, exception));
-                            }
-                            first = false;
+                    EList<Resource> resources = editingDomain.getResourceSet().getResources();
+                    Assert.isTrue(resources.size() == 1);
+                    Resource resource = resources.get(0);
+                    if (!editingDomain.isReadOnly(resource)) {
+                        try {
+                            resource.save(saveOptions);
+                        }
+                        catch (Exception e) {
+                            ScavePlugin.logError("Could not save resource", e);
                         }
                     }
                 }
             };
 
-        updateProblemIndication = false;
         try {
             // This runs the options, and shows progress.
-            //
             new ProgressMonitorDialog(getSite().getShell()).run(true, false, operation);
 
             // Refresh the necessary state.
-            //
             ((BasicCommandStack)editingDomain.getCommandStack()).saveIsDone();
             firePropertyChange(IEditorPart.PROP_DIRTY);
         }
         catch (Exception exception) {
-            // Something went wrong that shouldn't.
-            //
             ScaveEditPlugin.INSTANCE.log(exception);
         }
-        updateProblemIndication = true;
-        updateProblemIndication();
     }
 
     protected boolean isSaveable(Resource resource) {
         return true;
-    }
-
-    /**
-     * This returns wether something has been persisted to the URI of the specified resource.
-     * The implementation uses the URI converter from the editor's resource set to try to open an input stream.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    protected boolean isPersisted(Resource resource) {
-        boolean result = false;
-        try {
-            InputStream stream = editingDomain.getResourceSet().getURIConverter().createInputStream(resource.getURI());
-            if (stream != null) {
-                result = true;
-                stream.close();
-            }
-        }
-        catch (IOException e) {
-        }
-        return result;
     }
 
     /**
@@ -1114,9 +738,8 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
         IPath path= saveAsDialog.getResult();
         if (path != null) {
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-            if (file != null) {
+            if (file != null)
                 doSaveAs(URI.createPlatformResourceURI(file.getFullPath().toString(), true), new FileEditorInput(file));
-            }
         }
     }
 
@@ -1134,24 +757,12 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
         doSave(progressMonitor);
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public void gotoMarker(IMarker marker) {
         List<?> targetObjects = markerHelper.getTargetObjects(editingDomain, marker);
-        if (!targetObjects.isEmpty()) {
+        if (!targetObjects.isEmpty())
             setSelectionToViewer(targetObjects);
-        }
     }
 
-    /**
-     * This is called during startup.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public void init(IEditorSite site, IEditorInput editorInput)
         throws PartInitException {
         setSite(site);
@@ -1159,7 +770,6 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
         setPartName(editorInput.getName());
         site.setSelectionProvider(this);
         site.getPage().addPartListener(partListener);
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     /**
@@ -1203,7 +813,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
                 int statistics = idlistSelection.getStatisticsCount();
                 int histograms = idlistSelection.getHistogramsCount();
                 if (scalars + vectors + statistics + histograms == 0)
-                    statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
+                    statusLineManager.setMessage("No item selected");
                 else {
                     List<String> strings = new ArrayList<String>(3);
                     if (scalars > 0) strings.add(StringUtils.formatCounted(scalars, "scalar"));
@@ -1217,7 +827,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
             else if (selection instanceof IStructuredSelection) {
                 Collection<?> collection = ((IStructuredSelection)selection).toList();
                 if (collection.size()==0) {
-                    statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
+                        statusLineManager.setMessage("No item selected");
                 }
                 else if (collection.size()==1) {
                     Object object = collection.iterator().next();
@@ -1225,30 +835,16 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
                     String text = new InputsViewLabelProvider().getText(object);
                     if (text == null)
                         text = new AdapterFactoryItemDelegator(adapterFactory).getText(object);
-                    statusLineManager.setMessage(getString("_UI_SingleObjectSelected", text));
+                    statusLineManager.setMessage("Selected: " + text);
                 }
                 else {
-                    statusLineManager.setMessage(getString("_UI_MultiObjectSelected", Integer.toString(collection.size())));
+                        statusLineManager.setMessage("" + collection.size() + " items selected");
                 }
             }
             else {
                 statusLineManager.setMessage("");
             }
         }
-    }
-
-    /**
-     * This looks up a string in the plugin's plugin.properties file.
-     */
-    private static String getString(String key) {
-        return ScaveEditPlugin.INSTANCE.getString(key);
-    }
-
-    /**
-     * This looks up a string in plugin.properties, making a substitution.
-     */
-    private static String getString(String key, Object s1) {
-        return ScaveEditPlugin.INSTANCE.getString(key, new Object [] { s1 });
     }
 
     /**
@@ -1292,8 +888,6 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
      * Dispose widget.
      */
     public void dispose() {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
-
         if (getSite() != null && getSite().getPage() != null)
             getSite().getPage().removePartListener(partListener);
 

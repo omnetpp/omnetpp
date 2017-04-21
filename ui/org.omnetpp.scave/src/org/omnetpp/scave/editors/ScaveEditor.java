@@ -141,12 +141,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     };
 
     /**
-     * Temporary datasets and charts are added to this resource.
-     * The resource is not saved.
-     */
-    private Resource tempResource;
-
-    /**
      * Factory of Scave objects.
      */
     private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
@@ -361,9 +355,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         if (analysis.getCharts()==null)
             analysis.setCharts(factory.createCharts());
 
-        // create resource for temporary charts and datasets
-        tempResource = createTempResource();
-
         // create an adapter factory, that associates editorContextAdapter to Resource objects.
         // Therefore the editor context can be accessed from model objects by calling
         // EcoreUtil.getRegisteredAdapter(eObject.eResource(), IScaveEditorContext.class),
@@ -397,14 +388,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         analysis.setCharts(factory.createCharts());
         resource.getContents().add(analysis);
         return resource;
-    }
-
-    /**
-     * Prevent saving the temporary resource.
-     */
-    @Override
-    protected boolean isSaveable(Resource resource) {
-        return resource != tempResource;
     }
 
     @Override
@@ -520,21 +503,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         Resource resource = getResource();
         Analysis analysis = (Analysis)resource.getContents().get(0);
         return analysis;
-    }
-
-    /**
-     * Returns the temporary analysis object.
-     */
-    public Analysis getTempAnalysis() {
-        return (Analysis)tempResource.getContents().get(0);
-    }
-
-    /**
-     * Returns true if the object is a temporary object, i.e. it is not saved in
-     * the analysis file.
-     */
-    public boolean isTemporaryObject(EObject object) {
-        return object.eResource() == tempResource;
     }
 
     /**
@@ -834,7 +802,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
         // close pages whose content was deleted, except temporary datasets/charts
         // (temporary objects are not deleted, but they can be moved into the persistent analysis)
-        if (notification.getNotifier() instanceof EObject && !isTemporaryObject((EObject)notification.getNotifier())) {
+        if (notification.getNotifier() instanceof EObject) {
             List<Object> deletedObjects = null;
             switch (notification.getEventType()) {
             case Notification.REMOVE:
@@ -890,15 +858,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
      * isApplicable() method is hooked on selection changes.
      */
     public void fakeSelectionChange() {
-        setSelection(getSelection());
+        //TODO setSelection(getSelection());
     }
 
     /*
      * PageId
      */
-    private static final String TEMPORARY = "t:";
-    private static final String PERSISTENT = "p:";
-
     String getPageId(ScaveEditorPage page) {
         if (page == null)
             return null;
@@ -916,9 +881,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
                 ScaveEditorPage editorPage = entry.getValue();
                 if (page.equals(editorPage)) {
                     Resource resource = object.eResource();
-                    String prefix = resource == tempResource ? TEMPORARY : PERSISTENT;
                     String uri = resource != null ? resource.getURIFragment(object) : null;
-                    return uri != null ? prefix + uri : null;
+                    return uri != null ? uri : null;
                 }
             }
         }
@@ -948,14 +912,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
             EObject object = null;
             String uri = null;
             Resource resource = null;
-            if (pageId.startsWith(TEMPORARY)) {
-                uri = pageId.substring(TEMPORARY.length());
-                resource = tempResource;
-            }
-            else if (pageId.startsWith(PERSISTENT)) {
-                uri = pageId.substring(PERSISTENT.length());
-                resource = getResource();
-            }
+            uri = pageId;
+            resource = getResource();
 
             try {
                 if (resource != null && uri != null)

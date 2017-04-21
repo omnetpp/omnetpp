@@ -269,7 +269,7 @@ public class ScaveModelUtil {
     }
 
     public static boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
-        return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
+        return false; //TODO return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
     }
 
     public static Property getChartProperty(Chart chart, String propertyName) {

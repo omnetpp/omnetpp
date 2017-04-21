@@ -48,7 +48,7 @@ public class RemoveAction extends AbstractScaveAction {
             Object element = elements.next();
             if (element instanceof IWrapperItemProvider)
                 element = ((IWrapperItemProvider)element).getValue();
-            if (!(element instanceof EObject) || editor.isTemporaryObject((EObject)element))
+            if (!(element instanceof EObject))  //TODO || editor.isTemporaryObject((EObject)element)
                 return false;
         }
         return true; // only non-temporary EObjects selected
