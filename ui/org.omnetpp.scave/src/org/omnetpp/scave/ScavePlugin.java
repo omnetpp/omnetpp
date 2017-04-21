@@ -12,6 +12,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -97,6 +99,24 @@ public class ScavePlugin extends AbstractUIPlugin {
             imageRegistry.put(path, image);
         }
         return image;
+    }
+
+    /**
+     * Returns a platform shared image. Note: keys can be taken from IMG_*
+     * constants in the ISharedImages class, e.g. ISharedImages.IMG_TOOL_COPY.
+     */
+    public static Image getSharedImage(String key) {
+        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+        return sharedImages.getImage(key);
+    }
+
+    /**
+     * Returns a platform shared image. Note: keys can be taken from IMG_*
+     * constants in the ISharedImages class, e.g. ISharedImages.IMG_TOOL_COPY.
+     */
+    public static ImageDescriptor getSharedImageDescriptor(String key) {
+        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+        return sharedImages.getImageDescriptor(key);
     }
 
     public static void logError(Throwable exception) {

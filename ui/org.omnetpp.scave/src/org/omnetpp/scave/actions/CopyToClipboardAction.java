@@ -10,17 +10,19 @@ package org.omnetpp.scave.actions;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.ISharedImages;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.FilteredDataPanel;
 import org.omnetpp.scave.engine.ResultFileManager;
 
 /**
- * ...
+ * Copy data from the Browse Data page to the clipboard.
  */
 public class CopyToClipboardAction extends AbstractScaveAction {
     public CopyToClipboardAction() {
         setText("Copy to Clipboard");
-        setToolTipText("Copy Data to Clipboard"); //TODO  in various formats!!!!
+        setImageDescriptor(ScavePlugin.getSharedImageDescriptor(ISharedImages.IMG_TOOL_COPY));
     }
 
     @Override
