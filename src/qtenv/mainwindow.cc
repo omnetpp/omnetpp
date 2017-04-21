@@ -1133,7 +1133,7 @@ void MainWindow::on_actionFlipWindowLayout_triggered()
 void MainWindow::on_actionAbout_OMNeT_Qtenv_triggered()
 {
     QDialog *about = new QDialog();
-    about->setWindowTitle("About OMNeT++/OMNEST");
+    about->setWindowTitle("About OMNeT++");
     QVBoxLayout *layout = new QVBoxLayout();
     about->setLayout(layout);
 

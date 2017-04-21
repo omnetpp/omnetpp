@@ -126,7 +126,7 @@ proc hintDialog {key} {
 proc aboutDialog {} {
     global OMNETPP_RELEASE OMNETPP_EDITION OMNETPP_BUILDID
 
-    set title "About OMNeT++/OMNEST"
+    set title "About OMNeT++"
     set text "
 OMNeT++/OMNEST
 Discrete Event Simulation Framework
