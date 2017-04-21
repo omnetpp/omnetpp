@@ -339,6 +339,7 @@ else
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         if test "$TOOLCHAIN_NAME" = "clangc2"; then
             DEFINES="$DEFINES -D_MT -D_WINDOWS -D_WIN32 -DWIN32 -DWIN64 -D_USRDLL -D_WINDLL -D_DLL"
+            CFLAGS_RELEASE="$CFLAGS_RELEASE -O0" # FIXME temporary workaround as clang 3.8 on windows crashes with -O1 , or -O2
             CFLAGS_ARCH="$CFLAGS_ARCH -Wno-deprecated-declarations -isystem /visualc/include"
             CXXFLAGS="-std=c++14 -fcxx-exceptions"
             LDFLAG_LIBPATH="-Wl,-libpath:"
