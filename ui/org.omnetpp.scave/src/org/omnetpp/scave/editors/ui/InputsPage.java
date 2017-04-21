@@ -16,10 +16,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.edit.command.AddCommand;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -51,13 +48,12 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
-import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
+//TODO use "Add" and "Remove" instead of "New"/"Create" and "Delete" in context menus; ISharedImages.IMG_ELCL_REMOVE
+//TODO remove page description; display "empty-table message" instead (stacklayout?)
 public class InputsPage extends ScaveEditorPage {
     private InputsTree treeViewer;
 

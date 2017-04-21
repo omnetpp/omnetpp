@@ -43,6 +43,16 @@ import org.omnetpp.scave.model.ResultType;
 /**
  * This is the "Browse Data" page of Scave Editor
  */
+//TODO remove page description; display "empty-table message" instead (stacklayout?)
+//TODO tree context menu: move "Tree Levels" and "Flat Tree" to the toolbar; likewise for "Choose Table Columns" (use per-tab toolbars?)
+//TODO add "Export" to toolbar
+//TODO remove "Execute Filter" button from filter bar
+//TODO move "Switch filter mode" button to beginning of filter bar, and change it to toggle button
+//TODO revive "Export" and "Plot" actions
+//TODO save filter bar sash positions
+//TODO implement inc/dec decimal places (ie. change to number of significant digits; use scientific notation when needed)
+//TODO tables: right-align value column? (TableColumn.RIGHT)
+//TODO focus issue (currently a toolbar icon gets the focus by default?)
 public class BrowseDataPage extends ScaveEditorPage {
 
     // UI elements
