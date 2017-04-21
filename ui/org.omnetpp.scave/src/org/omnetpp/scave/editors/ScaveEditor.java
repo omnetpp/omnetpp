@@ -71,7 +71,6 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -92,11 +91,9 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
@@ -126,9 +123,6 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
-import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.HtmlHoverInfo;
-import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.DetailedPartInitException;
@@ -139,7 +133,6 @@ import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
-import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
@@ -1419,52 +1412,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         doCreatePages();
     }
 
-    public void configureTreeViewer(final TreeViewer modelViewer) {
-        ILabelProvider labelProvider =
-                new DecoratingLabelProvider(
-                        new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)),
-                        new ScaveModelLabelDecorator());
-        modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-        modelViewer.setLabelProvider(labelProvider);
-        modelViewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
-        // new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
-
-        modelViewer.addSelectionChangedListener(selectionChangedListener);
-
-        UIUtils.createContextMenuFor(modelViewer.getControl(), true, this);
-        setupDragAndDropSupportFor(modelViewer);
-
-        // on double-click, open (the dataset or chart), or bring up the Properties dialog
-        modelViewer.getTree().addSelectionListener(new SelectionAdapter() {
-            public void widgetDefaultSelected(SelectionEvent e) {
-                ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-                if (contributor != null) {
-                    if (contributor.getOpenAction().isEnabled())
-                        contributor.getOpenAction().run();
-                    else if (contributor.getEditAction().isEnabled())
-                        contributor.getEditAction().run();
-                }
-            }
-        });
-
-        new HoverSupport().adapt(modelViewer.getTree(), new IHoverInfoProvider() {
-            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-                Item item = modelViewer.getTree().getItem(new Point(x,y));
-                Object element = item==null ? null : item.getData();
-                if (element != null && modelViewer.getLabelProvider() instanceof DecoratingLabelProvider) {
-                    ILabelProvider labelProvider = ((DecoratingLabelProvider)modelViewer.getLabelProvider()).getLabelProvider();
-                    if (labelProvider instanceof ScaveModelLabelProvider) {
-                        ScaveModelLabelProvider scaveLabelProvider = (ScaveModelLabelProvider)labelProvider;
-                        return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(scaveLabelProvider.getTooltipText(element)));
-                    }
-                }
-                return null;
-            }
-        });
-    }
-
     /**
-     * Utility class to add content and label providers, context menu etc to a TreeViewer
+     * Utility class to add content and label providers, context menu etc to a Viewer
      * that is used to edit the model.
      */
     public void configureIconGridViewer(IconGridViewer modelViewer) {
