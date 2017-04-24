@@ -30,13 +30,13 @@ import org.eclipse.swt.widgets.Display;
   static {
       if (Platform.getOS().equals(Platform.OS_WIN32)) {
           try {
-              // mingwm10.dll is a dependency of opplibs.dll. We need to load it
+              // libwinpthread-1.dll is a dependency of opplibs.dll. We need to load it
               // explicitly, because for some reason it is not found otherwise
               // when placed next to opplibs.dll. --Andras
-              System.loadLibrary("mingwm10");
+              System.loadLibrary("libwinpthread-1");
           }
           catch (UnsatisfiedLinkError e) {
-              System.err.println("Warning: could not load mingwm10.dll: " + e.getClass().getName() + ": " + e.toString());
+              System.err.println("Warning: could not load libwinpthread-1.dll: " + e.getClass().getName() + ": " + e.toString());
           }
       }
       try {
