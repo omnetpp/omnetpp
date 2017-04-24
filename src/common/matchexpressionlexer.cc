@@ -55,9 +55,19 @@ int MatchExpressionLexer::getNextToken(char **valuep)
             case '\t':
                 continue;
 
+            case '=':
+                if (*ptr == '~') {
+                    ptr++;
+                    return MATCHES;
+                }
+                // no break!
+
             default: {
                 for ( ; ; ++ptr) {
                     switch (*ptr) {
+                        case '=':
+                            if (*(ptr+1) == '~')
+                                goto END;
                         case '\0':
                         case ' ':
                         case '\t':
@@ -67,7 +77,6 @@ int MatchExpressionLexer::getNextToken(char **valuep)
                             goto END;
                     }
                 }
-                ;
               END:
                 int len = ptr - start;
                 if (len == 2 && strncasecmp(start, "or", 2) == 0)

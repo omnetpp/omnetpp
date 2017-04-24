@@ -33,10 +33,10 @@ namespace common { class MatchExpression; };
  *
  * By default, a pattern must match the "default field" of the object,
  * which will usually be its name. Other fields can be matched with the
- * fieldname(pattern) syntax. These elements can be combined with the
- * AND, OR, NOT operators, accepted in both lowercase and uppercase.
- * AND has higher precedence than OR, but parentheses can be used to
- * change the evaluation order.
+ * fieldname(pattern) or fieldname=~pattern syntax (they are equivalent).
+ * These elements can be combined with the AND, OR, NOT operators, accepted
+ * in both lowercase and uppercase. AND has higher precedence than OR,
+ * and parentheses can be used to change the evaluation order.
  *
  * Patterns are those accepted by cPatternMatcher, that is, "*", "?",
  * character ranges as "{a-z}", numeric ranges as "{0..999}", or bracketed

@@ -40,6 +40,31 @@ msg->setBitLength(999);
 match("hello", msg);
 match("he* AND *lo", msg);
 match("bubu", msg);
+EV << endl;
+
+match("\"hello\"", msg);
+match("\"he*\" AND \"*lo\"", msg);
+match("\"bubu\"", msg);
+EV << endl;
+
+match("kind=~42", msg);
+match("kind=~41", msg);
+match("bitLength=~{990..1000}", msg);
+match("bitLength=~{980..990}", msg);
+EV << endl;
+
+match("kind =~ 42", msg);
+match("kind =~ 41", msg);
+match("bitLength=~{990..1000}", msg);
+match("bitLength=~{980..990}", msg);
+EV << endl;
+
+match("kind=~\"42\"", msg);
+match("kind=~\"41\"", msg);
+match("bitLength=~\"{990..1000}\"", msg);
+match("bitLength=~\"{980..990}\"", msg);
+EV << endl;
+
 match("kind(42)", msg);
 match("kind(41)", msg);
 match("bitLength({990..1000})", msg);
@@ -55,6 +80,26 @@ EV << "done\n";
 hello | (cPacket)hello --> true
 he* AND *lo | (cPacket)hello --> true
 bubu | (cPacket)hello --> false
+
+"hello" | (cPacket)hello --> true
+"he*" AND "*lo" | (cPacket)hello --> true
+"bubu" | (cPacket)hello --> false
+
+kind=~42 | (cPacket)hello --> true
+kind=~41 | (cPacket)hello --> false
+bitLength=~{990..1000} | (cPacket)hello --> true
+bitLength=~{980..990} | (cPacket)hello --> false
+
+kind =~ 42 | (cPacket)hello --> true
+kind =~ 41 | (cPacket)hello --> false
+bitLength=~{990..1000} | (cPacket)hello --> true
+bitLength=~{980..990} | (cPacket)hello --> false
+
+kind=~"42" | (cPacket)hello --> true
+kind=~"41" | (cPacket)hello --> false
+bitLength=~"{990..1000}" | (cPacket)hello --> true
+bitLength=~"{980..990}" | (cPacket)hello --> false
+
 kind(42) | (cPacket)hello --> true
 kind(41) | (cPacket)hello --> false
 bitLength({990..1000}) | (cPacket)hello --> true
