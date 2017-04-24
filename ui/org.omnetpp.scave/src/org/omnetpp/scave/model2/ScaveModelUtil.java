@@ -55,6 +55,8 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.HistogramChart;
+import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
@@ -72,6 +74,12 @@ public class ScaveModelUtil {
 
     private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
     private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+
+    public static InputFile createInput(String name) {
+        InputFile input = factory.createInputFile();
+        input.setName(name);
+        return input;
+    }
 
     public static Chart createChart(String name, ResultType type) {
         if (type==ResultType.SCALAR_LITERAL)
@@ -101,6 +109,25 @@ public class ScaveModelUtil {
         HistogramChart chart = factory.createHistogramChart();
         chart.setName(name);
         return chart;
+    }
+
+    public static void addInputFiles(EditingDomain domain, Analysis analysis, List<String> list) {
+        ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+        ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
+        Inputs inputs = analysis.getInputs();
+        List<InputFile> inputFiles = new ArrayList<>();
+        for (String item : list) {
+            InputFile inputFile = factory.createInputFile();
+            inputFile.setName(item);
+            inputFiles.add(inputFile);
+        }
+        Command command = AddCommand.create(domain, inputs, pkg.getInputs_Inputs(), inputFiles);
+        domain.getCommandStack().execute(command);
+    }
+
+    public static void setInputFile(EditingDomain domain, InputFile inputFile, String value) {
+        Command command = SetCommand.create(domain, inputFile, pkg.getInputFile_Name(), value);
+        domain.getCommandStack().execute(command);
     }
 
     private static String[] getFilterFieldsFor(String[] runidFields) {
@@ -198,7 +225,7 @@ public class ScaveModelUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T extends EObject> List<T> findObjects(EObject container, Class<T> type) {
-        ArrayList<T> objects = new ArrayList<T>();
+        ArrayList<T> objects = new ArrayList<>();
         for (TreeIterator<EObject> iterator = container.eAllContents(); iterator.hasNext(); ) {
             EObject object = iterator.next();
             if (type.isInstance(object))
@@ -212,7 +239,7 @@ public class ScaveModelUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T extends EObject> List<T> findObjects(Resource resource, Class<T> type) {
-        ArrayList<T> objects = new ArrayList<T>();
+        ArrayList<T> objects = new ArrayList<>();
         for (TreeIterator<EObject> iterator = resource.getAllContents(); iterator.hasNext(); ) {
             EObject object = iterator.next();
             if (type.isInstance(object))
@@ -225,7 +252,7 @@ public class ScaveModelUtil {
      * Collect charts from the given collection.
      */
     public static List<Chart> collectCharts(Collection<?> items) {
-        List<Chart> charts = new ArrayList<Chart>();
+        List<Chart> charts = new ArrayList<>();
         for (Object item : items)
             if (item instanceof Chart)
                 charts.add((Chart)item);
@@ -336,7 +363,7 @@ public class ScaveModelUtil {
      * of the result items found in {@code idlist}.
      */
     public static String[] getFieldValues(IDList idlist, ResultItemField field, ResultFileManager manager) {
-        Set<String> values = new HashSet<String>();
+        Set<String> values = new HashSet<>();
         for (int i = 0; i < idlist.size(); ++i) {
             long id = idlist.get(i);
             ResultItem item = manager.getItem(id);
@@ -352,7 +379,7 @@ public class ScaveModelUtil {
 
     public static IsoLineData[] getModuleAndDataPairs(IDList idlist, ResultFileManager manager, boolean addRunAttributes) {
         manager.checkReadLock();
-        Set<IsoLineData> values = new HashSet<IsoLineData>();
+        Set<IsoLineData> values = new HashSet<>();
         for (int i = 0; i < idlist.size(); ++i) {
             long id = idlist.get(i);
             ResultItem item = manager.getItem(id);
@@ -375,7 +402,7 @@ public class ScaveModelUtil {
     }
 
     public static List<String> getResultItemFields(IDList idlist, ResultFileManager manager) {
-        List<String> fields = new ArrayList<String>();
+        List<String> fields = new ArrayList<>();
         fields.add(ResultItemField.FILE);
         fields.add(ResultItemField.RUN);
         fields.add(ResultItemField.MODULE);

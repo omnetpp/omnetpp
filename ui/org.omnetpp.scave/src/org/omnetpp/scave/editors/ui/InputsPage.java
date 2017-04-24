@@ -7,51 +7,59 @@
 
 package org.omnetpp.scave.editors.ui;
 
-import static org.omnetpp.scave.TestSupport.FILE_RUN_VIEW_TREE_ID;
-import static org.omnetpp.scave.TestSupport.INPUT_FILES_TREE;
-import static org.omnetpp.scave.TestSupport.LOGICAL_VIEW_TREE_ID;
-import static org.omnetpp.scave.TestSupport.RUN_FILE_VIEW_TREE_ID;
-import static org.omnetpp.scave.TestSupport.WIDGET_ID;
-import static org.omnetpp.scave.TestSupport.enableGuiTest;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
-import org.omnetpp.common.ui.CustomSashForm;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.ui.FocusManager;
-import org.omnetpp.scave.actions.AddResultFileAction;
-import org.omnetpp.scave.actions.AddWildcardResultFileAction;
-import org.omnetpp.scave.actions.EditAction;
-import org.omnetpp.scave.actions.RemoveAction;
-import org.omnetpp.scave.actions.SetFilterAction;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.actions.CollapseSubtreeAction;
+import org.omnetpp.scave.actions.CollapseTreeAction;
+import org.omnetpp.scave.actions.EditInputFileAction;
+import org.omnetpp.scave.actions.ExpandSubtreeAction;
+import org.omnetpp.scave.actions.NewInputFileAction;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.treeproviders.InputsFileRunViewContentProvider;
-import org.omnetpp.scave.editors.treeproviders.InputsLogicalViewContentProvider;
-import org.omnetpp.scave.editors.treeproviders.InputsRunFileViewContentProvider;
-import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
+import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model.ScaveModelFactory;
+import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class InputsPage extends ScaveEditorPage {
-
-    private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
-    private Section inputFilesSection = null;
-    private Section dataSection = null;
-    private SashForm sashform = null;
+    private InputsTree treeViewer;
 
     private Runnable scheduledUpdate;
 
@@ -60,48 +68,79 @@ public class InputsPage extends ScaveEditorPage {
         initialize();
     }
 
-    public TreeViewer getInputFilesTreeViewer() {
-        InputFilesPanel panel = (InputFilesPanel)inputFilesSection.getClient();
-        return panel.getTreeViewer();
-    }
-
-    public TreeViewer getFileRunTreeViewer() {
-        DataPanel panel = (DataPanel)dataSection.getClient();
-        return panel.getFileRunTreeViewer();
-    }
-
-    public TreeViewer getRunFileTreeViewer() {
-        DataPanel panel = (DataPanel)dataSection.getClient();
-        return panel.getRunFileTreeViewer();
-    }
-
-    public TreeViewer getLogicalDataTreeViewer() {
-        DataPanel panel = (DataPanel)dataSection.getClient();
-        return panel.getLogicalTreeViewer();
-    }
-
     private void initialize() {
         // set up UI
         setPageTitle("Inputs");
         setFormTitle("Inputs");
         getContent().setLayout(new GridLayout());
-        createSashForm();
-        createInputFilesSection();
-        createDataSection();
 
-        // configure viewers
-        scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
+        Label label = new Label(getContent(), SWT.WRAP);
+        label.setText("Add or drag'n'drop result files (sca,vec) or folders that serve as input to the analysis. Wildcards (*,?) are accepted.");
+        label.setBackground(this.getBackground());
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 
-        getFileRunTreeViewer().setContentProvider(new InputsFileRunViewContentProvider());
-        getFileRunTreeViewer().setLabelProvider(new InputsViewLabelProvider());
+        IContainer baseFolder = ((FileEditorInput)scaveEditor.getEditorInput()).getFile().getParent();
+        treeViewer = new InputsTree(getContent(), scaveEditor.getAnalysis(), scaveEditor.getResultFileManager(), baseFolder, true);
+        treeViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        getRunFileTreeViewer().setContentProvider(new InputsRunFileViewContentProvider());
-        getRunFileTreeViewer().setLabelProvider(new InputsViewLabelProvider());
+        // toolbar
+        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+        addToToolbar(new NewInputFileAction());
+        addToToolbar(new EditInputFileAction());
+        addToToolbar(contributor.getDeleteAction());
+        addSeparatorToToolbar();
+        addToToolbar(new CollapseTreeAction(treeViewer));
 
-        getLogicalDataTreeViewer().setContentProvider(new InputsLogicalViewContentProvider());
-        getLogicalDataTreeViewer().setLabelProvider(new InputsViewLabelProvider());
+        treeViewer.getTree().setFocus();
 
+        //TODO treeViewer.addSelectionChangedListener(selectionChangedListener);
+
+        // context menu
+        UIUtils.createContextMenuFor(treeViewer.getTree(), true, new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager menuManager) {
+                menuManager.add(new NewInputFileAction());
+                menuManager.add(new EditInputFileAction());
+                menuManager.add(contributor.getDeleteAction());
+                menuManager.add(new Separator());
+                menuManager.add(contributor.getUndoRetargetAction());
+                menuManager.add(new Separator());
+                menuManager.add(new ExpandSubtreeAction(treeViewer));
+                menuManager.add(new CollapseSubtreeAction(treeViewer));
+                // TODO needed? scaveEditor.menuAboutToShow(menuManager);
+            }
+        });
+
+        // expand/collapse on double-click
+        treeViewer.getTree().addSelectionListener(new SelectionAdapter() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                Object element = treeViewer.getStructuredSelection().getFirstElement();
+                if (element != null) {
+                    if (treeViewer.getExpandedState(element))
+                        treeViewer.collapseToLevel(element, 1);
+                    else
+                        treeViewer.expandToLevel(element, 1);
+                }
+            }
+        });
+
+        // set up drag & drop of .sca and .vec files into the viewers
+        int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+        Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance(), LocalSelectionTransfer.getTransfer() }; // note: FileTransfer causes exception
+        treeViewer.addDropSupport(dndOperations, transfers, new DropTargetAdapter() {
+            @Override
+            public void drop(DropTargetEvent event) {
+                if (event.data instanceof IStructuredSelection)
+                    handleDrop((IStructuredSelection)event.data);
+            }
+        });
+
+        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
+
+        // refresh on workspace changes
         scaveEditor.getResultFileManager().addChangeListener(new IResultFilesChangeListener() {
+            @Override
             public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
                 switch (event.getChangeType()) {
                 case LOAD:
@@ -109,14 +148,14 @@ public class InputsPage extends ScaveEditorPage {
                     final ResultFileManager manager = event.getResultFileManager();
                     if (scheduledUpdate == null) {
                         scheduledUpdate = new Runnable() {
+                            @Override
                             public void run() {
                                 scheduledUpdate = null;
                                 if (!isDisposed()) {
                                     ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                                        @Override
                                         public Object call()  {
-                                            getFileRunTreeViewer().setInput(manager); // force refresh
-                                            getRunFileTreeViewer().setInput(manager);
-                                            getLogicalDataTreeViewer().setInput(manager);
+                                            getTreeViewer().refresh();
                                             return null;
                                         }
                                     });
@@ -125,122 +164,22 @@ public class InputsPage extends ScaveEditorPage {
                         };
                         getDisplay().asyncExec(scheduledUpdate);
                     }
+                default: // nothing
                 }
             }
         });
 
-        getFileRunTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
-        getRunFileTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
-        getLogicalDataTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
-
-        // set up drag & drop of .sca and .vec files into the viewers
-        setupResultFileDropTarget(getFileRunTreeViewer().getControl());
-        setupResultFileDropTarget(getRunFileTreeViewer().getControl());
-        setupResultFileDropTarget(getLogicalDataTreeViewer().getControl());
-
-        // set contents
-        Analysis analysis = scaveEditor.getAnalysis();
-        getInputFilesTreeViewer().setInput(analysis.getInputs());
-
-        ResultFileManager manager = scaveEditor.getResultFileManager();
-        getFileRunTreeViewer().setInput(manager);
-        getRunFileTreeViewer().setInput(manager);
-        getLogicalDataTreeViewer().setInput(manager);
-
-        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
-        setFocusManager(new FocusManager(this));
-
-        if (enableGuiTest) {
-            getInputFilesTreeViewer().getTree().setData(WIDGET_ID, INPUT_FILES_TREE);
-            getFileRunTreeViewer().getTree().setData(WIDGET_ID, FILE_RUN_VIEW_TREE_ID);
-            getRunFileTreeViewer().getTree().setData(WIDGET_ID, RUN_FILE_VIEW_TREE_ID);
-            getLogicalDataTreeViewer().getTree().setData(WIDGET_ID, LOGICAL_VIEW_TREE_ID);
-        }
+        getTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
     }
 
-    /**
-     * This method initializes formToolkit
-     *
-     * @return org.eclipse.ui.forms.widgets.FormToolkit
-     */
-    private FormToolkit getFormToolkit() {
-        if (formToolkit == null)
-            formToolkit = new FormToolkit2(Display.getCurrent());
-        return formToolkit;
-    }
-
-    private void createSashForm() {
-        sashform = new CustomSashForm(getContent(), SWT.VERTICAL | SWT.SMOOTH);
-        getFormToolkit().adapt(sashform);
-        sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
-                                            GridData.GRAB_VERTICAL |
-                                            GridData.FILL_BOTH));
-    }
-
-    /**
-     * This method initializes inputFilesSection
-     */
-    private void createInputFilesSection() {
-        inputFilesSection = getFormToolkit().createSection(sashform,
-                Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-        inputFilesSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        inputFilesSection.setText("Input files");
-        inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis. Wildcards (*,?) can also be used to specify multiple files.");
-        inputFilesSection.setExpanded(true);
-        InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
-        inputFilesSection.setClient(inputFilesPanel);
-        inputFilesPanel.setBackground(getBackground());
-
-        // buttons
-        configureViewerButton(
-                inputFilesPanel.getAddFileButton(),
-                inputFilesPanel.getTreeViewer(),
-                new AddResultFileAction());
-        configureViewerButton(
-                inputFilesPanel.getAddWildcardButton(),
-                inputFilesPanel.getTreeViewer(),
-                new AddWildcardResultFileAction());
-        configureViewerButton(
-                inputFilesPanel.getEditButton(),
-                inputFilesPanel.getTreeViewer(),
-                new EditAction());
-        configureViewerButton(
-                inputFilesPanel.getRemoveFileButton(),
-                inputFilesPanel.getTreeViewer(),
-                new RemoveAction());
-        inputFilesPanel.getRemoveFileButton().setText("Remove"); // override the text "Delete" that comes from the action
-    }
-
-    /**
-     * This method initializes dataSection
-     */
-    private void createDataSection() {
-        dataSection = getFormToolkit().createSection(sashform,
-                Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-        dataSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-        dataSection.setText("Data");
-        dataSection.setDescription("Here you can browse the result files and their contents.");
-        //dataSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
-        DataPanel dataPanel = new DataPanel(dataSection, SWT.NONE);
-        dataSection.setClient(dataPanel);
-
-        // double-clicks
-        configureViewerDefaultAction(
-                dataPanel.getFileRunTreeViewer(),
-                new SetFilterAction());
-        configureViewerDefaultAction(
-                dataPanel.getRunFileTreeViewer(),
-                new SetFilterAction());
-        configureViewerDefaultAction(
-                dataPanel.getLogicalTreeViewer(),
-                new SetFilterAction());
+    public InputsTree getTreeViewer() {
+        return treeViewer;
     }
 
     @Override
     public boolean gotoObject(Object object) {
         if (object instanceof InputFile) {
-            TreeViewer viewer = getInputFilesTreeViewer();
-            viewer.reveal(object);
+            getTreeViewer().reveal(object);
             return true;
         }
         else if (object instanceof Inputs) {
@@ -251,7 +190,42 @@ public class InputsPage extends ScaveEditorPage {
     }
 
     @Override
-    public void selectionChanged(ISelection selection) {
-        setViewerSelectionNoNotify(getInputFilesTreeViewer(), selection);
+    public void updatePage(Notification notification) {
+        getTreeViewer().refresh();
     }
+
+    @Override
+    public void selectionChanged(ISelection selection) {
+        System.out.println(selection);
+        //TODO if selection contains InputFiles, select them in the tree?
+    }
+
+    protected void handleDrop(IStructuredSelection droppedItems) {
+        // extract list of patterns to add
+        List<String> list = new ArrayList<>();
+        for (Object droppedItem : droppedItems.toList()) {
+            if (droppedItem instanceof IAdaptable)
+                droppedItem = ((IAdaptable) droppedItem).getAdapter(IResource.class);
+            if (droppedItem instanceof IFile) {
+                IFile file = (IFile)droppedItem;
+                String fileExtension = file.getFileExtension();
+                if (fileExtension != null && fileExtension.equals("sca") || fileExtension.equals("vec"))
+                    list.add(makeRelative(file.getFullPath()).toString());
+            }
+            else if (droppedItem instanceof IContainer) {
+                IContainer folder = (IContainer)droppedItem;
+                list.add(makeRelative(folder.getFullPath().append("*.vec")).toString());
+                list.add(makeRelative(folder.getFullPath().append("*.sca")).toString());
+            }
+        }
+
+        // add them
+        ScaveModelUtil.addInputFiles(scaveEditor.getEditingDomain(), scaveEditor.getAnalysis(), list);
+    }
+
+    protected IPath makeRelative(IPath path) {
+        IPath baseDir = ((FileEditorInput)scaveEditor.getEditorInput()).getFile().getParent().getFullPath();
+        return baseDir.isPrefixOf(path) ? path.removeFirstSegments(baseDir.segmentCount()) : path;
+    }
+
 }

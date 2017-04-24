@@ -246,7 +246,7 @@ public class GenericTreeNode {
      */
     @Override
     public String toString() {
-        return payload.toString();
+        return "GenericTreeNode(" +payload.toString() + ")";
     }
 
     /**

@@ -8,11 +8,15 @@
 package org.omnetpp.common.util;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.CommonPlugin;
 
@@ -55,6 +59,15 @@ public class UIUtils {
         }
     }
 
+    public static void createContextMenuFor(Control control, boolean removeAllWhenShown, IMenuListener menuListener) {
+        MenuManager contextMenu = new MenuManager("#PopUp");
+        contextMenu.setRemoveAllWhenShown(removeAllWhenShown);
+        contextMenu.addMenuListener(menuListener);
+        Menu menu = contextMenu.createContextMenu(control);
+        control.setMenu(menu);
+        // Note: don't register the context menu with the editor site, or "Run As", "Debug As", "Team", and other irrelevant menu items appear...
+    }
+    
     public static void dumpWidgetHierarchy(Control control) {
         dumpWidgetHierarchy(control, 0);
     }

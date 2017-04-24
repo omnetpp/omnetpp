@@ -69,8 +69,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
@@ -99,7 +97,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
@@ -137,10 +134,10 @@ import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
-import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
@@ -988,7 +985,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             contentOutlineViewer.expandToLevel(3);
 
             // Make sure our popups work.
-            createContextMenuFor(contentOutlineViewer);
+            UIUtils.createContextMenuFor(contentOutlineViewer.getControl(), true, ScaveEditor.this);
 
             if (!editingDomain.getResourceSet().getResources().isEmpty()) {
               // Select the root object in the view.
@@ -1398,24 +1395,24 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     }
 
 
-    /**
-     * This creates a context menu for the viewer and adds a listener as well registering the menu for extension.
-     */
-    protected void createContextMenuFor(StructuredViewer viewer) {
-        createContextMenuFor(viewer.getControl());
-    }
-    
-    protected void createContextMenuFor(Control control) {
-        MenuManager contextMenu = new MenuManager("#PopUp");
-        contextMenu.add(new Separator("additions"));
-        contextMenu.setRemoveAllWhenShown(true);
-        contextMenu.addMenuListener(this);
-        Menu menu = contextMenu.createContextMenu(control);
-        control.setMenu(menu);
-
-        // Note: don't register the context menu, otherwise "Run As", "Debug As", "Team", and other irrelevant menu items appear...
-        //getSite().registerContextMenu(contextMenu, viewer);
-    }
+//    /**
+//     * This creates a context menu for the viewer and adds a listener as well registering the menu for extension.
+//     */
+//    protected void createContextMenuFor(StructuredViewer viewer) {
+//        createContextMenuFor(viewer.getControl());
+//    }
+//
+//    protected void createContextMenuFor(Control control) {
+//        MenuManager contextMenu = new MenuManager("#PopUp");
+//        contextMenu.add(new Separator("additions"));
+//        contextMenu.setRemoveAllWhenShown(true);
+//        contextMenu.addMenuListener(this);
+//        Menu menu = contextMenu.createContextMenu(control);
+//        control.setMenu(menu);
+//
+//        // Note: don't register the context menu, otherwise "Run As", "Debug As", "Team", and other irrelevant menu items appear...
+//        //getSite().registerContextMenu(contextMenu, viewer);
+//    }
 
     /**
      * Returns a diagnostic describing the errors and warnings listed in the resource
@@ -1457,7 +1454,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         modelViewer.addSelectionChangedListener(selectionChangedListener);
 
-        createContextMenuFor(modelViewer);
+        UIUtils.createContextMenuFor(modelViewer.getControl(), true, this);
         setupDragAndDropSupportFor(modelViewer);
 
         // on double-click, open (the dataset or chart), or bring up the Properties dialog
@@ -1530,8 +1527,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         modelViewer.addSelectionChangedListener(selectionChangedListener);
 
-        createContextMenuFor(modelViewer.getControl());
-        createContextMenuFor(modelViewer.getCanvas());
+        UIUtils.createContextMenuFor(modelViewer.getControl(), true, this);
+        UIUtils.createContextMenuFor(modelViewer.getCanvas(), true, this);
 //        setupDragAndDropSupportFor(modelViewer);
 
         // on double-click, open (the dataset or chart), or bring up the Properties dialog
@@ -1729,9 +1726,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                 else if (collection.size()==1) {
                     Object object = collection.iterator().next();
                      // XXX unify label providers
-                    String text = new InputsViewLabelProvider().getText(object);
-                    if (text == null)
-                        text = new AdapterFactoryItemDelegator(adapterFactory).getText(object);
+//                    String text = new InputsViewLabelProvider().getText(object);
+//                    if (text == null)
+                    String text = new AdapterFactoryItemDelegator(adapterFactory).getText(object);
                     statusLineManager.setMessage("Selected: " + text);
                 }
                 else {

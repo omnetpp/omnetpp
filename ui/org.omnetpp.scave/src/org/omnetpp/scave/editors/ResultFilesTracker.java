@@ -346,7 +346,7 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
      * Matches <code>str</code> against the given <code>pattern</code>.
      * The pattern may contain '?' (any char) and '*' (any char sequence) wildcards.
      */
-    private static boolean matchPattern(String str, String pattern) {
+    public static boolean matchPattern(String str, String pattern) {
         return matchPattern(str, 0, str.length(), pattern, 0, pattern.length());
     }
 

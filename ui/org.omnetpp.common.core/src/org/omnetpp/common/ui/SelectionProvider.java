@@ -21,7 +21,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
  */
 public class SelectionProvider implements ISelectionProvider
 {
-    protected ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+    protected ListenerList<ISelectionChangedListener> listeners = new ListenerList<ISelectionChangedListener>(ListenerList.IDENTITY);
     protected ISelection selection = new StructuredSelection();
 
     public SelectionProvider() {
