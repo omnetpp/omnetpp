@@ -120,6 +120,16 @@ EnumType *ResultItem::getEnum() const
     }
 }
 
+int ScalarResult::getItemType() const
+{
+    return ResultFileManager::SCALAR;
+}
+
+int VectorResult::getItemType() const
+{
+    return ResultFileManager::VECTOR;
+}
+
 InterpolationMode VectorResult::getInterpolationMode() const
 {
     StringMap::const_iterator it = attributes.find("interpolationmode");
@@ -139,6 +149,16 @@ InterpolationMode VectorResult::getInterpolationMode() const
     else {
         return UNSPECIFIED;
     }
+}
+
+int StatisticsResult::getItemType() const
+{
+    return ResultFileManager::STATISTICS;
+}
+
+int HistogramResult::getItemType() const
+{
+    return ResultFileManager::HISTOGRAM;
 }
 
 void HistogramResult::addBin(double lowerBound, double count)
@@ -837,6 +857,7 @@ class MatchableResultItem : public MatchExpression::Matchable
         virtual const char *getAsString() const override;
         virtual const char *getAsString(const char *attribute) const override;
     private:
+        const char *getItemType() const;
         const char *getName() const { return item.getName().c_str(); }
         const char *getModuleName() const { return item.getModuleName().c_str(); }
         const char *getFileName() const { return item.getFile()->getFilePath().c_str(); }
@@ -858,18 +879,31 @@ const char *MatchableResultItem::getAsString(const char *attribute) const
         return getName();
     else if (strcasecmp("module", attribute) == 0)
         return getModuleName();
-    else if (strcasecmp("file", attribute) == 0)
-        return getFileName();
+    else if (strcasecmp("type", attribute) == 0)
+        return getItemType();
     else if (strcasecmp("run", attribute) == 0)
         return getRunName();
-    else if (strncasecmp("attr:", attribute, 5) == 0)
+    else if (strcasecmp("file", attribute) == 0)
+        return getFileName();
+    else if (strncasecmp("attr:", attribute, 5) == 0) //TODO rename runattr? this can be confused with item's own attrs
         return getRunAttribute(attribute+5);
-    else if (strncasecmp("itervar:", attribute, 5) == 0)
+    else if (strncasecmp("itervar:", attribute, 5) == 0) //TODO runitervar?
         return getIterationVariable(attribute+8);
-    else if (strncasecmp("param:", attribute, 6) == 0)
+    else if (strncasecmp("param:", attribute, 6) == 0) //TODO runparam?
         return getParamAssignment(attribute+6);
     else
-        return getResultItemAttribute(attribute);
+        return getResultItemAttribute(attribute); //TODO prefix with "attr:" ?
+}
+
+const char *MatchableResultItem::getItemType() const
+{
+    switch (item.getItemType()) {
+        case ResultFileManager::SCALAR: return "scalar";
+        case ResultFileManager::VECTOR: return "vector";
+        case ResultFileManager::STATISTICS: return "statistics";
+        case ResultFileManager::HISTOGRAM: return "histogram";
+        default: return "?";
+    }
 }
 
 IDList ResultFileManager::filterIDList(const IDList& idlist, const char *pattern) const

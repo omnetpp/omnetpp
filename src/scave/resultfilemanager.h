@@ -123,6 +123,8 @@ class SCAVE_API ResultItem
     ResultItem& operator=(const ResultItem& rhs);
     virtual ~ResultItem() { delete computation; }
 
+    virtual int getItemType() const = 0;
+
     const std::string& getName() const {return *nameRef;}
     const std::string& getModuleName() const {return *moduleNameRef;}
 
@@ -167,6 +169,7 @@ class SCAVE_API ScalarResult : public ResultItem
     ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, bool isField, bool isItervar) :
         ResultItem(fileRun, moduleName, name, attrs), value(value), isField_(isField), isItervar_(isItervar) {}
   public:
+    virtual int getItemType() const;
     double getValue() const {return value;}
     bool isField() const {return isField_;}
     bool isItervar() const {return isItervar_;}
@@ -191,6 +194,7 @@ class SCAVE_API VectorResult : public ResultItem
     VectorResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, int vectorId, const std::string& columns) :
         ResultItem(fileRun, moduleName, name, attrs), vectorId(vectorId), columns(columns), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
   public:
+    virtual int getItemType() const;
     int getVectorId() const {return vectorId;}
     const std::string& getColumns() const {return columns;}
     const Statistics& getStatistics() const {return stat;}
@@ -221,6 +225,7 @@ class SCAVE_API StatisticsResult : public ResultItem
     StatisticsResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, const Statistics& stat) :
         ResultItem(fileRun, moduleName, name, attrs), stat(stat) {}
   public:
+    virtual int getItemType() const;
     const Statistics& getStatistics() const {return stat;}
 };
 
@@ -239,6 +244,7 @@ class SCAVE_API HistogramResult : public StatisticsResult
         StatisticsResult(fileRun, moduleName, name, attrs, stat), bins(bins) {}
     void addBin(double lowerBound, double count);
   public:
+    virtual int getItemType() const;
     const Histogram& getHistogram() const {return bins;}
 };
 
