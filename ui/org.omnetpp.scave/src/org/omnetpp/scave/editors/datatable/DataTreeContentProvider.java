@@ -1229,7 +1229,7 @@ public class DataTreeContentProvider {
                 else if (allType == ResultFileManager.VECTOR)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
                 else if (allType == ResultFileManager.STATISTICS)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSTATISTICS);
                 else if (allType == ResultFileManager.HISTOGRAM)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else
@@ -1241,10 +1241,10 @@ public class DataTreeContentProvider {
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
                 else if (resultItem instanceof VectorResult)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
-                else if (resultItem instanceof StatisticsResult)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else if (resultItem instanceof HistogramResult)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                else if (resultItem instanceof StatisticsResult)
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSTATISTICS);
                 else
                     return ImageFactory.global().getIconImage(ImageFactory.DEFAULT);
             }

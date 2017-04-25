@@ -138,6 +138,7 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_ADDSELECTEDTODATASET = TOOL_IMAGE_DIR + "AddSelectedToDataset";
     public final static String TOOLBAR_IMAGE_SHOWSCALARS = TOOL_IMAGE_DIR + "ShowScalars";
     public final static String TOOLBAR_IMAGE_SHOWVECTORS = TOOL_IMAGE_DIR + "ShowVectors";
+    public final static String TOOLBAR_IMAGE_SHOWSTATISTICS = TOOL_IMAGE_DIR + "ShowStatistics";
     public final static String TOOLBAR_IMAGE_SHOWHISTOGRAMS = TOOL_IMAGE_DIR + "ShowHistograms";
     public final static String TOOLBAR_IMAGE_EXPORTIMAGE = TOOL_IMAGE_DIR + "ExportImage";
     public final static String TOOLBAR_IMAGE_LEGEND = TOOL_IMAGE_DIR + "legend";

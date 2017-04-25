@@ -61,6 +61,8 @@ public class IDListSelection implements IStructuredSelection {
             type = ResultType.SCALAR_LITERAL;
         else if (internalType == ResultFileManager.VECTOR)
             type = ResultType.VECTOR_LITERAL;
+        else if (internalType == ResultFileManager.STATISTICS)
+            type = ResultType.STATISTICS_LITERAL;
         else if (internalType == ResultFileManager.HISTOGRAM)
             type = ResultType.HISTOGRAM_LITERAL;
     }

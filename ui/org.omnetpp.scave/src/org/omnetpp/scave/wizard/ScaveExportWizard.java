@@ -292,11 +292,14 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             ArrayList<String> items = new ArrayList<>();
             int numScalars = selectedIDs.countByTypes(ResultFileManager.SCALAR);
             int numVectors = selectedIDs.countByTypes(ResultFileManager.VECTOR);
+            int numStatistics = selectedIDs.countByTypes(ResultFileManager.STATISTICS);
             int numHistograms = selectedIDs.countByTypes(ResultFileManager.HISTOGRAM);
             if (numScalars > 0)
                 items.add(StringUtils.formatCounted(numScalars, "scalar"));
             if (numVectors > 0)
                 items.add(StringUtils.formatCounted(numVectors, "vector"));
+            if (numStatistics > 0)
+                items.add(StringUtils.formatCounted(numStatistics, "statistics"));
             if (numHistograms > 0)
                 items.add(StringUtils.formatCounted(numHistograms, "histogram"));
             if (selectedIDs.isEmpty())
@@ -310,6 +313,8 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                 result += "scalar ";
             if ((types & ResultFileManager.VECTOR) != 0)
                 result += "vector ";
+            if ((types & ResultFileManager.STATISTICS) != 0)
+                result += "statistics ";
             if ((types & ResultFileManager.HISTOGRAM) != 0)
                 result += "histogram ";
             return StringUtils.join(result.split(" "), " and ");
