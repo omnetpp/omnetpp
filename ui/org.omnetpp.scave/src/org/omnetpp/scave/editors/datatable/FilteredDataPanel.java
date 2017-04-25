@@ -122,7 +122,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
             public void widgetSelected(SelectionEvent e) {
                 // check the filter string
                 if (!filterPanel.isFilterPatternValid()) {
-                    MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Contents are not changed.");
+                    MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Syntax error in filter expression, panel contents unchanged.");
                     return;
                 }
                 runFilter();
