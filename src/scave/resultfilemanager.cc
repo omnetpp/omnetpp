@@ -85,7 +85,7 @@ ResultItem& ResultItem::operator=(const ResultItem& rhs)
     return *this;
 }
 
-ResultItem::Type ResultItem::getType() const
+ResultItem::DataType ResultItem::getDataType() const
 {
     StringMap::const_iterator it = attributes.find("type");
     if (it == attributes.end()) {

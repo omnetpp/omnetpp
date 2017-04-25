@@ -25,7 +25,7 @@ import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.OutputVectorEntry;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ResultItem.Type;
+import org.omnetpp.scave.engine.ResultItem.DataType;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.ResultItemValueFormatter;
 
@@ -43,7 +43,7 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 
     protected Font font = JFaceResources.getDefaultFont();
 
-    protected Type type;
+    protected DataType type;
     protected EnumType enumType;
     protected ResultItemValueFormatter valueLabelProvider = new ResultItemValueFormatter();
     protected int fontHeight;

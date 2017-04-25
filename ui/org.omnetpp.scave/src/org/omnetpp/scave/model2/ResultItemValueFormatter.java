@@ -10,10 +10,10 @@ package org.omnetpp.scave.model2;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.ResultItem.Type;
+import org.omnetpp.scave.engine.ResultItem.DataType;
 
 public class ResultItemValueFormatter {
-    private Type type;
+    private DataType type;
     private EnumType enumType;
 
     public ResultItemValueFormatter() {
@@ -25,7 +25,7 @@ public class ResultItemValueFormatter {
 
     public void setResultItem(ResultItem resultItem) {
         if (resultItem != null) {
-            type = resultItem.getType();
+            type = resultItem.getDataType();
             enumType = resultItem.getEnum();
         }
         else {
@@ -39,13 +39,13 @@ public class ResultItemValueFormatter {
     }
 
     public String format(double value) {
-        if (type == Type.TYPE_DOUBLE) {
+        if (type == DataType.TYPE_DOUBLE) {
             return String.valueOf(value);
         }
-        else if (type == Type.TYPE_INT) {
+        else if (type == DataType.TYPE_INT) {
             return String.valueOf((int)value);
         }
-        else if (type == Type.TYPE_ENUM && enumType != null) {
+        else if (type == DataType.TYPE_ENUM && enumType != null) {
             String name = enumType.nameOf((int)value);
             return name != null ? name : "?";
         }
@@ -54,13 +54,13 @@ public class ResultItemValueFormatter {
     }
 
     public String format(BigDecimal value) {
-        if (type == Type.TYPE_DOUBLE) {
+        if (type == DataType.TYPE_DOUBLE) {
             return String.valueOf(value);
         }
-        else if (type == Type.TYPE_INT) {
+        else if (type == DataType.TYPE_INT) {
             return String.valueOf(value);
         }
-        else if (type == Type.TYPE_ENUM && enumType != null) {
+        else if (type == DataType.TYPE_ENUM && enumType != null) {
             String name = enumType.nameOf((int)value.doubleValue());
             return name != null ? name : "?";
         }

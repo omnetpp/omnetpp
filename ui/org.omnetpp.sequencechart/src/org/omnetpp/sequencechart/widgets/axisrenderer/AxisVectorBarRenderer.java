@@ -45,7 +45,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
     private XYArray data;
 
-    private ResultItem.Type type;
+    private ResultItem.DataType type;
 
     private EnumType enumType;
 
@@ -56,8 +56,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
         this.vectorModuleFullPath = vectorModuleFullPath;
         this.vectorName = vectorName;
         this.data = data;
-        this.type = resultItem.getType();
-        if (type == ResultItem.Type.TYPE_ENUM)
+        this.type = resultItem.getDataType();
+        if (type == ResultItem.DataType.TYPE_ENUM)
             enumType = resultItem.getEnum();
     }
 
@@ -305,7 +305,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
     private int getValueIndex(int index)
     {
-        if (type == ResultItem.Type.TYPE_ENUM || type == ResultItem.Type.TYPE_INT)
+        if (type == ResultItem.DataType.TYPE_ENUM || type == ResultItem.DataType.TYPE_INT)
             return (int)Math.floor(getValue(index));
         else
             return index % 2;
@@ -313,7 +313,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
     private String getValueText(int index)
     {
-        if (type == ResultItem.Type.TYPE_ENUM)
+        if (type == ResultItem.DataType.TYPE_ENUM)
             return enumType.nameOf((int)getValue(index));
         else {
             double value = getValue(index);

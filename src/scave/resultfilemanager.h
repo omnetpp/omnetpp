@@ -102,7 +102,7 @@ class SCAVE_API ResultItem
     friend class SqliteResultFileLoader;
 
   public:
-    enum Type { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
+    enum DataType { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
 
   protected:
     FileRun *fileRunRef; // backref to containing FileRun
@@ -139,16 +139,16 @@ class SCAVE_API ResultItem
     }
 
     /**
-     * Returns the type of this result item (INT,DOUBLE,ENUM).
+     * Returns the data type of this result item (INT,DOUBLE,ENUM).
      * If neither "type" nor "enum" attribute is given it returns DOUBLE.
      */
-    Type getType() const;
+    DataType getDataType() const;
 
     /**
      * Returns a pointer to the enum type described by the "enum" attribute
      * or nullptr if no "enum" attribute.
      */
-    EnumType* getEnum() const;
+    EnumType *getEnum() const;
 
     bool isComputed() const { return computation != nullptr; }
 };
