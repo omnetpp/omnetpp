@@ -62,10 +62,11 @@ QPainterPath FigureRenderer::PathItem::shape() const
 
     if (p != Qt::NoPen && p.color().alpha() > 0) {
         // and if the outline is drawn, including that too.
+        // Not using the constructor that takes a QPen because we want to avoid
+        // passing the dashOffset and dashPattern to the stroker, as that
+        // makes the path too complicated, is too inaccurate, and isn't necessary.
         QPainterPathStroker s;
         // setting up the stroker properly
-        /*s.setDashPattern(p.dashPattern()); // this was not really necessary
-        s.setDashOffset(p.dashOffset());*/   // but simplified the path too much
         s.setMiterLimit(p.miterLimit());
         s.setJoinStyle(p.joinStyle());
         s.setWidth(p.widthF());  // note the F at the end...
@@ -77,18 +78,15 @@ QPainterPath FigureRenderer::PathItem::shape() const
     return result;
 }
 
-QRectF FigureRenderer::PathItem::boundingRect() const
-{
-    float pw = pen().widthF();
-    return path().boundingRect().adjusted(-pw, -pw, pw, pw);
-}
-
 /* // only for debugging
 void FigureRenderer::PathItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QGraphicsPathItem::paint(painter, option, widget);
     painter->setBrush(QColor(255, 0, 0, 100));
     painter->setPen(QColor(0, 255, 0, 100));
     painter->drawPath(shape());
+    painter->setBrush(Qt::NoBrush);
+    painter->setPen(QColor(0, 0, 255, 100));
+    painter->drawRect(boundingRect());
 }
 */
 

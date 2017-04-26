@@ -47,12 +47,12 @@ protected:
     // messes up mouse selection (picking, collision detection, etc...)
     // UPDATE: Turns out, this should be used in all cases where there
     // is an optional outline with optional fill. So basically, with
-    // ALL shape figures, including simple ovals and rects, piesices, etc,
+    // ALL shape figures, including simple ovals and rects, pieslices, etc,
+    // XXX move this to graphicsitems.[h|cc]?
     class PathItem : public QGraphicsPathItem {
     public:
         using QGraphicsPathItem::QGraphicsPathItem;
         QPainterPath shape() const override;
-        QRectF boundingRect() const override;
         //For debugging purposes only:
         //void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) override;
     };
