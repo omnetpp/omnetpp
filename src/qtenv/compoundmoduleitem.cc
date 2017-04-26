@@ -409,7 +409,7 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
 
 QRectF CompoundModuleItem::boundingRect() const
 {
-    return area;
+    return area.adjusted(-outlineWidth, -outlineWidth, outlineWidth, outlineWidth);
 }
 
 void CompoundModuleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
