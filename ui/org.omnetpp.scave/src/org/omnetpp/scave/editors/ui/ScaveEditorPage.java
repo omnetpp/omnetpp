@@ -13,7 +13,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -45,7 +47,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.FocusManager;
@@ -53,7 +54,6 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ScaveEditorContributor;
 
 /**
  * Common functionality of Scave multi-page editor pages.
@@ -68,8 +68,9 @@ public class ScaveEditorPage extends Composite {
     protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
 
     private Label formTitle;
-    private ToolBar toolbar;
     private Composite content;
+    private ToolBar toolbar;
+    private ToolBarManager toolbarManager;
     private String pageTitle = "untitled";
 
     protected FocusManager focusManager = null;
@@ -83,7 +84,9 @@ public class ScaveEditorPage extends Composite {
         content = new Composite(this, SWT.NONE);
         content.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)content.getLayoutData()).horizontalSpan = 2;
+        
         this.scaveEditor = scaveEditor;
+        this.toolbarManager = new ToolBarManager(toolbar);
     }
 
     public Label getFormTitle() {
@@ -143,15 +146,26 @@ public class ScaveEditorPage extends Composite {
     }
 
     protected void addToToolbar(IAction action) {
-        addToToolbar(action, -1);
+        toolbarManager.add(new ActionContributionItem(action));
+        toolbarManager.update(true);
     }
 
-    protected void addToToolbar(IAction action, int pos) {
-        new ActionContributionItem(action).fill(getToolbar(), pos);
+    protected void setToolbarActionVisible(IAction action, boolean visible) {
+        IContributionItem item = findActionOnToolbar(action);
+        item.setVisible(visible);
+        toolbarManager.update(true);
+    }
+    
+    private IContributionItem findActionOnToolbar(IAction action) {
+        for (IContributionItem item : toolbarManager.getItems())
+            if (item instanceof ActionContributionItem && ((ActionContributionItem)item).getAction() == action)
+                return item;
+        return null;
     }
 
     protected void addSeparatorToToolbar() {
-        new ToolItem(toolbar, SWT.SEPARATOR);
+        toolbarManager.add(new Separator());
+        toolbarManager.update(true);
     }
 
     /**
