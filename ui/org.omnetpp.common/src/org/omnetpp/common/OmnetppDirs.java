@@ -104,6 +104,18 @@ public class OmnetppDirs {
     }
 
     /**
+     * Returns the MinGW bin directory, or the empty string "" on non-Windows OS or if it cannot be determined.
+     */
+    public static String getToolsVisualCBinDir() {
+        if (!Platform.getOS().equals(Platform.OS_WIN32))
+            return "";
+        String oppRoot = getOmnetppRootDir();
+        if (StringUtils.isBlank(oppRoot))
+            return "";
+        return new Path(oppRoot).append("tools").append("win64").append("visualc").append("bin").toOSString();
+    }
+
+    /**
      * checks if there exist a unix styled compiled lib under the lib
      */
     public static boolean isOppsimUnixStyleLibraryPresent(boolean debug) {

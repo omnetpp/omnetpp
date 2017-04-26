@@ -13,6 +13,7 @@ import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSu
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.core.runtime.Platform;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.OmnetppDirs;
 
 /**
@@ -36,6 +37,12 @@ public class GCCEnvironmentVariableSupplier implements IConfigurationEnvironment
             String msysBinDir = OmnetppDirs.getMsysBinDir();
             if (!StringUtils.isEmpty(msysBinDir))
                 buff.append(msysBinDir).append(';');
+
+            if (IConstants.IS_COMMERCIAL) {  // add the visualc dir also on OMNEST
+                String visualcBinDir = OmnetppDirs.getToolsVisualCBinDir();
+                if (!StringUtils.isEmpty(visualcBinDir))
+                    buff.append(visualcBinDir).append(';');
+            }
         }
 
         return new BuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND);
