@@ -50,6 +50,7 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.Histogram;
+import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -167,6 +168,7 @@ public class DataTable extends Table implements IDataControl {
     private ResultType type;
     private ResultFileManagerEx manager;
     private IDList idList;
+    private int numericPrecision = 6;
     private ListenerList listeners;
     private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
     private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
@@ -231,6 +233,17 @@ public class DataTable extends Table implements IDataControl {
 
     public ResultFileManagerEx getResultFileManager() {
         return manager;
+    }
+
+    public void setNumericPrecision(int numericPrecision) {
+        if (this.numericPrecision != numericPrecision) {
+            this.numericPrecision = numericPrecision;
+            refresh();
+        }
+    }
+
+    public int getNumericPrecision() {
+        return numericPrecision;
     }
 
     public void setIDList(IDList idlist) {
@@ -538,7 +551,7 @@ public class DataTable extends Table implements IDataControl {
             else if (type == ResultType.SCALAR_LITERAL) {
                 ScalarResult scalar = (ScalarResult)result;
                 if (COL_VALUE.equals(column))
-                    return String.valueOf(scalar.getValue());
+                    return formatNumber(scalar.getValue());
             }
             else if (type == ResultType.VECTOR_LITERAL) {
                 VectorResult vector = (VectorResult)result;
@@ -551,31 +564,31 @@ public class DataTable extends Table implements IDataControl {
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = vector.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : String.valueOf(mean);
+                    return Double.isNaN(mean) ? NA : formatNumber(mean);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = vector.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : String.valueOf(stddev);
+                    return Double.isNaN(stddev) ? NA : formatNumber(stddev);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = vector.getStatistics().getVariance();
-                    return Double.isNaN(variance) ? NA : String.valueOf(variance);
+                    return Double.isNaN(variance) ? NA : formatNumber(variance);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = vector.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : String.valueOf(min);
+                    return Double.isNaN(min) ? NA : formatNumber(min);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = vector.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : String.valueOf(max);
+                    return Double.isNaN(max) ? NA : formatNumber(max);
                 }
                 else if (COL_MIN_TIME.equals(column)) {
                     BigDecimal minTime = vector.getStartTime();
-                    return minTime == null || minTime.isNaN() ? NA : String.valueOf(minTime);
+                    return minTime == null || minTime.isNaN() ? NA : formatNumber(minTime);
                 }
                 else if (COL_MAX_TIME.equals(column)) {
                     BigDecimal maxTime = vector.getEndTime();
-                    return maxTime == null || maxTime.isNaN() ? NA : String.valueOf(maxTime);
+                    return maxTime == null || maxTime.isNaN() ? NA : formatNumber(maxTime);
                 }
             }
             else if (type == ResultType.HISTOGRAM_LITERAL) {
@@ -597,23 +610,23 @@ public class DataTable extends Table implements IDataControl {
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = stats.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : String.valueOf(mean);
+                    return Double.isNaN(mean) ? NA : formatNumber(mean);
                 }
                 else if (COL_STDDEV.equals(column)) {
                     double stddev = stats.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : String.valueOf(stddev);
+                    return Double.isNaN(stddev) ? NA : formatNumber(stddev);
                 }
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = stats.getStatistics().getVariance();
-                    return Double.isNaN(variance) ? NA : String.valueOf(variance);
+                    return Double.isNaN(variance) ? NA : formatNumber(variance);
                 }
                 else if (COL_MIN.equals(column)) {
                     double min = stats.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : String.valueOf(min);
+                    return Double.isNaN(min) ? NA : formatNumber(min);
                 }
                 else if (COL_MAX.equals(column)) {
                     double max = stats.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : String.valueOf(max);
+                    return Double.isNaN(max) ? NA : formatNumber(max);
                 }
                 else if (COL_NUMBINS.equals(column)) {
                     if (result instanceof HistogramResult)
@@ -628,7 +641,7 @@ public class DataTable extends Table implements IDataControl {
                             return NA;
                         double lo = bins.getBinLowerBound(1); //TODO (0)!
                         double up = bins.getBinUpperBound(bins.getNumBins()-2); //TODO ()-1!
-                        return String.valueOf(lo) + ".." + String.valueOf(up);
+                        return formatNumber(lo) + ".." + formatNumber(up);
                     }
                     else
                         return NA;
@@ -641,6 +654,14 @@ public class DataTable extends Table implements IDataControl {
         }
 
         return "";
+    }
+
+    protected String formatNumber(double d) {
+        return ScaveUtil.formatNumber(d, getNumericPrecision());
+    }
+
+    protected String formatNumber(BigDecimal d) {
+        return ScaveUtil.formatNumber(d, getNumericPrecision());
     }
 
     public void copySelectionToClipboard() {
@@ -657,6 +678,7 @@ public class DataTable extends Table implements IDataControl {
         Clipboard clipboard = new Clipboard(getDisplay());
         clipboard.setContents(new Object[] {writer.toString()}, new Transfer[] {TextTransfer.getInstance()});
         clipboard.dispose();
+
     }
 
     public void addDataListener(IDataListener listener) {

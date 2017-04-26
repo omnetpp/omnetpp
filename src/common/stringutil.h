@@ -410,6 +410,12 @@ COMMON_API double opp_strtod(const char *s, char **endptr);
 COMMON_API double opp_atof(const char *s);
 
 /**
+ * Formats the given double using printf's "%g" formatting. NOTE: This function
+ * is needed by the IDE (nativelibs).
+ */
+COMMON_API std::string opp_formatdouble(double value, int numSignificantDigits);
+
+/**
  * Returns the current date/time as a string in the "yyyymmdd-hh:mm:ss" format.
  */
 COMMON_API std::string opp_makedatetimestring();

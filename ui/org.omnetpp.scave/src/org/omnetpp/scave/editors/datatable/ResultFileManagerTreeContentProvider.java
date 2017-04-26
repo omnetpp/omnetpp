@@ -19,9 +19,11 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.Histogram;
@@ -76,6 +78,8 @@ public class ResultFileManagerTreeContentProvider {
 
     protected Class<? extends Node>[] levels;
 
+    protected int numericPrecision = 6;
+
     protected Node[] rootNodes;
 
     public ResultFileManagerTreeContentProvider() {
@@ -105,6 +109,14 @@ public class ResultFileManagerTreeContentProvider {
 
     public void setDefaultLevels() {
         setLevels(LEVELS2);
+    }
+
+    public void setNumericPrecision(int numericPrecision) {
+        this.numericPrecision = numericPrecision; // note: corresponding refresh() call is in DataTree
+    }
+
+    public int getNumericPrecision() {
+        return numericPrecision;
     }
 
     public Node[] getChildNodes(final List<Node> path) {
@@ -193,7 +205,7 @@ public class ResultFileManagerTreeContentProvider {
                                 ResultItem resultItem = matchContext.getResultItem();
                                 ResultItem.DataType type = resultItem.getDataType();
                                 boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
-                                nodeIdsMap.put(new ResultItemAttributeNode("Module name", String.valueOf(resultItem.getModuleName())), id);
+                                nodeIdsMap.put(new ResultItemAttributeNode("Module name", resultItem.getModuleName()), id);
                                 nodeIdsMap.put(new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
                                 if (resultItem instanceof ScalarResult) {
                                     ScalarResult scalar = (ScalarResult)resultItem;
@@ -203,27 +215,27 @@ public class ResultFileManagerTreeContentProvider {
                                     VectorResult vector = (VectorResult)resultItem;
                                     Statistics stat = vector.getStatistics();
                                     nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(stat.getMean())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
                                     //nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Start time", String.valueOf(vector.getStartTime())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("End time", String.valueOf(vector.getEndTime())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Start time", formatNumber(vector.getStartTime())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("End time", formatNumber(vector.getEndTime())), id);
                                 }
                                 else if (resultItem instanceof StatisticsResult) {
                                     StatisticsResult statistics = (StatisticsResult)resultItem;
                                     Statistics stat = statistics.getStatistics();
                                     nodeIdsMap.put(new ResultItemAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Sum of weights", String.valueOf(stat.getSumWeights())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Sum of weights", formatNumber(stat.getSumWeights())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
-                                    //nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(stat.getMean())), id);
+
                                     if (resultItem instanceof HistogramResult) {
                                         HistogramResult histogram = (HistogramResult)resultItem;
                                         Histogram hist = histogram.getHistogram();
@@ -299,10 +311,12 @@ public class ResultFileManagerTreeContentProvider {
 
             protected String toIntegerAwareString(double value, boolean isIntegerType) {
                 if (!isIntegerType || Double.isInfinite(value) || Double.isNaN(value) || Math.floor(value) != value)
-                    return String.valueOf(value);
+                    return formatNumber(value);
                 else
                     return String.valueOf((long)value);
             }
+
+
         });
 
         long totalMillis = System.currentTimeMillis() - startMillis;
@@ -310,6 +324,14 @@ public class ResultFileManagerTreeContentProvider {
             Debug.println("getChildNodes() for path = " + path + ": " + totalMillis + "ms");
 
         return nodes;
+    }
+
+    protected String formatNumber(double d) {
+        return ScaveUtil.formatNumber(d, getNumericPrecision());
+    }
+
+    protected String formatNumber(BigDecimal d) {
+        return ScaveUtil.formatNumber(d, getNumericPrecision());
     }
 
     protected static String getModulePrefix(final List<Node> path, Node nodeLimit) {
@@ -335,26 +357,26 @@ public class ResultFileManagerTreeContentProvider {
         return modulePrefix.toString();
     }
 
-    protected static String getResultItemShortDescription(ResultItem resultItem) {
+    protected String getResultItemShortDescription(ResultItem resultItem) {
         if (resultItem instanceof ScalarResult) {
             ScalarResult scalar = (ScalarResult)resultItem;
-            return String.valueOf(scalar.getValue());
+            return formatNumber(scalar.getValue());
         }
         else if (resultItem instanceof VectorResult) {
             VectorResult vector = (VectorResult)resultItem;
             Statistics stat = vector.getStatistics();
-            return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
+            return formatNumber(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
         }
         else if (resultItem instanceof HistogramResult) {  // note: should precede StatisticsResult branch
             HistogramResult histogram = (HistogramResult)resultItem;
             Statistics stat = histogram.getStatistics();
             Histogram hist = histogram.getHistogram();
-            return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ") [" + (hist.getNumBins()-2) + " bins]"; //TODO "-2"
+            return formatNumber(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ") [" + (hist.getNumBins()-2) + " bins]"; //TODO "-2"
         }
         else if (resultItem instanceof StatisticsResult) {
             StatisticsResult histogram = (StatisticsResult)resultItem;
             Statistics stat = histogram.getStatistics();
-            return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
+            return formatNumber(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
         }
         else
             throw new IllegalArgumentException();
@@ -1168,7 +1190,7 @@ public class ResultFileManagerTreeContentProvider {
         }
     }
 
-    public static class ResultItemNode extends Node {
+    public class ResultItemNode extends Node {  // note: non-static because it needs to call getResultItemShortDescription()
         public ResultFileManager manager;
 
         public long id;

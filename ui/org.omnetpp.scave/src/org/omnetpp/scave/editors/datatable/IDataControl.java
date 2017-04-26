@@ -15,6 +15,10 @@ public interface IDataControl {
 
     public void setResultFileManager(ResultFileManagerEx manager);
 
+    public void setNumericPrecision(int numDigitsShown);
+
+    public int getNumericPrecision();
+
     public IDList getIDList();
 
     public void setIDList(IDList list);

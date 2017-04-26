@@ -861,6 +861,13 @@ double opp_atof(const char *s)
     return d;
 }
 
+std::string opp_formatdouble(double value, int numSignificantDigits)
+{
+    char buf[128];
+    sprintf(buf, "%.*g", numSignificantDigits, value);
+    return buf;
+}
+
 std::string opp_makedatetimestring()
 {
     time_t t = time(nullptr);

@@ -20,6 +20,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
+import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -51,6 +53,7 @@ public class BrowseDataPage extends ScaveEditorPage {
     private Runnable scheduledUpdate;
 
     private SetFilterAction2 setFilterAction = new SetFilterAction2();
+    private int numericPrecision = 6;
 
     public BrowseDataPage(Composite parent, ScaveEditor editor) {
         super(parent, SWT.NONE, editor);
@@ -113,9 +116,18 @@ public class BrowseDataPage extends ScaveEditorPage {
         // set up contents
         ResultFileManagerEx manager = scaveEditor.getResultFileManager();
         tabFolder.setResultFileManager(manager);
+        
+        setNumericPrecision(getNumericPrecision()); // make sure it takes effect 
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
+        
+        
+        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+        addToToolbar(contributor.getCopyToClipboardAction()); //TODO ???
+        addToToolbar(contributor.getCreateTempChartAction()); //TODO ???
+        addToToolbar(new IncreaseDecimalPlacesAction());
+        addToToolbar(new DecreaseDecimalPlacesAction());
 
     }
 
@@ -267,5 +279,17 @@ public class BrowseDataPage extends ScaveEditorPage {
             scaveEditor.setSelection(new IDListSelection(control.getSelectedIDs(), control.getResultFileManager()));
             setFilterAction.update(panel);
         }
+    }
+
+    public void setNumericPrecision(int prec) {
+        this.numericPrecision = prec;
+        getAllPanel().getDataControl().setNumericPrecision(prec);
+        getScalarsPanel().getDataControl().setNumericPrecision(prec);
+        getVectorsPanel().getDataControl().setNumericPrecision(prec);
+        getHistogramsPanel().getDataControl().setNumericPrecision(prec);
+    }
+
+    public int getNumericPrecision() {
+        return numericPrecision;
     }
 }

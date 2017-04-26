@@ -44,12 +44,14 @@ namespace omnetpp { namespace common {
 %rename(quoteString)         opp_quotestr;
 %rename(needsQuotes)         opp_needsquotes;
 %rename(quoteStringIfNeeded) opp_quotestr_ifneeded;
+%rename(formatDouble)        opp_formatdouble;
 
 std::string opp_parsequotedstr(const char *txt);
 std::string opp_quotestr(const std::string& txt);
 bool opp_needsquotes(const char *txt);
 std::string opp_quotestr_ifneeded(const std::string& txt);
 int strdictcmp(const char *s1, const char *s2);
+std::string opp_formatdouble(double value, int numSignificantDigits);
 //int getPEVersion(const char *fileName);
 
 %ignore UnitConversion::parseQuantity(const char *, std::string&);
