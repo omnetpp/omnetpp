@@ -234,9 +234,9 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         // check if the libraries required for the active configuration are present
         // advise the user to switch configs
         boolean libMissing =
-                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.debug") && !(OmnetppDirs.isOppsimUnixStyleLibraryPresent(true)) || OmnetppDirs.isOppsimClangC2LibraryPresent(true))
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.debug") && !(OmnetppDirs.isOppsimUnixStyleLibraryPresent(true) || OmnetppDirs.isOppsimClangC2LibraryPresent(true)))
                 ||
-                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.release") && !(OmnetppDirs.isOppsimUnixStyleLibraryPresent(false)) || OmnetppDirs.isOppsimClangC2LibraryPresent(false));
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.release") && !(OmnetppDirs.isOppsimUnixStyleLibraryPresent(false) || OmnetppDirs.isOppsimClangC2LibraryPresent(false)));
 
         if (libMissing) {
             runInUIThread(new Runnable() {
