@@ -92,17 +92,19 @@ public class DataTable extends Table implements IDataControl {
         private String fieldName;
         private int defaultWidth;
         private boolean defaultVisible;
+        private boolean rightAligned;
 
-        public Column(String text, String fieldName, int defaultWidth, boolean defaultVisible) {
+        public Column(String text, String fieldName, int defaultWidth, boolean defaultVisible, boolean rightAligned) {
             this.text = text;
             this.fieldName = fieldName;
             this.defaultWidth = defaultWidth;
             this.defaultVisible = defaultVisible;
+            this.rightAligned = rightAligned;
         }
 
         @Override
         public Column clone() {
-            return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible);
+            return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible, this.rightAligned);
         }
 
         @Override
@@ -117,30 +119,30 @@ public class DataTable extends Table implements IDataControl {
     }
 
     private static final Column
-        COL_DIRECTORY = new Column("Folder", null, 60, false),
-        COL_FILE = new Column("File", FILE, 120, false),
-        COL_CONFIG = new Column("Config", CONFIGNAME, 120, false),
-        COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 60, false),
-        COL_RUN_ID = new Column("RunId", RUN, 100, false),
-        COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 120, true),
-        COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 160, true),
-        COL_REPLICATION = new Column("Replication", REPLICATION, 60, true),
-        COL_MODULE = new Column("Module", MODULE, 160, true),
-        COL_NAME = new Column("Name", NAME, 120, true),
-        COL_VALUE = new Column("Value", null, 120, true),
-        COL_KIND = new Column("Kind", null, 40, true),
-        COL_COUNT = new Column("Count", null, 80, true),
-        COL_SUMWEIGHTS = new Column("SumWeights", null, 120, true),
-        COL_MEAN = new Column("Mean", null, 120, true),
-        COL_STDDEV = new Column("StdDev", null, 120, true),
-        COL_VARIANCE = new Column("Variance", null, 120, false),
-        COL_MIN = new Column("Min", null, 120, false),
-        COL_MAX = new Column("Max", null, 120, false),
-        COL_NUMBINS = new Column("#Bins", null, 40, true),
-        COL_HISTOGRAMRANGE = new Column("Hist. Range", null, 120, true),
-        COL_VECTOR_ID = new Column("VectorId", null, 40, false),
-        COL_MIN_TIME = new Column("StartTime", null, 120, false),
-        COL_MAX_TIME = new Column("EndTime", null, 120, false);
+        COL_DIRECTORY = new Column("Folder", null, 60, false, false),
+        COL_FILE = new Column("File, FILE, 120, false, false),
+        COL_CONFIG = new Column("Config", CONFIGNAME, 120, false, false),
+        COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 60, false, false),
+        COL_RUN_ID = new Column("RunId", RUN, 100, false, false),
+        COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 120, true, false),
+        COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 160, true, false),
+        COL_REPLICATION = new Column("Replication", REPLICATION, 60, true, false),
+        COL_MODULE = new Column("Module", MODULE, 160, true, false),
+        COL_DATA = new Column("Name", NAME, 120, true, false), //TODO COL_NAME
+        COL_VALUE = new Column("Value", null, 120, true, true),
+        COL_KIND = new Column("Kind", null, 40, true, false),
+        COL_COUNT = new Column("Count", null, 80, true, true),
+        COL_SUMWEIGHTS = new Column("SumWeights", null, 120, true, true),
+        COL_MEAN = new Column("Mean", null, 120, true, true),
+        COL_STDDEV = new Column("StdDev", null, 120, true, true),
+        COL_VARIANCE = new Column("Variance", null, 120, true, true),
+        COL_MIN = new Column("Min", null, 120, false, true),
+        COL_MAX = new Column("Max", null, 120, false, true),
+        COL_NUMBINS = new Column("#Bins", null, 40, true, true),
+        COL_HISTOGRAMRANGE = new Column("Hist. Range", null, 120, true, true),
+        COL_VECTOR_ID = new Column("Vector id", null, 40, false, true),
+        COL_MIN_TIME = new Column("Min time", null, 120, false, true),
+        COL_MAX_TIME = new Column("Max time", null, 120, false, true);
 
     private static final Column[] allScalarColumns = new Column[] {
         COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
@@ -363,7 +365,7 @@ public class DataTable extends Table implements IDataControl {
 
     protected TableColumn addColumn(Column newColumn) {
         visibleColumns.add(newColumn);
-        TableColumn tableColumn = new TableColumn(this, SWT.NONE);
+        TableColumn tableColumn = new TableColumn(this, newColumn.rightAligned ? SWT.RIGHT : SWT.NONE);
         tableColumn.setText(newColumn.text);
         tableColumn.setWidth(newColumn.defaultWidth);
         tableColumn.setData(COLUMN_KEY, newColumn);
