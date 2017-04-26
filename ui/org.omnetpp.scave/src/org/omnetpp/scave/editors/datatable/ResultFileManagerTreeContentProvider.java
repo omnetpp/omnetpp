@@ -45,7 +45,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  *
  * @author levy
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ResultFileManagerTreeContentProvider {
     public final static Class[] LEVELS1 = new Class[] { ExperimentNode.class, MeasurementNode.class, ReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS2 = new Class[] { ExperimentMeasurementReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
@@ -286,11 +286,7 @@ public class ResultFileManagerTreeContentProvider {
                     });
                 }
                 for (Node node : nodes) {
-                    Collection ids = nodeIdsMap.getCollection(node);
-                    node.ids = new long[ids.size()];
-                    Iterator it = ids.iterator();
-                    for (int i = 0; i < ids.size(); i++)
-                        node.ids[i] = (Long)it.next();
+                    node.ids = toLongArray((Collection<Long>)nodeIdsMap.getCollection(node));
                     // add quick value if applicable
                     if (node.ids.length == 1 && !collector && StringUtils.isEmpty(node.value) &&
                         (!(node instanceof ModuleNameNode) || ((ModuleNameNode)node).leaf))
@@ -305,6 +301,14 @@ public class ResultFileManagerTreeContentProvider {
                 else
                     firstNode.children = nodes;
                 return nodes;
+            }
+
+            private long[] toLongArray(Collection<Long> c) {
+                long[] a = new long[c.size()];
+                Iterator<Long> it = c.iterator();
+                for (int i = 0; i < c.size(); i++)
+                    a[i] = (Long)it.next();
+                return a;
             }
 
             protected String toIntegerAwareString(double value, boolean isIntegerType) {
