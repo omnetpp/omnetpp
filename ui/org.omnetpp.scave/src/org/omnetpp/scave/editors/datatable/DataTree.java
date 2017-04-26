@@ -65,6 +65,7 @@ public class DataTree extends Tree implements IDataControl {
             refreshJob.restartTimer();
         }
     };
+    private FlatModuleTreeAction flatModuleTreeAction;
 
     public DataTree(Composite parent, int style) {
         super(parent, style | SWT.VIRTUAL | SWT.FULL_SELECTION);
@@ -74,6 +75,7 @@ public class DataTree extends Tree implements IDataControl {
         addColumn("Name", 400);
         addColumn("Value", 200);
         contentProvider = new DataTreeContentProvider();
+        flatModuleTreeAction = new FlatModuleTreeAction(this);
         loadPreferences();
 
         addListener(SWT.SetData, new Listener() {
@@ -108,6 +110,10 @@ public class DataTree extends Tree implements IDataControl {
         savePreferences();
         refresh();
         setSelectedIDs(idList);
+    }
+    
+    public FlatModuleTreeAction getFlatModuleTreeAction() {
+        return flatModuleTreeAction;
     }
 
     public ResultFileManagerEx getResultFileManager() {
@@ -292,7 +298,7 @@ public class DataTree extends Tree implements IDataControl {
     }
 
     public void contributeToContextMenu(IMenuManager menuManager) {
-        final ActionContributionItem item = new ActionContributionItem(new FlatModuleTreeAction("Flat Module Tree", Action.AS_CHECK_BOX, this));
+        final ActionContributionItem item = new ActionContributionItem(flatModuleTreeAction);
         menuManager.add(item);
         menuManager.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {

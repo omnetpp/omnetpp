@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
+import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.SetFilterAction2;
 import org.omnetpp.scave.editors.IDListSelection;
@@ -137,7 +138,18 @@ public class BrowseDataPage extends ScaveEditorPage {
         addToToolbar(contributor.getCopyToClipboardAction()); //TODO ???
         addToToolbar(contributor.getCreateTempChartAction()); //TODO ???
         addToToolbar(new IncreaseDecimalPlacesAction());
-        addToToolbar(new DecreaseDecimalPlacesAction());
+        addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed!
+
+        FlatModuleTreeAction flatModuleTreeAction = ((DataTree)getAllPanel().getDataControl()).getFlatModuleTreeAction();
+        addToToolbar(flatModuleTreeAction);
+
+        tabFolder.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                System.out.println("page change");
+                setToolbarActionVisible(flatModuleTreeAction, getActivePanel() == getAllPanel());
+                //TODO show/hide page-specific actions
+            }
+        });
 
     }
 
