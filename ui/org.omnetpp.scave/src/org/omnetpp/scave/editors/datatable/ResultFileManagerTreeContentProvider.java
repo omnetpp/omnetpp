@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -99,22 +101,6 @@ public class ResultFileManagerTreeContentProvider {
             Debug.println("setLevels(): " + levels);
         this.levels = levels;
         rootNodes = null;
-    }
-
-    public String getLevelsName() {
-        StringBuffer name = new StringBuffer();
-        for (int i = 0; i < levels.length; i++) {
-            Class level = levels[i];
-            try {
-                if (i != 0)
-                    name.append(" / ");
-                name.append(level.getMethod("getLevelName").invoke(null));
-            }
-            catch (Exception e) {
-                // void
-            }
-        }
-        return name.toString();
     }
 
     public void setDefaultLevels() {
@@ -445,6 +431,28 @@ public class ResultFileManagerTreeContentProvider {
             ResultItemAttributeNode.class};
     }
 
+    private static final Map<Class,String> LEVELNAMES = new HashMap<>();
+    static {
+        LEVELNAMES.put(ExperimentNode.class, "Experiment");
+        LEVELNAMES.put(MeasurementNode.class, "Measurement");
+        LEVELNAMES.put(ReplicationNode.class, "Replication");
+        LEVELNAMES.put(ExperimentMeasurementReplicationNode.class, "Experiment + Measurement + Replication");
+        LEVELNAMES.put(ConfigNode.class, "Config");
+        LEVELNAMES.put(RunNumberNode.class, "Run Number");
+        LEVELNAMES.put(ConfigRunNumberNode.class, "Config + Run Number");
+        LEVELNAMES.put(FileNameNode.class, "File");
+        LEVELNAMES.put(RunIdNode.class, "Run Id");
+        LEVELNAMES.put(FileNameRunIdNode.class, "File + Run Id");
+        LEVELNAMES.put(ModulePathNode.class, "Module Path");
+        LEVELNAMES.put(ModuleNameNode.class, "Module Name");
+        LEVELNAMES.put(ResultItemNode.class, "Result Item");
+        LEVELNAMES.put(ResultItemAttributeNode.class, "Result Item Attribute");
+    }
+
+    public static String getLevelName(Class levelClass) {
+        return LEVELNAMES.get(levelClass);
+    }
+
     protected static abstract class Node {
         public long[] ids;
 
@@ -469,10 +477,6 @@ public class ResultFileManagerTreeContentProvider {
         public NameValueNode(String name, String value) {
             this.name = name;
             this.value = value;
-        }
-
-        public static String getLevelName() {
-            return null;
         }
 
         @Override
@@ -531,10 +535,6 @@ public class ResultFileManagerTreeContentProvider {
             this.name = name;
         }
 
-        public static String getLevelName() {
-            return "Experiment";
-        }
-
         @Override
         public String getColumnText(int index) {
             return index == 0 ? name + " (experiment)" : value;
@@ -586,10 +586,6 @@ public class ResultFileManagerTreeContentProvider {
 
         public MeasurementNode(String name) {
             this.name = name;
-        }
-
-        public static String getLevelName() {
-            return "Measurement";
         }
 
         @Override
@@ -645,10 +641,6 @@ public class ResultFileManagerTreeContentProvider {
             this.name = name;
         }
 
-        public static String getLevelName() {
-            return "Replication";
-        }
-
         @Override
         public String getColumnText(int index) {
             return index == 0 ? name + " (replication)" : value;
@@ -701,10 +693,6 @@ public class ResultFileManagerTreeContentProvider {
             this.experiment = experiment;
             this.measurement = measurement;
             this.replication = replication;
-        }
-
-        public static String getLevelName() {
-            return "Experiment + Measurement + Replication";
         }
 
         @Override
@@ -769,10 +757,6 @@ public class ResultFileManagerTreeContentProvider {
             this.name = name;
         }
 
-        public static String getLevelName() {
-            return "Config";
-        }
-
         @Override
         public String getColumnText(int index) {
             return index == 0 ? name + " (config)" : value;
@@ -826,10 +810,6 @@ public class ResultFileManagerTreeContentProvider {
             this.runNumber = runNumber;
         }
 
-        public static String getLevelName() {
-            return "Run Number";
-        }
-
         @Override
         public String getColumnText(int index) {
             return index == 0 ? runNumber + " (run number)" : value;
@@ -878,10 +858,6 @@ public class ResultFileManagerTreeContentProvider {
         public ConfigRunNumberNode(String config, String runNumber) {
             this.config = config;
             this.runNumber = runNumber;
-        }
-
-        public static String getLevelName() {
-            return "Config + Run Number";
         }
 
         @Override
@@ -938,10 +914,6 @@ public class ResultFileManagerTreeContentProvider {
             this.fileName = name;
         }
 
-        public static String getLevelName() {
-            return "File Name";
-        }
-
         @Override
         public String getColumnText(int index) {
             return index == 0 ? fileName + " (file name)" : value;
@@ -994,10 +966,6 @@ public class ResultFileManagerTreeContentProvider {
             this.runId = runId;
         }
 
-        public static String getLevelName() {
-            return "Run Id";
-        }
-
         @Override
         public String getColumnText(int index) {
             return index == 0 ? runId + " (run id)" : value;
@@ -1047,10 +1015,6 @@ public class ResultFileManagerTreeContentProvider {
         public FileNameRunIdNode(String fileName, String runId) {
             this.fileName = fileName;
             this.runId = runId;
-        }
-
-        public static String getLevelName() {
-            return "File Name + Run Id";
         }
 
         @Override
@@ -1108,10 +1072,6 @@ public class ResultFileManagerTreeContentProvider {
             this.path = path;
         }
 
-        public static String getLevelName() {
-            return "Module Path";
-        }
-
         @Override
         public String getColumnText(int index) {
             return index == 0 ? path : value;
@@ -1162,10 +1122,6 @@ public class ResultFileManagerTreeContentProvider {
         public ModuleNameNode(String name, boolean leaf) {
             this.name = name;
             this.leaf = leaf;
-        }
-
-        public static String getLevelName() {
-            return "Module Name";
         }
 
         @Override
@@ -1224,10 +1180,6 @@ public class ResultFileManagerTreeContentProvider {
             this.manager = manager;
             this.id = id;
             this.name = name;
-        }
-
-        public static String getLevelName() {
-            return "Result Item";
         }
 
         @Override

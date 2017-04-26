@@ -75,12 +75,7 @@ public class CustomTreeLevelsAction extends Action {
                 viewer.setLabelProvider(new LabelProvider() {
                     @Override
                     public String getText(Object element) {
-                        try {
-                            return (String)((Class)element).getMethod("getLevelName").invoke(null);
-                        }
-                        catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
+                        return ResultFileManagerTreeContentProvider.getLevelName((Class)element);
                     }
                 });
                 final Class[] levels = dataTree.getContentProvider().getLevels();
