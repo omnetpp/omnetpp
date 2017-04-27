@@ -7,7 +7,11 @@
 
 package org.omnetpp.scave.editors.datatable;
 
-import static org.omnetpp.scave.model2.FilterField.*;
+import static org.omnetpp.scave.model2.FilterField.EXPERIMENT;
+import static org.omnetpp.scave.model2.FilterField.MEASUREMENT;
+import static org.omnetpp.scave.model2.FilterField.MODULE;
+import static org.omnetpp.scave.model2.FilterField.NAME;
+import static org.omnetpp.scave.model2.FilterField.REPLICATION;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,7 +21,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -25,6 +28,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.ui.FilterCombo;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterField;
@@ -40,10 +44,6 @@ import org.omnetpp.scave.model2.FilterUtil;
 public class FilteringPanel extends Composite {
 
     private final List<FilterField> simpleFilterFields = Collections.unmodifiableList(Arrays.asList(new FilterField[] {EXPERIMENT, MEASUREMENT, REPLICATION, MODULE, NAME}));
-
-    private Image IMG_BASICFILTER = ScavePlugin.getImage("icons/full/obj16/basicfilter.png");
-    private Image IMG_ADVANCEDFILTER = ScavePlugin.getImage("icons/full/obj16/advancedfilter.png");
-    private Image IMG_RUNFILTER = ScavePlugin.getImage("icons/full/obj16/runfilter.png");
 
     // Switch between "Simple" and "Advanced"
     private Button toggleFilterTypeButton;
@@ -160,7 +160,7 @@ public class FilteringPanel extends Composite {
     public void showSimpleFilter() {
         stackLayout.topControl = simpleFilterPanel;
         showingAdvancedFilter = false;
-        toggleFilterTypeButton.setImage(IMG_ADVANCEDFILTER);
+        toggleFilterTypeButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_ADVANCEDFILTER));
         toggleFilterTypeButton.setToolTipText("Switch to Advanced Filter");
         getParent().layout(true, true);
     }
@@ -168,7 +168,7 @@ public class FilteringPanel extends Composite {
     public void showAdvancedFilter() {
         stackLayout.topControl = advancedFilterPanel;
         showingAdvancedFilter = true;
-        toggleFilterTypeButton.setImage(IMG_BASICFILTER);
+        toggleFilterTypeButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_BASICFILTER));
         toggleFilterTypeButton.setToolTipText("Switch to Basic Filter");
         getParent().layout(true, true);
     }
@@ -327,7 +327,7 @@ public class FilteringPanel extends Composite {
 
         // Filter button
         filterButton = new Button(filterContainer, SWT.NONE);
-        filterButton.setImage(IMG_RUNFILTER);
+        filterButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUNFILTER));
         filterButton.setToolTipText("Execute Filter");
         filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 

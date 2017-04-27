@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -26,10 +27,6 @@ import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ScatterChart;
 
 public class ChartMenuManager extends MenuManager {
-    private static final String IMG_ZOOM = "icons/full/etool16/zoom.png";
-    private static final String IMG_APPLY = "icons/full/etool16/apply.png";
-    private static final String IMG_COMPUTE = "icons/full/etool16/compute.png";
-
     private Chart chart;
     private ScaveEditorContributor editorContributor;
     private ILabelProvider labelProvider;
@@ -72,7 +69,7 @@ public class ChartMenuManager extends MenuManager {
     }
 
     private IMenuManager createZoomSubmenu() {
-        IMenuManager zoomSubmenuManager = new MenuManager("Zoom", ScavePlugin.getImageDescriptor(IMG_ZOOM), null);
+        IMenuManager zoomSubmenuManager = new MenuManager("Zoom", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_ZOOM), null);
         zoomSubmenuManager.add(editorContributor.getHZoomInAction());
         zoomSubmenuManager.add(editorContributor.getHZoomOutAction());
         zoomSubmenuManager.add(editorContributor.getVZoomInAction());
@@ -84,7 +81,7 @@ public class ChartMenuManager extends MenuManager {
 
     protected IMenuManager createProcessingSubmenu(boolean isApply) {
         IMenuManager submenuManager = new MenuManager(isApply ? "Apply" : "Compute",
-                ScavePlugin.getImageDescriptor(isApply ? IMG_APPLY : IMG_COMPUTE), null);
+                ScavePlugin.getImageDescriptor(isApply ? ScaveImages.IMG_ETOOL16_APPLY : ScaveImages.IMG_ETOOL16_COMPUTE), null);
 //TODO
 //        submenuManager.add(new NewChartProcessingOpAction("Mean", createOp(isApply, "mean")));
 //        submenuManager.add(new NewChartProcessingOpAction("Window Batch Average", createOp(isApply, "winavg", "windowSize", "10")));

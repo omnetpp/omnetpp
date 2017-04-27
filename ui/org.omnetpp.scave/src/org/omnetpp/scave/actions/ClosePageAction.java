@@ -8,6 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
@@ -22,7 +23,7 @@ public class ClosePageAction extends AbstractScaveAction {
     public ClosePageAction() {
         setText("Close");
         setDescription("Close current page");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/close.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_CLOSE));
     }
 
     @Override

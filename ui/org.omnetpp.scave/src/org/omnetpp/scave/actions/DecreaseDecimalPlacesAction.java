@@ -8,6 +8,7 @@
 package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 
@@ -21,7 +22,7 @@ public class DecreaseDecimalPlacesAction extends AbstractScaveAction {
 
     public DecreaseDecimalPlacesAction() {
         setText("Decrease Display Precision");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/decimals_dec.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_DECIMALS_DEC));
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreePath;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.EditDialog;
@@ -35,7 +36,7 @@ public class EditAction extends AbstractScaveAction {
     public EditAction() {
         setText("Edit...");
         setToolTipText("Edit Selected Item");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/edit.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EDIT));
     }
 
     /**

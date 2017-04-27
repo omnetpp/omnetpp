@@ -136,6 +136,7 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.Markers;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
@@ -264,7 +265,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             }
         };
 
-    
+
     /**
      *  ResultFileManager containing all files of the analysis.
      */
@@ -473,7 +474,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             contentOutlinePage.dispose();
 
         super.dispose();
-        
+
     }
 
     // Modified DropAdapter to convert drop events.
@@ -957,7 +958,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                     }
                 });
             }
-            
+
             contentOutlineViewer = getTreeViewer();
             contentOutlineViewer.addSelectionChangedListener(this);
 
@@ -1324,7 +1325,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             ScavePlugin.logError(exception);
         }
     }
-    
+
     protected void handleActivate() {
     }
 
@@ -1477,17 +1478,17 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             @Override
             public Image getImage(Object element) {
                 if (element instanceof LineChart)
-                    return ScavePlugin.getImage("icons/full/obj/linechart.png");
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_LINECHART);
                 else if (element instanceof BarChart)
-                    return ScavePlugin.getImage("icons/full/obj/barchart.png");
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_BARCHART);
                 else if (element instanceof ScatterChart)
-                    return ScavePlugin.getImage("icons/full/obj/scatterchart.png");
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_SCATTERCHART);
                 else if (element instanceof HistogramChart)
-                    return ScavePlugin.getImage("icons/full/obj/histogramchart.png");
-                else 
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_HISTOGRAMCHART);
+                else
                     return null;
             }
-            
+
             @Override
             public String getText(Object element) {
                 if (element instanceof Chart)
@@ -1496,7 +1497,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                     return element == null ? "" : element.toString();
             }
         };
-        
+
         modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
         modelViewer.setLabelProvider(labelProvider);
 //        modelViewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
@@ -1743,5 +1744,5 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     protected boolean showOutlineView() {
         return true;
     }
-    
+
 }

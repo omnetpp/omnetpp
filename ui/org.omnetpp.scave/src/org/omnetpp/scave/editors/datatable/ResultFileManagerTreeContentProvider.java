@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -22,6 +21,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.DoubleVector;
@@ -57,18 +57,6 @@ public class ResultFileManagerTreeContentProvider {
     public final static Class[] LEVELS4 = new Class[] { ConfigRunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
-
-    private static final String IMG_EXPERIMENT = "icons/full/obj16/experiment.png";
-    private static final String IMG_MEASUREMENT = "icons/full/obj16/measurement.png";
-    private static final String IMG_REPLICATION = "icons/full/obj16/replication.png";
-    private static final String IMG_EXPERIMENT_MEASUREMENT_REPLICATION = "icons/full/obj16/run.png";
-    private static final String IMG_CONFIG = "icons/full/obj16/configuration.png";
-    private static final String IMG_RUNNUMBER = "icons/full/obj16/runnumber.png";
-    private static final String IMG_CONFIG_RUNNUMBER = "icons/full/obj16/run.png";
-    private static final String IMG_RUNID = "icons/full/obj16/run.png";
-    private static final String IMG_VECFILENAME = "icons/vecfile.png";
-    private static final String IMG_SCAFILENAME = "icons/vecfile.png";
-    private static final String IMG_FILENAME_RUNID = "icons/run.png";
 
     private static boolean debug = true;
 
@@ -563,7 +551,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_EXPERIMENT);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_EXPERIMENT);
         }
 
         @Override
@@ -616,7 +604,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_MEASUREMENT);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_MEASUREMENT);
         }
 
         @Override
@@ -669,7 +657,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_REPLICATION);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_REPLICATION);
         }
 
         @Override
@@ -723,7 +711,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_EXPERIMENT_MEASUREMENT_REPLICATION);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
 
         @Override
@@ -785,7 +773,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_CONFIG);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CONFIGURATION);
         }
 
         @Override
@@ -838,7 +826,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_RUNNUMBER);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUNNUMBER);
         }
 
         @Override
@@ -888,7 +876,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_CONFIG_RUNNUMBER);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
 
         @Override
@@ -942,7 +930,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(fileName.endsWith(".vec") ? IMG_VECFILENAME : IMG_SCAFILENAME);
+            return ScavePlugin.getCachedImage(fileName.endsWith(".vec") ? ScaveImages.IMG_VECFILE : ScaveImages.IMG_SCAFILE);
         }
 
         public boolean isExpandedByDefault() {
@@ -994,7 +982,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_RUNID);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
 
         @Override
@@ -1045,7 +1033,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public Image getImage() {
-            return ScavePlugin.getCachedImage(IMG_FILENAME_RUNID);
+            return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
 
         @Override

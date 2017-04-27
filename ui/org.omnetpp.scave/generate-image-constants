@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd $(dirname $0)
+../../_scripts/misc/java-generate-image-constants org.omnetpp.scave ScaveImages . $0 > src/org/omnetpp/scave/ScaveImages.java
+

@@ -25,6 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ResultFilesTracker;
 import org.omnetpp.scave.editors.treeproviders.Sorter;
@@ -108,13 +109,13 @@ public class InputsTree extends TreeViewer {
                             FileNode fileNode = new FileNode();
                             fileNode.filePath = resultFile.getFilePath();
                             fileNodes.add(fileNode);
-                            
+
                             RunList runlist = manager.getRunsInFile(resultFile);
                             for (Run run : Sorter.sort(runlist)) {
                                 RunNode runNode = new RunNode();
                                 runNode.runId = run.getRunName();
                                 fileNode.runs.add(runNode);
-                                
+
                                 if (groupRunFields) {
                                     runNode.attrGroups = new ArrayList<>();
                                     runNode.attrGroups.add(new AttrGroup("Iteration Variables", convert(run.getIterationVariables(), AttrType.ITERVAR)));
@@ -141,7 +142,7 @@ public class InputsTree extends TreeViewer {
                     result.add(new AttrNode(type, name, attrs.get(name)));
                 return result;
             }
-            
+
             private List<AttrNode> convert(OrderedKeyValueList list, AttrType type) {
                 List<AttrNode> result = new ArrayList<>();
                 for (int i = 0; i < list.size(); i++)
@@ -210,28 +211,28 @@ public class InputsTree extends TreeViewer {
         public Image getImage(Object element) {
             if (element instanceof InputFile) {
                 boolean empty = matchingFiles.get(element).size() == 0;
-                return ScavePlugin.getCachedImage(empty ? "icons/full/obj16/inputfile_inactive.png" : "icons/full/obj16/inputfile.png");
+                return ScavePlugin.getCachedImage(empty ? ScaveImages.IMG_OBJ16_INPUTFILE_INACTIVE : ScaveImages.IMG_OBJ16_INPUTFILE);
             }
             else if (element instanceof FileNode) {
                 String path = ((FileNode)element).filePath;
                 if (path.endsWith(".vec"))
-                    return ScavePlugin.getCachedImage("icons/vecfile.png");
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_VECFILE);
                 else if (path.endsWith(".sca"))
-                    return ScavePlugin.getCachedImage("icons/scafile.png");
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_SCAFILE);
                 else if (path.endsWith(".vci"))
-                    return ScavePlugin.getCachedImage("icons/vcifile.png");
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_VCIFILE);
                 else
-                    return ScavePlugin.getCachedImage("icons/scavefile.png");
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_SCAVEFILE);
             }
             else if (element instanceof RunNode)
-                return ScavePlugin.getCachedImage("icons/full/obj16/run.png");
+                return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
             else if (element instanceof AttrGroup)
-                return ScavePlugin.getCachedImage("icons/full/obj16/folder.png");
+                return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_FOLDER);
             else if (element instanceof AttrNode) {
                 switch (((AttrNode) element).type) {
-                    case ATTR: return ScavePlugin.getCachedImage("icons/full/obj16/runattr.png");
-                    case ITERVAR: return ScavePlugin.getCachedImage("icons/full/obj16/itervar.png");
-                    case PARAMASSIGNMENT: return ScavePlugin.getCachedImage("icons/full/obj16/paramassignment.png");
+                    case ATTR: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUNATTR);
+                    case ITERVAR: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_ITERVAR);
+                    case PARAMASSIGNMENT: return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_PARAMASSIGNMENT);
                 }
             }
             return null;

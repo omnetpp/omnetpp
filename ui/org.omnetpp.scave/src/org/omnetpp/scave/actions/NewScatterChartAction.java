@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
@@ -18,6 +19,6 @@ public class NewScatterChartAction extends NewChartObjectAction {
     public NewScatterChartAction() {
         super(ScaveModelFactory.eINSTANCE.createScatterChart());
         setText("New Scatter Chart");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/newscatterchart.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWSCATTERCHART));
     }
 }

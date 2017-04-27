@@ -9,6 +9,7 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model.Chart;
@@ -19,7 +20,7 @@ import org.omnetpp.scave.model.Chart;
 public class OpenChartAction extends AbstractScaveAction {
     public OpenChartAction() {
         setText("Open");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/plot.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_PLOT));
         setToolTipText("Open chart(s)");
     }
 

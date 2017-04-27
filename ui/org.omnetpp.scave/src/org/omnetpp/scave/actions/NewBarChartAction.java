@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.actions;
 
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.ScaveModelFactory;
 
@@ -18,6 +19,6 @@ public class NewBarChartAction extends NewChartObjectAction {
     public NewBarChartAction() {
         super(ScaveModelFactory.eINSTANCE.createBarChart());
         setText("New Bar Chart");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/newbarchart.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWBARCHART));
     }
 }

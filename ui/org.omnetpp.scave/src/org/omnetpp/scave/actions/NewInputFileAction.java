@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.model2.ScaveModelUtil;
@@ -24,7 +25,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class NewInputFileAction extends AbstractScaveAction {
     public NewInputFileAction() {
         setText("New Input...");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/newinputfile.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWINPUTFILE));
     }
 
     @Override

@@ -9,11 +9,12 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 
 /**
  * TODO
- * 
+ *
  * @author andras
  */
 public class CollapseTreeAction extends Action {
@@ -21,7 +22,7 @@ public class CollapseTreeAction extends Action {
 
     public CollapseTreeAction(TreeViewer tree) {
         setText("Collapse All");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/collapse.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COLLAPSE));
         this.tree = tree;
     }
 

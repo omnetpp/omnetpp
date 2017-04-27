@@ -9,6 +9,7 @@ package org.omnetpp.scave.actions;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage;
@@ -21,7 +22,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class GotoChartDefinitionAction extends AbstractScaveAction {
     public GotoChartDefinitionAction() {
         setText("Go to Chart Definition");
-        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/gotochartdefinition.png"));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_GOTOCHARTDEFINITION));
     }
 
     @Override

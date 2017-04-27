@@ -9,6 +9,7 @@ package org.omnetpp.scave.charting.properties;
 
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.scave.ScaveImages;
 
 public class LineProperties extends PropertySource {
 
@@ -22,20 +23,20 @@ public class LineProperties extends PropertySource {
 
 
     public enum SymbolType {
-        None("None", "none"), //XXX allowed?
-        Cross("Cross", "cross"),
-        Diamond("Diamond", "diamond"),
-        Dot("Dot", "dot"),
-        Plus("Plus", "plus"),
-        Square("Square", "square"),
-        Triangle("Triangle", "triangle");
+        None("None", ScaveImages.IMG_OBJ16_SYM_NONE),
+        Cross("Cross", ScaveImages.IMG_OBJ16_SYM_CROSS),
+        Diamond("Diamond", ScaveImages.IMG_OBJ16_SYM_DIAMOND),
+        Dot("Dot", ScaveImages.IMG_OBJ16_SYM_DOT),
+        Plus("Plus", ScaveImages.IMG_OBJ16_SYM_PLUS),
+        Square("Square", ScaveImages.IMG_OBJ16_SYM_SQUARE),
+        Triangle("Triangle", ScaveImages.IMG_OBJ16_SYM_TRIANGLE);
 
         private String name;
         private String imageId;
 
         private SymbolType(String name, String img) {
             this.name = name;
-            imageId = "icons/full/obj16/sym_"+img+".png";
+            imageId = img;
         }
 
         @Override
@@ -49,19 +50,19 @@ public class LineProperties extends PropertySource {
     }
 
     public enum LineType {
-        Linear("Linear", "linear"),
-        Pins("Pins", "pins"),
-        Dots("Dots", "dots"),
-        Points("Points", "points"),
-        SampleHold("Sample-Hold", "samplehold"),
-        BackwardSampleHold("Backward Sample-Hold", "bksamplehold");
+        Linear("Linear", ScaveImages.IMG_OBJ16_LINE_LINEAR),
+        Pins("Pins", ScaveImages.IMG_OBJ16_LINE_PINS),
+        Dots("Dots", ScaveImages.IMG_OBJ16_LINE_DOTS),
+        Points("Points", ScaveImages.IMG_OBJ16_LINE_POINTS),
+        SampleHold("Sample-Hold", ScaveImages.IMG_OBJ16_LINE_SAMPLEHOLD),
+        BackwardSampleHold("Backward Sample-Hold", ScaveImages.IMG_OBJ16_LINE_BKSAMPLEHOLD);
 
         private String name;
         private String imageId;
 
         private LineType(String name, String img) {
             this.name = name;
-            this.imageId = "icons/full/obj16/line_"+img+".png";
+            this.imageId = img;
         }
 
         @Override
