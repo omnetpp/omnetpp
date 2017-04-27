@@ -82,7 +82,7 @@ public class OmnetppDirs {
      * Returns the MSYS bin directory which contains utilities like perl, wish etc., or the empty string ""
      * on non-Windows OS or if it cannot be determined.
      */
-    public static String getMsysBinDir() {
+    public static String getToolsMsysBinDir() {
         if (!Platform.getOS().equals(Platform.OS_WIN32))
             return "";
         String oppRoot = getOmnetppRootDir();
@@ -94,7 +94,7 @@ public class OmnetppDirs {
     /**
      * Returns the MinGW bin directory, or the empty string "" on non-Windows OS or if it cannot be determined.
      */
-    public static String getMingwBinDir() {
+    public static String getToolsMingwBinDir() {
         if (!Platform.getOS().equals(Platform.OS_WIN32))
             return "";
         String oppRoot = getOmnetppRootDir();

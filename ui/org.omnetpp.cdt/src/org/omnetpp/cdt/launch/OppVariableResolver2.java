@@ -31,10 +31,11 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
         if (argument != null)
             abort("${" + varName +"} requires no argument", null);
 
-        String msysBinDir = OmnetppDirs.getMsysBinDir();
-        String mingwBinDir = OmnetppDirs.getMingwBinDir();
+        boolean isClangC2 = OmnetppDirs.isOppsimClangC2LibraryPresent(true) || OmnetppDirs.isOppsimClangC2LibraryPresent(false);
+        // add visualc or mingw specific binary directory depending whether we are using clang or mingw
+        String result = (isClangC2 ? OmnetppDirs.getToolsVisualCBinDir() : OmnetppDirs.getToolsMingwBinDir()) + ";" +
+                OmnetppDirs.getToolsMsysBinDir() + ";";
 
-        String result = msysBinDir + ";" + mingwBinDir;
         return result.equals(";") ? "" : result;
     }
 
