@@ -43,6 +43,8 @@ import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
+ * This is the content provider used with the DataTree widget.
+ *
  * This class provides a customizable tree of various data from the result file manager.
  * The tree is built up from levels that may be freely reordered and switched on/off.
  * Levels include experiment, measurement, replication, config, run number, file name, run id, module path, module name, result item, result item attributes, etc.
@@ -50,7 +52,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  * @author levy
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class ResultFileManagerTreeContentProvider {
+public class DataTreeContentProvider {
     public final static Class[] LEVELS1 = new Class[] { ExperimentNode.class, MeasurementNode.class, ReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS2 = new Class[] { ExperimentMeasurementReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
     public final static Class[] LEVELS3 = new Class[] { ConfigNode.class, RunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
@@ -70,7 +72,7 @@ public class ResultFileManagerTreeContentProvider {
 
     protected Node[] rootNodes;
 
-    public ResultFileManagerTreeContentProvider() {
+    public DataTreeContentProvider() {
         setDefaultLevels();
     }
 

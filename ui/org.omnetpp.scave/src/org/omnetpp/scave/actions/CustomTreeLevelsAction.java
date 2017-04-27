@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.scave.editors.datatable.DataTree;
-import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider;
+import org.omnetpp.scave.editors.datatable.DataTreeContentProvider;
 
 @SuppressWarnings("unchecked")
 public class CustomTreeLevelsAction extends Action {
@@ -33,10 +33,10 @@ public class CustomTreeLevelsAction extends Action {
 
     @Override
     public boolean isChecked() {
-        ResultFileManagerTreeContentProvider contentProvider = dataTree.getContentProvider();
+        DataTreeContentProvider contentProvider = dataTree.getContentProvider();
         Class[] levels = contentProvider.getLevels();
         boolean checked = true;
-        for (Class[] predefinedLevels : new Class[][] { ResultFileManagerTreeContentProvider.LEVELS1, ResultFileManagerTreeContentProvider.LEVELS2, ResultFileManagerTreeContentProvider.LEVELS3, ResultFileManagerTreeContentProvider.LEVELS4, ResultFileManagerTreeContentProvider.LEVELS5, ResultFileManagerTreeContentProvider.LEVELS6 })
+        for (Class[] predefinedLevels : new Class[][] { DataTreeContentProvider.LEVELS1, DataTreeContentProvider.LEVELS2, DataTreeContentProvider.LEVELS3, DataTreeContentProvider.LEVELS4, DataTreeContentProvider.LEVELS5, DataTreeContentProvider.LEVELS6 })
             if (PredefinedLevelsAction.isLevelsEqualsIgnoreModuleNameLevel(levels, predefinedLevels))
                 checked = false;
         setChecked(checked);
@@ -75,11 +75,11 @@ public class CustomTreeLevelsAction extends Action {
                 viewer.setLabelProvider(new LabelProvider() {
                     @Override
                     public String getText(Object element) {
-                        return ResultFileManagerTreeContentProvider.getLevelName((Class)element);
+                        return DataTreeContentProvider.getLevelName((Class)element);
                     }
                 });
                 final Class[] levels = dataTree.getContentProvider().getLevels();
-                Class[] levelClasses = ResultFileManagerTreeContentProvider.getAvailableLevelClasses();
+                Class[] levelClasses = DataTreeContentProvider.getAvailableLevelClasses();
                 Arrays.sort(levelClasses, new Comparator<Class>() {
                     public int compare(Class l1, Class l2) {
                         return adjust(ArrayUtils.indexOf(levels, l1)) - adjust(ArrayUtils.indexOf(levels, l2));

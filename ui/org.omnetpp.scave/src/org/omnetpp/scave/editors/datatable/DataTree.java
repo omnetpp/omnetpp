@@ -32,7 +32,7 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.CustomTreeLevelsAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.PredefinedLevelsAction;
-import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider.Node;
+import org.omnetpp.scave.editors.datatable.DataTreeContentProvider.Node;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -53,7 +53,7 @@ public class DataTree extends Tree implements IDataControl {
     protected ListenerList listeners;
     protected ResultFileManagerEx manager;
     protected IDList idList;
-    protected ResultFileManagerTreeContentProvider contentProvider;
+    protected DataTreeContentProvider contentProvider;
     protected IPreferenceStore preferenceStore = ScavePlugin.getDefault().getPreferenceStore();
     protected DelayedJob refreshJob = new DelayedJob(200) {
         public void run() {
@@ -73,7 +73,7 @@ public class DataTree extends Tree implements IDataControl {
         setMenu(contextMenuManager.createContextMenu(this));
         addColumn("Name", 400);
         addColumn("Value", 200);
-        contentProvider = new ResultFileManagerTreeContentProvider();
+        contentProvider = new DataTreeContentProvider();
         loadPreferences();
 
         addListener(SWT.SetData, new Listener() {
@@ -98,7 +98,7 @@ public class DataTree extends Tree implements IDataControl {
             manager.removeChangeListener(resultFilesChangeListener);
     }
 
-    public ResultFileManagerTreeContentProvider getContentProvider() {
+    public DataTreeContentProvider getContentProvider() {
         return contentProvider;
     }
 
@@ -300,12 +300,12 @@ public class DataTree extends Tree implements IDataControl {
             }
         });
         IMenuManager subMenuManager = new MenuManager("Tree Levels");
-        subMenuManager.add(new PredefinedLevelsAction("Experiment / Measurement / Replication", this, ResultFileManagerTreeContentProvider.LEVELS1));
-        subMenuManager.add(new PredefinedLevelsAction("Experiment + Measurement + Replication", this, ResultFileManagerTreeContentProvider.LEVELS2));
-        subMenuManager.add(new PredefinedLevelsAction("Config / Run Number", this, ResultFileManagerTreeContentProvider.LEVELS3));
-        subMenuManager.add(new PredefinedLevelsAction("Config + Run Number", this, ResultFileManagerTreeContentProvider.LEVELS4));
-        subMenuManager.add(new PredefinedLevelsAction("File / Run", this, ResultFileManagerTreeContentProvider.LEVELS5));
-        subMenuManager.add(new PredefinedLevelsAction("Run", this, ResultFileManagerTreeContentProvider.LEVELS6));
+        subMenuManager.add(new PredefinedLevelsAction("Experiment / Measurement / Replication", this, DataTreeContentProvider.LEVELS1));
+        subMenuManager.add(new PredefinedLevelsAction("Experiment + Measurement + Replication", this, DataTreeContentProvider.LEVELS2));
+        subMenuManager.add(new PredefinedLevelsAction("Config / Run Number", this, DataTreeContentProvider.LEVELS3));
+        subMenuManager.add(new PredefinedLevelsAction("Config + Run Number", this, DataTreeContentProvider.LEVELS4));
+        subMenuManager.add(new PredefinedLevelsAction("File / Run", this, DataTreeContentProvider.LEVELS5));
+        subMenuManager.add(new PredefinedLevelsAction("Run", this, DataTreeContentProvider.LEVELS6));
         subMenuManager.add(new Separator());
         subMenuManager.add(new CustomTreeLevelsAction(this));
         subMenuManager.addMenuListener(new IMenuListener() {

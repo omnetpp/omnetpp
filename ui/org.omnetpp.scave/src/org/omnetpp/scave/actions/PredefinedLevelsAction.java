@@ -6,7 +6,7 @@ package org.omnetpp.scave.actions;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.action.Action;
 import org.omnetpp.scave.editors.datatable.DataTree;
-import org.omnetpp.scave.editors.datatable.ResultFileManagerTreeContentProvider;
+import org.omnetpp.scave.editors.datatable.DataTreeContentProvider;
 
 @SuppressWarnings("unchecked")
 public class PredefinedLevelsAction extends Action {
@@ -29,16 +29,16 @@ public class PredefinedLevelsAction extends Action {
     @Override
     public void run() {
         if (!isChecked()) {
-            ResultFileManagerTreeContentProvider contentProvider = dataTree.getContentProvider();
+            DataTreeContentProvider contentProvider = dataTree.getContentProvider();
             Class[] currentLevels = contentProvider.getLevels();
-            int index = ArrayUtils.indexOf(currentLevels, ResultFileManagerTreeContentProvider.ModuleNameNode.class);
+            int index = ArrayUtils.indexOf(currentLevels, DataTreeContentProvider.ModuleNameNode.class);
             if (index == -1)
                 dataTree.setLevels(levels);
             else {
                 Class[] clonedLevels = levels.clone();
-                index = ArrayUtils.indexOf(clonedLevels, ResultFileManagerTreeContentProvider.ModulePathNode.class);
+                index = ArrayUtils.indexOf(clonedLevels, DataTreeContentProvider.ModulePathNode.class);
                 if (index != -1)
-                    clonedLevels[index] = ResultFileManagerTreeContentProvider.ModuleNameNode.class;
+                    clonedLevels[index] = DataTreeContentProvider.ModuleNameNode.class;
                 dataTree.setLevels(clonedLevels);
             }
         }
@@ -54,8 +54,8 @@ public class PredefinedLevelsAction extends Action {
     }
 
     private static Class toModulePathNodeClass(Class clazz) {
-        if (clazz.equals(ResultFileManagerTreeContentProvider.ModuleNameNode.class))
-            return ResultFileManagerTreeContentProvider.ModulePathNode.class;
+        if (clazz.equals(DataTreeContentProvider.ModuleNameNode.class))
+            return DataTreeContentProvider.ModulePathNode.class;
         else
             return clazz;
     }
