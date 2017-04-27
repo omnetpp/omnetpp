@@ -2009,6 +2009,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         //@{
         explicit cPathFigure(const char *name=nullptr) : cAbstractShapeFigure(name), joinStyle(JOIN_MITER), capStyle(CAP_BUTT), fillRule(FILL_EVENODD) {}
         cPathFigure(const cPathFigure& other) : cAbstractShapeFigure(other) {copy(other);}
+        virtual ~cPathFigure() {doClearPath();}
         cPathFigure& operator=(const cPathFigure& other);
         //@}
 
