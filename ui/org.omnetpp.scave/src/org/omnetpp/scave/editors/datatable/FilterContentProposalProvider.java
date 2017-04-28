@@ -27,7 +27,7 @@ import org.omnetpp.scave.model2.FilterField.Kind;
 /**
  * Content proposal provider for the filter text fields.
  */
-class FilterContentProposalProvider extends MatchExpressionContentProposalProvider
+public class FilterContentProposalProvider extends MatchExpressionContentProposalProvider
 {
     private static ContentProposal[] fieldPrefixProposals = new ContentProposal[] {
         new ContentProposal("attr:"),

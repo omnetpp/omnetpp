@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
@@ -48,7 +49,7 @@ import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
-import org.omnetpp.scave.editors.datatable.FilterField;
+import org.omnetpp.scave.editors.datatable.FilterContentProposalProvider;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -97,7 +98,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     // controls
     private Text nameText;
     private Text inputText;
-    private FilterField inputFilterField;
+    private FilterContentProposalProvider inputFieldProposalProvider;
     protected Group optionsGroup;
     private Button antialiasCheckbox;
     private Button cachingCheckbox;
@@ -220,8 +221,9 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             nameText.setFocus();
             inputText = createMultilineTextField("Result filter:", panel);
             ((GridLayout)panel.getLayout()).numColumns = 2;
-            inputFilterField = new FilterField(inputText);
-            inputFilterField.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
+            inputFieldProposalProvider = new FilterContentProposalProvider();
+            ContentAssistUtil.configureText(inputText, inputFieldProposalProvider);
+            inputFieldProposalProvider.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
         }
         else if (TAB_CHART.equals(name)) {
             group = createGroup("Title", panel);

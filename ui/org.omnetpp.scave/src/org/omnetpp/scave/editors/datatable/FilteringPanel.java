@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
@@ -52,7 +53,8 @@ public class FilteringPanel extends Composite {
 
     // Edit field for the "Advanced" mode
     private Composite advancedFilterPanel;
-    private org.omnetpp.scave.editors.datatable.FilterField advancedFilter; // TODO rename FilterField to avoid collision
+    private Text advancedFilterText;
+    private FilterContentProposalProvider filterProposalProvider;
 
     // Combo boxes for the "Simple" mode
     private Composite simpleFilterPanel;
@@ -68,7 +70,7 @@ public class FilteringPanel extends Composite {
     }
 
     public Text getAdvancedFilterText() {
-        return advancedFilter.getText();
+        return advancedFilterText;
     }
 
     public List<FilterField> getSimpleFilterFields() {
@@ -120,7 +122,7 @@ public class FilteringPanel extends Composite {
         setFilterHints(replicationCombo, hints.getHints(REPLICATION));
         setFilterHints(moduleCombo, hints.getHints(MODULE));
         setFilterHints(nameCombo, hints.getHints(NAME));
-        advancedFilter.setFilterHints(hints);
+        filterProposalProvider.setFilterHints(hints);
     }
 
     public void setFilterHintsOfCombos(FilterHints hints) {
@@ -163,7 +165,7 @@ public class FilteringPanel extends Composite {
         toggleFilterTypeButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_BASICFILTER));
         toggleFilterTypeButton.setToolTipText("Switch to Basic Filter");
         getParent().layout(true, true);
-        advancedFilter.getText().setFocus();
+        advancedFilterText.setFocus();
     }
 
     /**
@@ -301,10 +303,12 @@ public class FilteringPanel extends Composite {
         ((GridLayout)advancedFilterPanel.getLayout()).marginHeight = 1;
         ((GridLayout)advancedFilterPanel.getLayout()).marginWidth = 0;
 
-        advancedFilter = new org.omnetpp.scave.editors.datatable.FilterField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
-        advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
-        advancedFilter.getText().setMessage("type filter expression");
-        advancedFilter.getText().setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
+        advancedFilterText = new Text(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
+        advancedFilterText.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
+        advancedFilterText.setMessage("type filter expression");
+        advancedFilterText.setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
+        filterProposalProvider = new FilterContentProposalProvider();
+        ContentAssistUtil.configureText(advancedFilterText, filterProposalProvider);
 
         // the "Basic" view with a series of combo boxes
         simpleFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
