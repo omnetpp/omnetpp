@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.scave.editors.datatable;
+package org.omnetpp.common.contentassist;
 
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.widgets.Control;
@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * Implementation of <code>IControlContentAdapter2</code> for text widgets.
  */
-public class TextContentAdapter2 extends TextContentAdapter implements IControlContentAdapter2 {
+public class TextContentAdapter2 extends TextContentAdapter implements IControlContentAdapterEx {
 
     public void replaceControlContents(Control control, int start, int end, String text, int cursorPosition) {
         Text textControl = (Text)control;
