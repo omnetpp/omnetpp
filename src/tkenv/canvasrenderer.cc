@@ -61,7 +61,7 @@ void CanvasRenderer::refresh(FigureRenderingHints *hints)
         // otherwise we only adjust subtree of that particular figure
         cFigure *rootFigure = canvas->getRootFigure();
         uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
-        if (changes & cFigure::CHANGE_STRUCTURAL) {
+        if (changes & (cFigure::CHANGE_STRUCTURAL | cFigure::CHANGE_TAGS)) {
             redraw(hints);
             // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
         }
