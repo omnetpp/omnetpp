@@ -392,7 +392,7 @@ class SIM_API cFigure : public cOwnedObject
         /**
          * Copy constructor. Child figures and the figure ID are not copied.
          */
-        cFigure(const cFigure& other) : cOwnedObject(other), tags(nullptr) {copy(other);}
+        cFigure(const cFigure& other) : cOwnedObject(other), tooltip(nullptr), tags(nullptr) {copy(other);}
 
         /**
          * Destructor

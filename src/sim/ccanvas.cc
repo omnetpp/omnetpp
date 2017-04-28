@@ -907,7 +907,7 @@ cFigure *cFigure::dupTree() const
 void cFigure::copy(const cFigure& other)
 {
     setVisible(other.isVisible());
-    setZIndex(getZIndex());
+    setZIndex(other.getZIndex());
     setTooltip(other.getTooltip());
     setAssociatedObject(other.getAssociatedObject());
     setTags(other.getTags());
