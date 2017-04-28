@@ -60,10 +60,7 @@ public class FilteringPanel extends Composite {
     private Combo measurementCombo;
     private Combo replicationCombo;
     private Combo moduleCombo;
-    private Combo dataCombo;
-
-    // The "Go" button
-    private Button filterButton;
+    private Combo nameCombo;
 
     public FilteringPanel(Composite parent, int style) {
         super(parent, style);
@@ -74,8 +71,7 @@ public class FilteringPanel extends Composite {
         return advancedFilter.getText();
     }
 
-    public List<FilterField> getSimpleFilterFields()
-    {
+    public List<FilterField> getSimpleFilterFields() {
         return simpleFilterFields;
     }
 
@@ -96,11 +92,10 @@ public class FilteringPanel extends Composite {
     }
 
     public Combo getNameCombo() {
-        return dataCombo;
+        return nameCombo;
     }
 
-    public Combo getFilterCombo(FilterField field)
-    {
+    public Combo getFilterCombo(FilterField field) {
         if (field.equals(EXPERIMENT))
             return experimentCombo;
         else if (field.equals(MEASUREMENT))
@@ -110,13 +105,9 @@ public class FilteringPanel extends Composite {
         else if (field.equals(MODULE))
             return moduleCombo;
         else if (field.equals(NAME))
-            return dataCombo;
+            return nameCombo;
         else
             return null;
-    }
-
-    public Button getFilterButton() {
-        return filterButton;
     }
 
     public Button getToggleFilterTypeButton() {
@@ -128,7 +119,7 @@ public class FilteringPanel extends Composite {
         setFilterHints(measurementCombo, hints.getHints(MEASUREMENT));
         setFilterHints(replicationCombo, hints.getHints(REPLICATION));
         setFilterHints(moduleCombo, hints.getHints(MODULE));
-        setFilterHints(dataCombo, hints.getHints(NAME));
+        setFilterHints(nameCombo, hints.getHints(NAME));
         advancedFilter.setFilterHints(hints);
     }
 
@@ -163,6 +154,7 @@ public class FilteringPanel extends Composite {
         toggleFilterTypeButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_ADVANCEDFILTER));
         toggleFilterTypeButton.setToolTipText("Switch to Advanced Filter");
         getParent().layout(true, true);
+        nameCombo.setFocus();
     }
 
     public void showAdvancedFilter() {
@@ -171,6 +163,7 @@ public class FilteringPanel extends Composite {
         toggleFilterTypeButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_BASICFILTER));
         toggleFilterTypeButton.setToolTipText("Switch to Basic Filter");
         getParent().layout(true, true);
+        advancedFilter.getText().setFocus();
     }
 
     /**
@@ -204,7 +197,7 @@ public class FilteringPanel extends Composite {
         measurementCombo.setText(filterUtil.getField(MEASUREMENT.getName()));
         replicationCombo.setText(filterUtil.getField(REPLICATION.getName()));
         moduleCombo.setText(filterUtil.getField(MODULE.getName()));
-        dataCombo.setText(filterUtil.getField(NAME.getName()));
+        nameCombo.setText(filterUtil.getField(NAME.getName()));
 
         showSimpleFilter();
         return true;
@@ -293,6 +286,10 @@ public class FilteringPanel extends Composite {
         gridLayout.marginWidth = 0;
         filterContainer.setLayout(gridLayout);
 
+        // Toggle button
+        toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
+        toggleFilterTypeButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
+
         Composite filterFieldsContainer = new Composite(filterContainer, SWT.NONE);
         filterFieldsContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         filterFieldsContainer.setLayout(stackLayout = new StackLayout());
@@ -322,18 +319,8 @@ public class FilteringPanel extends Composite {
         measurementCombo = createFilterCombo(sashForm, "measurement filter", "Measurement Filter");
         replicationCombo = createFilterCombo(sashForm, "replication filter", "Replication Filter");
         moduleCombo = createFilterCombo(sashForm, "module filter", "Module Filter");
-        dataCombo = createFilterCombo(sashForm, "result name filter", "Result Name Filter");
+        nameCombo = createFilterCombo(sashForm, "result name filter", "Result Name Filter");
         sashForm.setWeights(new int[] {2,3,1,3,3});
-
-        // Filter button
-        filterButton = new Button(filterContainer, SWT.NONE);
-        filterButton.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUNFILTER));
-        filterButton.setToolTipText("Execute Filter");
-        filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-
-        // Toggle button
-        toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
-        toggleFilterTypeButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
         showSimpleFilter();
     }

@@ -137,7 +137,6 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
         };
 
         // when the filter button gets pressed, update the content
-        filterPanel.getFilterButton().addSelectionListener(selectionListener);
         filterPanel.getAdvancedFilterText().addSelectionListener(selectionListener);
         filterPanel.getExperimentCombo().addSelectionListener(selectionListener);
         filterPanel.getMeasurementCombo().addSelectionListener(selectionListener);
