@@ -20,7 +20,6 @@ import org.eclipse.emf.edit.ui.action.CopyAction;
 import org.eclipse.emf.edit.ui.action.CreateChildAction;
 import org.eclipse.emf.edit.ui.action.CreateSiblingAction;
 import org.eclipse.emf.edit.ui.action.CutAction;
-import org.eclipse.emf.edit.ui.action.DeleteAction;
 import org.eclipse.emf.edit.ui.action.LoadResourceAction;
 import org.eclipse.emf.edit.ui.action.PasteAction;
 import org.eclipse.emf.edit.ui.action.RedoAction;
@@ -126,11 +125,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * This keeps track of the current editor part.
      */
     protected IEditorPart activeEditor;
-
-    /**
-     * This is the action used to implement delete.
-     */
-    protected DeleteAction originalDeleteAction;  //TODO this arguably isn't used (ownDeleteAction is), verify it and remove this field!
 
     /**
      * This is the action used to implement cut.
@@ -471,21 +465,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         submenuManager = new MenuManager("Create Sibling");
         populateManager(submenuManager, createSiblingActions, null);
         menuManager.insertBefore("edit", submenuManager);
-      
-        // replace the inherited deleteAction with ours, that handle references and temp obects well
-        IContributionItem deleteActionItem = null;
-        for (IContributionItem item : menuManager.getItems())
-            if (item instanceof ActionContributionItem) {
-                ActionContributionItem acItem = (ActionContributionItem)item;
-                if (acItem.getAction() == originalDeleteAction) {
-                    deleteActionItem = item;
-                    break;
-                }
-            }
-        if (deleteActionItem != null) {
-            menuManager.remove(deleteActionItem);
-            menuManager.insertBefore("additions-end", ourDeleteAction);
-        }
+        menuManager.insertBefore("additions-end", ourDeleteAction);
 
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
@@ -771,10 +751,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         super.init(actionBars);
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
 
-        originalDeleteAction = createDeleteAction();
-        originalDeleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
-        actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), originalDeleteAction);
-
         cutAction = createCutAction();
         cutAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
         actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
@@ -794,16 +770,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         redoAction = createRedoAction();
         redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
         actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
-    }
-
-    /**
-     * Returns the action used to implement delete.
-     * 
-     * @see #originalDeleteAction
-     * @since 2.6
-     */
-    protected DeleteAction createDeleteAction() {
-        return new DeleteAction(removeAllReferencesOnDelete());
     }
 
     /**
@@ -863,7 +829,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     public void setActiveView(IViewPart part) {
         IActionBars actionBars = part.getViewSite().getActionBars();
         if (!(part instanceof PropertySheet)) {
-            actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), originalDeleteAction);
             actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
             actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
             actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
@@ -881,7 +846,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     public void deactivate() {
         activeEditor.removePropertyListener(this);
 
-        originalDeleteAction.setActiveWorkbenchPart(null);
         cutAction.setActiveWorkbenchPart(null);
         copyAction.setActiveWorkbenchPart(null);
         pasteAction.setActiveWorkbenchPart(null);
@@ -904,7 +868,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
                 : activeEditor.getEditorSite().getSelectionProvider();
 
         if (selectionProvider != null) {
-            selectionProvider.removeSelectionChangedListener(originalDeleteAction);
             selectionProvider.removeSelectionChangedListener(cutAction);
             selectionProvider.removeSelectionChangedListener(copyAction);
             selectionProvider.removeSelectionChangedListener(pasteAction);
@@ -920,7 +883,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     public void activate() {
         activeEditor.addPropertyListener(this);
 
-        originalDeleteAction.setActiveWorkbenchPart(activeEditor);
         cutAction.setActiveWorkbenchPart(activeEditor);
         copyAction.setActiveWorkbenchPart(activeEditor);
         pasteAction.setActiveWorkbenchPart(activeEditor);
@@ -943,7 +905,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
                 : activeEditor.getEditorSite().getSelectionProvider();
 
         if (selectionProvider != null) {
-            selectionProvider.addSelectionChangedListener(originalDeleteAction);
             selectionProvider.addSelectionChangedListener(cutAction);
             selectionProvider.addSelectionChangedListener(copyAction);
             selectionProvider.addSelectionChangedListener(pasteAction);
@@ -967,7 +928,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
             IStructuredSelection structuredSelection = selection instanceof IStructuredSelection
                     ? (IStructuredSelection) selection : StructuredSelection.EMPTY;
 
-            originalDeleteAction.updateSelection(structuredSelection);
             cutAction.updateSelection(structuredSelection);
             copyAction.updateSelection(structuredSelection);
             pasteAction.updateSelection(structuredSelection);
