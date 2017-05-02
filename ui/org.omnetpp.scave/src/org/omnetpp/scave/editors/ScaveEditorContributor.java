@@ -202,7 +202,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     // generic actions
     private IAction openAction;
     private IAction editAction;
-    private IScaveAction ourDeleteAction; // action handler of deleteRetargetAction
+    private IScaveAction removeAction; // action handler of deleteRetargetAction
     private IAction selectAllAction;
     private IAction exportChartsAction;
 
@@ -298,11 +298,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         editAction = registerAction(page, new EditAction());
         selectAllAction = registerAction(page, new SelectAllAction());
         exportChartsAction = registerAction(page, new ExportChartsAction());
-
-        // replacement of the inherited deleteAction
-        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-        ourDeleteAction = registerAction(page, new RemoveAction());
-        ourDeleteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+        removeAction = registerAction(page, new RemoveAction());
 
         // ChartPage actions
         hzoomInAction = registerAction(page, new ZoomChartAction(true, false, 2.0));
@@ -337,7 +333,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 //      createChartAction = registerAction(page, new CreateChartAction());
         super.init(bars, page);
 
-        bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), ourDeleteAction);
+        bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
         bars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
     }
 
@@ -406,8 +402,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         manager.add(undoRetargetAction);
         manager.add(redoRetargetAction);
 
-        optionalToolbarActions = new SubToolBarManager(manager);
-        optionalToolbarActions.add(deleteRetargetAction);
+//        optionalToolbarActions = new SubToolBarManager(manager);
+//        optionalToolbarActions.add(deleteRetargetAction);
 //        optionalToolbarActions.add(openAction);
 //        optionalToolbarActions.add(editAction);
 //
@@ -443,7 +439,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         menuManager.add(new ActionContributionItem(copyAction));
         menuManager.add(new ActionContributionItem(pasteAction));
         menuManager.add(new Separator());
-        menuManager.add(new ActionContributionItem(ourDeleteAction));
+        menuManager.add(new ActionContributionItem(removeAction));
         menuManager.add(new Separator());
 
         if ((style & ADDITIONS_LAST_STYLE) != 0) {
@@ -465,8 +461,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         submenuManager = new MenuManager("Create Sibling");
         populateManager(submenuManager, createSiblingActions, null);
         menuManager.insertBefore("edit", submenuManager);
-        menuManager.insertBefore("additions-end", ourDeleteAction);
-
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
 
@@ -479,7 +473,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     public void shareGlobalActions(IPage page, IActionBars actionBars) {
         if (!(page instanceof IPropertySheetPage)) {
-            actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), ourDeleteAction);
+            actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
             actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
             actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
             actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
@@ -489,7 +483,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
         // replace inherited deleteAction
         if (!(page instanceof IPropertySheetPage))
-            actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), ourDeleteAction);
+            actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
     }
 
     protected void addGlobalActions(IMenuManager menuManager) {
@@ -526,8 +520,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return editAction;
     }
 
-    public IAction getDeleteAction() {
-        return ourDeleteAction;
+    public IAction getRemoveAction() {
+        return removeAction;
     }
     
     public IAction getHZoomInAction() {

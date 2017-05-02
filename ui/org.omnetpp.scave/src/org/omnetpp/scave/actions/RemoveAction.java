@@ -19,6 +19,8 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.ISharedImages;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -26,8 +28,8 @@ import org.omnetpp.scave.editors.ScaveEditor;
  */
 public class RemoveAction extends AbstractScaveAction {
     public RemoveAction() {
-        setText("Delete");
-        setToolTipText("Delete selected items");
+        setText("Remove");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE));
     }
 
     @Override

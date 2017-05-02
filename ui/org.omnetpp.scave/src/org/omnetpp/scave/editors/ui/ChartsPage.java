@@ -67,6 +67,7 @@ public class ChartsPage extends ScaveEditorPage {
         addToToolbar(new NewHistogramChartAction());
         addSeparatorToToolbar();
         addToToolbar(contributor.getEditAction());
+        addToToolbar(contributor.getRemoveAction());
         addToToolbar(contributor.getOpenAction());
 
         viewer.setFocus();

@@ -83,7 +83,7 @@ public class InputsPage extends ScaveEditorPage {
         ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
         addToToolbar(new NewInputFileAction());
         addToToolbar(new EditInputFileAction());
-        addToToolbar(contributor.getDeleteAction());
+        addToToolbar(contributor.getRemoveAction());
         addSeparatorToToolbar();
         addToToolbar(new CollapseTreeAction(treeViewer));
 
@@ -97,7 +97,7 @@ public class InputsPage extends ScaveEditorPage {
             public void menuAboutToShow(IMenuManager menuManager) {
                 menuManager.add(new NewInputFileAction());
                 menuManager.add(new EditInputFileAction());
-                menuManager.add(contributor.getDeleteAction());
+                menuManager.add(contributor.getRemoveAction());
                 menuManager.add(new Separator());
                 menuManager.add(contributor.getUndoRetargetAction());
                 menuManager.add(new Separator());
