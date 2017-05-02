@@ -158,7 +158,6 @@ import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.model2.IScaveEditorContext;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
@@ -1601,7 +1600,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             firePropertyChange(IEditorPart.PROP_DIRTY);
         }
         catch (Exception exception) {
-            ScaveEditPlugin.INSTANCE.log(exception);
+            ScavePlugin.logError(exception);
         }
     }
 

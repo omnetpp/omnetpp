@@ -87,7 +87,6 @@ import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
 import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
-import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.views.DatasetView;
 
 /**
@@ -257,19 +256,19 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         }
     };
 
-    protected IAction showPropertiesViewAction = new Action(ScaveEditPlugin.INSTANCE.getString("_UI_ShowPropertiesView_menu_item")) {
+    protected IAction showPropertiesViewAction = new Action("Show Properties View") {
         @Override
         public void run() {
             try {
                 getPage().showView("org.eclipse.ui.views.PropertySheet");
             }
             catch (PartInitException exception) {
-                ScaveEditPlugin.INSTANCE.log(exception);
+                ScavePlugin.logError(exception);
             }
         }
     };
 
-    protected IAction refreshViewerAction = new Action(ScaveEditPlugin.INSTANCE.getString("_UI_RefreshViewer_menu_item")) {
+    protected IAction refreshViewerAction = new Action("Refresh") {
         @Override
         public boolean isEnabled() {
             return activeEditorPart instanceof IViewerProvider;
@@ -464,11 +463,11 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
         MenuManager submenuManager = null;
 
-        submenuManager = new MenuManager(ScaveEditPlugin.INSTANCE.getString("_UI_CreateChild_menu_item"));
+        submenuManager = new MenuManager("Create Child");
         populateManager(submenuManager, createChildActions, null);
         menuManager.insertBefore("edit", submenuManager);
 
-        submenuManager = new MenuManager(ScaveEditPlugin.INSTANCE.getString("_UI_CreateSibling_menu_item"));
+        submenuManager = new MenuManager("Create Sibling");
         populateManager(submenuManager, createSiblingActions, null);
         menuManager.insertBefore("edit", submenuManager);
       

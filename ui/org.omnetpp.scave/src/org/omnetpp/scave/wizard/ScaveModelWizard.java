@@ -17,7 +17,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.edit.ui.provider.ExtendedImageRegistry;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -33,7 +32,8 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ISetSelectionTarget;
-import org.omnetpp.scave.model.provider.ScaveEditPlugin;
+import org.omnetpp.scave.ScaveImages;
+import org.omnetpp.scave.ScavePlugin;
 
 
 /**
@@ -79,7 +79,7 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
         this.workbench = workbench;
         this.selection = selection;
         setWindowTitle("New Analysis File");
-        setDefaultPageImageDescriptor(ExtendedImageRegistry.INSTANCE.getImageDescriptor(ScaveEditPlugin.INSTANCE.getImage("full/wizban/NewScaveModel")));
+        setDefaultPageImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_WIZBAN_NEWSCAVEMODEL));
     }
 
     public void setInitialInputFiles(String[] initialInputFiles) {
@@ -165,7 +165,7 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
                             ScaveWizardUtil.saveAnfFile(modelFile, rootObject);
                         }
                         catch (Exception exception) {
-                            ScaveEditPlugin.INSTANCE.log(exception);
+                            ScavePlugin.logError(exception);
                         }
                         finally {
                             progressMonitor.done();
@@ -193,14 +193,14 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
                 IDE.openEditor(page, modelFile);
             }
             catch (PartInitException exception) {
-                MessageDialog.openError(workbenchWindow.getShell(), ScaveEditPlugin.INSTANCE.getString("_UI_OpenEditorError_label"), exception.getMessage());
+                MessageDialog.openError(workbenchWindow.getShell(), "Cannot open Analysis editor", exception.getMessage());
                 return false;
             }
 
             return true;
         }
         catch (Exception exception) {
-            ScaveEditPlugin.INSTANCE.log(exception);
+            ScavePlugin.logError(exception);
             return false;
         }
     }
@@ -223,11 +223,10 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
         protected boolean validatePage() {
             if (super.validatePage()) {
                 // Make sure the file ends in ".anf".
-                //
                 String requiredExt = FILENAME_EXTENSION;
                 String enteredExt = new Path(getFileName()).getFileExtension();
                 if (enteredExt == null || !enteredExt.equals(requiredExt)) {
-                    setErrorMessage(ScaveEditPlugin.INSTANCE.getString("_WARN_FilenameExtension", new Object [] { requiredExt }));
+                    setErrorMessage("File must have the '" + requiredExt + "' extension");
                     return false;
                 } else
                     return true;

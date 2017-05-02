@@ -90,4 +90,5 @@ public class ScaveImages {
     public static final String IMG_LOGO128 = "icons/logo128.png";
     public static final String IMG_LOGO64 = "icons/logo64.png";
     public static final String IMG_LOGO32 = "icons/logo32.png";
+    public static final String IMG_WIZBAN_NEWSCAVEMODEL = "icons/full/wizban/NewScaveModel.gif";
 }
