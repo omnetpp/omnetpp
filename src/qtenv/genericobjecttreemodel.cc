@@ -255,7 +255,11 @@ QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex
 QModelIndex GenericObjectTreeModel::parent(const QModelIndex& child) const
 {
     TreeNode *node = static_cast<TreeNode *>(child.internalPointer());
-    return node->getParent() ? createIndex(node->getIndexInParent(), 0, node->getParent()) : QModelIndex();
+    // the "row" of the parent ModelIndex is it's own index in it's parent,
+    // and not the index of this child in the parent ModelIndex
+    return node->getParent()
+            ? createIndex(node->getParent()->getIndexInParent(), 0, node->getParent())
+            : QModelIndex();
 }
 
 bool GenericObjectTreeModel::hasChildren(const QModelIndex& parent) const
@@ -286,7 +290,7 @@ int GenericObjectTreeModel::rowCount(const QModelIndex& parent) const
 
 int GenericObjectTreeModel::columnCount(const QModelIndex& parent) const
 {
-    return 1;  // is is a tree, not a table
+    return 1;
 }
 
 QVariant GenericObjectTreeModel::data(const QModelIndex& index, int role) const
@@ -383,7 +387,7 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
 
             cObject **objs = visitor.getArray();
             for (int i = 0; i < visitor.getArraySize(); ++i) {
-                children.push_back(new ChildObjectNode(this, i, of, desc, objs[i], mode));
+                children.push_back(new ChildObjectNode(this, children.size(), of, desc, objs[i], mode));
             }
             break;
         }
@@ -391,13 +395,12 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
         case Mode::INHERITANCE:
             if (!excludeInherited) {
                 for (int i = 0; i < desc->getInheritanceChainLength(); i++)
-                    children.push_back(new SuperClassNode(this, i, of, desc, i, mode));
+                    children.push_back(new SuperClassNode(this, children.size(), of, desc, i, mode));
                 break;
             }
 
         // if the condition fails, falling through, no break here
         default: {  // GROUPED and FLAT have much in common
-            int childIndex = 0;
             auto base = desc->getBaseClassDescriptor();
 
             std::set<std::string> groupNames;
@@ -406,17 +409,20 @@ void TreeNode::addObjectChildren(void *of, cClassDescriptor *desc, bool excludeI
                 if (mode == Mode::GROUPED && groupName)
                     groupNames.insert(groupName);
                 else
-                    children.push_back(new FieldNode(this, childIndex++, of, desc, i, mode));
+                    children.push_back(new FieldNode(this, children.size(), of, desc, i, mode));
             }
 
             if (mode == Mode::GROUPED)
                 for (auto& name : groupNames)
-                    children.push_back(new FieldGroupNode(this, childIndex++, of, desc, name, mode));
+                    children.push_back(new FieldGroupNode(this, children.size(), of, desc, name, mode));
 
-            else  // FLAT
+            else { // FLAT
                 std::sort(children.begin(), children.end(), [](TreeNode *a, TreeNode *b) {
                     return a->data(Qt::DisplayRole).toString() < b->data(Qt::DisplayRole).toString();
                 });
+                for (size_t i = 0; i < children.size(); ++i)
+                    children[i]->indexInParent = i;
+            }
         }
     }
 }
