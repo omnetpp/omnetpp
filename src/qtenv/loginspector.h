@@ -52,6 +52,7 @@ class QTENV_API LogInspector : public Inspector
    protected:
       static const QString PREF_COLUMNWIDTHS;
       static const QString PREF_MODE;
+      static const QString PREF_EXCLUDED_MODULES;
       static const QString PREF_SAVE_FILENAME;
 
       LogBuffer *logBuffer; // not owned
@@ -91,6 +92,9 @@ signals:
 
       void saveColumnWidths();
       void restoreColumnWidths();
+
+      void saveExcludedModules();
+      void restoreExcludedModules();
 
       void saveContent();
 

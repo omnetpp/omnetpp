@@ -125,6 +125,7 @@ void LogInspector::onFontChanged()
 
 const QString LogInspector::PREF_COLUMNWIDTHS = "columnwidths";
 const QString LogInspector::PREF_MODE = "mode";
+const QString LogInspector::PREF_EXCLUDED_MODULES = "excluded-modules";
 const QString LogInspector::PREF_SAVE_FILENAME = "savefilename";
 
 QToolBar *LogInspector::createToolbar(bool isTopLevel)
@@ -228,6 +229,7 @@ void LogInspector::doSetObject(cObject *obj)
     Inspector::doSetObject(obj);
     excludedModuleIds.clear();
     setMode((Mode)getPref(PREF_MODE, getMode()).toInt());
+    restoreExcludedModules();
 }
 
 cComponent *LogInspector::getInspectedObject()
@@ -287,10 +289,9 @@ void LogInspector::onFilterButton()
     auto dialog = new LogFilterDialog(this, dynamic_cast<cModule *>(getInspectedObject()), excludedModuleIds);
     if (dialog->exec() == QDialog::Accepted) {
         excludedModuleIds = dialog->getExcludedModuleIds();
-        auto provider = dynamic_cast<ModuleOutputContentProvider *>(textWidget->getContentProvider());
-        if (provider) {
+        if (auto provider = dynamic_cast<ModuleOutputContentProvider *>(textWidget->getContentProvider()))
             provider->setExcludedModuleIds(excludedModuleIds);
-        }
+        saveExcludedModules();
         textWidget->onContentChanged();
     }
     delete dialog;
@@ -346,6 +347,22 @@ void LogInspector::saveColumnWidths()
 void LogInspector::restoreColumnWidths()
 {
     textWidget->setColumnWidths(getPref(PREF_COLUMNWIDTHS, QList<QVariant>()).toList());
+}
+
+void LogInspector::saveExcludedModules()
+{
+    QStringList excludedModules;
+    for (auto id : excludedModuleIds)
+        excludedModules.append(getQtenv()->getComponentHistory()->getComponentFullPath(id).c_str());
+    setPref(PREF_EXCLUDED_MODULES, excludedModules);
+}
+
+void LogInspector::restoreExcludedModules()
+{
+    QStringList excludedModules = getPref(PREF_EXCLUDED_MODULES, QStringList()).toStringList();
+    for (auto path : excludedModules)
+        if (auto mod = getSimulation()->getModuleByPath(path.toUtf8()))
+            excludedModuleIds.insert(mod->getId());
 }
 
 void LogInspector::saveContent()
