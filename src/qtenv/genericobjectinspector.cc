@@ -81,9 +81,17 @@ const QString GenericObjectInspector::PREF_MODE = "mode";
 GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
     treeView = new QTreeView(this);
+
+    // various cosmetics
     treeView->setHeaderHidden(true);
     treeView->setItemDelegate(new HighlighterItemDelegate());
     treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
+    treeView->setUniformRowHeights(true);
+
+    // these enable horizontal scrolling
+    treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    treeView->header()->setStretchLastSection(false);
+    treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     QToolBar *toolbar = new QToolBar();
