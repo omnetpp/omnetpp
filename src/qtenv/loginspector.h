@@ -43,7 +43,6 @@ class QTENV_API LogInspector : public Inspector
    private slots:
       void runUntil();
       void fastRunUntil();
-      void stopSimulation();
       void onFontChanged();
 
    public:

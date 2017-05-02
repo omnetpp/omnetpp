@@ -258,12 +258,6 @@ void LogInspector::fastRunUntil()
     fastRunUntilAction->setEnabled(true);
 }
 
-void LogInspector::stopSimulation()
-{
-    MainWindow *mainWindow = getQtenv()->getMainWindow();
-    mainWindow->on_actionStop_triggered();
-}
-
 void LogInspector::refresh()
 {
     Inspector::refresh();
@@ -368,8 +362,7 @@ void LogInspector::restoreExcludedModules()
 void LogInspector::saveContent()
 {
     QString fileName = getPref(PREF_SAVE_FILENAME, "omnetpp.out").toString();
-    fileName = QFileDialog::getSaveFileName(this, tr("Save Log Window Contents"), "/home/jana/" + fileName,
-                                                    tr("Log files (*.out);;All files (*)"));
+    fileName = QFileDialog::getSaveFileName(this, "Save Log Window Contents", fileName, "Log files (*.out);;All files (*)");
 
     int lineNumber = textWidget->getContentProvider()->getLineCount();
 
