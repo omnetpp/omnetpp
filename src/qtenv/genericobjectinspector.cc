@@ -328,7 +328,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     // applying the format ranges
     layout.setAdditionalFormats(formats);
 
-    layout.setFont(painter->font());
+    layout.setFont(option.font);
     layout.setText(option.fontMetrics.elidedText(text, option.textElideMode, option.rect.width() - textOffset - 3));
     // this is the standard layout procedure in a single line case
     layout.beginLayout();
@@ -337,7 +337,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     layout.endLayout();
 
     // the layout is complete, now we just draw it on the appropriate position
-    layout.draw(painter, option.rect.bottomLeft() + QPoint(textOffset, -option.fontMetrics.height()));
+    layout.draw(painter, option.rect.topLeft() + QPoint(textOffset, option.rect.height() / 2 - layout.boundingRect().height() / 2));
     painter->restore();
 }
 
