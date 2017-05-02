@@ -389,6 +389,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     @Override
     public void contributeToToolBar(IToolBarManager manager) {
+        // note: most actions are displayed on toolbars inside the editor area
         manager.add(new Separator("scavemodel-settings"));
         manager.add(new Separator("scavemodel-additions"));
 
@@ -413,24 +414,24 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
         optionalToolbarActions = new SubToolBarManager(manager);
         optionalToolbarActions.add(deleteRetargetAction);
-        optionalToolbarActions.add(openAction);
-        optionalToolbarActions.add(editAction);
-
-        manager.insertBefore("scavemodel-additions", createTempChartAction);
-
-        manager.insertBefore("scavemodel-additions", switchChartToPanModeAction);
-        manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
-        manager.insertBefore("scavemodel-additions", hzoomInAction);
-        manager.insertBefore("scavemodel-additions", hzoomOutAction);
-        manager.insertBefore("scavemodel-additions", vzoomInAction);
-        manager.insertBefore("scavemodel-additions", vzoomOutAction);
-        manager.insertBefore("scavemodel-additions", zoomToFitAction);
-        manager.insertBefore("scavemodel-additions", refreshChartAction);
+//        optionalToolbarActions.add(openAction);
+//        optionalToolbarActions.add(editAction);
+//
+//        manager.insertBefore("scavemodel-additions", createTempChartAction);
+//
+//        manager.insertBefore("scavemodel-additions", switchChartToPanModeAction);
+//        manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
+//        manager.insertBefore("scavemodel-additions", hzoomInAction);
+//        manager.insertBefore("scavemodel-additions", hzoomOutAction);
+//        manager.insertBefore("scavemodel-additions", vzoomInAction);
+//        manager.insertBefore("scavemodel-additions", vzoomOutAction);
+//        manager.insertBefore("scavemodel-additions", zoomToFitAction);
+//        manager.insertBefore("scavemodel-additions", refreshChartAction);
     }
 
     @Override
     public void contributeToStatusLine(IStatusLineManager statusLineManager) {
-        super.contributeToStatusLine(statusLineManager);
+        // nothing
     }
 
     public void menuAboutToShow(IMenuManager menuManager) {
