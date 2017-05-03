@@ -174,10 +174,10 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
     }
 
     private static Type getType(VectorResult vector) {
-        ResultItem.Type type = vector.getType();
-        if (type == ResultItem.Type.TYPE_ENUM)
+        ResultItem.DataType type = vector.getDataType();
+        if (type == ResultItem.DataType.TYPE_ENUM)
             return Type.Enum;
-        else if (type == ResultItem.Type.TYPE_INT)
+        else if (type == ResultItem.DataType.TYPE_INT)
             return Type.Int;
         else
             return Type.Double;

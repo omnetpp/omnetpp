@@ -186,8 +186,8 @@ public class ResultFileManagerTreeContentProvider {
                             }
                             else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
                                 ResultItem resultItem = matchContext.getResultItem();
-                                ResultItem.Type type = resultItem.getType();
-                                boolean isIntegerType = type == ResultItem.Type.TYPE_INT;
+                                ResultItem.DataType type = resultItem.getDataType();
+                                boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
                                 nodeIdsMap.put(new ResultItemAttributeNode("Module name", String.valueOf(resultItem.getModuleName())), id);
                                 nodeIdsMap.put(new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
                                 StringMap attributes = resultItem.getAttributes();

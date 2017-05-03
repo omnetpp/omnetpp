@@ -157,7 +157,7 @@ public class ResultItemPropertySource implements IPropertySource {
 
                 if (propertyId.equals(PROP_MODULE)) return resultItem.getModuleName();
                 if (propertyId.equals(PROP_NAME)) return resultItem.getName();
-                if (propertyId.equals(PROP_TYPE)) return resultItem.getType().toString().replaceAll("TYPE_", "").toLowerCase();
+                if (propertyId.equals(PROP_TYPE)) return resultItem.getDataType().toString().replaceAll("TYPE_", "").toLowerCase();
 
                 if (resultItem instanceof ScalarResult) {
                     ScalarResult scalar = (ScalarResult)resultItem;

@@ -48,7 +48,7 @@ public class HistogramDataset implements IHistogramDataset {
         for (int i = 0; i < idlist.size(); ++i) {
             long id = idlist.get(i);
             HistogramResult histogram = manager.getHistogram(id);
-            boolean isIntegerType = histogram.getType() == ResultItem.Type.TYPE_INT;
+            boolean isIntegerType = histogram.getDataType() == ResultItem.DataType.TYPE_INT;
             DoubleVector bins = histogram.getBinLowerBounds();
             int size = (int)bins.size();
             double[] cellBreaks = new double[size+1];
