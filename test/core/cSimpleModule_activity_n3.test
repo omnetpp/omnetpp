@@ -1,0 +1,12 @@
+%description:
+Test what happens if an activity-based module throws an exception
+
+%activity:
+throw cRuntimeError("Banggg");
+
+%exitcode: 1
+
+%contains-regex: stderr
+<!> Error: Banggg
+
+
