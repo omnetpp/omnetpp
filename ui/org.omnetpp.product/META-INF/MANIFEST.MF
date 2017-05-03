@@ -2,4 +2,4 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Product
 Bundle-SymbolicName: org.omnetpp.product
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.1.qualifier

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Animation Player
 Bundle-SymbolicName: org.omnetpp.animation.core;singleton:=true
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.1.1.qualifier
 Bundle-Activator: org.omnetpp.animation.AnimationCorePlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
