@@ -75,9 +75,9 @@ public class ChartDefaults {
     public static final Color DEFAULT_INSETS_LINE_COLOR = ColorFactory.BLACK;
 
     // legend
-    public static final boolean DEFAULT_DISPLAY_LEGEND = false;
+    public static final boolean DEFAULT_DISPLAY_LEGEND = true;
     public static final boolean DEFAULT_LEGEND_BORDER = false;
-    public static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Above;
+    public static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Inside;
     public static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
     public static final FontData DEFAULT_LEGEND_FONTDATA = new FontData("Arial", 8, SWT.NORMAL);
     public static final Font DEFAULT_LEGEND_FONT = new Font(null, DEFAULT_LEGEND_FONTDATA);
