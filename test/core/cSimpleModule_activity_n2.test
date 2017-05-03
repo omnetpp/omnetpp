@@ -1,0 +1,12 @@
+%description:
+Test what happens if an activity-based module deletes itself
+
+%activity:
+delete this;
+
+%exitcode: 1
+
+%contains-regex: stderr
+Cannot delete itself
+
+
