@@ -855,6 +855,9 @@ void cFigure::validatePropertyKeys(cProperty *property) const
     const std::vector<const char *>& keys = property->getKeys();
     for (int i = 0; i < (int)keys.size(); i++) {
         const char *key = keys[i];
+        if (!*key && property->getNumValues(key) == 0)
+            continue; // skip empty key added by extra semicolon
+
         if (!isAllowedPropertyKey(key)) {
             std::string allowedList = opp_join(getAllowedPropertyKeys(), ", ");
             throw cRuntimeError(this, "Unknown property key '%s'; supported keys are: %s, and any string starting with 'x-'",
