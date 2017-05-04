@@ -61,7 +61,7 @@ The build process will create both debug and release binaries.
 === Verifying the Installation
 
 You should now test all samples and check they run correctly. As an example,
-the 'dyna' example is started by entering the following commands:
+the 'aloha' example is started by entering the following commands:
 
     $ cd samples/aloha
     $ ./aloha
@@ -83,18 +83,6 @@ the `omnetpp.exe` program in the `@omnetpp@-@version@/ide` directory in Windows
 Explorer, right-click it, and choose 'Send To > Desktop (create shortcut)' from
 the menu. On Windows 7, you can right-click the taskbar icon while the IDE is running,
 and select 'Pin this program to taskbar' from the context menu.
-
-When you try to build a project in the IDE, you may get the following warning message:
-
-[quote]
-_____________________________________________________________________
-Toolchain "..." is not supported on this platform or installation. Please go to the
-Project menu, and activate a different build configuration. (You may need to switch
-to the C/C++ perspective first, so that the required menu items appear in the Project menu.)
-_____________________________________________________________________
-
-If you encounter this message, choose 'Project > Properties > C/C++ Build >
-Tool Chain Editor > Current toolchain > GCC for @OMNETPP@'.
 
 
 === Environment Variables
@@ -157,6 +145,10 @@ to the `lib/` and `bin/` subdirs.
 @OMNETPP@ has been tested with both the gcc and the clang compiler from
 the MinGW-w64 package.
 
+NOTE: MinGW/Clang 3.8 generates incorrect code when you use multiple inheritance
+in your code. Because of this, we do not recommend using MinGW/clang at the moment.
+Later versions of clang my fix this issue.
+
 Microsoft Visual C++/ClangC2 is not supported in the Academic Edition.
 
 
@@ -182,13 +174,6 @@ After installing DeinoMPI, adjust the `MPI_DIR` setting in @OMNETPP@'s
 
 NOTE: In general, if you would like to run parallel simulations, we recommend
 that you use Linux, macOS, or another unix-like platform.
-
-==== PCAP
-
-The optional WinPcap library allows simulation models to capture and
-transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary
-compiler and linker options for models in case they need it.
 
 ==== Akaroa
 

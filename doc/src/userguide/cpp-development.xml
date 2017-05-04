@@ -54,7 +54,7 @@
           On Windows: The &Omnetpp;
           distribution comes with a preconfigured MinGW compiler toolchain (MinGW is the Windows port of the
           GCC compiler.) You do not have to install or download anything. The IDE should be able to use the
-          MinGW compiler out of box. <commercial>You can also use the Visual C++ compiler from your
+          MinGW/gcc compiler out of box. <commercial>You can also use the Clang/C2 compiler from your
           Microsoft Visual Studio installation.</commercial>
         </listitem>
         <listitem>
@@ -578,7 +578,7 @@
 
           <commercial>
           <para>
-              If you want to build a DLL on Windows using Microsoft Visual C++,
+              If you want to build a DLL on Windows using the Microsoft Visual Studio Clang/C2 compiler,
               symbols you want to use from other code need to be explicitly exported from the DLL.
               Functions, variables and classes must be marked with [[__declspec(dllexport)]] when the DLL is
               compiled, and with [[__declspec(dllimport)]] when you reference them from external code.
@@ -668,7 +668,7 @@
               Makemake option: [[-K]]
             </listitem>
             <listitem>
-              ``Makefrag'': If the folder contains a file named [[makefrag]]<commercial> or [[makefrag.vc]]</commercial>,
+              ``Makefrag'': If the folder contains a file named [[makefrag]],
               its contents will be automatically copied into the generated makefile, just above the
               first target rule. [[makefrag]] allows you to customize the generated makefile to some extent;
               for example, you can add new targets (e.g. to generate documentation or run a test suite),
@@ -681,7 +681,7 @@
             <listitem>
               ``More &raquo; Fragment files to include'': Here, it is possible to explicitly specify
               a list of makefile fragment files to include, instead of the default
-              [[makefrag]]<commercial> ([[makefrag.vc]])</commercial>.
+              [[makefrag]].
               Makemake option: [[-i]]
             </listitem>
           </itemizedlist>

@@ -16,8 +16,8 @@ One chapter is dedicated to each operating system.
 ifdef::OMNEST[]
 64-bit precompiled binaries are provided for the following platforms:
 
-* Windows 7, 10 with Microsoft Visual C++ 2015 / ClangC2
-* Windows 7, 10 with the bundled MinGW-w64 gcc/clang compiler
+* Windows 7, 10 with Microsoft Visual C++ 2017 / ClangC2
+* Windows 7, 10 with the bundled MinGW-w64 gcc compiler
 
 On other platforms, @OMNETPP@ needs to be compiled from source.
 endif::OMNEST[]
@@ -32,7 +32,7 @@ The Simulation IDE is supported on the following platforms:
 =====================================================================
 Simulations can be run practically on any unix-like environment with
 a decent and fairly up-to-date C++ compiler, for example gcc 5.x. Certain
-@OMNETPP@ features (Tkenv, parallel simulation, XML support, etc.) depend
+@OMNETPP@ features (Qtenv, parallel simulation, XML support, etc.) depend
 on the availability of external libraries (Tcl/Tk, MPI, LibXML or Expat,
 etc.)
 
