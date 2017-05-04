@@ -292,11 +292,11 @@ class SIM_API cFigure : public cOwnedObject
                 int getHeight() const {return height;}
                 RGBA& pixel(int x, int y);
                 const RGBA pixel(int x, int y) const {return const_cast<Pixmap*>(this)->pixel(x,y);}
-                virtual void setPixel(int x, int y, const Color& color, double opacity=1.0) {RGBA& p = pixel(x,y); p.set(color.red, color.green, color.blue, alpha(opacity));}
-                virtual const Color getColor(int x, int y) const {return (Color)pixel(x,y);}
-                virtual void setColor(int x, int y, const Color& color) {RGBA& p = pixel(x,y); p.red = color.red; p.green = color.green; p.blue = color.blue;}
-                virtual double getOpacity(int x, int y) const {return pixel(x,y).alpha / 255.0;}
-                virtual void setOpacity(int x, int y, double opacity) {pixel(x,y).alpha = alpha(opacity);}
+                void setPixel(int x, int y, const Color& color, double opacity=1.0) {RGBA& p = pixel(x,y); p.set(color.red, color.green, color.blue, alpha(opacity));}
+                const Color getColor(int x, int y) const {return (Color)pixel(x,y);}
+                void setColor(int x, int y, const Color& color) {RGBA& p = pixel(x,y); p.red = color.red; p.green = color.green; p.blue = color.blue;}
+                double getOpacity(int x, int y) const {return pixel(x,y).alpha / 255.0;}
+                void setOpacity(int x, int y, double opacity) {pixel(x,y).alpha = alpha(opacity);}
                 const uint8_t *buffer() const {return (uint8_t*)data;} // direct access for low-level manipulation
                 std::string str() const;
                 //@}
