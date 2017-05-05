@@ -3382,7 +3382,7 @@ else
             LDFLAG_INCLUDE="-Wl,-include:"
             LDFLAG_LIB="-Wl,-wholearchive:"
             LDFLAG_IMPLIB="-Wl,-implib:"
-            LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,-libpath:/visualc/lib -Wl,-nodefaultlib:libcmt -lmsvcrt -loldnames -lmsvcprt"
+            LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,-DEBUG -Wl,-libpath:/visualc/lib -Wl,-nodefaultlib:libcmt -lmsvcrt -loldnames -lmsvcprt"
             AR="lib -nologo"
             ARFLAG_OUT="-out:"
             RANLIB="test"

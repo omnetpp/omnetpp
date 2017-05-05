@@ -47,6 +47,11 @@ install: build $(CONFIGFILE)
 	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :
 	-$(Q)$(SHLIB_POSTPROCESS) $L/$(LIBNAME)$(SO_LIB_SUFFIX) 2>/dev/null || :
 	-$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR) 2>/dev/null || :
+ifeq ($(TOOLCHAIN_NAME),clangc2)
+ifeq ($(MODE),debug)
+	-$(Q)cp $O/$(LIBNAME).pdb $(OMNETPP_BIN_DIR) 2>/dev/null || :
+endif
+endif
 
 build : $O/$(LIBNAME)$(LIB_SUFFIX)
 
