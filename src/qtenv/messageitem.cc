@@ -101,8 +101,8 @@ void MessageItemUtil::setupFromDisplayString(MessageItem *mi, cMessage *msg, dou
         const char *imageName = ds.getTagArg("i", 0);
         mi->setImage(imageName[0] ? getQtenv()->icons.getImage(imageName, ds.getTagArg("is", 0)) : nullptr);
 
-        const char *imageColor = ds.getTagArg("i", 1);
-        mi->setImageColor(parseColor(imageColor));
+        QString imageColorName = ds.getTagArg("i", 1);
+        mi->setImageColor(imageColorName == "kind" ? kindColor : parseColor(imageColorName));
         mi->setImageColorPercentage((ds.getNumArgs("i") == 2) // color given, but no percentage
                                       ? 30
                                       : QString(ds.getTagArg("i", 2)).toDouble());
