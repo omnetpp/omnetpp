@@ -1,3 +1,5 @@
+2017-05-08  ------ omnetpp-5.1.1 released ------
+
 2017-04-29  Rudolf Hornig
 
 	* Fixed a problem where the IDE was not able to load its native library
