@@ -6,6 +6,16 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.1.1 (May 2017)
+------------------------
+
+This release contains only minor bugfixes.
+
+  - The IDE on Windows now can be started directly from a shortcut. Previously 
+    the IDE was not able to load its native library if it was started from a 
+    shortcut instead of the MinGW shell.
+
+
 OMNeT++ 5.1 (March 2017)
 ------------------------
 
