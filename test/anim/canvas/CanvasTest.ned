@@ -133,6 +133,9 @@ network CanvasTest
         shapeAnchor: ShapeAnchor {
             @display("p=100,750");
         }
+        panel: Panel {
+            @display("p=400,750");
+        }
         group: Group {
             @display("p=500,750");
         }
