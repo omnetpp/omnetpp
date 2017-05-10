@@ -723,8 +723,8 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     }
 
     if (info.generate_class) {
-        if (it->classtype == COWNEDOBJECT && info.classtype != COWNEDOBJECT) {
-            errors->addError(it->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cOwnedObject class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+        if (it->classtype == COWNEDOBJECT && !(info.classtype == COBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COWNEDOBJECT)) {
+            errors->addError(it->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
         }
     }
 
