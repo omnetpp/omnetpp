@@ -96,9 +96,9 @@ import org.omnetpp.scave.views.DatasetView;
  * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
  */
 public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IPropertyListener, ISelectionChangedListener {
-    private static ScaveEditorContributor instance;
 
-    protected IEditorPart activeEditorPart;
+    private static ScaveEditorContributor instance;
+    
     protected ISelectionProvider selectionProvider; // current selection provider
 
     /**
@@ -123,49 +123,14 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      */
     protected IMenuManager createSiblingMenuManager;
 
-    /**
-     * This keeps track of the current editor part.
-     */
     protected IEditorPart activeEditor;
-
-    /**
-     * This is the action used to implement cut.
-     */
     protected CutAction cutAction;
-
-    /**
-     * This is the action used to implement copy.
-     */
     protected CopyAction copyAction;
-
-    /**
-     * This is the action used to implement paste.
-     */
     protected PasteAction pasteAction;
-
-    /**
-     * This is the action used to implement undo.
-     */
     protected UndoAction undoAction;
-
-    /**
-     * This is the action used to implement redo.
-     */
     protected RedoAction redoAction;
-
-    /**
-     * This is the action used to load a resource.
-     */
     protected LoadResourceAction loadResourceAction;
-
-    /**
-     * This is the action used to control or uncontrol a contained object.
-     */
     protected ControlAction controlAction;
-
-    /**
-     * This is the action used to perform validation.
-     */
     protected ValidateAction validateAction;
 
     /**
@@ -270,13 +235,13 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     protected IAction refreshViewerAction = new Action("Refresh") {
         @Override
         public boolean isEnabled() {
-            return activeEditorPart instanceof IViewerProvider;
+            return activeEditor instanceof IViewerProvider;
         }
 
         @Override
         public void run() {
-            if (activeEditorPart instanceof IViewerProvider) {
-                Viewer viewer = ((IViewerProvider)activeEditorPart).getViewer();
+            if (activeEditor instanceof IViewerProvider) {
+                Viewer viewer = ((IViewerProvider)activeEditor).getViewer();
                 if (viewer != null) {
                     viewer.refresh();
                 }
@@ -512,8 +477,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     @Override
     public void setActivePage(IEditorPart part) {
         boolean visible = false;
-        if (activeEditorPart instanceof ScaveEditor) {
-            ScaveEditor scaveEditor = (ScaveEditor)activeEditorPart;
+        if (activeEditor instanceof ScaveEditor) {
+            ScaveEditor scaveEditor = (ScaveEditor)activeEditor;
             ScaveEditorPage page = scaveEditor.getActiveEditorPage();
             visible = page instanceof ChartsPage;
         }
@@ -624,7 +589,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
             }
         }
 
-        activeEditorPart = part; //TODO merge activeEditor and activeEditorPart
+        activeEditor = part;
 
         // Switch to the new selection provider.
         if (selectionProvider != null) {
@@ -665,7 +630,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).size() == 1) {
             Object object = ((IStructuredSelection)selection).getFirstElement();
 
-            EditingDomain domain = ((IEditingDomainProvider)activeEditorPart).getEditingDomain();
+            EditingDomain domain = ((IEditingDomainProvider)activeEditor).getEditingDomain();
 
             newChildDescriptors = domain.getNewChildDescriptors(object, null);
             newSiblingDescriptors = domain.getNewChildDescriptors(null, object);
@@ -694,7 +659,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         Collection<IAction> actions = new ArrayList<IAction>();
         if (descriptors != null)
             for (Object descriptor : descriptors)
-                actions.add(new CreateChildAction(activeEditorPart, selection, descriptor));
+                actions.add(new CreateChildAction(activeEditor, selection, descriptor));
         return actions;
     }
 
@@ -706,7 +671,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         Collection<IAction> actions = new ArrayList<IAction>();
         if (descriptors != null)
             for (Object descriptor : descriptors)
-                actions.add(new CreateSiblingAction(activeEditorPart, selection, descriptor));
+                actions.add(new CreateSiblingAction(activeEditor, selection, descriptor));
         return actions;
     }
 
