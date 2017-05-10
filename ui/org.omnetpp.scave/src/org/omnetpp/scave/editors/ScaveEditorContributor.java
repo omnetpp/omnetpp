@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
-import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 import org.eclipse.emf.edit.ui.action.ControlAction;
 import org.eclipse.emf.edit.ui.action.CopyAction;
@@ -77,6 +76,11 @@ import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.GotoChartSheetDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
+import org.omnetpp.scave.actions.NewBarChartAction;
+import org.omnetpp.scave.actions.NewChartSheetAction;
+import org.omnetpp.scave.actions.NewDatasetAction;
+import org.omnetpp.scave.actions.NewLineChartAction;
+import org.omnetpp.scave.actions.NewScatterChartAction;
 import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
@@ -98,30 +102,7 @@ import org.omnetpp.scave.views.DatasetView;
 public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IPropertyListener, ISelectionChangedListener {
 
     private static ScaveEditorContributor instance;
-    
     protected ISelectionProvider selectionProvider; // current selection provider
-
-    /**
-     * This will contain one {@link org.eclipse.emf.edit.ui.action.CreateChildAction} corresponding to each descriptor
-     * generated for the current selection by the item provider.
-     */
-    protected Collection<IAction> createChildActions;
-
-    /**
-     * This is the menu manager into which menu contribution items should be added for CreateChild actions.
-     */
-    protected IMenuManager createChildMenuManager;
-
-    /**
-     * This will contain one {@link org.eclipse.emf.edit.ui.action.CreateSiblingAction} corresponding to each descriptor
-     * generated for the current selection by the item provider.
-     */
-    protected Collection<IAction> createSiblingActions;
-
-    /**
-     * This is the menu manager into which menu contribution items should be added for CreateSibling actions.
-     */
-    protected IMenuManager createSiblingMenuManager;
 
     protected IEditorPart activeEditor;
     protected CutAction cutAction;
@@ -150,13 +131,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * This is used to encode the style bits.
      */
     protected int style;
-
-//  public IAction addResultFileAction;
-//  public IAction addWildcardResultFileAction;
-//  public IAction removeAction;
-//  public IAction addToDatasetAction;
-//  public IAction createDatasetAction;
-//  public IAction createChartAction;
 
     // global retarget actions
     private RetargetAction undoRetargetAction;
@@ -425,14 +399,13 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
         addGlobalActions(menuManager);
 
-        MenuManager submenuManager = null;
-
-        submenuManager = new MenuManager("Create Child");
-        populateManager(submenuManager, createChildActions, null);
+        MenuManager submenuManager = new MenuManager("New");
+        submenuManager.add(new NewBarChartAction(false));
+        submenuManager.add(new NewLineChartAction(false));
+        submenuManager.add(new NewScatterChartAction(false));
+        submenuManager.add(new NewDatasetAction(false));
+        submenuManager.add(new NewChartSheetAction(false));
         menuManager.insertBefore("edit", submenuManager);
-
-        submenuManager = new MenuManager("Create Sibling");
-        populateManager(submenuManager, createSiblingActions, null);
         menuManager.insertBefore("edit", submenuManager);
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
@@ -608,54 +581,14 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         }
     }
 
-    /**
-     * This implements {@link org.eclipse.jface.viewers.ISelectionChangedListener},
-     * handling {@link org.eclipse.jface.viewers.SelectionChangedEvent}s by querying for the children and siblings
-     * that can be added to the selected object and updating the menus accordingly.
-     */
     public void selectionChanged(SelectionChangedEvent event) {
-        // Remove any menu items for old selection.
-        //
-        if (createChildMenuManager != null)
-            depopulateManager(createChildMenuManager, createChildActions);
-        if (createSiblingMenuManager != null)
-            depopulateManager(createSiblingMenuManager, createSiblingActions);
-
-        // Query the new selection for appropriate new child/sibling descriptors
-        //
-        Collection<?> newChildDescriptors = null;
-        Collection<?> newSiblingDescriptors = null;
-
-        ISelection selection = event.getSelection();
-        if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).size() == 1) {
-            Object object = ((IStructuredSelection)selection).getFirstElement();
-
-            EditingDomain domain = ((IEditingDomainProvider)activeEditor).getEditingDomain();
-
-            newChildDescriptors = domain.getNewChildDescriptors(object, null);
-            newSiblingDescriptors = domain.getNewChildDescriptors(null, object);
-        }
-
-        // Generate actions for selection; populate and redraw the menus.
-        //
-        createChildActions = generateCreateChildActions(newChildDescriptors, selection);
-        createSiblingActions = generateCreateSiblingActions(newSiblingDescriptors, selection);
-
-        if (createChildMenuManager != null) {
-            populateManager(createChildMenuManager, createChildActions, null);
-            createChildMenuManager.update(true);
-        }
-        if (createSiblingMenuManager != null) {
-            populateManager(createSiblingMenuManager, createSiblingActions, null);
-            createSiblingMenuManager.update(true);
-        }
     }
 
     /**
      * This generates a {@link org.eclipse.emf.edit.ui.action.CreateChildAction} for each object in <code>descriptors</code>,
      * and returns the collection of these actions.
      */
-    protected Collection<IAction> generateCreateChildActions(Collection<?> descriptors, ISelection selection) {
+    private Collection<IAction> generateCreateChildActions(Collection<?> descriptors, ISelection selection) {
         Collection<IAction> actions = new ArrayList<IAction>();
         if (descriptors != null)
             for (Object descriptor : descriptors)
@@ -667,7 +600,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * This generates a {@link org.eclipse.emf.edit.ui.action.CreateSiblingAction} for each object in <code>descriptors</code>,
      * and returns the collection of these actions.
      */
-    protected Collection<IAction> generateCreateSiblingActions(Collection<?> descriptors, ISelection selection) {
+    private Collection<IAction> generateCreateSiblingActions(Collection<?> descriptors, ISelection selection) {
         Collection<IAction> actions = new ArrayList<IAction>();
         if (descriptors != null)
             for (Object descriptor : descriptors)
@@ -680,7 +613,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * based on the {@link org.eclipse.jface.action.IAction}s contained in the <code>actions</code> collection,
      * by inserting them before the specified contribution item <code>contributionID</code>.
      */
-    protected void populateManager(IContributionManager manager, Collection<? extends IAction> actions, String contributionID) {
+    private void populateManager(IContributionManager manager, Collection<? extends IAction> actions, String contributionID) {
         if (actions != null) {
             for (IAction action : actions) {
                 if (contributionID != null)
@@ -695,7 +628,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * This removes from the specified <code>manager</code> all {@link org.eclipse.jface.action.ActionContributionItem}s
      * based on the {@link org.eclipse.jface.action.IAction}s contained in the <code>actions</code> collection.
      */
-    protected void depopulateManager(IContributionManager manager, Collection<? extends IAction> actions) {
+    private void depopulateManager(IContributionManager manager, Collection<? extends IAction> actions) {
         if (actions != null) {
             IContributionItem[] items = manager.getItems();
             for (int i = 0; i < items.length; i++) {
