@@ -107,47 +107,34 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private SubToolBarManager optionalToolbarActions;
 
     // generic actions
-    private IAction openAction;
-    private IAction editAction;
-    private IScaveAction removeAction; // action handler of deleteRetargetAction
-    private IAction selectAllAction;
-    private IAction exportChartsAction;
+    private OpenChartAction openAction;
+    private EditAction editAction;
+    private RemoveAction removeAction; // action handler of deleteRetargetAction
+    private SelectAllAction selectAllAction;
+    private ExportChartsAction exportChartsAction;
 
     // ChartPage/ChartSheetPage actions
-    private IAction hzoomInAction;
-    private IAction hzoomOutAction;
-    private IAction vzoomInAction;
-    private IAction vzoomOutAction;
-    private IAction zoomToFitAction;
-    private IAction switchChartToPanModeAction;
-    private IAction switchChartToZoomModeAction;
-    private IAction copyChartToClipboardAction;
-    private IAction refreshChartAction;
-    private IAction gotoChartDefinitionAction;
-    private IAction gotoChartSheetDefinitionAction;
+    private ZoomChartAction hzoomInAction;
+    private ZoomChartAction hzoomOutAction;
+    private ZoomChartAction vzoomInAction;
+    private ZoomChartAction vzoomOutAction;
+    private ZoomChartAction zoomToFitAction;
+    private ChartMouseModeAction switchChartToPanModeAction;
+    private ChartMouseModeAction switchChartToZoomModeAction;
+    private CopyChartToClipboardAction copyChartToClipboardAction;
+    private RefreshChartAction refreshChartAction;
+    private GotoChartDefinitionAction gotoChartDefinitionAction;
+    private GotoChartSheetDefinitionAction gotoChartSheetDefinitionAction;
 
     // BrowseDataPage actions
-    private IAction copyToClipboardAction;
-    private IAction exportToSVGAction;
-    private IAction createTempChartAction;
-    private IAction saveTempChartAction;
-    private IAction saveTempChartSheetAction;
-    private IAction showOutputVectorViewAction;
-    private Map<String,IAction> exportActions;
+    private CopyToClipboardAction copyToClipboardAction;
+    private ExportToSVGAction exportToSVGAction;
+    private CreateTempChartAction createTempChartAction;
+    private SaveTempChartAction saveTempChartAction;
+    private SaveTempChartSheetAction saveTempChartSheetAction;
+    private ShowOutputVectorViewAction showOutputVectorViewAction;
+    private Map<String,ExportDataAction> exportActions;
 
-    IPropertyChangeListener zoomListener = new IPropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent event) {
-            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
-                ((ZoomChartAction)hzoomOutAction).updateEnabled();
-            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-                ((ZoomChartAction)vzoomOutAction).updateEnabled();
-        }
-    };
-
-    /**
-     * This action opens the Dataset view.
-     */
     private IAction showDatasetViewAction = new Action("Show Dataset View") {
         @Override
         public void run() {
@@ -189,6 +176,16 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         }
     };
 
+    IPropertyChangeListener zoomListener = new IPropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X)
+                ((ZoomChartAction)hzoomOutAction).updateEnabled();
+            if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
+                ((ZoomChartAction)vzoomOutAction).updateEnabled();
+        }
+    };
+
     /**
      * Creates a multi-page contributor.
      */
@@ -199,46 +196,39 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     @Override
     public void init(IActionBars bars, IWorkbenchPage page) {
-        openAction = registerAction(page, new OpenChartAction());
-        editAction = registerAction(page, new EditAction());
-        selectAllAction = registerAction(page, new SelectAllAction());
-        exportChartsAction = registerAction(page, new ExportChartsAction());
-        removeAction = registerAction(page, new RemoveAction());
+        registerAction(page, openAction = new OpenChartAction());
+        registerAction(page, editAction = new EditAction());
+        registerAction(page, selectAllAction = new SelectAllAction());
+        registerAction(page, exportChartsAction = new ExportChartsAction());
+        registerAction(page, removeAction = new RemoveAction());
 
         // ChartPage actions
-        hzoomInAction = registerAction(page, new ZoomChartAction(true, false, 2.0));
-        hzoomOutAction = registerAction(page, new ZoomChartAction(true, false, 1/2.0));
-        vzoomInAction = registerAction(page, new ZoomChartAction(false, true, 2.0));
-        vzoomOutAction = registerAction(page, new ZoomChartAction(false, true, 1/2.0));
-        zoomToFitAction = registerAction(page, new ZoomChartAction(true, true, 0.0));
-        switchChartToPanModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
-        switchChartToZoomModeAction = registerAction(page, new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
-        copyChartToClipboardAction = registerAction(page, new CopyChartToClipboardAction());
-        refreshChartAction = registerAction(page, new RefreshChartAction());
-        gotoChartDefinitionAction = registerAction(page, new GotoChartDefinitionAction());
-        gotoChartSheetDefinitionAction = registerAction(page, new GotoChartSheetDefinitionAction());
+        registerAction(page, hzoomInAction = new ZoomChartAction(true, false, 2.0));
+        registerAction(page, hzoomOutAction = new ZoomChartAction(true, false, 1/2.0));
+        registerAction(page, vzoomInAction = new ZoomChartAction(false, true, 2.0));
+        registerAction(page, vzoomOutAction = new ZoomChartAction(false, true, 1/2.0));
+        registerAction(page, zoomToFitAction = new ZoomChartAction(true, true, 0.0));
+        registerAction(page, switchChartToPanModeAction = new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
+        registerAction(page, switchChartToZoomModeAction = new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
+        registerAction(page, copyChartToClipboardAction = new CopyChartToClipboardAction());
+        registerAction(page, refreshChartAction = new RefreshChartAction());
+        registerAction(page, gotoChartDefinitionAction = new GotoChartDefinitionAction());
+        registerAction(page, gotoChartSheetDefinitionAction = new GotoChartSheetDefinitionAction());
 
         // BrowseDataPage actions
-        exportActions = new HashMap<String,IAction>();
+        exportActions = new HashMap<>();
         for (String format : ExportDataAction.FORMATS) {
-            IAction action = registerAction(page, new ExportDataAction(format));
+            ExportDataAction action = new ExportDataAction(format);
+            registerAction(page, action);
             exportActions.put(format, action);
         }
-        copyToClipboardAction = registerAction(page, new CopyToClipboardAction());
-        exportToSVGAction = registerAction(page, new ExportToSVGAction());
-        createTempChartAction = registerAction(page, new CreateTempChartAction());
-        saveTempChartAction = registerAction(page, new SaveTempChartAction());
-        saveTempChartSheetAction = registerAction(page, new SaveTempChartSheetAction());
-        showOutputVectorViewAction = registerAction(page, new ShowOutputVectorViewAction());
+        registerAction(page, copyToClipboardAction = new CopyToClipboardAction());
+        registerAction(page, exportToSVGAction = new ExportToSVGAction());
+        registerAction(page, createTempChartAction = new CreateTempChartAction());
+        registerAction(page, saveTempChartAction = new SaveTempChartAction());
+        registerAction(page, saveTempChartSheetAction = new SaveTempChartSheetAction());
+        registerAction(page, showOutputVectorViewAction = new ShowOutputVectorViewAction());
 
-//      addResultFileAction = registerAction(page, new AddResultFileAction());
-//      addWildcardResultFileAction = registerAction(page, new AddWildcardResultFileAction());
-//      openAction = registerAction(page, new OpenAction());
-//      editAction = registerAction(page, new EditAction());
-//      removeAction = registerAction(page, new RemoveAction());
-//      addToDatasetAction = registerAction(page, new AddToDatasetAction());
-//      createDatasetAction = registerAction(page, new CreateDatasetAction());
-//      createChartAction = registerAction(page, new CreateChartAction());
         super.init(bars, page);
 
         bars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
@@ -348,7 +338,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
         menuManager.add(new Separator("additions"));
         menuManager.add(new Separator());
-        
+
         // Add our other standard marker.
         menuManager.add(new Separator("additions-end"));
 
@@ -410,81 +400,101 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         showOptionalToolbarActions(visible); //TODO ???
     }
 
-    public IAction getOpenAction() {
+    public OpenChartAction getOpenAction() {
         return openAction;
     }
 
-    public IAction getEditAction() {
+    public EditAction getEditAction() {
         return editAction;
     }
 
-    public IAction getRemoveAction() {
+    public RemoveAction getRemoveAction() {
         return removeAction;
     }
-    
-    public IAction getHZoomInAction() {
+
+    public ZoomChartAction getHZoomInAction() {
         return hzoomInAction;
     }
-    public IAction getHZoomOutAction() {
+
+    public ZoomChartAction getHZoomOutAction() {
         return hzoomOutAction;
     }
-    public IAction getVZoomInAction() {
+
+    public ZoomChartAction getVZoomInAction() {
         return vzoomInAction;
     }
-    public IAction getVZoomOutAction() {
+
+    public ZoomChartAction getVZoomOutAction() {
         return vzoomOutAction;
     }
-    public IAction getZoomToFitAction() {
+
+    public ZoomChartAction getZoomToFitAction() {
         return zoomToFitAction;
     }
-    public IAction getSwitchChartToPanModeAction() {
+
+    public ChartMouseModeAction getSwitchChartToPanModeAction() {
         return switchChartToPanModeAction;
     }
-    public IAction getSwitchChartToZoomModeAction() {
+
+    public ChartMouseModeAction getSwitchChartToZoomModeAction() {
         return switchChartToZoomModeAction;
     }
-    public IAction getRefreshChartAction() {
+
+    public RefreshChartAction getRefreshChartAction() {
         return refreshChartAction;
     }
-    public IAction getGotoChartDefinitionAction() {
+
+    public GotoChartDefinitionAction getGotoChartDefinitionAction() {
         return gotoChartDefinitionAction;
     }
-    public IAction getGotoChartSheetDefinitionAction() {
+
+    public GotoChartSheetDefinitionAction getGotoChartSheetDefinitionAction() {
         return gotoChartSheetDefinitionAction;
     }
-    public IAction getCopyChartToClipboardAction() {
+
+    public CopyChartToClipboardAction  getCopyChartToClipboardAction() {
         return copyChartToClipboardAction;
     }
-    public IAction getCopyToClipboardAction() {
+
+    public CopyToClipboardAction getCopyToClipboardAction() {
         return copyToClipboardAction;
     }
-    public IAction getExportToSVGAction() {
+
+    public ExportToSVGAction getExportToSVGAction() {
         return exportToSVGAction;
     }
-    public Map<String, IAction> getExportActions() {
+
+    public Map<String, ExportDataAction> getExportActions() {
         return exportActions;
     }
-    public IAction getCreateTempChartAction() {
+
+    public CreateTempChartAction getCreateTempChartAction() {
         return createTempChartAction;
     }
-    public IAction getSaveTempChartAction() {
+
+    public SaveTempChartAction getSaveTempChartAction() {
         return saveTempChartAction;
     }
-    public IAction getSaveTempChartSheetAction() {
+
+    public SaveTempChartSheetAction getSaveTempChartSheetAction() {
         return saveTempChartSheetAction;
     }
-    public IAction getShowOutputVectorViewAction() {
+    public ShowOutputVectorViewAction getShowOutputVectorViewAction() {
         return showOutputVectorViewAction;
     }
+
     public RetargetAction getUndoRetargetAction() {
         return undoRetargetAction;
     }
+
     public RetargetAction getRedoRetargetAction() {
         return redoRetargetAction;
     }
+
     public IMenuManager createExportMenu() {
         return createExportMenu(new MenuManager("Export Data"));
     }
+
     public IMenuManager createExportMenu(IMenuManager exportMenu) {
         if (exportActions != null) {
             for (String format : ExportDataAction.FORMATS) {
