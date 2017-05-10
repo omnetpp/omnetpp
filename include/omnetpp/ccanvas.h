@@ -304,12 +304,14 @@ class SIM_API cFigure : public cOwnedObject
 
         // internal:
         enum {
-            CHANGE_STRUCTURAL = 1, // child added, removed, or reordered
+            CHANGE_STRUCTURAL = 1, // child added, removed, or reordered, shown/hidden
             CHANGE_TRANSFORM = 2, // transform change
-            CHANGE_GEOMETRY = 4, // geometry information (coords, start/end angle, etc)
+            CHANGE_GEOMETRY = 4, // geometry information (bounds, position, start/end angle, etc)
             CHANGE_VISUAL = 8,  // styling
             CHANGE_INPUTDATA = 16,  // text, image name or pixmap data, value to be displayed, etc
-            CHANGE_TAGS = 32  // figure tags
+            CHANGE_TAGS = 32,  // figure tags
+            CHANGE_ZINDEX = 64,  // zIndex
+            CHANGE_OTHER = 128  // tooltip, associated object
         };
 
     private:
@@ -469,18 +471,30 @@ class SIM_API cFigure : public cOwnedObject
 
         /**
          * Returns the Z-index of the figure.
+         *
+         * @see getEffectiveZIndex()
          */
         virtual double getZIndex() const {return zIndex;}
 
         /**
-         * Sets the Z-index of the figure. The Z-index specifies the stacking
-         * order of figures under the same parent. A figure with a greater
-         * Z-index is always in front of an element with a lower Z-index.
-         * For figures with the same Z-index, their relative order in the
-         * parent's child list defines the stacking order. (A later figure
-         * is in front of the earlier ones.)
+         * Sets the Z-index of the figure. The Z-index affects the stacking
+         * order of figures via the effective Z-index. The effective Z-index
+         * is computed as the sum of the Z-indices of this figure and its
+         * ancestors'. A figure with a greater effective Z-index is always in
+         * front of an element with a lower effective Z-index. For figures
+         * with the same effective Z-index, their relative order in the
+         * preorder traversal of the figure hierarchy defines the stacking
+         * order. (A later figure is in front of the earlier ones.)
          */
         virtual void setZIndex(double zIndex);
+
+        /**
+         * Returns the effective Z-index of the figure. The effective Z-index
+         * is computed as the sum of the Z-indices of this figure and its
+         * ancestors'. A figure with a greater effective Z-index is always in
+         * front of an element with a lower effective Z-index.
+         */
+        virtual double getEffectiveZIndex() const;
 
         /**
          * Returns the tooltip of the figure, or nullptr if it does not have one.
@@ -489,6 +503,9 @@ class SIM_API cFigure : public cOwnedObject
 
         /**
          * Sets the tooltip of the figure. Pass nullptr to clear the tooltip.
+         * If nullptr is set, the effective tooltip will be inherited
+         * from the associated object if there is one (see getAssociatedObject()),
+         * or from the parent figure. Empty tooltips will not be shown.
          */
         virtual void setTooltip(const char *tooltip);
 
@@ -708,7 +725,7 @@ class SIM_API cFigure : public cOwnedObject
 
         /**
          * If this figure is below the given reference figure in stacking order,
-         * move the it directly above. This is achieved by updating its Z-index
+         * move it directly above. This is achieved by updating its Z-index
          * if needed, and moving it in the parent's child list. An error is
          * raised if the two figures do not share the same parent.
          */
@@ -716,14 +733,14 @@ class SIM_API cFigure : public cOwnedObject
 
         /**
          * If this figure is above the given reference figure in stacking order,
-         * move the it directly below. This is achieved by updating its Z-index
+         * move it directly below. This is achieved by updating its Z-index
          * if needed, and moving it in the parent's child list. An error is
          * raised if the two figures do not share the same parent.
          */
         virtual void lowerBelow(cFigure *figure);
 
         /**
-         * Raise this figure above all other figures in stacking order. This is
+         * Raise this figure above all other figures under the same parent. This is
          * achieved by updating its Z-index if needed (setting it to be at least
          * the maximum of the Z-indices of the other figures), and moving it in the
          * parent's child list. It is an error if this figure has no parent.
@@ -731,7 +748,7 @@ class SIM_API cFigure : public cOwnedObject
         virtual void raiseToTop();
 
         /**
-         * Raise this figure above all other figures in stacking order. This is
+         * Lower this figure below all other figures under the same parent. This is
          * achieved by updating its Z-index if needed (setting it to be at most
          * the minimum of the Z-indices of the other figures), and moving it in the
          * parent's child list. It is an error if this figure has no parent.

@@ -50,8 +50,8 @@ private slots:
     void runUntil();
     void fastRunUntil();
     void relayout();
-    void zoomIn(int x = 0, int y = 0);
-    void zoomOut(int x = 0, int y = 0);
+    void zoomIn(int x = 0, int y = 0, int n = 1);
+    void zoomOut(int x = 0, int y = 0, int n = 1);
     void increaseIconSize() { zoomIconsBy(1.25); }
     void decreaseIconSize() { zoomIconsBy(0.8); }
     void runPreferencesDialog();

@@ -96,11 +96,12 @@ void CanvasViewer::contextMenuEvent(QContextMenuEvent *event)
     emit contextMenuRequested(event);
 }
 
-void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
+FigureRenderingHints CanvasViewer::makeFigureRenderingHints()
 {
+    FigureRenderingHints hints;
     QString prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor";
     QVariant variant = getQtenv()->getPref(prefName);
-    hints->zoom = variant.isValid() ? variant.value<double>() : 1;
+    hints.defaultZoom = variant.isValid() ? variant.value<double>() : 1;
 /*
     prefName = object->getFullName() + QString(":") + INSP_DEFAULT + ":imagesizefactor";
     variant = getQtenv()->getPref(prefName);
@@ -114,10 +115,12 @@ void CanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
     variant = getQtenv()->getPref(prefName);
     hints->showArrowheads = variant.isValid() ? variant.value<bool>() : false;
 */
-    hints->defaultFont = scene()->font().family().toStdString();
+    hints.defaultFont = scene()->font().family().toStdString();
 
     //TODO use getQtenv()->getCanvasFont()
-    hints->defaultFontSize = scene()->font().pointSize();
+    hints.defaultFontSize = scene()->font().pointSize();
+
+    return hints;
 }
 
 std::vector<cObject *> CanvasViewer::getObjectsAt(const QPoint& pos)
@@ -142,9 +145,7 @@ void CanvasViewer::redraw()
 
     object->getRootFigure()->callRefreshDisplay();
 
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    getCanvasRenderer()->redraw(&hints);
+    getCanvasRenderer()->redraw(makeFigureRenderingHints());
 }
 
 void CanvasViewer::refresh()
@@ -156,9 +157,7 @@ void CanvasViewer::refresh()
 
     object->getRootFigure()->callRefreshDisplay();
 
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    getCanvasRenderer()->refresh(&hints);
+    getCanvasRenderer()->refresh(makeFigureRenderingHints());
 }
 
 void CanvasViewer::clear()

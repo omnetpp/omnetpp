@@ -958,24 +958,33 @@ void cFigure::setZIndex(double zIndex)
 {
     if (this->zIndex != zIndex) {
         this->zIndex = zIndex;
-        fireStructuralChange();
+        fire(CHANGE_ZINDEX);
     }
+}
+
+double cFigure::getEffectiveZIndex() const
+{
+    cFigure *parent = getParentFigure();
+    return parent ? parent->getEffectiveZIndex() + zIndex : zIndex;
 }
 
 void cFigure::setTooltip(const char *tooltip)
 {
-    if (opp_strcmp(this->tooltip, tooltip) == 0)
-        return;
-    stringPool.release(this->tooltip);
-    this->tooltip = stringPool.get(tooltip);
-    fireVisualChange();
+    // opp_strcmp treats nullptr and "" as the same, so we have to check for
+    // that here, because they are treated differently as figure tooltips.
+    if (((this->tooltip == nullptr) != (tooltip == nullptr))
+            || (opp_strcmp(this->tooltip, tooltip) != 0)) {
+        stringPool.release(this->tooltip);
+        this->tooltip = stringPool.get(tooltip);
+        fire(CHANGE_OTHER);
+    }
 }
 
 void cFigure::setAssociatedObject(cObject *obj)
 {
     if (associatedObject != obj) {
         associatedObject = obj;
-        fireInputDataChange();
+        fire(CHANGE_OTHER);
     }
 }
 
@@ -1759,7 +1768,7 @@ void cPolylineFigure::setSmooth(bool smooth)
     if (smooth == this->smooth)
         return;
     this->smooth = smooth;
-    fireVisualChange();
+    fireGeometryChange();
 }
 
 void cPolylineFigure::setJoinStyle(JoinStyle joinStyle)
@@ -2350,7 +2359,7 @@ void cPolygonFigure::setSmooth(bool smooth)
     if (smooth == this->smooth)
         return;
     this->smooth = smooth;
-    fireVisualChange();
+    fireGeometryChange();
 }
 
 void cPolygonFigure::setJoinStyle(JoinStyle joinStyle)

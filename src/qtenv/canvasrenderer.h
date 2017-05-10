@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_CANVASRENDERER_H
 #define __OMNETPP_QTENV_CANVASRENDERER_H
 
-#include <QGraphicsScene>
+#include <QGraphicsItem>
 #include "omnetpp/ccanvas.h"
 #include "qtenvdefs.h"
 
@@ -27,6 +27,7 @@ namespace qtenv {
 class GraphicsLayer;
 class FigureRenderer;
 struct FigureRenderingHints;
+struct FigureRenderingArgs;
 
 class QTENV_API CanvasRenderer
 {
@@ -35,36 +36,35 @@ protected:
     GraphicsLayer *networkLayer = nullptr;
 
     cCanvas *canvas = nullptr;    // nullptr is allowed
-    uint64_t enabledTagBits, exceptTagBits;
+    uint64_t enabledTagBits = 0, exceptTagBits = 0;
+    double lastZoom = std::nan(""); // the canvas was last refreshed with this zoom
 
     std::map<cFigure *, QGraphicsItem*> items;
 
 protected:
     void assertCanvas();
-    virtual FigureRenderer *getRendererFor(cFigure *figure);
-    virtual void drawFigureRec(cFigure *figure, FigureRenderingHints *hints);
-    virtual void refreshFigureRec(cFigure *figure, FigureRenderingHints *hints);
-    virtual bool fulfillsTagFilter(cFigure *figure);
+    FigureRenderer *getRendererFor(cFigure *figure);
+    FigureRenderingArgs makeRootArgs(const FigureRenderingHints *hints);
+    FigureRenderingArgs makeChildArgs(const FigureRenderingArgs& args, int i);
+    void drawFigureRec(const FigureRenderingArgs& args);
+    void refreshFigureRec(const FigureRenderingArgs& args, uint8_t ancestorChanges);
+    bool fulfillsTagFilter(cFigure *figure);
 
 public:
-    CanvasRenderer() :
-        canvas(nullptr), enabledTagBits(0), exceptTagBits(0) {}
-    virtual ~CanvasRenderer() {}
-
-    virtual void setLayer(GraphicsLayer *layer, cCanvas *canvas, GraphicsLayer *networkLayer = nullptr);
-    virtual void setCanvas(cCanvas *canvas);
-    virtual bool hasCanvas() {return canvas != nullptr;}
-    virtual void refresh(FigureRenderingHints *hints);
-    virtual void redraw(FigureRenderingHints *hints);
+    void setLayer(GraphicsLayer *layer, cCanvas *canvas, GraphicsLayer *networkLayer = nullptr);
+    void setCanvas(cCanvas *canvas);
+    bool hasCanvas() {return canvas != nullptr;}
+    void refresh(const FigureRenderingHints& hints);
+    void redraw(const FigureRenderingHints& hints);
 
     QRectF itemsBoundingRect() const;
 
     // tag-based filtering
-    virtual std::string getAllTags();
-    virtual std::string getEnabledTags();
-    virtual std::string getExceptTags();
-    virtual void setEnabledTags(const char* tags);
-    virtual void setExceptTags(const char* tags);
+    std::string getAllTags();
+    std::string getEnabledTags();
+    std::string getExceptTags();
+    void setEnabledTags(const char* tags);
+    void setExceptTags(const char* tags);
 };
 
 } // namespace qtenv

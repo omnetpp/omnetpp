@@ -26,14 +26,26 @@
 namespace omnetpp {
 namespace qtenv {
 
-class GraphicsLayer;
 class ArrowheadItem;
 
+// this comes from way outside, from the inspector, through the CanvasRenderer,
+// and is constant during a single refresh
 struct QTENV_API FigureRenderingHints
-{ // all of these should be overwritten before use
-    double zoom = 1;
+{ // all of these should be overwritten (in the inspector) before use
+    double defaultZoom = 1; // XXX name: topLevelZoom? not really a default...
     std::string defaultFont = "Arial";
     int defaultFontSize = 12;
+};
+
+// this is a bit more private, only used by CanvasRenderer and FigureRenderer,
+// and changes on every figure during tree traversal
+struct QTENV_API FigureRenderingArgs {
+    cFigure *figure;
+    QGraphicsItem *item; // nullptr if rendering (not refreshing)
+    cFigure::Transform transform; // cumulative, includes the actual figure's transform
+    double zoom; // same as hints->defaultZoom most of the time, 1.0 inside panel figures
+    bool zoomChanged; // well, this one is constant, but not putting it into "hints"
+    const FigureRenderingHints *hints;
 };
 
 class QTENV_API FigureRenderer : public cObject // because Register_Class() takes cObject*
@@ -89,172 +101,163 @@ protected:
                                 double cpx, double cpy,
                                 double x, double y, bool isRel = false);
 
-    QPen createPen(const cAbstractLineFigure *figure, FigureRenderingHints *hints) const;
-    QPen createPen(const cAbstractShapeFigure *figure, FigureRenderingHints *hints) const;
-    QBrush createBrush(const cAbstractShapeFigure *figure) const;
-
-    virtual void setTransform(const cFigure::Transform& transform, QGraphicsItem *item) const;
-
-    virtual void refreshGeometry(cFigure* figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void refreshVisual(cFigure* figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    static QPen createPen(const FigureRenderingArgs& args);
+    static QBrush createBrush(const cAbstractShapeFigure *figure);
 
     virtual QGraphicsItem *newItem() = 0;
-    QGraphicsItem *createGeometry(cFigure *figure, FigureRenderingHints *hints);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) = 0;
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) = 0;
+
+    virtual void refreshGeometry(const FigureRenderingArgs& args) { }
+    virtual void refreshInputData(const FigureRenderingArgs& args) { }
+    virtual void refreshVisual(const FigureRenderingArgs& args) { }
+    virtual void refreshTransform(const FigureRenderingArgs& args);
+    virtual void refreshZoom(const FigureRenderingArgs& args);
 
 public:
-    FigureRenderer() {}
-    virtual ~FigureRenderer() {}
-
     static FigureRenderer *getRendererFor(cFigure *figure);
-    QGraphicsItem *render(cFigure *figure, GraphicsLayer *layer, FigureRenderingHints *hints);
-    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints);
+    virtual QGraphicsItem *render(const FigureRenderingArgs& args);
+    virtual void refresh(const FigureRenderingArgs& args, int8_t what);
 };
 
 class AbstractShapeFigureRenderer : public FigureRenderer
 {
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    QGraphicsItem *newItem() override;
-};
-
-class AbstractImageFigureRenderer : public FigureRenderer
-{
 protected:
-    void setImageTransform(cAbstractImageFigure *figure, QGraphicsItem *item, const cFigure::Transform &transform, double naturalWidth, double naturalHeight, bool translateOnly, double zoom);
-    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints);
+    QGraphicsItem *newItem() override;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
+    virtual void refreshZoom(const FigureRenderingArgs& args) override;
 };
 
 class NullRenderer : public FigureRenderer
 {
 protected:
-    virtual QGraphicsItem *newItem() { return nullptr; }
-    virtual void createVisual(cFigure*, QGraphicsItem*, FigureRenderingHints *hints) {}
-    virtual void setItemGeometryProperties(cFigure*, QGraphicsItem*, FigureRenderingHints *hints) {}
+    virtual QGraphicsItem *newItem() override { return nullptr; }
 };
 
-class GroupFigureRenderer : public FigureRenderer
+class GroupFigureRenderer : public NullRenderer
 {
-protected:
-    virtual QGraphicsItem *newItem();
-    virtual void createVisual(cFigure*, QGraphicsItem*, FigureRenderingHints *) {}
-    virtual void setItemGeometryProperties(cFigure*, QGraphicsItem*, FigureRenderingHints *) {}
+    // nothing
+};
+
+class PanelFigureRenderer : public NullRenderer
+{
+    // nothing
 };
 
 class AbstractLineFigureRenderer : public FigureRenderer
 {
+    // every item returned by newItem() of subclasses must have
+    // the start and end arrowheads in it as child items 0 and 1
 protected:
-    void setArrowStyle(cAbstractLineFigure *figure, ArrowheadItem *startItem, ArrowheadItem *endItem, double zoom = 1.0);
+    // only set position and rotation in setArrows overrides.
+    // style is taken care of in this refreshVisual
+    virtual void setArrows(const FigureRenderingArgs& args) = 0;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
+    virtual void refreshZoom(const FigureRenderingArgs& args) override;
 };
 
 class LineFigureRenderer : public AbstractLineFigureRenderer
 {
-private:
-    void setArrows(cLineFigure *lineFigure, QGraphicsLineItem *lineItem, double zoom = 1.0);
-
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
+    virtual void setArrows(const FigureRenderingArgs& args) override;
+    virtual QGraphicsItem *newItem() override;
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
 class ArcFigureRenderer : public AbstractLineFigureRenderer
 {
-private:
-    void setArrows(cArcFigure *arcFigure, QGraphicsPathItem *arcItem, double zoom = 1.0);
-
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual QGraphicsItem *newItem();
+    virtual void setArrows(const FigureRenderingArgs& args) override;
+    virtual QGraphicsItem *newItem() override;
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
 class PolylineFigureRenderer : public AbstractLineFigureRenderer
 {
-private:
-    void setArrows(cPolylineFigure *polyFigure, PathItem *polyItem, double zoom = 1.0);
-
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void setArrows(const FigureRenderingArgs& args) override;
     virtual QGraphicsItem *newItem();
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
 };
 
 class RectangleFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
 class OvalFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
 class RingFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
 class PieSliceFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
 };
 
 class PolygonFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
 };
 
 class PathFigureRenderer : public AbstractShapeFigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
 };
 
 class TextFigureRenderer : public FigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
-    virtual void refresh(cFigure *figure, QGraphicsItem *item, int8_t what, FigureRenderingHints *hints);
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
+    virtual void refreshInputData(const FigureRenderingArgs& args) override;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
+    virtual void refreshTransform(const FigureRenderingArgs& args) override;
+    virtual void refreshZoom(const FigureRenderingArgs& args) override;
     virtual QGraphicsItem *newItem();
 };
 
 class LabelFigureRenderer : public TextFigureRenderer
 {
 protected:
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints);
+    virtual void refreshTransform(const FigureRenderingArgs& args) override;
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
+    virtual void refreshZoom(const FigureRenderingArgs& args) override;
 };
 
-class ImageFigureRenderer : public AbstractImageFigureRenderer
+class ImageFigureRenderer : public FigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
-    virtual void createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
+    static void setImageTransform(const FigureRenderingArgs& args, double naturalWidth, double naturalHeight, bool translateOnly);
+    virtual void refreshGeometry(const FigureRenderingArgs& args) override;
+    virtual void refreshInputData(const FigureRenderingArgs& args) override;
+    virtual void refreshVisual(const FigureRenderingArgs& args) override;
+    virtual void refreshTransform(const FigureRenderingArgs& args) override;
     virtual QGraphicsItem *newItem() override;
 };
 
 class PixmapFigureRenderer : public ImageFigureRenderer
 {
 protected:
-    virtual void setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
+    virtual void refreshInputData(const FigureRenderingArgs& args) override;
+    virtual void refreshTransform(const FigureRenderingArgs& args) override;
 };
 
 class IconFigureRenderer : public ImageFigureRenderer
 {
 protected:
-    virtual void refreshTransform(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints) override;
+    virtual void refreshTransform(const FigureRenderingArgs& args) override;
 };
 
 } // namespace qtenv

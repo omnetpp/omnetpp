@@ -383,11 +383,9 @@ void ModuleInspector::wheelEvent(QWheelEvent *event)
     if (event->modifiers() & Qt::ControlModifier) {
         int d = event->delta() / 120;  // see the Qt docs for the division
         if (d < 0)
-            while (d++ < 0)
-                zoomOut(event->x(), event->y());
-        else
-            while (d-- > 0)
-                zoomIn(event->x(), event->y());
+            zoomOut(event->x(), event->y(), -d);
+        if (d > 0)
+            zoomIn(event->x(), event->y(), d);
 
         event->accept();
     }
@@ -457,14 +455,14 @@ void ModuleInspector::relayout()
     }
 }
 
-void ModuleInspector::zoomIn(int x, int y)
+void ModuleInspector::zoomIn(int x, int y, int n)
 {
-    zoomBy(getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble(), true, x, y);
+    zoomBy(getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble() * n, true, x, y);
 }
 
-void ModuleInspector::zoomOut(int x, int y)
+void ModuleInspector::zoomOut(int x, int y, int n)
 {
-    zoomBy(1.0 / getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble(), true, x, y);
+    zoomBy(1.0 / (getPref(PREF_ZOOMBYFACTOR, 1.3).toDouble() * n), true, x, y);
 }
 
 void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)

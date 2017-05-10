@@ -75,6 +75,7 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
     // The proper solution would be to pedantically call
     // prepareGeometryChange() in every custom item when needed.
     // However, this might also improve performance.
+    // XXX is this still necessary?
     moduleScene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
     setScene(moduleScene);
@@ -95,9 +96,6 @@ ModuleCanvasViewer::ModuleCanvasViewer() :
 
     canvasRenderer = new CanvasRenderer();
     canvasRenderer->setLayer(figureLayer, nullptr, networkLayer);
-
-    backgroundLayer->setFlag(QGraphicsItem::ItemIgnoresTransformations);
-    networkLayer->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 
     // that beautiful green shade behind everything
     setBackgroundBrush(QColor("#a0e0a0"));
@@ -382,24 +380,22 @@ void ModuleCanvasViewer::renderToPrinter(QPrinter &printer)
 
 void ModuleCanvasViewer::redrawFigures()
 {
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    canvasRenderer->redraw(&hints);
+    canvasRenderer->redraw(makeFigureRenderingHints());
 }
 
 void ModuleCanvasViewer::refreshFigures()
 {
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    canvasRenderer->refresh(&hints);
+    canvasRenderer->refresh(makeFigureRenderingHints());
 }
 
-void ModuleCanvasViewer::fillFigureRenderingHints(FigureRenderingHints *hints)
+FigureRenderingHints ModuleCanvasViewer::makeFigureRenderingHints()
 {
+    FigureRenderingHints hints;
     QFont canvasFont = getQtenv()->getCanvasFont();
-    hints->defaultFont = canvasFont.family().toStdString();
-    hints->defaultFontSize = canvasFont.pointSize();
-    hints->zoom = zoomFactor;
+    hints.defaultFont = canvasFont.family().toStdString();
+    hints.defaultFontSize = canvasFont.pointSize();
+    hints.defaultZoom = zoomFactor;
+    return hints;
 }
 
 // requires either recalculateLayout() or refreshLayout() called before!
@@ -706,10 +702,6 @@ void ModuleCanvasViewer::redraw()
     if (object == nullptr)
         return;
 
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    canvasRenderer->redraw(&hints);
-
     zoomLabel->setFont(getQtenv()->getCanvasFont());
     updateZoomLabelPos();
 
@@ -738,10 +730,6 @@ void ModuleCanvasViewer::refresh()
     if (canvas && getQtenv()->getSimulationState() != Qtenv::SIM_ERROR)
         canvas->getRootFigure()->callRefreshDisplay();
 
-    FigureRenderingHints hints;
-    fillFigureRenderingHints(&hints);
-    canvasRenderer->refresh(&hints);
-
     // redraw modules only if really needed
     if (needsRedraw) {
         needsRedraw = false;
@@ -763,7 +751,21 @@ void ModuleCanvasViewer::setZoomFactor(double zoomFactor)
 
         this->zoomFactor = zoomFactor;
         zoomLabel->setZoomFactor(zoomFactor);
-        redraw();
+        zoomLabel->setFont(getQtenv()->getCanvasFont());
+        updateZoomLabelPos();
+
+        clear();
+
+        if (!object || notDrawn)
+            return;
+
+        needsRedraw = false;
+
+        refreshLayout();
+        redrawModules();
+        refreshConnections();
+        refresh();
+
         viewport()->update();
     }
 }

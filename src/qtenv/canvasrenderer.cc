@@ -19,13 +19,50 @@
 #include "canvasrenderer.h"
 #include "figurerenderers.h"
 #include "graphicsitems.h"
+#include "common/stlutil.h"
 
 namespace omnetpp {
 namespace qtenv {
 
+void CanvasRenderer::assertCanvas()
+{
+    if (!canvas)
+        throw cRuntimeError("CanvasRenderer: No canvas object");
+}
+
 FigureRenderer *CanvasRenderer::getRendererFor(cFigure *figure)
 {
     return FigureRenderer::getRendererFor(figure);
+}
+
+FigureRenderingArgs CanvasRenderer::makeRootArgs(const FigureRenderingHints *hints)
+{
+    assertCanvas();
+
+    FigureRenderingArgs args;
+    args.figure = canvas->getRootFigure();
+    args.item = common::containsKey(items, args.figure)
+            ? items[args.figure] : nullptr; // not inserting a nullptr with []
+    args.zoom = hints->defaultZoom;
+    args.zoomChanged = hints->defaultZoom != lastZoom;
+    args.transform.scale(hints->defaultZoom);
+    args.figure->updateParentTransform(args.transform);
+    args.hints = hints;
+    return args;
+}
+
+FigureRenderingArgs CanvasRenderer::makeChildArgs(const FigureRenderingArgs& args, int i)
+{
+    FigureRenderingArgs childArgs;
+    childArgs.figure = args.figure->getFigure(i);
+    childArgs.item = common::containsKey(items, childArgs.figure)
+            ? items[childArgs.figure] : nullptr; // not inserting a nullptr with []
+    childArgs.zoom = dynamic_cast<cPanelFigure *>(childArgs.figure) ? 1.0 : args.zoom;
+    childArgs.zoomChanged = args.zoomChanged;
+    childArgs.transform = args.transform;
+    childArgs.figure->updateParentTransform(childArgs.transform);
+    childArgs.hints = args.hints;
+    return childArgs;
 }
 
 bool CanvasRenderer::fulfillsTagFilter(cFigure *figure)
@@ -54,29 +91,81 @@ void CanvasRenderer::setCanvas(cCanvas *canvas)
     exceptTagBits = 0;
 }
 
-void CanvasRenderer::redraw(FigureRenderingHints *hints)
+void CanvasRenderer::refresh(const FigureRenderingHints &hints)
+{
+    if (canvas) {
+        // if there is a structural change, we rebuild everything;
+        // otherwise we only adjust subtree of that particular figure
+        cFigure *rootFigure = canvas->getRootFigure();
+        uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
+        if (changes & (cFigure::CHANGE_STRUCTURAL | cFigure::CHANGE_TAGS))
+            redraw(hints);
+        else
+            if (changes || hints.defaultZoom != lastZoom)
+                refreshFigureRec(makeRootArgs(&hints), 0);
+
+        lastZoom = hints.defaultZoom;
+    }
+}
+
+void CanvasRenderer::redraw(const FigureRenderingHints &hints)
 {
     if (networkLayer)
         layer->removeItem(networkLayer);
 
     layer->clear();
-    layer->setScale(hints->zoom);
     items.clear();
+    lastZoom = std::nan("");
 
     // draw
-    if (canvas) {
-        // Shouldn't draw the rootFigure itself, because then the networkLayer
-        // can't be shoved between individual "real" top-level figures.
-        auto root = canvas->getRootFigure();
-        for (int i = 0; i < root->getNumFigures(); ++i)
-            drawFigureRec(root->getFigure(i), hints);
-
-        // But we add the layer to or little map as conceptual item for it just to be sure...
-        items[root] = layer;
-    }
+    if (canvas)
+        drawFigureRec(makeRootArgs(&hints));
     else
         if (networkLayer)
             layer->addItem(networkLayer);
+
+    lastZoom = hints.defaultZoom;
+}
+
+void CanvasRenderer::drawFigureRec(const FigureRenderingArgs& args)
+{
+    // figures that are not visible because of either their own flag, or the tag filter, are not rendered
+    if (args.figure->isVisible() && fulfillsTagFilter(args.figure)) {
+        QGraphicsItem *item = getRendererFor(args.figure)->render(args);
+        if (item) { // some renderers (like group) do not actually render anything
+            items[args.figure] = item;
+            layer->addItem(item);
+        }
+
+        for (int i = 0; i < args.figure->getNumFigures(); i++)
+            drawFigureRec(makeChildArgs(args, i));
+
+        if ((canvas->getSubmodulesLayer() == args.figure) && networkLayer) {
+            layer->addItem(networkLayer);
+            networkLayer->setZValue(args.figure->getEffectiveZIndex());
+        }
+    }
+}
+
+void CanvasRenderer::refreshFigureRec(const FigureRenderingArgs& args, uint8_t ancestorChanges)
+{
+    // not skipping the root figure
+    if ((args.figure->isVisible() && fulfillsTagFilter(args.figure)) || args.figure->getParentFigure() == nullptr) {
+        uint8_t localChanges = args.figure->getLocalChangeFlags();
+        uint8_t subtreeChanges = args.figure->getSubtreeChangeFlags();
+        uint8_t inheritedChanges = ancestorChanges & (cFigure::CHANGE_TRANSFORM | cFigure::CHANGE_ZINDEX);
+
+        if (localChanges || subtreeChanges || inheritedChanges || args.zoomChanged) {
+            uint8_t what = localChanges | inheritedChanges;
+
+            if (what || args.zoomChanged)
+                 getRendererFor(args.figure)->refresh(args, what);
+
+            if (subtreeChanges || what || args.zoomChanged)
+                for (int i = 0; i < args.figure->getNumFigures(); i++)
+                    refreshFigureRec(makeChildArgs(args, i), what);
+        }
+    }
 }
 
 QRectF CanvasRenderer::itemsBoundingRect() const
@@ -91,13 +180,6 @@ QRectF CanvasRenderer::itemsBoundingRect() const
     }
 
     return bounds;
-}
-
-// TODO: delete comment when cRuntimeError class is available
-void CanvasRenderer::assertCanvas()
-{
-    if (!canvas) {
-    }  // throw cRuntimeError("CanvasRenderer: No canvas object");
 }
 
 std::string CanvasRenderer::getAllTags()
@@ -130,63 +212,6 @@ void CanvasRenderer::setExceptTags(const char *tags)
 {
     assertCanvas();
     exceptTagBits = canvas->parseTags(tags);
-}
-
-void CanvasRenderer::drawFigureRec(cFigure *figure, FigureRenderingHints *hints)
-{
-    if (figure->isVisible() && fulfillsTagFilter(figure)) {
-        FigureRenderer *renderer = getRendererFor(figure);
-        QGraphicsItem *item = renderer->render(figure, layer, hints);
-
-        if (item) {
-            items[figure] = item;
-
-            auto parentFigure = figure->getParentFigure();
-            auto parentItem = items.count(parentFigure) > 0 ? items[parentFigure] : layer;
-            item->setParentItem(parentItem);
-
-            item->setZValue(figure->getZIndex());
-        }
-
-        for (int i = 0; i < figure->getNumFigures(); i++)
-            drawFigureRec(figure->getFigure(i), hints);
-
-        if (canvas->getSubmodulesLayer() == figure && networkLayer) {
-            layer->addItem(networkLayer);
-            networkLayer->setZValue(figure->getZIndex());
-        }
-    }
-}
-
-void CanvasRenderer::refresh(FigureRenderingHints *hints)
-{
-    if (canvas) {
-        // if there is a structural change, we rebuild everything;
-        // otherwise we only adjust subtree of that particular figure
-        cFigure *rootFigure = canvas->getRootFigure();
-        uint8_t changes = rootFigure->getLocalChangeFlags() | rootFigure->getSubtreeChangeFlags();
-        if (changes & cFigure::CHANGE_STRUCTURAL) {
-            redraw(hints);
-            // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
-        }
-        else if (changes != 0) {
-            refreshFigureRec(rootFigure, hints);
-            // note: no rootFigure->clearChangeFlags() here, as there might be others inspecting the same canvas object
-        }
-    }
-}
-
-void CanvasRenderer::refreshFigureRec(cFigure *figure, FigureRenderingHints *hints)
-{
-    uint8_t localChanges = figure->getLocalChangeFlags();
-    uint8_t subtreeChanges = figure->getSubtreeChangeFlags();
-
-    if (localChanges && items.count(figure))
-        getRendererFor(figure)->refresh(figure, items[figure], localChanges, hints);
-
-    if (subtreeChanges)
-        for (int i = 0; i < figure->getNumFigures(); i++)
-            refreshFigureRec(figure->getFigure(i), hints);
 }
 
 }  // namespace qtenv

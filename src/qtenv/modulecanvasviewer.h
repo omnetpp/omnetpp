@@ -89,7 +89,7 @@ private:
     void drawEnclosingModule(cModule *parentModule);
     void drawConnection(cGate *gate);
 
-    void fillFigureRenderingHints(FigureRenderingHints *hints);
+    FigureRenderingHints makeFigureRenderingHints();
 
     void updateZoomLabelPos();
 

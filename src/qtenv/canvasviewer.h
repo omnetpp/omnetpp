@@ -48,7 +48,7 @@ private:
 
     ZoomLabel *zoomLabel;
 
-    void fillFigureRenderingHints(FigureRenderingHints *hints);
+    FigureRenderingHints makeFigureRenderingHints();
     void clear();
     void updateZoomLabelPos();
 
