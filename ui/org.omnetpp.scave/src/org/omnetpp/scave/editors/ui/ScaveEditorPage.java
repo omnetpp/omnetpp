@@ -17,12 +17,7 @@ import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -33,16 +28,11 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -51,7 +41,6 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
 
@@ -237,88 +226,6 @@ public class ScaveEditorPage extends Composite {
             return;
         }
         scaveEditor.addWorkspaceFileToInputs(iFile);
-    }
-
-    /**
-     * Connects the button with an action, so that the action is executed
-     * when the button is pressed, and the button is enabled/disabled when
-     * the action becomes enabled/disabled.
-     *
-     * Note: ActionContributionItem is not good here because:
-     *  (1) it wants to create the button itself, and thus not compatible with FormToolkit
-     *  (2) the button it creates has wrong background color, and there's no way to access
-     *      the button to fix it (this is solved by ActionContributionItem2, it adds a getter)
-     */
-    private static void doConfigureButton(final Button button, final IScaveAction action) {
-        button.setText(action.getText());
-        button.setToolTipText(action.getToolTipText());
-        //if (action.getImageDescriptor() != null)
-        //    button.setImage(action.getImageDescriptor().createImage());
-
-        button.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                action.run();
-            }
-        });
-        final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent event) {
-                if (event.getProperty().equals(IAction.ENABLED)) {
-                    if (!button.isDisposed())
-                        button.setEnabled(action.isEnabled());
-                }
-            }
-        };
-        action.addPropertyChangeListener(propertyChangeListener);
-        button.addDisposeListener(new DisposeListener() {
-            @Override
-            public void widgetDisposed(DisposeEvent e) {
-                action.removePropertyChangeListener(propertyChangeListener);
-            }
-        });
-    }
-
-    /*
-     * Connects the button with an action, so that the action is executed
-     * when the button is pressed, and the button is enabled/disabled when
-     * the action becomes enabled/disabled.
-     *
-     * The action will be enabled/disabled based on a viewer's selection.
-     *
-     * See also: ActionContributionItem, ActionContributionItem2
-     */
-    public static void configureViewerButton(final Button button, final Viewer viewer, final IScaveAction action) {
-        doConfigureButton(button, action);
-        action.setViewer(viewer);
-        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                action.selectionChanged(event.getSelection());
-            }
-        });
-    }
-
-    /**
-     * Like <code>configureViewerButton</code>, but action will also run
-     * on double-clicking in the viewer.
-     */
-    public static void configureViewerDefaultButton(final Button button, final TreeViewer viewer, final IScaveAction action) {
-        configureViewerButton(button, viewer, action);
-        configureViewerDefaultAction(viewer, action);
-    }
-
-    /**
-     * Connects the double-click in the viewer with the action.
-     */
-    public static void configureViewerDefaultAction(final TreeViewer viewer, final IScaveAction action) {
-        action.setViewer(viewer);
-        viewer.getTree().addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-                action.run();
-            }
-        });
     }
 
     public void showStatusMessage(String message) {

@@ -7,7 +7,6 @@
 
 package org.omnetpp.scave.actions;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -112,16 +111,4 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
      * Redefine this method to control when the action should be enabled.
      */
     abstract protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection);
-
-    /**
-     * Utility function for use in isApplicable()
-     */
-    protected static boolean containsEObjectsOnly(IStructuredSelection selection) {
-        if (selection.isEmpty())
-            return true;
-        for (Object o : selection.toArray())
-            if (!(o instanceof EObject))
-                return false;
-        return true;
-    }
 }

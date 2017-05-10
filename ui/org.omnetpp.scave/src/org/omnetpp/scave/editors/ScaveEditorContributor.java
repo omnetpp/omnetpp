@@ -7,35 +7,24 @@
 
 package org.omnetpp.scave.editors;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.common.ui.viewer.IViewerProvider;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
-import org.eclipse.emf.edit.ui.action.ControlAction;
 import org.eclipse.emf.edit.ui.action.CopyAction;
-import org.eclipse.emf.edit.ui.action.CreateChildAction;
-import org.eclipse.emf.edit.ui.action.CreateSiblingAction;
 import org.eclipse.emf.edit.ui.action.CutAction;
-import org.eclipse.emf.edit.ui.action.LoadResourceAction;
 import org.eclipse.emf.edit.ui.action.PasteAction;
 import org.eclipse.emf.edit.ui.action.RedoAction;
 import org.eclipse.emf.edit.ui.action.UndoAction;
-import org.eclipse.emf.edit.ui.action.ValidateAction;
-import org.eclipse.emf.edit.ui.provider.DiagnosticDecorator;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.IContributionManager;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.action.SubContributionItem;
 import org.eclipse.jface.action.SubToolBarManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -51,7 +40,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -61,7 +49,6 @@ import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.PropertySheet;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.scave.ScavePlugin;
@@ -95,9 +82,9 @@ import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.views.DatasetView;
 
 /**
- * Manages the installation/deinstallation of global actions for multi-page editors.
- * Responsible for the redirection of global actions to the active editor.
- * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
+ * Editor contributor for ScaveEditor.
+ * 
+ * @author andras, tomi
  */
 public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IPropertyListener, ISelectionChangedListener {
 
@@ -110,14 +97,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     protected PasteAction pasteAction;
     protected UndoAction undoAction;
     protected RedoAction redoAction;
-    protected LoadResourceAction loadResourceAction;
-    protected ControlAction controlAction;
-    protected ValidateAction validateAction;
-
-    /**
-     * This is the action used to perform validation.
-     */
-    protected DiagnosticDecorator.LiveValidator.LiveValidationAction liveValidationAction;
 
     // global retarget actions
     private RetargetAction undoRetargetAction;
@@ -214,10 +193,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * Creates a multi-page contributor.
      */
     public ScaveEditorContributor() {
-        loadResourceAction = new LoadResourceAction();
-        validateAction = new ValidateAction();
-        controlAction = new ControlAction();
-        
         if (instance==null)
             instance = this;
     }
@@ -520,7 +495,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         }
         return exportMenu;
     }
-    
 
     /**
      * When the active editor changes, this remembers the change and registers with it as a selection provider.
@@ -562,167 +536,36 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     }
 
     /**
-     * This generates a {@link org.eclipse.emf.edit.ui.action.CreateChildAction} for each object in <code>descriptors</code>,
-     * and returns the collection of these actions.
-     */
-    private Collection<IAction> generateCreateChildActions(Collection<?> descriptors, ISelection selection) {
-        Collection<IAction> actions = new ArrayList<IAction>();
-        if (descriptors != null)
-            for (Object descriptor : descriptors)
-                actions.add(new CreateChildAction(activeEditor, selection, descriptor));
-        return actions;
-    }
-
-    /**
-     * This generates a {@link org.eclipse.emf.edit.ui.action.CreateSiblingAction} for each object in <code>descriptors</code>,
-     * and returns the collection of these actions.
-     */
-    private Collection<IAction> generateCreateSiblingActions(Collection<?> descriptors, ISelection selection) {
-        Collection<IAction> actions = new ArrayList<IAction>();
-        if (descriptors != null)
-            for (Object descriptor : descriptors)
-                actions.add(new CreateSiblingAction(activeEditor, selection, descriptor));
-        return actions;
-    }
-
-    /**
-     * This populates the specified <code>manager</code> with {@link org.eclipse.jface.action.ActionContributionItem}s
-     * based on the {@link org.eclipse.jface.action.IAction}s contained in the <code>actions</code> collection,
-     * by inserting them before the specified contribution item <code>contributionID</code>.
-     */
-    private void populateManager(IContributionManager manager, Collection<? extends IAction> actions, String contributionID) {
-        if (actions != null) {
-            for (IAction action : actions) {
-                if (contributionID != null)
-                    manager.insertBefore(contributionID, action);
-                else
-                    manager.add(action);
-            }
-        }
-    }
-        
-    /**
-     * This removes from the specified <code>manager</code> all {@link org.eclipse.jface.action.ActionContributionItem}s
-     * based on the {@link org.eclipse.jface.action.IAction}s contained in the <code>actions</code> collection.
-     */
-    private void depopulateManager(IContributionManager manager, Collection<? extends IAction> actions) {
-        if (actions != null) {
-            IContributionItem[] items = manager.getItems();
-            for (int i = 0; i < items.length; i++) {
-                // Look into SubContributionItems
-                IContributionItem contributionItem = items[i];
-                while (contributionItem instanceof SubContributionItem)
-                    contributionItem = ((SubContributionItem)contributionItem).getInnerItem();
-
-                // Delete the ActionContributionItems with matching action.
-                if (contributionItem instanceof ActionContributionItem) {
-                    IAction action = ((ActionContributionItem)contributionItem).getAction();
-                    if (actions.contains(action))
-                        manager.remove(contributionItem);
-                }
-            }
-        }
-    }
-
-    /**
      * This ensures that a delete action will clean up all references to deleted objects.
      */
     protected boolean removeAllReferencesOnDelete() {
         return true;
     }
-    
 
     @Override
     public void init(IActionBars actionBars) {
         super.init(actionBars);
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
 
-        cutAction = createCutAction();
+        cutAction = new CutAction();
         cutAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
         actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
 
-        copyAction = createCopyAction();
+        copyAction = new CopyAction();
         copyAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
         actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
 
-        pasteAction = createPasteAction();
+        pasteAction = new PasteAction();
         pasteAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
         actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
 
-        undoAction = createUndoAction();
+        undoAction = new UndoAction();
         undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
         actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
 
-        redoAction = createRedoAction();
+        redoAction = new RedoAction();
         redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
         actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
-    }
-
-    /**
-     * Returns the action used to implement cut.
-     * 
-     * @see #cutAction
-     * @since 2.6
-     */
-    protected CutAction createCutAction() {
-        return new CutAction();
-    }
-
-    /**
-     * Returns the action used to implement copy.
-     * 
-     * @see #copyAction
-     * @since 2.6
-     */
-    protected CopyAction createCopyAction() {
-        return new CopyAction();
-    }
-
-    /**
-     * Returns the action used to implement paste.
-     * 
-     * @see #pasteAction
-     * @since 2.6
-     */
-    protected PasteAction createPasteAction() {
-        return new PasteAction();
-    }
-
-    /**
-     * Returns the action used to implement undo.
-     * 
-     * @see #undoAction
-     * @since 2.6
-     */
-    protected UndoAction createUndoAction() {
-        return new UndoAction();
-    }
-
-    /**
-     * Returns the action used to implement redo.
-     * 
-     * @see #redoAction
-     * @since 2.6
-     */
-    protected RedoAction createRedoAction() {
-        return new RedoAction();
-    }
-
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    public void setActiveView(IViewPart part) {
-        IActionBars actionBars = part.getViewSite().getActionBars();
-        if (!(part instanceof PropertySheet)) {
-            actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
-            actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
-            actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
-        }
-        actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
-        actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
-
-        actionBars.updateActionBars();
     }
 
     public IEditorPart getActiveEditor() {
@@ -738,18 +581,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         undoAction.setActiveWorkbenchPart(null);
         redoAction.setActiveWorkbenchPart(null);
 
-        if (loadResourceAction != null)
-            loadResourceAction.setActiveWorkbenchPart(null);
-
-        if (controlAction != null)
-            controlAction.setActiveWorkbenchPart(null);
-
-        if (validateAction != null)
-            validateAction.setActiveWorkbenchPart(null);
-
-        if (liveValidationAction != null)
-            liveValidationAction.setActiveWorkbenchPart(null);
-
         ISelectionProvider selectionProvider = activeEditor instanceof ISelectionProvider ? (ISelectionProvider) activeEditor
                 : activeEditor.getEditorSite().getSelectionProvider();
 
@@ -757,12 +588,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
             selectionProvider.removeSelectionChangedListener(cutAction);
             selectionProvider.removeSelectionChangedListener(copyAction);
             selectionProvider.removeSelectionChangedListener(pasteAction);
-
-            if (validateAction != null)
-                selectionProvider.removeSelectionChangedListener(validateAction);
-
-            if (controlAction != null)
-                selectionProvider.removeSelectionChangedListener(controlAction);
         }
     }
 
@@ -775,18 +600,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         undoAction.setActiveWorkbenchPart(activeEditor);
         redoAction.setActiveWorkbenchPart(activeEditor);
 
-        if (loadResourceAction != null)
-            loadResourceAction.setActiveWorkbenchPart(activeEditor);
-
-        if (controlAction != null)
-            controlAction.setActiveWorkbenchPart(activeEditor);
-
-        if (validateAction != null)
-            validateAction.setActiveWorkbenchPart(activeEditor);
-
-        if (liveValidationAction != null)
-            liveValidationAction.setActiveWorkbenchPart(activeEditor);
-
         ISelectionProvider selectionProvider = activeEditor instanceof ISelectionProvider ? (ISelectionProvider) activeEditor
                 : activeEditor.getEditorSite().getSelectionProvider();
 
@@ -794,12 +607,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
             selectionProvider.addSelectionChangedListener(cutAction);
             selectionProvider.addSelectionChangedListener(copyAction);
             selectionProvider.addSelectionChangedListener(pasteAction);
-
-            if (validateAction != null)
-                selectionProvider.addSelectionChangedListener(validateAction);
-
-            if (controlAction != null)
-                selectionProvider.addSelectionChangedListener(controlAction);
         }
 
         update();
@@ -817,26 +624,14 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
             cutAction.updateSelection(structuredSelection);
             copyAction.updateSelection(structuredSelection);
             pasteAction.updateSelection(structuredSelection);
-
-            if (validateAction != null)
-                validateAction.updateSelection(structuredSelection);
-
-            if (controlAction != null)
-                controlAction.updateSelection(structuredSelection);
         }
 
         undoAction.update();
         redoAction.update();
-
-        if (loadResourceAction != null)
-            loadResourceAction.update();
-
-        if (liveValidationAction != null)
-            liveValidationAction.update();
     }
 
     public void propertyChanged(Object source, int id) {
         update();
     }
-    
+
 }
