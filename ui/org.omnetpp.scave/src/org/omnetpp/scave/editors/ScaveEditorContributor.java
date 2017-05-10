@@ -25,7 +25,6 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.action.SubToolBarManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -77,8 +76,6 @@ import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
-import org.omnetpp.scave.editors.ui.ChartsPage;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.views.DatasetView;
 
 /**
@@ -102,9 +99,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private RetargetAction undoRetargetAction;
     private RetargetAction redoRetargetAction;
     private RetargetAction deleteRetargetAction;
-
-    // container of conditional toolbar actions (delete/open/edit)
-    private SubToolBarManager optionalToolbarActions;
 
     // generic actions
     private OpenChartAction openAction;
@@ -299,22 +293,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
         manager.add(undoRetargetAction);
         manager.add(redoRetargetAction);
-
-//        optionalToolbarActions = new SubToolBarManager(manager);
-//        optionalToolbarActions.add(deleteRetargetAction);
-//        optionalToolbarActions.add(openAction);
-//        optionalToolbarActions.add(editAction);
-//
-//        manager.insertBefore("scavemodel-additions", createTempChartAction);
-//
-//        manager.insertBefore("scavemodel-additions", switchChartToPanModeAction);
-//        manager.insertBefore("scavemodel-additions", switchChartToZoomModeAction);
-//        manager.insertBefore("scavemodel-additions", hzoomInAction);
-//        manager.insertBefore("scavemodel-additions", hzoomOutAction);
-//        manager.insertBefore("scavemodel-additions", vzoomInAction);
-//        manager.insertBefore("scavemodel-additions", vzoomOutAction);
-//        manager.insertBefore("scavemodel-additions", zoomToFitAction);
-//        manager.insertBefore("scavemodel-additions", refreshChartAction);
     }
 
     @Override
@@ -382,22 +360,9 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         menuManager.insertAfter("ui-actions", refreshViewerAction);
     }
 
-    protected void showOptionalToolbarActions(boolean visible) {
-        if (optionalToolbarActions != null) {
-            optionalToolbarActions.setVisible(visible);
-            optionalToolbarActions.update(true);
-        }
-    }
-
     @Override
     public void setActivePage(IEditorPart part) {
-        boolean visible = false;
-        if (activeEditor instanceof ScaveEditor) {
-            ScaveEditor scaveEditor = (ScaveEditor)activeEditor;
-            ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-            visible = page instanceof ChartsPage;
-        }
-        showOptionalToolbarActions(visible); //TODO ???
+        // nothing
     }
 
     public OpenChartAction getOpenAction() {
