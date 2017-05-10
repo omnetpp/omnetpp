@@ -48,7 +48,7 @@ public:
 
     // Sets the size of the arrow so it fits
     // a line of penWidth width well.
-    void setSizeForPenWidth(double penWidth, double scale = 1.0, double addSize = 10);
+    void setSizeForPenWidth(double penWidth, double zoom = 1.0, double addSize = 8.0);
 
     void setEndPoints(const QPointF &start, const QPointF &end, double addAngle = 0);
 

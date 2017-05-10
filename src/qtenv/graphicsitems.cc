@@ -49,8 +49,12 @@ ArrowheadItem::ArrowheadItem(QGraphicsItem *parent)
     // (also see similar comments in figurerenderers.cc)
     // setFlags(QGraphicsItem::ItemIgnoresTransformations);
     setFillRule(Qt::WindingFill);
-    updatePolygon();
+
     setPen(QPen(QColor("black"), 1, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
+    setSizeForPenWidth(1);
+
+    updatePolygon();
+
     setData(ITEMDATA_COBJECT, parentItem()->data(ITEMDATA_COBJECT));
     setData(ITEMDATA_TOOLTIP, parentItem()->data(ITEMDATA_TOOLTIP));
 }
@@ -127,9 +131,9 @@ void ArrowheadItem::setArrowSkew(double skew)
     }
 }
 
-void ArrowheadItem::setSizeForPenWidth(double penWidth, double scale, double addSize)
+void ArrowheadItem::setSizeForPenWidth(double penWidth, double zoom, double addSize)
 {
-    double size = (1.25 * penWidth + addSize) * scale;
+    double size = penWidth + addSize / zoom;
     setArrowWidth(size);
     setArrowLength(size);
 }
