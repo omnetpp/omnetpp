@@ -925,7 +925,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                     //setViewerSelectionNoNotify(contentOutlineViewer, selection);
                     updateStatusLineManager(contentOutlineStatusLineManager, selection);
                 }
-                updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
+                updateStatusLineManager(getActionBarContributor().getActionBars().getStatusLineManager(), selection);
                 fireSelectionChangedEvent(selection);
             } finally {
                 selectionChangeInProgress = false;
@@ -1518,10 +1518,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         editingDomain.getResourceSet().getResources().get(0).setURI(uri);
         setInputWithNotify(editorInput);
         setPartName(editorInput.getName());
-        IProgressMonitor progressMonitor =
-            getActionBars().getStatusLineManager() != null ?
-                getActionBars().getStatusLineManager().getProgressMonitor() :
-                new NullProgressMonitor();
+        IStatusLineManager statusLineManager = getActionBarContributor().getActionBars().getStatusLineManager();
+        IProgressMonitor progressMonitor = statusLineManager != null ? statusLineManager.getProgressMonitor() : new NullProgressMonitor();
         doSave(progressMonitor);
     }
 
@@ -1600,22 +1598,11 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         }
     }
 
-    /**
-     * This implements {@link org.eclipse.jface.action.IMenuListener} to help fill the context menus with contributions from the Edit menu.
-     */
-    public void menuAboutToShow(IMenuManager menuManager) {
-        getActionBarContributor().populateContextMenu(menuManager);
-    }
-
     public ScaveEditorContributor getActionBarContributor() {
         if (getEditorSite() != null)
             return (ScaveEditorContributor)getEditorSite().getActionBarContributor();
         else
             return null;
-    }
-
-    public IActionBars getActionBars() {
-        return getActionBarContributor().getActionBars();
     }
 
     public AdapterFactory getAdapterFactory() {
