@@ -72,22 +72,22 @@ protected:
 
     static QPointF getAnchorOffset(cFigure::Anchor anchor, double width, double height, double ascent = 0);
 
-    void arcToUsingBezier(QPainterPath &painter, double currentX,
+    static void arcToUsingBezier(QPainterPath &path, double currentX,
                           double currentY, double x, double y,
                           double rx, double ry, double angle,
-                          bool largeArcFlag, bool sweepFlag, bool isRel) const;
+                          bool largeArcFlag, bool sweepFlag, bool isRel);
 
-    void calcSmoothBezierCP(QPainterPath &painter, char prevCommand,
+    static void calcSmoothBezierCP(QPainterPath &path, char prevCommand,
                             double currentX, double currentY,
                             double &cpx, double &cpy,
                             double x, double y,
-                            bool isRel = false) const;
+                            bool isRel = false);
 
-    void calcSmoothQuadBezierCP(QPainterPath &painter, char prevCommand,
+    static void calcSmoothQuadBezierCP(QPainterPath &path, char prevCommand,
                                 double currentX, double currentY,
                                 double &prevCpx, double &prevCpy,
                                 double cpx, double cpy,
-                                double x, double y, bool isRel = false) const;
+                                double x, double y, bool isRel = false);
 
     QPen createPen(const cAbstractLineFigure *figure, FigureRenderingHints *hints) const;
     QPen createPen(const cAbstractShapeFigure *figure, FigureRenderingHints *hints) const;

@@ -209,8 +209,8 @@ FigureRenderer::ArcShape FigureRenderer::endPointToCentralFromArcParameters(doub
     return ARC_ARC;
 }
 
-void FigureRenderer::arcToUsingBezier(QPainterPath& painter, double currentX, double currentY, double x, double y, double rx, double ry, double angle,
-        bool largeArcFlag, bool sweepFlag, bool isRel) const
+void FigureRenderer::arcToUsingBezier(QPainterPath& path, double currentX, double currentY, double x, double y, double rx, double ry, double angle,
+        bool largeArcFlag, bool sweepFlag, bool isRel)
 {
     double centerX, centerY;
     double startAngle, sweepLength;
@@ -229,7 +229,7 @@ void FigureRenderer::arcToUsingBezier(QPainterPath& painter, double currentX, do
 
     switch (shape) {
         case ARC_LINE: {
-            painter.moveTo(endX, endY);
+            path.moveTo(endX, endY);
             break;
         }
 
@@ -256,7 +256,7 @@ void FigureRenderer::arcToUsingBezier(QPainterPath& painter, double currentX, do
                 double dye = t * (sin(phi) * rx*sinTheta2 - cos(phi) * ry*cosTheta2);
 
                 // c) draw the cubic bezier:
-                painter.cubicTo(x1+dx1, y1+dy1, xe+dxe, ye+dye, xe, ye);
+                path.cubicTo(x1+dx1, y1+dy1, xe+dxe, ye+dye, xe, ye);
 
                 // do next segment
                 startAngle = theta2;
@@ -272,8 +272,8 @@ void FigureRenderer::arcToUsingBezier(QPainterPath& painter, double currentX, do
 }
 
 // for Svg's T statement
-void FigureRenderer::calcSmoothBezierCP(QPainterPath& painter, char prevCommand, double currentX, double currentY,
-        double& cpx, double& cpy, double x, double y, bool isRel) const
+void FigureRenderer::calcSmoothBezierCP(QPainterPath& path, char prevCommand, double currentX, double currentY,
+        double& cpx, double& cpy, double x, double y, bool isRel)
 {
     if (tolower(prevCommand) == 'q' || tolower(prevCommand) == 't') {
         if (cpx < currentX)
@@ -292,14 +292,14 @@ void FigureRenderer::calcSmoothBezierCP(QPainterPath& painter, char prevCommand,
     }
 
     if (isRel)
-        painter.quadTo(cpx, cpy, x + currentX, y + currentY);
+        path.quadTo(cpx, cpy, x + currentX, y + currentY);
     else
-        painter.quadTo(cpx, cpy, x, y);
+        path.quadTo(cpx, cpy, x, y);
 }
 
 // for Svg's S statement
-void FigureRenderer::calcSmoothQuadBezierCP(QPainterPath& painter, char prevCommand, double currentX, double currentY, double& prevCpx, double& prevCpy, double cpx, double cpy,
-        double x, double y, bool isRel) const
+void FigureRenderer::calcSmoothQuadBezierCP(QPainterPath& path, char prevCommand, double currentX, double currentY, double& prevCpx, double& prevCpy, double cpx, double cpy,
+        double x, double y, bool isRel)
 {
     if (tolower(prevCommand) == 's' || tolower(prevCommand) == 'c') {
         if (prevCpx < currentX)
@@ -317,9 +317,9 @@ void FigureRenderer::calcSmoothQuadBezierCP(QPainterPath& painter, char prevComm
         prevCpy = currentY;
     }
     if (isRel)
-        painter.cubicTo(prevCpx, prevCpy, cpx, cpy, x + currentX, y + currentY);
+        path.cubicTo(prevCpx, prevCpy, cpx, cpy, x + currentX, y + currentY);
     else
-        painter.cubicTo(prevCpx, prevCpy, cpx, cpy, x, y);
+        path.cubicTo(prevCpx, prevCpy, cpx, cpy, x, y);
 }
 
 QPen FigureRenderer::createPen(const cAbstractLineFigure *figure, FigureRenderingHints *hints) const
@@ -768,32 +768,31 @@ void PolylineFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
     cPolylineFigure *polyFigure = static_cast<cPolylineFigure *>(figure);
     PathItem *polyItem = static_cast<PathItem *>(item);
 
-    QPainterPath painter;
+    QPainterPath path;
 
     std::vector<cFigure::Point> points = polyFigure->getPoints();
     if (points.size() < 2) {
-        polyItem->setPath(painter);
+        polyItem->setPath(path);
         return;  // throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
     }
 
-    painter.moveTo(points[0].x, points[0].y);
+    path.moveTo(points[0].x, points[0].y);
 
     if (points.size() == 2)
-        painter.lineTo(points[1].x, points[1].y);
-    else if (polyFigure->getSmooth()) {
+        path.lineTo(points[1].x, points[1].y);
+    else if (polyFigure->getSmooth())
         for (size_t i = 2; i < points.size(); i++) {
             const cFigure::Point& control = points[i-1];
             bool isLast = (i == points.size()-1);
             cFigure::Point to = isLast ? points[i] : (points[i-1] + points[i]) * 0.5;
-            painter.quadTo(control.x, control.y, to.x, to.y);
+            path.quadTo(control.x, control.y, to.x, to.y);
         }
-    }
     else
         for (size_t i = 1; i < points.size(); i++)
-            painter.lineTo(points[i].x, points[i].y);
+            path.lineTo(points[i].x, points[i].y);
 
+    polyItem->setPath(path);
 
-    polyItem->setPath(painter);
 
     setArrows(polyFigure, polyItem, hints->zoom);
 }
@@ -830,10 +829,11 @@ void RectangleFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphi
     cRectangleFigure *rectFigure = static_cast<cRectangleFigure *>(figure);
     QGraphicsPathItem *rectItem = static_cast<QGraphicsPathItem *>(item);
     cFigure::Rectangle bounds = rectFigure->getBounds();
-    QPainterPath painter;
 
-    painter.addRoundedRect(bounds.x, bounds.y, bounds.width, bounds.height, rectFigure->getCornerRx(), rectFigure->getCornerRy());
-    rectItem->setPath(painter);
+    QPainterPath path;
+    path.addRoundedRect(bounds.x, bounds.y, bounds.width, bounds.height,
+                        rectFigure->getCornerRx(), rectFigure->getCornerRy());
+    rectItem->setPath(path);
 }
 
 void OvalFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -852,15 +852,15 @@ void RingFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
 {
     cRingFigure *ringFigure = static_cast<cRingFigure *>(figure);
     QGraphicsPathItem *ringItem = static_cast<QGraphicsPathItem *>(item);
-    QPainterPath path;
     cFigure::Rectangle bounds = ringFigure->getBounds();
     cFigure::Point center = bounds.getCenter();
     double innerRx = ringFigure->getInnerRx();
     double innerRy = ringFigure->getInnerRy();
 
+    QPainterPath path;
     path.addEllipse(bounds.x, bounds.y, bounds.width, bounds.height);
+    // the default FillRule will make this second ellipse a hole
     path.addEllipse(center.x-innerRx, center.y-innerRy, 2*innerRx, 2*innerRy);
-
     ringItem->setPath(path);
 }
 
@@ -871,8 +871,6 @@ void PieSliceFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
     cFigure::Rectangle bounds = pieSliceFigure->getBounds();
     cFigure::Point center = bounds.getCenter();
 
-    QPainterPath path;
-
     double start = pieSliceFigure->getStartAngle()*180/M_PI;
     double end = pieSliceFigure->getEndAngle()*180/M_PI;
 
@@ -880,6 +878,7 @@ void PieSliceFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphic
     // but keep it at the start if there is less than -1.0 pie. :c
     start = std::max(start, end - 360);
 
+    QPainterPath path;
     path.moveTo(center.x, center.y);
     path.arcTo(bounds.x, bounds.y, bounds.width, bounds.height, start, end - start);
     path.closeSubpath();
@@ -892,21 +891,23 @@ void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphics
     cPolygonFigure *polyFigure = static_cast<cPolygonFigure *>(figure);
     QGraphicsPathItem *polyItem = static_cast<QGraphicsPathItem *>(item);
 
-    QPainterPath painter;
 
     std::vector<cFigure::Point> points = polyFigure->getPoints();
+
+    QPainterPath path;
+
     if (points.size() < 2) {
-        polyItem->setPath(painter);
+        polyItem->setPath(path);
         return;
     }  // throw cRuntimeError("PolylineFigureRenderer: points.size() < 2");
 
     if (points.size() == 2) {
-        painter.moveTo(points[0].x, points[0].y);
-        painter.lineTo(points[1].x, points[1].y);
+        path.moveTo(points[0].x, points[0].y);
+        path.lineTo(points[1].x, points[1].y);
     }
     else if (polyFigure->getSmooth()) {
         cFigure::Point start = (points[0] + points[1]) * 0.5;
-        painter.moveTo(start.x, start.y);
+        path.moveTo(start.x, start.y);
 
         for (size_t i = 0; i < points.size(); i++) {
             int i1 = (i + 1) % points.size();
@@ -915,19 +916,19 @@ void PolygonFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphics
             cFigure::Point control = points[i1];
             cFigure::Point to = (points[i1] + points[i2]) * 0.5;
 
-            painter.quadTo(control.x, control.y, to.x, to.y);
+            path.quadTo(control.x, control.y, to.x, to.y);
         }
     }
     else {
-        painter.moveTo(points[0].x, points[0].y);
+        path.moveTo(points[0].x, points[0].y);
 
         for (size_t i = 0; i < points.size(); i++)
-            painter.lineTo(points[i].x, points[i].y);
+            path.lineTo(points[i].x, points[i].y);
     }
 
-    painter.closeSubpath();
+    path.closeSubpath();
 
-    polyItem->setPath(painter);
+    polyItem->setPath(path);
 }
 
 void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
@@ -938,13 +939,13 @@ void PolygonFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, F
     if (!(figure->getParentFigure()->getLocalChangeFlags() & cFigure::CHANGE_STRUCTURAL || figure->getLocalChangeFlags() & cFigure::CHANGE_GEOMETRY))
         setItemGeometryProperties(polyFigure, polyItem, hints);
 
-    QPainterPath painter = polyItem->path();
+    QPainterPath path = polyItem->path();
 
-    painter.setFillRule(polyFigure->getFillRule() == cFigure::FILL_EVENODD
+    path.setFillRule(polyFigure->getFillRule() == cFigure::FILL_EVENODD
                          ? Qt::OddEvenFill
                          : Qt::WindingFill);
 
-    polyItem->setPath(painter);
+    polyItem->setPath(path);
 
     QPen pen = createPen(polyFigure, hints);
 
@@ -961,73 +962,74 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
 {
     cPathFigure *pathFigure = static_cast<cPathFigure *>(figure);
     QGraphicsPathItem *pathItem = static_cast<QGraphicsPathItem *>(item);
-    QPainterPath painter;
 
-    char prevCommand;
+    QPainterPath path;
+
+    char prevCommand = ' ';
     cFigure::Point controlPoint;
 
     for (int i = 0; i < pathFigure->getNumPathItems(); ++i) {
         const cPathFigure::PathItem *command = pathFigure->getPathItem(i);
-        QPointF pos = painter.currentPosition();
+        QPointF pos = path.currentPosition();
         switch (command->code) {
             case 'M': {
                 const cPathFigure::MoveTo *moveTo = static_cast<const cPathFigure::MoveTo *>(command);
-                painter.moveTo(moveTo->x, moveTo->y);
+                path.moveTo(moveTo->x, moveTo->y);
                 break;
             }
 
             case 'm': {
                 const cPathFigure::MoveRel *moveRel = static_cast<const cPathFigure::MoveRel *>(command);
-                painter.moveTo(pos.x() + moveRel->dx, pos.y() + moveRel->dy);
+                path.moveTo(pos.x() + moveRel->dx, pos.y() + moveRel->dy);
                 break;
             }
 
             case 'L': {
                 const cPathFigure::LineTo *lineTo = static_cast<const cPathFigure::LineTo *>(command);
-                painter.lineTo(lineTo->x, lineTo->y);
+                path.lineTo(lineTo->x, lineTo->y);
                 break;
             }
 
             case 'l': {
                 const cPathFigure::LineRel *lineRel = static_cast<const cPathFigure::LineRel *>(command);
-                painter.lineTo(pos.x() + lineRel->dx, pos.y() + lineRel->dy);
+                path.lineTo(pos.x() + lineRel->dx, pos.y() + lineRel->dy);
                 break;
             }
 
             case 'H': {
                 const cPathFigure::HorizontalLineTo *horizLineTo = static_cast<const cPathFigure::HorizontalLineTo *>(command);
-                painter.lineTo(horizLineTo->x, pos.y());
+                path.lineTo(horizLineTo->x, pos.y());
                 break;
             }
 
             case 'h': {
                 const cPathFigure::HorizontalLineRel *horizLineRel = static_cast<const cPathFigure::HorizontalLineRel *>(command);
-                painter.lineTo(pos.x() + horizLineRel->dx, pos.y());
+                path.lineTo(pos.x() + horizLineRel->dx, pos.y());
                 break;
             }
 
             case 'V': {
                 const cPathFigure::VerticalLineTo *vertLineTo = static_cast<const cPathFigure::VerticalLineTo *>(command);
-                painter.lineTo(pos.x(), vertLineTo->y);
+                path.lineTo(pos.x(), vertLineTo->y);
                 break;
             }
 
             case 'v': {
                 const cPathFigure::VerticalLineRel *vertLineRel = static_cast<const cPathFigure::VerticalLineRel *>(command);
-                painter.lineTo(pos.x(), pos.y() + vertLineRel->dy);
+                path.lineTo(pos.x(), pos.y() + vertLineRel->dy);
                 break;
             }
 
             case 'A': {
                 const cPathFigure::ArcTo *arcTo = static_cast<const cPathFigure::ArcTo *>(command);
-                arcToUsingBezier(painter, pos.x(), pos.y(), arcTo->x, arcTo->y, arcTo->rx, arcTo->ry,
+                arcToUsingBezier(path, pos.x(), pos.y(), arcTo->x, arcTo->y, arcTo->rx, arcTo->ry,
                         arcTo->phi, arcTo->largeArc, arcTo->sweep, false);
                 break;
             }
 
             case 'a': {
                 const cPathFigure::ArcRel *arcRel = static_cast<const cPathFigure::ArcRel *>(command);
-                arcToUsingBezier(painter, pos.x(), pos.y(), arcRel->dx, arcRel->dy, arcRel->rx, arcRel->ry,
+                arcToUsingBezier(path, pos.x(), pos.y(), arcRel->dx, arcRel->dy, arcRel->rx, arcRel->ry,
                         arcRel->phi, arcRel->largeArc, arcRel->sweep, true);
                 break;
             }
@@ -1035,28 +1037,28 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
             case 'Q': {
                 const cPathFigure::CurveTo *curveTo = static_cast<const cPathFigure::CurveTo *>(command);
                 controlPoint = cFigure::Point(curveTo->x1, curveTo->y1);
-                painter.quadTo(controlPoint.x, controlPoint.y, curveTo->x, curveTo->y);
+                path.quadTo(controlPoint.x, controlPoint.y, curveTo->x, curveTo->y);
                 break;
             }
 
             case 'q': {
                 const cPathFigure::CurveRel *curveRel = static_cast<const cPathFigure::CurveRel *>(command);
-                QPointF pos = painter.currentPosition();
+                QPointF pos = path.currentPosition();
                 controlPoint = cFigure::Point(pos.x() + curveRel->dx1, pos.y() + curveRel->dy1);
-                painter.quadTo(controlPoint.x, controlPoint.y, pos.x() + curveRel->dx, pos.y() + curveRel->dy);
+                path.quadTo(controlPoint.x, controlPoint.y, pos.x() + curveRel->dx, pos.y() + curveRel->dy);
                 break;
             }
 
             case 'T': {
                 const cPathFigure::SmoothCurveTo *smoothCurveTo = static_cast<const cPathFigure::SmoothCurveTo *>(command);
-                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         smoothCurveTo->x, smoothCurveTo->y);
                 break;
             }
 
             case 't': {
                 const cPathFigure::SmoothCurveRel *smoothCurveRel = static_cast<const cPathFigure::SmoothCurveRel *>(command);
-                calcSmoothBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         smoothCurveRel->dx, smoothCurveRel->dy, true);
                 break;
             }
@@ -1064,7 +1066,7 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
             case 'C': {
                 const cPathFigure::CubicBezierCurveTo *bezierTo = static_cast<const cPathFigure::CubicBezierCurveTo *>(command);
                 controlPoint = cFigure::Point(bezierTo->x2, bezierTo->y2);
-                painter.cubicTo(bezierTo->x1, bezierTo->y1, bezierTo->x2, bezierTo->y2, bezierTo->x,
+                path.cubicTo(bezierTo->x1, bezierTo->y1, bezierTo->x2, bezierTo->y2, bezierTo->x,
                         bezierTo->y);
                 break;
             }
@@ -1075,27 +1077,27 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
                 QPointF controlPoint2(pos.x() + bezierRel->dx2, pos.y() + bezierRel->dy2);
                 QPointF endPoint(pos.x() + bezierRel->dx, pos.y() + bezierRel->dy);
                 controlPoint = cFigure::Point(controlPoint2.x(), controlPoint2.y());
-                painter.cubicTo(controlPoint1, controlPoint2, endPoint);
+                path.cubicTo(controlPoint1, controlPoint2, endPoint);
                 break;
             }
 
             case 'S': {
                 const cPathFigure::SmoothCubicBezierCurveTo *sBezierTo = static_cast<const cPathFigure::SmoothCubicBezierCurveTo *>(command);
-                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothQuadBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         sBezierTo->x2, sBezierTo->y2, sBezierTo->x, sBezierTo->y);
                 break;
             }
 
             case 's': {
                 const cPathFigure::SmoothCubicBezierCurveRel *sBezierRel = static_cast<const cPathFigure::SmoothCubicBezierCurveRel *>(command);
-                calcSmoothQuadBezierCP(painter, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothQuadBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         sBezierRel->dx2, sBezierRel->dy2, sBezierRel->dx, sBezierRel->dy, true);
                 i += 4;
                 break;
             }
 
             case 'Z': {
-                painter.closeSubpath();
+                path.closeSubpath();
                 break;
             }
         }
@@ -1103,9 +1105,9 @@ void PathFigureRenderer::setItemGeometryProperties(cFigure *figure, QGraphicsIte
     }
 
     auto o = pathFigure->getOffset();
-    painter.translate(o.x, o.y);
+    path.translate(o.x, o.y);
 
-    pathItem->setPath(painter);
+    pathItem->setPath(path);
 }
 
 void PathFigureRenderer::createVisual(cFigure *figure, QGraphicsItem *item, FigureRenderingHints *hints)
