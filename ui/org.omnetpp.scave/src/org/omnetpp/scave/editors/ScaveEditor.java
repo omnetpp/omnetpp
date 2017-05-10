@@ -72,14 +72,11 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -91,7 +88,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -124,14 +120,12 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
-import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.Markers;
-import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
@@ -145,16 +139,10 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
-import org.omnetpp.scave.model.Dataset;
-import org.omnetpp.scave.model.Folder;
-import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
-import org.omnetpp.scave.model.LineChart;
-import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.IScaveEditorContext;
@@ -1386,7 +1374,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return editingDomain;
     }
 
-
 //    /**
 //     * This creates a context menu for the viewer and adds a listener as well registering the menu for extension.
 //     */
@@ -1432,99 +1419,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     public void createPages() {
         createModel();
         doCreatePages();
-    }
-
-    /**
-     * Utility class to add content and label providers, context menu etc to a Viewer
-     * that is used to edit the model.
-     */
-    public void configureIconGridViewer(IconGridViewer modelViewer) {
-//        ILabelProvider labelProvider =
-//            new DecoratingLabelProvider(
-//                new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)),
-//                new ScaveModelLabelDecorator());
-
-        ILabelProvider labelProvider = new LabelProvider() {
-            @Override
-            public Image getImage(Object element) {
-                if (element instanceof LineChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_LINECHART);
-                else if (element instanceof BarChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_BARCHART);
-                else if (element instanceof ScatterChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_SCATTERCHART);
-                else if (element instanceof HistogramChart)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_HISTOGRAMCHART);
-                else if (element instanceof Dataset)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_DATASET);
-                else if (element instanceof Folder)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_FOLDER);
-                else if (element instanceof ChartSheet)
-                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_CHARTSHEET);
-                else
-                    return null;
-            }
-
-            @Override
-            public String getText(Object element) {
-                if (element instanceof AnalysisItem) {
-                    String text = StringUtils.defaultIfBlank(((AnalysisItem) element).getName(), "<unnamed>");
-                    if (element instanceof ChartSheet)
-                        text += " (" + ((ChartSheet)element).getCharts().size() + ")";
-                    return text;
-                }
-                return element == null ? "" : element.toString();
-            }
-        };
-
-        modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-        modelViewer.setLabelProvider(labelProvider);
-//        modelViewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
-        // new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
-
-        modelViewer.addSelectionChangedListener(selectionChangedListener);
-
-        IMenuListener menuListener = new IMenuListener() {
-            @Override
-            public void menuAboutToShow(IMenuManager menuManager) {
-                getActionBarContributor().populateContextMenu(menuManager);
-            }
-        };
-        
-        UIUtils.createContextMenuFor(modelViewer.getControl(), true, menuListener);
-        UIUtils.createContextMenuFor(modelViewer.getCanvas(), true, menuListener);
-        
-//        setupDragAndDropSupportFor(modelViewer);
-
-        // on double-click, open (the dataset or chart), or bring up the Properties dialog
-        modelViewer.addDoubleClickListener(new IDoubleClickListener() {
-            @Override
-            public void doubleClick(DoubleClickEvent event) {
-                ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-                if (contributor != null) {
-                    if (contributor.getOpenAction().isEnabled())
-                        contributor.getOpenAction().run();
-                    else if (contributor.getEditAction().isEnabled())
-                        contributor.getEditAction().run();
-                }
-            }
-        });
-//
-//        new HoverSupport().adapt(modelViewer.getTree(), new IHoverInfoProvider() {
-//            @Override
-//            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-//                Item item = modelViewer.getTree().getItem(new Point(x,y));
-//                Object element = item==null ? null : item.getData();
-//                if (element != null && modelViewer.getLabelProvider() instanceof DecoratingLabelProvider) {
-//                    ILabelProvider labelProvider = ((DecoratingLabelProvider)modelViewer.getLabelProvider()).getLabelProvider();
-//                    if (labelProvider instanceof ScaveModelLabelProvider) {
-//                        ScaveModelLabelProvider scaveLabelProvider = (ScaveModelLabelProvider)labelProvider;
-//                        return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(scaveLabelProvider.getTooltipText(element)));
-//                    }
-//                }
-//                return null;
-//            }
-//        });
     }
 
     /**

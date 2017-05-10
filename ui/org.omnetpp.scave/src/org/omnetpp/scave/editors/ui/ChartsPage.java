@@ -8,19 +8,31 @@
 package org.omnetpp.scave.editors.ui;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IconGridViewer;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScaveImages;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.NewBarChartAction;
 import org.omnetpp.scave.actions.NewChartSheetAction;
 import org.omnetpp.scave.actions.NewHistogramChartAction;
@@ -30,8 +42,15 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.Folder;
+import org.omnetpp.scave.model.HistogramChart;
+import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.ScatterChart;
+import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -39,8 +58,8 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * @author Andras
  */
 //TODO ChartDefinitionsPage? ChartListPage?
+//TODO add "Rename" to context menu
 public class ChartsPage extends ScaveEditorPage {
-    private FormToolkit formToolkit = null;
     private IconGridViewer viewer;
 
     /**
@@ -81,7 +100,84 @@ public class ChartsPage extends ScaveEditorPage {
         viewer.setFocus();
 
         // configure viewers
-        scaveEditor.configureIconGridViewer(getViewer());
+        configureViewer(viewer);
+
+        // set contents
+        Analysis analysis = scaveEditor.getAnalysis();
+        getViewer().setInput(analysis.getCharts());
+
+        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
+        setFocusManager(new FocusManager(this));
+    }
+
+    public IconGridViewer getViewer() {
+        return viewer;
+    }
+
+    @Override
+    public boolean gotoObject(Object object) {
+        if (object instanceof EObject) {
+            EObject eobject = (EObject)object;
+            if (ScaveModelUtil.findEnclosingOrSelf(eobject, Charts.class) != null) {
+                getViewer().reveal(eobject);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void selectionChanged(ISelection selection) {
+        setViewerSelectionNoNotify(getViewer(), selection);
+    }
+
+    public void updatePage(Notification notification) {
+        if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
+            return;
+        viewer.refresh();
+    }
+    
+    protected void configureViewer(IconGridViewer modelViewer) {
+//        ILabelProvider labelProvider =
+//            new DecoratingLabelProvider(
+//                new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)),
+//                new ScaveModelLabelDecorator());
+
+        ILabelProvider labelProvider = new LabelProvider() {
+            @Override
+            public Image getImage(Object element) {
+                if (element instanceof LineChart)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_LINECHART);
+                else if (element instanceof BarChart)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_BARCHART);
+                else if (element instanceof ScatterChart)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_SCATTERCHART);
+                else if (element instanceof HistogramChart)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_HISTOGRAMCHART);
+                else if (element instanceof Dataset)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_DATASET);
+                else if (element instanceof Folder)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_FOLDER);
+                else if (element instanceof ChartSheet)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_CHARTSHEET);
+                else
+                    return null;
+            }
+
+            @Override
+            public String getText(Object element) {
+                if (element instanceof AnalysisItem) {
+                    String text = StringUtils.defaultIfBlank(((AnalysisItem) element).getName(), "<unnamed>");
+                    if (element instanceof ChartSheet)
+                        text += " (" + ((ChartSheet)element).getCharts().size() + ")";
+                    return text;
+                }
+                return element == null ? "" : element.toString();
+            }
+        };
+
+        modelViewer.setContentProvider(new AdapterFactoryContentProvider(scaveEditor.getAdapterFactory()));
+        modelViewer.setLabelProvider(labelProvider);
 
         viewer.addDropListener(new IconGridViewer.IDropListener() {
             @Override
@@ -127,43 +223,48 @@ public class ChartsPage extends ScaveEditorPage {
             }
         });
 
-        // set contents
-        Analysis analysis = scaveEditor.getAnalysis();
-        getViewer().setInput(analysis.getCharts());
+        modelViewer.addSelectionChangedListener(scaveEditor.getSelectionChangedListener());
 
-        // ensure that focus gets restored correctly after user goes somewhere else and then comes back
-        setFocusManager(new FocusManager(this));
-    }
-
-    /**
-     * This method initializes formToolkit
-     */
-    private FormToolkit getFormToolkit() {
-        if (formToolkit == null)
-            formToolkit = new FormToolkit2(Display.getCurrent());
-        return formToolkit;
-    }
-
-    public IconGridViewer getViewer() {
-        return viewer;
-    }
-
-    @Override
-    public boolean gotoObject(Object object) {
-        if (object instanceof EObject) {
-            EObject eobject = (EObject)object;
-            if (ScaveModelUtil.findEnclosingOrSelf(eobject, Charts.class) != null) {
-                getViewer().reveal(eobject);
-                return true;
+        IMenuListener menuListener = new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager menuManager) {
+                scaveEditor.getActionBarContributor().populateContextMenu(menuManager);
             }
-        }
-        return false;
-    }
+        };
+        
+        UIUtils.createContextMenuFor(modelViewer.getCanvas(), true, menuListener);
+        
+        // on double-click, open (the dataset or chart), or bring up the Properties dialog
+        modelViewer.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+                if (contributor != null) {
+                    if (contributor.getOpenAction().isEnabled())
+                        contributor.getOpenAction().run();
+                    else if (contributor.getEditAction().isEnabled())
+                        contributor.getEditAction().run();
+                }
+            }
+        });
 
-    @Override
-    public void selectionChanged(ISelection selection) {
-        setViewerSelectionNoNotify(getViewer(), selection);
+//        new HoverSupport().adapt(modelViewer.getTree(), new IHoverInfoProvider() {
+//            @Override
+//            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
+//                Item item = modelViewer.getTree().getItem(new Point(x,y));
+//                Object element = item==null ? null : item.getData();
+//                if (element != null && modelViewer.getLabelProvider() instanceof DecoratingLabelProvider) {
+//                    ILabelProvider labelProvider = ((DecoratingLabelProvider)modelViewer.getLabelProvider()).getLabelProvider();
+//                    if (labelProvider instanceof ScaveModelLabelProvider) {
+//                        ScaveModelLabelProvider scaveLabelProvider = (ScaveModelLabelProvider)labelProvider;
+//                        return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(scaveLabelProvider.getTooltipText(element)));
+//                    }
+//                }
+//                return null;
+//            }
+//        });
     }
+    
 }
 
 
