@@ -35,7 +35,7 @@ namespace omnetpp {
 using namespace canvas_stream_ops;
 
 Register_Figure("group", cGroupFigure);
-//Register_Figure("panel", cPanelFigure);
+Register_Figure("panel", cPanelFigure);
 Register_Figure("line", cLineFigure);
 Register_Figure("arc", cArcFigure);
 Register_Figure("polyline", cPolylineFigure);
@@ -104,6 +104,7 @@ static const char *PKEY_BOUNDS = "bounds";
 static const char *PKEY_POS = "pos";
 static const char *PKEY_POINTS = "points";
 static const char *PKEY_ANCHOR = "anchor";
+static const char *PKEY_ANCHORPOINT = "anchorPoint";
 static const char *PKEY_SIZE = "size";
 static const char *PKEY_INNERSIZE = "innerSize";
 static const char *PKEY_CORNERRADIUS = "cornerRadius";
@@ -1314,10 +1315,10 @@ std::string cGroupFigure::str() const
 
 //----
 
-#if 0
 void cPanelFigure::copy(const cPanelFigure& other)
 {
     setPosition(other.getPosition());
+    setAnchorPoint(other.getAnchorPoint());
 }
 
 cPanelFigure& cPanelFigure::operator=(const cPanelFigure& other)
@@ -1340,13 +1341,14 @@ void cPanelFigure::parse(cProperty *property)
 {
     cFigure::parse(property);
     setPosition(parsePoint(property, PKEY_POS, 0));
+    setAnchorPoint(parsePoint(property, PKEY_ANCHORPOINT, 0));
 }
 
 const char **cPanelFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_POS, nullptr};
+        const char *localKeys[] = { PKEY_POS, PKEY_ANCHORPOINT, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -1355,14 +1357,14 @@ const char **cPanelFigure::getAllowedPropertyKeys() const
 void cPanelFigure::updateParentTransform(Transform& transform)
 {
     // replace current transform with an axis-aligned, unscaled (thus also unzoomable)
-    // coordinate system, with the origin at getPosition()
+    // coordinate system, with anchorPoint at getPosition()
     Point origin = transform.applyTo(getPosition());
-    transform = Transform().translate(origin.x, origin.y);
+    Point anchor = getTransform().applyTo(getAnchorPoint());
+    transform = Transform().translate(origin.x - anchor.x, origin.y - anchor.y);
 
     // then apply our own transform in the normal way (like all other figures do)
     transform.rightMultiply(getTransform());
 }
-#endif
 
 //----
 

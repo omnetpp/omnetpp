@@ -863,15 +863,14 @@ class SIM_API cGroupFigure : public cFigure
         //@}
 };
 
-#if 0
 /**
  * @brief Sets up an axis-aligned, unscaled coordinate system for children, canceling the
  * effect of any transformation (scaling, rotation, etc.) inherited from ancestor figures.
  *
  * This allows pixel-based positioning of children, and makes them immune to zooming.
- * The origin of the coordinate system is the position of the panel figure.
+ * The anchorPoint in the coordinate system is mapped to the position of the panel figure.
  * Setting a transformation on the panel figure itself allows rotation, scaling,
- * and adding pixel offset to the coordinate system.
+ * and skewing of the coordinate system. The anchorPoint is affected by this transformation.
  *
  * The panel figure itself has no visual appearance.
  *
@@ -881,6 +880,7 @@ class SIM_API cPanelFigure : public cFigure
 {
     private:
         Point position;
+        Point anchorPoint;
     protected:
         virtual const char **getAllowedPropertyKeys() const override;
         virtual void parse(cProperty *property) override;
@@ -900,28 +900,29 @@ class SIM_API cPanelFigure : public cFigure
         virtual std::string str() const override;
         virtual const char *getRendererClassName() const override {return "";} // non-visual figure
         virtual void updateParentTransform(Transform& transform) override;
+        virtual void move(double dx, double dy) override { moveLocal(dx, dy); }
         virtual void moveLocal(double dx, double dy) override {position.x += dx; position.y += dy; fireTransformChange();}
         //@}
 
         /** @name Figure attributes */
         //@{
         virtual const Point& getPosition() const  {return position;}
-        virtual void setPosition(const Point& position)  {this->position = position; fireGeometryChange();}
+        virtual void setPosition(const Point& position)  {this->position = position; fireTransformChange();}
 
         /**
          * By default, the (0,0) point in cPanelFigure's coordinate system will be mapped
          * to the given position (i.e. getPosition()) in the parent figure's coordinate system.
-         * By setting an offset, one can change (0,0) to an arbitrary point. E.g. by setting
-         * offset=(100,0), the (100,0) point will be mapped to the given position, i.e.
-         * panel contents will be appear 100 pixels to the left (given there are no transforms set).
+         * By setting an anchorPoint, one can change (0,0) to an arbitrary point. E.g. by setting
+         * anchorPoint=(100,0), the (100,0) point will be mapped to the given position, i.e.
+         * panel contents will appear 100 pixels to the left (given there are no transforms set).
+         * The translation part of the local transform is cancelled out because the anchorPoint
+         * is subject to the transformation of the panel figure the same way as the child figures.
          */
-        //TODO properly add "offset"
-        virtual const Point& getOffset() const  {return offset;}
-        virtual void setOffset(const Point& offset)  {this->offset = offset; fireGeometryChange();}
+        virtual const Point& getAnchorPoint() const  {return anchorPoint;}
+        virtual void setAnchorPoint(const Point& anchorPoint)  {this->anchorPoint = anchorPoint; fireTransformChange();}
 
         //@}
 };
-#endif
 
 /**
  * @brief Common base class for line figures.

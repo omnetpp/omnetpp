@@ -729,6 +729,12 @@ class cGroupFigure extends cFigure
 {
 }
 
+class cPanelFigure extends cFigure
+{
+    Point position @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    Point anchorPoint @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+}
+
 class cAbstractLineFigure extends cFigure
 {
     Color lineColor @group(line) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
