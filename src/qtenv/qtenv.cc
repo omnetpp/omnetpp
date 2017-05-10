@@ -1303,18 +1303,14 @@ void Qtenv::callRefreshDisplaySafe()
 void Qtenv::refreshInspectors()
 {
     // update inspectors
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ) {
-        Inspector *insp = *it;
-        InspectorList::iterator next = ++it;
-        insp->refresh();
-        it = next;
-    }
+    for (auto it : inspectors)
+        it->refresh();
 
     messageAnimator->redrawMessages();
 
     // clear the change flags on all inspected canvases
-    for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it)
-        (*it)->clearObjectChangeFlags();
+    for (auto it : inspectors)
+        it->postRefresh();
 
     // try opening "pending" inspectors
     restoreInspectors();

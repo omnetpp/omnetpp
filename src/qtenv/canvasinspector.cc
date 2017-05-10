@@ -127,7 +127,7 @@ void CanvasInspector::redraw()
     canvasViewer->redraw();
 }
 
-void CanvasInspector::clearObjectChangeFlags()
+void CanvasInspector::postRefresh()
 {
     if (object)
         getCanvas()->getRootFigure()->clearChangeFlags();

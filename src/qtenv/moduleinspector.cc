@@ -426,7 +426,7 @@ void ModuleInspector::refreshOsgViewer()
 #endif
 }
 
-void ModuleInspector::clearObjectChangeFlags()
+void ModuleInspector::postRefresh()
 {
     cCanvas *canvas = getCanvas();
     if (canvas)

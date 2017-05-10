@@ -146,7 +146,7 @@ public:
 
     virtual void doSetObject(cObject *obj) override;
     virtual void refresh() override;
-    virtual void clearObjectChangeFlags() override;
+    virtual void postRefresh() override;
 
     // implementations of inspector commands:
     virtual int getDefaultLayoutSeed();

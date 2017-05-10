@@ -121,8 +121,7 @@ class QTENV_API Inspector : public QWidget
       virtual void showWindow();
 
       virtual void refresh();
-
-      virtual void clearObjectChangeFlags() {}
+      virtual void postRefresh() {} // called on all inspectors as a "second stage", after refresh() was called on all of them
 
       virtual void objectDeleted(cObject *);
 };
