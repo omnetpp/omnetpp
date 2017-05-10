@@ -166,7 +166,7 @@ import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
  *
  * @author andras, tomi
  */
-public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomainProvider, ISelectionProvider, IMenuListener, IGotoMarker, INavigationLocationProvider {
+public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomainProvider, ISelectionProvider, IGotoMarker, INavigationLocationProvider {
     public static final String
         ACTIVE_PAGE = "ActivePage",
         PAGE = "Page",
@@ -978,7 +978,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             contentOutlineViewer.expandToLevel(3);
 
             // Make sure our popups work.
-            UIUtils.createContextMenuFor(contentOutlineViewer.getControl(), true, ScaveEditor.this);
+            UIUtils.createContextMenuFor(contentOutlineViewer.getControl(), true, new IMenuListener() {
+                @Override
+                public void menuAboutToShow(IMenuManager menuManager) {
+                    getActionBarContributor().populateContextMenu(menuManager);
+                }
+            });
 
             if (!editingDomain.getResourceSet().getResources().isEmpty()) {
               // Select the root object in the view.
@@ -1479,8 +1484,16 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
 
         modelViewer.addSelectionChangedListener(selectionChangedListener);
 
-        UIUtils.createContextMenuFor(modelViewer.getControl(), true, this);
-        UIUtils.createContextMenuFor(modelViewer.getCanvas(), true, this);
+        IMenuListener menuListener = new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager menuManager) {
+                getActionBarContributor().populateContextMenu(menuManager);
+            }
+        };
+        
+        UIUtils.createContextMenuFor(modelViewer.getControl(), true, menuListener);
+        UIUtils.createContextMenuFor(modelViewer.getCanvas(), true, menuListener);
+        
 //        setupDragAndDropSupportFor(modelViewer);
 
         // on double-click, open (the dataset or chart), or bring up the Properties dialog
@@ -1697,7 +1710,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
      * This implements {@link org.eclipse.jface.action.IMenuListener} to help fill the context menus with contributions from the Edit menu.
      */
     public void menuAboutToShow(IMenuManager menuManager) {
-        ((IMenuListener)getEditorSite().getActionBarContributor()).menuAboutToShow(menuManager);
+        getActionBarContributor().populateContextMenu(menuManager);
     }
 
     public ScaveEditorContributor getActionBarContributor() {

@@ -31,7 +31,6 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IContributionManager;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -96,7 +95,7 @@ import org.omnetpp.scave.views.DatasetView;
  * Responsible for the redirection of global actions to the active editor.
  * Multi-page contributor replaces the contributors for the individual editors in the multi-page editor.
  */
-public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IMenuListener, IPropertyListener, ISelectionChangedListener {
+public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IPropertyListener, ISelectionChangedListener {
     private static ScaveEditorContributor instance;
 
     protected IEditorPart activeEditorPart;
@@ -433,7 +432,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         // nothing
     }
 
-    public void menuAboutToShow(IMenuManager menuManager) {
+    public void populateContextMenu(IMenuManager menuManager) {
         // This is called for context menus of the model tree viewers
         // Add our standard marker.
         if ((style & ADDITIONS_LAST_STYLE) == 0)
