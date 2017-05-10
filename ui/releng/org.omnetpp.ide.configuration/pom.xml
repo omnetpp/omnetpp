@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.omnetpp.ide</groupId>
   <artifactId>org.omnetpp.ide.configuration</artifactId>
-  <version>5.1.1-SNAPSHOT</version>
+  <version>5.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>

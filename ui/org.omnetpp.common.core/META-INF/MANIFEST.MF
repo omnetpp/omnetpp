@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Common Core
 Bundle-SymbolicName: org.omnetpp.common.core
-Bundle-Version: 5.1.1.qualifier
+Bundle-Version: 5.2.0.qualifier
 Bundle-Activator: org.omnetpp.common.CommonCorePlugin
 Bundle-Vendor: OpenSim Ltd
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
