@@ -351,35 +351,5 @@ void BubbleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
 //---- end of BubbleItem ----
 
-//---- SelfTransformingPixmapItem implementation ----
-
-void SelfTransformingPixmapItem::setSelfTransform(const QTransform& transform)
-{
-    if (selfTransform != transform) {
-        prepareGeometryChange(); // will call update() if necessary
-        selfTransform = transform;
-    }
-}
-
-QPainterPath SelfTransformingPixmapItem::shape() const
-{
-    return selfTransform.map(QGraphicsPixmapItem::shape());
-}
-
-QRectF SelfTransformingPixmapItem::boundingRect() const
-{
-    return selfTransform.mapRect(QGraphicsPixmapItem::boundingRect());
-}
-
-void SelfTransformingPixmapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    painter->save();
-    painter->setTransform(selfTransform, true);
-    QGraphicsPixmapItem::paint(painter, option, widget);
-    painter->restore();
-}
-
-//---- end of SelfTransformingPixmapItem ----
-
 }  // namespace qtenv
 }  // namespace omnetpp
