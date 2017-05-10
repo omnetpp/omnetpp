@@ -184,7 +184,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * Creates a multi-page contributor.
      */
     public ScaveEditorContributor() {
-        if (instance==null)
+        if (instance == null)
             instance = this;
     }
 
@@ -239,15 +239,106 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return action;
     }
 
+    public static ScaveEditorContributor getDefault() {
+        return instance;
+    }
+
+    public OpenChartAction getOpenAction() {
+        return openAction;
+    }
+
+    public EditAction getEditAction() {
+        return editAction;
+    }
+
+    public RemoveAction getRemoveAction() {
+        return removeAction;
+    }
+
+    public ZoomChartAction getHZoomInAction() {
+        return hzoomInAction;
+    }
+
+    public ZoomChartAction getHZoomOutAction() {
+        return hzoomOutAction;
+    }
+
+    public ZoomChartAction getVZoomInAction() {
+        return vzoomInAction;
+    }
+
+    public ZoomChartAction getVZoomOutAction() {
+        return vzoomOutAction;
+    }
+
+    public ZoomChartAction getZoomToFitAction() {
+        return zoomToFitAction;
+    }
+
+    public ChartMouseModeAction getSwitchChartToPanModeAction() {
+        return switchChartToPanModeAction;
+    }
+
+    public ChartMouseModeAction getSwitchChartToZoomModeAction() {
+        return switchChartToZoomModeAction;
+    }
+
+    public RefreshChartAction getRefreshChartAction() {
+        return refreshChartAction;
+    }
+
+    public GotoChartDefinitionAction getGotoChartDefinitionAction() {
+        return gotoChartDefinitionAction;
+    }
+
+    public GotoChartSheetDefinitionAction getGotoChartSheetDefinitionAction() {
+        return gotoChartSheetDefinitionAction;
+    }
+
+    public CopyChartToClipboardAction  getCopyChartToClipboardAction() {
+        return copyChartToClipboardAction;
+    }
+
+    public CopyToClipboardAction getCopyToClipboardAction() {
+        return copyToClipboardAction;
+    }
+
+    public ExportToSVGAction getExportToSVGAction() {
+        return exportToSVGAction;
+    }
+
+    public Map<String, ExportDataAction> getExportActions() {
+        return exportActions;
+    }
+
+    public CreateTempChartAction getCreateTempChartAction() {
+        return createTempChartAction;
+    }
+
+    public SaveTempChartAction getSaveTempChartAction() {
+        return saveTempChartAction;
+    }
+
+    public SaveTempChartSheetAction getSaveTempChartSheetAction() {
+        return saveTempChartSheetAction;
+    }
+    public ShowOutputVectorViewAction getShowOutputVectorViewAction() {
+        return showOutputVectorViewAction;
+    }
+
+    public RetargetAction getUndoRetargetAction() {
+        return undoRetargetAction;
+    }
+
+    public RetargetAction getRedoRetargetAction() {
+        return redoRetargetAction;
+    }
+
     /**
      * Listen on zoom state changes of the chart.
      */
     public void registerChart(final IChartView chartView) {
         chartView.addPropertyChangeListener(zoomListener);
-    }
-
-    public static ScaveEditorContributor getDefault() {
-        return instance;
     }
 
     @Override
@@ -363,97 +454,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     @Override
     public void setActivePage(IEditorPart part) {
         // nothing
-    }
-
-    public OpenChartAction getOpenAction() {
-        return openAction;
-    }
-
-    public EditAction getEditAction() {
-        return editAction;
-    }
-
-    public RemoveAction getRemoveAction() {
-        return removeAction;
-    }
-
-    public ZoomChartAction getHZoomInAction() {
-        return hzoomInAction;
-    }
-
-    public ZoomChartAction getHZoomOutAction() {
-        return hzoomOutAction;
-    }
-
-    public ZoomChartAction getVZoomInAction() {
-        return vzoomInAction;
-    }
-
-    public ZoomChartAction getVZoomOutAction() {
-        return vzoomOutAction;
-    }
-
-    public ZoomChartAction getZoomToFitAction() {
-        return zoomToFitAction;
-    }
-
-    public ChartMouseModeAction getSwitchChartToPanModeAction() {
-        return switchChartToPanModeAction;
-    }
-
-    public ChartMouseModeAction getSwitchChartToZoomModeAction() {
-        return switchChartToZoomModeAction;
-    }
-
-    public RefreshChartAction getRefreshChartAction() {
-        return refreshChartAction;
-    }
-
-    public GotoChartDefinitionAction getGotoChartDefinitionAction() {
-        return gotoChartDefinitionAction;
-    }
-
-    public GotoChartSheetDefinitionAction getGotoChartSheetDefinitionAction() {
-        return gotoChartSheetDefinitionAction;
-    }
-
-    public CopyChartToClipboardAction  getCopyChartToClipboardAction() {
-        return copyChartToClipboardAction;
-    }
-
-    public CopyToClipboardAction getCopyToClipboardAction() {
-        return copyToClipboardAction;
-    }
-
-    public ExportToSVGAction getExportToSVGAction() {
-        return exportToSVGAction;
-    }
-
-    public Map<String, ExportDataAction> getExportActions() {
-        return exportActions;
-    }
-
-    public CreateTempChartAction getCreateTempChartAction() {
-        return createTempChartAction;
-    }
-
-    public SaveTempChartAction getSaveTempChartAction() {
-        return saveTempChartAction;
-    }
-
-    public SaveTempChartSheetAction getSaveTempChartSheetAction() {
-        return saveTempChartSheetAction;
-    }
-    public ShowOutputVectorViewAction getShowOutputVectorViewAction() {
-        return showOutputVectorViewAction;
-    }
-
-    public RetargetAction getUndoRetargetAction() {
-        return undoRetargetAction;
-    }
-
-    public RetargetAction getRedoRetargetAction() {
-        return redoRetargetAction;
     }
 
     public IMenuManager createExportMenu() {
