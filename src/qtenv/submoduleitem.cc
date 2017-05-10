@@ -167,7 +167,7 @@ void SubmoduleItem::updateNameItem()
             label += "[" + QString::number(vectorIndex) + "]";
         }
         nameItem->setText(label);
-        nameItem->setPos(-nameItem->boundingRect().width() / 2, shapeImageBoundingRect().height() / 2);
+        nameItem->setPos(-nameItem->textRect().width() / 2, shapeImageBoundingRect().height() / 2);
     }
 }
 
@@ -177,7 +177,7 @@ void SubmoduleItem::realignAnchoredItems()
 
     // the info text label
     if (textItem) {
-        auto textBounds = textItem->boundingRect();
+        auto textBounds = textItem->textRect();
         QPointF pos;
 
         switch (textPos) {
@@ -284,9 +284,9 @@ QRectF SubmoduleItem::shapeImageBoundingRect() const
 SubmoduleItem::SubmoduleItem(cModule *mod, GraphicsLayer *rangeLayer)
     : module(mod), rangeLayer(rangeLayer)
 {
-    nameItem = new OutlinedTextItem(this, scene());
-    queueItem = new OutlinedTextItem(this, scene());
-    textItem = new OutlinedTextItem(this, scene());
+    nameItem = new OutlinedTextItem(this);
+    queueItem = new OutlinedTextItem(this);
+    textItem = new OutlinedTextItem(this);
 
     connect(this, SIGNAL(xChanged()), this, SLOT(onPositionChanged()));
     connect(this, SIGNAL(yChanged()), this, SLOT(onPositionChanged()));

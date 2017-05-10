@@ -121,7 +121,7 @@ void ConnectionItem::updateTextItem()
     textItem->setBrush(textColor);
     textItem->setVisible(isVisible());
 
-    QRectF textRect = textItem->boundingRect();
+    QRectF textRect = textItem->textRect();
     QPointF textSize(textRect.width(), textRect.height());
 
     switch (textAlignment) {

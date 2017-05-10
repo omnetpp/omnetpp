@@ -88,14 +88,12 @@ protected:
     QBrush backgroundBrush;
     bool haloEnabled = true;
 
-    QPointF offset;
-
 public:
-    OutlinedTextItem(QGraphicsItem *parent = nullptr, QGraphicsScene *scene = nullptr);
+    OutlinedTextItem(QGraphicsItem *parent = nullptr);
     virtual ~OutlinedTextItem();
 
     QRectF boundingRect() const;
-    QRectF textRect() const;
+    QRectF textRect() const; // this would be the bounding box without the outline
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
@@ -105,7 +103,6 @@ public:
     void setPen(const QPen &pen);
     void setBrush(const QBrush &brush);
     void setBackgroundBrush(const QBrush &brush);
-    void setOffset(const QPointF& offset);
     void setHaloEnabled(bool enabled);
 };
 

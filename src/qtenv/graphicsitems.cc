@@ -174,7 +174,7 @@ void ZoomLabel::setZoomFactor(double zoomFactor)
 
 //---- OutlinedTextItem implementation ----
 
-OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
+OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent)
     : QGraphicsItem(parent)
 {
     outlineItem = new QGraphicsSimpleTextItem();
@@ -208,45 +208,57 @@ void OutlinedTextItem::setText(const QString& text)
         prepareGeometryChange();
         fillItem->setText(text);
         outlineItem->setText(text);
-        update();
+        // simple update() is broken, see https://bugreports.qt.io/browse/QTBUG-60143
+        update(boundingRect());
     }
 }
 
 QRectF OutlinedTextItem::boundingRect() const
 {
     QRectF rect = fillItem->boundingRect();
+    // including the outline
     double width = outlineItem->pen().widthF();
-    rect.adjust(0, 0, width, width);
-    return rect.translated(offset);
+    rect.adjust(-width/2, -width/2, width/2, width/2);
+    return rect;
 }
 
 QRectF OutlinedTextItem::textRect() const
 {
-    return fillItem->boundingRect().translated(offset);
+    return fillItem->boundingRect();
 }
 
 void OutlinedTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->save();
+    // background rectangle
     painter->setBrush(backgroundBrush);
     painter->setPen(Qt::NoPen);
     painter->drawRect(boundingRect());
-    painter->restore();
-    painter->save();
-    double halfWidth = outlineItem->pen().widthF() / 2;
-    painter->translate(halfWidth + offset.x(), halfWidth + offset.y());
+
+/*  // DEBUG rainbow
+    std::vector<QColor> colors = {"red", "green", "blue", "yellow", "orange", "cyan", "pink"};
+
+    painter->setPen(QPen(QColor("blue"), 1));
+    painter->setBrush(colors[rand() % colors.size()]);
+    painter->drawRect(boundingRect());
+
+    painter->setPen(QPen(QColor("red"), 1));
+    painter->drawRect(textRect());
+*/
+
     if (haloEnabled)
         outlineItem->paint(painter, option, widget);
     fillItem->paint(painter, option, widget);
-    painter->restore();
 }
 
 void OutlinedTextItem::setFont(const QFont &font)
 {
-    prepareGeometryChange();
-    outlineItem->setFont(font);
-    fillItem->setFont(font);
-    update();
+    if (font != fillItem->font()) {
+        prepareGeometryChange();
+        outlineItem->setFont(font);
+        fillItem->setFont(font);
+        // simple update() is broken, see https://bugreports.qt.io/browse/QTBUG-60143
+        update(boundingRect());
+    }
 }
 
 void OutlinedTextItem::setPen(const QPen& pen)
@@ -254,7 +266,8 @@ void OutlinedTextItem::setPen(const QPen& pen)
     if (pen != outlineItem->pen()) {
         prepareGeometryChange();
         outlineItem->setPen(pen);
-        update();
+        // simple update() is broken, see https://bugreports.qt.io/browse/QTBUG-60143
+        update(boundingRect());
     }
 }
 
@@ -262,7 +275,7 @@ void OutlinedTextItem::setBrush(const QBrush& brush)
 {
     if (brush != fillItem->brush()) {
         fillItem->setBrush(brush);
-        update();
+        update(boundingRect());
     }
 }
 
@@ -270,16 +283,7 @@ void OutlinedTextItem::setBackgroundBrush(const QBrush& brush)
 {
     if (backgroundBrush != brush) {
         backgroundBrush = brush;
-        update();
-    }
-}
-
-void OutlinedTextItem::setOffset(const QPointF& offset)
-{
-    if (this->offset != offset) {
-        prepareGeometryChange();
-        this->offset = offset;
-        update();
+        update(boundingRect());
     }
 }
 
@@ -288,7 +292,8 @@ void OutlinedTextItem::setHaloEnabled(bool enabled)
     if (enabled != haloEnabled) {
         prepareGeometryChange();
         haloEnabled = enabled;
-        update();
+        // simple update() is broken, see https://bugreports.qt.io/browse/QTBUG-60143
+        update(boundingRect());
     }
 }
 

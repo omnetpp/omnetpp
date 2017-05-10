@@ -277,7 +277,7 @@ QRectF MessageItem::shapeImageBoundingRect() const
 void MessageItem::updateTextItem()
 {
     textItem->setText(text);
-    QRectF textRect = textItem->boundingRect();
+    QRectF textRect = textItem->textRect();
     QRectF mainRect = shapeImageBoundingRect();
     textItem->setPos(-textRect.width() / 2, mainRect.height() / 2);
 }
