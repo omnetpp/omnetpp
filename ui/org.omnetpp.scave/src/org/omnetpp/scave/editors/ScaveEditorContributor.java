@@ -116,21 +116,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     /**
      * This is the action used to perform validation.
-     * 
-     * @since 2.9
      */
     protected DiagnosticDecorator.LiveValidator.LiveValidationAction liveValidationAction;
-
-    /**
-     * This style bit indicates that the "additions" separator should come after
-     * the "edit" separator.
-     */
-    public static final int ADDITIONS_LAST_STYLE = 0x1;
-
-    /**
-     * This is used to encode the style bits.
-     */
-    protected int style;
 
     // global retarget actions
     private RetargetAction undoRetargetAction;
@@ -227,7 +214,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
      * Creates a multi-page contributor.
      */
     public ScaveEditorContributor() {
-        style = ADDITIONS_LAST_STYLE;
         loadResourceAction = new LoadResourceAction();
         validateAction = new ValidateAction();
         controlAction = new ControlAction();
@@ -372,10 +358,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     }
 
     public void populateContextMenu(IMenuManager menuManager) {
-        // This is called for context menus of the model tree viewers
-        // Add our standard marker.
-        if ((style & ADDITIONS_LAST_STYLE) == 0)
-            menuManager.add(new Separator("additions"));
         menuManager.add(new Separator("edit"));
 
         // Add the edit menu actions.
@@ -389,10 +371,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         menuManager.add(new ActionContributionItem(removeAction));
         menuManager.add(new Separator());
 
-        if ((style & ADDITIONS_LAST_STYLE) != 0) {
-            menuManager.add(new Separator("additions"));
-            menuManager.add(new Separator());
-        }
+        menuManager.add(new Separator("additions"));
+        menuManager.add(new Separator());
         
         // Add our other standard marker.
         menuManager.add(new Separator("additions-end"));
@@ -406,15 +386,12 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         submenuManager.add(new NewDatasetAction(false));
         submenuManager.add(new NewChartSheetAction(false));
         menuManager.insertBefore("edit", submenuManager);
-        menuManager.insertBefore("edit", submenuManager);
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
 
         menuManager.insertAfter("additions-end", new Separator());
         menuManager.insertAfter("additions-end", createExportMenu());
         menuManager.insertAfter("additions-end", exportChartsAction);
-
-
     }
 
     public void shareGlobalActions(IPage page, IActionBars actionBars) {
