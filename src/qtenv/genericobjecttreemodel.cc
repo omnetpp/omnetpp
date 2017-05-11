@@ -625,7 +625,7 @@ QVariant ChildObjectNode::data(int role)
 QString ChildObjectNode::getNodeIdentifier()
 {
     return (parent ? parent->getNodeIdentifier() + "|" : "")
-           + QString("%1{%3}").arg(voidPtrToStr(containingDesc)).arg(object->getClassName());
+           + QString("%1{%3}").arg(voidPtrToStr(containingDesc)).arg(voidPtrToStr(object));
 }
 
 cObject *ChildObjectNode::getCObjectPointer()

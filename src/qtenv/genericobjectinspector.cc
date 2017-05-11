@@ -18,6 +18,7 @@
 #include <cmath>
 #include "omnetpp/cregistrationlist.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "qtenv.h"
 #include "inspectorfactory.h"
 #include "moduleinspector.h"
@@ -245,17 +246,17 @@ void GenericObjectInspector::setMode(Mode mode)
 
 void GenericObjectInspector::doSetObject(cObject *obj)
 {
-    QSet<QString> expanded = model->getExpandedNodesIn(treeView);
-
     Inspector::doSetObject(obj);
 
-    auto defaultMode = Mode::GROUPED;
-
-    if (obj
-        && obj != getObject()
-        && std::count(containerTypes.begin(), containerTypes.end(), getObjectBaseClass(obj))) {
-        defaultMode = Mode::CHILDREN;
+    if (!obj) {
+        // will recreate the model for the new object
+        doSetMode((Mode)getPref(PREF_MODE, (int)Mode::GROUPED).toInt());
+        return;
     }
+
+    QSet<QString> expanded = model->getExpandedNodesIn(treeView);
+
+    auto defaultMode = contains(containerTypes, std::string(getObjectBaseClass(obj))) ? Mode::CHILDREN : Mode::GROUPED;
 
     // will recreate the model for the new object
     doSetMode((Mode)getPref(PREF_MODE, (int)defaultMode).toInt());

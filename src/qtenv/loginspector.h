@@ -60,8 +60,6 @@ class QTENV_API LogInspector : public Inspector
       std::set<int> excludedModuleIds;
       Mode mode;
 
-      cComponent *getInspectedObject();
-
       bool isMatchingComponent(int componentId);
       bool isAncestorModule(int componentId, int potentialAncestorModuleId);
 
@@ -71,7 +69,7 @@ class QTENV_API LogInspector : public Inspector
       QAction *toMessagesModeAction;
       QAction *toLogModeAction;
 
-      QSize sizeHint() const override;
+      QSize sizeHint() const override { return QSize(700, 300); }
 
 signals:
       void selectionChanged(cObject*);

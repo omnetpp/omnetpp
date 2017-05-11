@@ -212,7 +212,7 @@ void LogInspector::setMode(Mode mode)
 
     toLogModeAction->setChecked(mode == LOG);
     toMessagesModeAction->setChecked(mode == MESSAGES);
-    auto provider = new ModuleOutputContentProvider(getQtenv(), getInspectedObject(), mode);
+    auto provider = new ModuleOutputContentProvider(getQtenv(), dynamic_cast<cComponent *>(object), mode);
     provider->setExcludedModuleIds(excludedModuleIds);
     textWidget->setContentProvider(provider);
 
@@ -230,16 +230,6 @@ void LogInspector::doSetObject(cObject *obj)
     excludedModuleIds.clear();
     setMode((Mode)getPref(PREF_MODE, getMode()).toInt());
     restoreExcludedModules();
-}
-
-cComponent *LogInspector::getInspectedObject()
-{
-    return static_cast<cComponent *>(object);
-}
-
-QSize LogInspector::sizeHint() const
-{
-    return QSize(700, 300);
 }
 
 void LogInspector::runUntil()
@@ -280,15 +270,16 @@ void LogInspector::onFindButton()
 
 void LogInspector::onFilterButton()
 {
-    auto dialog = new LogFilterDialog(this, dynamic_cast<cModule *>(getInspectedObject()), excludedModuleIds);
-    if (dialog->exec() == QDialog::Accepted) {
-        excludedModuleIds = dialog->getExcludedModuleIds();
-        if (auto provider = dynamic_cast<ModuleOutputContentProvider *>(textWidget->getContentProvider()))
-            provider->setExcludedModuleIds(excludedModuleIds);
-        saveExcludedModules();
-        textWidget->onContentChanged();
+    if (cModule *module = dynamic_cast<cModule *>(object)) {
+        LogFilterDialog dialog(this, module, excludedModuleIds);
+        if (dialog.exec() == QDialog::Accepted) {
+            excludedModuleIds = dialog.getExcludedModuleIds();
+            if (auto provider = dynamic_cast<ModuleOutputContentProvider *>(textWidget->getContentProvider()))
+                provider->setExcludedModuleIds(excludedModuleIds);
+            saveExcludedModules();
+            textWidget->onContentChanged();
+        }
     }
-    delete dialog;
 }
 
 void LogInspector::onCaretMoved(int lineIndex, int column)

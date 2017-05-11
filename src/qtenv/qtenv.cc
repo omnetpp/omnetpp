@@ -840,9 +840,6 @@ bool Qtenv::doRunSimulation()
     loggingEnabled = true;
     bool firstevent = true;
 
-    QElapsedTimer uiUpdateTimer;
-    uiUpdateTimer.start();
-
     while (true) {
         if (runMode == RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
@@ -855,11 +852,6 @@ bool Qtenv::doRunSimulation()
         // takeNextEvent, and it will terminate the simulation with an exception.
         if ((!reached || messageAnimator->isHoldActive()) && sim->guessNextEvent())
             break;
-
-        if (uiUpdateTimer.elapsed() > 100) {
-            QApplication::processEvents();
-            uiUpdateTimer.restart();
-        }
 
         // if there is no event, we have to let the control through to
         // takeNextEvent, and it will terminate the simulation with an exception.

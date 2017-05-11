@@ -101,13 +101,14 @@ void CanvasInspector::doSetObject(cObject *obj)
 
     Inspector::doSetObject(obj);
 
-    canvasViewer->setObject(getCanvas());
-    QVariant zoomFactorVariant = getQtenv()->getPref(object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor");
-    double zoomFactor = zoomFactorVariant.isValid() ? zoomFactorVariant.value<double>() : 1;
-    canvasViewer->setZoomFactor(zoomFactor);
+    if (object) {
+        canvasViewer->setObject(getCanvas());
+        QVariant zoomFactorVariant = getQtenv()->getPref(object->getFullName() + QString(":") + INSP_DEFAULT + ":zoomfactor");
+        double zoomFactor = zoomFactorVariant.isValid() ? zoomFactorVariant.value<double>() : 1;
+        canvasViewer->setZoomFactor(zoomFactor);
+    }
 
-    if (object)
-        redraw();
+    redraw();
 }
 
 void CanvasInspector::refresh()
