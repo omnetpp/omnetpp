@@ -9,16 +9,16 @@
       arch="x86,x86_64">
 
    <requires>
-      <import feature="org.eclipse.platform" version="4.6.2.v20161124-1529" match="equivalent"/>
-      <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.10.0.201606071959" match="equivalent"/>
-      <import feature="org.eclipse.gmf" version="1.10.0.201606071959" match="equivalent"/>
-      <import feature="org.eclipse.gef" version="3.11.0.201606061308" match="equivalent"/>
-      <import feature="org.eclipse.cdt" version="9.2.0.201612061315" match="equivalent"/>
-      <import feature="org.eclipse.emf.common" version="2.12.0.v20160420-0247" match="equivalent"/>
-      <import feature="org.eclipse.emf.ecore" version="2.12.0.v20160420-0247" match="equivalent"/>
-      <import feature="org.eclipse.emf.ecore.edit" version="2.9.0.v20160526-0356" match="equivalent"/>
-      <import feature="org.eclipse.emf.edit" version="2.12.0.v20160526-0356" match="equivalent"/>
-      <import feature="org.eclipse.cdt.llvm.dsf.lldb" version="1.0.0.201612061315" match="equivalent"/>
+      <import feature="org.eclipse.platform" version="4.6.2.v20161124-1529" match="compatible"/>
+      <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.10.0.201606071959" match="compatible"/>
+      <import feature="org.eclipse.gmf" version="1.10.0.201606071959" match="compatible"/>
+      <import feature="org.eclipse.gef" version="3.11.0.201606061308" match="compatible"/>
+      <import feature="org.eclipse.cdt" version="9.2.0.201612061315" match="compatible"/>
+      <import feature="org.eclipse.emf.common" version="2.12.0.v20160420-0247" match="compatible"/>
+      <import feature="org.eclipse.emf.ecore" version="2.12.0.v20160420-0247" match="compatible"/>
+      <import feature="org.eclipse.emf.ecore.edit" version="2.9.0.v20160526-0356" match="compatible"/>
+      <import feature="org.eclipse.emf.edit" version="2.12.0.v20160526-0356" match="compatible"/>
+      <import feature="org.eclipse.cdt.llvm.dsf.lldb" version="1.0.0.201612061315" match="compatible"/>
    </requires>
 
    <plugin
