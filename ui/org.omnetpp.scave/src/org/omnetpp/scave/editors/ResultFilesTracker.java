@@ -38,6 +38,7 @@ import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.jobs.ResultFileManagerUpdaterJob;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * This class is responsible for loading/unloading result files
@@ -73,24 +74,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
      * Listen to EMF model changes.
      */
     public void notifyChanged(Notification notification) {
-        if (manager == null)
-            return;
-
-        if (notification.isTouch())
-            return;
-
-        switch (notification.getEventType()) {
-        case Notification.ADD:
-        case Notification.ADD_MANY:
-        case Notification.REMOVE:
-        case Notification.REMOVE_MANY:
-        //case Notification.MOVE:
-        case Notification.SET:
-        //case Notification.UNSET:
-            Object notifier = notification.getNotifier();
-            if (notifier instanceof Inputs || notifier instanceof InputFile)
-                synchronize(false);
-        }
+        if (ScaveModelUtil.isInputsChange(notification))
+            synchronize(false);
     }
 
     /**

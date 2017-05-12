@@ -26,6 +26,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -326,6 +327,25 @@ public class ScaveModelUtil {
         }
         return charts;
     }
+    
+    public static boolean isInputsChange(Notification notification) {
+        if (notification.isTouch())
+            return false;
+        switch (notification.getEventType()) {
+            case Notification.ADD:
+            case Notification.ADD_MANY:
+            case Notification.REMOVE:
+            case Notification.REMOVE_MANY:
+            case Notification.MOVE:
+            case Notification.SET:
+            case Notification.UNSET:
+                Object notifier = notification.getNotifier();
+                if (notifier instanceof Inputs || notifier instanceof InputFile)
+                    return true;
+        }
+        return false;
+    }
+
 
     /**
      * Collect references to scave objects.

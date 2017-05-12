@@ -54,6 +54,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 
 //TODO use "Add" and "Remove" instead of "New"/"Create" and "Delete" in context menus; ISharedImages.IMG_ELCL_REMOVE
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
+//TODO "Edit Input" action enablement not OK when selection contains files, runs etc.
 public class InputsPage extends ScaveEditorPage {
     private InputsTree treeViewer;
 
@@ -187,7 +188,8 @@ public class InputsPage extends ScaveEditorPage {
 
     @Override
     public void updatePage(Notification notification) {
-        getTreeViewer().refresh();
+        if (ScaveModelUtil.isInputsChange(notification))
+            getTreeViewer().refresh();
     }
 
     @Override

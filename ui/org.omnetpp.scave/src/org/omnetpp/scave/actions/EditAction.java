@@ -16,11 +16,10 @@ import java.util.concurrent.Callable;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeSelection;
-import org.eclipse.jface.viewers.TreePath;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
 import org.omnetpp.scave.editors.ui.EditDialog;
 import org.omnetpp.scave.engine.ResultFileManager;
 
@@ -76,37 +75,13 @@ public class EditAction extends AbstractScaveAction {
 
     @Override
     public boolean isApplicable(final ScaveEditor editor, final IStructuredSelection selection) {
-        return ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                return getEditedObject(editor, selection) != null;
-            }
-        });
+        EObject editedObject = getEditedObject(editor, selection);
+        return editedObject != null && ScaveObjectEditFormFactory.instance().canCreateForm(editedObject);
     }
 
-     //TODO edit several objects together?
     private EObject getEditedObject(ScaveEditor editor, IStructuredSelection selection) {
-        if (selection.size() == 1) {
-            EObject editedObject = null;
-            if (selection.getFirstElement() instanceof EObject) {
-                editedObject = (EObject)selection.getFirstElement();
-            }
-            else if (selection instanceof ITreeSelection) {
-                ITreeSelection treeSelection = (ITreeSelection)selection;
-                TreePath[] paths = treeSelection.getPaths();
-                if (paths.length > 0) {
-                    TreePath path = paths[0];
-                    for (int i = path.getSegmentCount() - 1; i >= 0; --i) {
-                        Object segment = path.getSegment(i);
-                        if (segment instanceof EObject) {
-                            editedObject = (EObject)segment;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (editedObject != null && EditDialog.getEditableFeatures(editedObject, editor).length > 0)
-                return editedObject;
-        }
+        if (selection.size() == 1 && selection.getFirstElement() instanceof EObject)
+            return (EObject)selection.getFirstElement();
         return null;
     }
 }

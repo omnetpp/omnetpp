@@ -9,10 +9,10 @@ package org.omnetpp.scave.editors.forms;
 
 import java.util.Map;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
@@ -35,6 +35,15 @@ public class ScaveObjectEditFormFactory {
         if (instance == null)
             instance = new ScaveObjectEditFormFactory();
         return instance;
+    }
+
+    /**
+     * Returns true if this factory can create an edit form for this object 
+     */
+    public boolean canCreateForm(EObject object) {
+        if (object instanceof AnalysisItem || object instanceof InputFile || object instanceof Property)
+            return true;
+        return false;
     }
 
     /**
