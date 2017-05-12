@@ -203,19 +203,19 @@ public class SimulationLauncherJob extends Job {
         try {
             ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
             if (console != null) {
-                final IOConsoleOutputStream stream = console.newOutputStream();
-                if (isErrorMessage) {
-                    stream.setActivateOnWrite(true);
-                    // we have to set the color in the UI thread otherwise SWT will throw an error
-                    Display.getDefault().syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            stream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
-                        }
-                    });
+                try (final IOConsoleOutputStream stream = console.newOutputStream()) {
+                    if (isErrorMessage) {
+                        stream.setActivateOnWrite(true);
+                        // we have to set the color in the UI thread otherwise SWT will throw an error
+                        Display.getDefault().syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                stream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
+                            }
+                        });
+                    }
+                    stream.write(text);
                 }
-                stream.write(text);
-                stream.close();
             }
         } catch (IOException e) {
             LaunchPlugin.logError("Unable to write to console", e);
