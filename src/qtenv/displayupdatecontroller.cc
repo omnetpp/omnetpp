@@ -519,28 +519,28 @@ void RunModeProfile::save(const QString &prefix)
 {
     auto qtenv = getQtenv();
 
-    qtenv->setPref("runmodeprofile-" + prefix + "-target-cpu-usage", targetAnimationCpuUsage);
-    qtenv->setPref("runmodeprofile-" + prefix + "-min-fps", minFps);
-    qtenv->setPref("runmodeprofile-" + prefix + "-max-fps", maxFps);
-    qtenv->setPref("runmodeprofile-" + prefix + "-playback-speed", playbackSpeed);
-    qtenv->setPref("runmodeprofile-" + prefix + "-min-playback-speed", minPlaybackSpeed);
-    qtenv->setPref("runmodeprofile-" + prefix + "-max-playback-speed", maxPlaybackSpeed);
-    qtenv->setPref("runmodeprofile-" + prefix + "-min-animation-speed", minAnimationSpeed);
-    qtenv->setPref("runmodeprofile-" + prefix + "-max-animation-speed", maxAnimationSpeed);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-target-cpu-usage", targetAnimationCpuUsage);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-min-fps", minFps);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-max-fps", maxFps);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-playback-speed", playbackSpeed);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-min-playback-speed", minPlaybackSpeed);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-max-playback-speed", maxPlaybackSpeed);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-min-animation-speed", minAnimationSpeed);
+    qtenv->setPref("RunModeProfiles/" + prefix + "-max-animation-speed", maxAnimationSpeed);
 }
 
 void RunModeProfile::load(const QString &prefix)
 {
     auto qtenv = getQtenv();
 
-    targetAnimationCpuUsage = qtenv->getPref("runmodeprofile-" + prefix + "-target-cpu-usage", targetAnimationCpuUsage).toDouble();
-    minFps = qtenv->getPref("runmodeprofile-" + prefix + "-min-fps", minFps).toDouble();
-    maxFps = qtenv->getPref("runmodeprofile-" + prefix + "-max-fps", maxFps).toDouble();
-    playbackSpeed = qtenv->getPref("runmodeprofile-" + prefix + "-playback-speed", playbackSpeed).toDouble();
-    minPlaybackSpeed = qtenv->getPref("runmodeprofile-" + prefix + "-min-playback-speed", minPlaybackSpeed).toDouble();
-    maxPlaybackSpeed = qtenv->getPref("runmodeprofile-" + prefix + "-max-playback-speed", maxPlaybackSpeed).toDouble();
-    minAnimationSpeed = qtenv->getPref("runmodeprofile-" + prefix + "-min-animation-speed", minAnimationSpeed).toDouble();
-    maxAnimationSpeed = qtenv->getPref("runmodeprofile-" + prefix + "-max-animation-speed", maxAnimationSpeed).toDouble();
+    targetAnimationCpuUsage = qtenv->getPref("RunModeProfiles/" + prefix + "-target-cpu-usage", targetAnimationCpuUsage).toDouble();
+    minFps = qtenv->getPref("RunModeProfiles/" + prefix + "-min-fps", minFps).toDouble();
+    maxFps = qtenv->getPref("RunModeProfiles/" + prefix + "-max-fps", maxFps).toDouble();
+    playbackSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-playback-speed", playbackSpeed).toDouble();
+    minPlaybackSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-min-playback-speed", minPlaybackSpeed).toDouble();
+    maxPlaybackSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-max-playback-speed", maxPlaybackSpeed).toDouble();
+    minAnimationSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-min-animation-speed", minAnimationSpeed).toDouble();
+    maxAnimationSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-max-animation-speed", maxAnimationSpeed).toDouble();
 }
 
 } // namespace qtenv

@@ -135,6 +135,11 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
     return false;
 }
 
+bool Qtenv::isLocalPrefKey(const QString& key)
+{
+    return (key == "last-configname") || (key == "last-runnumber") || key.startsWith("RunModeProfiles");
+}
+
 void Qtenv::storeOptsInPrefs()
 {
     setPref("updatefreq_express_ms", QVariant::fromValue<int>(opt->updateFreqExpress));
@@ -2199,7 +2204,7 @@ QPoint Qtenv::getDefaultStopDialogCorner(const QPoint& offset)
 
 void Qtenv::setPref(const QString& key, const QVariant& value)
 {
-    auto settings = (localPrefKeys.contains(key) ? localPrefs : globalPrefs);
+    QSettings *settings = (isLocalPrefKey(key) ? localPrefs : globalPrefs);
     if (value.isValid())
         settings->setValue(key, value);
     else
@@ -2208,7 +2213,7 @@ void Qtenv::setPref(const QString& key, const QVariant& value)
 
 QVariant Qtenv::getPref(const QString& key, const QVariant& defaultValue)
 {
-    QSettings *settings = localPrefKeys.contains(key) ? localPrefs : globalPrefs;
+    QSettings *settings = (isLocalPrefKey(key) ? localPrefs : globalPrefs);
     return settings->value(key, defaultValue);
 }
 

@@ -201,7 +201,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       QSettings *localPrefs = nullptr;
 
       // These will be saved into the .qtenvrc in the working directory, all others into the one in the home of the user.
-      QSet<QString> localPrefKeys = {"last-configname", "last-runnumber"};
+      bool isLocalPrefKey(const QString& key);
 
       void storeOptsInPrefs();
       void restoreOptsFromPrefs();
