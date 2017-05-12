@@ -17,10 +17,14 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.core.runtime.jobs.JobGroup;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
@@ -78,9 +82,9 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
     };
 
     @Override
-    public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+    public void launch(ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 
-        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode, true);
+        final ILaunchConfiguration configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(config, mode, true);
         OmnetppLaunchUtils.replaceConfigurationInLaunch(launch, configuration);
 
         monitor.beginTask("Launching Simulation", 1);
@@ -112,26 +116,20 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             Debug.println(batches.toString());
 
             String[] batchRunFilters = batches.stream().map(batch -> StringUtils.join(batch, ",")).collect(Collectors.toList()).toArray(new String[]{});
-            Job job = new BatchedSimulationLauncherJob(configuration, launch, batchRunFilters, numConcurrentProcesses, stopOnError);
-            job.schedule();
 
-            /*
-             * TODO Something like this could work instead of BatchedSimulationLauncherJob, only progress reporting
-             * is broken in Eclipse 4.6, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=505959
-             *
-            Job launcherJob = new Job("x") {
-                //TODO obey stopOnError option!
+            Job launcherJob = new Job("Batch Execution of " + configuration.getName() + " ("+runNumbers.size()+" runs using " + batchRunFilters.length + " processes) ") {
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
                     JobGroup jobGroup = new JobGroup("Simulation batch", numConcurrentProcesses, batchRunFilters.length) {
                         @Override
                         protected boolean shouldCancel(IStatus lastCompletedJobResult, int numberOfFailedJobs, int numberOfCanceledJobs) {
-                            return numberOfCanceledJobs > 0 || numberOfFailedJobs > 0;
+                            return numberOfCanceledJobs > 0 || (stopOnError && numberOfFailedJobs > 0);
                         }
                     };
                     for (String batchRunFilter : batchRunFilters) {
                         Job job1 = new SimulationLauncherJob(configuration, launch, batchRunFilter, reportProgress, portNumber);
                         job1.setJobGroup(jobGroup);
+                        job1.setPriority(Job.BUILD);
                         job1.setSystem(false);
                         job1.schedule();
                     }
@@ -144,10 +142,12 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
                     }
                     return Status.OK_STATUS;
                 }
+
             };
+            launcherJob.setPriority(Job.BUILD);
             launcherJob.setSystem(false);
+            launcherJob.setUser(true);
             launcherJob.schedule();
-            */
         }
     }
 

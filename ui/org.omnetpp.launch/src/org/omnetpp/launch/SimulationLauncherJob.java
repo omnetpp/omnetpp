@@ -60,11 +60,10 @@ public class SimulationLauncherJob extends Job {
     private StringBuffer errors = new StringBuffer();
 
     public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, String runFilter, boolean reportProgress, int port) {
-        super("Simulating "+configuration.getName());
+        super("Simulating "+configuration.getName() + (runFilter.contains(",") ? " - Runs " : " - Run ") + runFilter);
         this.configuration = configuration;
         this.launch = launch;
         this.runFilter = runFilter;
-        this.taskName = "Run(s) " + runFilter;
         this.reportProgress = reportProgress;
         this.port = port;
     }
@@ -140,9 +139,9 @@ public class SimulationLauncherJob extends Job {
                 // do some error reporting if the process finished with error
                 dumpPostMortemInfo(iprocess, commandLine, workingDir);
 
-                //TODO After dumpPostMortemInfo(), when user clicks "Remove Terminated Launches" 
-                // in the Console, somehow a final last piece of simulation output is written to the 
-                // console page. This needs to be investigated, as it prevents dead Console pages 
+                //TODO After dumpPostMortemInfo(), when user clicks "Remove Terminated Launches"
+                // in the Console, somehow a final last piece of simulation output is written to the
+                // console page. This needs to be investigated, as it prevents dead Console pages
                 // from being removed (they still show up in the view's menu.)
 
                 if (subMonitor.isCanceled() || iprocess.getExitValue() == SIMULATION_CANCELLED_EXITCODE || iprocess.getExitValue() == 128 + SIGTERM) {

@@ -863,10 +863,10 @@ public class OmnetppLaunchUtils {
      * @return The process progress reported in the text or -1 if no progress info found
      */
     public static int getProgressInPercent(String text) {
-        String tag = "% completed";
+        String tag = "% total)";
         if (!StringUtils.contains(text, tag))
             return -1;
-        String pctStr = StringUtils.substringAfterLast(StringUtils.substringBeforeLast(text, tag)," ");
+        String pctStr = StringUtils.substringAfterLast(StringUtils.substringBeforeLast(text, tag),"(");
         return NumberUtils.toInt(pctStr, -1);
     }
 
