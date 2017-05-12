@@ -199,9 +199,10 @@ void Cmdenv::doRun()
             return;
         }
 
-        int runsTried = 0;
+        numRuns = (int)runNumbers.size();
+        runsTried = 0;
         int numErrors = 0;
-        for (int i = 0; i < (int)runNumbers.size(); i++) {
+        for (int i = 0; i < numRuns; i++) {
             runsTried++;
             int runNumber = runNumbers[i];
             bool finishedOK = false;
@@ -320,10 +321,10 @@ void Cmdenv::doRun()
                 break;
         }
 
-        if (runNumbers.size() > 1 && opt->verbose) {
-            int numSkipped = runNumbers.size() - runsTried;
+        if (numRuns > 1 && opt->verbose) {
+            int numSkipped = numRuns - runsTried;
             int numSuccess = runsTried - numErrors;
-            out << "\nRun statistics: total " << runNumbers.size();
+            out << "\nRun statistics: total " << numRuns;
             if (numSuccess > 0)
                 out << ", successful " << numSuccess;
             if (numErrors > 0)
@@ -509,10 +510,11 @@ const char *Cmdenv::progressPercentage()
     if (ratio == -1)
         return "";
     else {
+        double totalRatio = (ratio + runsTried - 1) / numRuns;
         static char buf[32];
         // DO NOT change the "% completed" string. The IDE launcher plugin matches
         // against this string for detecting user input
-        sprintf(buf, "  %d%% completed", (int)(100*ratio));
+        sprintf(buf, "  %d%% completed  (%d%% total)", (int)(100*ratio), (int)(100*totalRatio));
         return buf;
     }
 }
