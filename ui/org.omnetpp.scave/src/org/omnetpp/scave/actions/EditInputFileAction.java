@@ -39,6 +39,7 @@ public class EditInputFileAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        System.out.println("EditInputFileAction enablement check");
         return selection.getFirstElement() instanceof InputFile;
     }
 }

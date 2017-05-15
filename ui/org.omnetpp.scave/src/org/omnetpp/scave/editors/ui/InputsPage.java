@@ -40,7 +40,6 @@ import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.actions.CollapseSubtreeAction;
 import org.omnetpp.scave.actions.CollapseTreeAction;
-import org.omnetpp.scave.actions.EditInputFileAction;
 import org.omnetpp.scave.actions.ExpandSubtreeAction;
 import org.omnetpp.scave.actions.NewInputFileAction;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -52,9 +51,7 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
-//TODO use "Add" and "Remove" instead of "New"/"Create" and "Delete" in context menus; ISharedImages.IMG_ELCL_REMOVE
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
-//TODO "Edit Input" action enablement not OK when selection contains files, runs etc.
 public class InputsPage extends ScaveEditorPage {
     private InputsTree treeViewer;
 
@@ -83,7 +80,7 @@ public class InputsPage extends ScaveEditorPage {
         // toolbar
         ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
         addToToolbar(new NewInputFileAction());
-        addToToolbar(new EditInputFileAction());
+        addToToolbar(contributor.getEditInputFileAction());
         addToToolbar(contributor.getRemoveAction());
         addSeparatorToToolbar();
         addToToolbar(new CollapseTreeAction(treeViewer));
@@ -97,7 +94,7 @@ public class InputsPage extends ScaveEditorPage {
             @Override
             public void menuAboutToShow(IMenuManager menuManager) {
                 menuManager.add(new NewInputFileAction());
-                menuManager.add(new EditInputFileAction());
+                menuManager.add(contributor.getEditInputFileAction());
                 menuManager.add(contributor.getRemoveAction());
                 menuManager.add(new Separator());
                 menuManager.add(contributor.getUndoRetargetAction());
