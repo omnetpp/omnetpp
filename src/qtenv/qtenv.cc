@@ -890,8 +890,10 @@ bool Qtenv::doRunSimulation()
         // do a simulation step
         sim->executeEvent(event);
 
-        if (animating)
+        if (animating) {
+            callRefreshInspectors();
             performAnimations();
+        }
 
         messageAnimator->setMarkedModule(sim->guessNextModule());
 
