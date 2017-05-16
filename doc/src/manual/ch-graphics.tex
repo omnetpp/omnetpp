@@ -1199,24 +1199,31 @@ textFigure->setText("Hello World!");
 \subsection{Stacking Order}
 \label{sec:graphics:canvas-stacking-order}
 
-The stacking order a.ka. Z-order of figures is jointly determined by the
+The stacking order (a.k.a. Z-order) of figures is jointly determined by the
 child order and the \cclass{cFigure} attribute called Z-index, with
-the latter taking priority. Z-index is not used  directly, but an \textit{effective
-Z-index} is computed instead, as the sum of the Z-index values of the figure
-and all its ancestors up to the root figure.
+the latter taking priority. Z-index is not used  directly, but an 
+\textit{effective Z-index} is computed instead, as the \textit{sum} 
+of the Z-index values of the figure and all its ancestors up to the root figure.
 
-Figures with a larger effective Z-index will be displayed above figures with
-smaller effective Z-indices. Among figures whose effective Z-indices are equal,
-the first child will be the bottom-most one, and the last child will be the
-topmost one. For figures that are not siblings, the child order within the first
+A figure with a larger effective Z-index will be displayed above figures with
+smaller effective Z-indices, regardless of their positions in the figure tree.
+Among figures whose effective Z-indices are equal, child order determines 
+the stacking order. If two such figures are siblings, the one that occurs
+\textit{later} in the child list will be drawn above the other.
+For figures that are not siblings, the child order within the first
 common ancestor matters.
 
+% These two design decisions (the effective Z-index being computed as a sum
+% up to the root, and affecting the order among all figures not just among 
+% siblings) result in significant flexibility.
+% As the Z-order of figures is no longer constrained by  order as the figure tree is no longer constrained by .
+
 There are several methods for managing stacking order:
-\ffunc{setZIndex()}/\ffunc{getZIndex()}, \ffunc{getEffectiveZIndex()},
-\ffunc{insertAbove()}/\ffunc{insertBelow()}, 
-\ffunc{isAbove()}/\ffunc{isBelow()}, 
-\ffunc{raiseAbove()}/\ffunc{lowerBelow()},
-\ffunc{raiseToTop()}/\ffunc{lowerToBottom()}.
+\ffunc{setZIndex()}, \ffunc{getZIndex()}, \ffunc{getEffectiveZIndex()},
+\ffunc{insertAbove()}, \ffunc{insertBelow()}, 
+\ffunc{isAbove()}, \ffunc{isBelow()}, 
+\ffunc{raiseAbove()}, \ffunc{lowerBelow()},
+\ffunc{raiseToTop()}, \ffunc{lowerToBottom()}.
 
 
 \subsection{Transforms}

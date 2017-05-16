@@ -512,19 +512,19 @@ code modification in the main program.
 \subsection{The Simulation Loop}
 \label{sec:embedding:simulation-loop}
 
-To run the simulation, the \ffunc{selectNextModule()} and \ffunc{doOneEvent}
+To run the simulation, the \ffunc{takeNextEvent()} and \ffunc{executeEvent()}
 methods of \cclass{cSimulation} must be called in a loop:
 
 \begin{cpp}
-while (sim->getSimTime() < limit)
-{
-    cSimpleModule *mod = sim->selectNextModule();
-    sim->doOneEvent(mod);
+cSimulation *sim = getSimulation();
+while (sim->getSimTime() < limit) {
+    cEvent *event = sim->takeNextEvent();
+    sim->executeEvent(event);
 }
 \end{cpp}
 
-Depending on the concrete scheduler class, the
-\ffunc{selectNextModule()} may return \ttt{nullptr}. The default
+Depending on the concrete scheduler class, the \ffunc{takeNextEvent()} 
+may return \ttt{nullptr} in certain cases. The default
 \cclass{cSequentialScheduler} never returns \ttt{nullptr}.
 
 The execution may terminate in various ways. Runtime errors cause a
