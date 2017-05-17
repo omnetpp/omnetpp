@@ -273,22 +273,17 @@ void FigureRenderer::arcToUsingBezier(QPainterPath& path, double currentX, doubl
     }
 }
 
-// for Svg's T statement
-void FigureRenderer::calcSmoothBezierCP(QPainterPath& path, char prevCommand, double currentX, double currentY,
-        double& cpx, double& cpy, double x, double y, bool isRel)
+// for the T path command
+void FigureRenderer::calcSmoothQuadraticBezierCP(QPainterPath& path, char prevCommand, double currentX, double currentY,
+                                        double& cpx, double& cpy, double x, double y, bool isRel)
 {
     if (tolower(prevCommand) == 'q' || tolower(prevCommand) == 't') {
-        if (cpx < currentX)
-            cpx = currentX + std::fabs(currentX - cpx);
-        else
-            cpx = currentX - std::fabs(currentX - cpx);
-
-        if (cpy < currentY)
-            cpy = currentY + std::fabs(currentY - cpy);
-        else
-            cpy = currentY - std::fabs(currentY - cpy);
+        // mirror cp to current
+        cpx = currentX + (currentX - cpx);
+        cpy = currentY + (currentY - cpy);
     }
     else {
+        // if we can't continue, just draw a line
         cpx = currentX;
         cpy = currentY;
     }
@@ -299,29 +294,36 @@ void FigureRenderer::calcSmoothBezierCP(QPainterPath& path, char prevCommand, do
         path.quadTo(cpx, cpy, x, y);
 }
 
-// for Svg's S statement
-void FigureRenderer::calcSmoothQuadBezierCP(QPainterPath& path, char prevCommand, double currentX, double currentY, double& prevCpx, double& prevCpy, double cpx, double cpy,
-        double x, double y, bool isRel)
+// for the S path command
+void FigureRenderer::calcSmoothCubicBezierCP(QPainterPath& path, char prevCommand, double currentX, double currentY,
+                                            double& prevCpx, double& prevCpy, double cpx, double cpy,
+                                            double x, double y, bool isRel)
 {
     if (tolower(prevCommand) == 's' || tolower(prevCommand) == 'c') {
-        if (prevCpx < currentX)
-            prevCpx = currentX + std::fabs(currentX - prevCpx);
-        else
-            prevCpx = currentX - std::fabs(currentX - prevCpx);
-
-        if (prevCpy < currentY)
-            prevCpy = currentY + std::fabs(currentY - prevCpy);
-        else
-            prevCpy = currentY - std::fabs(currentY - prevCpy);
+        // mirror prevCp to current
+        prevCpx = currentX + currentX - prevCpx;
+        prevCpy = currentY + currentY - prevCpy;
     }
     else {
+        // if we can't continue, use the current position as the first control point
         prevCpx = currentX;
         prevCpy = currentY;
     }
-    if (isRel)
-        path.cubicTo(prevCpx, prevCpy, cpx, cpy, x + currentX, y + currentY);
-    else
+
+    if (isRel) {
+        path.cubicTo(prevCpx, prevCpy, cpx + currentX, cpy + currentY, x + currentX, y + currentY);
+
+        // storing the second control point for potential further continuations (s or S commands)
+        prevCpx = cpx + currentX;
+        prevCpy = cpy + currentY;
+    }
+    else {
         path.cubicTo(prevCpx, prevCpy, cpx, cpy, x, y);
+
+        // storing the second control point for potential further continuations (s or S commands)
+        prevCpx = cpx;
+        prevCpy = cpy;
+    }
 }
 
 QPen FigureRenderer::createPen(const FigureRenderingArgs& args)
@@ -1008,14 +1010,14 @@ void PathFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
 
             case 'T': {
                 const cPathFigure::SmoothCurveTo *smoothCurveTo = static_cast<const cPathFigure::SmoothCurveTo *>(command);
-                calcSmoothBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothQuadraticBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         smoothCurveTo->x, smoothCurveTo->y);
                 break;
             }
 
             case 't': {
                 const cPathFigure::SmoothCurveRel *smoothCurveRel = static_cast<const cPathFigure::SmoothCurveRel *>(command);
-                calcSmoothBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothQuadraticBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         smoothCurveRel->dx, smoothCurveRel->dy, true);
                 break;
             }
@@ -1040,16 +1042,15 @@ void PathFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
 
             case 'S': {
                 const cPathFigure::SmoothCubicBezierCurveTo *sBezierTo = static_cast<const cPathFigure::SmoothCubicBezierCurveTo *>(command);
-                calcSmoothQuadBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothCubicBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         sBezierTo->x2, sBezierTo->y2, sBezierTo->x, sBezierTo->y);
                 break;
             }
 
             case 's': {
                 const cPathFigure::SmoothCubicBezierCurveRel *sBezierRel = static_cast<const cPathFigure::SmoothCubicBezierCurveRel *>(command);
-                calcSmoothQuadBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
+                calcSmoothCubicBezierCP(path, prevCommand, pos.x(), pos.y(), controlPoint.x, controlPoint.y,
                         sBezierRel->dx2, sBezierRel->dy2, sBezierRel->dx, sBezierRel->dy, true);
-                i += 4;
                 break;
             }
 

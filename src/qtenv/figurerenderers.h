@@ -89,13 +89,13 @@ protected:
                           double rx, double ry, double angle,
                           bool largeArcFlag, bool sweepFlag, bool isRel);
 
-    static void calcSmoothBezierCP(QPainterPath &path, char prevCommand,
+    static void calcSmoothQuadraticBezierCP(QPainterPath &path, char prevCommand,
                             double currentX, double currentY,
                             double &cpx, double &cpy,
                             double x, double y,
                             bool isRel = false);
 
-    static void calcSmoothQuadBezierCP(QPainterPath &path, char prevCommand,
+    static void calcSmoothCubicBezierCP(QPainterPath &path, char prevCommand,
                                 double currentX, double currentY,
                                 double &prevCpx, double &prevCpy,
                                 double cpx, double cpy,
