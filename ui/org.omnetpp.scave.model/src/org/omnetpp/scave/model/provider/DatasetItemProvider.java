@@ -14,23 +14,23 @@ import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 
-import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * This is the item provider adapter for a {@link org.omnetpp.scave.model.Chart} object.
+ * This is the item provider adapter for a {@link org.omnetpp.scave.model.Dataset} object.
  * <!-- begin-user-doc -->
  * <!-- end-user-doc -->
  * @generated
  */
-public class ChartItemProvider extends AnalysisItemItemProvider {
+public class DatasetItemProvider extends AnalysisItemItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    public ChartItemProvider(AdapterFactory adapterFactory) {
+    public DatasetItemProvider(AdapterFactory adapterFactory) {
         super(adapterFactory);
     }
 
@@ -46,7 +46,6 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
             super.getPropertyDescriptors(object);
 
             addInputPropertyDescriptor(object);
-            addTemporaryPropertyDescriptor(object);
         }
         return itemPropertyDescriptors;
     }
@@ -62,9 +61,9 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
                  getResourceLocator(),
-                 getString("_UI_Chart_input_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_input_feature", "_UI_Chart_type"),
-                 ScaveModelPackage.Literals.CHART__INPUT,
+                 getString("_UI_Dataset_input_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_Dataset_input_feature", "_UI_Dataset_type"),
+                 ScaveModelPackage.Literals.DATASET__INPUT,
                  true,
                  false,
                  false,
@@ -74,36 +73,14 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
     }
 
     /**
-     * This adds a property descriptor for the Temporary feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    protected void addTemporaryPropertyDescriptor(Object object) {
-        itemPropertyDescriptors.add
-            (createItemPropertyDescriptor
-                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-                 getResourceLocator(),
-                 getString("_UI_Chart_temporary_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_temporary_feature", "_UI_Chart_type"),
-                 ScaveModelPackage.Literals.CHART__TEMPORARY,
-                 true,
-                 false,
-                 false,
-                 ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE,
-                 null,
-                 null));
-    }
-
-    /**
-     * This returns Chart.gif.
+     * This returns Dataset.gif.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
     public Object getImage(Object object) {
-        return overlayImage(object, getResourceLocator().getImage("full/obj16/Chart"));
+        return overlayImage(object, getResourceLocator().getImage("full/obj16/Dataset"));
     }
 
     /**
@@ -124,10 +101,10 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
      */
     @Override
     public String getText(Object object) {
-        String label = ((Chart)object).getName();
+        String label = ((Dataset)object).getName();
         return label == null || label.length() == 0 ?
-            getString("_UI_Chart_type") :
-            getString("_UI_Chart_type") + " " + label;
+            getString("_UI_Dataset_type") :
+            getString("_UI_Dataset_type") + " " + label;
     }
     
 
@@ -142,10 +119,8 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
     public void notifyChanged(Notification notification) {
         updateChildren(notification);
 
-        switch (notification.getFeatureID(Chart.class)) {
-            case ScaveModelPackage.CHART__INPUT:
-            case ScaveModelPackage.CHART__PROPERTIES:
-            case ScaveModelPackage.CHART__TEMPORARY:
+        switch (notification.getFeatureID(Dataset.class)) {
+            case ScaveModelPackage.DATASET__INPUT:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
                 return;
         }

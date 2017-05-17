@@ -57,15 +57,18 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
     @Override
     public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
-            case ScaveModelPackage.PROPERTY: return createProperty();
             case ScaveModelPackage.ANALYSIS: return createAnalysis();
             case ScaveModelPackage.INPUTS: return createInputs();
             case ScaveModelPackage.INPUT_FILE: return createInputFile();
+            case ScaveModelPackage.CHARTS: return createCharts();
+            case ScaveModelPackage.PROPERTY: return createProperty();
             case ScaveModelPackage.BAR_CHART: return createBarChart();
             case ScaveModelPackage.LINE_CHART: return createLineChart();
             case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
             case ScaveModelPackage.SCATTER_CHART: return createScatterChart();
-            case ScaveModelPackage.CHARTS: return createCharts();
+            case ScaveModelPackage.DATASET: return createDataset();
+            case ScaveModelPackage.CHART_SHEET: return createChartSheet();
+            case ScaveModelPackage.FOLDER: return createFolder();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -106,16 +109,6 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      * <!-- end-user-doc -->
      * @generated
      */
-    public Property createProperty() {
-        PropertyImpl property = new PropertyImpl();
-        return property;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public Analysis createAnalysis() {
         AnalysisImpl analysis = new AnalysisImpl();
         return analysis;
@@ -139,6 +132,26 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
     public InputFile createInputFile() {
         InputFileImpl inputFile = new InputFileImpl();
         return inputFile;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Charts createCharts() {
+        ChartsImpl charts = new ChartsImpl();
+        return charts;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Property createProperty() {
+        PropertyImpl property = new PropertyImpl();
+        return property;
     }
 
     /**
@@ -186,9 +199,29 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      * <!-- end-user-doc -->
      * @generated
      */
-    public Charts createCharts() {
-        ChartsImpl charts = new ChartsImpl();
-        return charts;
+    public Dataset createDataset() {
+        DatasetImpl dataset = new DatasetImpl();
+        return dataset;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public ChartSheet createChartSheet() {
+        ChartSheetImpl chartSheet = new ChartSheetImpl();
+        return chartSheet;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public Folder createFolder() {
+        FolderImpl folder = new FolderImpl();
+        return folder;
     }
 
     /**

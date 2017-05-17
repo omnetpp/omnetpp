@@ -5,67 +5,49 @@ package org.omnetpp.scave.model.impl;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.NotificationChain;
 
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.InternalEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Chart</b></em>'.
+ * An implementation of the model object '<em><b>Chart Sheet</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getInput <em>Input</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getProperties <em>Properties</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#isTemporary <em>Temporary</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#getCharts <em>Charts</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#isTemporary <em>Temporary</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#getProperties <em>Properties</em>}</li>
  * </ul>
  *
  * @generated
  */
-public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
+public class ChartSheetImpl extends AnalysisItemImpl implements ChartSheet {
     /**
-     * The default value of the '{@link #getInput() <em>Input</em>}' attribute.
+     * The cached value of the '{@link #getCharts() <em>Charts</em>}' reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #getInput()
+     * @see #getCharts()
      * @generated
      * @ordered
      */
-    protected static final String INPUT_EDEFAULT = null;
-
-    /**
-     * The cached value of the '{@link #getInput() <em>Input</em>}' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see #getInput()
-     * @generated
-     * @ordered
-     */
-    protected String input = INPUT_EDEFAULT;
-
-    /**
-     * The cached value of the '{@link #getProperties() <em>Properties</em>}' containment reference list.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see #getProperties()
-     * @generated
-     * @ordered
-     */
-    protected EList<Property> properties;
+    protected EList<Chart> charts;
 
     /**
      * The default value of the '{@link #isTemporary() <em>Temporary</em>}' attribute.
@@ -88,11 +70,21 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     protected boolean temporary = TEMPORARY_EDEFAULT;
 
     /**
+     * The cached value of the '{@link #getProperties() <em>Properties</em>}' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getProperties()
+     * @generated
+     * @ordered
+     */
+    protected EList<Property> properties;
+
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected ChartImpl() {
+    protected ChartSheetImpl() {
         super();
     }
 
@@ -103,7 +95,7 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
      */
     @Override
     protected EClass eStaticClass() {
-        return ScaveModelPackage.Literals.CHART;
+        return ScaveModelPackage.Literals.CHART_SHEET;
     }
 
     /**
@@ -111,32 +103,11 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getInput() {
-        return input;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public void setInput(String newInput) {
-        String oldInput = input;
-        input = newInput;
-        if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__INPUT, oldInput, input));
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EList<Property> getProperties() {
-        if (properties == null) {
-            properties = new EObjectContainmentEList<Property>(Property.class, this, ScaveModelPackage.CHART__PROPERTIES);
+    public EList<Chart> getCharts() {
+        if (charts == null) {
+            charts = new EObjectResolvingEList<Chart>(Chart.class, this, ScaveModelPackage.CHART_SHEET__CHARTS);
         }
-        return properties;
+        return charts;
     }
 
     /**
@@ -157,7 +128,19 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
         boolean oldTemporary = temporary;
         temporary = newTemporary;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__TEMPORARY, oldTemporary, temporary));
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART_SHEET__TEMPORARY, oldTemporary, temporary));
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EList<Property> getProperties() {
+        if (properties == null) {
+            properties = new EObjectContainmentEList<Property>(Property.class, this, ScaveModelPackage.CHART_SHEET__PROPERTIES);
+        }
+        return properties;
     }
 
     /**
@@ -168,7 +151,7 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__PROPERTIES:
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
                 return ((InternalEList<?>)getProperties()).basicRemove(otherEnd, msgs);
         }
         return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -182,12 +165,12 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                return getInput();
-            case ScaveModelPackage.CHART__PROPERTIES:
-                return getProperties();
-            case ScaveModelPackage.CHART__TEMPORARY:
+            case ScaveModelPackage.CHART_SHEET__CHARTS:
+                return getCharts();
+            case ScaveModelPackage.CHART_SHEET__TEMPORARY:
                 return isTemporary();
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
+                return getProperties();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -201,15 +184,16 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                setInput((String)newValue);
+            case ScaveModelPackage.CHART_SHEET__CHARTS:
+                getCharts().clear();
+                getCharts().addAll((Collection<? extends Chart>)newValue);
                 return;
-            case ScaveModelPackage.CHART__PROPERTIES:
+            case ScaveModelPackage.CHART_SHEET__TEMPORARY:
+                setTemporary((Boolean)newValue);
+                return;
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
                 getProperties().clear();
                 getProperties().addAll((Collection<? extends Property>)newValue);
-                return;
-            case ScaveModelPackage.CHART__TEMPORARY:
-                setTemporary((Boolean)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -223,14 +207,14 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                setInput(INPUT_EDEFAULT);
+            case ScaveModelPackage.CHART_SHEET__CHARTS:
+                getCharts().clear();
                 return;
-            case ScaveModelPackage.CHART__PROPERTIES:
-                getProperties().clear();
-                return;
-            case ScaveModelPackage.CHART__TEMPORARY:
+            case ScaveModelPackage.CHART_SHEET__TEMPORARY:
                 setTemporary(TEMPORARY_EDEFAULT);
+                return;
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
+                getProperties().clear();
                 return;
         }
         super.eUnset(featureID);
@@ -244,12 +228,12 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                return INPUT_EDEFAULT == null ? input != null : !INPUT_EDEFAULT.equals(input);
-            case ScaveModelPackage.CHART__PROPERTIES:
-                return properties != null && !properties.isEmpty();
-            case ScaveModelPackage.CHART__TEMPORARY:
+            case ScaveModelPackage.CHART_SHEET__CHARTS:
+                return charts != null && !charts.isEmpty();
+            case ScaveModelPackage.CHART_SHEET__TEMPORARY:
                 return temporary != TEMPORARY_EDEFAULT;
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
+                return properties != null && !properties.isEmpty();
         }
         return super.eIsSet(featureID);
     }
@@ -264,12 +248,10 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());
-        result.append(" (input: ");
-        result.append(input);
-        result.append(", temporary: ");
+        result.append(" (temporary: ");
         result.append(temporary);
         result.append(')');
         return result.toString();
     }
 
-} //ChartImpl
+} //ChartSheetImpl

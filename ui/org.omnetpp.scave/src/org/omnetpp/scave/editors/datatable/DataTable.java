@@ -120,7 +120,7 @@ public class DataTable extends Table implements IDataControl {
 
     private static final Column
         COL_DIRECTORY = new Column("Folder", null, 60, false, false),
-        COL_FILE = new Column("File, FILE, 120, false, false),
+        COL_FILE = new Column("File", FILE, 120, false, false),
         COL_CONFIG = new Column("Config", CONFIGNAME, 120, false, false),
         COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 60, false, false),
         COL_RUN_ID = new Column("RunId", RUN, 100, false, false),
@@ -128,7 +128,7 @@ public class DataTable extends Table implements IDataControl {
         COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 160, true, false),
         COL_REPLICATION = new Column("Replication", REPLICATION, 60, true, false),
         COL_MODULE = new Column("Module", MODULE, 160, true, false),
-        COL_DATA = new Column("Name", NAME, 120, true, false), //TODO COL_NAME
+        COL_NAME = new Column("Name", NAME, 120, true, false),
         COL_VALUE = new Column("Value", null, 120, true, true),
         COL_KIND = new Column("Kind", null, 40, true, false),
         COL_COUNT = new Column("Count", null, 80, true, true),

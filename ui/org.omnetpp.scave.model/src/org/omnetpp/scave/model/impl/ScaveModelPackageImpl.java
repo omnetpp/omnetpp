@@ -11,9 +11,13 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -36,20 +40,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * <!-- end-user-doc -->
      * @generated
      */
-    private EClass chartEClass = null;
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    private EClass propertyEClass = null;
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     private EClass analysisEClass = null;
 
     /**
@@ -65,6 +55,34 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * @generated
      */
     private EClass inputFileEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass chartsEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass analysisItemEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass chartEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass propertyEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -99,7 +117,21 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * <!-- end-user-doc -->
      * @generated
      */
-    private EClass chartsEClass = null;
+    private EClass datasetEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass chartSheetEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass folderEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -174,69 +206,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getChart() {
-        return chartEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EAttribute getChart_Name() {
-        return (EAttribute)chartEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EAttribute getChart_Input() {
-        return (EAttribute)chartEClass.getEStructuralFeatures().get(1);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EReference getChart_Properties() {
-        return (EReference)chartEClass.getEStructuralFeatures().get(2);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EClass getProperty() {
-        return propertyEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EAttribute getProperty_Name() {
-        return (EAttribute)propertyEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EAttribute getProperty_Value() {
-        return (EAttribute)propertyEClass.getEStructuralFeatures().get(1);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public EClass getAnalysis() {
         return analysisEClass;
     }
@@ -293,6 +262,105 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      */
     public EAttribute getInputFile_Name() {
         return (EAttribute)inputFileEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getCharts() {
+        return chartsEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getCharts_Items() {
+        return (EReference)chartsEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getAnalysisItem() {
+        return analysisItemEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getAnalysisItem_Name() {
+        return (EAttribute)analysisItemEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getChart() {
+        return chartEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getChart_Input() {
+        return (EAttribute)chartEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getChart_Properties() {
+        return (EReference)chartEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getChart_Temporary() {
+        return (EAttribute)chartEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getProperty() {
+        return propertyEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getProperty_Name() {
+        return (EAttribute)propertyEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getProperty_Value() {
+        return (EAttribute)propertyEClass.getEStructuralFeatures().get(1);
     }
 
     /**
@@ -417,8 +485,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getCharts() {
-        return chartsEClass;
+    public EClass getDataset() {
+        return datasetEClass;
     }
 
     /**
@@ -426,8 +494,62 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getCharts_Charts() {
-        return (EReference)chartsEClass.getEStructuralFeatures().get(0);
+    public EAttribute getDataset_Input() {
+        return (EAttribute)datasetEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getChartSheet() {
+        return chartSheetEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getChartSheet_Charts() {
+        return (EReference)chartSheetEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getChartSheet_Temporary() {
+        return (EAttribute)chartSheetEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getChartSheet_Properties() {
+        return (EReference)chartSheetEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getFolder() {
+        return folderEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getFolder_Items() {
+        return (EReference)folderEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -467,15 +589,6 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         isCreated = true;
 
         // Create classes and their features
-        chartEClass = createEClass(CHART);
-        createEAttribute(chartEClass, CHART__NAME);
-        createEAttribute(chartEClass, CHART__INPUT);
-        createEReference(chartEClass, CHART__PROPERTIES);
-
-        propertyEClass = createEClass(PROPERTY);
-        createEAttribute(propertyEClass, PROPERTY__NAME);
-        createEAttribute(propertyEClass, PROPERTY__VALUE);
-
         analysisEClass = createEClass(ANALYSIS);
         createEReference(analysisEClass, ANALYSIS__INPUTS);
         createEReference(analysisEClass, ANALYSIS__CHARTS);
@@ -485,6 +598,21 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
         inputFileEClass = createEClass(INPUT_FILE);
         createEAttribute(inputFileEClass, INPUT_FILE__NAME);
+
+        chartsEClass = createEClass(CHARTS);
+        createEReference(chartsEClass, CHARTS__ITEMS);
+
+        analysisItemEClass = createEClass(ANALYSIS_ITEM);
+        createEAttribute(analysisItemEClass, ANALYSIS_ITEM__NAME);
+
+        chartEClass = createEClass(CHART);
+        createEAttribute(chartEClass, CHART__INPUT);
+        createEReference(chartEClass, CHART__PROPERTIES);
+        createEAttribute(chartEClass, CHART__TEMPORARY);
+
+        propertyEClass = createEClass(PROPERTY);
+        createEAttribute(propertyEClass, PROPERTY__NAME);
+        createEAttribute(propertyEClass, PROPERTY__VALUE);
 
         barChartEClass = createEClass(BAR_CHART);
         createEAttribute(barChartEClass, BAR_CHART__GROUP_BY_FIELDS);
@@ -503,8 +631,16 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         createEAttribute(scatterChartEClass, SCATTER_CHART__ISO_DATA_PATTERN);
         createEAttribute(scatterChartEClass, SCATTER_CHART__AVERAGE_REPLICATIONS);
 
-        chartsEClass = createEClass(CHARTS);
-        createEReference(chartsEClass, CHARTS__CHARTS);
+        datasetEClass = createEClass(DATASET);
+        createEAttribute(datasetEClass, DATASET__INPUT);
+
+        chartSheetEClass = createEClass(CHART_SHEET);
+        createEReference(chartSheetEClass, CHART_SHEET__CHARTS);
+        createEAttribute(chartSheetEClass, CHART_SHEET__TEMPORARY);
+        createEReference(chartSheetEClass, CHART_SHEET__PROPERTIES);
+
+        folderEClass = createEClass(FOLDER);
+        createEReference(folderEClass, FOLDER__ITEMS);
 
         // Create enums
         resultTypeEEnum = createEEnum(RESULT_TYPE);
@@ -538,21 +674,16 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         // Set bounds for type parameters
 
         // Add supertypes to classes
+        chartEClass.getESuperTypes().add(this.getAnalysisItem());
         barChartEClass.getESuperTypes().add(this.getChart());
         lineChartEClass.getESuperTypes().add(this.getChart());
         histogramChartEClass.getESuperTypes().add(this.getChart());
         scatterChartEClass.getESuperTypes().add(this.getChart());
+        datasetEClass.getESuperTypes().add(this.getAnalysisItem());
+        chartSheetEClass.getESuperTypes().add(this.getAnalysisItem());
+        folderEClass.getESuperTypes().add(this.getAnalysisItem());
 
         // Initialize classes and features; add operations and parameters
-        initEClass(chartEClass, Chart.class, "Chart", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getChart_Name(), ecorePackage.getEString(), "name", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getChart_Input(), ecorePackage.getEString(), "input", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getChart_Properties(), this.getProperty(), null, "properties", null, 0, -1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-        initEClass(propertyEClass, Property.class, "Property", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getProperty_Name(), ecorePackage.getEString(), "name", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEAttribute(getProperty_Value(), ecorePackage.getEString(), "value", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
         initEClass(analysisEClass, Analysis.class, "Analysis", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getAnalysis_Inputs(), this.getInputs(), null, "inputs", null, 0, 1, Analysis.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getAnalysis_Charts(), this.getCharts(), null, "charts", null, 0, 1, Analysis.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -562,6 +693,21 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
         initEClass(inputFileEClass, InputFile.class, "InputFile", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getInputFile_Name(), ecorePackage.getEString(), "name", "", 0, 1, InputFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(chartsEClass, Charts.class, "Charts", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getCharts_Items(), this.getAnalysisItem(), null, "items", null, 0, -1, Charts.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(analysisItemEClass, AnalysisItem.class, "AnalysisItem", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getAnalysisItem_Name(), ecorePackage.getEString(), "name", null, 0, 1, AnalysisItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(chartEClass, Chart.class, "Chart", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getChart_Input(), ecorePackage.getEString(), "input", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getChart_Properties(), this.getProperty(), null, "properties", null, 0, -1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getChart_Temporary(), ecorePackage.getEBoolean(), "temporary", "false", 1, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(propertyEClass, Property.class, "Property", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getProperty_Name(), ecorePackage.getEString(), "name", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getProperty_Value(), ecorePackage.getEString(), "value", null, 0, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(barChartEClass, BarChart.class, "BarChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getBarChart_GroupByFields(), ecorePackage.getEString(), "groupByFields", null, 0, -1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
@@ -580,8 +726,16 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         initEAttribute(getScatterChart_IsoDataPattern(), ecorePackage.getEString(), "isoDataPattern", null, 0, -1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getScatterChart_AverageReplications(), ecorePackage.getEBoolean(), "averageReplications", "true", 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(chartsEClass, Charts.class, "Charts", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getCharts_Charts(), this.getChart(), null, "charts", null, 0, -1, Charts.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEClass(datasetEClass, Dataset.class, "Dataset", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEAttribute(getDataset_Input(), ecorePackage.getEString(), "input", null, 0, 1, Dataset.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(chartSheetEClass, ChartSheet.class, "ChartSheet", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getChartSheet_Charts(), this.getChart(), null, "charts", null, 0, -1, ChartSheet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getChartSheet_Temporary(), ecorePackage.getEBoolean(), "temporary", "false", 1, 1, ChartSheet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getChartSheet_Properties(), this.getProperty(), null, "properties", null, 0, -1, ChartSheet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(folderEClass, Folder.class, "Folder", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getFolder_Items(), this.getAnalysisItem(), null, "items", null, 0, -1, Folder.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals
         initEEnum(resultTypeEEnum, ResultType.class, "ResultType");

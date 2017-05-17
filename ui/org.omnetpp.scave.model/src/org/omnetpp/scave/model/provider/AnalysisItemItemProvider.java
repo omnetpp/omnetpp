@@ -9,28 +9,43 @@ import java.util.List;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.util.ResourceLocator;
+
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
+import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
+import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
+import org.eclipse.emf.edit.provider.IItemPropertySource;
+import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
+import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
+import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 
-import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * This is the item provider adapter for a {@link org.omnetpp.scave.model.Chart} object.
+ * This is the item provider adapter for a {@link org.omnetpp.scave.model.AnalysisItem} object.
  * <!-- begin-user-doc -->
  * <!-- end-user-doc -->
  * @generated
  */
-public class ChartItemProvider extends AnalysisItemItemProvider {
+public class AnalysisItemItemProvider 
+    extends ItemProviderAdapter
+    implements
+        IEditingDomainItemProvider,
+        IStructuredItemContentProvider,
+        ITreeItemContentProvider,
+        IItemLabelProvider,
+        IItemPropertySource {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    public ChartItemProvider(AdapterFactory adapterFactory) {
+    public AnalysisItemItemProvider(AdapterFactory adapterFactory) {
         super(adapterFactory);
     }
 
@@ -45,65 +60,31 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
         if (itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
-            addInputPropertyDescriptor(object);
-            addTemporaryPropertyDescriptor(object);
+            addNamePropertyDescriptor(object);
         }
         return itemPropertyDescriptors;
     }
 
     /**
-     * This adds a property descriptor for the Input feature.
+     * This adds a property descriptor for the Name feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected void addInputPropertyDescriptor(Object object) {
+    protected void addNamePropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
                  getResourceLocator(),
-                 getString("_UI_Chart_input_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_input_feature", "_UI_Chart_type"),
-                 ScaveModelPackage.Literals.CHART__INPUT,
+                 getString("_UI_AnalysisItem_name_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_AnalysisItem_name_feature", "_UI_AnalysisItem_type"),
+                 ScaveModelPackage.Literals.ANALYSIS_ITEM__NAME,
                  true,
                  false,
                  false,
                  ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
                  null,
                  null));
-    }
-
-    /**
-     * This adds a property descriptor for the Temporary feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    protected void addTemporaryPropertyDescriptor(Object object) {
-        itemPropertyDescriptors.add
-            (createItemPropertyDescriptor
-                (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
-                 getResourceLocator(),
-                 getString("_UI_Chart_temporary_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_temporary_feature", "_UI_Chart_type"),
-                 ScaveModelPackage.Literals.CHART__TEMPORARY,
-                 true,
-                 false,
-                 false,
-                 ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE,
-                 null,
-                 null));
-    }
-
-    /**
-     * This returns Chart.gif.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public Object getImage(Object object) {
-        return overlayImage(object, getResourceLocator().getImage("full/obj16/Chart"));
     }
 
     /**
@@ -124,10 +105,10 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
      */
     @Override
     public String getText(Object object) {
-        String label = ((Chart)object).getName();
+        String label = ((AnalysisItem)object).getName();
         return label == null || label.length() == 0 ?
-            getString("_UI_Chart_type") :
-            getString("_UI_Chart_type") + " " + label;
+            getString("_UI_AnalysisItem_type") :
+            getString("_UI_AnalysisItem_type") + " " + label;
     }
     
 
@@ -142,10 +123,8 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
     public void notifyChanged(Notification notification) {
         updateChildren(notification);
 
-        switch (notification.getFeatureID(Chart.class)) {
-            case ScaveModelPackage.CHART__INPUT:
-            case ScaveModelPackage.CHART__PROPERTIES:
-            case ScaveModelPackage.CHART__TEMPORARY:
+        switch (notification.getFeatureID(AnalysisItem.class)) {
+            case ScaveModelPackage.ANALYSIS_ITEM__NAME:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
                 return;
         }
@@ -162,6 +141,17 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
     @Override
     protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
+    }
+
+    /**
+     * Return the resource locator for this item provider's resources.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public ResourceLocator getResourceLocator() {
+        return ScaveEditPlugin.INSTANCE;
     }
 
 }

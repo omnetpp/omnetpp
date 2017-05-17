@@ -9,44 +9,29 @@ import java.util.List;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
-import org.eclipse.emf.common.util.ResourceLocator;
-
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-import org.eclipse.emf.edit.provider.IEditingDomainItemProvider;
-import org.eclipse.emf.edit.provider.IItemLabelProvider;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
-import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
-import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
-import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 
-import org.omnetpp.scave.model.Charts;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * This is the item provider adapter for a {@link org.omnetpp.scave.model.Charts} object.
+ * This is the item provider adapter for a {@link org.omnetpp.scave.model.Folder} object.
  * <!-- begin-user-doc -->
  * <!-- end-user-doc -->
  * @generated
  */
-public class ChartsItemProvider 
-    extends ItemProviderAdapter
-    implements
-        IEditingDomainItemProvider,
-        IStructuredItemContentProvider,
-        ITreeItemContentProvider,
-        IItemLabelProvider,
-        IItemPropertySource {
+public class FolderItemProvider extends AnalysisItemItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    public ChartsItemProvider(AdapterFactory adapterFactory) {
+    public FolderItemProvider(AdapterFactory adapterFactory) {
         super(adapterFactory);
     }
 
@@ -77,7 +62,7 @@ public class ChartsItemProvider
     public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
         if (childrenFeatures == null) {
             super.getChildrenFeatures(object);
-            childrenFeatures.add(ScaveModelPackage.Literals.CHARTS__ITEMS);
+            childrenFeatures.add(ScaveModelPackage.Literals.FOLDER__ITEMS);
         }
         return childrenFeatures;
     }
@@ -96,14 +81,14 @@ public class ChartsItemProvider
     }
 
     /**
-     * This returns Charts.gif.
+     * This returns Folder.gif.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
     public Object getImage(Object object) {
-        return overlayImage(object, getResourceLocator().getImage("full/obj16/Charts"));
+        return overlayImage(object, getResourceLocator().getImage("full/obj16/Folder"));
     }
 
     /**
@@ -124,7 +109,10 @@ public class ChartsItemProvider
      */
     @Override
     public String getText(Object object) {
-        return getString("_UI_Charts_type");
+        String label = ((Folder)object).getName();
+        return label == null || label.length() == 0 ?
+            getString("_UI_Folder_type") :
+            getString("_UI_Folder_type") + " " + label;
     }
     
 
@@ -139,8 +127,8 @@ public class ChartsItemProvider
     public void notifyChanged(Notification notification) {
         updateChildren(notification);
 
-        switch (notification.getFeatureID(Charts.class)) {
-            case ScaveModelPackage.CHARTS__ITEMS:
+        switch (notification.getFeatureID(Folder.class)) {
+            case ScaveModelPackage.FOLDER__ITEMS:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
                 return;
         }
@@ -160,49 +148,38 @@ public class ChartsItemProvider
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createBarChart()));
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createLineChart()));
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createHistogramChart()));
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createScatterChart()));
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createDataset()));
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createChartSheet()));
 
         newChildDescriptors.add
             (createChildParameter
-                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createFolder()));
-    }
-
-    /**
-     * Return the resource locator for this item provider's resources.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public ResourceLocator getResourceLocator() {
-        return ScaveEditPlugin.INSTANCE;
     }
 
 }

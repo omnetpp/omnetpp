@@ -57,89 +57,6 @@ public interface ScaveModelPackage extends EPackage {
     ScaveModelPackage eINSTANCE = org.omnetpp.scave.model.impl.ScaveModelPackageImpl.init();
 
     /**
-     * The meta object id for the '{@link org.omnetpp.scave.model.impl.ChartImpl <em>Chart</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.omnetpp.scave.model.impl.ChartImpl
-     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChart()
-     * @generated
-     */
-    int CHART = 0;
-
-    /**
-     * The feature id for the '<em><b>Name</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART__NAME = 0;
-
-    /**
-     * The feature id for the '<em><b>Input</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART__INPUT = 1;
-
-    /**
-     * The feature id for the '<em><b>Properties</b></em>' containment reference list.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART__PROPERTIES = 2;
-
-    /**
-     * The number of structural features of the '<em>Chart</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int CHART_FEATURE_COUNT = 3;
-
-    /**
-     * The meta object id for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.omnetpp.scave.model.impl.PropertyImpl
-     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProperty()
-     * @generated
-     */
-    int PROPERTY = 1;
-
-    /**
-     * The feature id for the '<em><b>Name</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int PROPERTY__NAME = 0;
-
-    /**
-     * The feature id for the '<em><b>Value</b></em>' attribute.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int PROPERTY__VALUE = 1;
-
-    /**
-     * The number of structural features of the '<em>Property</em>' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     * @ordered
-     */
-    int PROPERTY_FEATURE_COUNT = 2;
-
-    /**
      * The meta object id for the '{@link org.omnetpp.scave.model.impl.AnalysisImpl <em>Analysis</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -147,7 +64,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getAnalysis()
      * @generated
      */
-    int ANALYSIS = 2;
+    int ANALYSIS = 0;
 
     /**
      * The feature id for the '<em><b>Inputs</b></em>' containment reference.
@@ -184,7 +101,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getInputs()
      * @generated
      */
-    int INPUTS = 3;
+    int INPUTS = 1;
 
     /**
      * The feature id for the '<em><b>Inputs</b></em>' containment reference list.
@@ -212,7 +129,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getInputFile()
      * @generated
      */
-    int INPUT_FILE = 4;
+    int INPUT_FILE = 2;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -233,6 +150,154 @@ public interface ScaveModelPackage extends EPackage {
     int INPUT_FILE_FEATURE_COUNT = 1;
 
     /**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.ChartsImpl <em>Charts</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.ChartsImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getCharts()
+     * @generated
+     */
+    int CHARTS = 3;
+
+    /**
+     * The feature id for the '<em><b>Items</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHARTS__ITEMS = 0;
+
+    /**
+     * The number of structural features of the '<em>Charts</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHARTS_FEATURE_COUNT = 1;
+
+    /**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.AnalysisItemImpl <em>Analysis Item</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.AnalysisItemImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getAnalysisItem()
+     * @generated
+     */
+    int ANALYSIS_ITEM = 4;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ANALYSIS_ITEM__NAME = 0;
+
+    /**
+     * The number of structural features of the '<em>Analysis Item</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ANALYSIS_ITEM_FEATURE_COUNT = 1;
+
+    /**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.ChartImpl <em>Chart</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.ChartImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChart()
+     * @generated
+     */
+    int CHART = 5;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART__NAME = ANALYSIS_ITEM__NAME;
+
+    /**
+     * The feature id for the '<em><b>Input</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART__INPUT = ANALYSIS_ITEM_FEATURE_COUNT + 0;
+
+    /**
+     * The feature id for the '<em><b>Properties</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART__PROPERTIES = ANALYSIS_ITEM_FEATURE_COUNT + 1;
+
+    /**
+     * The feature id for the '<em><b>Temporary</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART__TEMPORARY = ANALYSIS_ITEM_FEATURE_COUNT + 2;
+
+    /**
+     * The number of structural features of the '<em>Chart</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 3;
+
+    /**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.PropertyImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProperty()
+     * @generated
+     */
+    int PROPERTY = 6;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int PROPERTY__NAME = 0;
+
+    /**
+     * The feature id for the '<em><b>Value</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int PROPERTY__VALUE = 1;
+
+    /**
+     * The number of structural features of the '<em>Property</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int PROPERTY_FEATURE_COUNT = 2;
+
+    /**
      * The meta object id for the '{@link org.omnetpp.scave.model.impl.BarChartImpl <em>Bar Chart</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -240,7 +305,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getBarChart()
      * @generated
      */
-    int BAR_CHART = 5;
+    int BAR_CHART = 7;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -268,6 +333,15 @@ public interface ScaveModelPackage extends EPackage {
      * @ordered
      */
     int BAR_CHART__PROPERTIES = CHART__PROPERTIES;
+
+    /**
+     * The feature id for the '<em><b>Temporary</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int BAR_CHART__TEMPORARY = CHART__TEMPORARY;
 
     /**
      * The feature id for the '<em><b>Group By Fields</b></em>' attribute list.
@@ -331,7 +405,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getLineChart()
      * @generated
      */
-    int LINE_CHART = 6;
+    int LINE_CHART = 8;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -361,6 +435,15 @@ public interface ScaveModelPackage extends EPackage {
     int LINE_CHART__PROPERTIES = CHART__PROPERTIES;
 
     /**
+     * The feature id for the '<em><b>Temporary</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int LINE_CHART__TEMPORARY = CHART__TEMPORARY;
+
+    /**
      * The feature id for the '<em><b>Line Name Format</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -386,7 +469,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getHistogramChart()
      * @generated
      */
-    int HISTOGRAM_CHART = 7;
+    int HISTOGRAM_CHART = 9;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -416,6 +499,15 @@ public interface ScaveModelPackage extends EPackage {
     int HISTOGRAM_CHART__PROPERTIES = CHART__PROPERTIES;
 
     /**
+     * The feature id for the '<em><b>Temporary</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int HISTOGRAM_CHART__TEMPORARY = CHART__TEMPORARY;
+
+    /**
      * The number of structural features of the '<em>Histogram Chart</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -432,7 +524,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getScatterChart()
      * @generated
      */
-    int SCATTER_CHART = 8;
+    int SCATTER_CHART = 10;
 
     /**
      * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -460,6 +552,15 @@ public interface ScaveModelPackage extends EPackage {
      * @ordered
      */
     int SCATTER_CHART__PROPERTIES = CHART__PROPERTIES;
+
+    /**
+     * The feature id for the '<em><b>Temporary</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int SCATTER_CHART__TEMPORARY = CHART__TEMPORARY;
 
     /**
      * The feature id for the '<em><b>XData Pattern</b></em>' attribute.
@@ -498,32 +599,133 @@ public interface ScaveModelPackage extends EPackage {
     int SCATTER_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 3;
 
     /**
-     * The meta object id for the '{@link org.omnetpp.scave.model.impl.ChartsImpl <em>Charts</em>}' class.
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.DatasetImpl <em>Dataset</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.omnetpp.scave.model.impl.ChartsImpl
-     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getCharts()
+     * @see org.omnetpp.scave.model.impl.DatasetImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDataset()
      * @generated
      */
-    int CHARTS = 9;
+    int DATASET = 11;
 
     /**
-     * The feature id for the '<em><b>Charts</b></em>' containment reference list.
+     * The feature id for the '<em><b>Name</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int CHARTS__CHARTS = 0;
+    int DATASET__NAME = ANALYSIS_ITEM__NAME;
 
     /**
-     * The number of structural features of the '<em>Charts</em>' class.
+     * The feature id for the '<em><b>Input</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int CHARTS_FEATURE_COUNT = 1;
+    int DATASET__INPUT = ANALYSIS_ITEM_FEATURE_COUNT + 0;
+
+    /**
+     * The number of structural features of the '<em>Dataset</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int DATASET_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 1;
+
+    /**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.ChartSheetImpl <em>Chart Sheet</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.ChartSheetImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChartSheet()
+     * @generated
+     */
+    int CHART_SHEET = 12;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART_SHEET__NAME = ANALYSIS_ITEM__NAME;
+
+    /**
+     * The feature id for the '<em><b>Charts</b></em>' reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART_SHEET__CHARTS = ANALYSIS_ITEM_FEATURE_COUNT + 0;
+
+    /**
+     * The feature id for the '<em><b>Temporary</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART_SHEET__TEMPORARY = ANALYSIS_ITEM_FEATURE_COUNT + 1;
+
+    /**
+     * The feature id for the '<em><b>Properties</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART_SHEET__PROPERTIES = ANALYSIS_ITEM_FEATURE_COUNT + 2;
+
+    /**
+     * The number of structural features of the '<em>Chart Sheet</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int CHART_SHEET_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 3;
+
+    /**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.FolderImpl <em>Folder</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.FolderImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getFolder()
+     * @generated
+     */
+    int FOLDER = 13;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int FOLDER__NAME = ANALYSIS_ITEM__NAME;
+
+    /**
+     * The feature id for the '<em><b>Items</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int FOLDER__ITEMS = ANALYSIS_ITEM_FEATURE_COUNT + 0;
+
+    /**
+     * The number of structural features of the '<em>Folder</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int FOLDER_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 1;
 
     /**
      * The meta object id for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
@@ -533,83 +735,8 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
      * @generated
      */
-    int RESULT_TYPE = 10;
+    int RESULT_TYPE = 14;
 
-
-    /**
-     * Returns the meta object for class '{@link org.omnetpp.scave.model.Chart <em>Chart</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Chart</em>'.
-     * @see org.omnetpp.scave.model.Chart
-     * @generated
-     */
-    EClass getChart();
-
-    /**
-     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#getName <em>Name</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Name</em>'.
-     * @see org.omnetpp.scave.model.Chart#getName()
-     * @see #getChart()
-     * @generated
-     */
-    EAttribute getChart_Name();
-
-    /**
-     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#getInput <em>Input</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Input</em>'.
-     * @see org.omnetpp.scave.model.Chart#getInput()
-     * @see #getChart()
-     * @generated
-     */
-    EAttribute getChart_Input();
-
-    /**
-     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Chart#getProperties <em>Properties</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the containment reference list '<em>Properties</em>'.
-     * @see org.omnetpp.scave.model.Chart#getProperties()
-     * @see #getChart()
-     * @generated
-     */
-    EReference getChart_Properties();
-
-    /**
-     * Returns the meta object for class '{@link org.omnetpp.scave.model.Property <em>Property</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Property</em>'.
-     * @see org.omnetpp.scave.model.Property
-     * @generated
-     */
-    EClass getProperty();
-
-    /**
-     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Property#getName <em>Name</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Name</em>'.
-     * @see org.omnetpp.scave.model.Property#getName()
-     * @see #getProperty()
-     * @generated
-     */
-    EAttribute getProperty_Name();
-
-    /**
-     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Property#getValue <em>Value</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Value</em>'.
-     * @see org.omnetpp.scave.model.Property#getValue()
-     * @see #getProperty()
-     * @generated
-     */
-    EAttribute getProperty_Value();
 
     /**
      * Returns the meta object for class '{@link org.omnetpp.scave.model.Analysis <em>Analysis</em>}'.
@@ -684,6 +811,123 @@ public interface ScaveModelPackage extends EPackage {
      * @generated
      */
     EAttribute getInputFile_Name();
+
+    /**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.Charts <em>Charts</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Charts</em>'.
+     * @see org.omnetpp.scave.model.Charts
+     * @generated
+     */
+    EClass getCharts();
+
+    /**
+     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Charts#getItems <em>Items</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the containment reference list '<em>Items</em>'.
+     * @see org.omnetpp.scave.model.Charts#getItems()
+     * @see #getCharts()
+     * @generated
+     */
+    EReference getCharts_Items();
+
+    /**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.AnalysisItem <em>Analysis Item</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Analysis Item</em>'.
+     * @see org.omnetpp.scave.model.AnalysisItem
+     * @generated
+     */
+    EClass getAnalysisItem();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.AnalysisItem#getName <em>Name</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Name</em>'.
+     * @see org.omnetpp.scave.model.AnalysisItem#getName()
+     * @see #getAnalysisItem()
+     * @generated
+     */
+    EAttribute getAnalysisItem_Name();
+
+    /**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.Chart <em>Chart</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Chart</em>'.
+     * @see org.omnetpp.scave.model.Chart
+     * @generated
+     */
+    EClass getChart();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#getInput <em>Input</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Input</em>'.
+     * @see org.omnetpp.scave.model.Chart#getInput()
+     * @see #getChart()
+     * @generated
+     */
+    EAttribute getChart_Input();
+
+    /**
+     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Chart#getProperties <em>Properties</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the containment reference list '<em>Properties</em>'.
+     * @see org.omnetpp.scave.model.Chart#getProperties()
+     * @see #getChart()
+     * @generated
+     */
+    EReference getChart_Properties();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#isTemporary <em>Temporary</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Temporary</em>'.
+     * @see org.omnetpp.scave.model.Chart#isTemporary()
+     * @see #getChart()
+     * @generated
+     */
+    EAttribute getChart_Temporary();
+
+    /**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.Property <em>Property</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Property</em>'.
+     * @see org.omnetpp.scave.model.Property
+     * @generated
+     */
+    EClass getProperty();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Property#getName <em>Name</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Name</em>'.
+     * @see org.omnetpp.scave.model.Property#getName()
+     * @see #getProperty()
+     * @generated
+     */
+    EAttribute getProperty_Name();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Property#getValue <em>Value</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Value</em>'.
+     * @see org.omnetpp.scave.model.Property#getValue()
+     * @see #getProperty()
+     * @generated
+     */
+    EAttribute getProperty_Value();
 
     /**
      * Returns the meta object for class '{@link org.omnetpp.scave.model.BarChart <em>Bar Chart</em>}'.
@@ -825,25 +1069,89 @@ public interface ScaveModelPackage extends EPackage {
     EAttribute getScatterChart_AverageReplications();
 
     /**
-     * Returns the meta object for class '{@link org.omnetpp.scave.model.Charts <em>Charts</em>}'.
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.Dataset <em>Dataset</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Charts</em>'.
-     * @see org.omnetpp.scave.model.Charts
+     * @return the meta object for class '<em>Dataset</em>'.
+     * @see org.omnetpp.scave.model.Dataset
      * @generated
      */
-    EClass getCharts();
+    EClass getDataset();
 
     /**
-     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Charts#getCharts <em>Charts</em>}'.
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Dataset#getInput <em>Input</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the containment reference list '<em>Charts</em>'.
-     * @see org.omnetpp.scave.model.Charts#getCharts()
-     * @see #getCharts()
+     * @return the meta object for the attribute '<em>Input</em>'.
+     * @see org.omnetpp.scave.model.Dataset#getInput()
+     * @see #getDataset()
      * @generated
      */
-    EReference getCharts_Charts();
+    EAttribute getDataset_Input();
+
+    /**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.ChartSheet <em>Chart Sheet</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Chart Sheet</em>'.
+     * @see org.omnetpp.scave.model.ChartSheet
+     * @generated
+     */
+    EClass getChartSheet();
+
+    /**
+     * Returns the meta object for the reference list '{@link org.omnetpp.scave.model.ChartSheet#getCharts <em>Charts</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the reference list '<em>Charts</em>'.
+     * @see org.omnetpp.scave.model.ChartSheet#getCharts()
+     * @see #getChartSheet()
+     * @generated
+     */
+    EReference getChartSheet_Charts();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ChartSheet#isTemporary <em>Temporary</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Temporary</em>'.
+     * @see org.omnetpp.scave.model.ChartSheet#isTemporary()
+     * @see #getChartSheet()
+     * @generated
+     */
+    EAttribute getChartSheet_Temporary();
+
+    /**
+     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.ChartSheet#getProperties <em>Properties</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the containment reference list '<em>Properties</em>'.
+     * @see org.omnetpp.scave.model.ChartSheet#getProperties()
+     * @see #getChartSheet()
+     * @generated
+     */
+    EReference getChartSheet_Properties();
+
+    /**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.Folder <em>Folder</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Folder</em>'.
+     * @see org.omnetpp.scave.model.Folder
+     * @generated
+     */
+    EClass getFolder();
+
+    /**
+     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Folder#getItems <em>Items</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the containment reference list '<em>Items</em>'.
+     * @see org.omnetpp.scave.model.Folder#getItems()
+     * @see #getFolder()
+     * @generated
+     */
+    EReference getFolder_Items();
 
     /**
      * Returns the meta object for enum '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}'.
@@ -877,66 +1185,6 @@ public interface ScaveModelPackage extends EPackage {
      * @generated
      */
     interface Literals {
-        /**
-         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ChartImpl <em>Chart</em>}' class.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @see org.omnetpp.scave.model.impl.ChartImpl
-         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChart()
-         * @generated
-         */
-        EClass CHART = eINSTANCE.getChart();
-
-        /**
-         * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute CHART__NAME = eINSTANCE.getChart_Name();
-
-        /**
-         * The meta object literal for the '<em><b>Input</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute CHART__INPUT = eINSTANCE.getChart_Input();
-
-        /**
-         * The meta object literal for the '<em><b>Properties</b></em>' containment reference list feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EReference CHART__PROPERTIES = eINSTANCE.getChart_Properties();
-
-        /**
-         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @see org.omnetpp.scave.model.impl.PropertyImpl
-         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProperty()
-         * @generated
-         */
-        EClass PROPERTY = eINSTANCE.getProperty();
-
-        /**
-         * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute PROPERTY__NAME = eINSTANCE.getProperty_Name();
-
-        /**
-         * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute PROPERTY__VALUE = eINSTANCE.getProperty_Value();
-
         /**
          * The meta object literal for the '{@link org.omnetpp.scave.model.impl.AnalysisImpl <em>Analysis</em>}' class.
          * <!-- begin-user-doc -->
@@ -998,6 +1246,102 @@ public interface ScaveModelPackage extends EPackage {
          * @generated
          */
         EAttribute INPUT_FILE__NAME = eINSTANCE.getInputFile_Name();
+
+        /**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ChartsImpl <em>Charts</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.ChartsImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getCharts()
+         * @generated
+         */
+        EClass CHARTS = eINSTANCE.getCharts();
+
+        /**
+         * The meta object literal for the '<em><b>Items</b></em>' containment reference list feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference CHARTS__ITEMS = eINSTANCE.getCharts_Items();
+
+        /**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.AnalysisItemImpl <em>Analysis Item</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.AnalysisItemImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getAnalysisItem()
+         * @generated
+         */
+        EClass ANALYSIS_ITEM = eINSTANCE.getAnalysisItem();
+
+        /**
+         * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute ANALYSIS_ITEM__NAME = eINSTANCE.getAnalysisItem_Name();
+
+        /**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ChartImpl <em>Chart</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.ChartImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChart()
+         * @generated
+         */
+        EClass CHART = eINSTANCE.getChart();
+
+        /**
+         * The meta object literal for the '<em><b>Input</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute CHART__INPUT = eINSTANCE.getChart_Input();
+
+        /**
+         * The meta object literal for the '<em><b>Properties</b></em>' containment reference list feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference CHART__PROPERTIES = eINSTANCE.getChart_Properties();
+
+        /**
+         * The meta object literal for the '<em><b>Temporary</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute CHART__TEMPORARY = eINSTANCE.getChart_Temporary();
+
+        /**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.PropertyImpl <em>Property</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.PropertyImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getProperty()
+         * @generated
+         */
+        EClass PROPERTY = eINSTANCE.getProperty();
+
+        /**
+         * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute PROPERTY__NAME = eINSTANCE.getProperty_Name();
+
+        /**
+         * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute PROPERTY__VALUE = eINSTANCE.getProperty_Value();
 
         /**
          * The meta object literal for the '{@link org.omnetpp.scave.model.impl.BarChartImpl <em>Bar Chart</em>}' class.
@@ -1112,22 +1456,74 @@ public interface ScaveModelPackage extends EPackage {
         EAttribute SCATTER_CHART__AVERAGE_REPLICATIONS = eINSTANCE.getScatterChart_AverageReplications();
 
         /**
-         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ChartsImpl <em>Charts</em>}' class.
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.DatasetImpl <em>Dataset</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
-         * @see org.omnetpp.scave.model.impl.ChartsImpl
-         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getCharts()
+         * @see org.omnetpp.scave.model.impl.DatasetImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getDataset()
          * @generated
          */
-        EClass CHARTS = eINSTANCE.getCharts();
+        EClass DATASET = eINSTANCE.getDataset();
 
         /**
-         * The meta object literal for the '<em><b>Charts</b></em>' containment reference list feature.
+         * The meta object literal for the '<em><b>Input</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference CHARTS__CHARTS = eINSTANCE.getCharts_Charts();
+        EAttribute DATASET__INPUT = eINSTANCE.getDataset_Input();
+
+        /**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ChartSheetImpl <em>Chart Sheet</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.ChartSheetImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getChartSheet()
+         * @generated
+         */
+        EClass CHART_SHEET = eINSTANCE.getChartSheet();
+
+        /**
+         * The meta object literal for the '<em><b>Charts</b></em>' reference list feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference CHART_SHEET__CHARTS = eINSTANCE.getChartSheet_Charts();
+
+        /**
+         * The meta object literal for the '<em><b>Temporary</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute CHART_SHEET__TEMPORARY = eINSTANCE.getChartSheet_Temporary();
+
+        /**
+         * The meta object literal for the '<em><b>Properties</b></em>' containment reference list feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference CHART_SHEET__PROPERTIES = eINSTANCE.getChartSheet_Properties();
+
+        /**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.FolderImpl <em>Folder</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.FolderImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getFolder()
+         * @generated
+         */
+        EClass FOLDER = eINSTANCE.getFolder();
+
+        /**
+         * The meta object literal for the '<em><b>Items</b></em>' containment reference list feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference FOLDER__ITEMS = eINSTANCE.getFolder_Items();
 
         /**
          * The meta object literal for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.

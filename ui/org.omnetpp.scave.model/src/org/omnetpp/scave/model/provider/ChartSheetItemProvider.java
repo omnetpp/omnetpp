@@ -9,28 +9,31 @@ import java.util.List;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.ecore.EStructuralFeature;
+
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 
-import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * This is the item provider adapter for a {@link org.omnetpp.scave.model.Chart} object.
+ * This is the item provider adapter for a {@link org.omnetpp.scave.model.ChartSheet} object.
  * <!-- begin-user-doc -->
  * <!-- end-user-doc -->
  * @generated
  */
-public class ChartItemProvider extends AnalysisItemItemProvider {
+public class ChartSheetItemProvider extends AnalysisItemItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    public ChartItemProvider(AdapterFactory adapterFactory) {
+    public ChartSheetItemProvider(AdapterFactory adapterFactory) {
         super(adapterFactory);
     }
 
@@ -45,30 +48,30 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
         if (itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
-            addInputPropertyDescriptor(object);
+            addChartsPropertyDescriptor(object);
             addTemporaryPropertyDescriptor(object);
         }
         return itemPropertyDescriptors;
     }
 
     /**
-     * This adds a property descriptor for the Input feature.
+     * This adds a property descriptor for the Charts feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected void addInputPropertyDescriptor(Object object) {
+    protected void addChartsPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
                  getResourceLocator(),
-                 getString("_UI_Chart_input_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_input_feature", "_UI_Chart_type"),
-                 ScaveModelPackage.Literals.CHART__INPUT,
+                 getString("_UI_ChartSheet_charts_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_ChartSheet_charts_feature", "_UI_ChartSheet_type"),
+                 ScaveModelPackage.Literals.CHART_SHEET__CHARTS,
                  true,
                  false,
                  false,
-                 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+                 null,
                  null,
                  null));
     }
@@ -84,9 +87,9 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
                  getResourceLocator(),
-                 getString("_UI_Chart_temporary_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_temporary_feature", "_UI_Chart_type"),
-                 ScaveModelPackage.Literals.CHART__TEMPORARY,
+                 getString("_UI_ChartSheet_temporary_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_ChartSheet_temporary_feature", "_UI_ChartSheet_type"),
+                 ScaveModelPackage.Literals.CHART_SHEET__TEMPORARY,
                  true,
                  false,
                  false,
@@ -96,14 +99,45 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
     }
 
     /**
-     * This returns Chart.gif.
+     * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
+     * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
+     * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
+        if (childrenFeatures == null) {
+            super.getChildrenFeatures(object);
+            childrenFeatures.add(ScaveModelPackage.Literals.CHART_SHEET__CHARTS);
+            childrenFeatures.add(ScaveModelPackage.Literals.CHART_SHEET__PROPERTIES);
+        }
+        return childrenFeatures;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected EStructuralFeature getChildFeature(Object object, Object child) {
+        // Check the type of the specified child object and return the proper feature to use for
+        // adding (see {@link AddCommand}) it as a child.
+
+        return super.getChildFeature(object, child);
+    }
+
+    /**
+     * This returns ChartSheet.gif.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
     public Object getImage(Object object) {
-        return overlayImage(object, getResourceLocator().getImage("full/obj16/Chart"));
+        return overlayImage(object, getResourceLocator().getImage("full/obj16/ChartSheet"));
     }
 
     /**
@@ -124,10 +158,10 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
      */
     @Override
     public String getText(Object object) {
-        String label = ((Chart)object).getName();
+        String label = ((ChartSheet)object).getName();
         return label == null || label.length() == 0 ?
-            getString("_UI_Chart_type") :
-            getString("_UI_Chart_type") + " " + label;
+            getString("_UI_ChartSheet_type") :
+            getString("_UI_ChartSheet_type") + " " + label;
     }
     
 
@@ -142,11 +176,13 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
     public void notifyChanged(Notification notification) {
         updateChildren(notification);
 
-        switch (notification.getFeatureID(Chart.class)) {
-            case ScaveModelPackage.CHART__INPUT:
-            case ScaveModelPackage.CHART__PROPERTIES:
-            case ScaveModelPackage.CHART__TEMPORARY:
+        switch (notification.getFeatureID(ChartSheet.class)) {
+            case ScaveModelPackage.CHART_SHEET__TEMPORARY:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+                return;
+            case ScaveModelPackage.CHART_SHEET__CHARTS:
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
+                fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
                 return;
         }
         super.notifyChanged(notification);
@@ -162,6 +198,11 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
     @Override
     protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
+
+        newChildDescriptors.add
+            (createChildParameter
+                (ScaveModelPackage.Literals.CHART_SHEET__PROPERTIES,
+                 ScaveModelFactory.eINSTANCE.createProperty()));
     }
 
 }

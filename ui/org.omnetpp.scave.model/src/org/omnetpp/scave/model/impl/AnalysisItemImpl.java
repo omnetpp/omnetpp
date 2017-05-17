@@ -2,54 +2,56 @@
  */
 package org.omnetpp.scave.model.impl;
 
-import java.util.Collection;
-
-import org.eclipse.emf.common.notify.NotificationChain;
-
-import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.omnetpp.scave.model.AnalysisItem;
-import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Charts</b></em>'.
+ * An implementation of the model object '<em><b>Analysis Item</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.impl.ChartsImpl#getItems <em>Items</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.AnalysisItemImpl#getName <em>Name</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class ChartsImpl extends EObjectImpl implements Charts {
+public abstract class AnalysisItemImpl extends EObjectImpl implements AnalysisItem {
     /**
-     * The cached value of the '{@link #getItems() <em>Items</em>}' containment reference list.
+     * The default value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #getItems()
+     * @see #getName()
      * @generated
      * @ordered
      */
-    protected EList<AnalysisItem> items;
+    protected static final String NAME_EDEFAULT = null;
+
+    /**
+     * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #getName()
+     * @generated
+     * @ordered
+     */
+    protected String name = NAME_EDEFAULT;
 
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected ChartsImpl() {
+    protected AnalysisItemImpl() {
         super();
     }
 
@@ -60,7 +62,7 @@ public class ChartsImpl extends EObjectImpl implements Charts {
      */
     @Override
     protected EClass eStaticClass() {
-        return ScaveModelPackage.Literals.CHARTS;
+        return ScaveModelPackage.Literals.ANALYSIS_ITEM;
     }
 
     /**
@@ -68,11 +70,8 @@ public class ChartsImpl extends EObjectImpl implements Charts {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EList<AnalysisItem> getItems() {
-        if (items == null) {
-            items = new EObjectContainmentEList<AnalysisItem>(AnalysisItem.class, this, ScaveModelPackage.CHARTS__ITEMS);
-        }
-        return items;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -80,13 +79,11 @@ public class ChartsImpl extends EObjectImpl implements Charts {
      * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-        switch (featureID) {
-            case ScaveModelPackage.CHARTS__ITEMS:
-                return ((InternalEList<?>)getItems()).basicRemove(otherEnd, msgs);
-        }
-        return super.eInverseRemove(otherEnd, featureID, msgs);
+    public void setName(String newName) {
+        String oldName = name;
+        name = newName;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS_ITEM__NAME, oldName, name));
     }
 
     /**
@@ -97,8 +94,8 @@ public class ChartsImpl extends EObjectImpl implements Charts {
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
-            case ScaveModelPackage.CHARTS__ITEMS:
-                return getItems();
+            case ScaveModelPackage.ANALYSIS_ITEM__NAME:
+                return getName();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -108,13 +105,11 @@ public class ChartsImpl extends EObjectImpl implements Charts {
      * <!-- end-user-doc -->
      * @generated
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
-            case ScaveModelPackage.CHARTS__ITEMS:
-                getItems().clear();
-                getItems().addAll((Collection<? extends AnalysisItem>)newValue);
+            case ScaveModelPackage.ANALYSIS_ITEM__NAME:
+                setName((String)newValue);
                 return;
         }
         super.eSet(featureID, newValue);
@@ -128,8 +123,8 @@ public class ChartsImpl extends EObjectImpl implements Charts {
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
-            case ScaveModelPackage.CHARTS__ITEMS:
-                getItems().clear();
+            case ScaveModelPackage.ANALYSIS_ITEM__NAME:
+                setName(NAME_EDEFAULT);
                 return;
         }
         super.eUnset(featureID);
@@ -143,10 +138,26 @@ public class ChartsImpl extends EObjectImpl implements Charts {
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
-            case ScaveModelPackage.CHARTS__ITEMS:
-                return items != null && !items.isEmpty();
+            case ScaveModelPackage.ANALYSIS_ITEM__NAME:
+                return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
         }
         return super.eIsSet(featureID);
     }
 
-} //ChartsImpl
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public String toString() {
+        if (eIsProxy()) return super.toString();
+
+        StringBuffer result = new StringBuffer(super.toString());
+        result.append(" (name: ");
+        result.append(name);
+        result.append(')');
+        return result.toString();
+    }
+
+} //AnalysisItemImpl

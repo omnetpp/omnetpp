@@ -66,18 +66,6 @@ public class ScaveModelSwitch<T> extends Switch<T> {
     @Override
     protected T doSwitch(int classifierID, EObject theEObject) {
         switch (classifierID) {
-            case ScaveModelPackage.CHART: {
-                Chart chart = (Chart)theEObject;
-                T result = caseChart(chart);
-                if (result == null) result = defaultCase(theEObject);
-                return result;
-            }
-            case ScaveModelPackage.PROPERTY: {
-                Property property = (Property)theEObject;
-                T result = caseProperty(property);
-                if (result == null) result = defaultCase(theEObject);
-                return result;
-            }
             case ScaveModelPackage.ANALYSIS: {
                 Analysis analysis = (Analysis)theEObject;
                 T result = caseAnalysis(analysis);
@@ -96,10 +84,36 @@ public class ScaveModelSwitch<T> extends Switch<T> {
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
+            case ScaveModelPackage.CHARTS: {
+                Charts charts = (Charts)theEObject;
+                T result = caseCharts(charts);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case ScaveModelPackage.ANALYSIS_ITEM: {
+                AnalysisItem analysisItem = (AnalysisItem)theEObject;
+                T result = caseAnalysisItem(analysisItem);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case ScaveModelPackage.CHART: {
+                Chart chart = (Chart)theEObject;
+                T result = caseChart(chart);
+                if (result == null) result = caseAnalysisItem(chart);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case ScaveModelPackage.PROPERTY: {
+                Property property = (Property)theEObject;
+                T result = caseProperty(property);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
             case ScaveModelPackage.BAR_CHART: {
                 BarChart barChart = (BarChart)theEObject;
                 T result = caseBarChart(barChart);
                 if (result == null) result = caseChart(barChart);
+                if (result == null) result = caseAnalysisItem(barChart);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -107,6 +121,7 @@ public class ScaveModelSwitch<T> extends Switch<T> {
                 LineChart lineChart = (LineChart)theEObject;
                 T result = caseLineChart(lineChart);
                 if (result == null) result = caseChart(lineChart);
+                if (result == null) result = caseAnalysisItem(lineChart);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -114,6 +129,7 @@ public class ScaveModelSwitch<T> extends Switch<T> {
                 HistogramChart histogramChart = (HistogramChart)theEObject;
                 T result = caseHistogramChart(histogramChart);
                 if (result == null) result = caseChart(histogramChart);
+                if (result == null) result = caseAnalysisItem(histogramChart);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -121,47 +137,33 @@ public class ScaveModelSwitch<T> extends Switch<T> {
                 ScatterChart scatterChart = (ScatterChart)theEObject;
                 T result = caseScatterChart(scatterChart);
                 if (result == null) result = caseChart(scatterChart);
+                if (result == null) result = caseAnalysisItem(scatterChart);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
-            case ScaveModelPackage.CHARTS: {
-                Charts charts = (Charts)theEObject;
-                T result = caseCharts(charts);
+            case ScaveModelPackage.DATASET: {
+                Dataset dataset = (Dataset)theEObject;
+                T result = caseDataset(dataset);
+                if (result == null) result = caseAnalysisItem(dataset);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case ScaveModelPackage.CHART_SHEET: {
+                ChartSheet chartSheet = (ChartSheet)theEObject;
+                T result = caseChartSheet(chartSheet);
+                if (result == null) result = caseAnalysisItem(chartSheet);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
+            }
+            case ScaveModelPackage.FOLDER: {
+                Folder folder = (Folder)theEObject;
+                T result = caseFolder(folder);
+                if (result == null) result = caseAnalysisItem(folder);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
             default: return defaultCase(theEObject);
         }
-    }
-
-    /**
-     * Returns the result of interpreting the object as an instance of '<em>Chart</em>'.
-     * <!-- begin-user-doc -->
-     * This implementation returns null;
-     * returning a non-null result will terminate the switch.
-     * <!-- end-user-doc -->
-     * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Chart</em>'.
-     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-     * @generated
-     */
-    public T caseChart(Chart object) {
-        return null;
-    }
-
-    /**
-     * Returns the result of interpreting the object as an instance of '<em>Property</em>'.
-     * <!-- begin-user-doc -->
-     * This implementation returns null;
-     * returning a non-null result will terminate the switch.
-     * <!-- end-user-doc -->
-     * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Property</em>'.
-     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-     * @generated
-     */
-    public T caseProperty(Property object) {
-        return null;
     }
 
     /**
@@ -206,6 +208,66 @@ public class ScaveModelSwitch<T> extends Switch<T> {
      * @generated
      */
     public T caseInputFile(InputFile object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Charts</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Charts</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseCharts(Charts object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Analysis Item</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Analysis Item</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseAnalysisItem(AnalysisItem object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Chart</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Chart</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseChart(Chart object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Property</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Property</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseProperty(Property object) {
         return null;
     }
 
@@ -270,17 +332,47 @@ public class ScaveModelSwitch<T> extends Switch<T> {
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Charts</em>'.
+     * Returns the result of interpreting the object as an instance of '<em>Dataset</em>'.
      * <!-- begin-user-doc -->
      * This implementation returns null;
      * returning a non-null result will terminate the switch.
      * <!-- end-user-doc -->
      * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Charts</em>'.
+     * @return the result of interpreting the object as an instance of '<em>Dataset</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseCharts(Charts object) {
+    public T caseDataset(Dataset object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Chart Sheet</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Chart Sheet</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseChartSheet(ChartSheet object) {
+        return null;
+    }
+
+    /**
+     * Returns the result of interpreting the object as an instance of '<em>Folder</em>'.
+     * <!-- begin-user-doc -->
+     * This implementation returns null;
+     * returning a non-null result will terminate the switch.
+     * <!-- end-user-doc -->
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Folder</em>'.
+     * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+     * @generated
+     */
+    public T caseFolder(Folder object) {
         return null;
     }
 

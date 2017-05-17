@@ -22,15 +22,6 @@ public interface ScaveModelFactory extends EFactory {
     ScaveModelFactory eINSTANCE = org.omnetpp.scave.model.impl.ScaveModelFactoryImpl.init();
 
     /**
-     * Returns a new object of class '<em>Property</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Property</em>'.
-     * @generated
-     */
-    Property createProperty();
-
-    /**
      * Returns a new object of class '<em>Analysis</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -56,6 +47,24 @@ public interface ScaveModelFactory extends EFactory {
      * @generated
      */
     InputFile createInputFile();
+
+    /**
+     * Returns a new object of class '<em>Charts</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Charts</em>'.
+     * @generated
+     */
+    Charts createCharts();
+
+    /**
+     * Returns a new object of class '<em>Property</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Property</em>'.
+     * @generated
+     */
+    Property createProperty();
 
     /**
      * Returns a new object of class '<em>Bar Chart</em>'.
@@ -94,13 +103,31 @@ public interface ScaveModelFactory extends EFactory {
     ScatterChart createScatterChart();
 
     /**
-     * Returns a new object of class '<em>Charts</em>'.
+     * Returns a new object of class '<em>Dataset</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return a new object of class '<em>Charts</em>'.
+     * @return a new object of class '<em>Dataset</em>'.
      * @generated
      */
-    Charts createCharts();
+    Dataset createDataset();
+
+    /**
+     * Returns a new object of class '<em>Chart Sheet</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Chart Sheet</em>'.
+     * @generated
+     */
+    ChartSheet createChartSheet();
+
+    /**
+     * Returns a new object of class '<em>Folder</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Folder</em>'.
+     * @generated
+     */
+    Folder createFolder();
 
     /**
      * Returns the package supported by this factory.

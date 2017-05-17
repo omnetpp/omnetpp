@@ -72,29 +72,6 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
     }
 
     /**
-     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Property} instances.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    protected PropertyItemProvider propertyItemProvider;
-
-    /**
-     * This creates an adapter for a {@link org.omnetpp.scave.model.Property}.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public Adapter createPropertyAdapter() {
-        if (propertyItemProvider == null) {
-            propertyItemProvider = new PropertyItemProvider(this);
-        }
-
-        return propertyItemProvider;
-    }
-
-    /**
      * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Analysis} instances.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -161,6 +138,52 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
         }
 
         return inputFileItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Charts} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ChartsItemProvider chartsItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.omnetpp.scave.model.Charts}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Adapter createChartsAdapter() {
+        if (chartsItemProvider == null) {
+            chartsItemProvider = new ChartsItemProvider(this);
+        }
+
+        return chartsItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Property} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected PropertyItemProvider propertyItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.omnetpp.scave.model.Property}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Adapter createPropertyAdapter() {
+        if (propertyItemProvider == null) {
+            propertyItemProvider = new PropertyItemProvider(this);
+        }
+
+        return propertyItemProvider;
     }
 
     /**
@@ -256,26 +279,72 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
     }
 
     /**
-     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Charts} instances.
+     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Dataset} instances.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected ChartsItemProvider chartsItemProvider;
+    protected DatasetItemProvider datasetItemProvider;
 
     /**
-     * This creates an adapter for a {@link org.omnetpp.scave.model.Charts}.
+     * This creates an adapter for a {@link org.omnetpp.scave.model.Dataset}.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
-    public Adapter createChartsAdapter() {
-        if (chartsItemProvider == null) {
-            chartsItemProvider = new ChartsItemProvider(this);
+    public Adapter createDatasetAdapter() {
+        if (datasetItemProvider == null) {
+            datasetItemProvider = new DatasetItemProvider(this);
         }
 
-        return chartsItemProvider;
+        return datasetItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.ChartSheet} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ChartSheetItemProvider chartSheetItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.omnetpp.scave.model.ChartSheet}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Adapter createChartSheetAdapter() {
+        if (chartSheetItemProvider == null) {
+            chartSheetItemProvider = new ChartSheetItemProvider(this);
+        }
+
+        return chartSheetItemProvider;
+    }
+
+    /**
+     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Folder} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected FolderItemProvider folderItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.omnetpp.scave.model.Folder}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Adapter createFolderAdapter() {
+        if (folderItemProvider == null) {
+            folderItemProvider = new FolderItemProvider(this);
+        }
+
+        return folderItemProvider;
     }
 
     /**
@@ -377,15 +446,18 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
      * @generated
      */
     public void dispose() {
-        if (propertyItemProvider != null) propertyItemProvider.dispose();
         if (analysisItemProvider != null) analysisItemProvider.dispose();
         if (inputsItemProvider != null) inputsItemProvider.dispose();
         if (inputFileItemProvider != null) inputFileItemProvider.dispose();
+        if (chartsItemProvider != null) chartsItemProvider.dispose();
+        if (propertyItemProvider != null) propertyItemProvider.dispose();
         if (barChartItemProvider != null) barChartItemProvider.dispose();
         if (lineChartItemProvider != null) lineChartItemProvider.dispose();
         if (histogramChartItemProvider != null) histogramChartItemProvider.dispose();
         if (scatterChartItemProvider != null) scatterChartItemProvider.dispose();
-        if (chartsItemProvider != null) chartsItemProvider.dispose();
+        if (datasetItemProvider != null) datasetItemProvider.dispose();
+        if (chartSheetItemProvider != null) chartSheetItemProvider.dispose();
+        if (folderItemProvider != null) folderItemProvider.dispose();
     }
 
 }
