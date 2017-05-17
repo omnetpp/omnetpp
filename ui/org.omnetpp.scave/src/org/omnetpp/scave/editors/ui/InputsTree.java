@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -25,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ResultFilesTracker;
@@ -195,7 +195,7 @@ public class InputsTree extends TreeViewer {
         @Override
         public String getText(Object element) {
             if (element instanceof InputFile)
-                return ((InputFile)element).getName() + " (" + matchingFiles.get(element).size() + ")";
+                return ((InputFile)element).getName() + " (matches " + StringUtils.formatCounted(matchingFiles.get(element).size(), "file") + ")";
             else if (element instanceof FileNode)
                 return ((FileNode)element).filePath;
             else if (element instanceof RunNode)
