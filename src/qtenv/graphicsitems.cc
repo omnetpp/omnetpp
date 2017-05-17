@@ -38,6 +38,12 @@ void ArrowheadItem::updatePolygon()
     polygon.append(QPointF(-arrowLength * fillRatio, aside));
     polygon.append(QPointF(-arrowLength, arrowWidth / 2 + aside));
 
+    // the miter limit should be big enough with a fill ratio of about 0.6 so the barbs aren't
+    // clipped, but not that big with a fill ratio of 0 that the arrow lines are unreasonably long
+    auto p = pen();
+    p.setMiterLimit(2 + fillRatio);
+    setPen(p);
+
     setPolygon(polygon);
 }
 

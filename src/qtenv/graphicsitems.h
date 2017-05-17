@@ -73,7 +73,8 @@ public:
 };
 
 
-// Used in the ModuleInspector to make text more readable on a cluttered background.
+// Used in the ModuleInspector to make text more readable on a cluttered background,
+// as well as on the canvas to implement the halo option for label and text figures.
 // If the functionality is not enough, just implement more of QGraphicsSimpleTextItems
 // functions, and forward them to one or both members accordingly.
 // The occasional small "offset" of the outline relative to the text

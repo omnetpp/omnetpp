@@ -582,12 +582,9 @@ void AbstractLineFigureRenderer::refreshVisual(const FigureRenderingArgs& args)
     ArrowheadItem *startItem = static_cast<ArrowheadItem *>(lineItem->childItems()[0]);
     ArrowheadItem *endItem = static_cast<ArrowheadItem *>(lineItem->childItems()[1]);
 
-    // XXX use inverse, and call it widthScale? Then change setSizeForPenWidth too
-    double widthZoom = lineFigure->getZoomLineWidth() ? 1.0 : args.zoom;
-
     auto lineColor = lineFigure->getLineColor();
     QColor color(lineColor.red, lineColor.green, lineColor.blue, lineFigure->getLineOpacity()*255);
-    double penWidth = lineFigure->getLineWidth() / widthZoom;
+    double penWidth = lineFigure->getLineWidth() / (lineFigure->getZoomLineWidth() ? 1.0 : args.zoom);
 
     // start arrowhead
     auto startStyle = lineFigure->getStartArrowhead();
@@ -597,7 +594,7 @@ void AbstractLineFigureRenderer::refreshVisual(const FigureRenderingArgs& args)
                             : 1);
     startItem->setColor(color);
     startItem->setLineWidth(penWidth);
-    startItem->setSizeForPenWidth(penWidth, widthZoom);
+    startItem->setSizeForPenWidth(penWidth, args.zoom);
 
     // end arrowhead
     auto endStyle = lineFigure->getEndArrowhead();
@@ -607,7 +604,7 @@ void AbstractLineFigureRenderer::refreshVisual(const FigureRenderingArgs& args)
                             : 1);
     endItem->setColor(color);
     endItem->setLineWidth(penWidth);
-    endItem->setSizeForPenWidth(penWidth, widthZoom);
+    endItem->setSizeForPenWidth(penWidth, args.zoom);
 }
 
 void AbstractLineFigureRenderer::refreshZoom(const FigureRenderingArgs& args)
