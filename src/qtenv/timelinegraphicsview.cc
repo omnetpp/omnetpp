@@ -540,7 +540,7 @@ void TimeLineGraphicsView::rebuildScene()
                 QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
                 simpleTextItem->setBrush(QPalette().text());
                 simpleTextItem->setFont(tickLabelFont);
-                simpleTextItem->setPos(x - labelWidth/2, axisY+3);
+                simpleTextItem->setPos(x - labelWidth/2, axisY+5);
                 scene()->addItem(simpleTextItem);
             }
         }
@@ -560,7 +560,7 @@ void TimeLineGraphicsView::rebuildScene()
         QGraphicsSimpleTextItem *simpleTextItem = new QGraphicsSimpleTextItem(label);
         simpleTextItem->setBrush(QPalette().text());
         simpleTextItem->setFont(tickLabelFont);
-        simpleTextItem->setPos((zeroEndX+zeroStartX)/2 - labelWidth/2, axisY+3);
+        simpleTextItem->setPos((zeroEndX+zeroStartX)/2 - labelWidth/2, axisY+5);
         scene()->addItem(simpleTextItem);
     }
 

@@ -167,13 +167,13 @@ void SubmoduleItem::updateNameItem()
             label += "[" + QString::number(vectorIndex) + "]";
         }
         nameItem->setText(label);
-        nameItem->setPos(-nameItem->textRect().width() / 2, shapeImageBoundingRect().height() / 2);
+        nameItem->setPos(-nameItem->textRect().width() / 2, shapeImageBoundingRect().height() / 2 + 2);
     }
 }
 
 void SubmoduleItem::realignAnchoredItems()
 {
-    auto mainBounds = shapeImageBoundingRect();
+    auto mainBounds = shapeImageBoundingRect().adjusted(-2, -2, 2, 2);
 
     // the info text label
     if (textItem) {

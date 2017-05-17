@@ -181,7 +181,7 @@ CompoundModuleItem::CompoundModuleItem(QGraphicsItem *parent) :
 
     modulePath = new OutlinedTextItem(this);
     // just moving it off the left border outline
-    modulePath->setPos(area.topLeft() + QPointF(2, 0));
+    modulePath->setPos(area.topLeft() + QPointF(2, 2));
     modulePath->setZValue(1);
 
     // text items will be at Z = 2
@@ -214,7 +214,7 @@ void CompoundModuleItem::setArea(QRectF area)
         updateRectangle();
         updateImage();
         updateGrid();
-        modulePath->setPos(area.topLeft() + QPointF(2, 0));
+        modulePath->setPos(area.topLeft() + QPointF(2, 2));
     }
 }
 
