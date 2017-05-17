@@ -20,11 +20,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -35,12 +36,12 @@ import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.command.MoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.properties.ChartProperties;
-import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.NodeType;
@@ -53,9 +54,11 @@ import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -199,6 +202,35 @@ public class ScaveModelUtil {
         return names;
     }
 
+    public static void addElementsToChartSheet(EditingDomain domain, Object[] elements, ChartSheet chartsheet) {
+        ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+        List<Chart> charts = new ArrayList<>();
+        for (Object element: elements)
+            if (element instanceof Chart)
+                charts.add((Chart)element);
+        Command command = AddCommand.create(domain, chartsheet, pkg.getChartSheet_Charts(), charts);
+        domain.getCommandStack().execute(command);
+    }
+
+    public static void moveElements(EditingDomain domain, Charts charts, Object[] elements, int index) {
+        // the elements[] array contains the elements in no particular order. We need to keep
+        // the order they are in the model (Charts object). Plus, we need reverse order due to
+        // the order we insert them back.
+        List<AnalysisItem> itemsToMove = new ArrayList<>();
+        for (AnalysisItem item : charts.getItems())
+            if (ArrayUtils.contains(elements, item))
+                itemsToMove.add(0, item); // reverse order
+
+        // do a series of "Move" commands
+        CompoundCommand command = new CompoundCommand();
+        for (AnalysisItem item : itemsToMove) {
+            if (charts.getItems().indexOf(item) < index)
+                index--; // insertion element will shift up because we removed an item from before it in the list 
+            command.append(MoveCommand.create(domain, charts, pkg.getCharts_Items(), item, index));
+        }
+        domain.getCommandStack().execute(command);
+    }
+    
     /**
      * Returns the analysis node of the specified resource.
      * It is assumed that the resource contains exactly one analysis node as

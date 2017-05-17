@@ -7,9 +7,12 @@
 
 package org.omnetpp.scave.editors.ui;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -26,6 +29,8 @@ import org.omnetpp.scave.actions.NewScatterChartAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.AnalysisItem;
+import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Charts;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -77,6 +82,50 @@ public class ChartsPage extends ScaveEditorPage {
 
         // configure viewers
         scaveEditor.configureIconGridViewer(getViewer());
+
+        viewer.addDropListener(new IconGridViewer.IDropListener() {
+            @Override
+            public void drop(Object[] draggedElements, Point p) {
+                Object target = viewer.getElementAt(p.x, p.y);
+                if (target instanceof ChartSheet) {
+                    ChartSheet chartSheet = (ChartSheet)target;
+                    ScaveModelUtil.addElementsToChartSheet(scaveEditor.getEditingDomain(), draggedElements, chartSheet);
+                    viewer.setSelection(new StructuredSelection(chartSheet));
+                }
+                else {
+                    Object insertionPoint = viewer.getElementAtOrAfter(p.x, p.y);
+                    System.out.println("DRAGGED BEFORE: " + insertionPoint);
+                    if (insertionPoint == null ||!ArrayUtils.contains(draggedElements, insertionPoint)) {
+                        Charts charts = scaveEditor.getAnalysis().getCharts();
+                        int index = insertionPoint == null ? charts.getItems().size() : charts.getItems().indexOf(insertionPoint);
+                        ScaveModelUtil.moveElements(scaveEditor.getEditingDomain(), charts, draggedElements, index);
+                        viewer.refresh();
+                    }
+                }
+            }
+        });
+
+        viewer.setRenameAdapter(new IconGridViewer.IRenameAdapter() {
+            @Override
+            public boolean isRenameable(Object element) {
+                return (element instanceof AnalysisItem);
+            }
+
+            @Override
+            public boolean isNameValid(Object element, String name) {
+                return true;
+            }
+
+            @Override
+            public String getName(Object element) {
+                return StringUtils.nullToEmpty(((AnalysisItem) element).getName());
+            }
+
+            @Override
+            public void setName(Object element, String name) {
+                ((AnalysisItem) element).setName(name);
+            }
+        });
 
         // set contents
         Analysis analysis = scaveEditor.getAnalysis();
