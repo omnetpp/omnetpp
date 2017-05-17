@@ -80,7 +80,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
     }
 
     protected void updateDataset(String formatString) {
-        xydataset = DatasetManager.createVectorDataset((LineChart)chart, formatString, false, manager, null);
+        xydataset = DatasetManager.createVectorDataset((LineChart)chart, formatString, false, manager, null);  //TODO try-catch!!!
         Line[] lines = NO_LINES;
         if (xydataset != null) {
             int count = xydataset.getSeriesCount();

@@ -94,7 +94,7 @@ public class ChartSheetPage extends ScaveEditorPage {
         
         //TODO add removeFromchartSheetAction();
         
-        //TODO contributor.refreshActions() !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //TODO contributor.refreshActions()! automatically, inside ScaveEditor.openClosablePage or so.
     }
 
     private void initialize() {

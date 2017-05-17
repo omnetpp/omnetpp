@@ -52,6 +52,7 @@ import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 //TODO remove page description; display "empty-table message" instead (stacklayout?)
+//TODO under each Run, display: "12 vectors", "35 scalars", etc.
 public class InputsPage extends ScaveEditorPage {
     private InputsTree treeViewer;
 
