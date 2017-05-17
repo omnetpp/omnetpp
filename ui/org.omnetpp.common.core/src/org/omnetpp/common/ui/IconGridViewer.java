@@ -14,17 +14,21 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.LayoutManager;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -34,12 +38,22 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -49,19 +63,24 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
+
 
 /**
  * Viewer that displays its contents like a file manager's "large icons" view.
  *
  * @author andras
  */
+//TODO use SWT.MOD1 instead of SWT.CTRL? (Mac!)
+//TODO keyboard: proper up/down, pngup/pgdn
 public class IconGridViewer extends ContentViewer {
     // configuration
-    private int topMargin = 20, leftMargin = 10, rightMargin = 10;
-    private int rowHeight = 120, columnWidth = 120;
-    private int itemHeight = 100, itemWidth = 100;
+    private static final int DEFAULT_MARGIN = 20;
+    private static final int DEFAULT_HORIZ_SPACING = 20, DEFAULT_VERT_SPACING = 20;
     private Color dragRectangleOutlineColor = ColorFactory.LIGHT_BLUE4;
     private Color dragRectangleFillColor = ColorFactory.LIGHT_BLUE;
     private Color selectionFillColor = new Color(Display.getDefault(), 216, 235, 243); // very light blue
@@ -71,8 +90,10 @@ public class IconGridViewer extends ContentViewer {
     private ScrolledComposite scrolledComposite;
     private Canvas canvas;
     private LightweightSystem lws;
-    private IFigure containerFigure;
-    private ListenerList<IDoubleClickListener> doubleClickListeners = new ListenerList<IDoubleClickListener>();
+    private Layer feedbackLayer;
+    private Layer contentLayer;
+    private ListenerList<IDoubleClickListener> doubleClickListeners = new ListenerList<>();
+    private ListenerList<IDropListener> dropListeners = new ListenerList<>();
 
     // contents, selection
     private Object[] elements;
@@ -80,11 +101,177 @@ public class IconGridViewer extends ContentViewer {
     private List<Object> selectedElements = new ArrayList<>();
     private Object focusElement;
 
-    // mouse
-    private int mouseButton;
-    private Point dragStart;
-    private RectangleFigure dragRectangleFigure;
+    private MouseHandler mouseHandler = new MouseHandler();
+    private IRenameAdapter renameAdapter;
 
+    public interface IDropListener {
+        //TODO boolean canDrop(Object[] elements, Point p); or some other feedback API
+        void drop(Object[] elements, org.eclipse.swt.graphics.Point p);
+    }
+
+    public interface IRenameAdapter {
+        public boolean isRenameable(Object element);
+        public String getName(Object element);
+        public boolean isNameValid(Object element, String name);
+        public void setName(Object element, String name);
+    }
+
+    // Note: don't use Draw2D's mouse listener because it doesn't capture
+    // the mouse during drag, rendering it essentially useless.
+    protected class MouseHandler implements MouseListener, MouseMoveListener, FocusListener, Runnable {
+        // mouse
+        private int mouseButton;
+        private Point mouseDownPos;
+        private RectangleFigure dragSelectionRectangle;
+        private boolean wasDragDrop = false;
+        private Object elementToRename;
+
+        @Override
+        public void mouseDown(MouseEvent e) {
+            canvas.forceFocus(); // Not setFocus(), because it won't cause the Rename cell editor to close! See setFocus() impl.
+            mouseButton = e.button;
+            mouseDownPos = new Point(e.x, e.y);
+            wasDragDrop = false;
+            boolean withModifier = (e.stateMask & SWT.MODIFIER_MASK) != 0;
+            boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+            boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
+            Object element = getElementAt(e.x, e.y);
+            if (e.button == 1 && selectedElements.size() == 1 && selectedElements.get(0) == element && !withModifier) {
+                // initiate direct rename, but only after a delay (otherwise it interferes with double-clicks)
+                elementToRename = element;
+                int delayMillis = Display.getCurrent().getDoubleClickTime() + 100;
+                Display.getCurrent().timerExec(delayMillis, this); // ends up calling run()
+                return;
+            }
+
+            if (mouseButton == 1 && !ctrl && !selectionContainsPoint(mouseDownPos)) // note: allow multi-selection to be drag'n'dropped
+                clearSelection();
+            if (element != null) {
+                if (mouseButton == 1) {
+                    if (shift)
+                        selectTo(element);
+                    else if (ctrl)
+                        toggleSelection(element);
+                    else // no modifier
+                        addToSelection(element);
+                }
+                else {
+                    addToSelection(element);
+                }
+            }
+        }
+
+        /*
+         * DirectRename's timer
+         */
+        @Override
+        public void run() {
+            if (canvas.isDisposed() || Display.getCurrent().getFocusControl() != canvas)
+                return;
+            if (elementToRename != null && selectedElements.size() == 1 && selectedElements.get(0) == elementToRename) {
+                startDirectRename(elementToRename);
+                elementToRename = null;
+            }
+        }
+
+        @Override
+        public void mouseMove(MouseEvent e) {
+            if (mouseButton != 1)
+                return; // not a button1 drag
+
+            // start drag selection
+            if (dragSelectionRectangle == null && !selectionContainsPoint(mouseDownPos))
+                startDrag();
+
+            // update the drag selection rectangle
+            if (dragSelectionRectangle != null) {
+                boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
+                Rectangle bounds = new Rectangle(Math.min(e.x, mouseDownPos.x), Math.min(e.y, mouseDownPos.y), Math.abs(e.x - mouseDownPos.x), Math.abs(e.y - mouseDownPos.y));
+                dragSelectionRectangle.setBounds(bounds);
+                selectByRectangle(bounds, ctrl);
+            }
+
+            // scroll if mouse goes outside the canvas
+            int yoffset = scrolledComposite.getOrigin().y;
+            if (e.y - yoffset < 0)
+                scrolledComposite.setOrigin(0, yoffset - 2);
+            else if (e.y - yoffset > scrolledComposite.getSize().y)
+                scrolledComposite.setOrigin(0, yoffset + 2);
+        }
+
+        @Override
+        public void mouseUp(MouseEvent e) {
+            boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
+            boolean shift = (e.stateMask & SWT.SHIFT) != 0;
+            if (dragSelectionRectangle == null && !ctrl && !shift && !wasDragDrop) {
+                Object element = getElementAt(mouseDownPos.x, mouseDownPos.y);
+                    if (element == null)
+                    clearSelection();
+                else
+                    select(element);
+            }
+
+            mouseButton = 0;
+            if (dragSelectionRectangle != null)
+                clearDrag();
+        }
+
+        @Override
+        public void mouseDoubleClick(MouseEvent e) {
+            if (e.button != 1)
+                return;
+            Object element = getElementAt(e.x, e.y);
+            if (element != null)
+                fireDoubleClick(new DoubleClickEvent(IconGridViewer.this, getSelection()));
+        }
+
+        public void dragInProgress() {
+            wasDragDrop = true;
+        }
+
+        @Override
+        public void focusLost(FocusEvent arg0) {
+            // emulate mouseUp
+            mouseButton = 0;
+            if (dragSelectionRectangle != null)
+                clearDrag();
+        }
+
+        @Override
+        public void focusGained(FocusEvent arg0) {
+        }
+
+        protected void startDrag() {
+            dragSelectionRectangle = new RectangleFigure();
+            dragSelectionRectangle.setAlpha(80);
+            dragSelectionRectangle.setFill(true);
+            dragSelectionRectangle.setBackgroundColor(dragRectangleFillColor);
+            dragSelectionRectangle.setForegroundColor(dragRectangleOutlineColor);
+            feedbackLayer.add(dragSelectionRectangle);
+        }
+
+        protected void clearDrag() {
+            if (dragSelectionRectangle != null) {
+                feedbackLayer.remove(dragSelectionRectangle);
+                dragSelectionRectangle = null;
+            }
+        }
+
+    };
+
+/*
+ * TODO example code from: https://www.eclipse.org/forums/index.php/t/55474/
+    FigureCanvas canvas = new FigureCanvas(shell);
+    canvas.getViewport().setContentsTracksWidth(true);
+    Figure panel = new Figure();
+    panel.setLayoutManager(new ToolbarLayout());
+    TextFlow content = new TextFlow(System.getProperties().toString());
+    FlowPage fp = new FlowPage();
+    fp.add(content);
+    panel.add(fp);
+    panel.add(new Label("A label"));
+    canvas.setContents(panel);
+ */
 
     public IconGridViewer(Composite parent) {
         scrolledComposite = new ScrolledComposite(parent,  SWT.V_SCROLL | SWT.BORDER);
@@ -92,126 +279,43 @@ public class IconGridViewer extends ContentViewer {
         canvas.setSize(500, 1000);
         scrolledComposite.setContent(canvas);
         lws = new LightweightSystem(canvas);
-        containerFigure = lws.getRootFigure();
-        containerFigure.setLayoutManager(new XYLayout());
-        containerFigure.setRequestFocusEnabled(true);
-        containerFigure.requestFocus();
+
+        initializeFigures(parent);
+        setupDragAndDrop();
         hookListeners();
     }
 
-    public void setMargins(int topMargin, int leftMargin, int rightMargin) {
-        this.topMargin = topMargin;
-        this.leftMargin = leftMargin;
-        this.rightMargin = rightMargin;
-    }
+    protected void initializeFigures(Composite parent) {
+        IFigure rootFigure = lws.getRootFigure();
+        LayeredPane layeredPane = new LayeredPane();
+        rootFigure.add(layeredPane);
 
-    public void setSpacing(int rowHeight, int columnWidth) {
-        this.rowHeight = rowHeight;
-        this.columnWidth = columnWidth;
-    }
+        contentLayer = new Layer();
+        contentLayer.setBorder(new MarginBorder(DEFAULT_MARGIN));
+        FlowLayout flowlayout = new FlowLayout();
+        flowlayout.setMajorSpacing(DEFAULT_VERT_SPACING);
+        flowlayout.setMinorSpacing(DEFAULT_HORIZ_SPACING);
+        contentLayer.setLayoutManager(flowlayout);
+        contentLayer.setRequestFocusEnabled(true);
+        layeredPane.add(contentLayer);
 
-    public void setItemSize(int itemHeight, int itemWidth) {
-        this.itemHeight = itemHeight;
-        this.itemWidth = itemWidth;
-    }
+        feedbackLayer = new Layer();
+        feedbackLayer.setLayoutManager(new XYLayout());
+        layeredPane.add(feedbackLayer);
 
-    public void setBackground(Color color) {
-        scrolledComposite.setBackground(color);
-        canvas.setBackground(color);
+        contentLayer.requestFocus();
     }
 
     private void hookListeners() {
         scrolledComposite.addControlListener(new ControlAdapter() {
             public void controlResized(ControlEvent e) {
-                int width = scrolledComposite.getSize().x;
-                arrange(width);
+                adjustCanvasSize();
             }
         });
 
-        // Note: don't use Draw2D's mouse listener because it doesn't capture
-        // the mouse during drag, rendering it essentially useless.
-        canvas.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseDown(MouseEvent e) {
-                canvas.setFocus();
-                mouseButton = e.button;
-                if (e.button != 1)
-                    return;
-                boolean shift = (e.stateMask & SWT.SHIFT) != 0;
-                boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
-                dragStart = new Point(e.x, e.y);
-                if (!ctrl)
-                    selectedElements.clear();
-                Object element = getElementAt(e.x, e.y);
-                if (element != null) {
-                    if (shift)
-                        selectTo(element);
-                    else
-                        toggleSelection(element);
-                }
-            }
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-                mouseButton = 0;
-                if (dragRectangleFigure != null) {
-                    containerFigure.remove(dragRectangleFigure);
-                    dragRectangleFigure = null;
-                }
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-                if (e.button != 1)
-                    return;
-                Object element = getElementAt(e.x, e.y);
-                if (element != null)
-                    fireDoubleClick(new DoubleClickEvent(IconGridViewer.this, getSelection()));
-            }
-        });
-
-        canvas.addMouseMoveListener(new MouseMoveListener() {
-            @Override
-            public void mouseMove(MouseEvent e) {
-                if (mouseButton != 1)
-                    return; // not button1 drag
-                if (dragRectangleFigure == null) {
-                    dragRectangleFigure = new RectangleFigure();
-                    dragRectangleFigure.setAlpha(80);
-                    dragRectangleFigure.setFill(true);
-                    dragRectangleFigure.setBackgroundColor(dragRectangleFillColor);
-                    dragRectangleFigure.setForegroundColor(dragRectangleOutlineColor);
-                    containerFigure.add(dragRectangleFigure);
-                }
-                boolean ctrl = (e.stateMask & SWT.CTRL) != 0;
-                Rectangle bounds = new Rectangle(Math.min(e.x, dragStart.x), Math.min(e.y, dragStart.y), Math.abs(e.x - dragStart.x), Math.abs(e.y - dragStart.y));
-                dragRectangleFigure.setBounds(bounds);
-                selectByRectangle(bounds, ctrl);
-
-                // scroll if mouse goes outside the canvas
-                int yoffset = scrolledComposite.getOrigin().y;
-                if (e.y - yoffset < 0)
-                    scrolledComposite.setOrigin(0, yoffset - 2);
-                else if (e.y - yoffset > scrolledComposite.getSize().y)
-                    scrolledComposite.setOrigin(0, yoffset + 2);
-            }
-        });
-
-        canvas.addFocusListener(new FocusListener() {
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                // emulate mouseUp
-                mouseButton = 0;
-                if (dragRectangleFigure != null) {
-                    containerFigure.remove(dragRectangleFigure);
-                    dragRectangleFigure = null;
-                }
-            }
-
-            @Override
-            public void focusGained(FocusEvent arg0) {
-            }
-        });
+        canvas.addMouseListener(mouseHandler);
+        canvas.addMouseMoveListener(mouseHandler);
+        canvas.addFocusListener(mouseHandler);
 
         canvas.addKeyListener(new KeyListener() {
             @Override
@@ -236,6 +340,8 @@ public class IconGridViewer extends ContentViewer {
                     movePageUp(ctrl || shift);
                 else if (ke.keyCode == '\r')
                     fireDoubleClick(new DoubleClickEvent(IconGridViewer.this, getSelection()));
+                else if (ke.keyCode == SWT.F2)
+                    startDirectRename(focusElement);
                 else if (ke.keyCode == ' ') {
                     ensureFocusElement();
                     if (focusElement != null)
@@ -247,6 +353,83 @@ public class IconGridViewer extends ContentViewer {
             public void keyReleased(KeyEvent ke) {
             }
         });
+    }
+
+    protected void setupDragAndDrop() {
+        int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+        Transfer[] transferTypes = new Transfer[] { LocalSelectionTransfer.getTransfer() };
+        final DragSource dragSource = new DragSource(getCanvas(), dndOperations);
+        dragSource.setTransfer(transferTypes);
+
+        dragSource.addDragListener(new DragSourceListener() {
+            @Override
+            public void dragStart(DragSourceEvent event) {
+                Object element = getElementAt(event.x, event.y);
+                if (element == null)
+                    event.doit = false;
+                else
+                    mouseHandler.dragInProgress();
+
+            }
+            @Override
+            public void dragFinished(DragSourceEvent event) {
+            }
+
+            @Override
+            public void dragSetData(DragSourceEvent event) {
+                event.data = getSelection();
+            }
+        });
+
+
+        final DropTarget dropTarget = new DropTarget(getCanvas(), dndOperations);
+        dropTarget.setTransfer(transferTypes);
+
+        dropTarget.addDropListener(new DropTargetAdapter() {
+            @Override
+            public void dragOver(DropTargetEvent event) {
+                org.eclipse.swt.graphics.Point p = getCanvas().toControl(event.x, event.y);
+                //TODO allow our listener to report back whether drag-and-drop is possible
+            }
+
+            @Override
+            public void drop(DropTargetEvent event) {
+                org.eclipse.swt.graphics.Point p = getCanvas().toControl(event.x, event.y);
+                Object[] elements = getSelection().toArray(); //((IStructuredSelection)event.data).toArray();
+                fireDrop(elements, p);
+            }
+        });
+
+    }
+
+    public void setMargin(int margin) {
+        contentLayer.setBorder(new MarginBorder(margin));
+    }
+
+    public int getMargin() {
+        MarginBorder border = (MarginBorder)contentLayer.getBorder();
+        return border.getInsets(contentLayer).left; // all four are the same
+    }
+
+    public void setSpacing(int horiz, int vert) {
+        FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
+        layout.setMajorSpacing(vert);
+        layout.setMinorSpacing(horiz);
+    }
+
+    public int getHorizontalSpacing() {
+        FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
+        return layout.getMinorSpacing();
+    }
+
+    public int getVerticalSpacing() {
+        FlowLayout layout = (FlowLayout)contentLayer.getLayoutManager();
+        return layout.getMajorSpacing();
+    }
+
+    public void setBackground(Color color) {
+        scrolledComposite.setBackground(color);
+        canvas.setBackground(color);
     }
 
     public void setFocus() {
@@ -261,10 +444,31 @@ public class IconGridViewer extends ContentViewer {
         doubleClickListeners.remove(listener);
     }
 
+    public void addDropListener(IDropListener listener) {
+        dropListeners.add(listener);
+    }
+
+    public void removeDropListener(IDropListener listener) {
+        dropListeners.remove(listener);
+    }
+
+    public void setRenameAdapter(IRenameAdapter renameAdapter) {
+        this.renameAdapter = renameAdapter;
+    }
+
+    public IRenameAdapter getRenameAdapter() {
+        return renameAdapter;
+    }
+
+    protected boolean selectionContainsPoint(Point p) {
+        for (Object element : selectedElements)
+            if (elementsToFigures.get(element).containsPoint(p))
+                return true;
+        return false;
+    }
+
     protected void fireDoubleClick(final DoubleClickEvent event) {
-        Object[] listeners = doubleClickListeners.getListeners();
-        for (int i = 0; i < listeners.length; ++i) {
-            final IDoubleClickListener l = (IDoubleClickListener) listeners[i];
+        for (IDoubleClickListener l : doubleClickListeners) {
             SafeRunnable.run(new SafeRunnable() {
                 @Override
                 public void run() {
@@ -274,11 +478,45 @@ public class IconGridViewer extends ContentViewer {
         }
     }
 
+    protected void fireDrop(Object[] elements, org.eclipse.swt.graphics.Point p) {
+        for (IDropListener listener : dropListeners) {
+            SafeRunnable.run(new SafeRunnable() {
+                @Override
+                public void run() {
+                    listener.drop(elements, p);
+                }
+            });
+        }
+    }
+
     public Object getElementAt(int x, int y) {
-        IFigure figure = containerFigure.findFigureAt(x, y);
-        if (figure == null || figure == containerFigure)
+        IFigure figure = contentLayer.findFigureAt(x, y);
+        if (figure == null || figure == contentLayer)
             return null;
         return getElementFromFigure(figure);
+    }
+
+    public Object getElementAtOrAfter(int x, int y) {
+        if (elements.length == 0)
+            return null;
+        Object element;
+        if ((element = getElementAt(x, y)) != null) // exactly
+            return element;
+
+        int topMargin = getMargin();
+        int hspacing = getHorizontalSpacing();
+
+        if ((element = getElementAt(x + hspacing, y)) != null) // right in front of an element
+            return element;
+        if (y < topMargin) // in top margin area
+            return elements[0];
+        Object prevElement = getElementAt(x - hspacing, y); // right after an element (last one in the line); TODO find bbox of line!
+        if (prevElement != null) {
+            int index = ArrayUtils.indexOf(elements,  prevElement);
+            if (index >= 0 && index != elements.length-1)
+                return elements[index+1];
+        }
+        return null;
     }
 
     @Override
@@ -291,7 +529,7 @@ public class IconGridViewer extends ContentViewer {
     }
 
     @Override
-    public ISelection getSelection() {
+    public IStructuredSelection getSelection() {
         return new StructuredSelection(selectedElements);
     }
 
@@ -314,7 +552,9 @@ public class IconGridViewer extends ContentViewer {
         IStructuredSelection structuredSelection = (IStructuredSelection) selection;
         if (!structuredSelection.toList().equals(selectedElements)) {
             selectedElements.clear();
-            selectedElements.addAll(structuredSelection.toList());
+            for (Object element : structuredSelection.toList())
+                if (ArrayUtils.contains(elements, element)) // add only those that are part of the viewer's content
+                    selectedElements.add(element);
             setSelectionToWidget();
             fireSelectionChanged();
         }
@@ -330,7 +570,7 @@ public class IconGridViewer extends ContentViewer {
             boolean selected = selectedElements.contains(element);
             IFigure figure = elementsToFigures.get(element);
             figure.setOpaque(selected);
-            figure.setBorder(null);
+            figure.setBorder(new MarginBorder(1));
         }
         if (focusElement != null) {
             IFigure figure = elementsToFigures.get(focusElement);
@@ -338,65 +578,142 @@ public class IconGridViewer extends ContentViewer {
         }
     }
 
+    public void startDirectRename(Object element) {
+        if (!ArrayUtils.contains(elements, element))
+            throw new RuntimeException("element not found");
+
+        IRenameAdapter renameAdapter = getRenameAdapter();
+        if (renameAdapter == null || !renameAdapter.isRenameable(element))
+            return;
+
+        focusElement = null; // hide focus rectangle
+        clearSelection();
+        refresh(); // if selection was already empty, focus rect doesn't disappear otherwise
+
+        CellEditor cellEditor = createCellEditor();
+        configureCellEditor(cellEditor, element);
+
+        cellEditor.setValue(renameAdapter.getName(element));
+        cellEditor.getControl().setVisible(true);
+        cellEditor.setFocus();
+        cellEditor.activate();
+
+        while (cellEditor.isActivated())
+            Display.getCurrent().readAndDispatch();
+
+        String value = (String)cellEditor.getValue(); // null if cancelled
+        if (value != null && renameAdapter.isNameValid(element, value))
+            renameAdapter.setName(element, value);
+
+        cellEditor.dispose();
+
+        select(element);
+        refresh();
+    }
+
+    private CellEditor createCellEditor() {
+        CellEditor cellEditor = new TextCellEditor(getCanvas(), SWT.BORDER | SWT.MULTI | SWT.WRAP) {
+            @Override
+            protected Control createControl(Composite parent) {
+                Text text = (Text)super.createControl(parent);
+
+                // Issue 1: The cell editor is normally committed via the widgetDefaultSelected()
+                // method. However, with SWT.MULTI a plain Enter just inserts a newline and does not
+                // fire a default selection (only Ctrl+Enter does).
+                // Workaround: fake a default selection event from a keyboard listener.
+                //
+                // Issue 2: Escape key does not close the cell editor or clear (invalidate) the value
+                // by default, only fires a cancelEditor() event.
+                // Solution: manually invalidate the value and close the cell editor.
+                //
+                text.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if (e.character == '\r') {
+                            handleDefaultSelection(null); // khmm... (event arg is not used in the actual code)
+                            e.doit = false; // prevents '\r' from being added to the text
+                        }
+                        else if (e.character == SWT.ESC) {
+                            setValueValid(false);
+                            fireCancelEditor();
+                            deactivate();
+                            e.doit = false;
+                        }
+                    }
+                });
+                return text;
+            }
+        };
+        return cellEditor;
+    }
+
+    private void configureCellEditor(CellEditor cellEditor, Object element) {
+        Control text = cellEditor.getControl();
+        LabeledIcon f = (LabeledIcon)elementsToFigures.get(element);
+        Rectangle b = f.getTextBounds();
+        int sideMargin = 10, bottomMargin = 30; // make room for at least 1 extra line
+        text.setBounds(b.x - sideMargin, b.y, b.width + 2*sideMargin, b.height + bottomMargin);
+    }
+
     @Override
     public void refresh() {
+        Debug.println("IconGridViewer.refresh()");
+
         IStructuredContentProvider contentProvider = (IStructuredContentProvider)getContentProvider();
         Object[] elements = contentProvider.getElements(getInput());
 
         boolean elementListChanged = false;
         if (!ArrayUtils.isEquals(elements, this.elements)) {
-            // clear focus if element was deleted
-            if (focusElement != null && !ArrayUtils.contains(elements, focusElement)) {
-                int pos = ArrayUtils.indexOf(this.elements, focusElement);
-                focusElement = elements.length == 0 ? null : pos < elements.length ? elements[pos] : elements[elements.length-1];
-            }
-
+            Object[] oldElements = this.elements;
             this.elements = elements;
             elementListChanged = true;
 
-            // remove deleted elements
+            // remove deleted elements from selection
+            for (Object element : selectedElements.toArray())
+                if (!ArrayUtils.contains(elements, element))
+                    selectedElements.remove(element);
+
+            // clear focus if element no longer exists
+            if (focusElement != null && !ArrayUtils.contains(elements, focusElement)) {
+                int pos = ArrayUtils.indexOf(oldElements, focusElement);
+                focusElement = elements.length == 0 ? null : pos < elements.length ? elements[pos] : elements[elements.length-1];
+            }
+
+            // remove all figures, then add them back in the elements' order
+            contentLayer.removeAll();
+            for (Object element : elements) {
+                IFigure figure = elementsToFigures.get(element);
+                if (figure == null) {
+                    figure = createFigure();
+                    elementsToFigures.put(element,  figure);
+                }
+                contentLayer.add(figure);
+            }
+
+            // remove deleted elements from elementsToFigures[]
             ArrayList<Object> trash = new ArrayList<>();
             for (Object element : elementsToFigures.keySet())
                 if (!ArrayUtils.contains(elements, element))
                     trash.add(element);
-            for (Object element : trash)                 {
-                IFigure figure = elementsToFigures.get(element);
-                containerFigure.remove(figure);
-                elementsToFigures.remove(element);
-            }
-
-            // add new elements
-            for (Object element : elements) {
-                if (!elementsToFigures.containsKey(element)) {
-                    IFigure figure = createFigure();
-                    containerFigure.add(figure, new Rectangle());
-                    elementsToFigures.put(element, figure);
-                }
-            }
-
-            // remove deleted elements from selection too
-            for (Object element : selectedElements.toArray())
-                if (!ArrayUtils.contains(elements, element))
-                    selectedElements.remove(element);
+            for (Object element : trash)
+                elementsToFigures.remove(element); // its figure was already removed above
         }
 
         // synchronize icons and labels
         ILabelProvider labelProvider = (ILabelProvider)getLabelProvider();
         for (Object element : elements) {
             IFigure figure = elementsToFigures.get(element);
-            Label labelFigure = (Label)figure;
+            LabeledIcon labelFigure = (LabeledIcon)figure;
             String text = labelProvider.getText(element);
             Image image = labelProvider.getImage(element);
             labelFigure.setIcon(image);
             labelFigure.setText(text);
-            figure.invalidateTree();
-            figure.revalidate();
         }
 
         setSelectionToWidget();
 
         if (elementListChanged)
-            arrange();
+            adjustCanvasSize();
     }
 
     @Override
@@ -406,43 +723,21 @@ public class IconGridViewer extends ContentViewer {
     }
 
     protected IFigure createFigure() {
-        Label label = new Label();
-        label.setTextPlacement(PositionConstants.SOUTH);
-        label.setIconAlignment(PositionConstants.CENTER);
+        LabeledIcon label = new LabeledIcon();
         label.setBackgroundColor(selectionFillColor);  // note: only takes effect when 'opaque' is set; we use this for selection
+        label.setBorder(new MarginBorder(1));
+        label.setPreferredSize(new Dimension(100, -1));
         return label;
     }
 
-    protected void arrange() {
-        arrange(canvas.getSize().x);
-    }
+    protected void adjustCanvasSize() {
+        int figuresMaxY = 0;
+        if (elements != null)
+            for (Object element : elements)
+                figuresMaxY = Math.max(figuresMaxY, elementsToFigures.get(element).getBounds().bottom());
 
-    protected void arrange(int canvasWidth) {
-        if (elements == null)
-            return;
-        int row = 0, col = 0;
-        int lastRow = 0;
-        LayoutManager layoutManager = containerFigure.getLayoutManager();
-        for (Object element : elements) {
-            IFigure figure = elementsToFigures.get(element);
-            Rectangle bounds = (Rectangle)layoutManager.getConstraint(figure);
-            bounds.x = col * columnWidth + leftMargin;
-            bounds.y = row * rowHeight + topMargin;
-            bounds.width = itemWidth;
-            bounds.height = itemHeight;
-            figure.setBounds(bounds);
-            lastRow = row;
-
-            col++;
-            if (bounds.right() + columnWidth + rightMargin >= canvasWidth) {
-                row++;
-                col = 0;
-            }
-        }
-        layoutManager.layout(containerFigure);
-
-        int height = (lastRow+1) * rowHeight + topMargin;
-        canvas.setSize(canvasWidth, height);
+        org.eclipse.swt.graphics.Rectangle controlArea = scrolledComposite.getClientArea();
+        canvas.setSize(controlArea.width, Math.max(figuresMaxY + getMargin(), controlArea.height));
     }
 
     protected Object getElementFromFigure(IFigure figure) {
@@ -486,12 +781,7 @@ public class IconGridViewer extends ContentViewer {
 
     protected int getItemsPerRow() {
         int width = canvas.getSize().x;
-        return (width - leftMargin - rightMargin) / columnWidth;
-    }
-
-    protected int getNumVisibleRows() {
-        int height = scrolledComposite.getSize().y;
-        return height / rowHeight;
+        return (width - 2*DEFAULT_MARGIN) / 100; //FIXME
     }
 
     protected void moveUp(boolean extendSelection) {
@@ -500,6 +790,26 @@ public class IconGridViewer extends ContentViewer {
 
     protected void moveDown(boolean extendSelection) {
         moveBy(getItemsPerRow(), extendSelection);
+    }
+
+    protected void movePageUp(boolean extendSelection) {
+        ensureFocusElement();
+        if (focusElement == null)
+            return;
+        int pos = ArrayUtils.indexOf(elements, focusElement);
+        int numRowsToJump = 5; //TODO
+        int newPos = pos - getItemsPerRow() * numRowsToJump;
+        moveTo(elements[Math.max(0, newPos)], extendSelection);
+    }
+
+    protected void movePageDown(boolean extendSelection) {
+        ensureFocusElement();
+        if (focusElement == null)
+            return;
+        int pos = ArrayUtils.indexOf(elements, focusElement);
+        int numRowsToJump = 5; //TODO
+        int newPos = pos + getItemsPerRow() * numRowsToJump;
+        moveTo(elements[Math.min(elements.length-1, newPos)], extendSelection);
     }
 
     protected void moveHome(boolean extendSelection) {
@@ -512,23 +822,17 @@ public class IconGridViewer extends ContentViewer {
             moveTo(elements[elements.length-1], extendSelection);
     }
 
-    protected void movePageUp(boolean extendSelection) {
-        ensureFocusElement();
-        if (focusElement == null)
-            return;
-        int pos = ArrayUtils.indexOf(elements, focusElement);
-        int newPos = pos - getItemsPerRow() * getNumVisibleRows();
-        moveTo(elements[Math.max(0, newPos)], extendSelection);
-    }
-
-    protected void movePageDown(boolean extendSelection) {
-        ensureFocusElement();
-        if (focusElement == null)
-            return;
-        int pos = ArrayUtils.indexOf(elements, focusElement);
-        int newPos = pos + getItemsPerRow() * getNumVisibleRows();
-        moveTo(elements[Math.min(elements.length-1, newPos)], extendSelection);
-    }
+//TODO
+//    class Row {
+//        int y;
+//        List<IFigure> figures;
+//    }
+//
+//    protected void findRows() {
+//        int y = -1;
+//        List<Integer> rows
+//        for (IFigure f : )
+//    }
 
     protected void selectByRectangle(Rectangle rectangle, boolean extendSelection) {
         if (!extendSelection)
@@ -536,7 +840,7 @@ public class IconGridViewer extends ContentViewer {
         for (Object element : elements) {
             if (!selectedElements.contains(element)) {
                 IFigure figure = elementsToFigures.get(element);
-                if (rectangle.contains(figure.getBounds().getCenter()))
+                if (rectangle.intersects(figure.getBounds()))
                     selectedElements.add(element);
             }
         }
@@ -544,6 +848,24 @@ public class IconGridViewer extends ContentViewer {
             focusElement = selectedElements.get(selectedElements.size()-1); // focus on last element
         setSelectionToWidget();
         fireSelectionChanged();
+    }
+
+    protected void clearSelection() {
+        if (!selectedElements.isEmpty()) {
+            selectedElements.clear();
+            setSelectionToWidget();
+            fireSelectionChanged();
+        }
+    }
+
+    protected void select(Object element) {
+        if (selectedElements.size() != 1 || selectedElements.get(0) != element || focusElement != element) {
+            focusElement = element;
+            selectedElements.clear();
+            selectedElements.add(element);
+            setSelectionToWidget();
+            fireSelectionChanged();
+        }
     }
 
     protected void toggleSelection(Object element) {
@@ -564,7 +886,7 @@ public class IconGridViewer extends ContentViewer {
             fireSelectionChanged();
         }
         else {
-            setSelectionToWidget(); // refraw focus mark
+            setSelectionToWidget(); // redraw focus mark
         }
     }
 
@@ -576,7 +898,7 @@ public class IconGridViewer extends ContentViewer {
         for (int i = pos1; i <= pos2; i++)
             if (!selectedElements.contains(elements[i]))
                 selectedElements.add(elements[i]);
-        focusElement = element;
+        // note: deliberately no focusElement = element;
         setSelectionToWidget();
         fireSelectionChanged();
     }
