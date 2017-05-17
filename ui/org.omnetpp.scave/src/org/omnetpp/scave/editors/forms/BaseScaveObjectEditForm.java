@@ -5,11 +5,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.omnetpp.scave.editors.ui.ModelObjectPalette;
-import org.omnetpp.scave.model.ScaveModelFactory;
-import org.omnetpp.scave.model2.IScaveEditorContext;
-import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Base class for IScaveObjectEditForm.
@@ -20,30 +16,16 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 abstract class BaseScaveObjectEditForm implements IScaveObjectEditForm {
 
     protected EObject object; // the edited or created object
-    protected EObject parent; // the parent of the edited object
     private ListenerList listeners = new ListenerList();
 
-    protected BaseScaveObjectEditForm(EObject object, EObject parent) {
+    protected BaseScaveObjectEditForm(EObject object) {
         Assert.isNotNull(object);
         this.object = object;
-        this.parent = parent;
     }
 
     public String getTitle() {
-        return object.eContainer() == null ?
-                "Create '" + getEditedObjectName() + "' node" :
-                "Edit '" + getEditedObjectName() + "' node";
+        return "Edit " + object.eClass().getName();
     }
-
-    protected String getEditedObjectName() {
-        IScaveEditorContext editorContext = ScaveModelUtil.getScaveEditorContextFor(parent);
-        Assert.isNotNull(editorContext);
-        ILabelProvider labelProvider = editorContext.getScaveModelLavelProvider();
-        // ask the label of a fresh instance, otherwise the value of the label feature also added to the label
-        ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
-        return labelProvider.getText(factory.create(object.eClass()));
-    }
-
 
     public String getDescription() {
         return ModelObjectPalette.getDescription(object.eClass());

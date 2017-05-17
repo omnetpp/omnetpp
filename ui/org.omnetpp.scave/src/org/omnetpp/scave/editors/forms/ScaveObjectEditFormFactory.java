@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.LineChart;
@@ -38,10 +39,8 @@ public class ScaveObjectEditFormFactory {
 
     /**
      * Creates a form containing all editable features of the object.
-     * @param object  the edited object
      */
     public IScaveObjectEditForm createForm(EObject object, Map<String,Object> formParameters, ResultFileManager manager) {
-        Assert.isTrue(object != null && object.eContainer() != null);
         return createForm(object, object.eContainer(), null, -1, formParameters, manager);
     }
 
@@ -53,15 +52,17 @@ public class ScaveObjectEditFormFactory {
     public IScaveObjectEditForm createForm(EObject object, EObject parent, EStructuralFeature feature, int index, Map<String,Object> formParameters, ResultFileManager manager) {
 
         if (object instanceof BarChart)
-            return new BarChartEditForm((BarChart)object, parent, formParameters, manager);
+            return new BarChartEditForm((BarChart)object, formParameters, manager);
         else if (object instanceof ScatterChart)
-            return new ScatterChartEditForm((ScatterChart)object, parent, formParameters, manager);
+            return new ScatterChartEditForm((ScatterChart)object, formParameters, manager);
         else if (object instanceof LineChart)
-            return new LineChartEditForm((LineChart)object, parent, formParameters, manager);
+            return new LineChartEditForm((LineChart)object, formParameters, manager);
         else if (object instanceof HistogramChart)
-            return new HistogramChartEditForm((HistogramChart)object, parent, formParameters, manager);
+            return new HistogramChartEditForm((HistogramChart)object, formParameters, manager);
         else if (object instanceof Chart)
-            return new ChartEditForm((Chart)object, parent, formParameters, manager);
+            return new ChartEditForm((Chart)object, formParameters, manager);
+        else if (object instanceof ChartSheet)
+            return new ChartSheetEditForm((ChartSheet)object, parent);
         else if (object instanceof InputFile)
             return new InputFileEditForm((InputFile)object, parent);
         else if (object instanceof Property)

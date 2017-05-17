@@ -43,7 +43,7 @@ public class PropertyEditForm extends BaseScaveObjectEditForm {
     private Text valueText;
 
     public PropertyEditForm(Property property, EObject parent) {
-        super(property, parent);
+        super(property);
         //this.property = property;
     }
 

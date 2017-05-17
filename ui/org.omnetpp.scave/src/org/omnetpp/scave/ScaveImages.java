@@ -32,10 +32,12 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_EXPORT = "icons/full/etool16/export.png";
     public static final String IMG_ETOOL16_EXPORTTOSVG = "icons/full/etool16/exporttosvg.png";
     public static final String IMG_ETOOL16_FLATMODULETREE = "icons/full/etool16/flatmoduletree.png";
-    public static final String IMG_ETOOL16_GOTOCHARTDEFINITION = "icons/full/etool16/gotochartdefinition.png";
+    public static final String IMG_ETOOL16_GOTOITEMDEFINITION = "icons/full/etool16/gotoitemdefinition.png";
     public static final String IMG_ETOOL16_HZOOMIN = "icons/full/etool16/hzoomin.png";
     public static final String IMG_ETOOL16_HZOOMOUT = "icons/full/etool16/hzoomout.png";
     public static final String IMG_ETOOL16_NEWBARCHART = "icons/full/etool16/newbarchart.png";
+    public static final String IMG_ETOOL16_NEWCHARTSHEET = "icons/full/etool16/newchartsheet.png";
+    public static final String IMG_ETOOL16_NEWDATASET = "icons/full/etool16/newdataset.png";
     public static final String IMG_ETOOL16_NEWHISTOGRAMCHART = "icons/full/etool16/newhistogramchart.png";
     public static final String IMG_ETOOL16_NEWINPUTFILE = "icons/full/etool16/newinputfile.png";
     public static final String IMG_ETOOL16_NEWLINECHART = "icons/full/etool16/newlinechart.png";
@@ -80,9 +82,13 @@ public class ScaveImages {
     public static final String IMG_OBJ16_SYM_SQUARE = "icons/full/obj16/sym_square.png";
     public static final String IMG_OBJ16_SYM_TRIANGLE = "icons/full/obj16/sym_triangle.png";
     public static final String IMG_OBJ_BARCHART = "icons/full/obj/barchart.png";
+    public static final String IMG_OBJ_CHARTSHEET = "icons/full/obj/chartsheet.png";
+    public static final String IMG_OBJ_DATASET = "icons/full/obj/dataset.png";
+    public static final String IMG_OBJ_FOLDER = "icons/full/obj/folder.png";
     public static final String IMG_OBJ_HISTOGRAMCHART = "icons/full/obj/histogramchart.png";
     public static final String IMG_OBJ_LINECHART = "icons/full/obj/linechart.png";
     public static final String IMG_OBJ_SCATTERCHART = "icons/full/obj/scatterchart.png";
+    public static final String IMG_WIZBAN_NEWSCAVEMODEL = "icons/full/wizban/NewScaveModel.gif";
     public static final String IMG_LOGO128 = "icons/logo128.png";
     public static final String IMG_LOGO16 = "icons/logo16.png";
     public static final String IMG_LOGO32 = "icons/logo32.png";
@@ -93,5 +99,4 @@ public class ScaveImages {
     public static final String IMG_SCAVEFILE = "icons/scavefile.png";
     public static final String IMG_VCIFILE = "icons/vcifile.png";
     public static final String IMG_VECFILE = "icons/vecfile.png";
-    public static final String IMG_WIZBAN_NEWSCAVEMODEL = "icons/full/wizban/NewScaveModel.gif";
 }

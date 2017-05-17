@@ -16,7 +16,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.set.ListOrderedSet;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.jface.viewers.ISelection;
@@ -72,7 +71,7 @@ public class BarChartEditForm extends ChartEditForm {
     public static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
 
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
-        pkg.getChart_Name(),
+        pkg.getAnalysisItem_Name(),
         pkg.getChart_Input(),
         pkg.getBarChart_GroupByFields(),
         pkg.getBarChart_BarFields(),
@@ -99,8 +98,8 @@ public class BarChartEditForm extends ChartEditForm {
     private Text baselineText;
     private Combo barPlacementCombo;
 
-    public BarChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
-        super(chart, parent, formParameters, manager);
+    public BarChartEditForm(Chart chart, Map<String,Object> formParameters, ResultFileManager manager) {
+        super(chart, formParameters, manager);
     }
 
     @Override

@@ -13,11 +13,11 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 
 
 /**
- * Create a BarChart..
+ * Create a Histogram Chart.
  */
-public class NewHistogramChartAction extends NewChartObjectAction {
-    public NewHistogramChartAction() {
-        super(ScaveModelFactory.eINSTANCE.createHistogramChart());
+public class NewHistogramChartAction extends NewAnalysisItemAction {
+    public NewHistogramChartAction(boolean withEditDialog) {
+        super(ScaveModelFactory.eINSTANCE.createHistogramChart(), withEditDialog);
         setText("New Histogram Chart");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWHISTOGRAMCHART));
     }

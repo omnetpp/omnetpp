@@ -41,7 +41,7 @@ public class InputFileEditForm extends BaseScaveObjectEditForm {
     private Text nameText;
 
     public InputFileEditForm(InputFile inputFile, EObject parent) {
-        super(inputFile, parent);
+        super(inputFile);
         //this.inputFile = inputFile;
     }
 

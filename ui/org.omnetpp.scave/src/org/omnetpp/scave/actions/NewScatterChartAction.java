@@ -13,11 +13,11 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 
 
 /**
- * Create a BarChart..
+ * Create a Scatter Chart.
  */
-public class NewScatterChartAction extends NewChartObjectAction {
-    public NewScatterChartAction() {
-        super(ScaveModelFactory.eINSTANCE.createScatterChart());
+public class NewScatterChartAction extends NewAnalysisItemAction {
+    public NewScatterChartAction(boolean withEditDialog) {
+        super(ScaveModelFactory.eINSTANCE.createScatterChart(), withEditDialog);
         setText("New Scatter Chart");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWSCATTERCHART));
     }

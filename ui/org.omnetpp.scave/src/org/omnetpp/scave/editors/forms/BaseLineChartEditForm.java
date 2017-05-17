@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -152,8 +151,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
     private ImageCombo lineTypeCombo;
     private PreviewCanvas previewCanvas;
 
-    public BaseLineChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
-        super(chart, parent, formParameters, manager);
+    public BaseLineChartEditForm(Chart chart, Map<String,Object> formParameters, ResultFileManager manager) {
+        super(chart, formParameters, manager);
         selectedLines = Collections.emptyList();
         lineProps = (VectorChartProperties)properties;
     }

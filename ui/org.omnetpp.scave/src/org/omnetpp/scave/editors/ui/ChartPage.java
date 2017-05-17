@@ -25,6 +25,7 @@ import org.omnetpp.common.canvas.LargeScrollableCanvas;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.charting.ChartFactory;
@@ -57,14 +58,16 @@ public class ChartPage extends ScaveEditorPage {
         hookListeners();
 
         ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-        addToToolbar(contributor.getGotoChartDefinitionAction());
+        if (chart.isTemporary())
+            addToToolbar(contributor.getSaveTempChartAction());
+        else
+            addToToolbar(contributor.getGotoChartDefinitionAction());
         addToToolbar(contributor.getCopyChartToClipboardAction());
         addToToolbar(contributor.getExportToSVGAction());
         addSeparatorToToolbar();
         addToToolbar(contributor.getSwitchChartToPanModeAction());
         addToToolbar(contributor.getSwitchChartToZoomModeAction());
         addSeparatorToToolbar();
-        addToToolbar(contributor.getZoomToFitAction());
         addToToolbar(contributor.getZoomToFitAction());
         addToToolbar(contributor.getHZoomInAction());
         addToToolbar(contributor.getHZoomOutAction());
@@ -74,7 +77,7 @@ public class ChartPage extends ScaveEditorPage {
         addToToolbar(contributor.getRefreshChartAction());
         addSeparatorToToolbar();
         addToToolbar(new ClosePageAction());
-        
+
     }
 
     @Override
@@ -113,21 +116,21 @@ public class ChartPage extends ScaveEditorPage {
             return;
 
         ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-        if (pkg.getChart_Name().equals(notification.getFeature())) {
-            setPageTitle("Chart: " + getChartName(chart));
-            setFormTitle("Chart: " + getChartName(chart));
+        if (pkg.getAnalysisItem_Name().equals(notification.getFeature())) {
+            setPageTitle(getChartName(chart));
+            setFormTitle(getChartName(chart));
         }
         updater.updateChart(notification);
     }
 
     private String getChartName(Chart chart) {
-        return chart.getName() != null ? chart.getName() : "<unnamed>";
+        return StringUtils.defaultIfBlank(chart.getName(), "<unnamed>");
     }
 
     protected void initialize() {
         // set up UI
-        setPageTitle("Chart: " + getChartName(chart));
-        setFormTitle("Chart: " + getChartName(chart));
+        setPageTitle(getChartName(chart));
+        setFormTitle(getChartName(chart));
         //setBackground(ColorFactory.asColor("lightGray"));
         getContent().setLayout(new GridLayout(2,false));
 

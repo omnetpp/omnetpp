@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.IconGridViewer;
 import org.omnetpp.scave.actions.NewBarChartAction;
+import org.omnetpp.scave.actions.NewChartSheetAction;
 import org.omnetpp.scave.actions.NewHistogramChartAction;
 import org.omnetpp.scave.actions.NewLineChartAction;
 import org.omnetpp.scave.actions.NewScatterChartAction;
@@ -52,7 +53,7 @@ public class ChartsPage extends ScaveEditorPage {
         getContent().setLayout(new GridLayout(2, false));
 
         Label label = new Label(getContent(), SWT.WRAP);
-        label.setText("Here you can edit chart defintions.");
+        label.setText("Here you can edit chart definitions.");
         label.setBackground(this.getBackground());
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
 
@@ -61,10 +62,12 @@ public class ChartsPage extends ScaveEditorPage {
         viewer.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
         ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-        addToToolbar(new NewBarChartAction());
-        addToToolbar(new NewLineChartAction());
-        addToToolbar(new NewScatterChartAction());
-        addToToolbar(new NewHistogramChartAction());
+        boolean withEditDialog = false;
+        addToToolbar(new NewBarChartAction(withEditDialog));
+        addToToolbar(new NewLineChartAction(withEditDialog));
+        addToToolbar(new NewScatterChartAction(withEditDialog));
+        addToToolbar(new NewHistogramChartAction(withEditDialog));
+        addToToolbar(new NewChartSheetAction(withEditDialog));
         addSeparatorToToolbar();
         addToToolbar(contributor.getEditAction());
         addToToolbar(contributor.getRemoveAction());

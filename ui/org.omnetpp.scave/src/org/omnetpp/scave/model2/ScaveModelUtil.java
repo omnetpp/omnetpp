@@ -39,6 +39,7 @@ import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
@@ -54,6 +55,7 @@ import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -69,9 +71,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author andras
  */
 public class ScaveModelUtil {
-
-    private static final String DEFAULT_CHARTSHEET_NAME = "default";
-
     private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
     private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 
@@ -81,16 +80,23 @@ public class ScaveModelUtil {
         return input;
     }
 
-    public static Chart createChart(String name, ResultType type) {
+    public static Chart createChart(String name, String title, ResultType type) {
+        Chart chart;
         if (type==ResultType.SCALAR_LITERAL)
-            return createBarChart(name);
+            chart = createBarChart(name);
         else if (type==ResultType.VECTOR_LITERAL)
-            return createLineChart(name);
-        //TODO statistics
+            chart = createLineChart(name);
         else if (type==ResultType.HISTOGRAM_LITERAL)
-            return createHistogramChart(name);
+            chart = createHistogramChart(name);
         else
             throw new IllegalArgumentException();
+
+        Property property = factory.createProperty();
+        property.setName(ChartProperties.PROP_GRAPH_TITLE);
+        property.setValue(title);
+        chart.getProperties().add(property);
+
+        return chart;
     }
 
     public static BarChart createBarChart(String name) {
@@ -109,6 +115,24 @@ public class ScaveModelUtil {
         HistogramChart chart = factory.createHistogramChart();
         chart.setName(name);
         return chart;
+    }
+
+    public static ChartSheet createChartSheet(String name) {
+        ChartSheet chartsheet = factory.createChartSheet();
+        chartsheet.setName(name);
+        return chartsheet;
+    }
+
+    public static List<String> getIDListAsFilters(IDList ids, String[] runidFields, ResultFileManager manager) {
+        Assert.isNotNull(runidFields);
+        String[] filterFields = getFilterFieldsFor(runidFields);
+        List<String> filters = new ArrayList<String>(ids.size());
+        for (int i = 0; i < ids.size(); ++i) {
+            long id = ids.get(i);
+            String filter = new FilterUtil(manager.getItem(id), filterFields).getFilterPattern(); //TODO include: getTypeOf(item)
+            filters.add(filter);
+        }
+        return filters;
     }
 
     public static void addInputFiles(EditingDomain domain, Analysis analysis, List<String> list) {
@@ -293,10 +317,6 @@ public class ScaveModelUtil {
             return eObject instanceof Resource ||
                    eObject instanceof Analysis;
         }
-    }
-
-    public static boolean isTemporaryChart(Chart chart, ScaveEditor editor) {
-        return false; //TODO return ScaveModelUtil.findEnclosingOrSelf(chart, Analysis.class) == editor.getTempAnalysis();
     }
 
     public static Property getChartProperty(Chart chart, String propertyName) {
@@ -519,25 +539,6 @@ public class ScaveModelUtil {
         Assert.isNotNull(nodeType);
         Assert.isNotNull(category);
         return nodeType.getCategory().equals(category);
-    }
-
-    private static final StringVector MODULE_AND_NAME =
-        StringVector.fromArray(new String[] {ResultItemField.MODULE, ResultItemField.NAME});
-
-    public static IScaveEditorContext getScaveEditorContextFor(EObject object)
-    {
-        Resource resource = object.eResource();
-        Adapter adapter = null;
-        synchronized (resource) {
-            adapter = EcoreUtil.getRegisteredAdapter(resource, IScaveEditorContext.class);
-        }
-        return adapter instanceof IScaveEditorContext ? (IScaveEditorContext)adapter : null;
-    }
-
-    public static ResultFileManager getResultFileManagerFor(EObject object)
-    {
-        IScaveEditorContext provider = getScaveEditorContextFor(object);
-        return provider != null ? provider.getResultFileManager() : null;
     }
 
     public static IFile getFileOfEObject(EObject object) {

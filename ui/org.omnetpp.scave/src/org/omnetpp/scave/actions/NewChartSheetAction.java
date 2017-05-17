@@ -13,12 +13,12 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 
 
 /**
- * Create a Line Chart.
+ * Create a ChartSheet.
  */
-public class NewLineChartAction extends NewAnalysisItemAction {
-    public NewLineChartAction(boolean withEditDialog) {
-        super(ScaveModelFactory.eINSTANCE.createLineChart(), withEditDialog);
-        setText("New Line Chart");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWLINECHART));
+public class NewChartSheetAction extends NewAnalysisItemAction {
+    public NewChartSheetAction(boolean withEditDialog) {
+        super(ScaveModelFactory.eINSTANCE.createChartSheet(), withEditDialog);
+        setText("New Chart Sheet");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWCHARTSHEET));
     }
 }

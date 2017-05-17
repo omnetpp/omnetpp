@@ -9,7 +9,6 @@ package org.omnetpp.scave.editors.forms;
 
 import java.util.Map;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -37,9 +36,8 @@ public class HistogramChartEditForm extends ChartEditForm {
     private Combo dataTypeCombo;
     private Button showOverflowCellCheckbox;
 
-    public HistogramChartEditForm(HistogramChart chart, EObject parent,
-            Map<String, Object> formParameters, ResultFileManager manager) {
-        super(chart, parent, formParameters, manager);
+    public HistogramChartEditForm(HistogramChart chart, Map<String, Object> formParameters, ResultFileManager manager) {
+        super(chart, formParameters, manager);
     }
 
     @Override

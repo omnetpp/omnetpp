@@ -76,10 +76,13 @@ import org.omnetpp.scave.actions.ExportChartsAction;
 import org.omnetpp.scave.actions.ExportDataAction;
 import org.omnetpp.scave.actions.ExportToSVGAction;
 import org.omnetpp.scave.actions.GotoChartDefinitionAction;
+import org.omnetpp.scave.actions.GotoChartSheetDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RemoveAction;
+import org.omnetpp.scave.actions.SaveTempChartAction;
+import org.omnetpp.scave.actions.SaveTempChartSheetAction;
 import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
@@ -217,11 +220,14 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private IAction copyChartToClipboardAction;
     private IAction refreshChartAction;
     private IAction gotoChartDefinitionAction;
+    private IAction gotoChartSheetDefinitionAction;
 
     // BrowseDataPage actions
     private IAction copyToClipboardAction;
     private IAction exportToSVGAction;
     private IAction createTempChartAction;
+    private IAction saveTempChartAction;
+    private IAction saveTempChartSheetAction;
     private IAction showOutputVectorViewAction;
     private Map<String,IAction> exportActions;
 
@@ -311,6 +317,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         copyChartToClipboardAction = registerAction(page, new CopyChartToClipboardAction());
         refreshChartAction = registerAction(page, new RefreshChartAction());
         gotoChartDefinitionAction = registerAction(page, new GotoChartDefinitionAction());
+        gotoChartSheetDefinitionAction = registerAction(page, new GotoChartSheetDefinitionAction());
 
         // BrowseDataPage actions
         exportActions = new HashMap<String,IAction>();
@@ -321,6 +328,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         copyToClipboardAction = registerAction(page, new CopyToClipboardAction());
         exportToSVGAction = registerAction(page, new ExportToSVGAction());
         createTempChartAction = registerAction(page, new CreateTempChartAction());
+        saveTempChartAction = registerAction(page, new SaveTempChartAction());
+        saveTempChartSheetAction = registerAction(page, new SaveTempChartSheetAction());
         showOutputVectorViewAction = registerAction(page, new ShowOutputVectorViewAction());
 
 //      addResultFileAction = registerAction(page, new AddResultFileAction());
@@ -551,6 +560,9 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     public IAction getGotoChartDefinitionAction() {
         return gotoChartDefinitionAction;
     }
+    public IAction getGotoChartSheetDefinitionAction() {
+        return gotoChartSheetDefinitionAction;
+    }
     public IAction getCopyChartToClipboardAction() {
         return copyChartToClipboardAction;
     }
@@ -565,6 +577,12 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     }
     public IAction getCreateTempChartAction() {
         return createTempChartAction;
+    }
+    public IAction getSaveTempChartAction() {
+        return saveTempChartAction;
+    }
+    public IAction getSaveTempChartSheetAction() {
+        return saveTempChartSheetAction;
     }
     public IAction getShowOutputVectorViewAction() {
         return showOutputVectorViewAction;

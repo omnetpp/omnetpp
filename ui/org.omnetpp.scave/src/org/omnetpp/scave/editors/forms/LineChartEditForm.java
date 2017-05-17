@@ -10,7 +10,6 @@ package org.omnetpp.scave.editors.forms;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -32,7 +31,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
      * Features edited on this form.
      */
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
-        pkg.getChart_Name(),
+        pkg.getAnalysisItem_Name(),
         pkg.getChart_Input(),
         pkg.getLineChart_LineNameFormat(),
         pkg.getChart_Properties(),
@@ -41,9 +40,8 @@ public class LineChartEditForm extends BaseLineChartEditForm {
     private Text lineNamePattern;
 
 
-    public LineChartEditForm(LineChart chart, EObject parent,
-            Map<String, Object> formParameters, ResultFileManager manager) {
-        super(chart, parent, formParameters, manager);
+    public LineChartEditForm(LineChart chart, Map<String, Object> formParameters, ResultFileManager manager) {
+        super(chart, formParameters, manager);
         updateDataset(getChart().getLineNameFormat());
     }
 

@@ -15,9 +15,9 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 /**
  * Create a BarChart..
  */
-public class NewBarChartAction extends NewChartObjectAction {
-    public NewBarChartAction() {
-        super(ScaveModelFactory.eINSTANCE.createBarChart());
+public class NewBarChartAction extends NewAnalysisItemAction {
+    public NewBarChartAction(boolean withEditDialog) {
+        super(ScaveModelFactory.eINSTANCE.createBarChart(), withEditDialog);
         setText("New Bar Chart");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWBARCHART));
     }

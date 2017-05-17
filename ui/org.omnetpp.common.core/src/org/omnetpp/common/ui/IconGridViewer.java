@@ -418,6 +418,8 @@ public class IconGridViewer extends ContentViewer {
     }
 
     protected void arrange(int canvasWidth) {
+        if (elements == null)
+            return;
         int row = 0, col = 0;
         int lastRow = 0;
         LayoutManager layoutManager = containerFigure.getLayoutManager();

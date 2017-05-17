@@ -104,8 +104,7 @@ public class EditAction extends AbstractScaveAction {
                     }
                 }
             }
-            if (editedObject != null && editedObject.eResource() != null &&
-                    EditDialog.getEditableFeatures(editedObject, editor).length > 0)
+            if (editedObject != null && EditDialog.getEditableFeatures(editedObject, editor).length > 0)
                 return editedObject;
         }
         return null;

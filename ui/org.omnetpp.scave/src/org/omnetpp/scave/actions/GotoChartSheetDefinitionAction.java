@@ -9,16 +9,13 @@ package org.omnetpp.scave.actions;
 
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.model.ScaveModelFactory;
-
 
 /**
- * Create a Line Chart.
+ * Opens the ChartSheet object on the Charts page.
  */
-public class NewLineChartAction extends NewAnalysisItemAction {
-    public NewLineChartAction(boolean withEditDialog) {
-        super(ScaveModelFactory.eINSTANCE.createLineChart(), withEditDialog);
-        setText("New Line Chart");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWLINECHART));
+public class GotoChartSheetDefinitionAction extends GotoItemDefinitionAction {
+    public GotoChartSheetDefinitionAction() {
+        setText("Go to Chart Definition");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_GOTOITEMDEFINITION));
     }
 }

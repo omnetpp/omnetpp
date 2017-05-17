@@ -13,12 +13,12 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 
 
 /**
- * Create a Line Chart.
+ * Create a Dataset.
  */
-public class NewLineChartAction extends NewAnalysisItemAction {
-    public NewLineChartAction(boolean withEditDialog) {
-        super(ScaveModelFactory.eINSTANCE.createLineChart(), withEditDialog);
-        setText("New Line Chart");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWLINECHART));
+public class NewDatasetAction extends NewAnalysisItemAction {
+    public NewDatasetAction(boolean withEditDialog) {
+        super(ScaveModelFactory.eINSTANCE.createDataset(), withEditDialog);
+        setText("New Dataset");
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWDATASET));
     }
 }

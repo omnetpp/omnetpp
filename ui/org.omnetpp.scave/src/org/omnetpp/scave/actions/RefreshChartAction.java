@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 
 /**
@@ -34,11 +35,13 @@ public class RefreshChartAction extends AbstractScaveAction {
         ScaveEditorPage page = scaveEditor.getActiveEditorPage();
         if (page instanceof ChartPage)
             ((ChartPage)page).updateChart();
+        else if (page instanceof ChartSheetPage)
+            ((ChartSheetPage)page).updateCharts();
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
         ScaveEditorPage page = editor.getActiveEditorPage();
-        return page instanceof ChartPage;
+        return page instanceof ChartPage || page instanceof ChartSheetPage;
     }
 }

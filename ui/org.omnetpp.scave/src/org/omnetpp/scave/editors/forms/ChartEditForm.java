@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
@@ -81,7 +80,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      * Features edited on this form.
      */
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
-        pkg.getChart_Name(),
+        pkg.getAnalysisItem_Name(),
         pkg.getChart_Input(),
         pkg.getChart_Properties(),
     };
@@ -90,7 +89,6 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      * The edited chart.
      */
     protected Chart chart;
-    protected EObject parent;
     protected Map<String, Object> formParameters;
     protected ResultFileManager manager;
     protected ChartProperties properties;
@@ -137,10 +135,9 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
 
     protected static final String USER_DATA_KEY = "ChartEditForm";
 
-    public ChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
-        super(chart, parent);
+    public ChartEditForm(Chart chart, Map<String,Object> formParameters, ResultFileManager manager) {
+        super(chart);
         this.chart = chart;
-        this.parent = parent;
         this.formParameters = formParameters;
         this.manager = manager;
         this.properties = ChartProperties.createPropertySource(chart, manager);

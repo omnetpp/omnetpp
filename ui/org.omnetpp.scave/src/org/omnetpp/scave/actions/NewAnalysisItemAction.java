@@ -13,53 +13,47 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.wizard.NewScaveObjectWizard;
 
 /**
- * Opens an edit dialog for the selected dataset, chart, chart sheet, etc.
+ * Creates a new chart, chart sheet, or other analysis item.
  */
-public class NewChartObjectAction extends AbstractScaveAction {
-    private EObject elementPrototype;
+public class NewAnalysisItemAction extends AbstractScaveAction {
+    private AnalysisItem elementPrototype;
+    private boolean withEditDialog;
 
-    public NewChartObjectAction(EObject elementPrototype) {
+    public NewAnalysisItemAction(AnalysisItem elementPrototype, boolean withEditDialog) {
         this.elementPrototype = elementPrototype;
+        this.withEditDialog = withEditDialog;
     }
 
     @Override
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-        //TODO  ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Object>() {
-
         EObject target = editor.getAnalysis().getCharts();
-        final EObject element = EcoreUtil.copy(elementPrototype);
+        AnalysisItem element = EcoreUtil.copy(elementPrototype);
         Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
         Assert.isTrue(command.canExecute());
-        NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, target, target.eContents().size(), element);
-        WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard) {
-            @Override
-            protected Point getInitialSize() {
-                return getShell().computeSize(800, SWT.DEFAULT, true);
-            }
-        };
-        if (dialog.open() == Window.OK)
-            editor.executeCommand(command);
 
-        // if it got inserted (has parent now), select it in the viewer.
-        // TODO check whether it needs to be in asyncExec
-        if (element.eContainer() != null) {
-            Display.getDefault().asyncExec(new Runnable() {
+        if (withEditDialog) {
+            NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, target, target.eContents().size(), element);
+            WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard) {
                 @Override
-                public void run() {
-                    editor.setSelection(new StructuredSelection(element));
+                protected Point getInitialSize() {
+                    return getShell().computeSize(800, SWT.DEFAULT, true);
                 }
-            });
+            };
+            if (dialog.open() != Window.OK)
+                return;
         }
+
+        editor.executeCommand(command);
+        editor.showAnalysisItem(element);
     }
 
     @Override

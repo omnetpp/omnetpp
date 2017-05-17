@@ -69,6 +69,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -136,14 +137,19 @@ import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.InputsPage;
 import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -170,7 +176,6 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private BrowseDataPage browseDataPage;
     private ChartsPage chartsPage;
     private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
-
 
     /**
      * This keeps track of the editing domain that is used to track all changes to the model.
@@ -549,6 +554,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             editingDomain.getResourceSet().getResource(resourceURI, true);
         }
         catch (Exception e) {
+            MessageDialog.openError(getSite().getShell(), "Error", "Could not open resource " + modelFile.getFile().getFullPath() + "\n\n" + e.getMessage());
             ScavePlugin.logError("coul not load resource", e);
             //TODO dialog? close editor?
             return;
@@ -773,6 +779,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return openClosablePage(chart);
     }
 
+    public ScaveEditorPage openChartsheet(ChartSheet chartsheet) {
+        return openClosablePage(chartsheet);
+    }
+
     /**
      * Opens the given <code>object</code> (dataset/chart/chartsheet), or
      * switches to it if already opened.
@@ -812,7 +822,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             setActivePage(pageIndex);
     }
 
-    public void gotoObject(Object object) {
+    public void showAnalysisItem(AnalysisItem item) {
+        showChartsPage();
+        getChartsPage().getViewer().setSelection(new StructuredSelection(item));
+    }
+
+    public void gotoObject(Object object) { //XXX useful?
         if (object instanceof EObject) {
             EObject eobject = (EObject)object;
             if (getAnalysis() == null || eobject.eResource() != getAnalysis().eResource())
@@ -868,6 +883,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         ScaveEditorPage page;
         if (object instanceof Chart)
             page = new ChartPage(getContainer(), this, (Chart)object);
+        else if (object instanceof ChartSheet)
+            page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
         else
             throw new IllegalArgumentException("Cannot create editor page for " + object);
 
@@ -1433,16 +1450,25 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_SCATTERCHART);
                 else if (element instanceof HistogramChart)
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_HISTOGRAMCHART);
+                else if (element instanceof Dataset)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_DATASET);
+                else if (element instanceof Folder)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_FOLDER);
+                else if (element instanceof ChartSheet)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_CHARTSHEET);
                 else
                     return null;
             }
 
             @Override
             public String getText(Object element) {
-                if (element instanceof Chart)
-                    return StringUtils.defaultIfBlank(((Chart) element).getName(), "<unnamed>");
-                else 
-                    return element == null ? "" : element.toString();
+                if (element instanceof AnalysisItem) {
+                    String text = StringUtils.defaultIfBlank(((AnalysisItem) element).getName(), "<unnamed>");
+                    if (element instanceof ChartSheet)
+                        text += " (" + ((ChartSheet)element).getCharts().size() + ")";
+                    return text;
+                }
+                return element == null ? "" : element.toString();
             }
         };
 

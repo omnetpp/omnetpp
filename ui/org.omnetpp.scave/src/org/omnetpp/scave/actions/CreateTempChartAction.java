@@ -8,16 +8,27 @@
 
 package org.omnetpp.scave.actions;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.eclipse.emf.common.command.BasicCommandStack;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandStack;
+import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScaveImages;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
@@ -28,7 +39,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
     public CreateTempChartAction() {
         setText("Plot");
         setToolTipText("Plot");
-        setImageDescriptor(ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_PLOT));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_PLOT));
     }
 
     @Override
@@ -53,22 +64,19 @@ public class CreateTempChartAction extends AbstractScaveAction {
         Chart chart = ResultFileManager.callWithReadLock(manager, new Callable<Chart>() {
             @Override
             public Chart call() {
-                System.out.println("TODO implemrnt chart creation!");
-                return null;
-//                Dataset dataset = ScaveModelUtil.createTemporaryDataset("dataset", idList, new String[] { FILE, CONFIGNAME, RUNNUMBER }, manager);
-//                String chartTitle = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), "temp" + ++counter);
-//                Chart chart = ScaveModelUtil.createChart(chartTitle, type);
-//                dataset.getItems().add(chart);
-//                Command command = AddCommand.create(editor.getEditingDomain(), editor.getTempAnalysis().getDatasets(), ScaveModelPackage.eINSTANCE.getDatasets_Datasets(), dataset);
-//
-//                // Do not use the CommandStack of the editor, because it would make it dirty
-//                // and the Add command undoable from the UI.
-//                // It's safe to use a separate command stack, because the operations on the
-//                // temporary resource does not interfere with the operations on the persistent resource.
-//                CommandStack commandStack = new BasicCommandStack();
-//                commandStack.execute(command);
-//                commandStack.flush();
-//                return chart;
+                //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
+                String[] filterFields = new String[] { ResultItemField.RUN };
+                List<String> filters = ScaveModelUtil.getIDListAsFilters(idList, filterFields, manager);
+                String name = "Chart" + (++counter);
+                String title = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
+                Chart chart = ScaveModelUtil.createChart(name, title, type);
+                chart.setInput(StringUtils.join(filters, "\n", "\n"));
+                chart.setTemporary(true);
+                //TODO cache the IDs
+                // IDList cachedIDs = new IDList();
+                // cachedIDs.set(idList);;
+                // add.setCachedIDs(cachedIDs);  //TODO see Add.cachedIDs field in scave_old
+                return chart;
             }
         });
 

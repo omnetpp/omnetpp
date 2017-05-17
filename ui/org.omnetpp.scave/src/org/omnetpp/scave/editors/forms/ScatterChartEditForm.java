@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -45,7 +44,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 
 
     private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
-        pkg.getChart_Name(),
+        pkg.getAnalysisItem_Name(),
         pkg.getChart_Input(),
         pkg.getScatterChart_XDataPattern(),
         pkg.getScatterChart_IsoDataPattern(),
@@ -65,8 +64,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     private IsoLineData[] xData = new IsoLineData[0];
     private IsoLineData[] isoData = new IsoLineData[0];
 
-    public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
-        super(chart, parent, formParameters, manager);
+    public ScatterChartEditForm(ScatterChart chart, Map<String,Object> formParameters, ResultFileManager manager) {
+        super(chart, formParameters, manager);
         updateDataset(null);
         IDList idlist = DatasetManager.getIDListFromDataset(manager, chart, ResultType.SCALAR_LITERAL);
         idlist.merge(DatasetManager.getIDListFromDataset(manager, chart, ResultType.VECTOR_LITERAL));
