@@ -31,6 +31,7 @@ class QTENV_API ExponentialSpinBox : public QDoubleSpinBox
     QString textFromValue(double val) const override;
     double valueFromText(const QString &text) const override;
 
+    void fixup(QString &str) const override;
     QValidator::State validate(QString &input, int &pos) const override;
 
 public slots:

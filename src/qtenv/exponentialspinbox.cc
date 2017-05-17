@@ -30,6 +30,8 @@ ExponentialSpinBox::ExponentialSpinBox(QWidget *parent)
     // well, this is disgusting.
     connect(this, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             [this](double val) { adjust(val); });
+
+    setDecimals(15);
 }
 
 void ExponentialSpinBox::adjust(double val, bool notify)
@@ -38,23 +40,11 @@ void ExponentialSpinBox::adjust(double val, bool notify)
     bool blocked = blockSignals(!notify);
 
     if (std::isnan(val)) {
-        // making it kindof exponential
-        int magnitude = std::ceil(std::log10(minimum()*1.0001));
         setSingleStep(minimum());
-        // the ifs are here to keep it spinning (except when magnitude changes...)
-        if (decimals() != (4 -magnitude))
-            setDecimals(4 - magnitude);
-
         setValue(minimum());
     }
     else {
-        // making it kindof exponential
-        int magnitude = std::ceil(std::log10(val*1.0001));
         setSingleStep(val / 10);
-        // the ifs are here to keep it spinning (except when magnitude changes...)
-        if (decimals() != (4 -magnitude))
-            setDecimals(4 - magnitude);
-
         setValue(val);
     }
 
@@ -68,9 +58,8 @@ void ExponentialSpinBox::stepBy(int steps)
         setValue(2*minimum());
         if (minimum() == 0) {
             setValue(singleStep());
-            if (singleStep() == 0) {
+            if (singleStep() == 0)
                 adjust(1e-15);
-            }
         }
     }
 }
@@ -86,27 +75,38 @@ double ExponentialSpinBox::valueFromText(const QString &text) const
     if (text.isEmpty())
         return specialValueText().isEmpty() ? value() : minimum();
 
-    return QDoubleSpinBox::valueFromText(text);
+    return QLocale("en_US").toDouble(text);
+}
+
+void ExponentialSpinBox::fixup(QString &str) const
+{
+    // the user might just want to erase the special value one character at a time
+    if (specialValueText().contains(str))
+        str = specialValueText();
+
+    // they might be in the middle of entering a number in scientific notation
+    if (str.endsWith("e"))
+        str = str.left(str.length() - 1);
+    if (str.endsWith("e-") || str.endsWith("e+"))
+        str = str.left(str.length() - 2);
 }
 
 QValidator::State ExponentialSpinBox::validate(QString &input, int &pos) const
 {
-    auto res = QDoubleSpinBox::validate(input, pos);
+    if (input.contains(','))
+        return QValidator::Invalid;
 
-    // if the inherited validator did not accept, let's try without a trailing 'e'
-    if (res == QValidator::Invalid && input.endsWith('e')) {
-        // so strip it from the end
-        QString stripped = input.left(input.length()-1);
-        // and if there is no more of it, let's check again
-        if (!stripped.contains('e'))
-            res = QDoubleSpinBox::validate(stripped, pos);
-    }
+    // the user might just want to erase the special value one character at a time
+    if (specialValueText().contains(input))
+        return QValidator::Intermediate;
 
-    // if still no bueno, the user might just want to erase the special value
-    if (res == QValidator::Invalid && specialValueText().contains(input))
-        res = QValidator::Intermediate;
+    // they might be in the middle of entering a number in scientific notation
+    if (input.endsWith("e") || input.endsWith("e-") || input.endsWith("e+"))
+        return QValidator::Intermediate;
 
-    return res;
+    bool ok;
+    QLocale("en_US").toDouble(input, &ok);
+    return ok ? QValidator::Acceptable : QValidator::Invalid;
 }
 
 } // namespace qtenv
