@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
-import org.omnetpp.scave.editors.ui.ModelObjectPalette;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Base class for IScaveObjectEditForm.
@@ -28,7 +28,7 @@ abstract class BaseScaveObjectEditForm implements IScaveObjectEditForm {
     }
 
     public String getDescription() {
-        return ModelObjectPalette.getDescription(object.eClass());
+        return ScaveModelUtil.getDescription(object.eClass());
     }
 
     public IStatus validate() {

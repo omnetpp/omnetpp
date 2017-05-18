@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.common.ui;
 
 import java.util.ArrayList;
 
@@ -19,9 +19,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 
 /**
- * Panel for choosing multiple elements from a list.
+ * A dual-listbox compound widget for choosing a subset from a list.
  *
- * When created the left list is filled with the selectable elements.
+ * When created, the left list is filled with the selectable elements.
  * The selected elements are shown in the right list.
  *
  * Elements can be moved between the two list with the "Add", "Add all",
@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.List;
  *
  * @author tomi
  */
-public class ListSelectionPanel extends Composite {
+public class ListMembershipSelectionControl extends Composite {
 
     // List controls
     private List leftList = null;
@@ -40,7 +40,7 @@ public class ListSelectionPanel extends Composite {
      */
     private java.util.List<String> items;
 
-    public ListSelectionPanel(
+    public ListMembershipSelectionControl(
             Composite parent,
             int style,
             java.util.List<String> items) {

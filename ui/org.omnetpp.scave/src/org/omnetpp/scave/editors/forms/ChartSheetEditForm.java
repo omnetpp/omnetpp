@@ -22,7 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.scave.editors.ui.ListSelectionPanel;
+import org.omnetpp.common.ui.ListMembershipSelectionControl;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -51,7 +51,7 @@ public class ChartSheetEditForm extends BaseScaveObjectEditForm {
 
     // edit controls
     private Text nameText;
-    private ListSelectionPanel chartsPanel;
+    private ListMembershipSelectionControl chartsPanel;
 
     /**
      * List of charts in the analysis sorted by name.
@@ -98,7 +98,7 @@ public class ChartSheetEditForm extends BaseScaveObjectEditForm {
         // charts panel
         Label chartsLabel = new Label(panel, SWT.NONE);
         chartsLabel.setText("Charts:");
-        chartsPanel = new ListSelectionPanel(
+        chartsPanel = new ListMembershipSelectionControl(
                         panel,
                         SWT.NONE,
                         getChartNames(allCharts));

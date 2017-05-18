@@ -158,24 +158,6 @@ public class ScaveEditorPage extends Composite {
     }
 
     /**
-     * Creates palette for model object creation
-     */
-    protected Composite createPalette(Composite parent) {
-        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
-        scrolledComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, false, true));
-        scrolledComposite.setBackground(PALETTE_BG_COLOR);
-        Composite toolbar = new Composite(scrolledComposite, SWT.NONE);
-        scrolledComposite.setContent(toolbar);
-        toolbar.setLayout(new RowLayout(SWT.VERTICAL));
-        ((RowLayout)toolbar.getLayout()).fill = true;
-        toolbar.setBackground(PALETTE_BG_COLOR);
-        new ModelObjectPalette(toolbar, BUTTONS_BG_COLOR, true, scaveEditor);
-        toolbar.setSize(toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-        return scrolledComposite;
-    }
-
-
-    /**
      * Sets up the given control so that when a file is drag-dropped into it,
      * it will be added to Inputs unless it's already in there.
      */

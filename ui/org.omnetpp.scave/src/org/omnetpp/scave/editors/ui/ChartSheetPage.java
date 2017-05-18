@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.ILayoutExtension;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.common.ui.LiveTable;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.actions.ClosePageAction;
 import org.omnetpp.scave.charting.ChartCanvas;

@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.common.ui;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,8 +53,8 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 
     private ArrayList<Control> orderedChildren = new ArrayList<Control>();
     private ArrayList<Control> selection = new ArrayList<Control>();
-    private ListenerList selectionChangedListeners = new ListenerList();
-    private ListenerList childOrderChangedListeners = new ListenerList();
+    private ListenerList<ISelectionChangedListener> selectionChangedListeners = new ListenerList<>();
+    private ListenerList<IChildOrderChangedListener> childOrderChangedListeners = new ListenerList<>();
     private Control insertMark = null;
 
     /**

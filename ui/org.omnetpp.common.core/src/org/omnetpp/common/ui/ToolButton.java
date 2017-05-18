@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.common.ui;
 
 import java.util.ArrayList;
 import java.util.List;
