@@ -2411,7 +2411,7 @@ void cPathFigure::parse(cProperty *property)
     if ((s = property->getValue(PKEY_PATH, 0)) != nullptr)
         setPath(s);
     if ((s = property->getValue(PKEY_OFFSET, 0)) != nullptr)
-        setOffset(parsePoint(property, s, 0));
+        setOffset(parsePoint(property, PKEY_OFFSET, 0));
     if ((s = property->getValue(PKEY_JOINSTYLE, 0)) != nullptr)
         setJoinStyle(parseJoinStyle(s));
     if ((s = property->getValue(PKEY_CAPSTYLE, 0)) != nullptr)
