@@ -41,6 +41,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -172,6 +173,7 @@ public class DataTable extends Table implements IDataControl {
     private IDList idList;
     private int numericPrecision = 6;
     private ListenerList listeners;
+    private int minColumnWidth = 5; // for usability
     private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
     private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
 
@@ -295,17 +297,18 @@ public class DataTable extends Table implements IDataControl {
 
             if (requestedVisible && !currentlyVisible)
                 addColumn(column);
-            else if (!requestedVisible && currentlyVisible){
+            else if (!requestedVisible && currentlyVisible) {
                 visibleColumns.remove(column);
                 tableColumn.dispose();
             }
         }
 
         int position = 0;
-        int[] columnOrder = new int[getColumns().length];
+        int[] columnOrder = new int[getColumnCount()];
         for (Column column : getAllColumns())
             if (visibleColumns.indexOf(column) != -1)
                 columnOrder[position++] = getTableColumnIndex(column);
+        columnOrder[position] = getColumnCount()-1; // the last, blank column
 
         setColumnOrder(columnOrder);
 
@@ -342,19 +345,29 @@ public class DataTable extends Table implements IDataControl {
     }
 
     protected void initColumns() {
+        // add a last, blank column, otherwise the right edge of the last column sticks to the table's right border which is often inconvenient
+        TableColumn blankColumn = new TableColumn(this, SWT.NONE);
+        blankColumn.setWidth(minColumnWidth);
+
         visibleColumns = new ArrayList<>();
         loadState();
     }
 
+    public TableColumn[] getColumnsExceptLastBlank() {
+        TableColumn[] columns = super.getColumns();
+        Assert.isTrue(columns[columns.length-1].getData(COLUMN_KEY) == null);
+        return Arrays.copyOfRange(columns, 0, columns.length-1);
+    }
+
     protected TableColumn getTableColumn(Column column) {
-        for (TableColumn tableColumn : getColumns())
+        for (TableColumn tableColumn : getColumnsExceptLastBlank())
             if (tableColumn.getData(COLUMN_KEY).equals(column))
                 return tableColumn;
         return null;
     }
 
     protected int getTableColumnIndex(Column column) {
-        TableColumn[] columns = getColumns();
+        TableColumn[] columns = getColumnsExceptLastBlank();
         for (int index = 0; index < columns.length; index++) {
             TableColumn tableColumn = columns[index];
             if (tableColumn.getData(COLUMN_KEY).equals(column))
@@ -365,7 +378,7 @@ public class DataTable extends Table implements IDataControl {
 
     protected TableColumn addColumn(Column newColumn) {
         visibleColumns.add(newColumn);
-        TableColumn tableColumn = new TableColumn(this, newColumn.rightAligned ? SWT.RIGHT : SWT.NONE);
+        TableColumn tableColumn = new TableColumn(this, newColumn.rightAligned ? SWT.RIGHT : SWT.NONE, getColumnsExceptLastBlank().length);
         tableColumn.setText(newColumn.text);
         tableColumn.setWidth(newColumn.defaultWidth);
         tableColumn.setData(COLUMN_KEY, newColumn);
@@ -387,11 +400,18 @@ public class DataTable extends Table implements IDataControl {
         tableColumn.addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
+                ensureMinimumColumnWidths(); // this is an attempt to enforce a minimum column width; simply calling setWidth() on the resized column does not really take effect
                 saveState();
             }
         });
 
         return tableColumn;
+    }
+
+    private void ensureMinimumColumnWidths() {
+        for (TableColumn tableColumn : getColumns())
+            if (tableColumn.getWidth() < minColumnWidth)
+                tableColumn.setWidth(minColumnWidth);  // this will either take effect in the rendering or not... (GTK3)
     }
 
     private void restoreSortOrder() {
