@@ -47,7 +47,7 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
     private Image image;
 
     public ContentProposal(String content) {
-        this(content, content, content, content.length(), null);
+        this(content, content, null, content.length(), null);
     }
 
     public ContentProposal(String content, String label) {
