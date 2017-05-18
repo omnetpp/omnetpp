@@ -81,7 +81,7 @@ import org.omnetpp.scave.views.DatasetView;
 
 /**
  * Editor contributor for ScaveEditor.
- * 
+ *
  * @author andras, tomi
  */
 public class ScaveEditorContributor extends MultiPageEditorActionBarContributor implements IPropertyListener, ISelectionChangedListener {
@@ -257,7 +257,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     public EditInputFileAction getEditInputFileAction() {
         return editInputFileAction;
     }
-    
+
     public RemoveAction getRemoveAction() {
         return removeAction;
     }
@@ -506,11 +506,13 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         }
         else {
             selectionProvider = part.getSite().getSelectionProvider();
-            selectionProvider.addSelectionChangedListener(this);
+            if (selectionProvider != null) { // this may also happen
+                selectionProvider.addSelectionChangedListener(this);
 
-            // Fake a selection changed event to update the menus.
-            if (selectionProvider.getSelection() != null)
-                selectionChanged(new SelectionChangedEvent(selectionProvider, selectionProvider.getSelection()));
+                // Fake a selection changed event to update the menus.
+                if (selectionProvider.getSelection() != null)
+                    selectionChanged(new SelectionChangedEvent(selectionProvider, selectionProvider.getSelection()));
+            }
         }
     }
 

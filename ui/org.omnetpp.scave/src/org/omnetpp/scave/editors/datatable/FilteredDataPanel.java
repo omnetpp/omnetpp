@@ -265,7 +265,7 @@ public class FilteredDataPanel extends Composite implements IHasFocusManager {
     @Override
     public boolean setFocus() {
         // try to restore focus where it was last time
-        if (focusManager.setFocus())
+        if (focusManager != null && focusManager.setFocus())
             return true;
         return super.setFocus();
     }

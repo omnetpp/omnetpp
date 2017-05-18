@@ -207,7 +207,7 @@ public class DataTreeContentProvider {
                                     nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
-                                    //nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
+                                    //nodeIdsMap.put(new ResultItemAttributeNode("Variance", formatNumber(stat.getVariance())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
@@ -242,7 +242,7 @@ public class DataTreeContentProvider {
                                                 if (isIntegerType)
                                                     name += toIntegerAwareString(upperBound-1, isIntegerType) + "]";
                                                 else
-                                                    name += String.valueOf(upperBound) + ")";
+                                                    name += formatNumber(upperBound) + ")";
                                                 list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
                                             }
                                             binsNode.children = list.toArray(new Node[0]);

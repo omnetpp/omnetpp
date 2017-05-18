@@ -608,7 +608,7 @@ public class DataTable extends Table implements IDataControl {
                     if (!stats.getStatistics().isWeighted())
                         return NA;
                     double sumWeights = stats.getStatistics().getSumWeights();
-                    return sumWeights >= 0 ? String.valueOf(sumWeights) : NA;
+                    return sumWeights >= 0 ? formatNumber(sumWeights) : NA;
                 }
                 else if (COL_MEAN.equals(column)) {
                     double mean = stats.getStatistics().getMean();
