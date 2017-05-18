@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
 import org.omnetpp.common.ui.HtmlHoverInfo;
@@ -82,21 +83,7 @@ public class NedInheritanceView extends AbstractModuleView {
         treeViewer = new TreeViewer(parent, SWT.SINGLE);
 
         // set label provider and content provider
-        treeViewer.setLabelProvider(new LabelProvider() {
-            @Override
-            public Image getImage(Object element) {
-                if (element instanceof GenericTreeNode)
-                    element = ((GenericTreeNode)element).getPayload();
-                return NedModelLabelProvider.getInstance().getImage(element);
-            }
-
-            @Override
-            public String getText(Object element) {
-                if (element instanceof GenericTreeNode)
-                    element = ((GenericTreeNode)element).getPayload();
-                return NedModelLabelProvider.getInstance().getText(element);
-            }
-        });
+        treeViewer.setLabelProvider(new GenericTreeLabelProvider(NedModelLabelProvider.getInstance()));
         treeViewer.setContentProvider(new GenericTreeContentProvider());
 
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {

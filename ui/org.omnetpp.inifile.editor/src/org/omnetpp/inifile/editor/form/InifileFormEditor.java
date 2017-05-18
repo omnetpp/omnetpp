@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
@@ -32,6 +31,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.inifile.editor.TestSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -92,7 +92,7 @@ public class InifileFormEditor extends Composite {
     protected TreeViewer createTreeViewer(Composite parent) {
         final TreeViewer viewer = new TreeViewer(parent, SWT.BORDER);
         addListener(viewer);
-        viewer.setLabelProvider(new LabelProvider());
+        viewer.setLabelProvider(new GenericTreeLabelProvider());
         viewer.setContentProvider(new GenericTreeContentProvider());
         return viewer;
     }

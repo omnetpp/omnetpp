@@ -61,6 +61,7 @@ import org.omnetpp.common.eventlog.EventLogFilterParameters.EnabledInt;
 import org.omnetpp.common.ui.AbstractEditableList;
 import org.omnetpp.common.ui.EditableCheckboxList;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
+import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
@@ -576,6 +577,7 @@ public class FilterEventLogDialog
         treeRoot.addChild(createEventTraceFilterTreeNode(panelContainer));
 
         panelCheckboxTree.setContentProvider(new GenericTreeContentProvider());
+        panelCheckboxTree.setLabelProvider(new GenericTreeLabelProvider());
         panelCheckboxTree.setInput(treeRoot);
         panelCheckboxTree.expandAll();
         panelCheckboxTree.getTree().setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));

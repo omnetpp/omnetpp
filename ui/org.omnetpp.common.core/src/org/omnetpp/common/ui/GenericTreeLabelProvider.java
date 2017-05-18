@@ -9,6 +9,7 @@ package org.omnetpp.common.ui;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -20,6 +21,10 @@ import org.eclipse.swt.graphics.Image;
  */
 public class GenericTreeLabelProvider implements ILabelProvider {
     private ILabelProvider labelProvider;
+
+    public GenericTreeLabelProvider() {
+        this(new LabelProvider());
+    }
 
     public GenericTreeLabelProvider(ILabelProvider labelProvider) {
         this.labelProvider = labelProvider;
