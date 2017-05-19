@@ -15,6 +15,8 @@ export NEDPATH=.:../lib
 EXTRA_INCLUDES="-I../../../src"
 #OPT="-a --debugger-attach-on-error=true"
 
+$MAKE -C signalreg
+
 opp_test gen $OPT -v $TESTFILES || exit 1
 echo
 (cd work; opp_makemake -f -o work --deep --no-deep-includes -i ../makefrag $EXTRA_INCLUDES; $MAKE) || exit 1

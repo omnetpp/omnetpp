@@ -1,0 +1,29 @@
+%description:
+
+Tests that cComponent::registerSignal() does not fail when used to initialize
+a static variable, neither when the variable is in the executable, nor when it
+is in a dynamic library that is loaded at runtime.
+
+%file: test.ned
+
+network Test
+{
+    @signal[registeredInExecutable];
+    @signal[registeredInLibrary];
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+static simsignal_t inExecutable = cComponent::registerSignal("registeredInExecutable");
+
+%inifile: omnetpp.ini
+
+network = Test
+cmdenv-express-mode = false
+check-signals = true
+load-libs=../../signalreg/signalreg
+
