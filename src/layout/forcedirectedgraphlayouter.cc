@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include "common/commonutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "forcedirectedgraphlayouter.h"
 #include "startreeembedding.h"
@@ -49,6 +50,14 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
     expectedEdgeLength = -1;
     pointLikeDistance = true;
     slippery = false;
+}
+
+ForceDirectedGraphLayouter::~ForceDirectedGraphLayouter()
+{
+    const auto& bodies = embedding.getBodies();
+    for (auto b : {topBorder, bottomBorder, leftBorder, rightBorder})
+        if (!contains(bodies, (IBody*)b))
+            delete b; // the embedding itself deletes the bodies in it
 }
 
 void ForceDirectedGraphLayouter::setParameters()

@@ -65,6 +65,7 @@ Register_InspectorFactory(GenericObjectInspectorFactory);
 class HighlighterItemDelegate : public QStyledItemDelegate
 {
   public:
+    using QStyledItemDelegate::QStyledItemDelegate;
     virtual void paint(QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex& index) const;
@@ -85,7 +86,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     // various cosmetics
     treeView->setHeaderHidden(true);
-    treeView->setItemDelegate(new HighlighterItemDelegate());
+    treeView->setItemDelegate(new HighlighterItemDelegate(treeView));
     treeView->setAttribute(Qt::WA_MacShowFocusRect, false);
     treeView->setUniformRowHeights(true);
 

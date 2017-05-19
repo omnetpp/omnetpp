@@ -65,6 +65,7 @@
 #include "loginspector.h"
 #include "gateinspector.h"
 #include "genericobjectinspector.h"
+#include "figurerenderers.h"
 #include "watchinspector.h"
 #include "mainwindow.h"
 #include "treeitemmodel.h"
@@ -669,6 +670,8 @@ void Qtenv::doRun()
 
     // pull down inspector factories
     inspectorfactories.clear();
+
+    FigureRenderer::clearRendererCache();
 
     mainWindow->storeGeometry();
     saveFonts();

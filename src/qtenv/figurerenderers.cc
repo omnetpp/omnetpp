@@ -98,7 +98,9 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
 {
     FigureRenderer *renderer;
     std::string rendererClassName = figure->getRendererClassName();
-    std::map<std::string, FigureRenderer *>::iterator it = rendererCache.find(rendererClassName);
+    if (!rendererClassName.empty() && (rendererClassName.find(':') == std::string::npos))
+        rendererClassName = "omnetpp::qtenv::" + rendererClassName;
+    auto it = rendererCache.find(rendererClassName);
     if (it != rendererCache.end())
         renderer = it->second;
     else {
@@ -106,8 +108,6 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
         if (rendererClassName == "")
             renderer = new NullRenderer();
         else {
-            if (rendererClassName.find(':') == std::string::npos)
-                rendererClassName = "omnetpp::qtenv::" + rendererClassName;
             cObjectFactory *factory = cObjectFactory::find(rendererClassName.c_str());
             if (!factory)
                 throw cRuntimeError("No renderer class '%s' for figure class '%s'", rendererClassName.c_str(), figure->getClassName());
@@ -119,6 +119,13 @@ FigureRenderer *FigureRenderer::getRendererFor(cFigure *figure)
         rendererCache[rendererClassName] = renderer;
     }
     return renderer;
+}
+
+void FigureRenderer::clearRendererCache()
+{
+    for (auto p : rendererCache)
+        delete p.second;
+    rendererCache.clear();
 }
 
 // from mozilla

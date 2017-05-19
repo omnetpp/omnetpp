@@ -117,7 +117,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
      */
     //@{
     ForceDirectedGraphLayouter();
-    virtual ~ForceDirectedGraphLayouter() {}
+    virtual ~ForceDirectedGraphLayouter();
     //@}
 
     void setParameters();
