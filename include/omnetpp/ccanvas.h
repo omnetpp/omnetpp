@@ -278,7 +278,7 @@ class SIM_API cFigure : public cOwnedObject
                 /** @name Methods. */
                 //@{
                 Pixmap();
-                Pixmap(int width, int height); // filled with black
+                Pixmap(int width, int height); // filled with transparent black
                 Pixmap(int width, int height, const RGBA& fill);
                 Pixmap(int width, int height, const Color& color, double opacity=1);
                 Pixmap(const Pixmap& other);
