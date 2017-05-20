@@ -128,6 +128,7 @@ public class ScaveModelUtil {
         return chartsheet;
     }
 
+    //TODO obsolete
     public static List<String> getIDListAsFilters(IDList ids, String[] runidFields, ResultFileManager manager) {
         Assert.isNotNull(runidFields);
         String[] filterFields = getFilterFieldsFor(runidFields);
@@ -140,6 +141,21 @@ public class ScaveModelUtil {
         return filters;
     }
 
+    public static String getIDListAsChartInput(IDList ids, String[] runidFields, ResultFileManager manager) {
+        Assert.isNotNull(runidFields);
+        String[] filterFields = getFilterFieldsFor(runidFields);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ids.size(); ++i) {
+            long id = ids.get(i);
+            ResultItem item = manager.getItem(id);
+            String filter = new FilterUtil(item, filterFields).getFilterPattern();
+            String typeName = item.getClass().getSimpleName().replace("Result", "").toLowerCase().concat("s"); //TODO hack
+            sb.append("ADD " + typeName + " WHERE " + filter + "\n");
+        }
+        return sb.toString();
+    }
+    
+    
     public static void addInputFiles(EditingDomain domain, Analysis analysis, List<String> list) {
         ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
         ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;

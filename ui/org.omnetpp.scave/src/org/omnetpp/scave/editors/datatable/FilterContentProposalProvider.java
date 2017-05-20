@@ -95,6 +95,8 @@ public class FilterContentProposalProvider extends MatchExpressionContentProposa
      */
     @Override
     public void addProposalsForToken(String contents, int position, Token token, List<IContentProposal> proposals) {
+        System.out.println("FilterContentProposalProvider::addProposalsForToken(): '" + contents + "', pos=" + position + ", token=" + token);
+
         Node parent = token.getParent();
         if (parent != null) {
             int type = parent.getType();
@@ -179,5 +181,6 @@ public class FilterContentProposalProvider extends MatchExpressionContentProposa
                 collectFilteredProposals(proposals, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, spaceBefore | ContentProposal.DEC_QUOTE);
             }
         }
+        System.out.println(proposals);
     }
 }

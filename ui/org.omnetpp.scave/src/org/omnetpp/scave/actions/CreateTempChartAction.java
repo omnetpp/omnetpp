@@ -8,13 +8,8 @@
 
 package org.omnetpp.scave.actions;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.eclipse.emf.common.command.BasicCommandStack;
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.CommandStack;
-import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
@@ -26,7 +21,6 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -66,11 +60,11 @@ public class CreateTempChartAction extends AbstractScaveAction {
             public Chart call() {
                 //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
                 String[] filterFields = new String[] { ResultItemField.RUN };
-                List<String> filters = ScaveModelUtil.getIDListAsFilters(idList, filterFields, manager);
+                String input = ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager);
                 String name = "Chart" + (++counter);
                 String title = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
                 Chart chart = ScaveModelUtil.createChart(name, title, type);
-                chart.setInput(StringUtils.join(filters, "\n", "\n"));
+                chart.setInput(input);
                 chart.setTemporary(true);
                 //TODO cache the IDs
                 // IDList cachedIDs = new IDList();

@@ -36,6 +36,7 @@ public abstract class MatchExpressionContentProposalProvider implements IContent
         List<IContentProposal> proposals = new ArrayList<IContentProposal>();
         Token token = getContainingOrPrecedingToken(contents, position);
 
+        System.out.println("MatchExpressionContentProposalProvider.getProposals(): token=" + token);
         if (token != null)
             addProposalsForToken(contents, position, token, proposals);
 

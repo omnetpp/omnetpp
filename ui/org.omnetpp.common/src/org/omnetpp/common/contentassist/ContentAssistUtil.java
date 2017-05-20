@@ -135,6 +135,9 @@ public class ContentAssistUtil {
                 }
             }
         });
+
+        //TODO in empty StyledText, content assist does not work properly
+        //TODO hide '\n' insertion / deletion from Undo
     }
 
     protected static void adjustPopupBounds(PopupDialog popup, Control control, ContentAssistCommandAdapter commandAdapter) {

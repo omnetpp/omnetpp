@@ -64,11 +64,12 @@ public class FilterUtil {
         parseFields(filterPattern);
     }
 
-    public FilterUtil(String runName, String moduleName, String dataName) {
-        setField(RUN, runName);
-        setField(MODULE, moduleName);
-        setField(NAME, dataName);
-    }
+//TODO unused    
+//    public FilterUtil(String runName, String moduleName, String dataName) {
+//        setField(RUN, runName);
+//        setField(MODULE, moduleName);
+//        setField(NAME, dataName);
+//    }
 
     public FilterUtil(ResultItem item, String[] filterFields) {
         Assert.isNotNull(item);

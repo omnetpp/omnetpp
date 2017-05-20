@@ -42,7 +42,11 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 
     public LineChartEditForm(LineChart chart, Map<String, Object> formParameters, ResultFileManager manager) {
         super(chart, formParameters, manager);
-        updateDataset(getChart().getLineNameFormat());
+        try {
+            updateDataset(getChart().getLineNameFormat());
+        } catch (Exception e) {
+            e.printStackTrace(); //TODO handle better -- this is likely a syntax error in the "Inputs" script
+        }
     }
 
     private LineChart getChart() {

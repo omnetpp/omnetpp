@@ -35,6 +35,8 @@ import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScalarScatterPlotDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.charting.dataset.VectorScatterPlotDataset;
+import org.omnetpp.scave.computed.VectorOp;
+import org.omnetpp.scave.computed.XYVector;
 import org.omnetpp.scave.engine.DataSorter;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
@@ -98,6 +100,21 @@ public class DatasetManager {
         return result;
     }
 
+    public static IDList getFilteredIDList(ResultFileManager manager, ResultType type, String filter) {
+        checkReadLock(manager);
+        IDList pool;
+        switch (type) {
+            case SCALAR_LITERAL: pool = manager.getAllScalars(); break;
+            case VECTOR_LITERAL: pool = manager.getAllVectors(); break;
+            case HISTOGRAM_LITERAL: pool = manager.getAllHistograms(); break;
+            default: pool = new IDList();
+        }
+
+        IDList result = StringUtils.isBlank(filter) ? pool : manager.filterIDList(pool, filter);
+        System.out.println("DatasetManager.getIDListFromDataset(): FILTER MATCHED " + result.size() + " ITEMS OF " + pool.size());
+        return result;
+    }
+
     public static XYArray[] getDataFromDataset(ResultFileManager manager, Chart chart) {
     	return new XYArray[0];
 //TODO
@@ -116,53 +133,7 @@ public class DatasetManager {
 //        return result;
     }
 
-    public static XYArray[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor monitor) {
-    	return new XYArray[0];
-//TODO
-//        checkReadLock(manager);
-//        DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-//        DataflowManager dataflowManager = builder.build(idlist);
-//        List<Node> arrayBuilders = builder.getArrayBuilders();
-//        XYArray[] result;
-//        try {
-//            result = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
-//        }
-//        finally {
-//            dataflowManager.delete();
-//        }
-//        return result;
-    }
-
-    private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders, IProgressMonitor monitor) {
-        long startTime = System.currentTimeMillis();
-        if (arrayBuilders.size() > 0) // XXX DataflowManager crashes when there are no sinks
-            manager.execute(monitor);
-        if (debug)
-            Debug.println("execute dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
-
-        XYArray[] result = new XYArray[arrayBuilders.size()];
-        for (int i = 0; i < result.length; ++i)
-            result[i] = arrayBuilders.get(i).getArray();
-        return result;
-    }
-
-    public static ScalarDataset createScalarDataset(BarChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
-        //TODO update progressMonitor
-        checkReadLock(manager);
-        IDList idlist = DatasetManager.getIDListFromDataset(manager, chart, ResultType.SCALAR_LITERAL);
-        return new ScalarDataset(idlist, chart.getGroupByFields(), chart.getBarFields(),
-                                        chart.getAveragedFields(), manager);
-    }
-
-    public static VectorDataset createVectorDataset(LineChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
-        checkReadLock(manager);
-        return createVectorDataset(chart, chart.getLineNameFormat(), true, manager, progressMonitor);
-    }
-
-    public static VectorDataset createVectorDataset(LineChart chart, String lineNameFormat, boolean computeData, ResultFileManager manager, IProgressMonitor progressMonitor) {
-        checkReadLock(manager);
-        IDList idlist = DatasetManager.getIDListFromDataset(manager, chart, ResultType.VECTOR_LITERAL);
-
+    public static XYVector[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor progressMonitor) {
         DataflowManager dataflowManager = new DataflowManager();
         String readerNodeTypeName = "vectorreaderbyfiletype";
         NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
@@ -199,12 +170,12 @@ public class DatasetManager {
             arrayBuilders.add(arrayBuilderNode);
         }
 
-        XYArray[] dataValues = null;
+        XYArray[] arrays = null;
         if (dataflowManager != null) {
             if (debug)
                 dataflowManager.dump();
             try {
-                dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, progressMonitor);
+                arrays = executeDataflowNetwork(dataflowManager, arrayBuilders, progressMonitor);
             }
             finally {
                 dataflowManager.delete();
@@ -212,16 +183,168 @@ public class DatasetManager {
             }
         }
 
-        if (progressMonitor != null && progressMonitor.isCanceled())
-            return null;
+        // convert native XYArrays to pure Java XYVectors
+        XYVector[] vectors = new XYVector[idlist.size()];
+        if (arrays != null) { //TODO ??? check how it can be null
+            Assert.isTrue(arrays.length == idlist.size());
+            for (int i = 0; i < arrays.length; i++)
+                vectors[i] = new XYVector(arrays[i]);
+        }
 
-        ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
-        String title = items.length <= 1 ? null : defaultTitle(items);
-        String lineTitleFormat = defaultResultItemTitleFormat(items);
+        return vectors;
+    }
 
-        return dataValues != null ?
-                new VectorDataset(title, idlist, dataValues, lineNameFormat, lineTitleFormat, manager) :
-                new VectorDataset(title, idlist, lineNameFormat, lineTitleFormat, manager);
+    private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders, IProgressMonitor monitor) {
+        long startTime = System.currentTimeMillis();
+        if (arrayBuilders.size() > 0) // XXX DataflowManager crashes when there are no sinks
+            manager.execute(monitor);
+        if (debug)
+            Debug.println("execute dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
+
+        XYArray[] result = new XYArray[arrayBuilders.size()];
+        for (int i = 0; i < result.length; ++i)
+            result[i] = arrayBuilders.get(i).getArray();
+        return result;
+    }
+
+    public static ScalarDataset createScalarDataset(BarChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
+        checkReadLock(manager);
+        try {
+            String input = StringUtils.nullToEmpty(chart.getInput());
+            ResultSet resultSet = evaluate(input, manager, progressMonitor);
+            if (progressMonitor != null && progressMonitor.isCanceled())
+                return null;
+
+            // take the scalars only 
+            IDList scalarIDs = resultSet.idList.filterByTypes(ResultFileManager.SCALAR);
+            return new ScalarDataset(scalarIDs, chart.getGroupByFields(), chart.getBarFields(), chart.getAveragedFields(), manager);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Chart '" + chart.getName() + "': " + e.getMessage());
+        }
+    }
+
+    public static VectorDataset createVectorDataset(LineChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
+        checkReadLock(manager);
+        return createVectorDataset(chart, chart.getLineNameFormat(), true, manager, progressMonitor);
+    }
+
+    public static VectorDataset createVectorDataset(LineChart chart, String lineNameFormat, boolean computeData, ResultFileManager manager, IProgressMonitor progressMonitor) { //TODO use computeData
+        checkReadLock(manager);
+
+        try {
+            String input = StringUtils.nullToEmpty(chart.getInput());
+            ResultSet resultSet = evaluate(input, manager, progressMonitor);
+
+            if (progressMonitor != null && progressMonitor.isCanceled())
+                return null;
+
+            // take the vector only 
+            IDList vectorIDs = resultSet.idList.filterByTypes(ResultFileManager.VECTOR);
+            XYVector[] vectors = new XYVector[vectorIDs.size()];
+            for (int i = 0; i < vectorIDs.size(); i++)
+                vectors[i] = resultSet.vectorData.get(vectorIDs.get(i));
+
+            // make default title (TODO why here?)
+            ResultItem[] items = ScaveModelUtil.getResultItems(vectorIDs, manager);
+            String title = items.length <= 1 ? null : defaultTitle(items);
+            String lineTitleFormat = defaultResultItemTitleFormat(items);
+
+            // create vector dataset
+            return new VectorDataset(title, vectorIDs, vectors, lineNameFormat, lineTitleFormat, manager);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Chart '" + chart.getName() + "': " + e.getMessage());
+        }
+
+    }
+
+
+    //TODO this is hack, make something more professional/extensible
+    protected static void applyVectorOp(XYVector array, String operation, double optArg) {
+        double d = optArg;
+        switch(operation) {
+            case "add": VectorOp.add(array, d); break;
+            case "subtract": VectorOp.subtract(array, d); break;
+            case "mul": VectorOp.mul(array, d); break;
+            case "div": VectorOp.div(array, d); break;
+            case "neg": VectorOp.neg(array); break;
+            case "mod": VectorOp.mod(array, d); break;
+            case "abs": VectorOp.abs(array); break;
+            case "sum": VectorOp.sum(array); break;
+            case "mean": VectorOp.mean(array); break;
+            case "min": VectorOp.min(array); break;
+            case "max": VectorOp.max(array); break;
+            case "discardNan": VectorOp.discardNan(array); break;
+            case "discardInf": VectorOp.discardInf(array); break;
+            case "discardNanAndInf": VectorOp.discardNanAndInf(array); break;
+            case "difference": VectorOp.difference(array); break;
+            default: throw new RuntimeException("No such vector operation: " + operation);
+        }
+    }
+
+    public static class ResultSet {
+        public IDList idList = new IDList();
+        Map<Long,XYVector> vectorData = new HashMap<>(); // keyed on ID
+    }
+    
+    public static ResultSet evaluate(String input, ResultFileManager manager, IProgressMonitor progressMonitor) {
+        checkReadLock(manager);
+        
+        int lineNo = 0;
+        try {
+            ResultSet resultSet = new ResultSet();
+            for (String line : input.split("\n")) {
+                lineNo++;
+                if (line.trim().isEmpty() || line.trim().startsWith("//"))
+                    continue;
+                String[] tokens = line.split(" ");
+                if (tokens.length == 0)
+                    throw new RuntimeException("Missing command");
+                String command = tokens[0];
+                if (command.equalsIgnoreCase("ADD")) {
+                    // parse line
+                    if (tokens.length < 4 || !tokens[2].equalsIgnoreCase("WHERE"))
+                        throw new RuntimeException("Sytax error, expecting 'ADD <type> WHERE <filter>'");
+
+                    ResultType resultType;
+                    String resultTypeName = tokens[1];
+                    switch (resultTypeName.toLowerCase()) {
+                        case "scalars": resultType = ResultType.SCALAR_LITERAL; break;
+                        case "vectors": resultType = ResultType.VECTOR_LITERAL; break;
+                        case "statistics": resultType = ResultType.STATISTICS_LITERAL; break; //TODO should imply the statistics part of histograms, too!
+                        case "histograms": resultType = ResultType.HISTOGRAM_LITERAL; break;
+                        default: throw new RuntimeException("Invalids result type '" + resultTypeName + "'");
+                    }
+
+                    String filter = StringUtils.join(Arrays.copyOfRange(tokens, 3, tokens.length), " ");
+
+                    // execute command
+                    IDList idlist = DatasetManager.getFilteredIDList(manager, resultType, filter);
+                    resultSet.idList.merge(idlist);
+
+                    // load vector data -- TODO maybe defer to the end (or to the first "APPLY" operation, so that the vector file needs to be read only once
+                    IDList vectorIDs = idlist.filterByTypes(ResultFileManager.VECTOR);
+                    XYVector[] vectors = getDataOfVectors(manager, vectorIDs, progressMonitor);
+                    for (int i = 0; i < vectorIDs.size(); i++)
+                        resultSet.vectorData.put(vectorIDs.get(i), vectors[i]);
+                }
+                else if (command.equalsIgnoreCase("APPLY")) {
+                    if (tokens.length < 2)
+                        throw new RuntimeException("Missing filter name after APPLY");
+                    String operation = tokens[1];
+                    for (XYVector vector : resultSet.vectorData.values())
+                        applyVectorOp(vector, operation, 0);
+                }
+                else {
+                    throw new RuntimeException("Unknown command '" + StringUtils.abbreviate(command,15) + "'");
+                }
+            }
+            return resultSet;
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Line " + lineNo + ": " + e.getMessage());
+        }
     }
 
 //    public static Pair<IDList,XYArray[]> readAndComputeVectorData(Chart chart, DatasetItem target, ResultFileManager manager, IProgressMonitor monitor) {
@@ -245,81 +368,95 @@ public class DatasetManager {
 //        return new Pair<IDList, XYArray[]>(idlist, dataValues);
 //    }
 
-    public static IXYDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+    public static IXYDataset createScatterPlotDataset(ScatterChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
         checkReadLock(manager);
 
-        //TODO update progressMonitor
-        if (chart != null) {
-            IDList scalars = DatasetManager.getIDListFromDataset(manager, chart, ResultType.SCALAR_LITERAL);
-            IDList vectors = DatasetManager.getIDListFromDataset(manager, chart, ResultType.VECTOR_LITERAL);
+        checkReadLock(manager);
+        try {
+            String input = StringUtils.nullToEmpty(chart.getInput());
+            ResultSet resultSet = evaluate(input, manager, progressMonitor);
 
-            // process scalars
-            XYDatasetVector xyScalars = null;
-            List<IsoLineData[]> isoLineIds = null;
-            if (!scalars.isEmpty()) {
-                IsoLineData xData = IsoLineData.fromFilterPattern(chart.getXDataPattern());
-                Assert.isLegal(xData != null && xData.getModuleName() != null && xData.getDataName() != null, "X data is not selected.");
+            if (progressMonitor != null && progressMonitor.isCanceled())
+                return null;
 
-                String xModuleName = xData.getModuleName();
-                String xScalarName = xData.getDataName();
-                List<String> isoPatterns = chart.getIsoDataPattern();
-                boolean averageReplications = chart.isAverageReplications();
+            IDList scalars = resultSet.idList.filterByTypes(ResultType.SCALAR);
+            IDList vectors = resultSet.idList.filterByTypes(ResultType.VECTOR);
+            String xDataPattern = chart.getXDataPattern();
+            List<String> isoPatterns = chart.getIsoDataPattern();
+            boolean averageReplications = chart.isAverageReplications();
 
-                StringVector isoModuleNames = new StringVector();
-                StringVector isoScalarNames = new StringVector();
-                StringVector isoAttrNames = new StringVector();
-                collectIsoParameters(isoPatterns, isoModuleNames, isoScalarNames, isoAttrNames);
-
-                DataSorter sorter = new DataSorter(manager);
-                ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
-                ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT, MEASUREMENT) :
-                                                                  new ResultItemFields(RUN, EXPERIMENT, MEASUREMENT, REPLICATION);
-                xyScalars = sorter.prepareScatterPlot3(scalars,
-                                xModuleName, xScalarName, rowFields, columnFields,
-                                isoModuleNames, isoScalarNames, new ResultItemFields(isoAttrNames));
-                // XXX isoLineIds should be returned by prepareScatterPlot3
-                isoLineIds = collectIsoLineIds(scalars, isoModuleNames, isoScalarNames, isoAttrNames, xyScalars, manager);
-                // assertOrdered(xyScalars);
-            }
-
-            // process vectors
-            XYArray[] xyVectors = null;
-            IDList yVectors = null;
-//TODO
-//            if (!vectors.isEmpty()) {
-//                DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-//                DataflowManager dataflowManager = builder.build(chart, chart, true /*computeData*/); // XXX
-//                yVectors = builder.getDisplayedIDs();
-//
-//                if (dataflowManager != null) {
-//                    List<Node> arrayBuilders = builder.getArrayBuilders();
-//                    if (debug) dataflowManager.dump();
-//                    try {
-//                        xyVectors = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
-//                    }
-//                    finally {
-//                        dataflowManager.delete();
-//                        dataflowManager = null;
-//                    }
-//                    if (xyVectors != null) {
-//                        for (int i = 0; i < xyVectors.length; ++i)
-//                            xyVectors[i].sortByX();
-//                    }
-//                }
-//            }
-
-            // compose results
-            if (xyScalars != null && xyVectors == null)
-                return createScatterPlotDataset(xyScalars, isoLineIds, manager);
-            else if (xyScalars == null && xyVectors != null)
-                return new VectorScatterPlotDataset(yVectors, xyVectors, manager);
-            else if (xyScalars != null && xyVectors != null)
-                return new CompoundXYDataset(
-                        createScatterPlotDataset(xyScalars, isoLineIds, manager),
-                        new VectorScatterPlotDataset(yVectors, xyVectors, manager));
-
+            return createScatterPlotDataset(scalars, vectors, xDataPattern, isoPatterns, averageReplications, manager);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Chart '" + chart.getName() + "': " + e.getMessage());
         }
-        return null;
+    }
+
+    private static IXYDataset createScatterPlotDataset(IDList scalars, IDList vectors, String xDataPattern, List<String> isoPatterns, boolean averageReplications, ResultFileManager manager) {
+        // process scalars
+        XYDatasetVector xyScalars = null;
+        List<IsoLineData[]> isoLineIds = null;
+        if (!scalars.isEmpty()) {
+            IsoLineData xData = IsoLineData.fromFilterPattern(xDataPattern);
+            Assert.isLegal(xData != null && xData.getModuleName() != null && xData.getDataName() != null, "X data is not selected.");
+
+            String xModuleName = xData.getModuleName();
+            String xScalarName = xData.getDataName();
+
+            StringVector isoModuleNames = new StringVector();
+            StringVector isoScalarNames = new StringVector();
+            StringVector isoAttrNames = new StringVector();
+            collectIsoParameters(isoPatterns, isoModuleNames, isoScalarNames, isoAttrNames);
+
+            DataSorter sorter = new DataSorter(manager);
+            ResultItemFields rowFields = new ResultItemFields(MODULE, NAME);
+            ResultItemFields columnFields = averageReplications ? new ResultItemFields(EXPERIMENT, MEASUREMENT) :
+                new ResultItemFields(RUN, EXPERIMENT, MEASUREMENT, REPLICATION);
+            xyScalars = sorter.prepareScatterPlot3(scalars,
+                    xModuleName, xScalarName, rowFields, columnFields,
+                    isoModuleNames, isoScalarNames, new ResultItemFields(isoAttrNames));
+            // XXX isoLineIds should be returned by prepareScatterPlot3
+            isoLineIds = collectIsoLineIds(scalars, isoModuleNames, isoScalarNames, isoAttrNames, xyScalars, manager);
+            // assertOrdered(xyScalars);
+        }
+
+        // process vectors
+        XYArray[] xyVectors = null;
+        IDList yVectors = null;
+        //TODO
+        //            if (!vectors.isEmpty()) {
+        //                DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+        //                DataflowManager dataflowManager = builder.build(chart, chart, true /*computeData*/); // XXX
+        //                yVectors = builder.getDisplayedIDs();
+        //
+        //                if (dataflowManager != null) {
+        //                    List<Node> arrayBuilders = builder.getArrayBuilders();
+        //                    if (debug) dataflowManager.dump();
+        //                    try {
+        //                        xyVectors = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
+        //                    }
+        //                    finally {
+        //                        dataflowManager.delete();
+        //                        dataflowManager = null;
+        //                    }
+        //                    if (xyVectors != null) {
+        //                        for (int i = 0; i < xyVectors.length; ++i)
+        //                            xyVectors[i].sortByX();
+        //                    }
+        //                }
+        //            }
+
+        // compose results
+        if (xyScalars != null && xyVectors == null)
+            return createScatterPlotDataset(xyScalars, isoLineIds, manager);
+        else if (xyScalars == null && xyVectors != null)
+            return new VectorScatterPlotDataset(yVectors, xyVectors, manager);
+        else if (xyScalars != null && xyVectors != null)
+            return new CompoundXYDataset(
+                    createScatterPlotDataset(xyScalars, isoLineIds, manager),
+                    new VectorScatterPlotDataset(yVectors, xyVectors, manager));
+        else
+            return null; //TODO ???
     }
 
     /**
@@ -418,10 +555,22 @@ public class DatasetManager {
             return null;
     }
 
-    public static IHistogramDataset createHistogramDataset(HistogramChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+    public static IHistogramDataset createHistogramDataset(HistogramChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
         checkReadLock(manager);
-        IDList idlist = chart != null ? getIDListFromDataset(manager, chart, ResultType.HISTOGRAM_LITERAL): new IDList();
-        return new HistogramDataset(idlist, manager);
+        try {
+            String input = StringUtils.nullToEmpty(chart.getInput());
+            ResultSet resultSet = evaluate(input, manager, progressMonitor);
+
+            if (progressMonitor != null && progressMonitor.isCanceled())
+                return null;
+
+            // take the histograms only 
+            IDList histogramIDs = resultSet.idList.filterByTypes(ResultFileManager.HISTOGRAM);
+            return new HistogramDataset(histogramIDs, manager);
+        } 
+        catch (Exception e) {
+            throw new RuntimeException("Chart '" + chart.getName() + "': " + e.getMessage());
+        }
     }
 
     public static String[] getResultItemNames(IDList idlist, String nameFormat, ResultFileManager manager) {

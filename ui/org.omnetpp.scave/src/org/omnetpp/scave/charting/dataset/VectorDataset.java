@@ -12,6 +12,7 @@ import java.util.concurrent.Callable;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.computed.XYVector;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -37,7 +38,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
         Type type;
         InterpolationMode interpolationMode;
         ResultItemValueFormatter formatter;
-        XYArray xyarray;
+        XYVector xyarray;
     }
 
     private String title;
@@ -60,7 +61,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
      * Intended for accessing the series keys only
      * (property sheet, edit dialog).
      */
-    public VectorDataset(String title, IDList idlist, String lineIdFormat, String defaultLineTitleFormat, ResultFileManager manager) {
+    public VectorDataset(String title, IDList idlist, String lineIdFormat, String defaultLineTitleFormat, ResultFileManager manager) { //TODO eliminate this ctor!
         Assert.isLegal(idlist != null);
         Assert.isLegal(manager != null);
         String[] keys = DatasetManager.getResultItemNames(idlist, lineIdFormat, manager);
@@ -86,7 +87,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
      * The data of the vectors are loaded/computed.
      * Intended for displaying the dataset (e.g. charts).
      */
-    public VectorDataset(String title, IDList idlist, XYArray[] seriesData, String lineIdFormat, String defaultLineTitleFormat, ResultFileManager manager) {
+    public VectorDataset(String title, IDList idlist, XYVector[] seriesData, String lineIdFormat, String defaultLineTitleFormat, ResultFileManager manager) {
         this(title, idlist, lineIdFormat, defaultLineTitleFormat, manager);
         Assert.isTrue(seriesData != null && data.length == seriesData.length);
         for (int i = 0; i < data.length; ++i) {
@@ -140,15 +141,15 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
     }
 
     public int getItemCount(int series) {
-        return data[series].xyarray != null ? data[series].xyarray.length() : 0;
+        return data[series].xyarray != null ? data[series].xyarray.size() : 0;
     }
 
     public double getX(int series, int item) {
-        return data[series].xyarray.getX(item);
+        return data[series].xyarray.x[item];
     }
 
     public BigDecimal getPreciseX(int series, int item) {
-        return data[series].xyarray.getPreciseX(item);
+        return null; //TODO data[series].xyarray.getPreciseX(item);
     }
 
     public String getXAsString(int series, int item) {
@@ -157,7 +158,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
     }
 
     public double getY(int series, int item) {
-        return data[series].xyarray.getY(item);
+        return data[series].xyarray.y[item];
     }
 
     public BigDecimal getPreciseY(int series, int item) {

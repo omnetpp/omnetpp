@@ -22,12 +22,14 @@ public class StyledTextContentAdapter implements IControlContentAdapter,
 
     @Override
     public void setControlContents(Control control, String text, int cursorPosition) {
+        System.out.println("StyledTextContentAdapter.setControlContents(" + control + ", '" + text + "', cursorPos=" + cursorPosition + ")");
         ((StyledText) control).setText(text);
         ((StyledText) control).setSelection(cursorPosition, cursorPosition);
     }
 
     @Override
     public void insertControlContents(Control control, String text, int cursorPosition) {
+        System.out.println("StyledTextContentAdapter.insertControlContents(" + control + ", '" + text + "', cursorPos=" + cursorPosition + ")");
         Point selection = ((StyledText) control).getSelection();
         ((StyledText) control).insert(text);
         // Insert will leave the cursor at the end of the inserted text. If this is not what we wanted, reset the selection.
@@ -50,6 +52,7 @@ public class StyledTextContentAdapter implements IControlContentAdapter,
 
     @Override
     public void setCursorPosition(Control control, int position) {
+        System.out.println("StyledTextContentAdapter.setCursorPosition(" + control + ", " + position + ")");
         ((StyledText) control).setSelection(new Point(position, position));
     }
 
@@ -64,6 +67,7 @@ public class StyledTextContentAdapter implements IControlContentAdapter,
     }
 
     public void replaceControlContents(Control control, int start, int end, String text, int cursorPosition) {
+        System.out.println("StyledTextContentAdapter.replaceControlContents(" + control + ", start=" + start + ", end=" + end + ", '" + text + "', " + cursorPosition + ")");
         StyledText textControl = (StyledText)control;
         textControl.setSelection(start, end);
         textControl.insert(text);
