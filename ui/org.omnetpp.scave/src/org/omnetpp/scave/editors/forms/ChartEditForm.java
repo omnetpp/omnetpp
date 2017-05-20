@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -40,6 +41,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
+import org.omnetpp.common.ui.StyledTextUndoRedoManager;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
@@ -95,7 +97,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
 
     // controls
     private Text nameText;
-    private Text inputText;
+    private StyledText inputText;
     private FilterContentProposalProvider inputFieldProposalProvider;
     protected Group optionsGroup;
     private Button antialiasCheckbox;
@@ -218,8 +220,9 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             nameText.setFocus();
             inputText = createMultilineTextField("Result filter:", panel);
             ((GridLayout)panel.getLayout()).numColumns = 2;
+            new StyledTextUndoRedoManager(inputText);
             inputFieldProposalProvider = new FilterContentProposalProvider();
-            ContentAssistUtil.configureText(inputText, inputFieldProposalProvider);
+            ContentAssistUtil.configureStyledText(inputText, inputFieldProposalProvider);
             inputFieldProposalProvider.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
         }
         else if (TAB_CHART.equals(name)) {
@@ -381,12 +384,13 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         return text;
     }
 
-    protected Text createMultilineTextField(String labelText, Composite parent) {
+    protected StyledText createMultilineTextField(String labelText, Composite parent) {
         if (labelText != null) {
             Label label = createLabel(labelText, parent);
             label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
         }
-        Text text = new Text(parent, SWT.MULTI | SWT.BORDER);
+        StyledText text = new StyledText(parent, SWT.MULTI | SWT.WRAP | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        text.setAlwaysShowScrollBars(false);
         text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)text.getLayoutData()).heightHint = 100;
         return text;
