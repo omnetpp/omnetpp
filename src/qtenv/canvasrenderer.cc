@@ -173,10 +173,13 @@ QRectF CanvasRenderer::itemsBoundingRect() const
     QRectF bounds;
 
     for (auto &p : items) {
-        // deviceTransform is needed to respect ItemIgnoresTransformations flag.
-        // Using identity viewport transform because we want scene coords.
-        QTransform tf = p.second->deviceTransform(QTransform());
-        bounds = bounds.united(tf.mapRect(p.second->boundingRect()));
+        QTransform sceneTransform = p.second->sceneTransform();
+        QRectF itemBounds = p.second->boundingRect();
+        QRectF mapped = sceneTransform.mapRect(itemBounds);
+
+        if (!std::isnan(mapped.left()) && !std::isnan(mapped.right())
+                && !std::isnan(mapped.top()) && !std::isnan(mapped.bottom()))
+            bounds = bounds.united(mapped);
     }
 
     return bounds;
