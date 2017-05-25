@@ -110,7 +110,9 @@ void resolveSendDirectHops(cModule *src, cModule *dest, std::vector<cModule*>& h
 
 bool isAPL();
 
-QString getObjectIcon(cObject *object);
+
+QIcon getObjectIcon(cObject *object);
+const char *getObjectIconName(cObject *object);
 
 const char *getObjectBaseClass(cObject *object);
 

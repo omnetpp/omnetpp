@@ -19,6 +19,8 @@
 #include <QStringList>
 #include <QDir>
 #include <QImage>
+#include <QIcon>
+#include <QString>
 #include <QPixmap>
 #include <QPixmapCache>
 #include <QRegularExpression>
@@ -26,8 +28,10 @@
 
 #include "omnetpp/cexception.h"
 #include "common/fileutil.h"
+#include "common/stlutil.h"
 #include "common/stringtokenizer.h"
 #include "imagecache.h"
+#include "qtutil.h"
 
 
 using namespace omnetpp::common;
@@ -45,6 +49,8 @@ ImageCache::~ImageCache()
 {
     delete unknownImage;
     for (auto i : imagesWithSize)
+        delete i.second;
+    for (auto i : objectIcons)
         delete i.second;
 }
 
@@ -248,7 +254,17 @@ QPixmap ImageCache::getTintedPixmap(const char *name, const char *size, const QC
 
 QPixmap ImageCache::getTintedPixmap(const char *nameWithSize, const QColor &tintColor, double tintAmount)
 {
-     return makeTintedPixmapCached(getImage(nameWithSize), tintColor, tintAmount);
+    return makeTintedPixmapCached(getImage(nameWithSize), tintColor, tintAmount);
+}
+
+QIcon ImageCache::getObjectIcon(cObject *object)
+{
+    const char *name = getObjectIconName(object);
+
+    if (!containsKey(objectIcons, name))
+        objectIcons[name] = new QIcon(QString(":/objects/") + name);
+
+    return *objectIcons[name];
 }
 
 

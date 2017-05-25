@@ -23,6 +23,7 @@
 
 class QImage;
 class QPixmap;
+class QIcon;
 class QString;
 
 namespace omnetpp {
@@ -34,6 +35,7 @@ class QTENV_API ImageCache
 {
 private:
     std::unordered_map<std::string, QImage*> imagesWithSize;
+    std::unordered_map<const char *, QIcon*> objectIcons; // the keys are returned by getObjectIconName
 
     void doLoadImage(const QString& fileName, const std::string& imageName);
     void doLoadImages(const char *dir, const char *prefix = "");
@@ -67,6 +69,8 @@ public:
 
     QPixmap getTintedPixmap(const char *name, const char *size, const QColor& tintColor, double tintAmount);
     QPixmap getTintedPixmap(const char *nameWithSize, const QColor& tintColor, double tintAmount);
+
+    QIcon getObjectIcon(cObject *object);
 };
 
 } // namespace qtenv

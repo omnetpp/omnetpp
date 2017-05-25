@@ -98,7 +98,7 @@ QVariant ObjectListModel::data(const QModelIndex& index, int role) const
             break;
         case Qt:: DecorationRole:
             return index.column() == 0
-                    ? QVariant::fromValue(QIcon(":/objects/" + getObjectIcon(objects[index.row()])))
+                    ? getObjectIcon(objects[index.row()])
                     : QVariant();
         case Qt::UserRole:
             return QVariant::fromValue(objects[index.row()]);

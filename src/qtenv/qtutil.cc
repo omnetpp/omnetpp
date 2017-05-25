@@ -233,7 +233,13 @@ void *strToVoidPtr(const char *s)
 
 //-----------------------------------------------------------------------
 
-QString getObjectIcon(cObject *object)
+// Simply delegates to the ImageCache to make it easier to call.
+QIcon getObjectIcon(cObject *object)
+{
+    return getQtenv()->icons.getObjectIcon(object);
+}
+
+const char *getObjectIconName(cObject *object)
 {
     const char *iconName;
     if (object == nullptr)
