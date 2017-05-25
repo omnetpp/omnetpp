@@ -199,7 +199,6 @@ OPPMAIN_LIB = $(LDFLAG_LIB)oppmain$D
 # flags and libraries required for Qtenv
 #
 ifeq ($(WITH_QTENV),yes)
-  QTENV_TARGET = qtenv
   DEFINES += -DPREFER_QTENV -DWITH_QTENV
   # libraries required for static linking
   ifneq ($(SHARED_LIBS),yes)
@@ -217,15 +216,12 @@ ifeq ($(WITH_QTENV),yes)
     endif
   endif
   ALL_ENV_LIBS += $(QTENV_LIBS)
-else
-  QTENV_TARGET = skip
 endif
 
 #
 # flags and libraries required for Ttenv
 #
 ifeq ($(WITH_TKENV),yes)
-  TKENV_TARGET = tkenv
   DEFINES += -DWITH_TKENV
   # libraries required for static linking
   ifneq ($(SHARED_LIBS),yes)
@@ -235,8 +231,6 @@ ifeq ($(WITH_TKENV),yes)
     endif
   endif
   ALL_ENV_LIBS += $(TKENV_LIBS)
-else
-  TKENV_TARGET = skip
 endif
 
 #
