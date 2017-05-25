@@ -47,6 +47,8 @@ class QTENV_API DisplayUpdateController : public QObject
 {
     Q_OBJECT
 
+    bool paused = false;
+
     // simple shortcuts
     cSimulation *sim = getSimulation();
     Qtenv *qtenv = getQtenv();
@@ -121,6 +123,10 @@ public:
     void skipHold(); // sets animationTime to the end of the current hold, effectively ending it
     void skipToNextEvent(); // the above, plus sets simTime to that of the next event
 
+    bool isPaused() { return paused; }
+    void pause() { animationTimer.invalidate(); paused = true; }
+    void resume() { animationTimer.invalidate(); paused = false; }
+
     // true if nothing (builtin anim, model hold, simtime anim) is "waiting to happen" before the next event
     bool rightBeforeEvent();
 
@@ -145,11 +151,9 @@ public:
     double getPlaybackSpeed() { return currentProfile->playbackSpeed; }
 
     void setMinAnimSpeed(double value) { currentProfile->minAnimationSpeed = value; }
-
     void setMaxAnimSpeed(double value) { currentProfile->maxAnimationSpeed = value; }
 
     int getFrameCount() const { return frameCount; }
-
     double getCurrentFps() const { return currentFps; }
 
     void simulationEvent(cEvent *event);

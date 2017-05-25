@@ -50,6 +50,11 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
         if (runMode == RUNMODE_EXPRESS)
             return true;
 
+        if (paused) {
+            QApplication::processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents, 100);
+            continue;
+        }
+
         if (recordingVideo) {
             bool reached = renderUntilNextEvent(onlyHold);
             if (reached)
@@ -277,6 +282,11 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
 
         if (!recordingVideo)
             return false;
+
+        if (paused) {
+            QApplication::processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents, 100);
+            continue;
+        }
 
         double holdTime = qtenv->getRemainingAnimationHoldTime();
 
