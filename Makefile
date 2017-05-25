@@ -25,7 +25,14 @@ allmodes:
 	@echo
 	@echo "Now you can type \"`echo $(OMNETPP_RELEASE) | sed 's/-.*//'`\" to start the IDE"
 
-components: base samples
+components: base
+
+# Test if the samples directory exists and add dependencies to build it, too
+ifneq ($(wildcard samples),)
+components: samples
+clean: clean-samples
+cleanall: cleanall-samples
+endif
 
 #=====================================================================
 #
@@ -42,7 +49,7 @@ include Makefile.inc
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv qtenv utils
-SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo osg-intro osg-earth osg-indoor osg-satellites hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
+SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets osg-intro osg-earth osg-indoor osg-satellites
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 # add systemc optionally
@@ -54,7 +61,7 @@ systemc: sim
 endif
 endif
 
-.PHONY: check-env cleanall depend makefiles clean apis docu tests all allmodes \
+.PHONY: check-env cleanall makefiles clean apis docu tests all allmodes \
         components base ui uilibs samples common layout eventlog scave nedxml sim \
         envir cmdenv tkenv qtenv utils systemc
 #
@@ -71,7 +78,6 @@ ui:
 uilibs: common layout eventlog scave nedxml $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgc [nedtool], etc)
-clean depend: makefiles
 common layout eventlog scave nedxml sim envir cmdenv tkenv qtenv systemc makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv tkenv qtenv: common
 envir : sim
@@ -81,7 +87,6 @@ sim : nedxml common
 $(SAMPLES) : makefiles base
 $(BASE) : check-env
 queueinglibext : queueinglib
-
 
 #
 # Core libraries and programs
@@ -93,7 +98,7 @@ $(BASE):
 #
 # Native libs for the UI
 #
-$(JNILIBS): nedxml
+$(JNILIBS): nedxml scave nedxml scave layout eventlog common
 	@echo ===== Compiling $@ ====
 	$(Q)cd $(OMNETPP_UI_DIR)/$@ && $(MAKE) clean
 	$(Q)cd $(OMNETPP_UI_DIR)/$@ && $(MAKE)
@@ -149,31 +154,35 @@ check-env:
 	fi; \
 	rm -f $(OMNETPP_BIN_DIR)/$$probefile; \
 
-clean: makefiles
+clean:
 	$(Q)-rm -f $(OMNETPP_LIB_DIR)/*.*
 	$(Q)-rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
 	$(Q)-rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 	$(Q)for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	$(Q)for i in $(SAMPLES) ""; do \
-	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
-	done
 	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 	$(Q)-rm -f $(OMNETPP_BIN_DIR)/*
 
-cleanall: makefiles
+clean-samples: makefiles
+	$(Q)for i in $(SAMPLES) ""; do \
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
+	done
+
+cleanall:
 	$(Q)-rm -rf $(OMNETPP_OUT_DIR)
 	$(Q)-rm -rf $(OMNETPP_LIB_DIR)/*
 	$(Q)for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	$(Q)for i in $(SAMPLES) ""; do \
-	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) cleanall); fi;\
-	done
 	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 # bin should be removed last because opp_configfilepath (in bin directory) is needed to clean
 	-rm -rf $(OMNETPP_BIN_DIR)/*
+
+cleanall-samples: makefiles
+	$(Q)for i in $(SAMPLES) ""; do \
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) cleanall && rm Makefile); fi;\
+	done
 
 cleanui:
 	for i in $(JNILIBS); do \
@@ -181,14 +190,14 @@ cleanui:
 	done
 
 makefiles:
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --deep --nolink)))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --deep --nolink)))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --make-so -pQUEUEING -I.)))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --make-so -I../queueinglib -L'../queueinglib/out/$(CONFIGNAME)' -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib)))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f -n)))
 	$(Q)for i in $(SAMPLES) ""; do \
-	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (MAKE="$(MAKE)" opp_makemake -f --deep)); fi;\
+	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (test -f Makefile || (MAKE="$(MAKE)" opp_makemake -f --deep))); fi;\
 	done
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (MAKE="$(MAKE)" opp_makemake -f --deep --nolink))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (MAKE="$(MAKE)" opp_makemake -f --deep --nolink))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (MAKE="$(MAKE)" opp_makemake -f --make-so -pQUEUEING -I.))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (MAKE="$(MAKE)" opp_makemake -f --make-so -I../queueinglib -L'../queueinglib/out/$(CONFIGNAME)' -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
-	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (MAKE="$(MAKE)" opp_makemake -f -n))
 
 # copy the documentation to the UI doc folder too.
 # patch some files to have correct URLs and add generic eclipse stylesheet when needed
