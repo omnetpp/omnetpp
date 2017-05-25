@@ -116,6 +116,7 @@ const char *getObjectBaseClass(cObject *object);
 
 QString getMessageShortInfoString(cMessage *msg);
 
+cGate *getGateOtherHalf(cGate *gate);
 // check if this is a two way connection (an other connection is pointing back
 // to the this gate's pair from the next gate's pair)
 bool isTwoWayConnection(cGate *gate);
