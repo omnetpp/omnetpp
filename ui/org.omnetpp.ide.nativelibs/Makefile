@@ -5,7 +5,6 @@
 CONFIGFILE = ../../Makefile.inc
 include $(CONFIGFILE)
 
-L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/ui
 
 #
@@ -100,8 +99,12 @@ ifeq ("$(MODE)","release")
 	$(STRIP) $(STRIP_FLAGS) $O/$(DLL)
 endif
 
-$(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
-	cp $O/$(DLL) $(DLL_TARGET_DIR)
+# copy files to the bin and lib directories from the out directory
+$(DLL_TARGET_DIR)/%: $O/% $(CONFIGFILE)
+	@mkdir -p $(DLL_TARGET_DIR)
+	@echo Copying to: $@
+	$(Q)cp $< $@
+	$(Q)$(SHLIB_POSTPROCESS) $@
 
 missing-dependency:
 	@echo '  *** Missing required dependency -- skipping build of UI support library.'

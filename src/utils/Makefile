@@ -20,7 +20,6 @@ COPTS=$(CFLAGS) $(INCL_FLAGS)
 # Rules
 #
 all: $(CONFIGFILE)
-	$(qecho) Copying scripts to bin directory...
 	$(Q)echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
 	$(Q)if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
@@ -44,16 +43,9 @@ all: $(CONFIGFILE)
 	@# next line is for samples/rundemo
 	$(Q)echo $(WISH) >$(HOME)/.wishname
 
-$O/%.o: %.cc
-	@mkdir -p $O
-	$(qecho) "$<"
-	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
-
 clean:
 	$(qecho) Cleaning...
 	$(Q)rm -rf $O
 	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_makemake opp_runall opp_test splitvec
-#	$(Q)rm -f opp_configfilepath
-#	$(Q)rm -f opp_configfilepath.cmd
 
 -include $(OBJS:%.o=%.d)

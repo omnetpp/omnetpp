@@ -9,9 +9,21 @@ include $(CONFIGFILE)
 # Local definitions
 #
 LIBNAME=$(LIB_PREFIX)oppeventlog$D
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
-L=$(OMNETPP_LIB_DIR)
+TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX)
+# On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
+ifeq ($(PLATFORM),win32.x86_64)
+  ifeq ($(SHARED_LIBS),yes)
+    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(A_LIB_SUFFIX)
+    ifeq ($(TOOLCHAIN_NAME),clangc2)
+      ifeq ($(MODE),debug)
+        TARGET_LIB_FILES+=$(OMNETPP_BIN_DIR)/$(LIBNAME).pdb
+      endif
+    endif
+  endif
+endif
+TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/eventlogtool$(EXE_SUFFIX)
 
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
 COPTS=$(CFLAGS) $(INCL_FLAGS)
@@ -22,18 +34,20 @@ OBJS= $O/ievent.o $O/ieventlog.o $O/eventlogfacade.o $O/eventlogtablefacade.o $O
       $O/eventlog.o $O/eventlogindex.o $O/messagedependency.o $O/event.o $O/eventlogentry.o \
       $O/eventlogentries.o $O/filteredevent.o $O/filteredeventlog.o $O/eventlogentryfactory.o
 
-GENERATED_SOURCES= eventlogentries.cc eventlogentries.h eventlogentryfactory.cc
+GENERATED_SOURCES= eventlogentries.csv eventlogentries.h eventlogentries.cc eventlogentryfactory.cc
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DEVENTLOG_EXPORT
 
-.PHONY: all clean build install
+.PHONY: all clean
+.SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
+
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
+$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -41,55 +55,49 @@ $O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
 #
 # Targets
 #
-all : install install_eventlogtool
+all : $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 
-install: build $(CONFIGFILE)
-	@mkdir -p $L
-	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)$(SHLIB_POSTPROCESS) $L/$(LIBNAME)$(SO_LIB_SUFFIX) 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR) 2>/dev/null || :
-ifeq ($(TOOLCHAIN_NAME),clangc2)
-ifeq ($(MODE),debug)
-	-$(Q)cp $O/$(LIBNAME).pdb $(OMNETPP_BIN_DIR) 2>/dev/null || :
-endif
-endif
-
-build : $O/$(LIBNAME)$(LIB_SUFFIX)
-
-install_eventlogtool: $O/eventlogtool$(EXE_SUFFIX) $(CONFIGFILE)
-	@mkdir -p $(OMNETPP_BIN_DIR)
-	$(Q)cp $O/eventlogtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
-
-$O/eventlogtool$(EXE_SUFFIX) : install $(GENERATED_SOURCES)
-	@mkdir -p $O
-	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) eventlogtool.cc -o $@ $(LDFLAGS) $(IMPLIBS) -loppeventlog$D
-
-$(GENERATED_SOURCES) : eventlogentries.txt eventlogentries.pl
-	$(PERL) eventlogentries.pl
-
-$O/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
-	@mkdir -p $O
-	@echo Creating static library: $@
-	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
-	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-
-$O/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+ifeq ($(SHARED_LIBS),yes)
+# dynamically linked library (on all platforms except Windows)
+$O/%$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $O
 	@echo Creating shared library: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 
-$O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+# dynamically linked library + import lib (on Windows)
+$O/%$(DLL_LIB_SUFFIX) $O/%$(A_LIB_SUFFIX): $(OBJS)
 	@mkdir -p $O
-	@echo Creating DLL: $@
+	@echo Creating DLL and import library: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
+else
+# statically linked library (on all platforms)
+$O/%$(A_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $O
+	@echo Creating static library: $@
+	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+endif
+
+$O/eventlogtool$(EXE_SUFFIX) : eventlogtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
+	@mkdir -p $O
+	@echo Creating executable: $@
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) eventlogtool.cc -o $@ $(LDFLAGS) $(IMPLIBS) -loppeventlog$D
+
+# copy files to the bin and lib directories from the out directory
+$(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
+	@mkdir -p $(OMNETPP_BIN_DIR) $(OMNETPP_LIB_DIR)
+	@echo Copying to: $@
+	$(Q)cp $< $@
+	$(Q)$(SHLIB_POSTPROCESS) $@
 
 clean:
 	$(qecho) Cleaning...
-	$(Q)rm -f $(GENERATED_SOURCES)
-	$(Q)rm -rf $O
-	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*
-	$(Q)rm -f $(OMNETPP_BIN_DIR)/eventlogtool$(EXE_SUFFIX)
+	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
+
+# generated source files
+# NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
+%ventlogentries.h %ventlogentries.cc %ventlogentries.csv %ventlogentryfactory.cc : eventlogentries.txt eventlogentries.pl $(CONFIGFILE)
+	@echo Generating $(GENERATED_SOURCES) from $<
+	$(Q)$(PERL) eventlogentries.pl
 
 -include $(OBJS:%.o=%.d)

@@ -9,8 +9,21 @@ include $(CONFIGFILE)
 # Local definitions
 #
 LIBNAME=$(LIB_PREFIX)oppnedxml$D
+TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX)
+# On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
+ifeq ($(PLATFORM),win32.x86_64)
+  ifeq ($(SHARED_LIBS),yes)
+    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(A_LIB_SUFFIX)
+    ifeq ($(TOOLCHAIN_NAME),clangc2)
+      ifeq ($(MODE),debug)
+        TARGET_LIB_FILES+=$(OMNETPP_BIN_DIR)/$(LIBNAME).pdb
+      endif
+    endif
+  endif
+endif
+TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/nedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)/opp_msgc
+
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/nedxml
-L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
@@ -39,13 +52,15 @@ GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DNEDXML_EXPORT
 
-.PHONY: all clean doc build install install_nedtool
+.PHONY: all clean
+.SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
+
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
+$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -53,84 +68,76 @@ $O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
 #
 # Targets
 #
-all : install install_nedtool
+all : $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 
-install: build $(CONFIGFILE)
-	@mkdir -p $L
-	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)$(SHLIB_POSTPROCESS) $L/$(LIBNAME)$(SO_LIB_SUFFIX) 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR) 2>/dev/null || :
-ifeq ($(TOOLCHAIN_NAME),clangc2)
-ifeq ($(MODE),debug)
-	-$(Q)cp $O/$(LIBNAME).pdb $(OMNETPP_BIN_DIR) 2>/dev/null || :
-endif
-endif
-
-build : $O/$(LIBNAME)$(LIB_SUFFIX)
-
-install_nedtool: $O/nedtool$(EXE_SUFFIX)
-	@mkdir -p $(OMNETPP_BIN_DIR)
-	$(Q)cp $O/nedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
-	$(Q)cp opp_msgc $(OMNETPP_BIN_DIR) && chmod +x $(OMNETPP_BIN_DIR)/opp_msgc
-
-$O/nedtool$(EXE_SUFFIX): nedtool.cc install
+ifeq ($(SHARED_LIBS),yes)
+# dynamically linked library (on all platforms except Windows)
+$O/%$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $O
-	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) nedtool.cc -o $@ $(LDFLAGS) -loppnedxml$D $(IMPLIBS)
+	@echo Creating shared library: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 
-$O/$(LIBNAME)$(A_LIB_SUFFIX): $(OBJS)
+# dynamically linked library + import lib (on Windows)
+$O/%$(DLL_LIB_SUFFIX) $O/%$(A_LIB_SUFFIX): $(OBJS)
+	@mkdir -p $O
+	@echo Creating DLL and import library: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
+else
+# statically linked library (on all platforms)
+$O/%$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $O
 	@echo Creating static library: $@
 	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+endif
 
-$O/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+$O/nedtool$(EXE_SUFFIX): nedtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	@mkdir -p $O
-	@echo Creating shared library: $@
-	$(Q)$(SHLIB_LD) $(LDFLAGS) $(XML_LIBS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
+	@echo Creating executable: $@
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) nedtool.cc -o $@ $(LDFLAGS) -loppnedxml$D $(IMPLIBS)
 
-$O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+$O/opp_msgc:
 	@mkdir -p $O
-	@echo Creating DLL: $@
-	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	$(Q)cp opp_msgc $O && chmod +x $O/opp_msgc
 
-nedelements.cc nedelements.h neddtdvalidator.cc neddtdvalidator.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
+# copy files to the bin and lib directories from the out directory
+$(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
+	@mkdir -p $(OMNETPP_BIN_DIR) $(OMNETPP_LIB_DIR)
+	@echo Copying to: $@
+	$(Q)cp $< $@
+	$(Q)$(SHLIB_POSTPROCESS) $@
+
+clean:
+	$(qecho) Cleaning...
+	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
+
+# generated source files
+# NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
+%edelements.cc %edelements.h %eddtdvalidator.cc %eddtdvalidator.h %edvalidator.cc %edvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
 	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
 
-ned1.tab.hh ned1.tab.cc : ned1.y
+%ed1.tab.hh %ed1.tab.cc : ned1.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o ned1.tab.cc -p ned1yy -d ned1.y
+
+%ed2.tab.hh %ed2.tab.cc : ned2.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
+
+%sg2.tab.hh %sg2.tab.cc : msg2.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
 
 lex.ned1yy.cc: ned1.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.ned1yy.cc -Pned1yy ned1.lex
 
-ned2.tab.hh ned2.tab.cc : ned2.y
-	$(qecho) YACC: $<
-	$(Q)$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
-
 lex.ned2yy.cc: ned2.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.ned2yy.cc -Pned2yy ned2.lex
 
-msg2.tab.hh msg2.tab.cc : msg2.y
-	$(qecho) YACC: $<
-	$(Q)$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
-
 lex.msg2yy.cc: msg2.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.msg2yy.cc -Pmsg2yy msg2.lex
-
-doc:
-	# NOTE: doxy.cfg has the output directory hardcoded!
-	$(DOXYGEN) doxy.cfg
-
-clean:
-	$(qecho) Cleaning...
-	$(Q)rm -f $(GENERATED_SOURCES)
-	$(Q)rm -rf $O
-	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*
-	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f nedtool$(EXE_SUFFIX) opp_msgc
 
 -include $(OBJS:%.o=%.d)

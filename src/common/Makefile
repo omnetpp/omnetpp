@@ -9,12 +9,25 @@ include $(CONFIGFILE)
 # Local definitions
 #
 LIBNAME=$(LIB_PREFIX)oppcommon$D
+TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX)
+# On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
+ifeq ($(PLATFORM),win32.x86_64)
+  ifeq ($(SHARED_LIBS),yes)
+    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(A_LIB_SUFFIX)
+    ifeq ($(TOOLCHAIN_NAME),clangc2)
+      ifeq ($(MODE),debug)
+        TARGET_LIB_FILES+=$(OMNETPP_BIN_DIR)/$(LIBNAME).pdb
+      endif
+    endif
+  endif
+endif
+
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
-L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
 COPTS=-Wno-unused-function $(CFLAGS) $(INCL_FLAGS)
+
 IMPLIBS=
 
 OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
@@ -40,13 +53,15 @@ endif
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DCOMMON_EXPORT
 
-.PHONY: all clean build install
+.PHONY: all clean
+.SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
+
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
+$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -54,49 +69,28 @@ $O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
 #
 # Targets
 #
-all : install
+all : $(TARGET_LIB_FILES)
 
-install: build $(CONFIGFILE)
-	@mkdir -p $L
-	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)$(SHLIB_POSTPROCESS) $L/$(LIBNAME)$(SO_LIB_SUFFIX) 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR) 2>/dev/null || :
-ifeq ($(TOOLCHAIN_NAME),clangc2)
-ifeq ($(MODE),debug)
-	-$(Q)cp $O/$(LIBNAME).pdb $(OMNETPP_BIN_DIR) 2>/dev/null || :
-endif
-endif
-
-build : $O/$(LIBNAME)$(LIB_SUFFIX)
-
-$O/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
-	@mkdir -p $O
-	@echo Creating static library: $@
-	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
-	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-
-$O/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+ifeq ($(SHARED_LIBS),yes)
+# dynamically linked library (on all platforms except Windows)
+$O/%$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $O
 	@echo Creating shared library: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 
-$O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
+# dynamically linked library + import lib (on Windows)
+$O/%$(DLL_LIB_SUFFIX) $O/%$(A_LIB_SUFFIX): $(OBJS)
 	@mkdir -p $O
-	@echo Creating DLL: $@
+	@echo Creating DLL and import library: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
-
-expression.tab.hh expression.tab.cc : expression.y
-	$(qecho) YACC: $<
-	$(Q)$(YACC) -o expression.tab.cc -p expressionyy -d expression.y
-
-lex.expressionyy.cc: expression.lex
-	$(qecho) LEX: $<
-	$(Q)$(LEX) -olex.expressionyy.cc -Pexpressionyy expression.lex
-
-matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
-	$(qecho) YACC: $<
-	$(Q)$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
+else
+# statically linked library (on all platforms)
+$O/%$(A_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $O
+	@echo Creating static library: $@
+	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+endif
 
 $O/sqlite3.o: sqlite3.c
 	@mkdir -p $O
@@ -108,10 +102,29 @@ else
 	$(Q)$(CC) -c $(COPTS) -Wno-deprecated-declarations -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_DEFAULT_FOREIGN_KEYS=1 -o $@ $<
 endif
 
+# copy files to the bin and lib directories from the out directory
+$(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
+	@mkdir -p $(OMNETPP_BIN_DIR) $(OMNETPP_LIB_DIR)
+	@echo Copying to: $@
+	$(Q)cp $< $@
+	$(Q)$(SHLIB_POSTPROCESS) $@
+
 clean:
 	$(qecho) Cleaning...
-	$(Q)rm -f $(GENERATED_SOURCES)
-	$(Q)rm -rf $O
-	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*
+	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
+
+# generated source files
+# NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
+expressio%.tab.hh expressio%.tab.cc : expression.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o expression.tab.cc -p expressionyy -d expression.y
+
+lex.expressionyy.cc: expression.lex
+	$(qecho) LEX: $<
+	$(Q)$(LEX) -olex.expressionyy.cc -Pexpressionyy expression.lex
+
+matchexpressio%.tab.hh matchexpressio%.tab.cc : matchexpression.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
 
 -include $(OBJS:%.o=%.d)

@@ -10,8 +10,30 @@ include $(CONFIGFILE)
 #
 MAINLIBNAME=$(LIB_PREFIX)oppmain$D
 LIBNAME=$(LIB_PREFIX)oppenvir$D
+
+TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(MAINLIBNAME)$(A_LIB_SUFFIX)
+# On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
+ifeq ($(PLATFORM),win32.x86_64)
+  ifeq ($(SHARED_LIBS),yes)
+    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(A_LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(MAINLIBNAME)$(A_LIB_SUFFIX)
+    ifeq ($(TOOLCHAIN_NAME),clangc2)
+      ifeq ($(MODE),debug)
+        TARGET_LIB_FILES+=$(OMNETPP_BIN_DIR)/$(LIBNAME).pdb
+      endif
+    endif
+  endif
+endif
+
+# build either opp_run or opp_run_release depending or mode (or nothing if we are building a static lib)
+ifeq ($(SHARED_LIBS),yes)
+  ifeq ($(MODE),debug)
+    TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
+  else
+    TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
+  endif
+endif
+
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
-L=$(OMNETPP_LIB_DIR)
 
 INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
@@ -43,13 +65,15 @@ GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DENVIR_EXPORT
 
-.PHONY: all clean envir-lib opp_run_executable build install
+.PHONY: all clean opp_run_executable
+.SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
+
 #
 # Automatic rules
 #
 .SUFFIXES : .cc
 
-$O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
+$O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE)
 	@mkdir -p $O
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) $(EXPORT_DEFINES) $(IMPORT_DEFINES) -o $@ $<
@@ -57,22 +81,30 @@ $O/%.o: %.cc $(CONFIGFILE) | $(GENERATED_SOURCES)
 #
 # Targets
 #
-all : install
+all : $(TARGET_LIB_FILES)
 
-install: build $(CONFIGFILE)
-	@mkdir -p $L
-	-$(Q)cp $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(A_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(SO_LIB_SUFFIX) $L 2>/dev/null || :
-	-$(Q)$(SHLIB_POSTPROCESS) $L/$(LIBNAME)$(SO_LIB_SUFFIX) 2>/dev/null || :
-	-$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR) 2>/dev/null || :
-ifeq ($(TOOLCHAIN_NAME),clangc2)
-ifeq ($(MODE),debug)
-	-$(Q)cp $O/$(LIBNAME).pdb $(OMNETPP_BIN_DIR) 2>/dev/null || :
-endif
-endif
+opp_run_executable: $(TARGET_EXE_FILES)
 
-build : $O/$(LIBNAME)$(LIB_SUFFIX) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX)
+ifeq ($(SHARED_LIBS),yes)
+# dynamically linked library (on all platforms except Windows)
+$O/%$(SO_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $O
+	@echo Creating shared library: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
+
+# dynamically linked library + import lib (on Windows)
+$O/%$(DLL_LIB_SUFFIX) $O/%$(A_LIB_SUFFIX): $(OBJS)
+	@mkdir -p $O
+	@echo Creating DLL and import library: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
+else
+# statically linked library (on all platforms)
+$O/%$(A_LIB_SUFFIX) : $(OBJS)
+	@mkdir -p $O
+	@echo Creating static library: $@
+	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+endif
 
 # Build a static lib that contains the main() function used with executable or dynamically linked models
 $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) : $O/main.o
@@ -81,56 +113,35 @@ $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) : $O/main.o
 	$(Q)$(AR) $(ARFLAG_OUT)$O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $O/main.o
 	$(Q)$(RANLIB) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX)
 
-$O/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
-	@mkdir -p $O
-	@echo Creating static library: $@
-	$(Q)$(AR) $(ARFLAG_OUT)$O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
-	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-
-$O/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
-	@mkdir -p $O
-	@echo Creating shared library: $@
-	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
-
-$O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
-	@mkdir -p $O
-	@echo Creating DLL: $@
-	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
-
-eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
-	$(PERL) eventlogwriter.pl
-
-$O/envirbase.o: eventlogwriter.h
-
-# default opp_run target - called only at the end once tkenv and cmdenv is done
-# opp_run is useless with static libs
-ifeq ("$(LIB_SUFFIX)","$(SHARED_LIB_SUFFIX)")
+# build opp_run executable
 ifeq ("$(MODE)","debug")
-opp_run_executable: $O/opp_run$(EXE_SUFFIX)
-$O/opp_run$(EXE_SUFFIX) : install
+$O/opp_run$(EXE_SUFFIX) : opp_run.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	$(qecho) "Creating executable: $@"
 	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) opp_run.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS) $(PSAPI_LIB)
-	$(Q)cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 else
-opp_run_executable: $O/opp_run_release$(EXE_SUFFIX)
-$O/opp_run_release$(EXE_SUFFIX) : install
+$O/opp_run$(EXE_SUFFIX) : $O/opp_run_release$(EXE_SUFFIX)
+	$(Q)cp $O/opp_run_release$(EXE_SUFFIX) $O/opp_run$(EXE_SUFFIX)
+
+$O/opp_run_release$(EXE_SUFFIX) : main.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	$(qecho) "Creating executable: $@"
 	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) main.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
-	$(Q)cp $O/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
-	$(Q)cp $O/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
 endif
 
-else
-opp_run_executable:
-	@echo "Note: We don't create opp_run.exe when building static libs"
-endif
+# copy files to the bin and lib directories from the out directory
+$(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
+	@mkdir -p $(OMNETPP_BIN_DIR) $(OMNETPP_LIB_DIR)
+	@echo Copying to: $@
+	$(Q)cp $< $@
+	$(Q)$(SHLIB_POSTPROCESS) $@
 
 clean:
 	$(qecho) Cleaning...
-	$(Q)rm -f $(GENERATED_SOURCES)
-	$(Q)rm -rf $O
-	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*
-	$(Q)rm -f $(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
-	$(Q)rm -f $(OMNETPP_BIN_DIR)/opp_run_release$(EXE_SUFFIX)
+	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
+
+# generated sources
+%ventlogwriter.cc %ventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
+	$(PERL) eventlogwriter.pl
+
+#$O/envirbase.o: eventlogwriter.h
 
 -include $(OBJS:%.o=%.d)
