@@ -727,7 +727,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     doNextEventInStep = displayUpdateController->rightBeforeEvent();
 
     updateStatusDisplay();
-    QCoreApplication::processEvents();
+    QApplication::processEvents();
 
     startClock();
     notifyLifecycleListeners(LF_ON_SIMULATION_RESUME);
@@ -942,7 +942,7 @@ bool Qtenv::doRunSimulationExpress()
 
     // update, just to get the above notice displayed
     callRefreshInspectors();
-    QCoreApplication::processEvents();
+    QApplication::processEvents();
 
     // OK, let's begin
     speedometer.start(getSimulation()->getSimTime());
