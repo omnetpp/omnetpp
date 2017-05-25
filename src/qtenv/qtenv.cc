@@ -2157,13 +2157,13 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
     return true;
 }
 
-std::string Qtenv::gets(const char *promt, const char *defaultReply)
+std::string Qtenv::gets(const char *prompt, const char *defaultReply)
 {
     cModule *mod = getSimulation()->getContextModule();
     std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();
     std::string result;
     bool dummy;
-    bool ok = inputDialog(title.c_str(), promt, nullptr, defaultReply, result, dummy);
+    bool ok = inputDialog(title.c_str(), prompt, nullptr, defaultReply, result, dummy);
     if (!ok)
         throw cRuntimeError(E_CANCEL);
     return result;

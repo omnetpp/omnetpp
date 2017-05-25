@@ -248,7 +248,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
       virtual void log(cLogEntry *entry) override;
       virtual void alert(const char *msg) override;
-      virtual std::string gets(const char *prompt, const char *defaultReply) override;
+      virtual std::string gets(const char *prompt, const char *defaultReply = nullptr) override;
       virtual bool askYesNo(const char *question) override;
 
       virtual bool idle() override;
