@@ -65,7 +65,7 @@ private slots:
 
     void createContextMenu(const std::vector<cObject*> &objects, const QPoint &globalPos);
 
-    void layers();
+    void showCanvasLayersDialog();
     void showLabels(bool show);
     void showArrowheads(bool show);
     void zoomIconsBy(double mult);
@@ -135,7 +135,6 @@ protected:
 
     std::map<cComponent *, std::string> bubblesToShow;
 
-    // drawing methods:
     virtual void redraw();
 
 public:

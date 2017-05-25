@@ -164,10 +164,15 @@ void ModuleLayouter::forgetPosition(cModule *submodule)
     modulePositions.erase(submodule);
 }
 
-void ModuleLayouter::refreshPosition(cModule *submodule)
+void ModuleLayouter::refreshPositionFromDS(cModule *submodule)
 {
-    forgetPosition(submodule);
-    ensureLayouted(submodule->getParentModule());
+    bool explicitCoords, obeysLayout;
+    double x, y, sx, sy;
+
+    getSubmoduleCoords(submodule, explicitCoords, obeysLayout, x, y, sx, sy);
+
+    if (explicitCoords)
+        modulePositions[submodule] = QPointF(x, y);
 }
 
 void ModuleLayouter::incrementLayoutSeed(cModule *module)

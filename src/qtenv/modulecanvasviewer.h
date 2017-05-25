@@ -20,6 +20,7 @@
 #include <map>
 #include <QPointF>
 #include <QGraphicsView>
+#include <unordered_set>
 #include <QPrinter>
 #include "qtenvdefs.h"
 
@@ -63,6 +64,12 @@ private:
     std::map<cModule*, SubmoduleItem*> submoduleGraphicsItems;
     std::map<cGate*, ConnectionItem*> connectionGraphicsItems;
 
+    // Change flags to remember components with "dirty" DisplayStrings.
+    // Used for, and cleared after, selective refresh of network graphics.
+    bool compoundModuleChanged = false;
+    std::unordered_set<cModule *> changedSubmodules;
+    std::unordered_set<cGate *> changedConnections;
+
     GraphicsLayer *backgroundLayer;
     GraphicsLayer *rangeLayer;
     GraphicsLayer *submoduleLayer;
@@ -83,10 +90,9 @@ private:
     void redrawFigures();
     void refreshFigures();
     void redrawModules();
-    void redrawNextEventMarker();
 
+    void redrawEnclosingModule();
     void drawSubmodule(cModule *submod);
-    void drawEnclosingModule(cModule *parentModule);
     void drawConnection(cGate *gate);
 
     FigureRenderingHints makeFigureRenderingHints();
@@ -163,16 +169,19 @@ public:
     QLineF getConnectionLine(cGate *gate);
 
     void clear();
-    bool getNeedsRedraw() { return needsRedraw; }
     void setNeedsRedraw(bool isNeed = true) { needsRedraw = isNeed; }
 
     void refreshSubmodule(cModule *submod);
     void refreshSubmodules();
     void refreshConnection(cGate *gate);
-    void refreshConnections(cModule *module);
+    void refreshConnections(cModule *module); // only the ones starting at a gate of module, not the "incoming" ones
     void refreshConnections();
 
     void setZoomLabelVisible(bool visible);
+
+    void displayStringChanged();
+    void displayStringChanged(cModule *submod);
+    void displayStringChanged(cGate *gate);
 };
 
 } // namespace qtenv

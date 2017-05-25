@@ -543,39 +543,37 @@ QLineF ModuleInspector::getConnectionLine(cGate *gate)
 
 void ModuleInspector::submoduleCreated(cModule *newmodule)
 {
-    canvasViewer->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw(); // could be optimized by remembering what needs to be drawn, but this is simpler
 }
 
 void ModuleInspector::submoduleDeleted(cModule *module)
 {
-    canvasViewer->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw(); // could be optimized by remembering what needs to be erased, but this is simpler
 }
 
 void ModuleInspector::connectionCreated(cGate *srcgate)
 {
-    canvasViewer->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw(); // could be optimized by remembering what needs to be drawn, but this is simpler
 }
 
 void ModuleInspector::connectionDeleted(cGate *srcgate)
 {
-    canvasViewer->setNeedsRedraw();
+    canvasViewer->setNeedsRedraw(); // could be optimized by remembering what needs to be erased, but this is simpler
 }
 
 void ModuleInspector::displayStringChanged(cModule *submodule)
 {
-    getQtenv()->getModuleLayouter()->refreshPosition(submodule);
-    canvasViewer->refreshSubmodule(submodule);
-    canvasViewer->refreshConnections();
+    canvasViewer->displayStringChanged(submodule);
 }
 
 void ModuleInspector::displayStringChanged()
 {
-    canvasViewer->setNeedsRedraw();  // TODO check, probably only non-background tags have changed...
+    canvasViewer->displayStringChanged();
 }
 
 void ModuleInspector::displayStringChanged(cGate *gate)
 {
-    canvasViewer->refreshConnection(gate);
+    canvasViewer->displayStringChanged(gate);
 }
 
 void ModuleInspector::redraw()
@@ -662,7 +660,7 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
     QMenu *menu = InspectorUtil::createInspectorContextMenu(o, this);
 
     menu->addSeparator();
-    menu->addAction("Show/Hide Canvas Layers...", this, SLOT(layers()));
+    menu->addAction("Show/Hide Canvas Layers...", this, SLOT(showCanvasLayersDialog()));
 
     menu->addSeparator();
     menu->addAction(showModuleNamesAction);
@@ -700,7 +698,7 @@ void ModuleInspector::runPreferencesDialog()
         InspectorUtil::preferencesDialog(variant.value<eTab>());
 }
 
-void ModuleInspector::layers()
+void ModuleInspector::showCanvasLayersDialog()
 {
     CanvasRenderer *canvasRenderer = canvasViewer->getCanvasRenderer();
     if (!canvasRenderer->hasCanvas()) {

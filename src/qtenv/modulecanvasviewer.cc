@@ -187,6 +187,23 @@ void ModuleCanvasViewer::setZoomLabelVisible(bool visible)
     zoomLabel->setVisible(visible);
 }
 
+void ModuleCanvasViewer::displayStringChanged()
+{
+    compoundModuleChanged = true;
+}
+
+void ModuleCanvasViewer::displayStringChanged(cModule *submod)
+{
+    ASSERT(submod->getParentModule() == object);
+    changedSubmodules.insert(submod);
+}
+
+void ModuleCanvasViewer::displayStringChanged(cGate *gate)
+{
+    ASSERT(gate->getOwnerModule() == object || gate->getOwnerModule()->getParentModule() == object);
+    changedConnections.insert(gate);
+}
+
 void ModuleCanvasViewer::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MouseButton::LeftButton)
@@ -332,19 +349,11 @@ void ModuleCanvasViewer::renderToPrinter(QPrinter &printer)
         auto figuresRect = canvasRenderer->itemsBoundingRect();
 
         rect = compoundRect.united(figuresRect);
-
-        rect = QRectF(rect.topLeft(), rect.bottomRight());
     }
 
     const int margin = 20;
     QMarginsF margins(margin, margin, margin, margin);
     rect = rect.marginsAdded(margins);
-
-    // DO NOT CHANGE THE RESOLUTION!
-    // I have no idea why it has to be 75, but this is a workaround for
-    // https://bugreports.qt.io/browse/QTBUG-57005 because we use the
-    // ItemIgnoresTransformations flag extensively.
-    printer.setResolution(75);
 
     printer.setPageMargins(QMargins(0, 0, 0, 0));
     printer.setPaperSize(rect.size() / printer.resolution(), QPrinter::Inch);
@@ -401,19 +410,17 @@ FigureRenderingHints ModuleCanvasViewer::makeFigureRenderingHints()
 // requires either recalculateLayout() or refreshLayout() called before!
 void ModuleCanvasViewer::redrawModules()
 {
+    submoduleLayer->clear();
+    submoduleGraphicsItems.clear();
+    connectionGraphicsItems.clear();
+
     cModule *parentModule = object;
 
-    //TODO then display all submodules
-    //CHK(Tcl_VarEval(interp, canvas, " delete dx", TCL_NULL));  // NOT "delete all" because that'd remove "bubbles" too!
+    for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it)
+        drawSubmodule(*it);
 
-    for (cModule::SubmoduleIterator it(parentModule); !it.end(); ++it) {
-        cModule *submod = *it;
-        //assert(submodPosMap.find(submod) != submodPosMap.end());
-        drawSubmodule(submod);
-    }
-
-    // draw enclosing module
-    drawEnclosingModule(parentModule);
+    // draw the inside of the inspected module
+    redrawEnclosingModule();
 
     // loop through all submodules and enclosing module & draw their connections
     bool atParent = false;
@@ -427,12 +434,13 @@ void ModuleCanvasViewer::redrawModules()
             }
         }
     }
-    //CHK(Tcl_VarEval(interp, canvas, " raise bubble", TCL_NULL));
-    //CHK(Tcl_VarEval(interp, "ModuleInspector:setScrollRegion ", windowName, " 0", TCL_NULL));
 }
 
 void ModuleCanvasViewer::drawSubmodule(cModule *submod)
 {
+    ASSERT(submod->getParentModule() == object);
+    ASSERT(!containsKey(submoduleGraphicsItems, submod));
+
     auto item = new SubmoduleItem(submod, rangeLayer);
     SubmoduleItemUtil::setupFromDisplayString(item, submod);
     item->setData(ITEMDATA_COBJECT, QVariant::fromValue(dynamic_cast<cObject *>(submod)));
@@ -445,14 +453,15 @@ void ModuleCanvasViewer::drawSubmodule(cModule *submod)
     item->update();
 }
 
-void ModuleCanvasViewer::drawEnclosingModule(cModule *parentModule)
+void ModuleCanvasViewer::redrawEnclosingModule()
 {
     backgroundLayer->clear();
     compoundModuleItem = new CompoundModuleItem();
     backgroundLayer->addItem(compoundModuleItem);
 
-    CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, parentModule, zoomFactor, getSubmodulesRect());
+    CompoundModuleItemUtil::setupFromDisplayString(compoundModuleItem, object, zoomFactor, getSubmodulesRect());
 
+    compoundModuleChanged = false;
     recalcSceneRect();
 }
 
@@ -511,6 +520,9 @@ void ModuleCanvasViewer::recalcSceneRect(bool alignTopLeft)
 
 void ModuleCanvasViewer::drawConnection(cGate *gate)
 {
+    ASSERT(gate->getOwnerModule() == object || gate->getOwnerModule()->getParentModule() == object);
+    ASSERT(!containsKey(connectionGraphicsItems, gate));
+
     auto item = new ConnectionItem(submoduleLayer);
     item->setLine(getConnectionLine(gate));
     ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
@@ -520,19 +532,26 @@ void ModuleCanvasViewer::drawConnection(cGate *gate)
 
 QPointF ModuleCanvasViewer::getSubmodCoords(cModule *mod)
 {
+    ASSERT(mod->getParentModule() == object);
     return getQtenv()->getModuleLayouter()->getModulePosition(mod, zoomFactor);
 }
 
 QRectF ModuleCanvasViewer::getSubmodRect(cModule *mod)
 {
-    if (submoduleGraphicsItems.count(mod) == 0) {
-        return compoundModuleItem->getArea();
-    }
+    // This should not be enforced, as we should handle invalid connections
+    // (like one between a sibling of a module and one of its submodules) gracefully.
+    // ASSERT(mod->getParentModule() == object);
+
+    if (submoduleGraphicsItems.count(mod) == 0)
+        return compoundModuleItem->boundingRect();
+
     return getQtenv()->getModuleLayouter()->getModuleRectangle(mod, zoomFactor, imageSizeFactor);
 }
 
 QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
 {
+    ASSERT(gate->getOwnerModule() == object || gate->getOwnerModule()->getParentModule() == object);
+
     cGate *nextGate = gate ? gate->getNextGate() : nullptr;
     if (!nextGate)
         return QLineF();
@@ -644,8 +663,17 @@ void ModuleCanvasViewer::clear()
     backgroundLayer->clear();
     submoduleLayer->clear();
     bubbleLayer->clear();
+
     submoduleGraphicsItems.clear();
     connectionGraphicsItems.clear();
+    compoundModuleItem = nullptr;
+
+    compoundModuleChanged = false;
+    changedSubmodules.clear();
+    changedConnections.clear();
+
+    needsRedraw = false;
+    notDrawn = false;
 }
 
 void ModuleCanvasViewer::refreshLayout()
@@ -655,14 +683,15 @@ void ModuleCanvasViewer::refreshLayout()
 
 void ModuleCanvasViewer::refreshSubmodule(cModule *submod)
 {
-    if (submoduleGraphicsItems.count(submod)) {
-        auto item = submoduleGraphicsItems[submod];
-        SubmoduleItemUtil::setupFromDisplayString(item, submod);
-        // Do not forget to make the layouter reread the "p" tag if needed
-        // by doing a "forgetPosition" or "refreshLayout(parent)" before this.
-        item->setPos(getSubmodCoords(submod));
-        item->update();
-    }
+    ASSERT(submod->getParentModule() == object);
+    ASSERT(containsKey(submoduleGraphicsItems, submod));
+
+    auto item = submoduleGraphicsItems[submod];
+    SubmoduleItemUtil::setupFromDisplayString(item, submod);
+    // Do not forget to make the layouter reread the "p" tag if needed
+    // by doing a "forgetPosition" or "refreshLayout(parent)" before this.
+    item->setPos(getSubmodCoords(submod));
+    item->update();
 }
 
 void ModuleCanvasViewer::refreshSubmodules()
@@ -670,21 +699,39 @@ void ModuleCanvasViewer::refreshSubmodules()
     if (object)
         for (cModule::SubmoduleIterator it(object); !it.end(); ++it)
             refreshSubmodule(*it);
+    changedSubmodules.clear();
 }
 
 void ModuleCanvasViewer::refreshConnection(cGate *gate)
 {
-    if (connectionGraphicsItems.count(gate)) {
-        ConnectionItem *item = connectionGraphicsItems[gate];
-        ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
-        item->setLine(getConnectionLine(gate));
-    }
+    ASSERT(gate->getOwnerModule() == object || gate->getOwnerModule()->getParentModule() == object);
+    ASSERT(containsKey(connectionGraphicsItems, gate));
+
+    ConnectionItem *item = connectionGraphicsItems[gate];
+    ConnectionItemUtil::setupFromDisplayString(item, gate, showArrowHeads);
+    item->setLine(getConnectionLine(gate));
 }
 
 void ModuleCanvasViewer::refreshConnections(cModule *module)
 {
-    for (cModule::GateIterator it(module); !it.end(); ++it)
+    ASSERT(module == object || module->getParentModule() == object);
+
+    for (cModule::GateIterator it(module); !it.end(); ++it) {
+        cGate *gate = *it;
+        if (gate->getNextGate() == nullptr)
+            continue;
+
+        if (module == object) {
+            if (gate->getType() != cGate::INPUT)
+                continue;
+        }
+        else {
+            if (gate->getType() != cGate::OUTPUT)
+                continue;
+        }
+
         refreshConnection(*it);
+    }
 }
 
 void ModuleCanvasViewer::refreshConnections()
@@ -693,6 +740,7 @@ void ModuleCanvasViewer::refreshConnections()
         refreshConnections(object);
         for (cModule::SubmoduleIterator it(object); !it.end(); ++it)
             refreshConnections(*it);
+        changedConnections.clear();
     }
 }
 
@@ -710,6 +758,8 @@ void ModuleCanvasViewer::redraw()
     redrawFigures();
     refreshSubmodules();
     refreshConnections();
+
+    recalcSceneRect();
 }
 
 void ModuleCanvasViewer::refresh()
@@ -730,15 +780,53 @@ void ModuleCanvasViewer::refresh()
     if (canvas && getQtenv()->getSimulationState() != Qtenv::SIM_ERROR)
         canvas->getRootFigure()->callRefreshDisplay();
 
-    // redraw modules only if really needed
+    // redraw from scratch only if really needed
     if (needsRedraw) {
-        needsRedraw = false;
         redraw();
+        needsRedraw = false;
     }
     else {
         refreshFigures();
-        refreshSubmodules();
+
+        for (auto s : changedSubmodules) {
+            getQtenv()->getModuleLayouter()->refreshPositionFromDS(s);
+            refreshSubmodule(s);
+
+            // have to update all incoming and outgoing connections as well,
+            // the bounding rect of the submodule might have changed
+            for (cModule::GateIterator it(s); !it.end(); ++it) {
+                cGate *gate = *it;
+                if (gate->getType() == cGate::OUTPUT)
+                    changedConnections.insert(gate);
+
+                if (gate->getType() == cGate::INPUT)
+                    changedConnections.insert(gate->getPreviousGate());
+            }
+        }
+
+        // has to be done after the submodules have been positioned, but before connections
+        if (compoundModuleChanged || !changedSubmodules.empty()) {
+            redrawEnclosingModule();
+
+            for (cModule::GateIterator it(object); !it.end(); ++it) {
+                cGate *gate = *it;
+                if (gate->getType() == cGate::INPUT)
+                    changedConnections.insert(gate);
+
+                // connections on OUTPUT gates are not shown, they are "outside"
+            }
+        }
+
+        for (auto g : changedConnections)
+            if (g && g->getNextGate()) // if any gate was unconnected above, we added a nullptr
+                refreshConnection(g);
     }
+
+    compoundModuleChanged = false;
+    changedConnections.clear();
+    changedSubmodules.clear();
+
+    recalcSceneRect();
 }
 
 void ModuleCanvasViewer::setZoomFactor(double zoomFactor)
@@ -754,19 +842,22 @@ void ModuleCanvasViewer::setZoomFactor(double zoomFactor)
         zoomLabel->setFont(getQtenv()->getCanvasFont());
         updateZoomLabelPos();
 
-        clear();
-
         if (!object || notDrawn)
             return;
 
         needsRedraw = false;
 
         refreshLayout();
-        redrawModules();
+        refreshSubmodules();
+        // has to be done after the submodules have been positioned, but before connections
+        redrawEnclosingModule();
         refreshConnections();
+
         refresh();
 
         viewport()->update();
+
+        recalcSceneRect();
     }
 }
 
