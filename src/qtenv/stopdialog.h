@@ -38,7 +38,7 @@ public:
 public slots:
     void onClickStop();
     void onClickUpdate();
-    void stopDialogAutoupdate();
+    void applyAutoupdate();
     void show();
 
 protected:

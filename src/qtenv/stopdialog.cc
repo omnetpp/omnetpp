@@ -29,7 +29,7 @@ StopDialog::StopDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->checkBox->setChecked(getQtenv()->opt->autoupdateInExpress);
 
-    stopDialogAutoupdate();
+    applyAutoupdate();
 }
 
 StopDialog::~StopDialog()
@@ -43,7 +43,7 @@ void StopDialog::onClickStop()
     close();
 }
 
-void StopDialog::stopDialogAutoupdate()
+void StopDialog::applyAutoupdate()
 {
     bool autoUpdate = ui->checkBox->isChecked();
     getQtenv()->opt->autoupdateInExpress = autoUpdate;

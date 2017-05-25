@@ -80,10 +80,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>updateButton</sender>
    <signal>clicked()</signal>
    <receiver>StopDialog</receiver>
-   <slot>stopDialogAutoupdate()</slot>
+   <slot>onClickUpdate()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>57</x>
@@ -96,10 +96,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>updateButton</sender>
-   <signal>clicked()</signal>
+   <sender>checkBox</sender>
+   <signal>stateChanged(int)</signal>
    <receiver>StopDialog</receiver>
-   <slot>onClickUpdate()</slot>
+   <slot>applyAutoupdate()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>90</x>
@@ -114,7 +114,7 @@
  </connections>
  <slots>
   <slot>onClickStop()</slot>
-  <slot>stopDialogAutoupdate()</slot>
+  <slot>applyAutoupdate()</slot>
   <slot>onClickUpdate()</slot>
  </slots>
 </ui>
