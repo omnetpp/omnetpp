@@ -110,7 +110,7 @@ void VectorPlotItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, 
 
         double x = mapFromSimtime(entry.t);
         double y = mapFromValue(entry.value);
-        double nextX, nextY;
+        double nextX = x, nextY = y;
         if (upperLimit == circBuf->items() - 1) {
             CircBuffer::CBEntry& entry = circBuf->entry((pos + 1) % circBuf->size());
             nextX = mapFromSimtime(entry.t);

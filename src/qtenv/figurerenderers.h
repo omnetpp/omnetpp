@@ -116,7 +116,7 @@ public:
     static FigureRenderer *getRendererFor(cFigure *figure);
     static void clearRendererCache();
     virtual QGraphicsItem *render(const FigureRenderingArgs& args);
-    virtual void refresh(const FigureRenderingArgs& args, int8_t what);
+    virtual void refresh(const FigureRenderingArgs& args, uint8_t what);
 };
 
 class AbstractShapeFigureRenderer : public FigureRenderer

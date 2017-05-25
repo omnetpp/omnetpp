@@ -2151,7 +2151,7 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
     QLineEdit *edit = new QLineEdit(defaultValue);
     layout->addWidget(edit);
 
-    QCheckBox *checkBox;
+    QCheckBox *checkBox = nullptr;
     if (checkboxLabel) {
         checkBox = new QCheckBox(checkboxLabel);
         layout->addWidget(checkBox);

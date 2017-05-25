@@ -469,7 +469,7 @@ QGraphicsItem *FigureRenderer::render(const FigureRenderingArgs& args)
     return item;
 }
 
-void FigureRenderer::refresh(const FigureRenderingArgs& args, int8_t what)
+void FigureRenderer::refresh(const FigureRenderingArgs& args, uint8_t what)
 {
     if (!args.item)
         return;
