@@ -91,7 +91,7 @@ samples: $(SAMPLES)
 ui:
 	$(Q)$(MAKE) $(MOPTS) $(MAKEFILE) BUILDING_UILIBS=yes uilibs
 
-uilibs: common layout eventlog scave nedxml $(JNILIBS)
+uilibs: $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgc [nedtool], etc)
 common layout eventlog scave nedxml sim envir cmdenv tkenv qtenv systemc makefiles: utils
@@ -114,7 +114,7 @@ $(BASE):
 #
 # Native libs for the UI
 #
-$(JNILIBS): nedxml scave nedxml scave layout eventlog common
+$(JNILIBS): nedxml scave layout eventlog common
 	@echo ===== Compiling $@ ====
 	$(Q)cd $(OMNETPP_UI_DIR)/$@ && $(MAKE) clean
 	$(Q)cd $(OMNETPP_UI_DIR)/$@ && $(MAKE)
