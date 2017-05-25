@@ -910,6 +910,7 @@ bool Qtenv::doRunSimulation()
         if (untilmodule_reached // run until module or message reached:
                 || (runUntil.eventNumber > 0 && sim->getEventNumber() + 1 >= runUntil.eventNumber)) {
             displayUpdateController->animateUntilNextEvent();
+            callRefreshInspectors();
             break;
         }
 
