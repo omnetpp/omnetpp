@@ -269,7 +269,7 @@ void ModuleInspector::doSetObject(cObject *obj)
         getQtenv()->callRefreshInspectors();
     } else {
         canvasViewer->setZoomFactor(1);
-        if (isToplevel())
+        if (isToplevelInspector())
             setEnabled(false);
     }
 
@@ -362,7 +362,7 @@ QImage ModuleInspector::getScreenshot()
         QPainter p;
         p.begin(&image);
         p.drawImage(osgViewer->mapTo(this, QPoint(0, 0)), osgImage);
-        if (!isToplevelWindow)
+        if (!isToplevelInspector())
             p.drawPixmap(toolbar->mapTo(this, QPoint(0, 0)), toolbar->grab());
         p.end();
     }
@@ -509,15 +509,6 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 
         setPref(PREF_CENTER, center.toPoint());
     }
-}
-
-void ModuleInspector::firstObjectSet(cObject *obj)
-{
-    Inspector::firstObjectSet(obj);
-#ifdef WITH_OSG
-    if (getOsgCanvas())
-        resetOsgView();
-#endif
 }
 
 void ModuleInspector::resetOsgView()

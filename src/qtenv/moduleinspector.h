@@ -131,7 +131,6 @@ protected:
     void wheelEvent(QWheelEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void zoomBy(double mult, bool snaptoone = false, int x = 0, int y = 0);
-    void firstObjectSet(cObject *obj) override;
 
     void renderToPrinter(QPrinter &printer);
 

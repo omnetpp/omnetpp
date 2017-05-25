@@ -106,7 +106,6 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
     factory = f;
     object = nullptr;
     type = f->getInspectorType();
-    isToplevelWindow = isTopLevel;
 
     if (!isTopLevel) {
         auto layout = new QGridLayout(parent);
@@ -118,7 +117,7 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
 
 Inspector::~Inspector()
 {
-    if (isToplevelWindow)
+    if (isToplevelInspector())
         setPref(PREF_GEOM, geometry());
     delete inspectDropdownMenu;
     delete copyDropdownMenu;
@@ -179,33 +178,30 @@ void Inspector::createCopyDropdownMenu()
 
 void Inspector::doSetObject(cObject *obj)
 {
-    if (obj != object) {
-        if (obj && !supportsObject(obj))
-            throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
-        cObject *oldObject = object;
-        object = obj;
-        if (findObjects)
-            findObjects->setData(QVariant::fromValue(object));
-        // create context menus
-        createInspectDropdownMenu();
-        createCopyDropdownMenu();
+    if (obj && !supportsObject(obj))
+        throw cRuntimeError("Inspector %s doesn't support objects of class %s", getClassName(), obj->getClassName());
+    cObject *oldObject = object;
+    object = obj;
+    if (findObjects)
+        findObjects->setData(QVariant::fromValue(object));
+    // create context menus
+    createInspectDropdownMenu();
+    createCopyDropdownMenu();
 
-        // note that doSetObject() is always followed by refresh(), see setObject()
-        emit inspectedObjectChanged(object, oldObject);
-    }
+    // note that doSetObject() is always followed by refresh(), see setObject()
+    emit inspectedObjectChanged(object, oldObject);
 }
 
 void Inspector::showWindow()
 {
-    if (isToplevelWindow) {
-        show();
-        raise();
-    }
+    ASSERT(isToplevelInspector());
+    show();
+    raise();
 }
 
 void Inspector::refresh()
 {
-    if (isToplevelWindow)
+    if (isToplevelInspector())
         refreshTitle();
 
     if (goBackAction)
@@ -277,17 +273,21 @@ void Inspector::objectDeleted(cObject *obj)
 
 void Inspector::setObject(cObject *obj)
 {
-    if (obj != object) {
+    if (isNew) {
+        doSetObject(obj);
+        if (isToplevelInspector()) {
+            loadInitialGeometry();
+            showWindow();
+        }
+        refresh();
+        isNew = false;
+    }
+    else if (obj != object) {
         if (object != nullptr) {
             historyBack.push_back(object);
             historyForward.clear();
         }
         doSetObject(obj);
-        if (obj && isNew) {
-            firstObjectSet(obj);
-            showWindow();
-            isNew = false;
-        }
         refresh();
     }
 }
@@ -298,16 +298,15 @@ void Inspector::removeFromToHistory(cObject *obj)
     remove(historyForward, obj);
 }
 
-void Inspector::firstObjectSet(cObject *obj)
+void Inspector::loadInitialGeometry()
 {
-    if (isToplevelWindow) {
-        auto geom = getPref(PREF_GEOM, QRect()).toRect();
+    ASSERT(isToplevelInspector());
 
-        adjustSize();
-        if (!geom.isNull()) {
-            setGeometry(geom);
-        }
-    }
+    adjustSize();
+
+    auto geom = getPref(PREF_GEOM, QRect()).toRect();
+    if (!geom.isNull())
+        setGeometry(geom);
 }
 
 QSize Inspector::sizeHint() const
@@ -379,7 +378,7 @@ void Inspector::goUpInto()  // XXX weird name
 
 void Inspector::closeEvent(QCloseEvent *)
 {
-    if (isToplevelWindow)
+    if (isToplevelInspector())
         setPref(PREF_GEOM, geometry());
 
     getQtenv()->deleteInspector(this);

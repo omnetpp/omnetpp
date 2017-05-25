@@ -316,7 +316,7 @@ void Qtenv::storeInspectors(bool closeThem)
 
     int index = 0;  // no particular meaning, just a unique identifier
     for (Inspector *insp : inspectors) {
-        if (insp->isToplevel()) {
+        if (insp->isToplevelInspector()) {
             cObject *obj = insp->getObject();
 
             if (!obj)
@@ -1210,7 +1210,8 @@ Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
     // first, try finding and displaying existing inspector
     Inspector *inspector = findFirstInspector(obj, type, ignoreEmbedded);
     if (inspector) {
-        inspector->showWindow();
+        if (inspector->isToplevelInspector())
+            inspector->showWindow();
         return inspector;
     }
 
@@ -1223,7 +1224,8 @@ Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
     InspectorType actualType = factory->getInspectorType();
     inspector = findFirstInspector(obj, actualType, ignoreEmbedded);
     if (inspector) {
-        inspector->showWindow();
+        if (inspector->isToplevelInspector())
+            inspector->showWindow();
         return inspector;
     }
 
@@ -1264,7 +1266,7 @@ Inspector *Qtenv::findFirstInspector(cObject *obj, InspectorType type, bool igno
 {
     for (InspectorList::iterator it = inspectors.begin(); it != inspectors.end(); ++it) {
         Inspector *insp = *it;
-        if (insp->getObject() == obj && insp->getType() == type && (!ignoreEmbedded || insp->isToplevel()))
+        if (insp->getObject() == obj && insp->getType() == type && (!ignoreEmbedded || insp->isToplevelInspector()))
             return insp;
     }
     return nullptr;

@@ -55,7 +55,6 @@ class QTENV_API Inspector : public QWidget
       InspectorFactory *factory; // meta-object that describes this inspector class
       cObject *object;        // the inspected object or nullptr if inspector is empty
       InspectorType type;
-      bool isToplevelWindow;  // if so: has window title, has infobar, and destructor should destroy window
       std::vector<cObject*> historyBack;
       std::vector<cObject*> historyForward;
       QAction *goBackAction = nullptr;
@@ -76,8 +75,8 @@ class QTENV_API Inspector : public QWidget
 
       virtual void doSetObject(cObject *obj);
       virtual void removeFromToHistory(cObject *obj);
-      // override this to perform any initialization after the first setObject()
-      virtual void firstObjectSet(cObject *obj);
+
+      virtual void loadInitialGeometry();
 
       QSize sizeHint() const override;
       void closeEvent(QCloseEvent *) override;
@@ -112,7 +111,7 @@ class QTENV_API Inspector : public QWidget
       virtual bool supportsObject(cObject *object) const;
 
       virtual InspectorType getType() const {return type;}
-      virtual bool isToplevel() const {return isToplevelWindow;}
+      virtual bool isToplevelInspector() const {return isWindow();}
 
       virtual cObject *getObject() const {return object;}
       virtual bool canGoForward();
