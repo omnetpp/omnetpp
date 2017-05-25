@@ -47,6 +47,10 @@ class QTENV_API GenericObjectTreeModel : public QAbstractItemModel
     QSet<QString> getExpandedNodesIn(QTreeView *view, const QModelIndex &index);
     void expandNodesIn(QTreeView *view, const QSet<QString> &ids, const QModelIndex &index);
 
+    QModelIndexList getVisibleNodesIn(QTreeView *view);
+
+    bool gatherMissingDataIn(QTreeView *view);
+
 public:
     // enum class so we can typedef it in TreeNode and the Inspector
     enum class Mode {
@@ -68,11 +72,27 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
+    QString getSelectedNodeIn(QTreeView *view);
+    void selectNodeIn(QTreeView *view, const QString& identifier);
+
     QSet<QString> getExpandedNodesIn(QTreeView *view);
     void expandNodesIn(QTreeView *view, const QSet<QString> &ids);
 
-    cObject *getCObjectPointer(QModelIndex index);
+    bool canFetchMore(const QModelIndex &parent) const override;
+    void fetchMore(const QModelIndex &parent) override;
+
+    bool gatherMissingDataIfSafeIn(QTreeView *view);
+    bool updateDataIn(QTreeView *view);
+
+    void refreshTreeStructure();
+    void refreshNodeChildrenRec(const QModelIndex &index);
+    void refreshChildList(const QModelIndex &index);
+
+    cObject *getCObjectPointer(const QModelIndex &index);
     ~GenericObjectTreeModel();
+
+signals:
+    void dataEdited(const QModelIndex& index) ;
 };
 
 } // namespace qtenv

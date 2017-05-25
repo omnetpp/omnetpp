@@ -25,6 +25,7 @@
 #include "loginspector.h"
 #include "genericobjectinspector.h"
 #include "genericobjecttreemodel.h"
+#include "displayupdatecontroller.h"
 #include "inspectorutil.h"
 #include "envir/objectprinter.h"
 #include "envir/visitor.h"
@@ -69,6 +70,8 @@ class HighlighterItemDelegate : public QStyledItemDelegate
     virtual void paint(QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex& index) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void destroyEditor(QWidget *editor, const QModelIndex &index) const;
 };
 
 //---- GenericObjectInspector implementation ----
@@ -106,7 +109,16 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
         toolbar->addWidget(spacer);
     }
 
-    addModeActions(toolbar);
+    // mode selection
+    toGroupedModeAction = toolbar->addAction(QIcon(":/tools/treemode_grouped"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
+    toGroupedModeAction->setCheckable(true);
+    toFlatModeAction = toolbar->addAction(QIcon(":/tools/treemode_flat"), "Switch to flat mode", this, SLOT(toFlatMode()));
+    toFlatModeAction->setCheckable(true);
+    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Switch to children mode", this, SLOT(toChildrenMode()));
+    toChildrenModeAction->setCheckable(true);
+    toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/treemode_inher"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
+    toInheritanceModeAction->setCheckable(true);
+
     toolbar->addSeparator();
 
     if (isTopLevel) {
@@ -133,10 +145,17 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     parent->setMinimumSize(20, 20);
 
     doSetMode(mode);
+    recreateModel();
 
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
     connect(treeView, SIGNAL(activated(QModelIndex)), this, SLOT(onTreeViewActivated(QModelIndex)));
+
+    // getting the data into any items newly brought into view
+    connect(treeView, SIGNAL(expanded(QModelIndex)), this, SLOT(gatherVisibleDataIfSafe()));
+    connect(treeView, SIGNAL(collapsed(QModelIndex)), this, SLOT(gatherVisibleDataIfSafe()));
+    connect(treeView->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(gatherVisibleDataIfSafe()));
+    connect(treeView->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(gatherVisibleDataIfSafe()));
 }
 
 GenericObjectInspector::~GenericObjectInspector()
@@ -144,24 +163,10 @@ GenericObjectInspector::~GenericObjectInspector()
     delete model;
 }
 
-void GenericObjectInspector::addModeActions(QToolBar *toolbar)
-{
-    // mode selection
-    toGroupedModeAction = toolbar->addAction(QIcon(":/tools/treemode_grouped"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
-    toGroupedModeAction->setCheckable(true);
-    toFlatModeAction = toolbar->addAction(QIcon(":/tools/treemode_flat"), "Switch to flat mode", this, SLOT(toFlatMode()));
-    toFlatModeAction->setCheckable(true);
-    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Switch to children mode", this, SLOT(toChildrenMode()));
-    toChildrenModeAction->setCheckable(true);
-    toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/treemode_inher"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
-    toInheritanceModeAction->setCheckable(true);
-}
-
 void GenericObjectInspector::recreateModel()
 {
     GenericObjectTreeModel *newModel = new GenericObjectTreeModel(object, mode, this);
     treeView->setModel(newModel);
-    treeView->reset();
 
     // expanding the top level item
     treeView->expand(newModel->index(0, 0, QModelIndex()));
@@ -169,7 +174,9 @@ void GenericObjectInspector::recreateModel()
     delete model;
     model = newModel;
 
-    connect(model, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(onDataChanged()));
+    gatherVisibleDataIfSafe();
+
+    connect(model, SIGNAL(dataEdited(const QModelIndex&)), this, SLOT(onDataEdited()));
 }
 
 void GenericObjectInspector::doSetMode(Mode mode)
@@ -183,8 +190,6 @@ void GenericObjectInspector::doSetMode(Mode mode)
     toFlatModeAction->setChecked(mode == Mode::FLAT);
     toChildrenModeAction->setChecked(mode == Mode::CHILDREN);
     toInheritanceModeAction->setChecked(mode == Mode::INHERITANCE);
-
-    recreateModel();
 }
 
 void GenericObjectInspector::mousePressEvent(QMouseEvent *event)
@@ -196,13 +201,19 @@ void GenericObjectInspector::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void GenericObjectInspector::resizeEvent(QResizeEvent *event)
+{
+    Inspector::resizeEvent(event);
+    gatherVisibleDataIfSafe();
+}
+
 void GenericObjectInspector::closeEvent(QCloseEvent *event)
 {
     Inspector::closeEvent(event);
     setPref(PREF_MODE, (int)mode);
 }
 
-void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
+void GenericObjectInspector::onTreeViewActivated(const QModelIndex &index)
 {
     auto object = model->getCObjectPointer(index);
     if (!object)
@@ -221,10 +232,20 @@ void GenericObjectInspector::onTreeViewActivated(QModelIndex index)
         setObject(object);
 }
 
-void GenericObjectInspector::onDataChanged()
+void GenericObjectInspector::onDataEdited()
 {
     getQtenv()->callRefreshDisplaySafe();
     getQtenv()->callRefreshInspectors();
+}
+
+void GenericObjectInspector::gatherVisibleDataIfSafe()
+{
+    bool changed = model->gatherMissingDataIfSafeIn(treeView);
+    if (changed) {
+        // because properly doing it is super slow
+        treeView->dataChanged(QModelIndex(), QModelIndex());
+        treeView->resizeColumnToContents(0); // and this is needed because of it
+    }
 }
 
 void GenericObjectInspector::createContextMenu(QPoint pos)
@@ -241,8 +262,10 @@ void GenericObjectInspector::createContextMenu(QPoint pos)
 
 void GenericObjectInspector::setMode(Mode mode)
 {
-    if (this->mode != mode)
+    if (this->mode != mode) {
         doSetMode(mode);
+        recreateModel();
+    }
 }
 
 void GenericObjectInspector::doSetObject(cObject *obj)
@@ -250,17 +273,18 @@ void GenericObjectInspector::doSetObject(cObject *obj)
     Inspector::doSetObject(obj);
 
     if (!obj) {
-        // will recreate the model for the new object
         doSetMode((Mode)getPref(PREF_MODE, (int)Mode::GROUPED).toInt());
+        recreateModel();
         return;
     }
 
     QSet<QString> expanded = model->getExpandedNodesIn(treeView);
 
-    auto defaultMode = contains(containerTypes, std::string(getObjectBaseClass(obj))) ? Mode::CHILDREN : Mode::GROUPED;
+    bool isContainerLike = contains(containerTypes, std::string(getObjectBaseClass(obj)));
+    auto defaultMode = isContainerLike ? Mode::CHILDREN : Mode::GROUPED;
 
-    // will recreate the model for the new object
     doSetMode((Mode)getPref(PREF_MODE, (int)defaultMode).toInt());
+    recreateModel();
 
     model->expandNodesIn(treeView, expanded);
 }
@@ -268,7 +292,22 @@ void GenericObjectInspector::doSetObject(cObject *obj)
 void GenericObjectInspector::refresh()
 {
     Inspector::refresh();
-    doSetObject(object);
+    if (object) {
+        QString selected = model->getSelectedNodeIn(treeView);
+
+        QSet<QString> expanded = model->getExpandedNodesIn(treeView);
+        model->refreshTreeStructure();
+
+        model->expandNodesIn(treeView, expanded);
+        if (!selected.isEmpty())
+            model->selectNodeIn(treeView, selected);
+
+        model->updateDataIn(treeView);
+
+        // this is a hack, proper item-wise datachanged is super slow
+        treeView->dataChanged(QModelIndex(), QModelIndex());
+        treeView->resizeColumnToContents(0);
+    }
 }
 
 //---- HighlighterItemDelegate implementation ----
@@ -383,6 +422,17 @@ void HighlighterItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *
     }
 }
 
+QWidget *HighlighterItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    getQtenv()->getDisplayUpdateController()->pause();
+    return QStyledItemDelegate::createEditor(parent, option, index);
+}
+
+void HighlighterItemDelegate::destroyEditor(QWidget *editor, const QModelIndex& index) const
+{
+    getQtenv()->getDisplayUpdateController()->resume();
+    QStyledItemDelegate::destroyEditor(editor, index);
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
-

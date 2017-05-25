@@ -45,9 +45,10 @@ protected:
     QTreeView *treeView;
     GenericObjectTreeModel *model = nullptr;
 
-    void mousePressEvent(QMouseEvent *) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
-    void addModeActions(QToolBar *toolbar);
+
     void recreateModel();
 
     Mode mode = Mode::GROUPED;
@@ -59,8 +60,9 @@ protected:
     void doSetMode(Mode mode);
 
 protected slots:
-    void onTreeViewActivated(QModelIndex index);
-    void onDataChanged();
+    void onTreeViewActivated(const QModelIndex& index);
+    void onDataEdited();
+    void gatherVisibleDataIfSafe();
     void createContextMenu(QPoint pos);
 
     void setMode(Mode mode);
