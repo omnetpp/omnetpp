@@ -66,7 +66,7 @@ public class LabeledIcon extends Figure implements PositionConstants {
         revalidate();
         repaint();
     }
-    
+
     /**
      * Returns the text of the label.
      */
@@ -122,4 +122,8 @@ public class LabeledIcon extends Figure implements PositionConstants {
         graphics.translate(-figureBounds.x, -figureBounds.y);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "('" + getText() + "')";
+    }
 }

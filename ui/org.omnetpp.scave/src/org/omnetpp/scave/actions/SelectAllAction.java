@@ -87,6 +87,9 @@ public class SelectAllAction extends AbstractScaveAction {
                 }
             }
         }
+        else if (activePage == scaveEditor.getChartsPage()) {
+            scaveEditor.getChartsPage().getViewer().selectAll();
+        }
     }
 
     protected boolean confirm(Shell shell, String controlName) {

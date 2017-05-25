@@ -8,6 +8,7 @@
 package org.omnetpp.common.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,7 @@ import org.omnetpp.common.color.ColorFactory;
  */
 //TODO use SWT.MOD1 instead of SWT.CTRL? (Mac!)
 //TODO keyboard: proper up/down, pngup/pgdn
+//TODO fix shift+cursor keys
 public class IconGridViewer extends ContentViewer {
     // configuration
     private static final int DEFAULT_MARGIN = 20;
@@ -168,6 +170,8 @@ public class IconGridViewer extends ContentViewer {
         public void run() {
             if (canvas.isDisposed() || Display.getCurrent().getFocusControl() != canvas)
                 return;
+            if (wasDragDrop)
+                return;
             if (elementToRename != null && selectedElements.size() == 1 && selectedElements.get(0) == elementToRename) {
                 startDirectRename(elementToRename);
                 elementToRename = null;
@@ -181,7 +185,7 @@ public class IconGridViewer extends ContentViewer {
 
             // start drag selection
             if (dragSelectionRectangle == null && !selectionContainsPoint(mouseDownPos))
-                startDrag();
+                startDragRectangle();
 
             // update the drag selection rectangle
             if (dragSelectionRectangle != null) {
@@ -213,8 +217,9 @@ public class IconGridViewer extends ContentViewer {
 
             mouseButton = 0;
             if (dragSelectionRectangle != null)
-                clearDrag();
+                clearDragRectangle();
         }
+
 
         @Override
         public void mouseDoubleClick(MouseEvent e) {
@@ -225,8 +230,13 @@ public class IconGridViewer extends ContentViewer {
                 fireDoubleClick(new DoubleClickEvent(IconGridViewer.this, getSelection()));
         }
 
-        public void dragInProgress() {
+        public void dragDropInProgress() {
             wasDragDrop = true;
+            Display.getCurrent().timerExec(-1, this); // cancel pending direct rename
+        }
+
+        public void dragDropFinished() {
+            mouseButton = 0;  // somehow we don't receive the MouseUp event then
         }
 
         @Override
@@ -234,14 +244,14 @@ public class IconGridViewer extends ContentViewer {
             // emulate mouseUp
             mouseButton = 0;
             if (dragSelectionRectangle != null)
-                clearDrag();
+                clearDragRectangle();
         }
 
         @Override
         public void focusGained(FocusEvent arg0) {
         }
 
-        protected void startDrag() {
+        protected void startDragRectangle() {
             dragSelectionRectangle = new RectangleFigure();
             dragSelectionRectangle.setAlpha(80);
             dragSelectionRectangle.setFill(true);
@@ -250,7 +260,7 @@ public class IconGridViewer extends ContentViewer {
             feedbackLayer.add(dragSelectionRectangle);
         }
 
-        protected void clearDrag() {
+        public void clearDragRectangle() {
             if (dragSelectionRectangle != null) {
                 feedbackLayer.remove(dragSelectionRectangle);
                 dragSelectionRectangle = null;
@@ -340,6 +350,8 @@ public class IconGridViewer extends ContentViewer {
                     movePageUp(ctrl || shift);
                 else if (ke.keyCode == '\r')
                     fireDoubleClick(new DoubleClickEvent(IconGridViewer.this, getSelection()));
+                else if (ke.keyCode == SWT.ESC)
+                    mouseHandler.clearDragRectangle();
                 else if (ke.keyCode == SWT.F2)
                     startDirectRename(focusElement);
                 else if (ke.keyCode == ' ') {
@@ -368,7 +380,7 @@ public class IconGridViewer extends ContentViewer {
                 if (element == null)
                     event.doit = false;
                 else
-                    mouseHandler.dragInProgress();
+                    mouseHandler.dragDropInProgress();
 
             }
             @Override
@@ -394,6 +406,7 @@ public class IconGridViewer extends ContentViewer {
 
             @Override
             public void drop(DropTargetEvent event) {
+                mouseHandler.dragDropFinished();
                 org.eclipse.swt.graphics.Point p = getCanvas().toControl(event.x, event.y);
                 Object[] elements = getSelection().toArray(); //((IStructuredSelection)event.data).toArray();
                 fireDrop(elements, p);
@@ -547,7 +560,6 @@ public class IconGridViewer extends ContentViewer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void setSelection(ISelection selection, boolean reveal) {
         IStructuredSelection structuredSelection = (IStructuredSelection) selection;
         if (!structuredSelection.toList().equals(selectedElements)) {
@@ -555,6 +567,8 @@ public class IconGridViewer extends ContentViewer {
             for (Object element : structuredSelection.toList())
                 if (ArrayUtils.contains(elements, element)) // add only those that are part of the viewer's content
                     selectedElements.add(element);
+            if (!selectedElements.isEmpty())
+                focusElement = selectedElements.get(0);
             setSelectionToWidget();
             fireSelectionChanged();
         }
@@ -779,37 +793,64 @@ public class IconGridViewer extends ContentViewer {
         moveBy(1, extendSelection);
     }
 
-    protected int getItemsPerRow() {
-        int width = canvas.getSize().x;
-        return (width - 2*DEFAULT_MARGIN) / 100; //FIXME
+    protected IFigure[][] getRows() {
+        @SuppressWarnings("unchecked")
+        List<IFigure> children = contentLayer.getChildren();
+        List<IFigure[]> rows = new ArrayList<>();
+        List<IFigure> currentRow = null;
+        int currentRowY = Integer.MIN_VALUE;
+        for (IFigure f : children) {
+            if (f instanceof LabeledIcon) {
+                if (f.getBounds().y != currentRowY) {
+                    if (currentRow != null)
+                        rows.add(currentRow.toArray(new IFigure[0]));
+                    currentRow = new ArrayList<IFigure>();
+                    currentRowY = f.getBounds().y;
+                }
+                currentRow.add(f);
+            }
+        }
+        if (currentRow != null)
+            rows.add(currentRow.toArray(new IFigure[0])); // last line
+        return rows.toArray(new IFigure[0][]);
+    }
+
+    protected int[] getFigureRowCol(IFigure f, IFigure[][] rows) {
+        for (int row = 0; row < rows.length; row++)
+            for (int col = 0; col < rows[row].length; col++)
+                if (rows[row][col] == f)
+                    return new int[] {row,col};
+        return null;
+    }
+
+    protected void moveByLine(int d, boolean extendSelection) {
+        ensureFocusElement();
+        if (focusElement == null)
+            return;
+        IFigure[][] rows = getRows();
+        IFigure focusElementFigure = elementsToFigures.get(focusElement);
+        int[] rowCol = getFigureRowCol(focusElementFigure, rows);
+        int row = rowCol[0], col = rowCol[1];
+        row = Math.min(Math.max(row + d, 0), rows.length-1);
+        col = Math.min(col, rows[row].length-1);
+        Object target = getElementFromFigure(rows[row][col]);
+        moveTo(target, extendSelection);
     }
 
     protected void moveUp(boolean extendSelection) {
-        moveBy(-1*getItemsPerRow(), extendSelection);
+        moveByLine(-1, extendSelection);
     }
 
     protected void moveDown(boolean extendSelection) {
-        moveBy(getItemsPerRow(), extendSelection);
+        moveByLine(1, extendSelection);
     }
 
     protected void movePageUp(boolean extendSelection) {
-        ensureFocusElement();
-        if (focusElement == null)
-            return;
-        int pos = ArrayUtils.indexOf(elements, focusElement);
-        int numRowsToJump = 5; //TODO
-        int newPos = pos - getItemsPerRow() * numRowsToJump;
-        moveTo(elements[Math.max(0, newPos)], extendSelection);
+        moveByLine(-4, extendSelection); //TODO
     }
 
     protected void movePageDown(boolean extendSelection) {
-        ensureFocusElement();
-        if (focusElement == null)
-            return;
-        int pos = ArrayUtils.indexOf(elements, focusElement);
-        int numRowsToJump = 5; //TODO
-        int newPos = pos + getItemsPerRow() * numRowsToJump;
-        moveTo(elements[Math.min(elements.length-1, newPos)], extendSelection);
+        moveByLine(4, extendSelection); //TODO
     }
 
     protected void moveHome(boolean extendSelection) {
@@ -821,18 +862,6 @@ public class IconGridViewer extends ContentViewer {
         if (elements.length > 0)
             moveTo(elements[elements.length-1], extendSelection);
     }
-
-//TODO
-//    class Row {
-//        int y;
-//        List<IFigure> figures;
-//    }
-//
-//    protected void findRows() {
-//        int y = -1;
-//        List<Integer> rows
-//        for (IFigure f : )
-//    }
 
     protected void selectByRectangle(Rectangle rectangle, boolean extendSelection) {
         if (!extendSelection)
@@ -863,6 +892,15 @@ public class IconGridViewer extends ContentViewer {
             focusElement = element;
             selectedElements.clear();
             selectedElements.add(element);
+            setSelectionToWidget();
+            fireSelectionChanged();
+        }
+    }
+
+    public void selectAll() {
+        if (selectedElements.size() != elements.length) {
+            selectedElements.clear();
+            selectedElements.addAll(Arrays.asList(elements));
             setSelectionToWidget();
             fireSelectionChanged();
         }
