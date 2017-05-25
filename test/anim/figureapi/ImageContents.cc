@@ -61,7 +61,7 @@ std::string ImageContents::onTick(int tick)
 {
     int step = tick % 4;
 
-    const char *imageNames[step] = {
+    const char *imageNames[] = {
         "abstract/penguin",
         "status/green",
         "misc/globe",
