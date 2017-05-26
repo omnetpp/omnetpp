@@ -123,11 +123,10 @@ public class MetaMakemake {
                     MakemakeOptions refOptions = refBuildSpec.getMakemakeOptions(refMakemakeFolder);
                     if (refOptions!=null && (refOptions.type==Type.SHAREDLIB || refOptions.type==Type.STATICLIB) && refOptions.metaExportLibrary) {
                         String libname = StringUtils.defaultIfEmpty(refOptions.target, refMakemakeFolder.getProject().getName());
-                        String outdir = StringUtils.defaultIfEmpty(refOptions.outRoot, "out");
-                        String libdir = refMakemakeFolder.getProject().getLocation().append(outdir).append("$(CONFIGNAME)").append(refMakemakeFolder.getProjectRelativePath()).toString();
+                        String libdir = refMakemakeFolder.getProject().getLocation().append(refMakemakeFolder.getProjectRelativePath()).toString();
                         translatedOptions.libDirs.add(libdir);
                         if (options.metaUseExportedLibs) {
-                            translatedOptions.libs.add(libname);
+                            translatedOptions.libs.add(libname+"$(D)");
                             if (refOptions.type==Type.SHAREDLIB && !StringUtils.isEmpty(refOptions.dllSymbol))
                                 translatedOptions.defines.add(refOptions.dllSymbol + "_IMPORT");
                         }

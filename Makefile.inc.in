@@ -60,14 +60,14 @@ endif
 #
 # Configure MODE specific flags/suffixes
 #
-ifeq ($(MODE),release)
+ifeq ($(MODE),debug)
+  CFLAGS=$(CFLAGS_DEBUG)
+  D=_dbg
+else
+  # by default assume release mode
+  MODE=release
   CFLAGS=$(CFLAGS_RELEASE)
   D=
-else
-  # by default assume debug mode
-  MODE=debug
-  CFLAGS=$(CFLAGS_DEBUG)
-  D=d
 endif
 
 # use statically built omnetpp if we are building the IDE native helper library

@@ -119,7 +119,7 @@ public class OmnetppDirs {
      * checks if there exist a unix styled compiled lib under the lib
      */
     public static boolean isOppsimUnixStyleLibraryPresent(boolean debug) {
-        String libFileName = getOmnetppLibDir() + "/liboppsim" + (debug ? "d" : "");
+        String libFileName = getOmnetppLibDir() + "/liboppsim" + (debug ? "_dbg" : "");
         String extension1, extension2;
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
             // on windows we do not test for dynamic libs (as they are in the bin directory)

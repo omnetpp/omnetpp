@@ -1091,7 +1091,8 @@ sub template()
 
 ### Some definitions first; note that we only print them if there're going to be needed
 {~nolink:}# Name of target to be created (-o option)
-{~nolink:}TARGET = {targetprefix}{target}{targetsuffix}
+{~nolink:}TARGET = {targetprefix}{target}$(D){targetsuffix}
+{~nolink:}TARGET_DIR = .
 {~nolink:}
 {exe:}# User interface (uncomment one) (-u option)
 {exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LIBS)
@@ -1188,12 +1189,17 @@ endif
 #------------------------------------------------------------------------------
 
 # Main target
-{~nolink:}all: $O/$(TARGET)
-{~nolink:}	$(Q)$(LN) $O/$(TARGET) .
+{~nolink:}all: $(TARGET_DIR)/$(TARGET)
 {~nolink:}
-### Rules for $TARGET. Note that end product will be softlinked into the
-### Makefile's directory; on systems that don't support soft links it will
-### be copied. Note that MinGW's "ln -s" also actually copies the file.
+### Rules for $TARGET. Note that end product will be hardlinked into the
+### TARGET_DIR (by default, the Makefile's directory); on systems that don't
+### support soft links it will be copied.
+
+### Copy binaries to their final destination from the out directory
+$(TARGET_DIR)/% : $O/%
+	@mkdir -p $(TARGET_DIR)
+	$(Q)cp -l -f $< $@
+
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {exe:}	@$(MKPATH) $O
 {exe:}	@echo Creating executable: $@
@@ -1262,7 +1268,7 @@ smheaders: {sourcedirs?$(SMFILES:.sm=_sm.h)}
 clean:
 	$(qecho) Cleaning...
 	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
-	$(Q)-rm -f $(TARGET)
+	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
 	$(Q)-rm -f $(call opp_rwildcard, . , *_m.{cc} *_m.h *_sm.{cc} *_sm.h)
 {@i:submakedirs}	-$(Q)cd {i} && $(MAKE) clean
 {/@}
