@@ -1,3 +1,20 @@
+2017-05-18  Rudolf Hornig
+
+	* Updated makefiles to speed up the build process (eliminited superfluous
+    file copying when everything was up to date.)
+
+	* Makefiles now correctly check all dependencies and return
+	immeiately if the build is up to date.
+
+	* Generated source files are created only once when parallel
+	build is used. Previously the same file was unnecessarily
+	generated several times.
+
+	* Makefiles in samples folder are re-created only if they are missing.
+
+	* The 'samples' folder is now optional and can be deleted if it's
+	not needed.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------
