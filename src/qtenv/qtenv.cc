@@ -1357,8 +1357,14 @@ std::string Qtenv::getWindowTitle()
     int runNumber = getConfigEx()->getActiveRunNumber();
     const char *inifile = getConfigEx()->getFileName();
 
+#ifdef NDEBUG
+    bool ndebug = true;
+#else
+    bool ndebug = false;
+#endif
+
     std::stringstream os;
-    os << OMNETPP_PRODUCT "/Qtenv - " << getWindowTitlePrefix();
+    os << OMNETPP_PRODUCT "/Qtenv (" << (ndebug ? "release" : "debug") << ") - " << getWindowTitlePrefix();
     if (opp_isempty(configName))
         os << "No network";
     else
