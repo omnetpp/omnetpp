@@ -8,7 +8,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * A copy of JFace's TextContentAdapter, adapted for StyledText widgets.
+ * Implementation of <code>IControlContentAdapterEx</code> for StyledText widgets.
+ * A copy of JFace's TextContentAdapter, adapted for StyledText widgets, and new method added.
  * 
  * @author andras
  */

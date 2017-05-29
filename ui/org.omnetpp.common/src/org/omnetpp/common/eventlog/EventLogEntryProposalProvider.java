@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
+import org.omnetpp.common.contentassist.IContentProposalEx;
 import org.omnetpp.common.util.MatchExpressionContentProposalProvider;
 import org.omnetpp.common.util.MatchExpressionSyntax.Node;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
@@ -45,11 +45,11 @@ import org.omnetpp.eventlog.engine.SimulationEndEntry;
 public class EventLogEntryProposalProvider extends MatchExpressionContentProposalProvider {
     private Class<?> clazz;
 
-    private static Map<Class<?>, ContentProposal> classToDefaultFieldProposalMap = new HashMap<Class<?>, ContentProposal>();
+    private static Map<Class<?>, ContentProposalEx> classToDefaultFieldProposalMap = new HashMap<Class<?>, ContentProposalEx>();
 
     private static Map<String, Class<?>> defaultFieldToClassMap = new HashMap<String, Class<?>>();
 
-    private static Map<Class<?>, ContentProposal[]> classToFieldProposalsMap = new HashMap<Class<?>, ContentProposal[]>();
+    private static Map<Class<?>, ContentProposalEx[]> classToFieldProposalsMap = new HashMap<Class<?>, ContentProposalEx[]>();
 
     static {
         // FIXME: KLUDGE: Java reflection is so lame that we can't enumerate these classes automagically
@@ -81,16 +81,16 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
 
             // default proposal
             String defaultField = eventLogEntry.getAsString();
-            classToDefaultFieldProposalMap.put(clazz, new ContentProposal(defaultField));
+            classToDefaultFieldProposalMap.put(clazz, new ContentProposalEx(defaultField));
             defaultFieldToClassMap.put(defaultField, clazz);
 
             // field proposals
             PStringVector names = eventLogEntry.getAttributeNames();
-            ContentProposal[] fieldProposals = new ContentProposal[(int)names.size()];
+            ContentProposalEx[] fieldProposals = new ContentProposalEx[(int)names.size()];
 
             for (int i = 0; i < names.size(); i++) {
                 String name = names.get(i);
-                fieldProposals[i] = new ContentProposal(name);
+                fieldProposals[i] = new ContentProposalEx(name);
             }
 
             classToFieldProposalsMap.put(clazz, fieldProposals);
@@ -105,7 +105,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
     }
 
     @Override
-    protected void addProposalsForToken(String contents, int position, Token token, List<IContentProposal> proposals) {
+    protected void addProposalsForToken(String contents, int position, Token token, List<IContentProposalEx> proposals) {
         Node parent = token.getParent();
         if (parent != null) {
             int type = parent.getType();
@@ -118,21 +118,21 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
             // action: replace with complete binary operator
             // result: "NOT |"
             if ((type == Node.UNARY_OPERATOR_EXPR && token.isIncomplete())) {
-                collectFilteredProposals(proposals, binaryOperatorProposals, token.getValue(), token.getStartPos(), token.getEndPos(), ContentProposal.DEC_SP_AFTER);
+                collectFilteredProposals(proposals, binaryOperatorProposals, token.getValue(), token.getStartPos(), token.getEndPos(), ContentProposalEx.DEC_SP_AFTER);
             }
             // content: incomplete binary operator
             // example: "A|"
             // action: replace with complete binary operator
             // result: "AND |"
             else if ((type == Node.BINARY_OPERATOR_EXPR && token.isIncomplete())) {
-                collectFilteredProposals(proposals, binaryOperatorProposals, token.getValue(), token.getStartPos(), token.getEndPos(), ContentProposal.DEC_SP_AFTER);
+                collectFilteredProposals(proposals, binaryOperatorProposals, token.getValue(), token.getStartPos(), token.getEndPos(), ContentProposalEx.DEC_SP_AFTER);
             }
             // content: inside binary operator
             // example: "AN|D"
             // action: replace with another binary operator
             // result: "OR|"
             else if (type == Node.BINARY_OPERATOR_EXPR && !atEnd) {
-                collectFilteredProposals(proposals, binaryOperatorProposals, "", token.getStartPos(), token.getEndPos(), ContentProposal.DEC_NONE);
+                collectFilteredProposals(proposals, binaryOperatorProposals, "", token.getStartPos(), token.getEndPos(), ContentProposalEx.DEC_NONE);
             }
 
             // class specific proposals
@@ -153,8 +153,8 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
                         endIndex = startIndex;
                     }
 
-                    collectFilteredProposals(proposals, unaryOperatorProposals, prefix, startIndex, endIndex, ContentProposal.DEC_SP_AFTER);
-                    collectFilteredProposals(proposals, getSubclassDefaultFieldProposals(), prefix, startIndex, endIndex, ContentProposal.DEC_SP_AFTER);
+                    collectFilteredProposals(proposals, unaryOperatorProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_SP_AFTER);
+                    collectFilteredProposals(proposals, getSubclassDefaultFieldProposals(), prefix, startIndex, endIndex, ContentProposalEx.DEC_SP_AFTER);
                 }
                 // content: after default field
                 // example: "BS |"
@@ -163,7 +163,7 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
                 else if (type == Node.PATTERN && atEnd) {
                     startIndex = token.getEndPos() + 1;
                     endIndex = startIndex;
-                    collectFilteredProposals(proposals, binaryOperatorProposals, "", startIndex, endIndex, ContentProposal.DEC_SP_AFTER);
+                    collectFilteredProposals(proposals, binaryOperatorProposals, "", startIndex, endIndex, ContentProposalEx.DEC_SP_AFTER);
                 }
                 // content: after default field followed by AND binary operator
                 // example: "BS AND |"
@@ -173,9 +173,9 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
                     prefix = "";
                     startIndex = token.getEndPos() + 1;
                     endIndex = startIndex;
-                    collectFilteredProposals(proposals, unaryOperatorProposals, prefix, startIndex, endIndex, ContentProposal.DEC_SP_AFTER);
+                    collectFilteredProposals(proposals, unaryOperatorProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_SP_AFTER);
                     Class<?> clazz = defaultFieldToClassMap.get(parent.getLeftOperand().getPatternString());
-                    collectFilteredProposals(proposals, classToFieldProposalsMap.get(clazz), prefix, startIndex, endIndex, ContentProposal.DEC_QUOTE | ContentProposal.DEC_OP | ContentProposal.DEC_CP);
+                    collectFilteredProposals(proposals, classToFieldProposalsMap.get(clazz), prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_OP | ContentProposalEx.DEC_CP);
                 }
             }
             else {
@@ -195,8 +195,8 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
                         endIndex = startIndex;
                     }
 
-                    collectFilteredProposals(proposals, unaryOperatorProposals, prefix, startIndex, endIndex, ContentProposal.DEC_SP_AFTER);
-                    collectFilteredProposals(proposals, classToFieldProposalsMap.get(clazz), prefix, startIndex, endIndex, ContentProposal.DEC_QUOTE | ContentProposal.DEC_OP | ContentProposal.DEC_CP);
+                    collectFilteredProposals(proposals, unaryOperatorProposals, prefix, startIndex, endIndex, ContentProposalEx.DEC_SP_AFTER);
+                    collectFilteredProposals(proposals, classToFieldProposalsMap.get(clazz), prefix, startIndex, endIndex, ContentProposalEx.DEC_QUOTE | ContentProposalEx.DEC_OP | ContentProposalEx.DEC_CP);
                 }
                 // content: after field expression
                 // example: "t(<expression>) |"
@@ -205,17 +205,17 @@ public class EventLogEntryProposalProvider extends MatchExpressionContentProposa
                 else if (type == Node.FIELDPATTERN && atEnd) {
                     startIndex = token.getEndPos() + 1;
                     endIndex = startIndex;
-                    collectFilteredProposals(proposals, binaryOperatorProposals, "", startIndex, endIndex, ContentProposal.DEC_SP_AFTER);
+                    collectFilteredProposals(proposals, binaryOperatorProposals, "", startIndex, endIndex, ContentProposalEx.DEC_SP_AFTER);
                 }
             }
         }
     }
 
-    private ContentProposal[] getSubclassDefaultFieldProposals() {
-        ContentProposal[] result = classToDefaultFieldProposalMap.values().toArray(new ContentProposal[0]);
+    private ContentProposalEx[] getSubclassDefaultFieldProposals() {
+        ContentProposalEx[] result = classToDefaultFieldProposalMap.values().toArray(new ContentProposalEx[0]);
         Arrays.sort(result,
-            new Comparator<ContentProposal>() {
-                public int compare(ContentProposal o1, ContentProposal o2) {
+            new Comparator<ContentProposalEx>() {
+                public int compare(ContentProposalEx o1, ContentProposalEx o2) {
                     return o1.getContent().compareTo(o2.getContent());
                 }
         });

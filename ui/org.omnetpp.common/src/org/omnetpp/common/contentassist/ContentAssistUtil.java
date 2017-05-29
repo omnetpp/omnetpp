@@ -45,8 +45,7 @@ public class ContentAssistUtil {
     /**
      * Setup content assist on a Text.
      *
-     * IMPORTANT: This one assumes that proposals are instances of ContentProposal,
-     * our IContentProposal implementation.
+     * IMPORTANT: This one assumes that proposals are instances of IContentProposalEx.
      */
     public static void configureText(Text text, IContentProposalProvider proposalProvider) {
         FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
@@ -54,7 +53,7 @@ public class ContentAssistUtil {
         decorator.setImage(contentAssistDecoration.getImage());
         decorator.setDescriptionText(contentAssistDecoration.getDescription());
         ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text,
-                new TextContentAdapter2(),
+                new TextContentAdapterEx(),
                 proposalProvider,
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,   /*commandId. "null" works equally well. XXX no binding is found for the default command "org.eclipse.ui.edit.text.contentAssist.proposals", that's why it says "null" in the bubble. how to fix it? */
                 "( ".toCharArray() /*auto-activation*/);
@@ -65,7 +64,7 @@ public class ContentAssistUtil {
         commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
         commandAdapter.addContentProposalListener(new IContentProposalListener() {
             public void proposalAccepted(IContentProposal proposal) {
-                ContentProposal filterProposal = (ContentProposal)proposal;
+                IContentProposalEx filterProposal = (IContentProposalEx)proposal;
                 contentAdapter.replaceControlContents(
                         text,
                         filterProposal.getStartIndex(),
@@ -93,7 +92,7 @@ public class ContentAssistUtil {
         commandAdapter.addContentProposalListener(new IContentProposalListener() {
             @Override
             public void proposalAccepted(IContentProposal proposal) {
-                ContentProposal filterProposal = (ContentProposal)proposal;
+                IContentProposalEx filterProposal = (IContentProposalEx)proposal;
                 final IControlContentAdapterEx contentAdapter = (IControlContentAdapterEx)commandAdapter.getControlContentAdapter();
                 contentAdapter.replaceControlContents(
                         styledText,

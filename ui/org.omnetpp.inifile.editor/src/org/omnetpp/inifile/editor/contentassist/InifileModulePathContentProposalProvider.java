@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -144,7 +144,7 @@ public class InifileModulePathContentProposalProvider extends ContentProposalPro
         for (String text : array) {
             if (!text.endsWith(".") && addEqualSign)
                 text += " = ";
-            proposals.add(new ContentProposal(text, text+label, null, image));
+            proposals.add(new ContentProposalEx(text, text+label, null, image));
         }
     }
 }

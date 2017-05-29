@@ -45,12 +45,12 @@ import org.omnetpp.common.ui.StyledTextUndoRedoManager;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.assist.ScriptContentProposalProvider;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
-import org.omnetpp.scave.editors.datatable.FilterContentProposalProvider;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
@@ -98,7 +98,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     // controls
     private Text nameText;
     private StyledText inputText;
-    private FilterContentProposalProvider inputFieldProposalProvider;
+    private ScriptContentProposalProvider inputFieldProposalProvider;
     protected Group optionsGroup;
     private Button antialiasCheckbox;
     private Button cachingCheckbox;
@@ -221,7 +221,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             inputText = createMultilineTextField("Result filter:", panel);
             ((GridLayout)panel.getLayout()).numColumns = 2;
             new StyledTextUndoRedoManager(inputText);
-            inputFieldProposalProvider = new FilterContentProposalProvider();
+            inputFieldProposalProvider = new ScriptContentProposalProvider();
             ContentAssistUtil.configureStyledText(inputText, inputFieldProposalProvider);
             inputFieldProposalProvider.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
         }

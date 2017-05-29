@@ -13,44 +13,45 @@ import java.util.List;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
+import org.omnetpp.common.contentassist.IContentProposalEx;
 import org.omnetpp.common.util.MatchExpressionSyntax.INodeVisitor;
 import org.omnetpp.common.util.MatchExpressionSyntax.Node;
 import org.omnetpp.common.util.MatchExpressionSyntax.Token;
 
 public abstract class MatchExpressionContentProposalProvider implements IContentProposalProvider {
-    protected static final boolean debug = false;
+    protected static final boolean debug = true;
 
-    protected static ContentProposal noProposal = new ContentProposal("", "No proposal", null);
+    protected static ContentProposalEx noProposal = new ContentProposalEx("", "No proposal", null);
 
-    protected static ContentProposal[] binaryOperatorProposals = new ContentProposal[] {
-        new ContentProposal("OR"),
-        new ContentProposal("AND")
+    protected static ContentProposalEx[] binaryOperatorProposals = new ContentProposalEx[] {
+        new ContentProposalEx("OR"),
+        new ContentProposalEx("AND")
     };
 
-    protected static ContentProposal[] unaryOperatorProposals = new ContentProposal[] {
-        new ContentProposal("NOT")
+    protected static ContentProposalEx[] unaryOperatorProposals = new ContentProposalEx[] {
+        new ContentProposalEx("NOT")
     };
 
-    public IContentProposal[] getProposals(String contents, int position) {
-        List<IContentProposal> proposals = new ArrayList<IContentProposal>();
+    public IContentProposalEx[] getProposals(String contents, int position) {
+        List<IContentProposalEx> proposals = new ArrayList<>();
         Token token = getContainingOrPrecedingToken(contents, position);
 
         System.out.println("MatchExpressionContentProposalProvider.getProposals(): token=" + token);
         if (token != null)
             addProposalsForToken(contents, position, token, proposals);
 
-        if (proposals.isEmpty())
-            proposals.add(noProposal);
+//        if (proposals.isEmpty())
+//            proposals.add(noProposal);
 
         if (debug)
             for (IContentProposal proposal : proposals)
                 Debug.println("Proposal: " + proposal.getContent());
 
-        return proposals.toArray(new IContentProposal[proposals.size()]);
+        return proposals.toArray(new IContentProposalEx[proposals.size()]);
     }
 
-    protected abstract void addProposalsForToken(String contents, int position, Token token, List<IContentProposal> proposals);
+    protected abstract void addProposalsForToken(String contents, int position, Token token, List<IContentProposalEx> proposals);
 
     /**
      * Finds the leaf node (token) in the parse tree that contains the {@code position}
@@ -114,9 +115,9 @@ public abstract class MatchExpressionContentProposalProvider implements IContent
      * @param endIndex the end index of the range to be replaced
      * @param decorators various decoration options
      */
-    protected void collectFilteredProposals(List<IContentProposal> result, ContentProposal[] proposals, String prefix, int startIndex, int endIndex, int decorators) {
+    protected void collectFilteredProposals(List<IContentProposalEx> result, ContentProposalEx[] proposals, String prefix, int startIndex, int endIndex, int decorators) {
         if (proposals != null) {
-            for (ContentProposal proposal : proposals) {
+            for (ContentProposalEx proposal : proposals) {
                 if (proposal.startsWith(prefix)) {
                     proposal.setStartIndex(startIndex);
                     proposal.setEndIndex(endIndex);

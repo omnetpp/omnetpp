@@ -12,9 +12,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Implementation of <code>IControlContentAdapter2</code> for text widgets.
+ * Implementation of <code>IControlContentAdapterEx</code> for text widgets.
  */
-public class TextContentAdapter2 extends TextContentAdapter implements IControlContentAdapterEx {
+public class TextContentAdapterEx extends TextContentAdapter implements IControlContentAdapterEx {
 
     public void replaceControlContents(Control control, int start, int end, String text, int cursorPosition) {
         Text textControl = (Text)control;

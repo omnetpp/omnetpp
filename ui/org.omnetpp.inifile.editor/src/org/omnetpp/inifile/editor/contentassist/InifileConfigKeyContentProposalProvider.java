@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -62,7 +62,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
             for (ConfigOption e : ConfigRegistry.getOptions()) {
                 if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) { // don't propose "extends" in [General]
                     String content = e.getName()+(addEqualSign ? " = " : "");
-                    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc), InifileUtils.ICON_PROPOSAL_GLOBALCONFIG));
+                    result.add(new ContentProposalEx(content, content, getConfigHelpText(e, section, doc), InifileUtils.ICON_PROPOSAL_GLOBALCONFIG));
                 }
             }
         }

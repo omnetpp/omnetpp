@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
@@ -72,7 +72,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
             for (ConfigOption e : ConfigRegistry.getPerObjectOptions()) {
                 if (possibleObjectKinds.contains(e.getObjectKind())) {
                     String content = prefixBase + "." + e.getName() + (addEqualSign ? " = " : "");
-                    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc), getImage(e.getObjectKind())));
+                    result.add(new ContentProposalEx(content, content, getConfigHelpText(e, section, doc), getImage(e.getObjectKind())));
                 }
             }
         }

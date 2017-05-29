@@ -56,7 +56,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.project.ProjectUtils;
@@ -154,9 +154,9 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             if (proposals == null) {
                 proposals = new ArrayList<>();
                 for (ConfigOption option : ConfigRegistry.getOptions())
-                    proposals.add(new ContentProposal("--" + option.getName()+"=", "--" + option.getName()+"=", getDescription(option)));
+                    proposals.add(new ContentProposalEx("--" + option.getName()+"=", "--" + option.getName()+"=", getDescription(option)));
                 for (ConfigOption option : ConfigRegistry.getPerObjectOptions())
-                    proposals.add(new ContentProposal("--" + option.getName()+"=", "--" + option.getName()+"= (*)", getDescription(option)));
+                    proposals.add(new ContentProposalEx("--" + option.getName()+"=", "--" + option.getName()+"= (*)", getDescription(option)));
                 proposals.sort(null);
             }
             return proposals;

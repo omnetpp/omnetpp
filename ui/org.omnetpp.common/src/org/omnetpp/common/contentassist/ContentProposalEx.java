@@ -21,7 +21,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-public class ContentProposal implements IContentProposal, Comparable<Object> {
+public class ContentProposalEx implements IContentProposalEx, Comparable<Object> {
     // decorators
     public static final int DEC_NONE       = 0x00;
     public static final int DEC_OP         = 0x01;
@@ -46,24 +46,24 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
 
     private Image image;
 
-    public ContentProposal(String content) {
+    public ContentProposalEx(String content) {
         this(content, content, null, content.length(), null);
     }
 
-    public ContentProposal(String content, String label) {
+    public ContentProposalEx(String content, String label) {
         this(content, label, null);
         this.cursorPosition = content.length();
     }
 
-    public ContentProposal(String content, String label, String description) {
+    public ContentProposalEx(String content, String label, String description) {
         this(content, label, description, content.length(), null);
     }
 
-    public ContentProposal(String content, String label, String description, Image image) {
+    public ContentProposalEx(String content, String label, String description, Image image) {
         this(content, label, description, content.length(), image);
     }
 
-    public ContentProposal(String content, String label, String description, int cursorPosition, Image image) {
+    public ContentProposalEx(String content, String label, String description, int cursorPosition, Image image) {
         this.content = content;
         this.label = label;
         this.description = description;

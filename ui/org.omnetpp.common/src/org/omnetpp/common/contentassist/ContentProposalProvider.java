@@ -82,8 +82,8 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
                 String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content;
                 int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
                 String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
-                Image image = candidate instanceof ContentProposal ? ((ContentProposal)candidate).getImage() : null;
-                result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition, image));
+                Image image = candidate instanceof ContentProposalEx ? ((ContentProposalEx)candidate).getImage() : null;
+                result.add(new ContentProposalEx(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition, image));
             }
         }
 
@@ -137,10 +137,10 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
         IContentProposal[] p = new IContentProposal[strings.length];
         if (labelSuffix==null)
             for (int i=0; i<p.length; i++)
-                p[i] = new ContentProposal(strings[i], strings[i].trim(), null);
+                p[i] = new ContentProposalEx(strings[i], strings[i].trim(), null);
         else
             for (int i=0; i<p.length; i++)
-                p[i] = new ContentProposal(strings[i], strings[i].trim()+" -- "+labelSuffix, null);
+                p[i] = new ContentProposalEx(strings[i], strings[i].trim()+" -- "+labelSuffix, null);
         return Arrays.asList(p);
     }
 
@@ -151,7 +151,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
         Assert.isTrue(strings.length == labels.length);
         List<IContentProposal> result = new ArrayList<IContentProposal>();
         for (int i=0; i<strings.length; i++)
-            result.add(new ContentProposal(strings[i], labels[i], null));
+            result.add(new ContentProposalEx(strings[i], labels[i], null));
         return result;
     }
 
@@ -161,7 +161,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
     protected static List<IContentProposal> toProposals(Map<String,String> proposalsWithLabels) {
         List<IContentProposal> result = new ArrayList<IContentProposal>();
         for (String proposal : proposalsWithLabels.keySet())
-            result.add(new ContentProposal(proposal, proposalsWithLabels.get(proposal), null));
+            result.add(new ContentProposalEx(proposal, proposalsWithLabels.get(proposal), null));
         return result;
     }
 }

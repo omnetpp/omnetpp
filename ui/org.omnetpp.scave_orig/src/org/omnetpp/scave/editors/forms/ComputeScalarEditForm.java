@@ -49,7 +49,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.ui.HelpLink;
 import org.omnetpp.common.util.Converter;
@@ -432,26 +432,26 @@ public class ComputeScalarEditForm extends BaseScaveObjectEditForm {
             List<IContentProposal> proposals = new ArrayList<IContentProposal>();
 
             for (String variable : getVariablesForField(field)) {
-                ContentProposal proposal = new ContentProposal(variable, variable, null);
+                ContentProposalEx proposal = new ContentProposalEx(variable, variable, null);
                 proposals.add(proposal);
             }
 
             if (field == FIELD_VALUE) {
                 for (String name : statistics) {
                     String content = quoteStatisticsIfNeeded(name);
-                    ContentProposal proposal = new ContentProposal(content, name, null);
+                    ContentProposalEx proposal = new ContentProposalEx(content, name, null);
                     proposals.add(proposal);
                 }
             }
 
             for (String module : moduleHints) {
-                ContentProposal proposal = new ContentProposal(module, module, null);
+                ContentProposalEx proposal = new ContentProposalEx(module, module, null);
                 proposals.add(proposal);
             }
 
             for (String fun : FUNCTION_NAMES) {
-                ContentProposal proposal = new ContentProposal(fun, fun, null);
-                proposal.setDecorators(ContentProposal.DEC_OP | ContentProposal.DEC_CP);
+                ContentProposalEx proposal = new ContentProposalEx(fun, fun, null);
+                proposal.setDecorators(ContentProposalEx.DEC_OP | ContentProposalEx.DEC_CP);
                 proposals.add(proposal);
             }
             return proposals;

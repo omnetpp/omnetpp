@@ -20,7 +20,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.text.templates.Template;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
@@ -154,7 +154,7 @@ s    * before getting presented to the user.
                     INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNedElement();
                     if ((iniFilePackage+".").equals(network.getNedTypeInfo().getNamePrefix())) {
                         String docu = NedCommentFormatter.makeTextDocu(network.getComment());
-                        p1.add(new ContentProposal(network.getName(), network.getName()+" - "+iniFilePackage, docu));
+                        p1.add(new ContentProposalEx(network.getName(), network.getName()+" - "+iniFilePackage, docu));
                     }
                 }
                 sort(p1);
@@ -166,7 +166,7 @@ s    * before getting presented to the user.
                 // TODO make a better presentation ( name - package ) = prefix filtering should be correctly implemented (prefix should match the name ONLY excluding the package)
 //              String namePrefix = StringUtils.removeEnd(network.getNEDTypeInfo().getNamePrefix(),".");
 //              String label = StringUtils.join(network.getName(), " - ", namePrefix);
-                p2.add(new ContentProposal(networkName, networkName, docu));
+                p2.add(new ContentProposalEx(networkName, networkName, docu));
             }
             sort(p2);
             p.addAll(p1);
@@ -302,7 +302,7 @@ s    * before getting presented to the user.
                     for (INedTypeInfo type : types) {
                         String docu = type.getFullyQualifiedName() + "\n\n";
                         docu += StringUtils.nullToEmpty(NedCommentFormatter.makeTextDocu(type.getNedElement().getComment()));
-                        p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
+                        p.add(new ContentProposalEx("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
                     }
                 p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
             }
@@ -324,7 +324,7 @@ s    * before getting presented to the user.
 
         p.addAll(toProposals(analyzer.getIterationVariableNames(section), "Iteration variable"));
         for (String variable : ConfigRegistry.getConfigVariableNames())
-            p.add(new ContentProposal(variable, variable, ConfigRegistry.getConfigVariableDescription(variable)));
+            p.add(new ContentProposalEx(variable, variable, ConfigRegistry.getConfigVariableDescription(variable)));
     }
 
     /**

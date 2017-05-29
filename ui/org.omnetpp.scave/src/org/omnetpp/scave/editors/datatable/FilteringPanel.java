@@ -31,6 +31,7 @@ import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.FilterCombo;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.assist.FilterContentProposalProvider;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterField;
 import org.omnetpp.scave.model2.FilterHints;

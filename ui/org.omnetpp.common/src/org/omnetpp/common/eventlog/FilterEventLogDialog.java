@@ -56,7 +56,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.eventlog.EventLogFilterParameters.EnabledInt;
 import org.omnetpp.common.ui.AbstractEditableList;
 import org.omnetpp.common.ui.EditableCheckboxList;
@@ -1127,7 +1127,7 @@ public class FilterEventLogDialog
         commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
         commandAdapter.addContentProposalListener(new IContentProposalListener() {
             public void proposalAccepted(IContentProposal proposal) {
-                ContentProposal contentProposal = (ContentProposal)proposal;
+                ContentProposalEx contentProposal = (ContentProposalEx)proposal;
                 int start = contentProposal.getStartIndex();
                 int end =contentProposal.getEndIndex();
                 int cursorPosition = contentProposal.getCursorPosition();

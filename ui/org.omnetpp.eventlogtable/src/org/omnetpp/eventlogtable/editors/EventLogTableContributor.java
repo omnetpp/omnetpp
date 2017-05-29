@@ -60,7 +60,7 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
-import org.omnetpp.common.contentassist.ContentProposal;
+import org.omnetpp.common.contentassist.ContentProposalEx;
 import org.omnetpp.common.eventlog.EventLogEntryProposalProvider;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
@@ -944,7 +944,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                                                 commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
                                                 commandAdapter.addContentProposalListener(new IContentProposalListener() {
                                                     public void proposalAccepted(IContentProposal proposal) {
-                                                        ContentProposal contentProposal = (ContentProposal)proposal;
+                                                        ContentProposalEx contentProposal = (ContentProposalEx)proposal;
                                                         int start = contentProposal.getStartIndex();
                                                         int end =contentProposal.getEndIndex();
                                                         int cursorPosition = contentProposal.getCursorPosition();
