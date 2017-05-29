@@ -1,3 +1,9 @@
+2017-05-29  Rudolf Hornig
+
+	* The IDE's native library is now using statically linked c++ standard
+	library to avoid binary dependency on libstdc++. This reduces the possibility
+	of compatibility issues on older systems.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-04-29  Rudolf Hornig
