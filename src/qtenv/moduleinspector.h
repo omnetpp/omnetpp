@@ -147,9 +147,6 @@ public:
     virtual void refresh() override;
     virtual void postRefresh() override;
 
-    // implementations of inspector commands:
-    virtual int getDefaultLayoutSeed();
-
     QImage getScreenshot();
 
     // notifications from envir:

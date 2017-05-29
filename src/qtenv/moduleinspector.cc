@@ -585,16 +585,8 @@ void ModuleInspector::displayStringChanged(cGate *gate)
     canvasViewer->refreshConnection(gate);
 }
 
-int ModuleInspector::getDefaultLayoutSeed()
+void ModuleInspector::redraw()
 {
-    const cDisplayString blank;
-    cModule *parentModule = static_cast<cModule *>(object);
-    const cDisplayString& ds = parentModule && parentModule->hasDisplayString() && parentModule->parametersFinalized() ? parentModule->getDisplayString() : blank;
-    long seed = resolveLongDispStrArg(ds.getTagArg("bgl", 4), parentModule, 1);
-    return seed;
-}
-
-void ModuleInspector::redraw() {
     canvasViewer->redraw();
 }
 
