@@ -152,12 +152,22 @@ void SubmoduleItemUtil::setupFromDisplayString(SubmoduleItem *si, cModule *mod)
         si->addRangeItem(r, rangeOutlineWidth, rangeFillColor, rangeOutlineColor);
     }
 
+    updateQueueSizeLabel(si, mod);
+}
+
+void SubmoduleItemUtil::updateQueueSizeLabel(SubmoduleItem *si, cModule *mod)
+{
+    cDisplayString ds = mod->getDisplayString();
+    std::string buffer;
+    ds = substituteDisplayStringParamRefs(ds, buffer, mod, true);
+
     QString queueText;
     if (ds.containsTag("q"))
         if (cQueue *q = dynamic_cast<cQueue *>(mod->findObject(ds.getTagArg("q", 0))))
             queueText = QString("q: %1").arg(q->getLength());
     si->setQueueText(queueText);
 }
+
 
 void SubmoduleItem::updateNameItem()
 {

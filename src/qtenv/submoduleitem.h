@@ -36,6 +36,7 @@ class SubmoduleItem;
 class QTENV_API SubmoduleItemUtil {
 public:
     static void setupFromDisplayString(SubmoduleItem *si, cModule *mod);
+    static void updateQueueSizeLabel(SubmoduleItem *si, cModule *mod);
 };
 
 

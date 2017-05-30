@@ -66,6 +66,9 @@ private:
 
     // Change flags to remember components with "dirty" DisplayStrings.
     // Used for, and cleared after, selective refresh of network graphics.
+    // Beware that the queue sizes should still be updated on every refresh
+    // because the queues are indirectly referenced from the DisplayString,
+    // and we don't get a notification about changes in their sizes.
     bool compoundModuleChanged = false;
     std::unordered_set<cModule *> changedSubmodules;
     std::unordered_set<cGate *> changedConnections;
@@ -173,6 +176,8 @@ public:
 
     void refreshSubmodule(cModule *submod);
     void refreshSubmodules();
+    void refreshQueueSizes(); // the little q: labels on the corner of the submodules
+
     void refreshConnection(cGate *gate);
     void refreshConnections(cModule *module); // only the ones starting at a gate of module, not the "incoming" ones
     void refreshConnections();

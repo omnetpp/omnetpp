@@ -702,6 +702,12 @@ void ModuleCanvasViewer::refreshSubmodules()
     changedSubmodules.clear();
 }
 
+void ModuleCanvasViewer::refreshQueueSizes()
+{
+    for (auto p : submoduleGraphicsItems)
+        SubmoduleItemUtil::updateQueueSizeLabel(p.second, p.first);
+}
+
 void ModuleCanvasViewer::refreshConnection(cGate *gate)
 {
     ASSERT(gate->getOwnerModule() == object || gate->getOwnerModule()->getParentModule() == object);
@@ -787,6 +793,7 @@ void ModuleCanvasViewer::refresh()
     }
     else {
         refreshFigures();
+        refreshQueueSizes(); // unconditionally on all submodules, because we don't get change notification
 
         for (auto s : changedSubmodules) {
             getQtenv()->getModuleLayouter()->refreshPositionFromDS(s);
@@ -853,11 +860,9 @@ void ModuleCanvasViewer::setZoomFactor(double zoomFactor)
         redrawEnclosingModule();
         refreshConnections();
 
-        refresh();
+        recalcSceneRect();
 
         viewport()->update();
-
-        recalcSceneRect();
     }
 }
 
