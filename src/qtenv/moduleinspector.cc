@@ -148,9 +148,7 @@ void ModuleInspector::createViews(bool isTopLevel)
     connect(canvasViewer, SIGNAL(marqueeZoom(QRectF)), this, SLOT(onMarqueeZoom(QRectF)));
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
-    toolbar = createToolbar(isTopLevel);
     stackedLayout = new QStackedLayout();
-
     stackedLayout->addWidget(canvasViewer);
 
 #ifdef WITH_OSG
@@ -158,6 +156,8 @@ void ModuleInspector::createViews(bool isTopLevel)
     connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject *>&)), this, SLOT(onObjectsPicked(const std::vector<cObject *>&)));
     stackedLayout->addWidget(osgViewer);
 #endif
+
+    toolbar = createToolbar(isTopLevel);
 
     auto layout = new QVBoxLayout(this);
     layout->setMargin(0);
@@ -209,7 +209,7 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 
 #ifdef WITH_OSG
     // osg-specific
-    action = toolbar->addAction(QIcon(":/tools/reset"), "Reset view", this, SLOT(resetOsgView()));
+    action = toolbar->addAction(QIcon(":/tools/reset"), "Reset view", osgViewer, SLOT(applyViewerHints()));
     resetOsgViewAction = action;
     toolbar->addSeparator();
 
@@ -509,13 +509,6 @@ void ModuleInspector::zoomBy(double mult, bool snaptoone, int x, int y)
 
         setPref(PREF_CENTER, center.toPoint());
     }
-}
-
-void ModuleInspector::resetOsgView()
-{
-#ifdef WITH_OSG
-    osgViewer->applyViewerHints();
-#endif
 }
 
 double ModuleInspector::getZoomFactor()

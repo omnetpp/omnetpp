@@ -69,7 +69,6 @@ private slots:
     void showLabels(bool show);
     void showArrowheads(bool show);
     void zoomIconsBy(double mult);
-    void resetOsgView();
 
     void switchToOsgView();
     void switchToCanvasView();
