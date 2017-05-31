@@ -237,6 +237,9 @@ void DisplayUpdateController::skipToNextEvent()
     simtime_t nextGuess = sim->guessNextSimtime();
     if (nextGuess > simTime()) // is -1 if no more events...
         sim->setSimTime(nextGuess);
+
+    qtenv->callRefreshDisplaySafe();
+    qtenv->callRefreshInspectors();
 }
 
 bool DisplayUpdateController::rightBeforeEvent()
