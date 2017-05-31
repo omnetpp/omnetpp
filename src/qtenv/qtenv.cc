@@ -892,6 +892,7 @@ bool Qtenv::doRunSimulation()
         ASSERT(simTime() <= event->getArrivalTime());
         // do a simulation step
         sim->executeEvent(event);
+        inspectorsFresh = false;
 
         if (animating) {
             callRefreshInspectors();
@@ -973,10 +974,13 @@ bool Qtenv::doRunSimulationExpress()
         // only on every 256. event to make it fast
         if ((getSimulation()->getEventNumber() & 0xff) == 0) {
             // to make the stopDialog more responsive
-            if (elapsed(100, last_update, false))
+            if (elapsed(100, last_update, false)) {
+                inspectorsFresh = false;
                 QApplication::processEvents();
+            }
 
             if (elapsed(opt->updateFreqExpress, last_update, true)) {
+                inspectorsFresh = false;
                 speedometer.beginNewInterval();  // should precede updateStatusDisplay()
                 if (opt->autoupdateInExpress) {
                     callRefreshDisplay();
@@ -997,6 +1001,8 @@ bool Qtenv::doRunSimulationExpress()
              (runUntil.time <= SIMTIME_ZERO || getSimulation()->guessNextSimtime() < runUntil.time) &&
              (runUntil.eventNumber <= 0 || getSimulation()->getEventNumber() + 1 < runUntil.eventNumber)
              );
+
+    inspectorsFresh = false;
 
     sprintf(info, "** Leaving Express mode at event #%" LL "d  t=%s\n",
             getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
@@ -1283,6 +1289,7 @@ void Qtenv::callRefreshDisplay()
     ASSERT(simulationState != SIM_ERROR && simulationState != SIM_NONET);
     getSimulation()->getSystemModule()->callRefreshDisplay();
     ++refreshDisplayCount;
+    inspectorsFresh = false;
 }
 
 void Qtenv::callRefreshDisplaySafe()
@@ -1314,6 +1321,8 @@ void Qtenv::refreshInspectors()
 
     // try opening "pending" inspectors
     restoreInspectors();
+
+    inspectorsFresh = true;
 }
 
 void Qtenv::callRefreshInspectors()

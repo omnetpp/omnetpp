@@ -159,6 +159,13 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       typedef std::list<Inspector*> InspectorList;
       InspectorList inspectors;     // list of inspector objects
 
+      // The Inspectors should only access the simulation outside of refresh() if this is true.
+      // (They can access it freely inside refresh(), but then they should not rely on any
+      // previously saved/cached pointers/references/state, as they should be considered stale.)
+      // Set to true after the inspectors are refreshed, and set to false
+      // after any model code is executed (executeEvent or refreshDisplay).
+      bool inspectorsFresh = false;
+
       LogBuffer logBuffer;          // text window contents
       ComponentHistory componentHistory; // id-to-fullpath mapping for deleted modules
       ModuleLayouter moduleLayouter;
@@ -340,6 +347,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
       void refreshInspectors();
       void callRefreshInspectors(); // with exception handling
+
+      bool inspectorsAreFresh() { return inspectorsFresh; }
 
       void storeInspectors(bool closeThem);
       void restoreInspectors();
