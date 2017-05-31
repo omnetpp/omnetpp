@@ -59,7 +59,7 @@ void ExponentialSpinBox::stepBy(int steps)
         if (minimum() == 0) {
             setValue(singleStep());
             if (singleStep() == 0)
-                adjust(1e-15);
+                adjust(1e-9);
         }
     }
 }
