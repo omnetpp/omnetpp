@@ -584,8 +584,24 @@ void ModuleInspector::redraw()
 void ModuleInspector::click(QMouseEvent *event)
 {
     auto objects = canvasViewer->getObjectsAt(event->pos());
-    if (!objects.empty())
+    if (!objects.empty()) {
+
+        // When a click on a figure redirects the selection to the associated object,
+        // this little hack will put both of them into the history of the embedded
+        // generic object inspector. This is not the most elegant solution...
+        // We are using that bit of information that for figures with an assoc.obj.,
+        // the assoc.obj. is pushed into the vector right before the figure.
+        if (objects.size() >= 2) {
+            // just a guess:
+            cFigure *figure = dynamic_cast<cFigure *>(objects[1]);
+            cObject *assocObj = objects[0];
+            // let's check if we were right:
+            if (figure && figure->getAssociatedObject() == assocObj)
+                emit selectionChanged(figure);
+        }
+
         emit selectionChanged(objects.front());
+    }
 }
 
 void ModuleInspector::doubleClick(QMouseEvent *event)

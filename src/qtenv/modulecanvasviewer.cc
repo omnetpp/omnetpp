@@ -644,8 +644,9 @@ std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QRect& rect)
         for (auto fig = dynamic_cast<cFigure *>(obj); fig; fig = fig->getParentFigure()) {
             auto assocObj = fig->getAssociatedObject();
 
-            if (assocObj && std::find(objects.begin(), objects.end(), assocObj) == objects.end()) {
-                objects.push_back(assocObj);
+            if (assocObj) {
+                if (!contains(objects, assocObj))
+                    objects.push_back(assocObj);
                 break;
             }
         }
