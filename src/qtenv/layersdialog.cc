@@ -25,6 +25,8 @@
 namespace omnetpp {
 namespace qtenv {
 
+static const char *geomPrefKey = "canvas-layers-dialog-geom";
+
 LayersDialog::LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent) :
     QDialog(parent),
     canvasViewer(canvasViewer),
@@ -64,6 +66,10 @@ LayersDialog::LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent) :
 
     showFigLayout->addStretch();
     hideFigLayout->addStretch();
+
+    QRect geom = getQtenv()->getPref(geomPrefKey, QRect()).toRect();
+    if (geom.isValid())
+        setGeometry(geom);
 }
 
 void LayersDialog::onEnabledCheckBoxClicked(bool checked)
@@ -123,6 +129,7 @@ void LayersDialog::reject()
 
 LayersDialog::~LayersDialog()
 {
+    getQtenv()->setPref(geomPrefKey, geometry());
     delete ui;
 }
 
