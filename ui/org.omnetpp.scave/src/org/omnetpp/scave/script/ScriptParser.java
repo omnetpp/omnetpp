@@ -25,11 +25,14 @@ import static org.omnetpp.scave.script.IScriptConstants.WHERE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.core.runtime.IStatus;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.computed.ComputedScalarEngine;
 import org.omnetpp.scave.computed.VectorOperation;
 import org.omnetpp.scave.computed.VectorOperations;
 import org.omnetpp.scave.model.ResultType;
@@ -49,7 +52,7 @@ public class ScriptParser {
                 lineNo++;
                 if (line.trim().isEmpty() || line.trim().startsWith("//"))
                     continue;
-                String[] tokens = line.split(" ");
+                String[] tokens = line.trim().split(" ");
                 if (tokens.length == 0)
                     throw new RuntimeException("Missing command");
                 String command = tokens[0];
@@ -101,6 +104,11 @@ public class ScriptParser {
                     computeCommand.setComputeConfidenceInterval(ArrayUtils.contains(options, COMPUTECONFIDENCEINTERVAL));
                     computeCommand.setConfidenceLevel(0.95); //TODO
                     commands.add(computeCommand);
+                    
+                    //IStatus[] status = new ComputedScalarEngine(null).validate(computeCommand.getValueExpr(), computeCommand.getScalarName(), computeCommand.getModuleExpr(), computeCommand.getGroupByExpr(), new HashSet<String>());
+                    //if (status.length > 0)
+                    //    throw new RuntimeException(status[0].getMessage()); //TODO
+
                 }
                 else {
                     throw new RuntimeException("Unknown command '" + StringUtils.abbreviate(command,15) + "'");

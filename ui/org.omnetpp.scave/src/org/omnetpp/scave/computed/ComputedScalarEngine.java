@@ -268,7 +268,7 @@ public class ComputedScalarEngine {
                 computeMinMax = op.isComputeMinMax();
                 computeConfInterval = op.isComputeConfidenceInterval();
                 if (computeConfInterval) {
-                    confidenceLevel = op.getConfidenceLevel() != null ? op.getConfidenceLevel() : 0.95;
+                    confidenceLevel = op.getConfidenceLevel();
                     Assert.isLegal(0.0 <= confidenceLevel && confidenceLevel <= 1.0);
                 }
             }
