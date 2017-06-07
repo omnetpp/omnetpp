@@ -17,7 +17,7 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 public class VectorChartProperties extends ChartProperties
 {
@@ -53,7 +53,7 @@ public class VectorChartProperties extends ChartProperties
     {
         IXYDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<IXYDataset>() {
             public IXYDataset call() {
-                return DatasetManager.createXYDataset(chart, false, manager, null);
+                return ScriptEngine.createXYDataset(chart, false, manager, null);
             }
         });
 

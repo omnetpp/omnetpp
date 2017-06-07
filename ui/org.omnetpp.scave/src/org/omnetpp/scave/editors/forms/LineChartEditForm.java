@@ -23,7 +23,7 @@ import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 public class LineChartEditForm extends BaseLineChartEditForm {
 
@@ -84,7 +84,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
     }
 
     protected void updateDataset(String formatString) {
-        xydataset = DatasetManager.createVectorDataset((LineChart)chart, formatString, false, manager, null);  //TODO try-catch!!!
+        xydataset = ScriptEngine.createVectorDataset((LineChart)chart, formatString, false, manager, null);  //TODO try-catch!!!
         Line[] lines = NO_LINES;
         if (xydataset != null) {
             int count = xydataset.getSeriesCount();

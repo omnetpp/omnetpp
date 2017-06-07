@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.scave.model2;
+package org.omnetpp.scave.script;
 
 import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.MODULE;
@@ -64,11 +64,10 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.script.AddCommand;
-import org.omnetpp.scave.script.ApplyCommand;
-import org.omnetpp.scave.script.ComputeScalarCommand;
-import org.omnetpp.scave.script.ScriptCommand;
-import org.omnetpp.scave.script.ScriptParser;
+import org.omnetpp.scave.model2.FilterUtil;
+import org.omnetpp.scave.model2.IsoLineData;
+import org.omnetpp.scave.model2.ResultItemFormatter;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * This class calculates the content of a chart
@@ -77,7 +76,7 @@ import org.omnetpp.scave.script.ScriptParser;
  * @author tomi
  */
 //TODO proper error handling for scripts (syntax validation during editing, runtime errors as markers, etc)
-public class DatasetManager {
+public class ScriptEngine {
     private static final boolean debug = false;
 
     public static class ResultSet {
@@ -95,7 +94,7 @@ public class DatasetManager {
                 long startTime = System.currentTimeMillis();
                 if (command instanceof AddCommand) {
                     AddCommand addCommand = (AddCommand)command;
-                    IDList idlist = DatasetManager.getFilteredIDList(manager, addCommand.getResultType(), addCommand.getFilterExpression());
+                    IDList idlist = ScriptEngine.getFilteredIDList(manager, addCommand.getResultType(), addCommand.getFilterExpression());
                     resultSet.idList.merge(idlist);
 
                     // load vector data -- TODO maybe defer to the end (or to the first "APPLY" operation, so that the vector file needs to be read only once

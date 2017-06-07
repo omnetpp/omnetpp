@@ -37,7 +37,7 @@ import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.IsoLineData;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 // XXX remove (or disable) the data that was selected as X data in the iso table
 public class ScatterChartEditForm extends BaseLineChartEditForm {
@@ -67,8 +67,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     public ScatterChartEditForm(ScatterChart chart, Map<String,Object> formParameters, ResultFileManager manager) {
         super(chart, formParameters, manager);
         updateDataset(null);
-        IDList idlist = DatasetManager.getIDListFromDataset(manager, chart, ResultType.SCALAR_LITERAL);
-        idlist.merge(DatasetManager.getIDListFromDataset(manager, chart, ResultType.VECTOR_LITERAL));
+        IDList idlist = ScriptEngine.getIDListFromDataset(manager, chart, ResultType.SCALAR_LITERAL);
+        idlist.merge(ScriptEngine.getIDListFromDataset(manager, chart, ResultType.VECTOR_LITERAL));
         xData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, false);
         isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);
     }
@@ -76,7 +76,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     protected void updateDataset(String formatString) {
         Line[] lines = NO_LINES;
         try {
-            xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, manager, null);
+            xydataset = ScriptEngine.createScatterPlotDataset((ScatterChart)chart, manager, null);
         }
         catch (Exception e) {
             ScavePlugin.logError(e);

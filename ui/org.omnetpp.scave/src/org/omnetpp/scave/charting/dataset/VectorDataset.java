@@ -21,7 +21,7 @@ import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model2.ResultItemFormatter;
 import org.omnetpp.scave.model2.ResultItemValueFormatter;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 /**
  * IXYDataset implementation for output vectors.
@@ -64,7 +64,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
     public VectorDataset(String title, IDList idlist, String lineIdFormat, String defaultLineTitleFormat, ResultFileManager manager) { //TODO eliminate this ctor!
         Assert.isLegal(idlist != null);
         Assert.isLegal(manager != null);
-        String[] keys = DatasetManager.getResultItemNames(idlist, lineIdFormat, manager);
+        String[] keys = ScriptEngine.getResultItemNames(idlist, lineIdFormat, manager);
         Assert.isTrue(idlist.size() == keys.length);
         this.title = title;
         this.defaultLineTitleFormat = defaultLineTitleFormat;

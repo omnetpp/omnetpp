@@ -22,7 +22,7 @@ import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model2.ScaveModelUtil;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 /**
  * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.
@@ -62,7 +62,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
                 String[] filterFields = new String[] { ResultItemField.RUN };
                 String input = ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager);
                 String name = "Chart" + (++counter);
-                String title = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
+                String title = StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
                 Chart chart = ScaveModelUtil.createChart(name, title, type);
                 chart.setInput(input);
                 chart.setTemporary(true);

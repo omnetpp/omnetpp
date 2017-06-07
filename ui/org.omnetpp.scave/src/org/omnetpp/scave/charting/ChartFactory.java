@@ -31,7 +31,7 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 /**
  * Factory for scalar and vector charts.
@@ -130,7 +130,7 @@ public class ChartFactory {
                 return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
                     @Override
                     public IDataset call() throws Exception {
-                        return DatasetManager.createScalarDataset(chart, manager, progressMonitor);
+                        return ScriptEngine.createScalarDataset(chart, manager, progressMonitor);
                     }
                 });
             }
@@ -148,7 +148,7 @@ public class ChartFactory {
                 return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
                     @Override
                     public IDataset call() {
-                        return DatasetManager.createVectorDataset(chart, manager, progressMonitor);
+                        return ScriptEngine.createVectorDataset(chart, manager, progressMonitor);
                     }
                 });
             }
@@ -166,7 +166,7 @@ public class ChartFactory {
                 return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
                     @Override
                     public IDataset call() {
-                        return DatasetManager.createHistogramDataset(chart, manager, progressMonitor);
+                        return ScriptEngine.createHistogramDataset(chart, manager, progressMonitor);
                     }
                 });
             }
@@ -184,7 +184,7 @@ public class ChartFactory {
                 return ResultFileManager.callWithReadLock(manager, new Callable<IDataset>() {
                     @Override
                     public IDataset call() {
-                        return DatasetManager.createScatterPlotDataset(chart, manager, progressMonitor);
+                        return ScriptEngine.createScatterPlotDataset(chart, manager, progressMonitor);
                     }
                 });
             }

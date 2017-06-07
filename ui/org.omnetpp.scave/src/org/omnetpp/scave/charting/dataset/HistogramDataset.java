@@ -14,7 +14,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Statistics;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 public class HistogramDataset implements IHistogramDataset {
 
@@ -42,7 +42,7 @@ public class HistogramDataset implements IHistogramDataset {
 
     public HistogramDataset(IDList idlist, ResultFileManager manager) {
         Assert.isLegal(idlist.areAllHistograms());
-        String[] keys = DatasetManager.getResultItemNames(idlist, null, manager);
+        String[] keys = ScriptEngine.getResultItemNames(idlist, null, manager);
         Assert.isTrue(keys.length == idlist.size());
         histograms = new HistogramData[idlist.size()];
         for (int i = 0; i < idlist.size(); ++i) {

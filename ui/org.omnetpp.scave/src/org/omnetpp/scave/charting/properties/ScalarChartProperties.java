@@ -18,7 +18,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 public class ScalarChartProperties extends ChartProperties
 {
@@ -71,7 +71,7 @@ public class ScalarChartProperties extends ChartProperties
     public IPropertySource getBarProperties() {
         ScalarDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<ScalarDataset>() {
             public ScalarDataset call() throws Exception {
-                return DatasetManager.createScalarDataset((BarChart)chart, manager, null);
+                return ScriptEngine.createScalarDataset((BarChart)chart, manager, null);
             }
         });
 

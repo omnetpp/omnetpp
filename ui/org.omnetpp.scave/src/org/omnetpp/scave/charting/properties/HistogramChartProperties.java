@@ -18,7 +18,7 @@ import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.HistogramChart;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 public class HistogramChartProperties extends ChartProperties
 {
@@ -84,7 +84,7 @@ public class HistogramChartProperties extends ChartProperties
     {
         IHistogramDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<IHistogramDataset>() {
             public IHistogramDataset call() {
-                return DatasetManager.createHistogramDataset((HistogramChart)chart, manager, null);
+                return ScriptEngine.createHistogramDataset((HistogramChart)chart, manager, null);
             }
         });
 

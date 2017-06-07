@@ -11,7 +11,7 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.script.ScriptEngine;
 
 public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDataset {
 
@@ -20,7 +20,7 @@ public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDat
 
     public VectorScatterPlotDataset(IDList vectors, XYArray[] vectorsData, ResultFileManager manager) {
         this.vectors = vectorsData;
-        this.keys = DatasetManager.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX nameFormat
+        this.keys = ScriptEngine.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX nameFormat
     }
 
     public String getTitle(String format) {
