@@ -107,6 +107,9 @@ signals:
 public slots:
     void setPlaybackSpeed(double speed);
 
+    void pause() { animationTimer.invalidate(); paused = true; }
+    void resume() { animationTimer.invalidate(); paused = false; }
+
 public:
     DisplayUpdateController();
 
@@ -124,8 +127,6 @@ public:
     void skipToNextEvent(); // the above, plus sets simTime to that of the next event
 
     bool isPaused() { return paused; }
-    void pause() { animationTimer.invalidate(); paused = true; }
-    void resume() { animationTimer.invalidate(); paused = false; }
 
     // true if nothing (builtin anim, model hold, simtime anim) is "waiting to happen" before the next event
     bool rightBeforeEvent();

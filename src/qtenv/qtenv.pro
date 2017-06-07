@@ -117,7 +117,8 @@ SOURCES += mainwindow.cc \
     vectorplotitem.cc \
     charttickdecimal.cc \
     exponentialspinbox.cc \
-    genericobjecttreenodes.cc
+    genericobjecttreenodes.cc \
+    highlighteritemdelegate.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -185,7 +186,8 @@ HEADERS += mainwindow.h \
     vectorplotitem.h \
     charttickdecimal.h \
     exponentialspinbox.h \
-    genericobjecttreenodes.h
+    genericobjecttreenodes.h \
+    highlighteritemdelegate.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
