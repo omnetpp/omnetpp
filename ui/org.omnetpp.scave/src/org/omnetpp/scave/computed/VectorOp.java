@@ -71,7 +71,7 @@ public class VectorOp {
         double sum = 0;
         int n = array.size();
         for (int i = 0; i < n; i++) {
-            sum += array.y[i]; 
+            sum += array.y[i];
             array.y[i] = sum;
         }
     }
@@ -80,7 +80,7 @@ public class VectorOp {
         double sum = 0;
         int n = array.size();
         for (int i = 0; i < n; i++) {
-            sum += array.y[i]; 
+            sum += array.y[i];
             array.y[i] = sum / (i+1);
         }
     }
@@ -93,7 +93,7 @@ public class VectorOp {
         for (int i = 1; i < n; i++) {
             if (array.y[i] < min)
                 min = array.y[i];
-            else 
+            else
                 array.y[i] = min;
         }
     }
@@ -106,7 +106,7 @@ public class VectorOp {
         for (int i = 1; i < n; i++) {
             if (array.y[i] > max)
                 max = array.y[i];
-            else 
+            else
                 array.y[i] = max;
         }
     }
@@ -136,832 +136,164 @@ public class VectorOp {
         //TODO discard y[0]?
     }
 
-}
-
-/*
-
-//-----
-
-bool TimeDiffNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void TimeDiffNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-
-        d.y = d.x - prevx;
-        prevx = d.x;
-
-        out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *TimeDiffNodeType::getDescription() const
-{
-    return "Returns the difference in time between this and the previous value: yout[k] = t[k] - t[k-1]";
-}
-
-void TimeDiffNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-void TimeDiffNodeType::getAttrDefaults(StringMap& attrs) const
-{
-}
-
-Node *TimeDiffNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new TimeDiffNode();
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void TimeDiffNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    attrs["type"] = "double";
-    attrs["interpolationmode"] = "backward-sample-hold";
-}
-
-//-----
-
-MovingAverageNode::MovingAverageNode(double alph)
-{
-    firstRead = true;
-    prevy = 0;
-    alpha = alph;
-}
-
-bool MovingAverageNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void MovingAverageNode::process()
-{
-    if (firstRead) {
-        Datum d;
-        in()->read(&d, 1);
-        prevy = d.y;
-        out()->write(&d, 1);
-        firstRead = false;
-    }
-
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-        d.y = prevy = prevy + alpha*(d.y-prevy);
-        out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *MovingAverageNodeType::getDescription() const
-{
-    return "Applies the exponentially weighted moving average filter:\n"
-           "yout[k] = yout[k-1] + alpha*(y[k]-yout[k-1])";
-}
-
-void MovingAverageNodeType::getAttributes(StringMap& attrs) const
-{
-    attrs["alpha"] = "smoothing constant";
-}
-
-void MovingAverageNodeType::getAttrDefaults(StringMap& attrs) const
-{
-    attrs["alpha"] = "0.1";
-}
-
-Node *MovingAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    double alpha = atof(attrs["alpha"].c_str());
-
-    Node *node = new MovingAverageNode(alpha);
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void MovingAverageNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double";
-}
-
-//-----
-
-bool SumNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void SumNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-
-        sum += d.y;
-        d.y = sum;
-
-        out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *SumNodeType::getDescription() const
-{
-    return "Sums up values: yout[k] = SUM(y[i], i=0..k)";
-}
-
-void SumNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-void SumNodeType::getAttrDefaults(StringMap& attrs) const
-{
-}
-
-Node *SumNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new SumNode();
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void SumNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    if (attrs["type"] != "int")
-        attrs["type"] = "double";
-}
-
-//------
-
-bool TimeShiftNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void TimeShiftNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-        d.x += dt;
-        d.xp = BigDecimal::Nil;
-        out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *TimeShiftNodeType::getDescription() const
-{
-    return "Shifts the input series in time by a constant: tout[k] = t[k] + dt";
-}
-
-void TimeShiftNodeType::getAttributes(StringMap& attrs) const
-{
-    attrs["dt"] = "the time shift";
-}
-
-Node *TimeShiftNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    double dt = atof(attrs["dt"].c_str());
-
-    Node *node = new TimeShiftNode(dt);
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-//------
-
-bool LinearTrendNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void LinearTrendNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-        d.y += a * d.x;
-        out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *LinearTrendNodeType::getDescription() const
-{
-    return "Adds linear component to input series: yout[k] = y[k] + a * t[k]";
-}
-
-void LinearTrendNodeType::getAttributes(StringMap& attrs) const
-{
-    attrs["a"] = "coeffient of linear component";
-}
-
-void LinearTrendNodeType::getAttrDefaults(StringMap& attrs) const
-{
-    attrs["a"] = "1.0";
-}
-
-Node *LinearTrendNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    double a = atof(attrs["a"].c_str());
-
-    Node *node = new LinearTrendNode(a);
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void LinearTrendNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double";
-}
-
-//-----
-
-bool CropNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void CropNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-        if (d.x >= from && d.x <= to)
-            out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *CropNodeType::getDescription() const
-{
-    return "Discards values outside the [t1, t2] interval";
-}
-
-void CropNodeType::getAttributes(StringMap& attrs) const
-{
-    attrs["t1"] = "'from' time";
-    attrs["t2"] = "'to' time";
-}
-
-Node *CropNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    double t1 = atof(attrs["t1"].c_str());
-    double t2 = atof(attrs["t2"].c_str());
-
-    Node *node = new CropNode(t1, t2);
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-//----
-
-bool MeanNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void MeanNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-        sum += d.y;
-        count++;
-        d.y = sum/count;
-        out()->write(&d, 1);
-    }
-}
-
-void MeanNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double";
-}
-
-//--
-
-const char *MeanNodeType::getDescription() const
-{
-    return "Calculates mean on (0,t)";
-}
-
-void MeanNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-Node *MeanNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new MeanNode();
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-//-----
-
-bool RemoveRepeatsNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void RemoveRepeatsNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-
-        if (first || prevy != d.y) {
-            first = false;
-            prevy = d.y;
-            out()->write(&d, 1);
+    public static void timeDiff(XYVector array) {
+        int n = array.size();
+        if (n == 0)
+            return;
+        double prevX = array.x[0];
+        for (int i = 1; i < n; i++) {
+            array.y[i] = array.x[i] - prevX;
+            prevX = array.x[i];
         }
+        //TODO discard x[0]?
     }
-}
 
-//--
-
-const char *RemoveRepeatsNodeType::getDescription() const
-{
-    return "Removes repeated y values";
-}
-
-void RemoveRepeatsNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-void RemoveRepeatsNodeType::getAttrDefaults(StringMap& attrs) const
-{
-}
-
-Node *RemoveRepeatsNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new RemoveRepeatsNode();
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void RemoveRepeatsNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    // TODO interpolationmode
-}
-
-//-----
-
-bool CompareNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void CompareNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-
-        if (d.y < threshold) {
-            if (replaceIfLess)
-                d.y = valueIfLess;
-        }
-        else if (d.y > threshold) {
-            if (replaceIfGreater)
-                d.y = valueIfGreater;
-        }
-        else {
-            if (replaceIfEqual)
-                d.y = valueIfEqual;
-        }
-        out()->write(&d, 1);
+    public static void movingAverage(XYVector array, double alpha) {
+        int n = array.size();
+        if (n == 0)
+            return;
+        double prevY = array.y[0];
+        for (int i = 0; i < n; i++)
+            array.y[i] = prevY = prevY + alpha*(array.y[i] - prevY);
     }
-}
 
-//--
-
-const char *CompareNodeType::getDescription() const
-{
-    return "Compares value against a threshold, and optionally replaces it with a constant";
-}
-
-void CompareNodeType::getAttributes(StringMap& attrs) const
-{
-    attrs["threshold"] = "constant to compare against";
-    attrs["ifLess"] = "number to output if y < threshold (empty=no change)";
-    attrs["ifEqual"] = "number to output if y == threshold (empty=no change)";
-    attrs["ifGreater"] = "number to output if y > threshold (empty=no change)";
-}
-
-void CompareNodeType::getAttrDefaults(StringMap& attrs) const
-{
-}
-
-Node *CompareNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    CompareNode *node = new CompareNode();
-    node->setNodeType(this);
-
-    node->setThreshold(atof(attrs["threshold"].c_str()));
-    if (!opp_isblank(attrs["ifLess"].c_str()))
-        node->setLessValue(atof(attrs["ifLess"].c_str()));
-    if (!opp_isblank(attrs["ifEqual"].c_str()))
-        node->setEqualValue(atof(attrs["ifEqual"].c_str()));
-    if (!opp_isblank(attrs["ifGreater"].c_str()))
-        node->setGreaterValue(atof(attrs["ifGreater"].c_str()));
-
-    mgr->addNode(node);
-    return node;
-}
-
-//-----
-
-bool IntegrateNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void IntegrateNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-
-        if (!isPrevValid) {
-            prevx = d.x;
-            prevy = d.y;
-            isPrevValid = true;
-            d.y = 0;
-            out()->write(&d, 1);
-        }
-        else {
-            switch (interpolationmode) {
-                case SAMPLE_HOLD:
-                    integral += prevy * (d.x-prevx);
-                    break;
-
-                case BACKWARD_SAMPLE_HOLD:
-                    integral += d.y * (d.x-prevx);
-                    break;
-
-                case LINEAR:
-                    integral += (prevy+d.y)/2 * (d.x-prevx);
-                    break;
-
-                default:
-                    Assert(false);
-            }
-            prevx = d.x;
-            prevy = d.y;
-            d.y = integral;
-            out()->write(&d, 1);
-        }
+    public static void timeShift(XYVector array, double dt) {
+        int n = array.size();
+        for (int i = 0; i < n; i++)
+            array.x[i] += dt;
     }
-}
 
-//--
+    public static void linearTrend(XYVector array, double a, double b) {
+        int n = array.size();
+        for (int i = 0; i < n; i++)
+            array.y[i] += a * array.x[i] + b;
+    }
 
-const char *IntegrateNodeType::getDescription() const
-{
-    return "Integrates the input as a step function (sample-hold or backward-sample-hold) or with linear interpolation";
-}
+    //TODO removeLinearTrend
 
-void IntegrateNodeType::getAttributes(StringMap& attrs) const
-{
-    attrs["interpolation-mode"] = "sample-hold, backward-sample-hold, or linear";
-}
+    public static void crop(XYVector array, double startTime, double endTime) {
+//TODO
+//            if (d.x >= from && d.x <= to)
+//                out()->write(&d, 1);
+    }
 
-void IntegrateNodeType::getAttrDefaults(StringMap& attrs) const
-{
-    attrs["interpolation-mode"] = "sample-hold";
-}
+    public static void clamp(XYVector array, double min, double max) {
+        int n = array.size();
+        for (int i = 0; i < n; i++)
+            array.y[i] = Math.min(max, Math.max(min, array.y[i]));
+    }
 
-Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
+    public static void discardOutliers(XYVector array, double min, double max) {
+        filter(array, (y) -> (y >= min && y <= max));
+    }
 
-    // TODO we should really support combobox selection on the UI for this...
-    InterpolationMode mode;
-    const std::string& modeString = attrs["interpolation-mode"];
-    if (modeString == "" || modeString == "sample-hold")
-        mode = SAMPLE_HOLD;
-    else if (modeString == "backward-sample-hold")
-        mode = BACKWARD_SAMPLE_HOLD;
-    else if (modeString == "linear")
-        mode = LINEAR;
-    else
-        throw opp_runtime_error("Unknown interpolation mode: %s", modeString.c_str());
-
-    Node *node = new IntegrateNode(mode);
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void IntegrateNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double";
-}
-
-//-----
-
-bool TimeAverageNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void TimeAverageNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-
-        if (!isPrevValid) {
-            prevx = d.x;
-            prevy = d.y;
-            isPrevValid = true;
-        }
-        else {
-            switch (interpolationmode) {
-                case SAMPLE_HOLD:
-                    integral += prevy * (d.x-prevx);
-                    break;
-
-                case BACKWARD_SAMPLE_HOLD:
-                    integral += d.y * (d.x-prevx);
-                    break;
-
-                case LINEAR:
-                    integral += (prevy+d.y)/2 * (d.x-prevx);
-                    break;
-
-                default:
-                    Assert(false);
-            }
-            prevx = d.x;
-            prevy = d.y;
-            if (d.x != startx) {  // suppress 0/0 = NaN values
-                d.y = integral / (d.x - startx);
-                out()->write(&d, 1);
+    public static void removeRepeats(XYVector array) {
+        int n = array.size();
+        if (n == 0)
+            return;
+        int dest = 0;
+        double prevY = array.y[0];
+        for (int src = 0; src < n; src++) {
+            if (array.y[src] != prevY) {
+                prevY = array.y[src];
+                if (src != dest)
+                    array.copy(src, dest);
+                dest++;
             }
         }
+        array.setSize(dest);
     }
-}
 
-//--
+    //note: CompareNode is skipped
 
-const char *TimeAverageNodeType::getDescription() const
-{
-    return "Calculates the time average of the input (integral divided by time)";
-}
+    public enum InterpolationMode { SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
 
-void TimeAverageNodeType::getAttributes(StringMap& attrs) const
-{
-    attrs["interpolation-mode"] = "sample-hold, backward-sample-hold, or linear";
-}
+    public static void integrate(XYVector array, InterpolationMode interpolationMode) {
+        int n = array.size();
+        if (n == 0)
+            return;
+        double integral = 0;
+        double prevx = array.x[0];
+        double prevy = array.y[0];
+        array.y[0] = 0;
+        for (int i = 1; i < n; i++) {
+            double dx = array.x[i] - prevx;
+            switch (interpolationMode) {
+            case SAMPLE_HOLD:
+                integral += prevy * dx;
+                break;
 
-void TimeAverageNodeType::getAttrDefaults(StringMap& attrs) const
-{
-    attrs["interpolation-mode"] = "sample-hold";
-}
+            case BACKWARD_SAMPLE_HOLD:
+                integral += array.y[i] * dx;
+                break;
 
-Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    // TODO we should really support combobox selection on the UI for this...
-    InterpolationMode mode;
-    const std::string& modeString = attrs["interpolation-mode"];
-    if (modeString == "" || modeString == "sample-hold")
-        mode = SAMPLE_HOLD;
-    else if (modeString == "backward-sample-hold")
-        mode = BACKWARD_SAMPLE_HOLD;
-    else if (modeString == "linear")
-        mode = LINEAR;
-    else
-        throw opp_runtime_error("Unknown interpolation mode: %s", modeString.c_str());
-
-    Node *node = new TimeAverageNode(mode);
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void TimeAverageNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double";
-}
-
-//-----
-
-bool DivideByTimeNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void DivideByTimeNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-        d.y /= d.x;
-        out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *DivideByTimeNodeType::getDescription() const
-{
-    return "Divides input by the current time: yout[k] = y[k] / t[k]";
-}
-
-void DivideByTimeNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-Node *DivideByTimeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new DivideByTimeNode();
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void DivideByTimeNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    attrs["type"] = "double";
-}
-
-//---
-
-bool TimeToSerialNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void TimeToSerialNode::process()
-{
-    int n = in()->size();
-    for (int i = 0; i < n; i++) {
-        Datum d;
-        in()->read(&d, 1);
-        d.x = serial;
-        d.xp = BigDecimal(serial);
-        serial++;
-        out()->write(&d, 1);
-    }
-}
-
-//--
-
-const char *TimeToSerialNodeType::getDescription() const
-{
-    return "Replaces time values with their index: tout[k] = k";
-}
-
-void TimeToSerialNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-Node *TimeToSerialNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new TimeToSerialNode();
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void TimeToSerialNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-}
-
-//-----
-
-bool SubtractFirstValueNode::isReady() const
-{
-    return in()->size() > 0;
-}
-
-void SubtractFirstValueNode::process()
-{
-    int n = in()->size();
-    Datum d;
-
-    int i = 0;
-    for ( ; !firstValueSeen && i < n; i++) {
-        in()->read(&d, 1);
-        if (!isNaN(d.y) && !isPositiveInfinity(d.y) && !isNegativeInfinity(d.y)) {
-            firstValue = d.y;
-            d.y = 0.0;
-            firstValueSeen = true;
+            case LINEAR:
+                integral += (prevy + array.y[i]) / 2 * dx;
+                break;
+            }
+            prevx = array.x[i];
+            prevy = array.y[i];
+            array.y[i] = integral;
         }
-        out()->write(&d, 1);
     }
 
-    for ( ; i < n; i++) {
-        in()->read(&d, 1);
-        d.y -= firstValue;
-        out()->write(&d, 1);
+    public static void timeAverage(XYVector array, InterpolationMode interpolationMode) {
+        int n = array.size();
+        if (n == 0)
+            return;
+        double integral = 0;
+        double x0 = array.x[0];
+        double prevx = array.x[0];
+        double prevy = array.y[0];
+        for (int i = 0; i < n; i++) {
+            double dx = array.x[i] - prevx;
+            switch (interpolationMode) {
+            case SAMPLE_HOLD:
+                integral += prevy * dx;
+                break;
+
+            case BACKWARD_SAMPLE_HOLD:
+                integral += array.y[i] * dx;
+                break;
+
+            case LINEAR:
+                integral += (prevy + array.y[i]) / 2 * dx;
+                break;
+            }
+            prevx = array.x[i];
+            prevy = array.y[i];
+
+            // Note: the following line results in the first few values (where x==x0)
+            // being replaced by NaN; it is debatable whether this is a good thing.
+            // Other options would be: 1. leaving them intact (questionable); or
+            // 2. filtering them out.
+            array.y[i] = integral / (array.x[i] - x0);
+        }
     }
+
+    public static void divideByTime(XYVector array) {
+        int n = array.size();
+        for (int i = 0; i < n; i++)
+            array.y[i] /= array.x[i];
+    }
+
+    public static void timeToSerial(XYVector array) {
+        int n = array.size();
+        for (int i = 0; i < n; i++)
+            array.x[i] = i;
+    }
+
+    public static void subtractFirstValue(XYVector array) {
+        int n = array.size();
+        int i;
+        for (i = 0; i < n; i++)
+            if (Double.isFinite(array.y[i]))
+                break;
+        if (i == n)
+            return;
+        double firstValue = array.y[i];
+        for ( ; i < n; i++)
+            array.y[i] -= firstValue;
+    }
+
 }
-
-//--
-
-const char *SubtractFirstValueNodeType::getDescription() const
-{
-    return "Subtract the first value from every subsequent values: yout[k] = y[k] - y[0]";
-}
-
-void SubtractFirstValueNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-Node *SubtractFirstValueNodeType::create(DataflowManager *mgr, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new SubtractFirstValueNode();
-    node->setNodeType(this);
-    mgr->addNode(node);
-    return node;
-}
-
-void SubtractFirstValueNodeType::mapVectorAttributes(   StringMap& attrs,   StringVector& warnings) const
-{
-    if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
-    else if (attrs["type"] == "")
-        attrs["type"] = "double";
-}
-
-}  // namespace scave
-}  // namespace omnetpp
-
-    
-}
-*/

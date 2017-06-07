@@ -164,17 +164,15 @@ public class EditDialog extends TitleAreaDialog {
     private void setErrorMessage(IStatus status) {
         String message = null;
         if (status.matches(IStatus.ERROR)) {
-            message = "There are errors:\n\t";
             IStatus error = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.ERROR);
             Assert.isNotNull(error);
-            message += status.isMultiStatus() ? status.getMessage() + ": " : "";
+            message = status.isMultiStatus() ? status.getMessage() + ": " : "";
             message += error.getMessage();
         }
         else if (status.matches(IStatus.WARNING)) {
-            message = "There are warnings:\n\t";
             IStatus warning = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.WARNING);
             Assert.isNotNull(warning);
-            message += status.isMultiStatus() ? status.getMessage() + ": " : "";
+            message = status.isMultiStatus() ? status.getMessage() + ": " : "";
             message += warning.getMessage();
         }
         setErrorMessage(message);

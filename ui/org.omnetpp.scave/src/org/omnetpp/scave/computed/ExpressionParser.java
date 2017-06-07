@@ -227,6 +227,11 @@ class ExpressionParser {
             this.start = start;
             this.end = end;
         }
+
+        @Override
+        public String toString() {
+            return "Token ["+ value + "]";
+        }
     }
 
 

@@ -21,8 +21,8 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ResultType;
-import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.model2.DatasetManager;
 
 /**
  * Creates a temporary chart from the selection on the BrowseDataPage, and opens it.

@@ -18,10 +18,10 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
-import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.ResultItemFormatter;
 import org.omnetpp.scave.model2.ResultItemValueFormatter;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.model2.DatasetManager;
 
 /**
  * IXYDataset implementation for output vectors.

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
@@ -58,6 +60,7 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.FilterHints;
+import org.omnetpp.scave.script.ScriptParser;
 
 /**
  * Edit form of charts.
@@ -97,8 +100,8 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
 
     // controls
     private Text nameText;
-    private StyledText inputText;
-    private ScriptContentProposalProvider inputFieldProposalProvider;
+    private StyledText scriptText;
+    private ScriptContentProposalProvider scriptContentProposalProvider;
     protected Group optionsGroup;
     private Button antialiasCheckbox;
     private Button cachingCheckbox;
@@ -218,12 +221,13 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             ((GridLayout)panel.getLayout()).numColumns = 2;
             nameText = createTextField("Chart name:", panel);
             nameText.setFocus();
-            inputText = createMultilineTextField("Result filter:", panel);
+            scriptText = createMultilineTextField("Result selection script:", panel);
             ((GridLayout)panel.getLayout()).numColumns = 2;
-            new StyledTextUndoRedoManager(inputText);
-            inputFieldProposalProvider = new ScriptContentProposalProvider();
-            ContentAssistUtil.configureStyledText(inputText, inputFieldProposalProvider);
-            inputFieldProposalProvider.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
+            new StyledTextUndoRedoManager(scriptText);
+            scriptContentProposalProvider = new ScriptContentProposalProvider();
+            ContentAssistUtil.configureStyledText(scriptText, scriptContentProposalProvider);
+            scriptContentProposalProvider.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
+            scriptText.addModifyListener((e) -> fireChangeNotification());
         }
         else if (TAB_CHART.equals(name)) {
             group = createGroup("Title", panel);
@@ -576,7 +580,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         case ScaveModelPackage.CHART__NAME:
             return nameText.getText();
         case ScaveModelPackage.CHART__INPUT:
-            return inputText.getText();
+            return scriptText.getText();
         case ScaveModelPackage.CHART__PROPERTIES:
             ChartProperties newProps = ChartProperties.createPropertySource(chart, new ArrayList<Property>(), manager);
             collectProperties(newProps);
@@ -595,7 +599,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             nameText.setText(value == null ? "" : (String)value);
             break;
         case ScaveModelPackage.CHART__INPUT:
-            inputText.setText(value == null ? "" : (String)value);
+            scriptText.setText(value == null ? "" : (String)value);
             break;
         case ScaveModelPackage.CHART__PROPERTIES:
             if (value != null) {
@@ -605,6 +609,21 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             }
             break;
         }
+    }
+
+    @Override
+    public IStatus validate() {
+        try {
+            System.out.println("Validating script...");
+            String script = scriptText.getText();
+            ScriptParser.parseScript(script);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, e.getMessage());
+        }
+
+        return super.validate();
     }
 
     /**

@@ -35,9 +35,9 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.DatasetManager;
 import org.omnetpp.scave.model2.IsoLineData;
 import org.omnetpp.scave.model2.ScaveModelUtil;
+import org.omnetpp.scave.model2.DatasetManager;
 
 // XXX remove (or disable) the data that was selected as X data in the iso table
 public class ScatterChartEditForm extends BaseLineChartEditForm {

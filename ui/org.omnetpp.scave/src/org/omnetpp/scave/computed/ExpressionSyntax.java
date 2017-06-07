@@ -48,6 +48,7 @@ class ExpressionSyntax {
 
         NumLiteral(double value) { this.value = value; }
         public <T,C> T accept(Visitor<T,C> v, C context) { return v.visitNumLiteral(this, context); }
+        @Override public String toString() {return "NumLiteral [" + value + "]"; }
     }
 
     static class StringLiteral extends Expr implements TemplateElement {
@@ -55,6 +56,7 @@ class ExpressionSyntax {
 
         StringLiteral(String value) { this.value = value; }
         public <T,C> T accept(Visitor<T,C> v, C context) { return v.visitStringLiteral(this, context); }
+        @Override public String toString() {return "StringLiteral [" + value + "]"; }
     }
 
     static class StatisticRef extends Expr
@@ -64,6 +66,7 @@ class ExpressionSyntax {
 
         StatisticRef(String name, Pattern module) { this.name = name; this.modulePattern = module; }
         public <T,C> T accept(Visitor<T,C> v, C context) { return v.visitStatisticRef(this, context); }
+        @Override public String toString() {return "StatisticRef [name=" + name + ", modulePattern=" + modulePattern + "]"; }
     }
 
     static class VariableRef extends Expr
@@ -72,6 +75,7 @@ class ExpressionSyntax {
 
         VariableRef(String name) { this.name = name; }
         public <T,C> T accept(Visitor<T,C> v, C context) { return v.visitVariableRef(this, context); }
+        @Override public String toString() {return "VariableRef [" + name + "]"; }
     }
 
     static class FunctionCall extends Expr
@@ -81,6 +85,7 @@ class ExpressionSyntax {
 
         FunctionCall(String name, List<Expr> args) { this.name = name; this.args = args; }
         public <T,C> T accept(Visitor<T,C> v, C context) { return v.visitFunctionCall(this, context); }
+        @Override public String toString() {return "FunctionCall [" + name + "(...)]"; }
     }
 
     static class LikeOp extends Expr {
@@ -105,6 +110,7 @@ class ExpressionSyntax {
 
     static abstract class PatternElement implements Node
     {
+        @Override public String toString() {return getClass().getSimpleName() + " [...]"; }
     }
 
     static class LiteralPattern extends PatternElement
