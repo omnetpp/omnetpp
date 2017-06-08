@@ -262,6 +262,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual int getParsimNumPartitions() const override;
     virtual unsigned long getUniqueNumber() override;
     virtual void attachDebugger() override;
+    virtual void refOsgNode(osg::Node *scene) override {}
+    virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override;
 
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override;

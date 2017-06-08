@@ -25,6 +25,8 @@
 #include "clifecyclelistener.h"
 #include "ccanvas.h"
 
+namespace osg { class Node; }
+
 namespace omnetpp {
 
 class cObject;
@@ -760,6 +762,18 @@ class SIM_API cEnvir
      * The function underlying cSimulation::getUniqueNumber().
      */
     virtual unsigned long getUniqueNumber() = 0;
+
+    /**
+     * Used by cOsgCanvas to increase the reference count of an osg::Node.
+     * Should delegate to node->ref() when OSG support is available.
+     */
+    virtual void refOsgNode(osg::Node *scene) = 0;
+
+    /**
+     * Used by cOsgCanvas to increase the reference count of an osg::Node.
+     * Should delegate to node->unref() when OSG support is available.
+     */
+    virtual void unrefOsgNode(osg::Node *scene) = 0;
 
     /**
      * May be called from the simulation while actively waiting

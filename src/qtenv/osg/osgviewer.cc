@@ -14,12 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef WITH_OSG
-
 #include "osgviewer.h"
 #include "omnetpp/osgutil.h"
 #include "inspectorutil.h"
 #include "cameramanipulators.h"
+#include "common/stlutil.h"
 
 #include <QDebug>
 #include <QToolTip>
@@ -48,10 +47,33 @@
 #include <osg/DeleteHandler>
 #include <osg/Version>
 
+#define emit
+
 namespace omnetpp {
 namespace qtenv {
 
-#define emit
+extern IOsgViewerFactory *osgViewerFactory;
+
+class RealOsgViewerFactory : public IOsgViewerFactory
+{
+public:
+    RealOsgViewerFactory() {
+        // this runs when the library is loaded because of the global realFactory object
+        osgViewerFactory = this;
+    }
+    virtual IOsgViewer *createViewer() override {
+        return new OsgViewer();
+    }
+    virtual void shutdown() override {
+        OsgViewer::uninit();
+    }
+
+    virtual void refNode(osg::Node *node) override { node->ref(); }
+    virtual void unrefNode(osg::Node *node) override { node->unref(); }
+};
+
+RealOsgViewerFactory realFactory;
+
 
 static QSurfaceFormat traitsToSurfaceFormat(const osg::GraphicsContext::Traits *traits) {
     QSurfaceFormat format;
@@ -269,31 +291,29 @@ void HeartBeat::init(osg::ref_ptr<osgViewer::CompositeViewer> viewer) {
 void HeartBeat::start() {
     // TODO: make this cooperate with the dynamic FPS mechanism of the 2D canvases
     if (!instance->timer.isActive())
-        instance->timer.start(1000 / 60, Qt::PreciseTimer, instance); // 60 FPS master race, yeah
+        instance->timer.start(1000 / 30.0, Qt::PreciseTimer, instance);
 }
 
-void HeartBeat::uninit() {
-    ASSERT2(instance, "No HeartBeat instance exists upon uninit()");
+void HeartBeat::stop() {
+    if (instance) {
+        instance->timer.stop();
+        instance->viewer = nullptr;
 
-    instance->timer.stop();
-    instance->viewer = nullptr;
-
-    delete instance;
-    instance = nullptr;
+        delete instance;
+        instance = nullptr;
+    }
 }
 
 void HeartBeat::timerEvent(QTimerEvent *event) {
-    if ((viewer->getRunFrameScheme() == osgViewer::CompositeViewer::CONTINUOUS)
-            || viewer->checkNeedToDoFrame()) {
+    if (viewer->checkNeedToDoFrame() && viewer->getNumViews() > 0)
         viewer->frame();
-    }
 }
 
 //  --------  OsgViewer  --------
 
 osg::ref_ptr<osgViewer::CompositeViewer> OsgViewer::viewer = nullptr;
 
-OsgViewer::OsgViewer(QWidget *parent): QOpenGLWidget(parent)
+OsgViewer::OsgViewer(QWidget *parent): IOsgViewer(parent)
 {
     if (!viewer.valid()) { // this is the validity of the pointer, not of the viewer
 #if OSG_VERSION_GREATER_OR_EQUAL(3, 5, 0)
@@ -414,7 +434,6 @@ bool OsgViewer::event(QEvent *event)
     switch (event->type())
     {
         case QEvent::Show:
-            applyViewerHints();
             HeartBeat::start();
             // no break here
         case QEvent::KeyPress:
@@ -457,6 +476,22 @@ void OsgViewer::setOsgCanvas(cOsgCanvas *canvas)
     }
 }
 
+void OsgViewer::enable()
+{
+    osgViewer::CompositeViewer::Views views;
+    viewer->getViews(views, false);
+    if (!contains(views, view.get()))
+        viewer->addView(view);
+}
+
+void OsgViewer::disable()
+{
+    osgViewer::CompositeViewer::Views views;
+    viewer->getViews(views, false);
+    if (contains(views, view.get()))
+        viewer->removeView(view);
+}
+
 void OsgViewer::refresh()
 {
     scene = osgCanvas ? osgCanvas->getScene() : nullptr;
@@ -464,9 +499,7 @@ void OsgViewer::refresh()
         // otherwise textures vanish from all other views when one view is closed.
         osgUtil::Optimizer::TextureVisitor(true, false, false, false, false, false).apply(*scene);
 
-        viewer->removeView(view);
         view->setSceneData(scene);
-        viewer->addView(view);
 
 #ifdef WITH_OSGEARTH
         auto sky = osgEarth::findTopMostNodeOfType<osgEarth::Util::SkyNode>(scene);
@@ -513,7 +546,7 @@ void OsgViewer::resetViewer()
 
 void OsgViewer::uninit()
 {
-    HeartBeat::uninit();
+    HeartBeat::stop();
     viewer = nullptr;
 }
 
@@ -566,6 +599,11 @@ unsigned int OsgViewer::mouseButtonQtToOsg(Qt::MouseButton button)
 void OsgViewer::setClearColor(float r, float g, float b, float alpha)
 {
     camera->setClearColor(osg::Vec4(r, g, b, alpha));
+}
+
+osg::Vec3d vec2osg(cOsgCanvas::Vec3d v)
+{
+    return osg::Vec3d(v.x, v.y, v.z);
 }
 
 void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, bool keepView)
@@ -664,17 +702,22 @@ void OsgViewer::setCameraManipulator(cOsgCanvas::CameraManipulatorType type, boo
 
     // setting the home viewpoint if found
 
+
+
 #ifdef WITH_OSGEARTH
     if (type == cOsgCanvas::CAM_EARTH) {
-        const osgEarth::Viewpoint &homeViewpoint = osgCanvas->getEarthViewpoint();
-        if (homeViewpoint.isValid())
+        auto vp = osgCanvas->getEarthViewpoint();
+        if (vp.valid) {
+            // the other constructor, which takes only 5 doubles, seems like it's missing from the osgEarth libraries...
+            osgEarth::Viewpoint homeViewpoint("home", vp.longitude, vp.latitude, vp.altitude, vp.heading, vp.pitch, vp.range);
             ((osgEarth::Util::EarthManipulator*)manipulator)->setHomeViewpoint(homeViewpoint);
+        }
     } else
 #endif
     {
         const cOsgCanvas::Viewpoint &homeViewpoint = osgCanvas->getGenericViewpoint();
         if (homeViewpoint.valid)
-            manipulator->setHomePosition(homeViewpoint.eye, homeViewpoint.center, homeViewpoint.up);
+            manipulator->setHomePosition(vec2osg(homeViewpoint.eye), vec2osg(homeViewpoint.center), vec2osg(homeViewpoint.up));
     }
 
     // and going home if needed
@@ -834,15 +877,5 @@ void OsgViewer::wheelEvent(QWheelEvent *event)
     }
 }
 
-void OsgViewer::paintEvent(QPaintEvent *event)
-{
-    // Not doing anything here, painting is driven by the OSG event loop,
-    // and the corresponding functions in the GraphicsWindow class above.
-    // But we have to override this to be empty, otherwise the automatic
-    // buffer swapping and such will interfere with viewer->frame().
-}
-
 } // qtenv
 } // omnetpp
-
-#endif // WITH_OSG

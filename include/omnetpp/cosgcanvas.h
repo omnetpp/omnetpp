@@ -19,11 +19,8 @@
 #include "cownedobject.h"
 #include "ccanvas.h"
 
-#ifdef WITH_OSG
-
 // don't include OSG headers yet
 namespace osg { class Node; class Group; class Vec3d; }
-namespace osgEarth { class Viewpoint; }
 
 namespace omnetpp {
 
@@ -51,9 +48,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
          */
         enum ViewerStyle {
             STYLE_GENERIC, ///< For generic (non-osgEarth) OSG models
-#ifdef WITH_OSGEARTH
             STYLE_EARTH    ///< For osgEarth models
-#endif
         };
 
         typedef cFigure::Color Color;
@@ -67,9 +62,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
             CAM_TERRAIN,   ///< Suitable for flying above an object or terrain
             CAM_OVERVIEW,  ///< Similar to TERRAIN, but only allows seeing the object from above
             CAM_TRACKBALL, ///< Allows unrestricted movement centered around an object
-#ifdef WITH_OSGEARTH
             CAM_EARTH      ///< Useful when viewing osgEarth scenes
-#endif
         };
 
         // this is only needed to simplify the Viewpoint hint
@@ -77,7 +70,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
             double x, y, z;
             Vec3d() : x(0), y(0), z(0) {}
             Vec3d(double x, double y, double z): x(x), y(y), z(z) {}
-            operator osg::Vec3d() const;
+            std::string str();
         };
 
         /**
@@ -95,12 +88,44 @@ class SIM_API cOsgCanvas : public cOwnedObject
             Vec3d eye;    ///< Specifies the position of the eye point.
             Vec3d center; ///< Specifies the position of the reference point.
             Vec3d up;     ///< Specifies the direction of the up vector.
-            bool valid;
+            bool valid;   ///< The validity of the data. If this is false, the vector members should not be read.
             //@}
             /** @name Methods. */
             //@{
             Viewpoint() : valid(false) {}
             Viewpoint(const Vec3d& eye, const Vec3d& center, const Vec3d& up): eye(eye), center(center), up(up), valid(true) {}
+            //@}
+        };
+
+        /**
+         * @brief Defines a viewpoint in 3D space with geographical coordinates,
+         * for osgEarth-style viewing.
+         *
+         * The EarthViewpoint is defined by a "focal point" on (or above) the Earth's
+         * surface (longitude, latitude, altitude), and two angles (heading, pitch)
+         * and a distance (range). The camera always looks at the "focal point", from
+         * a distance defined by range, and at an angle defined by heading and pitch.
+         *
+         * @ingroup OSG
+         */
+        struct SIM_API EarthViewpoint {
+            /** @name Data members. */
+            //@{
+            double longitude = 0, latitude = 0, altitude = 0; ///< The location of the "focal point".
+            double heading = 0, pitch = 0, range = 0;         ///< The distance and angle of the camera.
+            bool valid = false;                               ///< The validity of the data. If false, the other members should not be read.
+            //@}
+            /** @name Methods. */
+            //@{
+            EarthViewpoint() {}
+            /**
+             * Note the order of the first two parameters: longitude comes first, latitude is next.
+             * It is kept this way to remain consistent with osgEarth::Viewpoint, and to resemble the
+             * directions in the X:Y:Z coordinate systems. They are in reverse order almost everywhere
+             * else, so always pay attention to whether you need to flip them around or not.
+             */
+            EarthViewpoint(double longitude, double latitude, double altitude, double heading, double pitch, double range)
+                : longitude(longitude), latitude(latitude), altitude(altitude), heading(heading), pitch(pitch), range(range), valid(true) {}
             //@}
         };
 
@@ -117,11 +142,7 @@ class SIM_API cOsgCanvas : public cOwnedObject
         double zFar;  // see OpenGL gluPerspective
 
         Viewpoint *genericViewpoint; // never nullptr
-
-#ifdef WITH_OSGEARTH
-        // osgEarth-specific viewer hints
-        osgEarth::Viewpoint *earthViewpoint; // never nullptr
-#endif
+        EarthViewpoint *earthViewpoint; // never nullptr
 
     private:
         void copy(const cOsgCanvas& other);
@@ -268,37 +289,20 @@ class SIM_API cOsgCanvas : public cOwnedObject
         const Viewpoint& getGenericViewpoint() const {return *genericViewpoint;}
         //@}
 
-#ifdef WITH_OSGEARTH
         /** @name osgEarth-related viewer hints. */
         //@{
         /**
          * Sets the initial earthViewpoint hint.
          */
-        void setEarthViewpoint(const osgEarth::Viewpoint& earthViewpoint);
+        void setEarthViewpoint(const EarthViewpoint& earthViewpoint);
 
         /**
          * Returns the initial earthViewpoint hint.
          */
-        const osgEarth::Viewpoint& getEarthViewpoint() const {return *earthViewpoint;}
+        const EarthViewpoint& getEarthViewpoint() const {return *earthViewpoint;}
         //@}
-#endif
 };
 
 } // namespace omnetpp
-
-#else // not WITH_OSG
-
-// Dummy cOsgCanvas class in case OpenSceneGraph is not available
-namespace omnetpp {
-
-  class SIM_API cOsgCanvas : public cOwnedObject
-  {
-      public:
-          cOsgCanvas();
-  };
-
-}
-
-#endif // WITH_OSG
 
 #endif

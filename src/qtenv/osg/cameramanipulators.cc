@@ -14,8 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef WITH_OSG
-
 #include "cameramanipulators.h"
 
 namespace omnetpp {
@@ -162,6 +160,4 @@ bool OverviewManipulator::performMovementRightMouseButton(const double eventTime
 
 }  // namespace omnetpp
 }  // namespace omnetpp
-
-#endif  // WITH_OSG
 

@@ -66,16 +66,6 @@ ifeq ($(WITH_NETBUILDER),yes)
   IMPLIBS += -loppnedxml$D
 endif
 
-ifeq ($(WITH_OSG),yes)
-  IMPLIBS += -losg -lOpenThreads
-  GENERATED_SOURCES += sim_std_osg_m.cc sim_std_osg_m.h
-  OBJS_STD += $O/sim_std_osg_m.o
-
-  ifeq ($(WITH_OSGEARTH),yes)
-    IMPLIBS += -losgEarth
-  endif
-endif
-
 ifeq ($(WITH_PARSIM),yes)
   OBJS += $(OBJS_PARSIM)
   COPTS += $(MPI_CFLAGS)

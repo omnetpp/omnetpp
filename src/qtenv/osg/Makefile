@@ -2,20 +2,20 @@
 # Definitions to be customized by 'configure'
 #
 
-CONFIGFILE = ../../Makefile.inc
+CONFIGFILE = ../../../Makefile.inc
 include $(CONFIGFILE)
 
 #
 # Local definitions
 #
-LIBNAME=$(LIB_PREFIX)oppqtenv$D
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/qtenv
+LIBNAME=$(LIB_PREFIX)oppqtenv-osg$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/qtenv-osg
 L=$(OMNETPP_LIB_DIR)
 
 # disable warnings for cleaner output on MinGW/clang
-CFLAGS += -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" $(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
+CFLAGS += -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" -I"$(OMNETPP_SRC_DIR)"/qtenv $(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
 DEFINES += -DUNICODE -DQT_NO_EMIT -DQT_OPENGL_LIB -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
-IMPLIBS = -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS)
+IMPLIBS = -loppsim$D -loppenvir$D -loppqtenv$D -lopplayout$D -loppcommon$D $(QT_LIBS)
 
 # Required only on Mac OS X
 ifeq ("$(PLATFORM)", "macosx")
@@ -30,6 +30,14 @@ endif
 ifeq ($(TOOLCHAIN_NAME),clangc2)
 # QT_COMPILING_QSTRING_COMPAT_CPP should be added only for clang-c2 compiler
   DEFINES += -DQT_COMPILING_QSTRING_COMPAT_CPP
+endif
+
+ifeq ($(WITH_OSG),yes)
+  IMPLIBS += $(OSG_LIBS)
+endif
+
+ifeq ($(WITH_OSGEARTH),yes)
+  IMPLIBS += $(OSGEARTH_LIBS)
 endif
 
 #
@@ -49,7 +57,7 @@ OBJS=$(SOURCES:%.cc=$O/%.o) $(MOC_OUT:%.cpp=$O/%.o) $(RESOURCES_OUT:%.cpp=$O/%.o
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DQTENV_EXPORT
 
-.PHONY: all clean qtenv qmake skip build install
+.PHONY: all clean qtenv-osg qmake skip build install
 .SECONDARY:
 
 #
@@ -79,9 +87,9 @@ moc_%.cpp: %.h
 #
 # Targets
 #
-all: $(QTENV_TARGET)
+all: qtenv-osg
 
-qtenv: install
+qtenv-osg : install
 
 install: build $(CONFIGFILE)
 	@mkdir -p $L
@@ -94,8 +102,6 @@ ifeq ($(MODE),debug)
 	-$(Q)cp $O/$(LIBNAME).pdb $(OMNETPP_BIN_DIR) 2>/dev/null || :
 endif
 endif
-	$(Q)$(MAKE) build -C osg # this is not the most elegant...
-	$(Q)$(MAKE) install -C osg
 
 build : $O/$(LIBNAME)$(LIB_SUFFIX)
 
@@ -120,10 +126,6 @@ clean:
 	$(Q)rm -f $(GENERATED_FILES)
 	$(Q)rm -rf $O
 	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*
-	$(Q)$(MAKE) clean -C osg
-
-skip:
-	@echo '  *** WITH_QTENV=no -- skipping Qtenv.'
 
 $(RESOURCES_OUT): $(wildcard icons/tools/* icons/logo/* icons/objects/*)
 

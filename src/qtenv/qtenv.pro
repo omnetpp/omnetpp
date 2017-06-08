@@ -88,7 +88,6 @@ SOURCES += mainwindow.cc \
     preferencesdialog.cc \
     objecttreeinspector.cc \
     osgcanvasinspector.cc \
-    osgviewer.cc \
     rununtildialog.cc \
     submoduleitem.cc \
     modulecanvasviewer.cc \
@@ -99,7 +98,6 @@ SOURCES += mainwindow.cc \
     canvasviewer.cc \
     layersdialog.cc \
     fileeditor.cc \
-    cameramanipulators.cc \
     animationcontrollerdialog.cc \
     messageanimator.cc \
     displayupdatecontroller.cc \
@@ -118,7 +116,8 @@ SOURCES += mainwindow.cc \
     charttickdecimal.cc \
     exponentialspinbox.cc \
     genericobjecttreenodes.cc \
-    highlighteritemdelegate.cc
+    highlighteritemdelegate.cc \
+    iosgviewer.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -156,7 +155,6 @@ HEADERS += mainwindow.h \
     preferencesdialog.h \
     objecttreeinspector.h \
     osgcanvasinspector.h \
-    osgviewer.h \
     rununtildialog.h \
     submoduleitem.h \
     modulecanvasviewer.h \
@@ -167,7 +165,6 @@ HEADERS += mainwindow.h \
     canvasviewer.h \
     layersdialog.h \
     fileeditor.h \
-    cameramanipulators.h \
     animationcontrollerdialog.h \
     messageanimator.h \
     displayupdatecontroller.h \
@@ -187,7 +184,8 @@ HEADERS += mainwindow.h \
     charttickdecimal.h \
     exponentialspinbox.h \
     genericobjecttreenodes.h \
-    highlighteritemdelegate.h
+    highlighteritemdelegate.h \
+    iosgviewer.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 

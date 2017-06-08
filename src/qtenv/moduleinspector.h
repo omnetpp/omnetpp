@@ -38,7 +38,7 @@ class cOsgCanvas;
 
 namespace qtenv {
 
-class OsgViewer;
+class IOsgViewer;
 class ModuleCanvasViewer;
 class GraphicsLayer;
 
@@ -104,10 +104,7 @@ protected:
     QToolBar *toolbar;
 
     ModuleCanvasViewer *canvasViewer;
-
-#ifdef WITH_OSG
-    OsgViewer *osgViewer;
-#endif
+    IOsgViewer *osgViewer = nullptr;
 
 public slots:
     void onLayoutVisualizationStarts(cModule *module, QGraphicsScene *layoutingScene);
@@ -121,10 +118,8 @@ protected:
     QToolBar *createToolbar(bool isTopLevel);
     void refreshOsgViewer();
 
-#ifdef WITH_OSG
     cOsgCanvas *getOsgCanvas();
     void setOsgCanvas(cOsgCanvas *osgCanvas);
-#endif
 
     QSize sizeHint() const override { return QSize(600, 500); }
     void wheelEvent(QWheelEvent *event) override;

@@ -12,6 +12,7 @@
 //  `license' for details on this and other legal matters.
 //--------------------------------------------------------------
 
+
 enum omnetpp::cOsgCanvas::ViewerStyle;
 enum omnetpp::cOsgCanvas::CameraManipulatorType;
 
@@ -21,20 +22,15 @@ cplusplus
 namespace omnetpp {
 
 typedef cFigure::Color Color;
+typedef cOsgCanvas::Vec3d Vec3d;
 
-#ifdef WITH_OSGEARTH
-  Register_Enum(cOsgCanvas::ViewerStyle, (cOsgCanvas::STYLE_GENERIC, cOsgCanvas::STYLE_EARTH));
-  Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanvas::CAM_TRACKBALL, cOsgCanvas::CAM_EARTH));
-#else
-  Register_Enum(cOsgCanvas::ViewerStyle, (cOsgCanvas::STYLE_GENERIC));
-  Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanvas::CAM_TRACKBALL));
-#endif
+Register_Enum(cOsgCanvas::ViewerStyle, (cOsgCanvas::STYLE_GENERIC, cOsgCanvas::STYLE_EARTH));
+Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanvas::CAM_TRACKBALL, cOsgCanvas::CAM_EARTH));
 
 } // namespace omnetpp
 
 #include <osg/Node>
 #include <osg/Group>
-//TODO #include <osgEarth/Viewpoint>
 
 namespace osg {
     inline std::ostream& operator<<(std::ostream& os, Node *node) {
@@ -67,20 +63,33 @@ inline std::string osgNode_getDescription(osg::Node *node, unsigned int i)
 #endif
 }
 
-//TODO namespace osgEarth {
-//TODO     inline std::ostream& operator<<(std::ostream& os, const Viewpoint& viewpoint) {
-//TODO         return os << viewpoint.toString();
-//TODO     }
-//TODO } // namespace
-
 }}
 
-namespace omnetpp;  //XXX this ought to be conditional on USE_NAMESPACE but cannot; see hack above!
+namespace omnetpp;
 
 class osg::Node extends void;
-class osgEarth::Viewpoint extends void;
-class cOsgCanvas extends cOwnedObject;
+
 struct Color;
+struct Vec3d;
+
+struct cOsgCanvas::Viewpoint
+{
+    bool valid @editable;
+    Vec3d eye @tostring(.str()); // TODO fromstr for Vec3d
+    Vec3d center @tostring(.str());
+    Vec3d up @tostring(.str());
+}
+
+struct cOsgCanvas::EarthViewpoint
+{
+    bool valid @editable;
+    double longitude @editable;
+    double latitude @editable;
+    double altitude @editable;
+    double heading @editable;
+    double pitch @editable;
+    double range @editable;
+}
 
 class cOsgCanvas extends cOwnedObject
 {
@@ -91,30 +100,14 @@ class cOsgCanvas extends cOwnedObject
     double fieldOfViewAngle @editable @group(viewer hints);
     double zNear @editable @group(viewer hints);
     double zFar @editable @group(viewer hints);
-//TODO    osgEarth::Viewpoint earthViewpoint @group(viewer hints) @tostring(.toString());
+    cOsgCanvas::Viewpoint genericViewpoint;
+    cOsgCanvas::EarthViewpoint earthViewpoint;
 }
+
 namespace osg;
 
 class Node extends void
 {
-    //string className @getter(className);
     string descriptions[] @getter(osgNode_getDescription($,i)) @sizeGetter(osgNode_getNumDescriptions($));
     Node *children[] @getter(osgNode_getChild($,i)) @sizeGetter(osgNode_getNumChildren($));
 }
-
-
-//TODO
-//namespace osgEarth;
-//
-//class Viewpoint extends void
-//{
-//    string name;
-//    bool isValid @getter(isValid);
-//    double x @getter(x);
-//    double y @getter(y);
-//    double z @getter(z);
-//    double heading @editable;
-//    double pitch @editable;
-//    double range @editable;
-//    //TODO string SRS; //const osgEarth::SpatialReference *getSRS()
-//}

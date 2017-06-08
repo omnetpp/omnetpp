@@ -17,21 +17,19 @@
 #ifndef __OMNETPP_QTENV_OSGCANVASINSPECTOR_H
 #define __OMNETPP_QTENV_OSGCANVASINSPECTOR_H
 
-#ifdef WITH_OSG
-
 #include "inspector.h"
 
 namespace omnetpp {
 namespace qtenv {
 
-class OsgViewer;
+class IOsgViewer;
 
 class QTENV_API OsgCanvasInspector : public Inspector
 {
     Q_OBJECT
 
    private:
-      OsgViewer *osgViewer;
+      IOsgViewer *osgViewer;
 
    public:
       OsgCanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
@@ -42,7 +40,5 @@ class QTENV_API OsgCanvasInspector : public Inspector
 
 } // namespace qtenv
 } // namespace omnetpp
-
-#endif // WITH_OSG
 
 #endif

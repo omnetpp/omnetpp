@@ -88,24 +88,6 @@ void std_sim_descriptor_dummy() {}
 
 }  // namespace omnetpp
 
-#ifndef WITH_OSG
-
-// dummy version to make Node's descriptor class compile
-namespace osg {
-    class Node {
-      public:
-        const char *getDescription(int) const {return "";}
-        int getNumDescriptions() const {return 0;}
-    };
-    inline std::ostream& operator<<(std::ostream& os, Node *node) { return os; }
-} // namespace
-
-inline int osgNode_getNumChildren(osg::Node *node) { return 0; }
-inline osg::Node *osgNode_getChild(osg::Node *node, int i) { return nullptr; }
-
-#endif // WITH_OSG
-
-
 }}
 
 namespace omnetpp;

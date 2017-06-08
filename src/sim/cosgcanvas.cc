@@ -16,16 +16,22 @@
 
 #include "omnetpp/cosgcanvas.h"
 
-#ifdef WITH_OSG
+/*
+ * Implementation note: We don't want OMNeT++ to link directly with the OSG libraries
+ * even when when WITH_OSG is defined, because they pull in tons of other libraries
+ * while most simulations don't use 3D visualization at all. OSG support is loaded
+ * dynamically by Qtenv from a shared lib when needed.
+ *
+ * Therefore, cOsgCanvas MUST NOT CREATE ANY LINKER REFERENCE TO THE OSG LIBS.
+ * osg::Node::ref() and unref(), the use of which cannot be avoided, are accessed
+ * via cEnvir::refOsgNode() and unrefOsgNode() that delegate to the dynamically
+ * loaded OSG support library.
+ */
 
 #include <cmath>
 #include <limits>
 #include "omnetpp/globals.h"
 #include "omnetpp/osgutil.h" // OmnetppObjectNode
-#include "osg/Node"
-#ifdef WITH_OSGEARTH
-#include "osgEarth/Viewpoint"
-#endif
 
 namespace omnetpp {
 
@@ -36,22 +42,19 @@ static double NaN = std::numeric_limits<double>::quiet_NaN();
 inline void ref(osg::Node *scene)
 {
     if (scene)
-        scene->ref();
+        getEnvir()->refOsgNode(scene);
 }
 
 inline void unref(osg::Node *scene)
 {
     if (scene)
-        scene->unref();
+        getEnvir()->unrefOsgNode(scene);
 }
 
 cOsgCanvas::cOsgCanvas(const char *name, ViewerStyle viewerStyle, osg::Node *scene) : cOwnedObject(name),
     scene(scene), viewerStyle(viewerStyle), clearColor(Color(128, 128, 220)),
     cameraManipulatorType(CAM_AUTO), fieldOfViewAngle(30), zNear(NaN), zFar(NaN),
-    genericViewpoint(new Viewpoint())
-#ifdef WITH_OSGEARTH
-    ,earthViewpoint(new osgEarth::Viewpoint())
-#endif
+    genericViewpoint(new Viewpoint()), earthViewpoint(new EarthViewpoint())
 {
     ref(scene);
 }
@@ -60,9 +63,7 @@ cOsgCanvas::~cOsgCanvas()
 {
     unref(scene);
     delete genericViewpoint;
-#ifdef WITH_OSGEARTH
     delete earthViewpoint;
-#endif
 }
 
 void cOsgCanvas::copy(const cOsgCanvas& other)
@@ -74,9 +75,7 @@ void cOsgCanvas::copy(const cOsgCanvas& other)
     fieldOfViewAngle = other.fieldOfViewAngle;
     zNear = other.zNear;
     zFar = other.zFar;
-#ifdef WITH_OSGEARTH
     *earthViewpoint = *other.earthViewpoint;
-#endif
 }
 
 cOsgCanvas& cOsgCanvas::operator=(const cOsgCanvas& other)
@@ -117,26 +116,16 @@ void cOsgCanvas::setGenericViewpoint(const Viewpoint& viewpoint)
     *genericViewpoint = viewpoint;
 }
 
-#ifdef WITH_OSGEARTH
-void cOsgCanvas::setEarthViewpoint(const osgEarth::Viewpoint& viewpoint)
+void cOsgCanvas::setEarthViewpoint(const EarthViewpoint& viewpoint)
 {
     *earthViewpoint = viewpoint;
 }
-#endif
 
-cOsgCanvas::Vec3d::operator osg::Vec3d() const {
-    return osg::Vec3d(x, y, z);
+std::string cOsgCanvas::Vec3d::str()
+{
+    std::stringstream ss;
+    ss << "(" << x << ", " << y << ", " << z << ")";
+    return ss.str();
 }
 
 } // namespace omnetpp
-
-#else
-
-// Dummy cOsgCanvas class in case OpenSceneGraph is not available
-namespace omnetpp {
-
-cOsgCanvas::cOsgCanvas() : cOwnedObject() { }
-
-}
-
-#endif // WITH_OSG

@@ -14,15 +14,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef WITH_OSG
-
 #include "qtenvdefs.h"
 
 #include "inspectorfactory.h"
 #include "osgcanvasinspector.h"
-#include "osgviewer.h"
+#include "iosgviewer.h"
 #include "omnetpp/cosgcanvas.h"
-#include <osgDB/ReadFile>  // TMP
 
 namespace omnetpp {
 namespace qtenv {
@@ -42,7 +39,7 @@ Register_InspectorFactory(OsgCanvasInspectorFactory);
 
 OsgCanvasInspector::OsgCanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f) : Inspector(parent, isTopLevel, f)
 {
-    osgViewer = new OsgViewer();
+    osgViewer = IOsgViewer::createOne();
     QGridLayout *grid = new QGridLayout;
     grid->addWidget(osgViewer, 0, 0);
     grid->setMargin(0);
@@ -69,6 +66,3 @@ void OsgCanvasInspector::refresh()
 
 }  // namespace qtenv
 }  // namespace omnetpp
-
-#endif  // WITH_OSG
-

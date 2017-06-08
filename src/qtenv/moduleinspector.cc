@@ -44,7 +44,7 @@
 #include "inspectorfactory.h"
 #include "arrow.h"
 #include "canvasrenderer.h"
-#include "osgviewer.h"
+#include "iosgviewer.h"
 #include "mainwindow.h"
 #include "modulecanvasviewer.h"
 #include "inspectorutil.h"
@@ -151,11 +151,7 @@ void ModuleInspector::createViews(bool isTopLevel)
     stackedLayout = new QStackedLayout();
     stackedLayout->addWidget(canvasViewer);
 
-#ifdef WITH_OSG
-    osgViewer = new OsgViewer();
-    connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject *>&)), this, SLOT(onObjectsPicked(const std::vector<cObject *>&)));
-    stackedLayout->addWidget(osgViewer);
-#endif
+    // the osgViewer will be created and added the first time the user switches to it (if ever)
 
     toolbar = createToolbar(isTopLevel);
 
@@ -207,9 +203,8 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     action->setShortcut(Qt::CTRL + Qt::Key_Minus);
     canvasZoomOutAction = action;
 
-#ifdef WITH_OSG
     // osg-specific
-    action = toolbar->addAction(QIcon(":/tools/reset"), "Reset view", osgViewer, SLOT(applyViewerHints()));
+    action = toolbar->addAction(QIcon(":/tools/reset"), "Reset view");
     resetOsgViewAction = action;
     toolbar->addSeparator();
 
@@ -221,7 +216,6 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
     action = toolbar->addAction(QIcon(":/tools/modulegraphics"), "Module", this, SLOT(switchToCanvasView()));
     action->setCheckable(true);
     switchToCanvasViewAction = action;
-#endif
 
     // this is to fill the remaining space on the toolbar, replacing the ugly default gradient on Mac
     toolbar->setAutoFillBackground(true);
@@ -244,9 +238,7 @@ void ModuleInspector::doSetObject(cObject *obj)
     canvasViewer->setObject(module);
     canvasViewer->clear();
 
-#ifdef WITH_OSG
     setOsgCanvas(nullptr);
-#endif
 
     getQtenv()->getMessageAnimator()->clearInspector(this);
 
@@ -273,21 +265,16 @@ void ModuleInspector::doSetObject(cObject *obj)
             setEnabled(false);
     }
 
-#ifdef WITH_OSG
     cOsgCanvas *osgCanvas = getOsgCanvas();
     setOsgCanvas(osgCanvas);
 
-    bool enabled = ((getPref(PREF_MODE, 1).toInt() == 1));
+    bool enabled = ((getPref(PREF_MODE, IOsgViewer::isOsgPreferred() ? 1 : 0).toInt() == 1));
     if (osgCanvas != nullptr && enabled)
         switchToOsgView();
     else
         switchToCanvasView();
-#else
-    switchToCanvasView();
-#endif
 }
 
-#ifdef WITH_OSG
 cOsgCanvas *ModuleInspector::getOsgCanvas()
 {
     cModule *module = dynamic_cast<cModule *>(getObject());
@@ -297,11 +284,10 @@ cOsgCanvas *ModuleInspector::getOsgCanvas()
 
 void ModuleInspector::setOsgCanvas(cOsgCanvas *osgCanvas)
 {
-    osgViewer->setOsgCanvas(osgCanvas);
+    if (osgViewer)
+        osgViewer->setOsgCanvas(osgCanvas);
     switchToOsgViewAction->setEnabled(osgCanvas != nullptr);
 }
-
-#endif  // WITH_OSG
 
 void ModuleInspector::onFontChanged()
 {
@@ -322,12 +308,11 @@ void ModuleInspector::updateToolbarLayout()
                 canvasViewer->horizontalScrollBar()->height() + toolbarSpacing);
     }
     else {
-#ifdef WITH_OSG
-        osgViewer->setLayout(toolbarLayout);
+        if (osgViewer)
+            osgViewer->setLayout(toolbarLayout);
         // the osg mode never displays scrollbars.
         toolbarLayout->setContentsMargins(toolbarSpacing, toolbarSpacing,
                                           toolbarSpacing, toolbarSpacing);
-#endif
     }
 }
 
@@ -353,7 +338,6 @@ QImage ModuleInspector::getScreenshot()
 {
     QImage image = grab().toImage();
 
-#ifdef WITH_OSG
     if (stackedLayout->currentWidget() == osgViewer) {
         // QOpenGLWidget can't be simply grab()-bed,
         // so we have to stitch the image back together
@@ -366,7 +350,6 @@ QImage ModuleInspector::getScreenshot()
             p.drawPixmap(toolbar->mapTo(this, QPoint(0, 0)), toolbar->grab());
         p.end();
     }
-#endif
 
     return image;
 }
@@ -415,13 +398,13 @@ void ModuleInspector::refresh()
 
 void ModuleInspector::refreshOsgViewer()
 {
-#ifdef WITH_OSG
-    cOsgCanvas *osgCanvas = getOsgCanvas();
-    if (osgViewer->getOsgCanvas() != osgCanvas)
-        setOsgCanvas(osgCanvas);
-    else
-        osgViewer->refresh();
-#endif
+    if (osgViewer) {
+        cOsgCanvas *osgCanvas = getOsgCanvas();
+        if (osgViewer->getOsgCanvas() != osgCanvas)
+            setOsgCanvas(osgCanvas);
+        else
+            osgViewer->refresh();
+    }
 }
 
 void ModuleInspector::postRefresh()
@@ -768,8 +751,21 @@ void ModuleInspector::zoomIconsBy(double mult)
 
 void ModuleInspector::switchToOsgView()
 {
-#ifdef WITH_OSG
+    // creating and hooking up the viewer if does not yet exist.
+    if (!osgViewer) {
+        osgViewer = IOsgViewer::createOne();
+        connect(osgViewer, SIGNAL(objectsPicked(const std::vector<cObject *>&)), this, SLOT(onObjectsPicked(const std::vector<cObject *>&)));
+        stackedLayout->addWidget(osgViewer);
+
+        connect(resetOsgViewAction, SIGNAL(triggered()), osgViewer, SLOT(applyViewerHints()));
+        osgViewer->setOsgCanvas(getOsgCanvas());
+
+        if (toolbarLayout)
+            osgViewer->setLayout(toolbarLayout);
+    }
+
     stackedLayout->setCurrentWidget(osgViewer);
+    osgViewer->enable();
     updateToolbarLayout();
 
     switchToCanvasViewAction->setChecked(false);
@@ -783,7 +779,6 @@ void ModuleInspector::switchToOsgView()
 
     setPref(PREF_MODE, 1);
     update();
-#endif
 }
 
 void ModuleInspector::switchToCanvasView()
@@ -791,18 +786,16 @@ void ModuleInspector::switchToCanvasView()
     stackedLayout->setCurrentWidget(canvasViewer);
     updateToolbarLayout();
 
-#ifdef WITH_OSG  // otherwise these don't exist
+    if (osgViewer)
+        osgViewer->disable();
     switchToCanvasViewAction->setChecked(true);
     switchToOsgViewAction->setChecked(false);
-#endif
 
     // show/hide view-specific actions
     canvasRelayoutAction->setVisible(true);
     canvasZoomInAction->setVisible(true);
     canvasZoomOutAction->setVisible(true);
-#ifdef WITH_OSG  // otherwise this doesn't exist
     resetOsgViewAction->setVisible(false);
-#endif
 
     if (object) {
         QPointF center = getPref(PREF_CENTER, QPointF()).toPointF();

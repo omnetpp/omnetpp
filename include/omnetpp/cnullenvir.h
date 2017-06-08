@@ -149,6 +149,8 @@ class SIM_API cNullEnvir : public cEnvir
     virtual int getParsimProcId() const override {return 0;}
     virtual int getParsimNumPartitions() const override {return 1;}
     virtual unsigned long getUniqueNumber() override  {return nextUniqueNumber++;}
+    virtual void refOsgNode(osg::Node *scene) override {}
+    virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override  {return false;}
     virtual void attachDebugger() override {}
 

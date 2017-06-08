@@ -1291,15 +1291,11 @@ cCanvas *cModule::getCanvas() const
 
 cOsgCanvas *cModule::getOsgCanvas() const
 {
-#ifndef WITH_OSG
-    throw cRuntimeError("cOsgCanvas is not available: OMNeT++ has been compiled without OpenSceneGraph support");
-#else
     if (!osgCanvas) {
         osgCanvas = new cOsgCanvas("osgCanvas");
         const_cast<cModule*>(this)->take(osgCanvas);
     }
     return osgCanvas;
-#endif
 }
 
 void cModule::callInitialize()

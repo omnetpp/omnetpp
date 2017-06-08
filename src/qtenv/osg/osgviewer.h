@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_OSGVIEWER_H
-#define __OMNETPP_QTENV_OSGVIEWER_H
+#ifndef __OMNETPP_QTENV_OSG_OSGVIEWER_H
+#define __OMNETPP_QTENV_OSG_OSGVIEWER_H
 
-#ifdef WITH_OSG
+#include "qtenv/iosgviewer.h"
 
 #include "qtenv.h"
 #include "omnetpp/cosgcanvas.h"
@@ -58,10 +58,10 @@ class HeartBeat : public QObject {
 public:
     static void init(osg::ref_ptr<osgViewer::CompositeViewer> viewer);
     static void start();
-    static void uninit();
+    static void stop();
 };
 
-class QTENV_API OsgViewer : public QOpenGLWidget
+class QTENV_API OsgViewer : public IOsgViewer
 {
     Q_OBJECT
 
@@ -118,7 +118,6 @@ class QTENV_API OsgViewer : public QOpenGLWidget
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
 
     bool event(QEvent *event) override;
 
@@ -130,21 +129,24 @@ class QTENV_API OsgViewer : public QOpenGLWidget
     void setCameraManipulator(QAction *sender); // will get the type from the QAction data
 
   public slots:
-    void applyViewerHints();
+    void applyViewerHints() override;
 
   public:
     OsgViewer(QWidget *parent=nullptr);
 
-    void setOsgCanvas(cOsgCanvas *canvas);
-    cOsgCanvas *getOsgCanvas() const {return osgCanvas;}
+    void setOsgCanvas(cOsgCanvas *canvas) override;
+    cOsgCanvas *getOsgCanvas() const override {return osgCanvas;}
 
-    void refresh();
-    void resetViewer();
+    void enable() override;
+    void disable() override;
+
+    void refresh() override;
+    void resetViewer() override;
 
     static void uninit();
 
     // coordinates in local widget frame
-    std::vector<cObject *> objectsAt(const QPoint &pos);
+    std::vector<cObject *> objectsAt(const QPoint &pos) override;
 
     ~OsgViewer();
 
@@ -155,6 +157,4 @@ class QTENV_API OsgViewer : public QOpenGLWidget
 } // qtenv
 } // omnetpp
 
-#endif // WITH_OSG
-
-#endif
+#endif // __OMNETPP_QTENV_OSG_OSGVIEWER_H

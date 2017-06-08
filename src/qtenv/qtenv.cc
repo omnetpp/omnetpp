@@ -72,7 +72,7 @@
 #include "timelineinspector.h"
 #include "objecttreeinspector.h"
 #include "canvasinspector.h"
-#include "osgviewer.h"
+#include "iosgviewer.h"
 #include "messageanimator.h"
 #include "displayupdatecontroller.h"
 #include "messageanimator.h"
@@ -649,9 +649,7 @@ void Qtenv::doRun()
     }
     inspectors.clear();
 
-#ifdef WITH_OSG
-    OsgViewer::uninit();
-#endif
+    IOsgViewer::uninit();
 
     // clear log
     logBuffer.clear();
@@ -2259,6 +2257,16 @@ void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp
         getQtenv()->runSimulation(runMode, 0, 0, nullptr, mod);
         mainWindow->setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
+}
+
+void Qtenv::refOsgNode(osg::Node *scene)
+{
+    IOsgViewer::refNode(scene);
+}
+
+void Qtenv::unrefOsgNode(osg::Node *scene)
+{
+    IOsgViewer::unrefNode(scene);
 }
 
 void Qtenv::inspect()

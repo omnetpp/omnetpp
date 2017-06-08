@@ -14,12 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_CAMERAMANIPULATORS_H
-#define __OMNETPP_QTENV_CAMERAMANIPULATORS_H
+#ifndef __OMNETPP_QTENV_OSG_CAMERAMANIPULATORS_H
+#define __OMNETPP_QTENV_OSG_CAMERAMANIPULATORS_H
 
-#ifdef WITH_OSG
-
-#include "qtenvdefs.h"
+#include "qtenv/qtenvdefs.h"
 
 #include <osgGA/OrbitManipulator>
 
@@ -53,6 +51,4 @@ protected:
 } // namespace qtenv
 } // namespace omnetpp
 
-#endif // WITH_OSG
-
-#endif // __OMNETPP_QTENV_CAMERAMANIPULATORS_H
+#endif // __OMNETPP_QTENV_OSG_CAMERAMANIPULATORS_H
