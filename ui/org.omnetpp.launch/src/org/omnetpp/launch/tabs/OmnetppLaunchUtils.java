@@ -20,8 +20,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -41,7 +44,10 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.Debug;
@@ -64,6 +70,7 @@ public class OmnetppLaunchUtils {
 	// copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins)
     private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature";
     private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature";
+    public static final String DEBUG_EXE_SUFFIX = "_dbg";
 
     private static final int HTTP_PORT_START = 9000;
     private static final int HTTP_PORT_END = 9999;
@@ -263,6 +270,7 @@ public class OmnetppLaunchUtils {
         String workingDir = "";
         String executable = "";
         String iniFile = "omnetpp.ini";
+        String projectPath = "";
 
         // check the current selection and figure out the initial values if possible
         if (selectedResource != null) {
@@ -279,11 +287,14 @@ public class OmnetppLaunchUtils {
             // if a directory or project is selected, use it as working dir
             if (selectedResource instanceof IContainer)
                 workingDir = selectedResource.getFullPath().toString();
+
+            projectPath = selectedResource.getProject().getFullPath().toString();
         }
 
         if (StringUtils.isEmpty(executable) && !StringUtils.isEmpty(workingDir))
             executable = getDefaultExeName(workingDir);
 
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectPath);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, workingDir);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, executable);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile);
@@ -293,6 +304,8 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_BATCH_SIZE, 1);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "");
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH, IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES);
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD, IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD_ASK);
 
         // minimal CDT specific attributes required to start without errors
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
@@ -338,10 +351,11 @@ public class OmnetppLaunchUtils {
         IPath workingdirLocation = getLocationForWorkspacePath(StringUtils.substituteVariables(workingdirStr),"/",false);
 
         // executable name
-        String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
+        String exePathAndName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
+        String exeName = "";
 
         IProject project;
-        if (StringUtils.isEmpty(exeName)) {  // this means opp_run
+        if (StringUtils.isEmpty(exePathAndName)) {  // this means opp_run
             exeName = OmnetppDirs.getOmnetppBinDir()+"/opp_run";
             // detect if the current executable is release or debug
             // if we run a release executable we have to use opp_run_release (instead of opp_run)
@@ -354,12 +368,39 @@ public class OmnetppLaunchUtils {
                 throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: no related open C++ project"));
         }
         else {
-            String projectName = new Path(exeName).segment(0);
-            newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
-            exeName = new Path(exeName).removeFirstSegments(1).toString(); // project-relative path
+            String projectName = new Path(exePathAndName).segment(0);
             project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-            if (isDebugLaunch && (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID)))
-                throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: the executable's project ("+projectName+") is not an open C++ project"));
+            newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
+            if (isDebugLaunch) {
+                // check if there is a project as otherwise we cannot debug
+                if (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID))
+                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: the executable's project ("+projectName+") is not an open C++ project"));
+
+                // special handling of debug launch name (attach _dbg if not present as we always try to start and exe with a _dbg ending)
+                if (!exePathAndName.endsWith(DEBUG_EXE_SUFFIX))
+                    exePathAndName += DEBUG_EXE_SUFFIX;
+
+                IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(exePathAndName));
+                if (!file.exists())
+                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,
+                            "Cannot launch simulation in debug mode: the executable ("+exePathAndName+") does not exisits. " +
+                            "Switch your active configuration to 'debug' and rebuild the project!"));
+            } else {
+                // we are in run mode. Test if the release executable exists. If not, try the one with _dbg ending (if present)
+                IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(exePathAndName));
+                if (!file.exists()) {
+                    // TOD we should support either a fallback to debug or a forced release buils (configurable somehow)
+                    String fallbackExePathAndName = exePathAndName + DEBUG_EXE_SUFFIX;
+                    file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fallbackExePathAndName));
+                    if (file.exists()) // if the debug version exists use that for running
+                        exePathAndName = fallbackExePathAndName;
+                    else
+                        throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,
+                                "Cannot launch simulation in run mode: the executable ("+exePathAndName+") does not exisits. " +
+                                "Switch your active configuration to 'release' and rebuild the project!"));
+                }
+            }
+            exeName = new Path(exePathAndName).removeFirstSegments(1).toString(); // project-relative path
         }
 
         if (Platform.getOS().equals(Platform.OS_WIN32) && !exeName.matches("(?i).*\\.(exe|cmd|bat)$"))
@@ -426,8 +467,11 @@ public class OmnetppLaunchUtils {
         if (StringUtils.isNotBlank(shLibStr)) {
             String[] libs = StringUtils.split(shLibStr);
             // convert to file system location
-            for (int i = 0 ; i< libs.length; i++)
+            for (int i = 0 ; i< libs.length; i++) {
                 libs[i] = makeRelativePathTo(getLocationForWorkspacePath(libs[i], workingdirStr, true), workingdirLocation).toString();
+                if (isDebugLaunch && !libs[i].endsWith(DEBUG_EXE_SUFFIX))
+                    libs[i] += DEBUG_EXE_SUFFIX;
+            }
             args += " -l " + StringUtils.join(libs," -l ")+" ";
         }
 
@@ -549,10 +593,10 @@ public class OmnetppLaunchUtils {
         IConfiguration cfg = ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration();
         while (cfg != null) {
             // compare with the release toolchain names. (they must match with the IDs defined in the plugin.xml)
-            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.release") || cfg.getId().equals("org.omnetpp.cdt.msvc.config.release"))
+            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.release"))
                 return Boolean.TRUE;
             // for a debug toolchain we must use opp_run (which is also built in debug mode)
-            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.debug") || cfg.getId().equals("org.omnetpp.cdt.msvc.config.debug"))
+            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.debug"))
                 return Boolean.FALSE;
             cfg = cfg.getParent();
         }
@@ -598,7 +642,7 @@ public class OmnetppLaunchUtils {
             if (project.hasNature(CDT_CC_NATURE_ID)) {
                 Boolean projectReleaseMode = isReleaseModeCDTProject(project);
                 if (projectReleaseMode != null && commonReleaseMode != null && projectReleaseMode != commonReleaseMode)
-                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation: all of the projects must be compiled either in debug or relase mode."));
+                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation: all of the projects must be compiled with either the 'debug' or 'relase' configuration. Check the name of your configurations."));
 
                 if (projectReleaseMode != null)
                     commonReleaseMode = projectReleaseMode;
@@ -883,5 +927,84 @@ public class OmnetppLaunchUtils {
     public final static String VAR_NED_PATH = "opp_ned_path";
     public final static String VAR_SHARED_LIBS = "opp_shared_libs";
     public final static String VAR_IMAGE_PATH = "opp_image_path";
+
+    /**
+     * Walk through all projects and set the active configuration to match the launch mode, in case the
+     * launch config was configured to do this. It can also prompt the user in a dialog whether to switch or not.
+     */
+    public static void setActiveProjectConfigurationsIfNeeded(ILaunchConfiguration config, String mode, IProject[] projects) throws CoreException {
+        // set all dependent projects according to the current mode
+        int switchBeforeBuildValue = config.getAttribute(IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD, IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD_ASK);
+        if (switchBeforeBuildValue != IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD_NEVER) {
+            boolean configSwitchRequested = true;
+            String configNameBasedOnMode = ILaunchManager.DEBUG_MODE.equals(mode) ? "debug" : "release";
+
+            boolean askUser = switchBeforeBuildValue == IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD_ASK;
+            if (askUser) {
+                configSwitchRequested = false;  // assume we don't have to switch configs (all configs are set properly)
+                for (IProject p : projects) {
+                    ICProjectDescription projDesc = CDTPropertyManager.getProjectDescription(p);
+                    // check is any config should set to active
+                    if (projDesc != null && projDesc.getActiveConfiguration() != null)
+                        configSwitchRequested |= !configNameBasedOnMode.equals(projDesc.getActiveConfiguration().getName());
+                }
+                if (configSwitchRequested) {
+                    final int[] dialogResult = new int[2];
+                    Display.getDefault().syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(
+                                    Display.getCurrent().getActiveShell(), "Change Active Configuration?",
+                                    "You are trying to " + (ILaunchManager.DEBUG_MODE.equals(mode) ? "debug" : "run")+
+                                    " this program and the active configuration on the project is not set to '"+configNameBasedOnMode+
+                                    "'. Do you want to activate the '"+configNameBasedOnMode+"' configuration on the project (and on all of its dependencies)?"+
+                                    "\n\nNote that choosing 'No' may result in linker or runtime errors. You can change the default behavior on the "+
+                                    "Launch configuration dialog's 'Main' tab, in the 'More' / 'Build before launch' section.",
+                                    "Always do that in the future", false, null, null);
+                            dialogResult[0] = dialog.getReturnCode();
+                            dialogResult[1] = dialog.getToggleState() ? 1 : 0;
+
+                            // TODO handle persistence of the Do that in future checkbox
+                        }
+                    });
+                    configSwitchRequested = (dialogResult[0] == IDialogConstants.YES_ID);
+                    // change the configuration if the toggle was set to "do that in the fututre"
+                    ILaunchConfigurationWorkingCopy wc = config.getWorkingCopy();
+                    if (dialogResult[1] == 1) {  // if the user selected to persist the choice
+                        wc.setAttribute(IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD,
+                                dialogResult[0] == IDialogConstants.YES_ID ?
+                                        IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD_AUTO :
+                                        IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD_NEVER);
+                        wc.doSave();
+                    }
+                }
+            }
+
+            if (configSwitchRequested)
+                for (IProject p : projects) {
+                    ICProjectDescription projDesc = CDTPropertyManager.getProjectDescription(p);
+                    if (projDesc != null) {
+                        ICConfigurationDescription configDesc = projDesc.getConfigurationByName(configNameBasedOnMode);
+                        if (configDesc != null && !configNameBasedOnMode.equals(projDesc.getActiveConfiguration().getName())) {
+                            configDesc.setActive();
+                            CDTPropertyManager.performOk(null);
+                        }
+                    }
+                }
+        }
+    }
+
+    /**
+     * Return the project mapped to the LaunchConfiguration.
+     */
+    public static IProject getMappedProject(ILaunchConfiguration config) throws CoreException {
+        IResource[] res = config.getMappedResources();
+        for (IResource r : res)
+            if (r instanceof IProject)
+                return (IProject)r;
+
+        // fall back if no project was associated. Use the associated resoure's project itself
+        return (res.length > 0) ? res[0].getProject() : null;
+    }
 
 }

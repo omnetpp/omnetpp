@@ -11,9 +11,11 @@ import org.eclipse.cdt.dsf.debug.service.IRunControl;
 import org.eclipse.cdt.dsf.gdb.launching.GdbLaunchDelegate;
 import org.eclipse.cdt.dsf.service.DsfServiceEventHandler;
 import org.eclipse.cdt.dsf.service.DsfSession;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -107,7 +109,29 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
 
         // launch the debug session
         super.launch(launch.getLaunchConfiguration(), mode, launch, monitor);
+    }
 
+    @Override
+    public boolean buildForLaunch(ILaunchConfiguration config, String mode, IProgressMonitor monitor) throws CoreException {
+        SubMonitor localmonitor = SubMonitor.convert(monitor, "", 1); //$NON-NLS-1$
+        try {
+            IProject project = OmnetppLaunchUtils.getMappedProject(config);
+            if (project == null)
+                return false;
+
+            int buildBeforeValue = config.getAttribute(IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH, IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES);
+            IProject[] projects = (buildBeforeValue == IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_PROJECT_ONLY) ? new IProject[] { project } :
+                       (buildBeforeValue == IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES) ? computeReferencedBuildOrder(new IProject[] { project }) : null;
+            if (projects == null)
+                return false;
+
+            OmnetppLaunchUtils.setActiveProjectConfigurationsIfNeeded(config, mode, projects);
+
+            buildProjects(projects, localmonitor.newChild(1));
+            return false;
+        } finally {
+            localmonitor.done();
+        }
     }
 
     /**

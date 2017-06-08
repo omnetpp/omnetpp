@@ -191,6 +191,22 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_ADDITIONAL_ARGS = OMNETPP_LAUNCH_ID + ".ADDITIONAL_ARG";
 
     /**
+     * Whether to build before launch (0 = Project + dependencies, 1 = project only, 2 = Never build (nothing))
+     */
+    public static final String OPP_BUILD_BEFORE_LAUNCH = OMNETPP_LAUNCH_ID + ".BUILD_BEFORE_LAUNCH";
+    public static final int OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES = 0;
+    public static final int OPP_BUILD_BEFORE_LAUNCH_PROJECT_ONLY = 1;
+    public static final int OPP_BUILD_BEFORE_LAUNCH_NONE = 2;
+
+    /**
+     * Whether to switch active configuration before building (0 = Ask, 1 = Automatic, 2 = Never switch)
+     */
+    public static final String OPP_SWITCH_CONFIG_BEFORE_BUILD = OMNETPP_LAUNCH_ID + ".SWITCH_CONFIG_BEFORE_BUILD";
+    public static final int OPP_SWITCH_CONFIG_BEFORE_BUILD_ASK = 0;
+    public static final int OPP_SWITCH_CONFIG_BEFORE_BUILD_AUTO = 1;
+    public static final int OPP_SWITCH_CONFIG_BEFORE_BUILD_NEVER = 2;
+
+    /**
      * The default value for the gdbinit file (containing pretty printers)
      */
     public static final String OPP_GDB_INIT_FILE = "${opp_root}/misc/gdb/gdbinit.py";

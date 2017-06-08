@@ -115,6 +115,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     protected Button fVerboseCheckbox;
     protected Button fStopBatchOnErrorCheckbox;
 
+    // build before launch
+    protected Combo fBuildBeforeLaunchCombo;
+    protected Combo fSwitchBeforeBuildCombo;
+
     private ILaunchConfiguration config;
     private boolean updateDialogStateInProgress = false;
     private boolean isDebugLaunch = false;
@@ -194,8 +198,9 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         createOptionsGroup(composite, 1);
 
         Composite advancedGroup = createAdvancedGroup(composite, 1);
+        Composite buildGroup = createBuildGroup(composite, 1);
         ToggleLink more = new ToggleLink(composite, SWT.NONE);
-        more.setControls(new Control[] { advancedGroup });
+        more.setControls(new Control[] { advancedGroup, buildGroup });
 
         more.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -406,6 +411,22 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         return composite;
     }
 
+    protected Composite createBuildGroup(Composite parent, int colSpan) {
+        Composite composite = SWTFactory.createGroup(parent, "Build before launch", 3, colSpan, GridData.FILL_HORIZONTAL);
+
+        SWTFactory.createLabel(composite, "Projects to build:",1);
+        fBuildBeforeLaunchCombo = SWTFactory.createCombo(composite, SWT.BORDER | SWT.READ_ONLY, 2, new String[] {"This project and all its dependencies", "This project only", "Do not build automatically before launch"});
+        fBuildBeforeLaunchCombo.setToolTipText("Which projects to build automatically before launching");
+        fBuildBeforeLaunchCombo.setVisibleItemCount(3);
+
+        SWTFactory.createLabel(composite, "Configuration to build:",1);
+        fSwitchBeforeBuildCombo = SWTFactory.createCombo(composite, SWT.BORDER | SWT.READ_ONLY, 2, new String[] {"Ask whether to switch the configuration", "Switch automatically to the proper configuration", "Always use the active configuration"});
+        fSwitchBeforeBuildCombo.setToolTipText("Whether to switch the active configuration before building the project");
+        fSwitchBeforeBuildCombo.setVisibleItemCount(3);
+
+        return composite;
+    }
+
     protected void addModifyListeners(Control control) {
         if (control instanceof Text)
             ((Text)control).addModifyListener(modifyListener);
@@ -477,6 +498,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
             fNedPathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_NED_PATH, "").trim());
             fImagePathText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, "").trim());
             fAdditionalText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, "").trim());
+            int buildBeforeValue = config.getAttribute(IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH, IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES);
+            int switchBeforeBuildValue = config.getAttribute(IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD, IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD_ASK);
+            fBuildBeforeLaunchCombo.setText(fBuildBeforeLaunchCombo.getItem(buildBeforeValue));
+            fSwitchBeforeBuildCombo.setText(fSwitchBeforeBuildCombo.getItem(switchBeforeBuildValue));
 
             // bring dialog to consistent state
             updateDialogStateInProgress = false;
@@ -536,6 +561,9 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_IMAGE_PATH, fImagePathText.getText().trim());
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_ADDITIONAL_ARGS, fAdditionalText.getText().trim());
+
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH, fBuildBeforeLaunchCombo.getSelectionIndex());
+        configuration.setAttribute(IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD, fSwitchBeforeBuildCombo.getSelectionIndex());
 
         try {
             Set<IResource> assocRes = new HashSet<>();
@@ -662,7 +690,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     }
 
     /**
-     * Returns all the configuration names found in the supplied inifiles, together 
+     * Returns all the configuration names found in the supplied inifiles, together
      * with their descriptions (extends, network, description, etc.)
      */
     private String[] getConfigNames(IFile[] inifiles) {

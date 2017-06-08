@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
@@ -148,6 +149,29 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
             launcherJob.setSystem(false);
             launcherJob.setUser(true);
             launcherJob.schedule();
+        }
+    }
+
+    @Override
+    public boolean buildForLaunch(ILaunchConfiguration config, String mode, IProgressMonitor monitor) throws CoreException {
+        SubMonitor localmonitor = SubMonitor.convert(monitor, "", 1); //$NON-NLS-1$
+        try {
+            IProject project = OmnetppLaunchUtils.getMappedProject(config);
+            if (project == null)
+                return false;
+
+            int buildBeforeValue = config.getAttribute(IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH, IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES);
+            IProject[] projects = (buildBeforeValue == IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_PROJECT_ONLY) ? new IProject[] { project } :
+                       (buildBeforeValue == IOmnetppLaunchConstants.OPP_BUILD_BEFORE_LAUNCH_DEPENDENCIES) ? computeReferencedBuildOrder(new IProject[] { project }) : null;
+            if (projects == null)
+                return false;
+
+            OmnetppLaunchUtils.setActiveProjectConfigurationsIfNeeded(config, mode, projects);
+
+            buildProjects(projects, localmonitor.newChild(1));
+            return false;
+        } finally {
+            localmonitor.done();
         }
     }
 

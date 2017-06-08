@@ -40,6 +40,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -273,7 +274,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             }
 
             if (lc != null)
-                lc.launch(mode, new NullProgressMonitor());
+                DebugUIPlugin.buildAndLaunch(lc, mode, new NullProgressMonitor());
         }
         catch (CoreException e) {
             LaunchPlugin.logError(e);
@@ -430,7 +431,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                     result.addAll(interestingSections);
                 }
             }
-            catch (IOException|CoreException e) { 
+            catch (IOException|CoreException e) {
             }
 
         }
@@ -583,7 +584,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         ILaunchConfigurationType launchType = launchManager.getLaunchConfigurationType(IOmnetppLaunchConstants.SIMULATION_LAUNCH_CONFIGURATION_TYPE);
         if (suggestedName == null)
             suggestedName = resourceToAssociateWith.getParent().getName();
-        String name = launchManager.generateUniqueLaunchConfigurationNameFrom(suggestedName);
+        String name = launchManager.generateLaunchConfigurationName(suggestedName);
         ILaunchConfigurationWorkingCopy wc = launchType.newInstance(null, name);
 
         OmnetppLaunchUtils.setLaunchConfigDefaults(wc, resourceToAssociateWith);

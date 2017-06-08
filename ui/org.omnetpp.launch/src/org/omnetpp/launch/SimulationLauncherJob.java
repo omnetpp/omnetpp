@@ -150,7 +150,7 @@ public class SimulationLauncherJob extends Job {
                     return Status.CANCEL_STATUS;
                 } else {
                     subMonitor.subTask("Failed");
-                    return new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, iprocess.getExitValue(), taskName+": Finished with Error", new RuntimeException(errors.toString()));
+                    return new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, iprocess.getExitValue(), "Finished with Error", new RuntimeException(errors.toString()));
                 }
             }
         }

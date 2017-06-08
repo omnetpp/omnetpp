@@ -20,6 +20,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ned.model,
  org.omnetpp.inifile.editor,
  org.eclipse.cdt.core,
- org.eclipse.cdt.managedbuilder.core
+ org.eclipse.cdt.managedbuilder.core,
+ org.eclipse.cdt.debug.core,
+ org.eclipse.cdt.launch,
+ org.eclipse.cdt.ui
 Export-Package: org.omnetpp.launch,
  org.omnetpp.launch.tabs
