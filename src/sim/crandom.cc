@@ -46,14 +46,14 @@ Register_Class(cPoisson);
 
 cRandom::cRandom(cRNG *rng) : cOwnedObject(nullptr), rng(rng)
 {
-    if (!rng)
-        rng = cSimulation::getActiveSimulation()->getContext()->getRNG(0);
+    if (!this->rng)
+        this->rng = cSimulation::getActiveSimulation()->getContext()->getRNG(0);
 }
 
 cRandom::cRandom(const char *name, cRNG *rng) : cOwnedObject(name), rng(rng)
 {
-    if (!rng)
-        rng = cSimulation::getActiveSimulation()->getContext()->getRNG(0);
+    if (!this->rng)
+        this->rng = cSimulation::getActiveSimulation()->getContext()->getRNG(0);
 }
 
 //----
