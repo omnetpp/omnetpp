@@ -289,6 +289,12 @@
    <header>exponentialspinbox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>profileComboBox</tabstop>
+  <tabstop>playbackSpeedSpinBox</tabstop>
+  <tabstop>minSpeedSpinBox</tabstop>
+  <tabstop>maxSpeedSpinBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
