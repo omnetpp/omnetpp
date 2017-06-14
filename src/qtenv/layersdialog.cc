@@ -42,12 +42,14 @@ LayersDialog::LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent) :
     enabledTags = originalEnabledTags.split(' ', QString::SkipEmptyParts);
     exceptTags = originalExceptTags.split(' ', QString::SkipEmptyParts);
 
-    QStringList allTags = QString(canvasRenderer->getAllTags().c_str()).split(' ', QString::SkipEmptyParts);
+    auto allTags = canvasRenderer->getAllTagsAsVector();
 
     QVBoxLayout *showFigLayout = static_cast<QVBoxLayout *>(ui->showFigWidget->layout());
     QVBoxLayout *hideFigLayout = static_cast<QVBoxLayout *>(ui->hideFigWidget->layout());
 
-    for (QString tag : allTags) {
+    for (std::string t : allTags) {
+        QString tag(t.c_str());
+
         QCheckBox *enabledChkBox = new QCheckBox(tag);
         QCheckBox *exceptChkBox = new QCheckBox(tag);
 

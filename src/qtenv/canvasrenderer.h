@@ -60,7 +60,7 @@ public:
     QRectF itemsBoundingRect() const;
 
     // tag-based filtering
-    std::string getAllTags();
+    std::vector<std::string> getAllTagsAsVector();
     std::string getEnabledTags();
     std::string getExceptTags();
     void setEnabledTags(const char* tags);

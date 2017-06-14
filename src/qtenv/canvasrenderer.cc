@@ -185,10 +185,10 @@ QRectF CanvasRenderer::itemsBoundingRect() const
     return bounds;
 }
 
-std::string CanvasRenderer::getAllTags()
+std::vector<std::string> CanvasRenderer::getAllTagsAsVector()
 {
     assertCanvas();
-    return canvas->getAllTags();
+    return canvas->getAllTagsAsVector();
 }
 
 std::string CanvasRenderer::getEnabledTags()
