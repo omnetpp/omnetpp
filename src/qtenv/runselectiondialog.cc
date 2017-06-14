@@ -35,12 +35,6 @@ RunSelectionDialog::RunSelectionDialog(cConfigurationEx *configuration, const st
     adjustSize();
     setFont(getQtenv()->getBoldFont());
 
-    if (parent) {
-        auto geom = geometry();
-        geom.moveCenter(parent->geometry().center());
-        setGeometry(geom);
-    }
-
     configNames = configuration->getConfigNames();
 
     if (!configNameArg.empty() && !contains(configNames, configNameArg))
@@ -100,6 +94,19 @@ RunSelectionDialog::RunSelectionDialog(cConfigurationEx *configuration, const st
     ui->runNumber->setCurrentIndex(std::max(0, index));
 
     connect(ui->configName, SIGNAL(currentIndexChanged(int)), this, SLOT(configSelectionChanged(int)));
+
+    // the contents of the Config selection ComboBox can affect the size of the dialog
+    adjustSize();
+
+    if (parent) {
+        auto geom = geometry();
+        geom.moveCenter(parent->geometry().center());
+        setGeometry(geom);
+    }
+
+    // so far the horizontal policy was "MinimumExpanding" to make sure it will enlarge the dialog
+    // if needed in adjustSize(), but now we want to allow the user to resize it to a smaller width
+    ui->configName->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 }
 
 RunSelectionDialog::~RunSelectionDialog()
