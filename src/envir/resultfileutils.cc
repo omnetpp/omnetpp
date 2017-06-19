@@ -25,6 +25,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
+#include "omnetpp/opp_string.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "envirbase.h"
 
@@ -82,6 +83,15 @@ StringMap ResultFileUtils::convertProperties(const cProperties *properties)
             result[name] = os.str();
         }
     }
+    return result;
+}
+
+StringMap ResultFileUtils::convertMap(const opp_string_map *m)
+{
+    StringMap result;
+    if (m)
+        for (auto pair : *m)
+            result[pair.first.c_str()] = pair.second.c_str();
     return result;
 }
 

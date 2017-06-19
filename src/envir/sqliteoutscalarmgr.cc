@@ -53,34 +53,11 @@ extern omnetpp::cConfigOption *CFGID_PARAM_RECORDING;
 
 Register_Class(SqliteOutputScalarManager);
 
-SqliteOutputScalarManager::SqliteOutputScalarManager()
-{
-    initialized = false;
-}
-
-SqliteOutputScalarManager::~SqliteOutputScalarManager()
-{
-}
-
-void SqliteOutputScalarManager::openDb()
-{
-    mkPath(directoryOf(fname.c_str()).c_str());
-    writer.open(fname.c_str());
-
-    int commitFreq = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ);
-    writer.setCommitFreq(commitFreq);
-}
-
-void SqliteOutputScalarManager::closeDb()
-{
-    writer.close();
-}
-
 void SqliteOutputScalarManager::startRun()
 {
+    Assert(!initialized); // prevent reuse of object for multiple runs
+
     // clean up file from previous runs
-    initialized = false;
-    closeDb();
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
     dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
     if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
@@ -89,34 +66,35 @@ void SqliteOutputScalarManager::startRun()
 
 void SqliteOutputScalarManager::endRun()
 {
-    closeDb();
-    initialized = false;
+    closeFile();
 }
 
-void SqliteOutputScalarManager::initialize()
+void SqliteOutputScalarManager::openFileForRun()
 {
-    openDb();
-    writeRunData();
-}
+    // ensure startRun() has been invoked
+    Assert(!fname.empty());
 
-inline StringMap convertMap(const opp_string_map *m) {
-    StringMap result;
-    if (m)
-        for (auto pair : *m)
-            result[pair.first.c_str()] = pair.second.c_str();
-    return result;
-}
+    // open database
+    mkPath(directoryOf(fname.c_str()).c_str());
+    writer.open(fname.c_str());
 
-void SqliteOutputScalarManager::writeRunData()
-{
+    int commitFreq = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ);
+    writer.setCommitFreq(commitFreq);
+
+    // write run data
     writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
+}
+
+void SqliteOutputScalarManager::closeFile()
+{
+    writer.close();
 }
 
 void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -128,14 +106,14 @@ void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *
     std::string componentFullPath = component->getFullPath();
     bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_SCALAR_RECORDING);
     if (enabled)
-        writer.recordScalar(componentFullPath, name, value, convertMap(attributes));
+        writer.recordScalar(componentFullPath, name, value, ResultFileUtils::convertMap(attributes));
 }
 
 void SqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -173,21 +151,21 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
                 bins.setBins(histogram->getBinEdges(), histogram->getBinValues());
                 bins.setUnderflows(histogram->getUnderflowSumWeights());
                 bins.setOverflows(histogram->getOverflowSumWeights());
-                writer.recordHistogram(componentFullPath, name, stats, bins, convertMap(attributes));
+                writer.recordHistogram(componentFullPath, name, stats, bins, ResultFileUtils::convertMap(attributes));
                 savedAsHistogram = true;
             }
         }
     }
 
     if (!savedAsHistogram)
-        writer.recordStatistic(componentFullPath, name, stats, convertMap(attributes));
+        writer.recordStatistic(componentFullPath, name, stats, ResultFileUtils::convertMap(attributes));
 }
 
 void SqliteOutputScalarManager::recordParameter(cPar *par)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -204,7 +182,7 @@ void SqliteOutputScalarManager::recordComponentType(cComponent *component)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -217,12 +195,6 @@ void SqliteOutputScalarManager::recordComponentType(cComponent *component)
         const char *nedType = component->getComponentType()->getFullName();
         writer.recordParameter(componentFullPath, name, opp_quotestr(nedType), StringMap());
     }
-}
-
-
-const char *SqliteOutputScalarManager::getFileName() const
-{
-    return fname.c_str();
 }
 
 void SqliteOutputScalarManager::flush()

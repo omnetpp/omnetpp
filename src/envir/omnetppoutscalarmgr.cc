@@ -53,21 +53,43 @@ extern omnetpp::cConfigOption *CFGID_PARAM_RECORDING;
 
 Register_Class(OmnetppOutputScalarManager);
 
-
-OmnetppOutputScalarManager::OmnetppOutputScalarManager()
+void OmnetppOutputScalarManager::startRun()
 {
-    initialized = false;
+    Assert(!initialized); // prevent reuse of object for multiple runs
+
+    // delete file left over from previous runs
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
+    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+
+    bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND);
+    if (!shouldAppend)
+        removeFile(fname.c_str(), "old output scalar file");
+
+    // read configuration
+    int prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
+    writer.setPrecision(prec);
 }
 
-OmnetppOutputScalarManager::~OmnetppOutputScalarManager()
+void OmnetppOutputScalarManager::endRun()
 {
-    closeFile();
+    if (writer.isOpen()) {
+        writer.endRecordingForRun();
+        closeFile();
+    }
 }
 
-void OmnetppOutputScalarManager::openFile()
+void OmnetppOutputScalarManager::openFileForRun()
 {
+    // ensure startRun() has been invoked
+    Assert(!fname.empty());
+
+    // open file
     mkPath(directoryOf(fname.c_str()).c_str());
     writer.open(fname.c_str());
+
+    // write run data
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(),
+            ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
 }
 
 void OmnetppOutputScalarManager::closeFile()
@@ -75,56 +97,11 @@ void OmnetppOutputScalarManager::closeFile()
     writer.close();
 }
 
-void OmnetppOutputScalarManager::startRun()
-{
-    // finish up previous run
-    initialized = false;
-    closeFile();
-
-    // delete file left over from previous runs
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE);
-    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
-    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND) == false)
-        removeFile(fname.c_str(), "old output scalar file");
-
-    int prec = getEnvir()->getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
-    writer.setPrecision(prec);
-}
-
-void OmnetppOutputScalarManager::endRun()
-{
-    initialized = false;
-    if (writer.isOpen()) {
-        writer.endRecordingForRun();
-        closeFile();
-    }
-}
-
-inline StringMap convertMap(const opp_string_map *m)
-{
-    StringMap result;
-    if (m)
-        for (auto pair : *m)
-            result[pair.first.c_str()] = pair.second.c_str();
-    return result;
-}
-
-void OmnetppOutputScalarManager::initialize()
-{
-    openFile();
-    writeRunData();
-}
-
-void OmnetppOutputScalarManager::writeRunData()
-{
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
-}
-
 void OmnetppOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -134,16 +111,16 @@ void OmnetppOutputScalarManager::recordScalar(cComponent *component, const char 
         name = "(unnamed)";
 
     std::string componentFullPath = component->getFullPath();
-    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath + "." + name).c_str(), CFGID_SCALAR_RECORDING);
     if (enabled)
-        writer.recordScalar(componentFullPath, name, value, convertMap(attributes));
+        writer.recordScalar(componentFullPath, name, value, ResultFileUtils::convertMap(attributes));
 }
 
 void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -181,21 +158,21 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
                 bins.setBins(histogram->getBinEdges(), histogram->getBinValues());
                 bins.setUnderflows(histogram->getUnderflowSumWeights());
                 bins.setOverflows(histogram->getOverflowSumWeights());
-                writer.recordHistogram(componentFullPath, name, stats, bins, convertMap(attributes));
+                writer.recordHistogram(componentFullPath, name, stats, bins, ResultFileUtils::convertMap(attributes));
                 savedAsHistogram = true;
             }
         }
     }
 
     if (!savedAsHistogram)
-        writer.recordStatistic(componentFullPath, name, stats, convertMap(attributes));
+        writer.recordStatistic(componentFullPath, name, stats, ResultFileUtils::convertMap(attributes));
 }
 
 void OmnetppOutputScalarManager::recordParameter(cPar *par)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -212,7 +189,7 @@ void OmnetppOutputScalarManager::recordComponentType(cComponent *component)
 {
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (isBad())
@@ -225,11 +202,6 @@ void OmnetppOutputScalarManager::recordComponentType(cComponent *component)
         const char *nedType = component->getComponentType()->getFullName();
         writer.recordParameter(componentFullPath, name, opp_quotestr(nedType), StringMap());
     }
-}
-
-const char *OmnetppOutputScalarManager::getFileName() const
-{
-    return fname.c_str();
 }
 
 void OmnetppOutputScalarManager::flush()

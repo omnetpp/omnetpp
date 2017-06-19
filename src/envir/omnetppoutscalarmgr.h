@@ -38,15 +38,13 @@ using omnetpp::common::OmnetppScalarFileWriter;
 class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
 {
   protected:
-    bool initialized;  // true after first call to initialize(), even if it failed
-    std::string fname; // output file name
+    bool initialized = false;  // true after first call to openFileForRun(), even if it failed
+    std::string fname;
     OmnetppScalarFileWriter writer;
 
   protected:
-    void openFile();
-    void closeFile();
-    void writeRunData();
-    void initialize();
+    virtual void openFileForRun();
+    virtual void closeFile();
     bool isBad() {return initialized && !writer.isOpen();}
 
   public:
@@ -56,12 +54,12 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
     /**
      * Constructor.
      */
-    explicit OmnetppOutputScalarManager();
+    OmnetppOutputScalarManager() {}
 
     /**
      * Destructor.
      */
-    virtual ~OmnetppOutputScalarManager();
+    virtual ~OmnetppOutputScalarManager() {closeFile();}
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */
@@ -104,7 +102,7 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
     /**
      * Returns the file name.
      */
-    const char *getFileName() const override;
+    const char *getFileName() const override {return fname.c_str();}
 
     /**
      * Calls fflush().

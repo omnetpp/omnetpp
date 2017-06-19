@@ -50,19 +50,16 @@ class SqliteOutputVectorManager : public cIOutputVectorManager
 
     typedef std::vector<VectorData*> Vectors;
 
-    bool initialized;    // true after first call to initialize(), even if it failed
+    bool initialized = false;  // true after first call to initialize(), even if it failed
     std::string fname;
     SqliteVectorFileWriter writer;
-    Vectors vectors;         // registered output vectors
+    Vectors vectors;  // registered output vectors
 
-    enum IndexingMode { INDEX_AHEAD, INDEX_AFTER, INDEX_NONE } indexingMode;
+    enum IndexingMode { INDEX_AHEAD, INDEX_AFTER, INDEX_NONE } indexingMode = INDEX_AFTER;
 
   protected:
-    void openDb();
-    void closeDb();
-    void writeRunData();
-
-    virtual void initialize();
+    virtual void openFileForRun();
+    virtual void closeFile();
     bool isBad() {return initialized && !writer.isOpen();}
 
   public:
@@ -72,12 +69,12 @@ class SqliteOutputVectorManager : public cIOutputVectorManager
     /**
      * Constructor.
      */
-    explicit SqliteOutputVectorManager();
+    SqliteOutputVectorManager() {}
 
     /**
      * Destructor. Closes the output file if it is still open.
      */
-    virtual ~SqliteOutputVectorManager();
+    virtual ~SqliteOutputVectorManager() {closeFile();}
     //@}
 
     /** @name Redefined cIOutputVectorManager member functions. */
@@ -117,7 +114,7 @@ class SqliteOutputVectorManager : public cIOutputVectorManager
     /**
      * Returns the file name.
      */
-    const char *getFileName() const override;
+    const char *getFileName() const override {return fname.c_str();}
 
     /**
      * Calls fflush().

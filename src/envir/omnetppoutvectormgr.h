@@ -52,17 +52,14 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
 
     typedef std::vector<VectorData*> Vectors;
 
-    bool initialized;    // true after first call to initialize(), even if it failed
+    bool initialized = false; // true after first call to initialize(), even if it failed
     std::string fname;
     OmnetppVectorFileWriter writer;
-    Vectors vectors;         // registered output vectors
+    Vectors vectors; // registered output vectors
 
   protected:
-    void open();
-    void close();
-    void writeRunData();
-
-    virtual void initialize();
+    virtual void openFileForRun();
+    virtual void closeFile();
     bool isBad() {return initialized && !writer.isOpen();}
 
   public:
@@ -72,12 +69,12 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
     /**
      * Constructor.
      */
-    explicit OmnetppOutputVectorManager();
+    OmnetppOutputVectorManager() {}
 
     /**
      * Destructor. Closes the output file if it is still open.
      */
-    virtual ~OmnetppOutputVectorManager();
+    virtual ~OmnetppOutputVectorManager() {closeFile();}
     //@}
 
     /** @name Redefined cIOutputVectorManager member functions. */
@@ -117,7 +114,7 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
     /**
      * Returns the file name.
      */
-    const char *getFileName() const override;
+    const char *getFileName() const override {return fname.c_str();}
 
     /**
      * Calls fflush().

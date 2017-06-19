@@ -27,6 +27,7 @@
 namespace omnetpp {
 
 class cProperties;
+class opp_string_map;
 
 namespace envir {
 
@@ -40,6 +41,7 @@ class ResultFileUtils {
     static StringMap getIterationVariables();
     static OrderedKeyValueList getConfigEntries();
     static StringMap convertProperties(const cProperties *properties);
+    static StringMap convertMap(const opp_string_map *m);
 };
 
 } // namespace envir

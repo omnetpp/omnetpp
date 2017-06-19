@@ -52,10 +52,18 @@ extern omnetpp::cConfigOption *CFGID_VECTOR_BUFFER;
 
 Register_GlobalConfigOption(CFGID_OUTPUT_VECTOR_DB_INDEXING, "output-vector-db-indexing", CFG_CUSTOM, "skip", "Whether and when to add an index to the 'vectordata' table in SQLite output vector files. Possible values: skip, ahead, after");
 
-SqliteOutputVectorManager::SqliteOutputVectorManager()
+void SqliteOutputVectorManager::startRun()
 {
-    initialized = false;
+    Assert(!initialized); // prevent reuse of object for multiple runs
 
+    // delete file left over from previous runs
+    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
+    bool shouldAppend = getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND);
+    if (!shouldAppend)
+        removeFile(fname.c_str(), "old SQLite output vector file");
+
+    // read configuration
     size_t memoryLimit = (size_t) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     writer.setOverallMemoryLimit(memoryLimit);
 
@@ -71,60 +79,9 @@ SqliteOutputVectorManager::SqliteOutputVectorManager()
                 indexModeStr.c_str(), CFGID_OUTPUT_VECTOR_DB_INDEXING->getName());
 }
 
-SqliteOutputVectorManager::~SqliteOutputVectorManager()
-{
-}
-
-void SqliteOutputVectorManager::openDb()
-{
-    mkPath(directoryOf(fname.c_str()).c_str());
-    writer.open(fname.c_str());
-
-    if (indexingMode == INDEX_AHEAD)
-        writer.createVectorIndex();
-}
-
-void SqliteOutputVectorManager::closeDb()
-{
-    writer.close();
-}
-
-void SqliteOutputVectorManager::initialize()
-{
-    openDb();
-    writeRunData();
-}
-
-inline StringMap convertMap(const opp_string_map *m)
-{
-    StringMap result;
-    if (m)
-        for (auto pair : *m)
-            result[pair.first.c_str()] = pair.second.c_str();
-    return result;
-}
-
-void SqliteOutputVectorManager::writeRunData()
-{
-    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
-}
-
-void SqliteOutputVectorManager::startRun()
-{
-    // clean up file from previous runs
-    //initialized = false;
-    //bufferedSamples = 0;
-    //vectors.clear(); TODO clearing the remaining vector SHOULD be done after deleteNetwork()! because endRun may not be called at all
-    //closeDb();
-
-    fname = getEnvir()->getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    dynamic_cast<EnvirBase *>(getEnvir())->processFileName(fname);
-    if (getEnvir()->getConfig()->getAsBool(CFGID_OUTPUT_VECTOR_FILE_APPEND) == false)
-        removeFile(fname.c_str(), "old SQLite output vector file");
-}
-
 void SqliteOutputVectorManager::endRun()
 {
+    //TODO writeRecords() -- then finalize() can assert on no data being buffered
     if (writer.isOpen()) {
         writer.endRecordingForRun();
         if (indexingMode == INDEX_AFTER) {
@@ -133,11 +90,32 @@ void SqliteOutputVectorManager::endRun()
             double elapsedSecs = time(nullptr) - startTime + 1; // +1 is for rounding up
             std::cout << "Indexing SQLite output vector file took about " << elapsedSecs << "s" << endl;
         }
+
+        closeFile();
+        vectors.clear();
     }
 
-    initialized = false;
-    vectors.clear();
-    closeDb();
+}
+
+void SqliteOutputVectorManager::openFileForRun()
+{
+    // ensure startRun() has been invoked
+    Assert(!fname.empty());
+
+    // open database
+    mkPath(directoryOf(fname.c_str()).c_str());
+    writer.open(fname.c_str());
+
+    if (indexingMode == INDEX_AHEAD)
+        writer.createVectorIndex();
+
+    // write run data
+    writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getConfigEntries());
+}
+
+void SqliteOutputVectorManager::closeFile()
+{
+    writer.close();
 }
 
 void *SqliteOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
@@ -194,23 +172,18 @@ bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
 
     if (!initialized) {
         initialized = true;
-        initialize();
+        openFileForRun();
     }
 
     if (vp->handleInWriter == nullptr) {
         std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
         size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
-        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), convertMap(&vp->attributes), bufferSize);
+        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize);
     }
 
     eventnumber_t eventNumber = getSimulation()->getEventNumber();
     writer.recordInVector(vp->handleInWriter, eventNumber, t.raw(), value);
     return true;
-}
-
-const char *SqliteOutputVectorManager::getFileName() const
-{
-    return fname.c_str();
 }
 
 void SqliteOutputVectorManager::flush()

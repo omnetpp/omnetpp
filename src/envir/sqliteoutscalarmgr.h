@@ -37,15 +37,14 @@ using omnetpp::common::SqliteScalarFileWriter;
 class SqliteOutputScalarManager : public cIOutputScalarManager
 {
   protected:
-    bool initialized;    // true after first call to initialize(), even if it failed
+    enum State {NEW, RUN_STARTED, FILE_OPENED, RUN_CLOSED};
+    bool initialized = false;    // true after first call to initialize(), even if it failed
     std::string fname;
     SqliteScalarFileWriter writer;
 
   protected:
-    void openDb();
-    void closeDb();
-    void writeRunData();
-    virtual void initialize();
+    virtual void openFileForRun();
+    virtual void closeFile();
     bool isBad() {return initialized && !writer.isOpen();}
 
   public:
@@ -55,12 +54,12 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     /**
      * Constructor.
      */
-    explicit SqliteOutputScalarManager();
+    SqliteOutputScalarManager() {}
 
     /**
      * Destructor.
      */
-    virtual ~SqliteOutputScalarManager();
+    virtual ~SqliteOutputScalarManager() {closeFile();}
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */
@@ -103,7 +102,7 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     /**
      * Returns the file name.
      */
-    virtual const char *getFileName() const override;
+    const virtual char* getFileName() const override {return fname.c_str();}
 
     /**
      * Calls fflush().
