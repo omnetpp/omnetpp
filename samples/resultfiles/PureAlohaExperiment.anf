@@ -7,8 +7,8 @@
   <datasets>
     <datasets name="Utilization">
       <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(&quot;channelUtilization:last&quot;)"/>
-      <items xsi:type="scave:Add" filterPattern="name(mean) "/>
-      <items xsi:type="scave:ScatterChart" name="Load vs Utilization" xDataPattern="module(.) AND name(mean)">
+      <items xsi:type="scave:Add" filterPattern="name(iaMean) "/>
+      <items xsi:type="scave:ScatterChart" name="Load vs Utilization" xDataPattern="module(.) AND name(iaMean)">
         <properties name="X.Axis.Title" value="Mean packet interarrival time"/>
         <properties name="Y.Axis.Title" value="Utilization"/>
         <isoDataPattern>numHosts(*)</isoDataPattern>
