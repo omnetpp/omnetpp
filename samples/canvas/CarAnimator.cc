@@ -17,6 +17,7 @@ class CarAnimator : public cSimpleModule
 {
     private:
         simtime_t timeStep;
+        simtime_t lastStep;
         Point loc;
         double speed;
         double heading;
@@ -32,7 +33,8 @@ class CarAnimator : public cSimpleModule
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
-        void refresh();
+        virtual void refreshDisplay() const override;
+        void refresh() const;
 };
 
 Define_Module(CarAnimator);
@@ -47,6 +49,8 @@ void CarAnimator::initialize()
     distanceTravelled = 0;
 
     cCanvas *canvas = getParentModule()->getCanvas();
+
+    canvas->setAnimationSpeed(50.0, this);
 
     road = check_and_cast<cPolygonFigure *>(canvas->getFigure("road"));
     trail = check_and_cast<cPolylineFigure *>(canvas->getFigure("trail"));
@@ -71,16 +75,23 @@ void CarAnimator::initialize()
     scheduleAt(simTime(), new cMessage());
 }
 
-void CarAnimator::refresh()
+void CarAnimator::refresh() const
 {
-    cFigure::Transform t;
-    t.rotate(heading);
-    t.translate(loc.x, loc.y);
-    car->setTransform(t);
+    double t = (simTime() - lastStep) / timeStep;
 
-    trail->addPoint(loc);
-    if (trail->getNumPoints() > 500)
-        trail->removePoint(0);
+    ASSERT(t >= 0);
+    ASSERT(t <= 1);
+
+    cFigure::Transform carTr;
+    carTr.rotate(heading + angularSpeed * t);
+
+    double distance = speed * t;
+    carTr.translate(loc.x + distance * cos(heading), loc.y + distance * sin(heading));
+    car->setTransform(carTr);
+
+    cFigure::Transform antTr;
+    antTr.rotate(-2 * simTime().dbl()*M_PI/180);
+    antenna->setTransform(antTr);
 
     char buf[20];
     sprintf(buf, "%.0fm", distanceTravelled);
@@ -92,9 +103,18 @@ void CarAnimator::refresh()
     headingDisplay->setText(buf);
 }
 
+void CarAnimator::refreshDisplay() const
+{
+    refresh();
+}
+
 void CarAnimator::handleMessage(cMessage *msg)
 {
-    // steer
+    // move
+    double distance = speed * timeStep.dbl();
+    loc.x += distance * cos(heading);
+    loc.y += distance * sin(heading);
+
     Point target = road->getPoint(targetPointIndex);
     Point vectorToTarget = target - loc;
     if (vectorToTarget.getLength() < 50)  // reached
@@ -107,17 +127,19 @@ void CarAnimator::handleMessage(cMessage *msg)
     while (diff > M_PI)
         diff -= 2*M_PI;
 
+    // steer
+    heading += angularSpeed * timeStep.dbl();
+
     angularSpeed = diff / 30;
 
-    // move
-    heading += angularSpeed * timeStep.dbl();
-    double distance = speed * timeStep.dbl();
-    loc.x += distance * cos(heading);
-    loc.y += distance * sin(heading);
-    antenna->rotate(-2*M_PI/180, 0, 0);
     distanceTravelled += distance;
     refresh();
 
+    trail->addPoint(loc);
+    if (trail->getNumPoints() > 500)
+        trail->removePoint(0);
+
+    lastStep = simTime();
     scheduleAt(simTime() + timeStep, msg);
 }
 
