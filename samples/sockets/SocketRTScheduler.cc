@@ -66,6 +66,13 @@ void cSocketRTScheduler::setupListener()
     if (listenerSocket == INVALID_SOCKET)
         throw cRuntimeError("cSocketRTScheduler: cannot create socket");
 
+    // Setting this option makes it possible to kill the sample and restart
+    // it right away without having to change the port it is listening on.
+    // Not using SO_REUSEADDR as per: https://stackoverflow.com/a/34812994
+    int enable = 1;
+    if (setsockopt(listenerSocket, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0)
+        throw cRuntimeError("cSocketRTScheduler: cannot set socket option");
+
     sockaddr_in sinInterface;
     sinInterface.sin_family = AF_INET;
     sinInterface.sin_addr.s_addr = INADDR_ANY;
@@ -149,7 +156,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
                 gettimeofday(&curTime, nullptr);
                 curTime = timeval_substract(curTime, baseTime);
                 simtime_t t = curTime.tv_sec + curTime.tv_usec*1e-6;
-                // TBD assert that it's somehow not smaller than previous event's time
+                ASSERT(t >= simTime());
                 notificationMsg->setArrival(module->getId(), -1, t);
                 getSimulation()->getFES()->insert(notificationMsg);
                 return true;
@@ -179,8 +186,16 @@ int cSocketRTScheduler::receiveUntil(const timeval& targetTime)
     {
         if (receiveWithTimeout(100000))  // 100ms
             return 1;
+
+        // update simtime before calling envir's idle()
+        gettimeofday(&curTime, nullptr);
+        timeval relTime = timeval_substract(curTime, baseTime);
+        simtime_t t = relTime.tv_sec + relTime.tv_usec * 1e-6;
+        ASSERT(t >= simTime());
+        sim->setSimTime(t);
         if (getEnvir()->idle())
             return -1;
+
         gettimeofday(&curTime, nullptr);
     }
 
