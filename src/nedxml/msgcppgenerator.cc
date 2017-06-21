@@ -1378,11 +1378,13 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "{\n";
                 CC << "    return " << it->farraysize << ";\n";
                 CC << "}\n\n";
+
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
                 CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
+
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
                 CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
@@ -1408,15 +1410,18 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    delete [] this->" << it->var << ";\n";
                 CC << "    this->" << it->var << " = " << it->var << "2;\n";
                 CC << "}\n\n";
+
                 CC << "" << it->fsizetype << " " << info.msgclass << "::" << it->getsize << "() const\n";
                 CC << "{\n";
                 CC << "    return " << it->varsize << ";\n";
                 CC << "}\n\n";
+
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
                 CC << "{\n";
                 CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
                 CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
+
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
                 CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
@@ -1428,6 +1433,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "{\n";
                 CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
                 CC << "}\n\n";
+
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
                 CC << "    this->" << it->var << " = " << it->argname << ";\n";
