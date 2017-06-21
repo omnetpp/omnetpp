@@ -111,7 +111,7 @@ public class DataTree extends Tree implements IDataControl {
         refresh();
         setSelectedIDs(idList);
     }
-    
+
     public FlatModuleTreeAction getFlatModuleTreeAction() {
         return flatModuleTreeAction;
     }
@@ -305,7 +305,13 @@ public class DataTree extends Tree implements IDataControl {
                 item.update();
             }
         });
+
         IMenuManager subMenuManager = new MenuManager("Tree Levels");
+        contributeTreeLevelsActionsTo(subMenuManager);
+        menuManager.add(subMenuManager);
+    }
+
+    public void contributeTreeLevelsActionsTo(IMenuManager subMenuManager) {
         subMenuManager.add(new PredefinedLevelsAction("Experiment / Measurement / Replication", this, DataTreeContentProvider.LEVELS1));
         subMenuManager.add(new PredefinedLevelsAction("Experiment + Measurement + Replication", this, DataTreeContentProvider.LEVELS2));
         subMenuManager.add(new PredefinedLevelsAction("Config / Run Number", this, DataTreeContentProvider.LEVELS3));
@@ -320,7 +326,6 @@ public class DataTree extends Tree implements IDataControl {
                     item.update();
             }
         });
-        menuManager.add(subMenuManager);
     }
 
     /**

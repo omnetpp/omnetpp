@@ -15,24 +15,34 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
+import org.omnetpp.scave.ScaveImages;
+import org.omnetpp.scave.ScavePlugin;
 
 
 /**
  * Brings up the "Choose Columns" dialog for a data table.
  */
 public class ChooseTableColumnsAction extends Action {
-
-    private DataTable table;
+    private DataTable dataTable;
 
     public ChooseTableColumnsAction(DataTable table) {
         setText("Choose Table Columns...");
         setToolTipText("Choose Table Columns");
-        this.table = table;
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_CHOOSETABLECOLUMN));
+        this.dataTable = table;
+    }
+
+    public void setDataTable(DataTable dataTable) {
+        this.dataTable = dataTable;
+    }
+
+    public DataTable getDataTable() {
+        return dataTable;
     }
 
     @Override
     public void run() {
-        chooseTableColumns(table);
+        chooseTableColumns(dataTable);
     }
 
     protected void chooseTableColumns(DataTable table) {

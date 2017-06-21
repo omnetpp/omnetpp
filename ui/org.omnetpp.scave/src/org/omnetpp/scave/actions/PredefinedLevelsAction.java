@@ -8,7 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.omnetpp.scave.editors.datatable.DataTree;
 import org.omnetpp.scave.editors.datatable.DataTreeContentProvider;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class PredefinedLevelsAction extends Action {
     private final DataTree dataTree;
 

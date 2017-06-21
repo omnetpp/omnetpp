@@ -26,13 +26,10 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * The <code>ResultFileManager</code> is available from the
  * selection for the purpose of performing operations on the selected ids.
  *
- * FIXME this always must be homogenous? (all scalars, all vectors, etc?)
- *
  * @author tomi
  */
 public class IDListSelection implements IStructuredSelection {
-
-    Long[] elements;
+    Long[] elements;   //TODO why Long[]? store IDList in the first place!
     ResultFileManager manager;
     ResultType type;
 
@@ -48,7 +45,8 @@ public class IDListSelection implements IStructuredSelection {
             type = ResultType.VECTOR_LITERAL;
         else if (idlist.areAllHistograms())
             type = ResultType.HISTOGRAM_LITERAL;
-        // FIXME else WTF, tomi???
+        else
+            type = null;
     }
 
     public IDListSelection(long id, ResultFileManager manager) {

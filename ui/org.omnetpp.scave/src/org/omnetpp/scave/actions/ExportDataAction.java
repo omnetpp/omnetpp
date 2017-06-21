@@ -15,6 +15,7 @@ import org.eclipse.ui.IWorkbenchWizard;
 import org.omnetpp.scave.editors.IDListSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ExporterFactory;
+import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.wizard.ScaveExportWizard;
@@ -55,8 +56,19 @@ public class ExportDataAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        return selection instanceof IDListSelection ||
-                (selection instanceof IStructuredSelection &&
-                        selection.getFirstElement() instanceof Chart);
+        if (selection.isEmpty())
+            return false;
+        if (selection instanceof IDListSelection) {
+            IDList selectedIDs = ((IDListSelection)selection).toIDList();
+            int selectionItemTypes = selectedIDs.getItemTypes(); // TODO IDListSelection should have this method!
+            int supportedTypes = ExporterFactory.getByFormat(format).getSupportedResultTypes();
+            int unsupportedTypes = selectionItemTypes & ~supportedTypes;
+            return unsupportedTypes == 0;
+        }
+        if (selection instanceof IStructuredSelection) {
+            Object firstElement = selection.getFirstElement();
+            return firstElement instanceof Chart;
+        }
+        return false;
     }
 }

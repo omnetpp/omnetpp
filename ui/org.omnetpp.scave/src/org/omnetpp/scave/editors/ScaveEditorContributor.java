@@ -585,6 +585,9 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     public IAction getExportToSVGAction() {
         return exportToSVGAction;
     }
+    public Map<String, IAction> getExportActions() {
+        return exportActions;
+    }
     public IAction getCreateTempChartAction() {
         return createTempChartAction;
     }
@@ -598,7 +601,9 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return redoRetargetAction;
     }
     public IMenuManager createExportMenu() {
-        IMenuManager exportMenu = new MenuManager("Export Data");
+        return createExportMenu(new MenuManager("Export Data"));
+    }
+    public IMenuManager createExportMenu(IMenuManager exportMenu) {
         if (exportActions != null) {
             for (String format : ExportDataAction.FORMATS) {
                 IAction action = exportActions.get(format);

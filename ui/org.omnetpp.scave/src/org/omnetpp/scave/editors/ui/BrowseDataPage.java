@@ -19,7 +19,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.ui.DropdownAction;
 import org.omnetpp.common.ui.FocusManager;
+import org.omnetpp.scave.ScaveImages;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.DecreaseDecimalPlacesAction;
 import org.omnetpp.scave.actions.FlatModuleTreeAction;
 import org.omnetpp.scave.actions.IncreaseDecimalPlacesAction;
@@ -66,6 +69,10 @@ public class BrowseDataPage extends ScaveEditorPage {
     private SetFilterAction2 setFilterAction = new SetFilterAction2();
     private int numericPrecision = 6;
 
+    private DropdownAction treeLevelsAction;
+    private FlatModuleTreeAction flatModuleTreeAction;
+    private ChooseTableColumnsAction chooseTableColumnsAction;
+    
     public BrowseDataPage(Composite parent, ScaveEditor editor) {
         super(parent, SWT.NONE, editor);
         initialize();
@@ -127,30 +134,56 @@ public class BrowseDataPage extends ScaveEditorPage {
         // set up contents
         ResultFileManagerEx manager = scaveEditor.getResultFileManager();
         tabFolder.setResultFileManager(manager);
-        
-        setNumericPrecision(getNumericPrecision()); // make sure it takes effect 
+
+        setNumericPrecision(getNumericPrecision()); // make sure it takes effect
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
-        
-        
-        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
-        addToToolbar(contributor.getCopyToClipboardAction()); //TODO ???
-        addToToolbar(contributor.getCreateTempChartAction()); //TODO ???
-        addToToolbar(new IncreaseDecimalPlacesAction());
-        addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed!
 
-        FlatModuleTreeAction flatModuleTreeAction = ((DataTree)getAllPanel().getDataControl()).getFlatModuleTreeAction();
+        // add actions to the toolbar
+        ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
+        addToToolbar(contributor.getCopyToClipboardAction());
+
+        DropdownAction exportDataAction = new DropdownAction("Export Data", "Export In: ", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORT), false);
+        ScaveEditorContributor.getDefault().createExportMenu(exportDataAction.getMenuManager());
+        addToToolbar(exportDataAction);
+
+        addSeparatorToToolbar();
+
+        treeLevelsAction = new DropdownAction("Tree Levels", "Switch To: ", ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_TREELEVELS), true);
+        DataTree dataTree = (DataTree)getAllPanel().getDataControl();
+        dataTree.contributeTreeLevelsActionsTo(treeLevelsAction.getMenuManager());
+        addToToolbar(treeLevelsAction);
+
+        flatModuleTreeAction = ((DataTree)getAllPanel().getDataControl()).getFlatModuleTreeAction();
         addToToolbar(flatModuleTreeAction);
 
+        chooseTableColumnsAction = new ChooseTableColumnsAction(null);
+        addToToolbar(chooseTableColumnsAction);
+
+        addSeparatorToToolbar();
+
+        addToToolbar(new IncreaseDecimalPlacesAction());
+        addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
+        addSeparatorToToolbar();
+        addToToolbar(contributor.getCreateTempChartAction());
+
+        // show/hide actions that are specific to tab pages
         tabFolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                System.out.println("page change");
-                setToolbarActionVisible(flatModuleTreeAction, getActivePanel() == getAllPanel());
-                //TODO show/hide page-specific actions
+                updateIconVisibility();
             }
         });
-
+        updateIconVisibility();
+    }
+        
+    private void updateIconVisibility() {
+        boolean isAllPanelActive = (getActivePanel() == getAllPanel());
+        setToolbarActionVisible(flatModuleTreeAction, isAllPanelActive);
+        setToolbarActionVisible(treeLevelsAction, isAllPanelActive);
+        setToolbarActionVisible(chooseTableColumnsAction, !isAllPanelActive);
+        if (!isAllPanelActive)
+            chooseTableColumnsAction.setDataTable((DataTable)getActivePanel().getDataControl());
     }
 
     private void configureContextMenu(FilteredDataPanel panel) {
