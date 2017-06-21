@@ -44,14 +44,6 @@ ifeq ($(TOOLCHAIN_NAME),clangc2)
   DEFINES += -DQT_COMPILING_QSTRING_COMPAT_CPP
 endif
 
-ifeq ($(WITH_OSG),yes)
-  IMPLIBS += $(OSG_LIBS)
-endif
-
-ifeq ($(WITH_OSGEARTH),yes)
-  IMPLIBS += $(OSGEARTH_LIBS)
-endif
-
 #
 # local tools
 #
@@ -68,7 +60,7 @@ OBJS=$(SOURCES:%.cc=$O/%.o) $(MOC_OUT:%.cpp=$O/%.o) $(RESOURCES_OUT:%.cpp=$O/%.o
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DQTENV_EXPORT
 
-.PHONY: all clean
+.PHONY: all clean qtenv-osg
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
 #
@@ -98,7 +90,13 @@ moc_%.cpp: %.h
 #
 # Targets
 #
-all : $(TARGET_LIB_FILES)
+all : $(TARGET_LIB_FILES) 
+
+ifeq ($(WITH_OSG),yes)
+all: qtenv-osg
+qtenv-osg: $(TARGET_LIB_FILES)
+	$(Q)$(MAKE) -C osg
+endif
 
 ifeq ($(SHARED_LIBS),yes)
 # dynamically linked library (on all platforms except Windows)
@@ -106,8 +104,6 @@ $O/%$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $O
 	@echo Creating shared library: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
-	$(Q)$(MAKE) build -C osg # this is not the most elegant...
-	$(Q)$(MAKE) install -C osg
 
 # dynamically linked library + import lib (on Windows)
 $O/%$(DLL_LIB_SUFFIX) $O/%$(A_LIB_SUFFIX): $(OBJS)

@@ -16,7 +16,7 @@
 
 #include "osgviewer.h"
 #include "omnetpp/osgutil.h"
-#include "inspectorutil.h"
+#include "qtenv/inspectorutil.h"
 #include "cameramanipulators.h"
 #include "common/stlutil.h"
 

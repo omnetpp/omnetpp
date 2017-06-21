@@ -19,7 +19,7 @@
 
 #include "qtenv/iosgviewer.h"
 
-#include "qtenv.h"
+#include "qtenv/qtenv.h"
 #include "omnetpp/cosgcanvas.h"
 #include <QAction>
 #include <QOpenGLWidget>
