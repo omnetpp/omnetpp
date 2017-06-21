@@ -39,24 +39,9 @@ using std::ostream;
 #define H     (*hOutp)
 #define CC    (*ccOutp)
 
-// compatibility mode makes output more similar to opp_msgc's
-// #define MSGC_COMPATIBILE
-
-#ifdef MSGC_COMPATIBILE
-#define PROGRAM    "opp_msgc"
-#else
 #define PROGRAM    "nedtool"
-#endif
 
-#ifdef MSGC_COMPATIBILE
-// removes ":<linenumber>" from source location string
-inline std::string SL(const std::string& s)
-{
-    return s.substr(0, s.find_last_of(':'));
-}
-#else
 #define SL(x)    (x)
-#endif
 
 inline std::string str(const char *s) {
     return s;
@@ -588,11 +573,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
     generateNamespaceEnd();
 
-#ifdef MSGC_COMPATIBILE
-    H << "#endif // " << headerGuard << "\n";
-#else
     H << "#endif // ifndef " << headerGuard << "\n\n";
-#endif
 }
 
 MsgCppGenerator::Properties MsgCppGenerator::extractPropertiesOf(NEDElement *node)
@@ -968,16 +949,6 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
     std::ostringstream s;
     NED2Generator(errors).generate(s, nedElement, "");
     std::string str = s.str();
-
-#ifdef MSGC_COMPATIBILE
-    // remove comments
-    size_t p1;
-    while ((p1 = str.find("//")) != str.npos) {
-        size_t p2 = str.find("\n", p1);
-        std::string s2 = str.substr(0, p1) + str.substr(p2);
-        str = s2;
-    }
-#endif
 
     std::ostringstream o;
     o << " * <pre>\n";
@@ -2283,17 +2254,10 @@ void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
 
 void MsgCppGenerator::generateNamespaceEnd()
 {
-#ifdef MSGC_COMPATIBILE
-    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it) {
-        H << "}; // end namespace " << *it << std::endl;
-        CC << "}; // end namespace " << *it << std::endl;
-    }
-#else
     for (StringVector::const_reverse_iterator it = namespaceNameVector.rbegin(); it != namespaceNameVector.rend(); ++it) {
         H << "} // namespace " << *it << std::endl;
         CC << "} // namespace " << *it << std::endl;
     }
-#endif
     H << std::endl;
     CC << std::endl;
     namespaceNameVector.clear();
