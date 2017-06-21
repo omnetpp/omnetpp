@@ -1099,30 +1099,25 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             pure = " = 0";
         std::string overrideGetter(it->overrideGetter ? " override" : "");
         std::string overrideSetter(it->overrideSetter ? " override" : "");
+        std::string getterIndexVar("");
+        std::string getterIndexArg("");
+        std::string setterIndexArg("");
 
         bool isstruct = !it->fisprimitivetype;
         std::string constifprimitivetype = (!isstruct ? " const" : "");
-        if (it->fisarray && !it->farraysize.empty()) {
+        if (it->fisarray) {
+            getterIndexVar = "k";
+            getterIndexArg = it->fsizetype + " " + getterIndexVar;
+            setterIndexArg = getterIndexArg + ", ";
+            if (it->farraysize.empty()) {
+                H << "    virtual void " << it->alloc << "(" << it->fsizetype << " size)" << pure << ";\n";
+            }
             H << "    virtual " << it->fsizetype << " " << it->getsize << "() const" << pure << ";\n";
-            H << "    virtual " << it->rettype << " " << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "" << pure << overrideGetter << ";\n";
-            if (isstruct)
-                H << "    virtual const " << it->rettype << " " << it->getter << "(" << it->fsizetype << " k) const " << overrideGetter << " {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "(k);}\n";
-            H << "    virtual void " << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")" << pure << overrideSetter << ";\n";
         }
-        else if (it->fisarray && it->farraysize.empty()) {
-            H << "    virtual void " << it->alloc << "(" << it->fsizetype << " size)" << pure << ";\n";
-            H << "    virtual " << it->fsizetype << " " << it->getsize << "() const" << pure << ";\n";
-            H << "    virtual " << it->rettype << " " << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "" << pure << overrideGetter << ";\n";
-            if (isstruct)
-                H << "    virtual const " << it->rettype << " " << it->getter << "(" << it->fsizetype << " k) const" << overrideGetter << " {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "(k);}\n";
-            H << "    virtual void " << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")" << pure << overrideSetter << ";\n";
-        }
-        else {
-            H << "    virtual " << it->rettype << " " << it->getter << "()" << constifprimitivetype << "" << pure << overrideGetter << ";\n";
-            if (isstruct)
-                H << "    virtual const " << it->rettype << " " << it->getter << "() const" << overrideGetter << " {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "();}\n";
-            H << "    virtual void " << it->setter << "(" << it->argtype << " " << it->argname << ")" << pure << overrideSetter << ";\n";
-        }
+        H << "    virtual " << it->rettype << " " << it->getter << "(" << getterIndexArg << ")" << constifprimitivetype << "" << pure << overrideGetter << ";\n";
+        if (isstruct)
+            H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const " << overrideGetter << " {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << ");}\n";
+        H << "    virtual void " << it->setter << "(" << setterIndexArg << it->argtype << " " << it->argname << ")" << pure << overrideSetter << ";\n";
     }
     H << "};\n\n";
 
