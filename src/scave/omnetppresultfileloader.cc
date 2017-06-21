@@ -230,11 +230,6 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
         runRef->attributes = ctx.attrs;
         runRef->itervars = ctx.itervars;
         runRef->paramAssignments = ctx.moduleParams;
-
-        // the "runNumber" attribute is also stored separately
-        auto it = runRef->attributes.find("runNumber");
-        if (it != runRef->attributes.end())
-            CHECK(parseInt(it->second.c_str(), ctx.fileRunRef->runRef->runNumber), "invalid result file: int value expected as runNumber");
         break;
     }
     case ParseContext::SCALAR:
@@ -267,9 +262,8 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
 
 void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars)
 {
-    // Old file don't have itervar lines, but iteration variables are saved as run attributes.
-    // This method identifies iteration variables, and moves them from the attrs stringmap
-    // into itervars.
+    // Before version 5.1, files didn't have itervar lines, iteration variables were saved as run attributes.
+    // This method identifies iteration variables, and moves them from the attrs stringmap into itervars.
     if (itervars.empty() && attrs["iterationvars"] != "") {
         for (auto part : opp_split(attrs["iterationvars"], ", ")) {
             std::string varName = opp_substringafter(opp_substringbefore(part, "="), "$");
@@ -339,7 +333,6 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
 
     separateItervarsFromAttrs(index->run.attributes, index->run.itervars);
 
-    runRef->runNumber = index->run.runNumber;
     runRef->attributes = index->run.attributes;
     runRef->itervars = index->run.itervars;
     runRef->paramAssignments = index->run.paramAssignments;

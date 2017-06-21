@@ -33,14 +33,10 @@ public class InputsViewLabelProvider extends LabelProvider {
             }
             else if (payload instanceof RunPayload) {
                 RunPayload run = (RunPayload)payload;
-                if (run.getRunNumber()==0 && run.getRunName().equals(""))
+                if (run.getRunName().equals(""))
                     return "(unnamed run)"; // old vector files
-                else if (run.getRunNumber()!=0 && run.getRunName().equals(""))
-                    return "run "+run.getRunNumber()+" - unnamed"; // old scalar files
-                else if (run.getRunNumber()==0)
-                    return "run \""+run.getRunName()+"\"";  // cannot normally happen
                 else
-                    return "run "+run.getRunNumber()+" - \""+run.getRunName()+"\"";
+                    return "\""+run.getRunName()+"\"";
             }
             else if (payload != null && !payload.equals(""))
                 return payload.toString();

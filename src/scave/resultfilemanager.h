@@ -304,7 +304,6 @@ class SCAVE_API Run
     ResultFileManager *resultFileManager; // backref to containing ResultFileManager
     StringMap attributes;  // run attributes, such as configname, runnumber, network, datetime, processid, etc.
     StringMap itervars;  // iteration variables (${} notation in omnetpp.ini)
-    int runNumber = 0; // this run attribute is stored separately as well, for convenience
     OrderedKeyValueList paramAssignments; // module parameter assignments from the ini file and command line
     //TODO: OrderedKeyValueList configEntries; // configuration entries from the ini file and command line
     bool computed;
@@ -326,7 +325,6 @@ class SCAVE_API Run
     const std::string& getParamAssignment(const std::string& key) const;
     //TODO const OrderedKeyValueList& getConfigEntries() const {return configEntries;}
     //TODO const std::string& getConfigOption(const std::string& key) const;
-    int getRunNumber() const {return runNumber;}
     bool isComputed() const {return computed;}
 };
 
@@ -544,7 +542,6 @@ class SCAVE_API ResultFileManager
     // utility
     //void dump(ResultFile *fileRef, std::ostream& out) const;
 
-    StringVector *getFileAndRunNumberFilterHints(const IDList& idlist) const;
     StringVector *getFilePathFilterHints(const ResultFileList& fileList) const;
     StringVector *getRunNameFilterHints(const RunList& runList) const;
     StringVector *getModuleFilterHints(const IDList& idlist) const;

@@ -158,9 +158,9 @@ public class ResultFileManagerTreeContentProvider {
                             else if (nextLevelClass.equals(ConfigNode.class))
                                 nodeIdsMap.put(new ConfigNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME)), id);
                             else if (nextLevelClass.equals(RunNumberNode.class))
-                                nodeIdsMap.put(new RunNumberNode(matchContext.getRun().getRunNumber()), id);
+                                nodeIdsMap.put(new RunNumberNode(matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
                             else if (nextLevelClass.equals(ConfigRunNumberNode.class))
-                                nodeIdsMap.put(new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getRunNumber()), id);
+                                nodeIdsMap.put(new ConfigRunNumberNode(matchContext.getRunAttribute(RunAttribute.CONFIGNAME), matchContext.getRun().getAttribute(RunAttribute.RUNNUMBER)), id);
                             else if (nextLevelClass.equals(FileNameNode.class))
                                 nodeIdsMap.put(new FileNameNode(matchContext.getResultFile().getFileName()), id);
                             else if (nextLevelClass.equals(RunIdNode.class))
@@ -765,9 +765,9 @@ public class ResultFileManagerTreeContentProvider {
     }
 
     public static class RunNumberNode extends Node {
-        public long runNumber;
+        public String runNumber;
 
-        public RunNumberNode(long runNumber) {
+        public RunNumberNode(String runNumber) {
             this.runNumber = runNumber;
         }
 
@@ -777,19 +777,19 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public String getColumnText(int index) {
-            return index == 0 ? String.valueOf(runNumber) + " (run number)" : value;
+            return index == 0 ? runNumber + " (run number)" : value;
         }
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRun().getRunNumber() == runNumber;
+            return matchContext.getRunAttribute(RunAttribute.RUNNUMBER).equals(runNumber);
         }
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + (int) (runNumber ^ (runNumber >>> 32));
+            result = prime * result + ((runNumber == null) ? 0 : runNumber.hashCode());
             return result;
         }
 
@@ -802,18 +802,21 @@ public class ResultFileManagerTreeContentProvider {
             if (getClass() != obj.getClass())
                 return false;
             RunNumberNode other = (RunNumberNode) obj;
-            if (runNumber != other.runNumber)
+            if (runNumber == null) {
+                if (other.runNumber != null)
+                    return false;
+            } else if (!runNumber.equals(other.runNumber))
                 return false;
             return true;
         }
+
     }
 
     public static class ConfigRunNumberNode extends Node {
         public String config;
+        public String runNumber;
 
-        public long runNumber;
-
-        public ConfigRunNumberNode(String config, long runNumber) {
+        public ConfigRunNumberNode(String config, String runNumber) {
             this.config = config;
             this.runNumber = runNumber;
         }
@@ -829,7 +832,7 @@ public class ResultFileManagerTreeContentProvider {
 
         @Override
         public boolean matches(List<Node> path, long id, MatchContext matchContext) {
-            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(config) && matchContext.getRun().getRunNumber() == runNumber;
+            return matchContext.getRunAttribute(RunAttribute.CONFIGNAME).equals(config) && matchContext.getRunAttribute(RunAttribute.RUNNUMBER).equals(runNumber);
         }
 
         @Override
@@ -837,7 +840,7 @@ public class ResultFileManagerTreeContentProvider {
             final int prime = 31;
             int result = 1;
             result = prime * result + ((config == null) ? 0 : config.hashCode());
-            result = prime * result + (int) (runNumber ^ (runNumber >>> 32));
+            result = prime * result + ((runNumber == null) ? 0 : runNumber.hashCode());
             return result;
         }
 
@@ -853,13 +856,16 @@ public class ResultFileManagerTreeContentProvider {
             if (config == null) {
                 if (other.config != null)
                     return false;
-            }
-            else if (!config.equals(other.config))
+            } else if (!config.equals(other.config))
                 return false;
-            if (runNumber != other.runNumber)
+            if (runNumber == null) {
+                if (other.runNumber != null)
+                    return false;
+            } else if (!runNumber.equals(other.runNumber))
                 return false;
             return true;
         }
+
     }
 
     public static class FileNameNode extends Node {

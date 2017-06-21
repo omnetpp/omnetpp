@@ -1255,36 +1255,6 @@ static bool replaceIndexWithWildcard(std::string& str)
     return changed;
 }
 
-StringVector *ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idlist) const
-{
-    READER_MUTEX
-    FileRunList *fileRuns = getUniqueFileRuns(idlist);
-
-    StringVector vec;
-    DuplicateStringCollector coll;
-
-    for (int i = 0; i < (int)fileRuns->size(); i++) {
-        FileRun *fileRun = (*fileRuns)[i];
-        if (fileRun->runRef->getRunNumber() == 0) {
-            vec.push_back(fileRun->fileRef->getFilePath());
-        }
-        else {
-            char runNumberStr[32];
-            sprintf(runNumberStr, "%d", fileRun->runRef->getRunNumber());
-            vec.push_back(fileRun->fileRef->getFilePath()+"#"+runNumberStr);
-            coll.add(fileRun->fileRef->getFilePath()+"#*");
-        }
-    }
-    delete fileRuns;
-
-    // sort and concatenate them, and return the result
-    StringVector *wildvec = new StringVector(coll.get());
-    std::sort(vec.begin(), vec.end(), strdictLess);
-    std::sort(wildvec->begin(), wildvec->end(), strdictLess);
-    wildvec->insert(wildvec->end(), vec.begin(), vec.end());
-    return wildvec;
-}
-
 StringVector *ResultFileManager::getFilePathFilterHints(const ResultFileList& fileList) const
 {
     READER_MUTEX

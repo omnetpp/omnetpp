@@ -63,7 +63,7 @@ public class RunPropertySource implements IPropertySource {
             return run.getParamAssignment(propertyId.toString().substring(1));
 
         if (propertyId.equals(PROP_RUN_NAME)) return run.getRunName();
-        if (propertyId.equals(PROP_RUN_NUMBER)) return run.getRunNumber();
+        if (propertyId.equals(PROP_RUN_NUMBER)) return run.getAttribute("runnumber");
 
         return null;
     }

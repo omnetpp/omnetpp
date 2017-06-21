@@ -255,12 +255,6 @@ public class ResultFileManagerEx extends ResultFileManager {
     }
 
     @Override
-    public StringVector getFileAndRunNumberFilterHints(IDList idlist) {
-        checkNotDeleted();
-        return super.getFileAndRunNumberFilterHints(idlist);
-    }
-
-    @Override
     public FileRun getFileRun(ResultFile file, Run run) {
         checkReadLock();
         return super.getFileRun(file, run);

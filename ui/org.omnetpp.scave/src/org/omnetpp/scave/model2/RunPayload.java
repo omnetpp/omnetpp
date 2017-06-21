@@ -2,22 +2,23 @@ package org.omnetpp.scave.model2;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.RunAttribute;
 
 public class RunPayload {
     private String runName;
-    private int runNumber;
+    private String runNumber;
 
     public RunPayload(Run run) {
         Assert.isNotNull(run.getRunName());
         this.runName = run.getRunName();
-        this.runNumber = run.getRunNumber();
+        this.runNumber = run.getAttribute(RunAttribute.RUNNUMBER);
     }
 
     public String getRunName() {
         return runName;
     }
 
-    public int getRunNumber() {
+    public String getRunNumber() {
         return runNumber;
     }
 
@@ -29,11 +30,11 @@ public class RunPayload {
             return false;
 
         RunPayload other = (RunPayload) obj;
-        return runName.equals(other.runName) && runNumber == other.runNumber;
+        return runName.equals(other.runName) && runNumber.equals(other.runNumber);
     }
 
     @Override
     public int hashCode() {
-        return 31 * runName.hashCode() + runNumber;
+        return 31 * runName.hashCode() + runNumber.hashCode();
     }
 }

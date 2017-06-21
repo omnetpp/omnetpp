@@ -110,11 +110,6 @@ void SqliteResultFileLoader::loadRunAttrs()
         if (oldPairRef != attributes.end() && oldPairRef->second != attrValue)
             error("Value of run attribute conflicts with previously loaded value");
         fileRunRef->runRef->setAttribute(attrName, attrValue);
-
-        // the "runNumber" attribute is also stored separately
-        if (attrName == "runNumber")
-            if (!parseInt(attrValue.c_str(), fileRunRef->runRef->runNumber))
-                error("runNumber run attribute must be an integer");
     }
     finalizeStatement();
 }
