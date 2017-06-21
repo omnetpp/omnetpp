@@ -197,6 +197,8 @@ MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions&
     classType["omnetpp::cOwnedObject"] = COWNEDOBJECT;
     classType["omnetpp::cMessage"] = COWNEDOBJECT;
     classType["omnetpp::cPacket"] = COWNEDOBJECT;
+    classType["omnetpp::cModule"] = COWNEDOBJECT;
+    // TODO: others?
 }
 
 MsgCppGenerator::~MsgCppGenerator()
