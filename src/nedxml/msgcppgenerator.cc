@@ -2005,7 +2005,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             }
             cast = "(void *)";
             if (field.classtype == COBJECT || field.classtype == CNAMEDOBJECT || field.classtype == COWNEDOBJECT)
-                cast = cast + "static_cast<omnetpp::cObject *>";
+                cast = cast + "static_cast<const omnetpp::cObject *>";
             if (field.fispointer) {
                 CC << "        case " << i << ": return " << cast << "(" << value << "); break;\n";
             }
