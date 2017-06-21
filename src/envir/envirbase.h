@@ -52,7 +52,7 @@ class cIEventlogManager;
 
 namespace envir {
 
-class cXMLDocCache;
+class XMLDocCache;
 class SignalSource;
 
 // assumed maximum length for getFullPath() string.
@@ -115,7 +115,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
   protected:
     cConfigurationEx *cfg;
     ArgList *args;
-    cXMLDocCache *xmlCache;
+    XMLDocCache *xmlCache;
     int exitCode;
 
     EnvirOptions *opt;

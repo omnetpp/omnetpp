@@ -34,23 +34,23 @@
 namespace omnetpp {
 namespace envir {
 
-Register_Class(cAkOutputVectorManager);
+Register_Class(AkOutputVectorManager);
 
 Register_PerObjectConfigOption(CFGID_WITH_AKAROA, "with-akaroa", KIND_VECTOR, CFG_BOOL, "false", "Whether the output vector should be under Akaroa control.");
 
-cAkOutputVectorManager::cAkOutputVectorManager()
+AkOutputVectorManager::AkOutputVectorManager()
 {
     ak_declared = false;
     ak_count = 0;
 }
 
-cAkOutputVectorManager::~cAkOutputVectorManager()
+AkOutputVectorManager::~AkOutputVectorManager()
 {
 }
 
-void *cAkOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
+void *AkOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
-    AkVectorData *vp = (AkVectorData *)cFileOutputVectorManager::registerVector(modulename, vectorname);
+    AkVectorData *vp = (AkVectorData *)OmnetppOutputVectorManager::registerVector(modulename, vectorname);
 
     // see if this vector needs Akaroa control
     std::string objectfullpath = std::string(modulename) + "." + vectorname;
@@ -68,12 +68,12 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     return vp;
 }
 
-cFileOutputVectorManager::VectorData *cAkOutputVectorManager::createVectorData()
+OmnetppOutputVectorManager::VectorData *AkOutputVectorManager::createVectorData()
 {
     return new AkVectorData;
 }
 
-bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
+bool AkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
     AkVectorData *vp = (AkVectorData *)vectorhandle;
     if (vp->ak_controlled) {
@@ -89,7 +89,7 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
     }
 
     // 3. write the vector file too
-    return cFileOutputVectorManager::record(vectorhandle, t, value);
+    return OmnetppOutputVectorManager::record(vectorhandle, t, value);
 }
 }  // namespace envir
 }  // namespace omnetpp

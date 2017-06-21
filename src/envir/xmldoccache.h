@@ -33,7 +33,7 @@ namespace envir {
 /**
  * Reads and caches XML config files.
  */
-class ENVIR_API cXMLDocCache : public cObject
+class ENVIR_API XMLDocCache : public cObject
 {
   protected:
     typedef std::map<std::string,cXMLElement*> XMLDocMap;
@@ -48,12 +48,12 @@ class ENVIR_API cXMLDocCache : public cObject
     /**
      * Constructor
      */
-    cXMLDocCache();
+    XMLDocCache();
 
     /**
      * Destructor
      */
-    virtual ~cXMLDocCache();
+    virtual ~XMLDocCache();
 
     /**
      * Returns the DOM tree of the given document.

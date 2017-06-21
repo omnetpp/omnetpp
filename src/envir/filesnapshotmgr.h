@@ -31,7 +31,7 @@ namespace envir {
  *
  * @ingroup Envir
  */
-class ENVIR_API cFileSnapshotManager : public cISnapshotManager
+class ENVIR_API FileSnapshotManager : public cISnapshotManager
 {
   protected:
     std::string fname;  // output file name
@@ -43,12 +43,12 @@ class ENVIR_API cFileSnapshotManager : public cISnapshotManager
     /**
      * Constructor.
      */
-    explicit cFileSnapshotManager();
+    explicit FileSnapshotManager();
 
     /**
      * Destructor.
      */
-    virtual ~cFileSnapshotManager();
+    virtual ~FileSnapshotManager();
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */

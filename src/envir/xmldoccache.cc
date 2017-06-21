@@ -15,12 +15,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "xmldoccache.h"
+
 #include "common/fileutil.h"
 #include "nedxml/saxparser.h"
 #include "omnetpp/cobject.h"
 #include "omnetpp/cxmlelement.h"
 #include "omnetpp/cexception.h"
-#include "cxmldoccache.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
@@ -138,11 +139,11 @@ void cXMLSAXHandler::endCdataSection()
 
 //=========================================================
 
-cXMLDocCache::cXMLDocCache()
+XMLDocCache::XMLDocCache()
 {
 }
 
-cXMLDocCache::~cXMLDocCache()
+XMLDocCache::~XMLDocCache()
 {
     for (XMLDocMap::iterator i = documentCache.begin(); i != documentCache.end(); ++i)
         delete i->second;
@@ -150,7 +151,7 @@ cXMLDocCache::~cXMLDocCache()
         delete i->second;
 }
 
-cXMLElement *cXMLDocCache::parseDocument(const char *filename)
+cXMLElement *XMLDocCache::parseDocument(const char *filename)
 {
 #ifndef WITH_NETBUILDER
     throw cRuntimeError("Cannot load '%s': XML config file support currently requires "
@@ -169,7 +170,7 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
 #endif
 }
 
-cXMLElement *cXMLDocCache::parseContent(const char *content)
+cXMLElement *XMLDocCache::parseContent(const char *content)
 {
 #ifndef WITH_NETBUILDER
     throw cRuntimeError("Cannot parse XML string: XML support currently requires "
@@ -188,7 +189,7 @@ cXMLElement *cXMLDocCache::parseContent(const char *content)
 #endif
 }
 
-cXMLElement *cXMLDocCache::getDocument(const char *filename)
+cXMLElement *XMLDocCache::getDocument(const char *filename)
 {
     // if found, return it from cache
     std::string key = tidyFilename(toAbsolutePath(filename).c_str());
@@ -202,7 +203,7 @@ cXMLElement *cXMLDocCache::getDocument(const char *filename)
     return documentnode;
 }
 
-cXMLElement *cXMLDocCache::getParsed(const char *content)
+cXMLElement *XMLDocCache::getParsed(const char *content)
 {
     // if found, return it from cache
     XMLDocMap::iterator it = contentCache.find(content);
@@ -215,7 +216,7 @@ cXMLElement *cXMLDocCache::getParsed(const char *content)
     return documentnode;
 }
 
-void cXMLDocCache::forgetDocument(const char *filename)
+void XMLDocCache::forgetDocument(const char *filename)
 {
     std::string key = tidyFilename(toAbsolutePath(filename).c_str());
     XMLDocMap::iterator it = documentCache.find(key);
@@ -226,7 +227,7 @@ void cXMLDocCache::forgetDocument(const char *filename)
     }
 }
 
-void cXMLDocCache::forgetParsed(const char *content)
+void XMLDocCache::forgetParsed(const char *content)
 {
     XMLDocMap::iterator it = contentCache.find(content);
     if (it != contentCache.end()) {
@@ -236,14 +237,14 @@ void cXMLDocCache::forgetParsed(const char *content)
     }
 }
 
-void cXMLDocCache::flushDocumentCache()
+void XMLDocCache::flushDocumentCache()
 {
     for (XMLDocMap::iterator i = documentCache.begin(); i != documentCache.end(); ++i)
         delete i->second;
     documentCache.clear();
 }
 
-void cXMLDocCache::flushParsedContentCache()
+void XMLDocCache::flushParsedContentCache()
 {
     for (XMLDocMap::iterator i = contentCache.begin(); i != contentCache.end(); ++i)
         delete i->second;

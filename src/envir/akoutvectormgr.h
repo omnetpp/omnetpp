@@ -25,7 +25,7 @@
 
 #include <cstdio>
 #include "omnetpp/simutil.h"
-#include "fileoutvectormgr.h"
+#include "omnetppoutvectormgr.h"
 
 namespace omnetpp {
 namespace envir {
@@ -39,7 +39,7 @@ namespace envir {
  *
  * @ingroup Envir
  */
-class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
+class ENVIR_API AkOutputVectorManager : public OmnetppOutputVectorManager
 {
     struct AkVectorData : VectorData {
        bool ak_controlled;  // under Akaroa control or not
@@ -60,12 +60,12 @@ class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
     /**
      * Constructor.
      */
-    explicit cAkOutputVectorManager();
+    explicit AkOutputVectorManager();
 
     /**
      * Destructor.
      */
-    virtual ~cAkOutputVectorManager();
+    virtual ~AkOutputVectorManager();
     //@}
 
     /** @name Redefined cFileOutputVectorManager member functions. */

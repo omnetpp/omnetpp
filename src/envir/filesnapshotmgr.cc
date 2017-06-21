@@ -36,17 +36,17 @@ using std::ios;
 
 Register_PerRunConfigOption(CFGID_SNAPSHOT_FILE, "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sna", "Name of the snapshot file.");
 
-Register_Class(cFileSnapshotManager);
+Register_Class(FileSnapshotManager);
 
-cFileSnapshotManager::cFileSnapshotManager()
+FileSnapshotManager::FileSnapshotManager()
 {
 }
 
-cFileSnapshotManager::~cFileSnapshotManager()
+FileSnapshotManager::~FileSnapshotManager()
 {
 }
 
-void cFileSnapshotManager::startRun()
+void FileSnapshotManager::startRun()
 {
     // clean up file from previous runs
     fname = getEnvir()->getConfig()->getAsFilename(CFGID_SNAPSHOT_FILE);
@@ -54,23 +54,23 @@ void cFileSnapshotManager::startRun()
     removeFile(fname.c_str(), "old snapshot file");
 }
 
-void cFileSnapshotManager::endRun()
+void FileSnapshotManager::endRun()
 {
 }
 
-ostream *cFileSnapshotManager::getStreamForSnapshot()
+ostream *FileSnapshotManager::getStreamForSnapshot()
 {
     mkPath(directoryOf(fname.c_str()).c_str());
     ostream *os = new ofstream(fname.c_str(), ios::out|ios::app);
     return os;
 }
 
-void cFileSnapshotManager::releaseStreamForSnapshot(std::ostream *os)
+void FileSnapshotManager::releaseStreamForSnapshot(std::ostream *os)
 {
     delete os;
 }
 
-const char *cFileSnapshotManager::getFileName() const
+const char *FileSnapshotManager::getFileName() const
 {
     return fname.c_str();
 }

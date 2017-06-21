@@ -297,7 +297,7 @@ void env_dummy_function()
     OmnetppOutputVectorManager oovm;
     SqliteOutputScalarManager sosm;
     SqliteOutputVectorManager sovm;
-    cFileSnapshotManager sm;
+    FileSnapshotManager sm;
     MatchableObjectAdapter moa;
     EventlogFileManager elfm;
     (void)a;
