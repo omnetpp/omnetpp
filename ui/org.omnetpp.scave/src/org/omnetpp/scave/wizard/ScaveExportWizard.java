@@ -8,11 +8,16 @@
 package org.omnetpp.scave.wizard;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -33,13 +38,21 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
@@ -87,11 +100,11 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
      */
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        // TODO use the selection of the active Scave editor instead passed parameter?
+        // TODO use the selection of the active Scave editor instead of passed parameter?
 
         if (selection instanceof IDListSelection) {
             IDListSelection idlistSelection = (IDListSelection)selection;
-            selectedIDs = IDList.fromArray(idlistSelection.getIDs());
+            selectedIDs = idlistSelection.toIDList();
             resultFileManager = idlistSelection.getResultFileManager();
         }
         else if (selection.size() == 1 && (selection.getFirstElement() instanceof Dataset || selection.getFirstElement() instanceof DatasetItem)) {
@@ -147,14 +160,17 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
                         ScavePlugin.logError("Cannot set option " + widgetName + "=" + value + " on " + format + " exporter", e);
                     }
                 }
-                
+
                 final String filename = page.getFilePath().toOSString();
+                boolean openAfterwards = page.openAfterwardsCheckbox.getSelection();
 
                 // perform the export
                 Job exportJob = new WorkspaceJob(format + " Export") {
                     @Override
                     public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
                         exporter.saveResults(filename, resultFileManager, selectedIDs, monitor);
+                        if (openAfterwards)
+                            Display.getDefault().asyncExec(() -> openResult(filename));
                         return Status.OK_STATUS;
                     }
                 };
@@ -176,6 +192,42 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             page.saveDialogSettings();
     }
 
+    protected void openResult(String filename) {
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchPage workbenchPage = workbenchWindow == null ? null : workbenchWindow.getActivePage();
+        if (workbenchPage == null)
+            return;
+
+        try {
+            if (!StringUtils.endsWith(filename, ".vec") && !StringUtils.endsWith(filename, ".sca")) {
+                long fileSize = new File(filename).length();
+                long MiB = 1024*1024;
+                if (fileSize >= 10*MiB) {
+                    boolean ok = MessageDialog.openConfirm(getShell(), "Confirm", "Exported file is relatively large (~" + (long)(fileSize/MiB) + "MB), still open it?");
+                    if (!ok)
+                        return;
+                }
+            }
+
+            URI fileURI = new File(filename).toURI();
+            IFile[] candidates = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(fileURI);
+            IFile file = candidates.length == 0 ? null : candidates[0];
+            if (file == null) {
+                IDE.openEditor(workbenchPage, fileURI, EditorsUI.DEFAULT_TEXT_EDITOR_ID, true);
+            }
+            else {
+                file.refreshLocal(IResource.DEPTH_ZERO, null);
+                IDE.openEditor(workbenchPage, file, true);
+            }
+        }
+        catch (Exception e) {
+            String message = "Cannot open '" + filename + "'";
+            if (!StringUtils.isEmpty(e.getMessage()))
+                message += ": " + e.getMessage();
+            MessageDialog.openError(getShell(), "Error", message);
+        }
+    }
+
     /**
      * Wizard page
      */
@@ -183,6 +235,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
     {
         private Text filenameText;
         private Map<String,Control> widgetMap;
+        private Button openAfterwardsCheckbox;
 
         public Page() {
             super(format + " Export");
@@ -194,8 +247,11 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             Composite panel = SWTFactory.createComposite(parent, 1, 1, SWTFactory.GRAB_AND_FILL_BOTH);
             addCommonFields(panel);
             addXswtForm(panel);
+            openAfterwardsCheckbox = SWTFactory.createCheckButton(panel, "Open with default editor afterwards", null, false, 1);
+            ((GridData)openAfterwardsCheckbox.getLayoutData()).horizontalIndent = 8;
             restoreDialogSettings();
             setControl(panel);
+            updatePageCompletion();
         }
 
         protected void addCommonFields(Composite parent) {
@@ -221,12 +277,16 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         protected void addXswtForm(Composite parent) {
             try {
                 // instantiate XSWT form
-                Composite xswtHolder = SWTFactory.createComposite(parent, 1, 1, SWTFactory.GRAB_AND_FILL_BOTH);
+                Composite xswtHolder = SWTFactory.createComposite(parent, 1, 1, SWTFactory.GRAB_AND_FILL_HORIZONTAL);
                 String xswtDoc = exporterType.getXswtForm();
                 widgetMap = new HashMap<>(); // prevent NPE later
                 if (!xswtDoc.isEmpty())
                     widgetMap = XSWT.create(xswtHolder, new ByteArrayInputStream(xswtDoc.getBytes()));
-                parent.getShell().layout(true); // needed?
+
+                Display.getCurrent().asyncExec(() -> {  // when done synchronously, dialog height will be smaller than desired (?)
+                        Shell shell = parent.getShell();
+                        shell.setSize(shell.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+                });
             }
             catch (Exception e) {
                 IStatus status = new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, "Error showing the XSWT form of exporter '" + format + "'", e);
@@ -273,20 +333,33 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
 
             IPath path = getFilePath();
             if (path.isEmpty()) {
+                setErrorMessage(null);
                 setPageComplete(false);
-                setErrorMessage("Enter file name to export to");
             }
-            else if (path.segmentCount() > 1) {
-                boolean ok = path.removeLastSegments(1).toFile().isDirectory();
-                setErrorMessage(ok ? null : "No such directory");
-                setPageComplete(ok);
+            else if (path.toFile().isDirectory()) {
+                setErrorMessage("Target is a directory");
+                setPageComplete(false);
+            }
+            else if (path.segmentCount() > 1 && !path.removeLastSegments(1).toFile().isDirectory()) {
+                setErrorMessage("Directory does not exist");
+                setPageComplete(false);
+            }
+            else {
+                setErrorMessage(null);
+                setPageComplete(true);
             }
         }
 
         protected void handleBrowseButtonPressed() {
+            String directory, fileName;
             IPath path = getFilePath();
-            String directory = path.removeLastSegments(1).toOSString();
-            String fileName = path.lastSegment();
+            if (path.isEmpty()) {
+                directory = getDefaultExportDirectory();
+                fileName = "Untitled." + getDefaultExportDirectory();
+            } else {
+                directory = path.removeLastSegments(1).toOSString();
+                fileName = path.lastSegment();
+            }
 
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
             dialog.setText("Save to File");
@@ -304,15 +377,17 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
         public IPath getFilePath() {
             String currentFilename = filenameText.getText();
             if (currentFilename.isEmpty())
-                currentFilename = "exported." + exporterType.getFileExtension();
+                return new Path("");
             IPath path = new Path(currentFilename);
             if (!path.isAbsolute()) {
                 String directory = getDefaultExportDirectory();
                 path = new Path(directory).append(path);
             }
+            if (path.getFileExtension() == null)
+                path = path.addFileExtension(exporterType.getFileExtension());
             return path;
         }
-        
+
         protected String getDefaultExportDirectory() {
             if (selectedIDs.isEmpty())
                 return "";
@@ -324,7 +399,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             });
             return new Path(firstResultFile).removeLastSegments(1).toOSString(); // remove file name
         }
-        
+
         //TODO use
         public Map<String,String> getOptions() {
             Map<String,String> options = new HashMap<String, String>();
@@ -335,7 +410,7 @@ public class ScaveExportWizard extends Wizard implements IExportWizard {
             }
             return options;
         }
-        
+
         protected void saveDialogSettings() {
             IDialogSettings settings = getDialogSettings();
             if (settings != null) {
