@@ -102,8 +102,8 @@
 #define DEFAULT_OUTPUTVECTORMANAGER_CLASS "omnetpp::envir::SqliteOutputVectorManager"
 #define DEFAULT_OUTPUTSCALARMANAGER_CLASS "omnetpp::envir::SqliteOutputScalarManager"
 #else
-#define DEFAULT_OUTPUTVECTORMANAGER_CLASS "omnetpp::envir::cIndexedFileOutputVectorManager"
-#define DEFAULT_OUTPUTSCALARMANAGER_CLASS "omnetpp::envir::cFileOutputScalarManager"
+#define DEFAULT_OUTPUTVECTORMANAGER_CLASS "omnetpp::envir::OmnetppOutputVectorManager"
+#define DEFAULT_OUTPUTSCALARMANAGER_CLASS "omnetpp::envir::OmnetppOutputScalarManager"
 #endif
 
 #define DEFAULT_OUTPUT_SCALAR_PRECISION    "14"
