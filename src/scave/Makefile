@@ -47,7 +47,7 @@ OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/scaveexception.o $O/enumtype.o $O/teenode.o \
       $O/indexedvectorfilereader.o $O/xyarray.o $O/fields.o \
       $O/sqlitevectorreader.o $O/vectorreaderbyfiletype.o \
-      $O/indexedvectorfilereader2.o $O/sqliteresultfileutils.o \
+      $O/sqliteresultfileutils.o \
       $O/datatable.o $O/exporter.o $O/exportutils.o \
       $O/csvrecexporter.o $O/csvspreadexporter.o $O/jsonexporter.o \
       $O/omnetppscalarfileexporter.o $O/sqlitescalarfileexporter.o \

@@ -23,7 +23,6 @@
 #include "vectorfilewriter.h"
 #include "indexedvectorfile.h"
 #include "indexedvectorfilereader.h"
-#include "indexedvectorfilereader2.h"
 #include "sqlitevectorreader.h"
 #include "vectorreaderbyfiletype.h"
 #include "filewriter.h"
@@ -71,7 +70,6 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new VectorFileWriterNodeType());
     add(new IndexedVectorFileWriterNodeType());
     add(new IndexedVectorFileReaderNodeType());
-    add(new IndexedVectorFileReaderNode2Type());
     add(new SqliteVectorReaderNodeType());
     add(new VectorReaderByFileTypeNodeType());
     add(new FileWriterNodeType());
