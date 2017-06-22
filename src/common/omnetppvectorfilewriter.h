@@ -99,7 +99,6 @@ class COMMON_API OmnetppVectorFileWriter
     void check(int fprintfResult);
     void checki(int fprintfResult);
     virtual void writeRecords();
-    virtual void writeOneBlock(VectorData *vp);
     virtual void writeBlock(VectorData *vp);
     virtual void finalizeVector(VectorData *vp);
 

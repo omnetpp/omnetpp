@@ -66,10 +66,10 @@ void OmnetppVectorFileWriter::open(const char *filename)
 {
     // open file
     fname = filename;
-    f = fopen(fname.c_str(), "a");
+    f = fopen(fname.c_str(), "w");  // we only support overwrite but not append
     if (f == nullptr)
         throw opp_runtime_error("Cannot open output vector file '%s'", fname.c_str());
-    check(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));   //TODO only if at start of file
+    check(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
 
     // open index file
     ifname = opp_substringbeforelast(fname, ".") + ".vci";
@@ -77,8 +77,8 @@ void OmnetppVectorFileWriter::open(const char *filename)
     if (fi == nullptr)
         throw opp_runtime_error("Cannot open index file '%s'", ifname.c_str());
 
-    fprintf(fi, "%64s\n", "");  // leave blank space for fingerprint  --FIXME what if there are multiple runs in the vec file?
-    check(fprintf(fi, "version %d\n", INDEX_FILE_VERSION));   //TODO only if at start of file
+    fprintf(fi, "%64s\n", "");  // leave blank space for "fingerprint" (size and modification date of the vector file)
+    check(fprintf(fi, "version %d\n", INDEX_FILE_VERSION));
 }
 
 void OmnetppVectorFileWriter::close()
@@ -148,7 +148,7 @@ void OmnetppVectorFileWriter::finalizeVector(VectorData *vp)
 {
     Assert(isOpen());
     if (!vp->buffer.empty())
-        writeOneBlock(vp);
+        writeBlock(vp);
 }
 
 void OmnetppVectorFileWriter::endRecordingForRun()
@@ -222,22 +222,16 @@ void OmnetppVectorFileWriter::recordInVector(void *vectorhandle, eventnumber_t e
 
     // write out block if necessary
     if (vp->bufferedSamplesLimit > 0 && (int)vp->buffer.size() >= vp->bufferedSamplesLimit)
-        writeOneBlock(vp);
+        writeBlock(vp);
     else if (bufferedSamplesLimit > 0 && bufferedSamples >= bufferedSamplesLimit)
         writeRecords();
 }
 
 void OmnetppVectorFileWriter::writeRecords()
 {
-    //TODO use fflush analogous to commit?
     for (auto vp : vectors)
         if (!vp->buffer.empty())
             writeBlock(vp);
-}
-
-void OmnetppVectorFileWriter::writeOneBlock(VectorData *vp)
-{
-    writeBlock(vp);  //TODO ???
 }
 
 void OmnetppVectorFileWriter::writeBlock(VectorData *vp)
