@@ -203,12 +203,6 @@ void OmnetppVectorFileWriter::recordInVector(void *vectorhandle, eventnumber_t e
     vp->buffer.push_back(Sample(t, simtimeScaleExp, eventNumber, value));
     this->bufferedSamples++;
 
-    // write out block if necessary
-    if (vp->bufferedSamplesLimit > 0 && (int)vp->buffer.size() >= vp->bufferedSamplesLimit)
-        writeOneBlock(vp);
-    else if (bufferedSamplesLimit > 0 && bufferedSamples >= bufferedSamplesLimit)
-        writeRecords();
-
     // update vector statistics
     if (vp->currentBlock.statistics.getCount() == 0) {
         vp->currentBlock.startEventNum = eventNumber;
@@ -218,6 +212,12 @@ void OmnetppVectorFileWriter::recordInVector(void *vectorhandle, eventnumber_t e
     vp->currentBlock.endTime = SimtimeValue{t, simtimeScaleExp};
 
     vp->currentBlock.statistics.collect(value);
+
+    // write out block if necessary
+    if (vp->bufferedSamplesLimit > 0 && (int)vp->buffer.size() >= vp->bufferedSamplesLimit)
+        writeOneBlock(vp);
+    else if (bufferedSamplesLimit > 0 && bufferedSamples >= bufferedSamplesLimit)
+        writeRecords();
 }
 
 void OmnetppVectorFileWriter::writeRecords()
