@@ -36,6 +36,7 @@
 #include "common/fileutil.h"
 #include "common/commonutil.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "indexfile.h"
 #include "scaveutils.h"
@@ -216,20 +217,12 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     case ParseContext::NONE:
         break;
     case ParseContext::RUN: {
-        // find out if we have that run already
-        Run *runRef = resultFileManager->getRunByName(ctx.runName.c_str());
-        bool isNewRun = (runRef == nullptr);
-        if (runRef == nullptr)
-            runRef = resultFileManager->addRun(ctx.runName.c_str());
-        ctx.fileRunRef = resultFileManager->addFileRun(ctx.fileRef, runRef); //TODO check non-unique runId in this file
-        if (!isNewRun)
-            break; // already loaded, don't add attrs, itervars etc again; TODO check consistency
-
+        Run *runRef = resultFileManager->getOrAddRun(ctx.runName);
+        ctx.fileRunRef = resultFileManager->getOrAddFileRun(ctx.fileRef, runRef);
         separateItervarsFromAttrs(ctx.attrs, ctx.itervars);
-
-        runRef->attributes = ctx.attrs;
-        runRef->itervars = ctx.itervars;
-        runRef->paramAssignments = ctx.moduleParams;
+        addAll(runRef->attributes, ctx.attrs);  // note: merge/overwrite attributes if run already existed
+        addAll(runRef->itervars, ctx.itervars);
+        addAll(runRef->paramAssignments, ctx.moduleParams);
         break;
     }
     case ParseContext::SCALAR:
@@ -262,14 +255,17 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
 
 void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars)
 {
-    // Before version 5.1, files didn't have itervar lines, iteration variables were saved as run attributes.
+    // Before version 5.1, files didn't have 'itervar' lines, iteration variables were saved as run attributes.
     // This method identifies iteration variables, and moves them from the attrs stringmap into itervars.
-    if (itervars.empty() && attrs["iterationvars"] != "") {
-        for (auto part : opp_split(attrs["iterationvars"], ", ")) {
-            std::string varName = opp_substringafter(opp_substringbefore(part, "="), "$");
-            if (attrs.find(varName) != attrs.end()) {
-                itervars[varName] = attrs[varName];
-                attrs.erase(varName);
+    if (itervars.empty()) {
+        std::string itervarsAttr = attrs.find("iterationvars") != attrs.end() ? attrs["iterationvars"] : "";
+        if (!itervarsAttr.empty()) {
+            for (auto part : opp_split(itervarsAttr, ", ")) {
+                std::string varName = opp_substringafter(opp_substringbefore(part, "="), "$");
+                if (attrs.find(varName) != attrs.end()) {
+                    itervars[varName] = attrs[varName];
+                    attrs.erase(varName);
+                }
             }
         }
     }

@@ -77,12 +77,7 @@ void SqliteResultFileLoader::loadRuns()
         checkRow(resultCode);
         sqlite3_int64 runId = sqlite3_column_int64(stmt, 0);
         std::string runName  = (const char *) sqlite3_column_text(stmt, 1);
-        Run *runRef = resultFileManager->getRunByName(runName.c_str());
-        if (!runRef) {
-            // not yet: add it
-            runRef = resultFileManager->addRun(runName);
-        }
-        // associate Run with this file
+        Run *runRef = resultFileManager->getOrAddRun(runName);
         if (resultFileManager->getFileRun(fileRef, runRef) != nullptr)
             error("Non-unique runId in run table");
         FileRun *fileRunRef = resultFileManager->addFileRun(fileRef, runRef);

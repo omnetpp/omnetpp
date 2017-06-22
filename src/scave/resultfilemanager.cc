@@ -909,12 +909,29 @@ Run *ResultFileManager::addRun(const std::string& runName, bool computed)
     return run;
 }
 
+
 FileRun *ResultFileManager::addFileRun(ResultFile *file, Run *run)
 {
     FileRun *fileRun = new FileRun();
     fileRunList.push_back(fileRun);
     fileRun->fileRef = file;
     fileRun->runRef = run;
+    return fileRun;
+}
+
+Run *ResultFileManager::getOrAddRun(const std::string& runName)
+{
+    Run *run = getRunByName(runName.c_str());
+    if (!run)
+        run = addRun(runName);
+    return run;
+}
+
+FileRun *ResultFileManager::getOrAddFileRun(ResultFile *file, Run *run)
+{
+    FileRun *fileRun = getFileRun(file, run);
+    if (!fileRun)
+        fileRun = addFileRun(file, run);
     return fileRun;
 }
 

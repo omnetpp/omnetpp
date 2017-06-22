@@ -395,7 +395,9 @@ class SCAVE_API ResultFileManager
     // utility functions called while loading a result file
     ResultFile *addFile(const char *fileName, const char *fileSystemFileName, ResultFile::FileType fileType, bool computed);
     Run *addRun(const std::string& runName, bool computed=false);
-    FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
+    FileRun *addFileRun(ResultFile *file, Run *run);
+    Run *getOrAddRun(const std::string& runName);
+    FileRun *getOrAddFileRun(ResultFile *file, Run *run);
 
     int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, const StringMap& attrs, double value, bool isField);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns);
