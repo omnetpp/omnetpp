@@ -125,21 +125,16 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
     reader.seekTo(startOffset);
 
-    long readTime = 0;
-    long tokenizeTime = 0;
-    long parseTime = 0;
-//  printf("readBlock ");
-
     char *line;
     for (long k = 0; k < count  /*&& (line=reader.getNextLineBufferPointer())!=nullptr*/; ++k) {
-        TIME(readTime, line = reader.getNextLineBufferPointer());
+        line = reader.getNextLineBufferPointer();
 
         if (!line)
             break;
 
         offset = reader.getCurrentLineStartOffset();
         int length = reader.getCurrentLineLength();
-        TIME(tokenizeTime, tokenizer.tokenize(line, length));
+        tokenizer.tokenize(line, length);
 
         int numtokens = tokenizer.numTokens();
         char **vec = tokenizer.tokens();
@@ -152,15 +147,12 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
         // parse columns
         Datum a;
-        TIME(parseTime, a = parseColumns(vec, numtokens, vector->columns, file, -1, offset));
+        a = parseColumns(vec, numtokens, vector->columns, file, -1, offset);
 
         // write to port(s)
         for (PortVector::const_iterator port = portDataPtr->ports.begin(); port != portDataPtr->ports.end(); ++port)
             port->getChannel()->write(&a, 1);
     }
-
-//    printf("read: %ldms tokenize: %ldms parse: %ldms\n",
-//          readTime/1000, tokenizeTime/1000, parseTime/1000);
 
     return blockPtr->size;
 }
