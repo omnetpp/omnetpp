@@ -283,28 +283,22 @@ Exported 1 vector
 ---------------------------------------------------------------
 $ scavetool x -o out-v1.csv -v <files>
 inferred export format from file name: CSV-R
-reading ../results/General-#0.sca...
-done
-reading ../results/General-#1.sca...
-done
-reading ../results/General-#0.vec...
-done
-reading ../results/General-#1.vec...
-done
+reading ../results/General-#0.sca... done
+reading ../results/General-#1.sca... done
+reading ../results/General-#0.vec... done
+reading ../results/General-#1.vec... done
 4 file(s) loaded
+exporting to out-v1.csv... done
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ scavetool x -o out-v2.csv --verbose <files>
 inferred export format from file name: CSV-R
-reading ../results/General-#0.sca...
-done
-reading ../results/General-#1.sca...
-done
-reading ../results/General-#0.vec...
-done
-reading ../results/General-#1.vec...
-done
+reading ../results/General-#0.sca... done
+reading ../results/General-#1.sca... done
+reading ../results/General-#0.vec... done
+reading ../results/General-#1.vec... done
 4 file(s) loaded
+exporting to out-v2.csv... done
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ===============================================================
 $ scavetool out-Foppsca.sca

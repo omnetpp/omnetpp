@@ -791,26 +791,18 @@ $ scavetool --no-indexing <files>
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool -v <files>
-reading results/General-#0.sca...
-done
-reading results/General-#1.sca...
-done
-reading results/General-#0.vec...
-done
-reading results/General-#1.vec...
-done
+reading results/General-#0.sca... done
+reading results/General-#1.sca... done
+reading results/General-#0.vec... done
+reading results/General-#1.vec... done
 4 file(s) loaded
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool --verbose <files>
-reading results/General-#0.sca...
-done
-reading results/General-#1.sca...
-done
-reading results/General-#0.vec...
-done
-reading results/General-#1.vec...
-done
+reading results/General-#0.sca... done
+reading results/General-#1.sca... done
+reading results/General-#0.vec... done
+reading results/General-#1.vec... done
 4 file(s) loaded
 runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 .

@@ -217,14 +217,14 @@ void ScaveTool::loadFiles(ResultFileManager& manager, const vector<string>& file
 
         if (indexingAllowed && IndexFile::isExistingVectorFile(fileName) && !IndexFile::isIndexFileUpToDate(fileName)) {
             if (verbose)
-                cout << "index file for " << fileName << " is missing or out of date, indexing...\n";
+                cout << "index file for " << fileName << " is missing or out of date, indexing... " << std::flush;
             VectorFileIndexer().generateIndex(fileName, nullptr);
             if (verbose)
                 cout << "done\n";
         }
 
         if (verbose)
-            cout << "reading " << fileName << "...\n";
+            cout << "reading " << fileName << "... " << std::flush;
         manager.loadFile(fileName);
         if (verbose)
             cout << "done\n";
@@ -702,9 +702,14 @@ void ScaveTool::exportCommand(int argc, char **argv)
     if (unsupportedItemTypes != 0)
         throw opp_runtime_error("Data set contains items of type not supported by the export format, use -T option to filter");
 
+
     // export
+    if (opt_verbose)
+        cout << "exporting to " << opt_fileName << "... " << std::flush;
     exporter->setOptions(exporterOptions);
     exporter->saveResults(opt_fileName, &resultFileManager, results);
+    if (opt_verbose)
+        cout << "done\n";
 
     // report summary
     if (opt_fileName != "-") {
@@ -744,7 +749,7 @@ void ScaveTool::indexCommand(int argc, char **argv)
     for (int i = 0; i < (int)opt_fileNames.size(); i++) {
         const char *fileName = opt_fileNames[i].c_str();
         if (opt_verbose)
-            cout << "indexing " << fileName << "...\n";
+            cout << "indexing " << fileName << "... " << std::flush;
         if (opt_rebuild)
             indexer.rebuildVectorFile(fileName);
         else
