@@ -46,6 +46,8 @@
 #include "matchableobject.h"
 #include "omnetppoutscalarmgr.h"
 #include "omnetppoutvectormgr.h"
+#include "sqliteoutscalarmgr.h"
+#include "sqliteoutvectormgr.h"
 
 using namespace omnetpp::common;
 
@@ -293,6 +295,8 @@ void env_dummy_function()
     cFileOutputVectorManager_merged fovmm;
     OmnetppOutputScalarManager oosm;
     OmnetppOutputVectorManager oovm;
+    SqliteOutputScalarManager sosm;
+    SqliteOutputVectorManager sovm;
     cFileSnapshotManager sm;
     MatchableObjectAdapter moa;
     EventlogFileManager elfm;
@@ -303,6 +307,8 @@ void env_dummy_function()
     (void)fovmm;
     (void)oosm;
     (void)oovm;
+    (void)sosm;
+    (void)sovm;
     (void)sm;
     (void)moa;  // eliminate 'unused var' warnings
     (void)elfm;
