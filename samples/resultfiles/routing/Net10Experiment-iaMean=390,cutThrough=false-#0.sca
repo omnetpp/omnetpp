@@ -1,21 +1,21 @@
 version 2
-run Net10Experiment-44-20170619-12:47:21-705
+run Net10Experiment-44-20170627-20:42:58-22902
 attr configname Net10Experiment
-attr datetime 20170619-12:47:21
+attr datetime 20170627-20:42:58
 attr experiment Net10Experiment
 attr inifile omnetpp.ini
-attr iterationvars "$iaMean=390, $cutThrough=false"
+attr iterationvars "iaMean=390, cutThrough=false"
 attr iterationvarsf iaMean=390,cutThrough=false-
-attr measurement "$iaMean=390, $cutThrough=false"
+attr measurement "iaMean=390, cutThrough=false"
 attr network networks.Net10
-attr processid 705
+attr processid 22902
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 44
 attr seedset 44
-attr cutThrough false
-attr iaMean 390
+itervar cutThrough false
+itervar iaMean 390
 param **.destAddresses "\"1\""
 param **.app.sendIaTime "exponential(390 ms)"
 param **.queue[*].useCutThroughSwitching false
@@ -23,7 +23,6 @@ param **.queue[*].frameCapacity 100
 param **.appType "\"App\""
 param **.app.packetLength "4096 bytes"
 
-scalar _runattrs_ iaMean 390
 scalar Net10.rte[0].app hopCount:mean -nan
 attr interpolationmode none
 attr title "hop count of arrived packets, mean"
@@ -40,8 +39,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[0].routing outputIf:histogram
 field count 15259
-field mean 0
-field stddev 0
 field sum 0
 field sqrsum 0
 field min 0
@@ -98,8 +95,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[0].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -149,8 +144,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[0].queue[0] txBytes:histogram
 field count 15259
-field mean 4096
-field stddev 0
 field sum 62500864
 field sqrsum 256003538944
 field min 4096
@@ -189,8 +182,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[0].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -240,8 +231,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[0].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -308,8 +297,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[0].queue[2] rxBytes:histogram
 field count 12214
-field mean 4096
-field stddev 0
 field sum 50028544
 field sqrsum 204916916224
 field min 4096
@@ -331,8 +318,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[0].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -405,8 +390,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[1].routing outputIf:histogram
 field count 30642
-field mean -1
-field stddev 0
 field sum -30642
 field sqrsum 30642
 field min -1
@@ -435,8 +418,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[1].queue[0] rxBytes:histogram
 field count 15259
-field mean 4096
-field stddev 0
 field sum 62500864
 field sqrsum 256003538944
 field min 4096
@@ -458,8 +439,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[1].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -526,8 +505,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[1].queue[1] rxBytes:histogram
 field count 3048
-field mean 4096
-field stddev 0
 field sum 12484608
 field sqrsum 51136954368
 field min 4096
@@ -549,8 +526,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[1].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -617,8 +592,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[1].queue[2] rxBytes:histogram
 field count 9249
-field mean 4096
-field stddev 0
 field sum 37883904
 field sqrsum 155172470784
 field min 4096
@@ -640,8 +613,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[1].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -714,8 +685,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[2].routing outputIf:histogram
 field count 9249
-field mean 4
-field stddev 0
 field sum 36996
 field sqrsum 147984
 field min 4
@@ -744,8 +713,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -795,8 +762,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -863,8 +828,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -914,8 +877,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -982,8 +943,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[2] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1033,8 +992,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1101,8 +1058,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[3] rxBytes:histogram
 field count 6202
-field mean 4096
-field stddev 0
 field sum 25403392
 field sqrsum 104052293632
 field min 4096
@@ -1124,8 +1079,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[3] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1192,8 +1145,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[4] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1243,8 +1194,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[2].queue[4] txBytes:histogram
 field count 9249
-field mean 4096
-field stddev 0
 field sum 37883904
 field sqrsum 155172470784
 field min 4096
@@ -1289,8 +1238,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[3].routing outputIf:histogram
 field count 3048
-field mean 1
-field stddev 0
 field sum 3048
 field sqrsum 3048
 field min 1
@@ -1319,8 +1266,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[3].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1370,8 +1315,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[3].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1438,8 +1381,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[3].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1489,8 +1430,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[3].queue[1] txBytes:histogram
 field count 3048
-field mean 4096
-field stddev 0
 field sum 12484608
 field sqrsum 51136954368
 field min 4096
@@ -1529,8 +1468,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[3].queue[2] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1580,8 +1517,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[3].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1654,8 +1589,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[4].routing outputIf:histogram
 field count 6202
-field mean 2
-field stddev 0
 field sum 12404
 field sqrsum 24808
 field min 2
@@ -1684,8 +1617,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[0] rxBytes:histogram
 field count 3053
-field mean 4096
-field stddev 0
 field sum 12505088
 field sqrsum 51220840448
 field min 4096
@@ -1707,8 +1638,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1775,8 +1704,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1826,8 +1753,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1894,8 +1819,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[2] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -1945,8 +1868,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[2] txBytes:histogram
 field count 6202
-field mean 4096
-field stddev 0
 field sum 25403392
 field sqrsum 104052293632
 field min 4096
@@ -1985,8 +1906,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[3] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2036,8 +1955,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[4].queue[3] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2110,8 +2027,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[5].routing outputIf:histogram
 field count 12214
-field mean 3
-field stddev 0
 field sum 36642
 field sqrsum 109926
 field min 3
@@ -2140,8 +2055,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2191,8 +2104,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2259,8 +2170,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[1] rxBytes:histogram
 field count 3141
-field mean 4096
-field stddev 0
 field sum 12865536
 field sqrsum 52697235456
 field min 4096
@@ -2282,8 +2191,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2350,8 +2257,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[2] rxBytes:histogram
 field count 6042
-field mean 4096
-field stddev 0
 field sum 24748032
 field sqrsum 101367939072
 field min 4096
@@ -2373,8 +2278,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2441,8 +2344,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[3] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2492,8 +2393,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[5].queue[3] txBytes:histogram
 field count 12214
-field mean 4096
-field stddev 0
 field sum 50028544
 field sqrsum 204916916224
 field min 4096
@@ -2538,8 +2437,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[6].routing outputIf:histogram
 field count 6042
-field mean 4
-field stddev 0
 field sum 24168
 field sqrsum 96672
 field min 4
@@ -2568,8 +2465,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2619,8 +2514,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2687,8 +2580,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2738,8 +2629,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2806,8 +2695,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[2] rxBytes:histogram
 field count 3001
-field mean 4096
-field stddev 0
 field sum 12292096
 field sqrsum 50348425216
 field min 4096
@@ -2829,8 +2716,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2897,8 +2782,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[3] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -2948,8 +2831,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[3] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3016,8 +2897,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[4] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3067,8 +2946,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[6].queue[4] txBytes:histogram
 field count 6042
-field mean 4096
-field stddev 0
 field sum 24748032
 field sqrsum 101367939072
 field min 4096
@@ -3113,8 +2990,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[7].routing outputIf:histogram
 field count 3141
-field mean 0
-field stddev 0
 field sum 0
 field sqrsum 0
 field min 0
@@ -3171,8 +3046,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[7].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3222,8 +3095,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[7].queue[0] txBytes:histogram
 field count 3141
-field mean 4096
-field stddev 0
 field sum 12865536
 field sqrsum 52697235456
 field min 4096
@@ -3262,8 +3133,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[7].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3313,8 +3182,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[7].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3381,8 +3248,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[7].queue[2] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3432,8 +3297,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[7].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3506,8 +3369,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[8].routing outputIf:histogram
 field count 3053
-field mean 1
-field stddev 0
 field sum 3053
 field sqrsum 3053
 field min 1
@@ -3536,8 +3397,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[8].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3587,8 +3446,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[8].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3655,8 +3512,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[8].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3706,8 +3561,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[8].queue[1] txBytes:histogram
 field count 3053
-field mean 4096
-field stddev 0
 field sum 12505088
 field sqrsum 51220840448
 field min 4096
@@ -3746,8 +3599,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[8].queue[2] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3797,8 +3648,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[8].queue[2] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3871,8 +3720,6 @@ attr title "end-to-end delay of arrived packets, max"
 attr unit s
 statistic Net10.rte[9].routing outputIf:histogram
 field count 3001
-field mean 2
-field stddev 0
 field sum 6002
 field sqrsum 12004
 field min 2
@@ -3901,8 +3748,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[9].queue[0] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -3952,8 +3797,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[9].queue[0] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -4020,8 +3863,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[9].queue[1] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -4071,8 +3912,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[9].queue[1] txBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -4139,8 +3978,6 @@ attr title "received packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[9].queue[2] rxBytes:histogram
 field count 0
-field mean -nan
-field stddev -nan
 field sum 0
 field sqrsum 0
 field min -nan
@@ -4190,8 +4027,6 @@ attr title "transmitting packet byte length, sum"
 attr unit bytes
 statistic Net10.rte[9].queue[2] txBytes:histogram
 field count 3001
-field mean 4096
-field stddev 0
 field sum 12292096
 field sqrsum 50348425216
 field min 4096
@@ -4220,3 +4055,4 @@ scalar Net10.rte[9].queue[2] drop:sum 0
 attr interpolationmode none
 attr title "dropped packet byte length, sum"
 attr unit bytes
+
