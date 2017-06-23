@@ -130,7 +130,8 @@ class NEDXML_API MsgCppGenerator
             std::string argname;    // setter argument name
             std::string varsize;    // data member to store array size
             std::string fsizetype;  // type for storing array size
-            std::string getter;     // getter function name
+            std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
+            std::string mGetter;    // const getter function name:  "T& mGetter();" default value is the value of getter, @mgetter
             std::string setter;     // Setter function name
             std::string alloc;      // setArraySize() function name
             std::string getsize;    // array size getter function name

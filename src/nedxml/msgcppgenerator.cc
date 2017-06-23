@@ -774,6 +774,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         }
         else {
             it->getter = str("get") + capfieldname;
+            it->mGetter = str("get") + capfieldname;
             it->getsize = str("get") + capfieldname + "ArraySize";
         }
 
@@ -783,6 +784,10 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         }
         if (getProperty(it->fprops, "getter") != "") {
             it->getter = getProperty(it->fprops, "getter");
+        }
+        it->mGetter = it->getter;
+        if (getProperty(it->fprops, "mgetter") != "") {
+            it->mGetter = getProperty(it->fprops, "mgetter");
         }
         if (getProperty(it->fprops, "sizeSetter") != "") {
             it->alloc = getProperty(it->fprops, "sizeSetter");
@@ -1114,10 +1119,15 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             }
             H << "    virtual " << it->fsizetype << " " << it->getsize << "() const" << pure << ";\n";
         }
-        H << "    virtual " << it->rettype << " " << it->getter << "(" << getterIndexArg << ")" << constifprimitivetype << "" << pure << overrideGetter << ";\n";
-        if (isstruct)
-            H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const " << overrideGetter << " {return const_cast<" << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << ");}\n";
-        H << "    virtual void " << it->setter << "(" << setterIndexArg << it->argtype << " " << it->argname << ")" << pure << overrideSetter << ";\n";
+        if (isstruct) {
+            H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+            H << "    virtual " << it->rettype << " " << it->mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << it->rettype << ">(const_cast<const " << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << "));}\n";
+        }
+        else {
+            H << "    virtual " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+        }
+
+        H << "    virtual void " << it->setter << "(" << setterIndexArg << it->argtype << " " << it->argname << ")" << overrideSetter << pure << ";\n";
     }
     H << "};\n\n";
 
@@ -1374,12 +1384,20 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    return " << it->farraysize << ";\n";
                 CC << "}\n\n";
 
-                CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
-                CC << "{\n";
-                CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
-                CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
-                CC << "}\n\n";
-
+                if (isstruct) {
+                    CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
+                    CC << "{\n";
+                    CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
+                    CC << "}\n\n";
+                }
+                else {
+                    CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
+                    CC << "{\n";
+                    CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
+                    CC << "}\n\n";
+                }
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
                 CC << "    handleChange();\n";
@@ -1387,6 +1405,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
                 CC << "}\n\n";
             }
+
             else if (it->fisarray && it->farraysize.empty()) {
                 CC << "void " << info.msgclass << "::" << it->alloc << "(" << it->fsizetype << " size)\n";
                 CC << "{\n";
@@ -1413,11 +1432,20 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    return " << it->varsize << ";\n";
                 CC << "}\n\n";
 
-                CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << constifprimitivetype << "\n";
-                CC << "{\n";
-                CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
-                CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
-                CC << "}\n\n";
+                if (isstruct) {
+                    CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
+                    CC << "{\n";
+                    CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
+                    CC << "}\n\n";
+                }
+                else {
+                    CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
+                    CC << "{\n";
+                    CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
+                    CC << "}\n\n";
+                }
 
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
@@ -1427,10 +1455,18 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "}\n\n";
             }
             else {
-                CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "()" << constifprimitivetype << "\n";
-                CC << "{\n";
-                CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
-                CC << "}\n\n";
+                if (isstruct) {
+                    CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "()" << " const \n";
+                    CC << "{\n";
+                    CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
+                    CC << "}\n\n";
+                }
+                else {
+                    CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "()" << " const \n";
+                    CC << "{\n";
+                    CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
+                    CC << "}\n\n";
+                }
 
                 CC << "void " << info.msgclass << "::" << it->setter << "(" << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
