@@ -11,11 +11,10 @@
     <tycho.extras.version>0.26.0</tycho.extras.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <repo.url>http://download.eclipse.org/releases/oxygen</repo.url>
-<!--    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.7milestones</update-repo.url> -->
-    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.7-I-builds</update-repo.url>
-<!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.2</cdt-repo.url> -->
-<!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/oxygen/milestones</cdt-repo.url> -->
-    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/master/nightly</cdt-repo.url>
+    <update-repo.url>http://download.eclipse.org/eclipse/updates/4.7</update-repo.url>
+<!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.3</cdt-repo.url> -->
+    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/oxygen/milestones</cdt-repo.url>
+<!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/master/nightly</cdt-repo.url> -->
   </properties>
 
   <pluginRepositories>
