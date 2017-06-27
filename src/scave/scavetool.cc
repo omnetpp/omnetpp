@@ -95,6 +95,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-g, --grep-friendly", "Grep-friendly: with -p, put run names at the start of each line, not above groups as headings.");
         help.option("    --tabs", "Use tabs in tables instead of padding with spaces.");
         help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
+        help.option("-y, --add-itervars-as-scalars", "Add iteration variables as scalars");
         help.option("-D, --rundisplay <format>", "Display format for run; <format> can be any of:\n"
                     "  'runid'       Displays ${runid} (this is the default)\n"
                     "  'runnumber'   Displays ${configname} ${runnumber}\n"
@@ -112,6 +113,7 @@ void ScaveTool::printHelpPage(const std::string& page)
         help.option("-T, --type <types>", "Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).");
         help.option("-f, --filter <filter>", "Filter for result items (vectors, scalars, statistics, histograms) matched by filter expression (try 'help filter')");
         help.option("-w, --add-fields-as-scalars", "Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars");
+        help.option("-y, --add-itervars-as-scalars", "Add iteration variables as scalars");
         help.option("-o <filename>", "Output file name, or '-' for the standard output. This option is mandatory.");
         help.option("-F <format>", "Selects the exporter. The exporter's operation may further be customized via -x options.");
         help.option("-x <key>=<value>", "Option for the exporter. This option may occur multiple times.");
@@ -327,6 +329,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     int opt_resultTypeFilter = ResultFileManager::SCALAR | ResultFileManager::VECTOR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM;
     RunDisplayMode opt_runDisplayMode = RUNDISPLAY_RUNID;
     bool opt_includeFields = false;
+    bool opt_includeItervars = false;
     bool opt_bare = false;
     bool opt_perRun = false;
     bool opt_grepFriendly = false;
@@ -372,6 +375,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
             opt_runDisplayModeStr = opt.substr(2);
         else if (opt == "-w" || opt == "--add-fields-as-scalars")
             opt_includeFields = true;
+        else if (opt == "-y" || opt == "--add-itervars-as-scalars")
+            opt_includeItervars = true;
         else if (opt == "-p" || opt == "--per-run")
             opt_perRun = true;
         else if (opt == "-b" || opt == "--bare")
@@ -413,7 +418,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter statistics
-    IDList results = resultFileManager.getAllItems(true, opt_includeFields);
+    IDList results = resultFileManager.getAllItems(true, opt_includeFields, opt_includeItervars);
     results.set(results.filterByTypes(opt_resultTypeFilter));
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
 
@@ -622,6 +627,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     bool opt_verbose = false;
     bool opt_indexingAllowed = true;
     bool opt_includeFields = false;
+    bool opt_includeItervars = false;
     string opt_fileName;
     string opt_exporter;
     vector<string> opt_exporterOptions;
@@ -642,6 +648,8 @@ void ScaveTool::exportCommand(int argc, char **argv)
             opt_filterExpression = unquoteString(argv[++i]);
         else if (opt == "-w" || opt == "--add-fields-as-scalars")
             opt_includeFields = true;
+        else if (opt == "-y" || opt == "--add-itervars-as-scalars")
+            opt_includeItervars = true;
         else if (opt == "-o" && i != argc-1)
             opt_fileName = argv[++i];
         else if (opt == "-F" && i != argc-1)
@@ -691,7 +699,7 @@ void ScaveTool::exportCommand(int argc, char **argv)
     loadFiles(resultFileManager, opt_fileNames, opt_indexingAllowed, opt_verbose);
 
     // filter statistics
-    IDList results = resultFileManager.getAllItems(true, opt_includeFields);
+    IDList results = resultFileManager.getAllItems(true, opt_includeFields, opt_includeItervars);
     results.set(results.filterByTypes(opt_resultTypeFilter));
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
 
