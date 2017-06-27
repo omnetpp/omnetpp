@@ -117,7 +117,7 @@ public class ResultItemPropertySource implements IPropertySource {
                     for (int i = 0; i < binBounds.size(); i++) {
                         double bin1 = binBounds.get(i);
                         double bin2 = i < binBounds.size()-1 ? binBounds.get(i+1) : Double.POSITIVE_INFINITY;
-                        bins[i] = new ReadonlyPropertyDescriptor("%"+i, String.valueOf(bin1) + " .. " + String.valueOf(bin2), "Bins");
+                        bins[i] = new ReadonlyPropertyDescriptor("%"+i, "[" + String.valueOf(bin1) + ", " + String.valueOf(bin2) + ")", "Bins");
                     }
                 }
                 return concat(BASE_PROPERTY_DESCS, CONTAINER_PROPERTY_DESCS, fields, attrs, bins);
