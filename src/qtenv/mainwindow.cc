@@ -671,7 +671,7 @@ void MainWindow::updateNextEventDisplay()
     cEvent *msgptr = nullptr;
 
     int state = env->getSimulationState();
-    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING) {
+    if (state == Qtenv::SIM_NEW || state == Qtenv::SIM_READY || state == Qtenv::SIM_RUNNING || state == Qtenv::SIM_BUSY) {
         modptr = getSimulation()->guessNextModule();
         msgptr = getSimulation()->guessNextEvent();
     }
