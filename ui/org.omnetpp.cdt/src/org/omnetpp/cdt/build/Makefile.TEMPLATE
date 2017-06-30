@@ -114,7 +114,7 @@ endif
 ### Copy binaries to their final destination from the out directory
 $(TARGET_DIR)/% : $O/%
 	@mkdir -p $(TARGET_DIR)
-	$(Q)cp -l -f $< $@
+	$(Q)$(LN) $< $@
 
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {exe:}	@$(MKPATH) $O
