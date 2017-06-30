@@ -728,6 +728,13 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     it->overrideSetter = getPropertyAsBool(it->fprops, "overridesetter", false) || getPropertyAsBool(it->fprops, "override", false);
     it->tostring = getProperty(it->fprops, "tostring", "");
     it->fromstring = getProperty(it->fprops, "fromstring", "");
+    if (hasProperty(it->fprops, "byvalue")) {
+        if (it->fispointer)
+            errors->addError(it->nedElement, "unaccepted @byvalue property for pointer field '%s %s' in class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+        else if (it->fisprimitivetype)
+            errors->addError(it->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+    }
+    it->byvalue = getPropertyAsBool(it->fprops, "byvalue", it->fisprimitivetype);
 
     // resolve enum namespace
     it->enumname = getProperty(it->fprops, "enum");
@@ -816,6 +823,11 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     if (!it->fisprimitivetype) {
         if (it->fispointer) {
             it->datatype = it->ftype + " *";
+            it->argtype = it->datatype;
+            it->rettype = it->datatype;
+        }
+        else if (it->byvalue) {
+            it->datatype = it->ftype;
             it->argtype = it->datatype;
             it->rettype = it->datatype;
         }
@@ -1143,7 +1155,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             if (it->fisownedpointer)  //TODO fispointer or fisownedpointer?
                 H << "    virtual " << it->rettype << " " << it->remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         }
-        else if (!it->fisprimitivetype) {
+        else if (!it->byvalue) {
             H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
             H << "    virtual " << it->rettype << " " << it->mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << it->rettype << ">(const_cast<const " << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << "));}\n";
         }
@@ -1484,7 +1496,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "}\n\n";
             }
 
-            if (it->fisprimitivetype) {
+            if (it->byvalue) {
                 CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << idxarg << ")" << " const\n";
                 CC << "{\n";
                 if (it->fisarray) {
@@ -2072,8 +2084,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         CC << "    switch (field) {\n";
         for (size_t i = 0; i < fieldcount; i++) {
             const ClassInfo::FieldInfo& field = info.fieldlist[i];
-            bool opaque = field.fopaque;  // TODO: @opaque should rather be the attribute of the field's type, not the field itself
-            if (!field.fisprimitivetype && !opaque) {
+            // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
+            if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
                 CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.ftype << "));\n";
             }
         }
@@ -2096,8 +2108,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
-        bool opaque = field.fopaque;  // # TODO: @opaque should rather be the attribute of the field's type, not the field itself
-        if (!field.fisprimitivetype && !opaque) {
+        // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
+        if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
             std::string cast;
             std::string value;
             if (info.classtype == STRUCT) {

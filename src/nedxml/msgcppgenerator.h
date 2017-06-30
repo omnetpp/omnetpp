@@ -116,9 +116,10 @@ class NEDXML_API MsgCppGenerator
             std::string fval;       // value (or empty)
             bool fisabstract;
             bool fispointer;
-            bool fisownedpointer;   // true, when should use dup()/delete (and take()/drop() when cOwnedObject); from property: @owned, default value is true for cOwnedObject, otherwise false
+            bool fisownedpointer;   // true, when should use dup()/delete/take()/drop()/dropAndDelete(); read from @owned, default value is true for cOwnedObject, otherwise false
                                     // "T *removeFoo()" also generated for owned pointer members
             bool fisarray;
+            bool byvalue;           // @byvalue, default value is false        // TODO: @byvalue should rather be the attribute of the field's type, not the field itself
             std::string farraysize; // array size in MSG, maybe empty for dynamic arrays
             Properties fprops;      // field properties (name, first value of default key)
 
@@ -240,6 +241,8 @@ class NEDXML_API MsgCppGenerator
     void generateNamespaceEnd();
     std::string generatePreComment(NEDElement *nedElement);
     void generateTemplates();
+    bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
+
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
     void generate(MsgFileElement *fileElement);
