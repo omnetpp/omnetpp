@@ -95,8 +95,10 @@ void OmnetppOutputScalarManager::startRun()
 void OmnetppOutputScalarManager::endRun()
 {
     initialized = false;
-    writer.endRecordingForRun();
-    closeFile();
+    if (writer.isOpen()) {
+        writer.endRecordingForRun();
+        closeFile();
+    }
 }
 
 inline StringMap convertMap(const opp_string_map *m) {
@@ -230,7 +232,8 @@ const char *OmnetppOutputScalarManager::getFileName() const
 
 void OmnetppOutputScalarManager::flush()
 {
-    writer.flush();
+    if (writer.isOpen())
+        writer.flush();
 }
 
 }  // namespace envir

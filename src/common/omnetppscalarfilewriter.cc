@@ -97,6 +97,8 @@ void OmnetppScalarFileWriter::writeStatisticFields(const Statistics& statistic)
 
 void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments)
 {
+    Assert(isOpen());
+
     // save run
     check(fprintf(f, "run %s\n", QUOTE(runName.c_str())));
 
@@ -116,17 +118,20 @@ void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, c
 
 void OmnetppScalarFileWriter::endRecordingForRun()
 {
+    Assert(isOpen());
     check(fprintf(f, "\n"));
 }
 
 void OmnetppScalarFileWriter::recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes)
 {
+    Assert(isOpen());
     check(fprintf(f, "scalar %s %s %.*g\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), prec, value));
     writeAttributes(attributes);
 }
 
 void OmnetppScalarFileWriter::recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes)
 {
+    Assert(isOpen());
     check(fprintf(f, "statistic %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str())));
     writeStatisticFields(statistic);
     writeAttributes(attributes);
@@ -134,6 +139,7 @@ void OmnetppScalarFileWriter::recordStatistic(const std::string& componentFullPa
 
 void OmnetppScalarFileWriter::recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes)
 {
+    Assert(isOpen());
     check(fprintf(f, "statistic %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str())));
     writeStatisticFields(statistic);
     writeAttributes(attributes);
@@ -143,8 +149,8 @@ void OmnetppScalarFileWriter::recordHistogram(const std::string& componentFullPa
 
 void OmnetppScalarFileWriter::flush()
 {
-    if (f)
-        fflush(f);
+    Assert(isOpen());
+    fflush(f);
 }
 
 }  // namespace common

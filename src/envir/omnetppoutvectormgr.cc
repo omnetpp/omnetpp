@@ -82,7 +82,8 @@ void OmnetppOutputVectorManager::initialize()
     writeRunData();
 }
 
-inline StringMap convertMap(const opp_string_map *m) {
+inline StringMap convertMap(const opp_string_map *m)
+{
     StringMap result;
     if (m)
         for (auto pair : *m)
@@ -181,6 +182,9 @@ bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double 
         initialize();
     }
 
+    if (isBad())
+        return false;
+
     if (vp->handleInWriter == nullptr) {
         std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
         size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
@@ -200,7 +204,8 @@ const char *OmnetppOutputVectorManager::getFileName() const
 
 void OmnetppOutputVectorManager::flush()
 {
-    writer.flush();
+    if (writer.isOpen())
+        writer.flush();
 }
 
 }  // namespace envir

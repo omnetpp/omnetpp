@@ -114,6 +114,7 @@ void OmnetppVectorFileWriter::beginRecordingForRun(const std::string& runName, c
 {
     Assert(vectors.size() == 0);
     bufferedSamples = 0;
+    Assert(isOpen());
 
     // note: we write everything twice, once in .vec and once in .vci
 
@@ -145,14 +146,14 @@ void OmnetppVectorFileWriter::beginRecordingForRun(const std::string& runName, c
 
 void OmnetppVectorFileWriter::finalizeVector(VectorData *vp)
 {
+    Assert(isOpen());
     if (!vp->buffer.empty())
         writeOneBlock(vp);
 }
 
 void OmnetppVectorFileWriter::endRecordingForRun()
 {
-    Assert(f != nullptr);
-
+    Assert(isOpen());
     for (VectorData *vp : vectors)
         finalizeVector(vp);
 
@@ -292,8 +293,8 @@ void OmnetppVectorFileWriter::writeBlock(VectorData *vp)
 
 void OmnetppVectorFileWriter::flush()
 {
-    if (f)
-        writeRecords();  // flushes both files
+    Assert(isOpen());
+    writeRecords();  // flushes both files
 }
 
 

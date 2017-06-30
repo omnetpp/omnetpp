@@ -121,7 +121,6 @@ class COMMON_API OmnetppVectorFileWriter
     void *registerVector(const std::string& componentFullPath, const std::string& name, const StringMap& attributes, size_t bufferSize, bool recordEventNumbers);
     void deregisterVector(void *vechandle);
     void recordInVector(void *vectorhandle, eventnumber_t eventNumber, rawsimtime_t t, int simtimeScaleExp, double value);
-    void createVectorIndex();
 
     void flush();
 };
