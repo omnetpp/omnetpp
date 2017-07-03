@@ -65,9 +65,19 @@ inline std::string osgNode_getDescription(osg::Node *node, unsigned int i)
 
 }}
 
-namespace omnetpp;
 
+// fully qualified forward declarations for cObjectOsgNode
 class osg::Node extends void;
+class osg::Group extends osg::Node;
+
+// this must not be in any .msg namespace, because we are crossing C++ namespaces
+class omnetpp::cObjectOsgNode extends osg::Group {
+    // the getter with the const_cast should not be necessary (hopefully) with a future version of msgc which will static_cast to a const pointer
+    cObject *object @getter(const_cast<cObject*>($->getObject())) @tostring(->str());
+}
+
+
+namespace omnetpp;
 
 struct Color;
 struct Vec3d;
@@ -83,7 +93,7 @@ struct cOsgCanvas::Viewpoint
 struct cOsgCanvas::EarthViewpoint
 {
     bool valid @editable;
-    double longitude @editable;
+    double longitude @editable; // TODO grouping?
     double latitude @editable;
     double altitude @editable;
     double heading @editable;
@@ -110,4 +120,8 @@ class Node extends void
 {
     string descriptions[] @getter(osgNode_getDescription($,i)) @sizeGetter(osgNode_getNumDescriptions($));
     Node *children[] @getter(osgNode_getChild($,i)) @sizeGetter(osgNode_getNumChildren($));
+}
+
+class Group extends Node {
+    // must be defined so cObjectOsgNode inherits members from Node
 }
