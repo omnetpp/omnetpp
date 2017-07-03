@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "omnetpp/cosgcanvas.h"
 
 /*
  * Implementation note: We don't want OMNeT++ to link directly with the OSG libraries
@@ -31,7 +30,8 @@
 #include <cmath>
 #include <limits>
 #include "omnetpp/globals.h"
-#include "omnetpp/osgutil.h" // OmnetppObjectNode
+#include "omnetpp/csimulation.h"  // getEnvir()
+#include "omnetpp/cosgcanvas.h"
 
 namespace omnetpp {
 
@@ -91,7 +91,7 @@ std::string cOsgCanvas::str() const
 {
     if (scene == nullptr)
         return "(empty)";
-    return std::string("scene '") + scene->getName() + "'";
+    return "";
 }
 
 void cOsgCanvas::setScene(osg::Node *scene)

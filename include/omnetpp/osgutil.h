@@ -16,10 +16,11 @@
 #ifndef __OMNETPP_OSGUTIL_H
 #define __OMNETPP_OSGUTIL_H
 
-#include <osg/Group>
+#include <omnetpp.h>
 
-#include "ccomponent.h"
-#include "csimulation.h"
+#ifdef WITH_OSG
+
+#include <osg/Group>
 
 namespace omnetpp {
 
@@ -98,4 +99,7 @@ inline void cObjectOsgNode::setObject(const cObject *obj)
 
 } // namespace omnetpp
 
+#endif // WITH_OSG
+
 #endif
+
