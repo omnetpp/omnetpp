@@ -19,8 +19,8 @@
 #include "cownedobject.h"
 #include "ccanvas.h"
 
-// don't include OSG headers yet
-namespace osg { class Node; class Group; class Vec3d; }
+// don't include OSG headers
+namespace osg { class Node;  }
 
 namespace omnetpp {
 
