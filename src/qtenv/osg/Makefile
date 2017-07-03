@@ -62,8 +62,8 @@ MOC_SRC=$(filter-out ui_%.h, $(wildcard *.h))
 MOC_OUT=$(MOC_SRC:%.h=moc_%.cpp)
 RESOURCES_SRC=$(wildcard *.qrc)
 RESOURCES_OUT=$(RESOURCES_SRC:%.qrc=qrc_%.cpp)
-GENERATED_SOURCES=$(UI_OUT) $(MOC_OUT) $(RESOURCES_OUT)
-OBJS=$(SOURCES:%.cc=$O/%.o) $(MOC_OUT:%.cpp=$O/%.o) $(RESOURCES_OUT:%.cpp=$O/%.o)
+GENERATED_SOURCES=$(UI_OUT) $(MOC_OUT) $(RESOURCES_OUT) osg_m.cc osg_m.h
+OBJS=$(SOURCES:%.cc=$O/%.o) $(MOC_OUT:%.cpp=$O/%.o) $(RESOURCES_OUT:%.cpp=$O/%.o) $(O)/osg_m.o
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DQTENV_EXPORT
@@ -133,5 +133,9 @@ clean:
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 
 $(RESOURCES_OUT): $(wildcard icons/tools/* icons/logo/* icons/objects/*)
+
+%sg_m.h %sg_m.cc: osg.msg
+	$(qecho) MSGC: $<
+	$(Q)$(MSGC) -Xnc -Xns osg.msg
 
 -include $(OBJS:%.o=%.d)

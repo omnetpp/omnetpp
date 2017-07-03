@@ -151,8 +151,4 @@ lex.expryy.cc: expr.lex
 	$(qecho) MSGC: $<
 	$(Q)$(MSGC) -Xnc -Xns sim_std.msg
 
-%im_std_osg_m.h %im_std_osg_m.cc : sim_std_osg.msg
-	$(qecho) MSGC: $<
-	$(Q)$(MSGC) -Xnc -Xns sim_std_osg.msg
-
 -include $(OBJS:%.o=%.d)
