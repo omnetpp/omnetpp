@@ -42,28 +42,20 @@ void IOsgViewer::ensureViewerFactory()
     if (!osgViewerFactory) {
         osgViewerFactory = &dummyOsgFactory;
 
-        std::cout << "Loading OSG Viewer library..." << std::endl << std::endl;
-#ifdef NDEBUG
+        std::cout << "Loading OSG Viewer library... " << std::endl;
+
         try {
-            loadExtensionLibrary("oppqtenv-osg");
+            #ifdef NDEBUG
+                loadExtensionLibrary("oppqtenv-osg");
+            #else
+                loadExtensionLibrary("oppqtenv-osg_dbg");
+            #endif
         }
         catch (cRuntimeError &e) {
-        }
-#else
-        try {
-            loadExtensionLibrary("oppqtenv-osgd"); // TODO remove this once the library is called _dbg
-        }
-        catch (cRuntimeError &e) {
+            std::cout << "Failed: " << e.what() << std::endl;
         }
 
-        if (osgViewerFactory == &dummyOsgFactory)
-            try {
-                loadExtensionLibrary("oppqtenv-osg_dbg");
-            }
-            catch (cRuntimeError &e) {
-                // TODO remember e.what() somewhere? And print it in the dummy viewers?
-            }
-#endif
+        std::cout << std::endl;
 
         /*
         // Not throwing an exception here, because that will take the simulation into an "ERROR"
