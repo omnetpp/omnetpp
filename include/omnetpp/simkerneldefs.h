@@ -23,7 +23,7 @@
 #include "platdep/platdefs.h"
 
 // OMNeT++ version, (major<<8)|minor
-#define OMNETPP_VERSION  0x0501
+#define OMNETPP_VERSION  0x0502
 
 // OMNeT++ build number
 #define OMNETPP_BUILDNUM   1012
