@@ -4,7 +4,7 @@
 # without args, runs all *.test files in the current directory
 #
 
-MAKE="make -j6"
+MAKE="make -j6 MODE=debug"
 
 TESTFILES=$*
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
@@ -21,7 +21,7 @@ opp_test gen $OPT -v $TESTFILES || exit 1
 echo
 (cd work; opp_makemake -f -o work --deep --no-deep-includes -i ../makefrag $EXTRA_INCLUDES; $MAKE) || exit 1
 echo
-opp_test run $OPT -v $TESTFILES || exit 1
+opp_test run $OPT -p work_dbg -v $TESTFILES || exit 1
 echo
 echo Results can be found in ./work
 

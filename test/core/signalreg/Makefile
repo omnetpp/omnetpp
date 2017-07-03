@@ -6,7 +6,8 @@
 #
 
 # Name of target to be created (-o option)
-TARGET = $(LIB_PREFIX)signalreg$(SHARED_LIB_SUFFIX)
+TARGET = $(LIB_PREFIX)signalreg$(D)$(SHARED_LIB_SUFFIX)
+TARGET_DIR = .
 
 # C++ include paths (with -I)
 INCLUDE_PATH =
@@ -73,8 +74,11 @@ endif
 #------------------------------------------------------------------------------
 
 # Main target
-all: $O/$(TARGET)
-	$(Q)$(LN) $O/$(TARGET) .
+all: $(TARGET_DIR)/$(TARGET)
+
+$(TARGET_DIR)/% : $O/%
+	@mkdir -p $(TARGET_DIR)
+	$(Q)$(LN) $< $@
 
 $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 	@$(MKPATH) $O
@@ -106,7 +110,7 @@ smheaders: $(SMFILES:.sm=_sm.h)
 clean:
 	$(qecho) Cleaning...
 	$(Q)-rm -rf $O
-	$(Q)-rm -f $(TARGET)
+	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
 	$(Q)-rm -f $(call opp_rwildcard, . , *_m.cc *_m.h *_sm.cc *_sm.h)
 
 cleanall: clean
