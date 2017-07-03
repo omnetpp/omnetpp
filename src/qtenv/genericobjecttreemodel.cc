@@ -326,7 +326,7 @@ void GenericObjectTreeModel::refreshChildList(const QModelIndex &index)
         endInsertRows();
     }
 
-    ASSERT(newChildren.size() == node->getPotentialChildCount());
+    ASSERT((int)newChildren.size() == node->getPotentialChildCount());
 
     // the old children have already been deleted in unfill(), but the "new ones" still exist
     for (auto c : newChildren)

@@ -38,7 +38,7 @@ void TreeNode::fill()
     children = makeChildren();
     potentialChildCount = computeChildCount();
 
-    ASSERT(children.size() == potentialChildCount);
+    ASSERT((int)children.size() == potentialChildCount);
 
     for (auto c : children)
         c->init();
@@ -234,7 +234,7 @@ void TreeNode::init()
 TreeNode *TreeNode::getChild(int index)
 {
     ASSERT(filled);
-    ASSERT(index < children.size());
+    ASSERT(index < (int)children.size());
     return children[index];
 }
 
