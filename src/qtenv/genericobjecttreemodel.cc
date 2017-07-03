@@ -68,6 +68,9 @@ QModelIndexList GenericObjectTreeModel::getVisibleNodesIn(QTreeView *view)
     for (QModelIndex i = topIndex; i != bottomIndex; i = view->indexBelow(i))
         indices.append(i);
 
+    if (bottomIndex.isValid())
+        indices.append(bottomIndex);
+
     return indices;
 }
 
