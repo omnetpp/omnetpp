@@ -64,7 +64,7 @@ void OmnetppScalarFileWriter::check(int fprintfResult)
 void OmnetppScalarFileWriter::writeAttributes(const StringMap& attributes)
 {
     for (auto pair : attributes)
-        check(fprintf(f, "attr %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+        check(fprintf(f, "attr %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
 }
 
 void OmnetppScalarFileWriter::writeStatisticField(const char *name, long value)
