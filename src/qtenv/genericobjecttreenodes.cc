@@ -183,8 +183,11 @@ cClassDescriptor *TreeNode::getDescriptorForField(void *object, cClassDescriptor
 
     if (desc->getFieldIsCompound(fieldIndex)) {
         const char *dynamicTypeName = desc->getFieldDynamicTypeString(object, fieldIndex, arrayIndex);
-        if (dynamicTypeName)
-            return cClassDescriptor::getDescriptorFor(dynamicTypeName);
+        if (dynamicTypeName) {
+            auto desc = cClassDescriptor::getDescriptorFor(dynamicTypeName);
+            if (desc)
+                return desc;
+        }
     }
 
     return cClassDescriptor::getDescriptorFor(desc->getFieldStructName(fieldIndex));
