@@ -1,2 +1,7 @@
-opp_run -l `dirname $0`/../queueinglib/queueinglib $*
+#!/bin/sh
+QLIB=$(dirname $0)/../queueinglib/queueinglib
+if test ! -f $QLIB ; then # fall back to debug version if release is not present
+  QLIB=${QLIB}_dbg
+fi
+opp_run -l $QLIB $*
 
