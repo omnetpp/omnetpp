@@ -1196,7 +1196,7 @@ endif
 ### support soft links it will be copied.
 
 ### Copy binaries to their final destination from the out directory
-$(TARGET_DIR)/% : $O/%
+$(TARGET_DIR)/% :: $O/%
 	@mkdir -p $(TARGET_DIR)
 	$(Q)$(LN) $< $@
 
