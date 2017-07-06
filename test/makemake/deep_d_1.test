@@ -19,7 +19,7 @@ message Ugly {}
 %file: a/b/stupid/x.msg
 message Stupid {}
 
-%testprog: work -h classes
+%testprog: work_dbg -h classes
 %ignore-exitcode: 1
 %file: buildspec
 all:

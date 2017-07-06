@@ -13,7 +13,7 @@ TESTFILES=$*
 
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
 if [ ! -d work ];  then mkdir work; fi
-opp_test gen $OPT -v $TESTFILES || exit 1
+opp_test gen $OPT -p work_dbg -v $TESTFILES || exit 1
 
 cd work || exit 1
 echo > .project

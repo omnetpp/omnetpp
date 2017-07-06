@@ -17,7 +17,7 @@ message Two {}
 %file: a/b/three/three.msg
 message Three {}
 
-%testprog: work -l one/one -l a/two/two -l a/b/three/three -h classes
+%testprog: work_dbg -l one/one_dbg -l a/two/two_dbg -l a/b/three/three_dbg -h classes
 %ignore-exitcode: 1
 %file: buildspec
 all:

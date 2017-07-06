@@ -19,7 +19,7 @@ another syntax error
 %file: a/b/stupid/x.msg
 more syntax errors
 
-%testprog: work -h classes
+%testprog: work_dbg -h classes
 %ignore-exitcode: 1
 %file: buildspec
 all:
