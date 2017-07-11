@@ -57,21 +57,21 @@ Define_Module(Node);
 %subst: /1.87[0-9]+/1.87/
 
 %contains: results/General-#0.sca
-scalar Test.node 	rec:count 	6
-attr source  tenToFifteen
-scalar Test.node 	rec:sum 	75
-attr source  tenToFifteen
-scalar Test.node 	rec:mean 	12.5
-attr source  tenToFifteen
-scalar Test.node 	rec:min 	10
-attr source  tenToFifteen
-scalar Test.node 	rec:max 	15
-attr source  tenToFifteen
-scalar Test.node 	rec:last 	15
-attr source  tenToFifteen
-scalar Test.node 	rec:timeavg 	12
-attr source  tenToFifteen
-statistic Test.node 	rec:histogram
+scalar Test.node rec:count 6
+attr source tenToFifteen
+scalar Test.node rec:sum 75
+attr source tenToFifteen
+scalar Test.node rec:mean 12.5
+attr source tenToFifteen
+scalar Test.node rec:min 10
+attr source tenToFifteen
+scalar Test.node rec:max 15
+attr source tenToFifteen
+scalar Test.node rec:last 15
+attr source tenToFifteen
+scalar Test.node rec:timeavg 12
+attr source tenToFifteen
+statistic Test.node rec:histogram
 field count 6
 field mean 12.5
 field stddev 1.87
@@ -79,7 +79,7 @@ field sum 75
 field sqrsum 955
 field min 10
 field max 15
-attr source  tenToFifteen
+attr source tenToFifteen
 bin	-INF	0
 bin	7	0
 bin	8	0
@@ -93,20 +93,20 @@ bin	15	1
 bin	16	0
 bin	17	0
 bin	18	0
-scalar Test.node 	rec:2*mean 	25
-attr source  tenToFifteen
-scalar Test.node 	flt:count+100 	106
-attr source  tenToFifteen
-scalar Test.node 	flt:sum+100 	175
-attr source  tenToFifteen
-scalar Test.node 	flt:mean+100 	112.5
-attr source  tenToFifteen
-scalar Test.node 	flt:min+100 	110
-attr source  tenToFifteen
-scalar Test.node 	flt:max+100 	115
-attr source  tenToFifteen
-scalar Test.node 	flt:last+100 	115
-attr source  tenToFifteen
-scalar Test.node 	flt:timeavg+100 	112
-attr source  tenToFifteen
+scalar Test.node rec:2*mean 25
+attr source tenToFifteen
+scalar Test.node flt:count+100 106
+attr source tenToFifteen
+scalar Test.node flt:sum+100 175
+attr source tenToFifteen
+scalar Test.node flt:mean+100 112.5
+attr source tenToFifteen
+scalar Test.node flt:min+100 110
+attr source tenToFifteen
+scalar Test.node flt:max+100 115
+attr source tenToFifteen
+scalar Test.node flt:last+100 115
+attr source tenToFifteen
+scalar Test.node flt:timeavg+100 112
+attr source tenToFifteen
 

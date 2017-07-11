@@ -73,16 +73,16 @@ debug-statistics-recording = true
 %subst: /-?\-nan/nan/
 
 %contains: results/General-#0.sca
-scalar Test.node 	aplusb:min 	-11
-attr source  a+b
-scalar Test.node 	aplusb:max 	11
-attr source  a+b
-scalar Test.node 	aplusb:last 	-9
-attr source  a+b
+scalar Test.node aplusb:min -11
+attr source a+b
+scalar Test.node aplusb:max 11
+attr source a+b
+scalar Test.node aplusb:last -9
+attr source a+b
 
 %contains: results/General-#0.vec
-vector 0  Test.node  aplusb:vector  ETV
-attr source  a+b
+vector 0 Test.node aplusb:vector ETV
+attr source a+b
 0	1	0.1	nan
 0	2	0.2	-9
 0	3	0.3	11

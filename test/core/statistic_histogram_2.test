@@ -31,7 +31,7 @@ network Test
 **.scalar-recording = false
 
 %contains: results/General-#0.sca
-statistic Test.node 	bins:histogram
+statistic Test.node bins:histogram
 field count 100
 field mean 19.84
 field stddev 3.1549864332417
@@ -39,7 +39,7 @@ field sum 1984
 field sqrsum 40348
 field min 12
 field max 28
-attr source  foo
+attr source foo
 bin	-INF	0
 bin	4	0
 bin	5	0
@@ -74,7 +74,7 @@ bin	33	0
 bin	34	0
 bin	35	0
 bin	36	0
-statistic Test.node 	nobins:histogram
+statistic Test.node nobins:histogram
 field count 100
 field mean 19.84
 field stddev 3.1549864332417
@@ -82,7 +82,7 @@ field sum 1984
 field sqrsum 40348
 field min 12
 field max 28
-attr source  foo
-scalar Test.node 	dummy:last 	17
-attr source  foo
+attr source foo
+scalar Test.node dummy:last 17
+attr source foo
 

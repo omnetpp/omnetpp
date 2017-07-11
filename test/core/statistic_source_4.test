@@ -42,6 +42,6 @@ debug-statistics-recording = true
 output-scalar-file = test.sca
 
 %contains: test.sca
-scalar Test 	host1Sent:count 	3
-attr source  host1.udp.sentPk
+scalar Test host1Sent:count 3
+attr source host1.udp.sentPk
 

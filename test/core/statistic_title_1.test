@@ -56,11 +56,11 @@ Define_Module(Node);
 %subst: /-?:NaN/:nan/
 
 %contains: results/General-#0.sca
-scalar Test.node 	queueLength:q2:count 	2
-attr title  "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: count"
-scalar Test.node 	queueLength:q2:mean 	3
-attr title  "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: mean"
-scalar Test.node 	queueLength:q1:count 	6
-attr title  "Queue Length of q1: -- component: Test.node, statistic: queueLength:q1, recording mode: count"
-scalar Test.node 	queueLength:q1:mean 	12.5
-attr title  "Queue Length of q1: -- component: Test.node, statistic: queueLength:q1, recording mode: mean"
+scalar Test.node queueLength:q2:count 2
+attr title "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: count"
+scalar Test.node queueLength:q2:mean 3
+attr title "Queue Length of q2: -- component: Test.node, statistic: queueLength:q2, recording mode: mean"
+scalar Test.node queueLength:q1:count 6
+attr title "Queue Length of q1: -- component: Test.node, statistic: queueLength:q1, recording mode: count"
+scalar Test.node queueLength:q1:mean 12.5
+attr title "Queue Length of q1: -- component: Test.node, statistic: queueLength:q1, recording mode: mean"

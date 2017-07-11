@@ -16,7 +16,7 @@ recordStatistic(&doubles);
 %subst: /(\.[0-9][0-9])[0-9]+/\1/
 
 %contains: results/General-#0.sca
-statistic Test 	ints
+statistic Test ints
 field count 200
 field mean 120.78
 field stddev 20.58
@@ -24,7 +24,7 @@ field sum 24157
 field sqrsum 3002135
 field min 100
 field max 204
-attr type  int
+attr type int
 bin	-INF	0
 bin	48	0
 bin	50	0
@@ -131,7 +131,7 @@ bin	250	0
 bin	252	0
 bin	254	0
 bin	256	0
-statistic Test 	doubles
+statistic Test doubles
 field count 200
 field mean -0.15
 field stddev 10.21

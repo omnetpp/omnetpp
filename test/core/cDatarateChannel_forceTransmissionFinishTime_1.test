@@ -93,9 +93,9 @@ void Sink::handleMessage(cMessage *msg)
 
 
 %contains: results/General-#0.vec
-vector 0  Test.gen.out.channel  busy:vector  ETV
-attr interpolationmode  sample-hold
-attr source  channelBusy
+vector 0 Test.gen.out.channel busy:vector ETV
+attr interpolationmode sample-hold
+attr source channelBusy
 0	0	0	0
 0	1	0	1
 0	3	1	0

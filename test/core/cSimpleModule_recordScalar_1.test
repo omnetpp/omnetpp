@@ -18,9 +18,9 @@ for (int i=1; i<=10; i++)
 recordStatistic(&weightedStats, "m");
 
 %contains-regex: results/General-#0.sca
-scalar Test 	one 	24.2
-scalar Test 	two 	-1.3
-statistic Test 	stats
+scalar Test one 24.2
+scalar Test two -1.3
+statistic Test stats
 field count 10
 field mean 38.5
 field stddev 34.173576537046
@@ -28,8 +28,8 @@ field sum 385
 field sqrsum 25333
 field min 1
 field max 100
-attr unit  m
-statistic Test 	"weighted stats"
+attr unit m
+statistic Test "weighted stats"
 field count 10
 field mean 55
 field stddev 33.680483963269
@@ -41,5 +41,5 @@ field weights 55
 field weightedSum 3025
 field sqrSumWeights 385
 field weightedSqrSum 220825
-attr unit  m
+attr unit m
 

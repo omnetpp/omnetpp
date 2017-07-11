@@ -30,7 +30,7 @@ EV << "stored: " << vec.getValuesStored() << endl;
 
 
 %contains: results/General-#0.vec
-vector 0  Test  vec  ETV
+vector 0 Test vec ETV
 0	1	0	35
 0	2	3	-24
 0	4	5	0

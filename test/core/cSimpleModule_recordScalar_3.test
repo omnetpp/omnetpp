@@ -67,11 +67,11 @@ Test.fooAndFoobarOnly.foo*.scalar-recording = true
 Test.fooAndFoobarOnly.*.scalar-recording = false
 
 %contains: results/General-#0.sca
-scalar Test.defaults 	foo 	5
-scalar Test.defaults 	bar 	2.41
-attr unit  s
-scalar Test.defaults 	foobar 	12.98
-statistic Test.defaults 	stats
+scalar Test.defaults foo 5
+scalar Test.defaults bar 2.41
+attr unit s
+scalar Test.defaults foobar 12.98
+statistic Test.defaults stats
 field count 10
 field mean 38.5
 field stddev 34.17357654
@@ -79,12 +79,12 @@ field sum 385
 field sqrsum 25333
 field min 1
 field max 100
-attr unit  m
-scalar Test.allEnabled 	foo 	5
-scalar Test.allEnabled 	bar 	2.41
-attr unit  s
-scalar Test.allEnabled 	foobar 	12.98
-statistic Test.allEnabled 	stats
+attr unit m
+scalar Test.allEnabled foo 5
+scalar Test.allEnabled bar 2.41
+attr unit s
+scalar Test.allEnabled foobar 12.98
+statistic Test.allEnabled stats
 field count 10
 field mean 38.5
 field stddev 34.17357654
@@ -92,10 +92,10 @@ field sum 385
 field sqrsum 25333
 field min 1
 field max 100
-attr unit  m
-scalar Test.statsDisabled 	foo 	5
-scalar Test.statsDisabled 	bar 	2.41
-attr unit  s
-scalar Test.statsDisabled 	foobar 	12.98
-scalar Test.fooAndFoobarOnly 	foo 	5
-scalar Test.fooAndFoobarOnly 	foobar 	12.98
+attr unit m
+scalar Test.statsDisabled foo 5
+scalar Test.statsDisabled bar 2.41
+attr unit s
+scalar Test.statsDisabled foobar 12.98
+scalar Test.fooAndFoobarOnly foo 5
+scalar Test.fooAndFoobarOnly foobar 12.98

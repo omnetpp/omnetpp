@@ -16,7 +16,7 @@ vec.record(1/zero);
 vec.record(-1/zero);
 
 %contains-regex: results/General-#0.vec
-vector 0  Test  vec  ETV
+vector 0 Test vec ETV
 0	2	1	((1\.#INF)|(inf))
 0	2	1	-((1\.#INF)|(inf))
 

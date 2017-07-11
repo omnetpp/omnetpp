@@ -34,10 +34,10 @@ Test.node (Node):
         omnetpp::LastValueRecorder ==> dummy:last
 
 %contains: results/General-#0.sca
-scalar Test.node 	dorecord:last 	17
-attr source  foo
-scalar Test.node 	dorecord:max 	28
-attr source  foo
-scalar Test.node 	dummy:last 	17
-attr source  foo
+scalar Test.node dorecord:last 17
+attr source foo
+scalar Test.node dorecord:max 28
+attr source foo
+scalar Test.node dummy:last 17
+attr source foo
 

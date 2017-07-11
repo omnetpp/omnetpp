@@ -38,22 +38,22 @@ enumVec2.setEnum("Colors");
 enumVec2.record(1);
 
 %contains: results/General-#0.vec
-vector 0  Test  intVec  ETV
-attr interpolationmode  none
-attr max  5
-attr min  -5
-attr type  int
-vector 1  Test  doubleVec  ETV
-attr interpolationmode  sample-hold
-attr max  12.5
-attr type  double
-attr unit  m
-vector 2  Test  enumVec1  ETV
-attr enum  "one=1, three=3, two=2"
-attr enumname  numbers
-vector 3  Test  enumVec2  ETV
-attr enum  "BLUE=3, GREEN=2, RED=1"
-attr enumname  Colors
+vector 0 Test intVec ETV
+attr interpolationmode none
+attr max 5
+attr min -5
+attr type int
+vector 1 Test doubleVec ETV
+attr interpolationmode sample-hold
+attr max 12.5
+attr type double
+attr unit m
+vector 2 Test enumVec1 ETV
+attr enum "one=1, three=3, two=2"
+attr enumname numbers
+vector 3 Test enumVec2 ETV
+attr enum "BLUE=3, GREEN=2, RED=1"
+attr enumname Colors
 3	1	0	1
 2	1	0	1
 1	1	0	0.52
