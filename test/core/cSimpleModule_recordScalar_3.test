@@ -75,10 +75,10 @@ statistic Test.defaults stats
 field count 10
 field mean 38.5
 field stddev 34.17357654
-field sum 385
-field sqrsum 25333
 field min 1
 field max 100
+field sum 385
+field sqrsum 25333
 attr unit m
 scalar Test.allEnabled foo 5
 scalar Test.allEnabled bar 2.41
@@ -88,10 +88,10 @@ statistic Test.allEnabled stats
 field count 10
 field mean 38.5
 field stddev 34.17357654
-field sum 385
-field sqrsum 25333
 field min 1
 field max 100
+field sum 385
+field sqrsum 25333
 attr unit m
 scalar Test.statsDisabled foo 5
 scalar Test.statsDisabled bar 2.41

@@ -259,10 +259,10 @@ $ scavetool x -o out-f2.csv -f *:vector <files>
 Exported 2 vectors
 ---------------------------------------------------------------
 $ scavetool x -o out-w1.csv -Tsth --add-fields-as-scalars <files>
-Exported 32 scalars, 2 statistics, 2 histograms
+Exported 28 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ scavetool x -o out-w2.csv -Tsth -w <files>
-Exported 32 scalars, 2 statistics, 2 histograms
+Exported 28 scalars, 2 statistics, 2 histograms
 ---------------------------------------------------------------
 $ scavetool x -o out-x.csv -x separator=tab -x quoteEscaping=backslash <files>
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms

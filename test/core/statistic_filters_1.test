@@ -75,10 +75,10 @@ statistic Test.node rec:histogram
 field count 6
 field mean 12.5
 field stddev 1.87
-field sum 75
-field sqrsum 955
 field min 10
 field max 15
+field sum 75
+field sqrsum 955
 attr source tenToFifteen
 bin	-inf	0
 bin	7	0

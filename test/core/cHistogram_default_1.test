@@ -20,10 +20,10 @@ statistic Test ints
 field count 200
 field mean 120.78
 field stddev 20.58
-field sum 24157
-field sqrsum 3002135
 field min 100
 field max 204
+field sum 24157
+field sqrsum 3002135
 attr type int
 bin	-inf	0
 bin	48	0
@@ -135,10 +135,10 @@ statistic Test doubles
 field count 200
 field mean -0.15
 field stddev 10.21
-field sum -30.27
-field sqrsum 20778.05
 field min -27.35
 field max 28.60
+field sum -30.27
+field sqrsum 20778.05
 bin	-inf	0
 bin	-54.24	0
 bin	-50.66	0

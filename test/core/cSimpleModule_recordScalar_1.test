@@ -24,17 +24,15 @@ statistic Test stats
 field count 10
 field mean 38.5
 field stddev 34.173576537046
-field sum 385
-field sqrsum 25333
 field min 1
 field max 100
+field sum 385
+field sqrsum 25333
 attr unit m
 statistic Test "weighted stats"
 field count 10
 field mean 55
 field stddev 33.680483963269
-field sum 385
-field sqrsum 25333
 field min 1
 field max 100
 field weights 55

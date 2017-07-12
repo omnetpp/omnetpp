@@ -21,10 +21,10 @@ statistic Test hist
 field count 100
 field mean 49.5
 field stddev 29.011491975882
-field sum 4950
-field sqrsum 328350
 field min 0
 field max 99
+field sum 4950
+field sqrsum 328350
 bin	-inf	10
 bin	10	10
 bin	20	20
