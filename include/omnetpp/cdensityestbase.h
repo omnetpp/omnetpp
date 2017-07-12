@@ -161,11 +161,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * to update the stored statistics with this value.
      */
     virtual void collect(double value) override;
-
-    /**
-     * Convenience method, delegates to collect(double).
-     */
-    virtual void collect(SimTime value) override {collect(value.dbl());}
+    using cStatistic::collect;
 
     /**
      * Updates this object with data coming from another statistics

@@ -41,7 +41,7 @@ cDensityEstBase::cDensityEstBase(const char *name) : cStdDev(name)
     rangeMode = RANGE_AUTO;
     numPrecollected = 100;
     rangeExtFactor = 2.0;
-    rangeMin = rangeMax = 0;
+    rangeMin = rangeMax = 0; //TODO NaN?
     cellUnder = cellOver = 0;
     transformed = false;
     precollectedValues = new double[numPrecollected];  // to match RANGE_AUTO
@@ -256,14 +256,18 @@ void cDensityEstBase::setNumPrecollectedValues(int numPrecoll)
 void cDensityEstBase::setupRange()
 {
     //
-    // set rangemin and rangemax.
-    //   Attempts not to make zero width range (makes it 1.0 wide).
+    // Set rangeMin and rangeMax.
+    // Attempts not to make zero width range (makes it 1.0 wide).
     //
     double c, r;
     switch (rangeMode) {
         case RANGE_AUTO:
-            c = (minValue + maxValue) / 2;
-            r = (maxValue - minValue) * rangeExtFactor;
+            if (numValues == 0)
+                c = r = 0;
+            else {
+                c = (minValue + maxValue) / 2;
+                r = (maxValue - minValue) * rangeExtFactor;
+            }
             if (r == 0)
                 r = 1.0;  // warning?
             rangeMin = c - r / 2;
@@ -285,11 +289,12 @@ void cDensityEstBase::setupRange()
             break;
 
         case RANGE_FIXED:
-            // no-op: rangemin, rangemax already set
+            // no-op: rangeMin, rangeMax already set
             break;
 
         case RANGE_NOTSET:
-            break;  //TODO: throw cRuntimeError(this, "Histogram range mode is unset");
+            // no-op: rangeMin, rangeMax should remain unset
+            break;
     }
 }
 

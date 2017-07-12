@@ -98,6 +98,10 @@ class SIM_API cStatistic : public cRandom
 
     /** @name Collecting values. */
     //@{
+    /**
+     * Returns true if this object collects weighted statistics.
+     */
+    virtual bool isWeighted() const = 0;
 
     /**
      * Collects one value.
@@ -110,14 +114,24 @@ class SIM_API cStatistic : public cRandom
     virtual void collect(SimTime value) {collect(value.dbl());}
 
     /**
-     * Returns true if this object collects weighted statistics.
-     */
-    virtual bool isWeighted() const = 0;
-
-    /**
      * Collects one value with a given weight.
      */
     virtual void collect2(double value, double weight);
+
+    /**
+     * Convenience method, delegates to collect2(double, double).
+     */
+    virtual void collect2(SimTime value, double weight) {collect2(value.dbl(), weight);}
+
+    /**
+     * Convenience method, delegates to collect2(double, double).
+     */
+    virtual void collect2(double value, SimTime weight) {collect2(value, weight.dbl());}
+
+    /**
+     * Convenience method, delegates to collect2(double, double).
+     */
+    virtual void collect2(SimTime value, SimTime weight) {collect2(value.dbl(), weight.dbl());}
 
     /**
      * Updates this object with data coming from another statistics
@@ -137,18 +151,20 @@ class SIM_API cStatistic : public cRandom
     //@{
 
     /**
-     * Returns the number of the observations.
+     * Returns the number of the observations, regardless of their weights.
      */
     virtual long getCount() const = 0;
 
     /**
-     * Returns the sum of the values.
+     * Returns the sum of the values. Not available for weighted statistics.
+     *
      * @see getWeightedSum()
      */
     virtual double getSum() const = 0;
 
     /**
-     * Returns the sum of the squared values.
+     * Returns the sum of the squared values. Not available for weighted statistics.
+     *
      * @see getWeightedSqrSum()
      */
     virtual double getSqrSum() const = 0;

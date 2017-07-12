@@ -125,12 +125,11 @@ void cHistogramBase::transform()
 
     setupRange();  // this will set num_cells if it was unspecified (-1)
 
-    int i;
     cellv = new unsigned[numCells];
-    for (i = 0; i < numCells; i++)
+    for (int i = 0; i < numCells; i++)
         cellv[i] = 0;
 
-    for (i = 0; i < numValues; i++)
+    for (int i = 0; i < numValues; i++)
         collectTransformed(precollectedValues[i]);
 
     delete[] precollectedValues;

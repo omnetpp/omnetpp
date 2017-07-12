@@ -26,18 +26,24 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
+//TODO rename collect2() to collectWeighted(); revise names of weighted getter methods
 class SIM_API cStdDev : public cStatistic
 {
   protected:
-    long numValues;
-    double minValue, maxValue;
-    double sumValues, sumSquaredValues;
+    bool weighted;
+    double minValue;
+    double maxValue;
+    int64_t numValues; // the actual count of observations, independent of their weights
+    double sumWeights;  // equals count in the unweighted case
+    double sumWeightedValues; // sum in the unweighted case
+    double sumSquaredWeights; // equals count in the unweighted case
+    double sumWeightedSquaredValues; // sum of squared values in the unweighted case
 
   private:
     void copy(const cStdDev& other);
 
   protected:
-    void doMerge(const cStatistic *other);
+    void assertUnweighted() const;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -51,7 +57,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Constructor.
      */
-    explicit cStdDev(const char *name=nullptr);
+    explicit cStdDev(const char *name=nullptr, bool weighted=false);
 
     /**
      * Destructor.
@@ -96,63 +102,72 @@ class SIM_API cStdDev : public cStatistic
 
     /** @name Redefined cStatistic functions. */
     //@{
+    /**
+     * Returns false if this object represents unweighted statistics,
+     * and true if weighted.
+     */
+    virtual bool isWeighted() const override  {return weighted;}
 
     /**
-     * Collects one value.
+     * Collects one observation.
      */
     virtual void collect(double value) override;
+    using cStatistic::collect;
 
     /**
-     * Convenience method, delegates to collect(double).
+     * Collects one observation with a given weight. The weight must not be
+     * negative. (Zero-weight observations are allowed, but will not affect
+     * mean and stddev.)
      */
-    virtual void collect(SimTime value) override {collect(value.dbl());}
+    virtual void collect2(double value, double weight) override;
+    using cStatistic::collect2;
 
     /**
-     * Updates this object with data coming from another statistics
-     * object -- as if this object had collected observations fed
-     * into the other object as well. Throws an error if the other
-     * object is weighted statistics (see isWeighted()).
+     * Merge another statistics object into this one.
      */
     virtual void merge(const cStatistic *other) override;
 
-    /**
-     * Returns false, because this class does not collect weighted statistics.
-     */
-    virtual bool isWeighted() const override  {return false;}
 
     /**
-     * Returns the number of observations collected.
+     * Returns the number of values collected, regardless of their weights.
      */
     virtual long getCount() const override  {return numValues;}
 
     /**
-     * Returns the sum of the values.
+     * Returns the sum of the observations. The sum is only collected
+     * if the object represents unweighted statistics, i.e. it is an
+     * error to call this function for weighted statistics.
      */
-    virtual double getSum() const override  {return sumValues;}
+    virtual double getSum() const override  {assertUnweighted(); return sumWeightedValues;}
 
     /**
-     * Returns the squared sum of the collected values.
+     * Returns the sum of squares of the collected observations.
+     * This is only collected if the object represents unweighted statistics,
+     * i.e. it is an error to call this function for weighted statistics.
      */
-    virtual double getSqrSum() const override  {return sumSquaredValues;}
+    virtual double getSqrSum() const override  {assertUnweighted(); return sumWeightedSquaredValues;}
 
     /**
-     * Returns the minimum of the collected values, or NaN if none have been collected yet.
+     * Returns the minimum of the collected observations, or NaN if none
+     * have been collected yet.
      */
     virtual double getMin() const override;
 
     /**
-     * Returns the maximum of the collected values, or NaN if none have been collected yet.
+     * Returns the maximum of the collected observations, or NaN if none
+     * have been collected yet.
      */
     virtual double getMax() const override;
 
     /**
-     * Returns the mean of the collected values, or NaN if none have been collected yet.
+     * Returns the (weighted/unweighted) mean of the collected observations, or NaN
+     * if none have been collected yet.
      */
     virtual double getMean() const override;
 
     /**
-     * Returns the standard deviation of the observations, or NaN if less than
-     * two observations have been collected.
+     * Returns the (weighted/unweighted) standard deviation of the observations,
+     * or NaN if less than two observations have been collected.
      */
     virtual double getStddev() const override;
 
@@ -163,27 +178,24 @@ class SIM_API cStdDev : public cStatistic
     virtual double getVariance() const override;
 
     /**
-     * Since this is unweighted statistics, the sum of weights is getCount().
+     * Returns the sum of weights.
      */
-    virtual double getWeights() const override  {return getCount();}
+    virtual double getWeights() const override  {return sumWeights;}
 
     /**
-     * Since this is unweighted statistics, the sum of weight*value products
-     * is getSum().
+     * Returns the sum of weight*value products.
      */
-    virtual double getWeightedSum() const override  {return getSum();}
+    virtual double getWeightedSum() const override  {return sumWeightedValues;}
 
     /**
-     * Since this is unweighted statistics, the sum of squared weights
-     * is getCount().
+     * Returns the sum of squared weights.
      */
-    virtual double getSqrSumWeights() const override  {return getCount();}
+    virtual double getSqrSumWeights() const override  {return sumSquaredWeights;}
 
     /**
-     * Since this is unweighted statistics, the sum of weight*value*value
-     * products is getSqrSum().
+     * Returns the sum of weight*value*value products.
      */
-    virtual double getWeightedSqrSum() const override  {return getSqrSum();}
+    virtual double getWeightedSqrSum() const override  {return sumWeightedSquaredValues;}
 
     /**
      * Returns a number from a normal distribution with the current mean and
@@ -212,169 +224,37 @@ class SIM_API cStdDev : public cStatistic
 
 /**
  * @brief Statistics class to collect doubles and calculate weighted statistics
- * from them.
+ * from them. One application is to calculate time average.
  *
- * One application is to calculate time average.
+ * DEPRECATED CLASS -- use cStddev in weighted mode instead.
  *
  * @ingroup Statistics
  */
-class SIM_API cWeightedStdDev : public cStdDev
+class _OPPDEPRECATED SIM_API cWeightedStdDev : public cStdDev
 {
-  protected:
-    double sumWeights;
-    double sumWeightedValues;
-    double sumSquaredWeights;
-    double sumWeightedSquaredValues;
-
-  private:
-    void copy(const cWeightedStdDev& other);
-
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
+    /**
+     * Constructor.
+     */
+    explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name, true)  {}
 
     /**
-     * Constructors, destructor, duplication and assignment.
+     * Copy constructor.
      */
-    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev(r) {copy(r);}
-
-    /**
-     * Constructors, destructor, duplication and assignment.
-     */
-    explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name)  {sumWeights=sumWeightedValues=sumSquaredWeights=sumWeightedSquaredValues=0.0;}
-
-    /**
-     * Constructors, destructor, duplication and assignment.
-     */
-    virtual ~cWeightedStdDev() {}
+    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev(r) {}
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
-    cWeightedStdDev& operator=(const cWeightedStdDev& res);
-    //@}
-
-    /** @name Redefined cObject member functions. */
-    //@{
+    cWeightedStdDev& operator=(const cWeightedStdDev& res) {cStdDev::operator=(res); return *this;}
 
     /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
     virtual cWeightedStdDev *dup() const override  {return new cWeightedStdDev(*this);}
-
-    /**
-     * Produces a one-line description of the object's contents.
-     * See cObject for more details.
-     */
-    virtual std::string str() const override;
-
-    /**
-     * Serializes the object into an MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimPack(cCommBuffer *buffer) const override;
-
-    /**
-     * Deserializes the object from an MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual void parsimUnpack(cCommBuffer *buffer) override;
-    //@}
-
-    /** @name Redefined cStatistic functions. */
-    //@{
-
-    /**
-     * Collects one value.
-     */
-    virtual void collect(double value) override  {collect2(value,1.0);}
-
-    /**
-     * Convenience method, delegates to collect(double).
-     */
-    virtual void collect(SimTime value) override {collect(value.dbl());}
-
-    /**
-     * Returns true, because this class collects weighted statistics.
-     */
-    virtual bool isWeighted() const override  {return true;}
-
-    /**
-     * Collects one value with a given weight. Negative weights will cause a runtime error.
-     */
-    virtual void collect2(double value, double weight) override;
-
-    /**
-     * Convenience method, delegates to collect2(double, double).
-     */
-    virtual void collect2(SimTime value, double weight) {collect2(value.dbl(), weight);}
-
-    /**
-     * Convenience method, delegates to collect2(double, double).
-     */
-    virtual void collect2(double value, SimTime weight) {collect2(value, weight.dbl());}
-
-    /**
-     * Convenience method, delegates to collect2(double, double).
-     */
-    virtual void collect2(SimTime value, SimTime weight) {collect2(value.dbl(), weight.dbl());}
-
-    /**
-     * Updates this object with data coming from another statistics
-     * object -- as if this object had collected observations fed
-     * into the other object as well.
-     */
-    virtual void merge(const cStatistic *other) override;
-
-    /**
-     * Clears the results collected so far.
-     */
-    virtual void clearResult() override;
-
-    /**
-     * Returns the weighted mean of the observations collected, or NaN if
-     * no observations have been collected (or their weights were 0).
-     */
-    virtual double getMean() const override;
-
-    /**
-     * Returns the variance of the observations collected, or NaN if
-     * less than two observations have been collected.
-     */
-    virtual double getVariance() const override;
-
-    /**
-     * Returns the sum of weights.
-     */
-    virtual double getWeights() const override  {return sumWeights;}
-
-    /**
-     * Returns the sum of weight*value products.
-     */
-    virtual double getWeightedSum() const override  {return sumWeightedValues;}
-
-    /**
-     * Returns the sum of squared weights.
-     */
-    virtual double getSqrSumWeights() const override  {return sumSquaredWeights;}
-
-    /**
-     * Returns the sum of weight*value*value products.
-     */
-    virtual double getWeightedSqrSum() const override  {return sumWeightedSquaredValues;}
-
-    /**
-     * Writes the contents of the object into a text file.
-     */
-    virtual void saveToFile(FILE *) const override;
-
-    /**
-     * Reads the object data from a file, in the format written out by saveToFile().
-     */
-    virtual void loadFromFile(FILE *) override;
     //@}
 };
 

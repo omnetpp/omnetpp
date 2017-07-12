@@ -38,8 +38,9 @@ fclose(f);
 #
 3	 #= num_vals
 9 19	 #= min, max
+0	 #= weighted
 38	 #= sum
-542	 #= square sum
+542	 #= sum_squared_vals
 0	 #= transformed
 0	 #= range_mode
 2	 #= range_ext_factor
@@ -59,8 +60,9 @@ fclose(f);
 #
 3	 #= num_vals
 9 19	 #= min, max
+0	 #= weighted
 38	 #= sum
-542	 #= square sum
+542	 #= sum_squared_vals
 0	 #= transformed
 0	 #= range_mode
 2	 #= range_ext_factor
@@ -80,8 +82,9 @@ fclose(f);
 #
 7	 #= num_vals
 9 20	 #= min, max
+0	 #= weighted
 92	 #= sum
-1330	 #= square sum
+1330	 #= sum_squared_vals
 1	 #= transformed
 0	 #= range_mode
 2	 #= range_ext_factor
@@ -108,8 +111,9 @@ fclose(f);
 #
 7	 #= num_vals
 9 20	 #= min, max
+0	 #= weighted
 92	 #= sum
-1330	 #= square sum
+1330	 #= sum_squared_vals
 1	 #= transformed
 0	 #= range_mode
 2	 #= range_ext_factor

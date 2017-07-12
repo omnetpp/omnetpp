@@ -31,7 +31,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
 {
   protected:
     int numCells;     // number of histogram cells or bins
-    unsigned *cellv;  // array of counters
+    unsigned *cellv;  // array of counters  //TODO !!! this should be "double" so we can handle the weighted case AND be more overflow-proof
 
   private:
     void copy(const cHistogramBase& other);

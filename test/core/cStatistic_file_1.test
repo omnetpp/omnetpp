@@ -57,8 +57,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0 217	 #= min, max
+0	 #= weighted
 55149	 #= sum
-4.16791e+06	 #= square sum
+4.16791e+06	 #= sum_squared_vals
 1	 #= transformed
 2	 #= range_mode
 1.3	 #= range_ext_factor
@@ -85,8 +86,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 2	 #= range_mode
 1.3	 #= range_ext_factor
@@ -113,8 +115,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 0	 #= range_mode
 2	 #= range_ext_factor
@@ -156,8 +159,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 4	 #= range_mode
 2	 #= range_ext_factor
@@ -197,8 +201,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 2	 #= range_mode
 1.3	 #= range_ext_factor
@@ -328,8 +333,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0 217	 #= min, max
+0	 #= weighted
 55149	 #= sum
-4.16791e+06	 #= square sum
+4.16791e+06	 #= sum_squared_vals
 1	 #= transformed
 2	 #= range_mode
 1.3	 #= range_ext_factor
@@ -356,8 +362,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 2	 #= range_mode
 1.3	 #= range_ext_factor
@@ -384,8 +391,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 0	 #= range_mode
 2	 #= range_ext_factor
@@ -427,8 +435,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 4	 #= range_mode
 2	 #= range_ext_factor
@@ -468,8 +477,9 @@ fclose(f);
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
+0	 #= weighted
 55653.6	 #= sum
-4.22383e+06	 #= square sum
+4.22383e+06	 #= sum_squared_vals
 1	 #= transformed
 2	 #= range_mode
 1.3	 #= range_ext_factor

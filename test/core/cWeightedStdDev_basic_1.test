@@ -10,7 +10,6 @@ uses the "N" formula (N-1 gets nasty in the weighted case).
 void print(cStdDev& s)
 {
     EV << "n=" << s.getCount() << " w=" << s.getWeights()
-         << " sum=" << s.getSum() << " sqrsum=" << s.getSqrSum()
          << " min=" << s.getMin() << " max=" << s.getMax()
          << " mean=" << s.getMean() << " stddev=" << s.getStddev()
          << " var=" << s.getVariance() << endl;
@@ -34,6 +33,6 @@ print(ws);
 EV << "." << endl;
 
 %contains-regex: stdout
-n=250550 w=250550 sum=74855.5 sqrsum=43314.5 min=-0.199997 max=0.799978 mean=0.298765 stddev=0.289167 var=0.0836177
-n=100000 w=250550 sum=29967.2 sqrsum=17338.1 min=-0.199997 max=0.799995 mean=0.298765 stddev=0.289169 var=0.0836186
+n=250550 w=250550 min=-0.199997 max=0.799978 mean=0.298765 stddev=0.289167 var=0.0836177
+n=100000 w=250550 min=-0.199997 max=0.799995 mean=0.298765 stddev=0.289169 var=0.0836186
 .

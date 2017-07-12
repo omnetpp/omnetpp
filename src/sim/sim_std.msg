@@ -445,10 +445,8 @@ class cPoisson extends cRandom
 class cStatistic extends cOwnedObject
 {
     @icon(statistic);
-    long count @hint("Number of observations collected so far");
-    double weights @hint("Sum of weights, which equals the number of observations in the unweighted case");
-    double sum @hint("Sum of observations");
-    double sqrSum @hint("Sum of squares of the observations");
+    long count @hint("Number of observations collected, regardless of their weights");
+    double sumWeights @getter(getWeights) @hint("Sum of weights, which equals the number of observations in the unweighted case");
     double min @hint("Minimum of the observations");
     double max @hint("Maximum of the observations");
     double mean @hint("Mean of the observations");
