@@ -21,6 +21,7 @@
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/stlutil.h"
+#include "common/fileutil.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"
@@ -118,16 +119,20 @@ void OmnetppVectorFileExporter::setOption(const std::string& key, const std::str
         throw opp_runtime_error("Exporter: unhandled option '%s'", key.c_str());
 }
 
+//TODO caller should remove file in case of exception!!!
 void OmnetppVectorFileExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO progress reporting
-    //TODO check it's all vectors
-    //TODO idlist = idlist.filterByTypes(getSupportedResultTypes());
-
-    writer.open(fileName.c_str());
+    checkItemTypes(idlist, ResultFileManager::VECTOR);
 
     RunList *runList = manager->getUniqueRuns(idlist);
     std::unique_ptr<RunList> tmp(runList);
+
+    if (runList->size() > 1)
+        throw opp_runtime_error("Exporter: OMNeT++ vec files currently do not support multiple runs per file"); //TODO revise later
+
+    removeFile(fileName.c_str(), "existing file"); // remove existing file, just in case
+    writer.open(fileName.c_str());
 
     for (Run *run : *runList) {
         writer.beginRecordingForRun(run->getRunName(), run->getAttributes(), run->getIterationVariables(), run->getParamAssignments());

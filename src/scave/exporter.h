@@ -58,6 +58,7 @@ class SCAVE_API Exporter
 {
     protected:
         virtual void checkOptionKey(ExporterType *desc, const std::string& key);
+        virtual void checkItemTypes(const IDList& idlist, int supportedTypes);
     public:
         Exporter() {}
         virtual ~Exporter() {}

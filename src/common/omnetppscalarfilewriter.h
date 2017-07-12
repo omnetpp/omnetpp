@@ -51,7 +51,7 @@ class COMMON_API OmnetppScalarFileWriter
     OmnetppScalarFileWriter();
     virtual ~OmnetppScalarFileWriter();
 
-    void open(const char *filename);
+    void open(const char *filename); // append if file exists
     void close();
     bool isOpen() const {return f != nullptr;} // IMPORTANT: file will be closed when an error occurs
 

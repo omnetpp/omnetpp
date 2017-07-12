@@ -107,7 +107,7 @@ class COMMON_API OmnetppVectorFileWriter
     OmnetppVectorFileWriter();
     virtual ~OmnetppVectorFileWriter();
 
-    void open(const char *filename);
+    void open(const char *filename); // overwrite if file exists (append not supported)
     void close();
     bool isOpen() const {return f != nullptr;} // IMPORTANT: file will be closed when an error occurs
 

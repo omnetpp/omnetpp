@@ -100,7 +100,7 @@ class COMMON_API SqliteVectorFileWriter
     SqliteVectorFileWriter();
     virtual ~SqliteVectorFileWriter();
 
-    void open(const char *filename);
+    void open(const char *filename); // append if file exists
     void close();
     bool isOpen() const {return db != nullptr;} // IMPORTANT: db will be closed when an error occurs
 

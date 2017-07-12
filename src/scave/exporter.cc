@@ -53,6 +53,15 @@ void Exporter::setOptions(const StringMap& options)
         setOption(pair.first, pair.second);
 }
 
+void Exporter::checkItemTypes(const IDList& idlist, int supportedTypes)
+{
+    // check items are supported by the format
+    int itemTypes = idlist.getItemTypes();
+    int unsupportedItemTypes = itemTypes & ~supportedTypes;
+    if (unsupportedItemTypes != 0)
+        throw opp_runtime_error("Data set contains items of type not supported by the export format");
+}
+
 //----
 
 static std::vector<ExporterType*> exporters;

@@ -34,7 +34,7 @@ OmnetppScalarFileWriter::~OmnetppScalarFileWriter()
     close();
 }
 
-void OmnetppScalarFileWriter::open(const char *filename)   //TODO create/append
+void OmnetppScalarFileWriter::open(const char *filename)
 {
     fname = filename;
     f = fopen(fname.c_str(), "a");

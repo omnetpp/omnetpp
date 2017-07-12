@@ -44,6 +44,7 @@ typename std::set<T>& addAll(std::set<T>& s, const std::set<T>& t) {
 template<typename K, typename V>
 inline std::map<K,V>& addAll(std::map<K,V>& m, const std::map<K,V>& n) {
     m.insert(n.begin(), n.end());
+    return m;
 }
 
 template<typename T>

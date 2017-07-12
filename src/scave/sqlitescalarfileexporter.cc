@@ -21,6 +21,7 @@
 #include "common/stringutil.h"
 #include "common/stringtokenizer.h"
 #include "common/stlutil.h"
+#include "common/fileutil.h"
 #include "xyarray.h"
 #include "resultfilemanager.h"
 #include "datasorter.h"
@@ -103,7 +104,9 @@ void SqliteScalarFileExporter::setOption(const std::string& key, const std::stri
 void SqliteScalarFileExporter::saveResults(const std::string& fileName, ResultFileManager *manager, const IDList& idlist, IProgressMonitor *monitor)
 {
     //TODO progress reporting
+    checkItemTypes(idlist, ResultFileManager::SCALAR | ResultFileManager::STATISTICS | ResultFileManager::HISTOGRAM);
 
+    removeFile(fileName.c_str(), "existing file"); // remove existing file, as open() appends
     writer.open(fileName.c_str());
 
     RunList *runList = manager->getUniqueRuns(idlist);
