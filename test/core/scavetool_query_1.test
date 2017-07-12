@@ -183,16 +183,16 @@ echo .
 %contains: postrun-command(1).out
 ------------------------
 $ scavetool  <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool q <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool query <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool -s <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool -l <files>
 General-0-xxxx:
@@ -211,42 +211,41 @@ vector      Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
 
-
 ------------------------
 $ scavetool -a <files>
 General-0-xxxx:
 
-configname	General
-datetime	xxxx
-experiment	General
-inifile	_defaults.ini
-iterationvars	
-iterationvarsf	
-measurement	
-network	Test
-processid	xxxx
-repetition	0
-replication	#0
-resultdir	results
-runnumber	0
-seedset	0
+configname      General
+datetime        xxxx
+experiment      General
+inifile         _defaults.ini
+iterationvars   
+iterationvarsf  
+measurement     
+network         Test
+processid       xxxx
+repetition      0
+replication     #0
+resultdir       results
+runnumber       0
+seedset         0
 
 General-1-xxxx:
 
-configname	General
-datetime	xxxx
-experiment	General
-inifile	_defaults.ini
-iterationvars	
-iterationvarsf	
-measurement	
-network	Test
-processid	xxxx
-repetition	1
-replication	#1
-resultdir	results
-runnumber	1
-seedset	1
+configname      General
+datetime        xxxx
+experiment      General
+inifile         _defaults.ini
+iterationvars   
+iterationvarsf  
+measurement     
+network         Test
+processid       xxxx
+repetition      1
+replication     #1
+resultdir       results
+runnumber       1
+seedset         1
 
 ------------------------
 $ scavetool -n <files>
@@ -274,7 +273,7 @@ $ scavetool -c <files>
 General
 ------------------------
 $ scavetool --print-summary <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool --list-results <files>
 General-0-xxxx:
@@ -293,42 +292,41 @@ vector      Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
 
-
 ------------------------
 $ scavetool --list-runattrs <files>
 General-0-xxxx:
 
-configname	General
-datetime	xxxx
-experiment	General
-inifile	_defaults.ini
-iterationvars	
-iterationvarsf	
-measurement	
-network	Test
-processid	xxxx
-repetition	0
-replication	#0
-resultdir	results
-runnumber	0
-seedset	0
+configname      General
+datetime        xxxx
+experiment      General
+inifile         _defaults.ini
+iterationvars   
+iterationvarsf  
+measurement     
+network         Test
+processid       xxxx
+repetition      0
+replication     #0
+resultdir       results
+runnumber       0
+seedset         0
 
 General-1-xxxx:
 
-configname	General
-datetime	xxxx
-experiment	General
-inifile	_defaults.ini
-iterationvars	
-iterationvarsf	
-measurement	
-network	Test
-processid	xxxx
-repetition	1
-replication	#1
-resultdir	results
-runnumber	1
-seedset	1
+configname      General
+datetime        xxxx
+experiment      General
+inifile         _defaults.ini
+iterationvars   
+iterationvarsf  
+measurement     
+network         Test
+processid       xxxx
+repetition      1
+replication     #1
+resultdir       results
+runnumber       1
+seedset         1
 
 ------------------------
 $ scavetool --list-names <files>
@@ -356,22 +354,22 @@ $ scavetool --list-configs <files>
 General
 ------------------------
 $ scavetool --type sv <files>
-runs: 2 	scalars: 4	vectors: 2
+runs: 2   scalars: 4  vectors: 2
 ------------------------
 $ scavetool -Ts <files>
-runs: 2 	scalars: 4
+runs: 2   scalars: 4
 ------------------------
 $ scavetool -Tv <files>
-runs: 2 	vectors: 2
+runs: 2   vectors: 2
 ------------------------
 $ scavetool -Th <files>
-runs: 2 	histograms: 2
+runs: 2   histograms: 2
 ------------------------
 $ scavetool -Tsv <files>
-runs: 2 	scalars: 4	vectors: 2
+runs: 2   scalars: 4  vectors: 2
 ------------------------
 $ scavetool -T sv <files>
-runs: 2 	scalars: 4	vectors: 2
+runs: 2   scalars: 4  vectors: 2
 ------------------------
 $ scavetool -l --filter *:mean <files>
 General-0-xxxx:
@@ -381,7 +379,6 @@ scalar  Test.node  foo:mean  19.84
 General-1-xxxx:
 
 scalar  Test.node  foo:mean  19.65
-
 
 ------------------------
 $ scavetool -l -f *:mean <files>
@@ -393,7 +390,6 @@ General-1-xxxx:
 
 scalar  Test.node  foo:mean  19.65
 
-
 ------------------------
 $ scavetool -l -f name(*:mean) <files>
 General-0-xxxx:
@@ -403,7 +399,6 @@ scalar  Test.node  foo:mean  19.84
 General-1-xxxx:
 
 scalar  Test.node  foo:mean  19.65
-
 
 ------------------------
 $ scavetool -l -f *:mean OR *:vector <files>
@@ -417,7 +412,6 @@ General-1-xxxx:
 scalar  Test.node  foo:mean    19.65
 vector  Test.node  foo:vector  vectorId=1  count=100  mean=19.65  min=13  max=27
 
-
 ------------------------
 $ scavetool -l -f module(Test.node) AND *:vector <files>
 General-0-xxxx:
@@ -428,19 +422,18 @@ General-1-xxxx:
 
 vector  Test.node  foo:vector  vectorId=1  count=100  mean=19.65  min=13  max=27
 
-
 ------------------------
 $ scavetool -e -f *:mean OR *:vector <files>
 Test.node.foo:mean
 Test.node.foo:vector
 ------------------------
 $ scavetool -s --per-run <files>
-General-0-xxxx	scalars: 2	vectors: 1	statistics: 1	histograms: 1
-General-1-xxxx	scalars: 2	vectors: 1	statistics: 1	histograms: 1
+General-0-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
+General-1-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
 ------------------------
 $ scavetool -s -p <files>
-General-0-xxxx	scalars: 2	vectors: 1	statistics: 1	histograms: 1
-General-1-xxxx	scalars: 2	vectors: 1	statistics: 1	histograms: 1
+General-0-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
+General-1-xxxx  scalars: 2  vectors: 1  statistics: 1  histograms: 1
 ------------------------
 $ scavetool -l -p <files>
 General-0-xxxx:
@@ -459,42 +452,41 @@ vector      Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
 
-
 ------------------------
 $ scavetool -a -p <files>
 General-0-xxxx:
 
-configname	General
-datetime	xxxx
-experiment	General
-inifile	_defaults.ini
-iterationvars	
-iterationvarsf	
-measurement	
-network	Test
-processid	xxxx
-repetition	0
-replication	#0
-resultdir	results
-runnumber	0
-seedset	0
+configname      General
+datetime        xxxx
+experiment      General
+inifile         _defaults.ini
+iterationvars   
+iterationvarsf  
+measurement     
+network         Test
+processid       xxxx
+repetition      0
+replication     #0
+resultdir       results
+runnumber       0
+seedset         0
 
 General-1-xxxx:
 
-configname	General
-datetime	xxxx
-experiment	General
-inifile	_defaults.ini
-iterationvars	
-iterationvarsf	
-measurement	
-network	Test
-processid	xxxx
-repetition	1
-replication	#1
-resultdir	results
-runnumber	1
-seedset	1
+configname      General
+datetime        xxxx
+experiment      General
+inifile         _defaults.ini
+iterationvars   
+iterationvarsf  
+measurement     
+network         Test
+processid       xxxx
+repetition      1
+replication     #1
+resultdir       results
+runnumber       1
+seedset         1
 
 ------------------------
 $ scavetool -n -p <files>
@@ -567,7 +559,6 @@ vector      Test.node  foo:vector     1      100    19.65  13  27
 statistics  Test.node  foo:stats      100    19.65  13     27
 histogram   Test.node  foo:histogram  100    19.65  13     27  30
 
-
 ------------------------
 $ scavetool -l -b <files>
 General-0-xxxx:
@@ -586,7 +577,6 @@ vector      Test.node  foo:vector     1      100    19.65  13  27
 statistics  Test.node  foo:stats      100    19.65  13     27
 histogram   Test.node  foo:histogram  100    19.65  13     27  30
 
-
 ------------------------
 $ scavetool -l --grep-friendly <files>
 General-0-xxxx  scalar      Test.node  foo:mean       19.84
@@ -600,7 +590,6 @@ General-1-xxxx  scalar      Test.node  foo:last       19
 General-1-xxxx  vector      Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13  max=27
 General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
-
 
 ------------------------
 $ scavetool -l -g <files>
@@ -616,40 +605,39 @@ General-1-xxxx  vector      Test.node  foo:vector     vectorId=1  count=100   me
 General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
 
-
 ------------------------
 $ scavetool -n --per-run -g <files>
-General-0-xxxx	foo:histogram
-General-0-xxxx	foo:last
-General-0-xxxx	foo:mean
-General-0-xxxx	foo:stats
-General-0-xxxx	foo:vector
+General-0-xxxx  foo:histogram
+General-0-xxxx  foo:last
+General-0-xxxx  foo:mean
+General-0-xxxx  foo:stats
+General-0-xxxx  foo:vector
 
-General-1-xxxx	foo:histogram
-General-1-xxxx	foo:last
-General-1-xxxx	foo:mean
-General-1-xxxx	foo:stats
-General-1-xxxx	foo:vector
+General-1-xxxx  foo:histogram
+General-1-xxxx  foo:last
+General-1-xxxx  foo:mean
+General-1-xxxx  foo:stats
+General-1-xxxx  foo:vector
 
 ------------------------
 $ scavetool -m --per-run -g <files>
-General-0-xxxx	Test.node
+General-0-xxxx  Test.node
 
-General-1-xxxx	Test.node
+General-1-xxxx  Test.node
 
 ------------------------
 $ scavetool -e --per-run -g <files>
-General-0-xxxx	Test.node.foo:histogram
-General-0-xxxx	Test.node.foo:last
-General-0-xxxx	Test.node.foo:mean
-General-0-xxxx	Test.node.foo:stats
-General-0-xxxx	Test.node.foo:vector
+General-0-xxxx  Test.node.foo:histogram
+General-0-xxxx  Test.node.foo:last
+General-0-xxxx  Test.node.foo:mean
+General-0-xxxx  Test.node.foo:stats
+General-0-xxxx  Test.node.foo:vector
 
-General-1-xxxx	Test.node.foo:histogram
-General-1-xxxx	Test.node.foo:last
-General-1-xxxx	Test.node.foo:mean
-General-1-xxxx	Test.node.foo:stats
-General-1-xxxx	Test.node.foo:vector
+General-1-xxxx  Test.node.foo:histogram
+General-1-xxxx  Test.node.foo:last
+General-1-xxxx  Test.node.foo:mean
+General-1-xxxx  Test.node.foo:stats
+General-1-xxxx  Test.node.foo:vector
 
 ------------------------
 $ scavetool -l --tabs <files>
@@ -729,7 +717,6 @@ vector      Test.node  foo:vector            vectorId=1  count=100   mean=19.65 
 statistics  Test.node  foo:stats             count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=30
 
-
 ------------------------
 $ scavetool -l -w <files>
 General-0-xxxx:
@@ -776,33 +763,32 @@ vector      Test.node  foo:vector            vectorId=1  count=100   mean=19.65 
 statistics  Test.node  foo:stats             count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=30
 
-
 ------------------------
 $ scavetool -r --rundisplay runnumber <files>
-General	0
-General	1
+General  0
+General  1
 ------------------------
 $ scavetool -r -D runid <files>
 General-0-xxxx
 General-1-xxxx
 ------------------------
 $ scavetool -r -D runnumber <files>
-General	0
-General	1
+General  0
+General  1
 ------------------------
 $ scavetool -r -D itervars <files>
-General	null	0
-General	null	1
+General  null  0
+General  null  1
 ------------------------
 $ scavetool -r -D experiment <files>
-General	null	#0
-General	null	#1
+General  null  #0
+General  null  #1
 ------------------------
 $ scavetool -k <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool --no-indexing <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool -v <files>
 reading results/General-#0.sca...
@@ -814,7 +800,7 @@ done
 reading results/General-#1.vec...
 done
 4 file(s) loaded
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool --verbose <files>
 reading results/General-#0.sca...
@@ -826,5 +812,5 @@ done
 reading results/General-#1.vec...
 done
 4 file(s) loaded
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 .

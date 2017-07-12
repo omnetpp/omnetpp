@@ -143,7 +143,7 @@ echo .
 %contains: postrun-command(1).out
 ------------------------
 $ scavetool q <files>
-runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
+runs: 2   scalars: 4  vectors: 2  statistics: 2  histograms: 2
 ------------------------
 $ scavetool q -l <files>
 General-0-xxxx:
@@ -161,7 +161,6 @@ scalar      Test.node  foo:last       19
 vector      Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
 histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
-
 
 ------------------------
 $ scavetool export <files>
@@ -274,10 +273,9 @@ done
 Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ===============================================================
 $ scavetool out-F.sca out-F-sqlite.sca out.sca out-F-sqlite.vec out-F.vec out-k1.vec out-k2.vec out.vec
-runs: 2 	scalars: 12	vectors: 10	statistics: 6	histograms: 6
+runs: 2   scalars: 12  vectors: 10  statistics: 6  histograms: 6
 $ python out-F.py
 $ python out.py
 $ python out-v1.py
 $ python out-v2.py
 .
-
