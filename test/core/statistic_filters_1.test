@@ -80,7 +80,7 @@ field sqrsum 955
 field min 10
 field max 15
 attr source tenToFifteen
-bin	-INF	0
+bin	-inf	0
 bin	7	0
 bin	8	0
 bin	9	0

@@ -25,7 +25,7 @@ field sqrsum 3002135
 field min 100
 field max 204
 attr type int
-bin	-INF	0
+bin	-inf	0
 bin	48	0
 bin	50	0
 bin	52	0
@@ -139,7 +139,7 @@ field sum -30.27
 field sqrsum 20778.05
 field min -27.35
 field max 28.60
-bin	-INF	0
+bin	-inf	0
 bin	-54.24	0
 bin	-50.66	0
 bin	-47.07	0

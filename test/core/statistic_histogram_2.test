@@ -40,7 +40,7 @@ field sqrsum 40348
 field min 12
 field max 28
 attr source foo
-bin	-INF	0
+bin	-inf	0
 bin	4	0
 bin	5	0
 bin	6	0

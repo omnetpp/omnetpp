@@ -25,7 +25,7 @@ field sum 4950
 field sqrsum 328350
 field min 0
 field max 99
-bin	-INF	10
+bin	-inf	10
 bin	10	10
 bin	20	20
 bin	40	40
