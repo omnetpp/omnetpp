@@ -3,7 +3,7 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//  Author: Tamas Borbely
+//  Author: Tamas Borbely, Andras Varga
 //
 //=========================================================================
 
@@ -18,79 +18,57 @@
 #ifndef __OMNETPP_COMMON_STATISTICS_H
 #define __OMNETPP_COMMON_STATISTICS_H
 
-#include <cfloat>
 #include <cmath>
+#include <cstdint>
 #include "commondefs.h"
-#include "commonutil.h"
 
 namespace omnetpp {
 namespace common {
 
 /**
- * Class for collecting basic statistical data.
+ * Descriptive statistics with weights.
  */
 class COMMON_API Statistics
 {
     private:
-        long count;
-        double min;
-        double max;
-        double sum;
-        double sumSqr;
+        bool weighted;
+        double minValue;
+        double maxValue;
+        int64_t count; // the actual count of observations, independent of their weights
+        double sumWeights;  // equals count in the unweighted case
+        double sumWeightedValues; // sum in the unweighted case
+        double sumSquaredWeights; // equals count in the unweighted case
+        double sumWeightedSquaredValues; // sum of squared values in the unweighted case
+
+    private:
+        void assertUnweighted() const;
 
     public:
-        Statistics() { reset(); }
-        Statistics(long count, double min, double max, double sum, double sumSqr)
-            : count(count), min(min), max(max), sum(sum), sumSqr(sumSqr) {}
-        Statistics(const Statistics& s) : count(s.count), min(s.min), max(s.max), sum(s.sum), sumSqr(s.sumSqr) {}
+        Statistics(bool weighted=false) : weighted(weighted) {clear();}
+        Statistics(const Statistics& s) = default;
+        static Statistics makeUnweighted(int64_t count, double minValue, double maxValue, double sumValues, double sumSquaredValues);
+        static Statistics makeWeighted(int64_t count, double minValue, double maxValue, double sumWeights, double sumWeightedValues, double sumSquaredWeights, double sumWeightedSquaredValues);
+        static Statistics makeInvalid(bool weighted=false);
+        void clear();
+        void collect(double value);
+        void collect(double value, double weight);
+        void adjoin(const Statistics& other);
 
-        long getCount() const { return count; }
-        double getMin() const { return min; }
-        double getMax() const { return max; }
-        double getSum() const { return sum; }
-        double getSumSqr() const { return sumSqr; }
-        double getMean() const { return count == 0 ? NaN : sum / count; }
-        double getStddev() const { return sqrt(getVariance()); }
+        bool isWeighted() const {return weighted;}
+        double getMin() const {return minValue;}
+        double getMax() const {return maxValue;}
+        int64_t getCount() const {return count;} // actual count of values, regardless of their weights; see also getSumWeights()
+        double getSumWeights() const {return sumWeights;}
+        double getMean() const {return sumWeightedValues / sumWeights;}
+        double getStddev() const {return std::sqrt(getVariance());}
         double getVariance() const;
 
-        void setCount(long count) {this->count = count;}
-        void setMax(double max) {this->max = max;}
-        void setMin(double min) {this->min = min;}
-        void setSum(double sum) {this->sum = sum;}
-        void setSumSqr(double sumSqr) {this->sumSqr = sumSqr;}
-
-        void reset() { count = 0; min = POSITIVE_INFINITY; max = NEGATIVE_INFINITY; sum = 0.0; sumSqr = 0.0; }
-        void collect(double value);
-        void adjoin(const Statistics& other);
+        double getSum() const {assertUnweighted(); return sumWeightedValues;}
+        double getSumSqr() const {assertUnweighted(); return sumWeightedSquaredValues;}
+        double getWeightedSum() const {return sumWeightedValues;}
+        double getSumSquaredWeights() const {return sumSquaredWeights;}
+        double getSumWeightedSquaredValues() const {return sumWeightedSquaredValues;}
 };
-
-inline double Statistics::getVariance() const
-{
-    if (count == 0)
-        return NaN;
-    else {
-        double var = (sumSqr - sum*sum/count) / (count-1);
-        return var < 0 ? 0 : var;
-    }
-}
-
-inline void Statistics::collect(double value)
-{
-    count++;
-    min = (min < value ? min : value);
-    max = (max > value ? max : value);
-    sum += value;
-    sumSqr += value * value;
-}
-
-inline void Statistics::adjoin(const Statistics& other)
-{
-    count += other.count;
-    min = (min < other.min ? min : other.min);
-    max = (max > other.max ? max : other.max);
-    sum += other.sum;
-    sumSqr += other.sumSqr;
-}
 
 }  // namespace common
 }  // namespace omnetpp

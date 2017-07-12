@@ -151,13 +151,22 @@ void JsonExporter::writeOrderedKeyValueList(const std::string& key, const Ordere
 
 void JsonExporter::writeStatisticsFields(const Statistics& stat)
 {
-    writer.writeDouble("count", stat.getCount());
+    writer.writeInt("count", stat.getCount());
     writer.writeDouble("mean", stat.getMean());
     writer.writeDouble("stddev", stat.getStddev());
-    writer.writeDouble("sum", stat.getSum());
-    writer.writeDouble("sqrsum", stat.getSumSqr());
     writer.writeDouble("min", stat.getMin());
     writer.writeDouble("max", stat.getMax());
+    if (!stat.isWeighted()) {
+        writer.writeDouble("sum", stat.getSum());
+        writer.writeDouble("sqrsum", stat.getSumSqr());
+    }
+    else {
+        writer.writeDouble("weights", stat.getSumWeights());
+        writer.writeDouble("weightedSum", stat.getWeightedSum());
+        writer.writeDouble("sqrSumWeights", stat.getSumSquaredWeights());
+        writer.writeDouble("weightedSqrSum", stat.getSumWeightedSquaredValues());
+    }
+
     //TODO weighted?
 }
 

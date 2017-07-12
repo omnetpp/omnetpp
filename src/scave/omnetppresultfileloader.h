@@ -29,7 +29,6 @@
 
 #include "common/exception.h"
 #include "common/commonutil.h"
-#include "common/statistics.h"
 #include "idlist.h"
 #include "enumtype.h"
 #include "scaveutils.h"
@@ -43,8 +42,6 @@
 
 namespace omnetpp {
 namespace scave {
-
-using omnetpp::common::Statistics;
 
 class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
 {
@@ -65,13 +62,25 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
         int vectorId = -1;
         std::string vectorColumns; //TODO switch to 'bool hasEventNumber'
         double scalarValue;
-        Statistics stats;
+        struct {
+            int64_t count;
+            double minValue;
+            double maxValue;
+            double sum;
+            double sumSquares;
+            double sumWeights;
+            double sumWeightedValues;
+            double sumSquaredWeights;
+            double sumWeightedSquaredValues;
+        } fields;
         Histogram bins;
     };
   protected:
     void processLine(char **vec, int numTokens, ParseContext& ctx);
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
     void flush(ParseContext& ctx);
+    void resetFields(ParseContext& ctx);
+    Statistics makeStatsFromFields(ParseContext& ctx);
     void separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars);
   public:
     OmnetppResultFileLoader(ResultFileManager *resultFileManagerPar) : IResultFileLoader(resultFileManagerPar) {}

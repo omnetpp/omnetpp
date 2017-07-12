@@ -47,10 +47,6 @@ struct Block {
         startTime(0.0), endTime(0.0) {}
 
     long getCount() const { return stat.getCount(); }
-    double getMin() const { return stat.getMin(); }
-    double getMax() const { return stat.getMax(); }
-    double getSum() const { return stat.getSum(); }
-    double getSumSqr() const { return stat.getSumSqr(); }
 
     long endSerial() const { return startSerial + getCount(); }
 
@@ -58,8 +54,7 @@ struct Block {
 
     void collect(eventnumber_t eventNum, simultime_t simtime, double value)
     {
-        if (getCount() == 0)
-        {
+        if (getCount() == 0) {
             startEventNum = eventNum;
             startTime = simtime;
         }
@@ -101,8 +96,8 @@ struct VectorData {
     long getCount() const { return stat.getCount(); }
     double getMin() const { return stat.getMin(); }
     double getMax() const { return stat.getMax(); }
-    double getSum() const { return stat.getSum(); }
-    double getSumSqr() const { return stat.getSumSqr(); }
+    //double getSum() const { return stat.getSum(); }
+    //double getSumSqr() const { return stat.getSumSqr(); }
 
     /**
      * Adds the block statistics to the vector statistics.

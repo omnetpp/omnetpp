@@ -383,10 +383,9 @@ void CsvForSpreadsheetExporter::saveStatistics(ResultFileManager *manager, const
         csv.writeString("module");
         csv.writeString("name");
         csv.writeString("count");
+        csv.writeString("sumweights");
         csv.writeString("mean");
         csv.writeString("stddev");
-        csv.writeString("sum");
-        csv.writeString("sqrsum");
         csv.writeString("min");
         csv.writeString("max");
         csv.writeNewLine();
@@ -399,11 +398,13 @@ void CsvForSpreadsheetExporter::saveStatistics(ResultFileManager *manager, const
         csv.writeString(statistics.getModuleName());
         csv.writeString(statistics.getName());
         const Statistics& stat = statistics.getStatistics();
-        csv.writeDouble(stat.getCount());
+        csv.writeInt(stat.getCount());
+        if (stat.isWeighted())
+            csv.writeDouble(stat.getSumWeights());
+        else
+            csv.writeBlank();
         csv.writeDouble(stat.getMean());
         csv.writeDouble(stat.getStddev());
-        csv.writeDouble(stat.getSum());
-        csv.writeDouble(stat.getSumSqr());
         csv.writeDouble(stat.getMin());
         csv.writeDouble(stat.getMax());
         csv.writeNewLine();
@@ -433,10 +434,9 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
         csv.writeString("name");
         if (includeHistogramStatistics) {
             csv.writeString("count");
+            csv.writeString("sumweights");
             csv.writeString("mean");
             csv.writeString("stddev");
-            csv.writeString("sum");
-            csv.writeString("sqrsum");
             csv.writeString("min");
             csv.writeString("max");
         }
@@ -453,11 +453,13 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
         csv.writeString(histogram.getName());
         if (includeHistogramStatistics) {
             const Statistics& stat = histogram.getStatistics();
-            csv.writeDouble(stat.getCount());
+            csv.writeInt(stat.getCount());
+            if (stat.isWeighted())
+                csv.writeDouble(stat.getSumWeights());
+            else
+                csv.writeBlank();
             csv.writeDouble(stat.getMean());
             csv.writeDouble(stat.getStddev());
-            csv.writeDouble(stat.getSum());
-            csv.writeDouble(stat.getSumSqr());
             csv.writeDouble(stat.getMin());
             csv.writeDouble(stat.getMax());
         }

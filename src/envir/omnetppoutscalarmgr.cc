@@ -163,7 +163,11 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
     if (!enabled)
         return;
 
-    Statistics stats(statistic->getCount(), statistic->getMin(), statistic->getMax(), statistic->getSum(), statistic->getSqrSum());  //TODO handle weighted case
+    Statistics stats;
+    if (!statistic->isWeighted())
+        stats = Statistics::makeUnweighted(statistic->getCount(), statistic->getMin(), statistic->getMax(), statistic->getSum(), statistic->getSqrSum());
+    else
+        stats = Statistics::makeWeighted(statistic->getCount(), statistic->getMin(), statistic->getMax(), statistic->getWeights(), statistic->getWeightedSum(), statistic->getSqrSumWeights(), statistic->getWeightedSqrSum());
 
     bool savedAsHistogram = false;
     if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {

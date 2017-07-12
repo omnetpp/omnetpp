@@ -23,6 +23,7 @@ namespace omnetpp {
 namespace common {
 
 #define SCALAR_FILE_VERSION    2
+#define LL  INT64_PRINTF_FORMAT
 
 
 OmnetppScalarFileWriter::OmnetppScalarFileWriter()
@@ -67,9 +68,9 @@ void OmnetppScalarFileWriter::writeAttributes(const StringMap& attributes)
         check(fprintf(f, "attr %s %s\n", QUOTE(pair.first.c_str()), QUOTE(pair.second.c_str())));
 }
 
-void OmnetppScalarFileWriter::writeStatisticField(const char *name, long value)
+void OmnetppScalarFileWriter::writeStatisticField(const char *name, int64_t value)
 {
-    check(fprintf(f, "field %s %ld\n", QUOTE(name), value));
+    check(fprintf(f, "field %s %" LL "d\n", QUOTE(name), value));
 }
 
 void OmnetppScalarFileWriter::writeStatisticField(const char *name, double value)
@@ -79,20 +80,23 @@ void OmnetppScalarFileWriter::writeStatisticField(const char *name, double value
 
 void OmnetppScalarFileWriter::writeStatisticFields(const Statistics& statistic)
 {
+    // NOTE: mean and stddev may be computed from the others (and the IDE and
+    // scavetool do, too), but we store them for convenience of 3rd party tools
     writeStatisticField("count", statistic.getCount());
-    writeStatisticField("mean", statistic.getMean());
-    writeStatisticField("stddev", statistic.getStddev());
-    writeStatisticField("sum", statistic.getSum());
-    writeStatisticField("sqrsum", statistic.getSumSqr());
+    writeStatisticField("mean", statistic.getMean()); // computed; see note above
+    writeStatisticField("stddev", statistic.getStddev()); // computed; see note above
     writeStatisticField("min", statistic.getMin());
     writeStatisticField("max", statistic.getMax());
-//TODO
-//    if (statistic->isWeighted()) {
-//        writeStatisticField("weights", statistic->getWeights());
-//        writeStatisticField("weightedSum", statistic->getWeightedSum());
-//        writeStatisticField("sqrSumWeights", statistic->getSqrSumWeights());
-//        writeStatisticField("weightedSqrSum", statistic->getWeightedSqrSum());
-//    }
+    if (!statistic.isWeighted()) {
+        writeStatisticField("sum", statistic.getSum());
+        writeStatisticField("sqrsum", statistic.getSumSqr());
+    }
+    else {
+        writeStatisticField("weights", statistic.getSumWeights());
+        writeStatisticField("weightedSum", statistic.getWeightedSum());
+        writeStatisticField("sqrSumWeights", statistic.getSumSquaredWeights());
+        writeStatisticField("weightedSqrSum", statistic.getSumWeightedSquaredValues());
+    }
 }
 
 void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments)

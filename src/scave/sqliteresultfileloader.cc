@@ -203,8 +203,8 @@ void SqliteResultFileLoader::loadHistograms()
     std::map<sqlite3_int64,int> sqliteStatIdToHistogramIdx;
     const StringMap emptyAttrs;
 
-    prepareStatement("SELECT statId, runId, moduleName, statName, isHistogram, statCount, "
-            "statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
+    prepareStatement("SELECT statId, runId, moduleName, statName, isHistogram, isWeighted, "
+            "statCount, statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum "
             "FROM statistic;");
     for (int row=1; ; row++) {
@@ -216,21 +216,26 @@ void SqliteResultFileLoader::loadHistograms()
         sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
         std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
         std::string statName = (const char *)sqlite3_column_text(stmt, 3);
-        int isHistogram = sqlite3_column_int(stmt, 4);
-        sqlite3_int64 statCount = sqlite3_column_int64(stmt, 5);
-        double statMean = sqlite3ColumnDouble(stmt, 6); // can be computed from the others
-        double statStddev = sqlite3ColumnDouble(stmt, 7); // can be computed from the others
-        double statSum = sqlite3ColumnDouble(stmt, 8);
-        double statSqrsum = sqlite3ColumnDouble(stmt, 9);
-        double statMin = sqlite3ColumnDouble(stmt, 10);
-        double statMax = sqlite3ColumnDouble(stmt, 11);
-        //TODO make Scave understand weighted statistics:
-        //double statWeights = sqlite3ColumnDouble(stmt, 12);
-        //double statWeightedsum = sqlite3ColumnDouble(stmt, 13);
-        //double statSqrSumWeights = sqlite3ColumnDouble(stmt, 14);
-        //double statWeightedSqrSum = sqlite3ColumnDouble(stmt, 15);
+        bool isHistogram = sqlite3_column_int(stmt, 4);
+        bool isWeighted = sqlite3_column_int(stmt, 5);
+        sqlite3_int64 statCount = sqlite3_column_int64(stmt, 6);
+        double statMean = sqlite3ColumnDouble(stmt, 7); // can be computed from the others
+        double statStddev = sqlite3ColumnDouble(stmt, 8); // can be computed from the others
+        double statSum = sqlite3ColumnDouble(stmt, 9);
+        double statSqrsum = sqlite3ColumnDouble(stmt, 10);
+        double statMin = sqlite3ColumnDouble(stmt, 11);
+        double statMax = sqlite3ColumnDouble(stmt, 12);
+        double statWeights = sqlite3ColumnDouble(stmt, 13);
+        double statWeightedsum = sqlite3ColumnDouble(stmt, 14);
+        double statSqrSumWeights = sqlite3ColumnDouble(stmt, 15);
+        double statWeightedSqrSum = sqlite3ColumnDouble(stmt, 16);
+        (void)statMean; (void)statStddev; // unused vars; we'll recompute mean and stddev from the other fields
 
-        Statistics stat(statCount, statMin, statMax, statSum, statSqrsum);
+        Statistics stat;
+        if (isWeighted)
+            stat = Statistics::makeWeighted(statCount, statMin, statMax, statWeights, statWeightedsum, statSqrSumWeights, statWeightedSqrSum);
+        else
+            stat = Statistics::makeUnweighted(statCount, statMin, statMax, statSum, statSqrsum);
         if (isHistogram)
             sqliteStatIdToHistogramIdx[statId] = resultFileManager->addHistogram(fileRunMap.at(runId), moduleName.c_str(), statName.c_str(), stat, Histogram(), emptyAttrs);
         else
@@ -317,7 +322,7 @@ void SqliteResultFileLoader::loadVectors()
         int i = resultFileManager->addVector(fileRunMap.at(runId), vectorId, moduleName.c_str(), vectorName.c_str(), emptyAttrs, "ETV");
         sqliteVectorIdToVectorIdx[vectorId] = i;
         VectorResult& vec = fileRunMap.at(runId)->fileRef->vectorResults.at(i);
-        vec.stat = Statistics(count, vmin, vmax, vsum, vsumsqr);
+        vec.stat = Statistics::makeUnweighted(count, vmin, vmax, vsum, vsumsqr);
         vec.startEventNum = startEventNum;
         vec.endEventNum = endEventNum;
         vec.startTime = simultime_t(startSimtimeRaw, simtimeExp);

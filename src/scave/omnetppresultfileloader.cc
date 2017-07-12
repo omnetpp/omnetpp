@@ -141,15 +141,23 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         CHECK(parseDouble(vec[2], value), "invalid scalar file: invalid field value");
 
         if (fieldName == "count")
-            ctx.stats.setCount((long)value);
+            ctx.fields.count = value;
         else if (fieldName == "min")
-            ctx.stats.setMin(value);
+            ctx.fields.minValue = value;
         else if (fieldName == "max")
-            ctx.stats.setMax(value);
+            ctx.fields.maxValue = value;
         else if (fieldName == "sum")
-            ctx.stats.setSum(value);
+            ctx.fields.sum = value;
         else if (fieldName == "sqrsum")
-            ctx.stats.setSumSqr(value);
+            ctx.fields.sumSquares = value;
+        else if (fieldName == "weights")
+            ctx.fields.sumWeights = value;
+        else if (fieldName == "weightedSum")
+            ctx.fields.sumWeightedValues = value;
+        else if (fieldName == "sqrSumWeights")
+            ctx.fields.sumSquaredWeights = value;
+        else if (fieldName == "weightedSqrSum")
+            ctx.fields.sumWeightedSquaredValues = value;
     }
     else if (vec[0][0] == 'b' && !strcmp(vec[0], "bin")) {
         // syntax: "bin <lower_bound> <value>"
@@ -225,18 +233,24 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
         addAll(runRef->paramAssignments, ctx.moduleParams);
         break;
     }
-    case ParseContext::SCALAR:
+    case ParseContext::SCALAR: {
         resultFileManager->addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.scalarValue, false, false);
         break;
-    case ParseContext::VECTOR:
+    }
+    case ParseContext::VECTOR: {
         resultFileManager->addVector(ctx.fileRunRef, ctx.vectorId,ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.vectorColumns.c_str());
         break;
-    case ParseContext::STATISTICS:
-        resultFileManager->addStatistics(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.stats, ctx.attrs);
+    }
+    case ParseContext::STATISTICS: {
+        Statistics stats = makeStatsFromFields(ctx);
+        resultFileManager->addStatistics(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), stats, ctx.attrs);
         break;
-    case ParseContext::HISTOGRAM:
-        resultFileManager->addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.stats, ctx.bins, ctx.attrs);
+    }
+    case ParseContext::HISTOGRAM: {
+        Statistics stats = makeStatsFromFields(ctx);
+        resultFileManager->addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), stats, ctx.bins, ctx.attrs);
         break;
+    }
     default:
         throw opp_runtime_error("invalid result type");
     }
@@ -249,8 +263,24 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     ctx.vectorId = -1;
     ctx.scalarValue = NaN;
     ctx.attrs.clear();
-    ctx.stats.reset();
+    resetFields(ctx);
     ctx.bins.clear();
+}
+
+void OmnetppResultFileLoader::resetFields(ParseContext& ctx)
+{
+    ctx.fields.count = -1;
+    ctx.fields.minValue = ctx.fields.maxValue = ctx.fields.sum = ctx.fields.sumSquares = NaN;
+    ctx.fields.sumWeights = ctx.fields.sumWeightedValues = ctx.fields.sumSquaredWeights = ctx.fields.sumWeightedSquaredValues = NaN;
+}
+
+Statistics OmnetppResultFileLoader::makeStatsFromFields(ParseContext& ctx)
+{
+    bool weighted = !std::isnan(ctx.fields.sumWeights);
+    if (!weighted)
+        return Statistics::makeUnweighted(ctx.fields.count, ctx.fields.minValue, ctx.fields.maxValue, ctx.fields.sum, ctx.fields.sumSquares);
+    else
+        return Statistics::makeWeighted(ctx.fields.count, ctx.fields.minValue, ctx.fields.maxValue, ctx.fields.sumWeights, ctx.fields.sumWeightedValues, ctx.fields.sumSquaredWeights, ctx.fields.sumWeightedSquaredValues);
 }
 
 void OmnetppResultFileLoader::separateItervarsFromAttrs(StringMap& attrs, StringMap& itervars)
@@ -292,6 +322,7 @@ ResultFile *OmnetppResultFileLoader::loadFile(const char *fileName, const char *
             ParseContext ctx;
             ctx.fileRef = fileRef;
             ctx.fileName = fileRef->getFilePath().c_str();
+            resetFields(ctx);
             while ((line = freader.getNextLineBufferPointer()) != nullptr) {
                 int len = freader.getCurrentLineLength();
                 int numTokens = tokenizer.tokenize(line, len);

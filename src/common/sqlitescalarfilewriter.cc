@@ -134,10 +134,10 @@ void SqliteScalarFileWriter::prepareStatements()
     prepareStatement(add_scalar_stmt, "INSERT INTO scalar (runId, moduleName, scalarName, scalarValue) VALUES (?, ?, ?, ?);");
     prepareStatement(add_scalar_attr_stmt, "INSERT INTO scalarAttr (scalarId, attrName, attrValue) VALUES (?, ?, ?);");
     prepareStatement(add_statistic_stmt,
-            "INSERT INTO statistic (runId, moduleName, statName, isHistogram, "
-            "statCount, statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
+            "INSERT INTO statistic (runId, moduleName, statName, isHistogram, isWeighted, "
+            "statCount, statMean, statStddev, statMin, statMax, statSum, statSqrsum, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum"
-            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticAttr (statId, attrName, attrValue) VALUES (?, ?, ?);");
     prepareStatement(add_statistic_bin_stmt, "INSERT INTO histogramBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
 }
@@ -241,20 +241,22 @@ sqlite_int64 SqliteScalarFileWriter::writeStatistic(const std::string& component
     checkOK(sqlite3_bind_text(add_statistic_stmt, 2, componentFullPath.c_str(), componentFullPath.size(), SQLITE_STATIC));
     checkOK(sqlite3_bind_text(add_statistic_stmt, 3, name.c_str(), name.size(), SQLITE_STATIC));
     checkOK(sqlite3_bind_int(add_statistic_stmt, 4, (int)isHistogram));
-    checkOK(sqlite3_bind_int64(add_statistic_stmt, 5, statistic.getCount()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 6, statistic.getMean()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 7, statistic.getStddev()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 8, statistic.getSum()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 9, statistic.getSumSqr()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 10, statistic.getMin()));
-    checkOK(sqlite3_bind_double(add_statistic_stmt, 11, statistic.getMax()));
-//TODO
-//    if (statistic->isWeighted()) {
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 12, statistic->getWeights()));
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 13, statistic->getWeightedSum()));
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 14, statistic->getSqrSumWeights()));
-//        checkOK(sqlite3_bind_double(add_statistic_stmt, 15, statistic->getWeightedSqrSum()));
-//    }
+    checkOK(sqlite3_bind_int(add_statistic_stmt, 5, (int)statistic.isWeighted()));
+    checkOK(sqlite3_bind_int64(add_statistic_stmt, 6, statistic.getCount()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 7, statistic.getMean()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 8, statistic.getStddev()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 9, statistic.getMin()));
+    checkOK(sqlite3_bind_double(add_statistic_stmt, 10, statistic.getMax()));
+
+    if (!statistic.isWeighted()) {
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 11, statistic.getSum()));
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 12, statistic.getSumSqr()));
+    } else {
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 13, statistic.getSumWeights()));
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 14, statistic.getWeightedSum()));
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 15, statistic.getSumSquaredWeights()));
+        checkOK(sqlite3_bind_double(add_statistic_stmt, 16, statistic.getSumWeightedSquaredValues()));
+    }
     checkDone(sqlite3_step(add_statistic_stmt));
     sqlite3_int64 statisticId = sqlite3_last_insert_rowid(db);
     checkOK(sqlite3_clear_bindings(add_statistic_stmt));

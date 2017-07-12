@@ -438,7 +438,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         if (vector->hasColumn('V')) {
             CHECK(parseLong(tokens[i++], count) && parseDouble(tokens[i++], min) && parseDouble(tokens[i++], max) &&
                     parseDouble(tokens[i++], sum) && parseDouble(tokens[i++], sumSqr), "invalid statistics data", lineNum);
-            block.stat = Statistics(count, min, max, sum, sumSqr);
+            block.stat = Statistics::makeUnweighted(count, min, max, sum, sumSqr);
         }
         vector->addBlock(block);
     }
@@ -544,9 +544,10 @@ void IndexFileWriter::writeBlock(const VectorData& vector, const Block& block)
                             BigDecimal::ttoa(buff2, block.endTime, e)));
         }
         if (vector.hasColumn('V')) {
-            CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
-                            block.getCount(), precision, block.getMin(), precision, block.getMax(),
-                            precision, block.getSum(), precision, block.getSumSqr()));
+            const Statistics& stat = block.stat;
+            CHECK(fprintf(file, " %" LL "d %.*g %.*g %.*g %.*g",
+                            block.getCount(), precision, stat.getMin(), precision, stat.getMax(),
+                            precision, stat.getSum(), precision, stat.getSumSqr()));
         }
         CHECK(fprintf(file, "\n"));
     }

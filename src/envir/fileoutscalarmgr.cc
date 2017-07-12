@@ -208,16 +208,20 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     //   bin 10 13
     //   bin 20 19
     //   ...
-    // In Scave, fields are read as separate scalars.
+
+    // NOTE: mean and stddev may be computed from the others (and the IDE and
+    // scavetool do, too), but we store them for convenience of 3rd party tools
     check(fprintf(f, "statistic %s %s\n", QUOTE(component->getFullPath().c_str()), QUOTE(name)));
     writeStatisticField("count", statistic->getCount());
-    writeStatisticField("mean", statistic->getMean());
-    writeStatisticField("stddev", statistic->getStddev());
-    writeStatisticField("sum", statistic->getSum());
-    writeStatisticField("sqrsum", statistic->getSqrSum());
+    writeStatisticField("mean", statistic->getMean()); // computed; see note above
+    writeStatisticField("stddev", statistic->getStddev()); // computed; see note above
     writeStatisticField("min", statistic->getMin());
     writeStatisticField("max", statistic->getMax());
-    if (statistic->isWeighted()) {
+    if (!statistic->isWeighted()) {
+        writeStatisticField("sum", statistic->getSum());
+        writeStatisticField("sqrsum", statistic->getSqrSum());
+    }
+    else {
         writeStatisticField("weights", statistic->getWeights());
         writeStatisticField("weightedSum", statistic->getWeightedSum());
         writeStatisticField("sqrSumWeights", statistic->getSqrSumWeights());

@@ -265,14 +265,14 @@ void OmnetppVectorFileWriter::writeBlock(VectorData *vp)
     fflush(f);
 
     if (vp->recordEventNumbers) {
-        checki(fprintf(fi, "%d\t%" LL "d %" LL "d %" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
+        checki(fprintf(fi, "%d\t%" LL "d %" LL "d %" LL "d %" LL "d %s %s %" LL "d %.*g %.*g %.*g %.*g\n",
                 vp->id, block.offset, block.size,
                 block.startEventNum, block.endEventNum,
                 block.startTime.ttoa(buf), block.endTime.ttoa(buf2),
                 stats.getCount(), prec, stats.getMin(), prec, stats.getMax(), prec, stats.getSum(), prec, stats.getSumSqr()));
     }
     else {
-        checki(fprintf(fi, "%d\t%" LL "d %" LL "d %s %s %ld %.*g %.*g %.*g %.*g\n",
+        checki(fprintf(fi, "%d\t%" LL "d %" LL "d %s %s %" LL "d %.*g %.*g %.*g %.*g\n",
                 vp->id, block.offset, block.size,
                 block.startTime.ttoa(buf), block.endTime.ttoa(buf2),
                 stats.getCount(), prec, stats.getMin(), prec, stats.getMax(), prec, stats.getSum(), prec, stats.getSumSqr()));

@@ -74,14 +74,15 @@ const char SQL_CREATE_TABLES[] =
             "moduleName    TEXT NOT NULL, "
             "statName      TEXT NOT NULL, "
             "isHistogram   INTEGER NOT NULL, "  //actually, BOOL
+            "isWeighted    INTEGER NOT NULL, "  //actually, BOOL
             "statCount     INTEGER NOT NULL, "
-            "statMean      REAL, "
-            "statStddev    REAL, "  //TODO why store computed fields? why the "stat" prefix?
+            "statMean      REAL, "  // note: computed; stored for convenience
+            "statStddev    REAL, "  // note: computed; stored for convenience
             "statSum       REAL, "
             "statSqrsum    REAL, "
             "statMin       REAL, "
             "statMax       REAL, "
-            "statWeights          REAL, "
+            "statWeights          REAL, " // note: name of this and subsequent fields is consistent with textual sca file field names
             "statWeightedSum      REAL, "
             "statSqrSumWeights    REAL, "
             "statWeightedSqrSum   REAL "

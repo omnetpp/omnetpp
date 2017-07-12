@@ -961,7 +961,7 @@ int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName, co
 int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns)
 {
     VectorResult vector(fileRunRef, moduleName, vectorName, attrs, vectorId, columns);
-    vector.stat = Statistics(-1, NaN, NaN, NaN, NaN);
+    vector.stat = Statistics::makeInvalid(false);
     VectorResults& vectors = fileRunRef->fileRef->vectorResults;
     vectors.push_back(vector);
     return vectors.size() - 1;
@@ -994,12 +994,13 @@ void ResultFileManager::addStatisticsFieldsAsScalars(FileRun *fileRunRef, const 
     std::string name = statisticsName;
     StringMap emptyAttrs;
     addScalar(fileRunRef, moduleName, (name+":count").c_str(), emptyAttrs, stat.getCount(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":sqrsum").c_str(), emptyAttrs, stat.getSumSqr(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":min").c_str(), emptyAttrs, stat.getMin(), true, false);
-    addScalar(fileRunRef, moduleName, (name+":max").c_str(), emptyAttrs, stat.getMax(), true, false);
     addScalar(fileRunRef, moduleName, (name+":mean").c_str(), emptyAttrs, stat.getMean(), true, false);
     addScalar(fileRunRef, moduleName, (name+":stddev").c_str(), emptyAttrs, stat.getStddev(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":min").c_str(), emptyAttrs, stat.getMin(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":max").c_str(), emptyAttrs, stat.getMax(), true, false);
+    if (!stat.isWeighted())
+        addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true, false);  // this one might be useful
+    //TODO sumWeights? isWeighted?
 }
 
 // create a file for each dataset?
@@ -1022,7 +1023,7 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
 
     VectorResult newVector(fileRunRef, vector.getModuleName(), name, vectorAttributes, vectorId, vector.getColumns());
     newVector.computation = computation;
-    newVector.stat = Statistics(-1, NaN, NaN, NaN, NaN);
+    newVector.stat = Statistics::makeInvalid(false);
     fileRef->vectorResults.push_back(newVector);
     ID id = _mkID(true, false, VECTOR, fileRef->id, fileRef->vectorResults.size()-1);
     std::pair<ComputationID, ID> key = std::make_pair(computationID, input);

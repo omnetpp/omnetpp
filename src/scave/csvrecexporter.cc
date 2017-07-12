@@ -185,7 +185,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     std::vector<std::string> commonAndScalarColumnNames = {"run", "type", "module", "name", "attrname", "value"}; // note: 'value' doubles as scalar value and attr value
     std::vector<std::string> statisticColumnNames, histogramColumnNames, vectorColumnNames;
     if (haveStatisticColumns)
-        statisticColumnNames = {"count", "mean", "stddev", "min", "max"}; //TODO revise this list: sum instead of mean; sqrsum, sumweights?
+        statisticColumnNames = {"count", "sumweights", "mean", "stddev", "min", "max"};
     if (haveHistogramColumns)
         histogramColumnNames = {"binedges", "binvalues"};
     if (haveVectorColumns)
@@ -239,7 +239,11 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             writeResultItemBase(statistic, isHistogram ? "histogram" : "statistic", numColumns);
             csv.writeBlank(); // skip 'value'
             const Statistics& stat = statistic.getStatistics();
-            csv.writeDouble(stat.getCount()); //TODO revise
+            csv.writeInt(stat.getCount());
+            if (stat.isWeighted())
+                csv.writeDouble(stat.getSumWeights());
+            else
+                csv.writeBlank();
             csv.writeDouble(stat.getMean());
             csv.writeDouble(stat.getStddev());
             csv.writeDouble(stat.getMin());

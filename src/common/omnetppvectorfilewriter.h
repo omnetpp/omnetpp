@@ -69,7 +69,7 @@ class COMMON_API OmnetppVectorFileWriter
       Statistics statistics;       // statistics of the samples in the block
 
       Block() { reset(); }
-      void reset() { offset=-1; size=0; statistics.reset(); }
+      void reset() { offset=-1; size=0; statistics.clear(); }
     };
 
     struct VectorData {
