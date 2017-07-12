@@ -29,11 +29,11 @@ EV << "Done\n";
 NOISYLISTENER CONSTRUCTOR
 Subscribing:
 N
-SUBSCRIBED at module "Test", signal "dummy" (id=2)
+SUBSCRIBED at module "Test", signal "dummy"
 Y
 Unsubscribing:
 Y
-UNSUBSCRIBED from module "Test", signal "dummy" (id=2)
+UNSUBSCRIBED from module "Test", signal "dummy"
 N
 N
 N

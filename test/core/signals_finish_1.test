@@ -14,9 +14,9 @@ subscribe("dummy", listener);
 %contains: stdout
 Subscribing:
 NOISYLISTENER CONSTRUCTOR
-SUBSCRIBED at module "Test", signal "dummy" (id=2)
+SUBSCRIBED at module "Test", signal "dummy"
 
 %contains: stdout
-FINISH on module "Test", signal "dummy" (id=2)
-UNSUBSCRIBED from module "Test", signal "dummy" (id=2)
+FINISH on module "Test", signal "dummy"
+UNSUBSCRIBED from module "Test", signal "dummy"
 

@@ -88,79 +88,79 @@ cmdenv-event-banners = false
 
 %subst: /omnetpp:://
 %contains: stdout
-SUBSCRIBED at module "Test", signal "PRE_MODEL_CHANGE" (id=0)
-SUBSCRIBED at module "Test", signal "POST_MODEL_CHANGE" (id=1)
+SUBSCRIBED at module "Test", signal "PRE_MODEL_CHANGE"
+SUBSCRIBED at module "Test", signal "POST_MODEL_CHANGE"
 
 CREATING:
-SIGNAL from module "Test", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleAddNotification, info:
-SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE" (id=1), class cPostModuleAddNotification, info:
-SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleAddNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateAddNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostGateAddNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostModuleAddNotification, info:
-SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleAddNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateAddNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostGateAddNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostModuleAddNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateVectorResizeNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostGateVectorResizeNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateVectorResizeNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostGateVectorResizeNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateConnectNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCreateNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCreateNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostGateConnectNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCreateNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCreateNotification, info:
-SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "PRE_MODEL_CHANGE" (id=0), class cPreParameterChangeNotification, info:
-SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "POST_MODEL_CHANGE" (id=1), class cPostParameterChangeNotification, info:
-SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "PRE_MODEL_CHANGE" (id=0), class cPreParameterChangeNotification, info:
-SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "POST_MODEL_CHANGE" (id=1), class cPostParameterChangeNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateConnectNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCreateNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCreateNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostGateConnectNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCreateNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCreateNotification, info:
-SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHANGE" (id=0), class cPreParameterChangeNotification, info:
-SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE" (id=1), class cPostParameterChangeNotification, info:
-SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHANGE" (id=0), class cPreParameterChangeNotification, info:
-SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE" (id=1), class cPostParameterChangeNotification, info:
+SIGNAL from module "Test", signal "PRE_MODEL_CHANGE", class cPreModuleAddNotification, info:
+SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostModuleAddNotification, info:
+SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE", class cPreModuleAddNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateAddNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateAddNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostModuleAddNotification, info:
+SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE", class cPreModuleAddNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateAddNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateAddNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostModuleAddNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateVectorResizeNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateVectorResizeNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateVectorResizeNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateVectorResizeNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateConnectNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCreateNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCreateNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateConnectNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCreateNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCreateNotification, info:
+SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "PRE_MODEL_CHANGE", class cPreParameterChangeNotification, info:
+SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostParameterChangeNotification, info:
+SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "PRE_MODEL_CHANGE", class cPreParameterChangeNotification, info:
+SIGNAL from channel "Test.twoNodes.node1.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostParameterChangeNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateConnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCreateNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCreateNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateConnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCreateNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCreateNotification, info:
+SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHANGE", class cPreParameterChangeNotification, info:
+SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostParameterChangeNotification, info:
+SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHANGE", class cPreParameterChangeNotification, info:
+SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE", class cPostParameterChangeNotification, info:
 
 DELETING:
-SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleDeleteNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleDeleteNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateDisconnectNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostGateDisconnectNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateDisconnectNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPrePathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostGateDisconnectNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostPathCutNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateDeleteNotification, info:
-SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE" (id=1), class cPostGateDeleteNotification, info:
-SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE" (id=1), class cPostModuleDeleteNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleDeleteNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE" (id=0), class cPreGateDeleteNotification, info:
-SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE" (id=1), class cPostGateDeleteNotification, info:
-SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE" (id=1), class cPostModuleDeleteNotification, info:
-SIGNAL from module "Test", signal "POST_MODEL_CHANGE" (id=1), class cPostModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPrePathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateDisconnectNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostPathCutNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "PRE_MODEL_CHANGE", class cPreGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node1", signal "POST_MODEL_CHANGE", class cPostGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "PRE_MODEL_CHANGE", class cPreGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes.node2", signal "POST_MODEL_CHANGE", class cPostGateDeleteNotification, info:
+SIGNAL from module "Test.twoNodes", signal "POST_MODEL_CHANGE", class cPostModuleDeleteNotification, info:
+SIGNAL from module "Test", signal "POST_MODEL_CHANGE", class cPostModuleDeleteNotification, info:
 
 DONE
 
 <!> No more events, simulation completed -- at t=0s, event #1
 
 Calling finish() at end of Run #0...
-FINISH on module "Test", signal "POST_MODEL_CHANGE" (id=1)
-FINISH on module "Test", signal "PRE_MODEL_CHANGE" (id=0)
-SIGNAL from module "Test", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleDeleteNotification, info:
-UNSUBSCRIBED from module "Test", signal "POST_MODEL_CHANGE" (id=1)
-UNSUBSCRIBED from module "Test", signal "PRE_MODEL_CHANGE" (id=0)
+FINISH on module "Test", signal "POST_MODEL_CHANGE"
+FINISH on module "Test", signal "PRE_MODEL_CHANGE"
+SIGNAL from module "Test", signal "PRE_MODEL_CHANGE", class cPreModuleDeleteNotification, info:
+UNSUBSCRIBED from module "Test", signal "POST_MODEL_CHANGE"
+UNSUBSCRIBED from module "Test", signal "PRE_MODEL_CHANGE"
 NOISYLISTENER DESTRUCTOR
 
 End.

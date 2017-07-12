@@ -25,9 +25,11 @@ debug-statistics-recording = true
 
 **.dorecord:min.scalar-recording = false
 
+%subst: /signalID=\d+/signalID=_/
+
 %contains: stdout
 Test.node (Node):
-    "foo" (signalID=2):
+    "foo" (signalID=_):
         omnetpp::LastValueRecorder ==> dorecord:last
         omnetpp::MinRecorder ==> dorecord:min
         omnetpp::MaxRecorder ==> dorecord:max

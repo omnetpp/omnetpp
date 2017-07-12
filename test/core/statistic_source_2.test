@@ -39,9 +39,11 @@ warmup-period = 10s
 debug-statistics-recording = true
 
 %subst: /omnetpp:://
+%subst: /signalID=\d+/signalID=_/
+
 %contains: stdout
 Test.node (Node):
-    "bar" (signalID=4):
+    "bar" (signalID=_):
         WarmupPeriodFilter
             <signalvalue> + <signalvalue> (NaryExpressionFilter)
                 VectorRecorder ==> src10:vector
@@ -56,7 +58,7 @@ Test.node (Node):
             MinFilter
                 <signalvalue> + <signalvalue> (NaryExpressionFilter)
                     VectorRecorder ==> src13:vector
-    "foo" (signalID=3):
+    "foo" (signalID=_):
         WarmupPeriodFilter
             VectorRecorder ==> src1:vector
             HistogramRecorder ==> src1:histogram
@@ -118,7 +120,7 @@ Test.node (Node):
             MaxFilter
                 <signalvalue> + <signalvalue> (NaryExpressionFilter)
                     VectorRecorder ==> src13:vector
-    "src0" (signalID=2):
+    "src0" (signalID=_):
         WarmupPeriodFilter
             VectorRecorder ==> src0:vector
             HistogramRecorder ==> src0:histogram

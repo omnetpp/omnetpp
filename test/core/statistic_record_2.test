@@ -62,12 +62,14 @@ debug-statistics-recording = true
 **.rec31.result-recording-modes = -max(timeavg)/2,-vector(mean)  #NOTE: '-' means REMOVE, not negation!
 
 %subst: /omnetpp:://
+%subst: /signalID=\d+/signalID=_/
+
 %contains: stdout
 Test.node (Node):
-    "rec31" (signalID=17):
+    "rec31" (signalID=_):
         MaxFilter
             <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec31:max+1
-    "rec30" (signalID=16):
+    "rec30" (signalID=_):
         MaxFilter
             <lastsignalvalue> + 1 (ExpressionRecorder) ==> rec30:max+1
         TimeAverageFilter
@@ -79,58 +81,58 @@ Test.node (Node):
             cos(<lastsignalvalue> + 1) (ExpressionRecorder) ==> rec30:cos(mean+1)
         MaxFilter
             VectorRecorder ==> rec30:vector(max)
-    "rec21" (signalID=15):
+    "rec21" (signalID=_):
         MaxRecorder ==> rec21:max
         TimeAverageRecorder ==> rec21:timeavg
         VectorRecorder ==> rec21:vector
         CountRecorder ==> rec21:count
-    "rec20" (signalID=14):
+    "rec20" (signalID=_):
         MinRecorder ==> rec20:min
         MaxRecorder ==> rec20:max
-    "rec14" (signalID=13):
+    "rec14" (signalID=_):
         MaxRecorder ==> rec14:max
         CountRecorder ==> rec14:count
         HistogramRecorder ==> rec14:histogram
-    "rec13" (signalID=12):
+    "rec13" (signalID=_):
         MaxRecorder ==> rec13:max
         CountRecorder ==> rec13:count
         HistogramRecorder ==> rec13:histogram
-    "rec12" (signalID=11):
+    "rec12" (signalID=_):
         MaxRecorder ==> rec12:max
         VectorRecorder ==> rec12:vector
         CountRecorder ==> rec12:count
         HistogramRecorder ==> rec12:histogram
-    "rec11" (signalID=10):
+    "rec11" (signalID=_):
         MaxRecorder ==> rec11:max
         VectorRecorder ==> rec11:vector
         CountRecorder ==> rec11:count
         HistogramRecorder ==> rec11:histogram
-    "rec10" (signalID=9):
+    "rec10" (signalID=_):
         MaxRecorder ==> rec10:max
         VectorRecorder ==> rec10:vector
         HistogramRecorder ==> rec10:histogram
-    "rec6" (signalID=8):
+    "rec6" (signalID=_):
         MaxRecorder ==> rec6:max
-    "rec5" (signalID=7):
+    "rec5" (signalID=_):
         MaxRecorder ==> rec5:max
         VectorRecorder ==> rec5:vector
-    "rec4" (signalID=6):
+    "rec4" (signalID=_):
         MaxRecorder ==> rec4:max
         TimeAverageRecorder ==> rec4:timeavg
         VectorRecorder ==> rec4:vector
         CountRecorder ==> rec4:count
         HistogramRecorder ==> rec4:histogram
-    "rec3" (signalID=5):
+    "rec3" (signalID=_):
         MaxRecorder ==> rec3:max
         TimeAverageRecorder ==> rec3:timeavg
         VectorRecorder ==> rec3:vector
         HistogramRecorder ==> rec3:histogram
-    "rec2" (signalID=4):
+    "rec2" (signalID=_):
         CountRecorder ==> rec2:count
         HistogramRecorder ==> rec2:histogram
-    "rec1" (signalID=3):
+    "rec1" (signalID=_):
         HistogramRecorder ==> rec1:histogram
-    "rec0" (signalID=2):
+    "rec0" (signalID=_):
         MaxRecorder ==> rec0:max
         TimeAverageRecorder ==> rec0:timeavg
         VectorRecorder ==> rec0:vector

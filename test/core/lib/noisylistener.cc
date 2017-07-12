@@ -21,7 +21,7 @@ void NoisyListener::printFrom(cComponent *source, simsignal_t signalID)
     else
         EV << "destructing component";
     EV << " \"" << source->getFullPath() << "\", ";
-    EV << "signal \"" << cComponent::getSignalName(signalID) << "\" (id=" << signalID << ")";
+    EV << "signal \"" << cComponent::getSignalName(signalID) << "\""; // don't print numeric signalID, as it's prone to change
 }
 
 void NoisyListener::receiveSignal(cComponent *source, simsignal_t signalID, bool b, cObject *details)
