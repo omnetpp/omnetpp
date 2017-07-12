@@ -124,11 +124,11 @@ Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CF
 Register_GlobalConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
 Register_GlobalConfigOption(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "omnetpp::cFileCommunications", "If `parallel-simulation=true`, it selects the class that implements communication between partitions. The class must implement the `cParsimCommunications` interface.");
 Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", CFG_STRING, "omnetpp::cNullMessageProtocol", "If `parallel-simulation=true`, it selects the parallel simulation algorithm. The class must implement the `cParsimSynchronizer` interface.");
-Register_GlobalConfigOption(CFGID_EVENTLOGMANAGER_CLASS, "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager", "Part of the Envir plugin mechanism: selects the eventlog manager class to be used to record data. The class has to implement the `cIEventlogManager` interface.");
-Register_GlobalConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, DEFAULT_OUTPUTVECTORMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the `cIOutputVectorManager` interface.");
-Register_GlobalConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, DEFAULT_OUTPUTSCALARMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the `cIOutputScalarManager` interface.");
-Register_GlobalConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "omnetpp::envir::cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the `cISnapshotManager` interface.");
-Register_GlobalConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
+Register_PerRunConfigOption(CFGID_EVENTLOGMANAGER_CLASS, "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager", "Part of the Envir plugin mechanism: selects the eventlog manager class to be used to record data. The class has to implement the `cIEventlogManager` interface.");
+Register_PerRunConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanager-class", CFG_STRING, DEFAULT_OUTPUTVECTORMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output vector manager class to be used to record data from output vectors. The class has to implement the `cIOutputVectorManager` interface.");
+Register_PerRunConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, DEFAULT_OUTPUTSCALARMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the `cIOutputScalarManager` interface.");
+Register_PerRunConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "omnetpp::envir::cFileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the `cISnapshotManager` interface.");
+Register_PerRunConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
 Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "", "A semicolon-separated list of directories that contain module icons and other resources. This list with be concatenated with `OMNETPP_IMAGE_PATH`.");
 Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, nullptr, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
@@ -541,25 +541,6 @@ bool EnvirBase::setup()
 
         // install XML document cache
         xmlCache = new cXMLDocCache();
-
-        // install eventlog manager
-        eventlogManager = createByClassName<cIEventlogManager>(opt->eventlogManagerClass.c_str(), "eventlog manager");
-
-        // install output vector manager
-        outvectorManager = createByClassName<cIOutputVectorManager>(opt->outputVectorManagerClass.c_str(), "output vector manager");
-        addLifecycleListener(outvectorManager);
-
-        // install output scalar manager
-        outScalarManager = createByClassName<cIOutputScalarManager>(opt->outputScalarManagerClass.c_str(), "output scalar manager");
-        addLifecycleListener(outScalarManager);
-
-        // install snapshot manager
-        snapshotManager = createByClassName<cISnapshotManager>(opt->snapshotmanagerClass.c_str(), "snapshot manager");
-        addLifecycleListener(snapshotManager);
-
-        // install FES
-        cFutureEventSet *fes = createByClassName<cFutureEventSet>(opt->futureeventsetClass.c_str(), "FES");
-        getSimulation()->setFES(fes);
 
         // set up for sequential or distributed execution
         if (!opt->parsim) {
@@ -1318,13 +1299,6 @@ void EnvirBase::readOptions()
 #endif
     }
 
-    opt->futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
-
-    opt->eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
-    opt->outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
-    opt->outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
-    opt->snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
-
     opt->fnameAppendHost = cfg->getAsBool(CFGID_FNAME_APPEND_HOST, opt->parsim);
 
     debugOnErrors = cfg->getAsBool(CFGID_DEBUG_ON_ERRORS);
@@ -1391,10 +1365,39 @@ void EnvirBase::readPerRunOptions()
     opt->seedset = cfg->getAsInt(CFGID_SEED_SET);
     opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
+    opt->futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
+    opt->eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
+    opt->outputVectorManagerClass = cfg->getAsString(CFGID_OUTPUTVECTORMANAGER_CLASS);
+    opt->outputScalarManagerClass = cfg->getAsString(CFGID_OUTPUTSCALARMANAGER_CLASS);
+    opt->snapshotmanagerClass = cfg->getAsString(CFGID_SNAPSHOTMANAGER_CLASS);
 
+    // make time limits effective
     stopwatch.setCPUTimeLimit(opt->cpuTimeLimit);
     stopwatch.setRealTimeLimit(opt->realTimeLimit);
     getSimulation()->setWarmupPeriod(opt->warmupPeriod);
+
+    // install eventlog manager
+    delete eventlogManager;
+    eventlogManager = createByClassName<cIEventlogManager>(opt->eventlogManagerClass.c_str(), "eventlog manager");
+
+    // install output vector manager
+    delete outvectorManager;
+    outvectorManager = createByClassName<cIOutputVectorManager>(opt->outputVectorManagerClass.c_str(), "output vector manager");
+    addLifecycleListener(outvectorManager);
+
+    // install output scalar manager
+    delete outScalarManager;
+    outScalarManager = createByClassName<cIOutputScalarManager>(opt->outputScalarManagerClass.c_str(), "output scalar manager");
+    addLifecycleListener(outScalarManager);
+
+    // install snapshot manager
+    delete snapshotManager;
+    snapshotManager = createByClassName<cISnapshotManager>(opt->snapshotmanagerClass.c_str(), "snapshot manager");
+    addLifecycleListener(snapshotManager);
+
+    // install FES
+    cFutureEventSet *fes = createByClassName<cFutureEventSet>(opt->futureeventsetClass.c_str(), "FES");
+    getSimulation()->setFES(fes);
 
     // install fingerprint calculator object
     cFingerprintCalculator *fingerprint = nullptr;
