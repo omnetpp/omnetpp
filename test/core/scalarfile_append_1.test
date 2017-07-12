@@ -36,5 +36,4 @@ repeat = 3
 %postrun-command: scavetool results/General.sca
 
 %contains: postrun-command(1).out
-runs: 3 	scalars: 6	vectors: 0	histograms: 0
-
+runs: 3 	scalars: 6	vectors: 0	statistics: 0	histograms: 0

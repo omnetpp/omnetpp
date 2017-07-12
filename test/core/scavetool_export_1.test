@@ -67,7 +67,7 @@ run x        # -> error, -o is mandatory
 run x -o out.csv -x allowMixed=true
 run x -o out.py
 run x -o out.vec -Tv
-run x -o out.sca -Tsh
+run x -o out.sca -Tsth
 
 #
 #  -F <format>   Selects the exporter.
@@ -77,15 +77,16 @@ run x -o out.sca -Tsh
 run x -o out-F.csv -F CSV -x allowMixed=true
 run x -o out-F.py  -F Python
 run x -o out-F.vec -F OmnetppVectorFile -Tv
-run x -o out-F.sca -F OmnetppScalarFile -Tsh
+run x -o out-F.sca -F OmnetppScalarFile -Tsth
 run x -o out-F-sqlite.vec -F SqliteVectorFile -Tv
-run x -o out-F-sqlite.sca -F SqliteScalarFile -Tsh
+run x -o out-F-sqlite.sca -F SqliteScalarFile -Tsth
 
 #
 #  -T, --type <types>  Limit item types; <types> is concatenation of type characters (v=vector, s=scalar, t=statistic, h=histogram).
 #
 
 run x -o out-Ts.csv -Ts
+run x -o out-Tt.csv -Tt
 run x -o out-Th.csv -Th
 run x -o out-Tv.csv -Tv
 run x -o out-Tsh1.csv -Tsh -x allowMixed=true
@@ -104,8 +105,8 @@ run x -o out-f2.csv -f '*:vector'
 #  -w, --add-fields-as-scalars  Add statistics fields (count, sum, mean, stddev, min, max, etc) as scalars
 #
 
-run x -o out-w1.csv -Ts --add-fields-as-scalars
-run x -o out-w2.csv -Ts -w
+run x -o out-w1.csv -Tsth -x allowMixed=true --add-fields-as-scalars
+run x -o out-w2.csv -Tsth -x allowMixed=true -w
 
 #
 #  -x <key>=<value>    Option for the exporter. This option may occur multiple times.
@@ -142,22 +143,24 @@ echo .
 %contains: postrun-command(1).out
 ------------------------
 $ scavetool q <files>
-runs: 2 	scalars: 4	vectors: 2	histograms: 2
+runs: 2 	scalars: 4	vectors: 2	statistics: 2	histograms: 2
 ------------------------
 $ scavetool q -l <files>
 General-0-xxxx:
 
-scalar     Test.node  foo:mean       19.84
-scalar     Test.node  foo:last       17
-vector     Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
-histogram  Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=34
+scalar      Test.node  foo:mean       19.84
+scalar      Test.node  foo:last       17
+vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.84  min=12  max=28
+statistics  Test.node  foo:stats      count=100   mean=19.84  min=12      max=28
+histogram   Test.node  foo:histogram  count=100   mean=19.84  min=12      max=28  #bins=34
 
 General-1-xxxx:
 
-scalar     Test.node  foo:mean       19.65
-scalar     Test.node  foo:last       19
-vector     Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13  max=27
-histogram  Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
+scalar      Test.node  foo:mean       19.65
+scalar      Test.node  foo:last       19
+vector      Test.node  foo:vector     vectorId=1  count=100   mean=19.65  min=13  max=27
+statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
+histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=30
 
 
 ------------------------
@@ -170,37 +173,40 @@ scavetool: Output file name must be specified (-o option)
 ERROR
 ------------------------
 $ scavetool x -o out.csv -x allowMixed=true <files>
-Exported 4 scalars, 2 vectors, 2 histograms
+Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out.py <files>
-Exported 4 scalars, 2 vectors, 2 histograms
+Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out.vec -Tv <files>
 Exported 2 vectors
 ------------------------
-$ scavetool x -o out.sca -Tsh <files>
-Exported 4 scalars, 2 histograms
+$ scavetool x -o out.sca -Tsth <files>
+Exported 4 scalars, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-F.csv -F CSV -x allowMixed=true <files>
-Exported 4 scalars, 2 vectors, 2 histograms
+Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-F.py -F Python <files>
-Exported 4 scalars, 2 vectors, 2 histograms
+Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-F.vec -F OmnetppVectorFile -Tv <files>
 Exported 2 vectors
 ------------------------
-$ scavetool x -o out-F.sca -F OmnetppScalarFile -Tsh <files>
-Exported 4 scalars, 2 histograms
+$ scavetool x -o out-F.sca -F OmnetppScalarFile -Tsth <files>
+Exported 4 scalars, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-F-sqlite.vec -F SqliteVectorFile -Tv <files>
 Exported 2 vectors
 ------------------------
-$ scavetool x -o out-F-sqlite.sca -F SqliteScalarFile -Tsh <files>
-Exported 4 scalars, 2 histograms
+$ scavetool x -o out-F-sqlite.sca -F SqliteScalarFile -Tsth <files>
+Exported 4 scalars, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-Ts.csv -Ts <files>
 Exported 4 scalars
+------------------------
+$ scavetool x -o out-Tt.csv -Tt <files>
+Exported 2 statistics
 ------------------------
 $ scavetool x -o out-Th.csv -Th <files>
 Exported 2 histograms
@@ -226,14 +232,14 @@ Exported 2 vectors
 $ scavetool x -o out-f2.csv -f *:vector <files>
 Exported 2 vectors
 ------------------------
-$ scavetool x -o out-w1.csv -Ts --add-fields-as-scalars <files>
-Exported 32 scalars
+$ scavetool x -o out-w1.csv -Tsth -x allowMixed=true --add-fields-as-scalars <files>
+Exported 32 scalars, 2 statistics, 2 histograms
 ------------------------
-$ scavetool x -o out-w2.csv -Ts -w <files>
-Exported 32 scalars
+$ scavetool x -o out-w2.csv -Tsth -x allowMixed=true -w <files>
+Exported 32 scalars, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-x.csv -x allowMixed=true -x separator=tab -x quoteEscaping=backslash <files>
-Exported 4 scalars, 2 vectors, 2 histograms
+Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-k1.vec -Tv -k <files>
 Exported 2 vectors
@@ -252,7 +258,7 @@ done
 reading ../results/General-#1.vec...
 done
 4 file(s) loaded
-Exported 4 scalars, 2 vectors, 2 histograms
+Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ------------------------
 $ scavetool x -o out-v2.py --verbose <files>
 inferred export format from file name: Python
@@ -265,10 +271,10 @@ done
 reading ../results/General-#1.vec...
 done
 4 file(s) loaded
-Exported 4 scalars, 2 vectors, 2 histograms
+Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ===============================================================
 $ scavetool out-F.sca out-F-sqlite.sca out.sca out-F-sqlite.vec out-F.vec out-k1.vec out-k2.vec out.vec
-runs: 2 	scalars: 12	vectors: 10	histograms: 6
+runs: 2 	scalars: 12	vectors: 10	statistics: 6	histograms: 6
 $ python out-F.py
 $ python out.py
 $ python out-v1.py
