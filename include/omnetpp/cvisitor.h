@@ -59,7 +59,7 @@ class SIM_API cVisitor
     /**
      * @brief Can be thrown to get out in the middle of the traversal process.
      */
-     class EndTraversalException { public: EndTraversalException() {} };
+     class EndTraversalException { };
 
   public:
     /**
