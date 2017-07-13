@@ -21,13 +21,13 @@ public class HistogramDataset implements IHistogramDataset {
     private static class HistogramData {
         String key;
         boolean isIntegerType;
-        int count;
+        long count;
         double minValue;
         double maxValue;
         double[] cellBreaks;
         double[] cellValues;
 
-        public HistogramData(String key, boolean isIntegerType, int count, double minValue, double maxValue, double[] cellBreaks, double[] cellValues) {
+        public HistogramData(String key, boolean isIntegerType, long count, double minValue, double maxValue, double[] cellBreaks, double[] cellValues) {
             this.key = key;
             this.isIntegerType = isIntegerType;
             this.count = count;
@@ -77,7 +77,7 @@ public class HistogramDataset implements IHistogramDataset {
         return histograms[series].isIntegerType;
     }
 
-    public int getValueCount(int series) {
+    public long getValueCount(int series) {
         return histograms[series].count;
     }
 

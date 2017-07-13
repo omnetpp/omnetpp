@@ -30,14 +30,14 @@ public class StatUtils {
      * @param n the number of observations
      * @return
      */
-    public static double confidenceInterval(double p, double stddev, int n) {
+    public static double confidenceInterval(double p, double stddev, long n) {
         Assert.isLegal(n >= 0);
         Assert.isLegal(0.0 <= p && p <= 1.0);
 
         if (n <= 1)
             return Double.NaN;
 
-        int degreesOfFreedom = n - 1;
+        long degreesOfFreedom = n - 1;
         double tValue = 1.0 - (1.0 - p) / 2;
         double normalizedStddev = stddev / Math.sqrt(n);
 

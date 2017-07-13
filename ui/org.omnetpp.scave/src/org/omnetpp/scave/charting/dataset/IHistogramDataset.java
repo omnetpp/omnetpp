@@ -37,7 +37,7 @@ public interface IHistogramDataset extends IDataset {
      * @param series index of the histogram
      * @return number of data values collected
      */
-    int getValueCount(int series);
+    long getValueCount(int series);
 
     /**
      * Returns the least collected value.
@@ -112,7 +112,7 @@ public interface IHistogramDataset extends IDataset {
             throw new IndexOutOfBoundsException();
         }
 
-        public int getValueCount(int series) {
+        public long getValueCount(int series) {
             throw new IndexOutOfBoundsException();
         }
 

@@ -531,7 +531,7 @@ public class DataTable extends Table implements IDataControl {
                     return String.valueOf(vector.getVectorId());
                 }
                 else if (COL_COUNT.equals(column)) {
-                    int count = vector.getStatistics().getCount();
+                    long count = vector.getStatistics().getCount();
                     return count >= 0 ? String.valueOf(count) : "n.a.";
                 }
                 else if (COL_MEAN.equals(column)) {
@@ -566,7 +566,7 @@ public class DataTable extends Table implements IDataControl {
             else if (type == ResultType.HISTOGRAM_LITERAL) {
                 HistogramResult histogram = (HistogramResult)result;
                 if (COL_COUNT.equals(column)) {
-                    int count = histogram.getStatistics().getCount();
+                    long count = histogram.getStatistics().getCount();
                     return count >= 0 ? String.valueOf(count) : "n.a.";
                 }
                 else if (COL_MEAN.equals(column)) {
