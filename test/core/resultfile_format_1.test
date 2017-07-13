@@ -1,0 +1,224 @@
+%description:
+Test format of run header in result files
+
+%file: test.ned
+
+simple Node extends testlib.StatNode
+{
+    @statistic[foo](source=foo; record=last);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%inifile: omnetpp.ini
+[General]
+network = Test
+Test.**.foo = ${foovar=1,2}
+Test.**.bar = ${barvar=one,two}
+repeat = 2
+output-scalar-file-append = true
+output-scalar-file = ${resultdir}/${configname}.sca
+
+%prerun-command: rm -f results/*
+
+%subst: /^run General-(\d)-.*/run General-$1-xxx/m
+%subst: /^attr datetime [0-9:-]+/attr datetime xxx/m
+%subst: /^attr processid \d+/attr processid xxx/m
+
+%contains: results/General.sca
+version 2
+run General-0-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=1, $barvar=one"
+attr iterationvarsf foovar=1,barvar=one-
+attr measurement "$foovar=1, $barvar=one"
+attr network Test
+attr processid xxx
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+itervar barvar one
+itervar foovar 1
+param Test.**.foo 1
+param Test.**.bar one
+
+scalar _runattrs_ foovar 1
+scalar Test.node foo:last 17
+attr source foo
+
+run General-1-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=1, $barvar=one"
+attr iterationvarsf foovar=1,barvar=one-
+attr measurement "$foovar=1, $barvar=one"
+attr network Test
+attr processid xxx
+attr repetition 1
+attr replication #1
+attr resultdir results
+attr runnumber 1
+attr seedset 1
+itervar barvar one
+itervar foovar 1
+param Test.**.foo 1
+param Test.**.bar one
+
+scalar _runattrs_ foovar 1
+scalar Test.node foo:last 19
+attr source foo
+
+run General-2-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=1, $barvar=two"
+attr iterationvarsf foovar=1,barvar=two-
+attr measurement "$foovar=1, $barvar=two"
+attr network Test
+attr processid xxx
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 2
+attr seedset 2
+itervar barvar two
+itervar foovar 1
+param Test.**.foo 1
+param Test.**.bar two
+
+scalar _runattrs_ foovar 1
+scalar Test.node foo:last 18
+attr source foo
+
+run General-3-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=1, $barvar=two"
+attr iterationvarsf foovar=1,barvar=two-
+attr measurement "$foovar=1, $barvar=two"
+attr network Test
+attr processid xxx
+attr repetition 1
+attr replication #1
+attr resultdir results
+attr runnumber 3
+attr seedset 3
+itervar barvar two
+itervar foovar 1
+param Test.**.foo 1
+param Test.**.bar two
+
+scalar _runattrs_ foovar 1
+scalar Test.node foo:last 18
+attr source foo
+
+run General-4-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=2, $barvar=one"
+attr iterationvarsf foovar=2,barvar=one-
+attr measurement "$foovar=2, $barvar=one"
+attr network Test
+attr processid xxx
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 4
+attr seedset 4
+itervar barvar one
+itervar foovar 2
+param Test.**.foo 2
+param Test.**.bar one
+
+scalar _runattrs_ foovar 2
+scalar Test.node foo:last 19
+attr source foo
+
+run General-5-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=2, $barvar=one"
+attr iterationvarsf foovar=2,barvar=one-
+attr measurement "$foovar=2, $barvar=one"
+attr network Test
+attr processid xxx
+attr repetition 1
+attr replication #1
+attr resultdir results
+attr runnumber 5
+attr seedset 5
+itervar barvar one
+itervar foovar 2
+param Test.**.foo 2
+param Test.**.bar one
+
+scalar _runattrs_ foovar 2
+scalar Test.node foo:last 18
+attr source foo
+
+run General-6-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=2, $barvar=two"
+attr iterationvarsf foovar=2,barvar=two-
+attr measurement "$foovar=2, $barvar=two"
+attr network Test
+attr processid xxx
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 6
+attr seedset 6
+itervar barvar two
+itervar foovar 2
+param Test.**.foo 2
+param Test.**.bar two
+
+scalar _runattrs_ foovar 2
+scalar Test.node foo:last 18
+attr source foo
+
+run General-7-xxx
+attr configname General
+attr datetime xxx
+attr experiment General
+attr inifile _defaults.ini
+attr iterationvars "$foovar=2, $barvar=two"
+attr iterationvarsf foovar=2,barvar=two-
+attr measurement "$foovar=2, $barvar=two"
+attr network Test
+attr processid xxx
+attr repetition 1
+attr replication #1
+attr resultdir results
+attr runnumber 7
+attr seedset 7
+itervar barvar two
+itervar foovar 2
+param Test.**.foo 2
+param Test.**.bar two
+
+scalar _runattrs_ foovar 2
+scalar Test.node foo:last 21
+attr source foo
