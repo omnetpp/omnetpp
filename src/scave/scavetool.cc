@@ -316,8 +316,8 @@ string ScaveTool::rebuildCommandLine(int argc, char **argv)
 static void printAndDelete(std::ostream& out, StringSet *strings, const string& prefix = "")
 {
     if (strings != nullptr) {
-        for (StringSet::iterator it = strings->begin(); it != strings->end(); ++it)
-            out << prefix << *it << "\n";
+        for (auto str : *strings)
+            out << prefix << str << "\n";
         delete strings;
     }
 }
@@ -452,6 +452,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
     results.set(resultFileManager.filterIDList(results, opt_filterExpression.c_str()));
 
     RunList *runs = resultFileManager.getUniqueRuns(results);
+    std::sort(runs->begin(), runs->end(), [](Run *a, Run *b)  {return a->getRunName() < b->getRunName();}); // sort runs by runId, for consistent output
     IDList scalars = results.filterByTypes(ResultFileManager::SCALAR);
     IDList vectors = results.filterByTypes(ResultFileManager::VECTOR);
     IDList statistics = results.filterByTypes(ResultFileManager::STATISTICS);
@@ -603,12 +604,8 @@ void ScaveTool::queryCommand(int argc, char **argv)
     }
     case LIST_RUNS: {
         // note: we ignore opt_perRun, as it makes no sense here
-        StringSet *uniqueRunNames = new StringSet;
-        for (Run *run : *runs) {
-            string runName = runStr(run, opt_runDisplayMode);
-            uniqueRunNames->insert(runName);
-        }
-        printAndDelete(out, uniqueRunNames);
+        for (Run *run : *runs)
+            out << runStr(run, opt_runDisplayMode) << endl;
         break;
     }
     case LIST_CONFIGS: {
