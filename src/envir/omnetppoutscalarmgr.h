@@ -47,7 +47,6 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
     void closeFile();
     void writeRunData();
     void initialize();
-    void recordNumericIterationVariableAsScalar(const char *name, const char *value); // i.e. write *if* numeric
     bool isBad() {return initialized && !writer.isOpen();}
 
   public:

@@ -226,7 +226,7 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
         break;
     }
     case ParseContext::SCALAR:
-        resultFileManager->addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.scalarValue, false);
+        resultFileManager->addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.scalarValue, false, false);
         break;
     case ParseContext::VECTOR:
         resultFileManager->addVector(ctx.fileRunRef, ctx.vectorId,ctx.moduleName.c_str(), ctx.resultName.c_str(), ctx.attrs, ctx.vectorColumns.c_str());

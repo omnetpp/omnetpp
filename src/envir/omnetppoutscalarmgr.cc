@@ -118,40 +118,6 @@ void OmnetppOutputScalarManager::initialize()
 void OmnetppOutputScalarManager::writeRunData()
 {
     writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getParamAssignments());
-
-    // save numeric iteration variables as scalars as well, after saving them as run attributes (TODO this should not be necessary)
-    std::vector<const char *> names = getEnvir()->getConfigEx()->getIterationVariableNames();
-    for (const char *name : names) {
-        const char *value = getEnvir()->getConfigEx()->getVariable(name);
-        recordNumericIterationVariableAsScalar(name, value);
-    }
-}
-
-void OmnetppOutputScalarManager::recordNumericIterationVariableAsScalar(const char *name, const char *valueStr)
-{
-    static const std::string MODULE_FOR_RUNATTR_SCALAR("_runattrs_");
-    char *e;
-    setlocale(LC_NUMERIC, "C");
-    double value = strtod(valueStr, &e);
-    if (*e == '\0') {
-        // plain number - just record as it is
-        writer.recordScalar(MODULE_FOR_RUNATTR_SCALAR, name, value, convertMap(nullptr));
-    }
-    else if (e != valueStr) {
-        // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
-        std::string unit;
-        bool parsedOK = false;
-        try {
-            value = UnitConversion::parseQuantity(valueStr, unit);
-            parsedOK = true;
-        }
-        catch (std::exception& e) {
-        }
-        StringMap attrs;
-        if (parsedOK && !unit.empty())
-            attrs["unit"] = unit;
-        writer.recordScalar(MODULE_FOR_RUNATTR_SCALAR, name, value, attrs);
-    }
 }
 
 void OmnetppOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)

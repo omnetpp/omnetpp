@@ -162,12 +162,14 @@ class SCAVE_API ScalarResult : public ResultItem
   private:
     double value;
     bool isField_; // whether this scalar was created by exploding a "statistic" to its fields
+    bool isItervar_; // whether this scalar was create by converting itervars to scalars
   protected:
-    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, bool isField) :
-        ResultItem(fileRun, moduleName, name, attrs), value(value), isField_(isField) {}
+    ScalarResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, double value, bool isField, bool isItervar) :
+        ResultItem(fileRun, moduleName, name, attrs), value(value), isField_(isField), isItervar_(isItervar) {}
   public:
     double getValue() const {return value;}
     bool isField() const {return isField_;}
+    bool isItervar() const {return isItervar_;}
 };
 
 /**
@@ -381,9 +383,7 @@ class SCAVE_API ResultFileManager
     enum {SCALAR=1, VECTOR=2, STATISTICS=4, HISTOGRAM=8}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
-    // ID: 1 bit computed, 1 bit field, 6 bit type, 24 bit fileid, 32 bit pos
-    static bool _computed(ID id) { return (id >> 63) != 0; }
-    static bool _field(ID id) { return (id >> 62) != 0; }
+    // ID: 1 bit computed**, 1 bit field**, 6 bit type, 24 bit fileid, 32 bit pos (** apparently unused)
     static int _type(ID id)   {return (id >> 56) & 0x3fUL;}
     static int _fileid(ID id) {return (id >> 32) & 0x00fffffful;}
     static int _pos(ID id)    {return id & 0xffffffffUL;}
@@ -399,7 +399,7 @@ class SCAVE_API ResultFileManager
     Run *getOrAddRun(const std::string& runName);
     FileRun *getOrAddFileRun(ResultFile *file, Run *run);
 
-    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, const StringMap& attrs, double value, bool isField);
+    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, const StringMap& attrs, double value, bool isField, bool isItervar);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns);
     int addStatistics(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat, const StringMap& attrs);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
@@ -407,8 +407,10 @@ class SCAVE_API ResultFileManager
 
     ResultFile *getFileForID(ID id) const; // checks for nullptr
 
+    void addNumericIterationVariableAsScalar(FileRun *fileRunRef, const char *name, const char *value);
+
     template <class T>
-    void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeComputed = false, bool includeFields = true) const;
+    void collectIDs(IDList& result, std::vector<T> ResultFile::* vec, int type, bool includeComputed, bool includeFields, bool includeItervars) const;
 
     // unchecked getters are only for internal use by CmpBase in idlist.cc
     const ResultItem& uncheckedGetItem(ID id) const;
@@ -433,6 +435,7 @@ class SCAVE_API ResultFileManager
     // navigation
     ResultFileList getFiles() const; // filters out NULLs
     const RunList& getRuns() const {return runList;}
+    FileRunList getFileRunsInFile(ResultFile *file) const;
     RunList getRunsInFile(ResultFile *file) const;
     ResultFileList getFilesForRun(Run *run) const;
 
@@ -466,11 +469,11 @@ class SCAVE_API ResultFileManager
     StringSet *getUniqueParamAssignmentValues(const RunList& runList, const char *key) const;
 
     // getting lists of data items
-    IDList getAllScalars(bool includeComputed = false, bool includeFields = true) const;
+    IDList getAllScalars(bool includeComputed = false, bool includeFields = true, bool includeItervars = true) const;
     IDList getAllVectors(bool includeComputed = false) const;
     IDList getAllStatistics(bool includeComputed = false) const;
     IDList getAllHistograms(bool includeComputed = false) const;
-    IDList getAllItems(bool includeComputed = false, bool includeFields = true) const;
+    IDList getAllItems(bool includeComputed = false, bool includeFields = true, bool includeItervars = true) const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getStatisticsInFileRun(FileRun *fileRun) const;

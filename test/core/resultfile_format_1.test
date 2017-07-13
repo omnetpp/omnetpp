@@ -51,7 +51,6 @@ itervar foovar 1
 param Test.**.foo 1
 param Test.**.bar one
 
-scalar _runattrs_ foovar 1
 scalar Test.node foo:last 17
 attr source foo
 
@@ -75,7 +74,6 @@ itervar foovar 1
 param Test.**.foo 1
 param Test.**.bar one
 
-scalar _runattrs_ foovar 1
 scalar Test.node foo:last 19
 attr source foo
 
@@ -99,7 +97,6 @@ itervar foovar 1
 param Test.**.foo 1
 param Test.**.bar two
 
-scalar _runattrs_ foovar 1
 scalar Test.node foo:last 18
 attr source foo
 
@@ -123,7 +120,6 @@ itervar foovar 1
 param Test.**.foo 1
 param Test.**.bar two
 
-scalar _runattrs_ foovar 1
 scalar Test.node foo:last 18
 attr source foo
 
@@ -147,7 +143,6 @@ itervar foovar 2
 param Test.**.foo 2
 param Test.**.bar one
 
-scalar _runattrs_ foovar 2
 scalar Test.node foo:last 19
 attr source foo
 
@@ -171,7 +166,6 @@ itervar foovar 2
 param Test.**.foo 2
 param Test.**.bar one
 
-scalar _runattrs_ foovar 2
 scalar Test.node foo:last 18
 attr source foo
 
@@ -195,7 +189,6 @@ itervar foovar 2
 param Test.**.foo 2
 param Test.**.bar two
 
-scalar _runattrs_ foovar 2
 scalar Test.node foo:last 18
 attr source foo
 
@@ -219,6 +212,5 @@ itervar foovar 2
 param Test.**.foo 2
 param Test.**.bar two
 
-scalar _runattrs_ foovar 2
 scalar Test.node foo:last 21
 attr source foo

@@ -33,6 +33,7 @@
 #include "common/fileutil.h"
 #include "common/commonutil.h"
 #include "common/stringutil.h"
+#include "common/unitconversion.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "indexfile.h"
 #include "scaveutils.h"
@@ -58,6 +59,8 @@ namespace omnetpp {
 namespace scave {
 
 const std::string NULLSTRING = "";
+
+const char *ITERVARSCALAR_MODULE = "_runattrs_";
 
 ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs) :
         fileRunRef(fileRun), moduleNameRef(nullptr), nameRef(nullptr), attributes(attrs), computation(nullptr)
@@ -197,6 +200,16 @@ ResultFileList ResultFileManager::getFiles() const
     for (int i = 0; i < (int)fileList.size(); i++)
         if (fileList[i] && !fileList[i]->isComputed())
             out.push_back(fileList[i]);
+    return out;
+}
+
+FileRunList ResultFileManager::getFileRunsInFile(ResultFile *file) const
+{
+    READER_MUTEX
+    FileRunList out;
+    for (int i = 0; i < (int)fileRunList.size(); i++)
+        if (fileRunList[i]->fileRef == file)
+            out.push_back(fileRunList[i]);
     return out;
 }
 
@@ -441,7 +454,7 @@ const HistogramResult& ResultFileManager::getHistogram(ID id) const
 }
 
 template<class T>
-void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec, int type, bool includeComputed, bool includeFields) const
+void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec, int type, bool includeComputed, bool includeFields, bool includeItervars) const
 {
     for (int k = 0; k < (int)fileList.size(); k++) {
         if (fileList[k] != nullptr) {
@@ -449,30 +462,31 @@ void ResultFileManager::collectIDs(IDList& out, std::vector<T> ResultFile::*vec,
             for (int i = 0; i < (int)v.size(); i++) {
                 bool isComputed = v[i].isComputed();
                 bool isField = type == SCALAR ? ((ScalarResult&)v[i]).isField() : false;
+                bool isItervar = type == SCALAR ? ((ScalarResult&)v[i]).isItervar() : false;
 
-                if ((!isField || includeFields) && (!isComputed || includeComputed))
+                if ((!isField || includeFields) && (!isComputed || includeComputed) && (!isItervar || includeItervars))
                     out.uncheckedAdd(_mkID(isComputed, isField, type, k, i));
             }
         }
     }
 }
 
-IDList ResultFileManager::getAllItems(bool includeComputed, bool includeFields) const
+IDList ResultFileManager::getAllItems(bool includeComputed, bool includeFields, bool includeItervars) const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields);
-    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed, includeFields);
-    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeComputed, includeFields);
-    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed, includeFields);
+    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeComputed, includeFields, includeItervars);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed, includeFields, includeItervars);
     return out;
 }
 
-IDList ResultFileManager::getAllScalars(bool includeComputed, bool includeFields) const
+IDList ResultFileManager::getAllScalars(bool includeComputed, bool includeFields, bool includeItervars) const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields);
+    collectIDs(out, &ResultFile::scalarResults, SCALAR, includeComputed, includeFields, includeItervars);
     return out;
 }
 
@@ -480,7 +494,7 @@ IDList ResultFileManager::getAllVectors(bool includeComputed) const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed);
+    collectIDs(out, &ResultFile::vectorResults, VECTOR, includeComputed, true, true);
     return out;
 }
 
@@ -488,7 +502,7 @@ IDList ResultFileManager::getAllStatistics(bool includeComputed) const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeComputed);
+    collectIDs(out, &ResultFile::statisticsResults, STATISTICS, includeComputed, true, true);
     return out;
 }
 
@@ -496,7 +510,7 @@ IDList ResultFileManager::getAllHistograms(bool includeComputed) const
 {
     READER_MUTEX
     IDList out;
-    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed);
+    collectIDs(out, &ResultFile::histogramResults, HISTOGRAM, includeComputed, true, true);
     return out;
 }
 
@@ -935,10 +949,10 @@ FileRun *ResultFileManager::getOrAddFileRun(ResultFile *file, Run *run)
     return fileRun;
 }
 
-int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
-        const char *scalarName, const StringMap& attrs, double value, bool isField)
+int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName,
+        const StringMap& attrs, double value, bool isField, bool isItervar)
 {
-    ScalarResult scalar(fileRunRef, moduleName, scalarName, attrs, value, isField);
+    ScalarResult scalar(fileRunRef, moduleName, scalarName, attrs, value, isField, isItervar);
     ScalarResults& scalars = fileRunRef->fileRef->scalarResults;
     scalars.push_back(scalar);
     return scalars.size() - 1;
@@ -979,13 +993,13 @@ void ResultFileManager::addStatisticsFieldsAsScalars(FileRun *fileRunRef, const 
 {
     std::string name = statisticsName;
     StringMap emptyAttrs;
-    addScalar(fileRunRef, moduleName, (name+":count").c_str(), emptyAttrs, stat.getCount(), true);
-    addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true);
-    addScalar(fileRunRef, moduleName, (name+":sqrsum").c_str(), emptyAttrs, stat.getSumSqr(), true);
-    addScalar(fileRunRef, moduleName, (name+":min").c_str(), emptyAttrs, stat.getMin(), true);
-    addScalar(fileRunRef, moduleName, (name+":max").c_str(), emptyAttrs, stat.getMax(), true);
-    addScalar(fileRunRef, moduleName, (name+":mean").c_str(), emptyAttrs, stat.getMean(), true);
-    addScalar(fileRunRef, moduleName, (name+":stddev").c_str(), emptyAttrs, stat.getStddev(), true);
+    addScalar(fileRunRef, moduleName, (name+":count").c_str(), emptyAttrs, stat.getCount(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":sum").c_str(), emptyAttrs, stat.getSum(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":sqrsum").c_str(), emptyAttrs, stat.getSumSqr(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":min").c_str(), emptyAttrs, stat.getMin(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":max").c_str(), emptyAttrs, stat.getMax(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":mean").c_str(), emptyAttrs, stat.getMean(), true, false);
+    addScalar(fileRunRef, moduleName, (name+":stddev").c_str(), emptyAttrs, stat.getStddev(), true, false);
 }
 
 // create a file for each dataset?
@@ -1047,7 +1061,7 @@ ID ResultFileManager::addComputedScalar(const char *name, const char *module, co
     if (!fileRun)
         fileRun = addFileRun(computedScalarFile, run);
 
-    ScalarResult scalar(fileRun, module, name, StringMap(), value, false);
+    ScalarResult scalar(fileRun, module, name, StringMap(), value, false, false);
     scalar.computation = node;
 
     int id = computedScalarFile->scalarResults.size();
@@ -1143,8 +1157,46 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
     ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
         SqliteResultFileLoader(this).loadFile(fileName, fileSystemFileName, reload) :
         OmnetppResultFileLoader(this).loadFile(fileName, fileSystemFileName, reload);
+
+    // add numeric itervars as scalars
+    FileRunList fileRunsInFile = getFileRunsInFile(file);
+    for (FileRun *fileRun : fileRunsInFile) {
+        const StringMap& itervars = fileRun->runRef->getIterationVariables();
+        for (auto pair : itervars) {
+            ID id = getItemByName(fileRun, ITERVARSCALAR_MODULE, pair.first.c_str());
+            if (id == 0 || _type(id) != SCALAR)
+                addNumericIterationVariableAsScalar(fileRun, pair.first.c_str(), pair.second.c_str());
+        }
+    }
+
     Assert(file != nullptr);
     return file;
+}
+
+void ResultFileManager::addNumericIterationVariableAsScalar(FileRun *fileRunRef, const char *name, const char *valueStr)
+{
+    char *e;
+    setlocale(LC_NUMERIC, "C");
+    double value = strtod(valueStr, &e);
+    if (*e == '\0') {
+        // plain number - just add as it is
+        addScalar(fileRunRef, ITERVARSCALAR_MODULE, name, StringMap(), value, false, true);
+    }
+    else if (e != valueStr) {
+        // starts with a number, so it might be something like "100s"; if so, record it as scalar with "unit" attribute
+        std::string unit;
+        bool parsedOK = false;
+        try {
+            value = UnitConversion::parseQuantity(valueStr, unit);
+            parsedOK = true;
+        }
+        catch (std::exception& e) {
+        }
+        StringMap attrs;
+        if (parsedOK && !unit.empty())
+            attrs["unit"] = unit;
+        addScalar(fileRunRef, ITERVARSCALAR_MODULE, name, attrs, value, false, true);
+    }
 }
 
 void ResultFileManager::unloadFile(ResultFile *file)

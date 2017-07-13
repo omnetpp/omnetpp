@@ -173,7 +173,7 @@ void SqliteResultFileLoader::loadScalars()
         std::string moduleName = (const char *)sqlite3_column_text(stmt, 2);
         std::string scalarName = (const char *)sqlite3_column_text(stmt, 3);
         double scalarValue = sqlite3ColumnDouble(stmt,4);        // converts NULL to NaN
-        int i = resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), scalarName.c_str(), emptyAttrs, scalarValue, false);
+        int i = resultFileManager->addScalar(fileRunMap.at(runId), moduleName.c_str(), scalarName.c_str(), emptyAttrs, scalarValue, false, false);
         sqliteScalarIdToScalarIdx[scalarId] = i;
     }
     finalizeStatement();
