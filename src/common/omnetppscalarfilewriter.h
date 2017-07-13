@@ -44,7 +44,7 @@ class COMMON_API OmnetppScalarFileWriter
     void check(int fprintfResult);
     void writeAttributes(const StringMap& attributes);
     void writeStatisticFields(const Statistics& statistic);
-    void writeStatisticField(const char *name, long value);
+    void writeStatisticField(const char *name, int64_t value);
     void writeStatisticField(const char *name, double value);
 
   public:
