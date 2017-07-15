@@ -126,8 +126,8 @@ void cVarHistogram::copy(const cVarHistogram& res)
     // hack: as this ^ uses num_cells instead of max_num_cells, we must correct it:
     if (res.cellv) {
         delete[] cellv;
-        cellv = new unsigned[maxNumCells];
-        memcpy(cellv, res.cellv, numCells * sizeof(unsigned));
+        cellv = new double[maxNumCells];
+        memcpy(cellv, res.cellv, numCells * sizeof(double));
     }
 
     maxNumCells = res.maxNumCells;
@@ -178,7 +178,7 @@ void cVarHistogram::createEquiprobableCells()
     ASSERT(maxNumCells >= 2);  // maybe 1 is enough...
 
     // allocate cellv and bin_bounds
-    cellv = new unsigned[maxNumCells];
+    cellv = new double[maxNumCells];
     cellLowerBounds = new double[maxNumCells+1];
 
     qsort(precollectedValues, numValues, sizeof(double), compareDoubles);
@@ -256,6 +256,8 @@ void cVarHistogram::createEquiprobableCells()
 
 void cVarHistogram::transform()
 {
+    ASSERT(!weighted);
+
     if (isTransformed())
         throw cRuntimeError(this, "transform(): Histogram already transformed");
 
@@ -280,7 +282,7 @@ void cVarHistogram::transform()
         }
 
         // create cell vector and insert observations
-        cellv = new unsigned[numCells];
+        cellv = new double[numCells];
         for (int i = 0; i < numCells; i++)
             cellv[i] = 0;
 
@@ -297,10 +299,12 @@ void cVarHistogram::transform()
 void cVarHistogram::collectTransformed(double val)
 {
     if (val < rangeMin) {  // rangemin == cellLowerBounds[0]
-        cellUnder++;
+        numUnderflows++;
+        underflowSumWeights += 1;
     }
     else if (val >= rangeMax) {  // rangemax == cellLowerBounds[num_cells]
-        cellOver++;
+        numOverflows++;
+        overflowSumWeights += 1;
     }
     else {
         // sample falls in the range of ordinary cells/bins (rangeMin <= val < rangeMax),
@@ -324,6 +328,11 @@ void cVarHistogram::collectTransformed(double val)
         // increment the appropriate counter
         cellv[lowerIndex]++;
     }
+}
+
+void cVarHistogram::collectTransformed2(double value, double weight)
+{
+    ASSERT(false); // weighted case is unsupported
 }
 
 void cVarHistogram::clearResult()
@@ -364,11 +373,11 @@ double cVarHistogram::draw() const
         double lower, upper;
 
         // generate in [lower, upper)
-        double m = intrand(rng, numValues - cellUnder - cellOver);
+        double m = intrand(rng, numValues - numUnderflows - numOverflows);
 
         // select a random interval (k-1) and return a random number from
         // that interval generated according to uniform distribution.
-        m -= cellUnder;
+        m -= numUnderflows;
         int k;
         for (k = 0; m >= 0; k++)
             m -= cellv[k];
@@ -440,8 +449,8 @@ void cVarHistogram::loadFromFile(FILE *f)
 
     // increase allocated size of cellv[] to maxNumCells
     if (cellv && maxNumCells > numCells) {
-        unsigned int *newCellv = new unsigned[maxNumCells];
-        memcpy(newCellv, cellv, numCells * sizeof(unsigned));
+        double *newCellv = new double[maxNumCells];
+        memcpy(newCellv, cellv, numCells * sizeof(double));
         delete[] cellv;
         cellv = newCellv;
     }

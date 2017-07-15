@@ -36,20 +36,23 @@ using namespace std;
 
 namespace omnetpp {
 
-cDensityEstBase::cDensityEstBase(const char *name) : cStdDev(name)
+cDensityEstBase::cDensityEstBase(const char *name, bool weighted) : cStdDev(name, weighted)
 {
     rangeMode = RANGE_AUTO;
     numPrecollected = 100;
     rangeExtFactor = 2.0;
     rangeMin = rangeMax = 0; //TODO NaN?
-    cellUnder = cellOver = 0;
+    numUnderflows = numOverflows = 0;
+    underflowSumWeights = overflowSumWeights = 0;
     transformed = false;
     precollectedValues = new double[numPrecollected];  // to match RANGE_AUTO
+    precollectedWeights = weighted ? new double[numPrecollected] : nullptr;
 }
 
 cDensityEstBase::~cDensityEstBase()
 {
     delete[] precollectedValues;
+    delete[] precollectedWeights;
 }
 
 void cDensityEstBase::parsimPack(cCommBuffer *buffer) const
@@ -62,14 +65,18 @@ void cDensityEstBase::parsimPack(cCommBuffer *buffer) const
     buffer->pack(rangeMin);
     buffer->pack(rangeMax);
     buffer->pack(numPrecollected);
-    buffer->pack(cellUnder);
-    buffer->pack(cellOver);
+    buffer->pack(numUnderflows);
+    buffer->pack(numOverflows);
+    buffer->pack(underflowSumWeights);
+    buffer->pack(overflowSumWeights);
     buffer->pack(rangeExtFactor);
     buffer->pack(rangeMode);
     buffer->pack(transformed);
 
     if (buffer->packFlag(precollectedValues != nullptr))
         buffer->pack(precollectedValues, numValues);  // pack the used positions only
+    if (buffer->packFlag(precollectedWeights != nullptr))
+        buffer->pack(precollectedWeights, numValues);  // pack the used positions only
 #endif
 }
 
@@ -83,8 +90,10 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(rangeMin);
     buffer->unpack(rangeMax);
     buffer->unpack(numPrecollected);
-    buffer->unpack(cellUnder);
-    buffer->unpack(cellOver);
+    buffer->unpack(numUnderflows);
+    buffer->unpack(numOverflows);
+    buffer->unpack(underflowSumWeights);
+    buffer->unpack(overflowSumWeights);
     buffer->unpack(rangeExtFactor);
     int tmp;
     buffer->unpack(tmp);
@@ -97,6 +106,12 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
         precollectedValues = new double[numPrecollected];
         buffer->unpack(precollectedValues, numValues);
     }
+    delete[] precollectedWeights;
+    precollectedWeights = nullptr;
+    if (buffer->checkFlag()) {
+        precollectedWeights = new double[numPrecollected];
+        buffer->unpack(precollectedWeights, numValues);
+    }
 #endif
 }
 
@@ -105,8 +120,10 @@ void cDensityEstBase::copy(const cDensityEstBase& res)
     rangeMin = res.rangeMin;
     rangeMax = res.rangeMax;
     numPrecollected = res.numPrecollected;
-    cellUnder = res.cellUnder;
-    cellOver = res.cellOver;
+    numUnderflows = res.numUnderflows;
+    numOverflows = res.numOverflows;
+    underflowSumWeights = res.underflowSumWeights;
+    overflowSumWeights = res.overflowSumWeights;
 
     rangeExtFactor = res.rangeExtFactor;
     rangeMode = res.rangeMode;
@@ -119,6 +136,14 @@ void cDensityEstBase::copy(const cDensityEstBase& res)
         precollectedValues = new double[numPrecollected];
         memcpy(precollectedValues, res.precollectedValues, numPrecollected * sizeof(double));
     }
+
+    delete[] precollectedWeights;
+    precollectedWeights = nullptr;
+    if (res.precollectedWeights) {
+        precollectedWeights = new double[numPrecollected];
+        memcpy(precollectedWeights, res.precollectedWeights, numPrecollected * sizeof(double));
+    }
+
 }
 
 cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
@@ -140,7 +165,10 @@ void cDensityEstBase::merge(const cStatistic *other)
         // easiest and exact solution: simply recollect the observations
         // the other object has collected
         for (int i = 0; i < otherd->numValues; i++)
-            collect(precollectedValues[i]);
+            if (!otherd->isWeighted())
+                collect(otherd->precollectedValues[i]);
+            else
+                collect2(otherd->precollectedValues[i], otherd->precollectedWeights[i]);
     }
     else {
         // merge the base class
@@ -162,8 +190,10 @@ void cDensityEstBase::merge(const cStatistic *other)
 
 
         // merge underflow/overflow cells
-        cellUnder += otherd->getUnderflowCell();  //FIXME check overflow!! but this is unsigned long....
-        cellOver += otherd->getOverflowCell();
+        numUnderflows += otherd->getUnderflowCell();
+        numOverflows += otherd->getOverflowCell();
+        underflowSumWeights += otherd->getUnderflowSumWeights();
+        overflowSumWeights += otherd->getOverflowSumWeights();
 
         // then merge cell counters
         doMergeCellValues(otherd);
@@ -179,10 +209,13 @@ void cDensityEstBase::clearResult()
     numPrecollected = 100;
     rangeExtFactor = 2.0;
     rangeMin = rangeMax = 0;
-    cellUnder = cellOver = 0;
+    numUnderflows = numOverflows = 0;
+    underflowSumWeights = overflowSumWeights = 0;
 
     delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];  // to match RANGE_AUTO
+    delete[] precollectedWeights;
+    precollectedWeights = weighted ? new double[numPrecollected] : nullptr;  // to match RANGE_AUTO
 }
 
 void cDensityEstBase::setRange(double lower, double upper)
@@ -196,6 +229,9 @@ void cDensityEstBase::setRange(double lower, double upper)
 
     delete[] precollectedValues;
     precollectedValues = nullptr;  // not needed with RANGE_FIXED
+
+    delete[] precollectedWeights;
+    precollectedWeights = nullptr;  // not needed with RANGE_FIXED
 }
 
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
@@ -209,6 +245,9 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 
     delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
+
+    delete[] precollectedWeights;
+    precollectedWeights = nullptr;  // not needed with RANGE_FIXED
 }
 
 void cDensityEstBase::setRangeAutoLower(double upper, int numPrecoll, double rangeExtFact)
@@ -223,6 +262,9 @@ void cDensityEstBase::setRangeAutoLower(double upper, int numPrecoll, double ran
 
     delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
+
+    delete[] precollectedWeights;
+    precollectedWeights = weighted ? new double[numPrecollected] : nullptr;
 }
 
 void cDensityEstBase::setRangeAutoUpper(double lower, int numPrecoll, double rangeExtFact)
@@ -237,6 +279,9 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int numPrecoll, double ran
 
     delete[] precollectedValues;
     precollectedValues = new double[numPrecollected];
+
+    delete[] precollectedWeights;
+    precollectedWeights = weighted ? new double[numPrecollected] : nullptr;
 }
 
 void cDensityEstBase::setNumPrecollectedValues(int numPrecoll)
@@ -250,6 +295,11 @@ void cDensityEstBase::setNumPrecollectedValues(int numPrecoll)
     if (precollectedValues) {
         delete[] precollectedValues;
         precollectedValues = new double[numPrecollected];
+    }
+
+    if (precollectedWeights) {
+        delete[] precollectedWeights;
+        precollectedWeights = weighted ? new double[numPrecollected] : nullptr;
     }
 }
 
@@ -298,22 +348,43 @@ void cDensityEstBase::setupRange()
     }
 }
 
-void cDensityEstBase::collect(double val)
+void cDensityEstBase::collect(double value)
 {
     if (!isTransformed() && rangeMode == RANGE_FIXED)
         transform();
 
-    cStdDev::collect(val);  // this also increments num_vals
+    cStdDev::collect(value);
 
     if (!isTransformed()) {
         ASSERT(precollectedValues);
-        precollectedValues[numValues-1] = val;
+        precollectedValues[numValues-1] = value;
 
         if (numValues == numPrecollected)
             transform();
     }
     else {
-        collectTransformed(val);  // must maintain underflow/overflow cells
+        collectTransformed(value);  // must maintain underflow/overflow cells
+    }
+}
+
+void cDensityEstBase::collect2(double value, double weight)
+{
+    if (!isTransformed() && rangeMode == RANGE_FIXED)
+        transform();
+
+    cStdDev::collect2(value, weight);
+
+    if (!isTransformed()) {
+        ASSERT(precollectedValues);
+        ASSERT(precollectedWeights);
+        precollectedValues[numValues-1] = value;
+        precollectedWeights[numValues-1] = weight;
+
+        if (numValues == numPrecollected)
+            transform();
+    }
+    else {
+        collectTransformed2(value, weight);  // must maintain underflow/overflow cells
     }
 }
 
@@ -347,7 +418,8 @@ void cDensityEstBase::saveToFile(FILE *f) const
     fprintf(f, "%d\t #= range_mode\n", rangeMode);
     fprintf(f, "%lg\t #= range_ext_factor\n", rangeExtFactor);
     fprintf(f, "%lg %g\t #= range\n", rangeMin, rangeMax);
-    fprintf(f, "%lu %lu\t #= cell_under, cell_over\n", cellUnder, cellOver);
+    fprintf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over\n", numUnderflows, numOverflows);
+    fprintf(f, "%lg %lg\t #= sumweights_underflow, sum_weights_overflow\n", underflowSumWeights, overflowSumWeights);
     fprintf(f, "%d\t #= num_firstvals\n", numPrecollected);
 
     fprintf(f, "%d\t #= firstvals[] exists\n", precollectedValues != nullptr);
@@ -355,6 +427,11 @@ void cDensityEstBase::saveToFile(FILE *f) const
         int count = (int) std::min(numValues, (long)numPrecollected);
         for (int i = 0; i < count; i++)
             fprintf(f, " %lg\n", precollectedValues[i]);
+    }
+    if (precollectedWeights) {
+        int count = (int) std::min(numValues, (long)numPrecollected);
+        for (int i = 0; i < count; i++)
+            fprintf(f, " %lg\n", precollectedWeights[i]);
     }
 
 }
@@ -368,7 +445,8 @@ void cDensityEstBase::loadFromFile(FILE *f)
     freadvarsf(f, "%d\t #= range_mode", &tmp); rangeMode = (RangeMode)tmp;
     freadvarsf(f, "%lg\t #= range_ext_factor", &rangeExtFactor);
     freadvarsf(f, "%lg %lg\t #= range", &rangeMin, &rangeMax);
-    freadvarsf(f, "%lu %lu\t #= cell_under, cell_over", &cellUnder, &cellOver);
+    freadvarsf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over\n", &numUnderflows, &numOverflows);
+    freadvarsf(f, "%lg %lg\t #= sumweights_underflow, sum_weights_overflow\n", &underflowSumWeights, &overflowSumWeights);
     freadvarsf(f, "%d\t #= num_firstvals", &numPrecollected);
 
     int hasPrecollectedValues;
@@ -380,6 +458,11 @@ void cDensityEstBase::loadFromFile(FILE *f)
         precollectedValues = new double[numPrecollected];
         for (int i = 0; i < numValues; i++)
             freadvarsf(f, " %lg", &precollectedValues[i]);
+    }
+    if (hasPrecollectedValues && weighted) {
+        precollectedWeights = new double[numPrecollected];
+        for (int i = 0; i < numValues; i++)
+            freadvarsf(f, " %lg", &precollectedWeights[i]);
     }
 }
 

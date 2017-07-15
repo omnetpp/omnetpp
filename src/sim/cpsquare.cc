@@ -132,9 +132,9 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
     return *this;
 }
 
-void cPSquare::giveError()
+void cPSquare::raiseError()
 {
-    throw cRuntimeError(this, "setRange..() and setNumFirstVals() makes no sense with cPSquare");
+    throw cRuntimeError(this, "setRange..() and setNumFirstVals() make no sense with cPSquare");
 }
 
 void cPSquare::collectTransformed(double val)
@@ -201,6 +201,11 @@ void cPSquare::collectTransformed(double val)
             }
         }
     }
+}
+
+void cPSquare::collectTransformed2(double value, double weight)
+{
+    ASSERT(false); // weighted case is unsupported
 }
 
 void cPSquare::merge(const cStatistic *other)

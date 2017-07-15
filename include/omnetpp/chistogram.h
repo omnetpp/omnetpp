@@ -31,7 +31,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
 {
   protected:
     int numCells;     // number of histogram cells or bins
-    unsigned *cellv;  // array of counters  //TODO !!! this should be "double" so we can handle the weighted case AND be more overflow-proof
+    double *cellv;    // counts, type double because of weighted statistics
 
   private:
     void copy(const cHistogramBase& other);
@@ -52,7 +52,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Constructor.
      */
-    cHistogramBase(const char *name, int numcells);
+    cHistogramBase(const char *name, int numcells, bool weighted=false);
 
     /**
      * Destructor.
@@ -211,7 +211,7 @@ class SIM_API cHistogram : public cHistogramBase
     /**
      * Constructor.
      */
-    explicit cHistogram(const char *name=nullptr, int numcells=-1, HistogramMode mode=MODE_AUTO);
+    explicit cHistogram(const char *name=nullptr, int numcells=-1, HistogramMode mode=MODE_AUTO, bool weighted=false);
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
@@ -245,6 +245,12 @@ class SIM_API cHistogram : public cHistogramBase
      * after the histogram has been transformed.
      */
     virtual void collectTransformed(double value) override;
+
+    /**
+     * Called internally by collect2(), this method collects a value
+     * after the histogram has been transformed.
+     */
+    virtual void collectTransformed2(double value, double weight) override;
 
     /**
      * Called internally by transform(), this method should determine and set up
@@ -350,8 +356,8 @@ class SIM_API cLongHistogram : public cHistogram
     /**
      * Constructor.
      */
-    explicit cLongHistogram(const char *name=nullptr, int numcells=-1) :
-        cHistogram(name, numcells, MODE_INTEGERS) {}
+    explicit cLongHistogram(const char *name=nullptr, int numcells=-1, bool weighted=false) :
+        cHistogram(name, numcells, MODE_INTEGERS, weighted) {}
 
     /**
      * Destructor.
@@ -416,8 +422,8 @@ class SIM_API cDoubleHistogram : public cHistogram
     /**
      * Constructor.
      */
-    explicit cDoubleHistogram(const char *name=nullptr, int numcells=-1) :
-        cHistogram(name, numcells, MODE_DOUBLES) {}
+    explicit cDoubleHistogram(const char *name=nullptr, int numcells=-1, bool weighted=false) :
+        cHistogram(name, numcells, MODE_DOUBLES, weighted) {}
 
     /**
      * Destructor.

@@ -95,14 +95,19 @@ class SIM_API cPSquare : public cDensityEstBase
 
   private:
     // internal: issues error message
-    void giveError();
+    void raiseError();
 
   protected:
     /**
      * Called internally by collect(), this method updates the P2 data structure
      * with the new value.
      */
-    virtual void collectTransformed(double val) override;
+    virtual void collectTransformed(double value) override;
+
+    /**
+     * Called internally by collect().
+     */
+    virtual void collectTransformed2(double value, double weight) override;
 
   public:
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -117,31 +122,31 @@ class SIM_API cPSquare : public cDensityEstBase
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRange(double,double) override {giveError();}
+    virtual void setRange(double,double) override {raiseError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRangeAuto(int,double) override {giveError();}
+    virtual void setRangeAuto(int,double) override {raiseError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRangeAutoLower(double,int,double) override {giveError();}
+    virtual void setRangeAutoLower(double,int,double) override {raiseError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setRangeAutoUpper(double,int,double) override {giveError();}
+    virtual void setRangeAutoUpper(double,int,double) override {raiseError();}
 
     /**
      * setRange() and setNumFirstVals() methods are not used with cPSquare
      * (the algorithm does not require them), but they could not remain pure virtual.
      */
-    virtual void setNumPrecollectedValues(int) override {giveError();}
+    virtual void setNumPrecollectedValues(int) override {raiseError();}
 
     /**
      * Returns the number of cells used.

@@ -136,7 +136,13 @@ class SIM_API cVarHistogram : public cHistogramBase
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed(double val) override;
+    virtual void collectTransformed(double value) override;
+
+    /**
+     * Called internally by collect(), this method collects a value
+     * after the histogram has been transformed.
+     */
+    virtual void collectTransformed2(double value, double weight) override;
 
     /**
      * Generates a random number based on the collected data.

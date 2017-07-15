@@ -82,6 +82,7 @@ class SIM_API cDensityEstBase : public cStdDev
     // we can precollect observations to automatically determine the range before histogram cells are set up
     bool transformed;   // whether precollected values have been transformed into a histogram
     double *precollectedValues;
+    double *precollectedWeights; // nullptr for unweighted
     int numPrecollected;
 
     // range for distribution density collection
@@ -90,8 +91,10 @@ class SIM_API cDensityEstBase : public cStdDev
     double rangeMin, rangeMax;
 
     // variables for counting out-of-range observations
-    unsigned long cellUnder;
-    unsigned long cellOver;
+    int64_t numUnderflows;
+    int64_t numOverflows;
+    double underflowSumWeights;
+    double overflowSumWeights;
 
   private:
     void copy(const cDensityEstBase& other);
@@ -112,12 +115,12 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {precollectedValues=nullptr;copy(other);}
+    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {precollectedValues=nullptr; precollectedWeights=nullptr; copy(other);}
 
     /**
      * Constructor.
      */
-    explicit cDensityEstBase(const char *name=nullptr);
+    explicit cDensityEstBase(const char *name=nullptr, bool weighted=false);
 
     /**
      * Destructor.
@@ -162,6 +165,14 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual void collect(double value) override;
     using cStatistic::collect;
+
+    /**
+     * Collects one observation with a given weight. The weight must not be
+     * negative. (Zero-weight observations are allowed, but will not affect
+     * mean and stddev.)
+     */
+    virtual void collect2(double value, double weight) override;
+    using cStatistic::collect2;
 
     /**
      * Updates this object with data coming from another statistics
@@ -263,6 +274,14 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual void collectTransformed(double value) = 0;
 
+    /**
+     * Called internally by collect(), this method collects a value
+     * after the histogram has been transformed.
+     * Updating the underflow/overflow cells must be handled within this function.
+     * This is a pure virtual function; it must be redefined in subclasses.
+     */
+    virtual void collectTransformed2(double value, double weight) = 0;
+
   public:
 
     /** @name Transformation. */
@@ -277,7 +296,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Transforms the table of pre-collected values into an internal
      * histogram structure. This is a pure virtual function. Implementations
      * of transform() are expected to call setupRange(), and set the
-     * transfd flag when transformation was successfully done.
+     * transformed flag when transformation was successfully done.
      */
     virtual void transform() = 0;
     //@}
@@ -317,16 +336,26 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual double getCellPDF(int k) const;
 
     /**
-     * Returns number of observations that, being too small, fell out of the histogram
-     * range.
+     * Returns number of observations that were below the histogram range,
+     * independent of their weights.
      */
-    virtual unsigned long getUnderflowCell() const {return cellUnder;}
+    virtual int64_t getUnderflowCell() const {return numUnderflows;}
 
     /**
-     * Returns number of observations that, being too large, fell out of the histogram
-     * range.
+     * Returns number of observations that were above the histogram range,
+     * independent of their weights.
      */
-    virtual unsigned long getOverflowCell() const {return cellOver;}
+    virtual int64_t getOverflowCell() const {return numOverflows;}
+
+    /**
+     * Returns the total weight of the observations that were below the histogram range.
+     */
+    virtual double getUnderflowSumWeights() const {return underflowSumWeights;}
+
+    /**
+     * Returns the total weight of the observations that were above the histogram range.
+     */
+    virtual double getOverflowSumWeights() const {return overflowSumWeights;}
 
     /**
      * Combines the functionality of getBasepoint(), getCellValue() and getCellPDF() into a
@@ -346,7 +375,7 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual double getPDF(double x) const = 0;
 
     /**
-     * Returns the estimated value of the Cumulated Density Function at a given x.
+     * Returns the estimated value of the Cumulative Density Function at a given x.
      * This is a pure virtual function, implementation is provided
      * in subclasses implementing concrete histogram types.
      */

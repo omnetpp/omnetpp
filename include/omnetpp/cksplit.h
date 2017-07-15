@@ -236,6 +236,11 @@ class SIM_API cKSplit : public cDensityEstBase
      */
     virtual void collectTransformed(double val) override;
 
+    /**
+     * Called internally by collect().
+     */
+    virtual void collectTransformed2(double value, double weight) override;
+
   public:
     /** @name Redefined member functions from cStatistic and its subclasses. */
     //@{

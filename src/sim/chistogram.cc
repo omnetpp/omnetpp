@@ -46,8 +46,8 @@ namespace omnetpp {
 Register_Class(cLongHistogram);
 Register_Class(cDoubleHistogram);
 
-cHistogramBase::cHistogramBase(const char *name, int numcells) :
-    cDensityEstBase(name)
+cHistogramBase::cHistogramBase(const char *name, int numcells, bool weighted) :
+    cDensityEstBase(name, weighted)
 {
     cellv = nullptr;
     numCells = numcells;
@@ -80,7 +80,7 @@ void cHistogramBase::parsimUnpack(cCommBuffer *buffer)
     buffer->pack(numCells);
 
     if (buffer->checkFlag()) {
-        cellv = new unsigned int[numCells];
+        cellv = new double[numCells];
         buffer->unpack(cellv, numCells);
     }
 #endif
@@ -92,8 +92,8 @@ void cHistogramBase::copy(const cHistogramBase& res)
     delete[] cellv;
     cellv = nullptr;
     if (res.cellv) {
-        cellv = new unsigned[numCells];
-        memcpy(cellv, res.cellv, numCells * sizeof(unsigned));
+        cellv = new double[numCells];
+        memcpy(cellv, res.cellv, numCells * sizeof(double));
     }
 }
 
@@ -107,7 +107,7 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
 void cHistogramBase::doMergeCellValues(const cDensityEstBase *other)
 {
     for (int i = 0; i < numCells; i++)
-        cellv[i] += (unsigned int)other->getCellValue(i);  //TODO overflow check
+        cellv[i] += other->getCellValue(i);
 }
 
 void cHistogramBase::clearResult()
@@ -125,12 +125,15 @@ void cHistogramBase::transform()
 
     setupRange();  // this will set num_cells if it was unspecified (-1)
 
-    cellv = new unsigned[numCells];
+    cellv = new double[numCells];
     for (int i = 0; i < numCells; i++)
         cellv[i] = 0;
 
     for (int i = 0; i < numValues; i++)
-        collectTransformed(precollectedValues[i]);
+        if (!weighted)
+            collectTransformed(precollectedValues[i]);
+        else
+            collectTransformed2(precollectedValues[i], precollectedWeights[i]);
 
     delete[] precollectedValues;
     precollectedValues = nullptr;
@@ -152,7 +155,7 @@ void cHistogramBase::saveToFile(FILE *f) const
     fprintf(f, "%d\t #= cellv[] exists\n", cellv != nullptr);
     if (cellv)
         for (int i = 0; i < numCells; i++)
-            fprintf(f, " %u\n", cellv[i]);
+            fprintf(f, " %g\n", cellv[i]);
 }
 
 void cHistogramBase::loadFromFile(FILE *f)
@@ -165,9 +168,9 @@ void cHistogramBase::loadFromFile(FILE *f)
     delete[] cellv;
     cellv = nullptr;
     if (cellv_exists) {
-        cellv = new unsigned[numCells];
+        cellv = new double[numCells];
         for (int i = 0; i < numCells; i++)
-            freadvarsf(f, " %u", cellv + i);
+            freadvarsf(f, " %lg", cellv + i);
     }
 }
 
@@ -180,8 +183,8 @@ void cHistogramBase::setNumCells(int numcells)
 
 //----
 
-cHistogram::cHistogram(const char *name, int numcells, HistogramMode mode) :
-    cHistogramBase(name, numcells)
+cHistogram::cHistogram(const char *name, int numcells, HistogramMode mode, bool weighted) :
+    cHistogramBase(name, numcells, weighted)
 {
     cellSize = 0;
     this->mode = mode;
@@ -382,7 +385,7 @@ double cHistogram::draw() const
         return precollectedValues[intrand(rng, numValues)];
     }
     else {
-        long m = intrand(rng, numValues - cellUnder - cellOver);
+        long m = intrand(rng, numValues - numUnderflows - numOverflows);
 
         // select a random cell (k-1) and return a random number from it
         int k;
@@ -402,15 +405,24 @@ double cHistogram::draw() const
     }
 }
 
-void cHistogram::collectTransformed(double val)
+void cHistogram::collectTransformed(double value)
 {
-    int k = (int)floor((val - rangeMin) / cellSize);
-    if (k < 0 || val < rangeMin)
-        cellUnder++;
-    else if (k >= numCells || val >= rangeMax)
-        cellOver++;
+    collectTransformed2(value, 1.0);
+}
+
+void cHistogram::collectTransformed2(double value, double weight)
+{
+    int k = (int)floor((value - rangeMin) / cellSize);
+    if (k < 0 || value < rangeMin) {
+        numUnderflows++;
+        underflowSumWeights += weight;
+    }
+    else if (k >= numCells || value >= rangeMax) {
+        numOverflows++;
+        overflowSumWeights += weight;
+    }
     else
-        cellv[k]++;
+        cellv[k] += weight;
 }
 
 double cHistogram::getPDF(double x) const
@@ -430,7 +442,6 @@ double cHistogram::getCDF(double) const
     throw cRuntimeError(this, "getCDF() not implemented");
 }
 
-// return kth basepoint
 double cHistogram::getBasepoint(int k) const
 {
     //   k=0           : rangemin

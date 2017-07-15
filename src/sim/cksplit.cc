@@ -196,6 +196,8 @@ void cKSplit::doMergeCellValues(const cDensityEstBase *other)
 
 void cKSplit::transform()
 {
+    ASSERT(!weighted);
+
     if (isTransformed())
         throw cRuntimeError(this, "transform(): Histogram already transformed");
 
@@ -244,10 +246,19 @@ void cKSplit::collectTransformed(double x)
         insertIntoGrids(x, true);
     else if (rangeExtEnabled)
         newRootGrids(x);
-    else if (x < rangeMin)
-        cellUnder++;
-    else if (x >= rangeMax)
-        cellOver++;
+    else if (x < rangeMin) {
+        numUnderflows++;
+        underflowSumWeights += 1;
+    }
+    else if (x >= rangeMax) {
+        numOverflows++;
+        overflowSumWeights += 1;
+    }
+}
+
+void cKSplit::collectTransformed2(double value, double weight)
+{
+    ASSERT(false); // weighted case is unsupported
 }
 
 void cKSplit::insertIntoGrids(double x, int enable_splits)
