@@ -178,14 +178,16 @@ class SIM_API TimeAverageRecorder : public cNumericResultRecorder
 class SIM_API StatisticsRecorder : public cNumericResultRecorder
 {
     protected:
-        cStatistic *statistic;
+        cStatistic *statistic = nullptr;
+        simtime_t lastTime = -1;  // for time-weighted statistics (statistic->isWeighted()==true)
+        double lastValue = 0;
     protected:
-        virtual void collect(double value);
         virtual void collect(simtime_t_cref t, double value, cObject* details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
-        StatisticsRecorder(cStatistic* stat);
+        StatisticsRecorder();
         ~StatisticsRecorder();
+        virtual void setStatistic(cStatistic* stat);
         virtual cStatistic *getStatistic() const {return statistic;}
         virtual std::string str() const override;
 };
@@ -193,13 +195,13 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder
 class SIM_API StatsRecorder : public StatisticsRecorder
 {
     public:
-        StatsRecorder();
+        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
 };
 
 class SIM_API HistogramRecorder : public StatisticsRecorder
 {
     public:
-        HistogramRecorder();
+        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
 };
 
 /**

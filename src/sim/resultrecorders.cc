@@ -126,6 +126,7 @@ std::string SumRecorder::str() const
 
 //---
 
+//TODO should obey timeWeighted=true
 void MeanRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
@@ -208,10 +209,8 @@ std::string TimeAverageRecorder::str() const
 
 //---
 
-StatisticsRecorder::StatisticsRecorder(cStatistic *stat)
+StatisticsRecorder::StatisticsRecorder()
 {
-    statistic = stat;
-    statistic->removeFromOwnershipTree();
 }
 
 StatisticsRecorder::~StatisticsRecorder()
@@ -219,18 +218,30 @@ StatisticsRecorder::~StatisticsRecorder()
     delete statistic;
 }
 
-void StatisticsRecorder::collect(double value)
+void StatisticsRecorder::setStatistic(cStatistic* stat)
 {
-    statistic->collect(value);
+    ASSERT(statistic == nullptr);
+    statistic = stat;
+    statistic->removeFromOwnershipTree();
 }
 
 void StatisticsRecorder::collect(simtime_t_cref t, double value, cObject *details)
 {
-    statistic->collect(value);
+    if (!statistic->isWeighted())
+        statistic->collect(value);
+    else {
+        if (lastTime >= SIMTIME_ZERO)
+            statistic->collect2(lastValue, t - lastTime);
+        lastTime = t;
+        lastValue = value;
+    }
 }
 
 void StatisticsRecorder::finish(cResultFilter *prev)
 {
+    if (statistic->isWeighted() && lastTime >= SIMTIME_ZERO)
+        statistic->collect2(lastValue, simTime() - lastTime);
+
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
 }
@@ -242,12 +253,24 @@ std::string StatisticsRecorder::str() const
     return os.str();
 }
 
-StatsRecorder::StatsRecorder() : StatisticsRecorder(new cStdDev())
+void StatsRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
 {
+    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+
+    omnetpp::opp_string_map attrs = getStatisticAttributes();
+    auto it = attrs.find("timeWeighted");
+    bool weighted = it != attrs.end() && (it->second != "0" && it->second != "false");
+    setStatistic(new cStdDev(nullptr, weighted));
 }
 
-HistogramRecorder::HistogramRecorder() : StatisticsRecorder(new cHistogram())
+void HistogramRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
 {
+    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+
+    omnetpp::opp_string_map attrs = getStatisticAttributes();
+    auto it = attrs.find("timeWeighted");
+    bool weighted = it != attrs.end() && (it->second != "0" && it->second != "false");
+    setStatistic(new cHistogram(nullptr, -1, cHistogram::MODE_AUTO, weighted));
 }
 
 //---
