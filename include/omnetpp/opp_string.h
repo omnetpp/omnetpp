@@ -126,6 +126,16 @@ class SIM_API opp_string
     bool operator<(const opp_string& s) const  {return opp_strcmp(buf,s.buf) < 0;}
 
     /**
+     * Comparison.
+     */
+    bool operator==(const opp_string& s) const  {return opp_strcmp(buf,s.buf) == 0;}
+
+    /**
+     * Comparison.
+     */
+    bool operator!=(const opp_string& s) const  {return opp_strcmp(buf,s.buf) != 0;}
+
+    /**
      * Concatenation
      */
     opp_string& operator+=(const char *s) {return operator=(std::string(buf).append(s));}
