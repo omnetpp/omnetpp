@@ -19,6 +19,7 @@
 #include "omnetpp/platdep/platdefs.h"
 #include "common/bigdecimal.h"
 #include "common/histogram.h"
+#include "common/stlutil.h"
 #include "sqliteresultfileloader.h"
 
 using namespace omnetpp::common;
@@ -238,6 +239,17 @@ void SqliteResultFileLoader::loadParameters()
     finalizeStatement();
 }
 
+void SqliteResultFileLoader::setBins(HistogramResult *histogram, std::vector<double>& binEdges, std::vector<double>& binValues)
+{
+    auto& bins = histogram->bins;
+    bins.setUnderflows(binValues.front());
+    bins.setOverflows(binValues.back());
+    binEdges.erase(binEdges.begin()); // "-inf"
+    binValues.erase(binValues.begin()); // underflow
+    binValues.erase(binValues.end()-1); // overflow
+    bins.setBins(binEdges, binValues);
+}
+
 void SqliteResultFileLoader::loadHistograms()
 {
     std::map<sqlite3_int64,int> sqliteStatIdToStatisticsIdx;
@@ -284,7 +296,7 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT statId, runId, attrName, attrValue FROM statisticAttr JOIN statistic USING (statId) ORDER BY runId, statId;");
+    prepareStatement("SELECT statId, runId, attrName, attrValue FROM statisticAttr JOIN statistic USING (statId) ORDER BY statId;");
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
@@ -311,21 +323,39 @@ void SqliteResultFileLoader::loadHistograms()
     }
     finalizeStatement();
 
-    prepareStatement("SELECT statId, runId, lowerEdge, binValue FROM histogramBin JOIN statistic USING (statId) ORDER BY runId, statId;");
+    prepareStatement("SELECT statId, runId, lowerEdge, binValue FROM histogramBin JOIN statistic USING (statId) ORDER BY statId, lowerEdge;");
+    HistogramResult *currentHistogram = nullptr;
+    sqlite3_int64 currentStatId = -1;
+    std::vector<double> binEdges;
+    std::vector<double> binValues;
     for (int row=1; ; row++) {
         int resultCode = sqlite3_step(stmt);
-        if (resultCode == SQLITE_DONE)
+        if (resultCode == SQLITE_DONE) {
+            if (currentHistogram)
+                setBins(currentHistogram, binEdges, binValues);
             break;
+        }
         checkRow(resultCode);
-        sqlite3_int64 statId = sqlite3_column_int64(stmt, 0);
-        sqlite3_int64 runId = sqlite3_column_int64(stmt, 1);
+        sqlite3_int64 newStatId = sqlite3_column_int64(stmt, 0);
+        sqlite3_int64 newRunId = sqlite3_column_int64(stmt, 1);
         double lowerEdge = sqlite3_column_double(stmt, 2);
         double binValue = sqlite3_column_double(stmt, 3);
-        auto it = sqliteStatIdToHistogramIdx.find(statId);
-        if (it == sqliteStatIdToHistogramIdx.end())
-            error("Invalid statId in histogramBin table, or isHistogram field in the corresponding statistic table record is not set");
-        HistogramResult& hist = fileRunMap.at(runId)->fileRef->histogramResults.at(sqliteStatIdToHistogramIdx.at(statId));
-        hist.addBin(lowerEdge, binValue);
+        if (newStatId != currentStatId) {
+            if (currentHistogram)
+                setBins(currentHistogram, binEdges, binValues);
+
+            currentStatId = newStatId;
+            if (!containsKey(sqliteStatIdToHistogramIdx, newStatId))
+                error("Invalid statId in histogramBin table, or isHistogram field in the corresponding statistic table record is not set");
+            currentHistogram = &(fileRunMap.at(newRunId)->fileRef->histogramResults.at(sqliteStatIdToHistogramIdx.at(newStatId)));
+            binEdges.clear();
+            binValues.clear();
+        }
+
+        if (!binEdges.empty() && lowerEdge <= binEdges.back())
+            error("Bin edges must be strictly increasing");
+        binEdges.push_back(lowerEdge);
+        binValues.push_back(binValue);
     }
     finalizeStatement();
 }

@@ -285,8 +285,12 @@ void SqliteScalarFileWriter::recordHistogram(const std::string& componentFullPat
     sqlite3_int64 statisticId = writeStatistic(componentFullPath, name, statistic, true);
     for (const auto & attribute : attributes)
         writeStatisticAttr(statisticId, attribute.first.c_str(), attribute.second.c_str());
-    for (auto bin : bins.getBins())
-        writeStatisticBin(statisticId, bin.lowerBound, bin.count);
+
+    int n = bins.getNumBins();
+    writeBin(statisticId, -INFINITY, bins.getUnderflows());
+    for (int i = 0; i < n; i++)
+        writeBin(statisticId, bins.getBinEdge(i), bins.getBinValue(i));
+    writeBin(statisticId, bins.getBinEdge(n), bins.getOverflows());
 }
 
 void SqliteScalarFileWriter::writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value)
@@ -299,7 +303,7 @@ void SqliteScalarFileWriter::writeStatisticAttr(sqlite_int64 statisticId, const 
     checkOK(sqlite3_clear_bindings(add_statistic_attr_stmt));
 }
 
-void SqliteScalarFileWriter::writeStatisticBin(sqlite_int64 statisticId, double lowerEdge, double binValue)
+void SqliteScalarFileWriter::writeBin(sqlite_int64 statisticId, double lowerEdge, double binValue)
 {
     checkOK(sqlite3_reset(add_statistic_bin_stmt));
     checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 1, statisticId));

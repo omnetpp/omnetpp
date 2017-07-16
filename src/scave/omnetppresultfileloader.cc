@@ -183,13 +183,10 @@ void OmnetppResultFileLoader::processLine(char **vec, int numTokens, ParseContex
         double lowerBound, value;
         CHECK(parseDouble(vec[1], lowerBound), "invalid lower bound");
         CHECK(parseDouble(vec[2], value), "invalid bin value");
-
-        try {
-            ctx.bins.addBin(lowerBound, value);
-        }
-        catch (std::exception& e) {
-            throw ResultFileFormatException(e.what(), ctx.fileName, ctx.lineNo);
-        }
+        if (!ctx.binEdges.empty() && lowerBound <= ctx.binEdges.back())
+            CHECK(false, "bin edges must be strictly increasing");
+        ctx.binEdges.push_back(lowerBound);
+        ctx.binValues.push_back(value);
     }
     else if (vec[0][0] == 'a' && !strcmp(vec[0], "attr")) {
         // syntax: "attr <name> <value>"
@@ -276,7 +273,21 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     }
     case ParseContext::HISTOGRAM: {
         Statistics stats = makeStatsFromFields(ctx);
-        resultFileManager->addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), stats, ctx.bins, ctx.attrs);
+        Histogram bins;
+        if (ctx.binEdges.size() == ctx.binValues.size()+1)
+            bins.setBins(ctx.binEdges, ctx.binValues);
+        else if (ctx.binEdges.size() == ctx.binValues.size()) {
+            bins.setUnderflows(ctx.binValues.front());
+            bins.setOverflows(ctx.binValues.back());
+            ctx.binEdges.erase(ctx.binEdges.begin()); // "-inf"
+            ctx.binValues.erase(ctx.binValues.begin()); // underflow
+            ctx.binValues.erase(ctx.binValues.end()-1); // overflow
+            bins.setBins(ctx.binEdges, ctx.binValues);
+        }
+        else {
+            CHECK(false, "number of bin edges and bin values do not match");
+        }
+        resultFileManager->addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.resultName.c_str(), stats, bins, ctx.attrs);
         break;
     }
     default:
@@ -293,7 +304,8 @@ void OmnetppResultFileLoader::flush(ParseContext& ctx)
     ctx.paramValue.clear();
     ctx.attrs.clear();
     resetFields(ctx);
-    ctx.bins.clear();
+    ctx.binEdges.clear();
+    ctx.binValues.clear();
 }
 
 void OmnetppResultFileLoader::resetFields(ParseContext& ctx)

@@ -19,6 +19,7 @@
 #define __OMNETPP_COMMON_HISTOGRAM_H
 
 #include <vector>
+#include <algorithm>
 #include "commondefs.h"
 #include "commonutil.h"
 
@@ -26,84 +27,73 @@ namespace omnetpp {
 namespace common {
 
 /**
- * Class for storing histogram bins (cells).
+ * Class for storing histogram bins.
  */
 class COMMON_API Histogram {
-    public:
-        struct Bin {double lowerBound, count;};
     private:
-        std::vector<Bin> bins;
+        std::vector<double> binEdges;
+        std::vector<double> binValues; // one less than bin edges
+        double underflows = 0, overflows = 0;
     public:
         Histogram() {}
-        Histogram(const Histogram& other) : bins(other.bins) {}
-        void clear() {bins.clear();}
+        Histogram(const Histogram& other) = default;
+        void clear();
+        void setBins(const std::vector<double>& edges, const std::vector<double>& values);
+        void setBinEdges(const std::vector<double>& edges); // clears the histogram
+        void setBinValues(const std::vector<double>& values);
+        void setUnderflows(double d) {underflows = d;}
+        void setOverflows(double d) {overflows = d;}
 
-        void reserveBins(int expectedNumberOfBins) {bins.reserve(expectedNumberOfBins);}
-        void addBin(double lowerBound, double count = 0);
-        void collect(double value, double weight = 1);
-        void collectIntoBin(int k, double weight = 1);
+        void collect(double value, double weight=1);
+        void collectIntoBin(int k, double weight=1) {binValues.at(k) += weight;}
 
-        const std::vector<Bin>& getBins() const {return bins;}
-        std::vector<double> getBinLowerBounds() const;
-        std::vector<double> getBinValues() const;
-
-        int getNumBins() const {return bins.size();}
-        double getBinLowerBound(int k) const;
-        double getBinUpperBound(int k) const;
-        double getBinValue(int k) const;
+        const std::vector<double>& getBinEdges() const {return binEdges;} // one more than values
+        const std::vector<double>& getBinValues() const {return binValues;}
+        int getNumBins() const {return binValues.size();}
+        double getBinEdge(int k) const {return binEdges.at(k);} // bin[k] has edges [k] and [k+1]
+        double getBinValue(int k) const {return binValues.at(k);}
+        double getUnderflows() const {return underflows;}
+        double getOverflows() const {return overflows;}
 };
 
-inline void Histogram::addBin(double lowerBound, double count)
+inline void Histogram::clear()
 {
-    Assert(bins.empty() || lowerBound > bins.back().lowerBound); // preserve ordering
-    bins.push_back(Bin { lowerBound, count} );
+    binEdges.clear();
+    binValues.clear();
+    underflows = overflows = 0;
+}
+
+inline void Histogram::setBins(const std::vector<double>& edges, const std::vector<double>& values)
+{
+    Assert(edges.size() == values.size() + 1);
+    binEdges = edges;
+    binValues = values;
+}
+
+inline void Histogram::setBinEdges(const std::vector<double>& edges)
+{
+    binEdges = edges;
+    binValues.resize(edges.size()-1);
+    std::fill(binValues.begin(), binValues.end(), 0.0);
+}
+
+inline void Histogram::setBinValues(const std::vector<double>& values)
+{
+    Assert(binEdges.size() == binValues.size() + 1);
+    binValues = values;
 }
 
 inline void Histogram::collect(double value, double weight)
 {
-    //TODO find corresponding cell, then add
-}
-
-inline void Histogram::collectIntoBin(int k, double weight)
-{
-    Assert(k >= 0 && k < (int)bins.size());
-    bins[k].count += weight;
-}
-
-inline double Histogram::getBinLowerBound(int k) const
-{
-    Assert(k >= 0 && k < (int)bins.size());
-    return bins[k].lowerBound;
-}
-
-inline double Histogram::getBinUpperBound(int k) const
-{
-    Assert(k >= 0 && k < (int)bins.size());
-    return (k == (int)bins.size()-1) ? POSITIVE_INFINITY : bins[k+1].lowerBound;
-}
-
-inline double Histogram::getBinValue(int k) const
-{
-    Assert(k >= 0 && k < (int)bins.size());
-    return bins[k].count;
-}
-
-inline std::vector<double> Histogram::getBinLowerBounds() const
-{
-    std::vector<double> result;
-    result.reserve(bins.size());
-    for (auto& bin : bins)
-        result.push_back(bin.lowerBound);
-    return result;
-}
-
-inline std::vector<double> Histogram::getBinValues() const
-{
-    std::vector<double> result;
-    result.reserve(bins.size());
-    for (auto& bin : bins)
-        result.push_back(bin.count);
-    return result;
+    Assert(binEdges.size() == binValues.size() + 1);
+    auto it = std::upper_bound(binEdges.begin(), binEdges.end(), value);
+    int index = it - binEdges.begin() - 1;
+    if (index == -1)
+        underflows += weight;
+    else if (index == binValues.size())
+        overflows += weight;
+    else
+        binValues[index] += weight;
 }
 
 

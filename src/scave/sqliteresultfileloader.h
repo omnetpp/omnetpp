@@ -71,6 +71,7 @@ class SCAVE_API SqliteResultFileLoader : public IResultFileLoader
     void checkOK(int sqlite3_result);
     void checkRow(int sqlite3_result);
     void error(const char *errmsg);
+    void setBins(HistogramResult *histogram, std::vector<double>& binEdges, std::vector<double>& binValues);
 
   public:
     SqliteResultFileLoader(ResultFileManager* resultFileManagerPar);

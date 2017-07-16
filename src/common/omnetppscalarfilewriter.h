@@ -46,6 +46,7 @@ class COMMON_API OmnetppScalarFileWriter
     void writeStatisticFields(const Statistics& statistic);
     void writeStatisticField(const char *name, int64_t value);
     void writeStatisticField(const char *name, double value);
+    void writeBin(double lowerEdge, double value);
 
   public:
     OmnetppScalarFileWriter();

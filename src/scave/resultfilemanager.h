@@ -239,7 +239,6 @@ class SCAVE_API HistogramResult : public StatisticsResult
   protected:
     HistogramResult(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs, const Statistics& stat, const Histogram& bins) :
         StatisticsResult(fileRun, moduleName, name, attrs, stat), bins(bins) {}
-    void addBin(double lowerBound, double count);
   public:
     virtual int getItemType() const;
     const Histogram& getHistogram() const {return bins;}

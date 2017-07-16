@@ -77,7 +77,8 @@ class SCAVE_API OmnetppResultFileLoader : public IResultFileLoader
             double sumSquaredWeights;
             double sumWeightedSquaredValues;
         } fields;
-        Histogram bins;
+        std::vector<double> binEdges;
+        std::vector<double> binValues;
     };
   protected:
     void processLine(char **vec, int numTokens, ParseContext& ctx);

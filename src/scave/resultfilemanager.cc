@@ -162,11 +162,6 @@ int HistogramResult::getItemType() const
     return ResultFileManager::HISTOGRAM;
 }
 
-void HistogramResult::addBin(double lowerBound, double count)
-{
-    bins.addBin(lowerBound, count);
-}
-
 const std::string& Run::getAttribute(const std::string& attrName) const
 {
     auto it = attributes.find(attrName);

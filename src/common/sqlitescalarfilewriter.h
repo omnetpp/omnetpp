@@ -60,7 +60,7 @@ class COMMON_API SqliteScalarFileWriter
     void writeScalarAttr(sqlite_int64 scalarId, const char *name, size_t nameLength, const char *value, size_t valueLength);
     sqlite_int64 writeStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, bool isHistogram);
     void writeStatisticAttr(sqlite_int64 statisticId, const char *name, const char *value);
-    void writeStatisticBin(sqlite_int64 statisticId, double lowerEdge, double binValue);
+    void writeBin(sqlite_int64 statisticId, double lowerEdge, double binValue);
     sqlite_int64 writeParameter(const std::string& componentFullPath, const std::string& name, const std::string& value);
     void writeParameterAttr(sqlite_int64 parameterId, const char *name, size_t nameLength, const char *value, size_t valueLength);
     void prepareStatement(sqlite3_stmt *&stmt, const char *sql);

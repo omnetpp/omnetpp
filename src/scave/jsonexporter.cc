@@ -365,7 +365,7 @@ void JsonExporter::saveResults(const std::string& fileName, ResultFileManager *m
                 writeStatisticsFields(histogram.getStatistics());
 
                 const Histogram& bins = histogram.getHistogram();
-                writer.startRawValue("binedges"); writeVector(bins.getBinLowerBounds());
+                writer.startRawValue("binedges"); writeVector(bins.getBinEdges());
                 writer.startRawValue("binvalues"); writeVector(bins.getBinValues());
                 writer.closeObject();
             }

@@ -133,8 +133,6 @@ void SqliteOutputScalarManager::recordScalar(cComponent *component, const char *
 
 void SqliteOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    static const double MinusInfinity = -1.0/0.0;
-
     if (!initialized) {
         initialized = true;
         initialize();
@@ -172,11 +170,9 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
             Histogram bins;
             int n = histogram->getNumBins();
             if (n > 0) {
-                bins.reserveBins(n+2);
-                bins.addBin(MinusInfinity, histogram->getUnderflowSumWeights());
-                for (int i = 0; i < n; i++)
-                    bins.addBin(histogram->getBinEdge(i), histogram->getBinValue(i));
-                bins.addBin(histogram->getBinEdge(n), histogram->getOverflowSumWeights());
+                bins.setBins(histogram->getBinEdges(), histogram->getBinValues());
+                bins.setUnderflows(histogram->getUnderflowSumWeights());
+                bins.setOverflows(histogram->getOverflowSumWeights());
                 writer.recordHistogram(componentFullPath, name, stats, bins, convertMap(attributes));
                 savedAsHistogram = true;
             }

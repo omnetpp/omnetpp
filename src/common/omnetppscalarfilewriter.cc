@@ -144,14 +144,23 @@ void OmnetppScalarFileWriter::recordStatistic(const std::string& componentFullPa
     writeAttributes(attributes);
 }
 
+void OmnetppScalarFileWriter::writeBin(double lowerEdge, double value)
+{
+    check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, lowerEdge, prec, value));
+}
+
 void OmnetppScalarFileWriter::recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes)
 {
     Assert(isOpen());
     check(fprintf(f, "statistic %s %s\n", QUOTE(componentFullPath.c_str()), QUOTE(name.c_str())));
     writeStatisticFields(statistic);
     writeAttributes(attributes);
-    for (auto bin : bins.getBins())
-        check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, bin.lowerBound, prec, bin.count));
+
+    int n = bins.getNumBins();
+    writeBin(-INFINITY, bins.getUnderflows());
+    for (int i = 0; i < n; i++)
+        writeBin(bins.getBinEdge(i), bins.getBinValue(i));
+    writeBin(bins.getBinEdge(n), bins.getOverflows());
 }
 
 void OmnetppScalarFileWriter::recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value, const StringMap& attributes)

@@ -263,12 +263,11 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             csv.writeDouble(stat.getMax());
             if (isHistogram) {
                 const Histogram& histogram = dynamic_cast<const HistogramResult*>(&statistic)->getHistogram();
-                auto binLowerBounds = histogram.getBinLowerBounds();
+                auto binLowerBounds = histogram.getBinEdges();
                 auto binValues = histogram.getBinValues();
-                Assert(binLowerBounds[0] == NEGATIVE_INFINITY);
-                Assert(binValues.size() == binLowerBounds.size());
-                writeAsString(binLowerBounds, 1, binLowerBounds.size()); // skip initial -inf element
-                writeAsString(binValues, 1, binValues.size()-1); // remove first and last element (overflow/underflow counts)
+                Assert(binValues.size() == binLowerBounds.size()-1);
+                writeAsString(binLowerBounds, 0, binLowerBounds.size());
+                writeAsString(binValues, 0, binValues.size()-1);
             }
             finishRecord(numColumns);
             writeResultAttrRecords(statistic, numColumns);
