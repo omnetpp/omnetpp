@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.Inputs#getInputs <em>Inputs</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getInputs()
  * @model

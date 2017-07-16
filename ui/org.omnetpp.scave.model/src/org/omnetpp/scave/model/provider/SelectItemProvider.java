@@ -42,13 +42,7 @@ import org.omnetpp.scave.model.Select;
  * @generated
  */
 public class SelectItemProvider
-    extends SelectDeselectOpItemProvider
-    implements
-        IEditingDomainItemProvider,
-        IStructuredItemContentProvider,
-        ITreeItemContentProvider,
-        IItemLabelProvider,
-        IItemPropertySource {
+    extends SelectDeselectOpItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->

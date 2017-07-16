@@ -50,6 +50,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.Add;
@@ -110,6 +111,7 @@ public class ScaveModelUtil {
             return createBarChart(name);
         else if (type==ResultType.VECTOR_LITERAL)
             return createLineChart(name);
+        //TODO statistics
         else if (type==ResultType.HISTOGRAM_LITERAL)
             return createHistogramChart(name);
         else
@@ -431,17 +433,13 @@ public class ScaveModelUtil {
     }
 
     public static IDList getAllIDs(ResultFileManager manager, ResultType type) {
-        if (type == null) {
-            IDList idlist = new IDList();
-            idlist.merge(manager.getAllScalars());
-            idlist.merge(manager.getAllVectors());
-            idlist.merge(manager.getAllHistograms());
-            return idlist;
-        }
+        if (type == null)
+            return manager.getAllItems(false, true, true);
 
         switch (type.getValue()) {
-        case ResultType.SCALAR: return manager.getAllScalars();
+        case ResultType.SCALAR: return manager.getAllScalars(false, true, true);
         case ResultType.VECTOR: return manager.getAllVectors();
+        case ResultType.STATISTICS: return manager.getAllStatistics();
         case ResultType.HISTOGRAM: return manager.getAllHistograms();
         }
         Assert.isTrue(false, "Unknown dataset type: " + type);
@@ -571,6 +569,7 @@ public class ScaveModelUtil {
         switch (type.getValue()) {
         case ResultType.SCALAR: return ResultFileManager.SCALAR;
         case ResultType.VECTOR: return ResultFileManager.VECTOR;
+        case ResultType.STATISTICS: return ResultFileManager.STATISTICS;
         case ResultType.HISTOGRAM: return ResultFileManager.HISTOGRAM;
         default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
         }
@@ -581,6 +580,8 @@ public class ScaveModelUtil {
             return ResultType.SCALAR_LITERAL;
         else if (internalResultType == ResultFileManager.VECTOR)
             return ResultType.VECTOR_LITERAL;
+        else if (internalResultType == ResultFileManager.STATISTICS)
+            return ResultType.STATISTICS_LITERAL;
         else if (internalResultType == ResultFileManager.HISTOGRAM)
             return ResultType.HISTOGRAM_LITERAL;
         else {
@@ -594,8 +595,10 @@ public class ScaveModelUtil {
             return ResultType.SCALAR_LITERAL;
         else if (item instanceof VectorResult)
             return ResultType.VECTOR_LITERAL;
-        else if (item instanceof HistogramResult)
+        else if (item instanceof HistogramResult) // must precede StatisticsResult test
             return ResultType.HISTOGRAM_LITERAL;
+        else if (item instanceof StatisticsResult)
+            return ResultType.STATISTICS_LITERAL;
         else {
             Assert.isTrue(false, "Unknown result item: "+item);
             return null;

@@ -44,13 +44,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class ScatterChartItemProvider
-    extends ChartItemProvider
-    implements
-        IEditingDomainItemProvider,
-        IStructuredItemContentProvider,
-        ITreeItemContentProvider,
-        IItemLabelProvider,
-        IItemPropertySource {
+    extends ChartItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->

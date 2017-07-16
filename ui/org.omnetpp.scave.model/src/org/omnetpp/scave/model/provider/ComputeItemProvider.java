@@ -38,13 +38,7 @@ import org.omnetpp.scave.model.Compute;
  * @generated
  */
 public class ComputeItemProvider
-    extends ProcessingOpItemProvider
-    implements
-        IEditingDomainItemProvider,
-        IStructuredItemContentProvider,
-        ITreeItemContentProvider,
-        IItemLabelProvider,
-        IItemPropertySource {
+    extends ProcessingOpItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->

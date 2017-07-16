@@ -250,8 +250,8 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             csv.writeDouble(stat.getMax());
             if (isHistogram) {
                 const HistogramResult& histogram = *dynamic_cast<const HistogramResult*>(&statistic);
-                writeAsString(histogram.getBinLowerBounds());
-                writeAsString(histogram.getBinValues());
+                writeAsString(histogram.getHistogram().getBinLowerBounds());
+                writeAsString(histogram.getHistogram().getBinValues());
             }
             finishRecord(numColumns);
             writeResultAttrRecords(statistic, numColumns);

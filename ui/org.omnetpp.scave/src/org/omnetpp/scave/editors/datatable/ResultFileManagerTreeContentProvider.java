@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.collections.map.MultiValueMap;
@@ -19,6 +21,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.FileRun;
+import org.omnetpp.scave.engine.Histogram;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
@@ -28,6 +31,7 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.ScalarResult;
 import org.omnetpp.scave.engine.Statistics;
+import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -120,7 +124,7 @@ public class ResultFileManagerTreeContentProvider {
         }
         Node[] nodes = ResultFileManager.callWithReadLock(manager, new Callable<Node[]>() {
             public Node[] call() throws Exception {
-                MultiValueMap nodeIdsMap = new MultiValueMap();
+                MultiValueMap nodeIdsMap = MultiValueMap.decorate(new LinkedHashMap<>()); // preserve insertion order of children
                 int currentLevelIndex;
                 if (firstNode == null)
                     currentLevelIndex = -1;
@@ -141,6 +145,7 @@ public class ResultFileManagerTreeContentProvider {
                     if (!levels[j].equals(ResultItemAttributeNode.class))
                         collector = true;
                 Class<? extends Node> nextLevelClass = nextLevelIndex < levels.length ? levels[nextLevelIndex] : null;
+                boolean shouldSort = true;
                 if (nextLevelClass != null) {
                     int idCount = firstNode == null ? idList.size() : firstNode.ids.length;
                     for (int i = 0; i < idCount; i++) {
@@ -185,18 +190,12 @@ public class ResultFileManagerTreeContentProvider {
                                     nodeIdsMap.put(new ResultItemNode(manager, id, null), id);
                             }
                             else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
+                                shouldSort = false;  // retain insertion order
                                 ResultItem resultItem = matchContext.getResultItem();
                                 ResultItem.Type type = resultItem.getType();
                                 boolean isIntegerType = type == ResultItem.Type.TYPE_INT;
                                 nodeIdsMap.put(new ResultItemAttributeNode("Module name", String.valueOf(resultItem.getModuleName())), id);
                                 nodeIdsMap.put(new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
-                                StringMap attributes = resultItem.getAttributes();
-                                StringVector keys = attributes.keys();
-                                for (int j = 0; j < keys.size(); j++) {
-                                    String key = keys.get(j);
-                                    nodeIdsMap.put(new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
-                                }
-
                                 if (resultItem instanceof ScalarResult) {
                                     ScalarResult scalar = (ScalarResult)resultItem;
                                     nodeIdsMap.put(new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
@@ -205,47 +204,60 @@ public class ResultFileManagerTreeContentProvider {
                                     VectorResult vector = (VectorResult)resultItem;
                                     Statistics stat = vector.getStatistics();
                                     nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(stat.getMean())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
+                                    //nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Start time", String.valueOf(vector.getStartTime())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("End time", String.valueOf(vector.getEndTime())), id);
                                 }
-                                else if (resultItem instanceof HistogramResult) {
-                                    HistogramResult histogram = (HistogramResult)resultItem;
-                                    Statistics stat = histogram.getStatistics();
+                                else if (resultItem instanceof StatisticsResult) {
+                                    StatisticsResult statistics = (StatisticsResult)resultItem;
+                                    Statistics stat = statistics.getStatistics();
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Sum of weights", String.valueOf(stat.getSumWeights())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
+                                    //nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(stat.getMean())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
-                                    DoubleVector bins = histogram.getBinLowerBounds();
-                                    DoubleVector values = histogram.getBinValues();
-                                    if (bins != null && values != null && bins.size() > 0 && values.size() > 0) {
-                                        ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(histogram.getBinLowerBounds().size()));
-                                        List<Node> list = new ArrayList<Node>();
-                                        for (int j = 0; j < bins.size(); j++) {
-                                            double lowerBound = bins.get(j);
-                                            double upperBound = j < bins.size() - 1 ? bins.get(j + 1) : Double.POSITIVE_INFINITY;
-                                            double value = values.get(j);
-                                            String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
-                                            if (isIntegerType)
-                                                name += toIntegerAwareString(upperBound - 1, isIntegerType) + "]";
-                                            else
-                                                name += String.valueOf(upperBound) + ")";
-                                            list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
+                                    if (resultItem instanceof HistogramResult) {
+                                        HistogramResult histogram = (HistogramResult)resultItem;
+                                        Histogram hist = histogram.getHistogram();
+                                        DoubleVector binEdges = hist.getBinLowerBounds();
+                                        DoubleVector binValues = hist.getBinValues();
+                                        if (binEdges.size() > 0 && binValues.size() > 0) {
+                                            ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(hist.getNumBins()-2)); //TODO "-2"
+                                            List<Node> list = new ArrayList<Node>();
+                                            for (int j = 0; j < binEdges.size(); j++) {
+                                                double lowerBound = binEdges.get(j);
+                                                double upperBound = j < binEdges.size()-1 ? binEdges.get(j+1) : Double.POSITIVE_INFINITY;
+                                                double value = binValues.get(j);
+                                                String name = "[" + toIntegerAwareString(lowerBound, isIntegerType) + ", ";
+                                                if (isIntegerType)
+                                                    name += toIntegerAwareString(upperBound-1, isIntegerType) + "]";
+                                                else
+                                                    name += String.valueOf(upperBound) + ")";
+                                                list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
+                                            }
+                                            binsNode.children = list.toArray(new Node[0]);
+                                            nodeIdsMap.put(binsNode, id);
                                         }
-                                        binsNode.children = list.toArray(new Node[0]);
-                                        nodeIdsMap.put(binsNode, id);
                                     }
                                 }
-                                else
+                                else {
                                     throw new IllegalArgumentException();
+                                }
+                                StringMap attributes = resultItem.getAttributes();
+                                StringVector keys = attributes.keys();
+                                for (int j = 0; j < keys.size(); j++) {
+                                    String key = keys.get(j);
+                                    nodeIdsMap.put(new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
+                                }
                             }
                             else
                                 throw new IllegalArgumentException();
@@ -253,11 +265,13 @@ public class ResultFileManagerTreeContentProvider {
                     }
                 }
                 Node[] nodes = (Node[])nodeIdsMap.keySet().toArray(new Node[0]);
-                Arrays.sort(nodes, new Comparator<Node>() {
-                    public int compare(Node o1, Node o2) {
-                        return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
-                    }
-                });
+                if (shouldSort) {
+                    Arrays.sort(nodes, new Comparator<Node>() {
+                        public int compare(Node o1, Node o2) {
+                            return StringUtils.dictionaryCompare((o1).getColumnText(0), (o2).getColumnText(0));
+                        }
+                    });
+                }
                 for (Node node : nodes) {
                     Collection ids = nodeIdsMap.getCollection(node);
                     node.ids = new long[ids.size()];
@@ -328,8 +342,14 @@ public class ResultFileManagerTreeContentProvider {
             Statistics stat = vector.getStatistics();
             return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
         }
-        else if (resultItem instanceof HistogramResult) {
+        else if (resultItem instanceof HistogramResult) {  // note: should precede StatisticsResult branch
             HistogramResult histogram = (HistogramResult)resultItem;
+            Statistics stat = histogram.getStatistics();
+            Histogram hist = histogram.getHistogram();
+            return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ") [" + (hist.getNumBins()-2) + " bins]"; //TODO "-2"
+        }
+        else if (resultItem instanceof StatisticsResult) {
+            StatisticsResult histogram = (StatisticsResult)resultItem;
             Statistics stat = histogram.getStatistics();
             return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
         }
@@ -1185,6 +1205,8 @@ public class ResultFileManagerTreeContentProvider {
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
                 else if (allType == ResultFileManager.VECTOR)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                else if (allType == ResultFileManager.STATISTICS)
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else if (allType == ResultFileManager.HISTOGRAM)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else
@@ -1196,6 +1218,8 @@ public class ResultFileManagerTreeContentProvider {
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
                 else if (resultItem instanceof VectorResult)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                else if (resultItem instanceof StatisticsResult)
+                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else if (resultItem instanceof HistogramResult)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
                 else

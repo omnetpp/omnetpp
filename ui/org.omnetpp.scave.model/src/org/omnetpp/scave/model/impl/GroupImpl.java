@@ -38,11 +38,11 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.GroupImpl#getItems <em>Items</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.GroupImpl#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

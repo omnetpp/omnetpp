@@ -31,12 +31,12 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getXDataPattern <em>XData Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#getIsoDataPattern <em>Iso Data Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ScatterChartImpl#isAverageReplications <em>Average Replications</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

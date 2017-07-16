@@ -35,10 +35,10 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.DiscardImpl#getExcepts <em>Excepts</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

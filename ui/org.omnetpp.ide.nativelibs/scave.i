@@ -354,6 +354,13 @@ namespace omnetpp { namespace common {
 
 %include "common/statistics.h"
 
+/* ------------- histogram.h  ----------------- */
+namespace omnetpp { namespace common {
+%ignore Histogram::operator=;
+} } // namespaces
+
+%include "common/histogram.h"
+
 /* ------------- idlist.h  ----------------- */
 %include "idlist.i"
 
@@ -373,6 +380,7 @@ namespace omnetpp { namespace scave {
 %ignore ResultFile::fileSystemFilePath;
 %ignore ResultFile::scalarResults;
 %ignore ResultFile::vectorResults;
+%ignore ResultFile::statisticsResults;
 %ignore ResultFile::histogramResults;
 
 %rename FileRun::fileRef file;
@@ -431,6 +439,8 @@ namespace omnetpp { namespace scave {
           return getScalar(id);
       else if (type==VECTOR)
           return getVector(id);
+      else if (type==STATISTICS)
+          return getStatistics(id);
       else if (type==HISTOGRAM)
           return getHistogram(id);
       else

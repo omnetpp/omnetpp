@@ -22,6 +22,7 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getOperation <em>Operation</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getFilters <em>Filters</em>}</li>
@@ -30,7 +31,6 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getComputationHash <em>Computation Hash</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ProcessingOp#getGroupBy <em>Group By</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getProcessingOp()
  * @model abstract="true"

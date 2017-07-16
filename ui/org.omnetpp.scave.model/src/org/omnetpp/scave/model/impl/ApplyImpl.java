@@ -37,8 +37,6 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>Apply</b></em>'.
  * <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

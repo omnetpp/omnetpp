@@ -37,10 +37,10 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.DatasetsImpl#getDatasets <em>Datasets</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

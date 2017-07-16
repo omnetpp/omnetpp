@@ -240,8 +240,6 @@ class SCAVE_API HistogramResult : public StatisticsResult
     void addBin(double lowerBound, double count);
   public:
     const Histogram& getHistogram() const {return bins;}
-    const std::vector<double> getBinLowerBounds() const {return bins.getBinLowerBounds();}
-    const std::vector<double> getBinValues() const {return bins.getBinValues();}
 };
 
 typedef std::vector<ScalarResult> ScalarResults;

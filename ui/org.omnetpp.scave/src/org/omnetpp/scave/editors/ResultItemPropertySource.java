@@ -17,6 +17,7 @@ import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.StatisticsResult;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model2.ResultItemRef;
 
@@ -26,6 +27,7 @@ import org.omnetpp.scave.model2.ResultItemRef;
  * @author Andras
  */
 //FIXME: what if "id" becomes invalid? do we need a lock to access ResultFileManager?
+//TODO copy stuff from DataTable.getCellValue()
 public class ResultItemPropertySource implements IPropertySource {
     // display labels as well as property IDs
     public static final String PROP_DIRECTORY = "Folder";
@@ -42,11 +44,12 @@ public class ResultItemPropertySource implements IPropertySource {
     public static final String PROP_TYPE = "Type";
     public static final String PROP_VALUE = "Value";
     public static final String PROP_COUNT = "Count";
+    public static final String PROP_SUMWEIGHTS = "Sum of weights";
     public static final String PROP_MIN = "Min";
     public static final String PROP_MAX = "Max";
     public static final String PROP_MEAN = "Mean";
     public static final String PROP_STDDEV = "StdDev";
-    public static final String PROP_VARIANCE = "Variance";
+    public static final String PROP_NUMBINS = "Number of bins";
     public static final String PROP_VECTOR_ID = "Vector Id";
     public static final String PROP_START_EVENT_NUM = "Start event number";
     public static final String PROP_END_EVENT_NUM = "End event number";
@@ -67,18 +70,22 @@ public class ResultItemPropertySource implements IPropertySource {
         PROP_VALUE
     };
     public static final String[] VECTOR_PROPERTY_IDS = {
-        PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE,
+        PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV,
         PROP_START_EVENT_NUM, PROP_END_EVENT_NUM, PROP_START_TIME, PROP_END_TIME,
         PROP_VECTOR_ID
     };
+    public static final String[] STATISTICS_PROPERTY_IDS = {
+        PROP_COUNT, PROP_SUMWEIGHTS, PROP_MEAN, PROP_STDDEV, PROP_MIN, PROP_MAX
+    };
     public static final String[] HISTOGRAM_PROPERTY_IDS = {
-        PROP_COUNT, PROP_MIN, PROP_MAX, PROP_MEAN, PROP_STDDEV, PROP_VARIANCE
+        PROP_COUNT, PROP_SUMWEIGHTS, PROP_MEAN, PROP_STDDEV, PROP_MIN, PROP_MAX, PROP_NUMBINS
     };
 
     protected static final IPropertyDescriptor[] BASE_PROPERTY_DESCS = makeDescriptors(BASE_PROPERTY_IDS, "", "General"); // not "Base" because we this to appear after "Fields" in the property sheet
     protected static final IPropertyDescriptor[] CONTAINER_PROPERTY_DESCS = makeDescriptors(CONTAINER_PROPERTY_IDS, "", "Location"); // not "Container" because we want this group to appear at the bottom of the property sheet
     protected static final IPropertyDescriptor[] SCALAR_PROPERTY_DESCS = makeDescriptors(SCALAR_PROPERTY_IDS, "", "Fields");
     protected static final IPropertyDescriptor[] VECTOR_PROPERTY_DESCS = makeDescriptors(VECTOR_PROPERTY_IDS, "", "Fields");
+    protected static final IPropertyDescriptor[] STATISTICS_PROPERTY_DESCS = makeDescriptors(STATISTICS_PROPERTY_IDS, "", "Fields");
     protected static final IPropertyDescriptor[] HISTOGRAM_PROPERTY_DESCS = makeDescriptors(HISTOGRAM_PROPERTY_IDS, "", "Fields");
 
     private static IPropertyDescriptor[] makeDescriptors(String ids[], String prefix, String category) {
@@ -105,14 +112,15 @@ public class ResultItemPropertySource implements IPropertySource {
                     (item instanceof VectorResult) ? VECTOR_PROPERTY_DESCS :
                         (item instanceof ScalarResult) ? SCALAR_PROPERTY_DESCS :
                             (item instanceof HistogramResult) ? HISTOGRAM_PROPERTY_DESCS :
-                                new IPropertyDescriptor[0];
+                                (item instanceof StatisticsResult) ? STATISTICS_PROPERTY_DESCS :
+                                    new IPropertyDescriptor[0];
 
                 IPropertyDescriptor[] attrs = makeDescriptors(item.getAttributes().keys().toArray(), "@", "Attributes");
 
                 IPropertyDescriptor[] bins = null;
                 if (item instanceof HistogramResult) {
                     HistogramResult histogram = (HistogramResult)item;
-                    DoubleVector binBounds = histogram.getBinLowerBounds();
+                    DoubleVector binBounds = histogram.getHistogram().getBinLowerBounds();
                     bins = new IPropertyDescriptor[(int)binBounds.size()];
                     for (int i = 0; i < binBounds.size(); i++) {
                         double bin1 = binBounds.get(i);
@@ -141,7 +149,7 @@ public class ResultItemPropertySource implements IPropertySource {
                 // histogram bin
                 if (resultItem instanceof HistogramResult && propertyId instanceof String && propertyId.toString().charAt(0)=='%') {
                     int i = Integer.parseInt(propertyId.toString().substring(1));
-                    double value = ((HistogramResult)resultItem).getBinValues().get(i);
+                    double value = ((HistogramResult)resultItem).getHistogram().getBinValues().get(i);
                     double valueFloor = Math.floor(value);
                     return value == valueFloor ? String.valueOf((long)valueFloor) : String.valueOf(value);
                 }
@@ -172,22 +180,23 @@ public class ResultItemPropertySource implements IPropertySource {
                     if (propertyId.equals(PROP_MAX)) return vector.getStatistics().getMax();
                     if (propertyId.equals(PROP_MEAN)) return vector.getStatistics().getMean();
                     if (propertyId.equals(PROP_STDDEV)) return vector.getStatistics().getStddev();
-                    if (propertyId.equals(PROP_VARIANCE)) return vector.getStatistics().getVariance();
                     if (propertyId.equals(PROP_START_EVENT_NUM)) return vector.getStartEventNum();
                     if (propertyId.equals(PROP_END_EVENT_NUM)) return vector.getEndEventNum();
                     if (propertyId.equals(PROP_START_TIME)) return vector.getStartTime();
                     if (propertyId.equals(PROP_END_TIME)) return vector.getEndTime();
                     if (propertyId.equals(PROP_VECTOR_ID)) return vector.getVectorId();
                 }
-                else if (resultItem instanceof HistogramResult) {
-                    HistogramResult histogram = (HistogramResult)resultItem;
-                    if (propertyId.equals(PROP_KIND)) return "histogram";
-                    if (propertyId.equals(PROP_COUNT)) return histogram.getStatistics().getCount();
-                    if (propertyId.equals(PROP_MIN)) return histogram.getStatistics().getMin();
-                    if (propertyId.equals(PROP_MAX)) return histogram.getStatistics().getMax();
-                    if (propertyId.equals(PROP_MEAN)) return histogram.getStatistics().getMean();
-                    if (propertyId.equals(PROP_STDDEV)) return histogram.getStatistics().getStddev();
-                    if (propertyId.equals(PROP_VARIANCE)) return histogram.getStatistics().getVariance();
+                else if (resultItem instanceof StatisticsResult) {
+                    StatisticsResult statistics = (StatisticsResult)resultItem;
+                    if (propertyId.equals(PROP_KIND)) return (statistics instanceof HistogramResult ? "histogram" : "statistics") + ", "
+                            + (statistics.getStatistics().isWeighted() ? "weighted" : "unweighted");
+                    if (propertyId.equals(PROP_COUNT)) return statistics.getStatistics().getCount();
+                    if (propertyId.equals(PROP_SUMWEIGHTS)) return statistics.getStatistics().isWeighted() ? statistics.getStatistics().getSumWeights() : "n/a";
+                    if (propertyId.equals(PROP_MIN)) return statistics.getStatistics().getMin();
+                    if (propertyId.equals(PROP_MAX)) return statistics.getStatistics().getMax();
+                    if (propertyId.equals(PROP_MEAN)) return statistics.getStatistics().getMean();
+                    if (propertyId.equals(PROP_STDDEV)) return statistics.getStatistics().getStddev();
+                    if (propertyId.equals(PROP_NUMBINS)) return statistics instanceof HistogramResult ? ((HistogramResult)resultItem).getHistogram().getNumBins()-2 : "n/a"; //TODO revise "-2"
                 }
                 else {
                     if (propertyId.equals(PROP_KIND)) return "other";

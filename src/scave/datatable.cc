@@ -279,7 +279,7 @@ HistogramDataTable::HistogramDataTable(const HistogramResult *histogramResult) :
 
 int HistogramDataTable::getNumRows() const
 {
-    return histResult->getBinValues().size();
+    return histResult->getHistogram().getNumBins();
 }
 
 bool HistogramDataTable::isNull(int row, int col) const
@@ -301,13 +301,14 @@ BigDecimal HistogramDataTable::getBigDecimalValue(int row, int col) const
 
 double HistogramDataTable::getDoubleValue(int row, int col) const
 {
+    const Histogram& hist = histResult->getHistogram();
     if (col == 0)
-        return histResult->getBinLowerBounds()[row];
+        return hist.getBinLowerBounds()[row];
     else if (col == 1)
         // use the next lower bound as the upper bound for this bin
-        return row < (int)histResult->getBinLowerBounds().size()-1 ? histResult->getBinLowerBounds()[row+1] : POSITIVE_INFINITY;
+        return row < (int)hist.getBinLowerBounds().size()-1 ? hist.getBinLowerBounds()[row+1] : POSITIVE_INFINITY;
     else if (col == 2)
-        return histResult->getBinValues()[row];
+        return hist.getBinValues()[row];
     else
         throw opp_runtime_error("no such column with double type");
 }

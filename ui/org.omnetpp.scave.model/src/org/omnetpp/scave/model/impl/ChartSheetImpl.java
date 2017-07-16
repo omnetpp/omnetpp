@@ -41,12 +41,12 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#getCharts <em>Charts</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartSheetImpl#getProperties <em>Properties</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

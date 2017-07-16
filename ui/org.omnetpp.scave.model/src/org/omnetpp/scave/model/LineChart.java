@@ -21,10 +21,10 @@ package org.omnetpp.scave.model;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.LineChart#getLineNameFormat <em>Line Name Format</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getLineChart()
  * @model

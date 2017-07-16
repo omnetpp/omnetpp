@@ -35,10 +35,10 @@ import org.omnetpp.scave.model.Select;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.SelectImpl#getExcepts <em>Excepts</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

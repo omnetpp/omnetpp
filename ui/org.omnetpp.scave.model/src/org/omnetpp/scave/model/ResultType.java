@@ -49,6 +49,14 @@ public enum ResultType implements Enumerator
      */
     VECTOR_LITERAL(2, "vector", "VECTOR"),
     /**
+     * The '<em><b>Statistics</b></em>' literal object.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see #STATISTICS
+     * @generated
+     * @ordered
+     */
+    STATISTICS_LITERAL(3, "statistics", "STATISTICS"), /**
      * The '<em><b>Histogram</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -56,7 +64,7 @@ public enum ResultType implements Enumerator
      * @generated
      * @ordered
      */
-    HISTOGRAM_LITERAL(3, "histogram", "HISTOGRAM");
+    HISTOGRAM_LITERAL(4, "histogram", "HISTOGRAM");
     /**
      * The '<em><b>Scalar</b></em>' literal value.
      * <!-- begin-user-doc -->
@@ -88,6 +96,21 @@ public enum ResultType implements Enumerator
     public static final int VECTOR = 2;
 
     /**
+     * The '<em><b>Statistics</b></em>' literal value.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of '<em><b>Statistics</b></em>' literal object isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @see #STATISTICS_LITERAL
+     * @model name="statistics" literal="STATISTICS"
+     * @generated
+     * @ordered
+     */
+    public static final int STATISTICS = 3;
+
+    /**
      * The '<em><b>Histogram</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
@@ -100,7 +123,7 @@ public enum ResultType implements Enumerator
      * @generated
      * @ordered
      */
-    public static final int HISTOGRAM = 3;
+    public static final int HISTOGRAM = 4;
 
     /**
      * An array of all the '<em><b>Result Type</b></em>' enumerators.
@@ -112,6 +135,7 @@ public enum ResultType implements Enumerator
         new ResultType[] {
             SCALAR_LITERAL,
             VECTOR_LITERAL,
+            STATISTICS_LITERAL,
             HISTOGRAM_LITERAL,
         };
 
@@ -127,6 +151,8 @@ public enum ResultType implements Enumerator
      * Returns the '<em><b>Result Type</b></em>' literal with the specified literal value.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @param literal the literal.
+     * @return the matching enumerator or <code>null</code>.
      * @generated
      */
     public static ResultType get(String literal) {
@@ -143,6 +169,8 @@ public enum ResultType implements Enumerator
      * Returns the '<em><b>Result Type</b></em>' literal with the specified name.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @param name the name.
+     * @return the matching enumerator or <code>null</code>.
      * @generated
      */
     public static ResultType getByName(String name) {
@@ -159,12 +187,15 @@ public enum ResultType implements Enumerator
      * Returns the '<em><b>Result Type</b></em>' literal with the specified integer value.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
+     * @param value the integer value.
+     * @return the matching enumerator or <code>null</code>.
      * @generated
      */
     public static ResultType get(int value) {
         switch (value) {
             case SCALAR: return SCALAR_LITERAL;
             case VECTOR: return VECTOR_LITERAL;
+            case STATISTICS: return STATISTICS_LITERAL;
             case HISTOGRAM: return HISTOGRAM_LITERAL;
         }
         return null;

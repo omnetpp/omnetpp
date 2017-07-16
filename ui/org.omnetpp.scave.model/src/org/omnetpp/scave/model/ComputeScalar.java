@@ -15,6 +15,7 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.ComputeScalar#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ComputeScalar#getScalarName <em>Scalar Name</em>}</li>
@@ -27,7 +28,6 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.omnetpp.scave.model.ComputeScalar#getConfidenceLevel <em>Confidence Level</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ComputeScalar#isComputeMinMax <em>Compute Min Max</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getComputeScalar()
  * @model

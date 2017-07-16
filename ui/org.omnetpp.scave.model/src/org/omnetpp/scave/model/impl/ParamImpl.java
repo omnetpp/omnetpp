@@ -29,11 +29,11 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.ParamImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ParamImpl#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

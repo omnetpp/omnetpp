@@ -23,6 +23,7 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupByFields <em>Group By Fields</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupNameFormat <em>Group Name Format</em>}</li>
@@ -30,7 +31,6 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.omnetpp.scave.model.BarChart#getBarFields <em>Bar Fields</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getAveragedFields <em>Averaged Fields</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart()
  * @model

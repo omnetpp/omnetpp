@@ -41,12 +41,12 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getProperties <em>Properties</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

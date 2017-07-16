@@ -241,10 +241,12 @@ public class BrowseDataPage extends ScaveEditorPage {
      * the tab labels as well.
      */
     protected void refreshPage(ResultFileManager manager) {
-        IDList items = manager.getAllItems(false, true);
+        boolean showFields = false; // on the scalars page --TODO make configurable!!!
+        IDList items = manager.getAllItems(false, false, true); // exclude computed and fields
         IDList vectors = manager.getAllVectors(false);
-        IDList scalars = manager.getAllScalars(false, true);
-        IDList histograms = manager.getAllHistograms(false);
+        IDList scalars = manager.getAllScalars(false, showFields, true); 
+        IDList histograms = manager.getAllStatistics(false);
+        histograms.merge(manager.getAllHistograms(false));
 
         tabFolder.getAllPanel().setIDList(items);
         tabFolder.getScalarsPanel().setIDList(scalars);

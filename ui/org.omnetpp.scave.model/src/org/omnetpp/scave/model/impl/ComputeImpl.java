@@ -22,8 +22,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>Compute</b></em>'.
  * <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

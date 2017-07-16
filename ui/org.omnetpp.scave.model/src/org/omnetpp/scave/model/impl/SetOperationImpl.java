@@ -32,13 +32,13 @@ import org.omnetpp.scave.model.SetOperation;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getSourceDataset <em>Source Dataset</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getFilterPattern <em>Filter Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getType <em>Type</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getCachedIDs <em>Cached IDs</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

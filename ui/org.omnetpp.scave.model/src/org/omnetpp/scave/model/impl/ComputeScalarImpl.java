@@ -31,6 +31,7 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.ComputeScalarImpl#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ComputeScalarImpl#getScalarName <em>Scalar Name</em>}</li>
@@ -43,7 +44,6 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  *   <li>{@link org.omnetpp.scave.model.impl.ComputeScalarImpl#getConfidenceLevel <em>Confidence Level</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ComputeScalarImpl#isComputeMinMax <em>Compute Min Max</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

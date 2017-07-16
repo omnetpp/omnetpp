@@ -45,13 +45,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class ApplyItemProvider
-    extends ProcessingOpItemProvider
-    implements
-        IEditingDomainItemProvider,
-        IStructuredItemContentProvider,
-        ITreeItemContentProvider,
-        IItemLabelProvider,
-        IItemPropertySource {
+    extends ProcessingOpItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->

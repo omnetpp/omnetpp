@@ -508,7 +508,7 @@ void ScaveTool::queryCommand(int argc, char **argv)
             for (int i = 0; i < runHistograms.size(); i++) {
                 const HistogramResult& h = resultFileManager.getHistogram(runHistograms.get(i));
                 const Statistics& s = h.getStatistics();
-                out << maybeRunColumnWithTab << "histogram\t" << h.getModuleName() << "\t" << h.getName() << L(count) << s.getCount() << L(mean) << s.getMean() << L(min) << s.getMin() << L(max) << s.getMax() << L(#bins) << h.getBinValues().size() << endl;
+                out << maybeRunColumnWithTab << "histogram\t" << h.getModuleName() << "\t" << h.getName() << L(count) << s.getCount() << L(mean) << s.getMean() << L(min) << s.getMin() << L(max) << s.getMax() << L(#bins) << h.getHistogram().getNumBins() << endl;
             }
             out << endl;
         }

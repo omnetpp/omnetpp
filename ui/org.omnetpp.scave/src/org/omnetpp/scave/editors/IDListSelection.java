@@ -120,6 +120,10 @@ public class IDListSelection implements IStructuredSelection {
         return getCount(ResultType.VECTOR_LITERAL);
     }
 
+    public int getStatisticsCount() {
+        return getCount(ResultType.STATISTICS_LITERAL);
+    }
+
     public int getHistogramsCount() {
         return getCount(ResultType.HISTOGRAM_LITERAL);
     }

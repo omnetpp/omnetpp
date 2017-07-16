@@ -1111,13 +1111,15 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
                 IDListSelection idlistSelection = (IDListSelection)selection;
                 int scalars = idlistSelection.getScalarsCount();
                 int vectors = idlistSelection.getVectorsCount();
+                int statistics = idlistSelection.getStatisticsCount();
                 int histograms = idlistSelection.getHistogramsCount();
-                if (scalars + vectors + histograms == 0)
+                if (scalars + vectors + statistics + histograms == 0)
                     statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
                 else {
                     List<String> strings = new ArrayList<String>(3);
                     if (scalars > 0) strings.add(StringUtils.formatCounted(scalars, "scalar"));
                     if (vectors > 0) strings.add(StringUtils.formatCounted(vectors, "vector"));
+                    if (statistics > 0) strings.add(StringUtils.formatCounted(statistics, "statistics"));
                     if (histograms > 0) strings.add(StringUtils.formatCounted(histograms, "histogram"));
                     String message = "Selected " + StringUtils.join(strings, ", ", " and ");
                     statusLineManager.setMessage(message);
@@ -1126,7 +1128,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
             else if (selection instanceof IStructuredSelection) {
                 Collection<?> collection = ((IStructuredSelection)selection).toList();
                 if (collection.size()==0) {
-                        statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
+                    statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
                 }
                 else if (collection.size()==1) {
                     Object object = collection.iterator().next();
@@ -1137,7 +1139,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
                     statusLineManager.setMessage(getString("_UI_SingleObjectSelected", text));
                 }
                 else {
-                        statusLineManager.setMessage(getString("_UI_MultiObjectSelected", Integer.toString(collection.size())));
+                    statusLineManager.setMessage(getString("_UI_MultiObjectSelected", Integer.toString(collection.size())));
                 }
             }
             else {

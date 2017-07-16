@@ -40,6 +40,7 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getOperation <em>Operation</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getFilters <em>Filters</em>}</li>
@@ -48,7 +49,6 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getComputationHash <em>Computation Hash</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ProcessingOpImpl#getGroupBy <em>Group By</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

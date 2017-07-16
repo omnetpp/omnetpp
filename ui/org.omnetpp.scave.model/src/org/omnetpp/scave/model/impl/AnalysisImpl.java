@@ -34,12 +34,12 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.AnalysisImpl#getInputs <em>Inputs</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.AnalysisImpl#getDatasets <em>Datasets</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.AnalysisImpl#getChartSheets <em>Chart Sheets</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

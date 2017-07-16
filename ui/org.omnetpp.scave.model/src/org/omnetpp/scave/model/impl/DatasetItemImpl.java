@@ -24,8 +24,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>Dataset Item</b></em>'.
  * <!-- end-user-doc -->
- * <p>
- * </p>
  *
  * @generated
  */

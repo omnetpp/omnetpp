@@ -38,13 +38,7 @@ import org.omnetpp.scave.model.AddDiscardOp;
  * @generated
  */
 public class AddDiscardOpItemProvider
-    extends SetOperationItemProvider
-    implements
-        IEditingDomainItemProvider,
-        IStructuredItemContentProvider,
-        ITreeItemContentProvider,
-        IItemLabelProvider,
-        IItemPropertySource {
+    extends SetOperationItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->

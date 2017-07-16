@@ -1394,6 +1394,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         initEEnum(resultTypeEEnum, ResultType.class, "ResultType");
         addEEnumLiteral(resultTypeEEnum, ResultType.SCALAR_LITERAL);
         addEEnumLiteral(resultTypeEEnum, ResultType.VECTOR_LITERAL);
+        addEEnumLiteral(resultTypeEEnum, ResultType.STATISTICS_LITERAL);
         addEEnumLiteral(resultTypeEEnum, ResultType.HISTOGRAM_LITERAL);
 
         // Create resource

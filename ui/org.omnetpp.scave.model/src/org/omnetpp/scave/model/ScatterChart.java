@@ -23,12 +23,12 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.ScatterChart#getXDataPattern <em>XData Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ScatterChart#getIsoDataPattern <em>Iso Data Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.ScatterChart#isAverageReplications <em>Average Replications</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getScatterChart()
  * @model

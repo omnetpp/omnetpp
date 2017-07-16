@@ -22,11 +22,11 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.Group#getItems <em>Items</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Group#getName <em>Name</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getGroup()
  * @model

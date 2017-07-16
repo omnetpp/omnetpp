@@ -464,7 +464,7 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
             csv.writeDouble(stat.getMax());
         }
         csv.writeString("bins");
-        for (double d : histogram.getBinLowerBounds())
+        for (double d : histogram.getHistogram().getBinLowerBounds())
             csv.writeDouble(d);
         csv.writeNewLine();
 
@@ -475,7 +475,7 @@ void CsvForSpreadsheetExporter::saveHistograms(ResultFileManager *manager, const
             for (int i = 0; i < 7; i++)
                 csv.writeBlank();
         csv.writeString("counters");
-        for (double d : histogram.getBinValues())
+        for (double d : histogram.getHistogram().getBinValues())
             csv.writeDouble(d);
         csv.writeNewLine();
     }

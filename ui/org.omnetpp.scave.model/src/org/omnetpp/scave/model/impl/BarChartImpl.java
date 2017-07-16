@@ -34,6 +34,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getGroupByFields <em>Group By Fields</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getGroupNameFormat <em>Group Name Format</em>}</li>
@@ -41,7 +42,6 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getBarFields <em>Bar Fields</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.BarChartImpl#getAveragedFields <em>Averaged Fields</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

@@ -22,12 +22,12 @@ import org.eclipse.emf.common.util.EList;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.omnetpp.scave.model.Chart#getName <em>Name</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Chart#getFilters <em>Filters</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Chart#getProperties <em>Properties</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.omnetpp.scave.model.ScaveModelPackage#getChart()
  * @model abstract="true"

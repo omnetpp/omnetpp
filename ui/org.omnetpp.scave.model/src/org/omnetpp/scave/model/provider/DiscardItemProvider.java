@@ -42,13 +42,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class DiscardItemProvider
-    extends AddDiscardOpItemProvider
-    implements
-        IEditingDomainItemProvider,
-        IStructuredItemContentProvider,
-        ITreeItemContentProvider,
-        IItemLabelProvider,
-        IItemPropertySource {
+    extends AddDiscardOpItemProvider {
     /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
