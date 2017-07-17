@@ -59,7 +59,6 @@ echo 'digraph G { a -> b -> c; }' >dotfile
 zip a.zip dotfile  >/dev/null
 
 # msys programs
-check 'a2p.exe awkprog'
 check 'accessdb.exe --version'
 check 'awk.exe --version'
 check 'basename.exe --version'
@@ -111,7 +110,7 @@ check 'flex.exe --version'
 check 'fmt.exe --version'
 check 'fold.exe --version'
 check 'gawk.exe --version'
-check 'gawk-4.1.1.exe --version'
+check 'gawk-4.1.4.exe --version'
 check 'git-upload-pack.exe' 129
 check 'git.exe --version'  # note: git is tested in detail later
 check 'grep.exe --version'
@@ -145,7 +144,6 @@ check 'nice.exe --version'
 check 'nl.exe --version'
 check 'nohup.exe --version'
 check 'od.exe --version'
-check 'oldfind.exe --version'
 check 'paste.exe --version'
 check 'patch.exe --version'
 check 'pathchk.exe --version'
@@ -172,13 +170,12 @@ check 'sh.exe --version'
 check 'sha1sum.exe --version'
 check 'shred.exe --version'
 check 'sleep.exe --version'
-check 'slogin.exe dummyhost' 255
 check 'sort.exe --version'
 check 'split.exe --version'
 check 'ssh-add.exe' 2
 check 'ssh-agent.exe'
 check 'ssh-keygen.exe </dev/null' 1
-check 'ssh-keyscan.exe dummyhost' 255
+check 'ssh-keyscan.exe dummyhost' 0
 check 'ssh.exe dummyhost' 255
 check 'stat.exe --version'
 check 'stty.exe --version'
@@ -300,7 +297,7 @@ check 'getopt.exe --version'
 check 'gettext.exe --version'
 check 'git-receive-pack.exe' 129
 check 'git-shell.exe -c c' 128
-check 'git-upload-archive.exe --help' 16
+check 'git-upload-archive.exe --help' 0
 check 'gkill.exe --version'
 check 'gpg.exe --version'
 check 'gpg-error.exe --version'
@@ -315,7 +312,6 @@ check 'grops.exe --version'
 check 'grotty.exe --version'
 check 'groups.exe --version'
 check 'gsstool.exe --version'
-check 'guile.exe --version'
 check 'hostid.exe --version'
 check 'hpftodit.exe --version'
 check 'hxtool.exe --version'
@@ -323,7 +319,6 @@ check 'idn-lookup.exe --version'
 check 'indxbib.exe --version'
 check 'info.exe --version'
 check 'infocmp.exe -V'
-check 'infokey.exe --version'
 check 'infotocap.exe -V'
 check 'install-info.exe --version'
 check 'kcc.exe --version'
@@ -410,7 +405,6 @@ check 'strace.exe --version'
 check 'string2key.exe --version'
 #check 'tabs.exe '
 check 'tbl.exe --version'
-check 'testdb.exe --version'
 check 'tfmtodit.exe --version'
 check 'tic.exe -V'
 check 'timeout.exe --version'
@@ -433,7 +427,6 @@ check 'envsubst.exe --version'
 #check 'gcc-nm.exe --version'
 #check 'gcc-ranlib.exe --version'
 check 'gettext.exe --version'
-check 'mingw32-make.exe --version'
 check 'miniunzip.exe'
 check 'msgattrib.exe --version'
 check 'msgcat.exe --version'
@@ -455,7 +448,6 @@ check 'python2.7.exe --version'
 check 'python2.exe --version'
 check 'python2w.exe --version'
 check 'recode-sr-latin.exe --version'
-check 'testgdbm.exe --version'
 check 'tput.exe -V'
 check 'xgettext.exe --version'
 check 'xmlwf.exe -h'
@@ -467,6 +459,8 @@ check 'git.exe clone git://github.com/JackDanger/jack.git'  # git:// url
 cd jack || echo 'Warning: test repo not found -- subsequent git tests are likely to fail'
 echo '#include <whatever.h>' > dummy.c
 check 'git.exe add dummy.c'
+check 'git config user.email "you@example.com"'
+check 'git config user.name "Your Name"'
 check 'git.exe commit -m dummy-commit'
 check 'git.exe remote add xxx git@github.com:JackDanger/jack.git' # git@github r/w url
 check 'git.exe push xxx' 128
