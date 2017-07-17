@@ -32,6 +32,7 @@ Register_ResultRecorder("sum", SumRecorder);
 Register_ResultRecorder("mean", MeanRecorder);
 Register_ResultRecorder("min", MinRecorder);
 Register_ResultRecorder("max", MaxRecorder);
+Register_ResultRecorder("avg", AverageRecorder);
 Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("stats", StatsRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
@@ -126,11 +127,29 @@ std::string SumRecorder::str() const
 
 //---
 
-//TODO should obey timeWeighted=true
-void MeanRecorder::finish(cResultFilter *prev)
+void MeanRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
 {
-    opp_string_map attributes = getStatisticAttributes();
-    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum / count, &attributes);  // note: this is NaN if count==0
+    cNumericResultRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+
+    omnetpp::opp_string_map attrs = getStatisticAttributes();
+    auto it = attrs.find("timeWeighted");
+    timeWeighted = it != attrs.end() && (it->second != "0" && it->second != "false");
+}
+
+void MeanRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    if (!timeWeighted) {
+        count++;
+        weightedSum += value;
+    }
+    else {
+        if (startTime < SIMTIME_ZERO)  // uninitialized
+            startTime = t;
+        else
+            weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
+        lastTime = t;
+        lastValue = value;
+    }
 }
 
 std::string MeanRecorder::str() const
@@ -138,6 +157,29 @@ std::string MeanRecorder::str() const
     std::stringstream os;
     os << getResultName() << " = " << getMean();
     return os.str();
+}
+
+double MeanRecorder::getMean() const
+{
+    if (!timeWeighted) {
+        return weightedSum / count;
+    }
+    else {
+        if (startTime < SIMTIME_ZERO) // empty
+            return NaN;
+
+        simtime_t now = getSimulation()->getSimTime();
+        double lastInterval = SIMTIME_DBL(now - lastTime);
+        double weightedSum = this->weightedSum + lastValue * lastInterval;
+        double interval = SIMTIME_DBL(now - startTime);
+        return weightedSum / interval;
+    }
+}
+
+void MeanRecorder::finish(cResultFilter *prev)
+{
+    opp_string_map attributes = getStatisticAttributes();
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), getMean(), &attributes);
 }
 
 //---
@@ -167,6 +209,21 @@ std::string MaxRecorder::str() const
 {
     std::stringstream os;
     os << getResultName() << " = " << getMax();
+    return os.str();
+}
+
+//---
+
+void AverageRecorder::finish(cResultFilter *prev)
+{
+    opp_string_map attributes = getStatisticAttributes();
+    getEnvir()->recordScalar(getComponent(), getResultName().c_str(), sum / count, &attributes);  // note: this is NaN if count==0
+}
+
+std::string AverageRecorder::str() const
+{
+    std::stringstream os;
+    os << getResultName() << " = " << getAverage();
     return os.str();
 }
 

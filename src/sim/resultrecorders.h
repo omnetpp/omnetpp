@@ -105,19 +105,24 @@ class SIM_API SumRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the mean of signal values
+ * @brief Listener for recording the (weighted or unweighted) mean of signal values
  */
 class SIM_API MeanRecorder : public cNumericResultRecorder
 {
     protected:
-        long count;
-        double sum;
+        bool timeWeighted = false;
+        long count = 0;
+        double weightedSum = 0;
+        simtime_t startTime = -1;
+        simtime_t lastTime = -1;
+        double lastValue = NaN;
     protected:
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {count++; sum += value;}
+        virtual void init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
         virtual void finish(cResultFilter *prev) override;
     public:
-        MeanRecorder() {count = 0; sum = 0;}
-        double getMean() const {return sum/count;}
+        MeanRecorder() {}
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
+        double getMean() const;
         virtual std::string str() const override;
 };
 
@@ -150,6 +155,23 @@ class SIM_API MaxRecorder : public cNumericResultRecorder
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
         double getMax() const {return max;}
+        virtual std::string str() const override;
+};
+
+/**
+ * @brief Listener for recording the arithmetic mean of signal values
+ */
+class SIM_API AverageRecorder : public cNumericResultRecorder
+{
+    protected:
+        long count;
+        double sum;
+    protected:
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override {count++; sum += value;}
+        virtual void finish(cResultFilter *prev) override;
+    public:
+        AverageRecorder() {count = 0; sum = 0;}
+        double getAverage() const {return sum/count;}
         virtual std::string str() const override;
 };
 

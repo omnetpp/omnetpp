@@ -132,18 +132,22 @@ class SIM_API SumFilter : public cNumericResultFilter
 };
 
 /**
- * @brief Result filter that computes the mean of signal values
+ * @brief Result filter that computes the (weighted or unweighted) mean of signal values
  */
 class SIM_API MeanFilter : public cNumericResultFilter
 {
     protected:
-        long count;
-        double sum;
+        bool timeWeighted = false;
+        long count = 0;
+        double weightedSum = 0;
+        simtime_t startTime = -1;
+        simtime_t lastTime = -1;
+        double lastValue = NaN;
     protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {count++; sum += value; value = sum/count; return true;}
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
-        MeanFilter() {count = 0; sum = 0;}
-        double getMean() const {return sum/count;}
+        MeanFilter() {}
+        double getMean() const;
         virtual std::string str() const override;
 };
 
@@ -174,6 +178,22 @@ class SIM_API MaxFilter : public cNumericResultFilter
     public:
         MaxFilter() {max = NEGATIVE_INFINITY;}
         double getMax() const {return max;}
+        virtual std::string str() const override;
+};
+
+/**
+ * @brief Result filter that computes the arithmetic mean of signal values
+ */
+class SIM_API AverageFilter : public cNumericResultFilter
+{
+    protected:
+        long count;
+        double sum;
+    protected:
+        virtual bool process(simtime_t& t, double& value, cObject *details) override {count++; sum += value; value = sum/count; return true;}
+    public:
+        AverageFilter() {count = 0; sum = 0;}
+        double getAverage() const {return sum/count;}
         virtual std::string str() const override;
 };
 

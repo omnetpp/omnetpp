@@ -32,6 +32,7 @@ Register_ResultFilter("mean", MeanFilter);
 Register_ResultFilter("min", MinFilter);
 Register_ResultFilter("max", MaxFilter);
 Register_ResultFilter("last", IdentityFilter);  // useful for expressions like: record=last+5
+Register_ResultFilter("avg", AverageFilter);
 Register_ResultFilter("timeavg", TimeAverageFilter);
 Register_ResultFilter("removeRepeats", RemoveRepeatsFilter);
 Register_ResultFilter("packetBytes", PacketBytesFilter);
@@ -117,6 +118,49 @@ std::string SumFilter::str() const
 
 //---
 
+bool MeanFilter::process(simtime_t& t, double& value, cObject *details)
+{
+    if (!timeWeighted) {
+        count++;
+        weightedSum += value;
+        value = weightedSum/count;
+        return true;
+    }
+    else {
+        bool isFirstValue = startTime < SIMTIME_ZERO;
+        if (isFirstValue)
+            startTime = t;
+        else
+            weightedSum += lastValue * SIMTIME_DBL(t - lastTime);  // always forward-sample-hold
+        lastTime = t;
+        lastValue = value;
+
+        if (isFirstValue || t == startTime)
+            return false;  // suppress initial 0/0 = NaNs
+
+        double interval = SIMTIME_DBL(t - startTime);
+        value = weightedSum / interval;
+        return true;
+    }
+}
+
+double MeanFilter::getMean() const
+{
+    if (!timeWeighted) {
+        return weightedSum/count;
+    }
+    else {
+        if (startTime < SIMTIME_ZERO) // empty
+            return NaN;
+
+        simtime_t now = getSimulation()->getSimTime();
+        double lastInterval = SIMTIME_DBL(now - lastTime);
+        double weightedSum = this->weightedSum + lastValue * lastInterval;
+        double interval = SIMTIME_DBL(now - startTime);
+        return weightedSum / interval;
+    }
+}
+
 std::string MeanFilter::str() const
 {
     std::stringstream os;
@@ -139,6 +183,15 @@ std::string MaxFilter::str() const
 {
     std::stringstream os;
     os << "max = " << getMax();
+    return os.str();
+}
+
+//---
+
+std::string AverageFilter::str() const
+{
+    std::stringstream os;
+    os << "average = " << getAverage();
     return os.str();
 }
 
