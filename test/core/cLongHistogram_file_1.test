@@ -49,6 +49,7 @@ fclose(f3);
 1	 #= range_ext_factor
 10 20	 #= range
 1 1	 #= cell_under, cell_over
+1 1	 #= sumweights_underflow, sum_weights_overflow
 2	 #= num_firstvals
 0	 #= firstvals[] exists
 10	 #= num_cells
@@ -79,6 +80,7 @@ fclose(f3);
 1	 #= range_ext_factor
 10 20	 #= range
 1 1	 #= cell_under, cell_over
+1 1	 #= sumweights_underflow, sum_weights_overflow
 2	 #= num_firstvals
 0	 #= firstvals[] exists
 10	 #= num_cells

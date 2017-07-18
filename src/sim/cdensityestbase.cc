@@ -445,8 +445,8 @@ void cDensityEstBase::loadFromFile(FILE *f)
     freadvarsf(f, "%d\t #= range_mode", &tmp); rangeMode = (RangeMode)tmp;
     freadvarsf(f, "%lg\t #= range_ext_factor", &rangeExtFactor);
     freadvarsf(f, "%lg %lg\t #= range", &rangeMin, &rangeMax);
-    freadvarsf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over\n", &numUnderflows, &numOverflows);
-    freadvarsf(f, "%lg %lg\t #= sumweights_underflow, sum_weights_overflow\n", &underflowSumWeights, &overflowSumWeights);
+    freadvarsf(f, "%" PRId64 " %" PRId64 "\t #= cell_under, cell_over", &numUnderflows, &numOverflows);
+    freadvarsf(f, "%lg %lg\t #= sumweights_underflow, sum_weights_overflow", &underflowSumWeights, &overflowSumWeights);
     freadvarsf(f, "%d\t #= num_firstvals", &numPrecollected);
 
     int hasPrecollectedValues;
