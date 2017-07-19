@@ -9,17 +9,7 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 OMNeT++ 5.2 preview (Aug 2017)
 ------------------------------
 
-Build:
-
-  - Makefiles were updated to speed up the build process (eliminited superfluous
-    file copying when everything was up to date.)
-
-  - Makefiles in the 'samples' folder are now only recreated when missing,
-    not for every build.
-
-  - The build process works now correctly even if the 'samples' folder is
-    deleted. This is useful when you want to deploy OMNeT++ on a server where
-    the samples are not needed.
+TODO
 
 
 OMNeT++ 5.1.1 (May 2017)
