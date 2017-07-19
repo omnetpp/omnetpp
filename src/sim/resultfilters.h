@@ -117,6 +117,15 @@ class SIM_API IdentityFilter : public cNumericResultFilter
 };
 
 /**
+ * @brief Filter that removes (filters out) NaNs, and lets through all other values.
+ */
+class SIM_API SkipNanFilter : public cNumericResultFilter
+{
+    protected:
+        virtual bool process(simtime_t& t, double& value, cObject *details) override {return !std::isnan(value);}
+};
+
+/**
  * @brief Filter that outputs the sum of signal values.
  */
 class SIM_API SumFilter : public cNumericResultFilter
