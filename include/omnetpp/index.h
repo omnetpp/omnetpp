@@ -149,9 +149,6 @@ namespace omnetpp {
  * most functionality in subclasses is available via virtual functions
  * defined in cStatistic and cDensityEstBase.
  *
- * The transient detection and result accuracy classes are derived from
- * the cTransientDetection and cAccuracyDetection abstract base classes.
- *
  * The classes are:
  *    - cOutVector is used to record vector simulation results (an output
  *      vector, containing (time, value) pairs) to file

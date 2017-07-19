@@ -39,7 +39,6 @@
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/cdefaultlist.h"
 #include "omnetpp/cdensityestbase.h"
-#include "omnetpp/cdetect.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cdoubleparimpl.h"

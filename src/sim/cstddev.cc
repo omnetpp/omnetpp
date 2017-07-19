@@ -32,7 +32,6 @@
 #include "omnetpp/cstddev.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
-#include "omnetpp/cdetect.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
@@ -149,11 +148,6 @@ void cStdDev::collect(double value)
     sumWeightedValues += value;
     sumSquaredWeights += 1;
     sumWeightedSquaredValues += value * value;
-
-    if (auto td = getTransientDetectionObject())
-        td->collect(value);
-    if (auto ra = getAccuracyDetectionObject())
-        ra->collect(value);
 }
 
 void cStdDev::collect2(double value, double weight)
@@ -174,11 +168,6 @@ void cStdDev::collect2(double value, double weight)
     sumWeightedValues += weight * value;
     sumSquaredWeights += weight * weight;
     sumWeightedSquaredValues += weight * value * value;
-
-    if (auto td = getTransientDetectionObject())
-        td->collect(value); //TODO weight
-    if (auto ra = getAccuracyDetectionObject())
-        ra->collect(value); //TODO weight
 }
 
 void cStdDev::merge(const cStatistic *other)

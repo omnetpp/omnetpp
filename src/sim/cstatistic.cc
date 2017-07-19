@@ -30,7 +30,6 @@
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
-#include "omnetpp/cdetect.h"  //NL
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
@@ -47,21 +46,15 @@ using std::ostream;
 
 cStatistic::cStatistic(const cStatistic& r) : cRandom(r)
 {
-    td = nullptr;
-    ra = nullptr;
     copy(r);
 }
 
 cStatistic::cStatistic(const char *name) : cRandom(name)
 {
-    td = nullptr;
-    ra = nullptr;
 }
 
 cStatistic::~cStatistic()
 {
-    dropAndDelete(td);
-    dropAndDelete(ra);
 }
 
 void cStatistic::parsimPack(cCommBuffer *buffer) const
@@ -70,11 +63,6 @@ void cStatistic::parsimPack(cCommBuffer *buffer) const
     throw cRuntimeError(this, E_NOPARSIM);
 #else
     cRandom::parsimPack(buffer);
-
-    if (buffer->packFlag(td != nullptr))
-        buffer->packObject(td);
-    if (buffer->packFlag(ra != nullptr))
-        buffer->packObject(ra);
 #endif
 }
 
@@ -84,24 +72,11 @@ void cStatistic::parsimUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this, E_NOPARSIM);
 #else
     cRandom::parsimUnpack(buffer);
-
-    if (buffer->checkFlag())
-        take(td = (cTransientDetection *)buffer->unpackObject());
-    if (buffer->checkFlag())
-        take(ra = (cAccuracyDetection *)buffer->unpackObject());
 #endif
 }
 
 void cStatistic::copy(const cStatistic& res)
 {
-    dropAndDelete(td);
-    dropAndDelete(ra);
-    td = res.td;
-    if (td)
-        take(td = td->dup());
-    ra = res.ra;
-    if (ra)
-        take(ra = ra->dup());
 }
 
 cStatistic& cStatistic::operator=(const cStatistic& res)
@@ -109,24 +84,6 @@ cStatistic& cStatistic::operator=(const cStatistic& res)
     cOwnedObject::operator=(res);
     copy(res);
     return *this;
-}
-
-void cStatistic::setTransientDetectionObject(cTransientDetection *obj)
-{
-    if (td)
-        throw cRuntimeError(this, "setTransientDetection(): Object already has a transient detection algorithm");
-    td = obj;  // create pointer to td object
-    td->setHostObject(this);  // and create one back
-    take(td);
-}
-
-void cStatistic::setAccuracyDetectionObject(cAccuracyDetection *obj)
-{
-    if (ra)
-        throw cRuntimeError(this, "setAccuracyDetection(): Object already has an accuracy detection algorithm");
-    ra = obj;  // create pointer to ra object
-    ra->setHostObject(this);  // and create one back
-    take(ra);
 }
 
 void cStatistic::collect2(double, double)

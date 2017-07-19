@@ -681,34 +681,6 @@ class cPSquare extends cDensityEstBase
     @descriptor(readonly);
 }
 
-class cTransientDetection extends cOwnedObject
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
-class cAccuracyDetection extends cOwnedObject
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
-class cTDExpandingWindows extends cTransientDetection
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
-class cADByStddev extends cAccuracyDetection
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
 //----
 
 class cExpression extends cObject

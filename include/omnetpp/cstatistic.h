@@ -22,10 +22,6 @@
 
 namespace omnetpp {
 
-class cTransientDetection;
-class cAccuracyDetection;
-
-
 /**
  * @brief cStatistic is an abstract class for computing statistical properties
  * of a random variable.
@@ -37,10 +33,6 @@ class cAccuracyDetection;
  */
 class SIM_API cStatistic : public cRandom
 {
-  private:
-    cTransientDetection *td;
-    cAccuracyDetection *ra;
-
   private:
     void copy(const cStatistic& other);
 
@@ -216,32 +208,6 @@ class SIM_API cStatistic : public cRandom
      * Returns the sum of weight*value*value products.
      */
     virtual double getWeightedSqrSum() const = 0;
-    //@}
-
-    /** @name Transient and result accuracy detection. */
-    //@{
-
-    /**
-     * Assigns transient and accuracy detection objects to the statistic
-     * object.
-     */
-    virtual void setTransientDetectionObject(cTransientDetection *object);
-
-    /**
-     * Assigns transient and accuracy detection objects to the statistic
-     * object.
-     */
-    virtual void setAccuracyDetectionObject(cAccuracyDetection *object);
-
-    /**
-     * Returns the assigned transient and accuracy detection objects.
-     */
-    virtual cTransientDetection *getTransientDetectionObject() const  {return td;}
-
-    /**
-     * Returns the assigned transient and accuracy detection objects.
-     */
-    virtual cAccuracyDetection  *getAccuracyDetectionObject() const  {return ra;}
     //@}
 
     /** @name Generating random numbers based on the collected data */

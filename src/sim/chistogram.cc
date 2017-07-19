@@ -28,7 +28,6 @@
 #include <cmath>
 #include "omnetpp/distrib.h"
 #include "omnetpp/globals.h"
-#include "omnetpp/cdetect.h"
 #include "omnetpp/chistogram.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
