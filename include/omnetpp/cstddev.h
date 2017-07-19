@@ -26,7 +26,6 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
-//TODO rename collect2() to collectWeighted(); revise names of weighted getter methods
 class SIM_API cStdDev : public cStatistic
 {
   protected:
@@ -35,7 +34,7 @@ class SIM_API cStdDev : public cStatistic
     double maxValue;
     int64_t numValues; // the actual count of observations, independent of their weights
     double sumWeights;  // equals count in the unweighted case
-    double sumWeightedValues; // sum in the unweighted case
+    double sumWeightedValues; // equals sum in the unweighted case
     double sumSquaredWeights; // equals count in the unweighted case
     double sumWeightedSquaredValues; // sum of squared values in the unweighted case
 
@@ -166,8 +165,8 @@ class SIM_API cStdDev : public cStatistic
     virtual double getMean() const override;
 
     /**
-     * Returns the (weighted/unweighted) standard deviation of the observations,
-     * or NaN if less than two observations have been collected.
+     * Returns the estimated (weighted/unweighted) standard deviation of the
+     * observations, or NaN if less than two observations have been collected.
      */
     virtual double getStddev() const override;
 
@@ -178,22 +177,26 @@ class SIM_API cStdDev : public cStatistic
     virtual double getVariance() const override;
 
     /**
-     * Returns the sum of weights.
+     * Returns the sum of weights. (For unweighted statistics, all weights are
+     * taken to be 1.0.)
      */
     virtual double getWeights() const override  {return sumWeights;}
 
     /**
-     * Returns the sum of weight*value products.
+     * Returns the sum of weight*value products. (For unweighted statistics, all 
+     * weights are taken to be 1.0.)
      */
     virtual double getWeightedSum() const override  {return sumWeightedValues;}
 
     /**
-     * Returns the sum of squared weights.
+     * Returns the sum of squared weights. (For unweighted statistics, all weights 
+     * are taken to be 1.0.)
      */
     virtual double getSqrSumWeights() const override  {return sumSquaredWeights;}
 
     /**
-     * Returns the sum of weight*value*value products.
+     * Returns the sum of weight*value*value products. (For unweighted statistics, 
+     * all weights are taken to be 1.0.)
      */
     virtual double getWeightedSqrSum() const override  {return sumWeightedSquaredValues;}
 

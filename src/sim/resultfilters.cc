@@ -136,7 +136,7 @@ bool MeanFilter::process(simtime_t& t, double& value, cObject *details)
         lastValue = value;
 
         if (isFirstValue || t == startTime)
-            return false;  // suppress initial 0/0 = NaNs
+            return true;  // avoid initial 0/0 = NaNs, value is valid as mean
 
         double interval = SIMTIME_DBL(t - startTime);
         value = weightedSum / interval;
@@ -208,7 +208,7 @@ bool TimeAverageFilter::process(simtime_t& t, double& value, cObject *details)
     lastValue = value;
 
     if (isFirstValue || t == startTime)
-        return false;  // suppress initial 0/0 = NaNs
+        return true;  // avoid initial 0/0 = NaNs, value is valid as mean
 
     double interval = SIMTIME_DBL(t - startTime);
     value = weightedSum / interval;
