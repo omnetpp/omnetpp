@@ -1,3 +1,93 @@
+2017-07-15  Andras Varga
+
+	* Histogram classes: added support for weighted statistics to histogram
+	classes (cHistogramBase and subclasses: cHistogram, cVarHistogram,
+	cLongHistogram, cDoubleHistogram).
+	
+	Details:
+	- The data type of bin values were changed from int to double; they now 
+	  store sum of weights instead of observation counts. The unweighted case
+	  is treated simply as a special case of weighted where all weights are 1.0.
+	  
+	- New cDensityEstBase methods: getUnderflowSumWeights(), getOverflowSumWeights(). 
+	  They return sum of weights for observations that are outside the histogram 
+	  range. Note: the slightly misnamed getUnderflowCell()/getOverflowCell()
+	  methods that return overflow/underflow counts are still available.
+
+2017-07-12  Andras Varga
+
+	* cStddev: added support for weighted statistics. To make a weighted
+	cStddev, pass weighted=true in the constructor. The weighted-ness of
+	an cStddev instance cannot be changed afterwards. getMean() and 
+	getStddev() now return the weighted mean / stddev if the object is
+	weighted.
+
+	cWeightedStddev has been deprecated, as it is no longer needed. For now,
+	it has been turned into a trivial subclass of cStddev that just
+	initializes it with weighted=true.
+	
+	Incompatible change: sum and sum of squares of the values are no longer
+	available when collectecting weighted statistics (getSum() and getSqrSum()
+	throw an exception).
+
+2017-07-15  Andras Varga
+
+	* opp_string: op== was missing
+
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-07-13  Rudolf Hornig
+
+	* Workaround for compiler bug: removed empty ctor from EndTraversalException,
+	as it (strangely) caused such exceptions not to be caught properly when 
+	compiling with -O1 and greater optimization level with clang 4 on Windows.
+
+2017-06-08  Attila Torok
+
+	* cOsgCanvas: Changes necessary for allowing the OSG Viewer to be factored 
+	out from Qtenv into as separate support library, loaded on demand at runtime.
+	The simulation kernel kernel (and cOsgCanvas) now does NOT depend on the
+	OSG libraries: does not include OSG header files at all, and does not
+	reference any symbols in the OSG libraries.
+
+	Incompatible change: One must use the new cOsgCanvas::EarthViewpoint class
+	instead of osgEarth::Viewpoint in models.
+	
+	Details:
+	- cOsgCanvas now treats osg::Node* as opaque pointers. No attempt is made
+	  to dereference it.
+	- cOsgCanvas now performs osg::Node reference counting via cEnvir's new
+	  refOsgNode()/unrefOsgNode() methods instead of Node's methods.
+	- No WITH_OSG or WITH_OSGEARTH conditionals anywhere in omnetpp or qtenv.
+	  The only difference with WITH_OSG is whether or not the support library
+	  gets built. Consequences: the cOsgCanvas is always available; 
+	  cModule::getOsgCanvas() never throws "OSG not available" exception.
+
+2017-05-10  Attila Torok
+
+	* Figure classes: zIndex is now additive; added cFigure::getEffectiveZIndex().
+	The effective zIndex is the sum of the zIndex values of the figure and
+	all its ancestors up to the root figure. This provides more flexibility,
+	as the figure tree is no longer constrained by stacking order.
+
+2017-05-10  Attila Torok
+
+	* Figure classes: Enabled and implemented cPanelFigure
+
+2017-04-27  Attila Torok
+
+	* Figure classes: fixes
+	- added destructor to cPathFigure (leaked memory)
+	- cFigure::Pixmap: functions weren't meant to be virtual
+	- cFigure: tooltip was not initialized by ctor.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------

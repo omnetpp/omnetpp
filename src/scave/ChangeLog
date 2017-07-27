@@ -1,3 +1,158 @@
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-07-12  Andras Varga
+
+	* Proper loading and exporting of weighted statistics
+	- OmnetppResultFileLoader, SqliteResultFileLoader: updated
+	- JsonExporter, CsvRecordsExporter, CsvForSpreadsheetExporter: export
+	  fields related to weighted statistics
+
+2017-06-27  Andras Varga
+
+	* scavetool: do not export itervars as scalars by default; added -y,
+	--add-itervars-as-scalars option to turn exporting itervars back on
+
+2017-07-13  Andras Varga
+
+	* ResultFileManager: follow change: itervars are no longer saved as
+	scalars too, instead we add them (as scalars) from at load time.
+
+	Added itervar-scalars can now be identified (ScalarResult contains an
+	isItervar flag) and filtered out if as necessary. Corresponding
+	ResultFileManager methods now accept an includeItervars flag.
+
+2017-06-22  Andras Varga
+
+	* scavetool: edits in verbose-mode output
+
+2017-06-22  Andras Varga
+
+	* Remove unused class IndexedVectorFileReaderNode2
+
+2017-06-22  Andras Varga
+
+	* IndexedVectorFileReaderNode: remove gettimeofday() calls once inserted
+	for profiling purposes
+
+2017-06-22  Andras Varga
+
+	* OmnetppResultFileLoader: minor improvements:
+	- better support for merging multiple instances of the same run in various files
+	- fixes for extracting itervars from run attrs
+
+2017-06-21  Andras Varga
+
+	* ResultFileManager: do not store run number explicitly, as it no longer
+	has much significance. It is still available as the 'runnumber' attribute.
+
+2017-07-12  Andras Varga
+
+	* Exporter refinements
+	- verify that selected item types are a subset of supported item types
+	- prevent accidentally appending to existing file
+
+2017-04-06  Andras Varga
+
+	* JSON and CSV exporter changes:
+	- Python export changed to JSON export with optional Python flavour
+	- CSV export renamed to "CSV for spreadsheet" and significantly improved
+	 (also saves iteration variables for better run identification, etc)
+	- another CSV export added ("CSV Records"), provenly suitable as input
+	  for the read_csv() of Python PANDAS
+
+2017-04-06  Andras Varga
+
+	* Remove old export code:
+	- removed export.cc/h and octaveexport.cc/h
+	- scavetool: removed obsolete export commands 'vector' and 'scalar'
+
+2017-04-04  Andras Varga
+
+	* Follow change: iteration variables are now saved in result files
+	separately from run attrs, e.g. into 'itervar' lines. Partial list
+	of changes:
+	- Run class: added getIterationVariables() method
+	- ResultFileManager: added methods like getUniqueIterationVariableNames()
+	- OmnetppResultFileLoader, SqliteResultFileLoader: updated
+	- scavetool: added --list-itervars option
+
+2017-03-31  Andras Varga
+
+	* ResultFileManager, OmnetppResultFileLoader, etc: preserve order of
+	paramAssignment entries, i.e. "param" lines in the result file.
+
+2017-03-30  Andras Varga
+
+	* SqliteResultFileLoader: updated: histBin table was renamed to histogramBin
+
+2017-07-13  Andras Varga
+
+	* scavetool: sort runs by runId, for consistent query output
+
+2017-04-04  Andras Varga
+
+	* scavetool: use opp_formatTable() for all -q output
+
+2017-03-30  Andras Varga
+
+	* Added StatisticsResult (HistogramResult sans histogram). Until now,
+	statistic results in scalar files were loaded as several unrelated
+	scalars, and were not available as a single object.
+
+	* OmnetppResultFileLoader: refactoring
+
+	* SqliteResultFileLoader: observe newly added isHistogram column
+
+2017-03-28  Andras Varga
+
+	* OmnetppResultFileLoader: fix: 'run' line is mandatory since version 4.0
+
+2017-03-29  Andras Varga
+
+	* SqliteResultFileLoader: loading of vector attrs and run params was missing
+
+2017-03-28  Andras Varga
+
+	* SqliteResultFileLoader: refactoring
+
+2017-03-28  Andras Varga
+
+	* SqliteResultFileLoader: use camelized names in SQL queries. Note:
+	sqlite is case insensitive.
+
+2017-03-21  Andras Varga
+
+	* ResultItem classes: wrap access of naked data members into getter.
+	This provides more flexibility in implementing data members, e.g.
+	name strings and attribute sets can be pooled. Affects ScalarResult,
+	VectorResult, HistogramResult, Run, FileRun, etc.
+
+2017-03-20  Andras Varga
+
+	* ResultFileManager, OmnetppResultFileLoader: remove fields numLines
+	and numUnrecognizedLines (they were unused since introduction of sqlite
+	readers)
+
+2017-03-17  Andras Varga
+
+	* DataTable classes: throw instead of ignoring errors
+
+2017-05-25  Rudolf Hornig
+
+	* Updated makefiles for speeding up the build:
+	- generated files are created only once, even when using parallel build
+	- binaries are copied to their final destination using proper makefile
+	  targets
+
+----------- lines above this marker have been added from git log -----------
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------

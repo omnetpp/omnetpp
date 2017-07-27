@@ -1,3 +1,25 @@
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-05-25  Rudolf Hornig
+
+	* Updated makefiles for speeding up the build:
+	- generated files are created only once, even when using parallel build
+	- binaries are copied to their final destination using proper makefile
+	  targets
+
+2017-05-12  Rudolf Hornig
+
+	* Added (% total) to the event banner. The event banner now display
+	progress both in terms of % of the run and % of the total batch.
+	The two are different if several runs are executed in the same process.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------

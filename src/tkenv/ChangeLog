@@ -1,10 +1,34 @@
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-05-25  Rudolf Hornig
+
+	* Updated makefiles for speeding up the build:
+	- generated files are created only once, even when using parallel build
+	- binaries are copied to their final destination using proper makefile
+	  targets
+
+2017-04-28  Attila Torok
+
+	* Fix: Redraw the canvas from scratch when figure tags have changed.
+
+2017-04-19  Attila Torok
+
+	* Make pixmap figure offset work again.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------
 
 2017-03-14  Attila Torok
 
-	* Removed remains of support for recording a pair of doubles in an 
+	* Removed remains of support for recording a pair of doubles in an
 	output vector.
 
 2017-02-06  ------ omnetpp-5.1pre3 released ------

@@ -1,7 +1,42 @@
+2017-07-06  Rudolf Hornig
+
+	* opp_makemake: fixed build file dependency problem when the target name
+	has an extension. Note the double colon (::) dependency definition in the
+	generated makefiles. This is called terminal rule, and required because the
+	rule applies to all files (%) in a folder. This is a special case for the
+	generic % rule.
+
+2017-05-26  Rudolf Hornig
+
+	* opp_makemake: IMPORTANT CHANGES regarding debug/release-mode builds
+
+	- Models are built in RELEASE mode by default. Until now, DEBUG was the
+	  default, which resulted in casual users always running their simulations
+	  in DEBUG mode, i.e. much slower than possible.
+
+	- RELEASE and DEBUG mode binaries can now co-exist, so users do not have
+	  to recompile when they switch modes (e.g. when they want to debug a
+	  simulation -- remember, they are built in RELEASE mode by default.)
+	  This is a significant gain especially for large models like INET.
+	  The goal was achieved by adding the "_dbg" suffix to the names of
+	  DEBUG-mode binaries.
+
+	- Binaries are now hard-linked from the build directory (out/) to the
+	  target directory instead of being soft-linked. This leaves the copy
+	  in the build directory intact when the one in the target directory
+	  is deleted.
+
+2017-05-25  Rudolf Hornig
+
+	* Updated makefiles for speeding up the build:
+	- generated files are created only once, even when using parallel build
+	- binaries are copied to their final destination using proper makefile
+	  targets
+
 2017-05-18  Rudolf Hornig
 
 	* Updated makefiles to speed up the build process (eliminited superfluous
-    file copying when everything was up to date.)
+	file copying when everything was up to date.)
 
 	* Makefiles now correctly check all dependencies and return
 	immeiately if the build is up to date.

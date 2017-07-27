@@ -1,3 +1,9 @@
+2017-06-22  Andras Varga
+
+	* Refreshed result files (due to Aloha change and result file format changes)
+
+	* Added some vec files from the Aloha project
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------

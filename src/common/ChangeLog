@@ -1,3 +1,93 @@
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-07-12  Andras Varga
+
+	* New result file writers: added support for recording weighted statistics
+	- Statistics class changed to accommodate weighted statistics
+	- SQLite recorder: added isWeighted column to statistic table
+
+2017-07-03  Andras Varga
+
+	* New result file writers: fix for empty attr names. They occur when
+	@statistic declarations contain extra semicolons inside	the parens
+
+2017-06-30  Andras Varga
+
+	* New result file writers: fix crash in endRecordingForRun() when file was
+	not open
+
+2017-04-06  Andras Varga
+
+	* Refined CsvWriter and JsonWriter classes, used for exporting results
+	in respective formats from scavetool and the IDE.
+
+2017-04-04  Andras Varga
+
+	* New result file writers: save iteration variables separately from
+	run attributes. NOTE: This changes result file format!
+
+	- omnetpp recorders: introduced "itervar" lines
+	- SQLite recorder: added runItervar table
+
+2017-03-31  Andras Varga
+
+	* New result file writers: preserve order of "param" entries. These
+	entries contain a copy of the parameter assignment lines from omnetpp.ini,
+	so their order is important.
+
+	- omnetpp recorders: ensure order of "param" lines in the file mirror the
+	  order in the ini file
+	- SQLite recorder: added a paramOrder column to the RunParam table.
+
+2017-03-30  Andras Varga
+
+	* SQLite result files: histBin table renamed to histogramBin
+
+2017-04-04  Andras Varga
+
+	* stringutils: opp_formatTable() fix: it printed one more LF than needed
+
+2017-03-30  Andras Varga
+
+	* SQLite result files: added "isHistogram" column to "statistic" table.
+
+2017-03-29  Andras Varga
+
+	* SQLite result file reader: loading of vector attrs and run params was missing
+
+2017-03-28  Andras Varga
+
+	* SQLite result file writers:
+	- database schema factored out to separate file to avoid duplication
+	- camelize remaining names in the database (Note: sqlite is case insensitive)
+
+2017-06-22  Andras Varga
+
+	* New result file writers: OmnetppVectorFileWriter produced incorrect index
+	file in certain cases
+
+2017-05-25  Rudolf Hornig
+
+	* Updated makefiles for speeding up the build:
+	- generated files are created only once, even when using parallel build
+	- binaries are copied to their final destination using proper makefile
+	  targets
+
+2017-05-25  Attila Torok
+
+	* common/stlutil: Add containsKey() for unordered_map.
+
+2017-03-30  Andras Varga
+
+	* Result file writers: whitespace changes in the output, for consistency.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------

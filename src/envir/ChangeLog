@@ -1,3 +1,93 @@
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-07-12  Andras Varga
+
+	* Output scalar file recorders: sum and sqrSum are no longer saved for
+	weighted statistics. This is to follow recent cStddev/cWeightedStddev
+	change.
+
+2017-07-13  Andras Varga
+
+	* Output scalar files: do not save numeric iteration variables (of
+	parameter studies) as scalars. Instead we'll add them (as scalars)
+	at load time, if needed.
+
+2017-06-21  Andras Varga
+
+	* Cleanup: remove the leading "c" from the names of remaining classes,
+	namely cXMLDocCache, cFileSnapshotManager, cAkOutputVectorManager
+
+2017-06-22  Andras Varga
+
+	* Switch to new scalar/vector file recorders: The default values for
+	the outputscalarmanager-class= and outputvectormanager-class= config
+	options	are now the new classes OmnetppOutputScalarManager and
+	OmnetppOutputVectorManager. These classes rely on the new result
+	file writer classes in common/.
+
+	The old classes cIndexedFileOutVectorManager and cFileOutScalarManager
+	still exist. They will be removed in a later version of OMNeT++.
+
+2017-06-22  Andras Varga
+
+	* Fix: force SQLite result file recorder classes to be included into
+	simulation executables by the linker.
+
+2017-04-04  Andras Varga
+
+	* Old result file recorders: save iteration variables separately from
+	run attrs, into 'itervar' lines.
+
+2017-03-30  Andras Varga
+
+	* Refactoring: RunData class converted a collection of utility functions
+	(ResultFileUtils). Results in less state and more flexibility.
+
+2017-07-12  Andras Varga
+
+	* EnvirBase: changed the lifecycle of several plugin objects to per-run,
+	i.e. those objects are now deleted and re-created between runs. Affected
+	plugins: event log recorder, output vector file recorder, output scalar
+	file recorder, snapshot recorder, future event set (FES).
+
+	The corresponding configuration options have also become per-run options:
+	eventlogmanager-class=, outputvectormanager-class=, outputscalarmanager-class=,
+	snapshotmanager-class=, futureeventset-class=.
+
+	Side effect: in output vector files, vector IDs now start again from 0
+	at the start of each run when running multiple runs. Before, they continued
+	from where the previous run left off.
+
+2017-03-24  Andras Varga
+
+	* EnvirBase: refactoring: replaced CREATE_BY_CLASSNAME() macro by
+	createByClassName() template function
+
+2017-05-25  Rudolf Hornig
+
+	* Updated makefiles for speeding up the build:
+	- generated files are created only once, even when using parallel build
+	- binaries are copied to their final destination using proper makefile
+	  targets
+
+2017-06-08  TÖRÖK Attila
+
+	* EnvirBase: follow cEnvir changes (addition of refOsgNode()/unrefOsgNode())
+
+2017-03-30  Andras Varga
+
+	* Result file recorders: space changes in result files for consistency
+	and to minimize space differences with new recorders. Affected classes:
+	cFileOutputScalarManager, cFileOutputVectorManager, and
+	cIndexedFileOutputVectorManager
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------

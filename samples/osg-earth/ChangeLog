@@ -1,3 +1,8 @@
+2017-06-08  Attila Torok
+
+	* Follow OMNeT++ API change: use cOsgCanvas::EarthViewpoint instead of
+	osgEarth::Viewpoint.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------
@@ -10,8 +15,8 @@
 
 2017-01-19  Attila Torok
 
-	* Added an offline tile source package, and corresponding omnetpp.ini 
-	configurations. Levels 16, 17 and 18 are to be added in later to 
+	* Added an offline tile source package, and corresponding omnetpp.ini
+	configurations. Levels 16, 17 and 18 are to be added in later to
 	release builds from an overlay zip.
 
 2016-12-20  Attila Torok

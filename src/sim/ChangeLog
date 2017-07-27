@@ -1,3 +1,102 @@
+2017-07-19  Andras Varga
+
+	* Added "skipNan" result filter, for use with @statistic.
+
+2017-07-17  Andras Varga
+
+	* Statistics recording: added support collecting for time-weighted
+	statistics of variables like queue length. Add timeWeighted=1 or
+	timeWeighted=true to @statistic to make it collect time-weighted
+	statistics.
+
+	timeWeighted=1 affects the operation of the following recorders:
+	"mean", "stats" and "histogram". The "timeavg" recorder always
+	computes time average; an additional recorder "avg" has also been
+	added that always computes unweighted mean. "mean" emulates either
+	"avg" or "timeavg", depending on the presence of timeWeighted=1.
+
+2017-07-15  Andras Varga
+
+	* Histogram classes: added support for weighted statistics. See
+	include/omnetpp/ChangeLog for details.
+
+2017-07-12  Andras Varga
+
+	* cStddev: implemented support for weighted statistics. See
+	include/omnetpp/ChangeLog for details.
+
+	Note: there is a slight change in the file format statistics are saved
+	into (saveToFile() / loadFromFile() methods). Existing files must be
+	re-recorded or hand-modified.
+
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-05-25  Rudolf Hornig
+
+	* Updated makefiles for speeding up the build:
+	- generated files are created only once, even when using parallel build
+	- binaries are copied to their final destination using proper makefile
+	  targets
+
+2017-06-08  Attila Torok
+
+	* Changes necessary for allowing the OSG Viewer to be factored out from
+	Qtenv into as separate support library, loaded on demand at runtime.
+	The sim. kernel	now does not link with, or otherwise require, the OSG
+	libraries.
+
+	Details:
+	- cOsgCanvas now treats osg::Node* as opaque pointers. No attempt is made
+	  to dereference it.
+	- cOsgCanvas now performs osg::Node reference counting via cEnvir's new
+	  refOsgNode()/unrefOsgNode() methods instead of Node's methods.
+	- Removed sim_osg.msg, and OSG-related code from sim_std.msg. Contents has
+	  been moved inside the Qtenv OSG plugin.
+	- No WITH_OSG or WITH_OSGEARTH conditionals anywhere in omnetpp or qtenv.
+	  The only difference with WITH_OSG is whether or not the support library
+	  gets built. Consequences: the cOsgCanvas is always available;
+	  cModule::getOsgCanvas() never throws "OSG not available" exception.
+
+2017-06-12  Attila Torok
+
+	* cRandom: fixed typo in ctor implementation. Use member instead of parameter.
+
+2017-05-19  Attila Torok
+
+	* Fixed assertion failure in static registerSignal() in a dynamically
+	loaded lib.
+
+2017-05-18  Attila Torok
+
+	* Figure classes: fixed parsing of offset property for path figures.
+
+2017-05-10  Attila Torok
+
+	* Figure classes: implemented getEffectiveZIndex()
+
+2017-05-10  Attila Torok
+
+	* Figure classes: Implemented cPanelFigure
+
+2017-05-04  Attila Torok
+
+	* Figure classes: improvement in @figure parsing: allow empty string as
+	property key if it has no values. Such property keys are created when
+	there is a semicolon at the end of the list	(but within the parentheses).
+
+2017-04-18  Attila Torok
+
+	* Figure class: misc small refinements:
+	- figure copying: zIndex was not copied
+	- change notification adjustments
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------

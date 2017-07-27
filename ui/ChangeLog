@@ -1,3 +1,152 @@
+2017-07-16  Andras Varga
+
+	* Analysis Tool: Updated for 'statistic' items and for weighted statistics.
+
+	Background: Specifying "record=stats" in a @statistic NED property, or
+	or calling the record() method on a cStddDev object saves a "statistic"
+	object in the output scalar file (.sca). A "statistic" object includes
+	fields like the count of observations, mean, standard deviation, minimum
+	and maximum value. "statistic" objects so far have been blown up to
+	several unrelated scalars upon loading into the Analysis Tool, and were
+	not available as objects. Now they are loaded as objects, and appear in
+	the Histograms and All tabs of the Browse Data page. Statistics fields
+	continue to be available as scalars as well, so they can be used as
+	chart input.
+
+	Also, weighted statistics (like those saved from cWeightedStddev) were
+	not properly displayed in the Analysis Tool. This has been rectified
+	as well.
+
+	Details:
+	- The Histograms tab on the Browse Data page now includes "statistics"-
+	  type results as well.
+
+	- The Histograms tab now has new table columns: "Kind", "SumWeights",
+	  "#Bins", "Hist.Range", all displayed by default. "Kind" indicates
+	  whether a result item is a "statistic" or a "histogram", and whether
+	  it is weighted or unweighted.
+
+	- Individual fields of "statistic" and "histogram" result items are
+	  no longer displayed on the Scalars page.
+
+	- Properties for "statistic" and "histogram" result items now includes
+	  "Kind" ("weighted"/"unweighted") and "Sum of weights".
+
+	- The "Variance" line has been removed from Properties view because
+	  it's not too useful and can be easily computed as the square of the
+	  standard deviation.
+
+	- Missing or unavailable data in table cells is now displayed with a
+	  hyphen instead of "n.a."
+
+	- On the All tab of Browse Data page, result item fields are now in
+	  natural order (i.e. no longer in alphabetically sorted).
+
+	- New icon for scalar items on the All tab of Browse Data page
+
+2017-06-27  Andras Varga
+
+	* Analysis Tool: better display of histogram bins in the Properties view.
+	The display format of bins was changed from "a..b" to "[a,b)", in order
+	to clearly indicate that "a" is	inclusive and "b" is exclusive.
+
+2017-06-21  Andras Varga
+
+	* Analysis Tool: Export dialog refined
+
+	- Dialog now comes up with correct size (XSWT form fully visible)
+	- Better filename generation/validation
+	- Disable Finish button when filename field is empty
+	- Added 'Open exported file afterwards' checkbox
+	- Other refinements
+
+2017-04-06  Andras Varga
+
+	* Analysis Tool: final removal of export code (it was no longer
+	accessible from	the GUI since version 5.1.)
+
+2017-04-04  Andras Varga
+
+	* Analysis Tools: changed the syntax for accessing iteration variables
+	in filter expressions. Before, they could be accessed like run attributes,
+	with the "attr:" prefix. Now, one needs to use the "itervar:" prefix,
+	which is more explicit.
+
+2017-03-31  Andras Varga
+
+	* Analysis Tool: Properties view: properly display attributes, iteration
+	variables and parameter assignments for runs
+
+2017-03-20  Andras Varga
+
+	* Analysis Tool: Properties view: removed "Number of lines" and
+	"Unrecognized lines" entries from the properties of result files
+
+2017-06-23  Rudolf Hornig
+
+	* IDE: updated Eclipse for the final Oxygen release
+
+2017-06-08  Rudolf Hornig
+
+	* Run/Debug Launchers: changes related to "build before launch" and
+	recent changes in debug/release builds.
+
+	- The Run, Profile and Debug launch types now automatically trigger build.
+
+	- The launcher now switches the project (and optionally all projects it
+	  depends on) to the appropriate build configuration if necessary: Run
+	  and Profile will perform RELEASE build, Debug will perform DEBUG build.
+
+	- For Debug launch, the "_dbg" suffix is added implicitly to the target
+	  name (both exe and shared lib), and it is expected that the simulation
+	  will also load the "_dbg" versions of libraries.
+
+	- A new "Build before launch" section was added to the Launch config
+	  dialog, which allows you to control whether to switch build configuration
+	  automatically, or ask before the build. The scope of build can also
+	  configured; options are: "None", "This project", or "Project + dependencies".
+
+	- If the launch is configured as "Ask before build" (default), a
+	  confirmation dialog is shown on launch (and before the build), asking
+	  whether to switch the active build configuration to appropriate one.
+	  The dialog allows you to set the decision as permanent and reconfigures
+	  the launch config accordingly.
+
+2017-05-26  Rudolf Hornig
+
+	* Makefile generator: follow changes in the command-line opp_makemake tool
+
+	- Models are built in RELEASE mode by default. Until now, DEBUG was the
+	  default, which resulted in casual users always running their simulations
+	  in DEBUG mode, i.e. much slower than possible.
+
+	- RELEASE and DEBUG mode binaries can now co-exist, so users do not have
+	  to recompile when they switch modes (e.g. when they want to debug a
+	  simulation -- remember, they are built in RELEASE mode by default.)
+	  This is a significant gain especially for large models like INET.
+	  The goal was achieved by adding the "_dbg" suffix to the names of
+	  DEBUG-mode binaries.
+
+	- Binaries are now hard-linked from the build directory (out/) to the
+	  target directory instead of being soft-linked. This leaves the copy
+	  in the build directory intact when the one in the target directory
+	  is deleted.
+
+2017-05-29  Rudolf Hornig
+
+	* IDE: Use statically linked stdc++ library for the IDE native lib for
+	better compatibility.
+
+2017-05-12  Rudolf Hornig
+
+	* Simulation Launcher: better progress reporting and cancellation
+	for batch runs. Internally, this is the result of switching to the
+	new JobGroups API of Eclipse.
+
+2017-05-11  Rudolf Hornig
+
+	* IDE: use Eclipse Oxygen milestone builds (platform version 4.6.2)
+
 2017-05-29  Rudolf Hornig
 
 	* The IDE's native library is now using statically linked c++ standard
@@ -8,8 +157,8 @@
 
 2017-04-29  Rudolf Hornig
 
-	* Fixed a problem where the IDE was not able to load its native library
-	if it was not started from the MinGW shell.
+	* IDE: Fixed a problem where the IDE was not able to load its native
+	library	if it was not started from the MinGW shell.
 
 	* The IDE now properly detects whether it is using MinGW or Clang/C2.
 
@@ -26,11 +175,11 @@
 
 2017-03-04  Andras Varga
 
-	* nativelibs: tweak SWIG wrapping to accomodate changes in the scave library
+	* nativelibs: tweak SWIG wrapping to accommodate changes in the scave library
 
 2017-03-16  Andras Varga
 
-	* nativelibs: tweak SWIG wrapping to accomodate changes in the scave library
+	* nativelibs: tweak SWIG wrapping to accommodate changes in the scave library
 
 2017-02-17  Andras Varga
 
@@ -74,16 +223,16 @@
 	target in the generated makefiles (recursive wildcard; delete only the
 	actual target)
 
-2017-03-03  Levente Mészáros
+2017-03-03  Levente Meszaros
 
 	* Sequence Chart: Eventlog view: selection handling fixes
-	   - Temporariliy disabled reusing selection (due to NPE) after filtering
+	   - Temporarily disabled reusing selection (due to NPE) after filtering
 	     the eventlog
 	   - Fixed dangling focusElement on input change.
 	   - Changed selection marks to be more apparent.
 	   - Fixed revealing selected element in VirtualTable.
 
-2017-03-03  Levente Mészáros
+2017-03-03  Levente Meszaros
 
 	* Sequence Chart: Eventlog view: Fixed foreground color when the table
 	widget is not focused.
@@ -205,7 +354,7 @@
 	* neddoc: made the doxy file path relative to the project. This fixes the
 	issue in windows.
 
-2016-11-21  Levente Mészáros
+2016-11-21  Levente Meszaros
 
 	* Debug launch: GDB init file changed from python2 to python3 syntax
 
@@ -349,7 +498,7 @@
 	* Launcher: make simulation batch cancellable; getting run list was
 	broken by a recent commit
 
-2016-10-12  Levente Mészáros
+2016-10-12  Levente Meszaros
 
 	* Fixed incorrect tooltip background/foreground colors.
 
@@ -380,7 +529,7 @@
 
 	* Inifile editor: fix "widget already disposed" error
 
-2016-10-05  Levente Mészáros
+2016-10-05  Levente Meszaros
 
 	* Fixed incorrect swig mapping for ptr_t/uintptr_t.
 

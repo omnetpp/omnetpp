@@ -1,3 +1,215 @@
+2017-04-06  Andras Varga
+
+	* Modernizing: use C++11's range-based for loops where applicable, using
+	clang-tidy's modernize-loop-convert.
+
+	* Modernizing: replace INT64_PRINTF_FORMAT and LL with C++11's PRId64.
+	Note: PRId64 includes the "d" that was not part of INT64_PRINTF_FORMAT
+	alias LL.
+
+2017-07-07  Rudolf Hornig
+
+	* Fixed a typo in Makefiles that prevented building on Windows.
+
+2017-07-03  Attila Torok
+
+	* GenericObjectInspector: Fall back to the descriptor of the statically
+	declared type of object fields when a descriptor for their dynamic type
+	cannot be found.
+
+2017-05-25  Attila Torok
+
+	* Fixed a few issues reported by the Clang static analyzer.
+
+2017-06-14  Attila Torok
+
+	* Fix tab order (focus traversal) of widgets in	AnimationControllerDialog.
+
+	* Make the RunSelectionDialog big enough initially so all Configuration
+	names/descriptions fit in the ComboBox.
+
+2017-06-08  Attila Torok
+
+	* OSG Viewer is in a separate library, loaded at runtime.
+
+	Motivation:
+
+	OSG and especially osgEarth added a huge number of dependencies to Qtenv,
+	and to all simulation executables independent of whether or not 3D was
+	actually used by the simulation. This increased load time and made
+	debugging harder.
+
+	Change:
+
+	Qtenv and the sim library does not depend at all on OSG or osgEarth. OSG
+	support is in a separate library loaded at runtime. If the model uses
+	OSG, then it needs to link with the necessary libraries.
+
+	Sim API change:
+
+	One must use cOsgCanvas::EarthViewpoint instead of osgEarth::Viewpoint in
+	models.
+
+	Details:
+
+	The library is called oppqtenv-osg. It is looked for in the same places
+	as the other libraries specified by the -l command line argument of
+	opp_run. It is loaded with dlopen/LoadLibrary, so the rules of their
+	operation apply.
+
+	If the library could not be loaded, dummy viewers will be created in
+	place of the real ones. The dummy viewers just print a short message
+	about the failed loading of the library. The class descriptor for
+	cOsgCanvas, its inner classes, and for osg::Node and osg::Group are
+	also loaded from this support library.
+
+	No WITH_OSG or WITH_OSGEARTH conditionals anywhere in omnetpp or qtenv.
+	The only difference with WITH_OSG is whether or not the support library
+	gets built. Inside that, there are WITH_OSGEARTH conditionals still.
+
+	Additionally, OSG frame rate was decreased from 60 to 30 fps.
+
+2017-05-25  Attila Torok
+
+	* GenericObjectInspector: Fixed some crashes when inspecting dynamically
+	changing object hierarchies. Editing a value in the inspector while the
+	simulation runs is now easier, and pauses the simulation momentarily.
+
+	Technical details:
+
+	Until now, the QAbstractItemModel implementation (GenericObjectTreeModel)
+	was basically a single-use throw-away object: it was recreated each time
+	the inspector was refreshed. This was not optimal for many reasons (one
+	is performance, an other one is usability - since the selection was not
+	preserved between refreshes, editing was nearly impossible in Run mode,
+	and a few others). It was also just a thin "proxy" layer between the Qt
+	layouting/painting/etc. mechanisms and the simulation model objects (plus
+	some caching...), which affected stability in some cases, especially in
+	Express mode. From now on, the model is only deleted and recreated when
+	the inspected object, or the inspector "mode" changes. On any regular
+	refresh other than these, the item model detects changes both in node
+	data and tree structure, and notifies Qt about the changes accordingly.
+	It now also stores all presented data internally, taking care to only
+	access the simulation model when it is considered "safe", and not at all
+	during Qt event processing. This should improve stability substantially.
+
+2017-06-02  Attila Torok
+
+	* ModuleInspector: When a figure is clicked, it is now put in the history
+	of the embedded object inspector before its associated object.
+
+2017-05-30  Attila Torok
+
+	* Miscellaneous cleanups, performance improvements and fixes.
+
+2017-05-31  Attila Torok
+
+	* Fixed an issue where modules and figures were not consistent with the
+	simulation time display right after the network was built and
+	initialize() was called, or when the "Run until..." target was reached.
+
+2017-05-25  Attila Torok
+
+	* ModuleInspector: Refined network graphics updates based on change
+	callbacks. It is more incremental now, should be faster.
+
+	* Some tweaks to the implementation of basic Inspector functionality.
+
+2017-05-31  Attila Torok
+
+	* Higher factory default for minimum value in the spinboxes in the
+	'Animation parameters' dialog.
+
+	* Canvas layers (tag filter) dialog geometry is now persistent.
+
+	* Show (debug) or (release) in the window title based on NDEBUG.
+
+2017-05-19  Attila Torok
+
+	* Fixed a few random memory leaks (especially in the network layouter).
+
+2017-05-25  Attila Torok
+
+	* Figures with NaNs in their bounds should no longer break canvas rendering.
+
+2017-05-17  Attila Torok
+
+	* Fixed Bezier segment rendering (especially smooth continuations) in path figures.
+
+	* A bit more spacing around text in module items and on the timeline.
+
+2017-05-11  Attila Torok
+
+	* Inspector crash fixes, internal simplifications.
+
+2017-05-10  Attila Torok
+
+	* The size of arrowheads on connections and line figures is now more
+	reasonable with many combinations of zoom level, line width, and the
+	"zoomLineWidth" property.
+
+2017-05-10  Attila Torok
+
+	* Completely overhauled figure rendering. This should improve performance
+	and fix many issues.
+
+	* The effective zIndex of figures is now global in a canvas, so it can
+	cross figure tree branches. It is also relative (additive) to the
+	effective zIndex of the parent figure. See the documentation of cFigure.
+
+	* Implemented panel figure rendering correctly.
+
+2017-04-18  Attila Torok
+
+	* Figures without a tooltip inherit it from their nearest ancestor
+	that has one. Empty strings break this inheritance, but are not shown.
+	The own tooltip of the figure now overrides that of its associated object.
+
+2017-04-07  Attila Torok
+
+	* Fixed some graphics glitches when rendering outlined text (in network
+	graphics and figures with halo).
+
+2017-05-02  Attila Torok
+
+	* Fixes for the generic Object Inspector:
+	- Use the right font in the tree, and align the text better vertically.
+	- The tree can now be scrolled horizontally too when needed.
+	- Fixed an inconsistency in the model that caused broken branch
+	  lines in the view.
+
+2017-05-02  Attila Torok
+
+	* The list of excluded components in the Log Output is now persistent.
+
+	* The default name and location of the file when saving the log output
+	was made more reasonable.
+
+2017-05-12  Attila Torok
+
+	* Saving run mode profiles (animation settings for the different run
+	modes) to the local .qtenvrc file, as opposed to the global one.
+
+2017-04-06  Attila Torok
+
+	* Changed the contents and layout, and improved the usability of the
+	'Animation Parameters' dialog. The spinboxes in it are now adjustable
+	with steps proportional to the current value.
+
+	* When recording a video, the first frame (which is visible exactly
+	when the recording is started) is no longer omitted from the resulting
+	image sequence.
+
+2017-05-05  Attila Torok
+
+	* The special value "kind" is now also accepted as a color in the "i" tag
+	of display strings of messages as well.
+
+2017-04-19  Attila Torok
+
+	* Fix image colorization (tinting) of pixmap figures. Possible performance
+	improvement of tinted images by increasing the cache size.
+
 2017-05-08  ------ omnetpp-5.1.1 released ------
 
 2017-03-31  ------ omnetpp-5.1 released ------
