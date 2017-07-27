@@ -346,6 +346,8 @@ void LogInspector::restoreExcludedModules()
     for (auto path : excludedModules)
         if (auto mod = getSimulation()->getModuleByPath(path.toUtf8()))
             excludedModuleIds.insert(mod->getId());
+    if (auto provider = dynamic_cast<ModuleOutputContentProvider *>(textWidget->getContentProvider()))
+        provider->setExcludedModuleIds(excludedModuleIds);
 }
 
 void LogInspector::saveContent()
