@@ -25,6 +25,7 @@
 namespace omnetpp {
 
 class cResultFilter;
+class cProperty;
 
 /**
  * @brief Registers a result filter.
@@ -69,6 +70,7 @@ class SIM_API cResultFilter : public cResultListener
     public:
         cResultFilter();
         ~cResultFilter();
+        virtual void init(cComponent *component, cProperty *attrsProperty) {}
         virtual void addDelegate(cResultListener *delegate);
         virtual int getNumDelegates() const;
         cResultListener *getDelegate(int k) const {return delegates[k];}  // unsafe

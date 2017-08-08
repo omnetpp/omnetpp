@@ -54,10 +54,10 @@ class SIM_API StatisticSourceParser
   protected:
     // create and install a cResultFilter; its input is the expression at the top of the stack (length 'len').
     // filterRef may be nullptr; in that case, only the expression filter needs to be created
-    SignalSource createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len);
+    SignalSource createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len, cComponent *component, cProperty *statisticProperty);
   public:
     StatisticSourceParser() {}
-    SignalSource parse(cComponent *component, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter);
+    SignalSource parse(cComponent *component, cProperty *statisticProperty, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter);
     static void checkSignalDeclaration(cComponent *component, const char *signalName, TristateBool checkSignalDecl);
 };
 

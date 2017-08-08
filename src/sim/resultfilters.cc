@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "omnetpp/cpacket.h"  // PacketBytesFilter
+#include "omnetpp/cproperty.h"
 #include "resultfilters.h"
 
 namespace omnetpp {
@@ -119,6 +120,13 @@ std::string SumFilter::str() const
 
 //---
 
+void MeanFilter::init(cComponent *component, cProperty *attrsProperty)
+{
+    cNumericResultFilter::init(component, attrsProperty);
+    const char *attr = attrsProperty->getValue("timeWeighted", 0);
+    timeWeighted = attr && (std::string)attr != "0" && (std::string)attr != "false";
+}
+
 bool MeanFilter::process(simtime_t& t, double& value, cObject *details)
 {
     if (!timeWeighted) {
@@ -165,7 +173,7 @@ double MeanFilter::getMean() const
 std::string MeanFilter::str() const
 {
     std::stringstream os;
-    os << "mean = " << getMean();
+    os << (timeWeighted ? "time-weighted mean" : "mean") << " = " << getMean();
     return os.str();
 }
 

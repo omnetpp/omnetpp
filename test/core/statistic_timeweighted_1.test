@@ -1,0 +1,91 @@
+%description:
+Basic test for time-weighted statistics.
+
+%file: test.ned
+
+simple Node
+{
+    @signal[foo](type="long");
+    // note: "mean+100" is there because we want to test MeanFilter as well (plain "record=mean" uses MeanRecorder)
+    @statistic[unweighted](source=foo;record=mean,mean+100,avg,stats);
+    @statistic[timeweighted](source=foo;record=mean,mean+100,timeavg,stats;timeWeighted=1);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule {
+    simsignal_t signalID;
+
+    virtual void initialize() override {
+        signalID = registerSignal("foo");
+        emit(signalID, 1);
+        emit(signalID, 2);
+        scheduleAt(10, new cMessage()); // for time average
+    }
+    virtual void handleMessage(cMessage *msg) override {
+        emit(signalID, 5);
+        emit(signalID, 6);
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+%inifile: omnetpp.ini
+sim-time-limit = 20s  # 10s after emitting the last value, 6.0
+
+%subst: /2.380[0-9]+/2.380/
+%subst: /2.828[0-9]+/2.828/
+
+%contains: results/General-#0.sca
+scalar Test.node unweighted:mean 3.5
+attr source foo
+scalar Test.node unweighted:mean+100 103.5
+attr source foo
+scalar Test.node unweighted:avg 3.5
+attr source foo
+statistic Test.node unweighted:stats
+field count 4
+field mean 3.5
+field stddev 2.380
+field min 1
+field max 6
+field sum 14
+field sqrsum 66
+attr source foo
+scalar Test.node timeweighted:mean 4
+attr source foo
+attr timeWeighted 1
+scalar Test.node timeweighted:mean+100 102
+attr source foo
+attr timeWeighted 1
+scalar Test.node timeweighted:timeavg 4
+attr source foo
+attr timeWeighted 1
+statistic Test.node timeweighted:stats
+field count 4
+field mean 4
+field stddev 2.828
+field min 1
+field max 6
+field weights 20
+field weightedSum 80
+field sqrSumWeights 200
+field weightedSqrSum 400
+attr source foo
+attr timeWeighted 1
+
+

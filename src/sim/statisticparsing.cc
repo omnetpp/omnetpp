@@ -145,7 +145,7 @@ static int countDepth(const std::vector<Expression::Elem>& v, int root)
     return depth;
 }
 
-SignalSource StatisticSourceParser::parse(cComponent *component, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter)
+SignalSource StatisticSourceParser::parse(cComponent *component, cProperty *statisticProperty, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter)
 {
     // parse expression
     Expression expr;
@@ -195,7 +195,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
             // on the stack.
             // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
             FilterOrRecorderReference *filterRef = (FilterOrRecorderReference *)e.getFunctor();
-            SignalSource signalSource = createFilter(filterRef, stack, len);
+            SignalSource signalSource = createFilter(filterRef, stack, len, component, statisticProperty);
             stack.erase(stack.end()-len, stack.end());
             stack.push_back(Expression::Elem());
             stack.back() = new SignalSourceReference(signalSource);
@@ -210,7 +210,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
         // install it, and replace top 'len' elements with a SignalSourceReference
         // on the stack.
         // if top 'len' elements contain more than one signalsource/filterorrecorder elements --> throw error (not supported for now)
-        SignalSource signalSource = createFilter(nullptr, stack, len);
+        SignalSource signalSource = createFilter(nullptr, stack, len, component, statisticProperty);
         stack.erase(stack.end()-len, stack.end());
         stack.push_back(Expression::Elem());
         stack.back() = new SignalSourceReference(signalSource);
@@ -226,7 +226,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
     return signalSourceReference->getSignalSource();
 }
 
-SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len)
+SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filterRef, const std::vector<Expression::Elem>& stack, int len, cComponent *component, cProperty *statisticProperty)
 {
     Assert(len >= 1);
     int stackSize = stack.size();
@@ -250,6 +250,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     if (filterRef) {
         const char *filterName = filterRef->getName();
         filter = cResultFilterType::get(filterName)->create();
+        filter->init(component, statisticProperty);
     }
 
     SignalSource result(nullptr);
@@ -301,6 +302,8 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
             }
         }
         exprFilter->getExpression().setExpression(v, argLen);
+        if (exprFilter)
+            exprFilter->init(component, statisticProperty);
 
         if (!filter)
             result = SignalSource(exprFilter);
@@ -467,8 +470,11 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             recorder->init(component, statisticName, recordingMode, attrsProperty);
             filterOrRecorder = recorder;
         }
-        else
-            filterOrRecorder = cResultFilterType::get(name)->create();
+        else {
+            cResultFilter *filter = cResultFilterType::get(name)->create();
+            filter->init(component, attrsProperty);
+            filterOrRecorder = filter;
+        }
     }
 
     SignalSource result(nullptr);

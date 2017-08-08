@@ -64,7 +64,7 @@ class SIM_API cStatisticBuilder
 
         // Utility functions for addResultRecorders()
         std::vector<std::string> extractRecorderList(const char *modesOption, cProperty *statisticProperty);
-        SignalSource doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter);
+        SignalSource doStatisticSource(cComponent *component, cProperty *statisticProperty, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter);
         void doResultRecorder(const SignalSource& source, const char *mode, cComponent *component, const char *statisticName, cProperty *attrsProperty);
         TristateBool parseTristateBool(const char *s, const char *what);
 };

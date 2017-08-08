@@ -120,7 +120,7 @@ void cStatisticBuilder::doAddResultRecorders(cComponent *component, std::string&
         if (signal == SIMSIGNAL_NULL) {
             const char *sourceSpec = opp_emptytodefault(statisticProperty->getValue(PROPKEY_STATISTIC_SOURCE, 0), statisticName);
             bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
-            source = doStatisticSource(component, statisticName, sourceSpec, checkSignalDecl, hasWarmupPeriod);
+            source = doStatisticSource(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, hasWarmupPeriod);
         }
         else {
             source = SignalSource(component, signal);
@@ -190,7 +190,7 @@ std::vector<std::string> cStatisticBuilder::extractRecorderList(const char *mode
     return modes;
 }
 
-SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter)
+SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, cProperty *statisticProperty, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter)
 {
     try {
         if (isIdentifier(sourceSpec)) {
@@ -207,7 +207,7 @@ SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, const c
         }
         else {
             StatisticSourceParser parser;
-            return parser.parse(component, statisticName, sourceSpec, checkSignalDecl, needWarmupFilter);
+            return parser.parse(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, needWarmupFilter);
         }
     }
     catch (std::exception& e) {
