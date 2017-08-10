@@ -629,8 +629,9 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
                 f.fval = ptr2str(child->getAttribute("default-value"));
                 f.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
                 f.fispointer = (f.ftype[f.ftype.length()-1] == '*');
-                if (f.fispointer)
+                if (f.fispointer) {
                     f.ftype = f.ftype.substr(0, f.ftype.find_last_not_of(" \t*")+1);
+                }
                 f.fisarray = ptr2str(child->getAttribute("is-vector")) == "true";
                 f.farraysize = ptr2str(child->getAttribute("vector-size"));
 
@@ -713,6 +714,12 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         }
     }
 
+    if (it->fisarray && it->farraysize.empty() && !it->fval.empty())
+        errors->addError(it->nedElement, "unaccepted default value for variable length vector field '%s %s' in class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+    if (it->fispointer) {
+        if (it->fval.empty())
+            it->fval = "nullptr";
+    }
     it->fnopack = getPropertyAsBool(it->fprops, "nopack", false);
     it->feditable = getPropertyAsBool(it->fprops, "editable", false);
     it->editNotDisabled = getPropertyAsBool(it->fprops, "editable", true);
@@ -758,7 +765,13 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         it->argname = it->fname;
     }
 
-    it->varsize = it->fname + "_arraysize";
+    if (it->fispointer) {
+        it->fisownedpointer = getPropertyAsBool(it->fprops, "owned", it->classtype == COWNEDOBJECT);
+    }
+    else
+        it->fisownedpointer = false;
+
+    it->varsize = it->farraysize.empty() ? (it->fname + "_arraysize") : it->farraysize;
     std::string sizetypeprop = getProperty(it->fprops, "sizetype");
     it->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
@@ -767,6 +780,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         std::string capfieldname = it->fname;
         capfieldname[0] = toupper(capfieldname[0]);
         it->setter = str("set") + capfieldname;
+        it->remover = str("remove") + capfieldname;
         it->alloc = str("set") + capfieldname + "ArraySize";
         if (info.omitgetverb) {
             it->getter = it->fname;
@@ -774,7 +788,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         }
         else {
             it->getter = str("get") + capfieldname;
-            it->mGetter = str("get") + capfieldname;
+            it->mGetter = str("get") + capfieldname;             //TODO "get" (for compatibility) or "getMutable"  or "access"
             it->getsize = str("get") + capfieldname + "ArraySize";
         }
 
@@ -800,10 +814,16 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     // data type, argument type, conversion to/from string...
     it->maybe_c_str = "";
     if (!it->fisprimitivetype) {
-        it->datatype = it->ftype;
-        it->argtype = str("const ") + it->ftype + "&";
-        it->rettype = it->ftype + "&";
-        // it->fval = "" unless (it->fval != "");
+        if (it->fispointer) {
+            it->datatype = it->ftype + " *";
+            it->argtype = it->datatype;
+            it->rettype = it->datatype;
+        }
+        else {
+            it->datatype = it->ftype;
+            it->argtype = str("const ") + it->ftype + "&";
+            it->rettype = it->ftype + "&";
+        }
     }
     else {
         if (tdIt == PRIMITIVE_TYPES.end())
@@ -1036,8 +1056,8 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     H << "\n{\n";
     H << "  protected:\n";
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (it->fispointer) {
-            errors->addError(it->nedElement, "pointers not supported yet in '%s'\n", info.msgname.c_str());
+        if (it->fispointer && it->fisprimitivetype) {
+            errors->addError(it->nedElement, "pointers not supported for primitive types in '%s'\n", info.msgname.c_str());
             return;
         }
         if (!it->fisabstract) {
@@ -1108,8 +1128,6 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         std::string getterIndexArg("");
         std::string setterIndexArg("");
 
-        bool isstruct = !it->fisprimitivetype;
-        std::string constifprimitivetype = (!isstruct ? " const" : "");
         if (it->fisarray) {
             getterIndexVar = "k";
             getterIndexArg = it->fsizetype + " " + getterIndexVar;
@@ -1119,7 +1137,13 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             }
             H << "    virtual " << it->fsizetype << " " << it->getsize << "() const" << pure << ";\n";
         }
-        if (isstruct) {
+        if (it->fispointer) {
+            H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+            H << "    virtual " << it->rettype << " " << it->mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << it->rettype << ">(const_cast<const " << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << "));}\n";
+            if (it->fisownedpointer)  //TODO fispointer or fisownedpointer?
+                H << "    virtual " << it->rettype << " " << it->remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
+        }
+        else if (!it->fisprimitivetype) {
             H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
             H << "    virtual " << it->rettype << " " << it->mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << it->rettype << ">(const_cast<const " << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << "));}\n";
         }
@@ -1140,6 +1164,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
+    // constructor:
     if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
         if (info.keyword == "message" || info.keyword == "packet") {
             // CAREFUL when assigning values to existing members gets implemented!
@@ -1174,81 +1199,113 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         CC << "\n";
     for (const auto & it : info.fieldlist) {
         if (!it.fisabstract) {
-            if (it.fisarray && !it.farraysize.empty()) {
-                if (it.fisprimitivetype && !it.fval.empty()) {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                    CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
+            if (it.fisarray) {
+                if (!it.farraysize.empty()) {
+                    if (!it.fval.empty()) {
+                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
+                        CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
+                    }
+                    if (it.classtype == COWNEDOBJECT || it.fisownedpointer) {
+                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
+                        if (it.fispointer) {
+                            if (it.fisownedpointer)
+                                CC << "        if (this->" << it.var << " != nullptr) { take(this->" << it.var << "[i]); } // XXX\n";
+                        }
+                        else
+                            CC << "        take(&(this->" << it.var << "[i]));\n";
+                    }
                 }
-                if (it.classtype == COWNEDOBJECT) {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                    CC << "        take(&(this->" << it.var << "[i]));\n";
+                else {
+                    CC << "    " << it.varsize << " = 0;\n";
+                    CC << "    this->" << it.var << " = nullptr;\n";
                 }
-            }
-            else if (it.fisarray && it.farraysize.empty()) {
-                CC << "    " << it.varsize << " = 0;\n";
-                CC << "    this->" << it.var << " = 0;\n";
             }
             else {
                 if (!it.fval.empty()) {
                     CC << "    this->" << it.var << " = " << it.fval << ";\n";
                 }
                 if (it.classtype == COWNEDOBJECT) {
-                    CC << "    take(&(this->" << it.var << "));\n";
+                    if (it.fispointer)
+                        CC << "    if (this->" << it.var << " != nullptr) { take(this->" << it.var << "); }\n";
+                    else
+                        CC << "    take(&(this->" << it.var << "));\n";
                 }
             }
         }
     }
     CC << "}\n\n";
 
+    // copy constructor:
     CC << "" << info.msgclass << "::" << info.msgclass << "(const " << info.msgclass << "& other)";
     if (!info.msgbaseclass.empty()) {
         CC << " : ::" << info.msgbaseclass << "(other)";
+        //TODO @implements ???
     }
     CC << "\n{\n";
     for (const auto & it : info.fieldlist) {
         if (!it.fisabstract) {
-            if (it.fisarray && !it.farraysize.empty()) {
-                if (it.classtype == COWNEDOBJECT) {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                    CC << "        take(&(this->" << it.var << "[i]));\n";
+            if (it.fisarray) {
+                if (!it.farraysize.empty()) {
+                    if (it.fispointer) {
+                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
+                        CC << "        this->" << it.var << "[i] = nullptr;\n";
+                    }
+                    else if (it.classtype == COWNEDOBJECT) {
+                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
+                        CC << "        take(&(this->" << it.var << "[i]));\n";
+                    }
+                }
+                else
+                {
+                    CC << "    " << it.varsize << " = 0;\n";
+                    CC << "    this->" << it.var << " = nullptr;\n";
                 }
             }
-            else if (it.fisarray && it.farraysize.empty()) {
-                CC << "    " << it.varsize << " = 0;\n";
-                CC << "    this->" << it.var << " = 0;\n";
-            }
-            else if (!it.fisarray && it.classtype == COWNEDOBJECT) {
-                CC << "    take(&(this->" << it.var << "));\n";
+            else {
+                if (it.fispointer) {
+                    CC << "    this->" << it.var << " = nullptr;\n";
+                }
+                else if (it.classtype == COWNEDOBJECT) {
+                    CC << "    take(&(this->" << it.var << "));\n";
+                }
             }
         }
     }
     CC << "    copy(other);\n";
     CC << "}\n\n";
 
+    // destructor:
     CC << "" << info.msgclass << "::~" << info.msgclass << "()\n";
     CC << "{\n";
     for (const auto & it : info.fieldlist) {
         if (!it.fisabstract) {
-            if (it.classtype == COWNEDOBJECT) {
-                if (!it.fisarray) {
-                    CC << "    drop(&(this->" << it.var << "));\n";
+            if (it.fisarray) {
+                std::ostringstream s;
+                if (it.fisownedpointer)
+                    s << "        dropAndDelete(this->" << it.var << "[i]);\n";
+                else if (!it.fispointer && it.classtype == COWNEDOBJECT)
+                    s << "        drop(&(this->" << it.var << "[i]));\n";
+                if (!s.str().empty()) {
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
+                    CC << s.str();
+                    CC << "    }\n";
                 }
-                else if (!it.farraysize.empty()) {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                    CC << "        drop(&(this->" << it.var << "[i]));\n";
-                }
-                else {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
-                    CC << "        drop(&(this->" << it.var << "[i]));\n";
+
+                if (it.farraysize.empty()) {
+                    CC << "    delete [] this->" << it.var << ";\n";
                 }
             }
-            if (it.fisarray && it.farraysize.empty()) {
-                CC << "    delete [] this->" << it.var << ";\n";
+            else {
+                if (it.fisownedpointer)
+                    CC << "    dropAndDelete(this->" << it.var << ");\n";
+                else if (!it.fispointer && it.classtype == COWNEDOBJECT)
+                    CC << "    drop(&(this->" << it.var << "));\n";
             }
         }
     }
     CC << "}\n\n";
 
+    // operator = :
     CC << "" << info.msgclass << "& " << info.msgclass << "::operator=(const " << info.msgclass << "& other)\n";
     CC << "{\n";
     CC << "    if (this==&other) return *this;\n";
@@ -1259,38 +1316,76 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     CC << "    return *this;\n";
     CC << "}\n\n";
 
+    // copy function:
     CC << "void " << info.msgclass << "::copy(const " << info.msgclass << "& other)\n";
     CC << "{\n";
     for (const auto & it : info.fieldlist) {
+        // CC << "// " << it.fname << ":\n";
         if (!it.fisabstract) {
-            if (it.fisarray && !it.farraysize.empty()) {
-                CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
-                if (it.classtype == COWNEDOBJECT) {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                    CC << "        this->" << it.var << "[i].setName(other." << it.var << "[i].getName());\n";
+            if (it.fisarray) {
+                if (it.fispointer) {
+                    if (it.fisownedpointer) {
+                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
+                        CC << "        dropAndDelete(this->" << it.var << "[i]);\n";
+                        CC << "    }\n";
+                    }
                 }
-            }
-            else if (it.fisarray && it.farraysize.empty()) {
-                CC << "    delete [] this->" << it.var << ";\n";
-                CC << "    this->" << it.var << " = (other." << it.varsize << "==0) ? nullptr : new " << it.datatype << "[other." << it.varsize << "];\n";
-                CC << "    " << it.varsize << " = other." << it.varsize << ";\n";
-                CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
-                if (it.classtype == COWNEDOBJECT) {
-                    CC << "    {\n";
-                    CC << "        take(&(this->" << it.var << "[i]));\n";
-                    CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
-                    CC << "        this->" << it.var << "[i].setName(other." << it.var << "[i].getName());\n";
-                    CC << "    }\n";
+                if (it.farraysize.empty()) {
+                    if (!it.fispointer && it.classtype == COWNEDOBJECT) {
+                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
+                        CC << "        drop(&(this->" << it.var << "[i]));\n";
+                        CC << "    }\n";
+                    }
+                    CC << "    delete [] this->" << it.var << ";\n";
+                    CC << "    this->" << it.var << " = (other." << it.varsize << "==0) ? nullptr : new " << it.datatype << "[other." << it.varsize << "];\n";
+                    CC << "    " << it.varsize << " = other." << it.varsize << ";\n";
+                    if (!it.fispointer && it.classtype == COWNEDOBJECT) {
+                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
+                        CC << "        take(&(this->" << it.var << "[i]));\n";
+                        CC << "    }\n";
+                    }
+                }
+
+                CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
+                if (it.fispointer) {
+                    if (it.fisownedpointer) {
+                        CC << "        this->" << it.var << "[i] = other." << it.var << "[i]->dup();\n";
+                        CC << "        take(this->" << it.var << "[i]);\n";
+                    }
+                    else {
+                        CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
+                        if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                            CC << "        this->" << it.var << "[i]->setName(other." << it.var << "[i]->getName());\n";
+                        }
+                    }
                 }
                 else {
                     CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
+                    if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                        CC << "        this->" << it.var << "[i].setName(other." << it.var << "[i].getName());\n";
+                    }
+                    CC << "    }\n";
                 }
             }
             else {
-                CC << "    this->" << it.var << " = other." << it.var << ";\n";
-                if (!it.fisarray && (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT)) {
-                    CC << "    this->" << it.var << ".setName(other." << it.var << ".getName());\n";
+                if (it.fispointer) {
+                    if (it.fisownedpointer) {
+                        CC << "    dropAndDelete(this->" << it.var << ");\n";
+                        CC << "    this->" << it.var << " = other." << it.var << "->dup();\n";
+                        CC << "    take(this->" << it.var << ");\n";
+                    }
+                    else {
+                        CC << "    this->" << it.var << " = other." << it.var << ";\n";
+                        if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                            CC << "    this->" << it.var << "->setName(other." << it.var << "->getName());\n";
+                        }
+                    }
+                }
+                else {
+                    CC << "    this->" << it.var << " = other." << it.var << ";\n";
+                    if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                        CC << "    this->" << it.var << ".setName(other." << it.var << ".getName());\n";
+                    }
                 }
             }
         }
@@ -1321,11 +1416,9 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "    // field " << it.fname << " is abstract -- please do packing in customized class\n";
         }
         else {
-            if (it.fisarray && !it.farraysize.empty()) {
-                CC << "    doParsimArrayPacking(b,this->" << it.var << "," << it.farraysize << ");\n";
-            }
-            else if (it.fisarray && it.farraysize.empty()) {
-                CC << "    b->pack(" << it.varsize << ");\n";
+            if (it.fisarray) {
+                if (it.farraysize.empty())
+                    CC << "    b->pack(" << it.varsize << ");\n";
                 CC << "    doParsimArrayPacking(b,this->" << it.var << "," << it.varsize << ");\n";
             }
             else {
@@ -1354,18 +1447,20 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             CC << "    // field " << it.fname << " is abstract -- please do unpacking in customized class\n";
         }
         else {
-            if (it.fisarray && !it.farraysize.empty()) {
-                CC << "    doParsimArrayUnpacking(b,this->" << it.var << "," << it.farraysize << ");\n";
-            }
-            else if (it.fisarray && it.farraysize.empty()) {
-                CC << "    delete [] this->" << it.var << ";\n";
-                CC << "    b->unpack(" << it.varsize << ");\n";
-                CC << "    if (" << it.varsize << "==0) {\n";
-                CC << "        this->" << it.var << " = 0;\n";
-                CC << "    } else {\n";
-                CC << "        this->" << it.var << " = new " << it.datatype << "[" << it.varsize << "];\n";
-                CC << "        doParsimArrayUnpacking(b,this->" << it.var << "," << it.varsize << ");\n";
-                CC << "    }\n";
+            if (it.fisarray) {
+                if (!it.farraysize.empty()) {
+                    CC << "    doParsimArrayUnpacking(b,this->" << it.var << "," << it.farraysize << ");\n";
+                }
+                else {
+                    CC << "    delete [] this->" << it.var << ";\n";
+                    CC << "    b->unpack(" << it.varsize << ");\n";
+                    CC << "    if (" << it.varsize << "==0) {\n";
+                    CC << "        this->" << it.var << " = nullptr;\n";
+                    CC << "    } else {\n";
+                    CC << "        this->" << it.var << " = new " << it.datatype << "[" << it.varsize << "];\n";
+                    CC << "        doParsimArrayUnpacking(b,this->" << it.var << "," << it.varsize << ");\n";
+                    CC << "    }\n";
+                }
             }
             else {
                 CC << "    doParsimUnpacking(b,this->" << it.var << ");\n";
@@ -1376,37 +1471,41 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (!it->fisabstract) {
-            bool isstruct = !it->fisprimitivetype;
-            const char *constifprimitivetype = (!isstruct ? " const" : "");
-            if (it->fisarray && !it->farraysize.empty()) {
+            std::string idx = (it->fisarray) ? "[k]" : "";
+            std::string ref = (it->fispointer) ? "" : "&";
+            std::string idxarg = (it->fisarray) ? (it->fsizetype + " k") : std::string("");
+            std::string idxarg2 = (it->fisarray) ? (idxarg + ", ") : std::string("");
+
+            // getters:
+            if (it->fisarray) {
                 CC << "" << it->fsizetype << " " << info.msgclass << "::" << it->getsize << "() const\n";
                 CC << "{\n";
-                CC << "    return " << it->farraysize << ";\n";
-                CC << "}\n\n";
-
-                if (isstruct) {
-                    CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
-                    CC << "{\n";
-                    CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
-                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
-                    CC << "}\n\n";
-                }
-                else {
-                    CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
-                    CC << "{\n";
-                    CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
-                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
-                    CC << "}\n\n";
-                }
-                CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
-                CC << "{\n";
-                CC << "    handleChange();\n";
-                CC << "    if (k>=" << it->farraysize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
-                CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
+                CC << "    return " << it->varsize << ";\n";
                 CC << "}\n\n";
             }
 
-            else if (it->fisarray && it->farraysize.empty()) {
+            if (it->fisprimitivetype) {
+                CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << idxarg << ")" << " const\n";
+                CC << "{\n";
+                if (it->fisarray) {
+                    CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->varsize << " indexed by %lu\", (unsigned long)k);\n";
+                }
+                CC << "    return this->" << it->var << idx << it->maybe_c_str << ";\n";
+                CC << "}\n\n";
+            }
+            else {
+                CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << idxarg << ")" << " const\n";
+                CC << "{\n";
+                if (it->fisarray) {
+                    CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->varsize << " indexed by %lu\", (unsigned long)k);\n";
+                }
+                CC << "    return this->" << it->var << idx << it->maybe_c_str << ";\n";
+                CC << "}\n\n";
+
+            }
+
+            // resize:
+            if (it->fisarray && it->farraysize.empty()) {
                 CC << "void " << info.msgclass << "::" << it->alloc << "(" << it->fsizetype << " size)\n";
                 CC << "{\n";
                 CC << "    handleChange();\n";
@@ -1426,52 +1525,37 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 CC << "    delete [] this->" << it->var << ";\n";
                 CC << "    this->" << it->var << " = " << it->var << "2;\n";
                 CC << "}\n\n";
-
-                CC << "" << it->fsizetype << " " << info.msgclass << "::" << it->getsize << "() const\n";
-                CC << "{\n";
-                CC << "    return " << it->varsize << ";\n";
-                CC << "}\n\n";
-
-                if (isstruct) {
-                    CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
-                    CC << "{\n";
-                    CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
-                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
-                    CC << "}\n\n";
-                }
-                else {
-                    CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << it->fsizetype << " k)" << " const \n";
-                    CC << "{\n";
-                    CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
-                    CC << "    return this->" << it->var << "[k]" << it->maybe_c_str << ";\n";
-                    CC << "}\n\n";
-                }
-
-                CC << "void " << info.msgclass << "::" << it->setter << "(" << it->fsizetype << " k, " << it->argtype << " " << it->argname << ")\n";
-                CC << "{\n";
-                CC << "    handleChange();\n";
-                CC << "    if (k>=" << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size %d indexed by %d\", " << it->varsize << ", k);\n";
-                CC << "    this->" << it->var << "[k] = " << it->argname << ";\n";
-                CC << "}\n\n";
             }
-            else {
-                if (isstruct) {
-                    CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "()" << " const \n";
-                    CC << "{\n";
-                    CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
-                    CC << "}\n\n";
-                }
-                else {
-                    CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "()" << " const \n";
-                    CC << "{\n";
-                    CC << "    return this->" << it->var << "" << it->maybe_c_str << ";\n";
-                    CC << "}\n\n";
-                }
 
-                CC << "void " << info.msgclass << "::" << it->setter << "(" << it->argtype << " " << it->argname << ")\n";
+            // setter:
+            CC << "void " << info.msgclass << "::" << it->setter << "(" << idxarg2 << it->argtype << " " << it->argname << ")\n";
+            CC << "{\n";
+            if (it->fisarray) {
+                CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+            }
+            CC << "    handleChange();\n";
+            if (it->fisownedpointer) {
+                CC << "    dropAndDelete(this->" << it->var << idx << ");\n";
+            }
+            CC << "    this->" << it->var << idx << " = " << it->argname << ";\n";
+            if (it->fisownedpointer) {
+                CC << "    if (this->" << it->var << idx << " != nullptr)\n";
+                CC << "        take(this->" << it->var << idx << ");\n";
+            }
+            CC << "}\n\n";
+
+            // remover:
+            if (it->fisownedpointer) {  //TODO fispointer or fisownedpointer?
+                CC << it->rettype << " " << info.msgclass << "::" << it->remover << "(" << idxarg2 << it->argtype << " " << it->argname << ")\n";
                 CC << "{\n";
+                if (it->fisarray) {
+                    CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                }
                 CC << "    handleChange();\n";
-                CC << "    this->" << it->var << " = " << it->argname << ";\n";
+                CC << "    " << it->rettype << " retval = this->" << it->var << idx << ";\n";
+                CC << "    drop(retval);\n";
+                CC << "    this->" << it->var << idx << " = nullptr;\n";
+                CC << "    return retval;\n";
                 CC << "}\n\n";
             }
         }
@@ -1528,12 +1612,15 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
             throw NEDException("Abstract fields are not supported in a struct");
         if (it.classtype == COWNEDOBJECT)
             throw NEDException("cOwnedObject fields are not supported in a struct");
-        if (it.fisarray && it.farraysize.empty())
-            throw NEDException("Dynamic arrays are not supported in a struct");
-        if (it.fisarray && !it.farraysize.empty()) {
-            if (it.fisprimitivetype && !it.fval.empty()) {
-                CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
+        if (it.fisarray) {
+            if (it.farraysize.empty()) {
+                throw NEDException("Dynamic arrays are not supported in a struct");
+            }
+            else {
+                if (!it.fval.empty()) {
+                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
+                    CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
+                }
             }
         }
         else {
@@ -1880,7 +1967,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (!field.fisprimitivetype && field.fispointer && field.classtype == NONCOBJECT) {
             CC << "        case " << i << ": ";
-            CC << "{" << field.datatype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value));}\n";
+            CC << "{ const " << field.ftype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value)); }\n";
         }
     }
     CC << "        default: return nullptr;\n";
@@ -2259,7 +2346,7 @@ void MsgCppGenerator::generateTemplates()
     CC << "        out << *it;\n";
     CC << "    }\n";
     CC << "    out.put('}');\n";
-    CC << "    \n";
+    CC << "\n";
     CC << "    char buf[32];\n";
     CC << "    sprintf(buf, \" (size=%u)\", (unsigned int)vec.size());\n";
     CC << "    out.write(buf, strlen(buf));\n";

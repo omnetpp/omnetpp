@@ -116,6 +116,8 @@ class NEDXML_API MsgCppGenerator
             std::string fval;       // value (or empty)
             bool fisabstract;
             bool fispointer;
+            bool fisownedpointer;   // true, when should use dup()/delete (and take()/drop() when cOwnedObject); from property: @owned, default value is true for cOwnedObject, otherwise false
+                                    // "T *removeFoo()" also generated for owned pointer members
             bool fisarray;
             std::string farraysize; // array size in MSG, maybe empty for dynamic arrays
             Properties fprops;      // field properties (name, first value of default key)
@@ -128,10 +130,11 @@ class NEDXML_API MsgCppGenerator
             std::string rettype;    // getter C++ return type
             std::string var;        // name of data member variable
             std::string argname;    // setter argument name
-            std::string varsize;    // data member to store array size
+            std::string varsize;    // data member to store array size | value of farraysize
             std::string fsizetype;  // type for storing array size
             std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
             std::string mGetter;    // const getter function name:  "T& mGetter();" default value is the value of getter, @mgetter
+            std::string remover;    // remover function name (for owned pointers)
             std::string setter;     // Setter function name
             std::string alloc;      // setArraySize() function name
             std::string getsize;    // array size getter function name
