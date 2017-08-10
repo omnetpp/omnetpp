@@ -21,28 +21,69 @@ Legend:
 (i)     information
 
 
-OMNeT++ 5.1 preview 3
-~~~~~~~~~~~~~~~~~~~~~
+OMNeT++ 5.2
+~~~~~~~~~~~
 
-(+)     cFigure: added insertBelow() / insertAbove().
+(!)     Figure classes: zIndex is now additive: the effective zIndex is the sum
+        of the zIndex values of the figure and all its ancestors up to the root
+        figure. This provides more flexibility,	as the figure tree is no longer
+        constrained by stacking order.
 
-(+)     cFigure: parse(cProperty*) and getAllowedPropertyKeys() are now
-        public API.
+(+)     cFigure: added getEffectiveZIndex().
 
-(+)     Added opp_get_monotonic_clock_usecs(). This should be used for 
-        measuring wall-clock intervals instead of gettimeofday() which is
-        not monitonic.
+(+)     Figure classes: Added cPanelFigure that allows for creating visual
+        elements that are not affected by zooming.
 
-(!)     Change on Register_Figure() introduced in Preview 2: first argument
-        now must be quoted
+(+)     cStddev: added support for weighted statistics. To make a weighted
+	cStddev, pass weighted=true in the constructor. The weighted-ness of
+	an cStddev instance cannot be changed afterwards. getMean() and
+	getStddev() now return the weighted mean / stddev if the object is
+	weighted. Note: getSum() and getSqrSum() are not available when
+	collectecting weighted statistics (they throw an exception).
 
-(!)     Return type of send() and snapshot() methods changed to 'void'
+(-)     Deprecated cWeightedStddev, use cStddev with the weighted=true setting
+        instead. Temorarily, cWeightedStddev has been reimplemented as a
+        trivial subclass of cStddev with weighted=true.
 
-(!)     OppErrorCode renamed to ErrorCode
+(!)     cWeightedStddev: getSum() and getSqrSum() methods are no longer
+        available, due to the deprecated cWeightedStddev class having been
+        temporarily reimplemented as a trivial subclass of cStddev.
+
+(+)	Histogram classes: added support for weighted statistics to histogram
+	classes (cHistogramBase and subclasses: cHistogram, cVarHistogram,
+	cLongHistogram, cDoubleHistogram). Pass weighted=true to the constructor
+	to create weighted versions. To support weighted histograms, the
+	data type of bin values were changed from int to double; they now
+        store sum of weights instead of observation counts. The unweighted case
+        is treated simply as a special case of weighted where all weights are 1.0.
+
+(+)	New cDensityEstBase methods: getUnderflowSumWeights(), getOverflowSumWeights().
+        They return sum of weights for observations that are outside the histogram
+        range. Note: the slightly misnamed getUnderflowCell()/getOverflowCell()
+        methods that return overflow/underflow counts are still available.
+
+(i)     cOsgCanvas: Refactoring necessary for allowing the OSG Viewer to be factored
+	out from Qtenv into as separate support library, loaded on demand at runtime.
+	The simulation kernel kernel (and cOsgCanvas) now does NOT depend on the
+	OSG libraries: does not include OSG header files at all, and does not
+	reference any symbols in the OSG libraries. cOsgCanvas now treats
+	osg::Node* as opaque pointers, no attempt is made to dereference it.
+	cOsgCanvas now performs osg::Node reference counting via cEnvir's new
+	refOsgNode()/unrefOsgNode() methods instead of Node's methods.
+
+(+)     cModule::getOsgCanvas() is now always available (never throws "No OSG"
+        exception). This is a direct consequence of the change above.
+
+(!)     cOsgCanvas: arg/return value of setEarthViewpoint()/getEarthViewpoint()
+        have been changed from osgEarth::Viewpoint to cOsgCanvas::EarthViewpoint,
+        a similar new class. This change was made because cOsgCanvas now cannot
+        include or link with any OSG code, see above.
+
+(+)     opp_string: Added operator==()
 
 
-OMNeT++ 5.1 preview 2
-~~~~~~~~~~~~~~~~~~~~~
+OMNeT++ 5.1
+~~~~~~~~~~~
 
 (!!!)   cObject and subclasses: renamed info() to str(). A deprecated info() that
         delegates to str() was added back for compatibility. See include/omnetpp/
@@ -95,7 +136,7 @@ OMNeT++ 5.1 preview 2
 
 (+)     cEnvir: added appendToImagePath(), loadImage() to allow custom images
         to be loaded.
-        
+
 (+)     cEnvir: added getSubmodulePosition().
 
 (+)     cEnvir: added getImageSize() and getTextExtent() methods to support
@@ -130,10 +171,10 @@ OMNeT++ 5.1 preview 2
 
 (!)     cConfigurationEx: added getKeyValuePairs() method.
 
-(!)     Removed ${iterationvars2} inifile variable and corresponding 
+(!)     Removed ${iterationvars2} inifile variable and corresponding
         CFGVAR_ITERATIONVARS2 symbol.
 
-(+)     Added ${iterationvarsf} inifile variable and corresponding 
+(+)     Added ${iterationvarsf} inifile variable and corresponding
         CFGVAR_ITERATIONVARSF symbol.
 
 (+)     SimTime: added SIMTIME_AS (= -18) to SimTimeUnit enum.
@@ -145,7 +186,7 @@ OMNeT++ 5.1 preview 2
 
 (!)     cPacket: getDisplayString() changed to fall back to the encapsulated
         packet's display string.
-        
+
 (!)     cXMLElement now subclasses from cObject.
 
 (+)     cXMLElement: added str() and getXML() methods.
@@ -192,6 +233,21 @@ OMNeT++ 5.1 preview 2
 (+)     Added cStatisticBuilder internal class, as part of the change where
         setting up statistics recording was moved from EnvirBase into the sim.
         kernel.
+
+(+)     cFigure: added insertBelow() / insertAbove().
+
+(+)     cFigure: parse(cProperty*) and getAllowedPropertyKeys() are now
+        public API.
+
+(+)     Added opp_get_monotonic_clock_usecs(). This should be used for
+        measuring wall-clock intervals instead of gettimeofday() which is
+        not monitonic.
+
+(!)     Return type of send() and snapshot() methods changed to 'void'
+
+(!)     OppErrorCode renamed to ErrorCode
+
+(+)     opp_string: added str() method.
 
 
 OMNeT++ 5.0
