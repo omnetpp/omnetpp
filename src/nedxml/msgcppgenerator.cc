@@ -1163,11 +1163,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == CNAMEDOBJECT);
     // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == COWNEDOBJECT);
     for (const auto & it : info.baseclassFieldlist) {
-        std::string capfieldname = it.fname;
-        capfieldname[0] = toupper(capfieldname[0]);
-        std::string setter = "set" + capfieldname;
-        // FIXME setter function name - ezt a base class leirobol kellene venni
-        CC << "    this->" << setter << "(" << it.fval << ");\n";
+        CC << "    this->" << it.setter << "(" << it.fval << ");\n";
     }
     if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
         CC << "\n";
