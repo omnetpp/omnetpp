@@ -111,6 +111,13 @@ std::string ConstantFilter::str() const
 
 //---
 
+bool SumFilter::process(simtime_t& t, double& value, cObject* details)
+{
+    sum += value;
+    value = sum;
+    return true;
+}
+
 std::string SumFilter::str() const
 {
     std::stringstream os;
@@ -179,6 +186,14 @@ std::string MeanFilter::str() const
 
 //---
 
+bool MinFilter::process(simtime_t& t, double& value, cObject *details)
+{
+    if (value < min)
+        min = value;
+    value = min;
+    return true;
+}
+
 std::string MinFilter::str() const
 {
     std::stringstream os;
@@ -188,6 +203,15 @@ std::string MinFilter::str() const
 
 //---
 
+
+bool MaxFilter::process(simtime_t& t, double& value, cObject *details)
+{
+    if (value > max)
+        max = value;
+    value = max;
+    return true;
+}
+
 std::string MaxFilter::str() const
 {
     std::stringstream os;
@@ -196,6 +220,15 @@ std::string MaxFilter::str() const
 }
 
 //---
+
+
+bool AverageFilter::process(simtime_t& t, double& value, cObject *details)
+{
+    count++;
+    sum += value;
+    value = sum / count;
+    return true;
+}
 
 std::string AverageFilter::str() const
 {

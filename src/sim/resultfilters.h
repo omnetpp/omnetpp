@@ -133,7 +133,7 @@ class SIM_API SumFilter : public cNumericResultFilter
     protected:
         double sum;
     protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {sum += value; value = sum; return true;}
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         SumFilter() {sum = 0;}
         double getSum() const {return sum;}
@@ -169,7 +169,7 @@ class SIM_API MinFilter : public cNumericResultFilter
     protected:
         double min;
     protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {if (value < min) min = value; value = min; return true;}
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         MinFilter() {min = POSITIVE_INFINITY;}
         double getMin() const {return min;}
@@ -184,7 +184,7 @@ class SIM_API MaxFilter : public cNumericResultFilter
     protected:
         double max;
     protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {if (value > max) max = value; value = max; return true;}
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         MaxFilter() {max = NEGATIVE_INFINITY;}
         double getMax() const {return max;}
@@ -200,7 +200,7 @@ class SIM_API AverageFilter : public cNumericResultFilter
         long count;
         double sum;
     protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {count++; sum += value; value = sum/count; return true;}
+        virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
         AverageFilter() {count = 0; sum = 0;}
         double getAverage() const {return sum/count;}

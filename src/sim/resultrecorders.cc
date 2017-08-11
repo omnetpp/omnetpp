@@ -97,6 +97,11 @@ std::string CountRecorder::str() const
 
 //---
 
+void LastValueRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    lastValue = value;
+}
+
 void LastValueRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
@@ -111,6 +116,12 @@ std::string LastValueRecorder::str() const
 }
 
 //---
+
+void SumRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    sum += value;
+}
+
 
 void SumRecorder::finish(cResultFilter *prev)
 {
@@ -184,6 +195,13 @@ void MeanRecorder::finish(cResultFilter *prev)
 
 //---
 
+
+void MinRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    if (value < min)
+        min = value;
+}
+
 void MinRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
@@ -199,6 +217,12 @@ std::string MinRecorder::str() const
 
 //---
 
+void MaxRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    if (value > max)
+        max = value;
+}
+
 void MaxRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();
@@ -213,6 +237,12 @@ std::string MaxRecorder::str() const
 }
 
 //---
+
+void AverageRecorder::collect(simtime_t_cref t, double value, cObject *details)
+{
+    count++;
+    sum += value;
+}
 
 void AverageRecorder::finish(cResultFilter *prev)
 {

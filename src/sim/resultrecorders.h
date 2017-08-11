@@ -80,7 +80,7 @@ class SIM_API LastValueRecorder : public cNumericResultRecorder
     protected:
         double lastValue;
     protected:
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {lastValue = value;}
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
         LastValueRecorder() {lastValue = NaN;}
@@ -96,7 +96,7 @@ class SIM_API SumRecorder : public cNumericResultRecorder
     protected:
         double sum;
     protected:
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {sum += value;}
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
         SumRecorder() {sum = 0;}
@@ -134,7 +134,7 @@ class SIM_API MinRecorder : public cNumericResultRecorder
     protected:
         double min;
     protected:
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {if (value < min) min = value;}
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
         MinRecorder() {min = POSITIVE_INFINITY;}
@@ -150,7 +150,7 @@ class SIM_API MaxRecorder : public cNumericResultRecorder
     protected:
         double max;
     protected:
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {if (value > max) max = value;}
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
         MaxRecorder() {max = NEGATIVE_INFINITY;}
@@ -167,7 +167,7 @@ class SIM_API AverageRecorder : public cNumericResultRecorder
         long count;
         double sum;
     protected:
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {count++; sum += value;}
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
         AverageRecorder() {count = 0; sum = 0;}
@@ -204,7 +204,7 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder
         simtime_t lastTime = -1;  // for time-weighted statistics (statistic->isWeighted()==true)
         double lastValue = 0;
     protected:
-        virtual void collect(simtime_t_cref t, double value, cObject* details) override;
+        virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
         StatisticsRecorder();
