@@ -25,5 +25,5 @@ static simsignal_t inExecutable = cComponent::registerSignal("registeredInExecut
 network = Test
 cmdenv-express-mode = false
 check-signals = true
-load-libs=../../signalreg/signalreg_dbg
+load-libs=../../signalreg/signalreg
 

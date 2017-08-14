@@ -45,11 +45,7 @@ void IOsgViewer::ensureViewerFactory()
         std::cout << "Loading OSG Viewer library... " << std::endl;
 
         try {
-            #ifdef NDEBUG
-                loadExtensionLibrary("oppqtenv-osg");
-            #else
-                loadExtensionLibrary("oppqtenv-osg_dbg");
-            #endif
+            loadExtensionLibrary("oppqtenv-osg");
         }
         catch (cRuntimeError &e) {
             std::cout << "Failed: " << e.what() << std::endl;

@@ -26,43 +26,47 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace envir {
 
-std::string makeLibFileName(const char *libname, const char *prefix, const char *suffix)
+static std::string makeLibFileName(const char *libName, const char *namePrefix, const char *nameSuffix, const char *extension)
 {
-    bool hasDir = strchr(libname, '/') != nullptr || strchr(libname, '\\') != nullptr;
-    std::string dir, fileNameOnly;
-    splitFileName(libname, dir, fileNameOnly);
-    bool hasExt = strchr(fileNameOnly.c_str(), '.') != nullptr;
+    bool hasDir = strchr(libName, '/') != nullptr || strchr(libName, '\\') != nullptr;
+    std::string dir, fileName;
+    splitFileName(libName, dir, fileName);
+    bool hasExt = strchr(fileName.c_str(), '.') != nullptr;
 
     std::string libFileName;
     if (hasExt)
-        libFileName = libname;  // when an exact file name is given, leave it unchanged
+        libFileName = libName;  // when an exact file name is given, leave it unchanged (this is mostly for loading 3rd party libs)
     else if (hasDir)
-        libFileName = dir + "/" + prefix + fileNameOnly + suffix;
+        libFileName = dir + "/" + namePrefix + fileName + nameSuffix + extension;
     else
-        libFileName = std::string(prefix) + fileNameOnly + suffix;
+        libFileName = std::string(namePrefix) + fileName + nameSuffix + extension;
     return libFileName;
 }
 
-static bool opp_loadlibrary(const char *libname)
+static bool opp_loadlibrary(const char *libName)
 {
+    const char *nameSuffix = "";
+#ifndef NDEBUG
+    nameSuffix = "_dbg";
+#endif
 #if HAVE_DLOPEN
-    std::string libFileName = makeLibFileName(libname, "lib", SHARED_LIB_SUFFIX);
+    std::string libFileName = makeLibFileName(libName, "lib", nameSuffix, SHARED_LIB_SUFFIX);
     if (!dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL))
-        throw std::runtime_error(std::string("Cannot load library '")+libFileName+"': "+dlerror());
+        throw std::runtime_error(std::string("Cannot load library '") + libFileName + "': " + dlerror());
     return true;
 
 #elif defined(_WIN32)
 # ifdef __GNUC__
-    std::string libFileName = makeLibFileName(libname, "lib", ".dll");  // MinGW
+    std::string libFileName = makeLibFileName(libName, "lib", nameSuffix, ".dll");  // MinGW
 # else
-    std::string libFileName = makeLibFileName(libname, "", ".dll");  // Visual C++
+    std::string libFileName = makeLibFileName(libName, "", nameSuffix, ".dll");  // Visual C++
 # endif
     if (!LoadLibrary((char *)libFileName.c_str()))
-        throw std::runtime_error(std::string("Cannot load library '")+libFileName+"': "+opp_getWindowsError(GetLastError()));
+        throw std::runtime_error(std::string("Cannot load library '") + libFileName + "': " + opp_getWindowsError(GetLastError()));
     return true;
 
 #else
-    throw std::runtime_error(std::string("Cannot load library '")+libname+"': dlopen() syscall not available");
+    throw std::runtime_error(std::string("Cannot load library '") + libName + "': dlopen() syscall not available");
 #endif
 }
 
