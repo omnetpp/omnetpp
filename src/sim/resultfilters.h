@@ -337,6 +337,7 @@ class SIM_API NaryExpressionFilter : public ExpressionFilter
 
 /**
  * @brief Filter that expects a cPacket and outputs its length in bytes (getByteLength()).
+ * Null (nullptr) values are ignored; non-cPacket objects are an error.
  */
 class SIM_API PacketBytesFilter : public cObjectResultFilter
 {
@@ -348,6 +349,7 @@ class SIM_API PacketBytesFilter : public cObjectResultFilter
 
 /**
  * @brief Filter that expects a cPacket and outputs its length in bits (getBitLength()).
+ * Null (nullptr) values are ignored; non-cPacket objects are an error.
  */
 class SIM_API PacketBitsFilter : public cObjectResultFilter
 {

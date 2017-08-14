@@ -371,16 +371,18 @@ Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultF
 
 void PacketBytesFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-    if (cPacket *packet = dynamic_cast<cPacket *>(object))
-        fire(this, t, (double)packet->getByteLength(), details);
+    if (object)
+        if (cPacket *packet = check_and_cast<cPacket *>(object))
+            fire(this, t, (double)packet->getByteLength(), details);
 }
 
 //---
 
 void PacketBitsFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-    if (cPacket *packet = dynamic_cast<cPacket *>(object))
-        fire(this, t, (double)packet->getBitLength(), details);
+    if (object)
+        if (cPacket *packet = check_and_cast<cPacket *>(object))
+            fire(this, t, (double)packet->getBitLength(), details);
 }
 
 //---
