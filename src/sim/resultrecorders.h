@@ -51,7 +51,7 @@ class SIM_API VectorRecorder : public cNumericResultRecorder
 
 /**
  * @brief Listener for recording the count of signal values. Signal values do not need
- * to be numeric to be counted.
+ * to be numeric to be counted. NaN and nullptr values are ignored.
  */
 class SIM_API CountRecorder : public cResultRecorder
 {
@@ -61,10 +61,10 @@ class SIM_API CountRecorder : public cResultRecorder
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {count++;}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {count++;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {if (!std::isnan(d)) count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {count++;}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {count++;}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {count++;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {if (s) count++;}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {if (obj) count++;}
         virtual void finish(cResultFilter *prev) override;
     public:
         CountRecorder() {count = 0;}
@@ -73,7 +73,7 @@ class SIM_API CountRecorder : public cResultRecorder
 };
 
 /**
- * @brief Listener for recording the last signal value
+ * @brief Listener for recording the last non-NaN signal value.
  */
 class SIM_API LastValueRecorder : public cNumericResultRecorder
 {
@@ -89,7 +89,8 @@ class SIM_API LastValueRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the sum of signal values
+ * @brief Listener for recording the sum of signal values.
+ * NaN values in the input are ignored.
  */
 class SIM_API SumRecorder : public cNumericResultRecorder
 {
@@ -105,17 +106,19 @@ class SIM_API SumRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the (weighted or unweighted) mean of signal values
+ * @brief Listener for recording the (time-weighted or unweighted) mean of
+ * signal values. NaN values in the input are ignored, or in the time-weighted
+ * case, they denote intervals to be ignored.
  */
 class SIM_API MeanRecorder : public cNumericResultRecorder
 {
     protected:
         bool timeWeighted = false;
         long count = 0;
-        double weightedSum = 0;
-        simtime_t startTime = -1;
-        simtime_t lastTime = -1;
         double lastValue = NaN;
+        simtime_t lastTime = SIMTIME_ZERO;
+        double weightedSum = 0;
+        simtime_t totalTime = SIMTIME_ZERO;
     protected:
         virtual void init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
         virtual void finish(cResultFilter *prev) override;
@@ -127,7 +130,8 @@ class SIM_API MeanRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the minimum of signal values
+ * @brief Listener for recording the minimum of signal values.
+ * NaN values in the input are ignored.
  */
 class SIM_API MinRecorder : public cNumericResultRecorder
 {
@@ -143,7 +147,8 @@ class SIM_API MinRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the maximum of signal values
+ * @brief Listener for recording the maximum of signal values.
+ * NaN values in the input are ignored.
  */
 class SIM_API MaxRecorder : public cNumericResultRecorder
 {
@@ -159,7 +164,8 @@ class SIM_API MaxRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the arithmetic mean of signal values
+ * @brief Listener for recording the arithmetic mean of signal values.
+ * NaN values in the input are ignored.
  */
 class SIM_API AverageRecorder : public cNumericResultRecorder
 {
@@ -176,33 +182,36 @@ class SIM_API AverageRecorder : public cNumericResultRecorder
 };
 
 /**
- * @brief Listener for recording the time average of signal values
+ * @brief Listener for recording the time average of signal values.
+ * NaN values in the input denote intervals to be ignored.
  */
 class SIM_API TimeAverageRecorder : public cNumericResultRecorder
 {
     protected:
-        simtime_t startTime;
-        simtime_t lastTime;
-        double lastValue;
-        double weightedSum;
+        double lastValue = NaN;
+        simtime_t lastTime = SIMTIME_ZERO;
+        double weightedSum = 0;
+        simtime_t totalTime = SIMTIME_ZERO;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
-        TimeAverageRecorder() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
+        TimeAverageRecorder() {}
         double getTimeAverage() const;
         virtual std::string str() const override;
 };
 
 /**
- * @brief Listener for recording signal values via a cStatistic
+ * @brief Listener for recording signal values via a cStatistic.
+ * NaN values in the input are ignored, or in the time-weighted
+ * case, they denote intervals to be ignored.
  */
 class SIM_API StatisticsRecorder : public cNumericResultRecorder
 {
     protected:
         cStatistic *statistic = nullptr;
-        simtime_t lastTime = -1;  // for time-weighted statistics (statistic->isWeighted()==true)
-        double lastValue = 0;
+        double lastValue = NaN;
+        simtime_t lastTime = SIMTIME_ZERO;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;

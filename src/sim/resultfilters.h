@@ -47,7 +47,7 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
 
 /**
  * @brief Result filter for counting signals. Signal values do not need to be numeric
- * to be counted.
+ * to be counted. NaN and nullptr values are ignored.
  */
 class SIM_API CountFilter : public cResultFilter
 {
@@ -57,10 +57,10 @@ class SIM_API CountFilter : public cResultFilter
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override {count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override {count++; fire(this,t,count,details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override {if (!std::isnan(d)) count++; fire(this,t,count,details);}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {count++; fire(this,t,count,details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {count++; fire(this,t,count,details);}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {if (s) count++; fire(this,t,count,details);}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {if (obj) count++; fire(this,t,count,details);}
     public:
         CountFilter() {count = 0;}
         long getCount() const {return count;}
@@ -126,7 +126,7 @@ class SIM_API SkipNanFilter : public cNumericResultFilter
 };
 
 /**
- * @brief Filter that outputs the sum of signal values.
+ * @brief Filter that outputs the sum of signal values. NaN values in the input are ignored.
  */
 class SIM_API SumFilter : public cNumericResultFilter
 {
@@ -141,17 +141,19 @@ class SIM_API SumFilter : public cNumericResultFilter
 };
 
 /**
- * @brief Result filter that computes the (weighted or unweighted) mean of signal values
+ * @brief Result filter that computes the (time-weighted or unweighted) mean
+ * of signal values. NaN values in the input are ignored, or in the time-weighted
+ * case, they denote intervals to be ignored.
  */
 class SIM_API MeanFilter : public cNumericResultFilter
 {
     protected:
         bool timeWeighted = false;
         long count = 0;
-        double weightedSum = 0;
-        simtime_t startTime = -1;
-        simtime_t lastTime = -1;
         double lastValue = NaN;
+        simtime_t lastTime = SIMTIME_ZERO;
+        double weightedSum = 0;
+        simtime_t totalTime = SIMTIME_ZERO;
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
@@ -162,7 +164,8 @@ class SIM_API MeanFilter : public cNumericResultFilter
 };
 
 /**
- * @brief Result filter that computes the minimum of signal values
+ * @brief Result filter that computes the minimum of signal values.
+ * NaN values in the input are ignored.
  */
 class SIM_API MinFilter : public cNumericResultFilter
 {
@@ -177,7 +180,8 @@ class SIM_API MinFilter : public cNumericResultFilter
 };
 
 /**
- * @brief Result filter that computes the maximum of signal values
+ * @brief Result filter that computes the maximum of signal values.
+ * NaN values in the input are ignored.
  */
 class SIM_API MaxFilter : public cNumericResultFilter
 {
@@ -192,7 +196,8 @@ class SIM_API MaxFilter : public cNumericResultFilter
 };
 
 /**
- * @brief Result filter that computes the arithmetic mean of signal values
+ * @brief Result filter that computes the arithmetic mean of signal values.
+ * NaN values in the input are ignored.
  */
 class SIM_API AverageFilter : public cNumericResultFilter
 {
@@ -208,19 +213,20 @@ class SIM_API AverageFilter : public cNumericResultFilter
 };
 
 /**
- * @brief Result filter that computes the time average of signal values
+ * @brief Result filter that computes the time average of signal values.
+ * NaN values in the input denote intervals to be ignored.
  */
 class SIM_API TimeAverageFilter : public cNumericResultFilter
 {
     protected:
-        simtime_t startTime;
-        simtime_t lastTime;
-        double lastValue;
-        double weightedSum;
+        double lastValue = NaN;
+        simtime_t lastTime = SIMTIME_ZERO;
+        double weightedSum = 0;
+        simtime_t totalTime = SIMTIME_ZERO;
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
-        TimeAverageFilter() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
+        TimeAverageFilter() {}
         double getTimeAverage() const;
         virtual std::string str() const override;
 };
@@ -353,7 +359,7 @@ class SIM_API PacketBitsFilter : public cObjectResultFilter
 
 /**
  * @brief Filter that outputs the sum of signal values divided by the measurement
- * interval (simtime minus warmupPeriod)
+ * interval (simtime minus warmupPeriod). NaN values in the input are ignored.
  */
 class SIM_API SumPerDurationFilter : public cNumericResultFilter
 {

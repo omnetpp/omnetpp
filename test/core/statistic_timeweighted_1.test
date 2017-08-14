@@ -5,7 +5,7 @@ Basic test for time-weighted statistics.
 
 simple Node
 {
-    @signal[foo](type="long");
+    @signal[foo](type="double");
     // note: "mean+100" is there because we want to test MeanFilter as well (plain "record=mean" uses MeanRecorder)
     @statistic[unweighted](source=foo;record=mean,mean+100,avg,stats);
     @statistic[timeweighted](source=foo;record=mean,mean+100,timeavg,stats;timeWeighted=1);
@@ -18,25 +18,33 @@ network Test
 }
 
 %file: test.cc
-
+#include <limits>
 #include <omnetpp.h>
 
 using namespace omnetpp;
 
 namespace @TESTNAME@ {
 
+static double NaN = std::numeric_limits<double>::quiet_NaN();
+
 class Node : public cSimpleModule {
     simsignal_t signalID;
 
+    void emitWithTimestamp(simsignal_t signalID, simtime_t t, double value) {
+        cTimestampedValue tmp(t, value);
+        emit(signalID, &tmp);
+    }
+
     virtual void initialize() override {
         signalID = registerSignal("foo");
-        emit(signalID, 1);
-        emit(signalID, 2);
-        scheduleAt(10, new cMessage()); // for time average
-    }
-    virtual void handleMessage(cMessage *msg) override {
-        emit(signalID, 5);
-        emit(signalID, 6);
+        simtime_t t = 0;
+        emitWithTimestamp(signalID, t, 1);
+        emitWithTimestamp(signalID, t, 2);
+        t += 10;
+        emitWithTimestamp(signalID, t, NaN);  // NaN intervals should be ignored
+        t += 10;
+        emitWithTimestamp(signalID, t, 5);
+        emitWithTimestamp(signalID, t, 6);
     }
 };
 
@@ -45,7 +53,7 @@ Define_Module(Node);
 }; //namespace
 
 %inifile: omnetpp.ini
-sim-time-limit = 20s  # 10s after emitting the last value, 6.0
+sim-time-limit = 30s  # 10s after emitting the last value, 6.0
 
 %subst: /2.380[0-9]+/2.380/
 %subst: /2.828[0-9]+/2.828/
@@ -87,5 +95,4 @@ field sqrSumWeights 200
 field weightedSqrSum 400
 attr source foo
 attr timeWeighted 1
-
 

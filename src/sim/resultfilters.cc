@@ -17,6 +17,7 @@
 
 #include "omnetpp/cpacket.h"  // PacketBytesFilter
 #include "omnetpp/cproperty.h"
+#include "omnetpp/checkandcast.h"
 #include "resultfilters.h"
 
 namespace omnetpp {
@@ -113,6 +114,8 @@ std::string ConstantFilter::str() const
 
 bool SumFilter::process(simtime_t& t, double& value, cObject* details)
 {
+    if (std::isnan(value))
+        return false;
     sum += value;
     value = sum;
     return true;
@@ -137,43 +140,40 @@ void MeanFilter::init(cComponent *component, cProperty *attrsProperty)
 bool MeanFilter::process(simtime_t& t, double& value, cObject *details)
 {
     if (!timeWeighted) {
+        if (std::isnan(value))
+            return false;
         count++;
         weightedSum += value;
         value = weightedSum/count;
         return true;
     }
     else {
-        bool isFirstValue = startTime < SIMTIME_ZERO;
-        if (isFirstValue)
-            startTime = t;
-        else
-            weightedSum += lastValue * SIMTIME_DBL(t - lastTime);  // always forward-sample-hold
+        if (!std::isnan(lastValue)) {
+            totalTime += t - lastTime;
+            weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
+        }
         lastTime = t;
         lastValue = value;
-
-        if (isFirstValue || t == startTime)
-            return true;  // avoid initial 0/0 = NaNs, value is valid as mean
-
-        double interval = SIMTIME_DBL(t - startTime);
-        value = weightedSum / interval;
-        return true;
+        value = weightedSum / totalTime;
+        return !std::isnan(value);
     }
 }
 
 double MeanFilter::getMean() const
 {
     if (!timeWeighted) {
-        return weightedSum/count;
+        return weightedSum / count;
     }
     else {
-        if (startTime < SIMTIME_ZERO) // empty
-            return NaN;
+        simtime_t tmpTotalTime = totalTime;
+        double tmpWeightedSum = weightedSum;
 
-        simtime_t now = getSimulation()->getSimTime();
-        double lastInterval = SIMTIME_DBL(now - lastTime);
-        double weightedSum = this->weightedSum + lastValue * lastInterval;
-        double interval = SIMTIME_DBL(now - startTime);
-        return weightedSum / interval;
+        if (!std::isnan(lastValue)) {
+            simtime_t t = getSimulation()->getSimTime();
+            tmpTotalTime += t - lastTime;
+            tmpWeightedSum += lastValue * SIMTIME_DBL(t - lastTime);
+        }
+        return tmpWeightedSum / tmpTotalTime;
     }
 }
 
@@ -188,6 +188,8 @@ std::string MeanFilter::str() const
 
 bool MinFilter::process(simtime_t& t, double& value, cObject *details)
 {
+    if (std::isnan(value))
+        return false;
     if (value < min)
         min = value;
     value = min;
@@ -206,6 +208,8 @@ std::string MinFilter::str() const
 
 bool MaxFilter::process(simtime_t& t, double& value, cObject *details)
 {
+    if (std::isnan(value))
+        return false;
     if (value > max)
         max = value;
     value = max;
@@ -224,6 +228,8 @@ std::string MaxFilter::str() const
 
 bool AverageFilter::process(simtime_t& t, double& value, cObject *details)
 {
+    if (std::isnan(value))
+        return false;
     count++;
     sum += value;
     value = sum / count;
@@ -241,32 +247,27 @@ std::string AverageFilter::str() const
 
 bool TimeAverageFilter::process(simtime_t& t, double& value, cObject *details)
 {
-    bool isFirstValue = startTime < SIMTIME_ZERO;
-    if (isFirstValue)
-        startTime = t;
-    else
-        weightedSum += lastValue * SIMTIME_DBL(t - lastTime);  // always forward-sample-hold
+    if (!std::isnan(lastValue)) {
+        totalTime += t - lastTime;
+        weightedSum += lastValue * SIMTIME_DBL(t - lastTime);
+    }
     lastTime = t;
     lastValue = value;
-
-    if (isFirstValue || t == startTime)
-        return true;  // avoid initial 0/0 = NaNs, value is valid as mean
-
-    double interval = SIMTIME_DBL(t - startTime);
-    value = weightedSum / interval;
-    return true;
+    value = weightedSum / totalTime;
+    return !std::isnan(value);
 }
 
 double TimeAverageFilter::getTimeAverage() const
 {
-    if (startTime < SIMTIME_ZERO) // empty
-        return NaN;
+    simtime_t tmpTotalTime = totalTime;
+    double tmpWeightedSum = weightedSum;
 
-    simtime_t now = getSimulation()->getSimTime();
-    double lastInterval = SIMTIME_DBL(now - lastTime);
-    double weightedSum = this->weightedSum + lastValue * lastInterval;
-    double interval = SIMTIME_DBL(now - startTime);
-    return weightedSum / interval;
+    if (!std::isnan(lastValue)) {
+        simtime_t t = getSimulation()->getSimTime();
+        tmpTotalTime += t - lastTime;
+        tmpWeightedSum += lastValue * SIMTIME_DBL(t - lastTime);
+    }
+    return tmpWeightedSum / tmpTotalTime;
 }
 
 std::string TimeAverageFilter::str() const
@@ -386,6 +387,8 @@ void PacketBitsFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObj
 
 bool SumPerDurationFilter::process(simtime_t& t, double& value, cObject *details)
 {
+    if (std::isnan(value))
+        return false;
     sum += value;
     value = sum / (t - getSimulation()->getWarmupPeriod());
     return true;

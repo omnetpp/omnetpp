@@ -1,0 +1,118 @@
+%description:
+Basic test for individual result filters and recorders. Includes NaNs, to verify
+that they are ignored by most filters/recorders.
+
+%file: test.ned
+
+simple Node
+{
+    @signal[tenToFifteen](type="double");
+
+    // test the recorders
+    @statistic[rec](source=tenToFifteen;record=count,sum,mean,min,max,last,timeavg,histogram,vector,2*mean);
+
+    // test filters ("+100" forces the last node to be an ExpressionRecorder and previous ones to be Filters)
+    @statistic[flt](source=tenToFifteen;record=count+100,sum+100,mean+100,min+100,max+100,last+100,timeavg+100);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <limits>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+static double NaN = std::numeric_limits<double>::quiet_NaN();
+
+class Node : public cSimpleModule {
+    simsignal_t signalID;
+
+    virtual void initialize() override {
+        signalID = registerSignal("tenToFifteen");
+        emit(signalID, NaN); // NaNs should be ignored by most filters
+        emit(signalID, 10.0);
+        emit(signalID, 11.0);
+        emit(signalID, 12.0);
+        scheduleAt(0.1, new cMessage()); //so that we can exercise timeavg too
+    }
+    virtual void handleMessage(cMessage *msg) override {
+        delete msg;
+        emit(signalID, 13.0);
+        emit(signalID, NaN);
+        emit(signalID, 14.0);
+        emit(signalID, 15.0);
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+%subst: /-?:NaN/:nan/
+%subst: /1.87[0-9]+/1.87/
+
+%contains: results/General-#0.sca
+scalar Test.node rec:count 6
+attr source tenToFifteen
+scalar Test.node rec:sum 75
+attr source tenToFifteen
+scalar Test.node rec:mean 12.5
+attr source tenToFifteen
+scalar Test.node rec:min 10
+attr source tenToFifteen
+scalar Test.node rec:max 15
+attr source tenToFifteen
+scalar Test.node rec:last 15
+attr source tenToFifteen
+scalar Test.node rec:timeavg 12
+attr source tenToFifteen
+statistic Test.node rec:histogram
+field count 6
+field mean 12.5
+field stddev 1.87
+field min 10
+field max 15
+field sum 75
+field sqrsum 955
+attr source tenToFifteen
+bin	-inf	0
+bin	7	0
+bin	8	0
+bin	9	0
+bin	10	1
+bin	11	1
+bin	12	1
+bin	13	1
+bin	14	1
+bin	15	1
+bin	16	0
+bin	17	0
+bin	18	0
+scalar Test.node rec:2*mean 25
+attr source tenToFifteen
+scalar Test.node flt:count+100 106
+attr source tenToFifteen
+scalar Test.node flt:sum+100 175
+attr source tenToFifteen
+scalar Test.node flt:mean+100 112.5
+attr source tenToFifteen
+scalar Test.node flt:min+100 110
+attr source tenToFifteen
+scalar Test.node flt:max+100 115
+attr source tenToFifteen
+scalar Test.node flt:last+100 115
+attr source tenToFifteen
+scalar Test.node flt:timeavg+100 112
+attr source tenToFifteen
+
