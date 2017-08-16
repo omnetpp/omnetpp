@@ -48,7 +48,18 @@ namespace omnetpp {
 using std::ostream;
 
 Register_Class(cStdDev);
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 Register_Class(cWeightedStdDev);
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
 
 cStdDev::cStdDev(const char *s, bool weighted) : cStatistic(s), weighted(weighted)
 {

@@ -183,19 +183,19 @@ class SIM_API cStdDev : public cStatistic
     virtual double getWeights() const override  {return sumWeights;}
 
     /**
-     * Returns the sum of weight*value products. (For unweighted statistics, all 
+     * Returns the sum of weight*value products. (For unweighted statistics, all
      * weights are taken to be 1.0.)
      */
     virtual double getWeightedSum() const override  {return sumWeightedValues;}
 
     /**
-     * Returns the sum of squared weights. (For unweighted statistics, all weights 
+     * Returns the sum of squared weights. (For unweighted statistics, all weights
      * are taken to be 1.0.)
      */
     virtual double getSqrSumWeights() const override  {return sumSquaredWeights;}
 
     /**
-     * Returns the sum of weight*value*value products. (For unweighted statistics, 
+     * Returns the sum of weight*value*value products. (For unweighted statistics,
      * all weights are taken to be 1.0.)
      */
     virtual double getWeightedSqrSum() const override  {return sumWeightedSquaredValues;}
@@ -233,7 +233,11 @@ class SIM_API cStdDev : public cStatistic
  *
  * @ingroup Statistics
  */
-class _OPPDEPRECATED SIM_API cWeightedStdDev : public cStdDev
+class
+#ifndef __GNUC__
+      _OPPDEPRECATED  // GCC cannot properly handle class deprecations -- it already issues tons of warnings when the header file is included, not only on actual usage. Clang is OK.
+#endif
+      SIM_API cWeightedStdDev : public cStdDev
 {
   public:
     /** @name Constructors, destructor, assignment. */
@@ -241,7 +245,7 @@ class _OPPDEPRECATED SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructor.
      */
-    explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name, true)  {}
+    _OPPDEPRECATED explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name, true)  {}  // extra deprecation because of GCC bug, see above
 
     /**
      * Copy constructor.
