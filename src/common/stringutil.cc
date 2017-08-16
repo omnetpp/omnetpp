@@ -453,7 +453,7 @@ std::string opp_formatTable(const std::string& text, int spacing, const std::vec
             }
             col++;
         }
-        if (lineNum++ != lines.size()-1) // except for last line
+        if (lineNum++ != (int)lines.size()-1) // except for last line
             out << std::endl;
     }
     return out.str();

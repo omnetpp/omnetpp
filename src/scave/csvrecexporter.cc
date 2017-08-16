@@ -271,7 +271,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             const VectorResult& vector = manager->getVector(vectorIDs.get(i));
             writeResultItemBase(vector, "vector", numColumns);
             csv.writeBlank(); // skip 'value'
-            for (int i = 0; i < statisticColumnNames.size() + histogramColumnNames.size(); i++)
+            for (size_t i = 0; i < statisticColumnNames.size() + histogramColumnNames.size(); i++)
                 csv.writeBlank(); // skip intermediate columns
             XYArray *data = xyArrays[i];
             writeXAsString(data);
@@ -331,7 +331,7 @@ void CsvRecordsExporter::writeAsString(const std::vector<double>& data)
     size_t n = data.size();
     csv.beginRaw();
     out << "\"";
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         if (i != 0)
             out << " ";
         csv.writeRawDouble(data[i]);

@@ -100,12 +100,15 @@ int TreeNode::computeObjectChildCount(void *obj, cClassDescriptor *desc, Mode mo
         case Mode::INHERITANCE:
             if (!excludeInherited)
                 return desc->getInheritanceChainLength();
+            // no break (fall through)
 
-        // if the condition fails, falling through, no return here
         case Mode::FLAT: {
             auto base = desc->getBaseClassDescriptor();
             return desc->getFieldCount() - (excludeInherited && base ? base->getFieldCount() : 0);
         }
+
+        default:
+            return 0;
     }
 }
 
