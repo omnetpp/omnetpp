@@ -69,8 +69,9 @@ void cSocketRTScheduler::setupListener()
     // Setting this option makes it possible to kill the sample and restart
     // it right away without having to change the port it is listening on.
     // Not using SO_REUSEADDR as per: https://stackoverflow.com/a/34812994
+    // Correction: There is no SO_REUSEPORT on Windows, so SO_REUSEADDR it is.
     int enable = 1;
-    if (setsockopt(listenerSocket, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0)
+    if (setsockopt(listenerSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&enable, sizeof(int)) < 0)
         throw cRuntimeError("cSocketRTScheduler: cannot set socket option");
 
     sockaddr_in sinInterface;
