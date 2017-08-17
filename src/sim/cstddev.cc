@@ -267,7 +267,7 @@ double cStdDev::draw() const
 void cStdDev::saveToFile(FILE *f) const
 {
     fprintf(f, "\n#\n# (%s) %s\n#\n", getClassName(), getFullPath().c_str());
-    fprintf(f, "%ld\t #= num_vals\n", numValues);
+    fprintf(f, "%" PRId64 "\t #= num_vals\n", numValues);
     fprintf(f, "%lg %lg\t #= min, max\n", minValue, maxValue);
     fprintf(f, "%d\t #= weighted\n", weighted);
     if (!weighted) {
