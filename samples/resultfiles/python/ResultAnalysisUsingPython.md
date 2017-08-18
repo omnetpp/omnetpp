@@ -208,7 +208,7 @@ directly corresponds to the contents of the CSV file. Column names have
 been taken from the first line of the CSV file. Missing values are
 represented with NaNs (not-a-number).
 
-Unsurprisingly, the `tail()` method shows the last few lines. There is also
+The complementary `tail()` method shows the last few lines. There is also
 an `iloc` method that we use at places in this tutorial to show rows
 from the middle of the data frame. It accepts a range: `aloha.iloc[20:30]`
 selects 10 lines from line 20, `aloha.iloc[:5]` is like `head()`, and
@@ -250,6 +250,66 @@ the list syntax use square brackets.)
 tmp = aloha[['run', 'attrname', 'value']]
 tmp.head()
 ```
+
+The `describe()` method can be used to get an idea about the contents of a 
+column. When applied to a non-numeric column, it prints the number of 
+non-null elements in it (`count`), the number of unique values (`unique`),
+the most frequently occurring value (`top`) and its multiplicity (`freq`),
+and the inferred data type (more about that later.)
+
+```{.python .input}
+aloha.module.describe()
+```
+
+You can get a list of the unique values using the `unique()` method. For example,
+the following command lists the names of modules that have recorded any statistics:
+
+```{.python .input}
+aloha.module.unique()
+```
+
+When you apply `describe()` to a numeric column, you get a statistical summary
+with things like mean, standard deviation, minimum, maximum, and various 
+quantiles:
+
+```{.python .input}
+aloha.stddev.describe()
+```
+
+Applying `describe()` to the whole data frame creates a similar report about
+all numeric columns:
+
+```{.python .input}
+aloha.describe()
+```
+
+Let's spend a minute on data types and column data types. Every column has a
+data type (abbreviated *dtype*) that determines what type of values it may
+contain. Column dtypes can be printed with `dtypes`:
+
+```{.python .input}
+aloha.dtypes
+```
+
+The two most commonly used dtypes are *float64* and *object*. A *float64* column
+contains floating-point numbers, and missing values are represented with NaNs. 
+An *object* column may contain basically anything -- usually strings, but we'll
+also have NumPy arrays (`np.ndarray`) as elements in this tutorial. 
+Numeric values and booleans may also occur in an *object* column. Missing values
+in an *object* column are usually represented with `None`, but Pandas also
+interprets the floating-point NaN like that.
+Some degree of confusion arises from fact that some Pandas functions check 
+the column's dtype, while others are already happy if the contained elements
+are of the required type. To clarify: applying `describe()` to a column 
+prints a type inferred from the individual elements, *not* the column dtype.
+The column dtype type can be changed with the `astype()` method; we'll see an
+example for using it later in this tutorial.
+
+The column dtype can be accessed as the `dtype` property of a column, for example
+`aloha.stddev.dtype` yields `dtype('float64')`. There are also convenience
+functions such as `is_numeric_dtype()` and `is_string_dtype()` for checking 
+column dtype. (They need to be imported from the `pandas.api.types` package
+though.)
 
 Another vital thing to know, especially due of the existence of the *type*
 column, is how to filter rows. Perhaps surprisingly, the array index syntax
