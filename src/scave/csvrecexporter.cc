@@ -182,7 +182,7 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
     bool haveHistogramColumns = haveHistograms || !omitBlankColumns;
     bool haveVectorColumns = haveVectors || !omitBlankColumns;
 
-    std::vector<std::string> commonAndScalarColumnNames = {"run", "type", "module", "name", "attrname", "value"}; // note: 'value' doubles as scalar value and attr value
+    std::vector<std::string> commonAndScalarColumnNames = {"run", "type", "module", "name", "attrname", "attrvalue", "value"}; // note: 'value' is scalar value
     std::vector<std::string> statisticColumnNames, histogramColumnNames, vectorColumnNames;
     if (haveStatisticColumns)
         statisticColumnNames = {"count", "sumweights", "mean", "stddev", "min", "max"};
@@ -303,8 +303,8 @@ void CsvRecordsExporter::writeResultAttrRecords(const ResultItem& result, int nu
         csv.writeString("attr");
         csv.writeString(result.getModuleName());
         csv.writeString(result.getName());
-        csv.writeString(pair.first);
-        csv.writeString(pair.second);
+        csv.writeString(pair.first); // attrName
+        csv.writeString(pair.second); // attrValue
         finishRecord(numColumns);
     }
 }
@@ -315,7 +315,8 @@ void CsvRecordsExporter::writeResultItemBase(const ResultItem& result, const cha
     csv.writeString(type);
     csv.writeString(result.getModuleName());
     csv.writeString(result.getName());
-    csv.writeBlank();  // skip attr name
+    csv.writeBlank();  // skip 'attrName'
+    csv.writeBlank();  // skip 'attrValue'
 }
 
 void CsvRecordsExporter::finishRecord(int numColumns)
