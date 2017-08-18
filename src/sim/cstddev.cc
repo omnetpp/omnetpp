@@ -285,7 +285,7 @@ void cStdDev::saveToFile(FILE *f) const
 void cStdDev::loadFromFile(FILE *f)
 {
     int tmp;
-    freadvarsf(f, "%ld\t #= num_vals", &numValues);
+    freadvarsf(f, "%" PRId64 "\t #= num_vals", &numValues);
     freadvarsf(f, "%lg %lg\t #= min, max", &minValue, &maxValue);
     freadvarsf(f, "%d\t #= weighted", &tmp); weighted = tmp;
     if (!weighted) {

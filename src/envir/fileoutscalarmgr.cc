@@ -242,10 +242,10 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
 
             int n = histogram->getNumCells();
             if (n > 0) {
-                check(fprintf(f, "bin\t-inf\t%lu\n", histogram->getUnderflowCell()));
+                check(fprintf(f, "bin\t-inf\t%" PRId64 "\n", histogram->getUnderflowCell()));
                 for (int i = 0; i < n; i++)
                     check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBasepoint(i), prec, histogram->getCellValue(i)));
-                check(fprintf(f, "bin\t%.*g\t%lu\n", prec, histogram->getBasepoint(n), histogram->getOverflowCell()));
+                check(fprintf(f, "bin\t%.*g\t%" PRId64 "\n", prec, histogram->getBasepoint(n), histogram->getOverflowCell()));
             }
         }
     }

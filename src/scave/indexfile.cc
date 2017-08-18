@@ -543,7 +543,7 @@ void IndexFileWriter::writeBlock(const VectorData& vector, const Block& block)
         }
         if (vector.hasColumn('V')) {
             const Statistics& stat = block.stat;
-            CHECK(fprintf(file, " %" PRId64 " %.*g %.*g %.*g %.*g",
+            CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
                             block.getCount(), precision, stat.getMin(), precision, stat.getMax(),
                             precision, stat.getSum(), precision, stat.getSumSqr()));
         }
