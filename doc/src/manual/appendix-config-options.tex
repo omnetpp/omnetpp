@@ -227,7 +227,7 @@ with the \fopt{-h configdetails} option.
     {\allowbreak}22.{\allowbreak}2..{\allowbreak}100,{\allowbreak}
     {\allowbreak}233.{\allowbreak}3..{\allowbreak}}
 \item[eventlogmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}Eventlog\-File\-Manager}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+    \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the eventlog manager class to
     be used to record data. The class has to implement the
     \ttt{cIEventlog\-Manager} interface.
@@ -301,7 +301,7 @@ with the \fopt{-h configdetails} option.
     useful with distributed simulation. The default value is true if parallel
     simulation is enabled, false otherwise.
 \item[futureeventset-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}cEvent\-Heap}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+    \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the class for storing the
     future events in the simulation. The class has to implement the
     \ttt{cFuture\-Event\-Set} interface.
@@ -402,13 +402,13 @@ with the \fopt{-h configdetails} option.
     into larger chunks), and therefore allow more efficient processing later.
     There is also a per-vector limit, see
     \ttt{**.{\allowbreak}vector-{\allowbreak}buffer}.
-\item[outputscalarmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}cFile\-Output\-Scalar\-Manager}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+\item[outputscalarmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}Omnetpp\-Output\-Scalar\-Manager}\\
+    \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the output scalar manager class
     to be used to record data passed to recordScalar(). The class has to
     implement the \ttt{cIOutput\-Scalar\-Manager} interface.
-\item[outputvectormanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}cIndexed\-File\-Output\-Vector\-Manager}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+\item[outputvectormanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}Omnetpp\-Output\-Vector\-Manager}\\
+    \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the output vector manager class
     to be used to record data from output vectors. The class has to implement
     the \ttt{cIOutput\-Vector\-Manager} interface.
@@ -637,8 +637,8 @@ with the \fopt{-h configdetails} option.
 \item[snapshot-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}iterationvarsf\}{\allowbreak}\#\$\{{\allowbreak}repetition\}{\allowbreak}.{\allowbreak}sna}\\
     \textit{Per-simulation-run setting.}\\
     Name of the snapshot file.
-\item[snapshotmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}cFile\-Snapshot\-Manager}\\
-    \textit{Global setting (applies to all simulation runs).}\\
+\item[snapshotmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}File\-Snapshot\-Manager}\\
+    \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the class to handle streams to
     which snapshot() writes its output. The class has to implement the
     \ttt{cISnapshot\-Manager} interface.

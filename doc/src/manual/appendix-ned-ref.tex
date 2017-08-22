@@ -1856,12 +1856,14 @@ units.)
   d & day & 86400s \\\hline
   h & hour & 3600s \\\hline
   min & minute & 60s \\\hline
-  ms & millisecond & 1e-3s \\\hline
+  ms & millisecond & 0.001s \\\hline
   us & microsecond & 1e-6s \\\hline
   ns & nanosecond & 1e-9s \\\hline
   ps & picosecond & 1e-12s \\\hline
+  fs & femtosecond & 1e-15s \\\hline
+  as & attosecond & 1e-18s \\\hline
   bps & bit/sec & \\\hline
-  kbps & kilobit/sec & 1e3bps \\\hline
+  kbps & kilobit/sec & 1000bps \\\hline
   Mbps & megabit/sec & 1e6bps \\\hline
   Gbps & gigabit/sec & 1e9bps \\\hline
   Tbps & terabit/sec & 1e12bps \\\hline
@@ -1870,33 +1872,40 @@ units.)
   MiB & mega (mebi) byte & 1.04858e6B \\\hline
   GiB & giga (gibi) byte & 1.07374e9B \\\hline
   TiB & tera (tebi) byte & 1.09951e12B \\\hline
+  kB & kilobyte & 1000B \\\hline
+  MB & megabyte & 1e6B \\\hline
+  GB & gigabyte & 1e9B \\\hline
+  TB & terabyte & 1e12B \\\hline
   b & bit & \\\hline
   m & meter & \\\hline
-  km & kilometer & 1e3m \\\hline
-  cm & centimeter & 1e-2m \\\hline
-  mm & millimeter & 1e-3m \\\hline
+  mm & millimeter & 0.001m \\\hline
+  cm & centimeter & 0.01m \\\hline
+  km & kilometer & 1000m \\\hline
   W & watt & \\\hline
-  mW & milliwatt & 1e-3W \\\hline
+  mW & milliwatt & 0.001W \\\hline
+  kW & kilowatt & 1000W \\\hline
+  MW & megawatt & \\\hline
+  GW & gigawatt & 1000MW \\\hline
   Hz & hertz & \\\hline
-  kHz & kilohertz & 1e3Hz \\\hline
+  kHz & kilohertz & 1000Hz \\\hline
   MHz & megahertz & 1e6Hz \\\hline
   GHz & gigahertz & 1e9Hz \\\hline
-  g & gram & 1e-3kg \\\hline
   kg & kilogram & \\\hline
+  g & gram & 0.001kg \\\hline
   J & joule & \\\hline
-  kJ & kilojoule & 1e3J \\\hline
+  kJ & kilojoule & 1000J \\\hline
   MJ & megajoule & 1e6J \\\hline
   V & volt & \\\hline
-  kV & kilovolt & 1e3V \\\hline
-  mV & millivolt & 1e-3V \\\hline
+  kV & kilovolt & 1000V \\\hline
+  mV & millivolt & 0.001V \\\hline
   A & ampere & \\\hline
-  mA & milliampere & 1e-3A \\\hline
+  mA & milliampere & 0.001A \\\hline
   uA & microampere & 1e-6A \\\hline
   mps & meter/sec & \\\hline
   kmph & kilometer/hour & (1/3.6)mps \\\hline
   C & coulomb & \\\hline
   As & ampere-second & 1C \\\hline
-  mAs & milliampere-second & 1e-3C \\\hline
+  mAs & milliampere-second & 0.001C \\\hline
   Ah & ampere-hour & 3600C \\\hline
   mAh & milliampere-hour & 3.6C \\\hline
 \end{longtable}

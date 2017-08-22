@@ -5,5 +5,5 @@ perl stripgrammar.pl ../../../../src/nedxml/msg2.y >msg.txt
 perl stripeventlog.pl ../../../../src/eventlog/eventlogentries.txt >eventlog.txt
 opp_run -s -h nedfunctions >tmp.txt
 perl processnedfuncs.pl <tmp.txt >nedfuncs.tex
-opp_run -s -h units >units.txt
+opp_run -s -h units | sed 's/e+0/e/; s/e-0/e-/; s/e+/e/' | gawk '/../ { print "  " $1 " & " $2 " & " $3 " \\\\\\hline"; }' | sed 's/&  /\& /' >units.txt
 rm tmp.txt

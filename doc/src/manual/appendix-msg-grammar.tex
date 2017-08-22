@@ -219,7 +219,7 @@ opt\_fieldvector
         |
         ;
 
-fieldvalue   
+fieldvalue
         : fieldvalue fieldvalueitem
         | fieldvalueitem
         ;
@@ -262,7 +262,7 @@ property
 property\_namevalue
         : property\_name
         | property\_name '(' opt\_property\_keys ')'
-        | ENUM '(' NAME ')' 
+        | ENUM '(' NAME ')'
         ;
 
 property\_name
@@ -271,7 +271,7 @@ property\_name
         ;
 
 opt\_property\_keys
-        : property\_keys  
+        : property\_keys
         ;
 
 property\_keys
@@ -291,7 +291,7 @@ property\_values
 
 property\_value
         : property\_literal
-        |  
+        |
         ;
 
 property\_literal
