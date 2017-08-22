@@ -167,6 +167,32 @@ void Animator::initialize()
     group->rotate(M_PI/6, 100, 100);
 
     //--------------------------
+    cGroupFigure *layer = new cGroupFigure("layer");
+    layer->skewx(-0.3);
+
+    cImageFigure *referenceImg = new cImageFigure("ref");
+    referenceImg->setImageName("block/broadcast");
+    referenceImg->setPosition(cFigure::Point(200,200));
+    referenceImg->setOpacity(0.3);
+    layer->addFigure(referenceImg);
+
+    cPanelFigure *panel = new cPanelFigure("panel");
+
+    cImageFigure *img = new cImageFigure("img");
+    img->setImageName("block/broadcast");
+    img->setPosition(cFigure::Point(0,0));
+    panel->addFigure(img);
+
+    cRectangleFigure *border = new cRectangleFigure("border");
+    border->setBounds(cFigure::Rectangle(-25,-25,50,50));
+    border->setLineWidth(3);
+    panel->addFigure(border);
+
+    layer->addFigure(panel);
+    panel->setAnchorPoint(cFigure::Point(0,0));
+    panel->setPosition(cFigure::Point(210,200));
+
+    //--------------------------
 
     cFigure *figures[] = {
         line,
@@ -188,15 +214,18 @@ void Animator::initialize()
         pixmapFigure,
         pixmapFigure2,
         group,
+        layer,
         nullptr
     };
 
-    int dx = 100;
+    int x = 100;
     cCanvas *canvas = getParentModule()->getCanvas();
     for (cFigure **p = figures; *p; p++) {
         cFigure *figure = *p;
-        figure->move(dx, 50);
+        if (figure!=layer)
+            figure->move(x, 50);
         canvas->addFigure(figure);
-        dx += 100;
+        x += 200;
     }
 }
+

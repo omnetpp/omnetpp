@@ -1,4 +1,4 @@
-\chapter{Visualization}
+\chapter{Graphics and Visualization}
 \label{cha:graphics}
 
 \section{Overview}
@@ -2417,6 +2417,75 @@ The result:
 
 \begin{center}
 \includesvg{figures/figure-group}
+\end{center}
+
+
+\subsubsection{cPanelFigure}
+\label{sec:graphics:panelfigure}
+
+\cclass{cPanelFigure} is similar to \cclass{cGroupFigure} in that it is also
+intended for grouping its children and has no visual appearance of its own.
+However, it has a special behavior regarding transformations and especially zooming.
+ 
+\cclass{cPanelFigure} sets up an axis-aligned, unscaled coordinate system for
+its children, canceling the effect of any transformation (scaling, rotation,
+etc.) inherited from ancestor figures. This allows for pixel-based positioning
+of children, and makes them immune to zooming.
+
+Unlike \cclass{cGroupFigure} which itself has position attribute,
+\cclass{cPanelFigure} uses two points for positioning, a \textit{position} and
+an \textit{anchor point}. Position is interpreted in the coordinate system of
+the panel figure's parent, while the anchor point is interpreted in the
+coordinate system of the panel figure itself. To place the panel figure on the
+canvas, the panel's anchor point is mapped to \textit{position} in the
+parent.
+
+Setting a transformation on the panel figure itself allows for rotation,
+scaling, and skewing of its children. The anchor point is also affected by this
+transformation.
+
+The following example demonstrates \cclass{cPanelFigure} behavior. It
+creates a normal group figure as parent for the panel, and sets up a
+skewed coordinate system on it. A reference image is also added to it,
+in order to make the effect of skew visible. The panel figure is also
+added to it as a child. The panel contains an image (showing the same icon
+as the reference image), and a border around it. 
+
+\begin{cpp}
+cGroupFigure *layer = new cGroupFigure("parent");
+layer->skewx(-0.3);
+
+cImageFigure *referenceImg = new cImageFigure("ref");
+referenceImg->setImageName("block/broadcast");
+referenceImg->setPosition(cFigure::Point(200,200));
+referenceImg->setOpacity(0.3);
+layer->addFigure(referenceImg);
+
+cPanelFigure *panel = new cPanelFigure("panel");
+
+cImageFigure *img = new cImageFigure("img");
+img->setImageName("block/broadcast");
+img->setPosition(cFigure::Point(0,0));
+panel->addFigure(img);
+
+cRectangleFigure *border = new cRectangleFigure("border");
+border->setBounds(cFigure::Rectangle(-25,-25,50,50));
+border->setLineWidth(3);
+panel->addFigure(border);
+
+layer->addFigure(panel);
+panel->setAnchorPoint(cFigure::Point(0,0));
+panel->setPosition(cFigure::Point(210,200));
+\end{cpp}
+
+%% NOTE to authors: code should be kept in sync with test/anim/usman/*.cc!
+
+The screenshot shows the result at an approx. 4x zoom level. The large
+semi-transparent image is the reference image, the smaller one is the image within the panel
+figure. Note that neither the skew nor the zoom has affected the panel figure's children.
+
+\begin{center}
+\includesvg{figures/figure-panel}
 \end{center}
 
 

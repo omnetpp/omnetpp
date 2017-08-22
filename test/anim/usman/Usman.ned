@@ -1,6 +1,6 @@
 network Usman
 {
-    @display("bgb=2500,600,white");
+    @display("bgb=5000,5000,white");
     submodules:
         anim: Animator;
 }
