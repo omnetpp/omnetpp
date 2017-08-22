@@ -1,3 +1,16 @@
+2017-06-28  Attila Torok
+
+	* MainWindow: Display stats in BUSY state as well.
+
+	Needed for example for the sockets sample, when the cRTSocketScheduler is
+	calling cEnvir::idle() in which Qtenv updates the display, and we don't
+	want to see just three "n/a"-s.
+
+2017-07-27  Attila Torok
+
+	* LogInspector: Actually apply the module exclusion filter after it
+	is restored.
+
 2017-04-06  Andras Varga
 
 	* Modernizing: use C++11's range-based for loops where applicable, using

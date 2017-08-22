@@ -1,3 +1,8 @@
+2017-08-14  Andras Varga
+
+	* loadExtensionLibrary(): add "_dbg" suffix when in debug mode (Debug
+	executables prefer loading debug libraries.)
+
 2017-04-06  Andras Varga
 
 	* Modernizing: use C++11's range-based for loops where applicable, using

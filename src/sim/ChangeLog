@@ -1,3 +1,24 @@
+2017-08-18  Rudolf Hornig
+
+	* Elimnated some warnings
+
+2017-08-14  Andras Varga
+
+	* packetBytes/packetBits filters: throw error if object is not a cPacket.
+	(nullptrs are allowed and ignored.)
+
+2017-08-14  Andras Varga
+
+	* Reasult filters/recorders: ignore NaNs. This change affects count
+	(which now also ignores nullptrs), sum, min, max, avg, timeavg,
+	sumPerDuration, stats, histogram. For the time weighted case, NaNs mark
+	intervals to be ignored.
+
+2017-08-08  Andras Varga
+
+	* cResultFilter: added an init() method. That made it possible to update
+	MeanFilter to obey the timeWeighted=1 @statistic setting.
+
 2017-07-19  Andras Varga
 
 	* Added "skipNan" result filter, for use with @statistic.

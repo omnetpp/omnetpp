@@ -1,16 +1,21 @@
+2017-08-08  Andras Varga
+
+	* cResultFilter: added an init() method to allow filters access the content
+	of the @statistic property they occur in.
+
 2017-07-15  Andras Varga
 
 	* Histogram classes: added support for weighted statistics to histogram
 	classes (cHistogramBase and subclasses: cHistogram, cVarHistogram,
 	cLongHistogram, cDoubleHistogram).
-	
+
 	Details:
-	- The data type of bin values were changed from int to double; they now 
+	- The data type of bin values were changed from int to double; they now
 	  store sum of weights instead of observation counts. The unweighted case
 	  is treated simply as a special case of weighted where all weights are 1.0.
-	  
-	- New cDensityEstBase methods: getUnderflowSumWeights(), getOverflowSumWeights(). 
-	  They return sum of weights for observations that are outside the histogram 
+
+	- New cDensityEstBase methods: getUnderflowSumWeights(), getOverflowSumWeights().
+	  They return sum of weights for observations that are outside the histogram
 	  range. Note: the slightly misnamed getUnderflowCell()/getOverflowCell()
 	  methods that return overflow/underflow counts are still available.
 
@@ -18,14 +23,14 @@
 
 	* cStddev: added support for weighted statistics. To make a weighted
 	cStddev, pass weighted=true in the constructor. The weighted-ness of
-	an cStddev instance cannot be changed afterwards. getMean() and 
+	an cStddev instance cannot be changed afterwards. getMean() and
 	getStddev() now return the weighted mean / stddev if the object is
 	weighted.
 
 	cWeightedStddev has been deprecated, as it is no longer needed. For now,
 	it has been turned into a trivial subclass of cStddev that just
 	initializes it with weighted=true.
-	
+
 	Incompatible change: sum and sum of squares of the values are no longer
 	available when collectecting weighted statistics (getSum() and getSqrSum()
 	throw an exception).
@@ -46,12 +51,12 @@
 2017-07-13  Rudolf Hornig
 
 	* Workaround for compiler bug: removed empty ctor from EndTraversalException,
-	as it (strangely) caused such exceptions not to be caught properly when 
+	as it (strangely) caused such exceptions not to be caught properly when
 	compiling with -O1 and greater optimization level with clang 4 on Windows.
 
 2017-06-08  Attila Torok
 
-	* cOsgCanvas: Changes necessary for allowing the OSG Viewer to be factored 
+	* cOsgCanvas: Changes necessary for allowing the OSG Viewer to be factored
 	out from Qtenv into as separate support library, loaded on demand at runtime.
 	The simulation kernel kernel (and cOsgCanvas) now does NOT depend on the
 	OSG libraries: does not include OSG header files at all, and does not
@@ -59,7 +64,7 @@
 
 	Incompatible change: One must use the new cOsgCanvas::EarthViewpoint class
 	instead of osgEarth::Viewpoint in models.
-	
+
 	Details:
 	- cOsgCanvas now treats osg::Node* as opaque pointers. No attempt is made
 	  to dereference it.
@@ -67,7 +72,7 @@
 	  refOsgNode()/unrefOsgNode() methods instead of Node's methods.
 	- No WITH_OSG or WITH_OSGEARTH conditionals anywhere in omnetpp or qtenv.
 	  The only difference with WITH_OSG is whether or not the support library
-	  gets built. Consequences: the cOsgCanvas is always available; 
+	  gets built. Consequences: the cOsgCanvas is always available;
 	  cModule::getOsgCanvas() never throws "OSG not available" exception.
 
 2017-05-10  Attila Torok
