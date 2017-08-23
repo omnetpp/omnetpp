@@ -596,22 +596,22 @@ sub do_comment_verbatim {
             $line =~ s/ < /&lt;/xg;
             $line =~ s/ > /&gt;/xg;
         }
-        if ($line =~ s/\\begin{pdfonly}//) {
+        if ($line =~ s/\\begin\{pdfonly}//) {
             $skip = $true;
-        } elsif ($line =~ s/\\end{pdfonly}//) {
+        } elsif ($line =~ s/\\end\{pdfonly}//) {
             $skip = $false;
-        } elsif ($line =~ s/\\begin{htmlonly}//) {
+        } elsif ($line =~ s/\\begin\{htmlonly}//) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $true;              # allow processing on next line
             $esc = $false;
-        } elsif ($line =~ s/\\end{htmlonly}//) {
+        } elsif ($line =~ s/\\end\{htmlonly}//) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $false;              # allow processing on next line
             $esc = $true;
-        } elsif ($line =~ s/\\begin{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<pre class="$1">/ ) {
+        } elsif ($line =~ s/\\begin\{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<pre class="$1">/ ) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $true;
-        } elsif ($line =~ s/\\end{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<\/pre>/ ) {
+        } elsif ($line =~ s/\\end\{(verbatim|ned|msg|cpp|inifile|filelisting|commandline)}/<\/pre>/ ) {
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $false;              # allow processing on next line
         } elsif ($inh == $false && $line =~ s:^([ \t]*%.*):<!-- $1 -->: ) {
@@ -619,7 +619,7 @@ sub do_comment_verbatim {
                 $line = "";
             }
             vec($orig_inh, $i, 1) = $true;      # inhibit further processing
-        } elsif ($inh == $false && $line =~ /^\\end{document}/ ) {
+        } elsif ($inh == $false && $line =~ /^\\end\{document}/ ) {
             $#$arr = $i;
             fyi(8, "Truncating down to $i lines");
             last;
@@ -747,7 +747,7 @@ sub do_tables {
             $line =~ s/\\begin\{(longtable|tabular)[A-Za-z]*\}\{.*\}/$tabletag/;
             fyi(9, "line =-> $line");
             fyi(7, "Table with $#cols+1 columns.  Aligns = @cols");
-        } elsif ($line =~ s:\\end{(longtable|tabular)[A-Za-z]*}:</table>: ) {
+        } elsif ($line =~ s:\\end\{(longtable|tabular)[A-Za-z]*}:</table>: ) {
             $tlev --;
             @cols = ();
         } elsif ($tlev > 0) {
@@ -761,13 +761,12 @@ sub do_tables {
             $line =~ s:\& (?![ampltg]+;):</TD> <TD>:gx;
 
             # convert \multicolumn --> \mc
-            if ( $line =~ s:\\multicolumn{:\\mc\{:xg ) {
+            if ( $line =~ s:\\multicolumn\{:\\mc\{:xg ) {
                 fyi(9, "mc line: $line");
             }
 
             # add individual column alignments.
-            while (
-        $line =~ m/(.*?) (<TD>) (\s* \\mc\{\d+\}\{.+?\}\{)? (.*)/sx ) {
+            while ( $line =~ m/(.*?) (<TD>) (\s* \\mc\{\d+\}\{.+?\}\{)? (.*)/sx ) {
                 my($before, $after) = ($1, $4);
                 fyi(9, "cols[colnum=$colnum] = $cols[$colnum]");
                 my($mcspec) = $3;
@@ -844,6 +843,7 @@ sub do_begin_end {
                     }
                 }
                 $commregex =~ s/^\\/\\\\/g;
+                $commregex =~ s/\{/\\{/g;
                 fyi(7, "  B/E Apply: $commregex ==> $tox, on: ($line)");
                 $line =~ s/$commregex/$tox/;
             } else {
@@ -1208,7 +1208,7 @@ sub formatmath ()
       $txt =~ s!\\(Alpha|Beta|Gamma|Delta|Epsilon|Zeta|Eta|Theta|Iota|Kappa|Lambda|Mu|Nu|Xi|Omicron|Pi|Rho|Sigma|Tau|Upsilon|Phi|Chi|Psi|Omega|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|omicron|pi|rho|sigmaf|sigma|tau|upsilon|phi|chi|psi|omega)!&$1;!g;
 
       # convert \tilde{n}, N, a, A (other letters don't have tilde versions in HTML)
-      $txt =~ s!\\tilde{(n|N|a|A)}!&$1tilde;!g;
+      $txt =~ s!\\tilde\{(n|N|a|A)}!&$1tilde;!g;
 
       # convert \in
       $txt =~ s!\\in! is in !g;
