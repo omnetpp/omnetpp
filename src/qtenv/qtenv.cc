@@ -535,7 +535,14 @@ Qtenv::~Qtenv()
 static void signalHandler(int signum)
 {
     cStaticFlag::setExiting();
-    exit(2);
+
+    Qtenv *qtenv = getQtenv();
+
+    // The DisplayUpdateController loops check for this flag:
+    if (qtenv)
+        qtenv->setStopSimulationFlag();
+
+    QApplication::exit(2);
 }
 
 void Qtenv::doRun()
@@ -629,7 +636,7 @@ void Qtenv::doRun()
         //
         // RUN
         //
-        QApplication::exec();
+        exitCode = QApplication::exec();
     }
     catch (std::exception& e) {
         throw;

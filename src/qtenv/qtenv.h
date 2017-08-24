@@ -434,7 +434,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
  */
 inline Qtenv *getQtenv()
 {
-    return (Qtenv *)cSimulation::getActiveEnvir();
+    return dynamic_cast<Qtenv *>(cSimulation::getActiveEnvir());
 }
 
 } // namespace qtenv
