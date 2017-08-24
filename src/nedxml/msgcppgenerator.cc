@@ -483,6 +483,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
     CC << "#include <iostream>\n";
     CC << "#include <sstream>\n";
+    CC << "#include <memory>\n";
     CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
 
     CC << PARSIMPACK_BOILERPLATE;
@@ -2195,6 +2196,10 @@ void MsgCppGenerator::generateTemplates()
     CC << "// forward\n";
     CC << "template<typename T, typename A>\n";
     CC << "std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec);\n\n";
+
+    CC << "// Template rule to generate operator<< for shared_ptr<T>\n";
+    CC << "template<typename T>\n";
+    CC << "inline std::ostream& operator<<(std::ostream& out,const std::shared_ptr<T>& t) { return out << t.get(); }\n\n";
 
     CC << "// Template rule which fires if a struct or class doesn't have operator<<\n";
     CC << "template<typename T>\n";
