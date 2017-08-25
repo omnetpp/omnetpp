@@ -1,8 +1,16 @@
 #! /bin/sh
 
+set -e # exit on first error
+
 HERE=$(cd $(dirname $0); pwd)
 
-(cd ../aloha; rm -f $HERE/aloha/* results/*; opp_runall ./aloha -u Cmdenv -c PureAlohaExperiment && cp results/*.sca results/*-numHosts=10,iaMean=3-#0.vec results/*-numHosts=10,iaMean=9-#0.vec $HERE/aloha)
-(cd ../routing; rm -f $HERE/routing/* results/*; opp_runall ./routing -u Cmdenv -c Net10Experiment && cp results/*.sca $HERE/routing)
-(cd ../fifo && rm -f results/* && opp_runall ./fifo -u Cmdenv -c Fifo1 && cp results/* $HERE)
+DBG=_dbg
+
+rm -rf aloha routing routing2 fifo
+mkdir aloha routing routing2 fifo
+
+(cd ../aloha; rm -f results/*; opp_runall ./aloha$DBG -u Cmdenv -c PureAlohaExperiment && cp results/*.sca results/*-numHosts=10,iaMean=3-#0.vec results/*-numHosts=10,iaMean=9-#0.vec $HERE/aloha)
+(cd ../routing; rm -f results/*; opp_runall ./routing$DBG -u Cmdenv -c Net5SaturatedQueue && cp results/* $HERE/routing)
+(cd ../routing; rm -f results/*; opp_runall ./routing$DBG -u Cmdenv -c Net10Experiment && cp results/*.sca $HERE/routing2)
+(cd ../fifo && rm -f results/* && opp_runall ./fifo$DBG -u Cmdenv -c Fifo1 && cp results/* $HERE)
 

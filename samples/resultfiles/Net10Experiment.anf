@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="/resultfiles/routing/Net10Experiment-*.vec"/>
-    <inputs name="/resultfiles/routing/Net10Experiment-*.sca"/>
+    <inputs name="/resultfiles/routing2/Net10Experiment-*.vec"/>
+    <inputs name="/resultfiles/routing2/Net10Experiment-*.sca"/>
   </inputs>
   <datasets>
     <datasets name="X">
