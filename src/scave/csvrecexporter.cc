@@ -249,9 +249,10 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             csv.writeDouble(stat.getMin());
             csv.writeDouble(stat.getMax());
             if (isHistogram) {
-                const HistogramResult& histogram = *dynamic_cast<const HistogramResult*>(&statistic);
-                writeAsString(histogram.getHistogram().getBinLowerBounds());
-                writeAsString(histogram.getHistogram().getBinValues());
+                const Histogram& histogram = dynamic_cast<const HistogramResult*>(&statistic)->getHistogram();
+                Assert(histogram.getBinLowerBounds()[0] == NEGATIVE_INFINITY);
+                writeAsString(histogram.getBinLowerBounds(),1); // skip initial -inf element
+                writeAsString(histogram.getBinValues());
             }
             finishRecord(numColumns);
             writeResultAttrRecords(statistic, numColumns);
@@ -326,13 +327,13 @@ void CsvRecordsExporter::finishRecord(int numColumns)
     csv.writeNewLine();
 }
 
-void CsvRecordsExporter::writeAsString(const std::vector<double>& data)
+void CsvRecordsExporter::writeAsString(const std::vector<double>& data, int startIndex)
 {
     std::ostream& out = csv.out();
     size_t n = data.size();
     csv.beginRaw();
     out << "\"";
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = startIndex; i < n; i++) {
         if (i != 0)
             out << " ";
         csv.writeRawDouble(data[i]);
