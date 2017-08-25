@@ -54,7 +54,10 @@ As packages continually evolve, there might be incompatibilities between
 versions. We used the following versions when writing this tutorial:
 Pandas 0.20.2, NumPy 1.12.1, SciPy 0.19.1, Matplotlib 1.5.1, PivotTable.js 0.8.0.
 An easy way to determine which versions you have installed is using the `pip list` 
-command.
+command. (Note that the last one is the version of the Python interface library, 
+the PivotTable.js main Javascript library uses different version numbers, e.g. 
+2.7.0.)
+
 
 
 3. Getting your simulation results into Python
@@ -122,16 +125,17 @@ directory distributed with OMNeT++. The directory contains result
 files produced by the Aloha and Routing sample simulations, both
 of which are parameter studies. We'll start by looking at the Aloha results.
 
-As the first step, we use `scavetool` to convert Aloha's scalar files
-to CSV. In the scavetool command line, `x` means export, and the
-export format is inferred from the output file's extension. (Note that
-scavetool supports two different CSV output formats. We need *CSV Records*,
-or CSV-R for short, which is the default for the `.csv` extension.)
+As the first step, we use OMNeT++'s *scavetool* to convert Aloha's scalar files
+to CSV. Run the following commands in the terminal (replace `~/omnetpp` with 
+the location of your OMNeT++ installation):
 
+    cd ~/omnetpp/samples/resultfiles/aloha
+    scavetool x *.sca -o aloha.csv
 
-    cd ~/omnetpp/samples/resultfiles/
-    (cd aloha && scavetool x *.sca *.vec -o aloha.csv)
-
+In the scavetool command line, `x` means export, and the export format is 
+inferred from the output file's extension. (Note that scavetool supports 
+two different CSV output formats. We need *CSV Records*, or CSV-R for short, 
+which is the default for the `.csv` extension.)
 
 Let us spend a minute on what the export has created. The CSV file
 has a fixed number of columns named `run`, `type`, `module`, `name`,
@@ -159,7 +163,7 @@ items. The colums are:
 - *count*, *sumweights*, *mean*, *min*, *max*, *stddev*: Fields of the statistics 
   or histogram
 - *binedges*, *binvalues*: Histogram bin edges and bin values, as space-separated
-  lists
+  lists. *len(binedges)==len(binvalues)+1*
 - *vectime*, *vecvalue*: Output vector time and value arrays, as space-separated
   lists
 
@@ -611,7 +615,6 @@ Or, use `scalars_wide.to_csv("scalars.csv")` to save the data into a file
 which you can import.
 
 
-
 9. Plotting histograms
 ----------------------
 
@@ -636,32 +639,14 @@ hist.binedges, hist.binvalues
 ```
 
 The easiest way to plot the histogram from these two arrays is to look at it
-as a step function, and create a line plot with the appropriate drawing style. 
-Like so:
+as a step function, and create a line plot with the appropriate drawing style.
+The only caveat is that we need to add an extra `0` element to draw the right 
+side of the last histogram bin.
 
 ```{.python .input}
-plt.plot(hist.binedges, hist.binvalues, drawstyle='steps-post')  # or maybe steps-mid, for integers
+plt.plot(hist.binedges, np.append(hist.binvalues, 0), drawstyle='steps-post')   # or maybe steps-mid, for integers
 plt.show()
 ```
-
-To plot several histograms, we can iterate over the histograms and draw them
-one by one on the same plot. The following code does that, and also adds a 
-legend and adjusts the bounds of the x axis.
-
-```{.python .input}
-somehistograms = histograms[histograms.name == 'collisionLength:histogram'][:5]
-for row in somehistograms.itertuples():
-    plt.plot(row.binedges, row.binvalues, drawstyle='steps-post')
-plt.legend(somehistograms.module + "." + somehistograms.name)
-plt.xlim(0, 0.5)
-plt.show()
-```
-
-Note that the legend contains the same string for all histograms, which is not
-very meaningful. We could improve that by including some characteristics of
-the simulation that generated them, i.e. the number of hosts (`numHosts`
-iteration variable) and frame interarrival times (`iaTime` iteration variable).
-We'll see in a later section how that could be achieved.
 
 Another way to plot a recorded histogram is Matplotlib's `hist()` method, 
 although that is a bit tricky. Instead of taking histogram data, `hist()` 
@@ -673,57 +658,44 @@ in our `binedges` array twice, once as bin edges and once as values, and
 specifying `binvalues` as weights.
 
 ```{.python .input}
-plt.hist(bins=hist.binedges[1:], x=hist.binedges[1:-1], weights=hist.binvalues[1:-1])
+plt.hist(bins=hist.binedges, x=hist.binedges[:-1], weights=hist.binvalues)
 plt.show()
 ```
 
-The slicing (`[1:]` and `[1:-1]`) is needed because our `binvalues` array
-includes the number of lower and upper outliers as the first and last element,
-which we don't need for the histogram plotting.
-
-
-10. Plotting vectors
---------------------
-
-This section deals with basic plotting of output vectors. Output vectors
-are basically time series data, but values have timestamps instead
-of being evenly spaced. Vectors are in rows that have `"vector"`
-in the `type` column. The values and their timestamps are in the
-`vecvalue` and `vectime` columns as NumPy array objects (`ndarray`).
-
-Let us begin by selecting the vectors into a new data frame for convenience.
+`hist()` has some interesting options. For example, we can change the plotting
+style to be similar to a line plot by setting `histtype='step'`. To plot the
+normalized version of the histogram, specify `normed=True` or `density=True` 
+(they work differently; see the Matplotlib documentation for details). 
+To draw the cumulative density function, also specify `cumulative=True`. 
+The following plot shows the effect of some of these options.
 
 ```{.python .input}
-vectors = aloha[aloha.type=='vector']
-len(vectors)
-```
-
-A vector can be plotted on a line chart by simply passing the `vectime` and
-`vecvalue` arrays to `plt.plot()`:
-
-```{.python .input}
-vec = vectors.iloc[0]  # takes the first vector
-plt.plot(vec.vectime, vec.vecvalue)
-plt.xlim(0,100)
+plt.hist(bins=hist.binedges, x=hist.binedges[:-1], weights=hist.binvalues, histtype='step', normed=True)
 plt.show()
 ```
 
-When several vectors need to be placed on the same plot, one can simply
-use a `for` loop.
+To plot several histograms, we can iterate over the histograms and draw them
+one by one on the same plot. The following code does that, and also adds a 
+legend and adjusts the bounds of the x axis.
 
 ```{.python .input}
-somevectors = vectors[vectors.name == 'serverChannelState:vector']
-for row in somevectors.itertuples():
-    plt.plot(row.vectime, row.vecvalue)
-plt.legend(somevectors.module + "." + somevectors.name)
-plt.xlim(0,100)
+somehistograms = histograms[histograms.name == 'collisionLength:histogram'][:5]
+for row in somehistograms.itertuples():
+    plt.plot(row.binedges, np.append(row.binvalues, 0), drawstyle='steps-post')
+plt.legend(somehistograms.module + "." + somehistograms.name)
+plt.xlim(0, 0.5)
 plt.show()
 ```
 
+Note, however, that the legend contains the same string for all histograms, 
+which is not very meaningful. We could improve that by including some 
+characteristics of the simulation that generated them, i.e. the number of hosts
+(`numHosts` iteration variable) and frame interarrival times (`iaTime` iteration
+variable). We'll see in the next section how that can be achieved.
 
-11. Adding iteration variables as columns
+
+10. Adding iteration variables as columns
 -----------------------------------------
-
 
 In this step, we add the iteration variables associated with the simulation
 run to the data frame as columns. There are several reasons why this is a
@@ -781,19 +753,86 @@ aloha3 = aloha2.merge(itervarscol_df, left_on='run', right_on='run', how='outer'
 aloha3.head()
 ```
 
-To see the usefulness of what we've just done, let's try plotting some vectors
-again, this time with a proper legend:
+To see the result of our work, let's try plotting the same histograms again,
+this time with a proper legend:
 
 ```{.python .input}
-vectors = aloha3[aloha3.type=='vector']
-somevectors = vectors[vectors.name == 'serverChannelState:vector']
-for row in somevectors.itertuples():
-    plt.plot(row.vectime, row.vecvalue)
-plt.title('serverChannelState:vector')
-plt.legend(somevectors.iterationvars)
+histograms = aloha3[aloha3.type=='histogram']
+somehistograms = histograms[histograms.name == 'collisionLength:histogram'][:5]
+for row in somehistograms.itertuples():
+    plt.plot(row.binedges, np.append(row.binvalues, 0), drawstyle='steps-post')
+plt.title('collisionLength:histogram')
+plt.legend(somehistograms.iterationvars)
+plt.xlim(0, 0.5)
+plt.show()
+```
+
+
+11. Plotting vectors
+--------------------
+
+This section deals with basic plotting of output vectors. Output vectors
+are basically time series data, but values have timestamps instead
+of being evenly spaced. Vectors are in rows that have `"vector"`
+in the `type` column. The values and their timestamps are in the
+`vecvalue` and `vectime` columns as NumPy array objects (`ndarray`).
+
+We'll use a different data set for exploring output vector plotting, one from
+the *routing* example simulation. There are pre-recorded result files in the
+`samples/resultfiles/routing` directory; change into it in the terminal, and
+issue the following command to convert them to CSV:
+
+    scavetool x *.sca *.vec -o routing.csv
+
+Then we read the the CSV file into a data frame in the same way we saw with the
+*aloha* dataset:
+
+```{.python .input}
+routing = pd.read_csv('../routing/routing.csv', converters = {
+    'attrvalue': parse_if_number,
+    'binedges': parse_ndarray,
+    'binvalues': parse_ndarray,
+    'vectime': parse_ndarray,
+    'vecvalue': parse_ndarray})
+```
+
+Let us begin by selecting the vectors into a new data frame for convenience.
+
+```{.python .input}
+vectors = routing[routing.type=='vector']
+len(vectors)
+```
+
+Our data frame contains results from one run. To get some idea what vectors
+we have, let's print the list unique vector names and module names:
+
+```{.python .input}
+vectors.name.unique(), vectors.module.unique()
+```
+
+A vector can be plotted on a line chart by simply passing the `vectime` and
+`vecvalue` arrays to `plt.plot()`:
+
+```{.python .input}
+vec = vectors[vectors.name == 'qlen:vector'].iloc[4]  # take some vector
+plt.plot(vec.vectime, vec.vecvalue, drawstyle='steps-post')
 plt.xlim(0,100)
 plt.show()
 ```
+
+When several vectors need to be placed on the same plot, one can simply
+use a `for` loop.
+
+```{.python .input}
+somevectors = vectors[vectors.name == 'qlen:vector'][:5]
+for row in somevectors.itertuples():
+    plt.plot(row.vectime, row.vecvalue, drawstyle='steps-post')
+plt.title(somevectors.name.values[0])
+plt.legend(somevectors.module)
+plt.show()
+```
+
+
 
 12. Vector Filtering
 --------------------
@@ -1033,6 +1072,15 @@ PRIVATE NOTES
 
 TO BE DELETED BEFORE RELEASE.
 
+Plotting histograms of scalars is easy. The following example makes no sense though...
+
+```{.python .input}
+plt.hist(scalars_wide['Aloha.server.collisionLength:max'].values)
+plt.show()
+plt.hist(scalars[scalars.name=='collisionLength:max']['value'].values)
+plt.show()
+```
+
 TODO: scavetool should warn for duplicated results!
 
 "ValueError: Index contains duplicate entries, cannot reshape" -- if you see this, check uniqueness:
@@ -1045,17 +1093,15 @@ Boxplot: http://blog.bharatbhole.com/creating-boxplots-with-matplotlib/
 
 ```{.python .input}
 # vectors on a box plot (one box per vector)
-vectors1 = vectors[vectors.module == 'Aloha.server']  # less vectors = less clutter
-plt.boxplot(vectors1.vecvalue.values)  # boxplot will compute the properties of each vecvalue, and put up a box for it
-plt.gca().set_xticklabels(vectors1.name)  # label with vector names
-plt.xticks(rotation=10)  # prevent overlap of labels
+plt.boxplot(somevectors.vecvalue.values)  # boxplot will compute the properties of each vecvalue, and put up a box for it
+plt.title(somevectors.name.values[0])  # use vector name as title
+plt.gca().set_xticklabels(somevectors.module)  # label with module names
+plt.xticks(rotation=15)  # prevent overlap of labels
 plt.show()
 ```
 
 TODO try:
 - scalar plot with confidence intervals (aloha standard plot?)
-- plot histogram of a scalar!!! or of a vector;
-- save to / load from JSON! (what about NaNs and numpy arrays?)
 
 ```{.python .input}
 # plotting confidence interval as error bars (see https://stackoverflow.com/questions/20033396/how-to-visualize-95-confidence-interval-in-matplotlib)
