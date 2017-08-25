@@ -24,13 +24,12 @@ ifeq ($(PLATFORM),win32.x86_64)
   endif
 endif
 
-# build either opp_run or opp_run_release depending or mode (or nothing if we are building a static lib)
+# build opp_run, opp_run_dbg and opp_run_release depending on MODE (or nothing if we are building static libs)
 ifeq ($(SHARED_LIBS),yes)
-  ifeq ($(MODE),debug)
-    TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
-  else
-    TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
-  endif
+TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_run$(D)$(EXE_SUFFIX)
+  ifeq ($(MODE),release)
+	  TARGET_EXE_FILES+=$(OMNETPP_BIN_DIR)/opp_run_release$(EXE_SUFFIX)
+	endif
 endif
 
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
@@ -114,18 +113,13 @@ $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) : $O/main.o
 	$(Q)$(RANLIB) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX)
 
 # build opp_run executable
-ifeq ("$(MODE)","debug")
-$O/opp_run$(EXE_SUFFIX) : opp_run.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
-	$(qecho) "Creating executable: $@"
-	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) opp_run.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS) $(PSAPI_LIB)
-else
-$O/opp_run$(EXE_SUFFIX) : $O/opp_run_release$(EXE_SUFFIX)
-	$(Q)cp $O/opp_run_release$(EXE_SUFFIX) $O/opp_run$(EXE_SUFFIX)
 
-$O/opp_run_release$(EXE_SUFFIX) : main.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
+$O/opp_run$(D)$(EXE_SUFFIX) : main.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	$(qecho) "Creating executable: $@"
 	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) $(INCL_FLAGS) main.cc -o "$@" $(LDFLAGS) $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
-endif
+
+$O/opp_run_release$(EXE_SUFFIX) : $O/opp_run$(EXE_SUFFIX)
+	$(Q)cp $< $@
 
 # copy files to the bin and lib directories from the out directory
 $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)

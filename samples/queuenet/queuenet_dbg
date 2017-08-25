@@ -1,0 +1,2 @@
+#!/bin/sh
+opp_run_dbg -l $(dirname $0)/../queueinglib/queueinglib $*
