@@ -66,7 +66,7 @@ class SCAVE_API CsvRecordsExporter : public Exporter
         virtual void writeRunAttrRecord(const std::string& runId, const char *type, const std::string& attrName, const std::string& value, int numColumns);
         virtual void writeResultAttrRecords(const ResultItem& result, int numColumns);
         virtual void writeResultItemBase(const ResultItem& result, const char *type, int numColumns);
-        virtual void writeAsString(const std::vector<double>& data, int startIndex=0);
+        virtual void writeAsString(const std::vector<double>& data, int startIndex, int endIndex);
         virtual void writeXAsString(const XYArray *data);
         virtual void writeYAsString(const XYArray *data);
         virtual void finishRecord(int numColumns);

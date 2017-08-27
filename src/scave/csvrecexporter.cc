@@ -250,9 +250,12 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             csv.writeDouble(stat.getMax());
             if (isHistogram) {
                 const Histogram& histogram = dynamic_cast<const HistogramResult*>(&statistic)->getHistogram();
-                Assert(histogram.getBinLowerBounds()[0] == NEGATIVE_INFINITY);
-                writeAsString(histogram.getBinLowerBounds(),1); // skip initial -inf element
-                writeAsString(histogram.getBinValues());
+                auto binLowerBounds = histogram.getBinLowerBounds();
+                auto binValues = histogram.getBinValues();
+                Assert(binLowerBounds[0] == NEGATIVE_INFINITY);
+                Assert(binValues.size() == binLowerBounds.size());
+                writeAsString(binLowerBounds, 1, binLowerBounds.size()); // skip initial -inf element
+                writeAsString(binValues, 1, binValues.size()-1); // remove first and last element (overflow/underflow counts)
             }
             finishRecord(numColumns);
             writeResultAttrRecords(statistic, numColumns);
@@ -327,13 +330,12 @@ void CsvRecordsExporter::finishRecord(int numColumns)
     csv.writeNewLine();
 }
 
-void CsvRecordsExporter::writeAsString(const std::vector<double>& data, int startIndex)
+void CsvRecordsExporter::writeAsString(const std::vector<double>& data, int startIndex, int endIndex)
 {
     std::ostream& out = csv.out();
-    size_t n = data.size();
     csv.beginRaw();
     out << "\"";
-    for (size_t i = startIndex; i < n; i++) {
+    for (size_t i = startIndex; i < endIndex; i++) { // endIndex is exclusive
         if (i != 0)
             out << " ";
         csv.writeRawDouble(data[i]);
