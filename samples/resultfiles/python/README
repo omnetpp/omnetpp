@@ -1,0 +1,25 @@
+Note to maintainers
+-------------------
+
+The ResultAnalysisUsingPython.md file is a Jupyter notebook, maintained in 
+Markdown format for easier editing and version control. The "notedown" tool 
+is used to convert it from Markdown to Jupyter Notebook (.ipynb) format 
+(https://github.com/aaren/notedown).
+
+DO NOT PUBLISH THE MARKDOWN FILE DIRECTLY TO WEB. IT WILL MISS THE OUTPUTS OF THE COMMANDS.
+
+Notedown can be installed with 'pip install notedown'. In theory Jupyter 
+could also be convinced to save directly in Markdown (thus sparing the conversion), 
+but I could not get it to work.
+
+To convert for viewing/editing in Jupyter:
+
+notedown --match=fenced ResultAnalysisUsingPython.md -o tmp.ipynb
+
+To convert back, e.g. after editing in Jupyter:
+
+notedown --to markdown tmp.ipynb -o ResultAnalysisUsingPython.md
+
+When opened in Jupyter, run all cells to get the outputs. Then you can
+export it as HTML, Markdown with outputs, or pdf.
+

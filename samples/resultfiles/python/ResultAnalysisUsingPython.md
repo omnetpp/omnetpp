@@ -1,0 +1,857 @@
+Analysing Simulation Results With Python
+========================================
+
+1. When to use Python?
+----------------------
+
+The Analysis Tool in the OMNeT++ IDE is best suited for casual exploration of
+simulation results. If you are doing sophisticated result analysis, you will
+notice after a while that you have outgrown the IDE. The need for customized
+charts, multi-step computations to produce chart input, or the sheer volume
+of raw simulation results might all be reasons to look for something else.
+
+If you are familiar with R or Matlab, they are a natural choice. Otherwise,
+Python with the right libraries is pretty much the best choice. In addition
+to having excellent libraries for data analysis and visualization, Python is
+also a great general-purpose programming language, used for all kinds of
+problems from machine learning to web development and building desktop GUIs,
+so the knowledge you gain by learning it will be convertible to other areas.
+
+This tutorial will walk you through the initial steps of using Python for
+analysing simulation results, and shows how to do some of the most common tasks.
+The tutorial assumes that you have a working knowledge of OMNeT++ with regard
+to result recording, and basic familiarity with Python.
+
+
+2. Setting up
+-------------
+
+Before we can start, you need to install the necessary software.
+First, make sure you have Python, either version 2.x or 3.x (they are
+slightly incompatible.) If you have both versions available on your system,
+we recommend version 3.x. You also need OMNeT++ version 5.2 or later.
+
+We will heavily rely on three Python packages: [NumPy](http://www.numpy.org/),
+[Pandas](http://pandas.pydata.org/), and [Matplotlib](https://matplotlib.org/).
+There are also optional packages that will be useful for certain tasks:
+[SciPy](https://www.scipy.org/),
+[PivotTable.js](https://github.com/nicolaskruchten/pivottable).
+We also recommend that you install [IPython](https://ipython.org/) and
+[Jupyter](https://jupyter.org/), because they let you work much more comfortably
+than the bare Python shell.
+
+On most systems, these packages can be installed with `pip`, the Python package
+manager:
+
+
+    sudo pip install ipython jupyter
+    sudo pip install numpy pandas matplotlib
+    sudo pip install scipy pivottablejs
+
+
+
+3. Getting your simulation results into Python
+----------------------------------------------
+
+OMNeT++ result files have their own file format which is not directly
+digestible by Python. There are a number of ways to get your data
+inside Python:
+
+  1. Export from the IDE. The Analysis Tool can export data in number of
+  formats, the ones that are useful here are CSV and Python-flavoured JSON.
+  In this tutorial we'll use the CSV export, and read the result into Pandas
+  using its `read_csv()` function.
+
+  2. Export using scavetool. Exporting from the IDE may become tedious
+  after a while, because you have to go through the GUI every time your
+  simulations are re-run. Luckily, you can automate the exporting with
+  OMNeT++'s scavetool program. scavetool exposes the same export
+  functionality as the IDE, and also allows filtering of the data.
+
+  3. Read the OMNeT++ result files directly from Python. Development
+  of a Python package to read these files into Pandas data frames is
+  underway, but given that these files are line-oriented text files
+  with a straightforward and well-documented structure, writing your
+  own custom reader is also a perfectly feasible option.
+
+  4. SQLite. Since version 5.1, OMNeT++ has the ability to record simulation
+  results int SQLite3 database files, which can be opened directly from
+  Python using the [sqlite](https://docs.python.org/3/library/sqlite3.html)
+  package. This lets you use SQL queries to select the input data for your
+  charts or computations, which is kind of cool! You can even use GUIs like
+  [SQLiteBrowser](http://sqlitebrowser.org/) to browse the database and
+  craft your SELECT statements. Note: if you configure OMNeT++ for SQLite3
+  output, you'll still get `.vec` and `.sca` files as before, only their
+  format will change from textual to SQLite's binary format. When querying
+  the contents of the files, one issue  to deal with is that SQLite does not
+  allow cross-database queries, so you either need to configure OMNeT++
+  to record everything into one file (i.e. each run should append instead
+  of creating a new file), or use scavetool's export functionality to
+  merge the files into one.
+
+  5. Custom result recording. There is also the option to instrument
+  the simulation (via C++ code) or OMNeT++ (via custom result recorders)
+  to produce files that Python can directly digest, e.g. CSV.
+  However, in the light of the above options, it is rarely necessary
+  to go this far.
+
+With large-scale simulation studies, it can easily happen that the
+full set of simulation results do not fit into the memory at once.
+There are also multiple approaches to deal with this problem:
+
+  1. If you don't need all simulation results for the analysis, you can
+  configure OMNeT++ to record only a subset of them. Fine-grained control
+  is available.
+  2. Perform filtering and aggregation steps before analysis. The IDE and
+  scavetool are both capable of exporting only subset of the results.
+  3. When the above approaches are not enough, it can help to move
+  part of the result processing (typically, filtering and aggregation)
+  into the simulation model as dedicated result collection modules.
+  However, this solution requires significantly more work and comes
+  at a cost of lost flexibility, so use with care.
+
+
+In this tutorial, we'll work with the contents of the `samples/resultfiles`
+directory distributed with OMNeT++. The directory contains result
+files produced by the Aloha and Routing sample simulations, both
+of them a parameter study. We'll start by looking at the Aloha results.
+
+As the first step, we use *scavetool* to convert Aloha's scalar files
+to CSV. In the scavetool command line, `x` means export, and the
+export format is inferred from the output file's extension. (Note that
+scavetool supports two different CSV output formats. We need CSV Records,
+or CSV-R for short, which is the default for the `.csv` extension.)
+
+
+    cd ~/omnetpp/samples/resultfiles/
+    (cd aloha; scavetool x *.sca *.vec -o aloha.csv)
+
+
+Let us spend a minute on what the export has created. The CSV file
+has a fixed number of columns named `run`, `type`, `module`, `name`,
+`value`, etc. Each result item, i.e. scalar, statistic, histogram
+and vector, produces one row of output in the CSV. Other items such
+as run attributes, iteration variables of the parameter study and result
+attributes also generate their own rows. The content of the `type` column
+determines what type of information a given row contains. The `type`
+column also determines which other columns are in use. For example,
+the `bigedges` and `binvalues` columns are only filled in for histogram
+items. The colums are:
+
+- *run*: Identifies the simulation run
+- *type*: Row type, one of the following: `scalar`, `vector`, `statistics`,
+  `histogram`, `runattr`, `itervar`, `config`, `attr`
+- *module*: Hierarchical name (a.k.a. full path) of the module that recorded the
+  result item
+- *name*: Name of the result item
+- *attrname*: Name of the run attribute or result attribute
+- *value*: Attribute value or scalar value.
+- *count*, *mean*, *min*, *max*, *stddev*: Fields of the statistics or histogram
+- *binedges*, *binvalues*: Histogram bin edges and bin values, as space-
+  separated lists
+- *vectime*, *vecvalue*: Output vector time and value arrays, as space separated
+  lists
+
+When the export is done, you can start Jupyter.
+
+
+    jupyter notebook
+
+
+Once on the Python prompt, enter the following lines to make the
+functionality of Pandas, NumpPy and Matplotlib available in the session.
+The last, `%matplotlib` line is only needed for Jupyter. (It is a
+"magic" that arranges plots to be displayed within the notebook.)
+
+```{.python .input}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+```
+
+We utilize the `read_csv()` function to import the contents of the
+CSV file into a data frame. The data frame is the central concept of
+Pandas. We'll continue to work with this data frame throughout
+the whole tutorial.
+
+```{.python .input}
+aloha = pd.read_csv('../aloha/aloha.csv')
+```
+
+4. Exploring the data frame
+---------------------------
+
+You can view the contents of the data frame by simply entering the name
+of the variable (`aloha`). Alternatively, you can use the `head()` method
+of the data frame to view just the first few lines.
+
+```{.python .input}
+aloha.head()
+```
+
+You can see that the structure of the data frame, i.e. rows and columns,
+directly corresponds to the contents of the CSV file. Column names have
+been taken from the first line of the CSV file. Missing values are
+represented with NaNs (not-a-number).
+
+Hint: If you are in the terminal using the ipython shell, you might want
+to increase the display width for better readability:
+
+```{.python .input}
+pd.set_option('display.width', 180)
+pd.set_option('display.max_colwidth', 100)
+```
+
+If you have not looked at any Pandas tutorial yet, now is a very good
+time to read one. (See References at the bottom of this page for hints.)
+Until you finish, here are some basics for your short-term survival.
+
+You can refer to a column as whole with the array index syntax: `aloha['run']`,
+Altenatively, the more convenient member access syntax (`aloha.run`) can
+also be used, with restrictions. (E.g. the column name must be valid as a Python
+identifier, and should not collide with existing methods of the data frame.
+Names that are known to cause trouble include `name`, `min`, `max`, `mean`).
+
+```{.python .input}
+aloha.run.head()  # .head() is for limiting the output to 5 lines here
+```
+
+Selecting multiple columns is also possible, one just needs to use a list of
+column names as index. The result will be another data frame.
+
+```{.python .input}
+aloha[['run', 'attrname', 'value']].head()
+```
+
+Another vital thing to know, especially because of the existence of the *type*
+column, is how to filter rows. Without going into detail of why and how it
+works, the following syntax works for selecting the rows that contain
+iteration variables: `aloha[aloha.type == 'itervar']`. Conditions can be
+combined with AND/OR using the "`&`" and "`|`" operators, but you need
+parentheses because of operator precedence. The following command
+selects the rows that contain scalars with a certain name and module:
+
+```{.python .input}
+tmp = aloha[(aloha.type=='scalar') & (aloha.module=='Aloha.server') & (aloha.name=='channelUtilization:last')]
+tmp.head()
+```
+
+The result of filtering is a new data frame, which internally might be
+represented as a copy-on-write view of the original dataframe.
+
+
+5. Revisiting CSV loading
+-------------------------
+
+The way we have read the CSV file has one deficiency: data in the `value` column
+are represented as strings, so they are unsuitable as input for computation or
+plotting. You can verify that by printing `aloha.value.unique()` (it will print
+all values with quotes), or trying to do arithmetic on them, e.g.
+`aloha[aloha.type=='scalar'].value+1.0` (it will result in `TypeError`).
+The output of `aloha[aloha.type=='scalar'].value.describe()` also says
+`dtype: object` instead of the expected `float64` (cf. with the output of
+`aloha['stddev'].describe()`.)
+
+The reason is that `read_csv()` infers data types of columns from the data
+it finds in them. The `value` column is shared by scalar results, run
+attributes, iteration variables and some other types of rows, and while
+scalar results are always numeric, others are not. Thus, `read_csv()` decides
+that data in that value should be stored as strings.
+
+A similar issue arises with the `binedges`, `binvalues`, `vectime`, `vecvalue`
+columns. These columns contain lists of numbers separated by spaces, so they
+are read into strings as well. However, we would like to store them as NumPy
+arrays (`ndarray`) inside the data frame, because that's the form we can use
+in plots or as computation input.
+
+Luckily, `read_csv()` allows us to specify conversion functions for each column.
+So, armed with the following two short functions:
+
+```{.python .input}
+def parse_if_number(s):
+    try: return float(s)
+    except: return s
+
+def parse_ndarray(s):
+    return np.fromstring(s, sep=' ') if s else None
+```
+
+we can read the CSV file again, this time with the correct conversions:
+
+```{.python .input}
+aloha = pd.read_csv('../aloha/aloha.csv', converters = {
+    'value': parse_if_number,
+    'binedges': parse_ndarray,
+    'binvalues': parse_ndarray,
+    'vectime': parse_ndarray,
+    'vecvalue': parse_ndarray})
+```
+
+You can verify the result by evaluating `aloha.value.unique()`:
+numbers will no longer be beween quotes. The command
+`aloha[aloha.type=='scalar'].value.describe()` should also print
+`dtype: float64`.
+As for the numeric array columns, `aloha.binedges.describe()` will still
+print `dtype: object` because `nparray` *is* an object, but the most frequently
+occuring item (*top*) will show up between brackets and separated with commas,
+indicating that it is not string any more.
+
+
+6. Load-time filtering
+----------------------
+
+If the CSV file is large, you may want to skip certain columns or rows when
+reading it into memory. (File size is about the only valid reason for using
+load-time filtering, because you can also filter out or drop rows/columns
+from the data frame when it is already loaded.)
+
+To filter out columns, you need to specify in the `usecols` parameter
+the list of columns to keep:
+
+```{.python .input}
+tmp = pd.read_csv('../aloha/aloha.csv', usecols=['run', 'type', 'module', 'name', 'value'])
+```
+
+There is no such direct support for filtering out rows based on their content,
+but the iterator API (that reads the CSV file in chunks) helps:
+
+```{.python .input}
+iter = pd.read_csv('../aloha/aloha.csv', iterator=True, chunksize=100)
+tmp = pd.concat([chunk[chunk['type'] != 'histogram'] for chunk in iter])  # discards type=='histogram' lines
+```
+
+7. Plotting scalars
+-------------------
+
+Scalars can serve as input for may different kinds of plots.
+Here we show one typical plot: the "thoughput versus offered load" type,
+ie. the plot of an output metric against an input variable.
+Here, ....
+
+We also add a `qname` column by concatenating the module and the result
+item name columns with a dot as separator.
+
+```{.python .input}
+scalars = aloha[(aloha.type=='scalar') | (aloha.type=='itervar')]
+scalars['qname'] = scalars.module + '.' + scalars.name
+scalars['qname'] = scalars.qname.combine_first(scalars.attrname)
+scalars.value = scalars.value.astype('float64')
+scalars.head()
+```
+
+```{.python .input}
+scalars_wide = scalars.pivot('run', columns='qname', values='value')
+scalars_wide.head()
+```
+
+first attempt: scatter plot.
+
+```{.python .input}
+scalars_wide.plot.scatter('iaMean', 'Aloha.server.channelUtilization:last')
+plt.show()
+```
+
+Problem: does not connect iso lines by matching numHosts values
+
+Better: pivot table. Also computes average over repetitions:
+
+```{.python .input}
+util_vs_ia = scalars_wide.pivot_table(index='iaMean', columns='numHosts', values='Aloha.server.channelUtilization:last')  # note: aggregation function = mean (that's the default)
+util_vs_ia.head()
+```
+
+plotting it:
+
+```{.python .input}
+util_vs_ia.plot.line()
+plt.ylabel('channel utilization')
+plt.show()
+```
+
+8. Interactive pivot tables
+---------------------------
+
+Getting the pivot table right is not always easy, so having a GUI where 
+one can drag columns around and immediately see the result is definitely 
+a blessing. Pivottable.js presents such a GUI inside a browser, and 
+although the bulk of the code is Javascript, it has a Python frond-end 
+that integrates nicely with Jupyter. Let's try it!
+
+```{.python .input}
+import pivottablejs as pj
+pj.pivot_ui(scalars_wide)
+```
+
+An interactive panel containing the pivot table will appear. Here is how
+you can reproduce the above "Channel utilization vs iaMean" plot it it:
+
+1. drag `numHosts` to the "rows" area (directly left of the table)
+2. drag `iaMean` to "columns" area (above the table)
+3. near the top-left corner of the table, select *Average* and `ChannelUtilization:last` from the combo boxes
+4. in the top-left corner of the panel, select *Line Chart* from the combo box
+
+If you can't get to see it, the following will programmatically configure 
+the pivot table in the appropriate way:
+
+```{.python .input}
+pj.pivot_ui(piv1, rows=['numHosts'], cols=['iaMean'], vals=['Aloha.server.channelUtilization:last'], aggregatorName='Average', rendererName='Line Chart')
+```
+
+9. Plotting histograms
+----------------------
+
+In this section we explore how to plot histograms recorded by the simulation.
+Histograms are in rows that have `"histogram"` in the `type` column. 
+Histogram bin edges and bin values (counts) are in the `binedges` and 
+`binvalues` columns as NumPy array objects (`ndarray`).
+
+Let us begin by selecting the histograms into a new data frame for convenience.
+
+```{.python .input}
+histograms = aloha[aloha.type=='histogram']
+len(histograms)
+```
+
+Plotting a histogram is fairly straightforward. We can just create a line plot 
+from `binedges` and `binvalues` with the appropriate drawing style. Let us try:
+
+```{.python .input}
+hist = histograms.iloc[0]  # takes the first histogram
+plt.plot(hist.binedges, hist.binvalues, drawstyle='steps-post')  # or steps-mid, for integers
+plt.show()
+```
+
+NOTE: Although `plt.show()` is not needed in Jupyter (`%matplotlib inline`
+turns on immediate display), we'll continue to include it in further code
+fragments, so that they work without change when you use another Python shell.
+
+To plot several histograms, we only need to iterate over the rows. The following
+code also adds a legend and adjusts the bounds of the x axis.
+
+```{.python .input}
+somehistograms = histograms[histograms.name == 'collisionLength:histogram'][:5]
+for row in somehistograms.itertuples():
+    plt.plot(row.binedges, row.binvalues, drawstyle='steps-post')
+plt.legend(somehistograms.module + "." + somehistograms.name)
+plt.xlim(0, 0.5)
+plt.show()
+```
+
+Note that the legend contains the same string for all histograms, which is not
+very meaningful. We could improve that by including some characteristics of
+the simulation that generated them, i.e. the number of hosts (`numHosts`
+iteration variable) and frame interarrival times (`iaTime` iteration variable).
+We'll see in a later section how that could be achieved.
+
+
+10. Plotting vectors
+-------------------
+
+This section deals with basic plotting of output vectors. Output vectors
+are basically time series data, but values have timestamps instead
+of being evenly spaced. Vectors are in rows that have `"vector"`
+in the `type` column. The values and their timestamps are in the
+`vecvalue` and `vectime` columns as NumPy array objects (`ndarray`).
+
+Let us begin by selecting the vectors into a new data frame for convenience.
+
+```{.python .input}
+vectors = aloha[aloha.type=='vector']
+len(vectors)
+```
+
+A vector can be plot on a line chart by simply passing the `vectime` and
+`vecvalue` arrays to `plt.plot()`:
+
+```{.python .input}
+vec = vectors.iloc[0]  # takes the first vector
+plt.plot(vec.vectime, vec.vecvalue)
+plt.xlim(0,100)
+plt.show()
+```
+
+When several vectors need to be placed on the same plot, one can simply
+use a `for` loop.
+
+```{.python .input}
+somevectors = vectors[vectors.name == 'serverChannelState:vector']
+for row in somevectors.itertuples():
+    plt.plot(row.vectime, row.vecvalue)
+plt.legend(somevectors.module + "." + somevectors.name)
+plt.xlim(0,100)
+plt.show()
+```
+
+11. Adding iteration variables as columns
+-----------------------------------------
+
+
+In this step, we add the iteration variables associated with the simulation
+run to the data frame as columns. There are several reasons why this is a
+good idea: they are very useful for generating the legends for plots of
+e.g. histograms and vectors (e.g. "collision multiplicity histogram for
+numHosts=20 and iaMean=2s"), and often needed as chart input as well
+(e.g. "channel utilization vs number of hosts").
+
+First, we select the iteration variables vars as a smaller data frame.
+
+```{.python .input}
+itervars_df = aloha.loc[aloha.type=='itervar', ['run', 'attrname', 'value']]
+itervars_df.head()
+```
+
+We reshape the result by using the `pivot()` method. The following statement
+will convert unique values in the `attrname` column into separate columns:
+`iaMean` and `numHosts`. The new data frame will be indexed with the run id.
+
+```{.python .input}
+itervarspivot_df = itervars_df.pivot(index='run', columns='attrname', values='value')
+itervarspivot_df.head()
+```
+
+Now, we only need to add the new columns back into the original dataframe, using
+`merge()`. This operation is not quite unlike an SQL join of two tables on the
+`run` column.
+
+```{.python .input}
+aloha2 = aloha.merge(itervarspivot_df, left_on='run', right_index=True, how='outer')
+aloha2.head()
+```
+
+For plot legends, it is also useful to have a single `iterationvars` column with
+string values like `numHosts=10, iaMean=2`. This is easier than the above: we
+can just select the rows containing the run attribute named `iterationvars`
+(it contains exactly the string we need), take only the `run` and `value`
+columns, rename the `value` column to `iterationvars`, and then merge back the
+result into the original data frame in a way we did above.
+
+The selection and renaming step can be done as follows. (Note: we need
+`.astype(str)` in the condition so that rows where `attrname` is not filled in
+do not cause trouble.)
+
+```{.python .input}
+itervarscol_df = aloha.loc[(aloha.type=='runattr') & (aloha.attrname.astype(str)=='iterationvars'), ['run', 'value']]
+itervarscol_df = itervarscol_df.rename(columns={'value': 'iterationvars'})
+itervarscol_df.head()
+```
+
+In the merging step, we join the two tables (I mean, data frames) on the `run`
+column:
+
+```{.python .input}
+aloha3 = aloha2.merge(itervarscol_df, left_on='run', right_on='run', how='outer')
+aloha3.head()
+```
+
+To see the use value of what we've just done, let's try plotting some vectors
+again, this time with a proper legend:
+
+```{.python .input}
+vectors = aloha3[aloha3.type=='vector']
+somevectors = vectors[vectors.name == 'serverChannelState:vector']
+for row in somevectors.itertuples():
+    plt.plot(row.vectime, row.vecvalue)
+plt.title('serverChannelState:vector')
+plt.legend(somevectors.iterationvars)
+plt.xlim(0,100)
+plt.show()
+```
+
+12. Vector Filtering
+--------------------
+
+Plotting vectors "as is" is often not practical, as the result will be a crowded
+plot that's difficult to draw conclusions from. To remedy that, one can apply
+some kind of filtering before plotting, or plot a derived quantity such as the
+integral, sum or running average instead of the original. Such things can easily
+be achieved with the help of NumPy.
+
+Vector time and value are already stored in the data frame as NumPy arrays
+(`ndarray`), so we can apply NumPy functions to them. For example, let's
+try `np.cumsum()` which computes cumulative sum:
+
+```{.python .input}
+x = np.array([8, 2, 1, 5, 7])
+np.cumsum(x)
+```
+
+```{.python .input}
+for row in somevectors.itertuples():
+    plt.plot(row.vectime, np.cumsum(row.vecvalue))
+plt.show()
+```
+
+Plotting cumulative sum against time might be useful e.g. for an output
+vector where the simulation emits the packet length for each packet
+that has arrived at its destination. There, the sum would represent
+"total bytes received".
+
+Plotting the count against time for the same output vector would
+represent "number of packets received". For such a plot, we can utilize
+`np.arange(1,n)` which simply returns the numbers 1, 2, .., n-1
+as an array:
+
+```{.python .input}
+for row in somevectors.itertuples():
+    plt.plot(row.vectime, np.arange(1, row.vecvalue.size+1), '.-', drawstyle='steps-post')
+plt.xlim(0,5); plt.ylim(0,20)
+plt.show()
+```
+
+Note that we changed the plotting style to "steps-post", so
+that for any *t* time the plot accurately represents the number
+of values whose timestamp is less or equal to *t*.
+
+As another warm-up exercise, let's plot the time interval
+that elapses between adjacent values; that is, for each element
+we want to plot the time difference between the that element
+and the previous one.
+This can be achieved by computing `t[1:] - t[:-1]`, which is the
+elementwise subtraction of the `t` array and its shifted version.
+Array indexing starts at 0, so `t[1:]` means "drop the first element".
+Negative indices count from the end of the array, so `t[:-1]` means
+"without the last element". The latter is necessary because the
+sizes of the two arrays must match. or convenience, we encapsulate
+the formula into a Python function:
+
+```{.python .input}
+def diff(t):
+    return t[1:] - t[:-1]
+
+# example
+t = np.array([0.1, 1.5, 1.6, 2.0, 3.1])
+diff(t)
+```
+
+We can now plot it. Note that as `diff()` makes the array one element
+shorter, we need to write `row.vectime[1:]` to drop the first element
+(it has no preceding element, so `diff()` cannot be computed for it.)
+Also, we use dots for plotting instead of lines, as it makes more
+sense here.
+
+```{.python .input}
+for row in somevectors.itertuples():
+    plt.plot(row.vectime[1:], diff(row.vectime), 'o')
+plt.xlim(0,100)
+plt.show()
+```
+
+We now know enough NumPy to be able to write a function that computes
+running average (a.k.a. "mean filter"). Let's try it out in a plot
+immediately.
+
+```{.python .input}
+def running_avg(x):
+    return np.cumsum(x) / np.arange(1, x.size + 1)
+
+# example plot:
+for row in somevectors.itertuples():
+    plt.plot(row.vectime, running_avg(row.vecvalue))
+plt.xlim(0,100)
+plt.show()
+```
+
+For certain quantities such as queue length or on-off status,
+weighted average (with time intervals used as weights) makes
+more sense. Here is a function that computes running time-average:
+
+```{.python .input}
+def running_timeavg(t,x):
+    dt = t[1:] - t[:-1]
+    return np.cumsum(x[:-1] * dt) / t[1:]
+
+# example plot:
+for row in somevectors.itertuples():
+    plt.plot(row.vectime[1:], running_timeavg(row.vectime, row.vecvalue))
+plt.xlim(0,100)
+plt.show()
+```
+
+Computing the integral of the vector as a step function is very similar
+to the `running_timeavg()` function. (Note: Computing integral in other
+ways is part of NumPy and SciPy, if you ever need it. For example,
+`np.trapz(y,x)` computes integral using the trapezoidal rule.)
+
+```{.python .input}
+def integrate_steps(t,x):
+    dt = t[1:] - t[:-1]
+    return np.cumsum(x[:-1] * dt)
+
+# example plot:
+for row in somevectors.itertuples():
+    plt.plot(row.vectime[1:], integrate_steps(row.vectime, row.vecvalue))
+plt.show()
+```
+
+As the last example in this section, here is a function that computes
+moving window average. It relies on the clever trick of subtracting
+the cumulative sum of the original vector from its shifted version
+to get the sum of values in every *N*-sized window.
+
+```{.python .input}
+def winavg(x, N):
+    xpad = np.concatenate((np.zeros(N), x)) # pad with zeroes
+    s = np.cumsum(xpad)
+    ss = s[N:] - s[:-N]
+    ss[N-1:] /= N
+    ss[:N-1] /= np.arange(1, min(N-1,ss.size)+1)
+    return ss
+
+# example:
+for row in somevectors.itertuples():
+    plt.plot(row.vectime, winavg(row.vecvalue, 10))
+plt.xlim(0,200)
+plt.show()
+```
+
+You can find further hints for smoothing the plot of an output vector
+in the signal processing chapter of the SciPy Cookbook (see References).
+
+
+
+13. Computing histograms and scalars from vectors
+-------------------------------------------------
+
+Basic idea: what we compute from vectors can be added to the data frame
+as new scalars. Then they can simply be used in plots as any other
+scalar.
+
+THIS PART IS WORK IN PROGRESS.
+
+```{.python .input}
+# scipy.stats package:
+#https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats
+
+# compute mean of all vectors
+vectors['vecmean'] = vectors.vecvalue.apply(lambda x: np.mean(x))   # gives SettingWithCopyWarning :(
+vectors.loc[:,'vecmean'] = vectors.vecvalue.apply(lambda x: np.mean(x))  # also gives SettingWithCopyWarning!!! ???
+# see also: np.min(), np.max(), np.std();  when vector contains NaNs that are to be ignored, use np.nanmean(), np.nanstd(), etc.
+
+# confidence interval of a vector (see e.g. https://stackoverflow.com/questions/15033511/compute-a-confidence-interval-from-sample-data)
+import scipy.stats as st
+def confint95(x): return st.t.interval(0.95, len(x)-1, loc=np.mean(x), scale=st.sem(x))  # 95% confidence interval of samples in x --NOTE: gives "RuntimeWarning: Degrees of freedom <= 0 for slice" if there are NaNs (or vector is all NaNs?)
+vectors['confint'] = vectors.vecvalue.apply(lambda x: confint95(x))
+vectors.assign(confint=vectors.vecvalue.apply(lambda x: confint95(x)))  # this variant uses assign() to avoid SettingWithCopyWarning
+
+# plot the histogram of all vectors
+vectors1 = vectors[vectors.module == 'Aloha.server']  # less vectors = less clutter
+plt.hist(vectors1.vecvalue)
+plt.legend(vectors1.name)
+plt.show()
+
+# note: to compute histogram, use np.histogram(). it returns the values of the histogram (density or weights) and the bin edges as a pair (note: bin edges is one longer than values)
+# plotting a histogram computed with np.histogram()
+values,edges = np.histogram(x)
+plt.plot(edges, np.append(values,0), drawstyle='steps-post')   # append is needed because 'values' has one fewer elements than 'edges'
+plt.show()
+```
+
+Resources
+---------
+
+The primary and authentic source of information on Pandas, Matplotlib and other
+libraries is their official documentation. I do not link them here because they 
+are trivial to find via Google. Instead, here is a random collection of other 
+resources that I found useful while writing this tutorial (not counting all the 
+StackOverflow pages I visited.)
+
+- Pandas tutorial from Greg Reda: 
+  http://www.gregreda.com/2013/10/26/working-with-pandas-dataframes/
+- On reshaping data frames: 
+  https://pandas.pydata.org/pandas-docs/stable/reshaping.html#reshaping
+- Matplotlib tutorial of Nicolas P. Rougier:
+  https://www.labri.fr/perso/nrougier/teaching/matplotlib/
+- Creating boxplots with Matplotlib, from Bharat Bhole:
+  http://blog.bharatbhole.com/creating-boxplots-with-matplotlib/
+- SciPy Cookbook on signal smoothing: 
+  http://scipy-cookbook.readthedocs.io/items/SignalSmooth.html
+- Visual Guide on Pandas (video): 
+  https://www.youtube.com/watch?v=9d5-Ti6onew
+- Python Pandas Cookbook (videos):
+  https://www.youtube.com/playlist?list=PLyBBc46Y6aAz54aOUgKXXyTcEmpMisAq3
+
+
+Acknowledgements
+----------------
+
+I would like to thank the participants of the 2016 OMNeT++ Summit for the 
+valuable feedback, and especially Dr Kyeong Soo (Joseph) Kim for bringing
+my attention to Pandas and Jupyter.
+
+
+Author
+------
+
+Andras Varga
+
+
+PRIVATE NOTES
+-------------
+
+TO BE DELETED BEFORE RELEASE.
+
+- Java-Python bridges: http://pythonhosted.org/javabridge/index.html,
+https://www.py4j.org/index.html
+- see https://pandas.pydata.org/pandas-docs/stable/reshaping.html#reshaping, and
+think s/date/run/
+- TODO: scavetool should warn for duplicated results!
+- statistics for dummies: https://www.khanacademy.org/math/statistics-
+probability/sampling-distributions-library/sample-means/v/standard-error-of-the-
+mean
+- cf with: https://github.com/omnetpp/omnetpp-resultfiles/wiki/Tutorial-for-the-
+omnetpp-r-package
+
+
+
+"ValueError: Index contains duplicate entries, cannot reshape"
+
+if you see this, check uniqueness:
+
+```{.python .input}
+(routing.run + " " + routing.name + " " + routing.module)[routing.type=='scalar'].is_unique   # alternative version of the same thing, should yield True
+```
+
+```{.python .input}
+qlen3['value'] = qlen3.value.str.replace('true','1').replace('false','0')   # some itervar has values like 'false' and 'true', replace with 0 and 1
+```
+
+aloha.module.unique()  # what module names exist
+
+# to check the column types:
+type(df.vectime.values[150])  # 'str', 'list' or 'ndarray'???
+
+#BOXPLOT: http://blog.bharatbhole.com/creating-boxplots-with-matplotlib/
+
+# vectors on a box plot (one box per vector)
+vectors1 = vectors[vectors.module == 'Aloha.server']  # less vectors = less
+clutter
+plt.boxplot(vectors1.vecvalue.values)  # boxplot will compute the properties of
+each vecvalue, and put up a box for it
+plt.gca().set_xticklabels(vectors1.name)  # label with vector names
+plt.xticks(rotation=10)  # prevent overlap of labels
+plt.show()
+
+
+
+TODO try:
+- scalar plot with confidence intervals (aloha standard plot?)
+- basic vector functions like diff or integrate;
+- plot histogram of a column or of a vector;
+- save to / load from JSON! (what about NaNs and numpy arrays?)
+
+to verify 'value' columns have been converted:
+df[df.type=='scalar'].value.describe()  --> should print 'dtype: float64'
+
+```{.python .input}
+# plotting confidence interval as error bars (see https://stackoverflow.com/questions/20033396/how-to-visualize-95-confidence-interval-in-matplotlib)
+#TODO adapt to the aloha plot
+import numpy as np
+import scipy.stats as ss
+data_m=np.array([1,2.3,2.6,4.9])   #(Means of your data)
+data_df=np.array([5,6,7,8])   #(Degree-of-freedoms of your data)
+data_sd=np.array([1.1,1.2,1.2,1.4])   #(Standard Deviations of your data)
+import matplotlib.pyplot as plt
+plt.errorbar([0,.1,.2,.3], data_m, yerr=ss.t.ppf(0.95, data_df)*data_sd)
+#plt.xlim((-1,4))
+```
