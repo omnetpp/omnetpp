@@ -833,7 +833,6 @@ plt.show()
 ```
 
 
-
 12. Vector Filtering
 --------------------
 
@@ -985,49 +984,6 @@ You can find further hints for smoothing the plot of an output vector
 in the signal processing chapter of the SciPy Cookbook (see References).
 
 
-
-13. Computing histograms and scalars from vectors
--------------------------------------------------
-
-Basic idea: what we compute from vectors can be added to the data frame
-as new scalars. Then they can simply be used in plots as any other
-scalar.
-
-THIS PART IS WORK IN PROGRESS.
-
-scipy.stats package: https://docs.scipy.org/doc/scipy/reference/stats.html#module-scipy.stats
-
-
-```{.python .input}
-# compute mean of all vectors
-vectors = vectors.assign(vecmean = vectors.vecvalue.apply(lambda x: np.mean(x)))
-# see also: np.min(), np.max(), np.std();  when vector contains NaNs that are to be ignored, use np.nanmean(), np.nanstd(), etc.
-```
-
-```{.python .input}
-# confidence interval of a vector (see e.g. https://stackoverflow.com/questions/15033511/compute-a-confidence-interval-from-sample-data)
-import scipy.stats as st
-def confint95(x): return st.t.interval(0.95, len(x)-1, loc=np.mean(x), scale=st.sem(x))  # 95% confidence interval of samples in x --NOTE: gives "RuntimeWarning: Degrees of freedom <= 0 for slice" if there are NaNs (or vector is all NaNs?)
-vectors['confint'] = vectors.vecvalue.apply(lambda x: confint95(x))
-vectors.assign(confint=vectors.vecvalue.apply(lambda x: confint95(x)))  # this variant uses assign() to avoid SettingWithCopyWarning
-```
-
-```{.python .input}
-# plot the histogram of all vectors
-vectors1 = vectors[vectors.module == 'Aloha.server']  # less vectors = less clutter
-plt.hist(vectors1.vecvalue)
-plt.legend(vectors1.name)
-plt.show()
-```
-
-```{.python .input}
-# note: to compute histogram, use np.histogram(). it returns the values of the histogram (density or weights) and the bin edges as a pair (note: bin edges is one longer than values)
-# plotting a histogram computed with np.histogram()
-values,edges = np.histogram(x)
-plt.plot(edges, np.append(values,0), drawstyle='steps-post')   # append is needed because 'values' has one fewer elements than 'edges'
-plt.show()
-```
-
 Resources
 ---------
 
@@ -1067,52 +1023,4 @@ Author
 Andras Varga
 
 
-PRIVATE NOTES
--------------
-
-TO BE DELETED BEFORE RELEASE.
-
-Plotting histograms of scalars is easy. The following example makes no sense though...
-
-```{.python .input}
-plt.hist(scalars_wide['Aloha.server.collisionLength:max'].values)
-plt.show()
-plt.hist(scalars[scalars.name=='collisionLength:max']['value'].values)
-plt.show()
-```
-
-TODO: scavetool should warn for duplicated results!
-
-"ValueError: Index contains duplicate entries, cannot reshape" -- if you see this, check uniqueness:
-
-```{.python .input}
-(aloha.run + " " + aloha.name + " " + aloha.module)[aloha.type=='scalar'].is_unique   # alternative version of the same thing, should yield True
-```
-
-Boxplot: http://blog.bharatbhole.com/creating-boxplots-with-matplotlib/
-
-```{.python .input}
-# vectors on a box plot (one box per vector)
-plt.boxplot(somevectors.vecvalue.values)  # boxplot will compute the properties of each vecvalue, and put up a box for it
-plt.title(somevectors.name.values[0])  # use vector name as title
-plt.gca().set_xticklabels(somevectors.module)  # label with module names
-plt.xticks(rotation=15)  # prevent overlap of labels
-plt.show()
-```
-
-TODO try:
-- scalar plot with confidence intervals (aloha standard plot?)
-
-```{.python .input}
-# plotting confidence interval as error bars (see https://stackoverflow.com/questions/20033396/how-to-visualize-95-confidence-interval-in-matplotlib)
-#TODO adapt to the aloha plot
-import numpy as np
-import scipy.stats as ss
-data_m=np.array([1,2.3,2.6,4.9])   #(Means of your data)
-data_df=np.array([5,6,7,8])   #(Degree-of-freedoms of your data)
-data_sd=np.array([1.1,1.2,1.2,1.4])   #(Standard Deviations of your data)
-import matplotlib.pyplot as plt
-plt.errorbar([0,.1,.2,.3], data_m, yerr=ss.t.ppf(0.95, data_df)*data_sd)
-#plt.xlim((-1,4))
-```
 
