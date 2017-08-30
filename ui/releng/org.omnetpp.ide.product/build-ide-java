@@ -21,6 +21,10 @@ rm -rf out/ui
 mkdir -p out
 cp -r ui out
 
+touch out/ui/org.omnetpp.ide.nativelibs.linux.x86_64/libopplibs.so
+touch out/ui/org.omnetpp.ide.nativelibs.win32.x86_64/opplibs.dll
+touch out/ui/org.omnetpp.ide.nativelibs.macosx/libopplibs.jnilib
+
 echo Building $what IDE version: $VERSION with buildID: $BUILDID
 cd out/ui
 mvn clean verify -Dwhat=$what -DforceContextQualifier=$BUILDID || { echo --- error during compiling/packaging Java IDE parts ---; exit 1;}
