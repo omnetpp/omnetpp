@@ -45,6 +45,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -953,9 +954,10 @@ public class OmnetppLaunchUtils {
                 configSwitchRequested = false;  // assume we don't have to switch configs (all configs are set properly)
                 for (IProject p : projects) {
                     ICProjectDescription projDesc = CDTPropertyManager.getProjectDescription(p);
-                    // check is any config should set to active
+                    // check all active configurations and report if switching is required.
                     if (projDesc != null && projDesc.getActiveConfiguration() != null)
-                        configSwitchRequested |= !configNameBasedOnMode.equals(projDesc.getActiveConfiguration().getName());
+                        configSwitchRequested |= !projDesc.getActiveConfiguration().getName()
+                                                .toLowerCase().contains(configNameBasedOnMode.toLowerCase());
                 }
                 if (configSwitchRequested) {
                     final int[] dialogResult = new int[2];
@@ -991,19 +993,56 @@ public class OmnetppLaunchUtils {
                 }
             }
 
-            if (configSwitchRequested) {  // switch all projects
+            if (configSwitchRequested) {  // switch projects that are incorrectly set
                 for (IProject p : projects) {
                     ICProjectDescription projDesc = CDTPropertyManager.getProjectDescription(p);
                     if (projDesc != null) {
-                        ICConfigurationDescription configDesc = projDesc.getConfigurationByName(configNameBasedOnMode);
-                        if (configDesc != null && !configNameBasedOnMode.equals(projDesc.getActiveConfiguration().getName())) {
-                            configDesc.setActive();
-                            CDTPropertyManager.performOk(null);
+                        String activeConfigName = projDesc.getActiveConfiguration().getName().toLowerCase();
+                        if (!activeConfigName.contains(configNameBasedOnMode.toLowerCase())) {  // do we have to switch?
+                            ICConfigurationDescription newConfigDesc = getICConfigurationDescriptionForNameSubstring(projDesc, configNameBasedOnMode); // find the config that should be activated
+                            if (newConfigDesc != null) {
+                                newConfigDesc.setActive();
+                                CDTPropertyManager.performOk(null);
+                            } else {
+                                // show an error dialog (cannot switch 0 or multiple config)
+                                Display.getDefault().syncExec(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MessageDialog.openError(
+                                                Display.getCurrent().getActiveShell(),
+                                                "Incosistent Configuration Naming for '"+projDesc.getName()+"'",
+                                                "Cannot find or identify "+configNameBasedOnMode+" configuration for project '"+projDesc.getName()+"'."
+                                                + "\n\nTo be able to automatically switch between configurations, "
+                                                + "they should be named in a way that one (and only one) "
+                                                + "of them contains the word 'release' while the "
+                                                + "other contains 'debug'.");
+                                    }
+                                });
+                                throw new CoreException(Status.CANCEL_STATUS);
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Returns a project configuration that contains (case insensitive) the given substring in its name.
+     * Returns null if there are 0 or >=2 such configurations.
+     */
+    public static ICConfigurationDescription getICConfigurationDescriptionForNameSubstring(
+            ICProjectDescription projDesc, String substringInName) {
+
+        ICConfigurationDescription selectedConfig = null;
+        for (ICConfigurationDescription config : projDesc.getConfigurations())
+            if (config.getName().toLowerCase().contains(substringInName.toLowerCase()))
+                if (selectedConfig == null)
+                    selectedConfig = config;  // first occurrence
+                else
+                    return null;              // more than one is matching
+
+        return selectedConfig;
     }
 
     /**
