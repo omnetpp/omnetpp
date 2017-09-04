@@ -1,3 +1,8 @@
+2017-08-25  Andras Varga
+
+	* Launching: no not offer ".qtenv.ini" when creating launch
+	configuration
+
 2017-07-16  Andras Varga
 
 	* Analysis Tool: Updated for 'statistic' items and for weighted statistics.

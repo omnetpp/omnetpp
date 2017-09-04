@@ -1,3 +1,10 @@
+2017-08-27  Andras Varga
+
+	* CSVRecExporter refinements:
+	- remove underflow/overflow counts from exported binvalues arrays
+	- drop initial -inf from exported binedges
+	- move attr/runattr/param/itervar values into separate column 'attrvalue'
+
 2017-04-06  Andras Varga
 
 	* Modernizing: use C++11's range-based for loops where applicable, using
