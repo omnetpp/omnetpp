@@ -28,8 +28,8 @@ endif
 ifeq ($(SHARED_LIBS),yes)
 TARGET_EXE_FILES=$(OMNETPP_BIN_DIR)/opp_run$(D)$(EXE_SUFFIX)
   ifeq ($(MODE),release)
-	  TARGET_EXE_FILES+=$(OMNETPP_BIN_DIR)/opp_run_release$(EXE_SUFFIX)
-	endif
+    TARGET_EXE_FILES+=$(OMNETPP_BIN_DIR)/opp_run_release$(EXE_SUFFIX)
+  endif
 endif
 
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
