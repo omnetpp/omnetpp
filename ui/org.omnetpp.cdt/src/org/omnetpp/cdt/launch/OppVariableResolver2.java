@@ -7,6 +7,8 @@
 
 package org.omnetpp.cdt.launch;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -33,10 +35,12 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
 
         boolean isClangC2 = OmnetppDirs.isOppsimClangC2LibraryPresent(true) || OmnetppDirs.isOppsimClangC2LibraryPresent(false);
         // add visualc or mingw specific binary directory depending whether we are using clang or mingw
-        String result = (isClangC2 ? OmnetppDirs.getToolsVisualCBinDir() : OmnetppDirs.getToolsMingwBinDir()) + ";" +
-                OmnetppDirs.getToolsMsysBinDir() + ";";
+        String p1 = (isClangC2 ? OmnetppDirs.getToolsVisualCBinDir() : OmnetppDirs.getToolsMingwBinDir());
+        if (!p1.isEmpty()) p1 += File.pathSeparator;
+        String p2 = OmnetppDirs.getToolsMsysBinDir();
+        if (!p2.isEmpty()) p2 += File.pathSeparator;
 
-        return result.equals(";") ? "" : result;
+        return (p1.isEmpty() && p2.isEmpty()) ? "" : p1 + p2;
     }
 
     protected void abort(String message, Throwable exception) throws CoreException {

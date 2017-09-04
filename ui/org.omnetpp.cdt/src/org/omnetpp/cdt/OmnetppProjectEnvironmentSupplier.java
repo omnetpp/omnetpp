@@ -7,7 +7,8 @@
 
 package org.omnetpp.cdt;
 
-import org.eclipse.cdt.internal.core.envvar.EnvironmentVariableManager;
+import java.io.File;
+
 import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
@@ -27,6 +28,8 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
     // It seems that only the project properties dialog  has problems with it. If the focus is on the environment tab
     // and we open the properties dialog, the value is wrongly set. On the other hand if the focus is on an other
     // tab when we open it the path is correctly displayed
+
+    // this path environment is used during build and debugging
     private static class OmnetppBinPathEnvironmentVariable implements IBuildEnvironmentVariable {
 
         public OmnetppBinPathEnvironmentVariable() {
@@ -37,7 +40,17 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
         }
 
         public String getValue() {
-            return OmnetppDirs.getOmnetppBinDir();
+            String oppBinDir = OmnetppDirs.getOmnetppBinDir() + getDelimiter();
+
+            boolean isClangC2 = OmnetppDirs.isOppsimClangC2LibraryPresent(true) || OmnetppDirs.isOppsimClangC2LibraryPresent(false);
+            // add visualc or mingw specific binary directory depending whether we are using clang or mingw
+            String toolsDir = (isClangC2 ? OmnetppDirs.getToolsVisualCBinDir() : OmnetppDirs.getToolsMingwBinDir());
+            if (!toolsDir.isEmpty()) toolsDir += getDelimiter();
+
+            String msysDir = OmnetppDirs.getToolsMsysBinDir();
+            if (!msysDir.isEmpty()) msysDir += getDelimiter();
+
+            return (toolsDir.isEmpty() && msysDir.isEmpty()) ? oppBinDir : oppBinDir + toolsDir + msysDir;
         }
 
         public int getOperation() {
@@ -45,7 +58,7 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
         }
 
         public String getDelimiter() {
-            return EnvironmentVariableManager.getDefault().getDefaultDelimiter();
+            return File.pathSeparator;
         }
     }
 
@@ -64,10 +77,4 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
             IEnvironmentVariableProvider provider) {
         return new IBuildEnvironmentVariable[] {omnetppBinPathEnvironmentVariable};
     }
-
-
 }
-
-
-
-

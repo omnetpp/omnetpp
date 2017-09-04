@@ -7,7 +7,6 @@
             fileVersion="4.0.0">
       </managedBuildRevision>
       <toolChain
-            configurationEnvironmentSupplier="org.omnetpp.cdt.GCCEnvironmentVariableSupplier"
             id="org.omnetpp.cdt.gnu.toolchain.base"
             isAbstract="true"
             name="C++ Toolchain for OMNeT++"
