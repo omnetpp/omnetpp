@@ -249,6 +249,9 @@ void cPacket::encapsulate(cPacket *msg)
             throw cRuntimeError(this, "encapsulate(): Not owner of message (%s)%s, owner is (%s)%s",
                     msg->getClassName(), msg->getFullName(),
                     msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());
+        if (msg->getBitLength() < 0)
+            throw cRuntimeError(this, "encapsulate(): negative length (%" PRId64 ") in message (%s)%s",
+                    msg->getBitLength(), msg->getClassName(), msg->getFullName());
         take(encapsulatedPacket = msg);
 #ifdef REFCOUNTING
         ASSERT(encapsulatedPacket->shareCount == 0);
