@@ -414,62 +414,55 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     Qtenv::eState state = env->getSimulationState();
 
-    // 0 = no dialog, no finish, quit
-    // 1 = no dialog, finish, quit
-    // 2 = yes/no dialog, no finish, maybe quit
-    // 3 = yes/no/cancel dialog, maybe [maybe finish, quit]
-    // 4 = yes/no/cancel dialog with warning, maybe [maybe finish, quit]
-    int action = 0;
+    enum Action {
+        QUIT, // no dialog, no finish, quit
+        FINISH_QUIT, // no dialog, finish, quit
+        YES_NO_CANCEL, // yes/no/cancel dialog, maybe (maybe finish, quit)
+        YES_NO_CANCEL_WARNING // yes/no/cancel dialog with warning, maybe (maybe finish, quit)
+    };
+
+    Action action = QUIT;
 
     bool confirmExit = env->getPref("confirm-exit", true).toBool();
 
     // First, deciding what to do
     switch (state) {
         case Qtenv::SIM_NONET: // if there is no network, we simply quit
-            action = 0;
+        case Qtenv::SIM_NEW: // if there's a network, but not started, always exiting
+            action = QUIT;
             break;
-        case Qtenv::SIM_NEW: // if there's a network, but not started, always finishing and exiting
-            action = 1;
-            break;
+
         case Qtenv::SIM_READY: // during simulation (running or paused), either ask to finish, or just do it
         case Qtenv::SIM_RUNNING:
         case Qtenv::SIM_BUSY:
-        case Qtenv::SIM_TERMINATED: // <- this can't happen by the way, we always finish() after termination right away
-            action = confirmExit ? 3 : 1;
-            break;
-        case Qtenv::SIM_FINISHCALLED: // if the simulation ended properly, a simple confirmation or nothing
-            action = confirmExit ? 2 : 0;
-            break;
-        case Qtenv::SIM_ERROR: // after an error, we either ask to finish, with a warning, or not do anything
-            action = confirmExit ? 4 : 0;
+            action = confirmExit ? YES_NO_CANCEL : FINISH_QUIT;
             break;
 
-        default:
-            ASSERT(false);
+        case Qtenv::SIM_TERMINATED: // <- this can't happen by the way, we always finish() after termination right away
+        case Qtenv::SIM_FINISHCALLED: // if the simulation ended properly, a simple confirmation or nothing
+            action = QUIT;
+            break;
+
+        case Qtenv::SIM_ERROR: // after an error, we either ask to finish, with a warning, or not do anything
+            action = confirmExit ? YES_NO_CANCEL_WARNING : QUIT;
             break;
     }
 
     // Then acting on our decision:
     switch (action) {
-        case 0:
+        case QUIT:
             // nothing to do
             break;
-        case 1:
+        case FINISH_QUIT:
             env->finishSimulation();
             break;
-        case 2: // simple confirmation
-            if (!env->askYesNo("Do you really want to quit?")) {
-                event->ignore(); // answer was no, canceling quit
-                return;
-            }
-            break;
-        case 3: // dialog with 3 choices, either with warning, or a tame one
-        case 4: {
+        case YES_NO_CANCEL: // dialog with 3 choices, either with warning, or a tame one
+        case YES_NO_CANCEL_WARNING: {
             QString question3 = "Do you want to conclude the simulation by invoking finish() before exiting?";
             QString question4 = question3 + "\nThis can be dangerous, as the simulation was stopped with an error, so it might be in an inconsistent state!";
             QMessageBox::StandardButtons buttons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
 
-            int ans = (action == 3)
+            int ans = (action == YES_NO_CANCEL)
                     ? QMessageBox::question(this, "Question", question3, buttons, QMessageBox::Yes)
                     : QMessageBox::warning(this, "Warning", question4, buttons, QMessageBox::Yes);
 
@@ -482,9 +475,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
             }
             break;
         }
-        default: // what in the...
-            ASSERT(false);
-            break;
     }
 
     // finally letting it go, if we got here anyway

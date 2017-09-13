@@ -43,7 +43,7 @@
           <item>
            <widget class="QCheckBox" name="confirmExit">
             <property name="text">
-             <string>Ask for confirmation before exiting</string>
+             <string>Confirm exit when simulation is in progress</string>
             </property>
            </widget>
           </item>
