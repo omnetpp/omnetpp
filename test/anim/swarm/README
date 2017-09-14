@@ -1,0 +1,5 @@
+Basic performance test for the canvas.
+
+Set different population sizes, launch the simulation in Qtenv, then
+watch animation frame rate in the Animation Parameters dialog.
+Note: Zoom level also very much affects performance.
