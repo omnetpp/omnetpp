@@ -1,0 +1,7 @@
+# add required libraries for OpenSceneGraph and osgEarth
+ifeq ($(WITH_OSG),yes)
+OMNETPP_LIBS += $(filter-out $(USERIF_LIBS),$(OSG_LIBS) -losgAnimation)
+endif
+ifeq ($(WITH_OSGEARTH),yes)
+OMNETPP_LIBS += $(filter-out $(USERIF_LIBS),$(OSGEARTH_LIBS) -losgEarthFeatures -losgEarthSymbology -losgEarthAnnotation)
+endif

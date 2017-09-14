@@ -13,17 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-network SwarmAnimation
+simple OsgAnimator
 {
-    @display("bgb=800,600");
-
-    bool osg = default(true);
-
-    submodules:
-        animator: Animator if !osg {
-            @display("p=60,60;is=vs");
-        }
-        osgAnimator: OsgAnimator if osg {
-            @display("p=60,60;is=vs");
-        }
+    parameters:
+        int population = default(1000);
+        @display("i=block/cogwheel");
 }

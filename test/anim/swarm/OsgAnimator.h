@@ -13,17 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-network SwarmAnimation
-{
-    @display("bgb=800,600");
+#ifndef __MANHATTAN_ANIMATOR_H
+#define __MANHATTAN_ANIMATOR_H
 
-    bool osg = default(true);
+#include <omnetpp.h>
 
-    submodules:
-        animator: Animator if !osg {
-            @display("p=60,60;is=vs");
-        }
-        osgAnimator: OsgAnimator if osg {
-            @display("p=60,60;is=vs");
-        }
+namespace osg {
+    class PositionAttitudeTransform;
 }
+
+using namespace omnetpp;
+
+class OsgAnimator : public cSimpleModule
+{
+  protected:
+    double playgroundWidth, playgroundHeight;
+    std::vector<osg::PositionAttitudeTransform *> bees;
+  protected:
+    virtual void initialize();
+    virtual void refreshDisplay() const;
+    virtual void handleMessage(cMessage *msg);
+};
+
+#endif

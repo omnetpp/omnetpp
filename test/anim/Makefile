@@ -1,6 +1,6 @@
 FOLDERS = animation animation2 broadcast broadcast2 canvas changeparent chartinspector disabledconn \
           displaystring dynamic dynamic2 envirapi figureapi methodcall plugin refreshdisplay \
-          senddirect texthalo usman watch
+          senddirect swarm texthalo usman watch
 
 all: makefiles
 	for i in $(FOLDERS); do (cd $$i && make) || exit 1; done
