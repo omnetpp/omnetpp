@@ -692,6 +692,7 @@ void ModuleCanvasViewer::refreshSubmodule(cModule *submod)
     // Do not forget to make the layouter reread the "p" tag if needed
     // by doing a "forgetPosition" or "refreshLayout(parent)" before this.
     item->setPos(getSubmodCoords(submod));
+    item->setZoomFactor(zoomFactor);
     item->update();
 }
 
