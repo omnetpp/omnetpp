@@ -449,7 +449,6 @@ void DisplayUpdateController::reset()
     setTargetFps(maxPossibleFps * currentProfile->targetAnimationCpuUsage);
 
     runMode = RUNMODE_NOT_RUNNING;
-    hideDialog();
 
     animationTime = 0; // this is The Animation Time
 
@@ -475,6 +474,9 @@ void DisplayUpdateController::reset()
     filenameBase = "frames/"; // the prefix of the frame files' path
 
     emit playbackSpeedChanged(getPlaybackSpeed());
+
+    if (dialog)
+        dialog->displayMetrics();
 }
 
 DisplayUpdateController::~DisplayUpdateController()
