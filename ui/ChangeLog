@@ -1,3 +1,17 @@
+2017-09-18  Andras Varga
+
+	* removed "Add OMNeT++ Support" from the "File" menu
+
+	Reason: it did not add C++ support.
+
+	Replacement: delete the project from the workspace (but leave its
+	files!), and create a project over it using the "New OMNeT++ Project"
+	wizard. You existing files will appear under the new project.
+
+2017-09-18  Andras Varga
+
+	* Makemake Options dialog: layout fixes
+
 2017-08-25  Andras Varga
 
 	* Launching: no not offer ".qtenv.ini" when creating launch

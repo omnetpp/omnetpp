@@ -1,3 +1,18 @@
+2017-09-15  Attila Torok
+
+	* The AnimationControllerDialog is not hidden on network rebuild,
+	just updated.
+
+	* Fix: Submodule shape size is affected by zoom level again.
+
+2017-09-13  Attila Torok
+
+	* Quit confirmation: Do not ask when there is no simulation in progress.
+
+2017-08-24  Attila Torok
+
+	* Handle SIGINT and SIGTERM better.
+
 2017-06-28  Attila Torok
 
 	* MainWindow: Display stats in BUSY state as well.
