@@ -6,11 +6,11 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 5.2 preview (Aug 2017)
-------------------------------
+OMNeT++ 5.2 (September 2017)
+----------------------------
 
 Highlights of this release are the fine-tuning of result recording and processing
-(especially around weighted statistics); many bug fixes and improvements in Qtenv; 
+(especially around weighted statistics); many bug fixes and improvements in Qtenv;
 makefile changes to allow DEBUG and RELEASE builds of models to co-exist, and
 several related changes in the IDE.
 
@@ -26,12 +26,12 @@ Core:
    by zoom, for example when adding decorations next to submodule icons.
 
  - Statistics recording: added support for collecting time-weighted
-   statistics. This is useful for variables like queue length. Add 
-   timeWeighted=1 or timeWeighted=true to a @statistic to make it collect 
-   time-weighted statistics. timeWeighted=1 affects the operation of the 
-   following filters/recorders: "mean", "stats" and "histogram". The "timeavg" 
-   recorder always computes time average; an additional recorder "avg" has 
-   also been added that always computes unweighted mean. "mean" emulates 
+   statistics. This is useful for variables like queue length. Add
+   timeWeighted=1 or timeWeighted=true to a @statistic to make it collect
+   time-weighted statistics. timeWeighted=1 affects the operation of the
+   following filters/recorders: "mean", "stats" and "histogram". The "timeavg"
+   recorder always computes time average; an additional recorder "avg" has
+   also been added that always computes unweighted mean. "mean" emulates
    either "avg" or "timeavg", depending on the presence of the timeWeighted=1
    option.
 
@@ -48,11 +48,11 @@ Core:
 
  - Added support for weighted statistics to histogram classes and to cStddev
    (the cWeightedStddev class is no longer needed.) The primary motivation
-   for weighted statistics is the existence of variables where time average 
+   for weighted statistics is the existence of variables where time average
    makes much more sense than arithmetic mean, e.g. queue length.
 
  - The OSG viewer was factored out from Qtenv into a separate support library
-   which is only loaded at runtime on demand. Core OMNeT++ no longer has 
+   which is only loaded at runtime on demand. Core OMNeT++ no longer has
    any dependence on OSG or OSGEarth. This change improves simulation
    startup times and also debugging experience, as it eliminates the loading
    of the huge number of shared libraries that OSG and OSGEarth depends on.
@@ -297,6 +297,8 @@ Result recording and processing:
  - SqliteResultFileLoader: loading of vector attrs and run params was missing
 
  - SQLite recorder: slight changes in file format
+
+Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
 
 
 OMNeT++ 5.1.1 (May 2017)
