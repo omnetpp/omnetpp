@@ -188,7 +188,7 @@ public class MakemakeOptionsPanel extends Composite {
         exportLibraryCheckbox = createCheckbox(group, "Export this shared/static library for other projects", "Let dependent projects automatically use this library");
         ((GridData)exportLibraryCheckbox.getLayoutData()).horizontalIndent = 20;
         targetCompileOnlyRadioButton = createRadioButton(group, "No executable or library", null);
-        createLabel(group, "NOTE: To prevent the makefile from compiling any source file, exclude this folder from build.");
+        createNote(group, "NOTE: To prevent the makefile from compiling any source file, exclude this folder from build.");
 
         Group targetNameGroup = createGroup(targetPage, "Target name", 2);
         defaultTargetNameRadionButton = createRadioButton(targetNameGroup, "Default", "The default is the project name");
@@ -206,7 +206,7 @@ public class MakemakeOptionsPanel extends Composite {
         Group group1 = createGroup(scopePage, "Makefile Scope", 1);
         deepCheckbox = createCheckbox(group1, "Deep compile", "Compile all source files from this subdirectory tree");
         recurseCheckbox = createCheckbox(group1, "Recursive make", "Invoke makefiles any levels under this directory");
-        createLabel(group1, "NOTE: To control invocation order in recursive makefiles, add rules to Makefrag on the Custom tab.");
+        createNote(group1, "NOTE: To control invocation order in recursive makefiles, add rules to Makefrag on the Custom tab.");
         Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
         submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
         scopePageToggle = createToggleLink(scopePage, new Control[] {submakeDirsLabel, submakeDirsList.getListControl().getParent()});
@@ -218,7 +218,7 @@ public class MakemakeOptionsPanel extends Composite {
         exportIncludePathCheckbox = createCheckbox(includeGroup, "Export include path for other projects", null);
         useExportedIncludePathsCheckbox = createCheckbox(includeGroup, "Add include paths exported from referenced projects", null);
         useFeatureCFlagsCheckbox = createCheckbox(includeGroup, "Add include dirs and other compile options from enabled project features", null);
-        createLabel(includeGroup, "NOTE: Defines (-D options) contributed by project features will be placed into a generated header file as #define statements instead of being added to the compiler command line.");
+        createNote(includeGroup, "NOTE: Defines (-D options) contributed by project features will be placed into a generated header file as #define statements instead of being added to the compiler command line.");
 
         Group srcGroup = createGroup(compilePage, "Sources", 2);
         createLabel(srcGroup, "C++ file extension:");
@@ -311,10 +311,17 @@ public class MakemakeOptionsPanel extends Composite {
     protected Label createLabel(Composite composite, String text) {
         Label label = new Label(composite, SWT.WRAP);
         label.setText(text);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
         return label;
     }
 
+    protected Label createNote(Composite composite, String text) {
+        Label label = new Label(composite, SWT.WRAP);
+        label.setText(text);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        return label;
+    }
+    
     protected Link createLink(Composite composite, String text) {
         Link link = new Link(composite, SWT.NONE);
         link.setText(text);
