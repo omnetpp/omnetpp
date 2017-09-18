@@ -178,29 +178,13 @@
          </filterExpression>
       </commonFilter>
    </extension>
-  <extension
+   <extension
         point="org.eclipse.ui.navigator.viewer">
      <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
         <includes>
            <contentExtension pattern="org.omnetpp.*"/>
         </includes>
      </viewerContentBinding>
-  </extension>
-
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
-            id="org.omnetpp.main.contribution.addRemoveOPPSupport"
-            nameFilter="*"
-            objectClass="org.eclipse.core.resources.IProject">
-         <action
-               class="org.omnetpp.ide.ToggleNatureAction"
-               enablesFor="+"
-               id="org.omnetpp.ide.addRemoveNatureAction"
-               label="Add/Remove OMNeT++ Support">
-         </action>
-      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">

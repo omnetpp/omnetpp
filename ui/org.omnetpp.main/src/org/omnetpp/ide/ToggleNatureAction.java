@@ -25,6 +25,8 @@ import org.omnetpp.common.project.ProjectUtils;
 
 /**
  * Add/remove OMNeT++ nature to the selected project.
+ * 
+ * THIS CLASS IS CURRENTLY UNUSED, BECAUSE IT DOES NOT C++ SUPPORT TO THE PROJECT.
  *
  * @author Andras
  */
