@@ -189,7 +189,9 @@ clean:
 {@i:submakedirs}	-$(Q)cd {i} && $(MAKE) clean
 {/@}
 
-cleanall: clean
+cleanall:
+	$(Q)$(MAKE) -s clean MODE=release
+	$(Q)$(MAKE) -s clean MODE=debug
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 # include all dependencies
