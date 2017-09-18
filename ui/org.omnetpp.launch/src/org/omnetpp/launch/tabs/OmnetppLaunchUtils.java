@@ -382,19 +382,21 @@ public class OmnetppLaunchUtils {
                 if (!exePathAndName.endsWith(DEBUG_EXE_SUFFIX))
                     exePathAndName += DEBUG_EXE_SUFFIX;
 
-                IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(exePathAndName));
-                if (!file.exists())
-                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,
-                            "Cannot launch simulation in debug mode: the executable ("+exePathAndName+") does not exist. " +
-                            "Make sure the active configuration is 'debug' and the last build was successful!"));
+// FIXME We don't need this check because a missing executable is detected later.
+
+//                IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(exePathAndName));
+//                if (!file.exists())
+//                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,
+//                            "Cannot launch simulation in debug mode: the executable ("+exePathAndName+") does not exist. " +
+//                            "Make sure the active configuration is 'debug' and the last build was successful!"));
             } else {
-                // test if the release executable exists. If not, try the one with _dbg ending (if present)
-                IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(exePathAndName));
-                if (!file.exists()) {
-                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,
-                            "Cannot launch simulation in run mode: the executable ("+exePathAndName+") does not exist. " +
-                            "Make sure the active configuration is 'release' and the last build was successful!"));
-                }
+                // test if the release executable exists.
+//                IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(exePathAndName));
+//                if (!file.exists()) {
+//                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID,
+//                            "Cannot launch simulation in run mode: the executable ("+exePathAndName+") does not exist. " +
+//                            "Make sure the active configuration is 'release' and the last build was successful!"));
+//                }
             }
             exeName = new Path(exePathAndName).removeFirstSegments(1).toString(); // project-relative path
         }
