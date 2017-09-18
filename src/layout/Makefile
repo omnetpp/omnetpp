@@ -84,7 +84,7 @@ $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
 	$(Q)$(SHLIB_POSTPROCESS) $@
 
 clean:
-	$(qecho) Cleaning...
+	$(qecho) Cleaning layout
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 
 -include $(OBJS:%.o=%.d)

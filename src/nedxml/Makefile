@@ -108,7 +108,7 @@ $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
 	$(Q)$(SHLIB_POSTPROCESS) $@
 
 clean:
-	$(qecho) Cleaning...
+	$(qecho) Cleaning nedxml
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 
 # generated source files
