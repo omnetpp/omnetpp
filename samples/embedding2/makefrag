@@ -3,7 +3,7 @@
 # but without the user interface libs (oppenvir, oppcmdenv, opptkenv)
 #
 
-TARGET = embedding2$(EXE_SUFFIX)
+TARGET = embedding2$(D)$(EXE_SUFFIX)
 
 OMNETPP_LIBS = $(AS_NEEDED_OFF) $(KERNEL_LIBS) $(SYS_LIBS)
 
