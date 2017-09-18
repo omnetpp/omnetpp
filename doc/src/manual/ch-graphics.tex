@@ -1199,17 +1199,24 @@ textFigure->setText("Hello World!");
 \subsection{Stacking Order}
 \label{sec:graphics:canvas-stacking-order}
 
-The stacking order or Z-order of figures is jointly determined by the child
-order and the \cclass{cFigure} attribute called Z-index, with the latter
-taking priority.
-Figures with a larger Z-index will be displayed above figures with smaller
-Z-indices. Among figures whose Z-indices are equal, the first child will be the
-bottom-most one (below others), and the last child will be the
-topmost one.
+The stacking order a.ka. Z-order of figures is jointly determined by the
+child order and the \cclass{cFigure} attribute called Z-index, with
+the latter taking priority. Z-index is not used  directly, but an \textit{effective
+Z-index} is computed instead, as the sum of the Z-index values of the figure
+and all its ancestors up to the root figure.
+
+Figures with a larger effective Z-index will be displayed above figures with
+smaller effective Z-indices. Among figures whose effective Z-indices are equal,
+the first child will be the bottom-most one, and the last child will be the
+topmost one. For figures that are not siblings, the child order within the first
+common ancestor matters.
 
 There are several methods for managing stacking order:
-\ffunc{setZIndex()}/\ffunc{getZIndex()}, \ffunc{insertAbove()}/\ffunc{insertBelow()},
-\ffunc{isAbove()}/\ffunc{isBelow()}, \ffunc{raiseAbove()}/\ffunc{lowerBelow()}.
+\ffunc{setZIndex()}/\ffunc{getZIndex()}, \ffunc{getEffectiveZIndex()},
+\ffunc{insertAbove()}/\ffunc{insertBelow()}, 
+\ffunc{isAbove()}/\ffunc{isBelow()}, 
+\ffunc{raiseAbove()}/\ffunc{lowerBelow()},
+\ffunc{raiseToTop()}/\ffunc{lowerToBottom()}.
 
 
 \subsection{Transforms}
