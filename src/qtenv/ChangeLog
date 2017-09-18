@@ -1,3 +1,5 @@
+2017-09-18  ------ omnetpp-5.2 released ------
+
 2017-09-15  Attila Torok
 
 	* The AnimationControllerDialog is not hidden on network rebuild,
