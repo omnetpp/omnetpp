@@ -112,6 +112,11 @@ void Statistics::adjoin(const Statistics& other)
     sumWeightedSquaredValues += other.sumWeightedSquaredValues;
 }
 
+double Statistics::getStddev() const 
+{ 
+    return std::sqrt(getVariance());
+}
+
 double Statistics::getVariance() const
 {
     // note: no checks for division by zero, we prefer to return Inf or NaN

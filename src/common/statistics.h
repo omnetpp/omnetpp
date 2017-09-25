@@ -60,7 +60,7 @@ class COMMON_API Statistics
         int64_t getCount() const {return count;} // actual count of values, regardless of their weights; see also getSumWeights()
         double getSumWeights() const {return sumWeights;}
         double getMean() const {return sumWeightedValues / sumWeights;}
-        double getStddev() const {return std::sqrt(getVariance());}
+        double getStddev() const;
         double getVariance() const;
 
         double getSum() const {assertUnweighted(); return sumWeightedValues;}
