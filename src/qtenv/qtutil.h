@@ -90,7 +90,7 @@ const QString &getObjectShortTypeName(cObject *object); // uses the current sett
 const QString &getObjectShortTypeName(cObject *object, StripNamespace stripMode);
 const char *getObjectFullTypeName(cObject *object);
 
-QString makeObjectTooltip(cObject *obj);
+QTENV_API QString makeObjectTooltip(cObject *obj);
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);

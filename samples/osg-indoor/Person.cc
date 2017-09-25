@@ -9,6 +9,7 @@
 
 #ifdef WITH_OSG
 #include "Person.h"
+#include "omnetpp/osgutil.h"
 #include <osgDB/ReadFile>
 #include "OsgScene.h"
 

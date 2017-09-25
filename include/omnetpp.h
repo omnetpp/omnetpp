@@ -127,7 +127,6 @@
 #include "omnetpp/packing.h"
 #include "omnetpp/compat.h"
 #include "omnetpp/platdep/intlimits.h"
-#include "omnetpp/osgutil.h"
 
 #ifdef AUTOIMPORT_OMNETPP_NAMESPACE
 using namespace omnetpp;

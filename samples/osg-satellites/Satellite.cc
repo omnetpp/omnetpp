@@ -16,6 +16,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include "omnetpp/osgutil.h"
+
 #include <osg/Node>
 #include <osg/Texture>
 #include <osg/LineWidth>

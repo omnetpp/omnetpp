@@ -15,7 +15,6 @@
 *--------------------------------------------------------------*/
 
 #include "osgviewer.h"
-#include "omnetpp/osgutil.h"
 #include "qtenv/inspectorutil.h"
 #include "cameramanipulators.h"
 #include "common/stlutil.h"
@@ -52,7 +51,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-extern IOsgViewerFactory *osgViewerFactory;
+extern QTENV_API IOsgViewerFactory *osgViewerFactory;
 
 class RealOsgViewerFactory : public IOsgViewerFactory
 {

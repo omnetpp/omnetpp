@@ -21,6 +21,8 @@
 
 #include "qtenv/qtenv.h"
 #include "omnetpp/cosgcanvas.h"
+#include "omnetpp/osgutil.h"
+
 #include <QAction>
 #include <QOpenGLWidget>
 #include <QOpenGLContext>
@@ -61,7 +63,7 @@ public:
     static void stop();
 };
 
-class QTENV_API OsgViewer : public IOsgViewer
+class OsgViewer : public IOsgViewer
 {
     Q_OBJECT
 

@@ -77,7 +77,7 @@ class QTENV_API IOsgViewer : public QOpenGLWidget
     void objectsPicked(const std::vector<cObject*>&);
 };
 
-class IOsgViewerFactory : noncopyable
+class QTENV_API IOsgViewerFactory : noncopyable
 {
 public:
     virtual IOsgViewer *createViewer() = 0;

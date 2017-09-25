@@ -29,6 +29,7 @@ Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanv
 
 } // namespace omnetpp
 
+#include "omnetpp/osgutil.h"
 #include <osg/Node>
 #include <osg/Group>
 

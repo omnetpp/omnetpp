@@ -23,7 +23,7 @@ namespace omnetpp {
 namespace qtenv {
 
 // the osg implementation library will set this pointer to a real factory in it
-IOsgViewerFactory *osgViewerFactory = nullptr;
+QTENV_API IOsgViewerFactory *osgViewerFactory = nullptr;
 
 class DummyOsgViewerFactory: public IOsgViewerFactory
 {

@@ -79,6 +79,10 @@ OMNeT++ 5.2
         a similar new class. This change was made because cOsgCanvas now cannot
         include or link with any OSG code, see above.
 
+(!)     To use the cObjectOsgNode class, you must explicitly include the
+        omnetpp/osgutil.h header file into your sources. It is no longer included
+        in the omnetpp/omnetpp.h file.
+
 (+)     opp_string: Added operator==()
 
 

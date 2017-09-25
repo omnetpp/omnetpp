@@ -13,7 +13,7 @@ TARGET_LIB_FILES=$(OMNETPP_LIB_DIR)/$(LIBNAME)$(LIB_SUFFIX)
 # On Windows, the targets are different (DLLs go into the bin dir and separate export libs are created)
 ifeq ($(PLATFORM),win32.x86_64)
   ifeq ($(SHARED_LIBS),yes)
-    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(A_LIB_SUFFIX)
+    TARGET_LIB_FILES=$(OMNETPP_BIN_DIR)/$(LIBNAME)$(DLL_LIB_SUFFIX)
     ifeq ($(TOOLCHAIN_NAME),clangc2)
       ifeq ($(MODE),debug)
         TARGET_LIB_FILES+=$(OMNETPP_BIN_DIR)/$(LIBNAME).pdb
@@ -66,7 +66,7 @@ GENERATED_SOURCES=$(UI_OUT) $(MOC_OUT) $(RESOURCES_OUT) osg_m.cc osg_m.h
 OBJS=$(SOURCES:%.cc=$O/%.o) $(MOC_OUT:%.cpp=$O/%.o) $(RESOURCES_OUT:%.cpp=$O/%.o) $(O)/osg_m.o
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
-EXPORT_MACRO = -DQTENV_EXPORT
+EXPORT_MACRO =
 
 .PHONY: all clean
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)

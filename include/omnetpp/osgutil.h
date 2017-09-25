@@ -53,7 +53,7 @@ namespace omnetpp {
  *
  * @ingroup OSG
  */
-class SIM_API cObjectOsgNode : public osg::Group
+class cObjectOsgNode : public osg::Group
 {
     protected:
         int componentId; // 0=none

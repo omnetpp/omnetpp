@@ -12,6 +12,7 @@
 #include "GroundStation.h"
 #include "OsgEarthScene.h"
 #include "ChannelController.h"
+#include "omnetpp/osgutil.h"
 
 #include <osg/Node>
 #include <osg/Texture>
