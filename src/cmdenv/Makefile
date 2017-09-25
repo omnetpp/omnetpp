@@ -80,6 +80,8 @@ $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
 	$(Q)cp $< $@
 	$(Q)$(SHLIB_POSTPROCESS) $@
 
+$O/$(LIBNAME).pdb: $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
+
 clean:
 	$(qecho) Cleaning cmdenv
 	$(Q)rm -rf $O $(OMNETPP_LIB_DIR)/$(LIBNAME).* $(OMNETPP_BIN_DIR)/$(LIBNAME).*

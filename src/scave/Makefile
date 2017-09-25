@@ -107,6 +107,8 @@ $(OMNETPP_BIN_DIR)/% $(OMNETPP_LIB_DIR)/%: $O/% $(CONFIGFILE)
 	$(Q)cp $< $@
 	$(Q)$(SHLIB_POSTPROCESS) $@
 
+$O/$(LIBNAME).pdb: $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
+
 clean:
 	$(qecho) Cleaning scave
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
