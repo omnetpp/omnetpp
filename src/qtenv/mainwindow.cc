@@ -418,7 +418,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         QUIT, // no dialog, no finish, quit
         FINISH_QUIT, // no dialog, finish, quit
         YES_NO_CANCEL, // yes/no/cancel dialog, maybe (maybe finish, quit)
-        YES_NO_CANCEL_WARNING // yes/no/cancel dialog with warning, maybe (maybe finish, quit)
     };
 
     Action action = QUIT;
@@ -443,8 +442,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
             action = QUIT;
             break;
 
-        case Qtenv::SIM_ERROR: // after an error, we either ask to finish, with a warning, or not do anything
-            action = confirmExit ? YES_NO_CANCEL_WARNING : QUIT;
+        case Qtenv::SIM_ERROR: // after an error, do not ask for confirmation [Andras]
+            action = QUIT;
             break;
     }
 
@@ -456,15 +455,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         case FINISH_QUIT:
             env->finishSimulation();
             break;
-        case YES_NO_CANCEL: // dialog with 3 choices, either with warning, or a tame one
-        case YES_NO_CANCEL_WARNING: {
+        case YES_NO_CANCEL: {
             QString question3 = "Do you want to conclude the simulation by invoking finish() before exiting?";
-            QString question4 = question3 + "\nThis can be dangerous, as the simulation was stopped with an error, so it might be in an inconsistent state!";
             QMessageBox::StandardButtons buttons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
 
-            int ans = (action == YES_NO_CANCEL)
-                    ? QMessageBox::question(this, "Question", question3, buttons, QMessageBox::Yes)
-                    : QMessageBox::warning(this, "Warning", question4, buttons, QMessageBox::Yes);
+            int ans = QMessageBox::question(this, "Question", question3, buttons, QMessageBox::Yes);
 
             if (ans == QMessageBox::Yes)
                 env->finishSimulation();
@@ -1252,7 +1247,7 @@ void MainWindow::on_actionConcludeSimulation_triggered()
     if (getQtenv()->getSimulationState() == Qtenv::SIM_ERROR) {
         QMessageBox::StandardButton ans =
             QMessageBox::question(this, tr("Warning"),
-                    "Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?",
+                    "Simulation has stopped with error, calling finish() might produce unexpected results. Proceed anyway?",
                     QMessageBox::Yes | QMessageBox::No);
 
         if (ans == QMessageBox::No)
