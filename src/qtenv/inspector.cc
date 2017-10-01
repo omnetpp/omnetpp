@@ -197,6 +197,7 @@ void Inspector::showWindow()
     ASSERT(isToplevelInspector());
     show();
     raise();
+    activateWindow();
 }
 
 void Inspector::refresh()

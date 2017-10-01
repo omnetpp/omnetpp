@@ -1584,6 +1584,8 @@ void Qtenv::initialSetUpConfiguration()
 
     newRun(config.c_str(), run);
     mainWindow->reflectRecordEventlog();
+
+    QTimer::singleShot(0, mainWindow, &MainWindow::activateWindow);
 }
 
 void Qtenv::askParameter(cPar *par, bool unassigned)
