@@ -78,7 +78,7 @@ Build:
 
    - Binaries are now hard-linked from the build directory (out/) to the
      target directory instead of being soft-linked. This leaves the copy
-     in the build directory intact when the one in the target directory
+     in the target directory intact when the one in the build directory
      is deleted.
 
  - Refinements on the build process of OMNeT++ itself: generated files are
@@ -91,27 +91,11 @@ Build:
 
 IDE/Base:
 
- - The Eclipse platform was updated to the latest Oxygen milestone build (4.6.2)
+ - The Eclipse platform was updated to the latest Oxygen build (4.7.1)
 
 IDE/Build:
 
  - Makefile generator: follow changes in the command-line opp_makemake tool
-
- - Models are built in RELEASE mode by default. Until now, DEBUG was the
-   default, which resulted in casual users always running their simulations
-   in DEBUG mode, i.e. much slower than possible.
-
- - RELEASE and DEBUG mode binaries can now co-exist, so users do not have
-   to recompile when they switch modes (e.g. when they want to debug a
-   simulation -- remember, they are built in RELEASE mode by default.)
-   This is a significant gain especially for large models like INET.
-   The goal was achieved by adding the "_dbg" suffix to the names of
-   DEBUG-mode binaries.
-
- - Binaries are now hard-linked from the build directory (out/) to the
-   target directory instead of being soft-linked. This leaves the copy
-   in the build directory intact when the one in the target directory
-   is deleted.
 
 IDE/Launching:
 
@@ -122,8 +106,8 @@ IDE/Launching:
    and Profile will perform RELEASE build, Debug will perform DEBUG build.
 
  - For Debug launch, the "_dbg" suffix is added implicitly to the target
-   name (both exe and shared lib). (The simulations will also load the
-   "_dbg" versions of libraries when compiled to DEBUG.)
+   name (only for the exe files). The simulations will also load the "_dbg"
+   versions of libraries when compiled to DEBUG.
 
  - A new "Build before launch" section was added to the Launch config
    dialog, which allows you to control whether to switch build configuration
@@ -201,7 +185,7 @@ IDE/Analysis Tool:
 
 Qtenv:
 
-  - OSG Viewer is now a separate library, loaded at runtime.
+  - OSG Viewer is now a separate library, loaded only on demand.
 
   - Improved the appearance and usability of the Animation Parameters dialog.
 
