@@ -84,7 +84,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
     // these enable horizontal scrolling
     treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    treeView->header()->setStretchLastSection(false);
+    treeView->header()->setStretchLastSection(true);
     treeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
