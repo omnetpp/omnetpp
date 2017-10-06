@@ -20,6 +20,7 @@
 #include "inspectorutil.h"
 #include <QLayout>
 #include <QTreeView>
+#include <QHeaderView>
 
 #include <QDebug>
 
@@ -55,6 +56,10 @@ ObjectTreeInspector::ObjectTreeInspector(QWidget *parent, bool isTopLevel, Inspe
     view->setHeaderHidden(true);
     view->setAttribute(Qt::WA_MacShowFocusRect, false);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    view->header()->setStretchLastSection(true);
+    view->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
     parent->setMinimumSize(20, 20);
 
     connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(createContextMenu(QPoint)));
@@ -73,6 +78,7 @@ void ObjectTreeInspector::refresh()
     view->reset();
     // restoring the expansion state
     model->expandItems(view, expandedItems);
+    view->resizeColumnToContents(0);
 }
 
 void ObjectTreeInspector::createContextMenu(QPoint pos)
