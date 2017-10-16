@@ -490,15 +490,15 @@ void Cmdenv::doStatusUpdate(Speedometer& speedometer)
 const char *Cmdenv::progressPercentage()
 {
     double simtimeRatio = -1;
-    if (opt->simtimeLimit >= 0)
+    if (opt->simtimeLimit > 0)
         simtimeRatio = getSimulation()->getSimTime() / opt->simtimeLimit;
 
     double elapsedTimeRatio = -1;
-    if (opt->realTimeLimit >= 0)
+    if (opt->realTimeLimit > 0)
         elapsedTimeRatio = stopwatch.getElapsedSec() / opt->realTimeLimit;
 
     double cpuTimeRatio = -1;
-    if (opt->cpuTimeLimit >= 0)
+    if (opt->cpuTimeLimit > 0)
         cpuTimeRatio = stopwatch.getCPUUsageSec() / opt->cpuTimeLimit;
 
     double ratio = std::max(simtimeRatio, std::max(elapsedTimeRatio, cpuTimeRatio));
@@ -510,7 +510,7 @@ const char *Cmdenv::progressPercentage()
         static char buf[32];
         // DO NOT change the "% completed" string. The IDE launcher plugin matches
         // against this string for detecting user input
-        sprintf(buf, "  %d%% completed  (%d%% total)", (int)(100*ratio), (int)(100*totalRatio));
+        snprintf(buf, 32, "  %d%% completed  (%d%% total)", (int)(100*ratio), (int)(100*totalRatio));
         return buf;
     }
 }
