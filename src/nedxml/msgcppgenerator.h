@@ -61,7 +61,7 @@ class NEDXML_API MsgCppGenerator
   public:
     typedef std::vector<std::string> StringVector;
 
-    enum ClassType {
+    enum class ClassType {
         UNKNOWN = 0,
         STRUCT,       // struct
         NONCOBJECT,   // class not derived from cObject
@@ -160,7 +160,7 @@ class NEDXML_API MsgCppGenerator
             bool overrideSetter;   // @overridesetter|@override, uses when field setter function overrides a function in base class
 
           public:
-            FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
+            FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(ClassType::UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
         };
         typedef std::vector<FieldInfo> Fieldlist;
 
@@ -192,7 +192,7 @@ class NEDXML_API MsgCppGenerator
         StringVector implements;    //value vector from @implements
 
       public:
-        ClassInfo() : nedElement(nullptr), gap(false), omitgetverb(false), classtype(UNKNOWN),
+        ClassInfo() : nedElement(nullptr), gap(false), omitgetverb(false), classtype(ClassType::UNKNOWN),
               generate_class(true), generate_descriptor(true), generate_setters_in_descriptor(true) {}
     };
 

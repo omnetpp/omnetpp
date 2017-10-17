@@ -21,6 +21,7 @@
 
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"  // unlink()
 #include "msgcppgenerator.h"
 #include "ned2generator.h"
@@ -193,12 +194,12 @@ MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions&
     //  'foreign'      ==> non-cObject class (classes announced as "class noncobject" or "extends void")
     //  'struct'       ==> struct (no member functions)
     //
-    classType["omnetpp::cObject"] = COBJECT;
-    classType["omnetpp::cNamedObject"] = CNAMEDOBJECT;
-    classType["omnetpp::cOwnedObject"] = COWNEDOBJECT;
-    classType["omnetpp::cMessage"] = COWNEDOBJECT;
-    classType["omnetpp::cPacket"] = COWNEDOBJECT;
-    classType["omnetpp::cModule"] = COWNEDOBJECT;
+    classType["omnetpp::cObject"] = ClassType::COBJECT;
+    classType["omnetpp::cNamedObject"] = ClassType::CNAMEDOBJECT;
+    classType["omnetpp::cOwnedObject"] = ClassType::COWNEDOBJECT;
+    classType["omnetpp::cMessage"] = ClassType::COWNEDOBJECT;
+    classType["omnetpp::cPacket"] = ClassType::COWNEDOBJECT;
+    classType["omnetpp::cModule"] = ClassType::COWNEDOBJECT;
     // TODO: others?
 }
 
@@ -242,23 +243,23 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
     std::string classqname = canonicalizeQName(namespaceName, myclass);
 
     if (type0 == "struct-decl") {
-        type = STRUCT;
+        type = ClassType::STRUCT;
     }
     else if (type0 == "message-decl" || type0 == "packet-decl") {
-        type = COWNEDOBJECT;
+        type = ClassType::COWNEDOBJECT;
     }
     else if (type0 == "class-decl") {
         if (!isCobject) {
-            type = NONCOBJECT;
+            type = ClassType::NONCOBJECT;
             if (!baseclass.empty()) {
                 errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
             }
         }
         else if (baseclass == "") {
-            type = COWNEDOBJECT;
+            type = ClassType::COWNEDOBJECT;
         }
         else if (baseclass == "void") {
-            type = NONCOBJECT;
+            type = ClassType::NONCOBJECT;
         }
         else {
             StringVector found = lookupExistingClassName(baseclass);
@@ -267,7 +268,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
             }
             else if (found.empty()) {
                 errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
-                type = COBJECT;
+                type = ClassType::COBJECT;
             }
             else {
                 errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
@@ -678,11 +679,11 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     if (tdIt != PRIMITIVE_TYPES.end()) {
         it->fisprimitivetype = true;
         it->ftypeqname = "";  // unused
-        it->classtype = NONCOBJECT;
+        it->classtype = ClassType::NONCOBJECT;
     }
     else if (it->ftype.empty()) {
         // base class field assignment
-        it->classtype = UNKNOWN;
+        it->classtype = ClassType::UNKNOWN;
         it->fisprimitivetype = false; //FIXME we don't know
     }
     else {
@@ -709,7 +710,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     }
 
     if (info.generate_class) {
-        if (it->classtype == COWNEDOBJECT && !(info.classtype == COBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COWNEDOBJECT)) {
+        if (it->classtype == ClassType::COWNEDOBJECT && !(info.classtype == ClassType::COBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COWNEDOBJECT)) {
             errors->addError(it->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
         }
     }
@@ -764,7 +765,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     }
 
     // variable name
-    if (info.classtype == STRUCT) {
+    if (info.classtype == ClassType::STRUCT) {
         it->var = it->fname;
     }
     else {
@@ -773,7 +774,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     }
 
     if (it->fispointer) {
-        it->fisownedpointer = getPropertyAsBool(it->fprops, "owned", it->classtype == COWNEDOBJECT);
+        it->fisownedpointer = getPropertyAsBool(it->fprops, "owned", it->classtype == ClassType::COWNEDOBJECT);
     }
     else
         it->fisownedpointer = false;
@@ -783,7 +784,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     it->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // default method names
-    if (info.classtype != STRUCT) {
+    if (info.classtype != ClassType::STRUCT) {
         std::string capfieldname = it->fname;
         capfieldname[0] = toupper(capfieldname[0]);
         it->setter = str("set") + capfieldname;
@@ -870,7 +871,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
             info.msgbaseqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(classType, "','").c_str());
+            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(omnetpp::common::keys(classType), "','").c_str());
             info.msgbaseqname = "omnetpp::cMessage";
         }
         else {
@@ -886,33 +887,33 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     }
     else if (info.msgbase == "") {
         if (info.keyword == "message" || info.keyword == "packet") {
-            info.classtype = COWNEDOBJECT;
+            info.classtype = ClassType::COWNEDOBJECT;
         }
         else if (info.keyword == "class") {
-            info.classtype = COBJECT;  // Note: we never generate non-cObject classes
+            info.classtype = ClassType::COBJECT;  // Note: we never generate non-cObject classes
         }
         else if (info.keyword == "struct") {
-            info.classtype = STRUCT;
+            info.classtype = ClassType::STRUCT;
         }
         else {
             throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
         }
         // if announced earlier as noncobject, accept that.
         if (isClassDeclared(info.msgqname)) {
-            if (getClassType(info.msgqname) == NONCOBJECT && info.classtype == COBJECT) {
-                info.classtype = NONCOBJECT;
+            if (getClassType(info.msgqname) == ClassType::NONCOBJECT && info.classtype == ClassType::COBJECT) {
+                info.classtype = ClassType::NONCOBJECT;
             }
         }
     }
     else if (info.msgbase == "void") {
-        info.classtype = NONCOBJECT;
+        info.classtype = ClassType::NONCOBJECT;
     }
     else if (info.msgbaseqname != "") {
         info.classtype = getClassType(info.msgbaseqname);
     }
     else {
         errors->addError(info.nedElement, "unknown base class '%s' for '%s'\n", info.msgbase.c_str(), info.msgname.c_str());
-        info.classtype = COBJECT;
+        info.classtype = ClassType::COBJECT;
     }
 
     // check earlier declarations and register this class
@@ -1023,7 +1024,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << " *   private:\n";
         H << " *     void copy(const " << info.realmsgclass << "& other) { ... }\n\n";
         H << " *   public:\n";
-        if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
+        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT) {
             if (info.keyword == "message" || info.keyword == "packet") {
                 H << " *     " << info.realmsgclass << "(const char *name=nullptr, short kind=0) : " << info.msgclass << "(name,kind) {}\n";
             }
@@ -1036,13 +1037,13 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         }
         H << " *     " << info.realmsgclass << "(const " << info.realmsgclass << "& other) : " << info.msgclass << "(other) {copy(other);}\n";
         H << " *     " << info.realmsgclass << "& operator=(const " << info.realmsgclass << "& other) {if (this==&other) return *this; " << info.msgclass << "::operator=(other); copy(other); return *this;}\n";
-        if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
+        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
             H << " *     virtual " << info.realmsgclass << " *dup() const override {return new " << info.realmsgclass << "(*this);}\n";
         }
         H << " *     // ADD CODE HERE to redefine and implement pure virtual functions from " << info.msgclass << "\n";
         H << " * };\n";
         H << " * </pre>\n";
-        if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
+        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
             H << " *\n";
             H << " * The following should go into a .cc (.cpp) file:\n";
             H << " *\n";
@@ -1098,7 +1099,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         H << "\n";
         H << "  public:\n";
     }
-    if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
+    if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT) {
         if (info.keyword == "message" || info.keyword == "packet") {
             H << "    " << info.msgclass << "(const char *name=nullptr, short kind=0);\n";
         }
@@ -1168,7 +1169,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     H << "};\n\n";
 
     if (!info.gap) {
-        if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
+        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
             CC << "Register_Class(" << info.msgclass << ")\n\n";
         }
 
@@ -1177,7 +1178,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     }
 
     // constructor:
-    if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT) {
+    if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT) {
         if (info.keyword == "message" || info.keyword == "packet") {
             // CAREFUL when assigning values to existing members gets implemented!
             // The msg kind passed to the ctor should take priority!!!
@@ -1201,9 +1202,9 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
         }
     }
     CC << "{\n";
-    // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == COBJECT);
-    // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == CNAMEDOBJECT);
-    // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == COWNEDOBJECT);
+    // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COBJECT);
+    // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::CNAMEDOBJECT);
+    // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COWNEDOBJECT);
     for (const auto & it : info.baseclassFieldlist) {
         CC << "    this->" << it.setter << "(" << it.fval << ");\n";
     }
@@ -1217,7 +1218,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                         CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
                         CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
                     }
-                    if (it.classtype == COWNEDOBJECT || it.fisownedpointer) {
+                    if (it.classtype == ClassType::COWNEDOBJECT || it.fisownedpointer) {
                         CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
                         if (it.fispointer) {
                             if (it.fisownedpointer)
@@ -1236,7 +1237,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 if (!it.fval.empty()) {
                     CC << "    this->" << it.var << " = " << it.fval << ";\n";
                 }
-                if (it.classtype == COWNEDOBJECT) {
+                if (it.classtype == ClassType::COWNEDOBJECT) {
                     if (it.fispointer)
                         CC << "    if (this->" << it.var << " != nullptr) { take(this->" << it.var << "); }\n";
                     else
@@ -1262,7 +1263,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                         CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
                         CC << "        this->" << it.var << "[i] = nullptr;\n";
                     }
-                    else if (it.classtype == COWNEDOBJECT) {
+                    else if (it.classtype == ClassType::COWNEDOBJECT) {
                         CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
                         CC << "        take(&(this->" << it.var << "[i]));\n";
                     }
@@ -1277,7 +1278,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 if (it.fispointer) {
                     CC << "    this->" << it.var << " = nullptr;\n";
                 }
-                else if (it.classtype == COWNEDOBJECT) {
+                else if (it.classtype == ClassType::COWNEDOBJECT) {
                     CC << "    take(&(this->" << it.var << "));\n";
                 }
             }
@@ -1295,7 +1296,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                 std::ostringstream s;
                 if (it.fisownedpointer)
                     s << "        dropAndDelete(this->" << it.var << "[i]);\n";
-                else if (!it.fispointer && it.classtype == COWNEDOBJECT)
+                else if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT)
                     s << "        drop(&(this->" << it.var << "[i]));\n";
                 if (!s.str().empty()) {
                     CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
@@ -1310,7 +1311,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
             else {
                 if (it.fisownedpointer)
                     CC << "    dropAndDelete(this->" << it.var << ");\n";
-                else if (!it.fispointer && it.classtype == COWNEDOBJECT)
+                else if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT)
                     CC << "    drop(&(this->" << it.var << "));\n";
             }
         }
@@ -1343,7 +1344,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     }
                 }
                 if (it.farraysize.empty()) {
-                    if (!it.fispointer && it.classtype == COWNEDOBJECT) {
+                    if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT) {
                         CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
                         CC << "        drop(&(this->" << it.var << "[i]));\n";
                         CC << "    }\n";
@@ -1351,7 +1352,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     CC << "    delete [] this->" << it.var << ";\n";
                     CC << "    this->" << it.var << " = (other." << it.varsize << "==0) ? nullptr : new " << it.datatype << "[other." << it.varsize << "];\n";
                     CC << "    " << it.varsize << " = other." << it.varsize << ";\n";
-                    if (!it.fispointer && it.classtype == COWNEDOBJECT) {
+                    if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT) {
                         CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
                         CC << "        take(&(this->" << it.var << "[i]));\n";
                         CC << "    }\n";
@@ -1366,14 +1367,14 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     }
                     else {
                         CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
-                        if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                        if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
                             CC << "        this->" << it.var << "[i]->setName(other." << it.var << "[i]->getName());\n";
                         }
                     }
                 }
                 else {
                     CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
-                    if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                    if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
                         CC << "        this->" << it.var << "[i].setName(other." << it.var << "[i].getName());\n";
                     }
                     CC << "    }\n";
@@ -1388,14 +1389,14 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     }
                     else {
                         CC << "    this->" << it.var << " = other." << it.var << ";\n";
-                        if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                        if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
                             CC << "    this->" << it.var << "->setName(other." << it.var << "->getName());\n";
                         }
                     }
                 }
                 else {
                     CC << "    this->" << it.var << " = other." << it.var << ";\n";
-                    if (it.classtype == COWNEDOBJECT || it.classtype == CNAMEDOBJECT) {
+                    if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
                         CC << "    this->" << it.var << ".setName(other." << it.var << ".getName());\n";
                     }
                 }
@@ -1412,7 +1413,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     CC << "void " << info.msgclass << "::parsimPack(omnetpp::cCommBuffer *b) const\n";
     CC << "{\n";
     if (info.msgbaseclass != "") {
-        if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
+        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
             if (info.msgbaseclass != "omnetpp::cObject")
                 CC << "    ::" << info.msgbaseclass << "::parsimPack(b);\n";
         }
@@ -1443,7 +1444,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     CC << "void " << info.msgclass << "::parsimUnpack(omnetpp::cCommBuffer *b)\n";
     CC << "{\n";
     if (info.msgbaseclass != "") {
-        if (info.classtype == COWNEDOBJECT || info.classtype == CNAMEDOBJECT || info.classtype == COBJECT) {
+        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
             if (info.msgbaseclass != "omnetpp::cObject")
                 CC << "    ::" << info.msgbaseclass << "::parsimUnpack(b);\n";
         }
@@ -1529,7 +1530,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
                     CC << "    for (" << it->fsizetype << " i=sz; i<size; i++)\n";
                     CC << "        " << it->var << "2[i] = 0;\n";
                 }
-                if (it->classtype == COWNEDOBJECT) {
+                if (it->classtype == ClassType::COWNEDOBJECT) {
                     CC << "    for (" << it->fsizetype << " i=sz; i<size; i++)\n";
                     CC << "        take(&(" << it->var << "2[i]));\n";
                 }
@@ -1622,7 +1623,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& info)
     for (const auto & it : info.fieldlist) {
         if (it.fisabstract)
             throw NEDException("Abstract fields are not supported in a struct");
-        if (it.classtype == COWNEDOBJECT)
+        if (it.classtype == ClassType::COWNEDOBJECT)
             throw NEDException("cOwnedObject fields are not supported in a struct");
         if (it.fisarray) {
             if (it.farraysize.empty()) {
@@ -1790,9 +1791,9 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
                 flags.push_back("FD_ISCOMPOUND");
             if (it->fispointer)
                 flags.push_back("FD_ISPOINTER");
-            if (it->classtype == COBJECT || it->classtype == CNAMEDOBJECT)
+            if (it->classtype == ClassType::COBJECT || it->classtype == ClassType::CNAMEDOBJECT)
                 flags.push_back("FD_ISCOBJECT");
-            if (it->classtype == COWNEDOBJECT)
+            if (it->classtype == ClassType::COWNEDOBJECT)
                 flags.push_back("FD_ISCOBJECT | FD_ISCOWNEDOBJECT");
 
             if (it->feditable || (info.generate_setters_in_descriptor && it->fisprimitivetype && it->editNotDisabled))
@@ -1951,7 +1952,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             if (!field.farraysize.empty()) {
                 CC << "return " << field.farraysize << ";\n";
             }
-            else if (info.classtype == STRUCT) {
+            else if (info.classtype == ClassType::STRUCT) {
                 CC << "return pp->" << field.varsize << ";\n";
             }
             else {
@@ -1977,7 +1978,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
-        if (!field.fisprimitivetype && field.fispointer && field.classtype == NONCOBJECT) {
+        if (!field.fisprimitivetype && field.fispointer && field.classtype == ClassType::NONCOBJECT) {
             CC << "        case " << i << ": ";
             CC << "{ const " << field.ftype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value)); }\n";
         }
@@ -2002,7 +2003,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty())) {
             CC << "        case " << i << ": ";
-            if (info.classtype == STRUCT) {
+            if (info.classtype == ClassType::STRUCT) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
                     CC << "if (i>=" << arraySize << ") return \"\";\n                ";
@@ -2015,7 +2016,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         }
         else if (!field.fisprimitivetype) {
             CC << "        case " << i << ": ";
-            if (info.classtype == STRUCT) {
+            if (info.classtype == ClassType::STRUCT) {
                 CC << "{std::stringstream out; out << pp->" << field.var << (field.fisarray ? "[i]" : "") << "; return out.str();}\n";
             }
             else {
@@ -2051,7 +2052,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
             }
             std::string fromstringCall = makeFuncall("value", field.fromstring);
             CC << "        case " << i << ": ";
-            if (info.classtype == STRUCT) {
+            if (info.classtype == ClassType::STRUCT) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
                     CC << "if (i>=" << arraySize << ") return false;\n                ";
@@ -2112,14 +2113,14 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
             std::string cast;
             std::string value;
-            if (info.classtype == STRUCT) {
+            if (info.classtype == ClassType::STRUCT) {
                 value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");
             }
             else {
                 value = makeFuncall("pp", field.getter, field.fisarray);
             }
             cast = "(void *)";
-            if (field.classtype == COBJECT || field.classtype == CNAMEDOBJECT || field.classtype == COWNEDOBJECT)
+            if (field.classtype == ClassType::COBJECT || field.classtype == ClassType::CNAMEDOBJECT || field.classtype == ClassType::COWNEDOBJECT)
                 cast = cast + "static_cast<const omnetpp::cObject *>";
             if (field.fispointer) {
                 CC << "        case " << i << ": return " << cast << "(" << value << "); break;\n";
@@ -2426,7 +2427,7 @@ MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& clas
 {
     Assert(!classqname.empty() && classqname[0] != ':');  // must not start with "::"
     std::map<std::string, ClassType>::iterator it = classType.find(classqname);
-    ClassType type = it != classType.end() ? it->second : UNKNOWN;
+    ClassType type = it != classType.end() ? it->second : ClassType::UNKNOWN;
     return type;
 }
 
