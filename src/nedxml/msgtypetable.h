@@ -62,8 +62,8 @@ class NEDXML_API MsgTypeTable
     typedef std::map<std::string,TypeDesc> TypeDescMap;
     TypeDescMap PRIMITIVE_TYPES;
 
-    std::map<std::string,ClassType> classType;
-    std::map<std::string,std::string> enumType;
+    std::map<std::string,ClassType> classes;
+    std::map<std::string,std::string> enums;
 
     typedef std::map<std::string, std::string> Properties;  //FIXME kell egy reszletesebb modell...
 
@@ -193,7 +193,7 @@ class NEDXML_API MsgTypeTable
     MsgTypeTable() {initDescriptors();}
     StringVector lookupExistingClassName(const std::string& name, const std::string& contextNamespace);
     StringVector lookupExistingEnumName(const std::string& name, const std::string& contextNamespace);
-    bool isClassDeclared(const std::string& classqname) { return classType.find(classqname) != classType.end(); }
+    bool isClassDeclared(const std::string& classqname) { return classes.find(classqname) != classes.end(); }
     void addClassType(const std::string& classqname, ClassType type, NEDElement *context);
     ClassType getClassType(const std::string& classqname);
 };

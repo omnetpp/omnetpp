@@ -480,7 +480,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                 // forward declaration -- add to table
                 std::string name = ptr2str(child->getAttribute("name"));
                 if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
-                    typeTable.enumType[name] = canonicalizeQName(namespaceName, name);
+                    typeTable.enums[name] = canonicalizeQName(namespaceName, name);
                 else {
                     errors->addError(child, "Namespace name is reserved word: '%s'", name.c_str());
                 }
@@ -489,7 +489,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
             case NED_ENUM: {
                 EnumInfo info = extractEnumInfo(check_and_cast<EnumElement *>(child));
-                typeTable.enumType[info.enumName] = info.enumQName;
+                typeTable.enums[info.enumName] = info.enumQName;
                 generateEnum(info);
                 break;
             }
@@ -693,7 +693,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, FieldInfo *
             it->enumqname = "";
             CC << "\n\n/*\n Undeclared enum: " << it->enumname << "\n";
             CC << "  Declared enums:\n";
-            for (auto & x : typeTable.enumType)
+            for (auto & x : typeTable.enums)
                 CC << "    " << x.first << " : " << x.second << "\n";
             CC << "\n*/\n\n";
         }
@@ -815,7 +815,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
             info.msgbaseqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(omnetpp::common::keys(typeTable.classType), "','").c_str());
+            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(omnetpp::common::keys(typeTable.classes), "','").c_str());
             info.msgbaseqname = "omnetpp::cMessage";
         }
         else {
