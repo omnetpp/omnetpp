@@ -73,6 +73,11 @@ inline bool contains(const std::vector<T>& v, const T& a) {
     return find(v, a) != v.end();
 }
 
+template<typename T>
+inline bool contains(const std::set<T>& s, const T& a) {
+    return s.find(a) != s.end();
+}
+
 template<typename K, typename V>
 inline bool containsKey(const std::map<K,V>& m, const K& a) {
     return m.find(a) != m.end();
