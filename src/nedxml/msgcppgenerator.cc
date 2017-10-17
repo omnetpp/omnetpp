@@ -566,7 +566,7 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_FIELD: {
-                ClassInfo::FieldInfo f;
+                FieldInfo f;
                 f.nedElement = child;
                 f.fname = ptr2str(child->getAttribute("name"));
                 f.datatype = ptr2str(child->getAttribute("data-type"));  // ha ez nincs, eltunnek a struct mezoi....
@@ -612,7 +612,7 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
     return classInfo;
 }
 
-void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::FieldInfo *it)
+void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, FieldInfo *it)
 {
     if (it->fisabstract && !info.gap) {
         errors->addError(it->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", info.msgname.c_str());
@@ -1789,7 +1789,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     if (fieldcount > 0) {
         CC << "    int base = basedesc ? basedesc->getFieldCount() : 0;\n";
         for (size_t i = 0; i < info.fieldlist.size(); ++i) {
-            const ClassInfo::FieldInfo& field = info.fieldlist[i];
+            const FieldInfo& field = info.fieldlist[i];
             char c = field.fname[0];
             CC << "    if (fieldName[0]=='" << c << "' && strcmp(fieldName, \""<<field.fname<<"\")==0) return base+" << i << ";\n";
         }
@@ -1861,7 +1861,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
 
     for (size_t i = 0; i < fieldcount; ++i) {
-        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = info.fieldlist[i];
         const Properties& ref = field.fprops;
         if (!ref.empty()) {
             CC << "        case " << i << ":\n";
@@ -1890,7 +1890,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = info.fieldlist[i];
         if (field.fisarray) {
             CC << "        case " << i << ": ";
             if (!field.farraysize.empty()) {
@@ -1921,7 +1921,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = info.fieldlist[i];
         if (!field.fisprimitivetype && field.fispointer && field.classtype == ClassType::NONCOBJECT) {
             CC << "        case " << i << ": ";
             CC << "{ const " << field.ftype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value)); }\n";
@@ -1944,7 +1944,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = info.fieldlist[i];
         if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty())) {
             CC << "        case " << i << ": ";
             if (info.classtype == ClassType::STRUCT) {
@@ -1988,7 +1988,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = info.fieldlist[i];
         if (field.feditable || (info.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
             if (field.fromstring.empty()) {
                 errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
@@ -2028,7 +2028,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     else {
         CC << "    switch (field) {\n";
         for (size_t i = 0; i < fieldcount; i++) {
-            const ClassInfo::FieldInfo& field = info.fieldlist[i];
+            const FieldInfo& field = info.fieldlist[i];
             // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
             if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
                 CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.ftype << "));\n";
@@ -2052,7 +2052,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const ClassInfo::FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = info.fieldlist[i];
         // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
         if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
             std::string cast;
@@ -2094,7 +2094,7 @@ MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
                 for (NEDElement *e = child->getFirstChild(); e; e = e->getNextSibling()) {
                     switch (e->getTagCode()) {
                         case NED_ENUM_FIELD: {
-                            EnumInfo::EnumItem f;
+                            EnumItem f;
                             f.nedElement = e;
                             f.name = ptr2str(e->getAttribute("name"));
                             f.value = ptr2str(e->getAttribute("value"));

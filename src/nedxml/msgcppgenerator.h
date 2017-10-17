@@ -64,7 +64,9 @@ class NEDXML_API MsgCppGenerator
     typedef MsgTypeTable::TypeDesc TypeDesc;
     typedef MsgTypeTable::ClassType ClassType;
     typedef MsgTypeTable::Properties Properties;
+    typedef MsgTypeTable::FieldInfo FieldInfo;
     typedef MsgTypeTable::ClassInfo ClassInfo;
+    typedef MsgTypeTable::EnumItem EnumItem;
     typedef MsgTypeTable::EnumInfo EnumInfo;
 
   protected:
@@ -90,7 +92,7 @@ class NEDXML_API MsgCppGenerator
     ClassInfo extractClassInfo(NEDElement *node); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void extractClassDecl(NEDElement *node); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl
     Properties extractPropertiesOf(NEDElement *node);
-    void prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::FieldInfo *it);
+    void prepareFieldForCodeGeneration(ClassInfo& info, FieldInfo *it);
     void prepareForCodeGeneration(ClassInfo& classInfo);
     EnumInfo extractEnumInfo(EnumElement *node); // accepts EnumElement
     void generateClass(const ClassInfo& classInfo);
