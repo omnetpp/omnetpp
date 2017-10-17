@@ -117,42 +117,6 @@ P check_and_cast(T *p)
     return ret;
 }
 
-MsgCppGenerator::TypeDesc MsgCppGenerator::_PRIMITIVE_TYPES[] =
-{ //     nedTypeName        cppTypeName        fromstring            tostring               emptyValue
-        {"bit",             "bit",             "bit(string2long($))","long2string($.get())","bit(0)"},
-        {"bool",            "bool",            "string2bool($)",     "bool2string($)",      "false"},
-        {"float",           "float",           "string2double($)",   "double2string($)",    "0"},
-        {"double",          "double",          "string2double($)",   "double2string($)",    "0"},
-        {"simtime_t", "::omnetpp::simtime_t",  "string2simtime($)",  "simtime2string($)",   "0"},
-        {"string",    "::omnetpp::opp_string", "($)",                "oppstring2string($)", ""},
-        {"char",            "char",            "string2long($)",     "long2string($)",      "0"},
-        {"short",           "short",           "string2long($)",     "long2string($)",      "0"},
-        {"int",             "int",             "string2long($)",     "long2string($)",      "0"},
-        {"long",            "long",            "string2long($)",     "long2string($)",      "0"},
-        {"int8",            "int8_t",          "string2long($)",     "long2string($)",      "0"},
-        {"int8_t",          "int8_t",          "string2long($)",     "long2string($)",      "0"},
-        {"int16",           "int16_t",         "string2long($)",     "long2string($)",      "0"},
-        {"int16_t",         "int16_t",         "string2long($)",     "long2string($)",      "0"},
-        {"int32",           "int32_t",         "string2long($)",     "long2string($)",      "0"},
-        {"int32_t",         "int32_t",         "string2long($)",     "long2string($)",      "0"},
-        {"unsigned char",   "unsigned char",   "string2ulong($)",    "ulong2string($)",     "0"},
-        {"unsigned short",  "unsigned short",  "string2ulong($)",    "ulong2string($)",     "0"},
-        {"unsigned int",    "unsigned int",    "string2ulong($)",    "ulong2string($)",     "0"},
-        {"unsigned long",   "unsigned long",   "string2ulong($)",    "ulong2string($)",     "0"},
-        {"uint8",           "uint8_t",         "string2ulong($)",    "ulong2string($)",     "0"},
-        {"uint8_t",         "uint8_t",         "string2ulong($)",    "ulong2string($)",     "0"},
-        {"uint16",          "uint16_t",        "string2ulong($)",    "ulong2string($)",     "0"},
-        {"uint16_t",        "uint16_t",        "string2ulong($)",    "ulong2string($)",     "0"},
-        {"uint32",          "uint32_t",        "string2ulong($)",    "ulong2string($)",     "0"},
-        {"uint32_t",        "uint32_t",        "string2ulong($)",    "ulong2string($)",     "0"},
-        {"int64",           "int64_t",         "string2int64($)",    "int642string($)",     "0"},
-        {"int64_t",         "int64_t",         "string2int64($)",    "int642string($)",     "0"},
-        {"uint64",          "uint64_t",        "string2uint64($)",   "uint642string($)",    "0"},
-        {"uint64_t",        "uint64_t",        "string2uint64($)",   "uint642string($)",    "0"},
-        {nullptr,nullptr,nullptr,nullptr,nullptr}
-};
-
-
 const char *MsgCppGenerator::_RESERVED_WORDS[] =
 {
         "namespace", "cplusplus", "struct", "message", "packet", "class", "noncobject",
@@ -165,9 +129,8 @@ const char *MsgCppGenerator::_RESERVED_WORDS[] =
 
 void MsgCppGenerator::initDescriptors()
 {
-    for (int i = 0; _PRIMITIVE_TYPES[i].nedTypeName; ++i) {
-        PRIMITIVE_TYPES[_PRIMITIVE_TYPES[i].nedTypeName] = _PRIMITIVE_TYPES[i];
-        RESERVED_WORDS.insert(_PRIMITIVE_TYPES[i].nedTypeName);
+    for (int i = 0; typeTable._PRIMITIVE_TYPES[i].nedTypeName; ++i) {
+        RESERVED_WORDS.insert(typeTable._PRIMITIVE_TYPES[i].nedTypeName);
     }
     for (int i = 0; _RESERVED_WORDS[i]; ++i) {
         RESERVED_WORDS.insert(_RESERVED_WORDS[i]);
@@ -182,25 +145,6 @@ MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions&
 
     hOutp = ccOutp = nullptr;
     errors = e;
-
-    // pre-register some OMNeT++ classes so that one doesn't need to announce them
-    //
-    // @classes contains fully qualified names (ie with namespace); keys to the other hashes are fully qualified as well
-    //
-    // note: $classtype values:
-    //  'cownedobject' ==> subclasses from cOwnedObject
-    //  'cnamedobject' ==> subclasses from cNamedObject but NOT from cOwnedObject
-    //  'cobject'      ==> subclasses from cObject but NOT from cNamedObject
-    //  'foreign'      ==> non-cObject class (classes announced as "class noncobject" or "extends void")
-    //  'struct'       ==> struct (no member functions)
-    //
-    classType["omnetpp::cObject"] = ClassType::COBJECT;
-    classType["omnetpp::cNamedObject"] = ClassType::CNAMEDOBJECT;
-    classType["omnetpp::cOwnedObject"] = ClassType::COWNEDOBJECT;
-    classType["omnetpp::cMessage"] = ClassType::COWNEDOBJECT;
-    classType["omnetpp::cPacket"] = ClassType::COWNEDOBJECT;
-    classType["omnetpp::cModule"] = ClassType::COWNEDOBJECT;
-    // TODO: others?
 }
 
 MsgCppGenerator::~MsgCppGenerator()
@@ -262,9 +206,9 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
             type = ClassType::NONCOBJECT;
         }
         else {
-            StringVector found = lookupExistingClassName(baseclass);
+            StringVector found = typeTable.lookupExistingClassName(baseclass, namespaceName);
             if (found.size() == 1) {
-                type = getClassType(found[0]);
+                type = typeTable.getClassType(found[0]);
             }
             else if (found.empty()) {
                 errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
@@ -272,7 +216,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
             }
             else {
                 errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
-                type = getClassType(found[0]);
+                type = typeTable.getClassType(found[0]);
             }
         }
     }
@@ -281,7 +225,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
         return;
     }
 
-    addClassType(classqname, type, child);
+    typeTable.addClassType(classqname, type, child);
 }
 
 const char *PARSIMPACK_BOILERPLATE =
@@ -536,7 +480,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                 // forward declaration -- add to table
                 std::string name = ptr2str(child->getAttribute("name"));
                 if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
-                    enumType[name] = canonicalizeQName(namespaceName, name);
+                    typeTable.enumType[name] = canonicalizeQName(namespaceName, name);
                 else {
                     errors->addError(child, "Namespace name is reserved word: '%s'", name.c_str());
                 }
@@ -545,7 +489,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
 
             case NED_ENUM: {
                 EnumInfo info = extractEnumInfo(check_and_cast<EnumElement *>(child));
-                enumType[info.enumName] = info.enumQName;
+                typeTable.enumType[info.enumName] = info.enumQName;
                 generateEnum(info);
                 break;
             }
@@ -553,7 +497,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_STRUCT: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
-                addClassType(classInfo.msgname, classInfo.classtype, child);
+                typeTable.addClassType(classInfo.msgname, classInfo.classtype, child);
                 if (classInfo.generate_class)
                     generateStruct(classInfo);
                 if (classInfo.generate_descriptor)
@@ -566,7 +510,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_PACKET: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
-                addClassType(classInfo.msgqname, classInfo.classtype, child);
+                typeTable.addClassType(classInfo.msgqname, classInfo.classtype, child);
                 if (classInfo.generate_class)
                     generateClass(classInfo);
                 if (classInfo.generate_descriptor)
@@ -675,8 +619,8 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     }
 
     // determine field data type
-    TypeDescMap::const_iterator tdIt = PRIMITIVE_TYPES.find(it->ftype);
-    if (tdIt != PRIMITIVE_TYPES.end()) {
+    auto tdIt = typeTable.PRIMITIVE_TYPES.find(it->ftype);
+    if (tdIt != typeTable.PRIMITIVE_TYPES.end()) {
         it->fisprimitivetype = true;
         it->ftypeqname = "";  // unused
         it->classtype = ClassType::NONCOBJECT;
@@ -690,7 +634,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         it->fisprimitivetype = false;
 
         // $ftypeqname
-        StringVector found = lookupExistingClassName(it->ftype);
+        StringVector found = typeTable.lookupExistingClassName(it->ftype, namespaceName);
         if (found.size() == 1) {
             it->ftypeqname = found[0];
         }
@@ -703,7 +647,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->ftypeqname = found[0];
         }
 
-        it->classtype = getClassType(it->ftypeqname);
+        it->classtype = typeTable.getClassType(it->ftypeqname);
 
         if (it->ftypeqname != "omnetpp::cObject")
             it->ftypeqname = str("::") + it->ftypeqname; //FIXME why, really?
@@ -740,7 +684,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
     // resolve enum namespace
     it->enumname = getProperty(it->fprops, "enum");
     if (!it->enumname.empty()) {
-        StringVector found = lookupExistingEnumName(it->enumname);
+        StringVector found = typeTable.lookupExistingEnumName(it->enumname, namespaceName);
         if (found.size() == 1) {
             it->enumqname = found[0];
         }
@@ -749,7 +693,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
             it->enumqname = "";
             CC << "\n\n/*\n Undeclared enum: " << it->enumname << "\n";
             CC << "  Declared enums:\n";
-            for (auto & x : enumType)
+            for (auto & x : typeTable.enumType)
                 CC << "    " << x.first << " : " << x.second << "\n";
             CC << "\n*/\n\n";
         }
@@ -839,7 +783,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::
         }
     }
     else {
-        if (tdIt == PRIMITIVE_TYPES.end())
+        if (tdIt == typeTable.PRIMITIVE_TYPES.end())
             throw NEDException("Internal error - unknown primitive data type '%s'", it->ftype.c_str());
         // defaults:
         it->datatype = tdIt->second.cppTypeName;
@@ -866,12 +810,12 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
 
     // determine info.msgbaseqname
     if (info.msgbase != "void") {
-        StringVector found = lookupExistingClassName(info.msgbase);
+        StringVector found = typeTable.lookupExistingClassName(info.msgbase, namespaceName);
         if (found.size() == 1) {
             info.msgbaseqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(omnetpp::common::keys(classType), "','").c_str());
+            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(omnetpp::common::keys(typeTable.classType), "','").c_str());
             info.msgbaseqname = "omnetpp::cMessage";
         }
         else {
@@ -883,7 +827,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
 
     // check base class and determine type of object
     if (info.msgqname == "omnetpp::cObject" || info.msgqname == "omnetpp::cNamedObject" || info.msgqname == "omnetpp::cOwnedObject") {
-        info.classtype = getClassType(info.msgqname);  // only for sim_std.msg
+        info.classtype = typeTable.getClassType(info.msgqname);  // only for sim_std.msg
     }
     else if (info.msgbase == "") {
         if (info.keyword == "message" || info.keyword == "packet") {
@@ -899,8 +843,8 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
             throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
         }
         // if announced earlier as noncobject, accept that.
-        if (isClassDeclared(info.msgqname)) {
-            if (getClassType(info.msgqname) == ClassType::NONCOBJECT && info.classtype == ClassType::COBJECT) {
+        if (typeTable.isClassDeclared(info.msgqname)) {
+            if (typeTable.getClassType(info.msgqname) == ClassType::NONCOBJECT && info.classtype == ClassType::COBJECT) {
                 info.classtype = ClassType::NONCOBJECT;
             }
         }
@@ -909,7 +853,7 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
         info.classtype = ClassType::NONCOBJECT;
     }
     else if (info.msgbaseqname != "") {
-        info.classtype = getClassType(info.msgbaseqname);
+        info.classtype = typeTable.getClassType(info.msgbaseqname);
     }
     else {
         errors->addError(info.nedElement, "unknown base class '%s' for '%s'\n", info.msgbase.c_str(), info.msgname.c_str());
@@ -917,9 +861,9 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     }
 
     // check earlier declarations and register this class
-    if (isClassDeclared(info.msgqname) && false) // XXX add condition
+    if (typeTable.isClassDeclared(info.msgqname) && false) // XXX add condition
         errors->addError(info.nedElement, "attempt to redefine '%s'\n", info.msgname.c_str());
-    addClassType(info.msgqname, info.classtype, info.nedElement);
+    typeTable.addClassType(info.msgqname, info.classtype, info.nedElement);
 
     //
     // produce all sorts of derived names
@@ -2251,87 +2195,6 @@ std::string MsgCppGenerator::getProperty(const Properties& p, const char *name, 
     return it->second;
 }
 
-MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingClassName(const std::string& name)
-{
-    StringVector ret;
-    std::map<std::string, ClassType>::iterator it;
-
-    if (name.empty()) {
-        ret.push_back(name);
-        return ret;
-    }
-
-    // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
-    if (name.find("::") != name.npos) {
-        std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
-        it = classType.find(qname);
-        if (it != classType.end()) {
-            ret.push_back(it->first);
-            return ret;
-        }
-    }
-    else {
-        std::string qname = prefixWithNamespace(name);
-        it = classType.find(qname);
-        if (it != classType.end()) {
-            ret.push_back(it->first);
-            return ret;
-        }
-    }
-    size_t namelength = name.length();
-    for (it = classType.begin(); it != classType.end(); ++it) {
-        size_t l = it->first.length();
-        if (l >= namelength) {
-            size_t pos = l - namelength;
-            if ((pos == 0 || it->first[pos-1] == ':') && (it->first.substr(pos) == name)) {
-                ret.push_back(it->first);
-            }
-        }
-    }
-    return ret;
-}
-
-MsgCppGenerator::StringVector MsgCppGenerator::lookupExistingEnumName(const std::string& name)
-{
-    StringVector ret;
-    std::map<std::string, std::string>::iterator it;
-
-    if (name.empty()) {
-        // ret.push_back(name);
-        return ret;
-    }
-
-    // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
-    if (name.find("::") != name.npos) {
-        std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
-        it = enumType.find(qname);
-        if (it != enumType.end()) {
-            ret.push_back(it->second);
-            return ret;
-        }
-    }
-    else {
-        std::string qname = prefixWithNamespace(name);  // prefer name from local namespace
-        it = enumType.find(qname);
-        if (it != enumType.end()) {
-            ret.push_back(it->second);
-            return ret;
-        }
-    }
-
-    size_t namelength = name.length();
-    for (it = enumType.begin(); it != enumType.end(); ++it) {
-        size_t l = it->second.length();
-        if (l >= namelength) {
-            size_t pos = l - namelength;
-            if ((pos == 0 || it->second[pos-1] == ':') && (it->second.substr(pos) == name)) {
-                ret.push_back(it->second);
-            }
-        }
-    }
-    return ret;
-}
-
 void MsgCppGenerator::generateTemplates()
 {
     CC << "// forward\n";
@@ -2410,25 +2273,6 @@ void MsgCppGenerator::generateNamespaceEnd()
     H << std::endl;
     CC << std::endl;
     namespaceNameVector.clear();
-}
-
-void MsgCppGenerator::addClassType(const std::string& classqname, ClassType type, NEDElement *context)
-{
-    if (classType.find(classqname) != classType.end()) {
-        if (classType[classqname] != type)
-            errors->addError(context, "different declarations for '%s' are inconsistent\n", classqname.c_str());
-    }
-    else {
-        classType[classqname] = type;
-    }
-}
-
-MsgCppGenerator::ClassType MsgCppGenerator::getClassType(const std::string& classqname)
-{
-    Assert(!classqname.empty() && classqname[0] != ':');  // must not start with "::"
-    std::map<std::string, ClassType>::iterator it = classType.find(classqname);
-    ClassType type = it != classType.end() ? it->second : ClassType::UNKNOWN;
-    return type;
 }
 
 }  // namespace nedxml
