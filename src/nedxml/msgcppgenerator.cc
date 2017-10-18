@@ -20,11 +20,13 @@
 #include <cctype>
 
 #include "common/stringtokenizer.h"
+#include "common/fileutil.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"  // unlink()
 #include "msgcppgenerator.h"
 #include "ned2generator.h"
+#include "nedparser.h"
 #include "nedexception.h"
 #include "nedutil.h"
 
@@ -159,15 +161,58 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement, const char *hFile, c
     std::ofstream ccStream(ccFile);
     hOutp = &hStream;
     ccOutp = &ccStream;
-    generate(fileElement);
+    process(fileElement, true);
     hStream.close();
     ccStream.close();
 
     if (errors->containsError()) {
-        // remove output files when error occured:
+        // remove output files when error occurred:
         unlink(hFile);
         unlink(ccFile);
     }
+}
+
+void MsgCppGenerator::processImport(NEDElement *child, const std::string& currentDir)
+{
+    if (!namespaceName.empty()) {
+        errors->addError(child, "imports are not allowed within a namespace\n");
+        return;
+    }
+
+    std::string importName = child->getAttribute("import-spec");
+    std::string fileName = resolveImport(importName, currentDir);
+    if (fileName == "") {
+        errors->addError(child, "cannot resolve import '%s'\n", importName.c_str());
+        return;
+    }
+
+    NEDParser parser(errors);
+    NEDElement *tree = parser.parseMSGFile(fileName.c_str());
+    if (errors->containsError()) {
+        delete tree;
+        return;
+    }
+
+    typeTable.importedNedFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
+
+    // extract declarations
+    MsgFileElement *fileElement = check_and_cast<MsgFileElement*>(tree);
+    process(fileElement, false);
+    namespaceName = "";
+}
+
+std::string MsgCppGenerator::resolveImport(const std::string& importName, const std::string& currentDir)
+{
+    std::string msgFile = opp_replacesubstring(importName, ".", "/", true) + ".msg";
+    std::string candidate = concatDirAndFile(currentDir.c_str(), msgFile.c_str());
+    if (fileExists(candidate.c_str()))
+        return candidate;
+    for (auto dir : opts.importPath) {
+        std::string candidate = concatDirAndFile(dir.c_str(), msgFile.c_str());
+        if (fileExists(candidate.c_str()))
+            return candidate;
+    }
+    return "";
 }
 
 void MsgCppGenerator::extractClassDecl(NEDElement *child)
@@ -350,97 +395,102 @@ const char *PARSIMPACK_BOILERPLATE =
     "}  // namespace omnetpp\n"
     "\n";
 
-void MsgCppGenerator::generate(MsgFileElement *fileElement)
+void MsgCppGenerator::process(MsgFileElement *fileElement, bool generateCode)
 {
-    // make header guard using the file name
-    std::string hfilenamewithoutdir = hFilename;
-    size_t pos = hfilenamewithoutdir.find_last_of('/');
-    if (pos != hfilenamewithoutdir.npos)
-        hfilenamewithoutdir = hfilenamewithoutdir.substr(pos+1);
+    std::string currentDir = directoryOf(fileElement->getFilename());
+    std::string headerGuard;
+    if (generateCode) {
+        // make header guard using the file name
+        std::string hfilenamewithoutdir = hFilename;
+        size_t pos = hfilenamewithoutdir.find_last_of('/');
+        if (pos != hfilenamewithoutdir.npos)
+            hfilenamewithoutdir = hfilenamewithoutdir.substr(pos+1);
 
-    std::string headerGuard = hfilenamewithoutdir;
+        headerGuard = hfilenamewithoutdir;
 
-    // add first namespace to headerguard
-    NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
-    if (firstNS)
-        headerGuard = ptr2str(firstNS->getAttribute("name")) + "_" + headerGuard;
+        // add first namespace to headerguard
+        NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
+        if (firstNS)
+            headerGuard = ptr2str(firstNS->getAttribute("name")) + "_" + headerGuard;
 
-    // replace non-alphanumeric characters by '_'
-    std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), charToNameFilter);
-    // capitalize
-    std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), ::toupper);
-    headerGuard = str("__") + headerGuard;
+        // replace non-alphanumeric characters by '_'
+        std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), charToNameFilter);
+        // capitalize
+        std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), ::toupper);
+        headerGuard = str("__") + headerGuard;
 
-    H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
-      << " from " << fileElement->getFilename() << ".\n//\n\n";
-    H << "#if defined(__clang__)\n";
-    H << "#  pragma clang diagnostic ignored \"-Wreserved-id-macro\"\n";
-    H << "#endif\n";
-    H << "#ifndef " << headerGuard << "\n";
-    H << "#define " << headerGuard << "\n\n";
-    H << "#include <omnetpp.h>\n";
-    H << "\n";
-    H << "// " PROGRAM " version check\n";
-    H << "#define MSGC_VERSION 0x" << std::hex << std::setfill('0') << std::setw(4) << OMNETPP_VERSION << "\n";
-    H << "#if (MSGC_VERSION!=OMNETPP_VERSION)\n";
-    H << "#    error Version mismatch! Probably this file was generated by an earlier version of " PROGRAM ": 'make clean' should help.\n";
-    H << "#endif\n";
-    H << "\n";
-
-    if (opts.exportDef.length() > 4 && opts.exportDef.substr(opts.exportDef.length()-4) == "_API") {
-        // # generate boilerplate code for dll export
-        std::string exportbase = opts.exportDef.substr(0, opts.exportDef.length()-4);
-        H << "// dll export symbol\n";
-        H << "#ifndef " << opts.exportDef << "\n";
-        H << "#  if defined(" << exportbase << "_EXPORT)\n";
-        H << "#    define " << opts.exportDef << "  OPP_DLLEXPORT\n";
-        H << "#  elif defined(" << exportbase << "_IMPORT)\n";
-        H << "#    define " << opts.exportDef << "  OPP_DLLIMPORT\n";
-        H << "#  else\n";
-        H << "#    define " << opts.exportDef << "\n";
-        H << "#  endif\n";
+        H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
+          << " from " << fileElement->getFilename() << ".\n//\n\n";
+        H << "#if defined(__clang__)\n";
+        H << "#  pragma clang diagnostic ignored \"-Wreserved-id-macro\"\n";
+        H << "#endif\n";
+        H << "#ifndef " << headerGuard << "\n";
+        H << "#define " << headerGuard << "\n\n";
+        H << "#include <omnetpp.h>\n";
+        H << "\n";
+        H << "// " PROGRAM " version check\n";
+        H << "#define MSGC_VERSION 0x" << std::hex << std::setfill('0') << std::setw(4) << OMNETPP_VERSION << "\n";
+        H << "#if (MSGC_VERSION!=OMNETPP_VERSION)\n";
+        H << "#    error Version mismatch! Probably this file was generated by an earlier version of " PROGRAM ": 'make clean' should help.\n";
         H << "#endif\n";
         H << "\n";
-    }
 
-    CC << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100) << " from " << fileElement->getFilename() << ".\n//\n\n";
-    CC << "// Disable warnings about unused variables, empty switch stmts, etc:\n";
-    CC << "#ifdef _MSC_VER\n";
-    CC << "#  pragma warning(disable:4101)\n";
-    CC << "#  pragma warning(disable:4065)\n";
-    CC << "#endif\n\n";
+        if (opts.exportDef.length() > 4 && opts.exportDef.substr(opts.exportDef.length()-4) == "_API") {
+            // # generate boilerplate code for dll export
+            std::string exportbase = opts.exportDef.substr(0, opts.exportDef.length()-4);
+            H << "// dll export symbol\n";
+            H << "#ifndef " << opts.exportDef << "\n";
+            H << "#  if defined(" << exportbase << "_EXPORT)\n";
+            H << "#    define " << opts.exportDef << "  OPP_DLLEXPORT\n";
+            H << "#  elif defined(" << exportbase << "_IMPORT)\n";
+            H << "#    define " << opts.exportDef << "  OPP_DLLIMPORT\n";
+            H << "#  else\n";
+            H << "#    define " << opts.exportDef << "\n";
+            H << "#  endif\n";
+            H << "#endif\n";
+            H << "\n";
+        }
 
-    CC << "#if defined(__clang__)\n";
-    CC << "#  pragma clang diagnostic ignored \"-Wshadow\"\n";
-    CC << "#  pragma clang diagnostic ignored \"-Wconversion\"\n";
-    CC << "#  pragma clang diagnostic ignored \"-Wunused-parameter\"\n";
-    CC << "#  pragma clang diagnostic ignored \"-Wc++98-compat\"\n";
-    CC << "#  pragma clang diagnostic ignored \"-Wunreachable-code-break\"\n";
-    CC << "#  pragma clang diagnostic ignored \"-Wold-style-cast\"\n";
-    CC << "#elif defined(__GNUC__)\n";
-    CC << "#  pragma GCC diagnostic ignored \"-Wshadow\"\n";
-    CC << "#  pragma GCC diagnostic ignored \"-Wconversion\"\n";
-    CC << "#  pragma GCC diagnostic ignored \"-Wunused-parameter\"\n";
-    CC << "#  pragma GCC diagnostic ignored \"-Wold-style-cast\"\n";
-    CC << "#  pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"\n";
-    CC << "#  pragma GCC diagnostic ignored \"-Wfloat-conversion\"\n";
-    CC << "#endif\n\n";
+        CC << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100) << " from " << fileElement->getFilename() << ".\n//\n\n";
+        CC << "// Disable warnings about unused variables, empty switch stmts, etc:\n";
+        CC << "#ifdef _MSC_VER\n";
+        CC << "#  pragma warning(disable:4101)\n";
+        CC << "#  pragma warning(disable:4065)\n";
+        CC << "#endif\n\n";
 
-    CC << "#include <iostream>\n";
-    CC << "#include <sstream>\n";
-    CC << "#include <memory>\n";
-    CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
+        CC << "#if defined(__clang__)\n";
+        CC << "#  pragma clang diagnostic ignored \"-Wshadow\"\n";
+        CC << "#  pragma clang diagnostic ignored \"-Wconversion\"\n";
+        CC << "#  pragma clang diagnostic ignored \"-Wunused-parameter\"\n";
+        CC << "#  pragma clang diagnostic ignored \"-Wc++98-compat\"\n";
+        CC << "#  pragma clang diagnostic ignored \"-Wunreachable-code-break\"\n";
+        CC << "#  pragma clang diagnostic ignored \"-Wold-style-cast\"\n";
+        CC << "#elif defined(__GNUC__)\n";
+        CC << "#  pragma GCC diagnostic ignored \"-Wshadow\"\n";
+        CC << "#  pragma GCC diagnostic ignored \"-Wconversion\"\n";
+        CC << "#  pragma GCC diagnostic ignored \"-Wunused-parameter\"\n";
+        CC << "#  pragma GCC diagnostic ignored \"-Wold-style-cast\"\n";
+        CC << "#  pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"\n";
+        CC << "#  pragma GCC diagnostic ignored \"-Wfloat-conversion\"\n";
+        CC << "#endif\n\n";
 
-    CC << PARSIMPACK_BOILERPLATE;
+        CC << "#include <iostream>\n";
+        CC << "#include <sstream>\n";
+        CC << "#include <memory>\n";
+        CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
 
-    if (!firstNS) {
-        H << "\n\n";
-        CC << "\n";
-        generateTemplates();
+        CC << PARSIMPACK_BOILERPLATE;
+
+        if (!firstNS) {
+            H << "\n\n";
+            CC << "\n";
+            generateTemplates();
+        }
     }
 
     /*
        <!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
+                           import|
                            struct-decl|class-decl|message-decl|packet-decl|enum-decl|
                            struct|class|message|packet|enum)*)>
      */
@@ -448,24 +498,40 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
                 // open namespace(s)
-                if (!namespaceName.empty()) {
+                if (generateCode && !namespaceName.empty())
                     generateNamespaceEnd();
-                }
                 namespaceName = ptr2str(child->getAttribute("name"));
-                generateNamespaceBegin(child);
+                if (generateCode)
+                    generateNamespaceBegin(child);
                 break;
 
             case NED_CPLUSPLUS: {
                 // print C++ block
-                std::string body = ptr2str(child->getAttribute("body"));
-                body = body.substr(body.find_first_not_of("\r\n"));
-                size_t pos = body.find_last_not_of("\r\n");
-                if (pos != body.npos)
-                    body = body.substr(0, pos+1);
-                H << "// cplusplus {{\n"
-                  << body
-                  << "\n// }}\n\n"
-                ;
+                if (generateCode) {
+                    std::string body = ptr2str(child->getAttribute("body"));
+                    body = body.substr(body.find_first_not_of("\r\n"));
+                    size_t pos = body.find_last_not_of("\r\n");
+                    if (pos != body.npos)
+                        body = body.substr(0, pos+1);
+                    H << "// cplusplus {{\n"
+                            << body
+                            << "\n// }}\n\n"
+                            ;
+                }
+                break;
+            }
+
+            case NED_IMPORT: {
+                std::string importName = child->getAttribute("import-spec");
+                if (!common::contains(importsSeen, importName)) {
+                    importsSeen.insert(importName);
+                    processImport(child, currentDir);
+                    if (generateCode) {
+                        // assuming C++ include path is identical to msg import path, we can directly derive the include from importName
+                        std::string header = opp_replacesubstring(importName, ".", "/", true) + "_m.h";
+                        H << "#include \"" << header << "\" // import " << importName << "\n\n";
+                    }
+                }
                 break;
             }
 
@@ -482,7 +548,7 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
                 if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
                     typeTable.enums[name] = canonicalizeQName(namespaceName, name);
                 else {
-                    errors->addError(child, "Namespace name is reserved word: '%s'", name.c_str());
+                    errors->addError(child, "Enum name is reserved word: '%s'", name.c_str());
                 }
                 break;
             }
@@ -490,18 +556,21 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_ENUM: {
                 EnumInfo info = extractEnumInfo(check_and_cast<EnumElement *>(child));
                 typeTable.enums[info.enumName] = info.enumQName;
-                generateEnum(info);
+                if (generateCode)
+                    generateEnum(info);
                 break;
             }
 
             case NED_STRUCT: {
                 ClassInfo classInfo = extractClassInfo(child);
-                prepareForCodeGeneration(classInfo);
+                analyze(classInfo);
                 typeTable.addClassType(classInfo.msgname, classInfo.classtype, child);
-                if (classInfo.generate_class)
-                    generateStruct(classInfo);
-                if (classInfo.generate_descriptor)
-                    generateDescriptorClass(classInfo);
+                if (generateCode) {
+                    if (classInfo.generate_class)
+                        generateStruct(classInfo);
+                    if (classInfo.generate_descriptor)
+                        generateDescriptorClass(classInfo);
+                }
                 break;
             }
 
@@ -509,20 +578,23 @@ void MsgCppGenerator::generate(MsgFileElement *fileElement)
             case NED_MESSAGE:
             case NED_PACKET: {
                 ClassInfo classInfo = extractClassInfo(child);
-                prepareForCodeGeneration(classInfo);
+                analyze(classInfo);
                 typeTable.addClassType(classInfo.msgqname, classInfo.classtype, child);
-                if (classInfo.generate_class)
-                    generateClass(classInfo);
-                if (classInfo.generate_descriptor)
-                    generateDescriptorClass(classInfo);
+                if (generateCode) {
+                    if (classInfo.generate_class)
+                        generateClass(classInfo);
+                    if (classInfo.generate_descriptor)
+                        generateDescriptorClass(classInfo);
+                }
                 break;
             }
         }
     }
 
-    generateNamespaceEnd();
-
-    H << "#endif // ifndef " << headerGuard << "\n\n";
+    if (generateCode) {
+        generateNamespaceEnd();
+        H << "#endif // ifndef " << headerGuard << "\n\n";
+    }
 }
 
 MsgCppGenerator::Properties MsgCppGenerator::extractPropertiesOf(NEDElement *node)
@@ -612,7 +684,7 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
     return classInfo;
 }
 
-void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, FieldInfo *it)
+void MsgCppGenerator::analyzeField(ClassInfo& info, FieldInfo *it)
 {
     if (it->fisabstract && !info.gap) {
         errors->addError(it->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", info.msgname.c_str());
@@ -804,7 +876,7 @@ void MsgCppGenerator::prepareFieldForCodeGeneration(ClassInfo& info, FieldInfo *
     }
 }
 
-void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
+void MsgCppGenerator::analyze(ClassInfo& info)
 {
     info.msgqname = prefixWithNamespace(info.msgname);
 
@@ -925,10 +997,10 @@ void MsgCppGenerator::prepareForCodeGeneration(ClassInfo& info)
     }
 
     for (ClassInfo::Fieldlist::iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        prepareFieldForCodeGeneration(info, &(*it));
+        analyzeField(info, &(*it));
     }
     for (ClassInfo::Fieldlist::iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it) {
-        prepareFieldForCodeGeneration(info, &(*it));
+        analyzeField(info, &(*it));
     }
 }
 

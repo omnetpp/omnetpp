@@ -60,6 +60,11 @@ MsgTypeTable::TypeDesc MsgTypeTable::_PRIMITIVE_TYPES[] =
         {nullptr,nullptr,nullptr,nullptr,nullptr}
 };
 
+MsgTypeTable::~MsgTypeTable()
+{
+    for (NEDElement *node : importedNedFiles)
+        delete node;
+}
 
 void MsgTypeTable::initDescriptors()
 {

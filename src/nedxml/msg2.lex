@@ -17,7 +17,7 @@
 
 /*
  * MSG-2 reserved words:
- *    non-component:   cplusplus
+ *    non-component:   cplusplus import
  *    component:       struct message class noncobject enum
  *    inheritance:     extends
  *    field types:     char short int long double unsigned
@@ -80,6 +80,7 @@ using namespace omnetpp::nedxml;
 
 "namespace"              { countChars(); return NAMESPACE; }
 "cplusplus"              { countChars(); return CPLUSPLUS; }
+"import"                 { countChars(); return IMPORT; }
 "struct"                 { countChars(); return STRUCT; }
 "message"                { countChars(); return MESSAGE; }
 "packet"                 { countChars(); return PACKET; }

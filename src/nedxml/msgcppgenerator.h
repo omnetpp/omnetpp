@@ -38,6 +38,7 @@ namespace nedxml {
  */
 struct MsgCppGeneratorOptions
 {
+    std::vector<std::string> importPath;
     std::string exportDef;
     bool generateClasses;
     bool generateDescriptors;
@@ -71,8 +72,8 @@ class NEDXML_API MsgCppGenerator
 
   protected:
     static const char *_RESERVED_WORDS[];
-    typedef std::set<std::string> WordSet;
-    WordSet RESERVED_WORDS;
+    typedef std::set<std::string> StringSet;
+    StringSet RESERVED_WORDS;
 
     std::string hFilename;
     std::string ccFilename;
@@ -82,6 +83,7 @@ class NEDXML_API MsgCppGenerator
     MsgTypeTable typeTable;
     std::string namespaceName;      // as MSG
     StringVector namespaceNameVector;   // namespacename split by '::'
+    StringSet importsSeen;
 
     // command line options:
     MsgCppGeneratorOptions opts;
@@ -91,9 +93,11 @@ class NEDXML_API MsgCppGenerator
     std::string prefixWithNamespace(const std::string& s);
     ClassInfo extractClassInfo(NEDElement *node); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void extractClassDecl(NEDElement *node); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl
+    void processImport(NEDElement *child, const std::string& currentDir);
+    std::string resolveImport(const std::string& importName, const std::string& currentDir);
     Properties extractPropertiesOf(NEDElement *node);
-    void prepareFieldForCodeGeneration(ClassInfo& info, FieldInfo *it);
-    void prepareForCodeGeneration(ClassInfo& classInfo);
+    void analyzeField(ClassInfo& info, FieldInfo *it);
+    void analyze(ClassInfo& classInfo);
     EnumInfo extractEnumInfo(EnumElement *node); // accepts EnumElement
     void generateClass(const ClassInfo& classInfo);
     void generateStruct(const ClassInfo& classInfo);
@@ -107,7 +111,7 @@ class NEDXML_API MsgCppGenerator
 
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
-    void generate(MsgFileElement *fileElement);
+    void process(MsgFileElement *fileElement, bool generateCode);
     std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
 
   public:

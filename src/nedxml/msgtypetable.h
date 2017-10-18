@@ -183,6 +183,8 @@ class NEDXML_API MsgTypeTable
         EnumInfo() : nedElement(nullptr) {}
     };
 
+    std::vector<NEDElement*> importedNedFiles;
+
   protected:
     void initDescriptors();
     std::string prefixWithNamespace(const std::string& namespaceName, const std::string& name) {
@@ -191,6 +193,7 @@ class NEDXML_API MsgTypeTable
 
   public:
     MsgTypeTable() {initDescriptors();}
+    ~MsgTypeTable();
     StringVector lookupExistingClassName(const std::string& name, const std::string& contextNamespace);
     StringVector lookupExistingEnumName(const std::string& name, const std::string& contextNamespace);
     bool isClassDeclared(const std::string& classqname) { return classes.find(classqname) != classes.end(); }

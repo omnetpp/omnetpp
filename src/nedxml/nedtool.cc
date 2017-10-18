@@ -22,6 +22,8 @@
 #include <cstring>
 #include <fstream>
 #include <cerrno>
+#include <string>
+#include <vector>
 
 #include "common/fileglobber.h"
 #include "common/fileutil.h"
@@ -72,6 +74,7 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = nullptr; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
+std::vector<std::string> opt_includepath; // -I
 
 // MSG specific option variables:
 MsgCppGeneratorOptions msg_options;
@@ -311,6 +314,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
             else {
                 Assert(!opt_gensrc && !opt_genxml);  // already handled above
                 if (ftype == MSG_FILE) {
+                    msg_options.importPath = opt_includepath;
                     MsgCppGenerator generator(errors, msg_options);
                     generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
                 }
@@ -439,13 +443,14 @@ int main(int argc, char **argv)
         }
         else if (!strncmp(argv[i], "-I", 2)) {
             const char *arg = argv[i]+2;
-            if (!arg) {
+            if (!*arg) {
                 if (++i == argc) {
                     fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
+                arg = argv[i];
             }
-            // -I option is currently ignored
+            opt_includepath.push_back(arg);
         }
         else if (!strncmp(argv[i], "-T", 2)) {
             const char *arg = argv[i]+2;

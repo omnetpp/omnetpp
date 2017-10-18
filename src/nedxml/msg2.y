@@ -20,6 +20,7 @@
 %token NAMESPACE CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
 %token EXTENDS ABSTRACT READONLY
+%token IMPORT
 
 %token NAME PROPNAME DOUBLECOLON
 %token INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -106,6 +107,7 @@ static struct MSG2ParserState
     MsgFileElement *msgfile;
     NamespaceElement *namespacedecl;
     CplusplusElement *cplusplus;
+    ImportElement *import;
     StructDeclElement *structdecl;
     ClassDeclElement *classdecl;
     MessageDeclElement *messagedecl;
@@ -150,6 +152,7 @@ definition
         : namespace_decl
         | fileproperty
         | cplusplus
+        | import
         | struct_decl
         | class_decl
         | message_decl
@@ -210,6 +213,29 @@ cplusplus
                   ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
                   storeBannerAndRightComments(ps.cplusplus,@1,@2);
                 }
+        ;
+
+/*
+ * Import
+ */
+import
+        : IMPORT importspec ';'
+                {
+                  ps.import = (ImportElement *)createElementWithTag(NED_IMPORT, ps.msgfile);
+                  ps.import->setImportSpec(removeSpaces(@2).c_str());
+                  storePos(ps.import,@$);
+                  storeBannerAndRightComments(ps.import,@$);
+                }
+        ; /* no error recovery rule -- see discussion at top */
+
+importspec
+        : importspec '.' importname
+        | importname
+        ;
+
+importname
+        : NAME
+        | MESSAGE | PACKET | CLASS | STRUCT | ENUM | ABSTRACT | READONLY  /* for convenience, we also allow some keywords to be used as folder names */
         ;
 
 /*

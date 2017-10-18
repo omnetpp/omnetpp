@@ -201,6 +201,7 @@
 -->
 
 <!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
+                    import|
                     struct-decl|class-decl|message-decl|packet-decl|enum-decl|
                     struct|class|message|packet|enum)*)>
 
