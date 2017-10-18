@@ -1,3 +1,2 @@
 #!/bin/sh
-nedtool $*
-
+$(dirname $0)/nedtool $*
