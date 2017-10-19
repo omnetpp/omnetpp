@@ -696,32 +696,30 @@ void MsgCppGenerator::analyzeField(ClassInfo& classInfo, FieldInfo *field)
     }
 
     // determine field data type
-    auto tdIt = typeTable.PRIMITIVE_TYPES.find(field->ftype);
-    if (tdIt != typeTable.PRIMITIVE_TYPES.end()) {
-        field->fisprimitivetype = true;
-        field->ftypeqname = "";  // unused
-        field->classtype = ClassType::NONCOBJECT;
-    }
-    else if (field->ftype.empty()) {
+    if (field->ftype.empty()) {
         // base class field assignment
         field->classtype = ClassType::UNKNOWN;
         field->fisprimitivetype = false; //FIXME we don't know
     }
+    else if (containsKey(typeTable.PRIMITIVE_TYPES, field->ftype)) {
+        field->fisprimitivetype = true;
+        field->ftypeqname = "";  // unused
+        field->classtype = ClassType::NONCOBJECT;
+    }
     else {
         field->fisprimitivetype = false;
 
-        // $ftypeqname
-        StringVector found = typeTable.lookupExistingClassName(field->ftype, namespaceName);
-        if (found.size() == 1) {
-            field->ftypeqname = found[0];
+        StringVector candidateTypes = typeTable.lookupExistingClassName(field->ftype, namespaceName);
+        if (candidateTypes.size() == 1) {
+            field->ftypeqname = candidateTypes[0];
         }
-        else if (found.empty()) {
+        else if (candidateTypes.empty()) {
             errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
             field->ftypeqname = "omnetpp::cObject";
         }
         else {
-            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
-            field->ftypeqname = found[0];
+            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(candidateTypes, ", ").c_str());
+            field->ftypeqname = candidateTypes[0];
         }
 
         field->classtype = typeTable.getClassType(field->ftypeqname);
@@ -860,18 +858,17 @@ void MsgCppGenerator::analyzeField(ClassInfo& classInfo, FieldInfo *field)
         }
     }
     else {
-        if (tdIt == typeTable.PRIMITIVE_TYPES.end())
-            throw NEDException("Internal error - unknown primitive data type '%s'", field->ftype.c_str());
-        // defaults:
-        field->datatype = tdIt->second.cppTypeName;
-        field->argtype = tdIt->second.cppTypeName;
-        field->rettype = tdIt->second.cppTypeName;
+        Assert(containsKey(typeTable.PRIMITIVE_TYPES, field->ftype));
+        const TypeDesc& primitiveType = typeTable.PRIMITIVE_TYPES[field->ftype];
+        field->datatype = primitiveType.cppTypeName;
+        field->argtype = primitiveType.cppTypeName;
+        field->rettype = primitiveType.cppTypeName;
         if (field->fval.empty())
-            field->fval = tdIt->second.emptyValue;
+            field->fval = primitiveType.emptyValue;
         if (field->tostring.empty())
-            field->tostring = tdIt->second.tostring;
+            field->tostring = primitiveType.tostring;
         if (field->fromstring.empty())
-            field->fromstring = tdIt->second.fromstring;
+            field->fromstring = primitiveType.fromstring;
 
         if (field->ftype == "string") {
             field->argtype = "const char *";
