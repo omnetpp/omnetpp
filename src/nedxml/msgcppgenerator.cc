@@ -510,7 +510,9 @@ void MsgCppGenerator::process(MsgFileElement *fileElement, bool generateCode)
                 if (generateCode) {
                     std::string body = ptr2str(child->getAttribute("body"));
                     std::string target = ptr2str(child->getAttribute("target"));
-                    body = body.substr(body.find_first_not_of("\r\n"));
+                    size_t pos0 = body.find_first_not_of("\r\n");
+                    if (pos0 != body.npos)
+                        body = body.substr(pos0);
                     size_t pos = body.find_last_not_of("\r\n");
                     if (pos != body.npos)
                         body = body.substr(0, pos+1);
