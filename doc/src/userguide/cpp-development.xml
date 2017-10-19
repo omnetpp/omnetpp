@@ -29,8 +29,8 @@
           Makefiles are automatically generated for your project based on the project build configuration.
           The built-in makefile generator is compatible with the command line [[opp_makemake]] tool,
           and features deep makefiles, recursive make, cross-project references, invoking the message compiler,
-          automatic dependency generation, automatic linking with the &Omnetpp; libraries; and
-          can build executables, shared libraries or static libraries.
+          automatic linking with the &Omnetpp; libraries; and can build executables, shared libraries or
+          static libraries.
         </listitem>
         <listitem>
           Makefile generation and the project build system can be configured using a GUI interface.
@@ -53,17 +53,18 @@
         <listitem>
           On Windows: The &Omnetpp;
           distribution comes with a preconfigured MinGW compiler toolchain (MinGW is the Windows port of the
-          GCC compiler.) You do not have to install or download anything. The IDE should be able to use the
-          MinGW/gcc compiler out of box. <commercial>You can also use the Clang/C2 compiler from your
-          Microsoft Visual Studio installation.</commercial>
+          GCC/clang compiler.) You do not have to install or download anything. The IDE should be able to use the
+          MinGW/clang compiler out of box (you can also use the bundled GCC compiler.)
+          <commercial>&Omnetpp; can also use the Clang/C2 compiler from your Microsoft Visual Studio installation.</commercial>
         </listitem>
         <listitem>
-          On Linux: The default GCC toolchain can be used.
-          You have to install the GCC toolchain on your system before trying to compile a simulation with &Omnetpp;.
-          Please read the Install Guide for detailed instructions.
+          On Linux: By default, the [[clang]] compiler is used, but &Omnetpp; falls back to use [[GCC]]
+          if [[clang]] is not present on the system. You have to install clang or GCC
+          on your system before trying to compile a simulation with &Omnetpp;. Please read the
+          Install Guide for detailed instructions.
         </listitem>
         <listitem>
-          On Mac OS X: You should install Xcode Developer Tools to get compiler
+          On maxOS: You should install Xcode Developer Tools to get compiler
           support before trying to compile a simulation with &Omnetpp;.
           Please read the Install Guide for detailed instructions.
         </listitem>
@@ -262,13 +263,6 @@
         features such as content assist, go to definition, class hierarchy and refactoring
         are all based on the index.
         </para>
-
-        <para>
-        It is important that the C++ index is up to date before the build, because the index is used
-        by the IDE for dependency generation in the generated makefiles. (The input for dependencies
-        is the list of active [[#include]]'s in the sources, and the IDE takes this information
-        from the index.)
-        </para>
         </note>
 
         <sect3>
@@ -352,12 +346,12 @@
         <title>Configuring the Build Process</title>
         <para>The make invocation can be configured on ``C/C++ Build'' page of the ``Project Properties'' dialog.
         Most settings are already set correctly and do not need to be changed. One exception is the
-        ``Use parallel build'' option on the ``Behavior'' tab that you may want to enable, especially
+        ``Enable parallel build'' option on the ``Behavior'' tab that you may want to enable, especially
         if you have a multi-core computer.</para>
 
         <warning>
         Do not set the number of parallel jobs to be significantly higher than the number of CPU cores
-        you have. In particular, never turn on the ``Optimal jobs number'' feature, as it will start
+        you have. In particular, never turn on the ``Use unlimited jobs'' option, as it will start
         an excessive number of processes and you will run out of physical memory!
         </warning>
 
@@ -370,7 +364,10 @@
         <para>A project may have several build configurations, where each configuration describes
             the selected compiler toolchain, debug or release mode, any potential extra include and
             linker paths, defined symbols, etc. You can activate, create or delete build configurations
-            under the ``Build Configurations'' submenu of the project context menu.</para>
+            under the ``Build Configurations'' submenu of the project context menu. Be sure that
+            the name of the configuration contains the ``debug'' or ``release'' substring.
+            The IDE launcher uses the name of the configuration to switch the active configuration
+            depending whether you want to debug or run the simulation.</para>
     </sect2>
 
     <sect2>
@@ -486,7 +483,8 @@
               </listitem>
               <listitem>
                 ``Target name'': You may set the target name. The default value is derived from the project name.
-                Makemake option: [[-o]]
+                Makemake option: [[-o]] (If you are building a debug configuration, the target name will be implicitly
+                suffixed by the [[_dbg]] string.)
               </listitem>
               <listitem>
                 ``Output directory'': The output directory specifies where the object files and the final target
@@ -539,34 +537,22 @@
           <para>Settings that affect the include path:</para>
           <itemizedlist>
             <listitem>
-              ``Add all source folders under this deep makefile'': When turned on, it adds all folders
-              under this makefile to the include path. This means that source files can include header files
-              from any folder just by using the file name; see the discussion below on resolving ambiguities.
-              Makemake option: [[--no-deep-includes]] (negated option)
+              ``Export include path for other projects'' makes this project's include path
+              available for other dependent projects. This is usually required if your
+              project expects that other independent models will extend it in the future.
             </listitem>
             <listitem>
-              ``Automatically add other folders where include files are located'': This option
-              supplements the above option, and provides an automatic way to handle inclusions
-              from folders outside this source tree. When turned on, it automatically adds the
-              extra folders necessary for compiling the source files under this makefile.
-              It works by analyzing the include statements in the source files, finds out where the
-              included files are located, and adds those folders to the include path. Only looks at
-              folders outside this source tree, and into referenced projects.
-              Makemake option: [[--meta:auto-include-path]] (resolves to multiple [[-I]] options)
+              ``Add include paths exported from referenced projects'' allows a dependent project
+              to use header files from the dependencies if those projects have exported their
+              include path (i.e. the above option was turned on.)
+            </listitem>
+            <listitem>
+              ``Add include dirs and other compile options from enabled project features'':
+              Project features may require additional include paths and defines to compile
+              properly. Enabling this option will add those command line arguments (specified
+              in the ``.oppfeatures'' file) to the compiler command line.
             </listitem>
           </itemizedlist>
-          <para>
-            Automatic include path works best when include file names are unique, which is usually so.
-            In the case of collisions (two or more include files having the same name), include statements
-            should be qualified with the names of include files' parent folder (or more levels of ancestor
-            folders), otherwise the result will be unpredictable. For instance, if you have two header
-            files [[src/ospf/Route.h]] and [[src/ip/base/Route.h]], you can include them with
-            [[#include "ospf/Route.h"]] and [[#include "base/Route.h"]] (or [[#include "ip/base/Route.h"]]);
-            do ``not'' use [[#include "Route.h"]] because it would be ambiguous.
-            If the problematic file is located in the project root, use the form
-            [[#include "../projectname/inc.h"]] to make it unique.
-          </para>
-
           <para>Source files:</para>
           <itemizedlist>
             <listitem>
@@ -633,6 +619,12 @@
               Makemake option: [[--meta:use-exported-libs]]
             </listitem>
             <listitem>
+              ``Add libraries and other linker options from enabled project features'':
+              Project features may require additional libraries and linker options to build
+              properly. Enabling this option will add those command line arguments (specified
+              in the ``.oppfeatures'' file) to the linker command line.
+            </listitem>
+            <listitem>
               ``User interface libraries to link with'': If the makefile target is an executable, you may
               specify which &Omnetpp; user interface libraries (Cmdenv, Tkenv, or both) should be linked
               into the program.
@@ -663,11 +655,6 @@
 
           <itemizedlist>
             <listitem>
-              ``Makefile variables'': Variables (name + value) that you enter here will be inserted
-              into the generated makefile.
-              Makemake option: [[-K]]
-            </listitem>
-            <listitem>
               ``Makefrag'': If the folder contains a file named [[makefrag]],
               its contents will be automatically copied into the generated makefile, just above the
               first target rule. [[makefrag]] allows you to customize the generated makefile to some extent;
@@ -676,7 +663,6 @@
               add new dependencies to existing targets, overwrite variables, etc.
               The dialog lets you edit the contents of the [[makefrag]] file directly (it will be saved
               when you accept the dialog).
-              Makemake option: n/a
             </listitem>
             <listitem>
               ``More &raquo; Fragment files to include'': Here, it is possible to explicitly specify
@@ -726,8 +712,10 @@
         <itemizedlist>
           <listitem>
             Include path: Source folders in referenced projects will be automatically added
-            to the include path of your makefile if the ``Automatically add other folders
-            where include files are located'' option on the ``Compile'' tab is checked.
+            to the include path of your makefile if the ``Add include paths exported from
+            referenced projects'' option on the ``Compile'' tab is checked where the
+            referenced projects also enable the ``Export include path for other projects''
+            option.
           </listitem>
           <listitem>
             Linking: If the ``Link with libraries exported from referenced projects'' option on the
@@ -782,6 +770,9 @@
 
       <itemizedlist>
         <listitem>
+          ``ID'', which is a unique identifier inside the feature definition file.
+        </listitem>
+        <listitem>
           ``Feature name,'' for example [["UDP"]] or [["Mobility examples"]].
         </listitem>
         <listitem>
@@ -798,13 +789,14 @@
         <listitem>
           ``Required features.'' Some features may be built on top of others; for example, a HMIPv6
           protocol implementation relies on MIPv6, which in turn relies on IPv6. Thus, HMIPv6 can
-          only be enabled if MIPv6 and IPv6 are enabled as well.
+          only be enabled if MIPv6 and IPv6 are enabled as well. This is a space separated list of
+          feaure IDs.
         </listitem>
         <listitem>
-          ``NED packages.'' This is a list of NED package names that identify the code that implements
-          the feature. When you disable the feature, NED types defined in those packages and their
-          subpackages will be excluded; also, C++ code in the folders that correspond to the packages
-          (i.e. in the same folders as excluded NED files) will also be excluded.
+          ``NED packages.'' This is a space separated list of NED package names that identify the
+          code that implements the feature. When you disable the feature, NED types defined in those
+          packages and their subpackages will be excluded; also, C++ code in the folders that correspond
+          to the packages (i.e. in the same folders as excluded NED files) will also be excluded.
         </listitem>
         <listitem>
           ``Extra C++ source folders.'' If the feature contains C++ code that lives outside NED source
@@ -812,8 +804,10 @@
         </listitem>
         <listitem>
           ``Compile options,'' for example [[-DWITH_IPv6]]. When the feature is enabled, the compiler
-          options listed here are added to the compiler command line of all C++ files in the project.
-          A typical use of this field is defining symbols ([[WITH_xxx]]] that allows you to write conditional code
+          options listed here are either added to the compiler command line of all C++ files
+          or they can be used to generate a header file containing all these defines
+          so that header file can be included in all C++ files. A typical use of this field is
+          defining symbols ([[WITH_xxx]]] that allows you to write conditional code
           that only compiles when a given feature is enabled. Currently only the [[-D]] option
           (``define symbol'') is supported here.
         </listitem>
@@ -877,8 +871,8 @@
         </listitem>
         <listitem>
           Compile options. For example, if the feature defines preprocessor symbols ([[-DWITH_xxx]]),
-          they will be displayed on the ``Symbols'' tab of the ``C/C++ General > Paths and Symbols''
-          property page.
+          they can be used to generate a header file that contains the enabled macro definitions and
+          that file can be included in all C++ files.
         </listitem>
         <listitem>
           Linker options. For example, if the feature defines additional libraries to link with,
@@ -887,18 +881,7 @@
         </listitem>
       </itemizedlist>
       <note>
-        Feature enablements are saved into the workspace metadata, i.e. outside in the project directory.
-        This also means that the current feature enablement state cannot be (easily) put under
-        version control.
-      </note>
-      <note>
-        When you enable or disable a feature, &Omnetpp; (as of version 4.2) will trigger
-        a reindexing for the project.
-        This is done because C++ sources in the project may contain [[#ifdef]]'s that use
-        symbols defined by the changed features ([[WITH_xxx]] symbols), and CDT does not
-        automatically detect that those source files need to be re-parsed because of the changed
-        conditions. Its is important for the &Omnetpp; IDE that the C++ index is up to date,
-        because the index is used for dependency generation in generated makefiles.
+        Feature enablements are saved to the [[.oppfeaturestate]] file in the project root.
       </note>
     </sect2>
 
@@ -936,7 +919,10 @@
 
       <para>
         The root element is [[&lt;features&gt;]], and it may have several [[&lt;feature&gt;]]
-        child elements, each defining a project feature. The fields of a feature
+        child elements, each defining a project feature. Attributes of the [[&lt;features&gt;]]
+        element define the root(s) of the source folder(s) ([[cppSourceRoots]]) and the name of a
+        generated header file that contains all defines specified by the [[compilerFlags]]
+        attribute in the enabled features. The fields of a feature
         are represented with XML attributes; attribute names are [[id]], [[name]],
         [[description]], [[initiallyEnabled]], [[requires]], [[labels]], [[nedPackages]],
         [[extraSourceFolders]], [[compileFlags]] and [[linkerFlags]]. Items within attributes
@@ -948,7 +934,8 @@
       </para>
 
 <screen><![CDATA[
-<feature
+<features cppSourceRoots="src" definesFile="src/inet/features.h">
+    <feature
         id="TCP_common"
         name="TCP Common"
         description = "The common part of TCP implementations"
@@ -963,7 +950,7 @@
         extraSourceFolders = ""
         compileFlags = "-DWITH_TCP_COMMON"
         linkerFlags = ""
-        />
+    />
 ]]></screen>
     </sect2>
 
@@ -987,7 +974,8 @@
           symbol, i.e. [[-DWITH_YOURFEATURE]] will need to be added to the feature compile flags.)
         </listitem>
         <listitem>
-          Add the feature description into the [[.oppfeatures]] file of your project.
+          Add the feature description into the [[.oppfeatures]] file of your project
+          including the required feature dependencies.
         </listitem>
         <listitem>
           Test. A rudimentary test can be verify that your project compiles at all, both
@@ -1026,9 +1014,19 @@
         on the ``Makemake'' page of the ``Project Properties'' dialog.
       </listitem>
       <listitem>
-        [[.nedfolders]] : Contains the names of NED source folders, and also package exclusions;
+        [[.oppfeatures]] : Optionally contains the definitions of project features.
+      </listitem>
+      <listitem>
+        [[.oppfeaturestate]] : Optionally contains the current enablement state of the features.
+        (We do not recommend keeping this file under version control.)
+      </listitem>
+      <listitem>
+        [[.nedfolders]] : Contains the names of NED source folders;
         this is the information that can be configured on the ``NED Source Folders'' page
         of the ``Project Properties'' dialog.
+      </listitem>
+      <listitem>
+        [[.nedexclusions]] : Contains the names of excluded NED packages.
       </listitem>
     </itemizedlist>
     <para>
