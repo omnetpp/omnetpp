@@ -295,7 +295,7 @@ class SIM_API cMessage : public cEvent
      * does not define dup/copy operations.
      * The assignment operator does not change control info.
      */
-    void setControlInfo(cObject *p);
+    virtual void setControlInfo(cObject *p);
 
     /**
      * Removes the "control info" structure (object) from the message
