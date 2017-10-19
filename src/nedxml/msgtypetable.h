@@ -62,9 +62,6 @@ class NEDXML_API MsgTypeTable
     typedef std::map<std::string,TypeDesc> TypeDescMap;
     TypeDescMap PRIMITIVE_TYPES;
 
-    std::map<std::string,ClassType> classes;
-    std::map<std::string,std::string> enums;
-
     typedef std::map<std::string, std::string> Properties;  //FIXME kell egy reszletesebb modell...
 
     class FieldInfo {
@@ -183,6 +180,12 @@ class NEDXML_API MsgTypeTable
         EnumInfo() : nedElement(nullptr) {}
     };
 
+    std::map<std::string,ClassType> declaredClasses;
+    std::map<std::string,ClassInfo> definedClasses;
+
+    std::set<std::string> declaredEnums;
+    std::map<std::string,EnumInfo> definedEnums;
+
     std::vector<NEDElement*> importedNedFiles;
 
   protected:
@@ -196,9 +199,9 @@ class NEDXML_API MsgTypeTable
     ~MsgTypeTable();
     StringVector lookupExistingClassName(const std::string& name, const std::string& contextNamespace);
     StringVector lookupExistingEnumName(const std::string& name, const std::string& contextNamespace);
-    bool isClassDeclared(const std::string& classqname) { return classes.find(classqname) != classes.end(); }
-    void addClassType(const std::string& classqname, ClassType type, NEDElement *context);
-    ClassType getClassType(const std::string& classqname);
+    bool isClassDeclared(const std::string& classqname) { return declaredClasses.find(classqname) != declaredClasses.end(); }
+    void addDeclaredClass(const std::string& qname, ClassType classType, NEDElement *context);
+    ClassType getClassType(const std::string& qname);
 };
 
 } // namespace nedxml

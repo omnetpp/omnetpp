@@ -270,7 +270,7 @@ void MsgCppGenerator::extractClassDecl(NEDElement *child)
         return;
     }
 
-    typeTable.addClassType(classqname, type, child);
+    typeTable.addDeclaredClass(classqname, type, child);
 }
 
 const char *PARSIMPACK_BOILERPLATE =
@@ -550,26 +550,25 @@ void MsgCppGenerator::process(MsgFileElement *fileElement, bool generateCode)
             case NED_ENUM_DECL: {
                 // forward declaration -- add to table
                 std::string name = ptr2str(child->getAttribute("name"));
-                if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
-                    typeTable.enums[name] = canonicalizeQName(namespaceName, name);
-                else {
+                if (contains(RESERVED_WORDS, name))
                     errors->addError(child, "Enum name is reserved word: '%s'", name.c_str());
-                }
+                std::string qname = canonicalizeQName(namespaceName, name);
+                typeTable.declaredEnums.insert(qname);
                 break;
             }
 
             case NED_ENUM: {
-                EnumInfo info = extractEnumInfo(check_and_cast<EnumElement *>(child));
-                typeTable.enums[info.enumName] = info.enumQName;
+                EnumInfo enumInfo = extractEnumInfo(check_and_cast<EnumElement *>(child));
+                typeTable.declaredEnums.insert(enumInfo.enumQName);
                 if (generateCode)
-                    generateEnum(info);
+                    generateEnum(enumInfo);
                 break;
             }
 
             case NED_STRUCT: {
                 ClassInfo classInfo = extractClassInfo(child);
                 analyze(classInfo);
-                typeTable.addClassType(classInfo.msgname, classInfo.classtype, child);
+                typeTable.addDeclaredClass(classInfo.msgname, classInfo.classtype, child);
                 if (generateCode) {
                     if (classInfo.generate_class)
                         generateStruct(classInfo);
@@ -584,7 +583,7 @@ void MsgCppGenerator::process(MsgFileElement *fileElement, bool generateCode)
             case NED_PACKET: {
                 ClassInfo classInfo = extractClassInfo(child);
                 analyze(classInfo);
-                typeTable.addClassType(classInfo.msgqname, classInfo.classtype, child);
+                typeTable.addDeclaredClass(classInfo.msgqname, classInfo.classtype, child);
                 if (generateCode) {
                     if (classInfo.generate_class)
                         generateClass(classInfo);
@@ -768,8 +767,8 @@ void MsgCppGenerator::analyzeField(ClassInfo& classInfo, FieldInfo *field)
             field->enumqname = "";
             CC << "\n\n/*\n Undeclared enum: " << field->enumname << "\n";
             CC << "  Declared enums:\n";
-            for (auto & x : typeTable.enums)
-                CC << "    " << x.first << " : " << x.second << "\n";
+            for (const auto & qname : typeTable.declaredEnums)
+                CC << "    " << qname << "\n";
             CC << "\n*/\n\n";
         }
         else {
@@ -889,7 +888,7 @@ void MsgCppGenerator::analyze(ClassInfo& classInfo)
             classInfo.msgbaseqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(classInfo.nedElement, "'%s': unknown base class '%s', available classes '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(omnetpp::common::keys(typeTable.classes), "','").c_str());
+            errors->addError(classInfo.nedElement, "'%s': unknown base class '%s', available classes '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(omnetpp::common::keys(typeTable.declaredClasses), "','").c_str());
             classInfo.msgbaseqname = "omnetpp::cMessage";
         }
         else {
@@ -937,7 +936,7 @@ void MsgCppGenerator::analyze(ClassInfo& classInfo)
     // check earlier declarations and register this class
     if (typeTable.isClassDeclared(classInfo.msgqname) && false) // XXX add condition
         errors->addError(classInfo.nedElement, "attempt to redefine '%s'\n", classInfo.msgname.c_str());
-    typeTable.addClassType(classInfo.msgqname, classInfo.classtype, classInfo.nedElement);
+    typeTable.addDeclaredClass(classInfo.msgqname, classInfo.classtype, classInfo.nedElement);
 
     //
     // produce all sorts of derived names

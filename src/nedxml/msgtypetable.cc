@@ -82,51 +82,45 @@ void MsgTypeTable::initDescriptors()
     //  'foreign'      ==> non-cObject class (classes announced as "class noncobject" or "extends void")
     //  'struct'       ==> struct (no member functions)
     //
-    classes["omnetpp::cObject"] = ClassType::COBJECT;
-    classes["omnetpp::cNamedObject"] = ClassType::CNAMEDOBJECT;
-    classes["omnetpp::cOwnedObject"] = ClassType::COWNEDOBJECT;
-    classes["omnetpp::cMessage"] = ClassType::COWNEDOBJECT;
-    classes["omnetpp::cPacket"] = ClassType::COWNEDOBJECT;
-    classes["omnetpp::cModule"] = ClassType::COWNEDOBJECT;
+    declaredClasses["omnetpp::cObject"] = ClassType::COBJECT;
+    declaredClasses["omnetpp::cNamedObject"] = ClassType::CNAMEDOBJECT;
+    declaredClasses["omnetpp::cOwnedObject"] = ClassType::COWNEDOBJECT;
+    declaredClasses["omnetpp::cMessage"] = ClassType::COWNEDOBJECT;
+    declaredClasses["omnetpp::cPacket"] = ClassType::COWNEDOBJECT;
+    declaredClasses["omnetpp::cModule"] = ClassType::COWNEDOBJECT;
     // TODO: others?
 }
 
 MsgTypeTable::StringVector MsgTypeTable::lookupExistingClassName(const std::string& name, const std::string& contextNamespace)
 {
     StringVector ret;
-    std::map<std::string, ClassType>::iterator it;
 
     if (name.empty()) {
-        ret.push_back(name);
+        ret.push_back(name); //TODO why ???
         return ret;
     }
 
     // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
     if (name.find("::") != name.npos) {
         std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
-        it = classes.find(qname);
-        if (it != classes.end()) {
-            ret.push_back(it->first);
+        if (containsKey(declaredClasses, qname)) {
+            ret.push_back(qname);
             return ret;
         }
     }
     else {
         std::string qname = prefixWithNamespace(contextNamespace, name);
-        it = classes.find(qname);
-        if (it != classes.end()) {
-            ret.push_back(it->first);
+        if (containsKey(declaredClasses, qname)) {
+            ret.push_back(qname);
             return ret;
         }
     }
-    size_t namelength = name.length();
-    for (it = classes.begin(); it != classes.end(); ++it) {
-        size_t l = it->first.length();
-        if (l >= namelength) {
-            size_t pos = l - namelength;
-            if ((pos == 0 || it->first[pos-1] == ':') && (it->first.substr(pos) == name)) {
-                ret.push_back(it->first);
-            }
-        }
+
+    std::string doubleColonPlusName = std::string("::") + name;
+    for (auto it : declaredClasses) {
+        std::string classQName = it.first;
+        if (classQName == name || opp_stringendswith(classQName.c_str(), doubleColonPlusName.c_str()))
+            ret.push_back(classQName);
     }
     return ret;
 }
@@ -134,60 +128,51 @@ MsgTypeTable::StringVector MsgTypeTable::lookupExistingClassName(const std::stri
 MsgTypeTable::StringVector MsgTypeTable::lookupExistingEnumName(const std::string& name, const std::string& contextNamespace)
 {
     StringVector ret;
-    std::map<std::string, std::string>::iterator it;
 
     if (name.empty()) {
-        // ret.push_back(name);
         return ret;
     }
 
     // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
     if (name.find("::") != name.npos) {
         std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
-        it = enums.find(qname);
-        if (it != enums.end()) {
-            ret.push_back(it->second);
+        if (contains(declaredEnums, qname)) {
+            ret.push_back(qname);
             return ret;
         }
     }
     else {
         std::string qname = prefixWithNamespace(contextNamespace, name);  // prefer name from local namespace
-        it = enums.find(qname);
-        if (it != enums.end()) {
-            ret.push_back(it->second);
+        if (contains(declaredEnums, qname)) {
+            ret.push_back(qname);
             return ret;
         }
     }
 
-    size_t namelength = name.length();
-    for (it = enums.begin(); it != enums.end(); ++it) {
-        size_t l = it->second.length();
-        if (l >= namelength) {
-            size_t pos = l - namelength;
-            if ((pos == 0 || it->second[pos-1] == ':') && (it->second.substr(pos) == name)) {
-                ret.push_back(it->second);
-            }
-        }
+    std::string doubleColonPlusName = std::string("::") + name;
+    for (auto enumQName : declaredEnums) {
+        if (enumQName == name || opp_stringendswith(enumQName.c_str(), doubleColonPlusName.c_str()))
+            ret.push_back(enumQName);
     }
     return ret;
 }
 
-void MsgTypeTable::addClassType(const std::string& classqname, ClassType type, NEDElement *context)
+void MsgTypeTable::addDeclaredClass(const std::string& qname, ClassType classType, NEDElement *context)
 {
-    if (classes.find(classqname) != classes.end()) {
-        if (classes[classqname] != type)
+    if (containsKey(declaredClasses, qname)) {
+        if (declaredClasses[qname] != classType)
             ; //TODO: errors->addError(context, "different declarations for '%s' are inconsistent\n", classqname.c_str());
     }
     else {
-        classes[classqname] = type;
+        declaredClasses[qname] = classType;
     }
 }
 
-MsgTypeTable::ClassType MsgTypeTable::getClassType(const std::string& classqname)
+MsgTypeTable::ClassType MsgTypeTable::getClassType(const std::string& qname)
 {
-    Assert(!classqname.empty() && classqname[0] != ':');  // must not start with "::"
-    std::map<std::string, ClassType>::iterator it = classes.find(classqname);
-    ClassType type = it != classes.end() ? it->second : ClassType::UNKNOWN;
+    Assert(!qname.empty() && qname[0] != ':');  // must not start with "::"
+    std::map<std::string, ClassType>::iterator it = declaredClasses.find(qname);
+    ClassType type = it != declaredClasses.end() ? it->second : ClassType::UNKNOWN;
     return type;
 }
 
