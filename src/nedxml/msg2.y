@@ -213,6 +213,23 @@ cplusplus
                   ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
                   storeBannerAndRightComments(ps.cplusplus,@1,@2);
                 }
+        | CPLUSPLUS '(' targetspec ')' CPLUSPLUSBODY opt_semicolon
+                {
+                  ps.cplusplus = (CplusplusElement *)createElementWithTag(NED_CPLUSPLUS, ps.msgfile );
+                  ps.cplusplus->setTarget(toString(@3));
+                  ps.cplusplus->setBody(toString(trimDoubleBraces(@5)));
+                  storeBannerAndRightComments(ps.cplusplus,@1,@5);
+                }
+        ;
+        ;
+
+targetspec
+        : targetspec targetitem
+        | targetitem
+        ;
+
+targetitem
+        : NAME | DOUBLECOLON | INTCONSTANT | ':' | '.' | ','
         ;
 
 /*

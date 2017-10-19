@@ -509,14 +509,17 @@ void MsgCppGenerator::process(MsgFileElement *fileElement, bool generateCode)
                 // print C++ block
                 if (generateCode) {
                     std::string body = ptr2str(child->getAttribute("body"));
+                    std::string target = ptr2str(child->getAttribute("target"));
                     body = body.substr(body.find_first_not_of("\r\n"));
                     size_t pos = body.find_last_not_of("\r\n");
                     if (pos != body.npos)
                         body = body.substr(0, pos+1);
-                    H << "// cplusplus {{\n"
-                            << body
-                            << "\n// }}\n\n"
-                            ;
+                    if (target == "" || target == "h")
+                        H << "// cplusplus {{\n" << body << "\n// }}\n\n";
+                    else if (target == "cc")
+                        CC << "// cplusplus {{\n" << body << "\n// }}\n\n";
+                    else
+                        errors->addError(child, "unrecognized target '%s' for cplusplus block", target.c_str());
                 }
                 break;
             }

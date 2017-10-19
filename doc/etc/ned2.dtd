@@ -200,8 +200,7 @@
 **
 -->
 
-<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
-                    import|
+<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|import|
                     struct-decl|class-decl|message-decl|packet-decl|enum-decl|
                     struct|class|message|packet|enum)*)>
 
@@ -215,6 +214,7 @@
 
 <!ELEMENT cplusplus (comment*)>
 <!ATTLIST cplusplus
+     target              CDATA     #IMPLIED
      body                CDATA     #REQUIRED>
 
 <!-- C++ type announcements -->
@@ -298,5 +298,4 @@
 <!ELEMENT unknown        ANY>
 <!ATTLIST unknown
      element             CDATA     #REQUIRED>
-
 
