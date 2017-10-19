@@ -7,7 +7,7 @@
     <para>
       The &Omnetpp; IDE lets you execute single simulations and simulation batches, and also
       to debug and, to some extent, profile simulations. You can choose whether you want
-      the simulation to run in graphical mode (using ``Tkenv'') or in console (using ``Cmdenv'');
+      the simulation to run in graphical mode (using ``Qtenv'') or in console (using ``Cmdenv'');
       which simulation configuration and run number to execute; whether to record an eventlog or not;
       and many other options.
     </para>
@@ -32,8 +32,7 @@
       Profiling support is based on the ``valgrind'' program, http://valgrind.org. Valgrind is
       a suite of tools for debugging and profiling on Linux. It can automatically detect various
       memory access and memory management bugs, and perform detailed profiling of your program.
-      Valgrind support is brought into the &Omnetpp; IDE by the Linux Tools Project of Eclipse,
-      currently in incubation state.
+      Valgrind support is brought into the &Omnetpp; IDE by the Linux Tools Project of Eclipse.
     </para>
   </sect1>
 
@@ -99,6 +98,14 @@
         A blank launch configuration is created; you can give it a name at the top of the form
         that appears.
       </para>
+      <para>
+         The launcher automatically decides whether the release or debug build of the model
+         should be started. When running, release mode binaries are used automatically.
+         For debugging, debug builds are started (i.e. those where the binary ends with [[_dbg]]
+         suffix.) Before starting the simulation, the launcher ensures that the binary is
+         up to date and triggers a build process (and changes also the active configuration)
+         if necessary.
+      </para>
       <picture file="pictures/Launch-RunDialog.png">The Simulation Launcher</picture>
       <para> The ``Main'' tab of the configuration dialog was designed to make the launching of simulations as
         easy as possible. The only required field is the Working directory; all others have defaults. If you
@@ -117,21 +124,17 @@
       </note>
       <itemizedlist>
         <listitem>
-          <para> ``Working directory'': Set it to your working directory. Several of the below entries are
-            treated as relative to this directory. Changing the working directory may invalidate previously
-            selected entries in other fields of the dialog.</para>
-        </listitem>
-        <listitem>
-          <para> ``Simulation program'': You must set the name of the simulation executable here. This path is
+          <para> ``Executable'': You must set the name of the simulation executable here. This path is
             relative to the workspace root. You may use the ``Browse...'' button to select the executable
             directly. If your project output is a shared library, select "opp_run". The launcher dialog will
             use the "opp_run" helper executable to launch your simulation in the shared library. Check whether
             the "Dynamic Libraries" field in the advanced section contains the libraries you want to load.
           </para>
-          <warning>
-            If you want to debug your simulation, be sure to select the 'debug' version of your executable
-            here.
-          </warning>
+        </listitem>
+        <listitem>
+          <para> ``Working directory'': Set it to your working directory. Several of the below entries are
+            treated as relative to this directory. Changing the working directory may invalidate previously
+            selected entries in other fields of the dialog.</para>
         </listitem>
         <listitem>
           <para> ``Initialization file(s)'': You should specify one or more INI files that will be used to launch the
@@ -140,7 +143,7 @@
         </listitem>
         <listitem>
           <para>
-            ``Configuration name'': Once you specify a legal INI file, the box will present all of the
+            ``Config name'': Once you specify a legal INI file, the box will present all of the
             Config sections in that file. In addition, it will display the description of that section and the
             information regarding which Config section is extended by this section. You may select which Configuration
             should be launched.
@@ -151,12 +154,14 @@
           </para>
         </listitem>
         <listitem>
-          <para> ``Run number'': It is possible to specify which run number(s) must be executed for the
+          <para> ``Runs'': It is possible to specify which run(s) must be executed for the
             simulation. If the executable name and the INI file were already selected, it is possible to hover
             above the field to get more information about the possible run numbers. You can use comma and .. to
             separate the run numbers; for example, 1,2,5..9,20 corresponds to run numbers 1,2,5,6,7,8,9,20.
-            Entering a single asterisk (*) corresponds to all run numbers. Running several simulations in this
-            manner is called batch execution. If you do not specify anything, Run 0 will be executed.
+            Entering a single asterisk (*) corresponds to all run numbers. If you do not specify anything,
+            Run 0 will be executed. It is also possible to specify run filters. These are boolean expression
+            involving constants and iteration variables (e.g. ``$numHosts&gt;5 and $numHosts&lt;10'').
+            Running several simulations in this manner is called batch execution.
           </para>
           <note>
             Batch execution is possible only if you run your program in the command line environment. The simulation
@@ -165,9 +170,21 @@
           </note>
         </listitem>
         <listitem>
-          <para>``Processes to run in parallel'': With batch execution, it is possible to tell the
-            launcher to keep two or more simulations running at a time. This way you can take advantage of
-            multiple CPUs or CPU cores.</para>
+          <para> ``User interface'': You can specify which UI environment should be used during execution;
+            currently command line (Cmdenv) and a QT based graphical runtime (Qtenv) is supported.
+            The executable must be linked with the correct UI library or the UI should be loaded dynamically.
+          </para>
+          <note>
+            Batch execution and progress feedback during execution is supported only for the command line
+            environment.
+          </note>
+        </listitem>
+        <listitem>
+          <para>``Allow multiple processes'': With batch execution, it is possible to tell the
+            launcher to keep two or more simulations running at a time or to start a new simulation process
+            after a certain number of runs executed. This way you can take advantage of
+            multiple CPUs or CPU cores. You can set the number of CPUs to use and the number of
+            runs to execute in a single process.</para>
           <note>
             This is usually an easier and more efficient way to exploit multiprocessing power than parallel
             simulation (PDES).
@@ -179,18 +196,21 @@
           </warning>
         </listitem>
         <listitem>
-          <para> ``User interface'': You can specify which UI environment should be used during execution;
-            currently command line (Cmdenv) and Tcl/Tk (Tkenv) is supported. The executable must be linked
-            with the correct UI library or the UI should be loaded dynamically.</para>
-          <note>
-            Batch execution and progress feedback during execution is supported only for the command line
-            environment.
-          </note>
+          <para>
+          ``Simulation time limit'' and ``CPU time limit'' can be set also to limit the runtime length
+          if the simulation from the launch dialog in case those were not set from the INI file.
+          </para>
         </listitem>
         <listitem>
-          <para>``Record Eventlog'': Choosing "Default" uses the settings specified in the INI file,
-            however you may explicitly enable or disable simulation event logging. This is useful if you want
-            to temporarily switch the logging on or off.</para>
+          <para>``Output options'': Various options can be set regarding simulation output. These checkboxes
+            have three state: On, Off and Default (grayed.) Choosing "Default" uses the settings specified
+            in the INI file, however you may explicitly enable or disable the option overriding the INI setting.
+            This is useful if you want to temporarily switch the option on or off.</para>
+        </listitem>
+        <listitem>
+          <para>
+            Clicking on the ``More &gt;&gt;&gt;'' link will reveal additional (rarely used) controls.
+          </para>
         </listitem>
         <listitem>
           <para>
@@ -202,13 +222,13 @@
             etc.). The special macro [[${opp_shared_libs:/workingdir}]] expands to all shared libraries
             provided by the current project or any other project on which you currently depend.
           </para>
-          <note>If
-            your simulation is built as a shared library, you must use the "opp_run" stub executable to start
-            it. opp_run is basically an empty &Omnetpp;
+          <note>
+            If your simulation is built as a shared library, you must use the "opp_run" stub executable
+            to start it. opp_run is basically an empty &Omnetpp;
             executable which understands all command line options, but does not contain any simulation code.
           </note>
-          <warning>If
-            you use external shared libraries (i.e. libraries other than the ones provided by the current open
+          <warning>
+            If you use external shared libraries (i.e. libraries other than the ones provided by the current open
             projects or &Omnetpp;
             itself), you must ensure that the executable part has access to the shared library. On Windows, you
             must set the [[PATH]], while on Linux and Mac you must set the [[LD_LIBRARY_PATH]] to point to the
@@ -228,13 +248,20 @@
           </para>
         </listitem>
         <listitem>
+          <para> ``Image path'': A path that is used to load images and icons in the model.
+          </para>
+        </listitem>
+        <listitem>
           <para> ``Additional arguments'': Other command line argument can be specified here and will be
             passed to the simulation process.</para>
         </listitem>
         <listitem>
-          <para> ``Show Debug View on Launch'': This is a convenience function that allows the user to open the Debug View on simulation
-            execution. ``Debug View'' allows you to see and terminate the processes you have launched and
-            gives you the option to switch between their outputs in the console view.</para>
+          <para>
+            ``Build before launch'': This section allows you to configure the behavior of
+            automatic build before launching. Build scope can be set either to build ``this project and all
+            its dependencies'', ``this project only'' or we can turn of autobuild before launch.
+            Active configuration switching on build can be also configured here (Ask, Switch, Never switch.)
+          </para>
         </listitem>
       </itemizedlist>
       <sect3>
@@ -251,7 +278,7 @@
             <para>Configuration name: adds a [[-c &lt;configname&gt;]] option</para>
           </listitem>
           <listitem>
-            <para>Run number: adds a [[-r &lt;runnumber&gt;]] option</para>
+            <para>Run number: adds a [[-r &lt;runnumber/filter&gt;]] option</para>
           </listitem>
           <listitem>
             <para>User interface: adds a [[-u &lt;userinterface&gt;]] option</para>
@@ -271,12 +298,8 @@
   <sect1>
     <title>Batch Execution</title>
     <para>
-      In previous versions of &Omnetpp;, to run a simulation several times with different
-      parameters, you had to create an external script that created an INI file for each
-      run and started the simulation with the specified file. In &Omnetpp; 4.x, it is no
-      longer needed. The improved INI file syntax allows you to specify loops for
-      specific parameters so you no longer need separate INI files for each run. In
-      addition, the IDE itself supports starting your simulation several times.
+      &Omnetpp; INI files allow you to run a simulation several times with different
+      parameters. You can specify loops or constraint conditions for specific parameters.
     </para>
     <picture file="pictures/Launch-BatchRun.png">
       Iteration variable in the INI file
@@ -289,7 +312,8 @@
       to each product. It is possible to execute one, several or all runs of the simulation
       by specifying the ``Run number''
       field in the ``Run Dialog''. You can specify a single number (e.g. 3), a combination
-      of several numbers (e.g. 2,3,6,7..11) or all run numbers (using *).
+      of several numbers (e.g. 2,3,6,7..11), all run numbers (using *) or boolean expressions
+      using contstants and iteration variables (e.g. ``$numHosts&gt;5 and $numHosts&lt;10''.)
     </para>
     <tip>
       If you already have specified your executable, chosen the configuration which should be
@@ -329,8 +353,9 @@
         only you have to select the ``Debug'' toolbar icon or menu item instead on ``Run''.
         The same launch configurations are used for debugging that for running, that is,
         if you open the ``Debug Configurations...'' dialog, you will see the same launch
-        configurations as in the ``Run'' dialog. The dialog will have extra tab pages where
-        you can configure the debugger and other details.
+        configurations as in the ``Run'' dialog. The launcher is automatically using the
+        debug build of the model (i.e. the executable that has a [[_dbg]] suffix.)
+        The dialog will have extra tab pages where you can configure the debugger and other details.
       </para>
       <note>
         If you have problems with starting the debug session, check whether:
@@ -338,7 +363,7 @@
           <listitem>your executable is built with debug information,</listitem>
           <listitem>
             you can run the same executable without problem (using the same launch
-            configuration), and
+            configuration, but with adding a [[_dbg]] suffix to the executable name), and
           </listitem>
           <listitem>
             the debugger type is set properly on the ``Debugger'' tab of the ``Launch'' dialog.
@@ -398,10 +423,6 @@
         script, [[.gdbinit]] (or some [[.gdbinit.py]] script, because gdb allows startup
         scripts to be written in Python, too).
       </para>
-      <warning>
-        <para>Pretty printers are not available on Mac OS X, because OS X ships with an older gdb
-        version that predates the addition of Python pretty printer support.</para>
-      </warning>
       <para>
         The &Omnetpp; IDE comes with pretty printers for container classes in the
         standard C++ library ([[std::map&lt;T&gt;]], [[std::vector&lt;T&gt;]], etc.)
