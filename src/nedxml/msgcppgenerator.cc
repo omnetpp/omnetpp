@@ -643,26 +643,26 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_FIELD: {
-                FieldInfo f;
-                f.nedElement = child;
-                f.fname = ptr2str(child->getAttribute("name"));
-                f.datatype = ptr2str(child->getAttribute("data-type"));  // ha ez nincs, eltunnek a struct mezoi....
-                f.ftype = ptr2str(child->getAttribute("data-type"));
-                f.fval = ptr2str(child->getAttribute("default-value"));
-                f.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
-                f.fispointer = (f.ftype[f.ftype.length()-1] == '*');
-                if (f.fispointer) {
-                    f.ftype = f.ftype.substr(0, f.ftype.find_last_not_of(" \t*")+1);
+                FieldInfo field;
+                field.nedElement = child;
+                field.fname = ptr2str(child->getAttribute("name"));
+                field.datatype = ptr2str(child->getAttribute("data-type"));  // ha ez nincs, eltunnek a struct mezoi....
+                field.ftype = ptr2str(child->getAttribute("data-type"));
+                field.fval = ptr2str(child->getAttribute("default-value"));
+                field.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
+                field.fispointer = (field.ftype[field.ftype.length()-1] == '*');
+                if (field.fispointer) {
+                    field.ftype = field.ftype.substr(0, field.ftype.find_last_not_of(" \t*")+1);
                 }
-                f.fisarray = ptr2str(child->getAttribute("is-vector")) == "true";
-                f.farraysize = ptr2str(child->getAttribute("vector-size"));
+                field.fisarray = ptr2str(child->getAttribute("is-vector")) == "true";
+                field.farraysize = ptr2str(child->getAttribute("vector-size"));
 
-                f.fprops = extractPropertiesOf(child);
+                field.fprops = extractPropertiesOf(child);
 
-                if (f.ftype.empty())
-                    classInfo.baseclassFieldlist.push_back(f);
+                if (field.ftype.empty())
+                    classInfo.baseclassFieldlist.push_back(field);
                 else
-                    classInfo.fieldlist.push_back(f);
+                    classInfo.fieldlist.push_back(field);
                 break;
             }
 
@@ -689,323 +689,323 @@ MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
     return classInfo;
 }
 
-void MsgCppGenerator::analyzeField(ClassInfo& info, FieldInfo *it)
+void MsgCppGenerator::analyzeField(ClassInfo& classInfo, FieldInfo *field)
 {
-    if (it->fisabstract && !info.gap) {
-        errors->addError(it->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", info.msgname.c_str());
+    if (field->fisabstract && !classInfo.gap) {
+        errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", classInfo.msgname.c_str());
     }
 
     // determine field data type
-    auto tdIt = typeTable.PRIMITIVE_TYPES.find(it->ftype);
+    auto tdIt = typeTable.PRIMITIVE_TYPES.find(field->ftype);
     if (tdIt != typeTable.PRIMITIVE_TYPES.end()) {
-        it->fisprimitivetype = true;
-        it->ftypeqname = "";  // unused
-        it->classtype = ClassType::NONCOBJECT;
+        field->fisprimitivetype = true;
+        field->ftypeqname = "";  // unused
+        field->classtype = ClassType::NONCOBJECT;
     }
-    else if (it->ftype.empty()) {
+    else if (field->ftype.empty()) {
         // base class field assignment
-        it->classtype = ClassType::UNKNOWN;
-        it->fisprimitivetype = false; //FIXME we don't know
+        field->classtype = ClassType::UNKNOWN;
+        field->fisprimitivetype = false; //FIXME we don't know
     }
     else {
-        it->fisprimitivetype = false;
+        field->fisprimitivetype = false;
 
         // $ftypeqname
-        StringVector found = typeTable.lookupExistingClassName(it->ftype, namespaceName);
+        StringVector found = typeTable.lookupExistingClassName(field->ftype, namespaceName);
         if (found.size() == 1) {
-            it->ftypeqname = found[0];
+            field->ftypeqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
-            it->ftypeqname = "omnetpp::cObject";
+            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+            field->ftypeqname = "omnetpp::cObject";
         }
         else {
-            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
-            it->ftypeqname = found[0];
+            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
+            field->ftypeqname = found[0];
         }
 
-        it->classtype = typeTable.getClassType(it->ftypeqname);
+        field->classtype = typeTable.getClassType(field->ftypeqname);
 
-        if (it->ftypeqname != "omnetpp::cObject")
-            it->ftypeqname = str("::") + it->ftypeqname; //FIXME why, really?
+        if (field->ftypeqname != "omnetpp::cObject")
+            field->ftypeqname = str("::") + field->ftypeqname; //FIXME why, really?
     }
 
-    if (info.generate_class) {
-        if (it->classtype == ClassType::COWNEDOBJECT && !(info.classtype == ClassType::COBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COWNEDOBJECT)) {
-            errors->addError(it->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+    if (classInfo.generate_class) {
+        if (field->classtype == ClassType::COWNEDOBJECT && !(classInfo.classtype == ClassType::COBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COWNEDOBJECT)) {
+            errors->addError(field->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
         }
     }
 
-    if (it->fisarray && it->farraysize.empty() && !it->fval.empty())
-        errors->addError(it->nedElement, "unaccepted default value for variable length vector field '%s %s' in class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
-    if (it->fispointer) {
-        if (it->fval.empty())
-            it->fval = "nullptr";
+    if (field->fisarray && field->farraysize.empty() && !field->fval.empty())
+        errors->addError(field->nedElement, "unaccepted default value for variable length vector field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+    if (field->fispointer) {
+        if (field->fval.empty())
+            field->fval = "nullptr";
     }
-    it->fnopack = getPropertyAsBool(it->fprops, "nopack", false);
-    it->feditable = getPropertyAsBool(it->fprops, "editable", false);
-    it->editNotDisabled = getPropertyAsBool(it->fprops, "editable", true);
-    it->fopaque = getPropertyAsBool(it->fprops, "opaque", false);
-    it->overrideGetter = getPropertyAsBool(it->fprops, "overridegetter", false) || getPropertyAsBool(it->fprops, "override", false);
-    it->overrideSetter = getPropertyAsBool(it->fprops, "overridesetter", false) || getPropertyAsBool(it->fprops, "override", false);
-    it->tostring = getProperty(it->fprops, "tostring", "");
-    it->fromstring = getProperty(it->fprops, "fromstring", "");
-    if (hasProperty(it->fprops, "byvalue")) {
-        if (it->fispointer)
-            errors->addError(it->nedElement, "unaccepted @byvalue property for pointer field '%s %s' in class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
-        else if (it->fisprimitivetype)
-            errors->addError(it->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+    field->fnopack = getPropertyAsBool(field->fprops, "nopack", false);
+    field->feditable = getPropertyAsBool(field->fprops, "editable", false);
+    field->editNotDisabled = getPropertyAsBool(field->fprops, "editable", true);
+    field->fopaque = getPropertyAsBool(field->fprops, "opaque", false);
+    field->overrideGetter = getPropertyAsBool(field->fprops, "overridegetter", false) || getPropertyAsBool(field->fprops, "override", false);
+    field->overrideSetter = getPropertyAsBool(field->fprops, "overridesetter", false) || getPropertyAsBool(field->fprops, "override", false);
+    field->tostring = getProperty(field->fprops, "tostring", "");
+    field->fromstring = getProperty(field->fprops, "fromstring", "");
+    if (hasProperty(field->fprops, "byvalue")) {
+        if (field->fispointer)
+            errors->addError(field->nedElement, "unaccepted @byvalue property for pointer field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+        else if (field->fisprimitivetype)
+            errors->addError(field->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
     }
-    it->byvalue = getPropertyAsBool(it->fprops, "byvalue", it->fisprimitivetype);
+    field->byvalue = getPropertyAsBool(field->fprops, "byvalue", field->fisprimitivetype);
 
     // resolve enum namespace
-    it->enumname = getProperty(it->fprops, "enum");
-    if (!it->enumname.empty()) {
-        StringVector found = typeTable.lookupExistingEnumName(it->enumname, namespaceName);
+    field->enumname = getProperty(field->fprops, "enum");
+    if (!field->enumname.empty()) {
+        StringVector found = typeTable.lookupExistingEnumName(field->enumname, namespaceName);
         if (found.size() == 1) {
-            it->enumqname = found[0];
+            field->enumqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(it->nedElement, "undeclared enum '%s' in field '%s' in '%s'\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str());
-            it->enumqname = "";
-            CC << "\n\n/*\n Undeclared enum: " << it->enumname << "\n";
+            errors->addError(field->nedElement, "undeclared enum '%s' in field '%s' in '%s'\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+            field->enumqname = "";
+            CC << "\n\n/*\n Undeclared enum: " << field->enumname << "\n";
             CC << "  Declared enums:\n";
             for (auto & x : typeTable.enums)
                 CC << "    " << x.first << " : " << x.second << "\n";
             CC << "\n*/\n\n";
         }
         else {
-            errors->addWarning(it->nedElement, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
-            it->enumqname = found[0];
+            errors->addWarning(field->nedElement, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
+            field->enumqname = found[0];
         }
-        it->fprops["enum"] = it->enumqname;  // need to modify the property in place
-        if (it->tostring.empty())
-            it->tostring = str("enum2string($, \"") + it->enumqname + "\")";
-        if (it->fromstring.empty())
-            it->fromstring = str("(") + it->enumqname + ")string2enum($, \"" + it->enumqname + "\")";
+        field->fprops["enum"] = field->enumqname;  // need to modify the property in place
+        if (field->tostring.empty())
+            field->tostring = str("enum2string($, \"") + field->enumqname + "\")";
+        if (field->fromstring.empty())
+            field->fromstring = str("(") + field->enumqname + ")string2enum($, \"" + field->enumqname + "\")";
     }
 
     // variable name
-    if (info.classtype == ClassType::STRUCT) {
-        it->var = it->fname;
+    if (classInfo.classtype == ClassType::STRUCT) {
+        field->var = field->fname;
     }
     else {
-        it->var = it->fname + info.fieldnamesuffix;
-        it->argname = it->fname;
+        field->var = field->fname + classInfo.fieldnamesuffix;
+        field->argname = field->fname;
     }
 
-    if (it->fispointer) {
-        it->fisownedpointer = getPropertyAsBool(it->fprops, "owned", it->classtype == ClassType::COWNEDOBJECT);
+    if (field->fispointer) {
+        field->fisownedpointer = getPropertyAsBool(field->fprops, "owned", field->classtype == ClassType::COWNEDOBJECT);
     }
     else
-        it->fisownedpointer = false;
+        field->fisownedpointer = false;
 
-    it->varsize = it->farraysize.empty() ? (it->fname + "_arraysize") : it->farraysize;
-    std::string sizetypeprop = getProperty(it->fprops, "sizetype");
-    it->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
+    field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
+    std::string sizetypeprop = getProperty(field->fprops, "sizetype");
+    field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // default method names
-    if (info.classtype != ClassType::STRUCT) {
-        std::string capfieldname = it->fname;
+    if (classInfo.classtype != ClassType::STRUCT) {
+        std::string capfieldname = field->fname;
         capfieldname[0] = toupper(capfieldname[0]);
-        it->setter = str("set") + capfieldname;
-        it->remover = str("remove") + capfieldname;
-        it->alloc = str("set") + capfieldname + "ArraySize";
-        if (info.omitgetverb) {
-            it->getter = it->fname;
-            it->getsize = it->fname + "ArraySize";
+        field->setter = str("set") + capfieldname;
+        field->remover = str("remove") + capfieldname;
+        field->alloc = str("set") + capfieldname + "ArraySize";
+        if (classInfo.omitgetverb) {
+            field->getter = field->fname;
+            field->getsize = field->fname + "ArraySize";
         }
         else {
-            it->getter = str("get") + capfieldname;
-            it->mGetter = str("get") + capfieldname;             //TODO "get" (for compatibility) or "getMutable"  or "access"
-            it->getsize = str("get") + capfieldname + "ArraySize";
+            field->getter = str("get") + capfieldname;
+            field->mGetter = str("get") + capfieldname;             //TODO "get" (for compatibility) or "getMutable"  or "access"
+            field->getsize = str("get") + capfieldname + "ArraySize";
         }
 
         // allow customization of names
-        if (getProperty(it->fprops, "setter") != "") {
-            it->setter = getProperty(it->fprops, "setter");
+        if (getProperty(field->fprops, "setter") != "") {
+            field->setter = getProperty(field->fprops, "setter");
         }
-        if (getProperty(it->fprops, "getter") != "") {
-            it->getter = getProperty(it->fprops, "getter");
+        if (getProperty(field->fprops, "getter") != "") {
+            field->getter = getProperty(field->fprops, "getter");
         }
-        it->mGetter = it->getter;
-        if (getProperty(it->fprops, "mgetter") != "") {
-            it->mGetter = getProperty(it->fprops, "mgetter");
+        field->mGetter = field->getter;
+        if (getProperty(field->fprops, "mgetter") != "") {
+            field->mGetter = getProperty(field->fprops, "mgetter");
         }
-        if (getProperty(it->fprops, "sizeSetter") != "") {
-            it->alloc = getProperty(it->fprops, "sizeSetter");
+        if (getProperty(field->fprops, "sizeSetter") != "") {
+            field->alloc = getProperty(field->fprops, "sizeSetter");
         }
-        if (getProperty(it->fprops, "sizeGetter") != "") {
-            it->getsize = getProperty(it->fprops, "sizeGetter");
+        if (getProperty(field->fprops, "sizeGetter") != "") {
+            field->getsize = getProperty(field->fprops, "sizeGetter");
         }
     }
 
     // data type, argument type, conversion to/from string...
-    it->maybe_c_str = "";
-    if (!it->fisprimitivetype) {
-        if (it->fispointer) {
-            it->datatype = it->ftype + " *";
-            it->argtype = it->datatype;
-            it->rettype = it->datatype;
+    field->maybe_c_str = "";
+    if (!field->fisprimitivetype) {
+        if (field->fispointer) {
+            field->datatype = field->ftype + " *";
+            field->argtype = field->datatype;
+            field->rettype = field->datatype;
         }
-        else if (it->byvalue) {
-            it->datatype = it->ftype;
-            it->argtype = it->datatype;
-            it->rettype = it->datatype;
+        else if (field->byvalue) {
+            field->datatype = field->ftype;
+            field->argtype = field->datatype;
+            field->rettype = field->datatype;
         }
         else {
-            it->datatype = it->ftype;
-            it->argtype = str("const ") + it->ftype + "&";
-            it->rettype = it->ftype + "&";
+            field->datatype = field->ftype;
+            field->argtype = str("const ") + field->ftype + "&";
+            field->rettype = field->ftype + "&";
         }
     }
     else {
         if (tdIt == typeTable.PRIMITIVE_TYPES.end())
-            throw NEDException("Internal error - unknown primitive data type '%s'", it->ftype.c_str());
+            throw NEDException("Internal error - unknown primitive data type '%s'", field->ftype.c_str());
         // defaults:
-        it->datatype = tdIt->second.cppTypeName;
-        it->argtype = tdIt->second.cppTypeName;
-        it->rettype = tdIt->second.cppTypeName;
-        if (it->fval.empty())
-            it->fval = tdIt->second.emptyValue;
-        if (it->tostring.empty())
-            it->tostring = tdIt->second.tostring;
-        if (it->fromstring.empty())
-            it->fromstring = tdIt->second.fromstring;
+        field->datatype = tdIt->second.cppTypeName;
+        field->argtype = tdIt->second.cppTypeName;
+        field->rettype = tdIt->second.cppTypeName;
+        if (field->fval.empty())
+            field->fval = tdIt->second.emptyValue;
+        if (field->tostring.empty())
+            field->tostring = tdIt->second.tostring;
+        if (field->fromstring.empty())
+            field->fromstring = tdIt->second.fromstring;
 
-        if (it->ftype == "string") {
-            it->argtype = "const char *";
-            it->rettype = "const char *";
-            it->maybe_c_str = ".c_str()";
+        if (field->ftype == "string") {
+            field->argtype = "const char *";
+            field->rettype = "const char *";
+            field->maybe_c_str = ".c_str()";
         }
     }
 }
 
-void MsgCppGenerator::analyze(ClassInfo& info)
+void MsgCppGenerator::analyze(ClassInfo& classInfo)
 {
-    info.msgqname = prefixWithNamespace(info.msgname);
+    classInfo.msgqname = prefixWithNamespace(classInfo.msgname);
 
     // determine info.msgbaseqname
-    if (info.msgbase != "void") {
-        StringVector found = typeTable.lookupExistingClassName(info.msgbase, namespaceName);
+    if (classInfo.msgbase != "void") {
+        StringVector found = typeTable.lookupExistingClassName(classInfo.msgbase, namespaceName);
         if (found.size() == 1) {
-            info.msgbaseqname = found[0];
+            classInfo.msgbaseqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(info.nedElement, "'%s': unknown base class '%s', available classes '%s'", info.msgname.c_str(), info.msgbase.c_str(), join(omnetpp::common::keys(typeTable.classes), "','").c_str());
-            info.msgbaseqname = "omnetpp::cMessage";
+            errors->addError(classInfo.nedElement, "'%s': unknown base class '%s', available classes '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(omnetpp::common::keys(typeTable.classes), "','").c_str());
+            classInfo.msgbaseqname = "omnetpp::cMessage";
         }
         else {
-            errors->addError(info.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
-                    info.msgname.c_str(), info.msgbase.c_str(), join(found, "','").c_str());
-            info.msgbaseqname = found[0];
+            errors->addError(classInfo.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
+                    classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(found, "','").c_str());
+            classInfo.msgbaseqname = found[0];
         }
     }
 
     // check base class and determine type of object
-    if (info.msgqname == "omnetpp::cObject" || info.msgqname == "omnetpp::cNamedObject" || info.msgqname == "omnetpp::cOwnedObject") {
-        info.classtype = typeTable.getClassType(info.msgqname);  // only for sim_std.msg
+    if (classInfo.msgqname == "omnetpp::cObject" || classInfo.msgqname == "omnetpp::cNamedObject" || classInfo.msgqname == "omnetpp::cOwnedObject") {
+        classInfo.classtype = typeTable.getClassType(classInfo.msgqname);  // only for sim_std.msg
     }
-    else if (info.msgbase == "") {
-        if (info.keyword == "message" || info.keyword == "packet") {
-            info.classtype = ClassType::COWNEDOBJECT;
+    else if (classInfo.msgbase == "") {
+        if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
+            classInfo.classtype = ClassType::COWNEDOBJECT;
         }
-        else if (info.keyword == "class") {
-            info.classtype = ClassType::COBJECT;  // Note: we never generate non-cObject classes
+        else if (classInfo.keyword == "class") {
+            classInfo.classtype = ClassType::COBJECT;  // Note: we never generate non-cObject classes
         }
-        else if (info.keyword == "struct") {
-            info.classtype = ClassType::STRUCT;
+        else if (classInfo.keyword == "struct") {
+            classInfo.classtype = ClassType::STRUCT;
         }
         else {
-            throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
+            throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", classInfo.keyword.c_str(), classInfo.msgclass.c_str());
         }
         // if announced earlier as noncobject, accept that.
-        if (typeTable.isClassDeclared(info.msgqname)) {
-            if (typeTable.getClassType(info.msgqname) == ClassType::NONCOBJECT && info.classtype == ClassType::COBJECT) {
-                info.classtype = ClassType::NONCOBJECT;
+        if (typeTable.isClassDeclared(classInfo.msgqname)) {
+            if (typeTable.getClassType(classInfo.msgqname) == ClassType::NONCOBJECT && classInfo.classtype == ClassType::COBJECT) {
+                classInfo.classtype = ClassType::NONCOBJECT;
             }
         }
     }
-    else if (info.msgbase == "void") {
-        info.classtype = ClassType::NONCOBJECT;
+    else if (classInfo.msgbase == "void") {
+        classInfo.classtype = ClassType::NONCOBJECT;
     }
-    else if (info.msgbaseqname != "") {
-        info.classtype = typeTable.getClassType(info.msgbaseqname);
+    else if (classInfo.msgbaseqname != "") {
+        classInfo.classtype = typeTable.getClassType(classInfo.msgbaseqname);
     }
     else {
-        errors->addError(info.nedElement, "unknown base class '%s' for '%s'\n", info.msgbase.c_str(), info.msgname.c_str());
-        info.classtype = ClassType::COBJECT;
+        errors->addError(classInfo.nedElement, "unknown base class '%s' for '%s'\n", classInfo.msgbase.c_str(), classInfo.msgname.c_str());
+        classInfo.classtype = ClassType::COBJECT;
     }
 
     // check earlier declarations and register this class
-    if (typeTable.isClassDeclared(info.msgqname) && false) // XXX add condition
-        errors->addError(info.nedElement, "attempt to redefine '%s'\n", info.msgname.c_str());
-    typeTable.addClassType(info.msgqname, info.classtype, info.nedElement);
+    if (typeTable.isClassDeclared(classInfo.msgqname) && false) // XXX add condition
+        errors->addError(classInfo.nedElement, "attempt to redefine '%s'\n", classInfo.msgname.c_str());
+    typeTable.addClassType(classInfo.msgqname, classInfo.classtype, classInfo.nedElement);
 
     //
     // produce all sorts of derived names
     //
-    info.generate_class = opts.generateClasses && !getPropertyAsBool(info.props, "existingClass", false);
-    info.generate_descriptor = opts.generateDescriptors && getPropertyAsBool(info.props, "descriptor", true);
-    info.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(info.props, "descriptor") != "readonly");
+    classInfo.generate_class = opts.generateClasses && !getPropertyAsBool(classInfo.props, "existingClass", false);
+    classInfo.generate_descriptor = opts.generateDescriptors && getPropertyAsBool(classInfo.props, "descriptor", true);
+    classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, "descriptor") != "readonly");
 
-    if (getPropertyAsBool(info.props, "customize", false)) {
-        info.gap = 1;
-        info.msgclass = info.msgname + "_Base";
-        info.realmsgclass = info.msgname;
-        info.msgdescclass = makeIdentifier(info.realmsgclass) + "Descriptor";
+    if (getPropertyAsBool(classInfo.props, "customize", false)) {
+        classInfo.gap = 1;
+        classInfo.msgclass = classInfo.msgname + "_Base";
+        classInfo.realmsgclass = classInfo.msgname;
+        classInfo.msgdescclass = makeIdentifier(classInfo.realmsgclass) + "Descriptor";
     }
     else {
-        info.gap = 0;
-        info.msgclass = info.msgname;
-        info.realmsgclass = info.msgname;
-        info.msgdescclass = makeIdentifier(info.msgclass) + "Descriptor";
+        classInfo.gap = 0;
+        classInfo.msgclass = classInfo.msgname;
+        classInfo.realmsgclass = classInfo.msgname;
+        classInfo.msgdescclass = makeIdentifier(classInfo.msgclass) + "Descriptor";
     }
-    if (info.msgbase == "") {
-        if (info.msgqname == "omnetpp::cObject") {
-            info.msgbaseclass = "";
+    if (classInfo.msgbase == "") {
+        if (classInfo.msgqname == "omnetpp::cObject") {
+            classInfo.msgbaseclass = "";
         }
-        else if (info.keyword == "message") {
-            info.msgbaseclass = "omnetpp::cMessage";
+        else if (classInfo.keyword == "message") {
+            classInfo.msgbaseclass = "omnetpp::cMessage";
         }
-        else if (info.keyword == "packet") {
-            info.msgbaseclass = "omnetpp::cPacket";
+        else if (classInfo.keyword == "packet") {
+            classInfo.msgbaseclass = "omnetpp::cPacket";
         }
-        else if (info.keyword == "class") {
-            info.msgbaseclass = "omnetpp::cObject";  // note: all classes we generate subclass from cObject!
+        else if (classInfo.keyword == "class") {
+            classInfo.msgbaseclass = "omnetpp::cObject";  // note: all classes we generate subclass from cObject!
         }
-        else if (info.keyword == "struct") {
-            info.msgbaseclass = "";
+        else if (classInfo.keyword == "struct") {
+            classInfo.msgbaseclass = "";
         }
         else {
             throw NEDException("Internal error");
         }
     }
-    else if (info.msgbase == "void") {
-        info.msgbaseclass = "";
+    else if (classInfo.msgbase == "void") {
+        classInfo.msgbaseclass = "";
     }
     else {
-        info.msgbaseclass = info.msgbaseqname;
+        classInfo.msgbaseclass = classInfo.msgbaseqname;
     }
 
-    info.omitgetverb = getPropertyAsBool(info.props, "omitGetVerb", false);
-    info.fieldnamesuffix = getProperty(info.props, "fieldNameSuffix", "");
-    if (info.omitgetverb && info.fieldnamesuffix.empty()) {
-        errors->addWarning(info.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
+    classInfo.omitgetverb = getPropertyAsBool(classInfo.props, "omitGetVerb", false);
+    classInfo.fieldnamesuffix = getProperty(classInfo.props, "fieldNameSuffix", "");
+    if (classInfo.omitgetverb && classInfo.fieldnamesuffix.empty()) {
+        errors->addWarning(classInfo.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
                                             "adding '_var' suffix to data members to prevent name conflict between them and getter methods\n");
-        info.fieldnamesuffix = "_var";
+        classInfo.fieldnamesuffix = "_var";
     }
 
-    std::string s = getProperty(info.props, "implements");
+    std::string s = getProperty(classInfo.props, "implements");
     if (!s.empty()) {
-        info.implements = StringTokenizer(s.c_str(), ",").asVector();
+        classInfo.implements = StringTokenizer(s.c_str(), ",").asVector();
     }
 
-    for (ClassInfo::Fieldlist::iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        analyzeField(info, &(*it));
+    for (auto& field : classInfo.fieldlist) {
+        analyzeField(classInfo, &field);
     }
-    for (ClassInfo::Fieldlist::iterator it = info.baseclassFieldlist.begin(); it != info.baseclassFieldlist.end(); ++it) {
-        analyzeField(info, &(*it));
+    for (auto& field :  classInfo.baseclassFieldlist) {
+        analyzeField(classInfo, &field);
     }
 }
 
@@ -1023,246 +1023,246 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
     return o.str();
 }
 
-void MsgCppGenerator::generateClass(const ClassInfo& info)
+void MsgCppGenerator::generateClass(const ClassInfo& classInfo)
 {
-    if (isQualified(info.msgclass)) {
-        errors->addError(info.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", info.msgclass.c_str());
+    if (isQualified(classInfo.msgclass)) {
+        errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", classInfo.msgclass.c_str());
         return;
     }
 
     H << "/**\n";
-    H << " * Class generated from <tt>" << SL(info.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
-    H << generatePreComment(info.nedElement);
+    H << " * Class generated from <tt>" << SL(classInfo.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
+    H << generatePreComment(classInfo.nedElement);
 
-    if (info.gap) {
+    if (classInfo.gap) {
         H << " *\n";
-        H << " * " << info.msgclass << " is only useful if it gets subclassed, and " << info.realmsgclass << " is derived from it.\n";
-        H << " * The minimum code to be written for " << info.realmsgclass << " is the following:\n";
+        H << " * " << classInfo.msgclass << " is only useful if it gets subclassed, and " << classInfo.realmsgclass << " is derived from it.\n";
+        H << " * The minimum code to be written for " << classInfo.realmsgclass << " is the following:\n";
         H << " *\n";
         H << " * <pre>\n";
-        H << " * class " << TS(opts.exportDef) << info.realmsgclass << " : public " << info.msgclass << "\n";
+        H << " * class " << TS(opts.exportDef) << classInfo.realmsgclass << " : public " << classInfo.msgclass << "\n";
         H << " * {\n";
         H << " *   private:\n";
-        H << " *     void copy(const " << info.realmsgclass << "& other) { ... }\n\n";
+        H << " *     void copy(const " << classInfo.realmsgclass << "& other) { ... }\n\n";
         H << " *   public:\n";
-        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT) {
-            if (info.keyword == "message" || info.keyword == "packet") {
-                H << " *     " << info.realmsgclass << "(const char *name=nullptr, short kind=0) : " << info.msgclass << "(name,kind) {}\n";
+        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT) {
+            if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
+                H << " *     " << classInfo.realmsgclass << "(const char *name=nullptr, short kind=0) : " << classInfo.msgclass << "(name,kind) {}\n";
             }
             else {
-                H << " *     " << info.realmsgclass << "(const char *name=nullptr) : " << info.msgclass << "(name) {}\n";
+                H << " *     " << classInfo.realmsgclass << "(const char *name=nullptr) : " << classInfo.msgclass << "(name) {}\n";
             }
         }
         else {
-            H << " *     " << info.realmsgclass << "() : " << info.msgclass << "() {}\n";
+            H << " *     " << classInfo.realmsgclass << "() : " << classInfo.msgclass << "() {}\n";
         }
-        H << " *     " << info.realmsgclass << "(const " << info.realmsgclass << "& other) : " << info.msgclass << "(other) {copy(other);}\n";
-        H << " *     " << info.realmsgclass << "& operator=(const " << info.realmsgclass << "& other) {if (this==&other) return *this; " << info.msgclass << "::operator=(other); copy(other); return *this;}\n";
-        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
-            H << " *     virtual " << info.realmsgclass << " *dup() const override {return new " << info.realmsgclass << "(*this);}\n";
+        H << " *     " << classInfo.realmsgclass << "(const " << classInfo.realmsgclass << "& other) : " << classInfo.msgclass << "(other) {copy(other);}\n";
+        H << " *     " << classInfo.realmsgclass << "& operator=(const " << classInfo.realmsgclass << "& other) {if (this==&other) return *this; " << classInfo.msgclass << "::operator=(other); copy(other); return *this;}\n";
+        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+            H << " *     virtual " << classInfo.realmsgclass << " *dup() const override {return new " << classInfo.realmsgclass << "(*this);}\n";
         }
-        H << " *     // ADD CODE HERE to redefine and implement pure virtual functions from " << info.msgclass << "\n";
+        H << " *     // ADD CODE HERE to redefine and implement pure virtual functions from " << classInfo.msgclass << "\n";
         H << " * };\n";
         H << " * </pre>\n";
-        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
+        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
             H << " *\n";
             H << " * The following should go into a .cc (.cpp) file:\n";
             H << " *\n";
             H << " * <pre>\n";
-            H << " * Register_Class(" << info.realmsgclass << ")\n";
+            H << " * Register_Class(" << classInfo.realmsgclass << ")\n";
             H << " * </pre>\n";
         }
     }
     H << " */\n";
 
-    H << "class " << TS(opts.exportDef) << info.msgclass;
+    H << "class " << TS(opts.exportDef) << classInfo.msgclass;
     const char *baseclassSepar = " : ";
-    if (!info.msgbaseclass.empty()) {
-        H << baseclassSepar << "public ::" << info.msgbaseclass;  // make namespace explicit and absolute to disambiguate the way PROGRAM understood it
+    if (!classInfo.msgbaseclass.empty()) {
+        H << baseclassSepar << "public ::" << classInfo.msgbaseclass;  // make namespace explicit and absolute to disambiguate the way PROGRAM understood it
         baseclassSepar = ", ";
     }
 
-    for (const auto & impl : info.implements) {
+    for (const auto& impl : classInfo.implements) {
         H << baseclassSepar << "public " << impl;
         baseclassSepar = ", ";
     }
 
     H << "\n{\n";
     H << "  protected:\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (it->fispointer && it->fisprimitivetype) {
-            errors->addError(it->nedElement, "pointers not supported for primitive types in '%s'\n", info.msgname.c_str());
+    for (const FieldInfo& field : classInfo.fieldlist) {
+        if (field.fispointer && field.fisprimitivetype) {
+            errors->addError(field.nedElement, "pointers not supported for primitive types in '%s'\n", classInfo.msgname.c_str());
             return;
         }
-        if (!it->fisabstract) {
-            if (it->fisarray && !it->farraysize.empty()) {
-                H << "    " << it->datatype << " " << it->var << "[" << it->farraysize << "];\n";
+        if (!field.fisabstract) {
+            if (field.fisarray && !field.farraysize.empty()) {
+                H << "    " << field.datatype << " " << field.var << "[" << field.farraysize << "];\n";
             }
-            else if (it->fisarray && it->farraysize.empty()) {
-                H << "    " << it->datatype << " *" << it->var << "; // array ptr\n";
-                H << "    " << it->fsizetype << " " << it->varsize << ";\n";
+            else if (field.fisarray && field.farraysize.empty()) {
+                H << "    " << field.datatype << " *" << field.var << "; // array ptr\n";
+                H << "    " << field.fsizetype << " " << field.varsize << ";\n";
             }
             else {
-                H << "    " << it->datatype << " " << it->var << ";\n";
+                H << "    " << field.datatype << " " << field.var << ";\n";
             }
         }
     }
     H << "\n";
     H << "  private:\n";
-    H << "    void copy(const " << info.msgclass << "& other);\n\n";
+    H << "    void copy(const " << classInfo.msgclass << "& other);\n\n";
     H << "  protected:\n";
     H << "    // protected and unimplemented operator==(), to prevent accidental usage\n";
-    H << "    bool operator==(const " << info.msgclass << "&);\n";
-    if (info.gap) {
+    H << "    bool operator==(const " << classInfo.msgclass << "&);\n";
+    if (classInfo.gap) {
         H << "    // make constructors protected to avoid instantiation\n";
     }
     else {
         H << "\n";
         H << "  public:\n";
     }
-    if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT) {
-        if (info.keyword == "message" || info.keyword == "packet") {
-            H << "    " << info.msgclass << "(const char *name=nullptr, short kind=0);\n";
+    if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT) {
+        if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
+            H << "    " << classInfo.msgclass << "(const char *name=nullptr, short kind=0);\n";
         }
         else {
-            H << "    " << info.msgclass << "(const char *name=nullptr);\n";
+            H << "    " << classInfo.msgclass << "(const char *name=nullptr);\n";
         }
     }
     else {
-        H << "    " << info.msgclass << "();\n";
+        H << "    " << classInfo.msgclass << "();\n";
     }
-    H << "    " << info.msgclass << "(const " << info.msgclass << "& other);\n";
-    if (info.gap) {
+    H << "    " << classInfo.msgclass << "(const " << classInfo.msgclass << "& other);\n";
+    if (classInfo.gap) {
         H << "    // make assignment operator protected to force the user override it\n";
-        H << "    " << info.msgclass << "& operator=(const " << info.msgclass << "& other);\n";
+        H << "    " << classInfo.msgclass << "& operator=(const " << classInfo.msgclass << "& other);\n";
         H << "\n";
         H << "  public:\n";
     }
-    H << "    virtual ~" << info.msgclass << "();\n";
-    if (!info.gap) {
-        H << "    " << info.msgclass << "& operator=(const " << info.msgclass << "& other);\n";
+    H << "    virtual ~" << classInfo.msgclass << "();\n";
+    if (!classInfo.gap) {
+        H << "    " << classInfo.msgclass << "& operator=(const " << classInfo.msgclass << "& other);\n";
     }
-    if (info.gap) {
-        H << "    virtual " << info.msgclass << " *dup() const override {throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << info.realmsgclass << "\");}\n";
+    if (classInfo.gap) {
+        H << "    virtual " << classInfo.msgclass << " *dup() const override {throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << classInfo.realmsgclass << "\");}\n";
     }
     else {
-        H << "    virtual " << info.msgclass << " *dup() const override {return new " << info.msgclass << "(*this);}\n";
+        H << "    virtual " << classInfo.msgclass << " *dup() const override {return new " << classInfo.msgclass << "(*this);}\n";
     }
     H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const override;\n";
     H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;\n";
     H << "\n";
     H << "    // field getter/setter methods\n";
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
+    for (const auto& field : classInfo.fieldlist) {
         std::string pure;
-        if (it->fisabstract)
+        if (field.fisabstract)
             pure = " = 0";
-        std::string overrideGetter(it->overrideGetter ? " override" : "");
-        std::string overrideSetter(it->overrideSetter ? " override" : "");
+        std::string overrideGetter(field.overrideGetter ? " override" : "");
+        std::string overrideSetter(field.overrideSetter ? " override" : "");
         std::string getterIndexVar("");
         std::string getterIndexArg("");
         std::string setterIndexArg("");
 
-        if (it->fisarray) {
+        if (field.fisarray) {
             getterIndexVar = "k";
-            getterIndexArg = it->fsizetype + " " + getterIndexVar;
+            getterIndexArg = field.fsizetype + " " + getterIndexVar;
             setterIndexArg = getterIndexArg + ", ";
-            if (it->farraysize.empty()) {
-                H << "    virtual void " << it->alloc << "(" << it->fsizetype << " size)" << pure << ";\n";
+            if (field.farraysize.empty()) {
+                H << "    virtual void " << field.alloc << "(" << field.fsizetype << " size)" << pure << ";\n";
             }
-            H << "    virtual " << it->fsizetype << " " << it->getsize << "() const" << pure << ";\n";
+            H << "    virtual " << field.fsizetype << " " << field.getsize << "() const" << pure << ";\n";
         }
-        if (it->fispointer) {
-            H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-            H << "    virtual " << it->rettype << " " << it->mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << it->rettype << ">(const_cast<const " << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << "));}\n";
-            if (it->fisownedpointer)  //TODO fispointer or fisownedpointer?
-                H << "    virtual " << it->rettype << " " << it->remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
+        if (field.fispointer) {
+            H << "    virtual const " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
+            if (field.fisownedpointer)  //TODO fispointer or fisownedpointer?
+                H << "    virtual " << field.rettype << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         }
-        else if (!it->byvalue) {
-            H << "    virtual const " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-            H << "    virtual " << it->rettype << " " << it->mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << it->rettype << ">(const_cast<const " << info.msgclass << "*>(this)->" << it->getter << "(" << getterIndexVar << "));}\n";
+        else if (!field.byvalue) {
+            H << "    virtual const " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
         }
         else {
-            H << "    virtual " << it->rettype << " " << it->getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+            H << "    virtual " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
         }
 
-        H << "    virtual void " << it->setter << "(" << setterIndexArg << it->argtype << " " << it->argname << ")" << overrideSetter << pure << ";\n";
+        H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argtype << " " << field.argname << ")" << overrideSetter << pure << ";\n";
     }
     H << "};\n\n";
 
-    if (!info.gap) {
-        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
-            CC << "Register_Class(" << info.msgclass << ")\n\n";
+    if (!classInfo.gap) {
+        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+            CC << "Register_Class(" << classInfo.msgclass << ")\n\n";
         }
 
-        H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << info.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
-        H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << info.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
+        H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
+        H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
     // constructor:
-    if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT) {
-        if (info.keyword == "message" || info.keyword == "packet") {
+    if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT) {
+        if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
             // CAREFUL when assigning values to existing members gets implemented!
             // The msg kind passed to the ctor should take priority!!!
-            CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name, short kind) : ::" << info.msgbaseclass << "(name,kind)\n";
+            CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const char *name, short kind) : ::" << classInfo.msgbaseclass << "(name,kind)\n";
         }
         else {
-            if (info.msgbaseclass == "") {
-                CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name)\n";
+            if (classInfo.msgbaseclass == "") {
+                CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const char *name)\n";
             }
             else {
-                CC << "" << info.msgclass << "::" << info.msgclass << "(const char *name) : ::" << info.msgbaseclass << "(name)\n";
+                CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const char *name) : ::" << classInfo.msgbaseclass << "(name)\n";
             }
         }
     }
     else {
-        if (info.msgbaseclass == "") {
-            CC << "" << info.msgclass << "::" << info.msgclass << "()\n";
+        if (classInfo.msgbaseclass == "") {
+            CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "()\n";
         }
         else {
-            CC << "" << info.msgclass << "::" << info.msgclass << "() : ::" << info.msgbaseclass << "()\n";
+            CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "() : ::" << classInfo.msgbaseclass << "()\n";
         }
     }
     CC << "{\n";
     // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COBJECT);
     // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::CNAMEDOBJECT);
     // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COWNEDOBJECT);
-    for (const auto & it : info.baseclassFieldlist) {
+    for (const auto& it : classInfo.baseclassFieldlist) {
         CC << "    this->" << it.setter << "(" << it.fval << ");\n";
     }
-    if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
+    if (!classInfo.baseclassFieldlist.empty() && !classInfo.fieldlist.empty())
         CC << "\n";
-    for (const auto & it : info.fieldlist) {
-        if (!it.fisabstract) {
-            if (it.fisarray) {
-                if (!it.farraysize.empty()) {
-                    if (!it.fval.empty()) {
-                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
-                        CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
+    for (const auto& field : classInfo.fieldlist) {
+        if (!field.fisabstract) {
+            if (field.fisarray) {
+                if (!field.farraysize.empty()) {
+                    if (!field.fval.empty()) {
+                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
                     }
-                    if (it.classtype == ClassType::COWNEDOBJECT || it.fisownedpointer) {
-                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
-                        if (it.fispointer) {
-                            if (it.fisownedpointer)
-                                CC << "        if (this->" << it.var << " != nullptr) { take(this->" << it.var << "[i]); } // XXX\n";
+                    if (field.classtype == ClassType::COWNEDOBJECT || field.fisownedpointer) {
+                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        if (field.fispointer) {
+                            if (field.fisownedpointer)
+                                CC << "        if (this->" << field.var << " != nullptr) { take(this->" << field.var << "[i]); } // XXX\n";
                         }
                         else
-                            CC << "        take(&(this->" << it.var << "[i]));\n";
+                            CC << "        take(&(this->" << field.var << "[i]));\n";
                     }
                 }
                 else {
-                    CC << "    " << it.varsize << " = 0;\n";
-                    CC << "    this->" << it.var << " = nullptr;\n";
+                    CC << "    " << field.varsize << " = 0;\n";
+                    CC << "    this->" << field.var << " = nullptr;\n";
                 }
             }
             else {
-                if (!it.fval.empty()) {
-                    CC << "    this->" << it.var << " = " << it.fval << ";\n";
+                if (!field.fval.empty()) {
+                    CC << "    this->" << field.var << " = " << field.fval << ";\n";
                 }
-                if (it.classtype == ClassType::COWNEDOBJECT) {
-                    if (it.fispointer)
-                        CC << "    if (this->" << it.var << " != nullptr) { take(this->" << it.var << "); }\n";
+                if (field.classtype == ClassType::COWNEDOBJECT) {
+                    if (field.fispointer)
+                        CC << "    if (this->" << field.var << " != nullptr) { take(this->" << field.var << "); }\n";
                     else
-                        CC << "    take(&(this->" << it.var << "));\n";
+                        CC << "    take(&(this->" << field.var << "));\n";
                 }
             }
         }
@@ -1270,37 +1270,37 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     CC << "}\n\n";
 
     // copy constructor:
-    CC << "" << info.msgclass << "::" << info.msgclass << "(const " << info.msgclass << "& other)";
-    if (!info.msgbaseclass.empty()) {
-        CC << " : ::" << info.msgbaseclass << "(other)";
+    CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const " << classInfo.msgclass << "& other)";
+    if (!classInfo.msgbaseclass.empty()) {
+        CC << " : ::" << classInfo.msgbaseclass << "(other)";
         //TODO @implements ???
     }
     CC << "\n{\n";
-    for (const auto & it : info.fieldlist) {
-        if (!it.fisabstract) {
-            if (it.fisarray) {
-                if (!it.farraysize.empty()) {
-                    if (it.fispointer) {
-                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
-                        CC << "        this->" << it.var << "[i] = nullptr;\n";
+    for (const auto& field : classInfo.fieldlist) {
+        if (!field.fisabstract) {
+            if (field.fisarray) {
+                if (!field.farraysize.empty()) {
+                    if (field.fispointer) {
+                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        CC << "        this->" << field.var << "[i] = nullptr;\n";
                     }
-                    else if (it.classtype == ClassType::COWNEDOBJECT) {
-                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++)\n";
-                        CC << "        take(&(this->" << it.var << "[i]));\n";
+                    else if (field.classtype == ClassType::COWNEDOBJECT) {
+                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        CC << "        take(&(this->" << field.var << "[i]));\n";
                     }
                 }
                 else
                 {
-                    CC << "    " << it.varsize << " = 0;\n";
-                    CC << "    this->" << it.var << " = nullptr;\n";
+                    CC << "    " << field.varsize << " = 0;\n";
+                    CC << "    this->" << field.var << " = nullptr;\n";
                 }
             }
             else {
-                if (it.fispointer) {
-                    CC << "    this->" << it.var << " = nullptr;\n";
+                if (field.fispointer) {
+                    CC << "    this->" << field.var << " = nullptr;\n";
                 }
-                else if (it.classtype == ClassType::COWNEDOBJECT) {
-                    CC << "    take(&(this->" << it.var << "));\n";
+                else if (field.classtype == ClassType::COWNEDOBJECT) {
+                    CC << "    take(&(this->" << field.var << "));\n";
                 }
             }
         }
@@ -1309,116 +1309,116 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     CC << "}\n\n";
 
     // destructor:
-    CC << "" << info.msgclass << "::~" << info.msgclass << "()\n";
+    CC << "" << classInfo.msgclass << "::~" << classInfo.msgclass << "()\n";
     CC << "{\n";
-    for (const auto & it : info.fieldlist) {
-        if (!it.fisabstract) {
-            if (it.fisarray) {
+    for (const auto& field : classInfo.fieldlist) {
+        if (!field.fisabstract) {
+            if (field.fisarray) {
                 std::ostringstream s;
-                if (it.fisownedpointer)
-                    s << "        dropAndDelete(this->" << it.var << "[i]);\n";
-                else if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT)
-                    s << "        drop(&(this->" << it.var << "[i]));\n";
+                if (field.fisownedpointer)
+                    s << "        dropAndDelete(this->" << field.var << "[i]);\n";
+                else if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT)
+                    s << "        drop(&(this->" << field.var << "[i]));\n";
                 if (!s.str().empty()) {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
+                    CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
                     CC << s.str();
                     CC << "    }\n";
                 }
 
-                if (it.farraysize.empty()) {
-                    CC << "    delete [] this->" << it.var << ";\n";
+                if (field.farraysize.empty()) {
+                    CC << "    delete [] this->" << field.var << ";\n";
                 }
             }
             else {
-                if (it.fisownedpointer)
-                    CC << "    dropAndDelete(this->" << it.var << ");\n";
-                else if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT)
-                    CC << "    drop(&(this->" << it.var << "));\n";
+                if (field.fisownedpointer)
+                    CC << "    dropAndDelete(this->" << field.var << ");\n";
+                else if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT)
+                    CC << "    drop(&(this->" << field.var << "));\n";
             }
         }
     }
     CC << "}\n\n";
 
     // operator = :
-    CC << "" << info.msgclass << "& " << info.msgclass << "::operator=(const " << info.msgclass << "& other)\n";
+    CC << "" << classInfo.msgclass << "& " << classInfo.msgclass << "::operator=(const " << classInfo.msgclass << "& other)\n";
     CC << "{\n";
     CC << "    if (this==&other) return *this;\n";
-    if (info.msgbaseclass != "") {
-        CC << "    ::" << info.msgbaseclass << "::operator=(other);\n";
+    if (classInfo.msgbaseclass != "") {
+        CC << "    ::" << classInfo.msgbaseclass << "::operator=(other);\n";
     }
     CC << "    copy(other);\n";
     CC << "    return *this;\n";
     CC << "}\n\n";
 
     // copy function:
-    CC << "void " << info.msgclass << "::copy(const " << info.msgclass << "& other)\n";
+    CC << "void " << classInfo.msgclass << "::copy(const " << classInfo.msgclass << "& other)\n";
     CC << "{\n";
-    for (const auto & it : info.fieldlist) {
-        // CC << "// " << it.fname << ":\n";
-        if (!it.fisabstract) {
-            if (it.fisarray) {
-                if (it.fispointer) {
-                    if (it.fisownedpointer) {
-                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
-                        CC << "        dropAndDelete(this->" << it.var << "[i]);\n";
+    for (const auto& field : classInfo.fieldlist) {
+        // CC << "// " << field.fname << ":\n";
+        if (!field.fisabstract) {
+            if (field.fisarray) {
+                if (field.fispointer) {
+                    if (field.fisownedpointer) {
+                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                        CC << "        dropAndDelete(this->" << field.var << "[i]);\n";
                         CC << "    }\n";
                     }
                 }
-                if (it.farraysize.empty()) {
-                    if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT) {
-                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
-                        CC << "        drop(&(this->" << it.var << "[i]));\n";
+                if (field.farraysize.empty()) {
+                    if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT) {
+                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                        CC << "        drop(&(this->" << field.var << "[i]));\n";
                         CC << "    }\n";
                     }
-                    CC << "    delete [] this->" << it.var << ";\n";
-                    CC << "    this->" << it.var << " = (other." << it.varsize << "==0) ? nullptr : new " << it.datatype << "[other." << it.varsize << "];\n";
-                    CC << "    " << it.varsize << " = other." << it.varsize << ";\n";
-                    if (!it.fispointer && it.classtype == ClassType::COWNEDOBJECT) {
-                        CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
-                        CC << "        take(&(this->" << it.var << "[i]));\n";
+                    CC << "    delete [] this->" << field.var << ";\n";
+                    CC << "    this->" << field.var << " = (other." << field.varsize << "==0) ? nullptr : new " << field.datatype << "[other." << field.varsize << "];\n";
+                    CC << "    " << field.varsize << " = other." << field.varsize << ";\n";
+                    if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT) {
+                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                        CC << "        take(&(this->" << field.var << "[i]));\n";
                         CC << "    }\n";
                     }
                 }
 
-                CC << "    for (" << it.fsizetype << " i=0; i<" << it.varsize << "; i++) {\n";
-                if (it.fispointer) {
-                    if (it.fisownedpointer) {
-                        CC << "        this->" << it.var << "[i] = other." << it.var << "[i]->dup();\n";
-                        CC << "        take(this->" << it.var << "[i]);\n";
+                CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                if (field.fispointer) {
+                    if (field.fisownedpointer) {
+                        CC << "        this->" << field.var << "[i] = other." << field.var << "[i]->dup();\n";
+                        CC << "        take(this->" << field.var << "[i]);\n";
                     }
                     else {
-                        CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
-                        if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
-                            CC << "        this->" << it.var << "[i]->setName(other." << it.var << "[i]->getName());\n";
+                        CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
+                        if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                            CC << "        this->" << field.var << "[i]->setName(other." << field.var << "[i]->getName());\n";
                         }
                     }
                 }
                 else {
-                    CC << "        this->" << it.var << "[i] = other." << it.var << "[i];\n";
-                    if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
-                        CC << "        this->" << it.var << "[i].setName(other." << it.var << "[i].getName());\n";
+                    CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
+                    if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                        CC << "        this->" << field.var << "[i].setName(other." << field.var << "[i].getName());\n";
                     }
                     CC << "    }\n";
                 }
             }
             else {
-                if (it.fispointer) {
-                    if (it.fisownedpointer) {
-                        CC << "    dropAndDelete(this->" << it.var << ");\n";
-                        CC << "    this->" << it.var << " = other." << it.var << "->dup();\n";
-                        CC << "    take(this->" << it.var << ");\n";
+                if (field.fispointer) {
+                    if (field.fisownedpointer) {
+                        CC << "    dropAndDelete(this->" << field.var << ");\n";
+                        CC << "    this->" << field.var << " = other." << field.var << "->dup();\n";
+                        CC << "    take(this->" << field.var << ");\n";
                     }
                     else {
-                        CC << "    this->" << it.var << " = other." << it.var << ";\n";
-                        if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
-                            CC << "    this->" << it.var << "->setName(other." << it.var << "->getName());\n";
+                        CC << "    this->" << field.var << " = other." << field.var << ";\n";
+                        if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                            CC << "    this->" << field.var << "->setName(other." << field.var << "->getName());\n";
                         }
                     }
                 }
                 else {
-                    CC << "    this->" << it.var << " = other." << it.var << ";\n";
-                    if (it.classtype == ClassType::COWNEDOBJECT || it.classtype == ClassType::CNAMEDOBJECT) {
-                        CC << "    this->" << it.var << ".setName(other." << it.var << ".getName());\n";
+                    CC << "    this->" << field.var << " = other." << field.var << ";\n";
+                    if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                        CC << "    this->" << field.var << ".setName(other." << field.var << ".getName());\n";
                     }
                 }
             }
@@ -1431,164 +1431,164 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
     // parsimUnpack() is NOT that of cOwnedObject. However it's still needed because a
     // "friend" doParsimPacking() function could not access protected members otherwise.
     //
-    CC << "void " << info.msgclass << "::parsimPack(omnetpp::cCommBuffer *b) const\n";
+    CC << "void " << classInfo.msgclass << "::parsimPack(omnetpp::cCommBuffer *b) const\n";
     CC << "{\n";
-    if (info.msgbaseclass != "") {
-        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
-            if (info.msgbaseclass != "omnetpp::cObject")
-                CC << "    ::" << info.msgbaseclass << "::parsimPack(b);\n";
+    if (classInfo.msgbaseclass != "") {
+        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+            if (classInfo.msgbaseclass != "omnetpp::cObject")
+                CC << "    ::" << classInfo.msgbaseclass << "::parsimPack(b);\n";
         }
         else {
-            CC << "    doParsimPacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
+            CC << "    doParsimPacking(b,(::" << classInfo.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
-    for (const auto & it : info.fieldlist) {
-        if (it.fnopack) {
+    for (const auto& field : classInfo.fieldlist) {
+        if (field.fnopack) {
             // @nopack specified
         }
-        else if (it.fisabstract) {
-            CC << "    // field " << it.fname << " is abstract -- please do packing in customized class\n";
+        else if (field.fisabstract) {
+            CC << "    // field " << field.fname << " is abstract -- please do packing in customized class\n";
         }
         else {
-            if (it.fisarray) {
-                if (it.farraysize.empty())
-                    CC << "    b->pack(" << it.varsize << ");\n";
-                CC << "    doParsimArrayPacking(b,this->" << it.var << "," << it.varsize << ");\n";
+            if (field.fisarray) {
+                if (field.farraysize.empty())
+                    CC << "    b->pack(" << field.varsize << ");\n";
+                CC << "    doParsimArrayPacking(b,this->" << field.var << "," << field.varsize << ");\n";
             }
             else {
-                CC << "    doParsimPacking(b,this->" << it.var << ");\n";
+                CC << "    doParsimPacking(b,this->" << field.var << ");\n";
             }
         }
     }
     CC << "}\n\n";
 
-    CC << "void " << info.msgclass << "::parsimUnpack(omnetpp::cCommBuffer *b)\n";
+    CC << "void " << classInfo.msgclass << "::parsimUnpack(omnetpp::cCommBuffer *b)\n";
     CC << "{\n";
-    if (info.msgbaseclass != "") {
-        if (info.classtype == ClassType::COWNEDOBJECT || info.classtype == ClassType::CNAMEDOBJECT || info.classtype == ClassType::COBJECT) {
-            if (info.msgbaseclass != "omnetpp::cObject")
-                CC << "    ::" << info.msgbaseclass << "::parsimUnpack(b);\n";
+    if (classInfo.msgbaseclass != "") {
+        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+            if (classInfo.msgbaseclass != "omnetpp::cObject")
+                CC << "    ::" << classInfo.msgbaseclass << "::parsimUnpack(b);\n";
         }
         else {
-            CC << "    doParsimUnpacking(b,(::" << info.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
+            CC << "    doParsimUnpacking(b,(::" << classInfo.msgbaseclass << "&)*this);\n";  // this would do for cOwnedObject too, but the other is nicer
         }
     }
-    for (const auto & it : info.fieldlist) {
-        if (it.fnopack) {
+    for (const auto& field : classInfo.fieldlist) {
+        if (field.fnopack) {
             // @nopack specified
         }
-        else if (it.fisabstract) {
-            CC << "    // field " << it.fname << " is abstract -- please do unpacking in customized class\n";
+        else if (field.fisabstract) {
+            CC << "    // field " << field.fname << " is abstract -- please do unpacking in customized class\n";
         }
         else {
-            if (it.fisarray) {
-                if (!it.farraysize.empty()) {
-                    CC << "    doParsimArrayUnpacking(b,this->" << it.var << "," << it.farraysize << ");\n";
+            if (field.fisarray) {
+                if (!field.farraysize.empty()) {
+                    CC << "    doParsimArrayUnpacking(b,this->" << field.var << "," << field.farraysize << ");\n";
                 }
                 else {
-                    CC << "    delete [] this->" << it.var << ";\n";
-                    CC << "    b->unpack(" << it.varsize << ");\n";
-                    CC << "    if (" << it.varsize << "==0) {\n";
-                    CC << "        this->" << it.var << " = nullptr;\n";
+                    CC << "    delete [] this->" << field.var << ";\n";
+                    CC << "    b->unpack(" << field.varsize << ");\n";
+                    CC << "    if (" << field.varsize << "==0) {\n";
+                    CC << "        this->" << field.var << " = nullptr;\n";
                     CC << "    } else {\n";
-                    CC << "        this->" << it.var << " = new " << it.datatype << "[" << it.varsize << "];\n";
-                    CC << "        doParsimArrayUnpacking(b,this->" << it.var << "," << it.varsize << ");\n";
+                    CC << "        this->" << field.var << " = new " << field.datatype << "[" << field.varsize << "];\n";
+                    CC << "        doParsimArrayUnpacking(b,this->" << field.var << "," << field.varsize << ");\n";
                     CC << "    }\n";
                 }
             }
             else {
-                CC << "    doParsimUnpacking(b,this->" << it.var << ");\n";
+                CC << "    doParsimUnpacking(b,this->" << field.var << ");\n";
             }
         }
     }
     CC << "}\n\n";
 
-    for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
-        if (!it->fisabstract) {
-            std::string idx = (it->fisarray) ? "[k]" : "";
-            std::string ref = (it->fispointer) ? "" : "&";
-            std::string idxarg = (it->fisarray) ? (it->fsizetype + " k") : std::string("");
-            std::string idxarg2 = (it->fisarray) ? (idxarg + ", ") : std::string("");
+    for (const auto& field : classInfo.fieldlist) {
+        if (!field.fisabstract) {
+            std::string idx = (field.fisarray) ? "[k]" : "";
+            std::string ref = (field.fispointer) ? "" : "&";
+            std::string idxarg = (field.fisarray) ? (field.fsizetype + " k") : std::string("");
+            std::string idxarg2 = (field.fisarray) ? (idxarg + ", ") : std::string("");
 
             // getters:
-            if (it->fisarray) {
-                CC << "" << it->fsizetype << " " << info.msgclass << "::" << it->getsize << "() const\n";
+            if (field.fisarray) {
+                CC << "" << field.fsizetype << " " << classInfo.msgclass << "::" << field.getsize << "() const\n";
                 CC << "{\n";
-                CC << "    return " << it->varsize << ";\n";
+                CC << "    return " << field.varsize << ";\n";
                 CC << "}\n\n";
             }
 
-            if (it->byvalue) {
-                CC << "" << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << idxarg << ")" << " const\n";
+            if (field.byvalue) {
+                CC << "" << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
                 CC << "{\n";
-                if (it->fisarray) {
-                    CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->varsize << " indexed by %lu\", (unsigned long)k);\n";
+                if (field.fisarray) {
+                    CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
                 }
-                CC << "    return this->" << it->var << idx << it->maybe_c_str << ";\n";
+                CC << "    return this->" << field.var << idx << field.maybe_c_str << ";\n";
                 CC << "}\n\n";
             }
             else {
-                CC << "const " << it->rettype << " " << info.msgclass << "::" << it->getter << "(" << idxarg << ")" << " const\n";
+                CC << "const " << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
                 CC << "{\n";
-                if (it->fisarray) {
-                    CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->varsize << " indexed by %lu\", (unsigned long)k);\n";
+                if (field.fisarray) {
+                    CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
                 }
-                CC << "    return this->" << it->var << idx << it->maybe_c_str << ";\n";
+                CC << "    return this->" << field.var << idx << field.maybe_c_str << ";\n";
                 CC << "}\n\n";
 
             }
 
             // resize:
-            if (it->fisarray && it->farraysize.empty()) {
-                CC << "void " << info.msgclass << "::" << it->alloc << "(" << it->fsizetype << " size)\n";
+            if (field.fisarray && field.farraysize.empty()) {
+                CC << "void " << classInfo.msgclass << "::" << field.alloc << "(" << field.fsizetype << " size)\n";
                 CC << "{\n";
                 CC << "    handleChange();\n";
-                CC << "    " << it->datatype << " *" << it->var << "2 = (size==0) ? nullptr : new " << it->datatype << "[size];\n";
-                CC << "    " << it->fsizetype << " sz = " << it->varsize << " < size ? " << it->varsize << " : size;\n";
-                CC << "    for (" << it->fsizetype << " i=0; i<sz; i++)\n";
-                CC << "        " << it->var << "2[i] = this->" << it->var << "[i];\n";
-                if (it->fisprimitivetype) {
-                    CC << "    for (" << it->fsizetype << " i=sz; i<size; i++)\n";
-                    CC << "        " << it->var << "2[i] = 0;\n";
+                CC << "    " << field.datatype << " *" << field.var << "2 = (size==0) ? nullptr : new " << field.datatype << "[size];\n";
+                CC << "    " << field.fsizetype << " sz = " << field.varsize << " < size ? " << field.varsize << " : size;\n";
+                CC << "    for (" << field.fsizetype << " i=0; i<sz; i++)\n";
+                CC << "        " << field.var << "2[i] = this->" << field.var << "[i];\n";
+                if (field.fisprimitivetype) {
+                    CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
+                    CC << "        " << field.var << "2[i] = 0;\n";
                 }
-                if (it->classtype == ClassType::COWNEDOBJECT) {
-                    CC << "    for (" << it->fsizetype << " i=sz; i<size; i++)\n";
-                    CC << "        take(&(" << it->var << "2[i]));\n";
+                if (field.classtype == ClassType::COWNEDOBJECT) {
+                    CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
+                    CC << "        take(&(" << field.var << "2[i]));\n";
                 }
-                CC << "    " << it->varsize << " = size;\n";
-                CC << "    delete [] this->" << it->var << ";\n";
-                CC << "    this->" << it->var << " = " << it->var << "2;\n";
+                CC << "    " << field.varsize << " = size;\n";
+                CC << "    delete [] this->" << field.var << ";\n";
+                CC << "    this->" << field.var << " = " << field.var << "2;\n";
                 CC << "}\n\n";
             }
 
             // setter:
-            CC << "void " << info.msgclass << "::" << it->setter << "(" << idxarg2 << it->argtype << " " << it->argname << ")\n";
+            CC << "void " << classInfo.msgclass << "::" << field.setter << "(" << idxarg2 << field.argtype << " " << field.argname << ")\n";
             CC << "{\n";
-            if (it->fisarray) {
-                CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+            if (field.fisarray) {
+                CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
             }
             CC << "    handleChange();\n";
-            if (it->fisownedpointer) {
-                CC << "    dropAndDelete(this->" << it->var << idx << ");\n";
+            if (field.fisownedpointer) {
+                CC << "    dropAndDelete(this->" << field.var << idx << ");\n";
             }
-            CC << "    this->" << it->var << idx << " = " << it->argname << ";\n";
-            if (it->fisownedpointer) {
-                CC << "    if (this->" << it->var << idx << " != nullptr)\n";
-                CC << "        take(this->" << it->var << idx << ");\n";
+            CC << "    this->" << field.var << idx << " = " << field.argname << ";\n";
+            if (field.fisownedpointer) {
+                CC << "    if (this->" << field.var << idx << " != nullptr)\n";
+                CC << "        take(this->" << field.var << idx << ");\n";
             }
             CC << "}\n\n";
 
             // remover:
-            if (it->fisownedpointer) {  //TODO fispointer or fisownedpointer?
-                CC << it->rettype << " " << info.msgclass << "::" << it->remover << "(" << idxarg2 << it->argtype << " " << it->argname << ")\n";
+            if (field.fisownedpointer) {  //TODO fispointer or fisownedpointer?
+                CC << field.rettype << " " << classInfo.msgclass << "::" << field.remover << "(" << idxarg2 << field.argtype << " " << field.argname << ")\n";
                 CC << "{\n";
-                if (it->fisarray) {
-                    CC << "    if (k >= " << it->varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << it->farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                if (field.fisarray) {
+                    CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 }
                 CC << "    handleChange();\n";
-                CC << "    " << it->rettype << " retval = this->" << it->var << idx << ";\n";
+                CC << "    " << field.rettype << " retval = this->" << field.var << idx << ";\n";
                 CC << "    drop(retval);\n";
-                CC << "    this->" << it->var << idx << " = nullptr;\n";
+                CC << "    this->" << field.var << idx << " = nullptr;\n";
                 CC << "    return retval;\n";
                 CC << "}\n\n";
             }
@@ -1597,117 +1597,117 @@ void MsgCppGenerator::generateClass(const ClassInfo& info)
 }
 
 #define DD(x)
-void MsgCppGenerator::generateStruct(const ClassInfo& info)
+void MsgCppGenerator::generateStruct(const ClassInfo& classInfo)
 {
-    if (isQualified(info.msgclass)) {
-        errors->addError(info.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", info.msgclass.c_str());
+    if (isQualified(classInfo.msgclass)) {
+        errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", classInfo.msgclass.c_str());
         return;
     }
 
     H << "/**\n";
-    H << " * Struct generated from " << SL(info.nedElement->getSourceLocation()) << " by " PROGRAM ".\n";
+    H << " * Struct generated from " << SL(classInfo.nedElement->getSourceLocation()) << " by " PROGRAM ".\n";
     H << " */\n";
-    if (info.msgbaseclass.empty()) {
-        H << "struct " << TS(opts.exportDef) << info.msgclass << "\n";
+    if (classInfo.msgbaseclass.empty()) {
+        H << "struct " << TS(opts.exportDef) << classInfo.msgclass << "\n";
     }
     else {
-        H << "struct " << TS(opts.exportDef) << info.msgclass << " : public ::" << info.msgbaseqname << "\n";
+        H << "struct " << TS(opts.exportDef) << classInfo.msgclass << " : public ::" << classInfo.msgbaseqname << "\n";
     }
     H << "{\n";
-    H << "    " << info.msgclass << "();\n";
-    for (const auto & it : info.fieldlist) {
-        H << "    " << it.datatype << " " << it.var;
-        if (it.fisarray) {
-            H << "[" << it.farraysize << "]";
+    H << "    " << classInfo.msgclass << "();\n";
+    for (const auto& field : classInfo.fieldlist) {
+        H << "    " << field.datatype << " " << field.var;
+        if (field.fisarray) {
+            H << "[" << field.farraysize << "]";
         }
         H << ";\n";
     }
     H << "};\n\n";
 
     H << "// helpers for local use\n";
-    H << "void " << TS(opts.exportDef) << "__doPacking(omnetpp::cCommBuffer *b, const " << info.msgclass << "& a);\n";
-    H << "void " << TS(opts.exportDef) << "__doUnpacking(omnetpp::cCommBuffer *b, " << info.msgclass << "& a);\n\n";
+    H << "void " << TS(opts.exportDef) << "__doPacking(omnetpp::cCommBuffer *b, const " << classInfo.msgclass << "& a);\n";
+    H << "void " << TS(opts.exportDef) << "__doUnpacking(omnetpp::cCommBuffer *b, " << classInfo.msgclass << "& a);\n\n";
 
-    H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << info.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
-    H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << info.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
+    H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
+    H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
 
     // Constructor:
-    CC << "" << info.msgclass << "::" << info.msgclass << "()\n";
+    CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "()\n";
     CC << "{\n";
     // override baseclass fields initial value
-    for (const auto & it : info.baseclassFieldlist) {
-        CC << "    this->" << it.var << " = " << it.fval << ";\n";
+    for (const auto& field : classInfo.baseclassFieldlist) {
+        CC << "    this->" << field.var << " = " << field.fval << ";\n";
     }
-    if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
+    if (!classInfo.baseclassFieldlist.empty() && !classInfo.fieldlist.empty())
         CC << "\n";
 
-    for (const auto & it : info.fieldlist) {
-        if (it.fisabstract)
+    for (const auto& field : classInfo.fieldlist) {
+        if (field.fisabstract)
             throw NEDException("Abstract fields are not supported in a struct");
-        if (it.classtype == ClassType::COWNEDOBJECT)
+        if (field.classtype == ClassType::COWNEDOBJECT)
             throw NEDException("cOwnedObject fields are not supported in a struct");
-        if (it.fisarray) {
-            if (it.farraysize.empty()) {
+        if (field.fisarray) {
+            if (field.farraysize.empty()) {
                 throw NEDException("Dynamic arrays are not supported in a struct");
             }
             else {
-                if (!it.fval.empty()) {
-                    CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
-                    CC << "        this->" << it.var << "[i] = " << it.fval << ";\n";
+                if (!field.fval.empty()) {
+                    CC << "    for (" << field.fsizetype << " i=0; i<" << field.farraysize << "; i++)\n";
+                    CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
                 }
             }
         }
         else {
-            if (!it.fval.empty()) {
-                CC << "    this->" << it.var << " = " << it.fval << ";\n";
+            if (!field.fval.empty()) {
+                CC << "    this->" << field.var << " = " << field.fval << ";\n";
             }
         }
     }
     CC << "}\n\n";
 
     // doPacking/doUnpacking go to the global namespace
-    CC << "void __doPacking(omnetpp::cCommBuffer *b, const " << info.msgclass << "& a)\n";
+    CC << "void __doPacking(omnetpp::cCommBuffer *b, const " << classInfo.msgclass << "& a)\n";
     CC << "{\n";
-    if (!info.msgbaseclass.empty()) {
-        CC << "    doParsimPacking(b,(::" << info.msgbaseclass << "&)a);\n";
+    if (!classInfo.msgbaseclass.empty()) {
+        CC << "    doParsimPacking(b,(::" << classInfo.msgbaseclass << "&)a);\n";
     }
 
-    for (const auto & it : info.fieldlist) {
-        if (it.fisarray) {
-            CC << "    doParsimArrayPacking(b,a." << it.var << "," << it.farraysize << ");\n";
+    for (const auto& field : classInfo.fieldlist) {
+        if (field.fisarray) {
+            CC << "    doParsimArrayPacking(b,a." << field.var << "," << field.farraysize << ");\n";
         }
         else {
-            CC << "    doParsimPacking(b,a." << it.var << ");\n";
+            CC << "    doParsimPacking(b,a." << field.var << ");\n";
         }
     }
     CC << "}\n\n";
 
-    CC << "void __doUnpacking(omnetpp::cCommBuffer *b, " << info.msgclass << "& a)\n";
+    CC << "void __doUnpacking(omnetpp::cCommBuffer *b, " << classInfo.msgclass << "& a)\n";
     CC << "{\n";
-    if (!info.msgbaseclass.empty()) {
-        CC << "    doParsimUnpacking(b,(::" << info.msgbaseclass << "&)a);\n";
+    if (!classInfo.msgbaseclass.empty()) {
+        CC << "    doParsimUnpacking(b,(::" << classInfo.msgbaseclass << "&)a);\n";
     }
 
-    for (const auto & it : info.fieldlist) {
-        if (it.fisarray) {
-            CC << "    doParsimArrayUnpacking(b,a." << it.var << "," << it.farraysize << ");\n";
+    for (const auto& field : classInfo.fieldlist) {
+        if (field.fisarray) {
+            CC << "    doParsimArrayUnpacking(b,a." << field.var << "," << field.farraysize << ");\n";
         }
         else {
-            CC << "    doParsimUnpacking(b,a." << it.var << ");\n";
+            CC << "    doParsimUnpacking(b,a." << field.var << ");\n";
         }
     }
     CC << "}\n\n";
 }
 
-void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
+void MsgCppGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 {
-    CC << "class " << info.msgdescclass << " : public omnetpp::cClassDescriptor\n";
+    CC << "class " << classInfo.msgdescclass << " : public omnetpp::cClassDescriptor\n";
     CC << "{\n";
     CC << "  private:\n";
     CC << "    mutable const char **propertynames;\n";
     CC << "  public:\n";
-    CC << "    " << info.msgdescclass << "();\n";
-    CC << "    virtual ~" << info.msgdescclass << "();\n";
+    CC << "    " << classInfo.msgdescclass << "();\n";
+    CC << "    virtual ~" << classInfo.msgdescclass << "();\n";
     CC << "\n";
     CC << "    virtual bool doesSupport(omnetpp::cObject *obj) const override;\n";
     CC << "    virtual const char **getPropertyNames() const override;\n";
@@ -1730,36 +1730,36 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "};\n\n";
 
     // register class
-    CC << "Register_ClassDescriptor(" << info.msgdescclass << ")\n\n";
+    CC << "Register_ClassDescriptor(" << classInfo.msgdescclass << ")\n\n";
 
     // ctor, dtor
-    size_t fieldcount = info.fieldlist.size();
-    std::string qualifiedrealmsgclass = prefixWithNamespace(info.realmsgclass);
-    CC << "" << info.msgdescclass << "::" << info.msgdescclass << "() : omnetpp::cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << info.msgbaseclass << "\")\n";
+    size_t fieldcount = classInfo.fieldlist.size();
+    std::string qualifiedrealmsgclass = prefixWithNamespace(classInfo.realmsgclass);
+    CC << "" << classInfo.msgdescclass << "::" << classInfo.msgdescclass << "() : omnetpp::cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << classInfo.msgbaseclass << "\")\n";
     CC << "{\n";
     CC << "    propertynames = nullptr;\n";
     CC << "}\n";
     CC << "\n";
 
-    CC << "" << info.msgdescclass << "::~" << info.msgdescclass << "()\n";
+    CC << "" << classInfo.msgdescclass << "::~" << classInfo.msgdescclass << "()\n";
     CC << "{\n";
     CC << "    delete[] propertynames;\n";
     CC << "}\n";
     CC << "\n";
 
     // doesSupport()
-    CC << "bool " << info.msgdescclass << "::doesSupport(omnetpp::cObject *obj) const\n";
+    CC << "bool " << classInfo.msgdescclass << "::doesSupport(omnetpp::cObject *obj) const\n";
     CC << "{\n";
-    CC << "    return dynamic_cast<" << info.msgclass << " *>(obj)!=nullptr;\n";
+    CC << "    return dynamic_cast<" << classInfo.msgclass << " *>(obj)!=nullptr;\n";
     CC << "}\n";
     CC << "\n";
 
     // getPropertyNames()
-    CC << "const char **" << info.msgdescclass << "::getPropertyNames() const\n";
+    CC << "const char **" << classInfo.msgdescclass << "::getPropertyNames() const\n";
     CC << "{\n";
     CC << "    if (!propertynames) {\n";
     CC << "        static const char *names[] = { ";
-    for (const auto & prop : info.props) {
+    for (const auto& prop : classInfo.props) {
         CC << opp_quotestr(prop.first) << ", ";
     }
     CC << " nullptr };\n";
@@ -1772,9 +1772,9 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getProperty()
-    CC << "const char *" << info.msgdescclass << "::getProperty(const char *propertyname) const\n";
+    CC << "const char *" << classInfo.msgdescclass << "::getProperty(const char *propertyname) const\n";
     CC << "{\n";
-    for (const auto & prop : info.props) {
+    for (const auto& prop : classInfo.props) {
         CC << "    if (!strcmp(propertyname,"<< opp_quotestr(prop.first) << ")) return " << opp_quotestr(prop.second) << ";\n";
     }
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
@@ -1783,7 +1783,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldCount()
-    CC << "int " << info.msgdescclass << "::getFieldCount() const\n";
+    CC << "int " << classInfo.msgdescclass << "::getFieldCount() const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    return basedesc ? " << fieldcount << "+basedesc->getFieldCount() : " << fieldcount << ";\n";
@@ -1791,7 +1791,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldTypeFlags()
-    CC << "unsigned int " << info.msgdescclass << "::getFieldTypeFlags(int field) const\n";
+    CC << "unsigned int " << classInfo.msgdescclass << "::getFieldTypeFlags(int field) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1804,20 +1804,20 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     }
     else {
         CC << "    static unsigned int fieldTypeFlags[] = {\n";
-        for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
+        for (auto& field : classInfo.fieldlist) {
             StringVector flags;
-            if (it->fisarray)
+            if (field.fisarray)
                 flags.push_back("FD_ISARRAY");
-            if (!it->fisprimitivetype)
+            if (!field.fisprimitivetype)
                 flags.push_back("FD_ISCOMPOUND");
-            if (it->fispointer)
+            if (field.fispointer)
                 flags.push_back("FD_ISPOINTER");
-            if (it->classtype == ClassType::COBJECT || it->classtype == ClassType::CNAMEDOBJECT)
+            if (field.classtype == ClassType::COBJECT || field.classtype == ClassType::CNAMEDOBJECT)
                 flags.push_back("FD_ISCOBJECT");
-            if (it->classtype == ClassType::COWNEDOBJECT)
+            if (field.classtype == ClassType::COWNEDOBJECT)
                 flags.push_back("FD_ISCOBJECT | FD_ISCOWNEDOBJECT");
 
-            if (it->feditable || (info.generate_setters_in_descriptor && it->fisprimitivetype && it->editNotDisabled))
+            if (field.feditable || (classInfo.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled))
                 flags.push_back("FD_ISEDITABLE");
             std::string flagss;
             if (flags.empty())
@@ -1837,7 +1837,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldName()
-    CC << "const char *" << info.msgdescclass << "::getFieldName(int field) const\n";
+    CC << "const char *" << classInfo.msgdescclass << "::getFieldName(int field) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1850,8 +1850,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     }
     else {
         CC << "    static const char *fieldNames[] = {\n";
-        for (const auto & it : info.fieldlist) {
-            CC << "        \"" << it.fname << "\",\n";
+        for (const auto& field : classInfo.fieldlist) {
+            CC << "        \"" << field.fname << "\",\n";
         }
         CC << "    };\n";
         CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldNames[field] : nullptr;\n";
@@ -1860,13 +1860,13 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // findField()
-    CC << "int " << info.msgdescclass << "::findField(const char *fieldName) const\n";
+    CC << "int " << classInfo.msgdescclass << "::findField(const char *fieldName) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     if (fieldcount > 0) {
         CC << "    int base = basedesc ? basedesc->getFieldCount() : 0;\n";
-        for (size_t i = 0; i < info.fieldlist.size(); ++i) {
-            const FieldInfo& field = info.fieldlist[i];
+        for (size_t i = 0; i < classInfo.fieldlist.size(); ++i) {
+            const FieldInfo& field = classInfo.fieldlist[i];
             char c = field.fname[0];
             CC << "    if (fieldName[0]=='" << c << "' && strcmp(fieldName, \""<<field.fname<<"\")==0) return base+" << i << ";\n";
         }
@@ -1876,7 +1876,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldTypeString()
-    CC << "const char *" << info.msgdescclass << "::getFieldTypeString(int field) const\n";
+    CC << "const char *" << classInfo.msgdescclass << "::getFieldTypeString(int field) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1889,8 +1889,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     }
     else {
         CC << "    static const char *fieldTypeStrings[] = {\n";
-        for (const auto & it : info.fieldlist) {
-            CC << "        \"" << it.ftype << "\",\n";  // note: NOT $fieldtypeqname! that's getFieldStructName()
+        for (const auto& field : classInfo.fieldlist) {
+            CC << "        \"" << field.ftype << "\",\n";  // note: NOT $fieldtypeqname! that's getFieldStructName()
         }
         CC << "    };\n";
         CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeStrings[field] : nullptr;\n";
@@ -1899,7 +1899,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldPropertyNames()
-    CC << "const char **" << info.msgdescclass << "::getFieldPropertyNames(int field) const\n";
+    CC << "const char **" << classInfo.msgdescclass << "::getFieldPropertyNames(int field) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1909,11 +1909,11 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    }\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; ++i) {
-        const Properties& ref = info.fieldlist[i].fprops;
+        const Properties& ref = classInfo.fieldlist[i].fprops;
         if (!ref.empty()) {
             CC << "        case " << i << ": {\n";
             CC << "            static const char *names[] = { ";
-            for (const auto & it : ref) {
+            for (const auto& it : ref) {
                 CC << opp_quotestr(it.first) << ", ";
             }
             CC << " nullptr };\n";
@@ -1927,7 +1927,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldProperty()
-    CC << "const char *" << info.msgdescclass << "::getFieldProperty(int field, const char *propertyname) const\n";
+    CC << "const char *" << classInfo.msgdescclass << "::getFieldProperty(int field, const char *propertyname) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1938,11 +1938,11 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
 
     for (size_t i = 0; i < fieldcount; ++i) {
-        const FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = classInfo.fieldlist[i];
         const Properties& ref = field.fprops;
         if (!ref.empty()) {
             CC << "        case " << i << ":\n";
-            for (const auto & it : ref) {
+            for (const auto& it : ref) {
                 std::string prop = opp_quotestr(it.second);
                 CC << "            if (!strcmp(propertyname,\"" << it.first << "\")) return " << prop << ";\n";
             }
@@ -1956,7 +1956,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldArraySize()
-    CC << "int " << info.msgdescclass << "::getFieldArraySize(void *object, int field) const\n";
+    CC << "int " << classInfo.msgdescclass << "::getFieldArraySize(void *object, int field) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1964,16 +1964,16 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "            return basedesc->getFieldArraySize(object, field);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.msgclass << " *pp = (" << classInfo.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = classInfo.fieldlist[i];
         if (field.fisarray) {
             CC << "        case " << i << ": ";
             if (!field.farraysize.empty()) {
                 CC << "return " << field.farraysize << ";\n";
             }
-            else if (info.classtype == ClassType::STRUCT) {
+            else if (classInfo.classtype == ClassType::STRUCT) {
                 CC << "return pp->" << field.varsize << ";\n";
             }
             else {
@@ -1987,7 +1987,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldDynamicTypeString()
-    CC << "const char *" << info.msgdescclass << "::getFieldDynamicTypeString(void *object, int field, int i) const\n";
+    CC << "const char *" << classInfo.msgdescclass << "::getFieldDynamicTypeString(void *object, int field, int i) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -1995,10 +1995,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "            return basedesc->getFieldDynamicTypeString(object,field,i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.msgclass << " *pp = (" << classInfo.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = classInfo.fieldlist[i];
         if (!field.fisprimitivetype && field.fispointer && field.classtype == ClassType::NONCOBJECT) {
             CC << "        case " << i << ": ";
             CC << "{ const " << field.ftype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value)); }\n";
@@ -2010,7 +2010,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldValueAsString()
-    CC << "std::string " << info.msgdescclass << "::getFieldValueAsString(void *object, int field, int i) const\n";
+    CC << "std::string " << classInfo.msgdescclass << "::getFieldValueAsString(void *object, int field, int i) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -2018,13 +2018,13 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "            return basedesc->getFieldValueAsString(object,field,i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.msgclass << " *pp = (" << classInfo.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = classInfo.fieldlist[i];
         if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty())) {
             CC << "        case " << i << ": ";
-            if (info.classtype == ClassType::STRUCT) {
+            if (classInfo.classtype == ClassType::STRUCT) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
                     CC << "if (i>=" << arraySize << ") return \"\";\n                ";
@@ -2037,7 +2037,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
         }
         else if (!field.fisprimitivetype) {
             CC << "        case " << i << ": ";
-            if (info.classtype == ClassType::STRUCT) {
+            if (classInfo.classtype == ClassType::STRUCT) {
                 CC << "{std::stringstream out; out << pp->" << field.var << (field.fisarray ? "[i]" : "") << "; return out.str();}\n";
             }
             else {
@@ -2054,7 +2054,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // setFieldValueAsString()
-    CC << "bool " << info.msgdescclass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
+    CC << "bool " << classInfo.msgdescclass << "::setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -2062,18 +2062,18 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "            return basedesc->setFieldValueAsString(object,field,i,value);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.msgclass << " *pp = (" << classInfo.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const FieldInfo& field = info.fieldlist[i];
-        if (field.feditable || (info.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
+        const FieldInfo& field = classInfo.fieldlist[i];
+        if (field.feditable || (classInfo.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
             if (field.fromstring.empty()) {
                 errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
                 continue;
             }
             std::string fromstringCall = makeFuncall("value", field.fromstring);
             CC << "        case " << i << ": ";
-            if (info.classtype == ClassType::STRUCT) {
+            if (classInfo.classtype == ClassType::STRUCT) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
                     CC << "if (i>=" << arraySize << ") return false;\n                ";
@@ -2091,7 +2091,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldStructName()
-    CC << "const char *" << info.msgdescclass << "::getFieldStructName(int field) const\n";
+    CC << "const char *" << classInfo.msgdescclass << "::getFieldStructName(int field) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -2105,7 +2105,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     else {
         CC << "    switch (field) {\n";
         for (size_t i = 0; i < fieldcount; i++) {
-            const FieldInfo& field = info.fieldlist[i];
+            const FieldInfo& field = classInfo.fieldlist[i];
             // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
             if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
                 CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.ftype << "));\n";
@@ -2118,7 +2118,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "\n";
 
     // getFieldStructValuePointer()
-    CC << "void *" << info.msgdescclass << "::getFieldStructValuePointer(void *object, int field, int i) const\n";
+    CC << "void *" << classInfo.msgdescclass << "::getFieldStructValuePointer(void *object, int field, int i) const\n";
     CC << "{\n";
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    if (basedesc) {\n";
@@ -2126,15 +2126,15 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
     CC << "            return basedesc->getFieldStructValuePointer(object, field, i);\n";
     CC << "        field -= basedesc->getFieldCount();\n";
     CC << "    }\n";
-    CC << "    " << info.msgclass << " *pp = (" << info.msgclass << " *)object; (void)pp;\n";
+    CC << "    " << classInfo.msgclass << " *pp = (" << classInfo.msgclass << " *)object; (void)pp;\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
-        const FieldInfo& field = info.fieldlist[i];
+        const FieldInfo& field = classInfo.fieldlist[i];
         // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
         if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
             std::string cast;
             std::string value;
-            if (info.classtype == ClassType::STRUCT) {
+            if (classInfo.classtype == ClassType::STRUCT) {
                 value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");
             }
             else {
@@ -2159,10 +2159,10 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& info)
 
 MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
 {
-    EnumInfo info;
-    info.nedElement = node;
-    info.enumName = ptr2str(node->getAttribute("name"));
-    info.enumQName = canonicalizeQName(namespaceName, info.enumName);
+    EnumInfo enumInfo;
+    enumInfo.nedElement = node;
+    enumInfo.enumName = ptr2str(node->getAttribute("name"));
+    enumInfo.enumQName = canonicalizeQName(namespaceName, enumInfo.enumName);
 
     // prepare enum items:
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
@@ -2171,11 +2171,11 @@ MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
                 for (NEDElement *e = child->getFirstChild(); e; e = e->getNextSibling()) {
                     switch (e->getTagCode()) {
                         case NED_ENUM_FIELD: {
-                            EnumItem f;
-                            f.nedElement = e;
-                            f.name = ptr2str(e->getAttribute("name"));
-                            f.value = ptr2str(e->getAttribute("value"));
-                            info.fieldlist.push_back(f);
+                            EnumItem item;
+                            item.nedElement = e;
+                            item.name = ptr2str(e->getAttribute("name"));
+                            item.value = ptr2str(e->getAttribute("value"));
+                            enumInfo.fieldlist.push_back(item);
                             break;
                         }
 
@@ -2196,7 +2196,7 @@ MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
                 break;
         }
     }
-    return info;
+    return enumInfo;
 }
 
 void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
@@ -2226,8 +2226,8 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     CC << "    omnetpp::cEnum *e = omnetpp::cEnum::find(\"" << enumInfo.enumQName << "\");\n";
     CC << "    if (!e) omnetpp::enums.getInstance()->add(e = new omnetpp::cEnum(\"" << enumInfo.enumQName << "\"));\n";
     // enum inheritance: we should add fields from base enum as well, but that could only be done when importing is in place
-    for (const auto & it : enumInfo.fieldlist) {
-        CC << "    e->insert(" << it.name << ", \"" << it.name << "\");\n";
+    for (const auto& enumItem : enumInfo.fieldlist) {
+        CC << "    e->insert(" << enumItem.name << ", \"" << enumItem.name << "\");\n";
     }
     CC << ")\n\n";
 }

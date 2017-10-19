@@ -96,7 +96,7 @@ class NEDXML_API MsgCppGenerator
     void processImport(NEDElement *child, const std::string& currentDir);
     std::string resolveImport(const std::string& importName, const std::string& currentDir);
     Properties extractPropertiesOf(NEDElement *node);
-    void analyzeField(ClassInfo& info, FieldInfo *it);
+    void analyzeField(ClassInfo& classInfo, FieldInfo *field);
     void analyze(ClassInfo& classInfo);
     EnumInfo extractEnumInfo(EnumElement *node); // accepts EnumElement
     void generateClass(const ClassInfo& classInfo);
