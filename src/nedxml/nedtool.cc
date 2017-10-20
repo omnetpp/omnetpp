@@ -30,7 +30,7 @@
 #include "common/stringutil.h"
 #include "common/ver.h"
 #include "omnetpp/platdep/platmisc.h"  // getcwd, chdir
-#include "msgcppgenerator.h"
+#include "msgcompiler.h"
 #include "nedparser.h"
 #include "nederror.h"
 #include "nedexception.h"
@@ -77,7 +77,7 @@ bool opt_splitnedfiles = false;    // -u
 std::vector<std::string> opt_includepath; // -I
 
 // MSG specific option variables:
-MsgCppGeneratorOptions msg_options;
+MsgCompilerOptions msg_options;
 
 FilesElement *outputtree;
 
@@ -315,7 +315,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
                 Assert(!opt_gensrc && !opt_genxml);  // already handled above
                 if (ftype == MSG_FILE) {
                     msg_options.importPath = opt_includepath;
-                    MsgCppGenerator generator(errors, msg_options);
+                    MsgCompiler generator(errors, msg_options);
                     generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
                 }
                 else {

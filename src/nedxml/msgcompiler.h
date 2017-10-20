@@ -1,5 +1,5 @@
 //==========================================================================
-//  MSGCPPGENERATOR.H - part of
+//  MSGCOMPILER.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_MSGCPPGENERATOR_H
-#define __OMNETPP_NEDXML_MSGCPPGENERATOR_H
+#ifndef __OMNETPP_NEDXML_MSGCOMPILER_H
+#define __OMNETPP_NEDXML_MSGCOMPILER_H
 
 #include <iostream>
 #include <sstream>
@@ -27,16 +27,18 @@
 #include "nedelements.h"
 #include "nederror.h"
 #include "msgtypetable.h"
+#include "msganalyzer.h"
+#include "msgcodegenerator.h"
 
 namespace omnetpp {
 namespace nedxml {
 
 /**
- * @brief Options for MsgCppGenerator.Generates C++ code from a MSG file object tree.
+ * @brief Options for MsgCompiler.Generates C++ code from a MSG file object tree.
  *
  * @ingroup CppGenerator
  */
-struct MsgCppGeneratorOptions
+struct MsgCompilerOptions
 {
     std::vector<std::string> importPath;
     std::string exportDef;
@@ -44,7 +46,7 @@ struct MsgCppGeneratorOptions
     bool generateDescriptors;
     bool generateSettersInDescriptors;
 
-    MsgCppGeneratorOptions() :
+    MsgCompilerOptions() :
         generateClasses(true),
         generateDescriptors(true),
         generateSettersInDescriptors(true)
@@ -58,9 +60,10 @@ struct MsgCppGeneratorOptions
  *
  * @ingroup CppGenerator
  */
-class NEDXML_API MsgCppGenerator
+class NEDXML_API MsgCompiler
 {
   public:
+    typedef std::set<std::string> StringSet;
     typedef std::vector<std::string> StringVector;
     typedef MsgTypeTable::TypeDesc TypeDesc;
     typedef MsgTypeTable::ClassType ClassType;
@@ -71,59 +74,32 @@ class NEDXML_API MsgCppGenerator
     typedef MsgTypeTable::EnumInfo EnumInfo;
 
   protected:
-    static const char *_RESERVED_WORDS[];
-    typedef std::set<std::string> StringSet;
-    StringSet RESERVED_WORDS;
+    MsgCompilerOptions opts;
 
-    std::string hFilename;
-    std::string ccFilename;
-    std::ostream *hOutp;
-    std::ostream *ccOutp;
-    NEDErrorStore *errors;
     MsgTypeTable typeTable;
-    std::string namespaceName;      // as MSG
-    StringVector namespaceNameVector;   // namespacename split by '::'
+    MsgAnalyzer analyzer;
+    MsgCodeGenerator codegen;
+
+    NEDErrorStore *errors;
+    std::string currentNamespace;
     StringSet importsSeen;
 
-    // command line options:
-    MsgCppGeneratorOptions opts;
-
   protected:
-    void initDescriptors();
-    std::string prefixWithNamespace(const std::string& s);
-    ClassInfo extractClassInfo(NEDElement *node); // accepts StructElement, ClassElement, MessageElement, PacketElement
-    void extractClassDecl(NEDElement *node); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl
     void processImport(NEDElement *child, const std::string& currentDir);
     std::string resolveImport(const std::string& importName, const std::string& currentDir);
-    Properties extractPropertiesOf(NEDElement *node);
-    void analyzeField(ClassInfo& classInfo, FieldInfo *field);
-    void analyze(ClassInfo& classInfo);
-    EnumInfo extractEnumInfo(EnumElement *node); // accepts EnumElement
-    void generateClass(const ClassInfo& classInfo);
-    void generateStruct(const ClassInfo& classInfo);
-    void generateDescriptorClass(const ClassInfo& a);
-    void generateEnum(const EnumInfo& enumInfo);
-    void generateNamespaceBegin(NEDElement *element);
-    void generateNamespaceEnd();
-    std::string generatePreComment(NEDElement *nedElement);
-    void generateTemplates();
-    bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
-
-    bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
-    std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
     void process(MsgFileElement *fileElement, bool generateCode);
-    std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
+    void validateNamespaceName(const std::string& namespaceName, NEDElement *element);
 
   public:
     /**
      * Constructor.
      */
-    MsgCppGenerator(NEDErrorStore *errors, const MsgCppGeneratorOptions& options);
+    MsgCompiler(NEDErrorStore *errors, const MsgCompilerOptions& options);
 
     /**
      * Destructor.
      */
-    ~MsgCppGenerator();
+    ~MsgCompiler();
 
     /**
      * Generates C++ code from the specified message file. Assumes that the
@@ -132,7 +108,7 @@ class NEDXML_API MsgCppGenerator
     void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile);
 };
 
-} // namespace nedxml
+}  // namespace nedxml
 }  // namespace omnetpp
 
 

@@ -134,6 +134,7 @@ class NEDXML_API MsgTypeTable
         bool gap;                   // true if @customize
         bool omitgetverb;
         ClassType classtype;
+        std::string namespacename;
         std::string msgclass;
         std::string realmsgclass;
         std::string msgbaseclass;

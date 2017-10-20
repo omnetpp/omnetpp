@@ -1,5 +1,5 @@
 //==========================================================================
-//  MSGCPPGENERATOR.CC - part of
+//  MSGCODEGENERATOR.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -24,7 +24,7 @@
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"  // unlink()
-#include "msgcppgenerator.h"
+#include "msgcodegenerator.h"
 #include "ned2generator.h"
 #include "nedparser.h"
 #include "nedexception.h"
@@ -39,8 +39,8 @@ namespace nedxml {
 
 using std::ostream;
 
-#define H     (*hOutp)
-#define CC    (*ccOutp)
+#define H     hStream
+#define CC    ccStream
 
 #define PROGRAM    "nedtool"
 
@@ -60,217 +60,29 @@ static char charToNameFilter(char ch)
     return (isalnum(ch)) ? ch : '_';
 }
 
-inline bool isQualified(const std::string& qname)
-{
-    return qname.find("::") != qname.npos;
-}
-
-static std::string canonicalizeQName(const std::string& namespac, const std::string& name)
-{
-    std::string qname;
-    if (name.find("::") != name.npos) {
-        qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
-    }
-    else if (!namespac.empty() && !name.empty()) {
-        qname = namespac + "::" + name;
-    }
-    else
-        qname = name;
-    return qname;
-}
-
-static std::string makeIdentifier(const std::string& qname)
-{
-    std::string tmp = qname;
-    std::transform(tmp.begin(), tmp.end(), tmp.begin(), charToNameFilter);
-    return tmp;
-}
-
 inline std::ostream& operator<<(std::ostream& o, const std::pair<std::string, int>& p)
 {
     return o << '(' << p.first << ':' << p.second << ')';
 }
 
-inline std::string ptr2str(const char *ptr)
-{
-    return ptr ? ptr : "";
-}
-
-template<typename T>
-std::string join(const T& v, const std::string& delim)
-{
-    std::ostringstream s;
-    for (typename T::const_iterator i = v.begin(); i != v.end(); ++i) {
-        if (i != v.begin()) {
-            s << delim;
-        }
-        s << *i;
-    }
-    return s.str();
-}
-
-// Note: based on omnetpp 5.x checkandcast.h (merged check_and_cast and check_and_cast_failure)
-template<class P, class T>
-P check_and_cast(T *p)
-{
-    assert(p);
-    P ret = dynamic_cast<P>(p);
-    assert(ret);
-    return ret;
-}
-
-const char *MsgCppGenerator::_RESERVED_WORDS[] =
-{
-        "namespace", "cplusplus", "struct", "message", "packet", "class", "noncobject",
-        "enum", "extends", "abstract", "readonly", "properties", "fields", "unsigned",
-        "true", "false", "for", "while", "if", "else", "do", "enum", "class", "struct",
-        "typedef", "public", "private", "protected", "auto", "register", "sizeof", "void",
-        "new", "delete", "explicit", "static", "extern", "return", "try", "catch",
-        nullptr
-};
-
-void MsgCppGenerator::initDescriptors()
-{
-    for (int i = 0; typeTable._PRIMITIVE_TYPES[i].nedTypeName; ++i) {
-        RESERVED_WORDS.insert(typeTable._PRIMITIVE_TYPES[i].nedTypeName);
-    }
-    for (int i = 0; _RESERVED_WORDS[i]; ++i) {
-        RESERVED_WORDS.insert(_RESERVED_WORDS[i]);
-    }
-}
-
-MsgCppGenerator::MsgCppGenerator(NEDErrorStore *e, const MsgCppGeneratorOptions& options)
-{
-    initDescriptors();
-
-    opts = options;
-
-    hOutp = ccOutp = nullptr;
-    errors = e;
-}
-
-MsgCppGenerator::~MsgCppGenerator()
-{
-}
-
-void MsgCppGenerator::generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile)
+void MsgCodeGenerator::openFiles(const char *hFile, const char *ccFile)
 {
     hFilename = hFile;
     ccFilename = ccFile;
-    std::ofstream hStream(hFile);
-    std::ofstream ccStream(ccFile);
-    hOutp = &hStream;
-    ccOutp = &ccStream;
-    process(fileElement, true);
+    hStream.open(hFile);
+    ccStream.open(ccFile);
+}
+
+void MsgCodeGenerator::closeFiles()
+{
     hStream.close();
     ccStream.close();
-
-    if (errors->containsError()) {
-        // remove output files when error occurred:
-        unlink(hFile);
-        unlink(ccFile);
-    }
 }
 
-void MsgCppGenerator::processImport(NEDElement *child, const std::string& currentDir)
+void MsgCodeGenerator::deleteFiles()
 {
-    if (!namespaceName.empty()) {
-        errors->addError(child, "imports are not allowed within a namespace\n");
-        return;
-    }
-
-    std::string importName = child->getAttribute("import-spec");
-    std::string fileName = resolveImport(importName, currentDir);
-    if (fileName == "") {
-        errors->addError(child, "cannot resolve import '%s'\n", importName.c_str());
-        return;
-    }
-
-    NEDParser parser(errors);
-    NEDElement *tree = parser.parseMSGFile(fileName.c_str());
-    if (errors->containsError()) {
-        delete tree;
-        return;
-    }
-
-    typeTable.importedNedFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
-
-    // extract declarations
-    MsgFileElement *fileElement = check_and_cast<MsgFileElement*>(tree);
-    process(fileElement, false);
-    namespaceName = "";
-}
-
-std::string MsgCppGenerator::resolveImport(const std::string& importName, const std::string& currentDir)
-{
-    std::string msgFile = opp_replacesubstring(importName, ".", "/", true) + ".msg";
-    std::string candidate = concatDirAndFile(currentDir.c_str(), msgFile.c_str());
-    if (fileExists(candidate.c_str()))
-        return candidate;
-    for (auto dir : opts.importPath) {
-        std::string candidate = concatDirAndFile(dir.c_str(), msgFile.c_str());
-        if (fileExists(candidate.c_str()))
-            return candidate;
-    }
-    return "";
-}
-
-void MsgCppGenerator::extractClassDecl(NEDElement *child)
-{
-    std::string name = ptr2str(child->getAttribute("name"));
-    if (RESERVED_WORDS.find(name) != RESERVED_WORDS.end()) {
-        errors->addError(child, "type name '%s' is a reserved word\n", name.c_str());
-        return;
-    }
-
-    std::string type0 = child->getTagName();
-    std::string myclass = name;
-    std::string baseclass = ptr2str(child->getAttribute("extends-name"));
-    ClassType type;
-    bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
-
-    std::string classqname = canonicalizeQName(namespaceName, myclass);
-
-    if (type0 == "struct-decl") {
-        type = ClassType::STRUCT;
-    }
-    else if (type0 == "message-decl" || type0 == "packet-decl") {
-        type = ClassType::COWNEDOBJECT;
-    }
-    else if (type0 == "class-decl") {
-        if (!isCobject) {
-            type = ClassType::NONCOBJECT;
-            if (!baseclass.empty()) {
-                errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
-            }
-        }
-        else if (baseclass == "") {
-            type = ClassType::COWNEDOBJECT;
-        }
-        else if (baseclass == "void") {
-            type = ClassType::NONCOBJECT;
-        }
-        else {
-            StringVector found = typeTable.lookupExistingClassName(baseclass, namespaceName);
-            if (found.size() == 1) {
-                type = typeTable.getClassType(found[0]);
-            }
-            else if (found.empty()) {
-                errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
-                type = ClassType::COBJECT;
-            }
-            else {
-                errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
-                type = typeTable.getClassType(found[0]);
-            }
-        }
-    }
-    else {
-        errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
-        return;
-    }
-
-    typeTable.addDeclaredClass(classqname, type, child);
+    unlink(hFilename.c_str());
+    unlink(ccFilename.c_str());
 }
 
 const char *PARSIMPACK_BOILERPLATE =
@@ -395,622 +207,108 @@ const char *PARSIMPACK_BOILERPLATE =
     "}  // namespace omnetpp\n"
     "\n";
 
-void MsgCppGenerator::process(MsgFileElement *fileElement, bool generateCode)
+void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std::string& firstNamespace, const std::string& exportDef)
 {
-    std::string currentDir = directoryOf(fileElement->getFilename());
-    std::string headerGuard;
-    if (generateCode) {
-        // make header guard using the file name
-        std::string hfilenamewithoutdir = hFilename;
-        size_t pos = hfilenamewithoutdir.find_last_of('/');
-        if (pos != hfilenamewithoutdir.npos)
-            hfilenamewithoutdir = hfilenamewithoutdir.substr(pos+1);
+    // make header guard using the file name
+    std::string hfilenamewithoutdir = hFilename;
+    size_t pos = hfilenamewithoutdir.find_last_of('/');
+    if (pos != hfilenamewithoutdir.npos)
+        hfilenamewithoutdir = hfilenamewithoutdir.substr(pos+1);
 
-        headerGuard = hfilenamewithoutdir;
+    headerGuard = hfilenamewithoutdir;
 
-        // add first namespace to headerguard
-        NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
-        if (firstNS)
-            headerGuard = ptr2str(firstNS->getAttribute("name")) + "_" + headerGuard;
+    // add first namespace to headerguard
+    if (!firstNamespace.empty())
+        headerGuard = firstNamespace + "_" + headerGuard;
 
-        // replace non-alphanumeric characters by '_'
-        std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), charToNameFilter);
-        // capitalize
-        std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), ::toupper);
-        headerGuard = str("__") + headerGuard;
+    // replace non-alphanumeric characters by '_'
+    std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), charToNameFilter);
+    // capitalize
+    std::transform(headerGuard.begin(), headerGuard.end(), headerGuard.begin(), ::toupper);
+    headerGuard = str("__") + headerGuard;
 
-        H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
-          << " from " << fileElement->getFilename() << ".\n//\n\n";
-        H << "#if defined(__clang__)\n";
-        H << "#  pragma clang diagnostic ignored \"-Wreserved-id-macro\"\n";
+    H << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100)
+                  << " from " << msgFileName << ".\n//\n\n";
+    H << "#if defined(__clang__)\n";
+    H << "#  pragma clang diagnostic ignored \"-Wreserved-id-macro\"\n";
+    H << "#endif\n";
+    H << "#ifndef " << headerGuard << "\n";
+    H << "#define " << headerGuard << "\n\n";
+    H << "#include <omnetpp.h>\n";
+    H << "\n";
+    H << "// " PROGRAM " version check\n";
+    H << "#define MSGC_VERSION 0x" << std::hex << std::setfill('0') << std::setw(4) << OMNETPP_VERSION << "\n";
+    H << "#if (MSGC_VERSION!=OMNETPP_VERSION)\n";
+    H << "#    error Version mismatch! Probably this file was generated by an earlier version of " PROGRAM ": 'make clean' should help.\n";
+    H << "#endif\n";
+    H << "\n";
+
+    if (exportDef.length() > 4 && opp_stringendswith(exportDef.c_str(), "_API")) {
+        // # generate boilerplate code for dll export
+        std::string exportbase = exportDef.substr(0, exportDef.length()-4);
+        H << "// dll export symbol\n";
+        H << "#ifndef " << exportDef << "\n";
+        H << "#  if defined(" << exportbase << "_EXPORT)\n";
+        H << "#    define " << exportDef << "  OPP_DLLEXPORT\n";
+        H << "#  elif defined(" << exportbase << "_IMPORT)\n";
+        H << "#    define " << exportDef << "  OPP_DLLIMPORT\n";
+        H << "#  else\n";
+        H << "#    define " << exportDef << "\n";
+        H << "#  endif\n";
         H << "#endif\n";
-        H << "#ifndef " << headerGuard << "\n";
-        H << "#define " << headerGuard << "\n\n";
-        H << "#include <omnetpp.h>\n";
         H << "\n";
-        H << "// " PROGRAM " version check\n";
-        H << "#define MSGC_VERSION 0x" << std::hex << std::setfill('0') << std::setw(4) << OMNETPP_VERSION << "\n";
-        H << "#if (MSGC_VERSION!=OMNETPP_VERSION)\n";
-        H << "#    error Version mismatch! Probably this file was generated by an earlier version of " PROGRAM ": 'make clean' should help.\n";
-        H << "#endif\n";
-        H << "\n";
-
-        if (opts.exportDef.length() > 4 && opts.exportDef.substr(opts.exportDef.length()-4) == "_API") {
-            // # generate boilerplate code for dll export
-            std::string exportbase = opts.exportDef.substr(0, opts.exportDef.length()-4);
-            H << "// dll export symbol\n";
-            H << "#ifndef " << opts.exportDef << "\n";
-            H << "#  if defined(" << exportbase << "_EXPORT)\n";
-            H << "#    define " << opts.exportDef << "  OPP_DLLEXPORT\n";
-            H << "#  elif defined(" << exportbase << "_IMPORT)\n";
-            H << "#    define " << opts.exportDef << "  OPP_DLLIMPORT\n";
-            H << "#  else\n";
-            H << "#    define " << opts.exportDef << "\n";
-            H << "#  endif\n";
-            H << "#endif\n";
-            H << "\n";
-        }
-
-        CC << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100) << " from " << fileElement->getFilename() << ".\n//\n\n";
-        CC << "// Disable warnings about unused variables, empty switch stmts, etc:\n";
-        CC << "#ifdef _MSC_VER\n";
-        CC << "#  pragma warning(disable:4101)\n";
-        CC << "#  pragma warning(disable:4065)\n";
-        CC << "#endif\n\n";
-
-        CC << "#if defined(__clang__)\n";
-        CC << "#  pragma clang diagnostic ignored \"-Wshadow\"\n";
-        CC << "#  pragma clang diagnostic ignored \"-Wconversion\"\n";
-        CC << "#  pragma clang diagnostic ignored \"-Wunused-parameter\"\n";
-        CC << "#  pragma clang diagnostic ignored \"-Wc++98-compat\"\n";
-        CC << "#  pragma clang diagnostic ignored \"-Wunreachable-code-break\"\n";
-        CC << "#  pragma clang diagnostic ignored \"-Wold-style-cast\"\n";
-        CC << "#elif defined(__GNUC__)\n";
-        CC << "#  pragma GCC diagnostic ignored \"-Wshadow\"\n";
-        CC << "#  pragma GCC diagnostic ignored \"-Wconversion\"\n";
-        CC << "#  pragma GCC diagnostic ignored \"-Wunused-parameter\"\n";
-        CC << "#  pragma GCC diagnostic ignored \"-Wold-style-cast\"\n";
-        CC << "#  pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"\n";
-        CC << "#  pragma GCC diagnostic ignored \"-Wfloat-conversion\"\n";
-        CC << "#endif\n\n";
-
-        CC << "#include <iostream>\n";
-        CC << "#include <sstream>\n";
-        CC << "#include <memory>\n";
-        CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
-
-        CC << PARSIMPACK_BOILERPLATE;
-
-        if (!firstNS) {
-            H << "\n\n";
-            CC << "\n";
-            generateTemplates();
-        }
     }
 
-    /*
-       <!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|
-                           import|
-                           struct-decl|class-decl|message-decl|packet-decl|enum-decl|
-                           struct|class|message|packet|enum)*)>
-     */
-    for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
-        switch (child->getTagCode()) {
-            case NED_NAMESPACE:
-                // open namespace(s)
-                if (generateCode && !namespaceName.empty())
-                    generateNamespaceEnd();
-                namespaceName = ptr2str(child->getAttribute("name"));
-                if (generateCode)
-                    generateNamespaceBegin(child);
-                break;
+    CC << "//\n// Generated file, do not edit! Created by " PROGRAM " " << (OMNETPP_VERSION / 0x100) << "." << (OMNETPP_VERSION % 0x100) << " from " << msgFileName << ".\n//\n\n";
+    CC << "// Disable warnings about unused variables, empty switch stmts, etc:\n";
+    CC << "#ifdef _MSC_VER\n";
+    CC << "#  pragma warning(disable:4101)\n";
+    CC << "#  pragma warning(disable:4065)\n";
+    CC << "#endif\n\n";
 
-            case NED_CPLUSPLUS: {
-                // print C++ block
-                if (generateCode) {
-                    std::string body = ptr2str(child->getAttribute("body"));
-                    std::string target = ptr2str(child->getAttribute("target"));
-                    size_t pos0 = body.find_first_not_of("\r\n");
-                    if (pos0 != body.npos)
-                        body = body.substr(pos0);
-                    size_t pos = body.find_last_not_of("\r\n");
-                    if (pos != body.npos)
-                        body = body.substr(0, pos+1);
-                    if (target == "" || target == "h")
-                        H << "// cplusplus {{\n" << body << "\n// }}\n\n";
-                    else if (target == "cc")
-                        CC << "// cplusplus {{\n" << body << "\n// }}\n\n";
-                    else
-                        errors->addError(child, "unrecognized target '%s' for cplusplus block", target.c_str());
-                }
-                break;
-            }
+    CC << "#if defined(__clang__)\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wshadow\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wconversion\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wunused-parameter\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wc++98-compat\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wunreachable-code-break\"\n";
+    CC << "#  pragma clang diagnostic ignored \"-Wold-style-cast\"\n";
+    CC << "#elif defined(__GNUC__)\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wshadow\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wconversion\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wunused-parameter\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wold-style-cast\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"\n";
+    CC << "#  pragma GCC diagnostic ignored \"-Wfloat-conversion\"\n";
+    CC << "#endif\n\n";
 
-            case NED_IMPORT: {
-                std::string importName = child->getAttribute("import-spec");
-                if (!common::contains(importsSeen, importName)) {
-                    importsSeen.insert(importName);
-                    processImport(child, currentDir);
-                    if (generateCode) {
-                        // assuming C++ include path is identical to msg import path, we can directly derive the include from importName
-                        std::string header = opp_replacesubstring(importName, ".", "/", true) + "_m.h";
-                        H << "#include \"" << header << "\" // import " << importName << "\n\n";
-                    }
-                }
-                break;
-            }
+    CC << "#include <iostream>\n";
+    CC << "#include <sstream>\n";
+    CC << "#include <memory>\n";
+    CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
 
-            case NED_STRUCT_DECL:
-            case NED_CLASS_DECL:
-            case NED_MESSAGE_DECL:
-            case NED_PACKET_DECL:
-                extractClassDecl(child);
-                break;
+    CC << PARSIMPACK_BOILERPLATE;
 
-            case NED_ENUM_DECL: {
-                // forward declaration -- add to table
-                std::string name = ptr2str(child->getAttribute("name"));
-                if (contains(RESERVED_WORDS, name))
-                    errors->addError(child, "Enum name is reserved word: '%s'", name.c_str());
-                std::string qname = canonicalizeQName(namespaceName, name);
-                typeTable.declaredEnums.insert(qname);
-                break;
-            }
-
-            case NED_ENUM: {
-                EnumInfo enumInfo = extractEnumInfo(check_and_cast<EnumElement *>(child));
-                typeTable.declaredEnums.insert(enumInfo.enumQName);
-                if (generateCode)
-                    generateEnum(enumInfo);
-                break;
-            }
-
-            case NED_STRUCT: {
-                ClassInfo classInfo = extractClassInfo(child);
-                analyze(classInfo);
-                typeTable.addDeclaredClass(classInfo.msgname, classInfo.classtype, child);
-                if (generateCode) {
-                    if (classInfo.generate_class)
-                        generateStruct(classInfo);
-                    if (classInfo.generate_descriptor)
-                        generateDescriptorClass(classInfo);
-                }
-                break;
-            }
-
-            case NED_CLASS:
-            case NED_MESSAGE:
-            case NED_PACKET: {
-                ClassInfo classInfo = extractClassInfo(child);
-                analyze(classInfo);
-                typeTable.addDeclaredClass(classInfo.msgqname, classInfo.classtype, child);
-                if (generateCode) {
-                    if (classInfo.generate_class)
-                        generateClass(classInfo);
-                    if (classInfo.generate_descriptor)
-                        generateDescriptorClass(classInfo);
-                }
-                break;
-            }
-        }
-    }
-
-    if (generateCode) {
-        generateNamespaceEnd();
-        H << "#endif // ifndef " << headerGuard << "\n\n";
+    if (firstNamespace.empty()) {
+        H << "\n\n";
+        CC << "\n";
+        generateTemplates();
     }
 }
 
-MsgCppGenerator::Properties MsgCppGenerator::extractPropertiesOf(NEDElement *node)
+void MsgCodeGenerator::generateEpilog()
 {
-    Properties props;
-
-    for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(NED_PROPERTY)); child; child = child->getNextPropertySibling()) {
-        std::string propname = ptr2str(child->getAttribute("name"));
-        std::string propval;
-        for (PropertyKeyElement *key = child->getFirstPropertyKeyChild(); key; key = key->getNextPropertyKeySibling()) {
-            std::string keyname = ptr2str(key->getAttribute("name"));
-            if (keyname.empty()) {
-                const char *sep = "";
-                for (LiteralElement *lit = key->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling()) {
-                    std::string s = ptr2str(lit->getAttribute("value"));
-                    propval = propval + sep + s;
-                    sep = ",";
-                }
-            }
-        }
-        if (props.find(propname) == props.end()) {
-            props[propname] = propval;
-        }
-        else {
-            errors->addError(child, "the property '%s' is duplicated", propname.c_str());
-        }
-    }
-    return props;
+    H << "#endif // ifndef " << headerGuard << "\n\n";
 }
 
-MsgCppGenerator::ClassInfo MsgCppGenerator::extractClassInfo(NEDElement *node)
+std::string MsgCodeGenerator::generatePreComment(NEDElement *nedElement)
 {
-    ClassInfo classInfo;
-    classInfo.nedElement = node;
-
-    classInfo.keyword = node->getTagName();
-    classInfo.msgname = ptr2str(node->getAttribute("name"));
-    classInfo.msgbase = ptr2str(node->getAttribute("extends-name"));
-    classInfo.props = extractPropertiesOf(node);
-
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
-        switch (child->getTagCode()) {
-            case NED_FIELD: {
-                FieldInfo field;
-                field.nedElement = child;
-                field.fname = ptr2str(child->getAttribute("name"));
-                field.datatype = ptr2str(child->getAttribute("data-type"));  // ha ez nincs, eltunnek a struct mezoi....
-                field.ftype = ptr2str(child->getAttribute("data-type"));
-                field.fval = ptr2str(child->getAttribute("default-value"));
-                field.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
-                field.fispointer = (field.ftype[field.ftype.length()-1] == '*');
-                if (field.fispointer) {
-                    field.ftype = field.ftype.substr(0, field.ftype.find_last_not_of(" \t*")+1);
-                }
-                field.fisarray = ptr2str(child->getAttribute("is-vector")) == "true";
-                field.farraysize = ptr2str(child->getAttribute("vector-size"));
-
-                field.fprops = extractPropertiesOf(child);
-
-                if (field.ftype.empty())
-                    classInfo.baseclassFieldlist.push_back(field);
-                else
-                    classInfo.fieldlist.push_back(field);
-                break;
-            }
-
-            case NED_PROPERTY:
-                // skip properties here, properties already extracted
-                break;
-
-            case NED_PROPERTY_DECL:
-                errors->addError(child, "syntax error: property '%s' declaration unaccepted here", child->getTagName());
-                break;
-
-            case NED_PROPERTY_KEY:
-                errors->addError(child, "syntax error: property key '%s' unaccepted here", child->getTagName());
-                break;
-
-            case NED_COMMENT:
-                break;
-
-            default:
-                errors->addError(child, "unaccepted element: '%s'", child->getTagName());
-                break;
-        }
-    }
-    return classInfo;
-}
-
-void MsgCppGenerator::analyzeField(ClassInfo& classInfo, FieldInfo *field)
-{
-    if (field->fisabstract && !classInfo.gap) {
-        errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", classInfo.msgname.c_str());
-    }
-
-    // determine field data type
-    if (field->ftype.empty()) {
-        // base class field assignment
-        field->classtype = ClassType::UNKNOWN;
-        field->fisprimitivetype = false; //FIXME we don't know
-    }
-    else if (containsKey(typeTable.PRIMITIVE_TYPES, field->ftype)) {
-        field->fisprimitivetype = true;
-        field->ftypeqname = "";  // unused
-        field->classtype = ClassType::NONCOBJECT;
-    }
-    else {
-        field->fisprimitivetype = false;
-
-        StringVector candidateTypes = typeTable.lookupExistingClassName(field->ftype, namespaceName);
-        if (candidateTypes.size() == 1) {
-            field->ftypeqname = candidateTypes[0];
-        }
-        else if (candidateTypes.empty()) {
-            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-            field->ftypeqname = "omnetpp::cObject";
-        }
-        else {
-            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(candidateTypes, ", ").c_str());
-            field->ftypeqname = candidateTypes[0];
-        }
-
-        field->classtype = typeTable.getClassType(field->ftypeqname);
-
-        if (field->ftypeqname != "omnetpp::cObject")
-            field->ftypeqname = str("::") + field->ftypeqname; //FIXME why, really?
-    }
-
-    if (classInfo.generate_class) {
-        if (field->classtype == ClassType::COWNEDOBJECT && !(classInfo.classtype == ClassType::COBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COWNEDOBJECT)) {
-            errors->addError(field->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-        }
-    }
-
-    if (field->fisarray && field->farraysize.empty() && !field->fval.empty())
-        errors->addError(field->nedElement, "unaccepted default value for variable length vector field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-    if (field->fispointer) {
-        if (field->fval.empty())
-            field->fval = "nullptr";
-    }
-    field->fnopack = getPropertyAsBool(field->fprops, "nopack", false);
-    field->feditable = getPropertyAsBool(field->fprops, "editable", false);
-    field->editNotDisabled = getPropertyAsBool(field->fprops, "editable", true);
-    field->fopaque = getPropertyAsBool(field->fprops, "opaque", false);
-    field->overrideGetter = getPropertyAsBool(field->fprops, "overridegetter", false) || getPropertyAsBool(field->fprops, "override", false);
-    field->overrideSetter = getPropertyAsBool(field->fprops, "overridesetter", false) || getPropertyAsBool(field->fprops, "override", false);
-    field->tostring = getProperty(field->fprops, "tostring", "");
-    field->fromstring = getProperty(field->fprops, "fromstring", "");
-    if (hasProperty(field->fprops, "byvalue")) {
-        if (field->fispointer)
-            errors->addError(field->nedElement, "unaccepted @byvalue property for pointer field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-        else if (field->fisprimitivetype)
-            errors->addError(field->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-    }
-    field->byvalue = getPropertyAsBool(field->fprops, "byvalue", field->fisprimitivetype);
-
-    // resolve enum namespace
-    field->enumname = getProperty(field->fprops, "enum");
-    if (!field->enumname.empty()) {
-        StringVector found = typeTable.lookupExistingEnumName(field->enumname, namespaceName);
-        if (found.size() == 1) {
-            field->enumqname = found[0];
-        }
-        else if (found.empty()) {
-            errors->addError(field->nedElement, "undeclared enum '%s' in field '%s' in '%s'\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-            field->enumqname = "";
-            CC << "\n\n/*\n Undeclared enum: " << field->enumname << "\n";
-            CC << "  Declared enums:\n";
-            for (const auto & qname : typeTable.declaredEnums)
-                CC << "    " << qname << "\n";
-            CC << "\n*/\n\n";
-        }
-        else {
-            errors->addWarning(field->nedElement, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
-            field->enumqname = found[0];
-        }
-        field->fprops["enum"] = field->enumqname;  // need to modify the property in place
-        if (field->tostring.empty())
-            field->tostring = str("enum2string($, \"") + field->enumqname + "\")";
-        if (field->fromstring.empty())
-            field->fromstring = str("(") + field->enumqname + ")string2enum($, \"" + field->enumqname + "\")";
-    }
-
-    // variable name
-    if (classInfo.classtype == ClassType::STRUCT) {
-        field->var = field->fname;
-    }
-    else {
-        field->var = field->fname + classInfo.fieldnamesuffix;
-        field->argname = field->fname;
-    }
-
-    if (field->fispointer) {
-        field->fisownedpointer = getPropertyAsBool(field->fprops, "owned", field->classtype == ClassType::COWNEDOBJECT);
-    }
-    else
-        field->fisownedpointer = false;
-
-    field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
-    std::string sizetypeprop = getProperty(field->fprops, "sizetype");
-    field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
-
-    // default method names
-    if (classInfo.classtype != ClassType::STRUCT) {
-        std::string capfieldname = field->fname;
-        capfieldname[0] = toupper(capfieldname[0]);
-        field->setter = str("set") + capfieldname;
-        field->remover = str("remove") + capfieldname;
-        field->alloc = str("set") + capfieldname + "ArraySize";
-        if (classInfo.omitgetverb) {
-            field->getter = field->fname;
-            field->getsize = field->fname + "ArraySize";
-        }
-        else {
-            field->getter = str("get") + capfieldname;
-            field->mGetter = str("get") + capfieldname;             //TODO "get" (for compatibility) or "getMutable"  or "access"
-            field->getsize = str("get") + capfieldname + "ArraySize";
-        }
-
-        // allow customization of names
-        if (getProperty(field->fprops, "setter") != "") {
-            field->setter = getProperty(field->fprops, "setter");
-        }
-        if (getProperty(field->fprops, "getter") != "") {
-            field->getter = getProperty(field->fprops, "getter");
-        }
-        field->mGetter = field->getter;
-        if (getProperty(field->fprops, "mgetter") != "") {
-            field->mGetter = getProperty(field->fprops, "mgetter");
-        }
-        if (getProperty(field->fprops, "sizeSetter") != "") {
-            field->alloc = getProperty(field->fprops, "sizeSetter");
-        }
-        if (getProperty(field->fprops, "sizeGetter") != "") {
-            field->getsize = getProperty(field->fprops, "sizeGetter");
-        }
-    }
-
-    // data type, argument type, conversion to/from string...
-    field->maybe_c_str = "";
-    if (!field->fisprimitivetype) {
-        if (field->fispointer) {
-            field->datatype = field->ftype + " *";
-            field->argtype = field->datatype;
-            field->rettype = field->datatype;
-        }
-        else if (field->byvalue) {
-            field->datatype = field->ftype;
-            field->argtype = field->datatype;
-            field->rettype = field->datatype;
-        }
-        else {
-            field->datatype = field->ftype;
-            field->argtype = str("const ") + field->ftype + "&";
-            field->rettype = field->ftype + "&";
-        }
-    }
-    else {
-        Assert(containsKey(typeTable.PRIMITIVE_TYPES, field->ftype));
-        const TypeDesc& primitiveType = typeTable.PRIMITIVE_TYPES[field->ftype];
-        field->datatype = primitiveType.cppTypeName;
-        field->argtype = primitiveType.cppTypeName;
-        field->rettype = primitiveType.cppTypeName;
-        if (field->fval.empty())
-            field->fval = primitiveType.emptyValue;
-        if (field->tostring.empty())
-            field->tostring = primitiveType.tostring;
-        if (field->fromstring.empty())
-            field->fromstring = primitiveType.fromstring;
-
-        if (field->ftype == "string") {
-            field->argtype = "const char *";
-            field->rettype = "const char *";
-            field->maybe_c_str = ".c_str()";
-        }
-    }
-}
-
-void MsgCppGenerator::analyze(ClassInfo& classInfo)
-{
-    classInfo.msgqname = prefixWithNamespace(classInfo.msgname);
-
-    // determine info.msgbaseqname
-    if (classInfo.msgbase != "void") {
-        StringVector found = typeTable.lookupExistingClassName(classInfo.msgbase, namespaceName);
-        if (found.size() == 1) {
-            classInfo.msgbaseqname = found[0];
-        }
-        else if (found.empty()) {
-            errors->addError(classInfo.nedElement, "'%s': unknown base class '%s', available classes '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(omnetpp::common::keys(typeTable.declaredClasses), "','").c_str());
-            classInfo.msgbaseqname = "omnetpp::cMessage";
-        }
-        else {
-            errors->addError(classInfo.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
-                    classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(found, "','").c_str());
-            classInfo.msgbaseqname = found[0];
-        }
-    }
-
-    // check base class and determine type of object
-    if (classInfo.msgqname == "omnetpp::cObject" || classInfo.msgqname == "omnetpp::cNamedObject" || classInfo.msgqname == "omnetpp::cOwnedObject") {
-        classInfo.classtype = typeTable.getClassType(classInfo.msgqname);  // only for sim_std.msg
-    }
-    else if (classInfo.msgbase == "") {
-        if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
-            classInfo.classtype = ClassType::COWNEDOBJECT;
-        }
-        else if (classInfo.keyword == "class") {
-            classInfo.classtype = ClassType::COBJECT;  // Note: we never generate non-cObject classes
-        }
-        else if (classInfo.keyword == "struct") {
-            classInfo.classtype = ClassType::STRUCT;
-        }
-        else {
-            throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", classInfo.keyword.c_str(), classInfo.msgclass.c_str());
-        }
-        // if announced earlier as noncobject, accept that.
-        if (typeTable.isClassDeclared(classInfo.msgqname)) {
-            if (typeTable.getClassType(classInfo.msgqname) == ClassType::NONCOBJECT && classInfo.classtype == ClassType::COBJECT) {
-                classInfo.classtype = ClassType::NONCOBJECT;
-            }
-        }
-    }
-    else if (classInfo.msgbase == "void") {
-        classInfo.classtype = ClassType::NONCOBJECT;
-    }
-    else if (classInfo.msgbaseqname != "") {
-        classInfo.classtype = typeTable.getClassType(classInfo.msgbaseqname);
-    }
-    else {
-        errors->addError(classInfo.nedElement, "unknown base class '%s' for '%s'\n", classInfo.msgbase.c_str(), classInfo.msgname.c_str());
-        classInfo.classtype = ClassType::COBJECT;
-    }
-
-    // check earlier declarations and register this class
-    if (typeTable.isClassDeclared(classInfo.msgqname) && false) // XXX add condition
-        errors->addError(classInfo.nedElement, "attempt to redefine '%s'\n", classInfo.msgname.c_str());
-    typeTable.addDeclaredClass(classInfo.msgqname, classInfo.classtype, classInfo.nedElement);
-
-    //
-    // produce all sorts of derived names
-    //
-    classInfo.generate_class = opts.generateClasses && !getPropertyAsBool(classInfo.props, "existingClass", false);
-    classInfo.generate_descriptor = opts.generateDescriptors && getPropertyAsBool(classInfo.props, "descriptor", true);
-    classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, "descriptor") != "readonly");
-
-    if (getPropertyAsBool(classInfo.props, "customize", false)) {
-        classInfo.gap = 1;
-        classInfo.msgclass = classInfo.msgname + "_Base";
-        classInfo.realmsgclass = classInfo.msgname;
-        classInfo.msgdescclass = makeIdentifier(classInfo.realmsgclass) + "Descriptor";
-    }
-    else {
-        classInfo.gap = 0;
-        classInfo.msgclass = classInfo.msgname;
-        classInfo.realmsgclass = classInfo.msgname;
-        classInfo.msgdescclass = makeIdentifier(classInfo.msgclass) + "Descriptor";
-    }
-    if (classInfo.msgbase == "") {
-        if (classInfo.msgqname == "omnetpp::cObject") {
-            classInfo.msgbaseclass = "";
-        }
-        else if (classInfo.keyword == "message") {
-            classInfo.msgbaseclass = "omnetpp::cMessage";
-        }
-        else if (classInfo.keyword == "packet") {
-            classInfo.msgbaseclass = "omnetpp::cPacket";
-        }
-        else if (classInfo.keyword == "class") {
-            classInfo.msgbaseclass = "omnetpp::cObject";  // note: all classes we generate subclass from cObject!
-        }
-        else if (classInfo.keyword == "struct") {
-            classInfo.msgbaseclass = "";
-        }
-        else {
-            throw NEDException("Internal error");
-        }
-    }
-    else if (classInfo.msgbase == "void") {
-        classInfo.msgbaseclass = "";
-    }
-    else {
-        classInfo.msgbaseclass = classInfo.msgbaseqname;
-    }
-
-    classInfo.omitgetverb = getPropertyAsBool(classInfo.props, "omitGetVerb", false);
-    classInfo.fieldnamesuffix = getProperty(classInfo.props, "fieldNameSuffix", "");
-    if (classInfo.omitgetverb && classInfo.fieldnamesuffix.empty()) {
-        errors->addWarning(classInfo.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
-                                            "adding '_var' suffix to data members to prevent name conflict between them and getter methods\n");
-        classInfo.fieldnamesuffix = "_var";
-    }
-
-    std::string s = getProperty(classInfo.props, "implements");
-    if (!s.empty()) {
-        classInfo.implements = StringTokenizer(s.c_str(), ",").asVector();
-    }
-
-    for (auto& field : classInfo.fieldlist) {
-        analyzeField(classInfo, &field);
-    }
-    for (auto& field :  classInfo.baseclassFieldlist) {
-        analyzeField(classInfo, &field);
-    }
-}
-
-std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
-{
+    // reproduce original source
     std::ostringstream s;
-    NED2Generator(errors).generate(s, nedElement, "");
+    NED2Generator().generate(s, nedElement, "");
     std::string str = s.str();
 
+    // print it inside a comment
     std::ostringstream o;
     o << " * <pre>\n";
     o << opp_indentlines(opp_trim(opp_replacesubstring(opp_replacesubstring(str, "*/", "  ", true), "@", "\\@", true)), " * ");
@@ -1019,13 +317,8 @@ std::string MsgCppGenerator::generatePreComment(NEDElement *nedElement)
     return o.str();
 }
 
-void MsgCppGenerator::generateClass(const ClassInfo& classInfo)
+void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::string& exportDef)
 {
-    if (isQualified(classInfo.msgclass)) {
-        errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", classInfo.msgclass.c_str());
-        return;
-    }
-
     H << "/**\n";
     H << " * Class generated from <tt>" << SL(classInfo.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(classInfo.nedElement);
@@ -1036,7 +329,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& classInfo)
         H << " * The minimum code to be written for " << classInfo.realmsgclass << " is the following:\n";
         H << " *\n";
         H << " * <pre>\n";
-        H << " * class " << TS(opts.exportDef) << classInfo.realmsgclass << " : public " << classInfo.msgclass << "\n";
+        H << " * class " << TS(exportDef) << classInfo.realmsgclass << " : public " << classInfo.msgclass << "\n";
         H << " * {\n";
         H << " *   private:\n";
         H << " *     void copy(const " << classInfo.realmsgclass << "& other) { ... }\n\n";
@@ -1071,7 +364,7 @@ void MsgCppGenerator::generateClass(const ClassInfo& classInfo)
     }
     H << " */\n";
 
-    H << "class " << TS(opts.exportDef) << classInfo.msgclass;
+    H << "class " << TS(exportDef) << classInfo.msgclass;
     const char *baseclassSepar = " : ";
     if (!classInfo.msgbaseclass.empty()) {
         H << baseclassSepar << "public ::" << classInfo.msgbaseclass;  // make namespace explicit and absolute to disambiguate the way PROGRAM understood it
@@ -1086,10 +379,6 @@ void MsgCppGenerator::generateClass(const ClassInfo& classInfo)
     H << "\n{\n";
     H << "  protected:\n";
     for (const FieldInfo& field : classInfo.fieldlist) {
-        if (field.fispointer && field.fisprimitivetype) {
-            errors->addError(field.nedElement, "pointers not supported for primitive types in '%s'\n", classInfo.msgname.c_str());
-            return;
-        }
         if (!field.fisabstract) {
             if (field.fisarray && !field.farraysize.empty()) {
                 H << "    " << field.datatype << " " << field.var << "[" << field.farraysize << "];\n";
@@ -1592,22 +881,16 @@ void MsgCppGenerator::generateClass(const ClassInfo& classInfo)
     }
 }
 
-#define DD(x)
-void MsgCppGenerator::generateStruct(const ClassInfo& classInfo)
+void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef)
 {
-    if (isQualified(classInfo.msgclass)) {
-        errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", classInfo.msgclass.c_str());
-        return;
-    }
-
     H << "/**\n";
     H << " * Struct generated from " << SL(classInfo.nedElement->getSourceLocation()) << " by " PROGRAM ".\n";
     H << " */\n";
     if (classInfo.msgbaseclass.empty()) {
-        H << "struct " << TS(opts.exportDef) << classInfo.msgclass << "\n";
+        H << "struct " << TS(exportDef) << classInfo.msgclass << "\n";
     }
     else {
-        H << "struct " << TS(opts.exportDef) << classInfo.msgclass << " : public ::" << classInfo.msgbaseqname << "\n";
+        H << "struct " << TS(exportDef) << classInfo.msgclass << " : public ::" << classInfo.msgbaseqname << "\n";
     }
     H << "{\n";
     H << "    " << classInfo.msgclass << "();\n";
@@ -1621,8 +904,8 @@ void MsgCppGenerator::generateStruct(const ClassInfo& classInfo)
     H << "};\n\n";
 
     H << "// helpers for local use\n";
-    H << "void " << TS(opts.exportDef) << "__doPacking(omnetpp::cCommBuffer *b, const " << classInfo.msgclass << "& a);\n";
-    H << "void " << TS(opts.exportDef) << "__doUnpacking(omnetpp::cCommBuffer *b, " << classInfo.msgclass << "& a);\n\n";
+    H << "void " << TS(exportDef) << "__doPacking(omnetpp::cCommBuffer *b, const " << classInfo.msgclass << "& a);\n";
+    H << "void " << TS(exportDef) << "__doUnpacking(omnetpp::cCommBuffer *b, " << classInfo.msgclass << "& a);\n\n";
 
     H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
     H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
@@ -1695,7 +978,7 @@ void MsgCppGenerator::generateStruct(const ClassInfo& classInfo)
     CC << "}\n\n";
 }
 
-void MsgCppGenerator::generateDescriptorClass(const ClassInfo& classInfo)
+void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 {
     CC << "class " << classInfo.msgdescclass << " : public omnetpp::cClassDescriptor\n";
     CC << "{\n";
@@ -1730,7 +1013,7 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 
     // ctor, dtor
     size_t fieldcount = classInfo.fieldlist.size();
-    std::string qualifiedrealmsgclass = prefixWithNamespace(classInfo.realmsgclass);
+    std::string qualifiedrealmsgclass = prefixWithNamespace(classInfo.realmsgclass, classInfo.namespacename);
     CC << "" << classInfo.msgdescclass << "::" << classInfo.msgdescclass << "() : omnetpp::cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << classInfo.msgbaseclass << "\")\n";
     CC << "{\n";
     CC << "    propertynames = nullptr;\n";
@@ -2063,10 +1346,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     for (size_t i = 0; i < fieldcount; i++) {
         const FieldInfo& field = classInfo.fieldlist[i];
         if (field.feditable || (classInfo.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
-            if (field.fromstring.empty()) {
-                errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
-                continue;
-            }
+            if (field.fromstring.empty())
+                throw opp_runtime_error("Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str()); // ensured by MsgAnalyzer
             std::string fromstringCall = makeFuncall("value", field.fromstring);
             CC << "        case " << i << ": ";
             if (classInfo.classtype == ClassType::STRUCT) {
@@ -2153,55 +1434,8 @@ void MsgCppGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "\n";
 }
 
-MsgCppGenerator::EnumInfo MsgCppGenerator::extractEnumInfo(EnumElement *node)
+void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)
 {
-    EnumInfo enumInfo;
-    enumInfo.nedElement = node;
-    enumInfo.enumName = ptr2str(node->getAttribute("name"));
-    enumInfo.enumQName = canonicalizeQName(namespaceName, enumInfo.enumName);
-
-    // prepare enum items:
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
-        switch (child->getTagCode()) {
-            case NED_ENUM_FIELDS:
-                for (NEDElement *e = child->getFirstChild(); e; e = e->getNextSibling()) {
-                    switch (e->getTagCode()) {
-                        case NED_ENUM_FIELD: {
-                            EnumItem item;
-                            item.nedElement = e;
-                            item.name = ptr2str(e->getAttribute("name"));
-                            item.value = ptr2str(e->getAttribute("value"));
-                            enumInfo.fieldlist.push_back(item);
-                            break;
-                        }
-
-                        case NED_COMMENT:
-                            break;
-
-                        default:
-                            errors->addError(e, "unaccepted element '%s'", e->getTagName());
-                    }
-                }
-                break;
-
-            case NED_COMMENT:
-                break;
-
-            default:
-                errors->addError(child, "unaccepted element '%s'", child->getTagName());
-                break;
-        }
-    }
-    return enumInfo;
-}
-
-void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
-{
-    if (isQualified(enumInfo.enumName)) {
-        errors->addError(enumInfo.nedElement, "type name may not be qualified: '%s'\n", enumInfo.enumName.c_str());
-        return;
-    }
-
     H << "/**\n";
     H << " * Enum generated from <tt>" << SL(enumInfo.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(enumInfo.nedElement);
@@ -2228,12 +1462,12 @@ void MsgCppGenerator::generateEnum(const EnumInfo& enumInfo)
     CC << ")\n\n";
 }
 
-std::string MsgCppGenerator::prefixWithNamespace(const std::string& name)
+std::string MsgCodeGenerator::prefixWithNamespace(const std::string& name, const std::string& namespaceName)
 {
     return !namespaceName.empty() ? namespaceName + "::" + name : name;  // prefer name from local namespace
 }
 
-std::string MsgCppGenerator::makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex, const std::string& value)
+std::string MsgCodeGenerator::makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex, const std::string& value)
 {
     if (funcTemplate[0] == '.' || funcTemplate[0] == '-') {
         // ".foo()" becomes "var.foo()", "->foo()" becomes "var->foo()"
@@ -2249,26 +1483,7 @@ std::string MsgCppGenerator::makeFuncall(const std::string& var, const std::stri
     }
 }
 
-
-bool MsgCppGenerator::getPropertyAsBool(const Properties& p, const char *name, bool defval)
-{
-    Properties::const_iterator it = p.find(name);
-    if (it == p.end())
-        return defval;
-    if (it->second == "false")
-        return false;
-    return true;
-}
-
-std::string MsgCppGenerator::getProperty(const Properties& p, const char *name, const std::string& defval)
-{
-    Properties::const_iterator it = p.find(name);
-    if (it == p.end())
-        return defval;
-    return it->second;
-}
-
-void MsgCppGenerator::generateTemplates()
+void MsgCodeGenerator::generateTemplates()
 {
     CC << "// forward\n";
     CC << "template<typename T, typename A>\n";
@@ -2304,32 +1519,20 @@ void MsgCppGenerator::generateTemplates()
     CC << "\n";
 }
 
-void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
+void MsgCodeGenerator::generateImport(const std::string& importName)
 {
-    if (namespaceName.empty()) {
-        errors->addError(element, "namespace name is empty\n");
-    }
+    // assuming C++ include path is identical to msg import path, we can directly derive the include from importName
+    std::string header = opp_replacesubstring(importName, ".", "/", true) + "_m.h";
+    H << "#include \"" << header << "\" // import " << importName << "\n\n";
+}
 
-    // split namespacename into namespacenamevector
-    for (size_t pos = 0; ; ) {
-        size_t colonPos = namespaceName.find("::", pos);
-        if (colonPos != namespaceName.npos) {
-            namespaceNameVector.push_back(namespaceName.substr(pos, colonPos-pos));
-            pos = colonPos + 2;
-        }
-        else {
-            namespaceNameVector.push_back(namespaceName.substr(pos));
-            break;
-        }
-    }
-
-    // output namespace-begin lines; also check for reserved words
+void MsgCodeGenerator::generateNamespaceBegin(const std::string& namespaceName)
+{
     H << std::endl;
-    for (StringVector::const_iterator it = namespaceNameVector.begin(); it != namespaceNameVector.end(); ++it) {
-        if (RESERVED_WORDS.find(*it) != RESERVED_WORDS.end())
-            errors->addError(element, "namespace name '%s' is a reserved word\n", (*it).c_str());
-        H << "namespace " << *it << " {\n";
-        CC << "namespace " << *it << " {\n";
+    auto tokens = opp_split(namespaceName, "::");
+    for (auto token : tokens) {
+        H << "namespace " << token << " {\n";
+        CC << "namespace " << token << " {\n";
     }
     H << std::endl;
     CC << std::endl;
@@ -2337,15 +1540,33 @@ void MsgCppGenerator::generateNamespaceBegin(NEDElement *element)
     generateTemplates();
 }
 
-void MsgCppGenerator::generateNamespaceEnd()
+void MsgCodeGenerator::generateNamespaceEnd(const std::string& namespaceName)
 {
-    for (StringVector::const_reverse_iterator it = namespaceNameVector.rbegin(); it != namespaceNameVector.rend(); ++it) {
-        H << "} // namespace " << *it << std::endl;
-        CC << "} // namespace " << *it << std::endl;
+    auto tokens = opp_split(namespaceName, "::");
+    std::reverse(tokens.begin(), tokens.end());
+    for (auto token : tokens) {
+        H << "} // namespace " << token << std::endl;
+        CC << "} // namespace " << token << std::endl;
     }
     H << std::endl;
     CC << std::endl;
-    namespaceNameVector.clear();
+}
+
+void MsgCodeGenerator::generateCplusplusBlock(const std::string& target, const std::string& body0)
+{
+    std::string body = body0;
+    size_t pos0 = body.find_first_not_of("\r\n");
+    if (pos0 != body.npos)
+        body = body.substr(pos0);
+    size_t pos = body.find_last_not_of("\r\n");
+    if (pos != body.npos)
+        body = body.substr(0, pos+1);
+    if (target == "" || target == "h")
+        H << "// cplusplus {{\n" << body << "\n// }}\n\n";
+    else if (target == "cc")
+        CC << "// cplusplus {{\n" << body << "\n// }}\n\n";
+    else
+        throw opp_runtime_error("unrecognized target '%s' for cplusplus block", target.c_str());
 }
 
 }  // namespace nedxml
