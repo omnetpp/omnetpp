@@ -219,7 +219,7 @@ std::string NEDTypeInfo::getNedSource() const
 {
     std::stringstream out;
     NEDErrorStore errors;
-    generateNED2(out, getTree(), &errors);
+    generateNED2(out, getTree());
     return out.str();
 }
 

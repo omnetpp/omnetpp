@@ -175,7 +175,7 @@ void generateNED(std::ostream& out, NEDElement *node, NEDErrorStore *e, bool old
     if (oldsyntax)
         generateNED1(out, node, e);
     else
-        generateNED2(out, node, e);
+        generateNED2(out, node);
 }
 
 bool processFile(const char *fname, NEDErrorStore *errors)

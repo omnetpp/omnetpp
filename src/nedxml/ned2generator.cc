@@ -31,9 +31,9 @@ using std::ostream;
 
 #define DEFAULTINDENT    "            "
 
-void generateNED2(ostream& out, NEDElement *node, NEDErrorStore *e)
+void generateNED2(ostream& out, NEDElement *node)
 {
-    NED2Generator nedgen(e);
+    NED2Generator nedgen;
     nedgen.generate(out, node, "");
 }
 
@@ -41,11 +41,10 @@ void generateNED2(ostream& out, NEDElement *node, NEDErrorStore *e)
 
 #define OUT    (*outp)
 
-NED2Generator::NED2Generator(NEDErrorStore *e)
+NED2Generator::NED2Generator()
 {
     outp = nullptr;
     indentSize = 4;
-    errors = e;
 }
 
 NED2Generator::~NED2Generator()

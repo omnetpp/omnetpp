@@ -30,7 +30,7 @@ namespace nedxml {
  *
  * @ingroup NEDGenerator
  */
-NEDXML_API void generateNED2(std::ostream& out, NEDElement *node, NEDErrorStore *e);
+NEDXML_API void generateNED2(std::ostream& out, NEDElement *node);
 
 /**
  * @brief Generates NED code from a NED object tree.
@@ -45,13 +45,12 @@ class NEDXML_API NED2Generator
   protected:
     int indentSize;
     std::ostream *outp;
-    NEDErrorStore *errors;
 
   public:
     /**
      * Constructor.
      */
-    NED2Generator(NEDErrorStore *errors);
+    NED2Generator();
 
     /**
      * Destructor.
