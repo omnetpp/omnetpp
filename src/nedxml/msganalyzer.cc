@@ -399,9 +399,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         }
         else {
             field->getter = str("get") + capfieldname;
-            field->mGetter = str("get") + capfieldname;             //TODO "get" (for compatibility) or "getMutable"  or "access"
             field->getsize = str("get") + capfieldname + "ArraySize";
         }
+        field->mGetter = str("getMutable") + capfieldname;             //TODO "field->getter" (for compatibility) or "getMutable"  or "access"
 
         // allow customization of names
         if (getProperty(field->fprops, "setter") != "") {
@@ -410,7 +410,6 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         if (getProperty(field->fprops, "getter") != "") {
             field->getter = getProperty(field->fprops, "getter");
         }
-        field->mGetter = field->getter;
         if (getProperty(field->fprops, "mgetter") != "") {
             field->mGetter = getProperty(field->fprops, "mgetter");
         }
