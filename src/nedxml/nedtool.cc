@@ -360,7 +360,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
                     if (opt_msgimports) {
                         // new syntax (5.3 and up)
                         msg_options.importPath = opt_importpath;
-                        MsgCompiler generator(errors, msg_options);
+                        MsgCompiler generator(msg_options, errors);
                         std::set<std::string> dependencies;
                         generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname, dependencies);
                         if (opt_generatedependencies)

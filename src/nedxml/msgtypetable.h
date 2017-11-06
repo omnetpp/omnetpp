@@ -58,10 +58,6 @@ class NEDXML_API MsgTypeTable
         const char *emptyValue;
     };
 
-    static TypeDesc _PRIMITIVE_TYPES[];
-    typedef std::map<std::string,TypeDesc> TypeDescMap;
-    TypeDescMap PRIMITIVE_TYPES;
-
     typedef std::map<std::string, std::string> Properties;  //FIXME kell egy reszletesebb modell...
 
     class FieldInfo {
@@ -125,15 +121,20 @@ class NEDXML_API MsgTypeTable
       public:
         typedef std::vector<FieldInfo> Fieldlist;
 
-        NEDElement *nedElement;
+        NEDElement *nedElement = nullptr;
         std::string keyword;        // struct/class/packet from MSG
         std::string msgname;        // class name from MSG
-        std::string msgbase;        // base class name from MSG
+        std::string msgqname;
         Properties props;           // class properties
 
-        bool gap;                   // true if @customize
-        bool omitgetverb;
-        ClassType classtype;
+        bool classInfoComplete = false;  // whether following fields are filled in
+        bool fieldsComplete = false;  // whether fieldlist / baseclassFieldlist are filled in
+
+        std::string msgbaseqname;
+        std::string msgbase;        // base class name from MSG
+        bool gap = false;                   // true if @customize
+        bool omitgetverb = false;
+        ClassType classtype = ClassType::UNKNOWN;
         std::string namespacename;
         std::string msgclass;
         std::string realmsgclass;
@@ -143,19 +144,24 @@ class NEDXML_API MsgTypeTable
         Fieldlist fieldlist;        // list of fields
         Fieldlist baseclassFieldlist;   //modified baseclass fields, e.g. baseclass.basefield = value
 
-        bool generate_class;
-        bool generate_descriptor;
-        bool generate_setters_in_descriptor;
+        bool generate_class = true;
+        bool generate_descriptor = true;
+        bool generate_setters_in_descriptor = true;
 
-        //TODO kellenek ezek?
-        std::string msgqname;
-        std::string msgbaseqname;
 
         StringVector implements;    //value vector from @implements
 
-      public:
-        ClassInfo() : nedElement(nullptr), gap(false), omitgetverb(false), classtype(ClassType::UNKNOWN),
-              generate_class(true), generate_descriptor(true), generate_setters_in_descriptor(true) {}
+        std::string defaultvalue;       // value (or empty)
+        bool isopaque = false;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
+        bool byvalue = false;           // @byvalue, default value is false        // TODO: @byvalue should rather be the attribute of the field's type, not the field itself
+        bool isprimitivetype = false;  // whether primitive or compound type (TODO merge into ClassType?)
+        std::string datatype;   // member C++ datatype
+        std::string argtype;    // setter C++ argument type
+        std::string rettype;    // getter C++ return type
+        std::string tostring;   // function to convert data to string, defined in property @tostring
+        std::string fromstring; // function to convert string to data member, defined in property @fromstring
+        std::string maybe_c_str;       // uses ".c_str()"
+//??        bool feditable;         // @editable(true)
     };
 
     class EnumItem
@@ -172,21 +178,19 @@ class NEDXML_API MsgTypeTable
     class EnumInfo
     {
       public:
-        EnumElement *nedElement;
+        NEDElement *nedElement;
         std::string enumName;
         std::string enumQName;
         typedef std::vector<EnumItem> FieldList;
+        bool isDeclaration = false; // i.e. not a definition
         FieldList fieldlist;
       public:
         EnumInfo() : nedElement(nullptr) {}
     };
 
-    std::map<std::string,ClassType> declaredClasses;
+  private:
     std::map<std::string,ClassInfo> definedClasses;
-
-    std::set<std::string> declaredEnums;
     std::map<std::string,EnumInfo> definedEnums;
-
     std::vector<NEDElement*> importedMsgFiles;
 
   protected:
@@ -200,9 +204,14 @@ class NEDXML_API MsgTypeTable
     ~MsgTypeTable();
     StringVector lookupExistingClassName(const std::string& name, const std::string& contextNamespace);
     StringVector lookupExistingEnumName(const std::string& name, const std::string& contextNamespace);
-    bool isClassDeclared(const std::string& classqname) { return declaredClasses.find(classqname) != declaredClasses.end(); }
-    void addDeclaredClass(const std::string& qname, ClassType classType, NEDElement *context);
+    bool isClassDefined(const std::string& classqname) { return definedClasses.find(classqname) != definedClasses.end(); }
+    bool isEnumDefined(const std::string& enumqname) { return definedEnums.find(enumqname) != definedEnums.end(); }
+    ClassInfo& getClassInfo(const std::string& classqname);
+    const EnumInfo& getEnumInfo(const std::string& qname);
     ClassType getClassType(const std::string& qname);
+    void storeMsgFile(NEDElement *tree) {importedMsgFiles.push_back(tree);}
+    void addClass(const ClassInfo& classInfo) {definedClasses[classInfo.msgqname] = classInfo;} // TODO assert not already there
+    void addEnum(const EnumInfo& enumInfo) {definedEnums[enumInfo.enumQName] = enumInfo;}  //TODO assert not already there
 };
 
 } // namespace nedxml

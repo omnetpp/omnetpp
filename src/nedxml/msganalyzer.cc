@@ -30,6 +30,9 @@
 
 #include "omnetpp/simkerneldefs.h"
 
+//TODO camelize names of supported properties!!! (e.g. cpptype -> cppType, fromstring -> fromString)
+//TODO field's props should be produced by merging the type's props into it? (to be accessible from inspectors)
+
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -43,7 +46,12 @@ inline std::string str(const char *s) {
 
 static char charToNameFilter(char ch)
 {
-    return (isalnum(ch)) ? ch : '_';
+    return isalnum(ch) ? ch : '_';
+}
+
+inline bool isQualified(const std::string& qname)
+{
+    return qname.find("::") != qname.npos;
 }
 
 static std::string canonicalizeQName(const std::string& namespac, const std::string& name)
@@ -95,94 +103,20 @@ P check_and_cast(T *p)
     return ret;
 }
 
-static const char *_RESERVED_WORDS[] =
-{
-    "namespace", "cplusplus", "struct", "message", "packet", "class", "noncobject",
-    "enum", "extends", "abstract", "readonly", "properties", "fields", "unsigned",
-    "true", "false", "for", "while", "if", "else", "do", "enum", "class", "struct",
-    "typedef", "public", "private", "protected", "auto", "register", "sizeof", "void",
-    "new", "delete", "explicit", "static", "extern", "return", "try", "catch",
-    nullptr
+MsgAnalyzer::StringSet MsgAnalyzer::RESERVED_WORDS = {
+        "namespace", "cplusplus", "struct", "message", "packet", "class", "noncobject",
+        "enum", "extends", "abstract", "readonly", "properties", "fields", "unsigned",
+        "true", "false", "for", "while", "if", "else", "do", "enum", "class", "struct",
+        "typedef", "public", "private", "protected", "auto", "register", "sizeof", "void",
+        "new", "delete", "explicit", "static", "extern", "return", "try", "catch",
 };
 
-MsgAnalyzer::StringSet MsgAnalyzer::RESERVED_WORDS;
-
-void MsgAnalyzer::initDescriptors()
+MsgAnalyzer::MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, NEDErrorStore *errors) : errors(errors), typeTable(typeTable), opts(opts)
 {
-    if (RESERVED_WORDS.empty()) {
-        for (int i = 0; typeTable._PRIMITIVE_TYPES[i].nedTypeName; ++i)
-            RESERVED_WORDS.insert(typeTable._PRIMITIVE_TYPES[i].nedTypeName);
-        for (int i = 0; _RESERVED_WORDS[i]; ++i)
-            RESERVED_WORDS.insert(_RESERVED_WORDS[i]);
-    }
-}
-
-MsgAnalyzer::MsgAnalyzer(MsgTypeTable& typeTable, NEDErrorStore *e) : typeTable(typeTable)
-{
-    initDescriptors();
-    errors = e;
 }
 
 MsgAnalyzer::~MsgAnalyzer()
 {
-}
-
-void MsgAnalyzer::extractClassDecl(NEDElement *child, const std::string& namespaceName)
-{
-    std::string name = ptr2str(child->getAttribute("name"));
-    if (RESERVED_WORDS.find(name) != RESERVED_WORDS.end()) {
-        errors->addError(child, "type name '%s' is a reserved word\n", name.c_str());
-        return;
-    }
-
-    std::string type0 = child->getTagName();
-    std::string myclass = name;
-    std::string baseclass = ptr2str(child->getAttribute("extends-name"));
-    ClassType type;
-    bool isCobject = (ptr2str(child->getAttribute("is-cobject")) == "true");
-
-    std::string classqname = canonicalizeQName(namespaceName, myclass);
-
-    if (type0 == "struct-decl") {
-        type = ClassType::STRUCT;
-    }
-    else if (type0 == "message-decl" || type0 == "packet-decl") {
-        type = ClassType::COWNEDOBJECT;
-    }
-    else if (type0 == "class-decl") {
-        if (!isCobject) {
-            type = ClassType::NONCOBJECT;
-            if (!baseclass.empty()) {
-                errors->addError(child, "'%s': the keywords noncobject and extends cannot be used together", name.c_str());
-            }
-        }
-        else if (baseclass == "") {
-            type = ClassType::COWNEDOBJECT;
-        }
-        else if (baseclass == "void") {
-            type = ClassType::NONCOBJECT;
-        }
-        else {
-            StringVector found = typeTable.lookupExistingClassName(baseclass, namespaceName);
-            if (found.size() == 1) {
-                type = typeTable.getClassType(found[0]);
-            }
-            else if (found.empty()) {
-                errors->addError(child, "'%s': unknown ancestor class '%s'\n", myclass.c_str(), baseclass.c_str());
-                type = ClassType::COBJECT;
-            }
-            else {
-                errors->addWarning(child, "'%s': ambiguous ancestor class '%s'; possibilities: '%s'\n", myclass.c_str(), baseclass.c_str(), join(found, "','").c_str());
-                type = typeTable.getClassType(found[0]);
-            }
-        }
-    }
-    else {
-        errors->addError(child, "invalid type '%s' in class '%s'\n", type0.c_str(), myclass.c_str());
-        return;
-    }
-
-    typeTable.addDeclaredClass(classqname, type, child);
 }
 
 MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(NEDElement *node)
@@ -213,16 +147,41 @@ MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(NEDElement *node)
     return props;
 }
 
-MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(NEDElement *node, const std::string& namespaceName)
+MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(NEDElement *node, const std::string& namespaceName)
 {
     ClassInfo classInfo;
     classInfo.nedElement = node;
-
-    classInfo.keyword = node->getTagName();
-    classInfo.msgname = ptr2str(node->getAttribute("name"));
-    classInfo.msgbase = ptr2str(node->getAttribute("extends-name"));
-    classInfo.namespacename = namespaceName;
     classInfo.props = extractPropertiesOf(node);
+    std::string actually = getProperty(classInfo.props, "actually", "");
+    classInfo.keyword = node->getTagName();
+    classInfo.msgname = actually != "" ? actually : ptr2str(node->getAttribute("name"));
+    classInfo.namespacename = namespaceName;
+    classInfo.msgqname = prefixWithNamespace(classInfo.msgname, namespaceName);
+    return classInfo;
+}
+
+void MsgAnalyzer::ensureAnalyzed(ClassInfo& classInfo)
+{
+    if (!classInfo.classInfoComplete) {
+        extractClassInfo(classInfo);
+        analyzeClassOrStruct(classInfo, classInfo.namespacename);
+        classInfo.classInfoComplete = true;
+    }
+}
+
+void MsgAnalyzer::ensureFieldsAnalyzed(ClassInfo& classInfo)
+{
+    if (!classInfo.fieldsComplete) {
+        analyzeFields(classInfo, classInfo.namespacename);
+        classInfo.fieldsComplete = true;
+    }
+}
+
+void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
+{
+    NEDElement *node = classInfo.nedElement;
+
+    classInfo.msgbase = ptr2str(node->getAttribute("extends-name"));
 
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
@@ -230,7 +189,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(NEDElement *node, const std
                 FieldInfo field;
                 field.nedElement = child;
                 field.fname = ptr2str(child->getAttribute("name"));
-                field.datatype = ptr2str(child->getAttribute("data-type"));  // ha ez nincs, eltunnek a struct mezoi....
+                field.datatype = ptr2str(child->getAttribute("data-type"));
                 field.ftype = ptr2str(child->getAttribute("data-type"));
                 field.fval = ptr2str(child->getAttribute("default-value"));
                 field.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
@@ -255,11 +214,11 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(NEDElement *node, const std
                 break;
 
             case NED_PROPERTY_DECL:
-                errors->addError(child, "syntax error: property '%s' declaration unaccepted here", child->getTagName());
+                errors->addError(child, "syntax error: property '%s' declaration unaccepted here", child->getTagName()); //TODO into some validator
                 break;
 
             case NED_PROPERTY_KEY:
-                errors->addError(child, "syntax error: property key '%s' unaccepted here", child->getTagName());
+                errors->addError(child, "syntax error: property key '%s' unaccepted here", child->getTagName()); //TODO into some validator
                 break;
 
             case NED_COMMENT:
@@ -270,102 +229,206 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(NEDElement *node, const std
                 break;
         }
     }
-    return classInfo;
+}
+
+void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& namespaceName)
+{
+    // determine base class
+    if (classInfo.msgbase == "") {
+        if (classInfo.keyword == "message")
+            classInfo.msgbaseqname = "omnetpp::cMessage";
+        else if (classInfo.keyword == "packet")
+            classInfo.msgbaseqname = "omnetpp::cPacket";
+        else
+            classInfo.msgbaseqname = "";
+    }
+    else {
+        StringVector found = typeTable->lookupExistingClassName(classInfo.msgbase, namespaceName);
+        if (found.size() == 1) {
+            classInfo.msgbaseqname = found[0];
+            ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
+            ensureAnalyzed(baseClassInfo);
+            if (baseClassInfo.isprimitivetype)
+                errors->addError(classInfo.nedElement, "'%s': primitive type '%s' cannot be used as base class", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
+        }
+        else if (found.empty()) {
+            errors->addError(classInfo.nedElement, "'%s': unknown base class '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
+            classInfo.msgbaseqname = "omnetpp::cMessage";
+        }
+        else {
+            errors->addError(classInfo.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
+                    classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(found, "','").c_str());
+            classInfo.msgbaseqname = found[0];
+        }
+    }
+
+    // determine classType
+    if (classInfo.keyword == "struct") {
+        classInfo.classtype = ClassType::STRUCT;
+    }
+    else {
+        if (classInfo.msgqname == "omnetpp::cObject")
+            classInfo.classtype = ClassType::COBJECT;
+        else if (classInfo.msgqname == "omnetpp::cNamedObject")
+            classInfo.classtype = ClassType::CNAMEDOBJECT;
+        else if (classInfo.msgqname == "omnetpp::cOwnedObject")
+            classInfo.classtype = ClassType::COWNEDOBJECT;
+        else if (classInfo.msgbaseqname == "")
+            classInfo.classtype = ClassType::NONCOBJECT;
+        else if (typeTable->isClassDefined(classInfo.msgbaseqname)) {
+            ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
+            ensureAnalyzed(baseClassInfo);
+            classInfo.classtype = baseClassInfo.classtype;
+        }
+        else
+            classInfo.classtype = ClassType::NONCOBJECT; // assume non-cObject
+    }
+
+    // isPrimitive, isOpaque, byValue, data types, etc.
+    classInfo.isprimitivetype = getPropertyAsBool(classInfo.props, "primitive", false);
+    classInfo.isopaque = getPropertyAsBool(classInfo.props, "opaque", classInfo.isprimitivetype); // primitive types are also opaque and passed by value
+    classInfo.byvalue = getPropertyAsBool(classInfo.props, "byvalue", classInfo.isprimitivetype);
+    classInfo.defaultvalue = getProperty(classInfo.props, "defaultvalue", ""); //TODO use in fields
+
+    classInfo.datatype = getProperty(classInfo.props, "cpptype", "");
+    classInfo.argtype = getProperty(classInfo.props, "argtype", "");
+    classInfo.rettype  = getProperty(classInfo.props, "rettype", "");
+
+    classInfo.tostring  = getProperty(classInfo.props, "tostring", "");
+    classInfo.fromstring  = getProperty(classInfo.props, "fromstring", "");
+    classInfo.maybe_c_str  = getProperty(classInfo.props, "maybe_c_str", "");
+
+    //
+    // produce all sorts of derived names
+    //
+    bool existingClass = getPropertyAsBool(classInfo.props, "existingClass", false);
+    classInfo.generate_class = opts.generateClasses && !existingClass;
+    classInfo.generate_descriptor = opts.generateDescriptors && getPropertyAsBool(classInfo.props, "descriptor", true);
+    classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, "descriptor") != "readonly");
+
+    if (!existingClass && isQualified(classInfo.msgname))
+        errors->addError(classInfo.nedElement, "class name may only contain '::' when generating descriptor for an existing class");
+
+    classInfo.gap = getPropertyAsBool(classInfo.props, "customize", false);
+
+    if (classInfo.gap) {
+        classInfo.msgclass = classInfo.msgname + "_Base";
+        classInfo.realmsgclass = classInfo.msgname;
+        classInfo.msgdescclass = makeIdentifier(classInfo.realmsgclass) + "Descriptor";
+    }
+    else {
+        classInfo.msgclass = classInfo.msgname;
+        classInfo.realmsgclass = classInfo.msgname;
+        classInfo.msgdescclass = makeIdentifier(classInfo.msgclass) + "Descriptor";
+    }
+
+    classInfo.msgbaseclass = classInfo.msgbaseqname;
+
+    classInfo.omitgetverb = getPropertyAsBool(classInfo.props, "omitGetVerb", false);
+    classInfo.fieldnamesuffix = getProperty(classInfo.props, "fieldNameSuffix", "");
+    if (classInfo.omitgetverb && classInfo.fieldnamesuffix.empty()) {
+        errors->addWarning(classInfo.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
+                                                 "adding '_var' suffix to data members to prevent name conflict between them and getter methods");
+        classInfo.fieldnamesuffix = "_var";
+    }
+
+    std::string s = getProperty(classInfo.props, "implements");
+    if (!s.empty())
+        classInfo.implements = StringTokenizer(s.c_str(), ",").asVector();
+}
+
+void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespaceName)
+{
+    for (auto& field : classInfo.fieldlist)
+        analyzeField(classInfo, &field, namespaceName);
+//    for (auto& field :  classInfo.baseclassFieldlist)
+//        analyzeField(classInfo, &field, namespaceName);
 }
 
 void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName)
 {
-    if (field->fisabstract && !classInfo.gap) {
-        errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", classInfo.msgname.c_str());
-    }
+    Assert(!field->ftype.empty()); // base class fields don't need any analysis!
 
-    // determine field data type
-    if (field->ftype.empty()) {
-        // base class field assignment
-        field->classtype = ClassType::UNKNOWN;
-        field->fisprimitivetype = false; //FIXME we don't know
+    if (field->fisabstract && !classInfo.gap)
+        errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'", classInfo.msgname.c_str());
+
+    StringVector candidateTypes = typeTable->lookupExistingClassName(field->ftype, namespaceName);
+    if (candidateTypes.size() == 1) {
+        field->ftypeqname = candidateTypes[0];
     }
-    else if (containsKey(typeTable.PRIMITIVE_TYPES, field->ftype)) {
-        field->fisprimitivetype = true;
-        field->ftypeqname = "";  // unused
-        field->classtype = ClassType::NONCOBJECT;
+    else if (candidateTypes.empty()) {
+        errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+        field->ftypeqname = "omnetpp::cObject";
     }
     else {
-        field->fisprimitivetype = false;
-
-        StringVector candidateTypes = typeTable.lookupExistingClassName(field->ftype, namespaceName);
-        if (candidateTypes.size() == 1) {
-            field->ftypeqname = candidateTypes[0];
-        }
-        else if (candidateTypes.empty()) {
-            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-            field->ftypeqname = "omnetpp::cObject";
-        }
-        else {
-            errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(candidateTypes, ", ").c_str());
-            field->ftypeqname = candidateTypes[0];
-        }
-
-        field->classtype = typeTable.getClassType(field->ftypeqname);
-
-        if (field->ftypeqname != "omnetpp::cObject")
-            field->ftypeqname = str("::") + field->ftypeqname; //FIXME why, really?
+        errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(candidateTypes, ", ").c_str());
+        field->ftypeqname = candidateTypes[0];
     }
 
-    if (classInfo.generate_class) {
-        if (field->classtype == ClassType::COWNEDOBJECT && !(classInfo.classtype == ClassType::COBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COWNEDOBJECT)) {
-            errors->addError(field->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-        }
-    }
+    ClassInfo& fieldClassInfo = typeTable->getClassInfo(field->ftypeqname);
+    ensureAnalyzed(fieldClassInfo);
+    field->classtype = fieldClassInfo.classtype;
+    field->fisprimitivetype = fieldClassInfo.isprimitivetype;
+
+    if (classInfo.generate_class)
+        if (field->classtype == ClassType::COWNEDOBJECT && !(classInfo.classtype == ClassType::COBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COWNEDOBJECT))
+            errors->addError(field->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
 
     if (field->fispointer && field->fisprimitivetype) {
-        errors->addError(field->nedElement, "pointers not supported for primitive types in '%s'\n", classInfo.msgname.c_str());
+        errors->addError(field->nedElement, "pointers not supported for primitive types in '%s'", classInfo.msgname.c_str());
         return;
     }
 
     if (field->fisarray && field->farraysize.empty() && !field->fval.empty())
-        errors->addError(field->nedElement, "unaccepted default value for variable length vector field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+        errors->addError(field->nedElement, "unaccepted default value for variable length vector field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
     if (field->fispointer) {
         if (field->fval.empty())
             field->fval = "nullptr";
     }
+
     field->fnopack = getPropertyAsBool(field->fprops, "nopack", false);
     field->feditable = getPropertyAsBool(field->fprops, "editable", false);
     field->editNotDisabled = getPropertyAsBool(field->fprops, "editable", true);
-    field->fopaque = getPropertyAsBool(field->fprops, "opaque", false);
+    field->fopaque = getPropertyAsBool(field->fprops, "opaque", fieldClassInfo.isopaque);
     field->overrideGetter = getPropertyAsBool(field->fprops, "overridegetter", false) || getPropertyAsBool(field->fprops, "override", false);
     field->overrideSetter = getPropertyAsBool(field->fprops, "overridesetter", false) || getPropertyAsBool(field->fprops, "override", false);
-    field->tostring = getProperty(field->fprops, "tostring", "");
-    field->fromstring = getProperty(field->fprops, "fromstring", "");
-    if (hasProperty(field->fprops, "byvalue")) {
-        if (field->fispointer)
-            errors->addError(field->nedElement, "unaccepted @byvalue property for pointer field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-        else if (field->fisprimitivetype)
-            errors->addError(field->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'\n", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-    }
-    field->byvalue = getPropertyAsBool(field->fprops, "byvalue", field->fisprimitivetype);
 
-    // resolve enum namespace
+    // resolve enum
     field->enumname = getProperty(field->fprops, "enum");
     if (!field->enumname.empty()) {
-        StringVector found = typeTable.lookupExistingEnumName(field->enumname, namespaceName);
+        StringVector found = typeTable->lookupExistingEnumName(field->enumname, namespaceName);
         if (found.size() == 1) {
             field->enumqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(field->nedElement, "undeclared enum '%s' in field '%s' in '%s'\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+            errors->addError(field->nedElement, "undeclared enum '%s' in field '%s' in '%s'", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
             field->enumqname = "";
         }
         else {
             errors->addWarning(field->nedElement, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
             field->enumqname = found[0];
         }
-        field->fprops["enum"] = field->enumqname;  // need to modify the property in place
-        if (field->tostring.empty())
-            field->tostring = str("enum2string($, \"") + field->enumqname + "\")";
-        if (field->fromstring.empty())
-            field->fromstring = str("(") + field->enumqname + ")string2enum($, \"" + field->enumqname + "\")";
+        field->fprops["enum"] = field->enumqname; // need to overwrite it in props, because Qtenv will look up the enum by qname
     }
+
+//    if (hasProperty(field->fprops, "byvalue")) {
+//        if (field->fispointer)
+//            errors->addError(field->nedElement, "unaccepted @byvalue property for pointer field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+//        else if (field->fisprimitivetype)
+//            errors->addError(field->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+//    }
+
+    field->byvalue = getPropertyAsBool(field->fprops, "byvalue", fieldClassInfo.byvalue);
+
+    // fromstring/tostring
+    field->fromstring = fieldClassInfo.fromstring;
+    field->tostring = fieldClassInfo.tostring;
+    if (!field->enumname.empty()) {
+        field->tostring = str("enum2string($, \"") + field->enumqname + "\")";
+        field->fromstring = str("(") + field->enumqname + ")string2enum($, \"" + field->enumqname + "\")";
+    }
+    field->fromstring = getProperty(field->fprops, "fromstring", field->fromstring);
+    field->tostring = getProperty(field->fprops, "tostring", field->tostring);
 
     // variable name
     if (classInfo.classtype == ClassType::STRUCT) {
@@ -376,11 +439,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->argname = field->fname;
     }
 
-    if (field->fispointer) {
-        field->fisownedpointer = getPropertyAsBool(field->fprops, "owned", field->classtype == ClassType::COWNEDOBJECT);
-    }
-    else
-        field->fisownedpointer = false;
+    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, "owned", field->classtype == ClassType::COWNEDOBJECT);
 
     field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
     std::string sizetypeprop = getProperty(field->fprops, "sizetype");
@@ -404,60 +463,41 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->mGetter = str("getMutable") + capfieldname;             //TODO "field->getter" (for compatibility) or "getMutable"  or "access"
 
         // allow customization of names
-        if (getProperty(field->fprops, "setter") != "") {
+        if (getProperty(field->fprops, "setter") != "")
             field->setter = getProperty(field->fprops, "setter");
-        }
-        if (getProperty(field->fprops, "getter") != "") {
+        if (getProperty(field->fprops, "getter") != "")
             field->getter = getProperty(field->fprops, "getter");
-        }
-        if (getProperty(field->fprops, "mgetter") != "") {
+        if (getProperty(field->fprops, "mgetter") != "")
             field->mGetter = getProperty(field->fprops, "mgetter");
-        }
-        if (getProperty(field->fprops, "sizeSetter") != "") {
+        if (getProperty(field->fprops, "sizeSetter") != "")
             field->alloc = getProperty(field->fprops, "sizeSetter");
-        }
-        if (getProperty(field->fprops, "sizeGetter") != "") {
+        if (getProperty(field->fprops, "sizeGetter") != "")
             field->getsize = getProperty(field->fprops, "sizeGetter");
-        }
     }
 
     // data type, argument type, conversion to/from string...
-    field->maybe_c_str = "";
-    if (!field->fisprimitivetype) {
-        if (field->fispointer) {
-            field->datatype = field->ftype + " *";
-            field->argtype = field->datatype;
-            field->rettype = field->datatype;
-        }
-        else if (field->byvalue) {
-            field->datatype = field->ftype;
-            field->argtype = field->datatype;
-            field->rettype = field->datatype;
-        }
-        else {
-            field->datatype = field->ftype;
-            field->argtype = str("const ") + field->ftype + "&";
-            field->rettype = field->ftype + "&";
-        }
+    field->datatype = getProperty(field->fprops, "cpptype", fieldClassInfo.datatype);
+    field->argtype = getProperty(field->fprops, "argtype", fieldClassInfo.argtype);
+    field->rettype = getProperty(field->fprops, "rettype", fieldClassInfo.rettype);
+    field->maybe_c_str = getProperty(field->fprops, "maybe_c_str", fieldClassInfo.maybe_c_str);
+    if (field->datatype.empty())
+        field->datatype = field->ftype;
+    if (field->argtype.empty())
+        field->argtype = field->datatype;
+    if (field->rettype.empty())
+        field->rettype = field->datatype;
+
+    if (field->fispointer) {
+        field->datatype = field->datatype + " *";
+        field->argtype = str("const ") + field->argtype + " *";
+        field->rettype = field->rettype + " *";
+    }
+    else if (field->byvalue) {
+        // leave as is
     }
     else {
-        Assert(containsKey(typeTable.PRIMITIVE_TYPES, field->ftype));
-        const TypeDesc& primitiveType = typeTable.PRIMITIVE_TYPES[field->ftype];
-        field->datatype = primitiveType.cppTypeName;
-        field->argtype = primitiveType.cppTypeName;
-        field->rettype = primitiveType.cppTypeName;
-        if (field->fval.empty())
-            field->fval = primitiveType.emptyValue;
-        if (field->tostring.empty())
-            field->tostring = primitiveType.tostring;
-        if (field->fromstring.empty())
-            field->fromstring = primitiveType.fromstring;
-
-        if (field->ftype == "string") {
-            field->argtype = "const char *";
-            field->rettype = "const char *";
-            field->maybe_c_str = ".c_str()";
-        }
+        field->argtype = str("const ") + field->argtype + "&";
+        field->rettype = field->rettype + "&";
     }
 
     if (field->feditable || (classInfo.generate_setters_in_descriptor && field->fisprimitivetype && field->editNotDisabled))
@@ -465,132 +505,14 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             errors->addError(field->nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str()); //TODO only if descriptor class is also generated
 }
 
-void MsgAnalyzer::analyze(ClassInfo& classInfo, const std::string& namespaceName, const MsgCompilerOptions& opts)
+MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName)
 {
-    classInfo.msgqname = prefixWithNamespace(classInfo.msgname, namespaceName);
-
-    // determine info.msgbaseqname
-    if (classInfo.msgbase != "void") {
-        StringVector found = typeTable.lookupExistingClassName(classInfo.msgbase, namespaceName);
-        if (found.size() == 1) {
-            classInfo.msgbaseqname = found[0];
-        }
-        else if (found.empty()) {
-            errors->addError(classInfo.nedElement, "'%s': unknown base class '%s', available classes '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(omnetpp::common::keys(typeTable.declaredClasses), "','").c_str());
-            classInfo.msgbaseqname = "omnetpp::cMessage";
-        }
-        else {
-            errors->addError(classInfo.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
-                    classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(found, "','").c_str());
-            classInfo.msgbaseqname = found[0];
-        }
-    }
-
-    // check base class and determine type of object
-    if (classInfo.msgqname == "omnetpp::cObject" || classInfo.msgqname == "omnetpp::cNamedObject" || classInfo.msgqname == "omnetpp::cOwnedObject") {
-        classInfo.classtype = typeTable.getClassType(classInfo.msgqname);  // only for sim_std.msg
-    }
-    else if (classInfo.msgbase == "") {
-        if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
-            classInfo.classtype = ClassType::COWNEDOBJECT;
-        }
-        else if (classInfo.keyword == "class") {
-            classInfo.classtype = ClassType::COBJECT;  // Note: we never generate non-cObject classes
-        }
-        else if (classInfo.keyword == "struct") {
-            classInfo.classtype = ClassType::STRUCT;
-        }
-        else {
-            throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", classInfo.keyword.c_str(), classInfo.msgclass.c_str());
-        }
-        // if announced earlier as noncobject, accept that.
-        if (typeTable.isClassDeclared(classInfo.msgqname)) {
-            if (typeTable.getClassType(classInfo.msgqname) == ClassType::NONCOBJECT && classInfo.classtype == ClassType::COBJECT) {
-                classInfo.classtype = ClassType::NONCOBJECT;
-            }
-        }
-    }
-    else if (classInfo.msgbase == "void") {
-        classInfo.classtype = ClassType::NONCOBJECT;
-    }
-    else if (classInfo.msgbaseqname != "") {
-        classInfo.classtype = typeTable.getClassType(classInfo.msgbaseqname);
-    }
-    else {
-        errors->addError(classInfo.nedElement, "unknown base class '%s' for '%s'\n", classInfo.msgbase.c_str(), classInfo.msgname.c_str());
-        classInfo.classtype = ClassType::COBJECT;
-    }
-
-    // check earlier declarations and register this class
-    if (typeTable.isClassDeclared(classInfo.msgqname) && false) // XXX add condition
-        errors->addError(classInfo.nedElement, "attempt to redefine '%s'\n", classInfo.msgname.c_str());
-    typeTable.addDeclaredClass(classInfo.msgqname, classInfo.classtype, classInfo.nedElement);
-
-    //
-    // produce all sorts of derived names
-    //
-    classInfo.generate_class = opts.generateClasses && !getPropertyAsBool(classInfo.props, "existingClass", false);
-    classInfo.generate_descriptor = opts.generateDescriptors && getPropertyAsBool(classInfo.props, "descriptor", true);
-    classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, "descriptor") != "readonly");
-
-    if (getPropertyAsBool(classInfo.props, "customize", false)) {
-        classInfo.gap = 1;
-        classInfo.msgclass = classInfo.msgname + "_Base";
-        classInfo.realmsgclass = classInfo.msgname;
-        classInfo.msgdescclass = makeIdentifier(classInfo.realmsgclass) + "Descriptor";
-    }
-    else {
-        classInfo.gap = 0;
-        classInfo.msgclass = classInfo.msgname;
-        classInfo.realmsgclass = classInfo.msgname;
-        classInfo.msgdescclass = makeIdentifier(classInfo.msgclass) + "Descriptor";
-    }
-    if (classInfo.msgbase == "") {
-        if (classInfo.msgqname == "omnetpp::cObject") {
-            classInfo.msgbaseclass = "";
-        }
-        else if (classInfo.keyword == "message") {
-            classInfo.msgbaseclass = "omnetpp::cMessage";
-        }
-        else if (classInfo.keyword == "packet") {
-            classInfo.msgbaseclass = "omnetpp::cPacket";
-        }
-        else if (classInfo.keyword == "class") {
-            classInfo.msgbaseclass = "omnetpp::cObject";  // note: all classes we generate subclass from cObject!
-        }
-        else if (classInfo.keyword == "struct") {
-            classInfo.msgbaseclass = "";
-        }
-        else {
-            throw NEDException("Internal error");
-        }
-    }
-    else if (classInfo.msgbase == "void") {
-        classInfo.msgbaseclass = "";
-    }
-    else {
-        classInfo.msgbaseclass = classInfo.msgbaseqname;
-    }
-
-    classInfo.omitgetverb = getPropertyAsBool(classInfo.props, "omitGetVerb", false);
-    classInfo.fieldnamesuffix = getProperty(classInfo.props, "fieldNameSuffix", "");
-    if (classInfo.omitgetverb && classInfo.fieldnamesuffix.empty()) {
-        errors->addWarning(classInfo.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
-                                            "adding '_var' suffix to data members to prevent name conflict between them and getter methods\n");
-        classInfo.fieldnamesuffix = "_var";
-    }
-
-    std::string s = getProperty(classInfo.props, "implements");
-    if (!s.empty()) {
-        classInfo.implements = StringTokenizer(s.c_str(), ",").asVector();
-    }
-
-    for (auto& field : classInfo.fieldlist) {
-        analyzeField(classInfo, &field, namespaceName);
-    }
-    for (auto& field :  classInfo.baseclassFieldlist) {
-        analyzeField(classInfo, &field, namespaceName);
-    }
+    EnumInfo enumInfo;
+    enumInfo.nedElement = node;
+    enumInfo.enumName = ptr2str(node->getAttribute("name"));
+    enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
+    enumInfo.isDeclaration = true;
+    return enumInfo;
 }
 
 MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std::string& namespaceName)
@@ -598,7 +520,8 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std:
     EnumInfo enumInfo;
     enumInfo.nedElement = node;
     enumInfo.enumName = ptr2str(node->getAttribute("name"));
-    enumInfo.enumQName = canonicalizeQName(namespaceName, enumInfo.enumName);
+    enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
+    enumInfo.isDeclaration = false;
 
     // prepare enum items:
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {

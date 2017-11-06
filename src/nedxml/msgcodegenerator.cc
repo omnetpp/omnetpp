@@ -14,8 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <fstream>
-#include <sstream>
 #include <algorithm>
 #include <cctype>
 
@@ -1087,7 +1085,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             StringVector flags;
             if (field.fisarray)
                 flags.push_back("FD_ISARRAY");
-            if (!field.fisprimitivetype)
+            if (!field.fopaque)
                 flags.push_back("FD_ISCOMPOUND");
             if (field.fispointer)
                 flags.push_back("FD_ISPOINTER");

@@ -34,38 +34,41 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
+//TODO has problems with circular references (stack overflow)
+//TODO incorrect decl order (i.e. derived class before base class, or field before its typedef) causes C++ not to compile (fwd decl would be needed)
+
 static const char *BUILTIN_DEFINITIONS =
-//        "class bool { @cpptype(bool); @fromstring(string2bool($)); @tostring(bool2string($)); @defaultvalue(false); }\n"
-//        "class float { @cpptype(float); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
-//        "class double { @cpptype(double); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
-//        "class simtime_t { @cpptype(omnetpp::simtime_t); @fromstring(string2simtime($)); @tostring(simtime2string($)); @defaultvalue(0); }\n"
-//        "class string { @cpptype(omnetpp::opp_string); @fromstring(($)); @tostring(oppstring2string($)); }\n"
-//        "class char { @cpptype(char); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class short { @cpptype(short); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class int { @cpptype(int); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class long { @cpptype(long); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class int8 { @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class int8_t { @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class int16 { @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class int16_t { @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class int32 { @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class int32_t { @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-//        "class uchar { @cpptype(unsigned char); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class ushort { @cpptype(unsigned short); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class uint { @cpptype(unsigned int); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class ulong { @cpptype(unsigned long); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class uint8 { @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class uint8_t { @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class uint16 { @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class uint16_t { @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class uint32 { @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class uint32_t { @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-//        "class int64 { @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
-//        "class int64_t { @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
-//        "class uint64 { @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
-//        "class uint64_t { @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
+        "class __bool { @actually(bool); @primitive; @cpptype(bool); @fromstring(string2bool($)); @tostring(bool2string($)); @defaultvalue(false); }\n"
+        "class __float { @actually(float); @primitive; @cpptype(float); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
+        "class __double { @actually(double); @primitive; @cpptype(double); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
+        "class __string { @actually(string); @primitive; @cpptype(omnetpp::opp_string); @argtype(const char *); @rettype(const char *); @maybe_c_str(.c_str()); @fromstring(($)); @tostring(oppstring2string($)); }\n"
+        "class __char { @actually(char); @primitive; @cpptype(char); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class __short { @actually(short); @primitive; @cpptype(short); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class __int { @actually(int); @primitive; @cpptype(int); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class __long { @actually(long); @primitive; @cpptype(long); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class __uchar { @actually(unsigned char); @primitive; @cpptype(unsigned char); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class __ushort { @actually(unsigned short); @primitive; @cpptype(unsigned short); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class __uint { @actually(unsigned int); @primitive; @cpptype(unsigned int); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class __ulong { @actually(unsigned long); @primitive; @cpptype(unsigned long); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class int8 { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class int8_t { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class int16 { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class int16_t { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class int32 { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class int32_t { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+        "class uint8 { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class uint8_t { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class uint16 { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class uint16_t { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class uint32 { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class uint32_t { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+        "class int64 { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
+        "class int64_t { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
+        "class uint64 { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
+        "class uint64_t { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
         "namespace omnetpp;\n"
-        "class cObject {}\n"
+        "class simtime_t { @opaque; @byvalue; @cpptype(omnetpp::simtime_t); @fromstring(string2simtime($)); @tostring(simtime2string($)); @defaultvalue(0); }\n"
+        "class cObject { @overwritePreviousDefinition; }\n"
         "class cNamedObject extends cObject {}\n"
         "class cOwnedObject extends cNamedObject {}\n"
         "class cNoncopyableOwnedObject extends cOwnedObject {}"
@@ -73,6 +76,10 @@ static const char *BUILTIN_DEFINITIONS =
         "class cMessage extends cEvent {}\n"
         "class cPacket extends cMessage {}\n"
         "";
+
+inline std::string str(const char *s) {
+    return s;
+}
 
 static bool isQualified(const std::string& qname)
 {
@@ -83,7 +90,7 @@ static std::string canonicalizeQName(const std::string& namespac, const std::str
 {
     std::string qname;
     if (name.find("::") != name.npos)
-        qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
+        qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::"
     else if (!namespac.empty() && !name.empty())
         qname = namespac + "::" + name;
     else
@@ -96,20 +103,17 @@ inline std::string ptr2str(const char *ptr)
     return ptr ? ptr : "";
 }
 
-// Note: based on omnetpp 5.x checkandcast.h (merged check_and_cast and check_and_cast_failure)
 template<class P, class T>
 P check_and_cast(T *p)
 {
-    assert(p);
+    Assert(p);
     P ret = dynamic_cast<P>(p);
-    assert(ret);
+    Assert(ret);
     return ret;
 }
 
-MsgCompiler::MsgCompiler(NEDErrorStore *e, const MsgCompilerOptions& options) : analyzer(typeTable, e)
+MsgCompiler::MsgCompiler(const MsgCompilerOptions& opts, NEDErrorStore *errors) : opts(opts), analyzer(opts, &typeTable, errors), errors(errors)
 {
-    opts = options;
-    errors = e;
 }
 
 MsgCompiler::~MsgCompiler()
@@ -124,8 +128,10 @@ void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const
 
     importBuiltinDefinitions();
 
+    collectTypes(fileElement);
+
     codegen.openFiles(hFile, ccFile);
-    process(fileElement, true);
+    generateCode(fileElement);
     codegen.closeFiles();
 
     if (errors->containsError())
@@ -143,25 +149,83 @@ void MsgCompiler::importBuiltinDefinitions()
         return;
     }
 
-    typeTable.importedMsgFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
+    typeTable.storeMsgFile(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
 
     // extract declarations
-    MsgFileElement *fileElement1 = check_and_cast<MsgFileElement*>(tree);
-    process(fileElement1, false);
-    currentNamespace = "";
+    MsgFileElement *fileElement = check_and_cast<MsgFileElement*>(tree);
+    collectTypes(fileElement);
+}
+
+void MsgCompiler::collectTypes(MsgFileElement *fileElement)
+{
+    std::string currentDir = directoryOf(fileElement->getFilename());
+    std::string currentNamespace = "";
+    for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
+        switch (child->getTagCode()) {
+            case NED_NAMESPACE:
+                currentNamespace = ptr2str(child->getAttribute("name"));
+                validateNamespaceName(currentNamespace, child); //TODO into syntax validator class!!!
+                break;
+
+            case NED_CPLUSPLUS:
+                break;
+
+            case NED_IMPORT: {
+                if (!currentNamespace.empty())
+                    errors->addError(child, "imports are not allowed within a namespace"); //TODO into syntax validator class!!!
+                std::string importName = child->getAttribute("import-spec");
+                if (!common::contains(importsSeen, importName)) {
+                    importsSeen.insert(importName);
+                    processImport(child, currentDir);
+                }
+                 break;
+             }
+
+            case NED_STRUCT_DECL:
+            case NED_CLASS_DECL:
+            case NED_MESSAGE_DECL:
+            case NED_PACKET_DECL:
+                errors->addWarning(child, "type declarations are not needed with imports, and will be ignored"); //TODO into syntax validator class!!!
+                break;
+
+            case NED_ENUM_DECL: { // for enums already defined and registered in C++
+                EnumInfo enumInfo = analyzer.extractEnumDecl(check_and_cast<EnumDeclElement *>(child), currentNamespace);
+                if (typeTable.isEnumDefined(enumInfo.enumQName))
+                    errors->addError(enumInfo.nedElement, "attempt to redefine '%s'", enumInfo.enumName.c_str());
+                typeTable.addEnum(enumInfo);
+                break;
+            }
+
+            case NED_ENUM: {
+                EnumInfo enumInfo = analyzer.extractEnumInfo(check_and_cast<EnumElement *>(child), currentNamespace);
+                if (isQualified(enumInfo.enumName))
+                    errors->addError(enumInfo.nedElement, "type name may not be qualified: '%s'", enumInfo.enumName.c_str()); //TODO into some validator class
+                if (typeTable.isEnumDefined(enumInfo.enumQName))
+                    errors->addError(enumInfo.nedElement, "attempt to redefine '%s'", enumInfo.enumName.c_str());
+                typeTable.addEnum(enumInfo);
+                break;
+            }
+
+            case NED_STRUCT:
+            case NED_CLASS:
+            case NED_MESSAGE:
+            case NED_PACKET: {
+                ClassInfo classInfo = analyzer.makeIncompleteClassInfo(child, currentNamespace);
+                if (typeTable.isClassDefined(classInfo.msgqname) && !containsKey(classInfo.props, str("overwritePreviousDefinition")))
+                    errors->addError(classInfo.nedElement, "attempt to redefine '%s'", classInfo.msgname.c_str());
+                typeTable.addClass(classInfo);
+                break;
+            }
+        }
+    }
 }
 
 void MsgCompiler::processImport(NEDElement *child, const std::string& currentDir)
 {
-    if (!currentNamespace.empty()) {
-        errors->addError(child, "imports are not allowed within a namespace\n");
-        return;
-    }
-
     std::string importName = child->getAttribute("import-spec");
     std::string fileName = resolveImport(importName, currentDir);
     if (fileName == "") {
-        errors->addError(child, "cannot resolve import '%s'\n", importName.c_str());
+        errors->addError(child, "cannot resolve import '%s'", importName.c_str());
         return;
     }
 
@@ -174,12 +238,13 @@ void MsgCompiler::processImport(NEDElement *child, const std::string& currentDir
         return;
     }
 
-    typeTable.importedMsgFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
+    //TODO perform all sorts of validations
+
+    typeTable.storeMsgFile(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
 
     // extract declarations
     MsgFileElement *fileElement = check_and_cast<MsgFileElement*>(tree);
-    process(fileElement, false);
-    currentNamespace = "";
+    collectTypes(fileElement);
 }
 
 std::string MsgCompiler::resolveImport(const std::string& importName, const std::string& currentDir)
@@ -196,140 +261,90 @@ std::string MsgCompiler::resolveImport(const std::string& importName, const std:
     return "";
 }
 
-void MsgCompiler::process(MsgFileElement *fileElement, bool generateCode)
+
+std::string MsgCompiler::prefixWithNamespace(const std::string& name, const std::string& namespaceName)
 {
-    std::string currentDir = directoryOf(fileElement->getFilename());
+    return !namespaceName.empty() ? namespaceName + "::" + name : name;  // prefer name from local namespace
+}
 
-    if (generateCode) {
-        NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
-        std::string firstNSName = firstNS ? ptr2str(firstNS->getAttribute("name")) : "";
-        codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
-    }
+void MsgCompiler::generateCode(MsgFileElement *fileElement)
+{
+    std::string currentNamespace = "";
+    NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
+    std::string firstNSName = firstNS ? ptr2str(firstNS->getAttribute("name")) : "";
+    codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
 
-    /*
-       <!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|import|
-                           struct-decl|class-decl|message-decl|packet-decl|enum-decl|
-                           struct|class|message|packet|enum)*)>
-     */
     for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
                 // open namespace(s)
-                if (generateCode && !currentNamespace.empty())
+                if (!currentNamespace.empty())
                     codegen.generateNamespaceEnd(currentNamespace);
                 currentNamespace = ptr2str(child->getAttribute("name"));
-                validateNamespaceName(currentNamespace, child);
-                if (generateCode)
-                    codegen.generateNamespaceBegin(currentNamespace);
+                codegen.generateNamespaceBegin(currentNamespace);
                 break;
 
             case NED_CPLUSPLUS: {
                 // print C++ block
-                if (generateCode) {
-                    std::string body = ptr2str(child->getAttribute("body"));
-                    std::string target = ptr2str(child->getAttribute("target"));
-                    if (target == "" || target == "h" || target == "cc")
-                        codegen.generateCplusplusBlock(target, body);
-                    else
-                        errors->addError(child, "unrecognized target '%s' for cplusplus block", target.c_str());
-                }
+                std::string body = ptr2str(child->getAttribute("body"));
+                std::string target = ptr2str(child->getAttribute("target"));
+                if (target == "" || target == "h" || target == "cc")
+                    codegen.generateCplusplusBlock(target, body);
+                else
+                    errors->addError(child, "unrecognized target '%s' for cplusplus block", target.c_str());
                 break;
             }
 
             case NED_IMPORT: {
                 std::string importName = child->getAttribute("import-spec");
-                if (!common::contains(importsSeen, importName)) {
-                    importsSeen.insert(importName);
-                    processImport(child, currentDir);
-                    if (generateCode)
-                        codegen.generateImport(importName);
-                }
-                break;
-            }
-
-            case NED_STRUCT_DECL:
-            case NED_CLASS_DECL:
-            case NED_MESSAGE_DECL:
-            case NED_PACKET_DECL:
-                analyzer.extractClassDecl(child, currentNamespace);
-                break;
-
-            case NED_ENUM_DECL: {
-                //TODO analyzer.extractEnumDecl()
-                // forward declaration -- add to table
-                std::string name = ptr2str(child->getAttribute("name"));
-                if (contains(analyzer.RESERVED_WORDS, name))
-                    errors->addError(child, "Enum name is reserved word: '%s'", name.c_str());
-                std::string qname = canonicalizeQName(currentNamespace, name);
-                typeTable.declaredEnums.insert(qname);
+                codegen.generateImport(importName);
                 break;
             }
 
             case NED_ENUM: {
-                EnumInfo enumInfo = analyzer.extractEnumInfo(check_and_cast<EnumElement *>(child), currentNamespace);
-                typeTable.declaredEnums.insert(enumInfo.enumQName);
-                typeTable.definedEnums[enumInfo.enumQName] = enumInfo; //TODO wrap
-                if (generateCode) {
-                    if (isQualified(enumInfo.enumName))
-                        errors->addError(enumInfo.nedElement, "type name may not be qualified: '%s'\n", enumInfo.enumName.c_str());
-                    codegen.generateEnum(enumInfo);
-                }
+                std::string qname = prefixWithNamespace(ptr2str(child->getAttribute("name")), currentNamespace);
+                const EnumInfo& enumInfo = typeTable.getEnumInfo(qname);
+                codegen.generateEnum(enumInfo);
                 break;
             }
 
-            case NED_STRUCT: {
-                ClassInfo classInfo = analyzer.extractClassInfo(child, currentNamespace);
-                analyzer.analyze(classInfo, currentNamespace, opts);
-                typeTable.addDeclaredClass(classInfo.msgname, classInfo.classtype, child); //TODO also included in analyze()
-                typeTable.definedClasses[classInfo.msgqname] = classInfo; //TODO wrap
-                if (generateCode) {
-                    if (classInfo.generate_class) {
-                        if (isQualified(classInfo.msgclass))
-                            errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", classInfo.msgclass.c_str());
-                        codegen.generateStruct(classInfo, opts.exportDef);
-                    }
-                    if (classInfo.generate_descriptor)
-                        codegen.generateDescriptorClass(classInfo);
-                }
-                break;
-            }
-
+            case NED_STRUCT:
             case NED_CLASS:
             case NED_MESSAGE:
             case NED_PACKET: {
-                ClassInfo classInfo = analyzer.extractClassInfo(child, currentNamespace);
-                analyzer.analyze(classInfo, currentNamespace, opts);
-                typeTable.addDeclaredClass(classInfo.msgqname, classInfo.classtype, child); //TODO also included in analyze()
-                typeTable.definedClasses[classInfo.msgqname] = classInfo; //TODO wrap
-                if (generateCode) {
-                    if (classInfo.generate_class) {
-                        if (isQualified(classInfo.msgclass))
-                            errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'\n", classInfo.msgclass.c_str());
+                std::string qname = prefixWithNamespace(ptr2str(child->getAttribute("name")), currentNamespace);
+                ClassInfo& classInfo = typeTable.getClassInfo(qname);
+                analyzer.ensureAnalyzed(classInfo);
+                analyzer.ensureFieldsAnalyzed(classInfo);
+                if (classInfo.generate_class) {
+                    if (isQualified(classInfo.msgclass))
+                        errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.msgclass.c_str());
+                    if (child->getTagCode() == NED_STRUCT)
+                        codegen.generateStruct(classInfo, opts.exportDef);
+                    else
                         codegen.generateClass(classInfo, opts.exportDef);
-                    }
-                    if (classInfo.generate_descriptor)
-                        codegen.generateDescriptorClass(classInfo);
                 }
+                if (classInfo.generate_descriptor)
+                    codegen.generateDescriptorClass(classInfo);
                 break;
             }
         }
     }
 
-    if (generateCode) {
-        if (!currentNamespace.empty())
-            codegen.generateNamespaceEnd(currentNamespace);
-        codegen.generateEpilog();
-    }
+    if (!currentNamespace.empty())
+        codegen.generateNamespaceEnd(currentNamespace);
+    codegen.generateEpilog();
 }
 
 void MsgCompiler::validateNamespaceName(const std::string& namespaceName, NEDElement *element)
 {
     if (namespaceName.empty())
-        errors->addError(element, "namespace name is empty\n");
+        errors->addError(element, "namespace name is empty");
     for (auto token : opp_split(namespaceName, "::"))
         if (contains(MsgAnalyzer::RESERVED_WORDS, token))
-            errors->addError(element, "namespace name '%s' is a reserved word\n", token.c_str());
+            errors->addError(element, "namespace name '%s' is a reserved word", token.c_str());
 }
 
 }  // namespace nedxml
 }  // namespace omnetpp
+;

@@ -57,25 +57,29 @@ class NEDXML_API MsgAnalyzer
 
   protected:
     NEDErrorStore *errors;
-    MsgTypeTable& typeTable;
+    MsgTypeTable *typeTable;
+    const MsgCompilerOptions& opts;
 
   protected:
-    void initDescriptors();
-    Properties extractPropertiesOf(NEDElement *node);
+    void extractClassInfo(ClassInfo& classInfo);
+    void analyzeClassOrStruct(ClassInfo& classInfo, const std::string& namespaceName);
+    void analyzeFields(ClassInfo& classInfo, const std::string& namespaceName);
     void analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName);
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
+    Properties extractPropertiesOf(NEDElement *node);
     bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
     std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
 
   public:
-    MsgAnalyzer(MsgTypeTable& typeTable, NEDErrorStore *errors);
+    MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, NEDErrorStore *errors);
     ~MsgAnalyzer();
-    ClassInfo extractClassInfo(NEDElement *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
-    EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName); // accepts EnumElement
-    void extractClassDecl(NEDElement *node, const std::string& namespaceName); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl
-    void analyze(ClassInfo& classInfo, const std::string& namespaceName, const MsgCompilerOptions& opts);
+    ClassInfo makeIncompleteClassInfo(NEDElement *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
+    void ensureAnalyzed(ClassInfo& classInfo);
+    void ensureFieldsAnalyzed(ClassInfo& classInfo);
+    EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);
+    EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
 };
 
 } // namespace nedxml

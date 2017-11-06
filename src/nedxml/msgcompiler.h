@@ -34,7 +34,7 @@ namespace omnetpp {
 namespace nedxml {
 
 /**
- * @brief Options for MsgCompiler.Generates C++ code from a MSG file object tree.
+ * @brief Options for MsgCompiler.
  *
  * @ingroup CppGenerator
  */
@@ -75,29 +75,30 @@ class NEDXML_API MsgCompiler
 
   protected:
     MsgCompilerOptions opts;
-
     MsgTypeTable typeTable;
     MsgAnalyzer analyzer;
     MsgCodeGenerator codegen;
 
     bool used = false;
     NEDErrorStore *errors;
-    std::string currentNamespace;
     StringSet importsSeen;
     StringSet importedFiles;
 
   protected:
     void importBuiltinDefinitions();
+
     void processImport(NEDElement *child, const std::string& currentDir);
     std::string resolveImport(const std::string& importName, const std::string& currentDir);
-    void process(MsgFileElement *fileElement, bool generateCode);
+    void collectTypes(MsgFileElement *fileElement);
+    void generateCode(MsgFileElement *fileElement);
+    std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
     void validateNamespaceName(const std::string& namespaceName, NEDElement *element);
 
   public:
     /**
      * Constructor.
      */
-    MsgCompiler(NEDErrorStore *errors, const MsgCompilerOptions& options);
+    MsgCompiler(const MsgCompilerOptions& options, NEDErrorStore *errors);
 
     /**
      * Destructor.

@@ -18,6 +18,7 @@
 #define __OMNETPP_NEDXML_MSGCODEGENERATOR_H
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
