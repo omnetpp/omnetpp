@@ -205,6 +205,32 @@ static const char *PARSIMPACK_BOILERPLATE =
     "}  // namespace omnetpp\n"
     "\n";
 
+const char *DESCRIPTOR_BOILERPLATE =
+        "namespace {\n"
+        "template <class T> inline\n"
+        "typename std::enable_if<std::is_polymorphic<T>::value && std::is_base_of<omnetpp::cObject,T>::value, void *>::type\n"
+        "toVoidPtr(T* t)\n"
+        "{\n"
+        "    return (void *)(static_cast<const omnetpp::cObject *>(t));\n"
+        "}\n"
+        "\n"
+        "template <class T> inline\n"
+        "typename std::enable_if<std::is_polymorphic<T>::value && !std::is_base_of<omnetpp::cObject,T>::value, void *>::type\n"
+        "toVoidPtr(T* t)\n"
+        "{\n"
+        "    return (void *)dynamic_cast<const void *>(t);\n"
+        "}\n"
+        "\n"
+        "template <class T> inline\n"
+        "typename std::enable_if<!std::is_polymorphic<T>::value, void *>::type\n"
+        "toVoidPtr(T* t)\n"
+        "{\n"
+        "    return (void *)static_cast<const void *>(t);\n"
+        "}\n"
+        "\n"
+        "}\n"
+        "\n";
+
 void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std::string& firstNamespace, const std::string& exportDef)
 {
     // make header guard using the file name
@@ -286,6 +312,8 @@ void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std:
     CC << "#include \"" << hfilenamewithoutdir << "\"\n\n";
 
     CC << PARSIMPACK_BOILERPLATE;
+
+    CC << DESCRIPTOR_BOILERPLATE;
 
     if (firstNamespace.empty()) {
         H << "\n\n";
@@ -1407,7 +1435,6 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldlist[i];
         // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
         if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
-            std::string cast;
             std::string value;
             if (classInfo.classtype == ClassType::STRUCT) {
                 value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");
@@ -1415,14 +1442,11 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             else {
                 value = makeFuncall("pp", field.getter, field.fisarray);
             }
-            cast = "(void *)";
-            if (field.classtype == ClassType::COBJECT || field.classtype == ClassType::CNAMEDOBJECT || field.classtype == ClassType::COWNEDOBJECT)
-                cast = cast + "static_cast<const omnetpp::cObject *>";
             if (field.fispointer) {
-                CC << "        case " << i << ": return " << cast << "(" << value << "); break;\n";
+                CC << "        case " << i << ": return toVoidPtr(" << value << "); break;\n";
             }
             else {
-                CC << "        case " << i << ": return " << cast << "(&" << value << "); break;\n";
+                CC << "        case " << i << ": return toVoidPtr(&" << value << "); break;\n";
             }
         }
     }
