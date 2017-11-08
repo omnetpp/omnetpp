@@ -41,6 +41,7 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
       $O/ned1.tab.o $O/lex.ned1yy.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
       $O/msgcompiler.o $O/msgtypetable.o $O/msganalyzer.o $O/msgcodegenerator.o \
+      $O/msgcompilerold.o \
       $O/nedresourcecache.o $O/nedtypeinfo.o
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \

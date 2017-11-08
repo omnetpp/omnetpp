@@ -34,6 +34,46 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
+static const char *BUILTIN_DEFINITIONS =
+//        "class bool { @cpptype(bool); @fromstring(string2bool($)); @tostring(bool2string($)); @defaultvalue(false); }\n"
+//        "class float { @cpptype(float); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
+//        "class double { @cpptype(double); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
+//        "class simtime_t { @cpptype(omnetpp::simtime_t); @fromstring(string2simtime($)); @tostring(simtime2string($)); @defaultvalue(0); }\n"
+//        "class string { @cpptype(omnetpp::opp_string); @fromstring(($)); @tostring(oppstring2string($)); }\n"
+//        "class char { @cpptype(char); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class short { @cpptype(short); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class int { @cpptype(int); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class long { @cpptype(long); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class int8 { @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class int8_t { @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class int16 { @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class int16_t { @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class int32 { @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class int32_t { @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
+//        "class uchar { @cpptype(unsigned char); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class ushort { @cpptype(unsigned short); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class uint { @cpptype(unsigned int); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class ulong { @cpptype(unsigned long); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class uint8 { @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class uint8_t { @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class uint16 { @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class uint16_t { @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class uint32 { @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class uint32_t { @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
+//        "class int64 { @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
+//        "class int64_t { @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
+//        "class uint64 { @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
+//        "class uint64_t { @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
+        "namespace omnetpp;\n"
+        "class cObject {}\n"
+        "class cNamedObject extends cObject {}\n"
+        "class cOwnedObject extends cNamedObject {}\n"
+        "class cNoncopyableOwnedObject extends cOwnedObject {}"
+        "class cEvent extends cOwnedObject {}\n"
+        "class cMessage extends cEvent {}\n"
+        "class cPacket extends cMessage {}\n"
+        "";
+
 static bool isQualified(const std::string& qname)
 {
     return qname.find("::") != qname.npos;
@@ -78,12 +118,31 @@ MsgCompiler::~MsgCompiler()
 
 void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile)
 {
+    importBuiltinDefinitions();
+
     codegen.openFiles(hFile, ccFile);
     process(fileElement, true);
     codegen.closeFiles();
 
     if (errors->containsError())
         codegen.deleteFiles();
+}
+
+void MsgCompiler::importBuiltinDefinitions()
+{
+    NEDParser parser(errors);
+    NEDElement *tree = parser.parseMSGText(BUILTIN_DEFINITIONS, "bultin-definitions");
+    if (errors->containsError()) {
+        delete tree;
+        return;
+    }
+
+    typeTable.importedNedFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
+
+    // extract declarations
+    MsgFileElement *fileElement1 = check_and_cast<MsgFileElement*>(tree);
+    process(fileElement1, false);
+    currentNamespace = "";
 }
 
 void MsgCompiler::processImport(NEDElement *child, const std::string& currentDir)

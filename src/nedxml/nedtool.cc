@@ -31,6 +31,7 @@
 #include "common/ver.h"
 #include "omnetpp/platdep/platmisc.h"  // getcwd, chdir
 #include "msgcompiler.h"
+#include "msgcompilerold.h"
 #include "nedparser.h"
 #include "nederror.h"
 #include "nedexception.h"
@@ -61,8 +62,8 @@ bool opt_gensrc = false;           // -n
 bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -T
 bool opt_oldsyntax = false;        // -Q
-const char *opt_suffix = nullptr;     // -s
-const char *opt_hdrsuffix = nullptr;  // -t
+const char *opt_suffix = nullptr;  // -s
+const char *opt_hdrsuffix = nullptr; // -t
 bool opt_inplace = false;          // -k
 bool opt_unparsedexpr = false;     // -e
 bool opt_storesrc = false;         // -S
@@ -74,12 +75,16 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = nullptr; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
-std::vector<std::string> opt_includepath; // -I
+bool opt_msgimports = false;       // --msgimports
+std::vector<std::string> opt_importpath; // -I
 
 // MSG specific option variables:
 MsgCompilerOptions msg_options;
 
 FilesElement *outputtree;
+
+//TODO split into nedtool and msgtool alias msgc!
+//TODO turn code into a class, like scavetool
 
 void printUsage()
 {
@@ -123,6 +128,7 @@ void printUsage()
        "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
        "      name ends in _API, boilerplate code to conditionally define\n"
        "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
+       "  --msgimports: enable import and other features available from OMNeT++ 5.3\n"
        "  -Xnc: do not generate the classes, only object descriptions\n"
        "  -Xnd: do not generate object descriptions\n"
        "  -Xns: do not generate setters in object descriptions\n"
@@ -314,9 +320,22 @@ bool processFile(const char *fname, NEDErrorStore *errors)
             else {
                 Assert(!opt_gensrc && !opt_genxml);  // already handled above
                 if (ftype == MSG_FILE) {
-                    msg_options.importPath = opt_includepath;
-                    MsgCompiler generator(errors, msg_options);
-                    generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+                    if (opt_msgimports) {
+                        // new syntax (5.3 and up)
+                        msg_options.importPath = opt_importpath;
+                        MsgCompiler generator(errors, msg_options);
+                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+                    }
+                    else {
+                        // legacy (4.x) mode
+                        MsgCompilerOptionsOld options;
+                        options.exportDef = msg_options.exportDef;
+                        options.generateClasses = msg_options.generateClasses;
+                        options.generateDescriptors = msg_options.generateDescriptors;
+                        options.generateSettersInDescriptors = msg_options.generateSettersInDescriptors;
+                        MsgCompilerOld generator(errors, options);
+                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+                    }
                 }
                 else {
                     fprintf(stderr, "nedtool: generating C++ source from %s files is not supported\n",
@@ -450,7 +469,7 @@ int main(int argc, char **argv)
                 }
                 arg = argv[i];
             }
-            opt_includepath.push_back(arg);
+            opt_importpath.push_back(arg);
         }
         else if (!strncmp(argv[i], "-T", 2)) {
             const char *arg = argv[i]+2;
@@ -542,6 +561,9 @@ int main(int argc, char **argv)
                 }
                 msg_options.exportDef = argv[i];
             }
+        }
+        else if (!strcmp(argv[i], "--msgimports")) {
+            opt_msgimports = true;
         }
         else if (!strncmp(argv[i], "-X", 2)) {
             const char *arg = argv[i]+2;

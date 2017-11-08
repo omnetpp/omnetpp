@@ -85,7 +85,7 @@ void MsgCodeGenerator::deleteFiles()
     unlink(ccFilename.c_str());
 }
 
-const char *PARSIMPACK_BOILERPLATE =
+static const char *PARSIMPACK_BOILERPLATE =
     "namespace omnetpp {\n"
     "\n"
     "// Template pack/unpack rules. They are declared *after* a1l type-specific pack functions for multiple reasons.\n"

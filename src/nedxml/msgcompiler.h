@@ -85,6 +85,7 @@ class NEDXML_API MsgCompiler
     StringSet importsSeen;
 
   protected:
+    void importBuiltinDefinitions();
     void processImport(NEDElement *child, const std::string& currentDir);
     std::string resolveImport(const std::string& importName, const std::string& currentDir);
     void process(MsgFileElement *fileElement, bool generateCode);
