@@ -103,8 +103,10 @@ const char *NEDParser::getBuiltInDeclarations()
 NEDParser::NEDParser(NEDErrorStore *e)
 {
     nedsource = nullptr;
+    filename = nullptr;
     parseexpr = true;
     storesrc = false;
+    msgNewSyntax = true;
     errors = e;
 }
 
@@ -210,6 +212,8 @@ NEDElement *NEDParser::parseNED()
 NEDElement *NEDParser::parseMSG()
 {
     errors->clear();
+    msgLexerSetRecognizeImportKeyword(msgNewSyntax);
+    msgLexerSetRecognizeObsoleteKeywords(!msgNewSyntax);
     return ::doParseMSG2(this, nedsource->getFullText());
 }
 

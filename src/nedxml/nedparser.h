@@ -59,6 +59,7 @@ class NEDXML_API NEDParser
 
   protected:
     bool parseexpr;            // whether to parse expressions or not
+    bool msgNewSyntax;
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // name of file being parsed
     NEDErrorStore *errors;     // accumulates error messages
@@ -110,6 +111,9 @@ class NEDXML_API NEDParser
      * Returns the "store source code" flag; see setStoreSource().
      */
     bool getStoreSourceFlag() {return storesrc;}
+
+    void setMsgNewSyntaxFlag(bool b) {msgNewSyntax = b;}
+    bool getMsgNewSyntaxFlag() {return msgNewSyntax;}
 
     /**
      * May only be called during parsing. It returns the name of the source file being parsed.

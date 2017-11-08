@@ -51,12 +51,16 @@ namespace nedxml {
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;
 
+void msgLexerSetRecognizeImportKeyword(bool opt);
+void msgLexerSetRecognizeObsoleteKeywords(bool opt);
+
 } // namespace nedxml
 }  // namespace omnetpp
 
 omnetpp::nedxml::NEDElement *doParseNED2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
 omnetpp::nedxml::NEDElement *doParseNED1(omnetpp::nedxml::NEDParser *p, const char *nedtext);
 omnetpp::nedxml::NEDElement *doParseMSG2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
+
 
 #endif
 

@@ -213,6 +213,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         else if (ftype == NED_FILE || ftype == MSG_FILE) {
             NEDParser parser(errors);
             parser.setParseExpressions(!opt_unparsedexpr);
+            parser.setMsgNewSyntaxFlag(opt_msgimports);
             parser.setStoreSource(opt_storesrc);
             tree = (ftype == NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
         }
