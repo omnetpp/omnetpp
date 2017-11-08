@@ -77,6 +77,9 @@ bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
 bool opt_msgimports = false;       // --msgimports
 std::vector<std::string> opt_importpath; // -I
+bool opt_generatedependencies = false; // -M
+std::string opt_dependenciesfile;  // -MF
+bool opt_phonytargets = false;     // -MP
 
 // MSG specific option variables:
 MsgCompilerOptions msg_options;
@@ -129,6 +132,12 @@ void printUsage()
        "      name ends in _API, boilerplate code to conditionally define\n"
        "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
        "  --msgimports: enable import and other features available from OMNeT++ 5.3\n"
+       "  -M: turn on dependency generation for message files; see also: -MF, -MP\n"
+       "  -MF <file>: save dependencies into the specified file; when absent,\n"
+       "      dependencies will be written to the standard output\n"
+       "  -MP: add a phony target for each dependency other than the main file,\n"
+       "      causing each to depend on nothing. These dummy rules work around errors\n"
+       "      make gives if you remove header files without updating the Makefile.\n"
        "  -Xnc: do not generate the classes, only object descriptions\n"
        "  -Xnd: do not generate object descriptions\n"
        "  -Xns: do not generate setters in object descriptions\n"
@@ -182,6 +191,33 @@ void generateNED(std::ostream& out, NEDElement *node, NEDErrorStore *e, bool old
         generateNED1(out, node, e);
     else
         generateNED2(out, node);
+}
+
+void generateDependencies(const char *depsfile, const char *fname, const char *outhdrfname, const char *outfname, const std::set<std::string>& dependencies)
+{
+    std::ofstream fileStream;
+    bool useFileOutput = !opp_isempty(depsfile) && strcmp(depsfile, "-") != 0;
+    std::ostream& out = useFileOutput ? fileStream : std::cout;
+    if (useFileOutput) {
+        fileStream.open(depsfile);
+        if (fileStream.bad())
+            throw opp_runtime_error("could not open '%s' for write", depsfile);
+    }
+
+    out << outfname << " " << outhdrfname << " :";
+    out << " \\\n\t" << fname;
+    for (const std::string& dep : dependencies)
+        out << " \\\n\t" << dep;
+    out << "\n";
+    if (opt_phonytargets) {
+        out << fname << ":\n";
+        for (const std::string& dep : dependencies)
+            out << dep << ":\n";
+    }
+    if (out.bad())
+        throw opp_runtime_error("error writing dependencies to '%s'", depsfile);
+    if (useFileOutput)
+        fileStream.close();
 }
 
 bool processFile(const char *fname, NEDErrorStore *errors)
@@ -325,7 +361,10 @@ bool processFile(const char *fname, NEDErrorStore *errors)
                         // new syntax (5.3 and up)
                         msg_options.importPath = opt_importpath;
                         MsgCompiler generator(errors, msg_options);
-                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+                        std::set<std::string> dependencies;
+                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname, dependencies);
+                        if (opt_generatedependencies)
+                            generateDependencies(opt_dependenciesfile.c_str(), fname, outhdrfname, outfname, dependencies);
                     }
                     else {
                         // legacy (4.x) mode
@@ -565,6 +604,19 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "--msgimports")) {
             opt_msgimports = true;
+        }
+        else if (!strcmp(argv[i], "-M")) {
+            opt_generatedependencies = true;
+        }
+        else if (!strcmp(argv[i], "-MF")) {
+            if (++i == argc) {
+                fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                return 1;
+            }
+            opt_dependenciesfile = argv[i];
+        }
+        else if (!strcmp(argv[i], "-MP")) {
+            opt_phonytargets = true;
         }
         else if (!strncmp(argv[i], "-X", 2)) {
             const char *arg = argv[i]+2;

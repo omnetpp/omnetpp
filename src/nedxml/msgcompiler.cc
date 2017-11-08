@@ -116,8 +116,12 @@ MsgCompiler::~MsgCompiler()
 {
 }
 
-void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile)
+void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile, StringSet& outImportedFiles)
 {
+    if (used)
+        throw opp_runtime_error("MsgCompiler is a one-shot object, make a new instance to compile another file");
+    used = true;
+
     importBuiltinDefinitions();
 
     codegen.openFiles(hFile, ccFile);
@@ -126,18 +130,20 @@ void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const
 
     if (errors->containsError())
         codegen.deleteFiles();
+
+    outImportedFiles = importedFiles;
 }
 
 void MsgCompiler::importBuiltinDefinitions()
 {
     NEDParser parser(errors);
-    NEDElement *tree = parser.parseMSGText(BUILTIN_DEFINITIONS, "bultin-definitions");
+    NEDElement *tree = parser.parseMSGText(BUILTIN_DEFINITIONS, "builtin-definitions");
     if (errors->containsError()) {
         delete tree;
         return;
     }
 
-    typeTable.importedNedFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
+    typeTable.importedMsgFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
 
     // extract declarations
     MsgFileElement *fileElement1 = check_and_cast<MsgFileElement*>(tree);
@@ -159,6 +165,8 @@ void MsgCompiler::processImport(NEDElement *child, const std::string& currentDir
         return;
     }
 
+    importedFiles.insert(fileName);
+
     NEDParser parser(errors);
     NEDElement *tree = parser.parseMSGFile(fileName.c_str());
     if (errors->containsError()) {
@@ -166,7 +174,7 @@ void MsgCompiler::processImport(NEDElement *child, const std::string& currentDir
         return;
     }
 
-    typeTable.importedNedFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
+    typeTable.importedMsgFiles.push_back(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
 
     // extract declarations
     MsgFileElement *fileElement = check_and_cast<MsgFileElement*>(tree);

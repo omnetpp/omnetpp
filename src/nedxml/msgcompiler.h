@@ -80,9 +80,11 @@ class NEDXML_API MsgCompiler
     MsgAnalyzer analyzer;
     MsgCodeGenerator codegen;
 
+    bool used = false;
     NEDErrorStore *errors;
     std::string currentNamespace;
     StringSet importsSeen;
+    StringSet importedFiles;
 
   protected:
     void importBuiltinDefinitions();
@@ -106,7 +108,7 @@ class NEDXML_API MsgCompiler
      * Generates C++ code from the specified message file. Assumes that the
      * object tree has already passed DTD and syntax validation.
      */
-    void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile);
+    void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile, StringSet& outImportedFiles);
 };
 
 }  // namespace nedxml

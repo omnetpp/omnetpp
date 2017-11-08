@@ -187,7 +187,7 @@ class NEDXML_API MsgTypeTable
     std::set<std::string> declaredEnums;
     std::map<std::string,EnumInfo> definedEnums;
 
-    std::vector<NEDElement*> importedNedFiles;
+    std::vector<NEDElement*> importedMsgFiles;
 
   protected:
     void initDescriptors();

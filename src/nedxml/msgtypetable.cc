@@ -62,7 +62,7 @@ MsgTypeTable::TypeDesc MsgTypeTable::_PRIMITIVE_TYPES[] =
 
 MsgTypeTable::~MsgTypeTable()
 {
-    for (NEDElement *node : importedNedFiles)
+    for (NEDElement *node : importedMsgFiles)
         delete node;
 }
 
