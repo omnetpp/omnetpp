@@ -13,20 +13,13 @@
 //--------------------------------------------------------------
 
 
-enum omnetpp::cOsgCanvas::ViewerStyle;
-enum omnetpp::cOsgCanvas::CameraManipulatorType;
 
 cplusplus
 {{
 
 namespace omnetpp {
-
-typedef cFigure::Color Color;
-typedef cOsgCanvas::Vec3d Vec3d;
-
 Register_Enum(cOsgCanvas::ViewerStyle, (cOsgCanvas::STYLE_GENERIC, cOsgCanvas::STYLE_EARTH));
 Register_Enum(cOsgCanvas::CameraManipulatorType, (cOsgCanvas::CAM_AUTO, cOsgCanvas::CAM_TRACKBALL, cOsgCanvas::CAM_EARTH));
-
 } // namespace omnetpp
 
 #include "omnetpp/osgutil.h"
@@ -66,33 +59,41 @@ inline std::string osgNode_getDescription(osg::Node *node, unsigned int i)
 
 }}
 
-
-// fully qualified forward declarations for cObjectOsgNode
-class osg::Node extends void;
-class osg::Group extends osg::Node;
-
-// this must not be in any .msg namespace, because we are crossing C++ namespaces
-class omnetpp::cObjectOsgNode extends osg::Group {
-    // the getter with the const_cast should not be necessary (hopefully) with a future version of msgc which will static_cast to a const pointer
-    cObject *object @getter(const_cast<cObject*>($->getObject())) @tostring(->str());
-}
-
-
 namespace omnetpp;
 
-struct Color;
-struct Vec3d;
+enum cOsgCanvas::ViewerStyle;
+enum cOsgCanvas::CameraManipulatorType;
+
+class cFigure::Color
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+    @tostring(.str());
+    @fromstring(cFigure::parseColor($));
+}
+
+struct cOsgCanvas::Vec3d
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+    @tostring(.str()); 
+    // TODO fromstr for Vec3d
+}
 
 struct cOsgCanvas::Viewpoint
 {
+    @existingClass;
     bool valid @editable;
-    Vec3d eye @tostring(.str()); // TODO fromstr for Vec3d
-    Vec3d center @tostring(.str());
-    Vec3d up @tostring(.str());
+    cOsgCanvas::Vec3d eye;
+    cOsgCanvas::Vec3d center;
+    cOsgCanvas::Vec3d up;
 }
 
 struct cOsgCanvas::EarthViewpoint
 {
+    @existingClass;
     bool valid @editable;
     double longitude @editable; // TODO grouping?
     double latitude @editable;
@@ -104,9 +105,10 @@ struct cOsgCanvas::EarthViewpoint
 
 class cOsgCanvas extends cOwnedObject
 {
+    @existingClass;
     osg::Node *scene;
     int viewerStyle @editable @enum(omnetpp::cOsgCanvas::ViewerStyle) @group(viewer hints);
-    Color clearColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($)) @group(viewer hints);
+    cFigure::Color clearColor @editable @group(viewer hints);
     int cameraManipulatorType @editable @enum(omnetpp::cOsgCanvas::CameraManipulatorType) @group(viewer hints);
     double fieldOfViewAngle @editable @group(viewer hints);
     double zNear @editable @group(viewer hints);
@@ -115,14 +117,25 @@ class cOsgCanvas extends cOwnedObject
     cOsgCanvas::EarthViewpoint earthViewpoint;
 }
 
+class cObjectOsgNode extends osg::Group 
+{
+    @existingClass;
+    // the getter with the const_cast should not be necessary (hopefully) with a future version of msgc which will static_cast to a const pointer
+    cObject *object @getter(const_cast<cObject*>($->getObject())) @tostring(->str());
+}
+
 namespace osg;
 
-class Node extends void
+class Node
 {
+    @existingClass;
+    @descriptor(readonly);
     string descriptions[] @getter(osgNode_getDescription($,i)) @sizeGetter(osgNode_getNumDescriptions($));
     Node *children[] @getter(osgNode_getChild($,i)) @sizeGetter(osgNode_getNumChildren($));
 }
 
 class Group extends Node {
     // must be defined so cObjectOsgNode inherits members from Node
+    @existingClass;
 }
+

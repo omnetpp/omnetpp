@@ -7,11 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-cplusplus {{
-#include "NetPkt_m.h"
-}};
-
-packet NetPkt;
+import NetPkt;
 
 //
 // Message class for representing a Telnet packet (bytes carried in TCP).

@@ -16,24 +16,13 @@
 
 //
 // Property descriptors for the simkernel classes.
-// Usage: opp_msgc -Xnc -Xns sim_std.msg
 //
 
-enum omnetpp::cPar::Type;
-enum omnetpp::cGate::Type;
-enum omnetpp::cFigure::LineStyle;
-enum omnetpp::cFigure::CapStyle;
-enum omnetpp::cFigure::JoinStyle;
-enum omnetpp::cFigure::FillRule;
-enum omnetpp::cFigure::Arrowhead;
-enum omnetpp::cFigure::Anchor;
-enum omnetpp::cFigure::Interpolation;
 
 cplusplus
 {{
-
 #ifdef _MSC_VER
-#  pragma warning(disable:4996)  // deprecation (cLinkedList)
+#  pragma warning(disable:4996)  // deprecation
 #endif
 
 #ifdef __GNUC__
@@ -71,13 +60,6 @@ inline std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& c
     return os << "[" << cell.lower << ", " << cell.upper << ")  ==>  " << cell.value << " (" << cell.relativeFreq << ")";
 }
 
-typedef cFigure::Point Point;
-#define Rectangle cFigure::Rectangle  // typedef would conflict with MinGW's Rectangle in <wingdi.h>
-typedef cFigure::Transform Transform;
-typedef cFigure::Color Color;
-typedef cFigure::Font Font;
-typedef cFigure::Pixmap Pixmap;
-
 using namespace canvas_stream_ops;
 
 //
@@ -92,21 +74,28 @@ void std_sim_descriptor_dummy() {}
 
 namespace omnetpp;
 
-struct cDensityEstBase::Cell;
+enum cPar::Type;
+enum cGate::Type;
+enum cFigure::LineStyle;
+enum cFigure::CapStyle;
+enum cFigure::JoinStyle;
+enum cFigure::FillRule;
+enum cFigure::Arrowhead;
+enum cFigure::Anchor;
+enum cFigure::Interpolation;
 
-struct Point;
-struct Rectangle;
-struct Transform;
-struct Color;
-struct Font;
-struct Pixmap;
-
-class noncobject StringVector;
+class StringVector
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+}
 
 class cObject
 {
     @existingClass;
     @descriptor(readonly);
+    @overwritePreviousDefinition;
     @icon(cogwheel);
     string className @group(base) @hint("C++ class name") @eventlog(skip);
     string fullName @group(base) @hint("If object is part of a module/gate vector: name with index");
@@ -118,6 +107,7 @@ class cNamedObject extends cObject
 {
     @existingClass;
     @descriptor(readonly);
+    @overwritePreviousDefinition;
     string name @group(base) @editable @hint("An editable string attribute of the object, also used for fullName and fullPath");
 }
 
@@ -125,6 +115,7 @@ class cOwnedObject extends cNamedObject
 {
     @existingClass;
     @descriptor(readonly);
+    @overwritePreviousDefinition;
     cObject *owner @group(base) @hint("Module or container this object belongs to") @eventlog(skip);
 }
 
@@ -132,6 +123,7 @@ class cNoncopyableOwnedObject extends cOwnedObject
 {
     @existingClass;
     @descriptor(readonly);
+    @overwritePreviousDefinition;
 }
 
 class cDefaultList extends cNoncopyableOwnedObject
@@ -141,7 +133,7 @@ class cDefaultList extends cNoncopyableOwnedObject
     cOwnedObject *defaultList[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(owned objects) @hint("List of objects directly held by this component");
 }
 
-class cDisplayString extends void
+class cDisplayString
 {
     @existingClass;
     @descriptor(readonly);
@@ -157,21 +149,19 @@ class cProperty extends cObject
     string value @getter(str) @hint("Name and value");
 }
 
-class cIListener extends void;
+class cIListener
+{
+    @existingClass;
+    @descriptor(false);
+}
 
-class cComponent::SignalListenerList extends void
+class cComponent::SignalListenerList
 {
     @existingClass;
     @descriptor(readonly);
     string signalName @hint("Name of signal listened on");
     cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @tostring(->str()) for cResultListeners
 }
-
-class cPar extends cObject;
-class cComponentType extends cOwnedObject;
-class cCanvas extends cOwnedObject;
-class cOsgCanvas extends cOwnedObject;
-class cResultRecorder extends cIListener;
 
 class cComponent extends cDefaultList
 {
@@ -215,8 +205,6 @@ class cDatarateChannel extends cChannel
     bool isBusy @getter(isBusy) @group(fields) @hint("If channel is currently transmitting");
     simtime_t transmissionFinishTime @group(fields) @hint("If busy: when currently active transmissions will finish");
 }
-
-class cGate extends cObject;
 
 class cModule extends cComponent
 {
@@ -284,7 +272,7 @@ class cGate extends cObject
     @existingClass;
     @descriptor(readonly);
     @icon(gate);
-    char type @group(fields) @enum(omnetpp::cGate::Type) @hint("Gate type");
+    char type @group(fields) @enum(cGate::Type) @hint("Gate type");
     int id @group(fields) @hint("Gate id, unique within this module");
     bool isVector @getter(isVector) @group(fields) @hint("Whether this gate is part of a gate vector");
     int index @group(fields) @hint("If vector: index of this gate within its gate vector");
@@ -316,6 +304,7 @@ class cEvent extends cOwnedObject
 {
     @existingClass;
     @descriptor(readonly);
+    @overwritePreviousDefinition;
     short schedulingPriority @group(event) @editable @hint("Controls order of messages with equal timestamps in FES");
     cObject *targetObject @group(event) @hint("The object this message will be delivered to");
     bool isScheduled @getter(isScheduled) @group(sending) @hint("Whether event or message is currently scheduled (or in transit)");
@@ -326,6 +315,7 @@ class cMessage extends cEvent
 {
     @existingClass;
     @descriptor(readonly);
+    @overwritePreviousDefinition;
     @icon("message");
     long id @group("message") @hint("Automatically assigned unique identifier");
     long treeId @group("message") @hint("Identifier shared between the message and its copies");
@@ -357,6 +347,7 @@ class cPacket extends cMessage
 {
     @existingClass;
     @descriptor(readonly);
+    @overwritePreviousDefinition;
     @icon("packet");
     int64_t bitLength @group("packet") @editable @hint("Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel");
     int64_t byteLength @group("packet") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
@@ -569,6 +560,13 @@ class cDensityEstBase extends cStdDev
     cDensityEstBase::Cell cellInfo[] @getter(internalGetCellInfo) @sizeGetter(getNumCells) @group(histogram) @hint("Histogram cell bounds, observation count in the cell, and density estimate in the cell");
 }
 
+class cDensityEstBase::Cell
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+}
+
 class cHistogramBase extends cDensityEstBase
 {
     @existingClass;
@@ -690,7 +688,7 @@ class cPar extends cObject
     @descriptor(readonly);
     @icon(param);
     string value @getter(str) @setter(parse) @editable;
-    char type @enum(omnetpp::cPar::Type) @hint("Parameter type");
+    char type @enum(cPar::Type) @hint("Parameter type");
     string unit @hint("For long and double types only");
     bool isNumeric @getter(isNumeric) @group(flags) @hint("Whether parameter type is numeric, i.e. double or long");
     bool isVolatile @getter(isVolatile) @group(flags) @hint("Whether parameter was declared volatile in the NED file");
@@ -703,7 +701,7 @@ class cMsgPar extends cOwnedObject
     @existingClass;
     @descriptor(readonly);
     string value @getter(str) @setter(parse) @editable @hint("Parameter value");
-    char type @enum(omnetpp::cPar::Type) @hint("Parameter type");
+    char type @enum(cPar::Type) @hint("Parameter type");
     bool isNumeric @getter(isNumeric) @group(flags) @hint("Whether parameter is of numeric type");
     bool isConstant @getter(isConstant) @group(flags) @hint("Whether the parameter has a constant value");
 }
@@ -741,7 +739,7 @@ class cPacketQueue extends cQueue
     int64_t byteLength @hint("Total size of messages in the queue, in bytes");
 }
 
-class cHasher extends void
+class cHasher
 {
     @existingClass;
     @descriptor(readonly);
@@ -786,18 +784,7 @@ class cRealTimeScheduler extends cScheduler
     @descriptor(readonly);
 }
 
-cplusplus {{
-typedef cTopology::Node cTopology_Node;
-typedef cTopology::Link cTopology_Link;
-typedef cTopology::LinkIn cTopology_LinkIn;
-typedef cTopology::LinkOut cTopology_LinkOut;
-}}
-
-class cTopology_Link extends void;
-class cTopology_LinkIn extends cTopology_Link;
-class cTopology_LinkOut extends cTopology_Link;
-
-class cTopology_Node extends void
+class cTopology::Node
 {
     @existingClass;
     @descriptor(readonly);
@@ -806,14 +793,14 @@ class cTopology_Node extends void
     double weight @hint("Node weight -- affects graph algorithms such as shortest path");
     bool enabled @getter(isEnabled) @hint("Node state -- affects graph algorithms such as shortest path");
 
-    cTopology_LinkIn *inLink[] @getter(getLinkIn) @sizeGetter(getNumInLinks) @hint("Incoming links of this graph node");
-    cTopology_LinkOut *outLink[] @getter(getLinkOut) @sizeGetter(getNumOutLinks) @hint("Outgoing links of this graph node");
+    cTopology::LinkIn *inLink[] @getter(getLinkIn) @sizeGetter(getNumInLinks) @hint("Incoming links of this graph node");
+    cTopology::LinkOut *outLink[] @getter(getLinkOut) @sizeGetter(getNumOutLinks) @hint("Outgoing links of this graph node");
 
     double distanceToTarget @group(shortest path) @hint("After running a shortest path algorithm: distance to the target node");
-    cTopology_LinkOut *path[] @sizeGetter(getNumPaths) @group(shortest path) @hint("The next link of the shortest path or paths towards the target node");
+    cTopology::LinkOut *path[] @sizeGetter(getNumPaths) @group(shortest path) @hint("The next link of the shortest path or paths towards the target node");
 }
 
-class cTopology_Link extends void
+class cTopology::Link
 {
     @existingClass;
     @descriptor(readonly);
@@ -821,20 +808,20 @@ class cTopology_Link extends void
     bool enabled @getter(isEnabled) @hint("Link state -- affects graph algorithms such as shortest path");
 }
 
-class cTopology_LinkIn extends cTopology_Link
+class cTopology::LinkIn extends cTopology::Link
 {
     @existingClass;
     @descriptor(readonly);
-    cTopology_Node *remoteNode @hint("The node at the remote end of this connection");
+    cTopology::Node *remoteNode @hint("The node at the remote end of this connection");
     cGate *remoteGate @hint("The gate at the remote end of this connection");
     cGate *localGate @hint("The gate at the local end of this connection");
 }
 
-class cTopology_LinkOut extends cTopology_Link
+class cTopology::LinkOut extends cTopology::Link
 {
     @existingClass;
     @descriptor(readonly);
-    cTopology_Node *remoteNode @hint("The node at the remote end of this connection");
+    cTopology::Node *remoteNode @hint("The node at the remote end of this connection");
     cGate *remoteGate @hint("The gate at the remote end of this connection");
     cGate *localGate @hint("The gate at the local end of this connection");
 }
@@ -844,7 +831,7 @@ class cTopology extends cOwnedObject
     @existingClass;
     @descriptor(readonly);
     int numNodes @group(fields) @hint("Number of nodes in this topology object");
-    cTopology_Node *node[] @sizeGetter(getNumNodes) @hint("List of nodes in this topology object");
+    cTopology::Node *node[] @sizeGetter(getNumNodes) @hint("List of nodes in this topology object");
 }
 
 class cXMLElement extends cObject
@@ -859,6 +846,58 @@ class cXMLElement extends cObject
     string xml @getter(getXML) @hint("Element tree as XML fragment");
 }
 
+class cFigure::Point
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+    @tostring(.str());
+    @fromstring(cFigure::parsePoint($));
+}
+
+class cFigure::Rectangle
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+    @tostring(.str());
+    @fromstring(cFigure::parseRectangle($));
+}
+
+class cFigure::Transform
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+    @tostring(.str());
+    @fromstring(cFigure::parseTransform($));
+}
+
+class cFigure::Color
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+    @tostring(.str());
+    @fromstring(cFigure::parseColor($));
+}
+
+class cFigure::Font
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+    @tostring(.str());
+    @fromstring(cFigure::parseFont($));
+}
+
+class cFigure::Pixmap
+{
+    @existingClass;
+    @descriptor(false);
+    @opaque;
+}
+
 class cFigure extends cOwnedObject
 {
     @existingClass;
@@ -869,7 +908,7 @@ class cFigure extends cOwnedObject
     string tooltip @group(figure) @editable;
     cObject *associatedObject @group(figure);
     string tags @group(figure) @editable;
-    Transform transform @group(figure) @editable @tostring(.str()) @fromstring(cFigure::parseTransform($));
+    Transform transform @group(figure) @editable;
     cFigure *children[] @group(figure) @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
@@ -883,21 +922,21 @@ class cPanelFigure extends cFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Point position @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    Point anchorPoint @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    Point position @group(geometry) @editable;
+    Point anchorPoint @group(geometry) @editable;
 }
 
 class cAbstractLineFigure extends cFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Color lineColor @group(line) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
-    int lineStyle @group(line) @editable @enum(omnetpp::cFigure::LineStyle);
+    Color lineColor @group(line) @editable;
+    int lineStyle @group(line) @editable @enum(cFigure::LineStyle);
     double lineWidth @group(line) @editable;
     double lineOpacity @group(line) @editable;
-    int capStyle @group(line) @editable @enum(omnetpp::cFigure::CapStyle);
-    int startArrowhead @group(line) @editable @enum(omnetpp::cFigure::Arrowhead);
-    int endArrowhead @group(line) @editable @enum(omnetpp::cFigure::Arrowhead);
+    int capStyle @group(line) @editable @enum(cFigure::CapStyle);
+    int startArrowhead @group(line) @editable @enum(cFigure::Arrowhead);
+    int endArrowhead @group(line) @editable @enum(cFigure::Arrowhead);
     bool zoomLineWidth @group(line) @editable;
 }
 
@@ -905,15 +944,15 @@ class cLineFigure extends cAbstractLineFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Point start @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    Point end @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    Point start @group(geometry) @editable;
+    Point end @group(geometry) @editable;
 }
 
 class cArcFigure extends cAbstractLineFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    Rectangle bounds @group(geometry) @editable;
     double startAngle @group(geometry) @editable;
     double endAngle @group(geometry) @editable;
 }
@@ -922,9 +961,9 @@ class cPolylineFigure extends cAbstractLineFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints);
     bool smooth @group(geometry) @editable;
-    int joinStyle @group(line) @editable @enum(omnetpp::cFigure::JoinStyle);
+    int joinStyle @group(line) @editable @enum(cFigure::JoinStyle);
 }
 
 class cAbstractShapeFigure extends cFigure
@@ -933,8 +972,8 @@ class cAbstractShapeFigure extends cFigure
     @descriptor(readonly);
     bool outlined @group(outline) @getter(isOutlined) @editable;
     bool filled @group(fill) @getter(isFilled) @editable;
-    Color lineColor @group(outline) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
-    Color fillColor @group(fill) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    Color lineColor @group(outline) @editable;
+    Color fillColor @group(fill) @editable;
     int lineStyle @group(outline) @editable @enum(cFigure::LineStyle);
     double lineWidth @group(outline) @editable;
     double lineOpacity @group(outline) @editable;
@@ -946,7 +985,7 @@ class cRectangleFigure extends cAbstractShapeFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    Rectangle bounds @group(geometry) @editable;
     double cornerRx @group(geometry) @editable;
     double cornerRy @group(geometry) @editable;
 }
@@ -955,14 +994,14 @@ class cOvalFigure extends cAbstractShapeFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    Rectangle bounds @group(geometry) @editable;
 }
 
 class cRingFigure extends cAbstractShapeFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    Rectangle bounds @group(geometry) @editable;
     double innerRx @group(geometry) @editable;
     double innerRy @group(geometry) @editable;
 }
@@ -971,7 +1010,7 @@ class cPieSliceFigure extends cAbstractShapeFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Rectangle bounds @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parseRectangle($));
+    Rectangle bounds @group(geometry) @editable;
     double startAngle @group(geometry) @editable;
     double endAngle @group(geometry) @editable;
 }
@@ -980,10 +1019,10 @@ class cPolygonFigure extends cAbstractShapeFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints) @tostring(.str()) @fromstring(cFigure::parsePoint($));
+    Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints);
     bool smooth @group(geometry) @editable;
-    int joinStyle @group(outline) @editable @enum(omnetpp::cFigure::JoinStyle);
-    int fillRule @group(fill) @editable @enum(omnetpp::cFigure::FillRule);
+    int joinStyle @group(outline) @editable @enum(cFigure::JoinStyle);
+    int fillRule @group(fill) @editable @enum(cFigure::FillRule);
 }
 
 class cPathFigure extends cAbstractShapeFigure
@@ -991,21 +1030,21 @@ class cPathFigure extends cAbstractShapeFigure
     @existingClass;
     @descriptor(readonly);
     string path @group(geometry) @editable;
-    Point offset @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    int joinStyle @group(outline) @editable @enum(omnetpp::cFigure::JoinStyle);
-    int capStyle @group(outline) @editable @enum(omnetpp::cFigure::CapStyle);
-    int fillRule @group(fill) @editable @enum(omnetpp::cFigure::FillRule);
+    Point offset @group(geometry) @editable;
+    int joinStyle @group(outline) @editable @enum(cFigure::JoinStyle);
+    int capStyle @group(outline) @editable @enum(cFigure::CapStyle);
+    int fillRule @group(fill) @editable @enum(cFigure::FillRule);
 }
 
 class cAbstractTextFigure extends cFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Point position @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    int anchor @group(geometry) @editable @enum(omnetpp::cFigure::Anchor);
+    Point position @group(geometry) @editable;
+    int anchor @group(geometry) @editable @enum(cFigure::Anchor);
     string text @group(text) @editable;
-    Font font @group(text) @editable @tostring(.str()) @fromstring(cFigure::parseFont($));
-    Color color @group(text) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    Font font @group(text) @editable;
+    Color color @group(text) @editable;
     double opacity @group(text) @editable;
     bool halo @group(text) @editable;
 }
@@ -1026,13 +1065,13 @@ class cAbstractImageFigure extends cFigure
 {
     @existingClass;
     @descriptor(readonly);
-    Point position @group(geometry) @editable @tostring(.str()) @fromstring(cFigure::parsePoint($));
-    int anchor @group(geometry) @editable @enum(omnetpp::cFigure::Anchor);
+    Point position @group(geometry) @editable;
+    int anchor @group(geometry) @editable @enum(cFigure::Anchor);
     double width @group(geometry) @editable;
     double height @group(geometry) @editable;
-    int interpolation @group(image) @editable @enum(omnetpp::cFigure::Interpolation);
+    int interpolation @group(image) @editable @enum(cFigure::Interpolation);
     double opacity @group(image) @editable;
-    Color tintColor @group(image) @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    Color tintColor @group(image) @editable;
     double tintAmount @group(image) @editable;
 }
 
@@ -1062,7 +1101,13 @@ class cCanvas extends cOwnedObject
     @descriptor(readonly);
     cFigure *rootFigure;
     string allTags;
-    Color backgroundColor @editable @tostring(.str()) @fromstring(cFigure::parseColor($));
+    Color backgroundColor @editable;
+}
+
+class cOsgCanvas extends cOwnedObject
+{
+    @existingClass;
+    @descriptor(readonly);
 }
 
 class cResultListener extends cIListener

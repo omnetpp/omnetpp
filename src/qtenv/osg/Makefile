@@ -138,6 +138,6 @@ $(RESOURCES_OUT): $(wildcard icons/tools/* icons/logo/* icons/objects/*)
 
 %sg_m.h %sg_m.cc: osg.msg
 	$(qecho) MSGC: $<
-	$(Q)$(MSGC) -Xnc -Xns osg.msg
+	$(Q)$(MSGC) --msgimports osg.msg
 
 -include $(OBJS:%.o=%.d)
