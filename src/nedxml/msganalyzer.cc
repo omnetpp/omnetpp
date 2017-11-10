@@ -303,7 +303,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     //
     bool existingClass = getPropertyAsBool(classInfo.props, "existingClass", false);
     classInfo.generate_class = opts.generateClasses && !existingClass;
-    classInfo.generate_descriptor = opts.generateDescriptors && getPropertyAsBool(classInfo.props, "descriptor", true);
+    classInfo.generate_descriptor = opts.generateDescriptors && !classInfo.isopaque && getPropertyAsBool(classInfo.props, "descriptor", true);  // opaque also means no descriptor
     classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, "descriptor") != "readonly");
 
     if (!existingClass && isQualified(classInfo.msgname))

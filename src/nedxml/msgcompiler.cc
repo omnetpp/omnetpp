@@ -160,9 +160,9 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
                 break;
 
             case NED_IMPORT: {
-                if (!currentNamespace.empty())
-                    errors->addError(child, "imports are not allowed within a namespace"); //TODO into syntax validator class!!!
                 std::string importName = child->getAttribute("import-spec");
+                if (!currentNamespace.empty())
+                    errors->addError(child, "misplaced import '%s': imports are not allowed within a namespace", importName.c_str()); //TODO into syntax validator class!!!
                 if (!common::contains(importsSeen, importName)) {
                     importsSeen.insert(importName);
                     processImport(child, currentDir);
@@ -179,9 +179,8 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
 
             case NED_ENUM_DECL: { // for enums already defined and registered in C++
                 EnumInfo enumInfo = analyzer.extractEnumDecl(check_and_cast<EnumDeclElement *>(child), currentNamespace);
-                if (typeTable.isEnumDefined(enumInfo.enumQName))
-                    errors->addError(enumInfo.nedElement, "attempt to redefine '%s'", enumInfo.enumName.c_str());
-                typeTable.addEnum(enumInfo);
+                if (!typeTable.isEnumDefined(enumInfo.enumQName))
+                    typeTable.addEnum(enumInfo);
                 break;
             }
 
