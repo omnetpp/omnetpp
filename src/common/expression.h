@@ -119,48 +119,48 @@ class COMMON_API Expression
          * Effect during evaluation of the expression: pushes the given boolean
          * constant to the evaluation stack.
          */
-        void operator=(bool _b)  {type=BOOL; b=_b;}
+        void operator=(bool _b);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
+        void operator=(int _i);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
+        void operator=(short _i);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=nullptr;}
+        void operator=(long _l);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * to the evaluation stack.
          */
-        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=nullptr;}
+        void operator=(double _d);
 
         /**
          * Effect during evaluation of the expression: pushes the given string
          * to the evaluation stack.
          */
-        void operator=(const char *_s)  {type=STR; Assert(_s); s=opp_strdup(_s);}
+        void operator=(const char* _s);
 
         /**
          * Function object, with an interface not unlike cNEDFunction.
          * This object will be deleted by expression's destructor.
          */
-        void operator=(Functor *_f)  {type=FUNCTOR; Assert(_f); fu=_f;}
+        void operator=(Functor* _f);
 
         /**
          * Unary, binary or tertiary (?: only) operations.
          */
-        void operator=(OpType _op)  {type=OP; op=_op;}
+        void operator=(OpType _op);
 
         /**
          * Sets the unit of an Elem previously set to a double value.
@@ -192,7 +192,7 @@ class COMMON_API Expression
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
         bool bl;
         double dbl;
-        const char *dblunit; // stringpooled, may be nullptr
+        const char *dblunit=nullptr; // stringpooled, may be nullptr
         std::string s;
 
         Value()  {type=UNDEF;}

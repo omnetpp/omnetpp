@@ -36,6 +36,8 @@ StringPool Expression::Elem::stringPool;
 // should be member of Elem, but the VC++ 9.0 linker disagrees
 void Expression::Elem_eq(Elem& e, const Elem& other)
 {
+    if (&e == &other)
+        return;
     e.deleteOld();
 
     memcpy(&e, &other, sizeof(Elem));
@@ -79,6 +81,68 @@ std::string Expression::Elem_str(int type, bool b, double d, const char *s, Func
         default: Assert(false);
     }
     return os.str();
+}
+
+void Expression::Elem::operator=(OpType _op)
+{
+    deleteOld();
+    type = OP;
+    op = _op;
+}
+
+void Expression::Elem::operator=(Functor *_f)
+{
+    deleteOld();
+    type = FUNCTOR;
+    Assert(_f);
+    fu = _f;
+}
+
+void Expression::Elem::operator=(const char *_s)
+{
+    deleteOld();
+    type = STR;
+    Assert(_s);
+    s = opp_strdup(_s);
+}
+
+void Expression::Elem::operator=(double _d)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _d;
+    d.unit = nullptr;
+}
+
+void Expression::Elem::operator=(long _l)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _l;
+    d.unit = nullptr;
+}
+
+void Expression::Elem::operator=(short _i)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _i;
+    d.unit = nullptr;
+}
+
+void Expression::Elem::operator=(int _i)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _i;
+    d.unit = nullptr;
+}
+
+void Expression::Elem::operator=(bool _b)
+{
+    deleteOld();
+    type = BOOL;
+    b = _b;
 }
 
 std::string Expression::Value::str()
