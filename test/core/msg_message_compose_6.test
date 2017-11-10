@@ -5,8 +5,6 @@ Check cOwnedObject-based class as message member
 
 namespace @TESTNAME@;
 
-class omnetpp::cQueue;
-
 message MyMessage
 {
     omnetpp::cQueue q;
@@ -22,7 +20,7 @@ message MyMessage
 
 MyMessage x;
 
-cQueue& q = x.getQ();
+cQueue& q = x.getMutableQ();
 q.setName("queue");
 EV << q.getClassName() << ":" << q.getName() << ":" <<
       (q.getOwner()==&x ? "owned" : "not owned") << endl;

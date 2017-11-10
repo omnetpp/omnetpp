@@ -12,16 +12,16 @@ cplusplus {{
 #include "types.h"
 }}
 
+class IPAddress5 {@existingClass;@opaque;}
+class inet5::IPAddress5 {@existingClass;@opaque;}
+class foreign5::IPAddress5 {@existingClass;@opaque;}
+
 namespace inet5;
 
-class noncobject ::IPAddress5;
-class noncobject inet5::IPAddress5;
-class noncobject foreign5::IPAddress5;
-
-class TestMsg {
+class TestMsg extends cObject {
     ::IPAddress5 addr;
 
-    IPAddress5 inetAddr1; // Note: this means inet5::IPAddress5!
+    IPAddress5 inetAddr1; // Note: this means inet5::IPAddress5! 
     inet5::IPAddress5 inetAddr2;
     ::inet5::IPAddress5 inetAddr3;
 
@@ -45,17 +45,15 @@ dummy->setForeignAddr2(foreign5::IPAddress5());
 
 cClassDescriptor *desc = dummy->getDescriptor();
 ASSERT(desc);
-for (int i = 0; i < desc->getFieldCount(); i++) {
-    const char *s = desc->getFieldStructName(i);
-    EV << desc->getFieldName(i) << ": " << (s?s:"non-struct") << "\n";
-}
+for (int i = 0; i < desc->getFieldCount(); i++)
+    EV << desc->getFieldName(i) << ": " << desc->getFieldTypeString(i) << "\n";
 
 %subst: /omnetpp:://
 %contains: stdout
-className: non-struct
-fullName: non-struct
-fullPath: non-struct
-info: non-struct
+className: string
+fullName: string
+fullPath: string
+info: string
 addr: IPAddress5
 inetAddr1: inet5::IPAddress5
 inetAddr2: inet5::IPAddress5

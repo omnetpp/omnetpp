@@ -5,7 +5,7 @@ Test nested namespace.
 
 namespace @TESTNAME@::bar;
 
-class Foo
+class Foo extends cObject
 {
 };
 

@@ -5,8 +5,6 @@ Check static array of cOwnedObject-based class as message member
 
 namespace @TESTNAME@;
 
-class omnetpp::cQueue;
-
 message MyMessage
 {
     omnetpp::cQueue q[3];
@@ -26,9 +24,9 @@ message MyMessage
 MyMessage x;
 
 // access
-x.getQ(0).setName("q0"); x.getQ(0).insert(new cMessage());
-x.getQ(1).setName("q1");
-x.getQ(2).setName("q2"); x.getQ(2).insert(new cMessage());x.getQ(2).insert(new cMessage());
+x.getMutableQ(0).setName("q0"); x.getMutableQ(0).insert(new cMessage());
+x.getMutableQ(1).setName("q1");
+x.getMutableQ(2).setName("q2"); x.getMutableQ(2).insert(new cMessage()); x.getMutableQ(2).insert(new cMessage());
 PRINTOBJ(x.getQ(0));
 PRINTOBJ(x.getQ(1));
 PRINTOBJ(x.getQ(2));

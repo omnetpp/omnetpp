@@ -1,5 +1,5 @@
 %description:
-Check external non-cOwnedObject class as member in non-cOwnedObject class
+Check external non-cObject class as member in cObject class
 
 %file: test.msg
 
@@ -11,15 +11,19 @@ cplusplus {{
     private:
       int a;
     public:
-      int getA() {return a;}
+      int getA() const {return a;}
       void setA(int newa) {a=newa;}
   };
 
 }}
 
-class noncobject A;
+class A
+{
+    @existingClass;
+    int a;
+}
 
-class MyClass extends cOwnedObject
+class MyClass extends cObject
 {
     A b;
     char c;
@@ -34,7 +38,7 @@ class MyClass extends cOwnedObject
 
 MyClass x;
 
-x.getB().setA(11); PRINT(x.getB().getA());
+x.getMutableB().setA(11); PRINT(x.getB().getA());
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout

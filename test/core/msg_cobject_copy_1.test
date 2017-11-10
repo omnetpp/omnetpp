@@ -1,11 +1,11 @@
 %description:
-Copying and assignment for classes
+Copying and assignment for cObject classes
 
 %file: test.msg
 
 namespace @TESTNAME@;
 
-class Base extends cOwnedObject
+class Base extends cObject
 {
     int a = 7;
     int b[2];

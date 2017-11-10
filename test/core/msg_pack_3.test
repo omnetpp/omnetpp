@@ -10,16 +10,16 @@ typedef std::vector<int> IntVector;
 typedef std::list<int> IntList;
 typedef std::set<int> IntSet;
 typedef std::map<int,double> IntDoubleMap;
-typedef std::list<std::vector<int> > IntVectorList;
-typedef std::vector<std::list<int> > IntListVector;
+typedef std::list<std::vector<int>> IntVectorList;
+typedef std::vector<std::list<int>> IntListVector;
 }}
 
-class noncobject IntVector;
-class noncobject IntList;
-class noncobject IntSet;
-class noncobject IntDoubleMap;
-class noncobject IntVectorList;
-class noncobject IntListVector;
+class IntVector {@existingClass;@opaque;}
+class IntList {@existingClass;@opaque;}
+class IntSet {@existingClass;@opaque;}
+class IntDoubleMap {@existingClass;@opaque;}
+class IntVectorList {@existingClass;@opaque;}
+class IntListVector {@existingClass;@opaque;}
 
 message TestMessage {
     IntVector v;
@@ -43,18 +43,18 @@ message TestMessage {
 
 TestMessage msg("msg");
 
-msg.getV().push_back(1);
-msg.getV().push_back(5);
+msg.getMutableV().push_back(1);
+msg.getMutableV().push_back(5);
 
-msg.getL().push_back(99);
-msg.getL().push_back(54);
-msg.getL().push_back(63);
+msg.getMutableL().push_back(99);
+msg.getMutableL().push_back(54);
+msg.getMutableL().push_back(63);
 
-msg.getS().insert(888);
-msg.getS().insert(123);
+msg.getMutableS().insert(888);
+msg.getMutableS().insert(123);
 
-msg.getM()[3] = 3.14;
-msg.getM()[2] = 2.71;
+msg.getMutableM()[3] = 3.14;
+msg.getMutableM()[2] = 2.71;
 
 std::vector<int> v;
 v.push_back(5);

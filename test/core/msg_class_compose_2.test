@@ -1,11 +1,11 @@
 %description:
-Check non-cOwnedObject-class as member in non-cOwnedObject class
+Check non-cOwnedObject class as member in cOwnedObject class
 
 %file: test.msg
 
 namespace @TESTNAME@;
 
-class Class1
+class Class1 extends cObject
 {
     int bb;
 }
@@ -26,7 +26,7 @@ class MyClass extends cOwnedObject
 
 MyClass x;
 
-x.getB().setBb(11); PRINT(x.getB().getBb());
+x.getMutableB().setBb(11); PRINT(x.getB().getBb());
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout

@@ -29,9 +29,6 @@ class MyClass : public MyClass_Base
     virtual void setI(int i) {m=i;}
 };
 
-
-Register_Class(MyClass);
-
 %activity:
 
 #define PRINT(X) EV << #X << ":" << X << endl

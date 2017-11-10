@@ -17,7 +17,6 @@ message MyMessage extends Base
     string s1 = "one";
     string s2[2];
     string s3[];
-
 };
 
 %includes:

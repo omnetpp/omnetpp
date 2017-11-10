@@ -1,1 +1,3 @@
 OMNETPP_LIBS += -loppcommon$D
+MSGC += --msgimports
+

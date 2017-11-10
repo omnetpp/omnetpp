@@ -5,11 +5,9 @@ Test namespace.
 
 namespace @TESTNAME@;
 
-class Foo { }
+class Foo extends cObject { }
 
 struct Struct { }
-
-class omnetpp::cMessage;
 
 message cMessage { } // that is, @TESTNAME@::cMessage extends OMNeT++'s cMessage
 
@@ -31,8 +29,8 @@ message Derived2 extends omnetpp::cMessage { }  // extends OMNeT++ cMessage
 ::@TESTNAME@::Derived2 d2;
 
 // assest that the correct cMessage base class was generated for Derived1 and Derived2
-ASSERT(dynamic_cast< ::@TESTNAME@::cMessage*>(&d1) != nullptr);
-ASSERT(dynamic_cast< ::@TESTNAME@::cMessage*>(&d2) == nullptr);
+ASSERT(dynamic_cast<::@TESTNAME@::cMessage*>(&d1) != nullptr);
+ASSERT(dynamic_cast<::@TESTNAME@::cMessage*>(&d2) == nullptr);
 
 // check descriptor full name
 EV << x.getDescriptor()->getFullName() << "\n";

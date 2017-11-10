@@ -25,7 +25,7 @@ message MyMessage
 
 MyMessage x;
 
-x.getB().setBb(11); PRINT(x.getB().getBb());
+x.getMutableB().setBb(11); PRINT(x.getB().getBb());
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout

@@ -4,37 +4,25 @@ member, and field enum.
 
 %file: test_globalnamespace.msg
 enum @TESTNAME@_Enum { FIRST=1; SECOND=2; THIRD=3; }
-class @TESTNAME@_Base { int i=9; int e=FIRST @enum(@TESTNAME@_Enum); }
+class @TESTNAME@_Base extends cObject { int i=9; int e=FIRST @enum(@TESTNAME@_Enum); }
 
 %file: test_othernamespace.msg
 namespace @TESTNAME@_other;
 enum Enum { FIRST=10; SECOND=20; THIRD=30; }
-class Base { int i=90; int e=SECOND @enum(Enum); }
+class Base extends cObject { int i=90; int e=SECOND @enum(Enum); }
 
 %file: test_samenamespace.msg
 namespace @TESTNAME@;
 enum Enum { FIRST=100; SECOND=200; THIRD=300; }
-class Base { int i=900; int e=THIRD @enum(Enum); }
+class Base extends cObject { int i=900; int e=THIRD @enum(Enum); }
 
 
 %file: test.msg
-
-cplusplus {{
-#include "test_globalnamespace_m.h"
-#include "test_othernamespace_m.h"
-#include "test_samenamespace_m.h"
-}}
+import test_globalnamespace;
+import test_othernamespace;
+import test_samenamespace;
 
 namespace @TESTNAME@;
-
-class ::@TESTNAME@_Base extends cObject;
-enum ::@TESTNAME@_Enum;
-
-class @TESTNAME@_other::Base extends cObject;
-enum @TESTNAME@_other::Enum;
-
-class Base extends cObject;  // same @TESTNAME@::Base
-enum Enum;  // same @TESTNAME@::Enum
 
 // use stuff from other namespace
 class Msg1 extends @TESTNAME@_other::Base {
@@ -113,7 +101,7 @@ class @TESTNAME@::Msg3 {
     string info = ""
     int i = 900
     int e = "300 (THIRD)"
-    Base member = class @TESTNAME@::Base {
+    @TESTNAME@::Base member = class @TESTNAME@::Base {
         string className = @TESTNAME@::Base
         string fullName = ""
         string fullPath = ""

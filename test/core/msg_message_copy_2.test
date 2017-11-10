@@ -15,8 +15,6 @@ class MyClass
     int bb;
 }
 
-class omnetpp::cQueue;
-
 message Base
 {
     MyStruct ms;
@@ -29,7 +27,7 @@ message MyMessage extends Base
     MyStruct ms2;
     MyClass mc2;
     omnetpp::cQueue q2;
-};
+}
 
 %includes:
 #include "test_m.h"
@@ -49,12 +47,12 @@ void print(const char *what, MyMessage& x)
 
 // set up tester classes
 MyMessage x;
-x.getMs().bb=11;
-x.getMc().setBb(12);
-x.getQ().setName("q"); x.getQ().insert(new cMessage);
-x.getMs2().bb=21;
-x.getMc2().setBb(22);
-x.getQ2().setName("q2"); x.getQ2().insert(new cMessage);x.getQ2().insert(new cMessage);
+x.getMutableMs().bb=11;
+x.getMutableMc().setBb(12);
+x.getMutableQ().setName("q"); x.getMutableQ().insert(new cMessage);
+x.getMutableMs2().bb=21;
+x.getMutableMc2().setBb(22);
+x.getMutableQ2().setName("q2"); x.getMutableQ2().insert(new cMessage); x.getMutableQ2().insert(new cMessage);
 
 print("x", x);
 

@@ -16,7 +16,7 @@ class Opaque { };
 
 // vectors with elements that have operator<<
 typedef std::vector<int> IntVector;
-typedef std::vector<IPAddress> IPAddressVector;
+typedef std::vector<IPAddress> IPAddrvector;
 
 // *** inet namespace ***
 
@@ -30,7 +30,7 @@ class Opaque { };
 
 // vectors with elements that have operator<<
 typedef std::vector<int> IntVector;
-typedef std::vector<IPAddress> IPAddressVector;
+typedef std::vector<IPAddress> IPAddrvector;
 }
 
 // *** foreign namespace ***
@@ -45,7 +45,7 @@ class Opaque { };
 
 // vectors with elements that have operator<<
 typedef std::vector<int> IntVector;
-typedef std::vector<IPAddress> IPAddressVector;
+typedef std::vector<IPAddress> IPAddrvector;
 }
 
 %file: options.msg
@@ -54,14 +54,14 @@ class Options {
     string b;
 }
 
-%file: inet_options.msg
+%file: inetOptions.msg
 namespace inet;
 class Options {
     int a;
     string b;
 }
 
-%file: foreign_options.msg
+%file: foreignOptions.msg
 namespace foreign;
 class Options {
     int a;
@@ -69,53 +69,51 @@ class Options {
 }
 
 %file: test.msg
+import options;
+import inetOptions;
+import foreignOptions;
+
 cplusplus {{
 #include "types.h"
-#include "options_m.h"
-#include "inet_options_m.h"
-#include "foreign_options_m.h"
 }}
+
+class IPAddress {@existingClass;@opaque;}
+class Opaque {@existingClass;@opaque;}
+class IntVector {@existingClass;@opaque;}
+class IPAddrvector {@existingClass;@opaque;}
+
+class inet::IPAddress {@existingClass;@opaque;}
+class inet::Opaque {@existingClass;@opaque;}
+class inet::IntVector {@existingClass;@opaque;}
+class inet::IPAddrvector {@existingClass;@opaque;}
+
+class foreign::IPAddress {@existingClass;@opaque;}
+class foreign::Opaque {@existingClass;@opaque;}
+class foreign::IntVector {@existingClass;@opaque;}
+class foreign::IPAddrvector {@existingClass;@opaque;}
 
 namespace inet;
 
-class noncobject ::IPAddress;
-class noncobject ::Opaque;
-class noncobject ::IntVector;
-class noncobject ::IPAddressVector;
-class noncobject ::Options;
-
-class noncobject inet::IPAddress;
-class noncobject inet::Opaque;
-class noncobject inet::IntVector;
-class noncobject inet::IPAddressVector;
-class noncobject inet::Options;
-
-class noncobject foreign::IPAddress;
-class noncobject foreign::Opaque;
-class noncobject foreign::IntVector;
-class noncobject foreign::IPAddressVector;
-class noncobject foreign::Options;
-
-class Dummy {
+class Dummy extends cObject {
     string s = "Hello";
 
-    ::IPAddress addr;
+    ::IPAddress address;
     ::Opaque opaque;
     ::IntVector intvec;
-    ::IPAddressVector addrvec;
+    ::IPAddrvector addrvec;
     ::Options options;
 
-    inet::IPAddress inet_addr;
-    inet::Opaque inet_opaque;
-    inet::IntVector inet_intvec;
-    inet::IPAddressVector inet_addrvec;
-    inet::Options inet_options;
+    inet::IPAddress inetAddress;
+    inet::Opaque inetOpaque;
+    inet::IntVector inetIntvec;
+    inet::IPAddrvector inetAddrvec;
+    inet::Options inetOptions;
 
-    foreign::IPAddress foreign_addr;
-    foreign::Opaque foreign_opaque;
-    foreign::IntVector foreign_intvec;
-    foreign::IPAddressVector foreign_addrvec;
-    foreign::Options foreign_options;
+    foreign::IPAddress foreignAddress;
+    foreign::Opaque foreignOpaque;
+    foreign::IntVector foreignIntvec;
+    foreign::IPAddrvector foreignAddrvec;
+    foreign::Options foreignOptions;
 }
 
 %includes:
@@ -124,17 +122,17 @@ class Dummy {
 %activity:
 inet::Dummy *dummy = new inet::Dummy();
 
-dummy->setAddr(::IPAddress());
-dummy->getIntvec().push_back(13);
-dummy->getAddrvec().push_back(::IPAddress());
+dummy->setAddress(::IPAddress());
+dummy->getMutableIntvec().push_back(13);
+dummy->getMutableAddrvec().push_back(::IPAddress());
 
-dummy->setInet_addr(inet::IPAddress());
-dummy->getInet_intvec().push_back(42);
-dummy->getInet_addrvec().push_back(inet::IPAddress());
+dummy->setInetAddress(inet::IPAddress());
+dummy->getMutableInetIntvec().push_back(42);
+dummy->getMutableInetAddrvec().push_back(inet::IPAddress());
 
-dummy->setForeign_addr(foreign::IPAddress());
-dummy->getForeign_intvec().push_back(60);
-dummy->getForeign_addrvec().push_back(foreign::IPAddress());
+dummy->setForeignAddress(foreign::IPAddress());
+dummy->getMutableForeignIntvec().push_back(60);
+dummy->getMutableForeignAddrvec().push_back(foreign::IPAddress());
 
 cClassDescriptor *desc = dummy->getDescriptor();
 for (int i = 0; i < desc->getFieldCount(); i++)
@@ -147,18 +145,18 @@ fullName=""
 fullPath=""
 info=""
 s="Hello"
-addr="<IPAddress>"
+address="<IPAddress>"
 opaque=""
 intvec="{13} (size=1)"
 addrvec="{<IPAddress>} (size=1)"
 options=""
-inet_addr="<inet::IPAddress>"
-inet_opaque=""
-inet_intvec="{42} (size=1)"
-inet_addrvec="{<inet::IPAddress>} (size=1)"
-inet_options=""
-foreign_addr="<foreign::IPAddress>"
-foreign_opaque=""
-foreign_intvec="{60} (size=1)"
-foreign_addrvec="{<foreign::IPAddress>} (size=1)"
-foreign_options=""
+inetAddress="<inet::IPAddress>"
+inetOpaque=""
+inetIntvec="{42} (size=1)"
+inetAddrvec="{<inet::IPAddress>} (size=1)"
+inetOptions=""
+foreignAddress="<foreign::IPAddress>"
+foreignOpaque=""
+foreignIntvec="{60} (size=1)"
+foreignAddrvec="{<foreign::IPAddress>} (size=1)"
+foreignOptions=""

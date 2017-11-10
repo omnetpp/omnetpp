@@ -15,8 +15,6 @@ class MyClass
     int bb;
 }
 
-class omnetpp::cQueue;
-
 message Base
 {
     MyStruct ms[];
@@ -70,18 +68,18 @@ x.setMs2ArraySize(5);
 x.setMc2ArraySize(6);
 x.setQ2ArraySize(7);
 
-x.getMs(0).bb=10;
-x.getMs(1).bb=11;
-x.getMc(0).setBb(20);
-x.getMc(1).setBb(21);
-x.getQ(0).setName("q(0)"); x.getQ(0).insert(new cMessage);
-x.getQ(1).setName("q(1)"); x.getQ(1).insert(new cMessage); x.getQ(1).insert(new cMessage);
-x.getMs2(0).bb=30;
-x.getMs2(1).bb=31;
-x.getMc2(0).setBb(40);
-x.getMc2(1).setBb(41);
-x.getQ2(0).setName("q2(0)"); x.getQ2(0).insert(new cMessage);x.getQ2(0).insert(new cMessage);
-x.getQ2(1).setName("q2(1)"); x.getQ2(1).insert(new cMessage);
+x.getMutableMs(0).bb=10;
+x.getMutableMs(1).bb=11;
+x.getMutableMc(0).setBb(20);
+x.getMutableMc(1).setBb(21);
+x.getMutableQ(0).setName("q(0)"); x.getMutableQ(0).insert(new cMessage);
+x.getMutableQ(1).setName("q(1)"); x.getMutableQ(1).insert(new cMessage); x.getMutableQ(1).insert(new cMessage);
+x.getMutableMs2(0).bb=30;
+x.getMutableMs2(1).bb=31;
+x.getMutableMc2(0).setBb(40);
+x.getMutableMc2(1).setBb(41);
+x.getMutableQ2(0).setName("q2(0)"); x.getMutableQ2(0).insert(new cMessage);x.getMutableQ2(0).insert(new cMessage);
+x.getMutableQ2(1).setName("q2(1)"); x.getMutableQ2(1).insert(new cMessage);
 
 print("x",x);
 

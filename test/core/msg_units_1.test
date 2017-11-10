@@ -1,5 +1,5 @@
 %description:
-Check inheritance for structs
+Check units usage
 
 %file: test.msg
 
@@ -10,8 +10,8 @@ using namespace inet::units::values;
 
 namespace @TESTNAME@;
 
-class noncobject m;
-class noncobject W;
+class m {@existingClass;@descriptor(false);}
+class W {@existingClass;@descriptor(false);}
 
 message Foo {
     m distance;

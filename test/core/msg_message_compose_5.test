@@ -1,5 +1,5 @@
 %description:
-Check external non-cOwnedObject class as message member
+Check external non-cObject class as message member
 
 %file: test.msg
 
@@ -11,13 +11,17 @@ cplusplus {{
     private:
       int a;
     public:
-      int getA() {return a;}
+      int getA() const {return a;}
       void setA(int newa) {a=newa;}
   };
 
 }}
 
-class noncobject A;
+class A
+{
+    @existingClass;
+    int a;
+}
 
 message MyMessage
 {
@@ -34,7 +38,7 @@ message MyMessage
 
 MyMessage x;
 
-x.getB().setA(11); PRINT(x.getB().getA());
+x.getMutableB().setA(11); PRINT(x.getB().getA());
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout

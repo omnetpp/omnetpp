@@ -26,9 +26,9 @@ message MyMessage
 MyMessage x;
 
 // access
-x.getB(0).bb=10;
-x.getB(1).bb=11;
-x.getB(2).bb=12;
+x.getMutableB(0).bb=10;
+x.getMutableB(1).bb=11;
+x.getMutableB(2).bb=12;
 x.setC('x');
 
 PRINT(x.getB(0).bb);

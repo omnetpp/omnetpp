@@ -10,7 +10,6 @@ struct Base
     int bb;
 }
 
-
 struct MyStruct
 {
     Base b;
