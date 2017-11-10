@@ -38,44 +38,38 @@ namespace nedxml {
 //TODO incorrect decl order (i.e. derived class before base class, or field before its typedef) causes C++ not to compile (fwd decl would be needed)
 
 static const char *BUILTIN_DEFINITIONS =
-        "class __bool { @actually(bool); @primitive; @cpptype(bool); @fromstring(string2bool($)); @tostring(bool2string($)); @defaultvalue(false); }\n"
-        "class __float { @actually(float); @primitive; @cpptype(float); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
-        "class __double { @actually(double); @primitive; @cpptype(double); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }\n"
-        "class __string { @actually(string); @primitive; @cpptype(omnetpp::opp_string); @argtype(const char *); @rettype(const char *); @maybe_c_str(.c_str()); @fromstring(($)); @tostring(oppstring2string($)); }\n"
-        "class __char { @actually(char); @primitive; @cpptype(char); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class __short { @actually(short); @primitive; @cpptype(short); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class __int { @actually(int); @primitive; @cpptype(int); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class __long { @actually(long); @primitive; @cpptype(long); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class __uchar { @actually(unsigned char); @primitive; @cpptype(unsigned char); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class __ushort { @actually(unsigned short); @primitive; @cpptype(unsigned short); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class __uint { @actually(unsigned int); @primitive; @cpptype(unsigned int); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class __ulong { @actually(unsigned long); @primitive; @cpptype(unsigned long); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class int8 { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class int8_t { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class int16 { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class int16_t { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class int32 { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class int32_t { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }\n"
-        "class uint8 { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class uint8_t { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class uint16 { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class uint16_t { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class uint32 { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class uint32_t { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }\n"
-        "class int64 { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
-        "class int64_t { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }\n"
-        "class uint64 { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
-        "class uint64_t { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }\n"
-        "namespace omnetpp;\n"
-        "class simtime_t { @opaque; @byvalue; @cpptype(omnetpp::simtime_t); @fromstring(string2simtime($)); @tostring(simtime2string($)); @defaultvalue(0); }\n"
-        "class cObject { @overwritePreviousDefinition; }\n"
-        "class cNamedObject extends cObject {}\n"
-        "class cOwnedObject extends cNamedObject {}\n"
-        "class cNoncopyableOwnedObject extends cOwnedObject {}"
-        "class cEvent extends cOwnedObject {}\n"
-        "class cMessage extends cEvent {}\n"
-        "class cPacket extends cMessage {}\n"
-        "";
+        R"ENDMARK(
+        class __bool { @actually(bool); @primitive; @cpptype(bool); @fromstring(string2bool($)); @tostring(bool2string($)); @defaultvalue(false); }
+        class __float { @actually(float); @primitive; @cpptype(float); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }
+        class __double { @actually(double); @primitive; @cpptype(double); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }
+        class __string { @actually(string); @primitive; @cpptype(omnetpp::opp_string); @argtype(const char *); @rettype(const char *); @maybe_c_str(.c_str()); @fromstring(($)); @tostring(oppstring2string($)); }
+        class __char { @actually(char); @primitive; @cpptype(char); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class __short { @actually(short); @primitive; @cpptype(short); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class __int { @actually(int); @primitive; @cpptype(int); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class __long { @actually(long); @primitive; @cpptype(long); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class __uchar { @actually(unsigned char); @primitive; @cpptype(unsigned char); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class __ushort { @actually(unsigned short); @primitive; @cpptype(unsigned short); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class __uint { @actually(unsigned int); @primitive; @cpptype(unsigned int); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class __ulong { @actually(unsigned long); @primitive; @cpptype(unsigned long); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class int8 { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class int8_t { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class int16 { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class int16_t { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class int32 { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class int32_t { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
+        class uint8 { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class uint8_t { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class uint16 { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class uint16_t { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class uint32 { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class uint32_t { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
+        class int64 { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }
+        class int64_t { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }
+        class uint64 { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }
+        class uint64_t { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }
+        )ENDMARK";
+
+extern const char *SIM_STD_DEFINITIONS;  // contents of sim/sim_std.msg, stringified into sim_std_msg.cc
 
 inline std::string str(const char *s) {
     return s;
@@ -84,18 +78,6 @@ inline std::string str(const char *s) {
 static bool isQualified(const std::string& qname)
 {
     return qname.find("::") != qname.npos;
-}
-
-static std::string canonicalizeQName(const std::string& namespac, const std::string& name)
-{
-    std::string qname;
-    if (name.find("::") != name.npos)
-        qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::"
-    else if (!namespac.empty() && !name.empty())
-        qname = namespac + "::" + name;
-    else
-        qname = name;
-    return qname;
 }
 
 inline std::string ptr2str(const char *ptr)
@@ -140,10 +122,17 @@ void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const
     outImportedFiles = importedFiles;
 }
 
+
 void MsgCompiler::importBuiltinDefinitions()
 {
+    processBuiltinImport(BUILTIN_DEFINITIONS, "builtin-definitions");
+    processBuiltinImport(SIM_STD_DEFINITIONS, "sim_std.msg");
+}
+
+void MsgCompiler::processBuiltinImport(const char *txt, const char *fname)
+{
     NEDParser parser(errors);
-    NEDElement *tree = parser.parseMSGText(BUILTIN_DEFINITIONS, "builtin-definitions");
+    NEDElement *tree = parser.parseMSGText(txt, fname);
     if (errors->containsError()) {
         delete tree;
         return;

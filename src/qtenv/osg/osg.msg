@@ -64,15 +64,6 @@ namespace omnetpp;
 enum cOsgCanvas::ViewerStyle;
 enum cOsgCanvas::CameraManipulatorType;
 
-class cFigure::Color
-{
-    @existingClass;
-    @descriptor(false);
-    @opaque;
-    @tostring(.str());
-    @fromstring(cFigure::parseColor($));
-}
-
 struct cOsgCanvas::Vec3d
 {
     @existingClass;
@@ -106,6 +97,7 @@ struct cOsgCanvas::EarthViewpoint
 class cOsgCanvas extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition; // in sim_std.msg
     osg::Node *scene;
     int viewerStyle @editable @enum(omnetpp::cOsgCanvas::ViewerStyle) @group(viewer hints);
     cFigure::Color clearColor @editable @group(viewer hints);

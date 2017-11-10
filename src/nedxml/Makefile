@@ -41,14 +41,15 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
       $O/ned1.tab.o $O/lex.ned1yy.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
       $O/msgcompiler.o $O/msgtypetable.o $O/msganalyzer.o $O/msgcodegenerator.o \
-      $O/msgcompilerold.o \
+      $O/msgcompilerold.o $O/sim_std_msg.o \
       $O/nedresourcecache.o $O/nedtypeinfo.o
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   neddtdvalidator.h neddtdvalidator.cc \
                   ned1.tab.hh ned1.tab.cc lex.ned1yy.cc \
                   ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
-                  msg2.tab.hh msg2.tab.cc lex.msg2yy.cc
+                  msg2.tab.hh msg2.tab.cc lex.msg2yy.cc \
+                  sim_std_msg.cc
 
 # macro is used in $(EXPORT_DEFINES) with clang/c2 when building a shared lib
 EXPORT_MACRO = -DNEDXML_EXPORT
@@ -142,5 +143,11 @@ lex.ned2yy.cc: ned2.lex
 lex.msg2yy.cc: msg2.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.msg2yy.cc -Pmsg2yy msg2.lex
+
+sim_std_msg.cc : ../sim/sim_std.msg
+	$(qecho) STRINGIFY: $<
+	$(Q)echo 'namespace omnetpp { namespace nedxml { const char *SIM_STD_DEFINITIONS = R"ENDMARK(' >$@
+	$(Q)cat $< >>$@
+	$(Q)echo ')ENDMARK"; } }' >>$@
 
 -include $(OBJS:%.o=%.d)

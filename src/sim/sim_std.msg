@@ -72,6 +72,8 @@ void std_sim_descriptor_dummy() {}
 
 }}
 
+//TODO remove @descriptor(readonly) where possible
+
 namespace omnetpp;
 
 enum cPar::Type;
@@ -84,9 +86,22 @@ enum cFigure::Arrowhead;
 enum cFigure::Anchor;
 enum cFigure::Interpolation;
 
+class simtime_t
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+    @opaque;
+    @byvalue;
+    @cpptype(omnetpp::simtime_t);
+    @fromstring(string2simtime($)); @tostring(simtime2string($));
+    @defaultvalue(SIMTIME_ZERO);
+}
+
 class StringVector
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
 }
@@ -94,8 +109,8 @@ class StringVector
 class cObject
 {
     @existingClass;
-    @descriptor(readonly);
     @overwritePreviousDefinition;
+    @descriptor(readonly);
     @icon(cogwheel);
     string className @group(base) @hint("C++ class name") @eventlog(skip);
     string fullName @group(base) @hint("If object is part of a module/gate vector: name with index");
@@ -106,29 +121,30 @@ class cObject
 class cNamedObject extends cObject
 {
     @existingClass;
-    @descriptor(readonly);
     @overwritePreviousDefinition;
+    @descriptor(readonly);
     string name @group(base) @editable @hint("An editable string attribute of the object, also used for fullName and fullPath");
 }
 
 class cOwnedObject extends cNamedObject
 {
     @existingClass;
-    @descriptor(readonly);
     @overwritePreviousDefinition;
+    @descriptor(readonly);
     cObject *owner @group(base) @hint("Module or container this object belongs to") @eventlog(skip);
 }
 
 class cNoncopyableOwnedObject extends cOwnedObject
 {
     @existingClass;
-    @descriptor(readonly);
     @overwritePreviousDefinition;
+    @descriptor(readonly);
 }
 
 class cDefaultList extends cNoncopyableOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cOwnedObject *defaultList[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(owned objects) @hint("List of objects directly held by this component");
 }
@@ -136,6 +152,7 @@ class cDefaultList extends cNoncopyableOwnedObject
 class cDisplayString
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string value @getter(str) @setter(parse) @editable @hint("The editable display string itself");
 }
@@ -143,6 +160,7 @@ class cDisplayString
 class cProperty extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     bool isImplicit @getter(isImplicit) @group(fields);
     string index @group(fields);
@@ -152,12 +170,14 @@ class cProperty extends cObject
 class cIListener
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
 }
 
 class cComponent::SignalListenerList
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string signalName @hint("Name of signal listened on");
     cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @tostring(->str()) for cResultListeners
@@ -166,6 +186,7 @@ class cComponent::SignalListenerList
 class cComponent extends cDefaultList
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     bool isModule @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
     cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
@@ -178,6 +199,7 @@ class cComponent extends cDefaultList
 class cChannel extends cComponent
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(channel);
     cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI") @editable @setter(setDisplayString) @fromstring($) @tostring(.str()) @getter(getDisplayString);
@@ -186,6 +208,7 @@ class cChannel extends cComponent
 class cIdealChannel extends cChannel
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     // nothing special
 }
@@ -193,6 +216,7 @@ class cIdealChannel extends cChannel
 class cDelayChannel extends cChannel
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     // nothing special
 }
@@ -200,6 +224,7 @@ class cDelayChannel extends cChannel
 class cDatarateChannel extends cChannel
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     // Note: no need to spell out delay etc, they come from cComponent parameters
     bool isBusy @getter(isBusy) @group(fields) @hint("If channel is currently transmitting");
@@ -209,6 +234,7 @@ class cDatarateChannel extends cChannel
 class cModule extends cComponent
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(compound);
     int id @group(fields) @hint("Unique module ID -- IDs of deleted modules are not issued again");
@@ -226,6 +252,7 @@ class cModule extends cComponent
 class cSimpleModule extends cModule
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(simple);
     bool isTerminated @getter(isTerminated) @group(fields) @hint("Whether this module has terminated");
@@ -241,6 +268,7 @@ class cSimpleModule extends cModule
 class cComponentType extends cNoncopyableOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string nedSource @getter(getNedSource) @hint("NED source of component if available");
 }
@@ -248,6 +276,7 @@ class cComponentType extends cNoncopyableOwnedObject
 class cModuleType extends cComponentType
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     bool isNetwork @getter(isNetwork) @group(fields) @hint("Whether this module type can be used as toplevel module");
 }
@@ -255,12 +284,14 @@ class cModuleType extends cComponentType
 class cChannelType extends cComponentType
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cRegistrationList extends cNamedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cObject *contents[] @getter(get) @sizeGetter(size) @hint("Contained objects");
 }
@@ -270,6 +301,7 @@ class cRegistrationList extends cNamedObject
 class cGate extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(gate);
     char type @group(fields) @enum(cGate::Type) @hint("Gate type");
@@ -294,6 +326,7 @@ class cGate extends cObject
 class cArray extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(container);
     bool takeOwnership @group(fields) @editable @hint("Whether the array should own the objects inserted into it");
@@ -303,8 +336,8 @@ class cArray extends cOwnedObject
 class cEvent extends cOwnedObject
 {
     @existingClass;
-    @descriptor(readonly);
     @overwritePreviousDefinition;
+    @descriptor(readonly);
     short schedulingPriority @group(event) @editable @hint("Controls order of messages with equal timestamps in FES");
     cObject *targetObject @group(event) @hint("The object this message will be delivered to");
     bool isScheduled @getter(isScheduled) @group(sending) @hint("Whether event or message is currently scheduled (or in transit)");
@@ -314,8 +347,8 @@ class cEvent extends cOwnedObject
 class cMessage extends cEvent
 {
     @existingClass;
-    @descriptor(readonly);
     @overwritePreviousDefinition;
+    @descriptor(readonly);
     @icon("message");
     long id @group("message") @hint("Automatically assigned unique identifier");
     long treeId @group("message") @hint("Identifier shared between the message and its copies");
@@ -346,8 +379,8 @@ class cMessage extends cEvent
 class cPacket extends cMessage
 {
     @existingClass;
-    @descriptor(readonly);
     @overwritePreviousDefinition;
+    @descriptor(readonly);
     @icon("packet");
     int64_t bitLength @group("packet") @editable @hint("Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel");
     int64_t byteLength @group("packet") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
@@ -362,12 +395,14 @@ class cPacket extends cMessage
 class cRNG extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cRandom extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(cogwheel); //TODO
     cRNG *rng @getter(getRNG) @setter(setRNG);
@@ -376,6 +411,7 @@ class cRandom extends cOwnedObject
 class cUniform extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double a;
     double b;
@@ -384,6 +420,7 @@ class cUniform extends cRandom
 class cExponential extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double mean;
 }
@@ -391,6 +428,7 @@ class cExponential extends cRandom
 class cNormal extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double mean;
     double stddev;
@@ -399,6 +437,7 @@ class cNormal extends cRandom
 class cTruncNormal extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double mean;
     double stddev;
@@ -407,6 +446,7 @@ class cTruncNormal extends cRandom
 class cGamma extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double alpha;
     double theta;
@@ -415,6 +455,7 @@ class cGamma extends cRandom
 class cBeta extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double alpha1;
     double alpha2;
@@ -423,6 +464,7 @@ class cBeta extends cRandom
 class cErlang extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     unsigned int k;
     double mean;
@@ -431,6 +473,7 @@ class cErlang extends cRandom
 class cChiSquare extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     unsigned int k;
 }
@@ -438,6 +481,7 @@ class cChiSquare extends cRandom
 class cStudentT extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     unsigned int i;
 }
@@ -445,6 +489,7 @@ class cStudentT extends cRandom
 class cCauchy extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double a;
     double b;
@@ -453,6 +498,7 @@ class cCauchy extends cRandom
 class cTriang extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double a;
     double b;
@@ -462,6 +508,7 @@ class cTriang extends cRandom
 class cWeibull extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double a;
     double b;
@@ -470,6 +517,7 @@ class cWeibull extends cRandom
 class cParetoShifted extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double a;
     double b;
@@ -479,6 +527,7 @@ class cParetoShifted extends cRandom
 class cIntUniform extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int a;
     int b;
@@ -487,6 +536,7 @@ class cIntUniform extends cRandom
 class cBernoulli extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double p;
 }
@@ -494,6 +544,7 @@ class cBernoulli extends cRandom
 class cBinomial extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int n;
     double p;
@@ -502,6 +553,7 @@ class cBinomial extends cRandom
 class cGeometric extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double p;
 }
@@ -509,6 +561,7 @@ class cGeometric extends cRandom
 class cNegBinomial extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int n;
     double p;
@@ -517,6 +570,7 @@ class cNegBinomial extends cRandom
 class cPoisson extends cRandom
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double lambda;
 }
@@ -526,6 +580,7 @@ class cPoisson extends cRandom
 class cStatistic extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(statistic);
     long count @hint("Number of observations collected, regardless of their weights");
@@ -540,18 +595,21 @@ class cStatistic extends cOwnedObject
 class cStdDev extends cStatistic
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cWeightedStdDev extends cStdDev
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cDensityEstBase extends cStdDev
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram cells");
     unsigned long underflowCell @group(histogram) @hint("Number of observations below the first histogram cell");
@@ -563,6 +621,7 @@ class cDensityEstBase extends cStdDev
 class cDensityEstBase::Cell
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
 }
@@ -570,66 +629,77 @@ class cDensityEstBase::Cell
 class cHistogramBase extends cDensityEstBase
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cHistogram extends cHistogramBase
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cVarHistogram extends cHistogramBase
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cLongHistogram extends cHistogram
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cDoubleHistogram extends cHistogram
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cKSplit extends cDensityEstBase
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cPSquare extends cDensityEstBase
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cTransientDetection extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cAccuracyDetection extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cTDExpandingWindows extends cTransientDetection
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cADByStddev extends cAccuracyDetection
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
@@ -638,6 +708,7 @@ class cADByStddev extends cAccuracyDetection
 class cExpression extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string str @getter(str);
 }
@@ -645,6 +716,7 @@ class cExpression extends cObject
 class cFSM extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int state @hint("Numeric code of the state the FSM is currently in");
     string stateName @hint("Name of the current FSM state");
@@ -653,6 +725,7 @@ class cFSM extends cOwnedObject
 class cNEDMathFunction extends cNoncopyableOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string category @hint("Function category");
     string description;
@@ -662,6 +735,7 @@ class cNEDMathFunction extends cNoncopyableOwnedObject
 class cNEDFunction extends cNoncopyableOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string signature @hint("Argument types and return value");
     string category @hint("Function category");
@@ -675,6 +749,7 @@ class cNEDFunction extends cNoncopyableOwnedObject
 class cOutVector extends cNoncopyableOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(outvector);
     bool isEnabled @getter(isEnabled) @setter(setEnabled) @editable @hint("If disabled, values passed to this object to record are simply discarded");
@@ -685,6 +760,7 @@ class cOutVector extends cNoncopyableOwnedObject
 class cPar extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(param);
     string value @getter(str) @setter(parse) @editable;
@@ -699,6 +775,7 @@ class cPar extends cObject
 class cMsgPar extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string value @getter(str) @setter(parse) @editable @hint("Parameter value");
     char type @enum(cPar::Type) @hint("Parameter type");
@@ -709,6 +786,7 @@ class cMsgPar extends cOwnedObject
 class cFutureEventSet extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(container);
     int length @hint("Number of items contained");
@@ -718,12 +796,14 @@ class cFutureEventSet extends cOwnedObject
 class cEventHeap extends cFutureEventSet
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cQueue extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(queue);
     bool takeOwnership @group(fields) @editable @hint("Whether the queue should own the objects inserted into it");
@@ -734,6 +814,7 @@ class cQueue extends cOwnedObject
 class cPacketQueue extends cQueue
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int64_t bitLength @hint("Total size of messages in the queue");
     int64_t byteLength @hint("Total size of messages in the queue, in bytes");
@@ -742,6 +823,7 @@ class cPacketQueue extends cQueue
 class cHasher
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
    string hash @getter(str) @hint("The current hash value");
 }
@@ -749,12 +831,14 @@ class cHasher
 class cFingerprintCalculator extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cSimulation extends cNoncopyableOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(container);
     simtime_t simTime @hint("The current simulation time in seconds");
@@ -769,24 +853,28 @@ class cSimulation extends cNoncopyableOwnedObject
 class cScheduler extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cSequentialScheduler extends cScheduler
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cRealTimeScheduler extends cScheduler
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cTopology::Node
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int moduleId @hint("ID of the module this node corresponds to");
     cModule *module @hint("The module this node corresponds to");
@@ -803,6 +891,7 @@ class cTopology::Node
 class cTopology::Link
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double weight @hint("Link weight -- affects graph algorithms such as shortest path");
     bool enabled @getter(isEnabled) @hint("Link state -- affects graph algorithms such as shortest path");
@@ -811,6 +900,7 @@ class cTopology::Link
 class cTopology::LinkIn extends cTopology::Link
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cTopology::Node *remoteNode @hint("The node at the remote end of this connection");
     cGate *remoteGate @hint("The gate at the remote end of this connection");
@@ -820,6 +910,7 @@ class cTopology::LinkIn extends cTopology::Link
 class cTopology::LinkOut extends cTopology::Link
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cTopology::Node *remoteNode @hint("The node at the remote end of this connection");
     cGate *remoteGate @hint("The gate at the remote end of this connection");
@@ -829,6 +920,7 @@ class cTopology::LinkOut extends cTopology::Link
 class cTopology extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int numNodes @group(fields) @hint("Number of nodes in this topology object");
     cTopology::Node *node[] @sizeGetter(getNumNodes) @hint("List of nodes in this topology object");
@@ -837,6 +929,7 @@ class cTopology extends cOwnedObject
 class cXMLElement extends cObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string tagName @hint("XML element tag");
     string nodeValue @hint("Contents of text node inside this XML element");
@@ -849,6 +942,7 @@ class cXMLElement extends cObject
 class cFigure::Point
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
     @tostring(.str());
@@ -858,6 +952,7 @@ class cFigure::Point
 class cFigure::Rectangle
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
     @tostring(.str());
@@ -867,6 +962,7 @@ class cFigure::Rectangle
 class cFigure::Transform
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
     @tostring(.str());
@@ -876,6 +972,7 @@ class cFigure::Transform
 class cFigure::Color
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
     @tostring(.str());
@@ -885,6 +982,7 @@ class cFigure::Color
 class cFigure::Font
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
     @tostring(.str());
@@ -894,6 +992,7 @@ class cFigure::Font
 class cFigure::Pixmap
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
 }
@@ -901,6 +1000,7 @@ class cFigure::Pixmap
 class cFigure extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     int id @group(figure);
     bool visible @group(figure) @getter(isVisible) @editable;
@@ -915,12 +1015,14 @@ class cFigure extends cOwnedObject
 class cGroupFigure extends cFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cPanelFigure extends cFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Point position @group(geometry) @editable;
     Point anchorPoint @group(geometry) @editable;
@@ -929,6 +1031,7 @@ class cPanelFigure extends cFigure
 class cAbstractLineFigure extends cFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Color lineColor @group(line) @editable;
     int lineStyle @group(line) @editable @enum(cFigure::LineStyle);
@@ -943,6 +1046,7 @@ class cAbstractLineFigure extends cFigure
 class cLineFigure extends cAbstractLineFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Point start @group(geometry) @editable;
     Point end @group(geometry) @editable;
@@ -951,6 +1055,7 @@ class cLineFigure extends cAbstractLineFigure
 class cArcFigure extends cAbstractLineFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Rectangle bounds @group(geometry) @editable;
     double startAngle @group(geometry) @editable;
@@ -960,6 +1065,7 @@ class cArcFigure extends cAbstractLineFigure
 class cPolylineFigure extends cAbstractLineFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints);
     bool smooth @group(geometry) @editable;
@@ -969,6 +1075,7 @@ class cPolylineFigure extends cAbstractLineFigure
 class cAbstractShapeFigure extends cFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     bool outlined @group(outline) @getter(isOutlined) @editable;
     bool filled @group(fill) @getter(isFilled) @editable;
@@ -984,6 +1091,7 @@ class cAbstractShapeFigure extends cFigure
 class cRectangleFigure extends cAbstractShapeFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Rectangle bounds @group(geometry) @editable;
     double cornerRx @group(geometry) @editable;
@@ -993,6 +1101,7 @@ class cRectangleFigure extends cAbstractShapeFigure
 class cOvalFigure extends cAbstractShapeFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Rectangle bounds @group(geometry) @editable;
 }
@@ -1000,6 +1109,7 @@ class cOvalFigure extends cAbstractShapeFigure
 class cRingFigure extends cAbstractShapeFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Rectangle bounds @group(geometry) @editable;
     double innerRx @group(geometry) @editable;
@@ -1009,6 +1119,7 @@ class cRingFigure extends cAbstractShapeFigure
 class cPieSliceFigure extends cAbstractShapeFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Rectangle bounds @group(geometry) @editable;
     double startAngle @group(geometry) @editable;
@@ -1018,6 +1129,7 @@ class cPieSliceFigure extends cAbstractShapeFigure
 class cPolygonFigure extends cAbstractShapeFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Point points[] @group(geometry) @editable @getter(getPoint) @setter(setPoint) @sizeGetter(getNumPoints);
     bool smooth @group(geometry) @editable;
@@ -1028,6 +1140,7 @@ class cPolygonFigure extends cAbstractShapeFigure
 class cPathFigure extends cAbstractShapeFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string path @group(geometry) @editable;
     Point offset @group(geometry) @editable;
@@ -1039,6 +1152,7 @@ class cPathFigure extends cAbstractShapeFigure
 class cAbstractTextFigure extends cFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Point position @group(geometry) @editable;
     int anchor @group(geometry) @editable @enum(cFigure::Anchor);
@@ -1052,18 +1166,21 @@ class cAbstractTextFigure extends cFigure
 class cTextFigure extends cAbstractTextFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cLabelFigure extends cAbstractTextFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cAbstractImageFigure extends cFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Point position @group(geometry) @editable;
     int anchor @group(geometry) @editable @enum(cFigure::Anchor);
@@ -1078,6 +1195,7 @@ class cAbstractImageFigure extends cFigure
 class cImageFigure extends cAbstractImageFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string imageName @editable;
 }
@@ -1085,12 +1203,14 @@ class cImageFigure extends cAbstractImageFigure
 class cIconFigure extends cImageFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cPixmapFigure extends cAbstractImageFigure
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     Pixmap pixmap;
 }
@@ -1098,6 +1218,7 @@ class cPixmapFigure extends cAbstractImageFigure
 class cCanvas extends cOwnedObject
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cFigure *rootFigure;
     string allTags;
@@ -1107,18 +1228,21 @@ class cCanvas extends cOwnedObject
 class cOsgCanvas extends cOwnedObject
 {
     @existingClass;
-    @descriptor(readonly);
+    @overwritePreviousDefinition;
+    @descriptor(false);  // descriptor will come from osg.msg in qtenv
 }
 
 class cResultListener extends cIListener
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cResultFilter extends cResultListener
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @tostring(->str());
 }
@@ -1126,6 +1250,7 @@ class cResultFilter extends cResultListener
 class WarmupPeriodFilter extends cResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     simtime_t endWarmupPeriod;
 }
@@ -1133,6 +1258,7 @@ class WarmupPeriodFilter extends cResultFilter
 class CountFilter extends cResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     long count;
 }
@@ -1140,6 +1266,7 @@ class CountFilter extends cResultFilter
 class ConstantFilter extends cResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double constant;
 }
@@ -1147,30 +1274,35 @@ class ConstantFilter extends cResultFilter
 class Constant0Filter extends ConstantFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class Constant1Filter extends ConstantFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cNumericResultFilter extends cResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class IdentityFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class SumFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double sum;
 }
@@ -1178,6 +1310,7 @@ class SumFilter extends cNumericResultFilter
 class MeanFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double mean;
 }
@@ -1185,6 +1318,7 @@ class MeanFilter extends cNumericResultFilter
 class MinFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double min;
 }
@@ -1192,6 +1326,7 @@ class MinFilter extends cNumericResultFilter
 class MaxFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double max;
 }
@@ -1199,6 +1334,7 @@ class MaxFilter extends cNumericResultFilter
 class TimeAverageFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double timeAverage;
 }
@@ -1206,6 +1342,7 @@ class TimeAverageFilter extends cNumericResultFilter
 class RemoveRepeatsFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double lastValue;
 }
@@ -1213,6 +1350,7 @@ class RemoveRepeatsFilter extends cNumericResultFilter
 class ExpressionFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string expression @tostring(.str());
     double lastValue;
@@ -1222,6 +1360,7 @@ class ExpressionFilter extends cNumericResultFilter
 class UnaryExpressionFilter extends ExpressionFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double lastInputValue;
 }
@@ -1229,30 +1368,35 @@ class UnaryExpressionFilter extends ExpressionFilter
 class NaryExpressionFilter extends ExpressionFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class cObjectResultFilter extends cResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class PacketBytesFilter extends cObjectResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class PacketBitsFilter extends cObjectResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class SumPerDurationFilter extends cNumericResultFilter
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double sumPerDuration;
 }
@@ -1260,6 +1404,7 @@ class SumPerDurationFilter extends cNumericResultFilter
 class cResultRecorder extends cResultListener
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cComponent *component;
     string resultName;
@@ -1270,12 +1415,14 @@ class cResultRecorder extends cResultListener
 class cNumericResultRecorder extends cResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class VectorRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     simtime_t lastWriteTime;
     double lastValue;
@@ -1284,6 +1431,7 @@ class VectorRecorder extends cNumericResultRecorder
 class CountRecorder extends cResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     long count;
 }
@@ -1291,6 +1439,7 @@ class CountRecorder extends cResultRecorder
 class LastValueRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double lastValue;
 }
@@ -1298,6 +1447,7 @@ class LastValueRecorder extends cNumericResultRecorder
 class SumRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double sum;
 }
@@ -1305,6 +1455,7 @@ class SumRecorder extends cNumericResultRecorder
 class MeanRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double mean;
 }
@@ -1312,6 +1463,7 @@ class MeanRecorder extends cNumericResultRecorder
 class MinRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double min;
 }
@@ -1319,6 +1471,7 @@ class MinRecorder extends cNumericResultRecorder
 class MaxRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double max;
 }
@@ -1326,6 +1479,7 @@ class MaxRecorder extends cNumericResultRecorder
 class TimeAverageRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     double timeAverage @hint(Computed with the CURRENT simulation time);
 }
@@ -1333,6 +1487,7 @@ class TimeAverageRecorder extends cNumericResultRecorder
 class StatisticsRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     cStatistic *statistic;
 }
@@ -1340,18 +1495,21 @@ class StatisticsRecorder extends cNumericResultRecorder
 class StatsRecorder extends StatisticsRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class HistogramRecorder extends StatisticsRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
 class ExpressionRecorder extends cNumericResultRecorder
 {
     @existingClass;
+    @overwritePreviousDefinition;
     @descriptor(readonly);
     string expression @tostring(.str());
     double currentValue;
