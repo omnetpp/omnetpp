@@ -40,24 +40,6 @@ class NEDXML_API MsgTypeTable
   public:
     typedef std::vector<std::string> StringVector;
 
-    enum class ClassType {
-        UNKNOWN = 0,
-        STRUCT,       // struct
-        NONCOBJECT,   // class not derived from cObject
-        COBJECT,      // class derived from cObject
-        COWNEDOBJECT, // class derived from cOwnedObject
-        CNAMEDOBJECT  // class derived from cNamedObject
-    };
-
-    struct TypeDesc
-    {
-        const char *nedTypeName;
-        const char *cppTypeName;
-        const char *fromstring;
-        const char *tostring;
-        const char *emptyValue;
-    };
-
     typedef std::map<std::string, std::string> Properties;  //FIXME kell egy reszletesebb modell...
 
     class FieldInfo {
@@ -72,6 +54,7 @@ class NEDXML_API MsgTypeTable
         bool fispointer;
         bool fisownedpointer;   // true, when should use dup()/delete/take()/drop()/dropAndDelete(); read from @owned, default value is true for cOwnedObject, otherwise false
                                 // "T *removeFoo()" also generated for owned pointer members
+                                //FIXME: should just be "owned" -- whether field type is cOwnedObject or not is already part of iscOwnedObject!
         bool fisarray;
         bool byvalue;           // @byvalue, default value is false        // TODO: @byvalue should rather be the attribute of the field's type, not the field itself
         std::string farraysize; // array size in MSG, maybe empty for dynamic arrays
@@ -79,7 +62,10 @@ class NEDXML_API MsgTypeTable
 
         // data needed for code generation
         bool fisprimitivetype;  // whether primitive or compound type (TODO merge into ClassType?)
-        ClassType classtype;    // cobject/cnamedobject/cownedobject/...
+        bool isClass; // or struct
+        bool iscObject;
+        bool iscNamedObject;
+        bool iscOwnedObject;
         std::string datatype;   // member C++ datatype
         std::string argtype;    // setter C++ argument type
         std::string rettype;    // getter C++ return type
@@ -114,7 +100,7 @@ class NEDXML_API MsgTypeTable
         bool overrideSetter;   // @overridesetter|@override, uses when field setter function overrides a function in base class
 
       public:
-        FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(ClassType::UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
+        FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), fnopack(false), feditable(false),fopaque(false) {}
     };
 
     class ClassInfo {
@@ -134,7 +120,10 @@ class NEDXML_API MsgTypeTable
         std::string msgbase;        // base class name from MSG
         bool gap = false;                   // true if @customize
         bool omitgetverb = false;
-        ClassType classtype = ClassType::UNKNOWN;
+        bool isClass; // or struct
+        bool iscObject;
+        bool iscNamedObject;
+        bool iscOwnedObject;
         std::string namespacename;
         std::string msgclass;
         std::string realmsgclass;
@@ -208,7 +197,6 @@ class NEDXML_API MsgTypeTable
     bool isEnumDefined(const std::string& enumqname) { return definedEnums.find(enumqname) != definedEnums.end(); }
     ClassInfo& getClassInfo(const std::string& classqname);
     const EnumInfo& getEnumInfo(const std::string& qname);
-    ClassType getClassType(const std::string& qname);
     void storeMsgFile(NEDElement *tree) {importedMsgFiles.push_back(tree);}
     void addClass(const ClassInfo& classInfo) {definedClasses[classInfo.msgqname] = classInfo;} // TODO assert not already there
     void addEnum(const EnumInfo& enumInfo) {definedEnums[enumInfo.enumQName] = enumInfo;}  //TODO assert not already there

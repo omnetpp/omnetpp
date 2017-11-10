@@ -41,8 +41,6 @@ class NEDXML_API MsgCodeGenerator
 {
   public:
     typedef std::vector<std::string> StringVector;
-    typedef MsgTypeTable::TypeDesc TypeDesc;
-    typedef MsgTypeTable::ClassType ClassType;
     typedef MsgTypeTable::Properties Properties;
     typedef MsgTypeTable::FieldInfo FieldInfo;
     typedef MsgTypeTable::ClassInfo ClassInfo;

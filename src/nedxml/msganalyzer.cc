@@ -262,26 +262,26 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         }
     }
 
-    // determine classType
-    if (classInfo.keyword == "struct") {
-        classInfo.classtype = ClassType::STRUCT;
-    }
-    else {
+    // determine class kind
+    classInfo.isClass = (classInfo.keyword != "struct");
+    classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = false;
+    if (classInfo.isClass) {
         if (classInfo.msgqname == "omnetpp::cObject")
-            classInfo.classtype = ClassType::COBJECT;
+            classInfo.iscObject = true;
         else if (classInfo.msgqname == "omnetpp::cNamedObject")
-            classInfo.classtype = ClassType::CNAMEDOBJECT;
+            classInfo.iscObject = classInfo.iscNamedObject = true;
         else if (classInfo.msgqname == "omnetpp::cOwnedObject")
-            classInfo.classtype = ClassType::COWNEDOBJECT;
-        else if (classInfo.msgbaseqname == "")
-            classInfo.classtype = ClassType::NONCOBJECT;
-        else if (typeTable->isClassDefined(classInfo.msgbaseqname)) {
+            classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = true;
+        else if (classInfo.msgbaseqname != "" && typeTable->isClassDefined(classInfo.msgbaseqname)) {
             ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
             ensureAnalyzed(baseClassInfo);
-            classInfo.classtype = baseClassInfo.classtype;
+            classInfo.iscObject = baseClassInfo.iscObject;
+            classInfo.iscNamedObject = baseClassInfo.iscNamedObject;
+            classInfo.iscOwnedObject = baseClassInfo.iscOwnedObject;
         }
-        else
-            classInfo.classtype = ClassType::NONCOBJECT; // assume non-cObject
+        else {
+            // assume non-cObject
+        }
     }
 
     // isPrimitive, isOpaque, byValue, data types, etc.
@@ -367,11 +367,14 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     ClassInfo& fieldClassInfo = typeTable->getClassInfo(field->ftypeqname);
     ensureAnalyzed(fieldClassInfo);
-    field->classtype = fieldClassInfo.classtype;
     field->fisprimitivetype = fieldClassInfo.isprimitivetype;
+    field->isClass = fieldClassInfo.isClass;
+    field->iscObject = fieldClassInfo.iscObject;
+    field->iscNamedObject = fieldClassInfo.iscNamedObject;
+    field->iscOwnedObject = fieldClassInfo.iscOwnedObject;
 
     if (classInfo.generate_class)
-        if (field->classtype == ClassType::COWNEDOBJECT && !(classInfo.classtype == ClassType::COBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COWNEDOBJECT))
+        if (field->iscOwnedObject && !classInfo.iscObject)
             errors->addError(field->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
 
     if (field->fispointer && field->fisprimitivetype) {
@@ -431,7 +434,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->tostring = getProperty(field->fprops, "tostring", field->tostring);
 
     // variable name
-    if (classInfo.classtype == ClassType::STRUCT) {
+    if (!classInfo.isClass) {
         field->var = field->fname;
     }
     else {
@@ -439,14 +442,14 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->argname = field->fname;
     }
 
-    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, "owned", field->classtype == ClassType::COWNEDOBJECT);
+    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, "owned", field->iscOwnedObject);
 
     field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
     std::string sizetypeprop = getProperty(field->fprops, "sizetype");
     field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // default method names
-    if (classInfo.classtype != ClassType::STRUCT) {
+    if (classInfo.isClass) {
         std::string capfieldname = field->fname;
         capfieldname[0] = toupper(capfieldname[0]);
         field->setter = str("set") + capfieldname;

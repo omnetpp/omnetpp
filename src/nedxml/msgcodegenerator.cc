@@ -360,7 +360,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         H << " *   private:\n";
         H << " *     void copy(const " << classInfo.realmsgclass << "& other) { ... }\n\n";
         H << " *   public:\n";
-        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT) {
+        if (classInfo.iscNamedObject) {
             if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
                 H << " *     " << classInfo.realmsgclass << "(const char *name=nullptr, short kind=0) : " << classInfo.msgclass << "(name,kind) {}\n";
             }
@@ -373,13 +373,13 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         }
         H << " *     " << classInfo.realmsgclass << "(const " << classInfo.realmsgclass << "& other) : " << classInfo.msgclass << "(other) {copy(other);}\n";
         H << " *     " << classInfo.realmsgclass << "& operator=(const " << classInfo.realmsgclass << "& other) {if (this==&other) return *this; " << classInfo.msgclass << "::operator=(other); copy(other); return *this;}\n";
-        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+        if (classInfo.iscObject) {
             H << " *     virtual " << classInfo.realmsgclass << " *dup() const override {return new " << classInfo.realmsgclass << "(*this);}\n";
         }
         H << " *     // ADD CODE HERE to redefine and implement pure virtual functions from " << classInfo.msgclass << "\n";
         H << " * };\n";
         H << " * </pre>\n";
-        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+        if (classInfo.iscObject) {
             H << " *\n";
             H << " * The following should go into a .cc (.cpp) file:\n";
             H << " *\n";
@@ -431,7 +431,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         H << "\n";
         H << "  public:\n";
     }
-    if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT) {
+    if (classInfo.iscNamedObject) {
         if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
             H << "    " << classInfo.msgclass << "(const char *name=nullptr, short kind=0);\n";
         }
@@ -453,14 +453,15 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     if (!classInfo.gap) {
         H << "    " << classInfo.msgclass << "& operator=(const " << classInfo.msgclass << "& other);\n";
     }
-    if (classInfo.gap) {
-        H << "    virtual " << classInfo.msgclass << " *dup() const override {throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << classInfo.realmsgclass << "\");}\n";
+    if (classInfo.iscObject) {
+        if (classInfo.gap)
+            H << "    virtual " << classInfo.msgclass << " *dup() const override {throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << classInfo.realmsgclass << "\");}\n";
+        else
+            H << "    virtual " << classInfo.msgclass << " *dup() const override {return new " << classInfo.msgclass << "(*this);}\n";
     }
-    else {
-        H << "    virtual " << classInfo.msgclass << " *dup() const override {return new " << classInfo.msgclass << "(*this);}\n";
-    }
-    H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const override;\n";
-    H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;\n";
+    std::string maybe_override = classInfo.iscObject ? " override" : "";
+    H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const" << maybe_override << ";\n";
+    H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b)" << maybe_override << ";\n";
     H << "\n";
     H << "    // field getter/setter methods\n";
     for (const auto& field : classInfo.fieldlist) {
@@ -501,16 +502,15 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     H << "};\n\n";
 
     if (!classInfo.gap) {
-        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+        if (classInfo.iscObject) {
             CC << "Register_Class(" << classInfo.msgclass << ")\n\n";
+            H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
+            H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
         }
-
-        H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
-        H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
     // constructor:
-    if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT) {
+    if (classInfo.iscNamedObject) {
         if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
             // CAREFUL when assigning values to existing members gets implemented!
             // The msg kind passed to the ctor should take priority!!!
@@ -550,7 +550,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                         CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
                         CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
                     }
-                    if (field.classtype == ClassType::COWNEDOBJECT || field.fisownedpointer) {
+                    if (field.iscOwnedObject || field.fisownedpointer) {
                         CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
                         if (field.fispointer) {
                             if (field.fisownedpointer)
@@ -569,7 +569,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 if (!field.fval.empty()) {
                     CC << "    this->" << field.var << " = " << field.fval << ";\n";
                 }
-                if (field.classtype == ClassType::COWNEDOBJECT) {
+                if (field.iscOwnedObject) {
                     if (field.fispointer)
                         CC << "    if (this->" << field.var << " != nullptr) { take(this->" << field.var << "); }\n";
                     else
@@ -595,7 +595,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                         CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
                         CC << "        this->" << field.var << "[i] = nullptr;\n";
                     }
-                    else if (field.classtype == ClassType::COWNEDOBJECT) {
+                    else if (field.iscOwnedObject) {
                         CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
                         CC << "        take(&(this->" << field.var << "[i]));\n";
                     }
@@ -610,7 +610,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 if (field.fispointer) {
                     CC << "    this->" << field.var << " = nullptr;\n";
                 }
-                else if (field.classtype == ClassType::COWNEDOBJECT) {
+                else if (field.iscOwnedObject) {
                     CC << "    take(&(this->" << field.var << "));\n";
                 }
             }
@@ -628,7 +628,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 std::ostringstream s;
                 if (field.fisownedpointer)
                     s << "        dropAndDelete(this->" << field.var << "[i]);\n";
-                else if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT)
+                else if (!field.fispointer && field.iscOwnedObject)
                     s << "        drop(&(this->" << field.var << "[i]));\n";
                 if (!s.str().empty()) {
                     CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
@@ -643,7 +643,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             else {
                 if (field.fisownedpointer)
                     CC << "    dropAndDelete(this->" << field.var << ");\n";
-                else if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT)
+                else if (!field.fispointer && field.iscOwnedObject)
                     CC << "    drop(&(this->" << field.var << "));\n";
             }
         }
@@ -676,7 +676,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     }
                 }
                 if (field.farraysize.empty()) {
-                    if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT) {
+                    if (!field.fispointer && field.iscOwnedObject) {
                         CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
                         CC << "        drop(&(this->" << field.var << "[i]));\n";
                         CC << "    }\n";
@@ -684,7 +684,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     CC << "    delete [] this->" << field.var << ";\n";
                     CC << "    this->" << field.var << " = (other." << field.varsize << "==0) ? nullptr : new " << field.datatype << "[other." << field.varsize << "];\n";
                     CC << "    " << field.varsize << " = other." << field.varsize << ";\n";
-                    if (!field.fispointer && field.classtype == ClassType::COWNEDOBJECT) {
+                    if (!field.fispointer && field.iscOwnedObject) {
                         CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
                         CC << "        take(&(this->" << field.var << "[i]));\n";
                         CC << "    }\n";
@@ -699,14 +699,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     }
                     else {
                         CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
-                        if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                        if (field.iscNamedObject) {
                             CC << "        this->" << field.var << "[i]->setName(other." << field.var << "[i]->getName());\n";
                         }
                     }
                 }
                 else {
                     CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
-                    if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                    if (field.iscNamedObject) {
                         CC << "        this->" << field.var << "[i].setName(other." << field.var << "[i].getName());\n";
                     }
                     CC << "    }\n";
@@ -721,14 +721,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     }
                     else {
                         CC << "    this->" << field.var << " = other." << field.var << ";\n";
-                        if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                        if (field.iscNamedObject) {
                             CC << "    this->" << field.var << "->setName(other." << field.var << "->getName());\n";
                         }
                     }
                 }
                 else {
                     CC << "    this->" << field.var << " = other." << field.var << ";\n";
-                    if (field.classtype == ClassType::COWNEDOBJECT || field.classtype == ClassType::CNAMEDOBJECT) {
+                    if (field.iscNamedObject) {
                         CC << "    this->" << field.var << ".setName(other." << field.var << ".getName());\n";
                     }
                 }
@@ -738,14 +738,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     CC << "}\n\n";
 
     //
-    // Note: This class may not be derived from cOwnedObject, and then this parsimPack()/
-    // parsimUnpack() is NOT that of cOwnedObject. However it's still needed because a
+    // Note: This class may not be derived from cObject, and then this parsimPack()/
+    // parsimUnpack() is NOT that of cObject. However it's still needed because a
     // "friend" doParsimPacking() function could not access protected members otherwise.
     //
     CC << "void " << classInfo.msgclass << "::parsimPack(omnetpp::cCommBuffer *b) const\n";
     CC << "{\n";
     if (classInfo.msgbaseclass != "") {
-        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+        if (classInfo.iscObject) {
             if (classInfo.msgbaseclass != "omnetpp::cObject")
                 CC << "    ::" << classInfo.msgbaseclass << "::parsimPack(b);\n";
         }
@@ -776,7 +776,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     CC << "void " << classInfo.msgclass << "::parsimUnpack(omnetpp::cCommBuffer *b)\n";
     CC << "{\n";
     if (classInfo.msgbaseclass != "") {
-        if (classInfo.classtype == ClassType::COWNEDOBJECT || classInfo.classtype == ClassType::CNAMEDOBJECT || classInfo.classtype == ClassType::COBJECT) {
+        if (classInfo.iscObject) {
             if (classInfo.msgbaseclass != "omnetpp::cObject")
                 CC << "    ::" << classInfo.msgbaseclass << "::parsimUnpack(b);\n";
         }
@@ -862,7 +862,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
                     CC << "        " << field.var << "2[i] = 0;\n";
                 }
-                if (field.classtype == ClassType::COWNEDOBJECT) {
+                if (field.iscOwnedObject) {
                     CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
                     CC << "        take(&(" << field.var << "2[i]));\n";
                 }
@@ -949,7 +949,7 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
     for (const auto& field : classInfo.fieldlist) {
         if (field.fisabstract)
             throw NEDException("Abstract fields are not supported in a struct");
-        if (field.classtype == ClassType::COWNEDOBJECT)
+        if (field.iscOwnedObject)
             throw NEDException("cOwnedObject fields are not supported in a struct");
         if (field.fisarray) {
             if (field.farraysize.empty()) {
@@ -1117,10 +1117,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 flags.push_back("FD_ISCOMPOUND");
             if (field.fispointer)
                 flags.push_back("FD_ISPOINTER");
-            if (field.classtype == ClassType::COBJECT || field.classtype == ClassType::CNAMEDOBJECT)
+            if (field.iscObject)
                 flags.push_back("FD_ISCOBJECT");
-            if (field.classtype == ClassType::COWNEDOBJECT)
-                flags.push_back("FD_ISCOBJECT | FD_ISCOWNEDOBJECT");
+            if (field.iscOwnedObject)
+                flags.push_back("FD_ISCOWNEDOBJECT");
 
             if (field.feditable || (classInfo.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled))
                 flags.push_back("FD_ISEDITABLE");
@@ -1278,7 +1278,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             if (!field.farraysize.empty()) {
                 CC << "return " << field.farraysize << ";\n";
             }
-            else if (classInfo.classtype == ClassType::STRUCT) {
+            else if (!classInfo.isClass) {
                 CC << "return pp->" << field.varsize << ";\n";
             }
             else {
@@ -1304,7 +1304,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const FieldInfo& field = classInfo.fieldlist[i];
-        if (!field.fisprimitivetype && field.fispointer && field.classtype == ClassType::NONCOBJECT) {
+        if (!field.fisprimitivetype && field.fispointer && !field.iscObject) {
             CC << "        case " << i << ": ";
             CC << "{ const " << field.ftype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value)); }\n";
         }
@@ -1329,7 +1329,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldlist[i];
         if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty())) {
             CC << "        case " << i << ": ";
-            if (classInfo.classtype == ClassType::STRUCT) {
+            if (!classInfo.isClass) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
                     CC << "if (i>=" << arraySize << ") return \"\";\n                ";
@@ -1342,7 +1342,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         }
         else if (!field.fisprimitivetype) {
             CC << "        case " << i << ": ";
-            if (classInfo.classtype == ClassType::STRUCT) {
+            if (!classInfo.isClass) {
                 CC << "{std::stringstream out; out << pp->" << field.var << (field.fisarray ? "[i]" : "") << "; return out.str();}\n";
             }
             else {
@@ -1376,7 +1376,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 throw opp_runtime_error("Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str()); // ensured by MsgAnalyzer
             std::string fromstringCall = makeFuncall("value", field.fromstring);
             CC << "        case " << i << ": ";
-            if (classInfo.classtype == ClassType::STRUCT) {
+            if (!classInfo.isClass) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
                     CC << "if (i>=" << arraySize << ") return false;\n                ";
@@ -1436,7 +1436,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
         if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
             std::string value;
-            if (classInfo.classtype == ClassType::STRUCT) {
+            if (!classInfo.isClass) {
                 value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");
             }
             else {
