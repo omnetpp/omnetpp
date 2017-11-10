@@ -105,31 +105,31 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: pushes the given boolean
          * constant to the evaluation stack.
          */
-        void operator=(bool _b)  {type=BOOL; b=_b;}
+        void operator=(bool b);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
+        void operator=(int i);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=nullptr;}
+        void operator=(short i);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=nullptr;}
+        void operator=(long l);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * to the evaluation stack.
          */
-        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=nullptr;}
+        void operator=(double d);
 
         /**
          * Sets the unit of an Elem previously set to a double value.
@@ -141,41 +141,41 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: pushes the given string
          * to the evaluation stack.
          */
-        void operator=(const char *_s)  {type=STR; s = stringPool.get(_s);}
+        void operator=(const char *s);
 
         /**
          * Effect during evaluation of the expression: pushes the given
          * cXMLElement pointer to the evaluation stack.
          */
-        void operator=(cXMLElement *_x)  {type=XML; x=_x;}
+        void operator=(cXMLElement *x);
 
         /**
          * Effect during evaluation of the expression: Call a function
          * taking 0..4 doubles and returning a double.
          */
-        void operator=(cNEDMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;}
+        void operator=(cNEDMathFunction *f);
 
         /**
          * Effect during evaluation of the expression: call a function
          * that function takes an array of cNEDValues and returns a cNEDValue.
          */
-        void set(cNEDFunction *f, int argc)  {type=NEDFUNC; ASSERT(f); nf.f=f; nf.argc=argc;}
+        void set(cNEDFunction *f, int argc);
 
         /**
          * Function object, with an interface not unlike cNEDFunction.
          * This object will be deleted by expression's destructor.
          */
-        void operator=(Functor *f)  {type=FUNCTOR; ASSERT(f); fu=f;}
+        void operator=(Functor *f);
 
         /**
          * Unary, binary or tertiary (?:) operations.
          */
-        void operator=(OpType _op)  {type=OP; op=_op;}
+        void operator=(OpType op);
 
         /**
          * Constant subexpression.
          */
-        void operator=(cExpression *_expr)  {type=CONSTSUBEXPR; constExpr=_expr;}
+        void operator=(cExpression* expr);
 
         /**
          * For cDynamicExpression::compare()
@@ -332,6 +332,7 @@ class SIM_API cDynamicExpression : public cExpression
 
     //@}
 };
+
 
 }  // namespace omnetpp
 

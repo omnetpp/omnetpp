@@ -73,6 +73,98 @@ void cDynamicExpression::Elem::deleteOld()
         delete constExpr;
 }
 
+void cDynamicExpression::Elem::set(cNEDFunction* f, int argc)
+{
+    deleteOld();
+    type = NEDFUNC;
+    ASSERT(f);
+    nf.f = f;
+    nf.argc = argc;
+}
+
+void cDynamicExpression::Elem::operator=(double _d)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _d;
+    d.unit = nullptr;
+}
+
+void cDynamicExpression::Elem::operator=(long _l)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _l;
+    d.unit = nullptr;
+}
+
+void cDynamicExpression::Elem::operator=(short _i)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _i;
+    d.unit = nullptr;
+}
+
+void cDynamicExpression::Elem::operator=(int _i)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _i;
+    d.unit = nullptr;
+}
+
+void cDynamicExpression::Elem::operator=(bool _b)
+{
+    deleteOld();
+    type = BOOL;
+    b = _b;
+}
+
+void cDynamicExpression::Elem::operator=(cNEDMathFunction* _f)
+{
+    deleteOld();
+    type = MATHFUNC;
+    ASSERT(_f);
+    f = _f;
+}
+
+void cDynamicExpression::Elem::operator=(cExpression* _expr)
+{
+    deleteOld();
+    type = CONSTSUBEXPR;
+    constExpr = _expr;
+}
+
+void cDynamicExpression::Elem::operator=(OpType _op)
+{
+    deleteOld();
+    type = OP;
+    op = _op;
+}
+
+void cDynamicExpression::Elem::operator=(Functor* f)
+{
+    deleteOld();
+    type = FUNCTOR;
+    ASSERT(f);
+    fu = f;
+}
+
+void cDynamicExpression::Elem::operator=(cXMLElement* _x)
+{
+    deleteOld();
+    type = XML;
+    x = _x;
+}
+
+void cDynamicExpression::Elem::operator=(const char* _s)
+{
+    deleteOld();
+    type = STR;
+    s = stringPool.get(_s);
+}
+
 int cDynamicExpression::Elem::compare(const Elem& other) const
 {
     if (type != other.type)
