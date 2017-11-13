@@ -79,6 +79,7 @@ class NEDXML_API MsgAnalyzer
     void ensureFieldsAnalyzed(ClassInfo& classInfo);
     EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);
     EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
+    ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName);
 };
 
 } // namespace nedxml

@@ -191,6 +191,10 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
                 if (typeTable.isEnumDefined(enumInfo.enumQName))
                     errors->addError(enumInfo.nedElement, "attempt to redefine '%s'", enumInfo.enumName.c_str());
                 typeTable.addEnum(enumInfo);
+                ClassInfo classInfo = analyzer.extractClassInfoFromEnum(check_and_cast<EnumElement *>(child), currentNamespace);
+                if (typeTable.isClassDefined(classInfo.msgqname))
+                    errors->addError(classInfo.nedElement, "attempt to redefine '%s'", classInfo.msgname.c_str());
+                typeTable.addClass(classInfo);
                 break;
             }
 

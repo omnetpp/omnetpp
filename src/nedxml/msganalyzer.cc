@@ -602,6 +602,70 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std:
     return enumInfo;
 }
 
+MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName)
+{
+    ClassInfo classInfo = makeIncompleteClassInfo(node, namespaceName);
+/*
+    @primitive;
+    @descriptor(false);
+    @fromstring((namespaceName::typeName)string2enum($, "namespaceName::typeName"));
+    @tostring(enum2string($, "namespaceName::typeName"));
+    @defaultvalue(((namespaceName::typeName)-1));
+ */
+    classInfo.isprimitivetype = true;
+    classInfo.datatype = classInfo.msgqname;
+    classInfo.fromstring = str("(") + classInfo.msgqname + ")string2enum($, \"" + classInfo.msgqname + "\")";
+    classInfo.tostring = str("enum2string($, \"") + classInfo.msgqname + "\")";
+    classInfo.defaultvalue = str("((") + classInfo.msgqname + ")-1)";
+
+    // determine base class
+    if (classInfo.msgbase != "")
+        errors->addError(classInfo.nedElement, "'%s': type '%s' cannot be used as base class of enum", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
+
+    classInfo.msgbaseqname = "";
+
+    // determine class kind
+    classInfo.isClass = false;
+    classInfo.iscObject = false;
+    classInfo.iscOwnedObject = false;
+    classInfo.iscNamedObject = false;
+
+
+    // isPrimitive, isOpaque, byValue, data types, etc.
+    classInfo.isprimitivetype = true;
+    classInfo.isopaque = true;
+    classInfo.byvalue = true;
+
+    classInfo.datatype = classInfo.msgqname;
+    classInfo.argtype = classInfo.msgqname;
+    classInfo.rettype  = classInfo.msgqname;
+
+    classInfo.maybe_c_str  = "";
+
+    //
+    // produce all sorts of derived names
+    //
+    bool existingClass = false;
+    classInfo.generate_class = false;
+    classInfo.generate_descriptor = false;
+    classInfo.generate_setters_in_descriptor = false;
+
+    classInfo.gap = false;
+
+    classInfo.msgclass = classInfo.msgname;
+    classInfo.realmsgclass = classInfo.msgname;
+    classInfo.msgdescclass = makeIdentifier(classInfo.msgclass) + "Descriptor";
+
+    classInfo.msgbaseclass = classInfo.msgbaseqname;
+
+    classInfo.omitgetverb = false;
+    classInfo.fieldnamesuffix = "";
+
+    classInfo.classInfoComplete = true;
+
+    return classInfo;
+}
+
 std::string MsgAnalyzer::prefixWithNamespace(const std::string& name, const std::string& namespaceName)
 {
     return !namespaceName.empty() ? namespaceName + "::" + name : name;  // prefer name from local namespace
