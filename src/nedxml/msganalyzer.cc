@@ -503,7 +503,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     if (field->fispointer) {
         field->datatype = field->datatype + " *";
-        field->argtype = str("const ") + field->argtype + " *";
+        field->argtype = field->argtype + " *";
         field->rettype = field->rettype + " *";
     }
     else if (field->byvalue) {
