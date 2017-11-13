@@ -63,6 +63,7 @@ class NEDXML_API MsgAnalyzer
     void analyzeClassOrStruct(ClassInfo& classInfo, const std::string& namespaceName);
     void analyzeFields(ClassInfo& classInfo, const std::string& namespaceName);
     void analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName);
+    void analyzeBaseClassField(ClassInfo& classInfo, FieldInfo *field);
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
     Properties extractPropertiesOf(NEDElement *node);
     bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }

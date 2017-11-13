@@ -253,7 +253,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         }
         else if (found.empty()) {
             errors->addError(classInfo.nedElement, "'%s': unknown base class '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
-            classInfo.msgbaseqname = "omnetpp::cMessage";
+            classInfo.msgbaseqname = "";
         }
         else {
             errors->addError(classInfo.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
@@ -347,14 +347,13 @@ void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespa
 {
     for (auto& field : classInfo.fieldlist)
         analyzeField(classInfo, &field, namespaceName);
-//TODO base class fields: we need @setter to initialize it! so we must analyze!
-//    for (auto& field :  classInfo.baseclassFieldlist)
-//        analyzeField(classInfo, &field, namespaceName);
+    for (auto& field :  classInfo.baseclassFieldlist)
+        analyzeBaseClassField(classInfo, &field);
 }
 
 void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName)
 {
-    Assert(!field->ftype.empty()); // base class fields don't need any analysis!
+    Assert(!field->ftype.empty());
 
     if (field->fisabstract && !classInfo.gap)
         errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'", classInfo.msgname.c_str());
@@ -513,6 +512,35 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (field->feditable || (classInfo.generate_setters_in_descriptor && field->fisprimitivetype && field->editNotDisabled))
         if (field->fromstring.empty())
             errors->addError(field->nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str()); //TODO only if descriptor class is also generated
+}
+
+void MsgAnalyzer::analyzeBaseClassField(ClassInfo& classInfo, FieldInfo *field)
+{
+    Assert(field->ftype.empty());
+
+    // find where it class was inherited from
+    FieldInfo *fieldDefinition = nullptr;
+    ClassInfo *currentClass = &classInfo;
+    while (currentClass->msgbaseqname != "") {
+        currentClass = &typeTable->getClassInfo(currentClass->msgbaseqname);
+        ensureAnalyzed(*currentClass);
+        for (FieldInfo& f : currentClass->fieldlist) {
+            if (f.fname == field->fname) {
+                fieldDefinition = &f;
+                break;
+            }
+        }
+        if (fieldDefinition)
+            break;
+    }
+
+    if (!fieldDefinition)
+        errors->addError(field->nedElement, "Unknown field '%s' (not found in any super class)", field->fname.c_str());
+    else {
+        // copy stuff
+        field->setter = fieldDefinition->setter;
+        //TODO more
+    }
 }
 
 MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName)
