@@ -529,6 +529,7 @@ void MsgAnalyzer::analyzeBaseClassField(ClassInfo& classInfo, FieldInfo *field)
     while (currentClass->msgbaseqname != "") {
         currentClass = &typeTable->getClassInfo(currentClass->msgbaseqname);
         ensureAnalyzed(*currentClass);
+        ensureFieldsAnalyzed(*currentClass);
         for (FieldInfo& f : currentClass->fieldlist) {
             if (f.fname == field->fname) {
                 fieldDefinition = &f;
