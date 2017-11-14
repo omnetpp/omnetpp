@@ -231,6 +231,18 @@ void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
     }
 }
 
+bool MsgAnalyzer::hasSuperclass(ClassInfo& classInfo, const std::string& superclassQName)
+{
+    ClassInfo *currentClass = &classInfo;
+    while (currentClass->msgbaseqname != "") {
+        currentClass = &typeTable->getClassInfo(currentClass->msgbaseqname);
+        if (currentClass->msgqname == superclassQName)
+            return true;
+        ensureAnalyzed(*currentClass);
+    }
+    return false;
+}
+
 void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& namespaceName)
 {
     // determine base class
@@ -275,6 +287,8 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         else if (classInfo.msgbaseqname != "" && typeTable->isClassDefined(classInfo.msgbaseqname)) {
             ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
             ensureAnalyzed(baseClassInfo);
+            if (!baseClassInfo.isClass)
+                errors->addError(classInfo.nedElement, "%s: A class may not extend as struct", classInfo.msgname.c_str());
             classInfo.iscObject = baseClassInfo.iscObject;
             classInfo.iscNamedObject = baseClassInfo.iscNamedObject;
             classInfo.iscOwnedObject = baseClassInfo.iscOwnedObject;
@@ -283,11 +297,22 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
             // assume non-cObject
         }
     }
+    else {
+        if (classInfo.msgbaseqname != "" && typeTable->isClassDefined(classInfo.msgbaseqname)) {
+            ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
+            ensureAnalyzed(baseClassInfo);
+            if (baseClassInfo.isClass)
+                errors->addError(classInfo.nedElement, "%s: A struct may not extend a class", classInfo.msgname.c_str());
+        }
+    }
 
+    std::string requiredSuperClass;
     if (classInfo.keyword == "message")
-        ; //TODO ensure base class really extends cMessage!
+        requiredSuperClass = "omnetpp::cMessage";
     else if (classInfo.keyword == "packet")
-        ; //TODO ensure base class really extends cPacket!
+        requiredSuperClass = "omnetpp::cPacket";
+    if (!requiredSuperClass.empty() && !hasSuperclass(classInfo, requiredSuperClass))
+        errors->addError(classInfo.nedElement, "%s class '%s' must be derived from '%s'", classInfo.keyword.c_str(), classInfo.msgname.c_str(), requiredSuperClass.c_str());
 
 
     // isPrimitive, isOpaque, byValue, data types, etc.
@@ -348,7 +373,7 @@ void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespa
     for (auto& field : classInfo.fieldlist)
         analyzeField(classInfo, &field, namespaceName);
     for (auto& field :  classInfo.baseclassFieldlist)
-        analyzeBaseClassField(classInfo, &field);
+        analyzeInheritedField(classInfo, &field);
 }
 
 void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName)
@@ -519,27 +544,25 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             errors->addError(field->nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str()); //TODO only if descriptor class is also generated
 }
 
-void MsgAnalyzer::analyzeBaseClassField(ClassInfo& classInfo, FieldInfo *field)
+MsgAnalyzer::FieldInfo *MsgAnalyzer::findSuperclassField(ClassInfo& classInfo, const std::string& fieldName)
 {
-    Assert(field->ftype.empty());
-
-    // find where it class was inherited from
-    FieldInfo *fieldDefinition = nullptr;
     ClassInfo *currentClass = &classInfo;
     while (currentClass->msgbaseqname != "") {
         currentClass = &typeTable->getClassInfo(currentClass->msgbaseqname);
         ensureAnalyzed(*currentClass);
         ensureFieldsAnalyzed(*currentClass);
-        for (FieldInfo& f : currentClass->fieldlist) {
-            if (f.fname == field->fname) {
-                fieldDefinition = &f;
-                break;
-            }
-        }
-        if (fieldDefinition)
-            break;
+        for (FieldInfo& f : currentClass->fieldlist)
+            if (f.fname == fieldName && !f.ftype.empty())
+                return &f;
     }
+    return nullptr;
+}
 
+void MsgAnalyzer::analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field)
+{
+    Assert(field->ftype.empty()); // i.e. it is an inherited field
+
+    FieldInfo *fieldDefinition = findSuperclassField(classInfo, field->fname);
     if (!fieldDefinition)
         errors->addError(field->nedElement, "Unknown field '%s' (not found in any super class)", field->fname.c_str());
     else {
@@ -645,7 +668,6 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *node, 
     //
     // produce all sorts of derived names
     //
-    bool existingClass = false;
     classInfo.generate_class = false;
     classInfo.generate_descriptor = false;
     classInfo.generate_setters_in_descriptor = false;
