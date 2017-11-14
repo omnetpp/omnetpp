@@ -463,6 +463,8 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             H << "    virtual " << classInfo.msgclass << " *dup() const override {return new " << classInfo.msgclass << "(*this);}\n";
     }
     std::string maybe_override = classInfo.iscObject ? " override" : "";
+    std::string maybe_handleChange = classInfo.beforeChange.empty() ? "" : (classInfo.beforeChange + ";");
+    std::string maybe_handleChange_line = classInfo.beforeChange.empty() ? "" : (str("    ") + classInfo.beforeChange + ";\n");
     H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const" << maybe_override << ";\n";
     H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b)" << maybe_override << ";\n";
     H << "\n";
@@ -488,13 +490,13 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         }
         if (field.fispointer) {
             H << "    virtual const " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
+            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { " << maybe_handleChange << "return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
             if (field.fisownedpointer)  //TODO fispointer or fisownedpointer?
                 H << "    virtual " << field.rettype << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         }
         else if (!field.byvalue) {
             H << "    virtual const " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { handleChange(); return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
+            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { " << maybe_handleChange << "return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
         }
         else {
             H << "    virtual " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
@@ -856,7 +858,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             if (field.fisarray && field.farraysize.empty()) {
                 CC << "void " << classInfo.msgclass << "::" << field.alloc << "(" << field.fsizetype << " size)\n";
                 CC << "{\n";
-                CC << "    handleChange();\n";
+                CC << maybe_handleChange_line;
                 CC << "    " << field.datatype << " *" << field.var << "2 = (size==0) ? nullptr : new " << field.datatype << "[size];\n";
                 CC << "    " << field.fsizetype << " sz = " << field.varsize << " < size ? " << field.varsize << " : size;\n";
                 CC << "    for (" << field.fsizetype << " i=0; i<sz; i++)\n";
@@ -881,7 +883,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             if (field.fisarray) {
                 CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
             }
-            CC << "    handleChange();\n";
+            CC << maybe_handleChange_line;
             if (field.fisownedpointer) {
                 CC << "    dropAndDelete(this->" << field.var << idx << ");\n";
             }
@@ -899,7 +901,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 if (field.fisarray) {
                     CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 }
-                CC << "    handleChange();\n";
+                CC << maybe_handleChange_line;
                 CC << "    " << field.rettype << " retval = this->" << field.var << idx << ";\n";
                 CC << "    drop(retval);\n";
                 CC << "    this->" << field.var << idx << " = nullptr;\n";

@@ -274,6 +274,13 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         }
     }
 
+    // resolve base class/struct --TODO merge with previous block!!!
+    ClassInfo *baseClassInfo = nullptr;
+    if (classInfo.msgbaseqname != "" && typeTable->isClassDefined(classInfo.msgbaseqname)) {
+        baseClassInfo = &typeTable->getClassInfo(classInfo.msgbaseqname);
+        ensureAnalyzed(*baseClassInfo);
+    }
+
     // determine class kind
     classInfo.isClass = (classInfo.keyword != "struct");
     classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = false;
@@ -284,28 +291,24 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
             classInfo.iscObject = classInfo.iscNamedObject = true;
         else if (classInfo.msgqname == "omnetpp::cOwnedObject")
             classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = true;
-        else if (classInfo.msgbaseqname != "" && typeTable->isClassDefined(classInfo.msgbaseqname)) {
-            ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
-            ensureAnalyzed(baseClassInfo);
-            if (!baseClassInfo.isClass)
+        else if (baseClassInfo != nullptr) {
+            if (!baseClassInfo->isClass)
                 errors->addError(classInfo.nedElement, "%s: A class may not extend as struct", classInfo.msgname.c_str());
-            classInfo.iscObject = baseClassInfo.iscObject;
-            classInfo.iscNamedObject = baseClassInfo.iscNamedObject;
-            classInfo.iscOwnedObject = baseClassInfo.iscOwnedObject;
+            classInfo.iscObject = baseClassInfo->iscObject;
+            classInfo.iscNamedObject = baseClassInfo->iscNamedObject;
+            classInfo.iscOwnedObject = baseClassInfo->iscOwnedObject;
         }
         else {
             // assume non-cObject
         }
     }
     else {
-        if (classInfo.msgbaseqname != "" && typeTable->isClassDefined(classInfo.msgbaseqname)) {
-            ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
-            ensureAnalyzed(baseClassInfo);
-            if (baseClassInfo.isClass)
-                errors->addError(classInfo.nedElement, "%s: A struct may not extend a class", classInfo.msgname.c_str());
-        }
+        // struct
+        if (baseClassInfo != nullptr && baseClassInfo->isClass)
+            errors->addError(classInfo.nedElement, "%s: A struct may not extend a class", classInfo.msgname.c_str());
     }
 
+    // message must subclass from cMessage, packet ditto
     std::string requiredSuperClass;
     if (classInfo.keyword == "message")
         requiredSuperClass = "omnetpp::cMessage";
@@ -329,9 +332,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.fromstring  = getProperty(classInfo.props, "fromstring", "");
     classInfo.maybe_c_str  = getProperty(classInfo.props, "maybe_c_str", "");
 
-    //
-    // produce all sorts of derived names
-    //
+    // generation gap
     bool existingClass = getPropertyAsBool(classInfo.props, "existingClass", false);
     classInfo.generate_class = opts.generateClasses && !existingClass;
     classInfo.generate_descriptor = opts.generateDescriptors && !classInfo.isopaque && getPropertyAsBool(classInfo.props, "descriptor", true);  // opaque also means no descriptor
@@ -355,6 +356,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     classInfo.msgbaseclass = classInfo.msgbaseqname;
 
+    // omitGetVerb / fieldNameSuffix
     classInfo.omitgetverb = getPropertyAsBool(classInfo.props, "omitGetVerb", false);
     classInfo.fieldnamesuffix = getProperty(classInfo.props, "fieldNameSuffix", "");
     if (classInfo.omitgetverb && classInfo.fieldnamesuffix.empty()) {
@@ -363,6 +365,12 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         classInfo.fieldnamesuffix = "_var";
     }
 
+    // beforeChange
+    classInfo.beforeChange = getProperty(classInfo.props, "beforeChange", "");
+    if (classInfo.beforeChange.empty() && baseClassInfo != nullptr)
+        classInfo.beforeChange = baseClassInfo->beforeChange;
+
+    // additional base classes (interfaces)
     std::string s = getProperty(classInfo.props, "implements");
     if (!s.empty())
         classInfo.implements = StringTokenizer(s.c_str(), ",").asVector();

@@ -150,6 +150,7 @@ class NEDXML_API MsgTypeTable
         std::string tostring;   // function to convert data to string, defined in property @tostring
         std::string fromstring; // function to convert string to data member, defined in property @fromstring
         std::string maybe_c_str;       // uses ".c_str()"
+        std::string beforeChange;  // method to be called before mutator methods
 //??        bool feditable;         // @editable(true)
     };
 
