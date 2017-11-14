@@ -293,7 +293,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
             classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = true;
         else if (baseClassInfo != nullptr) {
             if (!baseClassInfo->isClass)
-                errors->addError(classInfo.nedElement, "%s: A class may not extend as struct", classInfo.msgname.c_str());
+                errors->addError(classInfo.nedElement, "%s: base type is not a class", classInfo.msgname.c_str());
             classInfo.iscObject = baseClassInfo->iscObject;
             classInfo.iscNamedObject = baseClassInfo->iscNamedObject;
             classInfo.iscOwnedObject = baseClassInfo->iscOwnedObject;
@@ -305,7 +305,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     else {
         // struct
         if (baseClassInfo != nullptr && baseClassInfo->isClass)
-            errors->addError(classInfo.nedElement, "%s: A struct may not extend a class", classInfo.msgname.c_str());
+            errors->addError(classInfo.nedElement, "%s: base type is not a struct", classInfo.msgname.c_str());
     }
 
     // message must subclass from cMessage, packet ditto
@@ -315,7 +315,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     else if (classInfo.keyword == "packet")
         requiredSuperClass = "omnetpp::cPacket";
     if (!requiredSuperClass.empty() && !hasSuperclass(classInfo, requiredSuperClass))
-        errors->addError(classInfo.nedElement, "%s class '%s' must be derived from '%s'", classInfo.keyword.c_str(), classInfo.msgname.c_str(), requiredSuperClass.c_str());
+        errors->addError(classInfo.nedElement, "%s: base class is not a %s (must be derived from %s)", classInfo.msgname.c_str(), classInfo.keyword.c_str(), requiredSuperClass.c_str());
 
 
     // isPrimitive, isOpaque, byValue, data types, etc.
