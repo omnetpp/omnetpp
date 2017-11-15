@@ -525,7 +525,7 @@ root directory where the following files are present:
             if not self.featurestate[req].enabled:
                 if not req in requirements and not req in featureOnList:
                     self.updateRequirementsOf(req, featureOnList, requirements)
-                requirements.add(req)
+                    requirements.add(req)
     ############################
     def updateRequirements(self, featureOnList, requirements):
         for featureid in featureOnList:

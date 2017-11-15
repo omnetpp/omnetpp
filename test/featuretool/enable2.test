@@ -22,7 +22,7 @@ feature_c_folder
 feature_d_folder
 %prerun-command: cp .nedexclusions_in .nedexclusions
 
-%testprog: opp_featuretool enable F_B
+%testprog: opp_featuretool enable F_B F_C
 
 #%ignore-exitcode: 1
 
@@ -35,7 +35,7 @@ feature_d_folder
 '.nedexclusions' found.
 
 %contains: stdout
-Enabling feature(s):  F_B
+Enabling feature(s):  F_B, F_C
 opp_featuretool: .oppfeaturestate file updated.
 opp_featuretool: .nedexclusions file updated.
 
@@ -50,7 +50,7 @@ Warning:
 <featurestates>
     <feature enabled="true" id="F_A"/>
     <feature enabled="true" id="F_B"/>
-    <feature enabled="false" id="F_C"/>
+    <feature enabled="true" id="F_C"/>
     <feature enabled="false" id="F_D"/>
     <feature enabled="true" id="F_E"/>
 </featurestates>
@@ -61,7 +61,7 @@ feature_a_folder
 %not-contains: .nedexclusions
 feature_b_folder
 
-%contains: .nedexclusions
+%not-contains: .nedexclusions
 feature_c_folder
 
 %contains: .nedexclusions
