@@ -865,7 +865,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 CC << "        " << field.var << "2[i] = this->" << field.var << "[i];\n";
                 if (field.fisprimitivetype) {
                     CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
-                    CC << "        " << field.var << "2[i] = 0;\n";
+                    CC << "        " << field.var << "2[i] = 0;\n"; //TODO not 0 but fval!
                 }
                 if (field.iscOwnedObject) {
                     CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";

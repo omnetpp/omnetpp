@@ -421,17 +421,10 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         return;
     }
 
-    if (field->fisarray) {
-        //TODO note: currently the grammar does not accept arrays with initializers!
-        if (field->farraysize.empty() && !field->fval.empty())  //TODO but what about fval for fixed-size arrays??? CHECK!!!
-            errors->addError(field->nedElement, "unaccepted default value for variable length vector field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-    }
-    else {
-        if (field->fval.empty() && !fieldClassInfo.defaultvalue.empty())
-            field->fval = fieldClassInfo.defaultvalue;
-        if (field->fispointer && field->fval.empty())
-            field->fval = "nullptr";
-    }
+    if (field->fispointer && field->fval.empty())
+        field->fval = "nullptr";
+    if (field->fval.empty() && !fieldClassInfo.defaultvalue.empty())
+        field->fval = fieldClassInfo.defaultvalue;
 
     field->fnopack = getPropertyAsBool(field->fprops, "nopack", false);
     field->feditable = getPropertyAsBool(field->fprops, "editable", false);
