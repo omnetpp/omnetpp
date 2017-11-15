@@ -82,6 +82,7 @@ using namespace omnetpp::nedxml;
 "//"                     { comment(); }
 
 "namespace"              { countChars(); return NAMESPACE; }
+"using"                  { countChars(); return USING; /*reserved for future use*/ } 
 "cplusplus"              { countChars(); return CPLUSPLUS; }
 "import"                 { countChars(); return recognizeImportKeyword ? IMPORT : NAME; }
 "struct"                 { countChars(); return STRUCT; }
@@ -101,6 +102,7 @@ using namespace omnetpp::nedxml;
 "long"                   { countChars(); return LONGTYPE; }
 "double"                 { countChars(); return DOUBLETYPE; }
 "unsigned"               { countChars(); return UNSIGNED_; }
+"const"                  { countChars(); return CONST_; /*reserved for future use*/ }
 "string"                 { countChars(); return STRINGTYPE; }
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }
