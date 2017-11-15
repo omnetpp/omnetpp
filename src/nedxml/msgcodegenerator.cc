@@ -1200,7 +1200,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     else {
         CC << "    static const char *fieldTypeStrings[] = {\n";
         for (const auto& field : classInfo.fieldlist) {
-            CC << "        \"" << field.ftype << "\",\n";  // note: NOT $fieldtypeqname! that's getFieldStructName()
+            CC << "        \"" << field.ftypeqname << "\",\n";
         }
         CC << "    };\n";
         CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeStrings[field] : nullptr;\n";
