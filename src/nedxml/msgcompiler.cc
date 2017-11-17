@@ -71,18 +71,14 @@ static const char *BUILTIN_DEFINITIONS =
 
 extern const char *SIM_STD_DEFINITIONS;  // contents of sim/sim_std.msg, stringified into sim_std_msg.cc
 
-inline std::string str(const char *s) {
-    return s;
+inline std::string str(const char *s)
+{
+    return s ? s : "";
 }
 
 static bool isQualified(const std::string& qname)
 {
     return qname.find("::") != qname.npos;
-}
-
-inline std::string ptr2str(const char *ptr)
-{
-    return ptr ? ptr : "";
 }
 
 template<class P, class T>
@@ -152,7 +148,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
     for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
-                currentNamespace = ptr2str(child->getAttribute("name"));
+                currentNamespace = str(child->getAttribute("name"));
                 validateNamespaceName(currentNamespace, child); //TODO into syntax validator class!!!
                 break;
 
@@ -263,7 +259,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
 {
     std::string currentNamespace = "";
     NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
-    std::string firstNSName = firstNS ? ptr2str(firstNS->getAttribute("name")) : "";
+    std::string firstNSName = firstNS ? str(firstNS->getAttribute("name")) : "";
     codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
 
     for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
@@ -272,14 +268,14 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 // open namespace(s)
                 if (!currentNamespace.empty())
                     codegen.generateNamespaceEnd(currentNamespace);
-                currentNamespace = ptr2str(child->getAttribute("name"));
+                currentNamespace = str(child->getAttribute("name"));
                 codegen.generateNamespaceBegin(currentNamespace);
                 break;
 
             case NED_CPLUSPLUS: {
                 // print C++ block
-                std::string body = ptr2str(child->getAttribute("body"));
-                std::string target = ptr2str(child->getAttribute("target"));
+                std::string body = str(child->getAttribute("body"));
+                std::string target = str(child->getAttribute("target"));
                 if (target == "" || target == "h" || target == "cc")
                     codegen.generateCplusplusBlock(target, body);
                 else
@@ -294,7 +290,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
             }
 
             case NED_ENUM: {
-                std::string qname = prefixWithNamespace(ptr2str(child->getAttribute("name")), currentNamespace);
+                std::string qname = prefixWithNamespace(str(child->getAttribute("name")), currentNamespace);
                 const EnumInfo& enumInfo = typeTable.getEnumInfo(qname);
                 codegen.generateEnum(enumInfo);
                 break;
@@ -304,7 +300,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
             case NED_CLASS:
             case NED_MESSAGE:
             case NED_PACKET: {
-                std::string qname = prefixWithNamespace(ptr2str(child->getAttribute("name")), currentNamespace);
+                std::string qname = prefixWithNamespace(str(child->getAttribute("name")), currentNamespace);
                 ClassInfo& classInfo = typeTable.getClassInfo(qname);
                 analyzer.ensureAnalyzed(classInfo);
                 analyzer.ensureFieldsAnalyzed(classInfo);

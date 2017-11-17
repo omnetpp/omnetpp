@@ -40,8 +40,9 @@ namespace nedxml {
 
 #define SL(x)    (x)
 
-inline std::string str(const char *s) {
-    return s;
+inline std::string str(const char *s)
+{
+    return s ? s : "";
 }
 
 static char charToNameFilter(char ch)
@@ -54,30 +55,11 @@ inline bool isQualified(const std::string& qname)
     return qname.find("::") != qname.npos;
 }
 
-static std::string canonicalizeQName(const std::string& namespac, const std::string& name)
-{
-    std::string qname;
-    if (name.find("::") != name.npos) {
-        qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
-    }
-    else if (!namespac.empty() && !name.empty()) {
-        qname = namespac + "::" + name;
-    }
-    else
-        qname = name;
-    return qname;
-}
-
 static std::string makeIdentifier(const std::string& qname)
 {
     std::string tmp = qname;
     std::transform(tmp.begin(), tmp.end(), tmp.begin(), charToNameFilter);
     return tmp;
-}
-
-inline std::string ptr2str(const char *ptr)
-{
-    return ptr ? ptr : "";
 }
 
 template<typename T>
@@ -124,14 +106,14 @@ MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(NEDElement *node)
     Properties props;
 
     for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(NED_PROPERTY)); child; child = child->getNextPropertySibling()) {
-        std::string propname = ptr2str(child->getAttribute("name"));
+        std::string propname = str(child->getAttribute("name"));
         std::string propval;
         for (PropertyKeyElement *key = child->getFirstPropertyKeyChild(); key; key = key->getNextPropertyKeySibling()) {
-            std::string keyname = ptr2str(key->getAttribute("name"));
+            std::string keyname = str(key->getAttribute("name"));
             if (keyname.empty()) {
                 const char *sep = "";
                 for (LiteralElement *lit = key->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling()) {
-                    std::string s = ptr2str(lit->getAttribute("value"));
+                    std::string s = str(lit->getAttribute("value"));
                     propval = propval + sep + s;
                     sep = ",";
                 }
@@ -154,7 +136,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(NEDElement *node, co
     classInfo.props = extractPropertiesOf(node);
     std::string actually = getProperty(classInfo.props, "actually", "");
     classInfo.keyword = node->getTagName();
-    classInfo.msgname = actually != "" ? actually : ptr2str(node->getAttribute("name"));
+    classInfo.msgname = actually != "" ? actually : str(node->getAttribute("name"));
     classInfo.namespacename = namespaceName;
     classInfo.msgqname = prefixWithNamespace(classInfo.msgname, namespaceName);
     return classInfo;
@@ -181,24 +163,24 @@ void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
 {
     NEDElement *node = classInfo.nedElement;
 
-    classInfo.msgbase = ptr2str(node->getAttribute("extends-name"));
+    classInfo.msgbase = str(node->getAttribute("extends-name"));
 
     for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_FIELD: {
                 FieldInfo field;
                 field.nedElement = child;
-                field.fname = ptr2str(child->getAttribute("name"));
-                field.datatype = ptr2str(child->getAttribute("data-type"));
-                field.ftype = ptr2str(child->getAttribute("data-type"));
-                field.fval = ptr2str(child->getAttribute("default-value"));
-                field.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
+                field.fname = str(child->getAttribute("name"));
+                field.datatype = str(child->getAttribute("data-type"));
+                field.ftype = str(child->getAttribute("data-type"));
+                field.fval = str(child->getAttribute("default-value"));
+                field.fisabstract = str(child->getAttribute("is-abstract")) == "true";
                 field.fispointer = (field.ftype[field.ftype.length()-1] == '*');
                 if (field.fispointer) {
                     field.ftype = field.ftype.substr(0, field.ftype.find_last_not_of(" \t*")+1);
                 }
-                field.fisarray = ptr2str(child->getAttribute("is-vector")) == "true";
-                field.farraysize = ptr2str(child->getAttribute("vector-size"));
+                field.fisarray = str(child->getAttribute("is-vector")) == "true";
+                field.farraysize = str(child->getAttribute("vector-size"));
 
                 field.fprops = extractPropertiesOf(child);
 
@@ -310,7 +292,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.isprimitivetype = getPropertyAsBool(classInfo.props, "primitive", false);
     classInfo.isopaque = getPropertyAsBool(classInfo.props, "opaque", classInfo.isprimitivetype); // primitive types are also opaque and passed by value
     classInfo.byvalue = getPropertyAsBool(classInfo.props, "byvalue", classInfo.isprimitivetype);
-    classInfo.defaultvalue = getProperty(classInfo.props, "defaultvalue", ""); //TODO use in fields
+    classInfo.defaultvalue = getProperty(classInfo.props, "defaultvalue", "");
 
     classInfo.datatype = getProperty(classInfo.props, "cpptype", "");
     classInfo.argtype = getProperty(classInfo.props, "argtype", "");
@@ -558,7 +540,7 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumDecl(EnumDeclElement *node, const 
 {
     EnumInfo enumInfo;
     enumInfo.nedElement = node;
-    enumInfo.enumName = ptr2str(node->getAttribute("name"));
+    enumInfo.enumName = str(node->getAttribute("name"));
     enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
     enumInfo.isDeclaration = true;
     return enumInfo;
@@ -568,7 +550,7 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std:
 {
     EnumInfo enumInfo;
     enumInfo.nedElement = node;
-    enumInfo.enumName = ptr2str(node->getAttribute("name"));
+    enumInfo.enumName = str(node->getAttribute("name"));
     enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
     enumInfo.isDeclaration = false;
 
@@ -581,8 +563,8 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std:
                         case NED_ENUM_FIELD: {
                             EnumItem item;
                             item.nedElement = e;
-                            item.name = ptr2str(e->getAttribute("name"));
-                            item.value = ptr2str(e->getAttribute("value"));
+                            item.name = str(e->getAttribute("name"));
+                            item.value = str(e->getAttribute("value"));
                             enumInfo.fieldlist.push_back(item);
                             break;
                         }
