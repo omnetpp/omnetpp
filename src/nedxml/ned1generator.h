@@ -18,8 +18,9 @@
 #define __OMNETPP_NEDXML_NED1GENERATOR_H
 
 #include <iostream>
+
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 
 namespace omnetpp {
 namespace nedxml {
@@ -30,7 +31,7 @@ namespace nedxml {
  *
  * @ingroup NEDGenerator
  */
-NEDXML_API void generateNED1(std::ostream& out, NEDElement *node, NEDErrorStore *e);
+NEDXML_API void generateNED1(std::ostream& out, NEDElement *node, ErrorStore *e);
 
 /**
  * @brief Generates NED code from a NED object tree.
@@ -45,13 +46,13 @@ class NEDXML_API NED1Generator
   protected:
     int indentSize;
     std::ostream *outp;
-    NEDErrorStore *errors;
+    ErrorStore *errors;
 
   public:
     /**
      * Constructor.
      */
-    NED1Generator(NEDErrorStore *errors);
+    NED1Generator(ErrorStore *errors);
 
     /**
      * Destructor.

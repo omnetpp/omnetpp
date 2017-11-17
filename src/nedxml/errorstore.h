@@ -1,5 +1,5 @@
 //==========================================================================
-// nederror.h  -
+// errorstore.h  -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDERROR_H
-#define __OMNETPP_NEDXML_NEDERROR_H
+#ifndef __OMNETPP_NEDXML_ERRORSTORE_H
+#define __OMNETPP_NEDXML_ERRORSTORE_H
 
 #include <vector>
 #include <exception>
@@ -29,12 +29,12 @@ namespace nedxml {
 class NEDElement;
 
 // Note: this cannot be inner type because of swig wrapping
-enum NEDErrorSeverity {NED_SEVERITY_INFO, NED_SEVERITY_WARNING, NED_SEVERITY_ERROR};
+enum ProblemSeverity {SEVERITY_INFO, SEVERITY_WARNING, SEVERITY_ERROR};
 
 /**
- * Stores error messages
+ * Stores error and warning messages
  */
-class NEDXML_API NEDErrorStore
+class NEDXML_API ErrorStore
 {
     private:
         struct Entry {
@@ -54,8 +54,8 @@ class NEDXML_API NEDErrorStore
         /**
          * Ctor
          */
-        NEDErrorStore() {doprint = false;}
-        ~NEDErrorStore() {}
+        ErrorStore() {doprint = false;}
+        ~ErrorStore() {}
 
         /**
          * If set, errors get dumped to stderr as well as stored

@@ -32,7 +32,7 @@ using std::ostream;
 
 #define NED2FEATURE      "NED2 feature unsupported in NED1: "
 
-void generateNED1(ostream& out, NEDElement *node, NEDErrorStore *e)
+void generateNED1(ostream& out, NEDElement *node, ErrorStore *e)
 {
     NED1Generator nedgen(e);
     nedgen.generate(out, node, "");
@@ -42,7 +42,7 @@ void generateNED1(ostream& out, NEDElement *node, NEDErrorStore *e)
 
 #define OUT    (*outp)
 
-NED1Generator::NED1Generator(NEDErrorStore *e)
+NED1Generator::NED1Generator(ErrorStore *e)
 {
     outp = nullptr;
     indentSize = 4;

@@ -188,7 +188,7 @@ void MsgCompilerOld::initDescriptors()
     }
 }
 
-MsgCompilerOld::MsgCompilerOld(NEDErrorStore *e, const MsgCompilerOptionsOld& options)
+MsgCompilerOld::MsgCompilerOld(ErrorStore *e, const MsgCompilerOptionsOld& options)
 {
     initDescriptors();
 

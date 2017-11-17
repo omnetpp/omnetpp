@@ -15,14 +15,15 @@
 *--------------------------------------------------------------*/
 
 #include "nedsaxhandler.h"
+
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 #include "nedexception.h"
 
 namespace omnetpp {
 namespace nedxml {
 
-NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
+NEDSAXHandler::NEDSAXHandler(const char *fname, ErrorStore *e)
 {
     root = current = nullptr;
     sourceFilename = fname;

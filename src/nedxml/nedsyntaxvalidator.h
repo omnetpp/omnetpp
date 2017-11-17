@@ -61,7 +61,7 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
      * parsed or unparsed expressions in the tree (This affects the validation
      * process.)
      */
-    NEDSyntaxValidator(bool parsedExpr, NEDErrorStore *e)
+    NEDSyntaxValidator(bool parsedExpr, ErrorStore *e)
         : NEDValidatorBase(e) {parsedExpressions=parsedExpr;}
 
     /**

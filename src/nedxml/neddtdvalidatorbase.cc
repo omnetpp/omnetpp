@@ -18,8 +18,9 @@
 #include <cstdio>
 #include <cassert>
 #include "common/opp_ctype.h"
-#include "nederror.h"
 #include "neddtdvalidatorbase.h"
+
+#include "errorstore.h"
 
 using namespace omnetpp::common;
 

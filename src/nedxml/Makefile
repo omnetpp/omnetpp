@@ -31,7 +31,7 @@ COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -loppcommon$D $(XML_LIBS)
 
-OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
+OBJS= $O/nedelements.o $O/nedelement.o $O/errorstore.o $O/nedexception.o \
       $O/nedvalidator.o $O/neddtdvalidator.o $O/neddtdvalidatorbase.o \
       $O/nedsyntaxvalidator.o $O/nedcrossvalidator.o \
       $O/nedfilebuffer.o $O/nedparser.o $O/nedyylib.o \

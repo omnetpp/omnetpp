@@ -24,8 +24,8 @@
 #include <map>
 #include <set>
 
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 #include "msgtypetable.h"
 
 namespace omnetpp {
@@ -54,7 +54,7 @@ class NEDXML_API MsgAnalyzer
     static StringSet RESERVED_WORDS;
 
   protected:
-    NEDErrorStore *errors;
+    ErrorStore *errors;
     MsgTypeTable *typeTable;
     const MsgCompilerOptions& opts;
 
@@ -75,7 +75,7 @@ class NEDXML_API MsgAnalyzer
     std::string lookupExistingClassName(const std::string& name, const std::string& contextNamespace,  ClassInfo *contextClass=nullptr);
 
   public:
-    MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, NEDErrorStore *errors);
+    MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, ErrorStore *errors);
     ~MsgAnalyzer();
     ClassInfo makeIncompleteClassInfo(NEDElement *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void ensureAnalyzed(ClassInfo& classInfo);

@@ -15,7 +15,8 @@
 #include <cstring>
 #include <cstdio>
 #include <cassert>
-#include "nederror.h"
+
+#include "errorstore.h"
 #include "saxparser.h"
 
 namespace omnetpp {

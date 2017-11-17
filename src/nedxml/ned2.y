@@ -83,7 +83,7 @@
 #include "common/commonutil.h"
 #include "common/stringutil.h"
 #include "nedyydefs.h"
-#include "nederror.h"
+#include "errorstore.h"
 #include "nedexception.h"
 
 #define YYDEBUG 1           /* allow debugging */

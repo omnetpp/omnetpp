@@ -18,8 +18,8 @@
 #define __OMNETPP_NEDXML_NEDSAXHANDLER_H
 
 
+#include "errorstore.h"
 #include "nedelement.h"
-#include "nederror.h"
 #include "saxparser.h"
 
 namespace omnetpp {
@@ -50,13 +50,13 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
     NEDElement *root;
     NEDElement *current;
     const char *sourceFilename;
-    NEDErrorStore *errors;
+    ErrorStore *errors;
 
   public:
     /**
      * Constructor. Filename is necessary to create correct src-loc info.
      */
-    NEDSAXHandler(const char *filename, NEDErrorStore *e);
+    NEDSAXHandler(const char *filename, ErrorStore *e);
 
     /**
      * Destructor

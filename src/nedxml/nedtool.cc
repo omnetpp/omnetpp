@@ -29,11 +29,11 @@
 #include "common/fileutil.h"
 #include "common/stringutil.h"
 #include "common/ver.h"
+#include "errorstore.h"
 #include "omnetpp/platdep/platmisc.h"  // getcwd, chdir
 #include "msgcompiler.h"
 #include "msgcompilerold.h"
 #include "nedparser.h"
-#include "nederror.h"
 #include "nedexception.h"
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
@@ -185,7 +185,7 @@ bool renameFileToBAK(const char *fname)
     return true;
 }
 
-void generateNED(std::ostream& out, NEDElement *node, NEDErrorStore *e, bool oldsyntax)
+void generateNED(std::ostream& out, NEDElement *node, ErrorStore *e, bool oldsyntax)
 {
     if (oldsyntax)
         generateNED1(out, node, e);
@@ -220,7 +220,7 @@ void generateDependencies(const char *depsfile, const char *fname, const char *o
         fileStream.close();
 }
 
-bool processFile(const char *fname, NEDErrorStore *errors)
+bool processFile(const char *fname, ErrorStore *errors)
 {
     if (opt_verbose)
         fprintf(stdout, "processing '%s'...\n", fname);
@@ -398,7 +398,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
     return true;
 }
 
-bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStore *errors)
+bool processListFile(const char *listfilename, bool istemplistfile, ErrorStore *errors)
 {
     const int maxline = 1024;
     char line[maxline];
@@ -480,8 +480,8 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    NEDErrorStore errorstore;
-    NEDErrorStore *errors = &errorstore;
+    ErrorStore errorstore;
+    ErrorStore *errors = &errorstore;
     errors->setPrintToStderr(true);
 
     // process options

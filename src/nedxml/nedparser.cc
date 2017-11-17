@@ -24,10 +24,10 @@
 
 #include "common/opp_ctype.h"
 #include "nedparser.h"
+
+#include "errorstore.h"
 #include "nedfilebuffer.h"
 #include "nedelements.h"
-#include "nederror.h"
-
 #include "nedyydefs.h"
 
 using namespace omnetpp::common;
@@ -100,7 +100,7 @@ const char *NEDParser::getBuiltInDeclarations()
 
 //--------
 
-NEDParser::NEDParser(NEDErrorStore *e)
+NEDParser::NEDParser(ErrorStore *e)
 {
     nedsource = nullptr;
     filename = nullptr;

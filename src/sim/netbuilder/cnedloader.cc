@@ -17,7 +17,6 @@
 #include "common/stringutil.h"
 #include "common/fileutil.h"
 #include "nedxml/nedelements.h"
-#include "nedxml/nederror.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/ccomponenttype.h"
@@ -29,6 +28,8 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cdisplaystring.h"
 #include "cnedloader.h"
+
+#include "../../nedxml/errorstore.h"
 #include "cexpressionbuilder.h"
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"

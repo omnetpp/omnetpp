@@ -18,8 +18,9 @@
 #define __OMNETPP_NEDXML_NED2GENERATOR_H
 
 #include <iostream>
+
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 
 namespace omnetpp {
 namespace nedxml {

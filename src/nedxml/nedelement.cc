@@ -21,7 +21,8 @@
 #include <iostream>
 
 #include "nedelement.h"
-#include "nederror.h"
+
+#include "errorstore.h"
 #include "nedexception.h"
 
 namespace omnetpp {

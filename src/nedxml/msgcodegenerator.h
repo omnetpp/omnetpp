@@ -25,8 +25,8 @@
 #include <map>
 #include <set>
 
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 #include "msgtypetable.h"
 
 namespace omnetpp {

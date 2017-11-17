@@ -18,8 +18,8 @@
 #ifndef __OMNETPP_NEDXML_NEDXMLPARSER_H
 #define __OMNETPP_NEDXML_NEDXMLPARSER_H
 
+#include "errorstore.h"
 #include "nedelement.h"
-#include "nederror.h"
 
 namespace omnetpp {
 namespace nedxml {
@@ -29,7 +29,7 @@ namespace nedxml {
  *
  * @ingroup XMLParser
  */
-NEDXML_API NEDElement *parseXML(const char *filename, NEDErrorStore *errors);
+NEDXML_API NEDElement *parseXML(const char *filename, ErrorStore *errors);
 
 } // namespace nedxml
 }  // namespace omnetpp

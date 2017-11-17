@@ -25,8 +25,9 @@
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
-#include "nederror.h"
 #include "nedsyntaxvalidator.h"
+
+#include "errorstore.h"
 
 using namespace omnetpp::common;
 

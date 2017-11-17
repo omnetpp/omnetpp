@@ -1,5 +1,5 @@
 //==========================================================================
-// nederror.cc -
+// errorstore.cc -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -18,7 +18,7 @@
 #include <cstdarg>
 #include <cstdlib>
 #include "common/commonutil.h"
-#include "nederror.h"
+#include "errorstore.h"
 #include "nedelement.h"
 
 using namespace omnetpp::common;
@@ -26,7 +26,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
+void ErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
 {
     entries.push_back(Entry());
     Entry& e = entries.back();
@@ -54,93 +54,93 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, co
 
 #define BUFLEN    1024
 
-void NEDErrorStore::addError(NEDElement *context, const char *messagefmt, ...)
+void ErrorStore::addError(NEDElement *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(context, nullptr, NED_SEVERITY_ERROR, message);
+    doAdd(context, nullptr, SEVERITY_ERROR, message);
 }
 
-void NEDErrorStore::addError(const char *location, const char *messagefmt, ...)
+void ErrorStore::addError(const char *location, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(nullptr, location, NED_SEVERITY_ERROR, message);
+    doAdd(nullptr, location, SEVERITY_ERROR, message);
 }
 
-void NEDErrorStore::addWarning(NEDElement *context, const char *messagefmt, ...)
+void ErrorStore::addWarning(NEDElement *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(context, nullptr, NED_SEVERITY_WARNING, message);
+    doAdd(context, nullptr, SEVERITY_WARNING, message);
 }
 
-void NEDErrorStore::addWarning(const char *location, const char *messagefmt, ...)
+void ErrorStore::addWarning(const char *location, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
-    doAdd(nullptr, location, NED_SEVERITY_WARNING, message);
+    doAdd(nullptr, location, SEVERITY_WARNING, message);
 }
 
-void NEDErrorStore::add(NEDElement *context, int severity, const char *messagefmt, ...)
+void ErrorStore::add(NEDElement *context, int severity, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(context, nullptr, severity, message);
 }
 
-void NEDErrorStore::add(const char *location, int severity, const char *messagefmt, ...)
+void ErrorStore::add(const char *location, int severity, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
     doAdd(nullptr, location, severity, message);
 }
 
-bool NEDErrorStore::containsError() const
+bool ErrorStore::containsError() const
 {
     for (const auto & entry : entries)
-        if (entry.severity == NED_SEVERITY_ERROR)
+        if (entry.severity == SEVERITY_ERROR)
             return true;
 
     return false;
 }
 
-const char *NEDErrorStore::errorSeverity(int i) const
+const char *ErrorStore::errorSeverity(int i) const
 {
     if (i < 0 || i >= (int)entries.size())
         return nullptr;
     return severityName(entries[i].severity);
 }
 
-int NEDErrorStore::errorSeverityCode(int i) const
+int ErrorStore::errorSeverityCode(int i) const
 {
     if (i < 0 || i >= (int)entries.size())
         return -1;
     return entries[i].severity;
 }
 
-const char *NEDErrorStore::errorLocation(int i) const
+const char *ErrorStore::errorLocation(int i) const
 {
     if (i < 0 || i >= (int)entries.size())
         return nullptr;
     return entries[i].location.c_str();
 }
 
-NEDElement *NEDErrorStore::errorContext(int i) const
+NEDElement *ErrorStore::errorContext(int i) const
 {
     if (i < 0 || i >= (int)entries.size())
         return nullptr;
     return entries[i].context;
 }
 
-const char *NEDErrorStore::errorText(int i) const
+const char *ErrorStore::errorText(int i) const
 {
     if (i < 0 || i >= (int)entries.size())
         return nullptr;
     return entries[i].message.c_str();
 }
 
-int NEDErrorStore::findFirstErrorFor(NEDElement *node, int startIndex) const
+int ErrorStore::findFirstErrorFor(NEDElement *node, int startIndex) const
 {
     for (int i = startIndex; i < (int)entries.size(); i++)
         if (entries[i].context == node)
@@ -149,13 +149,13 @@ int NEDErrorStore::findFirstErrorFor(NEDElement *node, int startIndex) const
     return -1;
 }
 
-const char *NEDErrorStore::severityName(int severity)
+const char *ErrorStore::severityName(int severity)
 {
     switch (severity) {
-        case NED_SEVERITY_INFO:    return "Info";
-        case NED_SEVERITY_WARNING: return "Warning";
-        case NED_SEVERITY_ERROR:   return "Error";
-        default:                   return "???";
+        case SEVERITY_INFO:    return "Info";
+        case SEVERITY_WARNING: return "Warning";
+        case SEVERITY_ERROR:   return "Error";
+        default:               return "???";
     }
 }
 

@@ -16,13 +16,14 @@
 
 #include "saxparser.h"
 #include "nedsaxhandler.h"
-#include "nederror.h"
 #include "nedxmlparser.h"
+
+#include "errorstore.h"
 
 namespace omnetpp {
 namespace nedxml {
 
-NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
+NEDElement *parseXML(const char *filename, ErrorStore *errors)
 {
     NEDSAXHandler sh(filename, errors);
     SAXParser parser;

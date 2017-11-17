@@ -24,8 +24,8 @@
 #include <map>
 #include <set>
 
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 #include "msgtypetable.h"
 #include "msganalyzer.h"
 #include "msgcodegenerator.h"
@@ -78,7 +78,7 @@ class NEDXML_API MsgCompiler
     MsgCodeGenerator codegen;
 
     bool used = false;
-    NEDErrorStore *errors;
+    ErrorStore *errors;
     StringSet importsSeen;
     StringSet importedFiles;
 
@@ -97,7 +97,7 @@ class NEDXML_API MsgCompiler
     /**
      * Constructor.
      */
-    MsgCompiler(const MsgCompilerOptions& options, NEDErrorStore *errors);
+    MsgCompiler(const MsgCompilerOptions& options, ErrorStore *errors);
 
     /**
      * Destructor.

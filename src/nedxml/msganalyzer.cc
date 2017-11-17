@@ -93,7 +93,7 @@ MsgAnalyzer::StringSet MsgAnalyzer::RESERVED_WORDS = {
         "new", "delete", "explicit", "static", "extern", "return", "try", "catch",
 };
 
-MsgAnalyzer::MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, NEDErrorStore *errors) : errors(errors), typeTable(typeTable), opts(opts)
+MsgAnalyzer::MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, ErrorStore *errors) : errors(errors), typeTable(typeTable), opts(opts)
 {
 }
 

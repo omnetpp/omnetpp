@@ -17,7 +17,6 @@
 #include <algorithm>
 #include "common/stringutil.h"
 #include "common/patternmatcher.h"
-#include "nedxml/nederror.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cdynamicexpression.h"
@@ -25,6 +24,8 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
 #include "cneddeclaration.h"
+
+#include "../../nedxml/errorstore.h"
 #include "cnedloader.h"
 
 namespace omnetpp {

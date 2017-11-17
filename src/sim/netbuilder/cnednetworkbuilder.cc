@@ -25,12 +25,12 @@
 #include "common/stringutil.h"
 #include "common/patternmatcher.h"
 #include "nedxml/nedelements.h"
-#include "nedxml/nederror.h"
 #include "nedxml/nedparser.h"
 #include "nedxml/nedxmlparser.h"
 #include "nedxml/neddtdvalidator.h"
 #include "nedxml/nedsyntaxvalidator.h"
 #include "nedxml/nedutil.h"
+#include "nedxml/errorstore.h"
 #include "nedxml/xmlgenerator.h"  // for debugging
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"

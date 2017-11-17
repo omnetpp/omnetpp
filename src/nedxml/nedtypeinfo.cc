@@ -19,10 +19,11 @@
 #include <sstream>
 #include "common/stlutil.h"
 #include "common/stringutil.h"
-#include "nederror.h"
 #include "nedutil.h"
 #include "nedexception.h"
 #include "nedtypeinfo.h"
+
+#include "errorstore.h"
 #include "nedresourcecache.h"
 #include "ned2generator.h"
 
@@ -218,7 +219,7 @@ std::string NEDTypeInfo::str() const
 std::string NEDTypeInfo::getNedSource() const
 {
     std::stringstream out;
-    NEDErrorStore errors;
+    ErrorStore errors;
     generateNED2(out, getTree());
     return out.str();
 }

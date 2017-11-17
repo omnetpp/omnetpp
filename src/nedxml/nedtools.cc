@@ -16,7 +16,8 @@
 
 #include "common/fileutil.h"
 #include "nedtools.h"
-#include "nederror.h"
+
+#include "errorstore.h"
 #include "neddtdvalidator.h"
 
 using namespace omnetpp::common;
@@ -28,7 +29,7 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
 {
     while (true) {
         // try DTD validation, and find first problem
-        NEDErrorStore errors;
+        ErrorStore errors;
         NEDDTDValidator dtdValidator(&errors);
         dtdValidator.validate(tree);
         if (errors.empty())

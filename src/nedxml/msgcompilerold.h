@@ -24,8 +24,8 @@
 #include <map>
 #include <set>
 
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 
 namespace omnetpp {
 namespace nedxml {
@@ -93,7 +93,7 @@ class NEDXML_API MsgCompilerOld
     std::string ccFilename;
     std::ostream *hOutp;
     std::ostream *ccOutp;
-    NEDErrorStore *errors;
+    ErrorStore *errors;
     std::map<std::string,ClassType> classType;
     std::map<std::string,std::string> enumType;
     std::string namespaceName;      // as MSG
@@ -244,7 +244,7 @@ class NEDXML_API MsgCompilerOld
     /**
      * Constructor.
      */
-    MsgCompilerOld(NEDErrorStore *errors, const MsgCompilerOptionsOld& options);
+    MsgCompilerOld(ErrorStore *errors, const MsgCompilerOptionsOld& options);
 
     /**
      * Destructor.

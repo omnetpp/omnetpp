@@ -19,8 +19,9 @@
 #include <sstream>
 #include "common/stringutil.h"
 #include "ned2generator.h"
+
+#include "errorstore.h"
 #include "nedutil.h"
-#include "nederror.h"
 
 using namespace omnetpp::common;
 

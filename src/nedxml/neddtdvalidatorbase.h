@@ -51,7 +51,7 @@ class NEDXML_API NEDDTDValidatorBase : public NEDValidatorBase
     void checkCommentAttribute(NEDElement *node, const char *attr);
     //@}
   public:
-    NEDDTDValidatorBase(NEDErrorStore *e) : NEDValidatorBase(e) {}
+    NEDDTDValidatorBase(ErrorStore *e) : NEDValidatorBase(e) {}
 };
 
 } // namespace nedxml

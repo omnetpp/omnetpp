@@ -90,7 +90,7 @@ P check_and_cast(T *p)
     return ret;
 }
 
-MsgCompiler::MsgCompiler(const MsgCompilerOptions& opts, NEDErrorStore *errors) : opts(opts), analyzer(opts, &typeTable, errors), errors(errors)
+MsgCompiler::MsgCompiler(const MsgCompilerOptions& opts, ErrorStore *errors) : opts(opts), analyzer(opts, &typeTable, errors), errors(errors)
 {
 }
 

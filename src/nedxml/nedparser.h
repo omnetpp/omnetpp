@@ -18,9 +18,10 @@
 #define __OMNETPP_NEDXML_NEDPARSER_H
 
 #include <cstdio>
+
+#include "errorstore.h"
 #include "nedelement.h"
 #include "nedyydefs.h"
-#include "nederror.h"
 
 namespace omnetpp {
 namespace nedxml {
@@ -54,7 +55,7 @@ class NEDXML_API NEDParser
     // INTERNAL: error and debug handling, called from grammar file
     void error(const char *msg, int line);
 
-    NEDErrorStore *getErrors() {return errors;}
+    ErrorStore *getErrors() {return errors;}
     NEDFileBuffer *getSource() {return nedsource;}
 
   protected:
@@ -62,7 +63,7 @@ class NEDXML_API NEDParser
     bool msgNewSyntax;
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // name of file being parsed
-    NEDErrorStore *errors;     // accumulates error messages
+    ErrorStore *errors;     // accumulates error messages
     NEDFileBuffer *nedsource;  // represents the source file
 
     bool loadFile(const char *osfname, const char *fname);
@@ -75,7 +76,7 @@ class NEDXML_API NEDParser
     /**
      * Constructor.
      */
-    NEDParser(NEDErrorStore *e);
+    NEDParser(ErrorStore *e);
 
     /**
      * Destructor.

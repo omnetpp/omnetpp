@@ -21,9 +21,10 @@
 #include "common/fileglobber.h"
 #include "common/patternmatcher.h"
 #include "common/opp_ctype.h"
-#include "nederror.h"
 #include "nedexception.h"
 #include "nedresourcecache.h"
+
+#include "errorstore.h"
 #include "nedparser.h"
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
@@ -54,7 +55,7 @@ void NEDResourceCache::registerBuiltinDeclarations()
     // NED code to define built-in types
     const char *nedcode = NEDParser::getBuiltInDeclarations();
 
-    NEDErrorStore errors;
+    ErrorStore errors;
     NEDParser parser(&errors);
     NEDElement *tree = parser.parseNEDText(nedcode, "built-in-declarations");
     if (errors.containsError()) {
@@ -127,7 +128,7 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
 {
     // load file
     NEDElement *tree = nullptr;
-    NEDErrorStore errors;
+    ErrorStore errors;
     if (isXML) {
         if (nedtext)
             throw NEDException("loadNedText(): Parsing XML from string not supported");
@@ -164,12 +165,12 @@ NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, c
     return tree;
 }
 
-std::string NEDResourceCache::getFirstError(NEDErrorStore *errors, const char *prefix)
+std::string NEDResourceCache::getFirstError(ErrorStore *errors, const char *prefix)
 {
     // find first error
     int i;
     for (i = 0; i < errors->numMessages(); i++)
-        if (errors->errorSeverityCode(i) == NED_SEVERITY_ERROR)
+        if (errors->errorSeverityCode(i) == SEVERITY_ERROR)
             break;
     Assert(i != errors->numMessages());
 

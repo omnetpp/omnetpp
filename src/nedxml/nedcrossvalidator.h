@@ -66,7 +66,7 @@ class NEDXML_API NEDCrossValidator : public NEDValidatorBase
 
   public:
     /** Constructor */
-    NEDCrossValidator(bool parsedExpr, NEDResourceCache *resolver, NEDErrorStore *e);
+    NEDCrossValidator(bool parsedExpr, NEDResourceCache *resolver, ErrorStore *e);
 
     /** Destructor */
     virtual ~NEDCrossValidator();

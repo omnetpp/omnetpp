@@ -18,17 +18,18 @@
 *--------------------------------------------------------------*/
 
 #include "common/stringutil.h"
-#include "nederror.h"
 #include "nedexception.h"
 #include "nedresourcecache.h"
 #include "nedcrossvalidator.h"
+
+#include "errorstore.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace nedxml {
 
-NEDCrossValidator::NEDCrossValidator(bool parsedExpr, NEDResourceCache *res, NEDErrorStore *e)
+NEDCrossValidator::NEDCrossValidator(bool parsedExpr, NEDResourceCache *res, ErrorStore *e)
     : NEDValidatorBase(e)
 {
     parsedExpressions = parsedExpr;

@@ -24,8 +24,8 @@
 #include <map>
 #include <set>
 
+#include "errorstore.h"
 #include "nedelements.h"
-#include "nederror.h"
 
 namespace omnetpp {
 namespace nedxml {

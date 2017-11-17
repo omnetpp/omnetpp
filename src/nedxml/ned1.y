@@ -95,7 +95,7 @@
 #include "common/commonutil.h"
 #include "nedyydefs.h"
 #include "nedutil.h"
-#include "nederror.h"
+#include "errorstore.h"
 #include "nedexception.h"
 
 #define YYDEBUG 1           /* allow debugging */
