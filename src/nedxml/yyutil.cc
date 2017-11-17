@@ -1,5 +1,5 @@
 //==========================================================================
-// nedyylib.cc  -
+// yyutil.cc  -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -18,9 +18,9 @@
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
-#include "nedyylib.h"
 #include "nedfilebuffer.h"
 #include "nedyydefs.h"
+#include "yyutil.h"
 
 using namespace omnetpp::common;
 

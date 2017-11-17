@@ -116,7 +116,7 @@ void yyerror (const char *s);
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nedutil.h"
-#include "nedyylib.h"
+#include "yyutil.h"
 
 using namespace omnetpp;
 

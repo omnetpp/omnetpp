@@ -21,7 +21,8 @@
 #include <cassert>
 #include "common/opp_ctype.h"
 #include "nedfilebuffer.h"
-#include "nedyylib.h"
+
+#include "yyutil.h"
 
 using namespace omnetpp::common;
 

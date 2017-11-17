@@ -1,5 +1,5 @@
 //==========================================================================
-// nedyylib.h  -
+// yyutil.h  -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
