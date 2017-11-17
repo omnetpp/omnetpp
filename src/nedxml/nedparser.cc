@@ -26,9 +26,9 @@
 #include "nedparser.h"
 
 #include "errorstore.h"
-#include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nedyydefs.h"
+#include "sourcedocument.h"
 
 using namespace omnetpp::common;
 
@@ -159,7 +159,7 @@ bool NEDParser::loadFile(const char *osfname, const char *fname)
     // init class members
     if (nedsource)
         delete nedsource;
-    nedsource = new NEDFileBuffer();
+    nedsource = new SourceDocument();
     filename = fname;
     errors->clear();
 
@@ -188,7 +188,7 @@ bool NEDParser::loadText(const char *nedtext, const char *fname)
     // init vars
     if (nedsource)
         delete nedsource;
-    nedsource = new NEDFileBuffer();
+    nedsource = new SourceDocument();
     filename = fname;
     errors->clear();
 

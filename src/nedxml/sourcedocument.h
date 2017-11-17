@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDFILEBUFFER.H - part of
+//  SOURCEDOCUMENT.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDFILEBUFFER_H
-#define __OMNETPP_NEDXML_NEDFILEBUFFER_H
+#ifndef __OMNETPP_NEDXML_SOURCEDOCUMENT_H
+#define __OMNETPP_NEDXML_SOURCEDOCUMENT_H
 
 #include "nedparser.h"   // for YYLTYPE
 
@@ -25,14 +25,14 @@ namespace nedxml {
 /**
  * @brief Stores the full text of a NED/MSG file.
  *
- * Used internally by NEDParser. Stores the full text of a NED file,
+ * Used internally by NEDParser. Stores the full text of a source file,
  * and makes it possible to retrieve parts of it by (line1,col1,line2,col2)
  * coordinates passed in an YYLTYPE structure. Also finds and retrieves
  * comments near a position passed in an YYLTYPE.
  *
  * @ingroup NEDParser
  */
-class NEDXML_API NEDFileBuffer
+class NEDXML_API SourceDocument
 {
   private:
     enum {COMMENT_LINE, BLANK_LINE, CODE_LINE};
@@ -68,12 +68,12 @@ class NEDXML_API NEDFileBuffer
     /**
      * Constructor.
      */
-    NEDFileBuffer();
+    SourceDocument();
 
     /**
      * Destructor.
      */
-    ~NEDFileBuffer();
+    ~SourceDocument();
 
     /**
      * Reads NED file given with its filename.

@@ -85,7 +85,7 @@ int yylex();
 void yyerror (const char *s);
 
 #include "nedparser.h"
-#include "nedfilebuffer.h"
+#include "sourcedocument.h"
 #include "nedelements.h"
 #include "nedutil.h"
 #include "yyutil.h"

@@ -34,7 +34,7 @@ IMPLIBS= -loppcommon$D $(XML_LIBS)
 OBJS= $O/nedelements.o $O/nedelement.o $O/errorstore.o $O/nedexception.o \
       $O/nedvalidator.o $O/neddtdvalidator.o $O/neddtdvalidatorbase.o \
       $O/nedsyntaxvalidator.o $O/nedcrossvalidator.o \
-      $O/nedfilebuffer.o $O/nedparser.o $O/yyutil.o \
+      $O/sourcedocument.o $O/nedparser.o $O/yyutil.o \
       $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o \
       $O/nedutil.o $O/ned2generator.o $O/ned1generator.o $O/xmlgenerator.o \
       $O/nedxmlparser.o $O/nedsaxhandler.o $O/saxparser_$(XMLPARSER).o \

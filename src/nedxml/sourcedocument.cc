@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDFILEBUFFER.CC - part of
+//  SOURCEDOCUMENT.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,14 +14,14 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "sourcedocument.h"
+
 #include <sys/stat.h>
 #include <cstring>
 #include <cstdio>
 #include <ctime>
 #include <cassert>
 #include "common/opp_ctype.h"
-#include "nedfilebuffer.h"
-
 #include "yyutil.h"
 
 using namespace omnetpp::common;
@@ -31,7 +31,7 @@ namespace nedxml {
 
 //-----------------------------------------------------------
 
-NEDFileBuffer::NEDFileBuffer()
+SourceDocument::SourceDocument()
 {
     wholeFile = nullptr;
 
@@ -44,14 +44,14 @@ NEDFileBuffer::NEDFileBuffer()
     commentBuf = new char[commentBufLen];
 }
 
-NEDFileBuffer::~NEDFileBuffer()
+SourceDocument::~SourceDocument()
 {
     delete[] wholeFile;
     delete[] lineBeg;
     delete[] commentBuf;
 }
 
-bool NEDFileBuffer::readFile(const char *filename)
+bool SourceDocument::readFile(const char *filename)
 {
     // load file into memory
     if (wholeFile)
@@ -79,7 +79,7 @@ bool NEDFileBuffer::readFile(const char *filename)
     return indexLines();
 }
 
-bool NEDFileBuffer::setData(const char *data)
+bool SourceDocument::setData(const char *data)
 {
     if (wholeFile)
         return false;  // reinit not supported
@@ -92,7 +92,7 @@ bool NEDFileBuffer::setData(const char *data)
 // indexLines()
 //   Sets up the lineBeg[] array. Line numbering goes from 1, ie. the first line
 //   is lineBeg[1]
-bool NEDFileBuffer::indexLines()
+bool SourceDocument::indexLines()
 {
     // convert all CR and CR+LF into LF to avoid trouble
     char *s, *d;
@@ -140,12 +140,12 @@ bool NEDFileBuffer::indexLines()
     return true;
 }
 
-int NEDFileBuffer::getLineType(int lineNumber)
+int SourceDocument::getLineType(int lineNumber)
 {
     return getLineType(getPosition(lineNumber, 0));
 }
 
-int NEDFileBuffer::getLineType(const char *s)
+int SourceDocument::getLineType(const char *s)
 {
     while (*s == ' ' || *s == '\t')
         s++;
@@ -156,7 +156,7 @@ int NEDFileBuffer::getLineType(const char *s)
     return CODE_LINE;
 }
 
-bool NEDFileBuffer::lineContainsCode(const char *s)
+bool SourceDocument::lineContainsCode(const char *s)
 {
     // tolerant version: punctuation does not count as code
     while (*s == ' ' || *s == '\t' || *s == ':' || *s == ',' || *s == ';')
@@ -168,12 +168,12 @@ bool NEDFileBuffer::lineContainsCode(const char *s)
     return true;
 }
 
-int NEDFileBuffer::getLineIndent(int lineNumber)
+int SourceDocument::getLineIndent(int lineNumber)
 {
     return getLineIndent(getPosition(lineNumber, 0));
 }
 
-int NEDFileBuffer::getLineIndent(const char *s)
+int SourceDocument::getLineIndent(const char *s)
 {
     int co = 0;
     while (*s == ' ' || *s == '\t') {
@@ -183,7 +183,7 @@ int NEDFileBuffer::getLineIndent(const char *s)
     return co;
 }
 
-char *NEDFileBuffer::getPosition(int line, int column)
+char *SourceDocument::getPosition(int line, int column)
 {
     // tolerant version: if line is out of range, return beginning or end of file
     if (line < 1)
@@ -210,7 +210,7 @@ char *NEDFileBuffer::getPosition(int line, int column)
     return s;
 }
 
-const char *NEDFileBuffer::get(YYLTYPE pos)
+const char *SourceDocument::get(YYLTYPE pos)
 {
     if (end) {
         *end = savedChar;
@@ -233,13 +233,13 @@ const char *NEDFileBuffer::get(YYLTYPE pos)
     return beg;
 }
 
-const char *NEDFileBuffer::getFileComment()
+const char *SourceDocument::getFileComment()
 {
     return stripComment(get(getFileCommentPos()));
 }
 
 // all subsequent comment and blank lines will be included, up to the _last blank_ line
-YYLTYPE NEDFileBuffer::getFileCommentPos()
+YYLTYPE SourceDocument::getFileCommentPos()
 {
     if (end) {
         *end = savedChar;
@@ -273,7 +273,7 @@ YYLTYPE NEDFileBuffer::getFileCommentPos()
 //   result: ==li     there was no comment
 //           ==li-1   single-line comment on line li-1
 //
-int NEDFileBuffer::topLineOfBannerComment(int li)
+int SourceDocument::topLineOfBannerComment(int li)
 {
     // seek beginning of comment block
     int codeLineIndent = getLineIndent(li);
@@ -282,12 +282,12 @@ int NEDFileBuffer::topLineOfBannerComment(int li)
     return li;
 }
 
-const char *NEDFileBuffer::getBannerComment(YYLTYPE pos)
+const char *SourceDocument::getBannerComment(YYLTYPE pos)
 {
     return stripComment(get(getBannerCommentPos(pos)));
 }
 
-YYLTYPE NEDFileBuffer::getBannerCommentPos(YYLTYPE pos)
+YYLTYPE SourceDocument::getBannerCommentPos(YYLTYPE pos)
 {
     trimSpaceAndComments(pos);
     if (end) {
@@ -314,12 +314,12 @@ YYLTYPE NEDFileBuffer::getBannerCommentPos(YYLTYPE pos)
 //  also serves as "getRightComment"
 //  NOTE: only handles really trailing comments, ie. those after last_line.last_column
 //
-const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
+const char *SourceDocument::getTrailingComment(YYLTYPE pos)
 {
     return stripComment(get(getTrailingCommentPos(pos)));
 }
 
-YYLTYPE NEDFileBuffer::getTrailingCommentPos(YYLTYPE pos)
+YYLTYPE SourceDocument::getTrailingCommentPos(YYLTYPE pos)
 {
     trimSpaceAndComments(pos);
     if (end) {
@@ -367,7 +367,7 @@ static const char *findCommentOnLine(const char *s)
     return s;
 }
 
-const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
+const char *SourceDocument::getNextInnerComment(YYLTYPE& pos)
 {
     // FIXME unfortunately, this will collect comments even from
     // inside single-line or multi-line string literals
@@ -405,7 +405,7 @@ const char *NEDFileBuffer::getNextInnerComment(YYLTYPE& pos)
     return nullptr;
 }
 
-YYLTYPE NEDFileBuffer::getFullTextPos()
+YYLTYPE SourceDocument::getFullTextPos()
 {
     YYLTYPE pos;
     pos.first_line = 1;
@@ -415,7 +415,7 @@ YYLTYPE NEDFileBuffer::getFullTextPos()
     return pos;
 }
 
-const char *NEDFileBuffer::getFullText()
+const char *SourceDocument::getFullText()
 {
     return get(getFullTextPos());
 }
@@ -424,7 +424,7 @@ const char *NEDFileBuffer::getFullText()
 //  return a "stripped" version of a multi-line comment --
 //  all non-comment elements (comma, etc) are deleted
 //
-char *NEDFileBuffer::stripComment(const char *comment)
+char *SourceDocument::stripComment(const char *comment)
 {
     // expand buffer if necessary
     if (commentBufLen < (int)strlen(comment)+1) {
@@ -451,7 +451,7 @@ char *NEDFileBuffer::stripComment(const char *comment)
     return commentBuf;
 }
 
-void NEDFileBuffer::trimSpaceAndComments(YYLTYPE& pos)
+void SourceDocument::trimSpaceAndComments(YYLTYPE& pos)
 {
     if (end) {
         *end = savedChar;

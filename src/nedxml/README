@@ -43,8 +43,8 @@ NED parser:
     nedgrammar.h
     ned.lex
     ned.y
-    nedfilebuffer.cc
-    nedfilebuffer.h
+    sourcedocument.cc
+    sourcedocument.h
 
 NED code generator:
     nedgenerator.cc

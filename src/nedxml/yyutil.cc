@@ -18,9 +18,9 @@
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
-#include "nedfilebuffer.h"
 #include "nedyydefs.h"
 #include "yyutil.h"
+#include "sourcedocument.h"
 
 using namespace omnetpp::common;
 

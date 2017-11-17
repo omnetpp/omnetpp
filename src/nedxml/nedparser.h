@@ -26,7 +26,7 @@
 namespace omnetpp {
 namespace nedxml {
 
-class NEDFileBuffer;
+class SourceDocument;
 class NEDParser;
 
 extern NEDParser *np;
@@ -45,7 +45,7 @@ extern NEDParser *np;
  *
  * Elements of the tree are subclassed from NEDElement;
  * NEDElementFactory is used to actually create the objects.
- * Internally this class uses a bison/flex grammar and NEDFileBuffer.
+ * Internally this class uses a bison/flex grammar and SourceDocument.
  *
  * @ingroup NEDParser
  */
@@ -56,7 +56,7 @@ class NEDXML_API NEDParser
     void error(const char *msg, int line);
 
     ErrorStore *getErrors() {return errors;}
-    NEDFileBuffer *getSource() {return nedsource;}
+    SourceDocument *getSource() {return nedsource;}
 
   protected:
     bool parseexpr;            // whether to parse expressions or not
@@ -64,7 +64,7 @@ class NEDXML_API NEDParser
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // name of file being parsed
     ErrorStore *errors;     // accumulates error messages
-    NEDFileBuffer *nedsource;  // represents the source file
+    SourceDocument *nedsource;  // represents the source file
 
     bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
