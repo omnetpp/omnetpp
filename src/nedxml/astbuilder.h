@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDSAXHANDLER.H - part of
+//  ASTBUILDER.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDSAXHANDLER_H
-#define __OMNETPP_NEDXML_NEDSAXHANDLER_H
+#ifndef __OMNETPP_NEDXML_ASTBUILDER_H
+#define __OMNETPP_NEDXML_ASTBUILDER_H
 
 
 #include "errorstore.h"
@@ -27,7 +27,7 @@ namespace nedxml {
 
 
 /**
- * @brief SAX handler (to be used with SAXParser) that builds a NED object tree.
+ * @brief SAX handler (to be used with SAXParser) that builds an AST.
  *
  * Elements of the tree are subclassed from ASTNode;
  * ASTNodeFactory is used to actually create the objects.
@@ -45,7 +45,7 @@ namespace nedxml {
  *
  * @ingroup XMLParser
  */
-class NEDXML_API NEDSAXHandler : public SAXHandler
+class NEDXML_API ASTBuilder : public SAXHandler
 {
     ASTNode *root;
     ASTNode *current;
@@ -56,12 +56,12 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
     /**
      * Constructor. Filename is necessary to create correct src-loc info.
      */
-    NEDSAXHandler(const char *filename, ErrorStore *e);
+    ASTBuilder(const char *filename, ErrorStore *e);
 
     /**
      * Destructor
      */
-    virtual ~NEDSAXHandler();
+    virtual ~ASTBuilder();
 
     /**
      * Returns the object tree that was built up during XML parsing.

@@ -15,16 +15,16 @@
 *--------------------------------------------------------------*/
 
 #include "saxparser.h"
-#include "nedsaxhandler.h"
 #include "errorstore.h"
 #include "xmlastparser.h"
+#include "astbuilder.h"
 
 namespace omnetpp {
 namespace nedxml {
 
 ASTNode *parseXML(const char *filename, ErrorStore *errors)
 {
-    NEDSAXHandler sh(filename, errors);
+    ASTBuilder sh(filename, errors);
     SAXParser parser;
 
     parser.setHandler(&sh);

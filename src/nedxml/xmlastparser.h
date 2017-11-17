@@ -26,7 +26,7 @@ namespace nedxml {
 
 /**
  * @brief Simple front-end to load an AST from an XML file. Invokes SAXParser
- * with NEDSAXHandler.
+ * with ASTBuilder.
  *
  * @ingroup XMLParser
  */
@@ -34,6 +34,7 @@ NEDXML_API ASTNode *parseXML(const char *filename, ErrorStore *errors);
 
 } // namespace nedxml
 }  // namespace omnetpp
+
 
 #endif
 

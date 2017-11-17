@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDSAXHANDLER.CC - part of
+//  ASTBUILDER.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "nedsaxhandler.h"
+#include "astbuilder.h"
 
 #include "errorstore.h"
 #include "nedelements.h"
@@ -23,26 +23,26 @@
 namespace omnetpp {
 namespace nedxml {
 
-NEDSAXHandler::NEDSAXHandler(const char *fname, ErrorStore *e)
+ASTBuilder::ASTBuilder(const char *fname, ErrorStore *e)
 {
     root = current = nullptr;
     sourceFilename = fname;
     errors = e;
 }
 
-NEDSAXHandler::~NEDSAXHandler()
+ASTBuilder::~ASTBuilder()
 {
     delete root;
 }
 
-ASTNode *NEDSAXHandler::getTree()
+ASTNode *ASTBuilder::getTree()
 {
     ASTNode *tree = root;
     root = current = nullptr;
     return tree;
 }
 
-void NEDSAXHandler::startElement(const char *name, const char **atts)
+void ASTBuilder::startElement(const char *name, const char **atts)
 {
     // initialize node
     ASTNode *node;
@@ -82,32 +82,32 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
     }
 }
 
-void NEDSAXHandler::endElement(const char *name)
+void ASTBuilder::endElement(const char *name)
 {
     current = current->getParent();
 }
 
-void NEDSAXHandler::characterData(const char *s, int len)
+void ASTBuilder::characterData(const char *s, int len)
 {
     // ignore
 }
 
-void NEDSAXHandler::processingInstruction(const char *target, const char *data)
+void ASTBuilder::processingInstruction(const char *target, const char *data)
 {
     // ignore
 }
 
-void NEDSAXHandler::comment(const char *data)
+void ASTBuilder::comment(const char *data)
 {
     // ignore
 }
 
-void NEDSAXHandler::startCdataSection()
+void ASTBuilder::startCdataSection()
 {
     // ignore
 }
 
-void NEDSAXHandler::endCdataSection()
+void ASTBuilder::endCdataSection()
 {
     // ignore
 }
