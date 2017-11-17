@@ -185,14 +185,13 @@ class NEDXML_API MsgTypeTable
 
   protected:
     void initDescriptors();
-    std::string prefixWithNamespace(const std::string& namespaceName, const std::string& name) {
+    std::string prefixWithNamespace(const std::string& namespaceName, const std::string& name) {  //TODO not needed
         return !namespaceName.empty() ? namespaceName + "::" + name : name;
     }
 
   public:
     MsgTypeTable() {initDescriptors();}
     ~MsgTypeTable();
-    StringVector lookupExistingClassName(const std::string& name, const std::string& contextNamespace);
     StringVector lookupExistingEnumName(const std::string& name, const std::string& contextNamespace);
     bool isClassDefined(const std::string& classqname) { return definedClasses.find(classqname) != definedClasses.end(); }
     bool isEnumDefined(const std::string& enumqname) { return definedEnums.find(enumqname) != definedEnums.end(); }

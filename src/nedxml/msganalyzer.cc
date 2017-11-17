@@ -255,33 +255,21 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
             classInfo.msgbaseqname = "";
     }
     else {
-        StringVector found = typeTable->lookupExistingClassName(classInfo.msgbase, namespaceName);
-        if (found.size() == 1) {
-            classInfo.msgbaseqname = found[0];
-            ClassInfo& baseClassInfo = typeTable->getClassInfo(classInfo.msgbaseqname);
-            ensureAnalyzed(baseClassInfo);
-            if (baseClassInfo.isprimitivetype)
-                errors->addError(classInfo.nedElement, "'%s': primitive type '%s' cannot be used as base class", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
-        }
-        else if (found.empty()) {
+        classInfo.msgbaseqname = lookupExistingClassName(classInfo.msgbase, namespaceName);
+        if (classInfo.msgbaseqname.empty())
             errors->addError(classInfo.nedElement, "'%s': unknown base class '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
-            classInfo.msgbaseqname = "";
-        }
-        else {
-            errors->addError(classInfo.nedElement, "'%s': ambiguous base class '%s'; possibilities: '%s'",
-                    classInfo.msgname.c_str(), classInfo.msgbase.c_str(), join(found, "','").c_str());
-            classInfo.msgbaseqname = found[0];
-        }
     }
 
-    // resolve base class/struct --TODO merge with previous block!!!
+    // resolve base class/struct
     ClassInfo *baseClassInfo = nullptr;
-    if (classInfo.msgbaseqname != "" && typeTable->isClassDefined(classInfo.msgbaseqname)) {
+    if (classInfo.msgbaseqname != "") {
         baseClassInfo = &typeTable->getClassInfo(classInfo.msgbaseqname);
         ensureAnalyzed(*baseClassInfo);
+        if (baseClassInfo->isprimitivetype)
+            errors->addError(classInfo.nedElement, "'%s': primitive type '%s' cannot be used as base class", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
     }
 
-    // determine class kind
+    // determine class type
     classInfo.isClass = (classInfo.keyword != "struct");
     classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = false;
     if (classInfo.isClass) {
@@ -391,17 +379,10 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (field->fisabstract && !classInfo.gap)
         errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'", classInfo.msgname.c_str());
 
-    StringVector candidateTypes = typeTable->lookupExistingClassName(field->ftype, namespaceName);
-    if (candidateTypes.size() == 1) {
-        field->ftypeqname = candidateTypes[0];
-    }
-    else if (candidateTypes.empty()) {
+    field->ftypeqname = lookupExistingClassName(field->ftype, namespaceName, &classInfo);
+    if (field->ftypeqname.empty()) {
         errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
         field->ftypeqname = "omnetpp::cObject";
-    }
-    else {
-        errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(candidateTypes, ", ").c_str());
-        field->ftypeqname = candidateTypes[0];
     }
 
     ClassInfo& fieldClassInfo = typeTable->getClassInfo(field->ftypeqname);
@@ -710,6 +691,59 @@ std::string MsgAnalyzer::getProperty(const Properties& p, const char *name, cons
     if (it == p.end())
         return defval;
     return it->second;
+}
+
+std::string MsgAnalyzer::lookupExistingClassName(const std::string& name, const std::string& contextNamespace,  ClassInfo *contextClass)
+{
+    if (name.empty())
+        return "";
+
+    if (name.find("::") == 0) {
+        // if $name start with "::", take it as an explicitly qualified name
+        std::string qname = name.substr(2);
+        if (typeTable->isClassDefined(qname))
+            return qname;
+    }
+    else {
+        // relative name
+        // look into the enclosing type and its super types
+        if (contextClass != nullptr) {
+            std::string qname = prefixWithNamespace(name, contextClass->msgqname);
+            if (typeTable->isClassDefined(qname))
+                return qname;
+            ClassInfo *currentClass = contextClass;
+            while (currentClass->msgbaseqname != "") {
+                currentClass = &typeTable->getClassInfo(currentClass->msgbaseqname); // go to super class
+                std::string qname = prefixWithNamespace(name, currentClass->msgqname);
+                if (typeTable->isClassDefined(qname))
+                    return qname;
+                ensureAnalyzed(*currentClass);
+            }
+        }
+
+        // search from current namespace up to the top level
+        std::string lookupNamespace = contextNamespace;
+        while (true) {
+            std::string qname = prefixWithNamespace(name, lookupNamespace);
+            if (typeTable->isClassDefined(qname))
+                return qname;
+
+            if (lookupNamespace.empty())
+                break;
+
+            // drop last segment
+            int pos = lookupNamespace.rfind("::");
+            if (pos == std::string::npos)
+                pos = 0;
+            lookupNamespace = lookupNamespace.substr(0, pos);
+        }
+
+        // additionally, try in in the omnetpp namespace as well
+        std::string qname = "omnetpp::" + name;
+        if (typeTable->isClassDefined(qname))
+            return qname;
+    }
+    return "";
 }
 
 }  // namespace nedxml

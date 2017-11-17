@@ -1008,7 +1008,7 @@ class cFigure extends cOwnedObject
     string tooltip @group(figure) @editable;
     cObject *associatedObject @group(figure);
     string tags @group(figure) @editable;
-    Transform transform @group(figure) @editable;
+    cFigure::Transform transform @group(figure) @editable;
     cFigure *children[] @group(figure) @getter(getFigure) @sizeGetter(getNumFigures);
 }
 
@@ -1222,7 +1222,7 @@ class cCanvas extends cOwnedObject
     @descriptor(readonly);
     cFigure *rootFigure;
     string allTags;
-    Color backgroundColor @editable;
+    cFigure::Color backgroundColor @editable;
 }
 
 class cOsgCanvas extends cOwnedObject

@@ -37,39 +37,6 @@ void MsgTypeTable::initDescriptors()
 {
 }
 
-MsgTypeTable::StringVector MsgTypeTable::lookupExistingClassName(const std::string& name, const std::string& contextNamespace)
-{
-    StringVector ret;
-
-    if (name.empty()) {
-        ret.push_back(name); //TODO why ???
-        return ret;
-    }
-
-    // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
-    if (name.find("::") != name.npos) {
-        std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::", because names in @classes don't have it either
-        if (containsKey(definedClasses, qname)) {
-            ret.push_back(qname);
-            return ret;
-        }
-    }
-    else {
-        std::string qname = prefixWithNamespace(contextNamespace, name);
-        if (containsKey(definedClasses, qname)) {
-            ret.push_back(qname);
-            return ret;
-        }
-    }
-
-    std::string doubleColonPlusName = std::string("::") + name;
-    for (auto it : definedClasses) {
-        std::string classQName = it.first;
-        if (classQName == name || opp_stringendswith(classQName.c_str(), doubleColonPlusName.c_str()))
-            ret.push_back(classQName);
-    }
-    return ret;
-}
 
 MsgTypeTable::StringVector MsgTypeTable::lookupExistingEnumName(const std::string& name, const std::string& contextNamespace)
 {
