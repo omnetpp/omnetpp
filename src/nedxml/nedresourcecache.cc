@@ -26,10 +26,10 @@
 
 #include "errorstore.h"
 #include "nedparser.h"
-#include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
+#include "xmlastparser.h"
 
 using namespace omnetpp::common;
 

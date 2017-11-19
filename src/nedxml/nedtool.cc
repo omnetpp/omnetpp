@@ -35,7 +35,6 @@
 #include "msgcompilerold.h"
 #include "nedparser.h"
 #include "nedexception.h"
-#include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
@@ -43,6 +42,7 @@
 #include "ned1generator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
+#include "xmlastparser.h"
 
 using namespace omnetpp::common;
 

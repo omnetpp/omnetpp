@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDXMLPARSER.H - part of
+//  XMLASTPARSER.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,26 +14,28 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
-#ifndef __OMNETPP_NEDXML_NEDXMLPARSER_H
-#define __OMNETPP_NEDXML_NEDXMLPARSER_H
-
+#include "saxparser.h"
+#include "nedsaxhandler.h"
 #include "errorstore.h"
-#include "astnode.h"
+#include "xmlastparser.h"
 
 namespace omnetpp {
 namespace nedxml {
 
-/**
- * @brief Simple front-end to NED XML parsing: invokes SAXParser with NEDSAXHandler.
- *
- * @ingroup XMLParser
- */
-NEDXML_API ASTNode *parseXML(const char *filename, ErrorStore *errors);
+ASTNode *parseXML(const char *filename, ErrorStore *errors)
+{
+    NEDSAXHandler sh(filename, errors);
+    SAXParser parser;
 
-} // namespace nedxml
+    parser.setHandler(&sh);
+    bool ok = parser.parse(filename);
+    if (!ok) {
+        errors->addError("", "error reading '%s': %s", filename, parser.getErrorMessage());
+        return nullptr;
+    }
+    return sh.getTree();
+}
+
+}  // namespace nedxml
 }  // namespace omnetpp
-
-
-#endif
 
