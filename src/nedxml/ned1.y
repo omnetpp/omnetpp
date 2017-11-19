@@ -125,12 +125,13 @@ void yyerror (const char *s);
 #include "sourcedocument.h"
 #include "nedelements.h"
 #include "nedutil.h"
-#include "yyutil.h"
+#include "nedyyutil.h"
 
 using namespace omnetpp;
 
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
+using namespace omnetpp::nedxml::nedyyutil;
 
 static struct NED1ParserState
 {
@@ -225,7 +226,7 @@ filenames
 filename
         : STRINGCONSTANT
                 {
-                  ps.import = (ImportElement *)createElementWithTag(NED_IMPORT, ps.nedfile );
+                  ps.import = (ImportElement *)createNedElementWithTag(NED_IMPORT, ps.nedfile );
                   ps.import->setImportSpec(toString(trimQuotes(@1)));
                   storeBannerAndRightComments(ps.import,@1);
                   storePos(ps.import, @$);
@@ -246,11 +247,11 @@ channeldefinition
 channelheader
         : CHANNEL NAME
                 {
-                  ps.channel = (ChannelElement *)createElementWithTag(NED_CHANNEL, ps.nedfile);
+                  ps.channel = (ChannelElement *)createNedElementWithTag(NED_CHANNEL, ps.nedfile);
                   ps.channel->setName(toString(@2));
-                  ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.channel);
+                  ps.extends = (ExtendsElement *)createNedElementWithTag(NED_EXTENDS, ps.channel);
                   ps.extends->setName("ned.DatarateChannel");  // NED-1 channels are implicitly DatarateChannels
-                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.channel);
+                  ps.params = (ParametersElement *)createNedElementWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
                   storeBannerAndRightComments(ps.channel,@1,@2);
                 }
@@ -307,7 +308,7 @@ simpledefinition
 simpleheader
         : SIMPLE NAME
                 {
-                  ps.module = (SimpleModuleElement *)createElementWithTag(NED_SIMPLE_MODULE, ps.nedfile );
+                  ps.module = (SimpleModuleElement *)createNedElementWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleElement *)ps.module)->setName(toString(@2));
                   storeBannerAndRightComments(ps.module,@1,@2);
                 }
@@ -338,7 +339,7 @@ moduledefinition
 moduleheader
         : MODULE NAME
                 {
-                  ps.module = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ps.module = (CompoundModuleElement *)createNedElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleElement *)ps.module)->setName(toString(@2));
                   storeBannerAndRightComments(ps.module,@1,@2);
                 }
@@ -362,8 +363,8 @@ displayblock
                 {
                   ps.property = addComponentProperty(ps.module, "display");
                   ps.params = (ParametersElement *)ps.module->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
-                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralElement *literal = (LiteralElement *)createElementWithTag(NED_LITERAL);
+                  ps.propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralElement *literal = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeBackgroundDisplayString(opp_parsequotedstr(toString(@3)).c_str());
@@ -392,7 +393,7 @@ opt_paramblock
 paramblock
         : PARAMETERS ':'
                 {
-                  ps.params = (ParametersElement *)getOrCreateElementWithTag(NED_PARAMETERS, ps.module); // network header may have created it for @isNetwork
+                  ps.params = (ParametersElement *)getOrCreateNedElementWithTag(NED_PARAMETERS, ps.module); // network header may have created it for @isNetwork
                   storeBannerAndRightComments(ps.params,@1,@2);
                 }
           opt_parameters
@@ -488,7 +489,7 @@ opt_gateblock
 gateblock
         : GATES ':'
                 {
-                  ps.gates = (GatesElement *)createElementWithTag(NED_GATES, ps.module );
+                  ps.gates = (GatesElement *)createNedElementWithTag(NED_GATES, ps.module );
                   storeBannerAndRightComments(ps.gates,@1,@2);
                 }
           opt_gates
@@ -566,7 +567,7 @@ opt_submodblock
 submodblock
         : SUBMODULES ':'
                 {
-                  ps.submods = (SubmodulesElement *)createElementWithTag(NED_SUBMODULES, ps.module );
+                  ps.submods = (SubmodulesElement *)createNedElementWithTag(NED_SUBMODULES, ps.module );
                   storeBannerAndRightComments(ps.submods,@1,@2);
                 }
           opt_submodules
@@ -588,7 +589,7 @@ submodules
 submodule
         : NAME ':' NAME opt_semicolon
                 {
-                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createNedElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
                   storeBannerAndRightComments(ps.submod,@1,@4);
@@ -599,7 +600,7 @@ submodule
                 }
         | NAME ':' NAME vector opt_semicolon
                 {
-                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createNedElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
                   addExpression(ps.submod, "vector-size",ps.exprPos,$4);
@@ -611,7 +612,7 @@ submodule
                 }
         | NAME ':' NAME LIKE NAME opt_semicolon
                 {
-                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createNedElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@5));
                   ps.submod->setLikeExpr(toString(@3)); //TODO store as expression
@@ -623,7 +624,7 @@ submodule
                 }
         | NAME ':' NAME vector LIKE NAME opt_semicolon
                 {
-                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createNedElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@6));
                   ps.submod->setLikeExpr(toString(@3)); //TODO store as expression
@@ -711,7 +712,7 @@ inputvalue
                   addExpression(ps.substparam, "value",@2,$2);
 
                   PropertyElement *prop = addProperty(ps.substparam, "prompt");
-                  PropertyKeyElement *propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, prop);
+                  PropertyKeyElement *propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, prop);
                   propkey->appendChild(createStringLiteral(@4));
                 }
         | '(' expression ')'
@@ -784,8 +785,8 @@ opt_submod_displayblock
                 {
                   ps.property = addComponentProperty(ps.submod, "display");
                   ps.substparams = (ParametersElement *)ps.submod->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
-                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralElement *literal = (LiteralElement *)createElementWithTag(NED_LITERAL);
+                  ps.propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralElement *literal = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeSubmoduleDisplayString(opp_parsequotedstr(toString(@3)).c_str());
@@ -815,7 +816,7 @@ opt_connblock
 connblock
         : CONNECTIONS NOCHECK ':'
                 {
-                  ps.conns = (ConnectionsElement *)createElementWithTag(NED_CONNECTIONS, ps.module );
+                  ps.conns = (ConnectionsElement *)createNedElementWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(true);
                   storeBannerAndRightComments(ps.conns,@1,@3);
                 }
@@ -825,7 +826,7 @@ connblock
                 }
         | CONNECTIONS ':'
                 {
-                  ps.conns = (ConnectionsElement *)createElementWithTag(NED_CONNECTIONS, ps.module );
+                  ps.conns = (ConnectionsElement *)createNedElementWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(false);
                   storeBannerAndRightComments(ps.conns,@1,@2);
                 }
@@ -853,7 +854,7 @@ connection
 loopconnection
         : FOR
                 {
-                  ps.conngroup = (ConnectionGroupElement *)createElementWithTag(NED_CONNECTION_GROUP, ps.conns);
+                  ps.conngroup = (ConnectionGroupElement *)createNedElementWithTag(NED_CONNECTION_GROUP, ps.conns);
                   ps.inLoop=1;
                 }
           loopvarlist DO notloopconnections ENDFOR opt_semicolon
@@ -873,7 +874,7 @@ loopvarlist
 loopvar
         : NAME '=' expression TO expression
                 {
-                  ps.loop = (LoopElement *)createElementWithTag(NED_LOOP, ps.conngroup);
+                  ps.loop = (LoopElement *)createNedElementWithTag(NED_LOOP, ps.conngroup);
                   ps.loop->setParamName( toString(@1) );
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
@@ -885,7 +886,7 @@ opt_conncondition
         : IF expression
                 {
                   // add condition to conn
-                  ps.condition = (ConditionElement *)createElementWithTag(NED_CONDITION, ps.conn);
+                  ps.condition = (ConditionElement *)createNedElementWithTag(NED_CONDITION, ps.conn);
                   addExpression(ps.condition, "condition",@2,$2);
                   storePos(ps.condition, @$);
                 }
@@ -896,8 +897,8 @@ opt_conn_displaystr
         : DISPLAY STRINGCONSTANT
                 {
                   ps.property = addComponentProperty(ps.conn, "display");
-                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralElement *literal = (LiteralElement *)createElementWithTag(NED_LITERAL);
+                  ps.propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralElement *literal = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeConnectionDisplayString(opp_parsequotedstr(toString(@2)).c_str());
@@ -963,16 +964,16 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
-                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.conn = (ConnectionElement *)createNedElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
+                  ps.params = (ParametersElement *)createNedElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule( toString(@1) );
                   addExpression(ps.conn, "src-module-index",ps.exprPos,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
-                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.conn = (ConnectionElement *)createNedElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
+                  ps.params = (ParametersElement *)createNedElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule( toString(@1) );
                 }
@@ -998,8 +999,8 @@ leftgate
 parentleftgate
         : NAME vector
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
-                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.conn = (ConnectionElement *)createNedElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
+                  ps.params = (ParametersElement *)createNedElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
@@ -1007,16 +1008,16 @@ parentleftgate
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
-                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.conn = (ConnectionElement *)createNedElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
+                  ps.params = (ParametersElement *)createNedElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                 }
         | NAME PLUSPLUS
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
-                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.conn = (ConnectionElement *)createNedElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
+                  ps.params = (ParametersElement *)createNedElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
@@ -1118,9 +1119,9 @@ networkdefinition
 networkheader
         : NETWORK NAME ':' NAME opt_semicolon
                 {
-                  ps.module = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ps.module = (CompoundModuleElement *)createNedElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleElement *)ps.module)->setName(toString(@2));
-                  ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.module);
+                  ps.extends = (ExtendsElement *)createNedElementWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString(@4));
                   storeBannerAndRightComments(ps.module,@1,@5);
                   storePos(ps.extends, @4);
@@ -1360,7 +1361,7 @@ ASTNode *doParseNED1(NEDParser *p, const char *nedtext)
     if (!handle)
         {np->getErrors()->addError("", "unable to allocate work memory"); return nullptr;}
 
-    // create parser state and NEDFileElement
+    // create parser state and NedFileElement
     resetParserState();
     ps.nedfile = new NedFileElement();
 
@@ -1409,7 +1410,7 @@ void createSubstparamsElementIfNotExists()
    ASTNode *parent = ps.inNetwork ? (ASTNode *)ps.module : (ASTNode *)ps.submod;
    ps.substparams = (ParametersElement *)parent->getFirstChildWithTag(NED_PARAMETERS);
    if (!ps.substparams)
-       ps.substparams = (ParametersElement *)createElementWithTag(NED_PARAMETERS, parent);
+       ps.substparams = (ParametersElement *)createNedElementWithTag(NED_PARAMETERS, parent);
 }
 
 void createGatesizesElementIfNotExists()
@@ -1417,7 +1418,7 @@ void createGatesizesElementIfNotExists()
    // check if already exists (multiple blocks must be merged)
    ps.gatesizes = (GatesElement *)ps.submod->getFirstChildWithTag(NED_GATES);
    if (!ps.gatesizes)
-       ps.gatesizes = (GatesElement *)createElementWithTag(NED_GATES, ps.submod);
+       ps.gatesizes = (GatesElement *)createNedElementWithTag(NED_GATES, ps.submod);
 }
 
 void removeRedundantConnectionParams()

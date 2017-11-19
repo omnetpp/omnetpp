@@ -46,7 +46,7 @@ std::string cDynamicModuleType::str() const
 
 std::string cDynamicModuleType::getNedSource() const
 {
-    return getDecl()->getNedSource();
+    return getDecl()->getNEDSource();
 }
 
 bool cDynamicModuleType::isNetwork() const

@@ -1,5 +1,5 @@
 //==========================================================================
-// neddtdvalidatorbase.h -
+// dtdvalidationutils.h -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -15,32 +15,36 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __OMNETPP_NEDXML_NEDDTDVALIDATORBASE_H
-#define __OMNETPP_NEDXML_NEDDTDVALIDATORBASE_H
+#ifndef __OMNETPP_NEDXML_DTDVALIDATIONUTILS_H
+#define __OMNETPP_NEDXML_DTDVALIDATIONUTILS_H
 
-#include "nedvalidator.h"
+#include "nedxmldefs.h"
 
 namespace omnetpp {
 namespace nedxml {
 
+class ASTNode;
+class ErrorStore;
+
 /**
- * Adds utility methods for DTD validation to NEDValidatorBase.
+ * Utility functions for DTD validation.
  *
  * @ingroup Validation
  */
-class NEDXML_API NEDDTDValidatorBase : public NEDValidatorBase
+class NEDXML_API DTDValidationUtils
 {
   protected:
+    ErrorStore *errors;
+    void tryCheckChoice(ASTNode *node, ASTNode *&curchild, int tags[], char mult);
+
+  public:
     struct Choice {
         int tags[20]; // array terminated by NED_NULL (increase size if needed)
         char mult;
     };
 
-    // helper function
-    void tryCheckChoice(ASTNode *node, ASTNode *&curchild, int tags[], char mult);
-
-    /** @name Utility functions */
-    //@{
+  public:
+    DTDValidationUtils(ErrorStore *e) : errors(e) {}
     void checkSequence(ASTNode *node, int tags[], char mult[]);
     void checkChoice(ASTNode *node, int tags[], char mult);
     void checkSeqOfChoices(ASTNode *node, Choice choices[], int n);
@@ -49,9 +53,6 @@ class NEDXML_API NEDDTDValidatorBase : public NEDValidatorBase
     void checkEnumeratedAttribute(ASTNode *node, const char *attr, const char *vals[], int n);
     void checkNameAttribute(ASTNode *node, const char *attr);
     void checkCommentAttribute(ASTNode *node, const char *attr);
-    //@}
-  public:
-    NEDDTDValidatorBase(ErrorStore *e) : NEDValidatorBase(e) {}
 };
 
 } // namespace nedxml

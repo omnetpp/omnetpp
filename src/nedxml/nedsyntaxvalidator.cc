@@ -34,7 +34,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-
 static struct { const char *fname; int args; } known_funcs[] =
 {
    /* <math.h> */
@@ -592,92 +591,6 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
         // string: no restriction on value
         // TBD check that if text is present, it's a quoted version of the value
     }
-}
-
-void NEDSyntaxValidator::validateElement(MsgFileElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(NamespaceElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(CplusplusElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(StructDeclElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(ClassDeclElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(MessageDeclElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(PacketDeclElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(EnumDeclElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(EnumElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(EnumFieldsElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(EnumFieldElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(MessageElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(PacketElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(ClassElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(StructElement *node)
-{
-}
-
-void NEDSyntaxValidator::validateElement(FieldElement *node)
-{
-    ASTNode *classNode = node->getParent()->getParent();
-    bool isStruct = !strcmp(classNode->getTagName(), "struct");
-
-    if (node->getIsAbstract() && isStruct)
-        errors->addError(node, "A struct cannot have abstract fields");
-
-    if (node->getIsAbstract() && !opp_isempty(node->getDefaultValue()))
-        errors->addError(node, "An abstract field cannot be assigned a default value");
-
-    if (node->getIsVector() && opp_isempty(node->getVectorSize()) && isStruct)
-        errors->addError(node, "A struct cannot have dynamic array fields");
-
-    if (opp_isempty(node->getDataType())) {  // type is missing
-        if (node->getIsAbstract())
-            errors->addError(node, "An abstract field needs a type");
-        if (node->getIsVector())
-            errors->addError(node, "Cannot set array field of the base class");
-        if (opp_isempty(node->getDefaultValue()))
-            errors->addError(node, "Missing field type");
-    }
-
-    // TBD check syntax of default value, and that its type agrees with field type
 }
 
 void NEDSyntaxValidator::validateElement(UnknownElement *node)

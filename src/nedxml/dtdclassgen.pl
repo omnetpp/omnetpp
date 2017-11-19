@@ -12,10 +12,13 @@
 # [ \t\n]   --> \s
 # [^ \t\n]  --> [^\s]
 #
-$verbose=0;
+$verbose = 0;
 
 $filename = $ARGV[0];
-$filename =~ /./ || die "*** no file name given\n";
+$filename || die "*** missing <filename> argument\n";
+
+$lang = $ARGV[1];
+($lang eq 'msg' || $lang eq 'ned') || die "*** missing or invalid <language> argument, must be 'ned' or 'msg'\n";
 
 $buf="";
 open(IN,$filename) || die "*** cannot open input file $filename";
@@ -27,18 +30,25 @@ $buf =~ s/<!--.*?-->//sg;
 
 close(IN);
 
-$hfile = "nedelements.h";
-$ccfile = "nedelements.cc";
-$validatorhfile = "nedvalidator.h";
-$validatorccfile = "nedvalidator.cc";
-$dtdvalidatorbasehfile = "neddtdvalidatorbase.h";
-$dtdvalidatorhfile = "neddtdvalidator.h";
-$dtdvalidatorccfile = "neddtdvalidator.cc";
+$ned = $lang;
+$Ned = uc($lang); #TODO: ucfirst($lang);
+$NED = uc($lang);
 
-$copyright = '//==========================================================================
+$shortfilename = $filename;
+$shortfilename =~ s!.*/!!;
+
+$hfile = "${ned}elements.h";
+$ccfile = "${ned}elements.cc";
+$validatorhfile = "${ned}validator.h";
+$validatorccfile = "${ned}validator.cc";
+$dtdvalidatorbasehfile = "${ned}dtdvalidatorbase.h";
+$dtdvalidatorhfile = "${ned}dtdvalidator.h";
+$dtdvalidatorccfile = "${ned}dtdvalidator.cc";
+
+$copyright = "//==========================================================================
 // Part of the OMNeT++/OMNEST Discrete Event Simulation System
 //
-// Generated from ned.dtd by dtdclassgen.pl
+// Generated from $shortfilename by dtdclassgen.pl
 //
 //==========================================================================
 
@@ -53,7 +63,7 @@ $copyright = '//================================================================
 // THIS IS A GENERATED FILE, DO NOT EDIT!
 //
 
-';
+";
 
 $elements = ();
 
@@ -223,9 +233,10 @@ open(H,">$hfile") || die "*** cannot open output file $hfile";
 open(CC,">$ccfile") || die "*** cannot open output file $ccfile";
 
 print H "$copyright\n";
-print H "#ifndef __OMNETPP_NEDXML_NEDELEMENTS_H\n";
-print H "#define __OMNETPP_NEDXML_NEDELEMENTS_H\n\n";
+print H "#ifndef __OMNETPP_NEDXML_${NED}ELEMENTS_H\n";
+print H "#define __OMNETPP_NEDXML_${NED}ELEMENTS_H\n\n";
 print H "#include \"astnode.h\"\n\n";
+print H "#include \"nedelements.h\"\n" if ($ned ne "ned");
 print H "namespace omnetpp {\n";
 print H "namespace nedxml {\n\n";
 
@@ -250,44 +261,48 @@ print H " * Tag codes\n";
 print H " *\n";
 print H " * \@ingroup Data\n";
 print H " */\n";
-print H "enum ASTNodeCode {\n";
-print H "    NED_NULL = 0,  // 0 is reserved\n";
+print H "enum ${Ned}TagCode {\n";
+print H "    NED_NULL = 0,  // 0 is reserved\n" if ($ned eq 'ned');
+print H "    dummy = 100,\n" if ($ned eq 'msg');
 foreach $element (@elements)
 {
+    next if ($ned eq 'msg' && ($element eq 'files' || $element eq 'package' || $element eq 'comment' || $element eq 'property' || $element eq 'property-key' || $element eq 'literal' || $element eq 'import' || $element eq 'unknown'));
     print H "    $enumname{$element}";
     print H "," unless ($element eq $elements[$#elements]);
     print H "\n";
 }
 print H "};\n\n";
 
-print H "// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default\n";
-print H "enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
-print H "enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
-print H "enum {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
-print H "enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
+if ($ned eq "ned") {
+    print H "// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default\n";
+    print H "enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
+    print H "enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
+    print H "enum {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
+    print H "enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
+    print H "\n";
 
-print H "\n";
-
-print CC "static const char *gatetype_vals[] = {\"\", \"input\", \"output\", \"inout\"};\n";
-print CC "static int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
-print CC "static const int gatetype_n = 4;\n";
-print CC "\n";
-print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
-print CC "static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
-print CC "static const int partype_n = 6;\n";
-print CC "\n";
-print CC "static const char *littype_vals[] = {\"double\", \"quantity\", \"int\", \"string\", \"bool\", \"spec\"};\n";
-print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
-print CC "static const int littype_n = 6;\n";
-print CC "\n";
-print CC "static const char *subgate_vals[] = {\"\", \"i\", \"o\"};\n";
-print CC "static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
-print CC "static const int subgate_n = 3;\n";
-print CC "\n";
-
+    print CC "static const char *gatetype_vals[] = {\"\", \"input\", \"output\", \"inout\"};\n";
+    print CC "static int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
+    print CC "static const int gatetype_n = 4;\n";
+    print CC "\n";
+    print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
+    print CC "static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
+    print CC "static const int partype_n = 6;\n";
+    print CC "\n";
+    print CC "static const char *littype_vals[] = {\"double\", \"quantity\", \"int\", \"string\", \"bool\", \"spec\"};\n";
+    print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
+    print CC "static const int littype_n = 6;\n";
+    print CC "\n";
+    print CC "static const char *subgate_vals[] = {\"\", \"i\", \"o\"};\n";
+    print CC "static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
+    print CC "static const int subgate_n = 3;\n";
+    print CC "\n";
+}
 
 foreach $element (@elements)
 {
+    next if ($ned eq 'msg' && ($element eq 'files' || $element eq 'package' || $element eq 'comment' || $element eq 'property' || $element eq 'property-key' || $element eq 'literal' || $element eq 'import' || $element eq 'unknown'));
+
     $elementclass = $elementclass{$element};
     $shortelementclass = $shortelementclass{$element};
 
@@ -509,36 +524,21 @@ foreach $element (@elements)
 # Factory class
 #
 print H "/**\n";
-print H " * @brief GENERATED CLASS. Factory for ASTNode subclasses.\n";
+print H " * @brief GENERATED CLASS. Factory for ${NED} ASTNode subclasses.\n";
 print H " *\n";
 print H " * \@ingroup Data\n";
 print H " */\n";
-print H "class NEDXML_API ASTNodeFactory\n";
+print H "class NEDXML_API ${Ned}AstNodeFactory : public ASTNodeFactory\n";
 print H "{\n";
-print H "  private:\n";
-print H "    static ASTNodeFactory *f;\n";
-print H "    // ctor is private, because only one instance is allowed\n";
-print H "    ASTNodeFactory() {}\n";
 print H "  public:\n";
-print H "    /** Destructor */\n";
-print H "    virtual ~ASTNodeFactory() {}\n";
-print H "    /** Returns factory instance */\n";
-print H "    static ASTNodeFactory *getInstance();\n";
-print H "    /** Creates ASTNode subclass which corresponds to tagname */\n";
 print H "    virtual ASTNode *createElementWithTag(const char *tagname);\n";
-print H "    /** Creates ASTNode subclass which corresponds to tagcode */\n";
 print H "    virtual ASTNode *createElementWithTag(int tagcode);\n";
-print H "};\n\n} // namespace nedxml\n";
-print H "}  // namespace omnetpp\n\n";
+print H "};\n\n";
+print H "} // namespace nedxml\n";
+print H "} // namespace omnetpp\n\n";
 print H "#endif\n\n";
 
-print CC "ASTNodeFactory *ASTNodeFactory::f;\n\n";
-print CC "ASTNodeFactory *ASTNodeFactory::getInstance()\n";
-print CC "{\n";
-print CC "    if (!f) f=new ASTNodeFactory();\n";
-print CC "    return f;\n";
-print CC "}\n\n";
-print CC "ASTNode *ASTNodeFactory::createElementWithTag(const char *tagname)\n";
+print CC "ASTNode *${Ned}AstNodeFactory::createElementWithTag(const char *tagname)\n";
 print CC "{\n";
 foreach $element (@elements)
 {
@@ -548,7 +548,7 @@ foreach $element (@elements)
 }
 print CC "    throw NEDException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
 print CC "}\n\n";
-print CC "ASTNode *ASTNodeFactory::createElementWithTag(int tagcode)\n";
+print CC "ASTNode *${Ned}AstNodeFactory::createElementWithTag(int tagcode)\n";
 print CC "{\n";
 print CC "    switch (tagcode) {\n";
 foreach $element (@elements)
@@ -559,8 +559,9 @@ foreach $element (@elements)
 }
 print CC "    }\n";
 print CC "    throw NEDException(\"unknown tag code %d, cannot create object to represent it\", tagcode);\n";
-print CC "}\n\n} // namespace nedxml\n";
-print CC "}  // namespace omnetpp\n\n";
+print CC "}\n\n";
+print CC "} // namespace nedxml\n";
+print CC "} // namespace omnetpp\n\n";
 
 
 #-------------------------------------------------------------------------------------
@@ -571,11 +572,11 @@ open(VAL_H,">$validatorhfile") || die "*** cannot open output file $validatorhfi
 open(VAL_CC,">$validatorccfile") || die "*** cannot open output file $validatorccfile";
 
 print VAL_H "$copyright\n";
-print VAL_H "#ifndef __OMNETPP_NEDXML_NEDVALIDATOR_H\n";
-print VAL_H "#define __OMNETPP_NEDXML_NEDVALIDATOR_H\n\n";
+print VAL_H "#ifndef __OMNETPP_NEDXML_${NED}VALIDATOR_H\n";
+print VAL_H "#define __OMNETPP_NEDXML_${NED}VALIDATOR_H\n\n";
 print VAL_H "#include \"errorstore.h\"\n";
 print VAL_H "#include \"nedexception.h\"\n";
-print VAL_H "#include \"nedelements.h\"\n\n";
+print VAL_H "#include \"${ned}elements.h\"\n\n";
 print VAL_H "namespace omnetpp {\n";
 print VAL_H "namespace nedxml {\n\n";
 
@@ -585,22 +586,22 @@ print VAL_CC "#include \"errorstore.h\"\n";
 print VAL_CC "#include \"nedexception.h\"\n";
 print VAL_CC "#include \"$validatorhfile\"\n\n";
 print VAL_CC "namespace omnetpp {\n";
-print VAL_CC "namespace nedxml {\n\n";
+print VAL_CC "namespace nedxml {\n";
 
 print VAL_H "/**\n";
-print VAL_H " * @brief GENERATED CLASS. Abtract base class for NED validators.\n";
+print VAL_H " * @brief GENERATED CLASS. Abtract base class for ${NED} validators.\n";
 print VAL_H " *\n";
 print VAL_H " * \@ingroup Validation\n";
 print VAL_H " */\n";
-print VAL_H "class NEDXML_API NEDValidatorBase\n";
+print VAL_H "class NEDXML_API ${Ned}ValidatorBase\n";
 print VAL_H "{\n";
 print VAL_H "  protected:\n";
 print VAL_H "    ErrorStore *errors;\n";
 print VAL_H "  public:\n";
 print VAL_H "    /** \@name Constructor, destructor */\n";
 print VAL_H "    //\@{\n";
-print VAL_H "    NEDValidatorBase(ErrorStore *e) {errors = e;}\n";
-print VAL_H "    virtual ~NEDValidatorBase() {}\n";
+print VAL_H "    ${Ned}ValidatorBase(ErrorStore *e) {errors = e;}\n";
+print VAL_H "    virtual ~${Ned}ValidatorBase() {}\n";
 print VAL_H "    //\@}\n\n";
 print VAL_H "    /** Validates the node recursively */\n";
 print VAL_H "    virtual void validate(ASTNode *node);\n";
@@ -615,18 +616,19 @@ foreach $element (@elements)
     print VAL_H "    virtual void validateElement($elementclass{$element} *node) = 0;\n";
 }
 print VAL_H "    //\@}\n";
-print VAL_H "};\n\n} // namespace nedxml\n";
-print VAL_H "}  // namespace omnetpp\n\n";
+print VAL_H "};\n\n";
+print VAL_H "} // namespace nedxml\n";
+print VAL_H "} // namespace omnetpp\n\n";
 print VAL_H "#endif\n\n";
 
-print VAL_CC "void  NEDValidatorBase::validate(ASTNode *node)\n";
+print VAL_CC "void  ${Ned}ValidatorBase::validate(ASTNode *node)\n";
 print VAL_CC "{\n";
 print VAL_CC "    validateElement(node);\n";
 print VAL_CC "    for (ASTNode *child=node->getFirstChild(); child; child=child->getNextSibling())\n";
 print VAL_CC "        validate(child);\n";
 print VAL_CC "}\n\n";
 
-print VAL_CC "void  NEDValidatorBase::validateElement(ASTNode *node)\n";
+print VAL_CC "void  ${Ned}ValidatorBase::validateElement(ASTNode *node)\n";
 print VAL_CC "{\n";
 print VAL_CC "    try {\n";
 print VAL_CC "        switch (node->getTagCode()) {\n";
@@ -643,8 +645,9 @@ print VAL_CC "    catch (NEDException& e)\n";
 print VAL_CC "    {\n";
 print VAL_CC "        INTERNAL_ERROR1(node,\"validateElement(): NEDException: %s\", e.what());\n";
 print VAL_CC "    }\n";
-print VAL_CC "}\n\n} // namespace nedxml\n";
-print VAL_CC "}  // namespace omnetpp\n\n";
+print VAL_CC "}\n\n";
+print VAL_CC "} // namespace nedxml\n";
+print VAL_CC "} // namespace omnetpp\n\n";
 
 
 #-------------------------------------------------------------------------------------
@@ -655,10 +658,11 @@ open(DTDVAL_H,">$dtdvalidatorhfile") || die "*** cannot open output file $dtdval
 open(DTDVAL_CC,">$dtdvalidatorccfile") || die "*** cannot open output file $dtdvalidatorccfile";
 
 print DTDVAL_H "$copyright\n";
-print DTDVAL_H "#ifndef __OMNETPP_NEDXML_DTDVALIDATOR_H\n";
-print DTDVAL_H "#define __OMNETPP_NEDXML_DTDVALIDATOR_H\n\n";
-print DTDVAL_H "#include \"nedelements.h\"\n";
-print DTDVAL_H "#include \"$dtdvalidatorbasehfile\"\n\n";
+print DTDVAL_H "#ifndef __OMNETPP_NEDXML_${NED}DTDVALIDATOR_H\n";
+print DTDVAL_H "#define __OMNETPP_NEDXML_${NED}DTDVALIDATOR_H\n\n";
+print DTDVAL_H "#include \"${ned}elements.h\"\n";
+print DTDVAL_H "#include \"${ned}validator.h\"\n";
+print DTDVAL_H "#include \"dtdvalidationutils.h\"\n\n";
 print DTDVAL_H "namespace omnetpp {\n";
 print DTDVAL_H "namespace nedxml {\n\n";
 
@@ -674,11 +678,14 @@ print DTDVAL_H " * @brief GENERATED CLASS. Validates an ASTNode tree by the DTD.
 print DTDVAL_H " *\n";
 print DTDVAL_H " * \@ingroup Validation\n";
 print DTDVAL_H " */\n";
-print DTDVAL_H "class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase\n";
+print DTDVAL_H "class NEDXML_API ${Ned}DTDValidator : public ${Ned}ValidatorBase\n";
 print DTDVAL_H "{\n";
+print DTDVAL_H "  protected:\n";
+print DTDVAL_H "      typedef DTDValidationUtils::Choice Choice;\n";
+print DTDVAL_H "      DTDValidationUtils utils;\n";
 print DTDVAL_H "  public:\n";
-print DTDVAL_H "    NEDDTDValidator(ErrorStore *e) : NEDDTDValidatorBase(e) {}\n";
-print DTDVAL_H "    virtual ~NEDDTDValidator() {}\n";
+print DTDVAL_H "    ${Ned}DTDValidator(ErrorStore *e) : ${Ned}ValidatorBase(e), utils(e) {}\n";
+print DTDVAL_H "    virtual ~${Ned}DTDValidator() {}\n";
 print DTDVAL_H "\n";
 print DTDVAL_H "  protected:\n";
 print DTDVAL_H "    /** \@name Validation functions */\n";
@@ -688,13 +695,14 @@ foreach $element (@elements)
     print DTDVAL_H "    virtual void validateElement($elementclass{$element} *node) override;\n";
 }
 print DTDVAL_H "    //\@}\n";
-print DTDVAL_H "};\n\n} // namespace nedxml\n";
-print DTDVAL_H "}  // namespace omnetpp\n\n";
+print DTDVAL_H "};\n\n";
+print DTDVAL_H "} // namespace nedxml\n";
+print DTDVAL_H "} // namespace omnetpp\n\n";
 print DTDVAL_H "#endif\n\n";
 
 foreach $element (@elements)
 {
-    print DTDVAL_CC "void NEDDTDValidator\:\:validateElement($elementclass{$element} *node)\n";
+    print DTDVAL_CC "void ${Ned}DTDValidator\:\:validateElement($elementclass{$element} *node)\n";
     print DTDVAL_CC "{\n";
     if ($elementdef{$element} =~ /^\(([^|]*)\)$/) {  # in parens, does not contain "|"
        @a = split(',',$1);
@@ -708,7 +716,7 @@ foreach $element (@elements)
        }
        print DTDVAL_CC "    int tags[] = {$tags NED_NULL};\n";
        print DTDVAL_CC "    char mult[] = {$mult 0};\n";
-       print DTDVAL_CC "    checkSequence(node, tags, mult);\n";
+       print DTDVAL_CC "    utils.checkSequence(node, tags, mult);\n";
     }
     elsif ($elementdef{$element} =~ /^\(\(([^,]*)\)([*?+]?)\)$/) { # like ((a|b|c)*)
        @a = split('\|',$1);
@@ -719,7 +727,7 @@ foreach $element (@elements)
           $tags .= $enumname{$e}.",";
        }
        print DTDVAL_CC "    int tags[] = {$tags NED_NULL};\n";
-       print DTDVAL_CC "    checkChoice(node, tags, \'$mult\');\n";
+       print DTDVAL_CC "    utils.checkChoice(node, tags, \'$mult\');\n";
     }
     elsif ($elementdef{$element} =~ /^\((.*)\)$/) {  # fallback: in parens
        print DTDVAL_CC "    Choice choices[] = {\n";
@@ -753,10 +761,10 @@ foreach $element (@elements)
           }
        }
        print DTDVAL_CC "    };\n";
-       print DTDVAL_CC "    checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));\n";
+       print DTDVAL_CC "    utils.checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));\n";
     }
     elsif ($elementdef{$element} eq 'EMPTY') {
-       print DTDVAL_CC "    checkEmpty(node);\n";
+       print DTDVAL_CC "    utils.checkEmpty(node);\n";
     }
     elsif ($elementdef{$element} eq 'ANY') {
        print DTDVAL_CC "    // ANY\n";
@@ -779,7 +787,7 @@ foreach $element (@elements)
         $atttype = $atttypes[$i];
 
         if ($attval eq "#REQUIRED") {
-            print DTDVAL_CC "    checkRequiredAttribute(node, \"$attname\");\n";
+            print DTDVAL_CC "    utils.checkRequiredAttribute(node, \"$attname\");\n";
         }
 
         if ($atttype =~ /^\((.*)\)$/) {
@@ -793,18 +801,18 @@ foreach $element (@elements)
                $vals .= ",\"\"";
             }
             print DTDVAL_CC "    const char *vals${i}[] = {$vals};\n";
-            print DTDVAL_CC "    checkEnumeratedAttribute(node, \"$attname\", vals$i, sizeof(vals$i)/sizeof(const char *));\n";
+            print DTDVAL_CC "    utils.checkEnumeratedAttribute(node, \"$attname\", vals$i, sizeof(vals$i)/sizeof(const char *));\n";
         }
         elsif ($attname eq "comment" || $attname =~ /-comment$/) {
-            print DTDVAL_CC "    checkCommentAttribute(node, \"$attname\");\n";
+            print DTDVAL_CC "    utils.checkCommentAttribute(node, \"$attname\");\n";
         }
         elsif ($atttype eq "NMTOKEN") {
-            print DTDVAL_CC "    checkNameAttribute(node, \"$attname\");\n";
+            print DTDVAL_CC "    utils.checkNameAttribute(node, \"$attname\");\n";
         }
     }
     print DTDVAL_CC "}\n\n";
 }
 
 print DTDVAL_CC "} // namespace nedxml\n";
-print DTDVAL_CC "}  // namespace omnetpp\n\n";
+print DTDVAL_CC "} // namespace omnetpp\n\n";
 

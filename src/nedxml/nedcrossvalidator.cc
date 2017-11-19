@@ -72,16 +72,6 @@ ASTNode *NEDCrossValidator::getChannelInterfaceDeclaration(const char *name)
     return getXXXDeclaration(name, NED_CHANNEL_INTERFACE);
 }
 
-ASTNode *NEDCrossValidator::getEnumDeclaration(const char *name)
-{
-    return getXXXDeclaration(name, NED_ENUM);
-}
-
-ASTNode *NEDCrossValidator::getClassDeclaration(const char *name)
-{
-    return getXXXDeclaration(name, NED_CLASS);
-}
-
 void NEDCrossValidator::validateElement(FilesElement *node)
 {
 }
@@ -346,95 +336,6 @@ void NEDCrossValidator::validateElement(IdentElement *node)
 }
 
 void NEDCrossValidator::validateElement(LiteralElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(MsgFileElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(NamespaceElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(CplusplusElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(StructDeclElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(ClassDeclElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(MessageDeclElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(PacketDeclElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(EnumDeclElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(EnumElement *node)
-{
-    // check extends-name
-    const char *baseName = node->getExtendsName();
-    ASTNode *base = getEnumDeclaration(baseName);
-    if (!base)
-        errors->addError(node, "unknown base enum type '%s'", baseName);
-}
-
-void NEDCrossValidator::validateElement(EnumFieldsElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(EnumFieldElement *node)
-{
-}
-
-void NEDCrossValidator::validateElement(MessageElement *node)
-{
-    // check extends-name
-    const char *baseClassName = node->getExtendsName();
-    ASTNode *baseClass = getClassDeclaration(baseClassName);
-    if (!baseClass)
-        errors->addError(node, "unknown base class '%s'", baseClassName);
-}
-
-void NEDCrossValidator::validateElement(PacketElement *node)
-{
-    // check extends-name
-    const char *baseClassName = node->getExtendsName();
-    ASTNode *baseClass = getClassDeclaration(baseClassName);
-    if (!baseClass)
-        errors->addError(node, "unknown base class '%s'", baseClassName);
-}
-
-void NEDCrossValidator::validateElement(ClassElement *node)
-{
-    // check extends-name
-    const char *baseClassName = node->getExtendsName();
-    ASTNode *baseClass = getClassDeclaration(baseClassName);
-    if (!baseClass)
-        errors->addError(node, "unknown base class '%s'", baseClassName);
-}
-
-void NEDCrossValidator::validateElement(StructElement *node)
-{
-    // check extends-name
-    const char *baseClassName = node->getExtendsName();
-    ASTNode *baseClass = getClassDeclaration(baseClassName);
-    if (!baseClass)
-        errors->addError(node, "unknown base class '%s'", baseClassName);
-}
-
-void NEDCrossValidator::validateElement(FieldElement *node)
 {
 }
 

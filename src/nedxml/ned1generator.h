@@ -83,15 +83,15 @@ class NEDXML_API NED1Generator
     //@}
 
     /** Dispatch to various doXXX() methods according to node type */
-    void generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
+    void generateNEDItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
 
-    /** Invoke generateNedItem() on all children */
+    /** Invoke generateNEDItem() on all children */
     void generateChildren(ASTNode *node, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNedItem() on all children of the given tagcode */
+    /** Invoke generateNEDItem() on all children of the given tagcode */
     void generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNedItem() on children of the given tagcodes (NED_NULL-terminated array) */
+    /** Invoke generateNEDItem() on children of the given tagcodes (NED_NULL-terminated array) */
     void generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg=nullptr);
 
     /** @name Utilities */

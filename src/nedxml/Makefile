@@ -31,12 +31,13 @@ COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -loppcommon$D $(XML_LIBS)
 
-OBJS= $O/nedelements.o $O/astnode.o $O/errorstore.o $O/nedexception.o \
-      $O/nedvalidator.o $O/neddtdvalidator.o $O/neddtdvalidatorbase.o \
+OBJS= $O/astnode.o $O/errorstore.o $O/nedexception.o \
+      $O/nedelements.o $O/nedvalidator.o $O/neddtdvalidator.o $O/dtdvalidationutils.o \
+      $O/msgelements.o $O/msgvalidator.o $O/msgdtdvalidator.o \
       $O/nedsyntaxvalidator.o $O/nedcrossvalidator.o \
-      $O/sourcedocument.o $O/nedparser.o $O/yyutil.o \
-      $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o \
-      $O/nedutil.o $O/ned2generator.o $O/ned1generator.o $O/xmlgenerator.o \
+      $O/sourcedocument.o $O/nedparser.o $O/nedyyutil.o $O/msgyyutil.o $O/yyutil.o\
+      $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o $O/nedutil.o \
+      $O/ned2generator.o $O/ned1generator.o $O/msggenerator.o $O/xmlgenerator.o \
       $O/xmlastparser.o $O/astbuilder.o $O/saxparser_$(XMLPARSER).o \
       $O/ned1.tab.o $O/lex.ned1yy.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
@@ -46,6 +47,8 @@ OBJS= $O/nedelements.o $O/astnode.o $O/errorstore.o $O/nedexception.o \
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   neddtdvalidator.h neddtdvalidator.cc \
+                  msgelements.cc msgelements.h msgvalidator.cc msgvalidator.h \
+                  msgdtdvalidator.h msgdtdvalidator.cc \
                   ned1.tab.hh ned1.tab.cc lex.ned1yy.cc \
                   ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
                   msg2.tab.hh msg2.tab.cc lex.msg2yy.cc \
@@ -118,7 +121,10 @@ clean:
 # generated source files
 # NOTE: This is a trick: creating a muti-target pattern rule that prevents executing this target multiple times when running make in parallel
 %edelements.cc %edelements.h %eddtdvalidator.cc %eddtdvalidator.h %edvalidator.cc %edvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
-	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd
+	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/ned2.dtd ned
+
+%sgelements.cc %sgelements.h %sgdtdvalidator.cc %sgdtdvalidator.h %sgvalidator.cc %sgvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/msg2.dtd
+	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/msg2.dtd msg
 
 %ed1.tab.hh %ed1.tab.cc : ned1.y
 	$(qecho) YACC: $<

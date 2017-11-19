@@ -17,14 +17,11 @@
 #include <algorithm>
 #include <cctype>
 
-#include "common/stringtokenizer.h"
-#include "common/fileutil.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/platdep/platmisc.h"  // unlink()
 #include "msgcodegenerator.h"
-#include "ned2generator.h"
-#include "nedparser.h"
+#include "msggenerator.h"
 #include "nedexception.h"
 #include "nedutil.h"
 
@@ -334,7 +331,7 @@ std::string MsgCodeGenerator::generatePreComment(ASTNode *nedElement)
 {
     // reproduce original source
     std::ostringstream s;
-    NED2Generator().generate(s, nedElement, "");
+    MsgGenerator().generate(s, nedElement, "");
     std::string str = s.str();
 
     // print it inside a comment

@@ -395,7 +395,6 @@ class NEDXML_API ASTNode
     static long getNumExisting() {return numExisting;}
     //@}
 
-
     /** @name User data */
     //@{
 
@@ -414,6 +413,27 @@ class NEDXML_API ASTNode
 
 typedef ASTNode NEDElement;
 typedef ASTNode MsgElement;
+
+/**
+ * @brief Base class for ASTNode factories.
+ *
+ * @ingroup Data
+ */
+class NEDXML_API ASTNodeFactory
+{
+  public:
+    virtual ~ASTNodeFactory() {}
+
+    /**
+     * Creates ASTNode subclass which corresponds to tagName
+     */
+    virtual ASTNode *createElementWithTag(const char *tagName) = 0;
+
+    /**
+     * Creates ASTNode subclass which corresponds to tagCode
+     */
+    virtual ASTNode *createElementWithTag(int tagCode) = 0;
+};
 
 } // namespace nedxml
 }  // namespace omnetpp

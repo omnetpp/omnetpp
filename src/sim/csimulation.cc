@@ -263,7 +263,7 @@ void cSimulation::setSimulationTimeLimit(simtime_t simTimeLimit)
 int cSimulation::loadNedSourceFolder(const char *folder)
 {
 #ifdef WITH_NETBUILDER
-    return cNEDLoader::getInstance()->loadNedSourceFolder(folder);
+    return cNEDLoader::getInstance()->loadNEDSourceFolder(folder);
 #else
     throw cRuntimeError("Cannot load NED files from '%s': Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);
@@ -273,7 +273,7 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::getInstance()->loadNedFile(nedFilename, expectedPackage, isXML);
+    cNEDLoader::getInstance()->loadNEDFile(nedFilename, expectedPackage, isXML);
 #else
     throw cRuntimeError("Cannot load '%s': Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedFilename);
@@ -283,7 +283,7 @@ void cSimulation::loadNedFile(const char *nedFilename, const char *expectedPacka
 void cSimulation::loadNedText(const char *name, const char *nedText, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::getInstance()->loadNedText(name, nedText, expectedPackage, isXML);
+    cNEDLoader::getInstance()->loadNEDText(name, nedText, expectedPackage, isXML);
 #else
     throw cRuntimeError("Cannot source NED text: Simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)");
@@ -293,14 +293,14 @@ void cSimulation::loadNedText(const char *name, const char *nedText, const char 
 void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::getInstance()->doneLoadingNedFiles();
+    cNEDLoader::getInstance()->doneLoadingNEDFiles();
 #endif
 }
 
 std::string cSimulation::getNedPackageForFolder(const char *folder)
 {
 #ifdef WITH_NETBUILDER
-    return cNEDLoader::getInstance()->getNedPackageForFolder(folder);
+    return cNEDLoader::getInstance()->getNEDPackageForFolder(folder);
 #else
     return "-";
 #endif

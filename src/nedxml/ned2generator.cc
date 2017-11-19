@@ -60,7 +60,7 @@ void NED2Generator::setIndentSize(int indentsiz)
 void NED2Generator::generate(ostream& out, ASTNode *node, const char *indent)
 {
     outp = &out;
-    generateNedItem(node, indent, false);
+    generateNEDItem(node, indent, false);
     outp = nullptr;
 }
 
@@ -102,7 +102,7 @@ static bool _isNetwork(ASTNode *node)
 void NED2Generator::generateChildren(ASTNode *node, const char *indent, const char *arg)
 {
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
-        generateNedItem(child, indent, child == node->getLastChild(), arg);
+        generateNEDItem(child, indent, child == node->getLastChild(), arg);
 }
 
 void NED2Generator::generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg)
@@ -117,7 +117,7 @@ void NED2Generator::generateChildrenWithType(ASTNode *node, int tagcode, const c
     // now the recursive call
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         if (child->getTagCode() == tagcode)
-            generateNedItem(child, indent, child == lastWithTag, arg);
+            generateNEDItem(child, indent, child == lastWithTag, arg);
 
 }
 
@@ -142,7 +142,7 @@ void NED2Generator::generateChildrenWithTypes(ASTNode *node, int tagcodes[], con
     // now the recursive call
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         if (isInVector(child->getTagCode(), tagcodes))
-            generateNedItem(child, indent, child == lastWithTag, arg);
+            generateNEDItem(child, indent, child == lastWithTag, arg);
 
 }
 
@@ -183,7 +183,7 @@ void NED2Generator::printExpression(ASTNode *node, const char *attr, const char 
     else {
         for (ExpressionElement *expr = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr = expr->getNextExpressionSibling())
             if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(), attr))
-                generateNedItem(expr, indent, false, nullptr);
+                generateNEDItem(expr, indent, false, nullptr);
 
     }
 }
@@ -275,7 +275,7 @@ void NED2Generator::doFiles(FilesElement *node, const char *indent, bool, const 
     generateChildren(node, indent);
 }
 
-void NED2Generator::doNedFile(NedFileElement *node, const char *indent, bool, const char *)
+void NED2Generator::doNEDFile(NedFileElement *node, const char *indent, bool, const char *)
 {
     OUT << getBannerComment(node, indent);
     generateChildren(node, indent);
@@ -790,7 +790,7 @@ void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool i
     if (!op2) {
         // unary
         OUT << node->getName();
-        generateNedItem(op1, indent, false, nullptr);
+        generateNEDItem(op1, indent, false, nullptr);
     }
     else if (!op3) {
         // binary
@@ -815,12 +815,12 @@ void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool i
 
         if (needsParen)
             OUT << "(";
-        generateNedItem(op1, indent, false, nullptr);
+        generateNEDItem(op1, indent, false, nullptr);
         if (spacious)
             OUT << " " << node->getName() << " ";
         else
             OUT << node->getName();
-        generateNedItem(op2, indent, false, nullptr);
+        generateNEDItem(op2, indent, false, nullptr);
         if (needsParen)
             OUT << ")";
     }
@@ -831,11 +831,11 @@ void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool i
 
         if (needsParen)
             OUT << "(";
-        generateNedItem(op1, indent, false, nullptr);
+        generateNEDItem(op1, indent, false, nullptr);
         OUT << (spacious ? " ? " : "?");
-        generateNedItem(op2, indent, false, nullptr);
+        generateNEDItem(op2, indent, false, nullptr);
         OUT << (spacious ? " : " : ":");
-        generateNedItem(op3, indent, false, nullptr);
+        generateNEDItem(op3, indent, false, nullptr);
         if (needsParen)
             OUT << ")";
     }
@@ -852,7 +852,7 @@ void NED2Generator::doFunction(FunctionElement *node, const char *indent, bool i
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         if (child != node->getFirstChild())
             OUT << ", ";
-        generateNedItem(child, indent, false, nullptr);
+        generateNEDItem(child, indent, false, nullptr);
     }
     OUT << ")";
 }
@@ -888,193 +888,6 @@ void NED2Generator::doLiteral(LiteralElement *node, const char *indent, bool isl
         OUT << (sep ? sep : "");
 }
 
-void NED2Generator::doMsgFile(MsgFileElement *node, const char *indent, bool, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    generateChildren(node, indent);
-}
-
-void NED2Generator::doNamespace(NamespaceElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "namespace " << node->getName() << ";" << getRightComment(node);
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doCplusplus(CplusplusElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "cplusplus {{" << node->getBody() << "}}" << getRightComment(node);
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doStructDecl(StructDeclElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "struct " << node->getName() << ";" << getRightComment(node);
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doClassDecl(ClassDeclElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "class ";
-    if (!node->getIsCobject())
-        OUT << "noncobject ";
-    OUT << node->getName();
-    if (!opp_isempty(node->getExtendsName()))
-        OUT << " extends " << node->getExtendsName();
-    OUT << ";" << getRightComment(node);
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doMessageDecl(MessageDeclElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "message " << node->getName() << ";" << getRightComment(node);
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doPacketDecl(PacketDeclElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "packet " << node->getName() << ";" << getRightComment(node);
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doEnumDecl(EnumDeclElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "enum ";
-    OUT << node->getName() << ";" << getRightComment(node);
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doEnum(EnumElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "enum " << node->getName();
-    if (!opp_isempty(node->getExtendsName()))
-        OUT << " extends " << node->getExtendsName();
-    OUT << getRightComment(node);
-    OUT << indent << "{\n";
-    generateChildren(node, increaseIndent(indent));
-    OUT << indent << "}";
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doEnumFields(EnumFieldsElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << getRightComment(node);
-    generateChildren(node, indent);
-}
-
-void NED2Generator::doEnumField(EnumFieldElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << node->getName();
-    if (!opp_isempty(node->getValue()))
-        OUT << " = " << node->getValue();
-    OUT << ";" << getRightComment(node);
-}
-
-void NED2Generator::doMessage(MessageElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "message " << node->getName();
-    if (!opp_isempty(node->getExtendsName()))
-        OUT << " extends " << node->getExtendsName();
-    OUT << getRightComment(node);
-    OUT << indent << "{\n";
-    doMsgClassOrStructBody(node, indent);
-    OUT << indent << "}";
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doPacket(PacketElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "packet " << node->getName();
-    if (!opp_isempty(node->getExtendsName()))
-        OUT << " extends " << node->getExtendsName();
-    OUT << getRightComment(node);
-    OUT << indent << "{\n";
-    doMsgClassOrStructBody(node, indent);
-    OUT << indent << "}";
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doClass(ClassElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "class " << node->getName();
-    if (!opp_isempty(node->getExtendsName()))
-        OUT << " extends " << node->getExtendsName();
-    OUT << getRightComment(node);
-    OUT << indent << "{\n";
-    doMsgClassOrStructBody(node, indent);
-    OUT << indent << "}";
-    OUT << getTrailingComment(node);
-}
-
-void NED2Generator::doStruct(StructElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent << "struct " << node->getName();
-    if (!opp_isempty(node->getExtendsName()))
-        OUT << " extends " << node->getExtendsName();
-    OUT << getRightComment(node);
-    OUT << indent << "{\n";
-    doMsgClassOrStructBody(node, indent);
-    OUT << indent << "}" << getTrailingComment(node);
-}
-
-void NED2Generator::doMsgClassOrStructBody(ASTNode *node, const char *indent)
-{
-    // "node" must be a PacketElement, MessageElement, ClassElement or StructElement
-    generateChildren(node, increaseIndent(indent));
-
-    // if (msgfileVersion!=1)
-    //    generateChildren(node, increaseIndent(indent)); // 4.x syntax
-    // else
-    // {
-    //     // old (3.x) syntax
-    //     if (node->getFirstChildWithTag(NED_PROPERTY))
-    //     {
-    //         OUT << increaseIndent(indent) << "properties:\n";
-    //         generateChildrenWithType(node, NED_PROPERTY, increaseIndent(increaseIndent(indent)));
-    //     }
-    //     if (node->getFirstChildWithTag(NED_FIELD))
-    //     {
-    //         OUT << increaseIndent(indent) << "fields:\n";
-    //         generateChildrenWithType(node, NED_FIELD, increaseIndent(increaseIndent(indent)));
-    //     }
-    // }
-}
-
-void NED2Generator::doField(FieldElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << indent;
-    if (node->getIsAbstract())
-        OUT << "abstract ";
-    if (node->getIsReadonly())
-        OUT << "readonly ";
-    if (!opp_isempty(node->getDataType()))
-        OUT << node->getDataType() << " ";
-    OUT << node->getName();
-    if (node->getIsVector() && !opp_isempty(node->getVectorSize()))
-        OUT << "[" << node->getVectorSize() << "]";
-    else if (node->getIsVector())
-        OUT << "[]";
-    const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
-    generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
-    if (!opp_isempty(node->getDefaultValue()))
-        OUT << " = " << node->getDefaultValue();
-    OUT << ";" << getRightComment(node);
-}
-
 void NED2Generator::doComment(CommentElement *node, const char *indent, bool islast, const char *)
 {
     // ignore here: comments are taken care of individually where they occur
@@ -1082,13 +895,13 @@ void NED2Generator::doComment(CommentElement *node, const char *indent, bool isl
 
 //---------------------------------------------------------------------------
 
-void NED2Generator::generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg)
+void NED2Generator::generateNEDItem(ASTNode *node, const char *indent, bool islast, const char *arg)
 {
     // dispatch
     int tagcode = node->getTagCode();
     switch (tagcode) {
         case NED_FILES: doFiles(static_cast<FilesElement *>(node), indent, islast, arg); break;
-        case NED_NED_FILE: doNedFile(static_cast<NedFileElement *>(node), indent, islast, arg); break;
+        case NED_NED_FILE: doNEDFile(static_cast<NedFileElement *>(node), indent, islast, arg); break;
         case NED_PACKAGE: doPackage(static_cast<PackageElement *>(node), indent, islast, arg); break;
         case NED_IMPORT: doImport(static_cast<ImportElement *>(node), indent, islast, arg); break;
         case NED_PROPERTY_DECL: doPropertyDecl(static_cast<PropertyDeclElement *>(node), indent, islast, arg); break;
@@ -1118,25 +931,8 @@ void NED2Generator::generateNedItem(ASTNode *node, const char *indent, bool isla
         case NED_FUNCTION: doFunction(static_cast<FunctionElement *>(node), indent, islast, arg); break;
         case NED_IDENT: doIdent(static_cast<IdentElement *>(node), indent, islast, arg); break;
         case NED_LITERAL: doLiteral(static_cast<LiteralElement *>(node), indent, islast, arg); break;
-
-        case NED_MSG_FILE: doMsgFile(static_cast<MsgFileElement *>(node), indent, islast, arg); break;
-        case NED_NAMESPACE: doNamespace(static_cast<NamespaceElement *>(node), indent, islast, arg); break;
-        case NED_CPLUSPLUS: doCplusplus(static_cast<CplusplusElement *>(node), indent, islast, arg); break;
-        case NED_STRUCT_DECL: doStructDecl(static_cast<StructDeclElement *>(node), indent, islast, arg); break;
-        case NED_CLASS_DECL: doClassDecl(static_cast<ClassDeclElement *>(node), indent, islast, arg); break;
-        case NED_MESSAGE_DECL: doMessageDecl(static_cast<MessageDeclElement *>(node), indent, islast, arg); break;
-        case NED_PACKET_DECL: doPacketDecl(static_cast<PacketDeclElement *>(node), indent, islast, arg); break;
-        case NED_ENUM_DECL: doEnumDecl(static_cast<EnumDeclElement *>(node), indent, islast, arg); break;
-        case NED_ENUM: doEnum(static_cast<EnumElement *>(node), indent, islast, arg); break;
-        case NED_ENUM_FIELDS: doEnumFields(static_cast<EnumFieldsElement *>(node), indent, islast, arg); break;
-        case NED_ENUM_FIELD: doEnumField(static_cast<EnumFieldElement *>(node), indent, islast, arg); break;
-        case NED_MESSAGE: doMessage(static_cast<MessageElement *>(node), indent, islast, arg); break;
-        case NED_PACKET: doPacket(static_cast<PacketElement *>(node), indent, islast, arg); break;
-        case NED_CLASS: doClass(static_cast<ClassElement *>(node), indent, islast, arg); break;
-        case NED_STRUCT: doStruct(static_cast<StructElement *>(node), indent, islast, arg); break;
-        case NED_FIELD: doField(static_cast<FieldElement *>(node), indent, islast, arg); break;
         case NED_COMMENT: doComment(static_cast<CommentElement *>(node), indent, islast, arg); break;
-        default: INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
+        default: INTERNAL_ERROR1(node, "generateNEDItem(): unknown tag '%s'", node->getTagName());
     }
 }
 

@@ -58,7 +58,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         if (child->getTagCode() == NED_EXTENDS) {
             // resolve and store base type name
             const char *extendsName = ((ExtendsElement *)child)->getName();
-            std::string extendsQName = getResolver()->resolveNedType(context, extendsName);
+            std::string extendsQName = getResolver()->resolveNEDType(context, extendsName);
             Assert(!extendsQName.empty());
             extendsNames.push_back(extendsQName);
 
@@ -82,7 +82,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         if (child->getTagCode() == NED_INTERFACE_NAME) {
             // resolve and store base type
             const char *interfaceName = ((InterfaceNameElement *)child)->getName();
-            std::string interfaceQName = getResolver()->resolveNedType(context, interfaceName);
+            std::string interfaceQName = getResolver()->resolveNEDType(context, interfaceName);
             Assert(!interfaceQName.empty());
             interfaceNames.push_back(interfaceQName);
 
@@ -179,7 +179,7 @@ std::string NEDTypeInfo::getPackageProperty(const char *propertyName) const
     // find first such property in the current file, then in package.ned of this package and parent packages
     for (NedFileElement *nedFile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
          nedFile != nullptr;
-         nedFile = getResolver()->getParentPackageNedFile(nedFile))
+         nedFile = getResolver()->getParentPackageNEDFile(nedFile))
     {
         const char *propertyValue = ASTNodeUtil::getLocalStringProperty(nedFile, propertyName);
         if (propertyValue)
@@ -216,7 +216,7 @@ std::string NEDTypeInfo::str() const
     return out.str();
 }
 
-std::string NEDTypeInfo::getNedSource() const
+std::string NEDTypeInfo::getNEDSource() const
 {
     std::stringstream out;
     ErrorStore errors;

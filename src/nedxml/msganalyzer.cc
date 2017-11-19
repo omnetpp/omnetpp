@@ -28,7 +28,7 @@
 #include "nedexception.h"
 #include "nedutil.h"
 
-#include "omnetpp/simkerneldefs.h"
+//#include "omnetpp/simkerneldefs.h"
 
 //TODO camelize names of supported properties!!! (e.g. cpptype -> cppType, fromstring -> fromString)
 //TODO field's props should be produced by merging the type's props into it? (to be accessible from inspectors)
@@ -358,6 +358,15 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 {
     Assert(!field->ftype.empty());
 
+    if (field->fisabstract && !classInfo.isClass)
+        errors->addError(field->nedElement, "A struct cannot have abstract fields");
+
+    if (field->fisabstract && !field->fval.empty())
+        errors->addError(field->nedElement, "An abstract field cannot be assigned a default value");
+
+    if (field->fisarray && field->farraysize.empty() && !classInfo.isClass)
+        errors->addError(field->nedElement, "A struct cannot have dynamic array fields");
+
     if (field->fisabstract && !classInfo.gap)
         errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'", classInfo.msgname.c_str());
 
@@ -525,6 +534,13 @@ MsgAnalyzer::FieldInfo *MsgAnalyzer::findSuperclassField(ClassInfo& classInfo, c
 void MsgAnalyzer::analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field)
 {
     Assert(field->ftype.empty()); // i.e. it is an inherited field
+
+    if (field->fisabstract)
+        errors->addError(field->nedElement, "An abstract field needs a type");
+    if (field->fisarray)
+        errors->addError(field->nedElement, "Cannot set array field of super class");
+    if (field->fval.empty())
+        errors->addError(field->nedElement, "Missing field value assigment");
 
     FieldInfo *fieldDefinition = findSuperclassField(classInfo, field->fname);
     if (!fieldDefinition)

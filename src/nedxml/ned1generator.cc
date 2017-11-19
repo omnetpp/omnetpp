@@ -61,7 +61,7 @@ void NED1Generator::setIndentSize(int indentsiz)
 void NED1Generator::generate(ostream& out, ASTNode *node, const char *indent)
 {
     outp = &out;
-    generateNedItem(node, indent, false);
+    generateNEDItem(node, indent, false);
     outp = nullptr;
 }
 
@@ -104,7 +104,7 @@ static bool _isNetwork(ASTNode *node)
 void NED1Generator::generateChildren(ASTNode *node, const char *indent, const char *arg)
 {
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
-        generateNedItem(child, indent, child == node->getLastChild(), arg);
+        generateNEDItem(child, indent, child == node->getLastChild(), arg);
 }
 
 void NED1Generator::generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg)
@@ -119,7 +119,7 @@ void NED1Generator::generateChildrenWithType(ASTNode *node, int tagcode, const c
     // now the recursive call
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         if (child->getTagCode() == tagcode)
-            generateNedItem(child, indent, child == lastWithTag, arg);
+            generateNEDItem(child, indent, child == lastWithTag, arg);
 
 }
 
@@ -144,7 +144,7 @@ void NED1Generator::generateChildrenWithTypes(ASTNode *node, int tagcodes[], con
     // now the recursive call
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         if (isInVector(child->getTagCode(), tagcodes))
-            generateNedItem(child, indent, child == lastWithTag, arg);
+            generateNEDItem(child, indent, child == lastWithTag, arg);
 
 }
 
@@ -189,7 +189,7 @@ void NED1Generator::printExpression(ASTNode *node, const char *attr, const char 
     else {
         for (ExpressionElement *expr = (ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr = expr->getNextExpressionSibling())
             if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(), attr))
-                generateNedItem(expr, indent, false, nullptr);
+                generateNEDItem(expr, indent, false, nullptr);
 
     }
 }
@@ -996,7 +996,7 @@ void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool i
     if (!op2) {
         // unary
         OUT << node->getName();
-        generateNedItem(op1, indent, false, nullptr);
+        generateNEDItem(op1, indent, false, nullptr);
     }
     else if (!op3) {
         // binary
@@ -1021,12 +1021,12 @@ void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool i
 
         if (needsParen)
             OUT << "(";
-        generateNedItem(op1, indent, false, nullptr);
+        generateNEDItem(op1, indent, false, nullptr);
         if (spacious)
             OUT << " " << node->getName() << " ";
         else
             OUT << node->getName();
-        generateNedItem(op2, indent, false, nullptr);
+        generateNEDItem(op2, indent, false, nullptr);
         if (needsParen)
             OUT << ")";
     }
@@ -1037,11 +1037,11 @@ void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool i
 
         if (needsParen)
             OUT << "(";
-        generateNedItem(op1, indent, false, nullptr);
+        generateNEDItem(op1, indent, false, nullptr);
         OUT << (spacious ? " ? " : "?");
-        generateNedItem(op2, indent, false, nullptr);
+        generateNEDItem(op2, indent, false, nullptr);
         OUT << (spacious ? " : " : ":");
-        generateNedItem(op3, indent, false, nullptr);
+        generateNEDItem(op3, indent, false, nullptr);
         if (needsParen)
             OUT << ")";
     }
@@ -1058,7 +1058,7 @@ void NED1Generator::doFunction(FunctionElement *node, const char *indent, bool i
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         if (child != node->getFirstChild())
             OUT << ", ";
-        generateNedItem(child, indent, false, nullptr);
+        generateNEDItem(child, indent, false, nullptr);
     }
     OUT << ")";
 }
@@ -1090,7 +1090,7 @@ void NED1Generator::doLiteral(LiteralElement *node, const char *indent, bool isl
 
 //---------------------------------------------------------------------------
 
-void NED1Generator::generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg)
+void NED1Generator::generateNEDItem(ASTNode *node, const char *indent, bool islast, const char *arg)
 {
     // dispatch
     int tagcode = node->getTagCode();
@@ -1125,7 +1125,7 @@ void NED1Generator::generateNedItem(ASTNode *node, const char *indent, bool isla
         case NED_FUNCTION: doFunction(static_cast<FunctionElement *>(node), indent, islast, arg); break;
         case NED_IDENT: doIdent(static_cast<IdentElement *>(node), indent, islast, arg); break;
         case NED_LITERAL: doLiteral(static_cast<LiteralElement *>(node), indent, islast, arg); break;
-        default: ;//XXX: add back this line: INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
+        default: ;//XXX: add back this line: INTERNAL_ERROR1(node, "generateNEDItem(): unknown tag '%s'", node->getTagName());
     }
 }
 

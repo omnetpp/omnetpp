@@ -44,7 +44,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     cNEDLoader()  {}
 
     // reimplemented so that we can add cModuleType/cChannelType
-    virtual void registerNedType(const char *qname, bool isInnerType, NEDElement *node) override;
+    virtual void registerNEDType(const char *qname, bool isInnerType, NEDElement *node) override;
 
   public:
     /** Access to the singleton instance */

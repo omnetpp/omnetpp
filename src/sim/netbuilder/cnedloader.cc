@@ -57,7 +57,7 @@ void cNEDLoader::clear()
     inst = nullptr;
 }
 
-void cNEDLoader::registerNedType(const char *qname, bool isInnerType, NEDElement *node)
+void cNEDLoader::registerNEDType(const char *qname, bool isInnerType, NEDElement *node)
 {
     // wrap, and add to the table (Note: we cannot reuse base class impl, because it creates a NEDTypeInfo)
     cNEDDeclaration *decl = new cNEDDeclaration(this, qname, isInnerType, node);

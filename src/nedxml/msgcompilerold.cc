@@ -24,7 +24,7 @@
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
 #include "omnetpp/platdep/platmisc.h"  // unlink()
-#include "ned2generator.h"
+#include "msggenerator.h"
 #include "nedexception.h"
 #include "nedutil.h"
 
@@ -970,7 +970,7 @@ void MsgCompilerOld::prepareForCodeGeneration(ClassInfo& info)
 std::string MsgCompilerOld::generatePreComment(ASTNode *nedElement)
 {
     std::ostringstream s;
-    NED2Generator().generate(s, nedElement, "");
+    MsgGenerator().generate(s, nedElement, "");
     std::string str = s.str();
 
 #ifdef MSGC_COMPATIBILE

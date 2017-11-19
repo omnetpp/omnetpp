@@ -35,9 +35,11 @@
 #include "msgcompilerold.h"
 #include "nedparser.h"
 #include "nedexception.h"
+#include "msgdtdvalidator.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
+#include "msggenerator.h"
 #include "ned2generator.h"
 #include "ned1generator.h"
 #include "xmlgenerator.h"
@@ -185,12 +187,17 @@ bool renameFileToBAK(const char *fname)
     return true;
 }
 
-void generateNED(std::ostream& out, ASTNode *node, ErrorStore *e, bool oldsyntax)
+void generateSource(std::ostream& out, ASTNode *node, ErrorStore *e, int contentType, bool oldsyntax)
 {
-    if (oldsyntax)
-        generateNED1(out, node, e);
-    else
-        generateNED2(out, node);
+    if (contentType == NED_FILE) {
+        if (oldsyntax)
+            generateNED1(out, node, e);
+        else
+            generateNED2(out, node);
+    }
+    else if (contentType == MSG_FILE) {
+        generateMsg(out, node);
+    }
 }
 
 void generateDependencies(const char *depsfile, const char *fname, const char *outhdrfname, const char *outfname, const std::set<std::string>& dependencies)
@@ -258,19 +265,34 @@ bool processFile(const char *fname, ErrorStore *errors)
             return false;
         }
 
-        // DTD validation and additional syntax validation
-        NEDDTDValidator dtdvalidator(errors);
-        dtdvalidator.validate(tree);
-        if (errors->containsError()) {
-            delete tree;
-            return false;
-        }
+        int contentType = (ftype==NED_FILE || ftype==MSG_FILE) ? ftype :
+                (tree->getTagCode()==NED_NED_FILE || tree->getFirstChildWithTag(NED_NED_FILE)!=nullptr) ? NED_FILE :
+                        (tree->getTagCode()==NED_MSG_FILE || tree->getFirstChildWithTag(NED_MSG_FILE)!=nullptr) ? MSG_FILE :
+                                UNKNOWN_FILE;
 
-        NEDSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
-        syntaxvalidator.validate(tree);
-        if (errors->containsError()) {
-            delete tree;
-            return false;
+        // DTD validation and additional syntax validation
+        if (contentType == NED_FILE) {
+            NEDDTDValidator dtdvalidator(errors);
+            dtdvalidator.validate(tree);
+            if (errors->containsError()) {
+                delete tree;
+                return false;
+            }
+
+            NEDSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
+            syntaxvalidator.validate(tree);
+            if (errors->containsError()) {
+                delete tree;
+                return false;
+            }
+        }
+        else if (contentType == MSG_FILE) {
+            MSGDTDValidator dtdvalidator(errors);
+            dtdvalidator.validate(tree);
+            if (errors->containsError()) {
+                delete tree;
+                return false;
+            }
         }
 
         if (opt_mergeoutput) {
@@ -343,7 +365,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                     if (opt_inplace && !renameFileToBAK(outfname))
                         return false;
                     ofstream out(outfname);
-                    generateNED(out, child, errors, opt_oldsyntax);
+                    generateSource(out, child, errors, contentType, opt_oldsyntax);
                     out.close();
                 }
             }
@@ -351,7 +373,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                 if (opt_inplace && !renameFileToBAK(outfname))
                     return false;
                 ofstream out(outfname);
-                generateNED(out, tree, errors, opt_oldsyntax);
+                generateSource(out, tree, errors, contentType, opt_oldsyntax);
                 out.close();
             }
             else {
@@ -717,7 +739,7 @@ int main(int argc, char **argv)
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
         else if (opt_gensrc)
-            generateNED(out, outputtree, errors, opt_oldsyntax);
+            generateSource(out, outputtree, errors, NED_FILE /*TODO or MSG_FILE*/, opt_oldsyntax);
         else
             return 1;  // mergeoutput with C++ output not supported
         // generateCpp(out, cout, outputtree);

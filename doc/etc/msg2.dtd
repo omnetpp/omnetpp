@@ -1,0 +1,140 @@
+<!--
+**
+** OMNeT++ Message Description v2 (MSG2)
+**
+-->
+
+<!ELEMENT files (msg-file*)>
+
+<!ELEMENT msg-file (comment*, (namespace|property|cplusplus|import|
+                    struct-decl|class-decl|message-decl|packet-decl|enum-decl|
+                    struct|class|message|packet|enum)*)>
+
+<!ATTLIST msg-file
+     filename            CDATA     #IMPLIED
+     version             CDATA     "2">
+
+<!-- comments and whitespace; comments include '//' marks.
+     Default value is a space or a newline, depending on the context.
+ -->
+<!ELEMENT comment EMPTY>
+<!ATTLIST comment
+     locid              NMTOKEN   #REQUIRED
+     content            CDATA     #IMPLIED>
+
+<!ELEMENT import (comment*)>
+<!ATTLIST import
+     import-spec        CDATA     #REQUIRED>
+
+<!ELEMENT property (comment*, property-key*)>
+<!ATTLIST property
+     is-implicit        (true|false) "false"
+     name               CDATA     #REQUIRED
+     index              CDATA     #IMPLIED>
+
+<!ELEMENT property-key (comment*, literal*)>
+<!ATTLIST property-key
+     name               CDATA     #IMPLIED>
+
+<!ELEMENT literal (comment*)>
+<!-- Note: value is in fact REQUIRED, but empty attr value should
+     also be accepted because that represents the "" string literal;
+     "spec" is for properties, to store the null value and "-",
+     the antivalue.
+ -->
+<!ATTLIST literal
+     type  (double|quantity|int|bool|string|spec)  #REQUIRED
+     text                CDATA     #IMPLIED
+     value               CDATA     #IMPLIED>
+
+<!ELEMENT namespace (comment*)>
+<!ATTLIST namespace
+     name                CDATA     #REQUIRED>  <!-- note: not NMTOKEN because it may contain "::" -->
+
+<!ELEMENT cplusplus (comment*)>
+<!ATTLIST cplusplus
+     target              CDATA     #IMPLIED
+     body                CDATA     #REQUIRED>
+
+<!-- C++ type announcements -->
+
+<!ELEMENT struct-decl (comment*)>
+<!ATTLIST struct-decl
+     name                CDATA     #REQUIRED>
+
+<!ELEMENT class-decl (comment*)>
+<!ATTLIST class-decl
+     name                CDATA     #REQUIRED
+     is-cobject      (true|false)  "false"
+     extends-name        CDATA     #IMPLIED>
+
+<!ELEMENT message-decl (comment*)>
+<!ATTLIST message-decl
+     name                CDATA     #REQUIRED>
+
+<!ELEMENT packet-decl (comment*)>
+<!ATTLIST packet-decl
+     name                CDATA     #REQUIRED>
+
+<!ELEMENT enum-decl (comment*)>
+<!ATTLIST enum-decl
+     name                CDATA     #REQUIRED>
+
+<!-- Enums -->
+
+<!ELEMENT enum (comment*, enum-fields?)>
+<!ATTLIST enum
+     name                CDATA     #REQUIRED
+     extends-name        CDATA     #IMPLIED
+     source-code         CDATA     #IMPLIED>
+
+<!ELEMENT enum-fields (comment*, enum-field*)>
+
+<!ELEMENT enum-field (comment*)>
+<!ATTLIST enum-field
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #IMPLIED>
+
+<!-- Message, class, struct -->
+
+<!ELEMENT message (comment*, (property|field)*)>
+<!ATTLIST message
+     name                CDATA     #REQUIRED
+     extends-name        CDATA     #IMPLIED
+     source-code         CDATA     #IMPLIED>
+
+<!ELEMENT packet (comment*, (property|field)*)>
+<!ATTLIST packet
+     name                CDATA     #REQUIRED
+     extends-name        CDATA     #IMPLIED
+     source-code         CDATA     #IMPLIED>
+
+<!ELEMENT class (comment*, (property|field)*)>
+<!ATTLIST class
+     name                CDATA     #REQUIRED
+     extends-name        CDATA     #IMPLIED
+     source-code         CDATA     #IMPLIED>
+
+<!ELEMENT struct (comment*, (property|field)*)>
+<!ATTLIST struct
+     name                CDATA     #REQUIRED
+     extends-name        CDATA     #IMPLIED
+     source-code         CDATA     #IMPLIED>
+
+<!ELEMENT field (comment*, property*)>
+<!ATTLIST field
+     name                NMTOKEN   #REQUIRED
+     data-type           CDATA     #IMPLIED
+     is-abstract     (true|false)  "false"
+     is-readonly     (true|false)  "false"
+     is-vector       (true|false)  "false"
+     vector-size         CDATA     #IMPLIED
+     default-value       CDATA     #IMPLIED>
+
+<!--
+  **  'unknown' is used internally to represent elements not in this DTD
+  -->
+<!ELEMENT unknown        ANY>
+<!ATTLIST unknown
+     element             CDATA     #REQUIRED>
+

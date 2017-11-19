@@ -1,5 +1,5 @@
 //==========================================================================
-// neddtdvalidatorbase.cc -
+// dtdvalidationutils.cc -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -18,8 +18,8 @@
 #include <cstdio>
 #include <cassert>
 #include "common/opp_ctype.h"
-#include "neddtdvalidatorbase.h"
-
+#include "dtdvalidationutils.h"
+#include "astnode.h"
 #include "errorstore.h"
 
 using namespace omnetpp::common;
@@ -27,7 +27,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-void NEDDTDValidatorBase::checkSequence(ASTNode *node, int tags[], char mult[])
+void DTDValidationUtils::checkSequence(ASTNode *node, int tags[], char mult[])
 {
     ASTNode *p = node->getFirstChild();
     for (int i = 0; tags[i]; i++) {
@@ -74,7 +74,7 @@ static int isInVector(int a, int v[])
     return false;
 }
 
-void NEDDTDValidatorBase::tryCheckChoice(ASTNode *node, ASTNode *& curchild, int tags[], char mult)
+void DTDValidationUtils::tryCheckChoice(ASTNode *node, ASTNode *& curchild, int tags[], char mult)
 {
     // note: 'node' argument is solely used by errors->addError() (when curchild==nullptr)
     if (mult == '?') {
@@ -98,7 +98,7 @@ void NEDDTDValidatorBase::tryCheckChoice(ASTNode *node, ASTNode *& curchild, int
     }
 }
 
-void NEDDTDValidatorBase::checkChoice(ASTNode *node, int tags[], char mult)
+void DTDValidationUtils::checkChoice(ASTNode *node, int tags[], char mult)
 {
     ASTNode *curchild = node->getFirstChild();
     tryCheckChoice(node, curchild, tags, mult);
@@ -106,7 +106,7 @@ void NEDDTDValidatorBase::checkChoice(ASTNode *node, int tags[], char mult)
         errors->addError(node, "DTD validation error: child element '%s' unexpected", curchild->getTagName());
 }
 
-void NEDDTDValidatorBase::checkSeqOfChoices(ASTNode *node, Choice choices[], int n)
+void DTDValidationUtils::checkSeqOfChoices(ASTNode *node, Choice choices[], int n)
 {
     ASTNode *curchild = node->getFirstChild();
     for (int i = 0; i < n; i++)
@@ -115,13 +115,13 @@ void NEDDTDValidatorBase::checkSeqOfChoices(ASTNode *node, Choice choices[], int
         errors->addError(node, "DTD validation error: child element '%s' unexpected", curchild->getTagName());
 }
 
-void NEDDTDValidatorBase::checkEmpty(ASTNode *node)
+void DTDValidationUtils::checkEmpty(ASTNode *node)
 {
     if (node->getFirstChild())
         errors->addError(node, "DTD validation error: EMPTY element has children\n");
 }
 
-void NEDDTDValidatorBase::checkRequiredAttribute(ASTNode *node, const char *attr)
+void DTDValidationUtils::checkRequiredAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -129,7 +129,7 @@ void NEDDTDValidatorBase::checkRequiredAttribute(ASTNode *node, const char *attr
         errors->addError(node, "DTD validation error: required attribute '%s' is empty", attr);
 }
 
-void NEDDTDValidatorBase::checkEnumeratedAttribute(ASTNode *node, const char *attr, const char *vals[], int n)
+void DTDValidationUtils::checkEnumeratedAttribute(ASTNode *node, const char *attr, const char *vals[], int n)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -143,7 +143,7 @@ void NEDDTDValidatorBase::checkEnumeratedAttribute(ASTNode *node, const char *at
                            "enumerated values ('%s',...)", s, attr, vals[0]);
 }
 
-void NEDDTDValidatorBase::checkNameAttribute(ASTNode *node, const char *attr)
+void DTDValidationUtils::checkNameAttribute(ASTNode *node, const char *attr)
 {
     //
     // NOTE: we use this method for validating NMTOKEN attributes in our DTD.
@@ -167,7 +167,7 @@ void NEDDTDValidatorBase::checkNameAttribute(ASTNode *node, const char *attr)
         }
 }
 
-void NEDDTDValidatorBase::checkCommentAttribute(ASTNode *node, const char *attr)
+void DTDValidationUtils::checkCommentAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);

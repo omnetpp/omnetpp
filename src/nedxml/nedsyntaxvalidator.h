@@ -26,7 +26,6 @@
 namespace omnetpp {
 namespace nedxml {
 
-
 /**
  * @brief Performs structural validation of components.
  *
@@ -104,22 +103,6 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
     virtual void validateElement(FunctionElement *node) override;
     virtual void validateElement(IdentElement *node) override;
     virtual void validateElement(LiteralElement *node) override;
-    virtual void validateElement(MsgFileElement *node) override;
-    virtual void validateElement(NamespaceElement *node) override;
-    virtual void validateElement(CplusplusElement *node) override;
-    virtual void validateElement(StructDeclElement *node) override;
-    virtual void validateElement(ClassDeclElement *node) override;
-    virtual void validateElement(MessageDeclElement *node) override;
-    virtual void validateElement(PacketDeclElement *node) override;
-    virtual void validateElement(EnumDeclElement *node) override;
-    virtual void validateElement(EnumElement *node) override;
-    virtual void validateElement(EnumFieldsElement *node) override;
-    virtual void validateElement(EnumFieldElement *node) override;
-    virtual void validateElement(MessageElement *node) override;
-    virtual void validateElement(PacketElement *node) override;
-    virtual void validateElement(ClassElement *node) override;
-    virtual void validateElement(StructElement *node) override;
-    virtual void validateElement(FieldElement *node) override;
     virtual void validateElement(UnknownElement *node) override;
     //@}
 };

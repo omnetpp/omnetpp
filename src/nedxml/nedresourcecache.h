@@ -96,28 +96,28 @@ class NEDXML_API NEDResourceCache
     typedef std::map<std::string,std::string> StringMap;
     StringMap folderPackages;
 
-    struct PendingNedType {
+    struct PendingNEDType {
         std::string qname;
         bool isInnerType;
         ASTNode *node;
-        PendingNedType(const char *q, bool inner, ASTNode *e) {qname=q;isInnerType=inner;node=e;}
+        PendingNEDType(const char *q, bool inner, ASTNode *e) {qname=q;isInnerType=inner;node=e;}
     };
 
     // storage for NED components not resolved yet because of missing dependencies
-    std::vector<PendingNedType> pendingList;
+    std::vector<PendingNEDType> pendingList;
 
   protected:
     virtual void registerBuiltinDeclarations();
-    virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
-    virtual void doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML);
-    virtual ASTNode *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
+    virtual int doLoadNEDSourceFolder(const char *foldername, const char *expectedPackage);
+    virtual void doLoadNEDFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML);
+    virtual ASTNode *parseAndValidateNEDFileOrText(const char *nedfname, const char *nedtext, bool isXML);
     virtual std::string determineRootPackageName(const char *nedSourceFolderName);
-    virtual std::string getNedSourceFolderForFolder(const char *folder) const;
-    virtual void collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes);
-    virtual void collectNedType(const char *qname, bool isInnerType, ASTNode *node);
+    virtual std::string getNEDSourceFolderForFolder(const char *folder) const;
+    virtual void collectNEDTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes);
+    virtual void collectNEDType(const char *qname, bool isInnerType, ASTNode *node);
     virtual bool areDependenciesResolved(const char *qname, ASTNode *node);
-    virtual void registerPendingNedTypes();
-    virtual void registerNedType(const char *qname, bool isInnerType, ASTNode *node);
+    virtual void registerPendingNEDTypes();
+    virtual void registerNEDType(const char *qname, bool isInnerType, ASTNode *node);
     virtual std::string getFirstError(ErrorStore *errors, const char *prefix=nullptr);
 
   public:
@@ -133,19 +133,19 @@ class NEDXML_API NEDResourceCache
      * The given folder is assumed to be the root of the NED package hierarchy.
      * Returns the number of files loaded.
      *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     * Note: doneLoadingNEDFiles() must be called after the last
+     * loadNEDSourceFolder()/loadNEDFile()/loadNEDText() call.
      */
-    virtual int loadNedSourceFolder(const char *foldername);
+    virtual int loadNEDSourceFolder(const char *foldername);
 
     /**
      * Load a single NED file. If the expected package is given (non-nullptr),
      * it should match the package declaration inside the NED file.
      *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     * Note: doneLoadingNEDFiles() must be called after the last
+     * loadNEDSourceFolder()/loadNEDFile()/loadNEDText() call.
      */
-    virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+    virtual void loadNEDFile(const char *nedfname, const char *expectedPackage, bool isXML);
 
     /**
      * Parses and loads the NED source code passed in the nedtext argument.
@@ -154,17 +154,17 @@ class NEDXML_API NEDResourceCache
      * is given (non-nullptr), it should match the package declaration inside
      * the NED file.
      *
-     * Note: doneLoadingNedFiles() must be called after the last
-     * loadNedSourceFolder()/loadNedFile()/loadNedText() call.
+     * Note: doneLoadingNEDFiles() must be called after the last
+     * loadNEDSourceFolder()/loadNEDFile()/loadNEDText() call.
      */
-    virtual void loadNedText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML);
+    virtual void loadNEDText(const char *name, const char *nedtext, const char *expectedPackage, bool isXML);
 
     /**
      * To be called after all NED folders / files have been loaded. May be
      * redefined to issue errors for components that could not be fully
      * resolved because of missing base types or interfaces.
      */
-    virtual void doneLoadingNedFiles();
+    virtual void doneLoadingNEDFiles();
 
     /**
      * Add a file (parsed into an object tree) to the cache. If the file
@@ -182,7 +182,7 @@ class NEDXML_API NEDResourceCache
      * file itself, returns the nearest ancestor package.ned file. Returns nullptr
      * if there is no parent package.ned file.
      */
-    virtual NedFileElement *getParentPackageNedFile(NedFileElement *nedfile) const;
+    virtual NedFileElement *getParentPackageNEDFile(NedFileElement *nedfile) const;
 
     /** Look up a fully qualified NED type name from the cache. Returns nullptr if not found. */
     virtual NEDTypeInfo *lookup(const char *qname) const;
@@ -191,12 +191,12 @@ class NEDXML_API NEDResourceCache
     virtual NEDTypeInfo *getDecl(const char *qname) const;
 
     /** Resolves the given NED type name in the given context, among the given type names. Returns "" if not found. */
-    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename, INEDTypeNames *qnames);
+    virtual std::string resolveNEDType(const NEDLookupContext& context, const char *nedtypename, INEDTypeNames *qnames);
 
     /** Resolves NED type name, based on the NED files loaded */
-    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename) {
+    virtual std::string resolveNEDType(const NEDLookupContext& context, const char *nedtypename) {
         CachedTypeNames names(this);
-        return resolveNedType(context, nedtypename, &names);
+        return resolveNEDType(context, nedtypename, &names);
     }
 
     /** Available NED type names */
@@ -206,10 +206,10 @@ class NEDXML_API NEDResourceCache
      * Returns the NED package that corresponds to the given folder. Returns ""
      * for the default package, and "-" if the folder is outside all NED folders.
      */
-    virtual std::string getNedPackageForFolder(const char *folder) const;
+    virtual std::string getNEDPackageForFolder(const char *folder) const;
 
     /**
-     * Utility method, useful with resolveNedType()/resolveComponentType()
+     * Utility method, useful with resolveNEDType()/resolveComponentType()
      */
     static NEDLookupContext getParentContextOf(const char *qname, ASTNode *node);
 

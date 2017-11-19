@@ -18,6 +18,7 @@
 
 #include "errorstore.h"
 #include "nedelements.h"
+#include "msgelements.h"
 #include "nedexception.h"
 
 namespace omnetpp {
@@ -48,7 +49,11 @@ void ASTBuilder::startElement(const char *name, const char **atts)
     ASTNode *node;
     bool unknown = false;
     try {
-        node = ASTNodeFactory::getInstance()->createElementWithTag(name);
+        try {
+            node = NEDAstNodeFactory().createElementWithTag(name);
+        } catch (NEDException& e) {
+            node = MSGAstNodeFactory().createElementWithTag(name);
+        }
     }
     catch (NEDException& e) {
         errors->addError(current, "error: %s", e.what());

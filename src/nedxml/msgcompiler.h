@@ -25,7 +25,7 @@
 #include <set>
 
 #include "errorstore.h"
-#include "nedelements.h"
+#include "msgelements.h"
 #include "msgtypetable.h"
 #include "msganalyzer.h"
 #include "msgcodegenerator.h"

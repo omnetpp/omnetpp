@@ -86,14 +86,15 @@ void yyerror (const char *s);
 
 #include "nedparser.h"
 #include "sourcedocument.h"
-#include "nedelements.h"
+#include "msgelements.h"
 #include "nedutil.h"
-#include "yyutil.h"
+#include "msgyyutil.h"
 
 using namespace omnetpp;
 
 using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
+using namespace omnetpp::nedxml::msgyyutil;
 
 static struct MSG2ParserState
 {
@@ -177,7 +178,7 @@ definition
 namespace_decl
         : NAMESPACE qname0 ';'
                 {
-                  ps.namespacedecl = (NamespaceElement *)createElementWithTag(NED_NAMESPACE, ps.msgfile );
+                  ps.namespacedecl = (NamespaceElement *)createMsgElementWithTag(NED_NAMESPACE, ps.msgfile );
                   ps.namespacedecl->setName(toString(@2));
                   storeBannerAndRightComments(ps.namespacedecl,@1,@2);
                 }
@@ -209,13 +210,13 @@ fileproperty
 cplusplus
         : CPLUSPLUS CPLUSPLUSBODY opt_semicolon
                 {
-                  ps.cplusplus = (CplusplusElement *)createElementWithTag(NED_CPLUSPLUS, ps.msgfile );
+                  ps.cplusplus = (CplusplusElement *)createMsgElementWithTag(NED_CPLUSPLUS, ps.msgfile );
                   ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
                   storeBannerAndRightComments(ps.cplusplus,@1,@2);
                 }
         | CPLUSPLUS '(' targetspec ')' CPLUSPLUSBODY opt_semicolon
                 {
-                  ps.cplusplus = (CplusplusElement *)createElementWithTag(NED_CPLUSPLUS, ps.msgfile );
+                  ps.cplusplus = (CplusplusElement *)createMsgElementWithTag(NED_CPLUSPLUS, ps.msgfile );
                   ps.cplusplus->setTarget(toString(@3));
                   ps.cplusplus->setBody(toString(trimDoubleBraces(@5)));
                   storeBannerAndRightComments(ps.cplusplus,@1,@5);
@@ -238,7 +239,7 @@ targetitem
 import
         : IMPORT importspec ';'
                 {
-                  ps.import = (ImportElement *)createElementWithTag(NED_IMPORT, ps.msgfile);
+                  ps.import = (ImportElement *)createMsgElementWithTag(NED_IMPORT, ps.msgfile);
                   ps.import->setImportSpec(removeSpaces(@2).c_str());
                   storePos(ps.import,@$);
                   storeBannerAndRightComments(ps.import,@$);
@@ -261,7 +262,7 @@ importname
 struct_decl
         : STRUCT qname ';'
                 {
-                  ps.structdecl = (StructDeclElement *)createElementWithTag(NED_STRUCT_DECL, ps.msgfile );
+                  ps.structdecl = (StructDeclElement *)createMsgElementWithTag(NED_STRUCT_DECL, ps.msgfile );
                   ps.structdecl->setName(toString(@2));
                   storeBannerAndRightComments(ps.structdecl,@1,@2);
                 }
@@ -270,21 +271,21 @@ struct_decl
 class_decl
         : CLASS qname ';'
                 {
-                  ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
+                  ps.classdecl = (ClassDeclElement *)createMsgElementWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setName(toString(@2));
                   ps.classdecl->setIsCobject(true);
                   storeBannerAndRightComments(ps.classdecl,@1,@2);
                 }
         | CLASS NONCOBJECT qname ';'
                 {
-                  ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
+                  ps.classdecl = (ClassDeclElement *)createMsgElementWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(false);
                   ps.classdecl->setName(toString(@3));
                   storeBannerAndRightComments(ps.classdecl,@1,@3);
                 }
         | CLASS qname EXTENDS qname ';'
                 {
-                  ps.classdecl = (ClassDeclElement *)createElementWithTag(NED_CLASS_DECL, ps.msgfile );
+                  ps.classdecl = (ClassDeclElement *)createMsgElementWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(true);
                   ps.classdecl->setName(toString(@2));
                   ps.classdecl->setExtendsName(toString(@4));
@@ -295,7 +296,7 @@ class_decl
 message_decl
         : MESSAGE qname ';'
                 {
-                  ps.messagedecl = (MessageDeclElement *)createElementWithTag(NED_MESSAGE_DECL, ps.msgfile );
+                  ps.messagedecl = (MessageDeclElement *)createMsgElementWithTag(NED_MESSAGE_DECL, ps.msgfile );
                   ps.messagedecl->setName(toString(@2));
                   storeBannerAndRightComments(ps.messagedecl,@1,@2);
                 }
@@ -304,7 +305,7 @@ message_decl
 packet_decl
         : PACKET qname ';'
                 {
-                  ps.packetdecl = (PacketDeclElement *)createElementWithTag(NED_PACKET_DECL, ps.msgfile );
+                  ps.packetdecl = (PacketDeclElement *)createMsgElementWithTag(NED_PACKET_DECL, ps.msgfile );
                   ps.packetdecl->setName(toString(@2));
                   storeBannerAndRightComments(ps.packetdecl,@1,@2);
                 }
@@ -313,7 +314,7 @@ packet_decl
 enum_decl
         : ENUM qname ';'
                 {
-                  ps.enumdecl = (EnumDeclElement *)createElementWithTag(NED_ENUM_DECL, ps.msgfile );
+                  ps.enumdecl = (EnumDeclElement *)createMsgElementWithTag(NED_ENUM_DECL, ps.msgfile );
                   ps.enumdecl->setName(toString(@2));
                   storeBannerAndRightComments(ps.enumdecl,@1,@2);
                 }
@@ -325,10 +326,10 @@ enum_decl
 enum
         : ENUM qname '{'
                 {
-                  ps.enump = (EnumElement *)createElementWithTag(NED_ENUM, ps.msgfile );
+                  ps.enump = (EnumElement *)createMsgElementWithTag(NED_ENUM, ps.msgfile );
                   ps.enump->setName(toString(@2));
                   storeBannerAndRightComments(ps.enump,@1,@2);
-                  ps.enumfields = (EnumFieldsElement *)createElementWithTag(NED_ENUM_FIELDS, ps.enump);
+                  ps.enumfields = (EnumFieldsElement *)createMsgElementWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
           opt_enumfields '}' opt_semicolon
                 { storeTrailingComment(ps.enump,@$); }
@@ -347,13 +348,13 @@ enumfields
 enumfield
         : NAME ';'
                 {
-                  ps.enumfield = (EnumFieldElement *)createElementWithTag(NED_ENUM_FIELD, ps.enumfields);
+                  ps.enumfield = (EnumFieldElement *)createMsgElementWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(@1));
                   storeBannerAndRightComments(ps.enumfield,@1,@1);
                 }
         | NAME '=' enumvalue ';'
                 {
-                  ps.enumfield = (EnumFieldElement *)createElementWithTag(NED_ENUM_FIELD, ps.enumfields);
+                  ps.enumfield = (EnumFieldElement *)createMsgElementWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(@1));
                   ps.enumfield->setValue(toString(@3));
                   storeBannerAndRightComments(ps.enumfield,@1,@3);
@@ -386,13 +387,13 @@ struct
 message_header
         : MESSAGE qname '{'
                 {
-                  ps.msgclassorstruct = ps.messagep = (MessageElement *)createElementWithTag(NED_MESSAGE, ps.msgfile );
+                  ps.msgclassorstruct = ps.messagep = (MessageElement *)createMsgElementWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
                   storeBannerAndRightComments(ps.messagep,@1,@2);
                 }
         | MESSAGE qname EXTENDS qname '{'
                 {
-                  ps.msgclassorstruct = ps.messagep = (MessageElement *)createElementWithTag(NED_MESSAGE, ps.msgfile );
+                  ps.msgclassorstruct = ps.messagep = (MessageElement *)createMsgElementWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
                   ps.messagep->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.messagep,@1,@4);
@@ -402,13 +403,13 @@ message_header
 packet_header
         : PACKET qname '{'
                 {
-                  ps.msgclassorstruct = ps.packetp = (PacketElement *)createElementWithTag(NED_PACKET, ps.msgfile );
+                  ps.msgclassorstruct = ps.packetp = (PacketElement *)createMsgElementWithTag(NED_PACKET, ps.msgfile );
                   ps.packetp->setName(toString(@2));
                   storeBannerAndRightComments(ps.packetp,@1,@2);
                 }
         | PACKET qname EXTENDS qname '{'
                 {
-                  ps.msgclassorstruct = ps.packetp = (PacketElement *)createElementWithTag(NED_PACKET, ps.msgfile );
+                  ps.msgclassorstruct = ps.packetp = (PacketElement *)createMsgElementWithTag(NED_PACKET, ps.msgfile );
                   ps.packetp->setName(toString(@2));
                   ps.packetp->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.packetp,@1,@4);
@@ -418,13 +419,13 @@ packet_header
 class_header
         : CLASS qname '{'
                 {
-                  ps.msgclassorstruct = ps.classp = (ClassElement *)createElementWithTag(NED_CLASS, ps.msgfile );
+                  ps.msgclassorstruct = ps.classp = (ClassElement *)createMsgElementWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
                   storeBannerAndRightComments(ps.classp,@1,@2);
                 }
         | CLASS qname EXTENDS qname '{'
                 {
-                  ps.msgclassorstruct = ps.classp = (ClassElement *)createElementWithTag(NED_CLASS, ps.msgfile );
+                  ps.msgclassorstruct = ps.classp = (ClassElement *)createMsgElementWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
                   ps.classp->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.classp,@1,@4);
@@ -434,13 +435,13 @@ class_header
 struct_header
         : STRUCT qname '{'
                 {
-                  ps.msgclassorstruct = ps.structp = (StructElement *)createElementWithTag(NED_STRUCT, ps.msgfile );
+                  ps.msgclassorstruct = ps.structp = (StructElement *)createMsgElementWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
                   storeBannerAndRightComments(ps.structp,@1,@2);
                 }
         | STRUCT qname EXTENDS qname '{'
                 {
-                  ps.msgclassorstruct = ps.structp = (StructElement *)createElementWithTag(NED_STRUCT, ps.msgfile );
+                  ps.msgclassorstruct = ps.structp = (StructElement *)createMsgElementWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
                   ps.structp->setExtendsName(toString(@4));
                   storeBannerAndRightComments(ps.structp,@1,@4);
@@ -485,7 +486,7 @@ field
 fieldtypename
         : fieldmodifiers fielddatatype NAME
                 {
-                  ps.field = (FieldElement *)createElementWithTag(NED_FIELD, ps.msgclassorstruct);
+                  ps.field = (FieldElement *)createMsgElementWithTag(NED_FIELD, ps.msgclassorstruct);
                   ps.field->setName(toString(@3));
                   ps.field->setDataType(toString(@2));
                   ps.field->setIsAbstract(ps.isAbstract);
@@ -493,7 +494,7 @@ fieldtypename
                 }
         | fieldmodifiers NAME
                 {
-                  ps.field = (FieldElement *)createElementWithTag(NED_FIELD, ps.msgclassorstruct);
+                  ps.field = (FieldElement *)createMsgElementWithTag(NED_FIELD, ps.msgclassorstruct);
                   ps.field->setName(toString(@2));
                   ps.field->setIsAbstract(ps.isAbstract);
                   ps.field->setIsReadonly(ps.isReadonly);
@@ -609,7 +610,7 @@ property_namevalue
                 {
                   ASTNode *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
                   ps.property = addProperty(propertyscope, toString(@1));
-                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey = (PropertyKeyElement *)createMsgElementWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild(createPropertyValue(@3));
                   storePos(ps.propkey, @3);
                 }
@@ -643,7 +644,7 @@ property_keys
 property_key
         : property_literal '=' property_values
                 {
-                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey = (PropertyKeyElement *)createMsgElementWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->setName(opp_trim(toString(@1)).c_str());
                   for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
@@ -652,7 +653,7 @@ property_key
                 }
         | property_values
                 {
-                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey = (PropertyKeyElement *)createMsgElementWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild($1);
                   for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
@@ -675,7 +676,7 @@ property_value
                 }
         |  /*empty*/
                 {
-                  LiteralElement *node = (LiteralElement *)createElementWithTag(NED_LITERAL);
+                  LiteralElement *node = (LiteralElement *)createMsgElementWithTag(NED_LITERAL);
                   node->setType(NED_CONST_SPEC); // and leave both value and text at ""
                   $$ = node;
                 }
@@ -720,7 +721,7 @@ ASTNode *doParseMSG2(NEDParser *p, const char *nedtext)
     if (!handle)
         {np->getErrors()->addError("", "unable to allocate work memory"); return nullptr;}
 
-    // create parser state and NEDFileElement
+    // create parser state and NedFileElement
     resetParserState();
     ps.msgfile = new MsgFileElement();
 

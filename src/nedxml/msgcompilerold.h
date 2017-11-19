@@ -25,7 +25,7 @@
 #include <set>
 
 #include "errorstore.h"
-#include "nedelements.h"
+#include "msgelements.h"
 
 namespace omnetpp {
 namespace nedxml {

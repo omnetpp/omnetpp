@@ -125,7 +125,7 @@ class NEDXML_API NEDTypeInfo
     /**
      * Returns the NED declaration.
      */
-    virtual std::string getNedSource() const;
+    virtual std::string getNEDSource() const;
 
     /**
      * Returns the number of "extends" names. This includes indirect

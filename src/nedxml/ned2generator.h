@@ -82,15 +82,15 @@ class NEDXML_API NED2Generator
     //@}
 
     /** Dispatch to various doXXX() methods according to node type */
-    void generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
+    void generateNEDItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
 
-    /** Invoke generateNedItem() on all children */
+    /** Invoke generateNEDItem() on all children */
     void generateChildren(ASTNode *node, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNedItem() on all children of the given tagcode */
+    /** Invoke generateNEDItem() on all children of the given tagcode */
     void generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNedItem() on children of the given tagcodes (NED_NULL-terminated array) */
+    /** Invoke generateNEDItem() on children of the given tagcodes (NED_NULL-terminated array) */
     void generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg=nullptr);
 
     /** @name Utilities */
@@ -114,7 +114,7 @@ class NEDXML_API NED2Generator
     /** @name Generate NED code from the given element */
     //@{
     void doFiles(FilesElement *node, const char *indent, bool islast, const char *);
-    void doNedFile(NedFileElement *node, const char *indent, bool islast, const char *);
+    void doNEDFile(NedFileElement *node, const char *indent, bool islast, const char *);
     void doPackage(PackageElement *node, const char *indent, bool islast, const char *);
     void doImport(ImportElement *node, const char *indent, bool islast, const char *);
     void doPropertyDecl(PropertyDeclElement *node, const char *indent, bool islast, const char *);
@@ -151,24 +151,6 @@ class NEDXML_API NED2Generator
     void doFunction(FunctionElement *node, const char *indent, bool islast, const char *);
     void doIdent(IdentElement *node, const char *indent, bool islast, const char *);
     void doLiteral(LiteralElement *node, const char *indent, bool islast, const char *);
-
-    // msg stuff
-    void doMsgFile(MsgFileElement *node, const char *indent, bool islast, const char *);
-    void doNamespace(NamespaceElement *node, const char *indent, bool islast, const char *);
-    void doCplusplus(CplusplusElement *node, const char *indent, bool islast, const char *);
-    void doStructDecl(StructDeclElement *node, const char *indent, bool islast, const char *);
-    void doClassDecl(ClassDeclElement *node, const char *indent, bool islast, const char *);
-    void doMessageDecl(MessageDeclElement *node, const char *indent, bool islast, const char *);
-    void doPacketDecl(PacketDeclElement *node, const char *indent, bool islast, const char *);
-    void doEnumDecl(EnumDeclElement *node, const char *indent, bool islast, const char *);
-    void doEnum(EnumElement *node, const char *indent, bool islast, const char *);
-    void doEnumFields(EnumFieldsElement *node, const char *indent, bool islast, const char *);
-    void doEnumField(EnumFieldElement *node, const char *indent, bool islast, const char *);
-    void doMessage(MessageElement *node, const char *indent, bool islast, const char *);
-    void doPacket(PacketElement *node, const char *indent, bool islast, const char *);
-    void doClass(ClassElement *node, const char *indent, bool islast, const char *);
-    void doStruct(StructElement *node, const char *indent, bool islast, const char *);
-    void doField(FieldElement *node, const char *indent, bool islast, const char *);
     void doComment(CommentElement *node, const char *indent, bool islast, const char *);
     //@}
 };
