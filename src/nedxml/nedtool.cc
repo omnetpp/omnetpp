@@ -41,7 +41,6 @@
 #include "nedcrossvalidator.h"
 #include "msggenerator.h"
 #include "ned2generator.h"
-#include "ned1generator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
 #include "xmlastparser.h"
@@ -63,7 +62,6 @@ bool opt_genxml = false;           // -x
 bool opt_gensrc = false;           // -n
 bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -T
-bool opt_oldsyntax = false;        // -Q
 const char *opt_suffix = nullptr;  // -s
 const char *opt_hdrsuffix = nullptr; // -t
 bool opt_inplace = false;          // -k
@@ -111,7 +109,6 @@ void printUsage()
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
        "  -T xml/ned/msg/off: following files are XML, NED or MSG up to '-T off'\n"
-       "  -Q: with -n: use old (3.x) NED syntax\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -t <suffix>: when generating C++, suffix for generated header files\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
@@ -187,16 +184,11 @@ bool renameFileToBAK(const char *fname)
     return true;
 }
 
-void generateSource(std::ostream& out, ASTNode *node, ErrorStore *e, int contentType, bool oldsyntax)
+void generateSource(std::ostream& out, ASTNode *node, ErrorStore *e, int contentType)
 {
-    if (contentType == NED_FILE) {
-        if (oldsyntax)
-            generateNED1(out, node, e);
-        else
-            generateNED2(out, node);
-    }
-    else if (contentType == MSG_FILE) {
-        generateMsg(out, node);
+    switch (contentType) {
+    case NED_FILE: generateNED2(out, node); break;
+    case MSG_FILE: generateMsg(out, node); break;
     }
 }
 
@@ -365,7 +357,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                     if (opt_inplace && !renameFileToBAK(outfname))
                         return false;
                     ofstream out(outfname);
-                    generateSource(out, child, errors, contentType, opt_oldsyntax);
+                    generateSource(out, child, errors, contentType);
                     out.close();
                 }
             }
@@ -373,7 +365,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                 if (opt_inplace && !renameFileToBAK(outfname))
                     return false;
                 ofstream out(outfname);
-                generateSource(out, tree, errors, contentType, opt_oldsyntax);
+                generateSource(out, tree, errors, contentType);
                 out.close();
             }
             else {
@@ -554,9 +546,6 @@ int main(int argc, char **argv)
                 fprintf(stderr, "nedtool: unknown file type %s after -T\n", arg);
                 return 1;
             }
-        }
-        else if (!strcmp(argv[i], "-Q")) {
-            opt_oldsyntax = true;
         }
         else if (!strcmp(argv[i], "-s")) {
             i++;
@@ -739,7 +728,7 @@ int main(int argc, char **argv)
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
         else if (opt_gensrc)
-            generateSource(out, outputtree, errors, NED_FILE /*TODO or MSG_FILE*/, opt_oldsyntax);
+            generateSource(out, outputtree, errors, NED_FILE /*TODO or MSG_FILE*/);
         else
             return 1;  // mergeoutput with C++ output not supported
         // generateCpp(out, cout, outputtree);

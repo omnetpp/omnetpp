@@ -58,7 +58,6 @@ void msgLexerSetRecognizeObsoleteKeywords(bool opt);
 }  // namespace omnetpp
 
 omnetpp::nedxml::ASTNode *doParseNED2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
-omnetpp::nedxml::ASTNode *doParseNED1(omnetpp::nedxml::NEDParser *p, const char *nedtext);
 omnetpp::nedxml::ASTNode *doParseMSG2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
 
 

@@ -37,9 +37,8 @@ OBJS= $O/astnode.o $O/errorstore.o $O/exception.o \
       $O/nedsyntaxvalidator.o $O/nedcrossvalidator.o \
       $O/sourcedocument.o $O/nedparser.o $O/nedyyutil.o $O/msgyyutil.o $O/yyutil.o\
       $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o $O/nedutil.o \
-      $O/ned2generator.o $O/ned1generator.o $O/msggenerator.o $O/xmlgenerator.o \
+      $O/ned2generator.o $O/msggenerator.o $O/xmlgenerator.o \
       $O/xmlastparser.o $O/astbuilder.o $O/saxparser_$(XMLPARSER).o \
-      $O/ned1.tab.o $O/lex.ned1yy.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
       $O/msgcompiler.o $O/msgtypetable.o $O/msganalyzer.o $O/msgcodegenerator.o \
       $O/msgcompilerold.o $O/sim_std_msg.o \
@@ -49,7 +48,6 @@ GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   neddtdvalidator.h neddtdvalidator.cc \
                   msgelements.cc msgelements.h msgvalidator.cc msgvalidator.h \
                   msgdtdvalidator.h msgdtdvalidator.cc \
-                  ned1.tab.hh ned1.tab.cc lex.ned1yy.cc \
                   ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
                   msg2.tab.hh msg2.tab.cc lex.msg2yy.cc \
                   sim_std_msg.cc
@@ -126,10 +124,6 @@ clean:
 %sgelements.cc %sgelements.h %sgdtdvalidator.cc %sgdtdvalidator.h %sgvalidator.cc %sgvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/msg2.dtd
 	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/etc/msg2.dtd msg
 
-%ed1.tab.hh %ed1.tab.cc : ned1.y
-	$(qecho) YACC: $<
-	$(Q)$(YACC) -o ned1.tab.cc -p ned1yy -d ned1.y
-
 %ed2.tab.hh %ed2.tab.cc : ned2.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
@@ -137,10 +131,6 @@ clean:
 %sg2.tab.hh %sg2.tab.cc : msg2.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
-
-lex.ned1yy.cc: ned1.lex
-	$(qecho) LEX: $<
-	$(Q)$(LEX) -olex.ned1yy.cc -Pned1yy ned1.lex
 
 lex.ned2yy.cc: ned2.lex
 	$(qecho) LEX: $<

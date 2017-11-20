@@ -106,7 +106,6 @@ NEDParser::NEDParser(ErrorStore *e)
     filename = nullptr;
     parseexpr = true;
     storesrc = false;
-    msgNewSyntax = true;
     errors = e;
 }
 
@@ -203,10 +202,7 @@ bool NEDParser::loadText(const char *nedtext, const char *fname)
 ASTNode *NEDParser::parseNED()
 {
     errors->clear();
-    if (guessIsNEDInNewSyntax(nedsource->getFullText()))
-        return ::doParseNED2(this, nedsource->getFullText());
-    else
-        return ::doParseNED1(this, nedsource->getFullText());
+    return ::doParseNED2(this, nedsource->getFullText());
 }
 
 ASTNode *NEDParser::parseMSG()
@@ -215,69 +211,6 @@ ASTNode *NEDParser::parseMSG()
     msgLexerSetRecognizeImportKeyword(msgNewSyntax);
     msgLexerSetRecognizeObsoleteKeywords(!msgNewSyntax);
     return ::doParseMSG2(this, nedsource->getFullText());
-}
-
-bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
-{
-    // we regard expressions to be always in the new syntax
-    if (strncmp(txt, MAGIC_PREFIX, strlen(MAGIC_PREFIX)) == 0)
-        return true;
-
-    // first, remove all comments and string literals
-    char *buf = new char[strlen(txt)+1];
-    const char *s;
-    char *d;
-    bool whitespaceOnly = true;
-    for (s = txt, d = buf; *s; ) {
-        if (*s == '/' && *(s+1) == '/') {
-            // if there's a comment, skip rest of the line
-            s += 2;
-            while (*s && *s != '\r' && *s != '\n')
-                s++;
-        }
-        else if (*s == '"') {
-            // leave out string literals as well
-            s++;
-            while (*s && *s != '\r' && *s != '\n' && *s != '"')
-                if (*s++ == '\\')
-                    s++;
-
-            if (*s == '"')
-                s++;
-        }
-        else {
-            if (*s && !opp_isspace(*s))
-                whitespaceOnly = false;
-
-            // copy everything else
-            *d++ = *s++;
-        }
-    }
-    *d = '\0';
-
-    // Only in NED2 are curly braces {} and "@" allowed and widely used.
-    //
-    bool containsNED2Chars = strchr(buf, '{') || strchr(buf, '}') || strchr(buf, '@');
-
-    // If needed, check whether it contains the keyword "package";
-    // it is only used in NED2. We have to search "whole words only",
-    // so plain strstr() is not enough.
-    // Note: this is not bulletproof, because NED2 keywords were not
-    // reserved in NED1.
-    //
-    bool containsPackageKeyword = false;
-    if (!containsNED2Chars)
-        for (const char *s = strstr(buf, "package"); s != nullptr; s = strstr(s+1, "package"))
-            if (opp_isspace(s[strlen("package")]) && (s == buf || opp_isspace(s[-1]))) {
-                containsPackageKeyword = true;
-                break;
-            }
-
-
-    // cleanup
-    delete[] buf;
-
-    return whitespaceOnly || containsNED2Chars || containsPackageKeyword;
 }
 
 void NEDParser::error(const char *msg, int line)

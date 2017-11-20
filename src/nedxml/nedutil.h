@@ -25,33 +25,10 @@
 #include "astnode.h"
 
 namespace omnetpp {
-
-namespace common { class DisplayString; };
-
 namespace nedxml {
-
 
 class PropertyElement;
 class LiteralElement;
-
-/**
- * @brief Display string conversions.
- *
- * @ingroup Misc
- */
-class NEDXML_API DisplayStringUtil
-{
-  private:
-    typedef omnetpp::common::DisplayString DisplayString;
-    static void parseDisplayString(const char *s, DisplayString& ds);
-  public:
-    static std::string upgradeBackgroundDisplayString(const char *s);
-    static std::string upgradeSubmoduleDisplayString(const char *s);
-    static std::string upgradeConnectionDisplayString(const char *s);
-    static std::string toOldBackgroundDisplayString(const char *s);
-    static std::string toOldSubmoduleDisplayString(const char *s);
-    static std::string toOldConnectionDisplayString(const char *s);
-};
 
 /**
  * @brief Various utilities for the ASTNode tree.
@@ -77,11 +54,6 @@ class NEDXML_API ASTNodeUtil
     static int compare(ASTNode *node1, ASTNode *node2);
     /** Recursive version of compare() */
     static int compareTree(ASTNode *node1, ASTNode *node2);
-    //@}
-
-    /** @name Misc */
-    //@{
-    static bool isNEDType(ASTNode *node);
     //@}
 };
 

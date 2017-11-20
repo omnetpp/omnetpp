@@ -63,14 +63,13 @@ class NEDXML_API NEDParser
     bool msgNewSyntax;
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // name of file being parsed
-    ErrorStore *errors;     // accumulates error messages
-    SourceDocument *nedsource;  // represents the source file
+    ErrorStore *errors;        // accumulates error messages
+    SourceDocument *nedsource; // represents the source file
 
     bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
     ASTNode *parseNED();
     ASTNode *parseMSG();
-    static bool guessIsNEDInNewSyntax(const char *txt);
 
   public:
     /**
