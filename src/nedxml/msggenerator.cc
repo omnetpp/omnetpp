@@ -20,7 +20,6 @@
 #include "common/stringutil.h"
 #include "msggenerator.h"
 #include "errorstore.h"
-#include "nedutil.h"
 
 using namespace omnetpp::common;
 

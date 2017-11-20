@@ -17,7 +17,6 @@
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "nedexception.h"
-#include "nedutil.h"
 #include "msgtypetable.h"
 #include "msganalyzer.h"
 #include "msgcompiler.h"

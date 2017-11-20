@@ -25,7 +25,6 @@
 #include "msgcompiler.h"
 #include "nedparser.h"
 #include "nedexception.h"
-#include "nedutil.h"
 
 #include "omnetpp/simkerneldefs.h"
 

@@ -28,8 +28,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cdisplaystring.h"
 #include "cnedloader.h"
-
-#include "../../nedxml/errorstore.h"
+#include "nedxml/errorstore.h"
 #include "cexpressionbuilder.h"
 #include "cdynamicmoduletype.h"
 #include "cdynamicchanneltype.h"

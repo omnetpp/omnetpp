@@ -57,7 +57,6 @@
 #include <cstdlib>
 #include "common/commonutil.h"
 #include "common/stringutil.h"
-#include "nedyydefs.h"
 #include "errorstore.h"
 #include "nedexception.h"
 
@@ -87,7 +86,6 @@ void yyerror (const char *s);
 #include "nedparser.h"
 #include "sourcedocument.h"
 #include "msgelements.h"
-#include "nedutil.h"
 #include "msgyyutil.h"
 
 using namespace omnetpp;

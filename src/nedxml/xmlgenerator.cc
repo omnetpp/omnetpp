@@ -19,7 +19,6 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
-#include "nedelements.h"
 #include "xmlgenerator.h"
 
 namespace omnetpp {
@@ -47,6 +46,7 @@ std::string generateXML(ASTNode *tree, bool srcloc, int indentsize)
 
 NEDXMLGenerator::NEDXMLGenerator()
 {
+    printSrcLoc = true;
     indentSize = 2;
 }
 

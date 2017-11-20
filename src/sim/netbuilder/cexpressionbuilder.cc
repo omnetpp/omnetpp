@@ -29,8 +29,7 @@
 #include "omnetpp/cparimpl.h"
 #include "omnetpp/nedsupport.h"
 #include "cexpressionbuilder.h"
-
-#include "../../nedxml/errorstore.h"
+#include "nedxml/errorstore.h"
 
 using namespace omnetpp::common;
 

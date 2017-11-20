@@ -24,8 +24,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cdisplaystring.h"
 #include "cneddeclaration.h"
-
-#include "../../nedxml/errorstore.h"
+#include "nedxml/errorstore.h"
 #include "cnedloader.h"
 
 namespace omnetpp {

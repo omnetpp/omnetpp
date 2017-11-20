@@ -20,7 +20,7 @@
 
 
 #include <iostream>
-#include "nedelements.h"
+#include "astnode.h"
 
 namespace omnetpp {
 namespace nedxml {
