@@ -101,7 +101,7 @@ MsgAnalyzer::~MsgAnalyzer()
 {
 }
 
-MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(NEDElement *node)
+MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(ASTNode *node)
 {
     Properties props;
 
@@ -129,7 +129,7 @@ MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(NEDElement *node)
     return props;
 }
 
-MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(NEDElement *node, const std::string& namespaceName)
+MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(ASTNode *node, const std::string& namespaceName)
 {
     ClassInfo classInfo;
     classInfo.nedElement = node;
@@ -161,11 +161,11 @@ void MsgAnalyzer::ensureFieldsAnalyzed(ClassInfo& classInfo)
 
 void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
 {
-    NEDElement *node = classInfo.nedElement;
+    ASTNode *node = classInfo.nedElement;
 
     classInfo.msgbase = str(node->getAttribute("extends-name"));
 
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_FIELD: {
                 FieldInfo field;
@@ -555,10 +555,10 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std:
     enumInfo.isDeclaration = false;
 
     // prepare enum items:
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_ENUM_FIELDS:
-                for (NEDElement *e = child->getFirstChild(); e; e = e->getNextSibling()) {
+                for (ASTNode *e = child->getFirstChild(); e; e = e->getNextSibling()) {
                     switch (e->getTagCode()) {
                         case NED_ENUM_FIELD: {
                             EnumItem item;

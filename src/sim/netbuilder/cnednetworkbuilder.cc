@@ -729,7 +729,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
     ParametersElement *paramsNode = submod->getFirstParametersChild();
     if (paramsNode)
         for (PropertyElement *prop = paramsNode->getFirstPropertyChild(); prop != nullptr; prop = prop->getNextPropertySibling())
-            if (omnetpp::opp_strcmp(prop->getName(), "dynamic") == 0 && NEDElementUtil::propertyAsBool(prop) == true)
+            if (omnetpp::opp_strcmp(prop->getName(), "dynamic") == 0 && ASTNodeUtil::propertyAsBool(prop) == true)
                 return;
 
 

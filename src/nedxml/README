@@ -12,7 +12,7 @@ Data classes:
     ned.dtd
     dtdclassgen.pl
     nedelement.cc
-  * nedelement.h
+  * astnode.h
     nedelements.cc (generated from DTD)
   * nedelements.h (generated from DTD)
     nedstring.cc

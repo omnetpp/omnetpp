@@ -27,9 +27,9 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[])
+void NEDDTDValidatorBase::checkSequence(ASTNode *node, int tags[], char mult[])
 {
-    NEDElement *p = node->getFirstChild();
+    ASTNode *p = node->getFirstChild();
     for (int i = 0; tags[i]; i++) {
         switch (mult[i]) {
             case '1':
@@ -74,7 +74,7 @@ static int isInVector(int a, int v[])
     return false;
 }
 
-void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *& curchild, int tags[], char mult)
+void NEDDTDValidatorBase::tryCheckChoice(ASTNode *node, ASTNode *& curchild, int tags[], char mult)
 {
     // note: 'node' argument is solely used by errors->addError() (when curchild==nullptr)
     if (mult == '?') {
@@ -98,30 +98,30 @@ void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *& curchil
     }
 }
 
-void NEDDTDValidatorBase::checkChoice(NEDElement *node, int tags[], char mult)
+void NEDDTDValidatorBase::checkChoice(ASTNode *node, int tags[], char mult)
 {
-    NEDElement *curchild = node->getFirstChild();
+    ASTNode *curchild = node->getFirstChild();
     tryCheckChoice(node, curchild, tags, mult);
     if (curchild)
         errors->addError(node, "DTD validation error: child element '%s' unexpected", curchild->getTagName());
 }
 
-void NEDDTDValidatorBase::checkSeqOfChoices(NEDElement *node, Choice choices[], int n)
+void NEDDTDValidatorBase::checkSeqOfChoices(ASTNode *node, Choice choices[], int n)
 {
-    NEDElement *curchild = node->getFirstChild();
+    ASTNode *curchild = node->getFirstChild();
     for (int i = 0; i < n; i++)
         tryCheckChoice(node, curchild, choices[i].tags, choices[i].mult);
     if (curchild)
         errors->addError(node, "DTD validation error: child element '%s' unexpected", curchild->getTagName());
 }
 
-void NEDDTDValidatorBase::checkEmpty(NEDElement *node)
+void NEDDTDValidatorBase::checkEmpty(ASTNode *node)
 {
     if (node->getFirstChild())
         errors->addError(node, "DTD validation error: EMPTY element has children\n");
 }
 
-void NEDDTDValidatorBase::checkRequiredAttribute(NEDElement *node, const char *attr)
+void NEDDTDValidatorBase::checkRequiredAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -129,7 +129,7 @@ void NEDDTDValidatorBase::checkRequiredAttribute(NEDElement *node, const char *a
         errors->addError(node, "DTD validation error: required attribute '%s' is empty", attr);
 }
 
-void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)
+void NEDDTDValidatorBase::checkEnumeratedAttribute(ASTNode *node, const char *attr, const char *vals[], int n)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -143,7 +143,7 @@ void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char 
                            "enumerated values ('%s',...)", s, attr, vals[0]);
 }
 
-void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
+void NEDDTDValidatorBase::checkNameAttribute(ASTNode *node, const char *attr)
 {
     //
     // NOTE: we use this method for validating NMTOKEN attributes in our DTD.
@@ -167,7 +167,7 @@ void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
         }
 }
 
-void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *attr)
+void NEDDTDValidatorBase::checkCommentAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);

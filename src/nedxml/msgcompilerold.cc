@@ -238,7 +238,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement, const char *hFile, co
     }
 }
 
-void MsgCompilerOld::extractClassDecl(NEDElement *child)
+void MsgCompilerOld::extractClassDecl(ASTNode *child)
 {
     std::string name = ptr2str(child->getAttribute("name"));
     if (RESERVED_WORDS.find(name) != RESERVED_WORDS.end()) {
@@ -511,7 +511,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
                            struct-decl|class-decl|message-decl|packet-decl|enum-decl|
                            struct|class|message|packet|enum)*)>
      */
-    for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
                 // open namespace(s)
@@ -599,7 +599,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
 #endif
 }
 
-MsgCompilerOld::Properties MsgCompilerOld::extractPropertiesOf(NEDElement *node)
+MsgCompilerOld::Properties MsgCompilerOld::extractPropertiesOf(ASTNode *node)
 {
     Properties props;
 
@@ -627,7 +627,7 @@ MsgCompilerOld::Properties MsgCompilerOld::extractPropertiesOf(NEDElement *node)
     return props;
 }
 
-MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(NEDElement *node)
+MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(ASTNode *node)
 {
     ClassInfo classInfo;
     classInfo.nedElement = node;
@@ -637,7 +637,7 @@ MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(NEDElement *node)
     classInfo.msgbase = ptr2str(node->getAttribute("extends-name"));
     classInfo.props = extractPropertiesOf(node);
 
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_FIELD: {
                 ClassInfo::FieldInfo f;
@@ -967,7 +967,7 @@ void MsgCompilerOld::prepareForCodeGeneration(ClassInfo& info)
     }
 }
 
-std::string MsgCompilerOld::generatePreComment(NEDElement *nedElement)
+std::string MsgCompilerOld::generatePreComment(ASTNode *nedElement)
 {
     std::ostringstream s;
     NED2Generator().generate(s, nedElement, "");
@@ -2032,10 +2032,10 @@ MsgCompilerOld::EnumInfo MsgCompilerOld::extractEnumInfo(EnumElement *node)
     info.enumQName = canonicalizeQName(namespaceName, info.enumName);
 
     // prepare enum items:
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_ENUM_FIELDS:
-                for (NEDElement *e = child->getFirstChild(); e; e = e->getNextSibling()) {
+                for (ASTNode *e = child->getFirstChild(); e; e = e->getNextSibling()) {
                     switch (e->getTagCode()) {
                         case NED_ENUM_FIELD: {
                             EnumInfo::EnumItem f;
@@ -2252,7 +2252,7 @@ void MsgCompilerOld::generateTemplates()
     CC << "\n";
 }
 
-void MsgCompilerOld::generateNamespaceBegin(NEDElement *element)
+void MsgCompilerOld::generateNamespaceBegin(ASTNode *element)
 {
     if (namespaceName.empty()) {
         errors->addError(element, "namespace name is empty\n");
@@ -2303,7 +2303,7 @@ void MsgCompilerOld::generateNamespaceEnd()
     namespaceNameVector.clear();
 }
 
-void MsgCompilerOld::addClassType(const std::string& classqname, ClassType type, NEDElement *context)
+void MsgCompilerOld::addClassType(const std::string& classqname, ClassType type, ASTNode *context)
 {
     if (classType.find(classqname) != classType.end()) {
         if (classType[classqname] != type)

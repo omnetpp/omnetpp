@@ -44,25 +44,25 @@ class NEDXML_API NEDCrossValidator : public NEDValidatorBase
     NEDResourceCache *resolver;
 
     // temporary variables:
-    NEDElement *moduleTypeDecl;
+    ASTNode *moduleTypeDecl;
 
-    NEDElement *findChildWithTagAndAttribute(NEDElement *node, int tag, const char *attr, const char *value);
-    void checkGate(GateElement *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrcGate);
+    ASTNode *findChildWithTagAndAttribute(ASTNode *node, int tag, const char *attr, const char *value);
+    void checkGate(GateElement *gate, bool hasGateIndex, bool isInput, ASTNode *conn, bool isSrcGate);
     void validateConnGate(const char *submodName, bool hasSubmodIndex,
                           const char *gateName, bool hasGateIndex,
-                          NEDElement *parent, NEDElement *conn, bool isSrc);
+                          ASTNode *parent, ASTNode *conn, bool isSrc);
 
     // internal helper
-    NEDElement *getXXXDeclaration(const char *name, int tagcode1, int tagcode2=-1);
+    ASTNode *getXXXDeclaration(const char *name, int tagcode1, int tagcode2=-1);
 
     // these utility methods look up name in resolver, and add an error if the type doesn't match
-    NEDElement *getModuleDeclaration(const char *name);
-    NEDElement *getChannelDeclaration(const char *name);
-    NEDElement *getModuleInterfaceDeclaration(const char *name);
-    NEDElement *getChannelInterfaceDeclaration(const char *name);
+    ASTNode *getModuleDeclaration(const char *name);
+    ASTNode *getChannelDeclaration(const char *name);
+    ASTNode *getModuleInterfaceDeclaration(const char *name);
+    ASTNode *getChannelInterfaceDeclaration(const char *name);
 
-    NEDElement *getEnumDeclaration(const char *name);
-    NEDElement *getClassDeclaration(const char *name);
+    ASTNode *getEnumDeclaration(const char *name);
+    ASTNode *getClassDeclaration(const char *name);
 
   public:
     /** Constructor */

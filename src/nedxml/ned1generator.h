@@ -31,7 +31,7 @@ namespace nedxml {
  *
  * @ingroup NEDGenerator
  */
-NEDXML_API void generateNED1(std::ostream& out, NEDElement *node, ErrorStore *e);
+NEDXML_API void generateNED1(std::ostream& out, ASTNode *node, ErrorStore *e);
 
 /**
  * @brief Generates NED code from a NED object tree.
@@ -68,12 +68,12 @@ class NEDXML_API NED1Generator
      * Generates NED code. Takes an output stream where the generated NED code
      * will be written, the object tree and the base indentation.
      */
-    void generate(std::ostream& out, NEDElement *node, const char *indent);
+    void generate(std::ostream& out, ASTNode *node, const char *indent);
 
     /**
      * Generates NED code and returns it as a string.
      */
-    std::string generate(NEDElement *node, const char *indent);
+    std::string generate(ASTNode *node, const char *indent);
 
   protected:
     /** @name Change indentation level */
@@ -83,34 +83,34 @@ class NEDXML_API NED1Generator
     //@}
 
     /** Dispatch to various doXXX() methods according to node type */
-    void generateNedItem(NEDElement *node, const char *indent, bool islast, const char *arg=nullptr);;
+    void generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
 
     /** Invoke generateNedItem() on all children */
-    void generateChildren(NEDElement *node, const char *indent, const char *arg=nullptr);
+    void generateChildren(ASTNode *node, const char *indent, const char *arg=nullptr);
 
     /** Invoke generateNedItem() on all children of the given tagcode */
-    void generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg=nullptr);
+    void generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg=nullptr);
 
     /** Invoke generateNedItem() on children of the given tagcodes (NED_NULL-terminated array) */
-    void generateChildrenWithTypes(NEDElement *node, int tagcodes[], const char *indent, const char *arg=nullptr);
+    void generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg=nullptr);
 
     /** @name Utilities */
     //@{
-    void printInheritance(NEDElement *node, const char *indent);
-    bool hasExpression(NEDElement *node, const char *attr);
-    void printExpression(NEDElement *node, const char *attr, const char *indent);
-    void printOptVector(NEDElement *node, const char *attr, const char *indent);
-    std::string getDisplayStringOf(NEDElement *node, PropertyElement *&outDisplayProp);
+    void printInheritance(ASTNode *node, const char *indent);
+    bool hasExpression(ASTNode *node, const char *attr);
+    void printExpression(ASTNode *node, const char *attr, const char *indent);
+    void printOptVector(ASTNode *node, const char *attr, const char *indent);
+    std::string getDisplayStringOf(ASTNode *node, PropertyElement *&outDisplayProp);
     const char *getPromptTextOf(ParamElement *param);
     //@}
 
     /** @name Getters for comments */
     //@{
-    std::string concatInnerComments(NEDElement *node);
-    std::string getBannerComment(NEDElement *node, const char *indent);
-    std::string getRightComment(NEDElement *node);
-    std::string getInlineRightComment(NEDElement *node);
-    std::string getTrailingComment(NEDElement *node);
+    std::string concatInnerComments(ASTNode *node);
+    std::string getBannerComment(ASTNode *node, const char *indent);
+    std::string getRightComment(ASTNode *node);
+    std::string getInlineRightComment(ASTNode *node);
+    std::string getTrailingComment(ASTNode *node);
     //@}
 
     /** @name Generate NED code from the given element */
@@ -151,7 +151,7 @@ class NEDXML_API NED1Generator
     void doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *);
     void doLoop(LoopElement *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionElement *node, const char *indent, bool islast, const char *);
-    void printConnectionGate(NEDElement *conn, const char *modname, const char *modindexattr,
+    void printConnectionGate(ASTNode *conn, const char *modname, const char *modindexattr,
                              const char *gatename, const char *gateindexattr, bool isplusplus,
                              int gatesubg, const char *indent);
 

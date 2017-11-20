@@ -34,7 +34,7 @@ namespace nedxml {
 struct MsgCompilerOptions;
 
 /**
- * @brief Part of the message compiler. Produces ClassInfo/EnumInfo objects from the NEDElement tree.
+ * @brief Part of the message compiler. Produces ClassInfo/EnumInfo objects from the ASTNode tree.
  * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
  * @ingroup CppGenerator
@@ -65,7 +65,7 @@ class NEDXML_API MsgAnalyzer
     void analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName);
     void analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field);
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
-    Properties extractPropertiesOf(NEDElement *node);
+    Properties extractPropertiesOf(ASTNode *node);
     bool hasSuperclass(ClassInfo& classInfo, const std::string& superclassQName);
     FieldInfo *findSuperclassField(ClassInfo& classInfo, const std::string& fieldName);
     bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
@@ -77,7 +77,7 @@ class NEDXML_API MsgAnalyzer
   public:
     MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, ErrorStore *errors);
     ~MsgAnalyzer();
-    ClassInfo makeIncompleteClassInfo(NEDElement *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
+    ClassInfo makeIncompleteClassInfo(ASTNode *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void ensureAnalyzed(ClassInfo& classInfo);
     void ensureFieldsAnalyzed(ClassInfo& classInfo);
     EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);

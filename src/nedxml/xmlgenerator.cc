@@ -28,7 +28,7 @@ namespace nedxml {
 using std::ostream;
 using std::endl;
 
-void generateXML(ostream& out, NEDElement *tree, bool srcloc, int indentsize)
+void generateXML(ostream& out, ASTNode *tree, bool srcloc, int indentsize)
 {
     NEDXMLGenerator xmlgen;
     xmlgen.setIndentSize(indentsize);
@@ -36,7 +36,7 @@ void generateXML(ostream& out, NEDElement *tree, bool srcloc, int indentsize)
     xmlgen.generate(out, tree);
 }
 
-std::string generateXML(NEDElement *tree, bool srcloc, int indentsize)
+std::string generateXML(ASTNode *tree, bool srcloc, int indentsize)
 {
     std::stringstream out;
     generateXML(out, tree, srcloc, indentsize);
@@ -66,7 +66,7 @@ void NEDXMLGenerator::setIndentSize(int indentsiz)
         indentSize = 16;
 }
 
-void NEDXMLGenerator::generate(ostream& out, NEDElement *tree)
+void NEDXMLGenerator::generate(ostream& out, ASTNode *tree)
 {
     // xml header
     out << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << endl;
@@ -75,7 +75,7 @@ void NEDXMLGenerator::generate(ostream& out, NEDElement *tree)
     doGenerate(out, tree, 0);
 }
 
-std::string NEDXMLGenerator::generate(NEDElement *tree)
+std::string NEDXMLGenerator::generate(ASTNode *tree)
 {
     std::stringstream out;
     generate(out, tree);
@@ -101,7 +101,7 @@ void NEDXMLGenerator::printAttrValue(ostream& out, const char *s)
     }
 }
 
-void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
+void NEDXMLGenerator::doGenerate(ostream& out, ASTNode *node, int level)
 {
     const char *indent = "                ";
     indent = indent + strlen(indent) - indentSize;
@@ -118,7 +118,7 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
         printAttrValue(out, node->getSourceLocation());
         out << "\"";
 
-        const NEDSourceRegion& r = node->getSourceRegion();
+        const SourceRegion& r = node->getSourceRegion();
         if (r.startLine > 0) {  // filled in
             out << " src-region=\"" << r.startLine << ":" << r.startColumn << "-"
                 << r.endLine << ":" << r.endColumn << "\"";
@@ -149,7 +149,7 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
     out << ">" << endl;
 
     // children
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         doGenerate(out, child, level+1);
     }
 

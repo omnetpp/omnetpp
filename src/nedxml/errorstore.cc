@@ -19,14 +19,14 @@
 #include <cstdlib>
 #include "common/commonutil.h"
 #include "errorstore.h"
-#include "nedelement.h"
+#include "astnode.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace nedxml {
 
-void ErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const char *message)
+void ErrorStore::doAdd(ASTNode *context, const char *loc, int severity, const char *message)
 {
     entries.push_back(Entry());
     Entry& e = entries.back();
@@ -54,7 +54,7 @@ void ErrorStore::doAdd(NEDElement *context, const char *loc, int severity, const
 
 #define BUFLEN    1024
 
-void ErrorStore::addError(NEDElement *context, const char *messagefmt, ...)
+void ErrorStore::addError(ASTNode *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
@@ -68,7 +68,7 @@ void ErrorStore::addError(const char *location, const char *messagefmt, ...)
     doAdd(nullptr, location, SEVERITY_ERROR, message);
 }
 
-void ErrorStore::addWarning(NEDElement *context, const char *messagefmt, ...)
+void ErrorStore::addWarning(ASTNode *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
@@ -82,7 +82,7 @@ void ErrorStore::addWarning(const char *location, const char *messagefmt, ...)
     doAdd(nullptr, location, SEVERITY_WARNING, message);
 }
 
-void ErrorStore::add(NEDElement *context, int severity, const char *messagefmt, ...)
+void ErrorStore::add(ASTNode *context, int severity, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
@@ -126,7 +126,7 @@ const char *ErrorStore::errorLocation(int i) const
     return entries[i].location.c_str();
 }
 
-NEDElement *ErrorStore::errorContext(int i) const
+ASTNode *ErrorStore::errorContext(int i) const
 {
     if (i < 0 || i >= (int)entries.size())
         return nullptr;
@@ -140,7 +140,7 @@ const char *ErrorStore::errorText(int i) const
     return entries[i].message.c_str();
 }
 
-int ErrorStore::findFirstErrorFor(NEDElement *node, int startIndex) const
+int ErrorStore::findFirstErrorFor(ASTNode *node, int startIndex) const
 {
     for (int i = startIndex; i < (int)entries.size(); i++)
         if (entries[i].context == node)
@@ -161,7 +161,7 @@ const char *ErrorStore::severityName(int severity)
 
 //---
 
-void NEDInternalError(const char *file, int line, NEDElement *context, const char *messagefmt, ...)
+void NEDInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);

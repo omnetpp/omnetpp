@@ -185,7 +185,7 @@ bool renameFileToBAK(const char *fname)
     return true;
 }
 
-void generateNED(std::ostream& out, NEDElement *node, ErrorStore *e, bool oldsyntax)
+void generateNED(std::ostream& out, ASTNode *node, ErrorStore *e, bool oldsyntax)
 {
     if (oldsyntax)
         generateNED1(out, node, e);
@@ -225,7 +225,7 @@ bool processFile(const char *fname, ErrorStore *errors)
     if (opt_verbose)
         fprintf(stdout, "processing '%s'...\n", fname);
 
-    NEDElement *tree = nullptr;
+    ASTNode *tree = nullptr;
 
     try {
         // determine file type
@@ -322,7 +322,7 @@ bool processFile(const char *fname, ErrorStore *errors)
             {
                 if (tree->getTagCode() == NED_NED_FILE || tree->getTagCode() == NED_MSG_FILE) {
                     // wrap the tree into a FilesElement
-                    NEDElement *file = tree;
+                    ASTNode *file = tree;
                     tree = new FilesElement();
                     tree->appendChild(file);
                 }
@@ -330,7 +330,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                 if (opt_splitnedfiles)
                     NEDTools::splitToFiles((FilesElement *)tree);
 
-                for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
+                for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
                     // extract file name
                     if (child->getTagCode() == NED_NED_FILE)
                         strcpy(outfname, ((NedFileElement *)child)->getFilename());

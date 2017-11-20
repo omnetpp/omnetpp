@@ -43,17 +43,17 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
     bool parsedExpressions;
 
     // internal helpers: verify attributes
-    void checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n);
-    void checkEnumAttribute(NEDElement *node, const char *attr, const char *values[], int n);
-    void checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed);
-    void checkPropertyNameAttribute(NEDElement *node, const char *attr);
-    void checkPropertyIndexAttribute(NEDElement *node, const char *attr);
+    void checkExpressionAttributes(ASTNode *node, const char *attrs[], bool optional[], int n);
+    void checkEnumAttribute(ASTNode *node, const char *attr, const char *values[], int n);
+    void checkDottedNameAttribute(ASTNode *node, const char *attr, bool wildcardsAllowed);
+    void checkPropertyNameAttribute(ASTNode *node, const char *attr);
+    void checkPropertyIndexAttribute(ASTNode *node, const char *attr);
 
     // helper: whether the given node is inside the BODY of a submodule or a connection
-    bool isWithinSubcomponent(NEDElement *node);
+    bool isWithinSubcomponent(ASTNode *node);
 
     // whether the given node is inside an inner type
-    bool isWithinInnerType(NEDElement *node);
+    bool isWithinInnerType(ASTNode *node);
 
   public:
     /**

@@ -115,36 +115,36 @@ NEDParser::~NEDParser()
     delete nedsource;
 }
 
-NEDElement *NEDParser::parseNEDFile(const char *osfname, const char *fname)
+ASTNode *NEDParser::parseNEDFile(const char *osfname, const char *fname)
 {
     if (!loadFile(osfname, fname))
         return nullptr;
     return parseNED();
 }
 
-NEDElement *NEDParser::parseNEDText(const char *nedtext, const char *fname)
+ASTNode *NEDParser::parseNEDText(const char *nedtext, const char *fname)
 {
     if (!loadText(nedtext, fname))
         return nullptr;
     return parseNED();
 }
 
-NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
+ASTNode *NEDParser::parseNEDExpression(const char *nedexpression)
 {
     parseexpr = true;
     std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
-    NEDElement *tree = parseNEDText(source.c_str(), "buffer");
+    ASTNode *tree = parseNEDText(source.c_str(), "buffer");
     return tree ? tree->getFirstChild() : nullptr;  // unwrap from NedFileElement
 }
 
-NEDElement *NEDParser::parseMSGFile(const char *osfname, const char *fname)
+ASTNode *NEDParser::parseMSGFile(const char *osfname, const char *fname)
 {
     if (!loadFile(osfname, fname))
         return nullptr;
     return parseMSG();
 }
 
-NEDElement *NEDParser::parseMSGText(const char *nedtext, const char *fname)
+ASTNode *NEDParser::parseMSGText(const char *nedtext, const char *fname)
 {
     if (!loadText(nedtext, fname))
         return nullptr;
@@ -200,7 +200,7 @@ bool NEDParser::loadText(const char *nedtext, const char *fname)
     return true;
 }
 
-NEDElement *NEDParser::parseNED()
+ASTNode *NEDParser::parseNED()
 {
     errors->clear();
     if (guessIsNEDInNewSyntax(nedsource->getFullText()))
@@ -209,7 +209,7 @@ NEDElement *NEDParser::parseNED()
         return ::doParseNED1(this, nedsource->getFullText());
 }
 
-NEDElement *NEDParser::parseMSG()
+ASTNode *NEDParser::parseMSG()
 {
     errors->clear();
     msgLexerSetRecognizeImportKeyword(msgNewSyntax);

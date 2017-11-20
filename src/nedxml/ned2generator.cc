@@ -32,7 +32,7 @@ using std::ostream;
 
 #define DEFAULTINDENT    "            "
 
-void generateNED2(ostream& out, NEDElement *node)
+void generateNED2(ostream& out, ASTNode *node)
 {
     NED2Generator nedgen;
     nedgen.generate(out, node, "");
@@ -57,14 +57,14 @@ void NED2Generator::setIndentSize(int indentsiz)
     indentSize = indentsiz;
 }
 
-void NED2Generator::generate(ostream& out, NEDElement *node, const char *indent)
+void NED2Generator::generate(ostream& out, ASTNode *node, const char *indent)
 {
     outp = &out;
     generateNedItem(node, indent, false);
     outp = nullptr;
 }
 
-std::string NED2Generator::generate(NEDElement *node, const char *indent)
+std::string NED2Generator::generate(ASTNode *node, const char *indent)
 {
     std::stringstream ss;
     generate(ss, node, indent);
@@ -91,31 +91,31 @@ const char *NED2Generator::decreaseIndent(const char *indent)
 
 //---------------------------------------------------------------------------
 
-static bool _isNetwork(NEDElement *node)
+static bool _isNetwork(ASTNode *node)
 {
     Assert(node->getTagCode() == NED_COMPOUND_MODULE || node->getTagCode() == NED_SIMPLE_MODULE);
-    return NEDElementUtil::getLocalBoolProperty(node, "isNetwork");
+    return ASTNodeUtil::getLocalBoolProperty(node, "isNetwork");
 }
 
 //---------------------------------------------------------------------------
 
-void NED2Generator::generateChildren(NEDElement *node, const char *indent, const char *arg)
+void NED2Generator::generateChildren(ASTNode *node, const char *indent, const char *arg)
 {
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         generateNedItem(child, indent, child == node->getLastChild(), arg);
 }
 
-void NED2Generator::generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg)
+void NED2Generator::generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg)
 {
     // find last
-    NEDElement *lastWithTag = nullptr;
-    for (NEDElement *child1 = node->getFirstChild(); child1; child1 = child1->getNextSibling())
+    ASTNode *lastWithTag = nullptr;
+    for (ASTNode *child1 = node->getFirstChild(); child1; child1 = child1->getNextSibling())
         if (child1->getTagCode() == tagcode)
             lastWithTag = child1;
 
 
     // now the recursive call
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         if (child->getTagCode() == tagcode)
             generateNedItem(child, indent, child == lastWithTag, arg);
 
@@ -130,17 +130,17 @@ static int isInVector(int a, int v[])
     return false;
 }
 
-void NED2Generator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], const char *indent, const char *arg)
+void NED2Generator::generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg)
 {
     // find last
-    NEDElement *lastWithTag = nullptr;
-    for (NEDElement *child1 = node->getFirstChild(); child1; child1 = child1->getNextSibling())
+    ASTNode *lastWithTag = nullptr;
+    for (ASTNode *child1 = node->getFirstChild(); child1; child1 = child1->getNextSibling())
         if (isInVector(child1->getTagCode(), tagcodes))
             lastWithTag = child1;
 
 
     // now the recursive call
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         if (isInVector(child->getTagCode(), tagcodes))
             generateNedItem(child, indent, child == lastWithTag, arg);
 
@@ -148,7 +148,7 @@ void NED2Generator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], 
 
 //---------------------------------------------------------------------------
 
-void NED2Generator::printInheritance(NEDElement *node, const char *indent)
+void NED2Generator::printInheritance(ASTNode *node, const char *indent)
 {
     if (node->getFirstChildWithTag(NED_EXTENDS)) {
         OUT << " extends ";
@@ -161,7 +161,7 @@ void NED2Generator::printInheritance(NEDElement *node, const char *indent)
     }
 }
 
-bool NED2Generator::hasExpression(NEDElement *node, const char *attr)
+bool NED2Generator::hasExpression(ASTNode *node, const char *attr)
 {
     if (!opp_isempty(node->getAttribute(attr))) {
         return true;
@@ -175,7 +175,7 @@ bool NED2Generator::hasExpression(NEDElement *node, const char *attr)
     }
 }
 
-void NED2Generator::printExpression(NEDElement *node, const char *attr, const char *indent)
+void NED2Generator::printExpression(ASTNode *node, const char *attr, const char *indent)
 {
     if (!opp_isempty(node->getAttribute(attr))) {
         OUT << node->getAttribute(attr);
@@ -188,7 +188,7 @@ void NED2Generator::printExpression(NEDElement *node, const char *attr, const ch
     }
 }
 
-void NED2Generator::printOptVector(NEDElement *node, const char *attr, const char *indent)
+void NED2Generator::printOptVector(ASTNode *node, const char *attr, const char *indent)
 {
     if (hasExpression(node, attr)) {
         OUT << "[";
@@ -199,7 +199,7 @@ void NED2Generator::printOptVector(NEDElement *node, const char *attr, const cha
 
 //---------------------------------------------------------------------------
 
-static const char *getComment(NEDElement *node, const char *locId)
+static const char *getComment(ASTNode *node, const char *locId)
 {
     CommentElement *comment = (CommentElement *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
     return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : nullptr;
@@ -232,10 +232,10 @@ static std::string formatComment(const char *comment, const char *indent, const 
     return ret;
 }
 
-std::string NED2Generator::concatInnerComments(NEDElement *node)
+std::string NED2Generator::concatInnerComments(ASTNode *node)
 {
     std::string ret;
-    for (NEDElement *child = node->getFirstChildWithTag(NED_COMMENT); child; child = child->getNextSiblingWithTag(NED_COMMENT)) {
+    for (ASTNode *child = node->getFirstChildWithTag(NED_COMMENT); child; child = child->getNextSiblingWithTag(NED_COMMENT)) {
         CommentElement *comment = (CommentElement *)child;
         if (!strcmp(comment->getLocid(), "inner"))
             ret += comment->getContent();
@@ -243,26 +243,26 @@ std::string NED2Generator::concatInnerComments(NEDElement *node)
     return ret;
 }
 
-std::string NED2Generator::getBannerComment(NEDElement *node, const char *indent)
+std::string NED2Generator::getBannerComment(ASTNode *node, const char *indent)
 {
     const char *comment = getComment(node, "banner");
     std::string innerComments = concatInnerComments(node);
     return formatComment(comment, indent, "") + formatComment(innerComments.c_str(), indent, "");
 }
 
-std::string NED2Generator::getRightComment(NEDElement *node)
+std::string NED2Generator::getRightComment(ASTNode *node)
 {
     const char *comment = getComment(node, "right");
     return formatComment(comment, nullptr, "\n");
 }
 
-std::string NED2Generator::getInlineRightComment(NEDElement *node)
+std::string NED2Generator::getInlineRightComment(ASTNode *node)
 {
     const char *comment = getComment(node, "right");
     return formatComment(comment, nullptr, " ");
 }
 
-std::string NED2Generator::getTrailingComment(NEDElement *node)
+std::string NED2Generator::getTrailingComment(ASTNode *node)
 {
     const char *comment = getComment(node, "trailing");
     return formatComment(comment, nullptr, "\n");
@@ -680,7 +680,7 @@ void NED2Generator::doCondition(ConditionElement *node, const char *indent, bool
         OUT << (sep ? sep : "");
 }
 
-void NED2Generator::printConnectionGate(NEDElement *conn, const char *modname, const char *modindexattr,
+void NED2Generator::printConnectionGate(ASTNode *conn, const char *modname, const char *modindexattr,
         const char *gatename, const char *gateindexattr, bool isplusplus,
         int gatesubg, const char *indent)
 {
@@ -783,9 +783,9 @@ bool NED2Generator::isOperatorLeftAssoc(const char *op)
 
 void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool islast, const char *)
 {
-    NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : nullptr;
+    ASTNode *op1 = node->getFirstChild();
+    ASTNode *op2 = op1 ? op1->getNextSibling() : nullptr;
+    ASTNode *op3 = op2 ? op2->getNextSibling() : nullptr;
 
     if (!op2) {
         // unary
@@ -800,7 +800,7 @@ void NED2Generator::doOperator(OperatorElement *node, const char *indent, bool i
         bool needsParen = false;
         bool spacious = (prec <= 2);  // we want spaces around &&, ||, ##
 
-        NEDElement *parent = node->getParent();
+        ASTNode *parent = node->getParent();
         if (parent && parent->getTagCode() == NED_OPERATOR) {
             OperatorElement *parentop = (OperatorElement *)parent;
             int parentprec = getOperatorPrecedence(parentop->getName(), parentop->getNumChildren());
@@ -849,7 +849,7 @@ void NED2Generator::doFunction(FunctionElement *node, const char *indent, bool i
     }
 
     OUT << node->getName() << "(";
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         if (child != node->getFirstChild())
             OUT << ", ";
         generateNedItem(child, indent, false, nullptr);
@@ -1030,7 +1030,7 @@ void NED2Generator::doStruct(StructElement *node, const char *indent, bool islas
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void NED2Generator::doMsgClassOrStructBody(NEDElement *node, const char *indent)
+void NED2Generator::doMsgClassOrStructBody(ASTNode *node, const char *indent)
 {
     // "node" must be a PacketElement, MessageElement, ClassElement or StructElement
     generateChildren(node, increaseIndent(indent));
@@ -1082,7 +1082,7 @@ void NED2Generator::doComment(CommentElement *node, const char *indent, bool isl
 
 //---------------------------------------------------------------------------
 
-void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool islast, const char *arg)
+void NED2Generator::generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg)
 {
     // dispatch
     int tagcode = node->getTagCode();

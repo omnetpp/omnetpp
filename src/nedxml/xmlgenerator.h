@@ -30,14 +30,14 @@ namespace nedxml {
  *
  * @ingroup XMLGenerator
  */
-NEDXML_API void generateXML(std::ostream& out, NEDElement *tree, bool srcloc, int indentsize = 4);
+NEDXML_API void generateXML(std::ostream& out, ASTNode *tree, bool srcloc, int indentsize = 4);
 
 /**
  * @brief Simple front-end to NEDXMLGenerator.
  *
  * @ingroup XMLGenerator
  */
-NEDXML_API std::string generateXML(NEDElement *tree, bool srcloc, int indentsize = 4);
+NEDXML_API std::string generateXML(ASTNode *tree, bool srcloc, int indentsize = 4);
 
 /**
  * @brief Serializes a NED object tree in XML format.
@@ -50,7 +50,7 @@ class NEDXML_API NEDXMLGenerator
     bool printSrcLoc;
     int indentSize;
     virtual void printAttrValue(std::ostream& out, const char *s);
-    virtual void doGenerate(std::ostream& out, NEDElement *node, int level);
+    virtual void doGenerate(std::ostream& out, ASTNode *node, int level);
 
   public:
     /**
@@ -66,7 +66,7 @@ class NEDXML_API NEDXMLGenerator
     /**
      * Enable or disable generation of src-loc attributes in the output XML.
      * src-loc attributes contain filename-line-column information that refers
-     * to the original document. For example, if the NEDElement tree was
+     * to the original document. For example, if the ASTNode tree was
      * produced by parsing a NED file, src-loc attributes refer to locations
      * in the NED file.
      */
@@ -85,12 +85,12 @@ class NEDXML_API NEDXMLGenerator
      * </pre>
      * I.e. unspecified encoding, and no document type will be included.
      */
-    virtual void generate(std::ostream& out, NEDElement *tree);
+    virtual void generate(std::ostream& out, ASTNode *tree);
 
     /**
      * Serialize the object tree into XML, and return the result as string.
      */
-    virtual std::string generate(NEDElement *tree);
+    virtual std::string generate(ASTNode *tree);
 
 };
 

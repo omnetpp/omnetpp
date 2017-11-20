@@ -73,7 +73,7 @@ class NEDXML_API MsgCodeGenerator
     void generateImport(const std::string& importName);
     void generateNamespaceBegin(const std::string& namespaceName);
     void generateNamespaceEnd(const std::string& namespaceName);
-    std::string generatePreComment(NEDElement *nedElement);
+    std::string generatePreComment(ASTNode *nedElement);
     void generateCplusplusBlock(const std::string& target, const std::string& body);
     void generateTemplates();
 };

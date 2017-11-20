@@ -30,15 +30,13 @@ namespace nedxml {
 class NEDResourceCache;
 
 /**
- * @brief Stores information on a NED or MSG type.
+ * @brief Stores information on a NED type.
  *
- * This class wraps a NEDElement tree of a NED declaration (module, channel, module
- * interface or channel interface), or declaration in a msg file (enum,
- * class, struct). May be extended by subclassing.
+ * This class wraps an ASTNode tree of a NED declaration (module, channel,
+ * module interface or channel interface). May be extended by subclassing.
  *
- * Represents NED declarations of modules, module interfaces,
- * channels and channel interfaces. All instances are created and managed
- * by NEDResourceCache.
+ * Represents NED declarations of modules, module interfaces, channels and
+ * channel interfaces. All instances are created and managed by NEDResourceCache.
  *
  * @ingroup NEDResources
  */
@@ -54,10 +52,10 @@ class NEDXML_API NEDTypeInfo
     Type type;
     std::string qualifiedName;
     bool isInner;  // whether it is an inner type
-    NEDElement *tree; // points into resolver
+    ASTNode *tree; // points into resolver
 
     typedef std::vector<std::string> StringVector;
-    typedef std::map<std::string,NEDElement*> NameToElementMap;
+    typedef std::map<std::string,ASTNode*> NameToElementMap;
 
     // inheritance. Vectors contain fully qualifies names, and include
     // indirect base types/interfaces as well (transitive closure).
@@ -80,12 +78,12 @@ class NEDXML_API NEDTypeInfo
   protected:
     void checkComplianceToInterface(NEDTypeInfo *interfaceDecl);
     void collectLocalDeclarations();
-    void addToElementMap(NameToElementMap& elementMap, NEDElement *node);
+    void addToElementMap(NameToElementMap& elementMap, ASTNode *node);
     void mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap);
 
   public:
     /** Constructor. It expects fully qualified name */
-    NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree);
+    NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree);
 
     /** Destructor */
     virtual ~NEDTypeInfo();
@@ -96,8 +94,8 @@ class NEDXML_API NEDTypeInfo
     /** Returns the fully qualified name of the NED type */
     virtual const char *getFullName() const;
 
-    /** Returns the raw NEDElement tree representing the component */
-    virtual NEDElement *getTree() const;
+    /** Returns the raw ASTNode tree representing the component */
+    virtual ASTNode *getTree() const;
 
     /** The NED type resolver this type is registered in */
     NEDResourceCache *getResolver() const  {return resolver;}

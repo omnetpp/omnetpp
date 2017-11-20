@@ -57,7 +57,7 @@ void NEDResourceCache::registerBuiltinDeclarations()
 
     ErrorStore errors;
     NEDParser parser(&errors);
-    NEDElement *tree = parser.parseNEDText(nedcode, "built-in-declarations");
+    ASTNode *tree = parser.parseNEDText(nedcode, "built-in-declarations");
     if (errors.containsError()) {
         delete tree;
         throw NEDException(getFirstError(&errors).c_str());
@@ -110,7 +110,7 @@ void NEDResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
 
     // parse file
     std::string nedfname2 = nedtext ? nedfname : tidyFilename(toAbsolutePath(nedfname).c_str());  // so that NedFileElement stores absolute file name
-    NEDElement *tree = parseAndValidateNedFileOrText(nedfname2.c_str(), nedtext, isXML);
+    ASTNode *tree = parseAndValidateNedFileOrText(nedfname2.c_str(), nedtext, isXML);
     Assert(tree);
 
     // check that declared package matches expected package
@@ -124,10 +124,10 @@ void NEDResourceCache::doLoadNedFileOrText(const char *nedfname, const char *ned
     addFile(nedfname2.c_str(), tree);
 }
 
-NEDElement *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedtext, bool isXML)
+ASTNode *NEDResourceCache::parseAndValidateNedFileOrText(const char *fname, const char *nedtext, bool isXML)
 {
     // load file
-    NEDElement *tree = nullptr;
+    ASTNode *tree = nullptr;
     ErrorStore errors;
     if (isXML) {
         if (nedtext)
@@ -207,7 +207,7 @@ void NEDResourceCache::loadNedText(const char *name, const char *nedtext, const 
     registerPendingNedTypes();
 }
 
-bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
+bool NEDResourceCache::addFile(const char *fname, ASTNode *node)
 {
     std::string key = tidyFilename(toAbsolutePath(fname).c_str());
     NEDFileMap::iterator it = files.find(key);
@@ -225,9 +225,9 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
     return true;
 }
 
-void NEDResourceCache::collectNedTypesFrom(NEDElement *node, const std::string& packagePrefix, bool areInnerTypes)
+void NEDResourceCache::collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes)
 {
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         int tag = child->getTagCode();
         if (tag == NED_CHANNEL || tag == NED_CHANNEL_INTERFACE || tag == NED_SIMPLE_MODULE ||
             tag == NED_COMPOUND_MODULE || tag == NED_MODULE_INTERFACE ||
@@ -236,23 +236,23 @@ void NEDResourceCache::collectNedTypesFrom(NEDElement *node, const std::string& 
             std::string qname = packagePrefix + child->getAttribute("name");
             collectNedType(qname.c_str(), areInnerTypes, child);
 
-            if (NEDElement *types = child->getFirstChildWithTag(NED_TYPES))
+            if (ASTNode *types = child->getFirstChildWithTag(NED_TYPES))
                 collectNedTypesFrom(types, qname+".", true);
         }
     }
 }
 
-void NEDResourceCache::collectNedType(const char *qname, bool isInnerType, NEDElement *node)
+void NEDResourceCache::collectNedType(const char *qname, bool isInnerType, ASTNode *node)
 {
     // we'll process it later, from doneLoadingNedFiles()
     pendingList.push_back(PendingNedType(qname, isInnerType, node));
 }
 
-bool NEDResourceCache::areDependenciesResolved(const char *qname, NEDElement *node)
+bool NEDResourceCache::areDependenciesResolved(const char *qname, ASTNode *node)
 {
     // check that all base types are resolved
     NEDLookupContext context = getParentContextOf(qname, node);
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         if (child->getTagCode() != NED_EXTENDS && child->getTagCode() != NED_INTERFACE_NAME)
             continue;
 
@@ -300,7 +300,7 @@ void NEDResourceCache::registerPendingNedTypes()
     }
 }
 
-void NEDResourceCache::registerNedType(const char *qname, bool isInnerType, NEDElement *node)
+void NEDResourceCache::registerNedType(const char *qname, bool isInnerType, ASTNode *node)
 {
     NEDTypeInfo *decl = new NEDTypeInfo(this, qname, isInnerType, node);
     nedTypes[qname] = decl;
@@ -322,7 +322,7 @@ NEDTypeInfo *NEDResourceCache::getDecl(const char *qname) const
     return decl;
 }
 
-NEDElement *NEDResourceCache::getFile(const char *fname) const
+ASTNode *NEDResourceCache::getFile(const char *fname) const
 {
     // hash table lookup
     std::string key = tidyFilename(toAbsolutePath(fname).c_str());
@@ -343,7 +343,7 @@ NedFileElement *NEDResourceCache::getParentPackageNedFile(NedFileElement *nedfil
 
     if (fname != "package.ned") {
         // get package.ned from same package
-        NEDElement *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
+        ASTNode *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
         if (e)
             return (NedFileElement *)e;
     }
@@ -359,7 +359,7 @@ NedFileElement *NEDResourceCache::getParentPackageNedFile(NedFileElement *nedfil
         dir = tidyFilename(parentDir.c_str(), true);
 
         // return package.ned from this dir, if exists
-        NEDElement *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
+        ASTNode *e = getFile(tidyFilename(concatDirAndFile(dir.c_str(), "package.ned").c_str(), true).c_str());
         if (e)
             return (NedFileElement *)e;
     }
@@ -376,7 +376,7 @@ std::string NEDResourceCache::determineRootPackageName(const char *nedSourceFold
     fclose(f);
 
     // read package declaration from it
-    NEDElement *tree = parseAndValidateNedFileOrText(packageNedFilename.c_str(), nullptr, false);
+    ASTNode *tree = parseAndValidateNedFileOrText(packageNedFilename.c_str(), nullptr, false);
     Assert(tree);
     PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string result = packageDecl ? packageDecl->getName() : "";
@@ -426,9 +426,9 @@ std::string NEDResourceCache::getNedPackageForFolder(const char *folder) const
     return opp_join(".", const_cast<StringMap&>(folderPackages)[sourceFolder].c_str(), subpackage.c_str());
 }
 
-NEDLookupContext NEDResourceCache::getParentContextOf(const char *qname, NEDElement *node)
+NEDLookupContext NEDResourceCache::getParentContextOf(const char *qname, ASTNode *node)
 {
-    NEDElement *contextnode = node->getParent();
+    ASTNode *contextnode = node->getParent();
     if (contextnode->getTagCode() == NED_TYPES)
         contextnode = contextnode->getParent();
     const char *lastdot = strrchr(qname, '.');
@@ -447,7 +447,7 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
         // inner type?
         if (context.element->getTagCode() == NED_COMPOUND_MODULE) {
             std::string qname = context.qname;
-            NEDElement *topLevelCompoundModule = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE);
+            ASTNode *topLevelCompoundModule = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE);
             if (topLevelCompoundModule) {
                 // if context is already an inner type, look up nedtypename in its enclosing toplevel NED type
                 int index = qname.rfind('.');

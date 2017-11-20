@@ -32,7 +32,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree)
+NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree)
 {
     this->resolver = resolver;
     this->qualifiedName = qname;
@@ -54,7 +54,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
 
     // add "extends" and "like" names, after resolving them
     NEDLookupContext context = NEDResourceCache::getParentContextOf(qname, tree);
-    for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
         if (child->getTagCode() == NED_EXTENDS) {
             // resolve and store base type name
             const char *extendsName = ((ExtendsElement *)child)->getName();
@@ -118,7 +118,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
     if (getType() == SIMPLE_MODULE || getType() == COMPOUND_MODULE || getType() == CHANNEL) {
         // Note: @class() be used to override inherited implementation class.
         // The @class property itself does NOT get inherited.
-        const char *explicitClassName = NEDElementUtil::getLocalStringProperty(getTree(), "class");
+        const char *explicitClassName = ASTNodeUtil::getLocalStringProperty(getTree(), "class");
         if (!opp_isempty(explicitClassName)) {
             if (explicitClassName[0] == ':' && explicitClassName[1] == ':')
                 implClassName = explicitClassName+2;
@@ -156,7 +156,7 @@ const char *NEDTypeInfo::getFullName() const
     return qualifiedName.c_str();
 }
 
-NEDElement *NEDTypeInfo::getTree() const
+ASTNode *NEDTypeInfo::getTree() const
 {
     return tree;
 }
@@ -169,7 +169,7 @@ const char *NEDTypeInfo::getSourceFileName() const
 
 std::string NEDTypeInfo::getPackage() const
 {
-    NEDElement *nedFile = getTree()->getParentWithTag(NED_NED_FILE);
+    ASTNode *nedFile = getTree()->getParentWithTag(NED_NED_FILE);
     PackageElement *packageDecl = nedFile ? (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE) : nullptr;
     return packageDecl ? packageDecl->getName() : "";
 }
@@ -181,7 +181,7 @@ std::string NEDTypeInfo::getPackageProperty(const char *propertyName) const
          nedFile != nullptr;
          nedFile = getResolver()->getParentPackageNedFile(nedFile))
     {
-        const char *propertyValue = NEDElementUtil::getLocalStringProperty(nedFile, propertyName);
+        const char *propertyValue = ASTNodeUtil::getLocalStringProperty(nedFile, propertyName);
         if (propertyValue)
             return propertyValue;
     }
@@ -266,7 +266,7 @@ NEDTypeInfo *NEDTypeInfo::getSuperDecl() const
 
 bool NEDTypeInfo::isNetwork() const
 {
-    return NEDElementUtil::getLocalBoolProperty(getTree(), "isNetwork");
+    return ASTNodeUtil::getLocalBoolProperty(getTree(), "isNetwork");
 }
 
 TypesElement *NEDTypeInfo::getTypesElement() const
@@ -297,7 +297,7 @@ ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
 void NEDTypeInfo::collectLocalDeclarations()
 {
     if (TypesElement *types = getTypesElement()) {
-        for (NEDElement *child = types->getFirstChild(); child; child = child->getNextSibling()) {
+        for (ASTNode *child = types->getFirstChild(); child; child = child->getNextSibling()) {
             int code = child->getTagCode();
             if (code == NED_SIMPLE_MODULE || code == NED_COMPOUND_MODULE || code == NED_CHANNEL || code == NED_CHANNEL_INTERFACE || code == NED_MODULE_INTERFACE)
                 addToElementMap(localInnerTypeDecls, child);
@@ -319,12 +319,12 @@ void NEDTypeInfo::collectLocalDeclarations()
             addToElementMap(localSubmoduleDecls, submodule);
 
     if (ConnectionsElement *connectionsNode = getConnectionsElement()) {
-        for (NEDElement *child = connectionsNode->getFirstChild(); child; child = child->getNextSibling()) {
+        for (ASTNode *child = connectionsNode->getFirstChild(); child; child = child->getNextSibling()) {
             if (child->getTagCode() == NED_CONNECTION && !opp_isempty(((ConnectionElement*)child)->getName()))
                 addToElementMap(localConnectionDecls, child);
             else if (child->getTagCode() == NED_CONNECTION_GROUP) {
-                NEDElement *connectionGroup = child;
-                for (NEDElement *child = connectionGroup->getFirstChild(); child; child = child->getNextSibling())
+                ASTNode *connectionGroup = child;
+                for (ASTNode *child = connectionGroup->getFirstChild(); child; child = child->getNextSibling())
                     if (child->getTagCode() == NED_CONNECTION && !opp_isempty(((ConnectionElement*)child)->getName()))
                         addToElementMap(localConnectionDecls, child);
             }
@@ -338,7 +338,7 @@ void NEDTypeInfo::collectLocalDeclarations()
     mergeElementMap(allLocalDecls, localConnectionDecls);
 }
 
-void NEDTypeInfo::addToElementMap(NameToElementMap& elementMap, NEDElement *node)
+void NEDTypeInfo::addToElementMap(NameToElementMap& elementMap, ASTNode *node)
 {
     std::string name = node->getAttribute("name");
     if (containsKey(elementMap, name))
@@ -350,7 +350,7 @@ void NEDTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElement
 {
     for (const auto & it : elementMap) {
         const std::string& name = it.first;
-        NEDElement *node = it.second;
+        ASTNode *node = it.second;
         if (containsKey(destMap, name))
             throw NEDException(node, "Name '%s' is not unique within its component", name.c_str());
         destMap[name] = node;
@@ -370,14 +370,14 @@ ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
 
     ConnectionsElement *connectionsNode = getConnectionsElement();
     if (connectionsNode) {
-        for (NEDElement *child = connectionsNode->getFirstChild(); child; child = child->getNextSibling()) {
+        for (ASTNode *child = connectionsNode->getFirstChild(); child; child = child->getNextSibling()) {
             if (child->getTagCode() == NED_CONNECTION) {
                 if (child->getId() == id)
                     return (ConnectionElement *)child;
             }
             else if (child->getTagCode() == NED_CONNECTION_GROUP) {
-                NEDElement *conngroup = child;
-                for (NEDElement *child = conngroup->getFirstChild(); child; child = child->getNextSibling())
+                ASTNode *conngroup = child;
+                for (ASTNode *child = conngroup->getFirstChild(); child; child = child->getNextSibling())
                     if (child->getId() == id && child->getTagCode() == NED_CONNECTION)
                         return (ConnectionElement *)child;
             }
@@ -518,7 +518,7 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
                 // if both gatesizes are given, check that they are actually the same
                 if (hasGatesize && ihasGatesize) {
                     bool mismatch = (gatesizeExpr && igatesizeExpr) ?
-                        NEDElementUtil::compareTree(gatesizeExpr, igatesizeExpr) != 0 : // with parsed expressions
+                        ASTNodeUtil::compareTree(gatesizeExpr, igatesizeExpr) != 0 : // with parsed expressions
                         opp_strcmp(gate->getVectorSize(), igate->getVectorSize()) != 0;  // with unparsed expressions
                     if (mismatch)
                         throw NEDException(gate, "Size of gate vector '%s' must be specified as in interface '%s'",

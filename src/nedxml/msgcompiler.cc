@@ -128,7 +128,7 @@ void MsgCompiler::importBuiltinDefinitions()
 void MsgCompiler::processBuiltinImport(const char *txt, const char *fname)
 {
     NEDParser parser(errors);
-    NEDElement *tree = parser.parseMSGText(txt, fname);
+    ASTNode *tree = parser.parseMSGText(txt, fname);
     if (errors->containsError()) {
         delete tree;
         return;
@@ -145,7 +145,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
 {
     std::string currentDir = directoryOf(fileElement->getFilename());
     std::string currentNamespace = "";
-    for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
                 currentNamespace = str(child->getAttribute("name"));
@@ -208,7 +208,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
     }
 }
 
-void MsgCompiler::processImport(NEDElement *child, const std::string& currentDir)
+void MsgCompiler::processImport(ASTNode *child, const std::string& currentDir)
 {
     std::string importName = child->getAttribute("import-spec");
     std::string fileName = resolveImport(importName, currentDir);
@@ -220,7 +220,7 @@ void MsgCompiler::processImport(NEDElement *child, const std::string& currentDir
     importedFiles.insert(fileName);
 
     NEDParser parser(errors);
-    NEDElement *tree = parser.parseMSGFile(fileName.c_str());
+    ASTNode *tree = parser.parseMSGFile(fileName.c_str());
     if (errors->containsError()) {
         delete tree;
         return;
@@ -262,7 +262,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
     std::string firstNSName = firstNS ? str(firstNS->getAttribute("name")) : "";
     codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
 
-    for (NEDElement *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case NED_NAMESPACE:
                 // open namespace(s)
@@ -324,7 +324,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
     codegen.generateEpilog();
 }
 
-void MsgCompiler::validateNamespaceName(const std::string& namespaceName, NEDElement *element)
+void MsgCompiler::validateNamespaceName(const std::string& namespaceName, ASTNode *element)
 {
     if (namespaceName.empty())
         errors->addError(element, "namespace name is empty");

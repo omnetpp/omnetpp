@@ -35,9 +35,9 @@ NEDSAXHandler::~NEDSAXHandler()
     delete root;
 }
 
-NEDElement *NEDSAXHandler::getTree()
+ASTNode *NEDSAXHandler::getTree()
 {
-    NEDElement *tree = root;
+    ASTNode *tree = root;
     root = current = nullptr;
     return tree;
 }
@@ -45,10 +45,10 @@ NEDElement *NEDSAXHandler::getTree()
 void NEDSAXHandler::startElement(const char *name, const char **atts)
 {
     // initialize node
-    NEDElement *node;
+    ASTNode *node;
     bool unknown = false;
     try {
-        node = NEDElementFactory::getInstance()->createElementWithTag(name);
+        node = ASTNodeFactory::getInstance()->createElementWithTag(name);
     }
     catch (NEDException& e) {
         errors->addError(current, "error: %s", e.what());

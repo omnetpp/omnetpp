@@ -36,9 +36,9 @@ class ErrorStore;
  */
 struct NEDLookupContext
 {
-    NEDElement *element;  // compound module or NED file
+    ASTNode *element;  // compound module or NED file
     std::string qname;    // fully qualified name, or (for NED files) package name
-    NEDLookupContext(NEDElement *e, const char *q) {element=e;qname=q;}
+    NEDLookupContext(ASTNode *e, const char *q) {element=e;qname=q;}
 };
 
 /**
@@ -78,7 +78,7 @@ class NEDXML_API NEDResourceCache
       };
 
   protected:
-    typedef std::map<std::string, NEDElement *> NEDFileMap;
+    typedef std::map<std::string, ASTNode *> NEDFileMap;
     typedef std::map<std::string, NEDTypeInfo *> NEDTypeInfoMap;
 
     // table of loaded NED files; maps file name to NED element.
@@ -99,8 +99,8 @@ class NEDXML_API NEDResourceCache
     struct PendingNedType {
         std::string qname;
         bool isInnerType;
-        NEDElement *node;
-        PendingNedType(const char *q, bool inner, NEDElement *e) {qname=q;isInnerType=inner;node=e;}
+        ASTNode *node;
+        PendingNedType(const char *q, bool inner, ASTNode *e) {qname=q;isInnerType=inner;node=e;}
     };
 
     // storage for NED components not resolved yet because of missing dependencies
@@ -110,14 +110,14 @@ class NEDXML_API NEDResourceCache
     virtual void registerBuiltinDeclarations();
     virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
     virtual void doLoadNedFileOrText(const char *nedfname, const char *nedtext, const char *expectedPackage, bool isXML);
-    virtual NEDElement *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
+    virtual ASTNode *parseAndValidateNedFileOrText(const char *nedfname, const char *nedtext, bool isXML);
     virtual std::string determineRootPackageName(const char *nedSourceFolderName);
     virtual std::string getNedSourceFolderForFolder(const char *folder) const;
-    virtual void collectNedTypesFrom(NEDElement *node, const std::string& packagePrefix, bool areInnerTypes);
-    virtual void collectNedType(const char *qname, bool isInnerType, NEDElement *node);
-    virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
+    virtual void collectNedTypesFrom(ASTNode *node, const std::string& packagePrefix, bool areInnerTypes);
+    virtual void collectNedType(const char *qname, bool isInnerType, ASTNode *node);
+    virtual bool areDependenciesResolved(const char *qname, ASTNode *node);
     virtual void registerPendingNedTypes();
-    virtual void registerNedType(const char *qname, bool isInnerType, NEDElement *node);
+    virtual void registerNedType(const char *qname, bool isInnerType, ASTNode *node);
     virtual std::string getFirstError(ErrorStore *errors, const char *prefix=nullptr);
 
   public:
@@ -171,10 +171,10 @@ class NEDXML_API NEDResourceCache
      * was already added, no processing takes place and the function
      * returns false; otherwise it returns true.
      */
-    virtual bool addFile(const char *fname, NEDElement *node);  //XXX make protected?
+    virtual bool addFile(const char *fname, ASTNode *node);  //XXX make protected?
 
     /** Get a file (represented as object tree) from the cache */
-    virtual NEDElement *getFile(const char *fname) const;
+    virtual ASTNode *getFile(const char *fname) const;
 
     /**
      * Given a NED file, returns the package.ned file from the same folder,
@@ -211,7 +211,7 @@ class NEDXML_API NEDResourceCache
     /**
      * Utility method, useful with resolveNedType()/resolveComponentType()
      */
-    static NEDLookupContext getParentContextOf(const char *qname, NEDElement *node);
+    static NEDLookupContext getParentContextOf(const char *qname, ASTNode *node);
 
 };
 

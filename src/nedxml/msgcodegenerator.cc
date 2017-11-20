@@ -330,7 +330,7 @@ void MsgCodeGenerator::generateEpilog()
     H << "#endif // ifndef " << headerGuard << "\n\n";
 }
 
-std::string MsgCodeGenerator::generatePreComment(NEDElement *nedElement)
+std::string MsgCodeGenerator::generatePreComment(ASTNode *nedElement)
 {
     // reproduce original source
     std::ostringstream s;

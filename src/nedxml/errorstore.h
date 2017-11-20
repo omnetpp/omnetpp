@@ -26,7 +26,7 @@
 namespace omnetpp {
 namespace nedxml {
 
-class NEDElement;
+class ASTNode;
 
 // Note: this cannot be inner type because of swig wrapping
 enum ProblemSeverity {SEVERITY_INFO, SEVERITY_WARNING, SEVERITY_ERROR};
@@ -38,7 +38,7 @@ class NEDXML_API ErrorStore
 {
     private:
         struct Entry {
-            NEDElement *context;
+            ASTNode *context;
             int severity;
             std::string location;
             std::string message;
@@ -48,7 +48,7 @@ class NEDXML_API ErrorStore
         bool doprint;
 
      private:
-        void doAdd(NEDElement *context, const char *loc, int severity, const char *message);
+        void doAdd(ASTNode *context, const char *loc, int severity, const char *message);
 
      public:
         /**
@@ -65,7 +65,7 @@ class NEDXML_API ErrorStore
         /**
          * Add an error message with the severity ERROR.
          */
-        void addError(NEDElement *context, const char *messagefmt, ...);
+        void addError(ASTNode *context, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity ERROR.
@@ -75,7 +75,7 @@ class NEDXML_API ErrorStore
         /**
          * Add an error message with the severity WARNING.
          */
-        void addWarning(NEDElement *context, const char *messagefmt, ...);
+        void addWarning(ASTNode *context, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity WARNING.
@@ -85,7 +85,7 @@ class NEDXML_API ErrorStore
         /**
          * Add an error message.
          */
-        void add(NEDElement *context, int severity, const char *messagefmt, ...);
+        void add(ASTNode *context, int severity, const char *messagefmt, ...);
 
         /**
          * Add an error message.
@@ -117,7 +117,7 @@ class NEDXML_API ErrorStore
         const char *errorSeverity(int i) const;
         int errorSeverityCode(int i) const;
         const char *errorLocation(int i) const;
-        NEDElement *errorContext(int i) const;
+        ASTNode *errorContext(int i) const;
         const char *errorText(int i) const;
         //@}
 
@@ -125,7 +125,7 @@ class NEDXML_API ErrorStore
          * Return the first message with index >= startIndex whose
          * context is the given node. Returns -1 if none found.
          */
-        int findFirstErrorFor(NEDElement *node, int startIndex) const;
+        int findFirstErrorFor(ASTNode *node, int startIndex) const;
 
         /**
          * Convert severities from numeric to textual form.
@@ -144,7 +144,7 @@ class NEDXML_API ErrorStore
  * This method is typically used via the INTERNAL_ERROR0()...INTERNAL_ERROR4() macros that
  * add the __FILE__, __LINE__ args implicitly.
  */
-void NEDInternalError(const char *file, int line, NEDElement *context, const char *messagefmt, ...);
+void NEDInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...);
 
 
 } // namespace nedxml

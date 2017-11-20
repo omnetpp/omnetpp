@@ -20,7 +20,7 @@
 #include <cstdio>
 
 #include "errorstore.h"
-#include "nedelement.h"
+#include "astnode.h"
 #include "nedyydefs.h"
 
 namespace omnetpp {
@@ -43,8 +43,8 @@ extern NEDParser *np;
 /**
  * @brief Parses NED and MSG files into an object tree form.
  *
- * Elements of the tree are subclassed from NEDElement;
- * NEDElementFactory is used to actually create the objects.
+ * Elements of the tree are subclassed from ASTNode;
+ * ASTNodeFactory is used to actually create the objects.
  * Internally this class uses a bison/flex grammar and SourceDocument.
  *
  * @ingroup NEDParser
@@ -68,8 +68,8 @@ class NEDXML_API NEDParser
 
     bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
-    NEDElement *parseNED();
-    NEDElement *parseMSG();
+    ASTNode *parseNED();
+    ASTNode *parseMSG();
     static bool guessIsNEDInNewSyntax(const char *txt);
 
   public:
@@ -98,7 +98,7 @@ class NEDXML_API NEDParser
 
     /**
      * Affects operation of parseFile() and parseText(), specifies whether
-     * sourceCode attributes in NEDElements should be filled out.
+     * sourceCode attributes in ASTNodes should be filled out.
      * Default is false.
      */
     void setStoreSource(bool b) {storesrc = b;}
@@ -127,7 +127,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    NEDElement *parseNEDFile(const char *osfname, const char *fname=nullptr);
+    ASTNode *parseNEDFile(const char *osfname, const char *fname=nullptr);
 
     /**
      * Parse the given NED source and return the result tree.
@@ -135,13 +135,13 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to "buffer".
      */
-    NEDElement *parseNEDText(const char *nedtext, const char *fname=nullptr);
+    ASTNode *parseNEDText(const char *nedtext, const char *fname=nullptr);
 
     /**
      * Parse the given text as a NED expression, and return the result tree.
      * Returns nullptr or partial tree if there was an error.
      */
-    NEDElement *parseNEDExpression(const char *nedexpression);
+    ASTNode *parseNEDExpression(const char *nedexpression);
 
     /**
      * Parse the given MSG (.msg) file and return the result tree.
@@ -149,7 +149,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    NEDElement *parseMSGFile(const char *osfname, const char *fname=nullptr);
+    ASTNode *parseMSGFile(const char *osfname, const char *fname=nullptr);
 
     /**
      * Parse the given MSG source and return the result tree.
@@ -157,7 +157,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    NEDElement *parseMSGText(const char *nedtext, const char *fname=nullptr);
+    ASTNode *parseMSGText(const char *nedtext, const char *fname=nullptr);
 };
 
 } // namespace nedxml

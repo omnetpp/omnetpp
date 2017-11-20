@@ -44,7 +44,7 @@ class NEDXML_API MsgTypeTable
 
     class FieldInfo {
       public:
-        NEDElement *nedElement;     // pointer to NED element
+        ASTNode *nedElement;     // pointer to NED element
 
         std::string fname;      // field name in MSG
         std::string ftype;      // field type in MSG
@@ -107,7 +107,7 @@ class NEDXML_API MsgTypeTable
       public:
         typedef std::vector<FieldInfo> Fieldlist;
 
-        NEDElement *nedElement = nullptr;
+        ASTNode *nedElement = nullptr;
         std::string keyword;        // struct/class/packet from MSG
         std::string msgname;        // class name from MSG
         std::string msgqname;
@@ -157,7 +157,7 @@ class NEDXML_API MsgTypeTable
     class EnumItem
     {
       public:
-        NEDElement *nedElement;
+        ASTNode *nedElement;
         std::string name;
         std::string value;
         std::string comment;
@@ -168,7 +168,7 @@ class NEDXML_API MsgTypeTable
     class EnumInfo
     {
       public:
-        NEDElement *nedElement;
+        ASTNode *nedElement;
         std::string enumName;
         std::string enumQName;
         typedef std::vector<EnumItem> FieldList;
@@ -181,7 +181,7 @@ class NEDXML_API MsgTypeTable
   private:
     std::map<std::string,ClassInfo> definedClasses;
     std::map<std::string,EnumInfo> definedEnums;
-    std::vector<NEDElement*> importedMsgFiles;
+    std::vector<ASTNode*> importedMsgFiles;
 
   protected:
     void initDescriptors();
@@ -197,7 +197,7 @@ class NEDXML_API MsgTypeTable
     bool isEnumDefined(const std::string& enumqname) { return definedEnums.find(enumqname) != definedEnums.end(); }
     ClassInfo& getClassInfo(const std::string& classqname);
     const EnumInfo& getEnumInfo(const std::string& qname);
-    void storeMsgFile(NEDElement *tree) {importedMsgFiles.push_back(tree);}
+    void storeMsgFile(ASTNode *tree) {importedMsgFiles.push_back(tree);}
     void addClass(const ClassInfo& classInfo) {definedClasses[classInfo.msgqname] = classInfo;} // TODO assert not already there
     void addEnum(const EnumInfo& enumInfo) {definedEnums[enumInfo.enumQName] = enumInfo;}  //TODO assert not already there
 };

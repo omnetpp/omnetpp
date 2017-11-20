@@ -101,7 +101,7 @@ static struct MSG2ParserState
     bool isAbstract;
     bool isReadonly;
 
-    std::vector<NEDElement *> propvals; // temporarily collects property values
+    std::vector<ASTNode *> propvals; // temporarily collects property values
 
     /* MSG-II: message subclassing */
     MsgFileElement *msgfile;
@@ -118,7 +118,7 @@ static struct MSG2ParserState
     PacketElement *packetp;
     ClassElement *classp;
     StructElement *structp;
-    NEDElement *msgclassorstruct;
+    ASTNode *msgclassorstruct;
     EnumFieldsElement *enumfields;
     EnumFieldElement *enumfield;
     FieldElement *field;
@@ -607,7 +607,7 @@ property_namevalue
         | property_name '(' opt_property_keys ')'
         | ENUM '(' NAME ')' /* legacy syntax */
                 {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
+                  ASTNode *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
                   ps.property = addProperty(propertyscope, toString(@1));
                   ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild(createPropertyValue(@3));
@@ -618,13 +618,13 @@ property_namevalue
 property_name
         : '@' PROPNAME
                 {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
+                  ASTNode *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
                   ps.property = addProperty(propertyscope, toString(@2));
                   ps.propvals.clear(); // just to be safe
                 }
         | '@' PROPNAME '[' PROPNAME ']'
                 {
-                  NEDElement *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
+                  ASTNode *propertyscope = ps.field ? ps.field : ps.msgclassorstruct ? ps.msgclassorstruct : ps.msgfile;
                   ps.property = addProperty(propertyscope, toString(@2));
                   ps.property->setIndex(toString(@4));
                   ps.propvals.clear(); // just to be safe
@@ -697,7 +697,7 @@ opt_semicolon : ';' | ;
 //
 int msg2yylex_destroy();  // from lex.XXX.cc file
 
-NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
+ASTNode *doParseMSG2(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;

@@ -19,7 +19,7 @@
 #include <cstdlib>
 #include "common/commonutil.h"
 #include "nedexception.h"
-#include "nedelement.h"
+#include "astnode.h"
 
 using namespace omnetpp::common;
 
@@ -35,7 +35,7 @@ NEDException::NEDException(const char *messagefmt...) : std::runtime_error("")
     msg = message;
 }
 
-NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std::runtime_error("")
+NEDException::NEDException(ASTNode *context, const char *messagefmt...) : std::runtime_error("")
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);

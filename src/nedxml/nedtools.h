@@ -32,10 +32,10 @@ class NEDXML_API NEDTools
 {
   public:
     /**
-     * Tries to makes a NEDElement tree comply with the DTD by gradually
+     * Tries to makes an ASTNode tree comply with the DTD by gradually
      * discarding elements that fail DTD validation. Success is not guaranteed.
      */
-    static void repairNEDElementTree(NEDElement *tree);
+    static void repairASTNodeTree(ASTNode *tree);
 
     /**
      * Splits each NEDFile under FilesElement to several files, to place

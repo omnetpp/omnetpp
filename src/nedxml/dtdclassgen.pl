@@ -225,7 +225,7 @@ open(CC,">$ccfile") || die "*** cannot open output file $ccfile";
 print H "$copyright\n";
 print H "#ifndef __OMNETPP_NEDXML_NEDELEMENTS_H\n";
 print H "#define __OMNETPP_NEDXML_NEDELEMENTS_H\n\n";
-print H "#include \"nedelement.h\"\n\n";
+print H "#include \"astnode.h\"\n\n";
 print H "namespace omnetpp {\n";
 print H "namespace nedxml {\n\n";
 
@@ -250,7 +250,7 @@ print H " * Tag codes\n";
 print H " *\n";
 print H " * \@ingroup Data\n";
 print H " */\n";
-print H "enum NEDElementCode {\n";
+print H "enum ASTNodeCode {\n";
 print H "    NED_NULL = 0,  // 0 is reserved\n";
 foreach $element (@elements)
 {
@@ -323,7 +323,7 @@ foreach $element (@elements)
     print H " *\n";
     print H " * \@ingroup Data\n";
     print H " */\n";
-    print H "class NEDXML_API $elementclass : public NEDElement\n";
+    print H "class NEDXML_API $elementclass : public ASTNode\n";
     print H "{\n";
     print H "  private:\n";
     for ($i=0; $i<$attcount; $i++)
@@ -335,20 +335,20 @@ foreach $element (@elements)
     print H "    /** \@name Constructors, destructor */\n";
     print H "    //\@{\n";
     print H "    $elementclass();\n";
-    print H "    $elementclass(NEDElement *parent);\n";
+    print H "    $elementclass(ASTNode *parent);\n";
     print H "    virtual ~$elementclass() {}\n";
     print H "    //\@}\n";
     print H "\n";
-    print H "    /** \@name Redefined NEDElement methods, incl. generic access to attributes */\n";
+    print H "    /** \@name Redefined ASTNode methods, incl. generic access to attributes */\n";
     print H "    //\@{\n";
     print H "    virtual const char *getTagName() const override {return \"$element\";}\n";
     print H "    virtual int getTagCode() const override {return $enumname{$element};}\n";
     print H "    virtual int getNumAttributes() const override;\n";
     print H "    virtual const char *getAttributeName(int k) const override;\n";
     print H "    virtual const char *getAttribute(int k) const override;\n";
-    print H "    virtual const char *getAttribute(const char *name) const override {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk\n";
+    print H "    virtual const char *getAttribute(const char *name) const override {return ASTNode::getAttribute(name);} // needed because of a C++ language quirk\n";
     print H "    virtual void setAttribute(int k, const char *val) override;\n";
-    print H "    virtual void setAttribute(const char *name, const char *val) override {NEDElement::setAttribute(name, val);} // ditto\n";
+    print H "    virtual void setAttribute(const char *name, const char *val) override {ASTNode::setAttribute(name, val);} // ditto\n";
     print H "    virtual const char *getAttributeDefault(int k) const override;\n";
     print H "    virtual $elementclass *dup() const override;\n";
     print H "    //\@}\n";
@@ -395,7 +395,7 @@ foreach $element (@elements)
     print CC "    applyDefaults();\n";
     print CC "}\n\n";
 
-    print CC "$elementclass\:\:$elementclass(NEDElement *parent) : NEDElement(parent)\n";
+    print CC "$elementclass\:\:$elementclass(ASTNode *parent) : ASTNode(parent)\n";
     print CC "{\n";
     for ($i=0; $i<$attcount; $i++)
     {
@@ -509,36 +509,36 @@ foreach $element (@elements)
 # Factory class
 #
 print H "/**\n";
-print H " * @brief GENERATED CLASS. Factory for NEDElement subclasses.\n";
+print H " * @brief GENERATED CLASS. Factory for ASTNode subclasses.\n";
 print H " *\n";
 print H " * \@ingroup Data\n";
 print H " */\n";
-print H "class NEDXML_API NEDElementFactory\n";
+print H "class NEDXML_API ASTNodeFactory\n";
 print H "{\n";
 print H "  private:\n";
-print H "    static NEDElementFactory *f;\n";
+print H "    static ASTNodeFactory *f;\n";
 print H "    // ctor is private, because only one instance is allowed\n";
-print H "    NEDElementFactory() {}\n";
+print H "    ASTNodeFactory() {}\n";
 print H "  public:\n";
 print H "    /** Destructor */\n";
-print H "    virtual ~NEDElementFactory() {}\n";
+print H "    virtual ~ASTNodeFactory() {}\n";
 print H "    /** Returns factory instance */\n";
-print H "    static NEDElementFactory *getInstance();\n";
-print H "    /** Creates NEDElement subclass which corresponds to tagname */\n";
-print H "    virtual NEDElement *createElementWithTag(const char *tagname);\n";
-print H "    /** Creates NEDElement subclass which corresponds to tagcode */\n";
-print H "    virtual NEDElement *createElementWithTag(int tagcode);\n";
+print H "    static ASTNodeFactory *getInstance();\n";
+print H "    /** Creates ASTNode subclass which corresponds to tagname */\n";
+print H "    virtual ASTNode *createElementWithTag(const char *tagname);\n";
+print H "    /** Creates ASTNode subclass which corresponds to tagcode */\n";
+print H "    virtual ASTNode *createElementWithTag(int tagcode);\n";
 print H "};\n\n} // namespace nedxml\n";
 print H "}  // namespace omnetpp\n\n";
 print H "#endif\n\n";
 
-print CC "NEDElementFactory *NEDElementFactory::f;\n\n";
-print CC "NEDElementFactory *NEDElementFactory::getInstance()\n";
+print CC "ASTNodeFactory *ASTNodeFactory::f;\n\n";
+print CC "ASTNodeFactory *ASTNodeFactory::getInstance()\n";
 print CC "{\n";
-print CC "    if (!f) f=new NEDElementFactory();\n";
+print CC "    if (!f) f=new ASTNodeFactory();\n";
 print CC "    return f;\n";
 print CC "}\n\n";
-print CC "NEDElement *NEDElementFactory::createElementWithTag(const char *tagname)\n";
+print CC "ASTNode *ASTNodeFactory::createElementWithTag(const char *tagname)\n";
 print CC "{\n";
 foreach $element (@elements)
 {
@@ -548,7 +548,7 @@ foreach $element (@elements)
 }
 print CC "    throw NEDException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
 print CC "}\n\n";
-print CC "NEDElement *NEDElementFactory::createElementWithTag(int tagcode)\n";
+print CC "ASTNode *ASTNodeFactory::createElementWithTag(int tagcode)\n";
 print CC "{\n";
 print CC "    switch (tagcode) {\n";
 foreach $element (@elements)
@@ -603,9 +603,9 @@ print VAL_H "    NEDValidatorBase(ErrorStore *e) {errors = e;}\n";
 print VAL_H "    virtual ~NEDValidatorBase() {}\n";
 print VAL_H "    //\@}\n\n";
 print VAL_H "    /** Validates the node recursively */\n";
-print VAL_H "    virtual void validate(NEDElement *node);\n";
+print VAL_H "    virtual void validate(ASTNode *node);\n";
 print VAL_H "    /** Dispatches to the corresponding overloaded validateElement() function */\n";
-print VAL_H "    virtual void validateElement(NEDElement *node);\n";
+print VAL_H "    virtual void validateElement(ASTNode *node);\n";
 print VAL_H "\n";
 print VAL_H "  protected:\n";
 print VAL_H "    /** \@name Validation functions, to be implemented in subclasses */\n";
@@ -619,14 +619,14 @@ print VAL_H "};\n\n} // namespace nedxml\n";
 print VAL_H "}  // namespace omnetpp\n\n";
 print VAL_H "#endif\n\n";
 
-print VAL_CC "void  NEDValidatorBase::validate(NEDElement *node)\n";
+print VAL_CC "void  NEDValidatorBase::validate(ASTNode *node)\n";
 print VAL_CC "{\n";
 print VAL_CC "    validateElement(node);\n";
-print VAL_CC "    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())\n";
+print VAL_CC "    for (ASTNode *child=node->getFirstChild(); child; child=child->getNextSibling())\n";
 print VAL_CC "        validate(child);\n";
 print VAL_CC "}\n\n";
 
-print VAL_CC "void  NEDValidatorBase::validateElement(NEDElement *node)\n";
+print VAL_CC "void  NEDValidatorBase::validateElement(ASTNode *node)\n";
 print VAL_CC "{\n";
 print VAL_CC "    try {\n";
 print VAL_CC "        switch (node->getTagCode()) {\n";
@@ -670,7 +670,7 @@ print DTDVAL_CC "namespace omnetpp {\n";
 print DTDVAL_CC "namespace nedxml {\n\n";
 
 print DTDVAL_H "/**\n";
-print DTDVAL_H " * @brief GENERATED CLASS. Validates a NEDElement tree by the DTD.\n";
+print DTDVAL_H " * @brief GENERATED CLASS. Validates an ASTNode tree by the DTD.\n";
 print DTDVAL_H " *\n";
 print DTDVAL_H " * \@ingroup Validation\n";
 print DTDVAL_H " */\n";

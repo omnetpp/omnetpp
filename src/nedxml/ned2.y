@@ -127,9 +127,9 @@ static struct NED2ParserState
 {
     bool inTypes;
     bool inConnGroup;
-    std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
-    std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
-    std::stack<NEDElement *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
+    std::stack<ASTNode *> propertyscope; // top(): where to insert properties as we parse them
+    std::stack<ASTNode *> blockscope;    // top(): where to insert parameters, gates, etc
+    std::stack<ASTNode *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
 
     /* tmp flags, used with param, gate and conn */
     int paramType;
@@ -138,7 +138,7 @@ static struct NED2ParserState
     bool isDefault;
     YYLTYPE exprPos;
     int subgate;
-    std::vector<NEDElement *> propvals; // temporarily collects property values
+    std::vector<ASTNode *> propvals; // temporarily collects property values
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -152,7 +152,7 @@ static struct NED2ParserState
     PropertyDeclElement *propertydecl;
     ExtendsElement *extends;
     InterfaceNameElement *interfacename;
-    NEDElement *component;  // compound/simple module, module interface, channel or channel interface
+    ASTNode *component;  // compound/simple module, module interface, channel or channel interface
     ParametersElement *parameters;
     ParamElement *param;
     PropertyElement *property;
@@ -183,7 +183,7 @@ static void restoreGlobalParserState()  // for error recovery
     ps = globalps;
 }
 
-static void assertNonEmpty(std::stack<NEDElement *>& somescope)
+static void assertNonEmpty(std::stack<ASTNode *>& somescope)
 {
     // for error recovery: STL stack::top() crashes if stack is empty
     if (somescope.empty())
@@ -389,7 +389,7 @@ channeldefinition
 channelheader
         : CHANNEL NAME
                 {
-                  ps.component = (ChannelElement *)createElementWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ps.component = (ChannelElement *)createElementWithTag(NED_CHANNEL, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile);
                   ((ChannelElement *)ps.component)->setName(toString(@2));
                 }
            opt_inheritance
@@ -455,7 +455,7 @@ channelinterfacedefinition
 channelinterfaceheader
         : CHANNELINTERFACE NAME
                 {
-                  ps.component = (ChannelInterfaceElement *)createElementWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ps.component = (ChannelInterfaceElement *)createElementWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile);
                   ((ChannelInterfaceElement *)ps.component)->setName(toString(@2));
                 }
            opt_interfaceinheritance
@@ -502,7 +502,7 @@ simplemoduledefinition
 simplemoduleheader
         : SIMPLE NAME
                 {
-                  ps.component = (SimpleModuleElement *)createElementWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ps.component = (SimpleModuleElement *)createElementWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile );
                   ((SimpleModuleElement *)ps.component)->setName(toString(@2));
                 }
           opt_inheritance
@@ -542,7 +542,7 @@ compoundmoduledefinition
 compoundmoduleheader
         : MODULE NAME
                 {
-                  ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile );
                   ((CompoundModuleElement *)ps.component)->setName(toString(@2));
                 }
           opt_inheritance
@@ -582,7 +582,7 @@ networkdefinition
 networkheader
         : NETWORK NAME
                 {
-                  ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile );
                   ((CompoundModuleElement *)ps.component)->setName(toString(@2));
                 }
           opt_inheritance
@@ -622,7 +622,7 @@ moduleinterfacedefinition
 moduleinterfaceheader
         : MODULEINTERFACE NAME
                 {
-                  ps.component = (ModuleInterfaceElement *)createElementWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ps.component = (ModuleInterfaceElement *)createElementWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile);
                   ((ModuleInterfaceElement *)ps.component)->setName(toString(@2));
                 }
            opt_interfaceinheritance
@@ -1306,13 +1306,13 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addExpression(ps.conn, "src-module-index",ps.exprPos,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                 }
         ;
@@ -1340,14 +1340,14 @@ leftgate
 parentleftgate
         : NAME opt_subgate
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGateSubg(ps.subgate);
                 }
         | NAME opt_subgate vector
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGateSubg(ps.subgate);
@@ -1355,7 +1355,7 @@ parentleftgate
                 }
         | NAME opt_subgate PLUSPLUS
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGateSubg(ps.subgate);
@@ -1678,7 +1678,7 @@ opt_semicolon
 //
 int ned2yylex_destroy();  // from lex.XXX.cc file
 
-NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
+ASTNode *doParseNED2(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -1713,7 +1713,7 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     // NOTE: we cannot use storePos() because it strips off the leading spaces
     // and comments from the element.
     YYLTYPE pos = np->getSource()->getFullTextPos();
-    NEDSourceRegion region;
+    SourceRegion region;
     region.startLine = pos.first_line;
     region.startColumn = pos.first_column;
     region.endLine = pos.last_line;

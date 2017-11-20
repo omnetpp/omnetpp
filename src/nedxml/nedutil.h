@@ -22,7 +22,7 @@
 #define __OMNETPP_NEDXML_NEDUTIL_H
 
 #include <string>
-#include "nedelement.h"
+#include "astnode.h"
 
 namespace omnetpp {
 
@@ -54,18 +54,18 @@ class NEDXML_API DisplayStringUtil
 };
 
 /**
- * @brief Various utilities for the NEDElement tree.
+ * @brief Various utilities for the ASTNode tree.
  *
  * @ingroup Misc
  */
-class NEDXML_API NEDElementUtil
+class NEDXML_API ASTNodeUtil
 {
   public:
     /** @name Utilities for accessing properties */
     //@{
-    static const char *getLocalStringProperty(NEDElement *parent, const char *name);
-    static bool getLocalBoolProperty(NEDElement *parent, const char *name);
-    static PropertyElement *getLocalProperty(NEDElement *parent, const char *name);
+    static const char *getLocalStringProperty(ASTNode *parent, const char *name);
+    static bool getLocalBoolProperty(ASTNode *parent, const char *name);
+    static PropertyElement *getLocalProperty(ASTNode *parent, const char *name);
     static LiteralElement *getTheOnlyValueFrom(PropertyElement *property);
     static bool propertyAsBool(PropertyElement *property);
     static const char *propertyAsString(PropertyElement *property);
@@ -74,14 +74,14 @@ class NEDXML_API NEDElementUtil
     /** @name Comparison */
     //@{
     /** Compares tagname and declared attrs (ignores id, srcloc, srcregion, etc) */
-    static int compare(NEDElement *node1, NEDElement *node2);
+    static int compare(ASTNode *node1, ASTNode *node2);
     /** Recursive version of compare() */
-    static int compareTree(NEDElement *node1, NEDElement *node2);
+    static int compareTree(ASTNode *node1, ASTNode *node2);
     //@}
 
     /** @name Misc */
     //@{
-    static bool isNEDType(NEDElement *node);
+    static bool isNEDType(ASTNode *node);
     //@}
 };
 

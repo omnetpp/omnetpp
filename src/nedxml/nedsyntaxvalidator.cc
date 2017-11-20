@@ -99,12 +99,12 @@ static struct { const char *fname; int args; } known_funcs[] =
    {nullptr,0}
 };
 
-void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n)
+void NEDSyntaxValidator::checkExpressionAttributes(ASTNode *node, const char *attrs[], bool optional[], int n)
 {
     if (parsedExpressions) {
         // allow attribute values to be present, but check there are no
         // Expression children that are not in the list
-        for (NEDElement *child = node->getFirstChildWithTag(NED_EXPRESSION); child; child = child->getNextSiblingWithTag(NED_EXPRESSION)) {
+        for (ASTNode *child = node->getFirstChildWithTag(NED_EXPRESSION); child; child = child->getNextSiblingWithTag(NED_EXPRESSION)) {
             ExpressionElement *expr = (ExpressionElement *)child;
             const char *target = expr->getTarget();
             int i;
@@ -144,7 +144,7 @@ void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char 
     }
 }
 
-void NEDSyntaxValidator::checkEnumAttribute(NEDElement *node, const char *attr, const char *values[], int n)
+void NEDSyntaxValidator::checkEnumAttribute(ASTNode *node, const char *attr, const char *values[], int n)
 {
     const char *value = node->getAttribute(attr);
     for (int i = 0; i < n; i++)
@@ -153,7 +153,7 @@ void NEDSyntaxValidator::checkEnumAttribute(NEDElement *node, const char *attr, 
     errors->addError(node, "Illegal attribute value '%s'", value);
 }
 
-void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *attr, bool wildcardsAllowed)
+void NEDSyntaxValidator::checkDottedNameAttribute(ASTNode *node, const char *attr, bool wildcardsAllowed)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -166,7 +166,7 @@ void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *
         }
 }
 
-void NEDSyntaxValidator::checkPropertyNameAttribute(NEDElement *node, const char *attr)
+void NEDSyntaxValidator::checkPropertyNameAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -179,7 +179,7 @@ void NEDSyntaxValidator::checkPropertyNameAttribute(NEDElement *node, const char
         }
 }
 
-void NEDSyntaxValidator::checkPropertyIndexAttribute(NEDElement *node, const char *attr)
+void NEDSyntaxValidator::checkPropertyIndexAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -192,7 +192,7 @@ void NEDSyntaxValidator::checkPropertyIndexAttribute(NEDElement *node, const cha
         }
 }
 
-bool NEDSyntaxValidator::isWithinSubcomponent(NEDElement *node)
+bool NEDSyntaxValidator::isWithinSubcomponent(ASTNode *node)
 {
     // only returns true if node is within the BODY of a submodule or a connection
     // (i.e. returns *false* for a submodule vector size)
@@ -205,7 +205,7 @@ bool NEDSyntaxValidator::isWithinSubcomponent(NEDElement *node)
     return false;
 }
 
-bool NEDSyntaxValidator::isWithinInnerType(NEDElement *node)
+bool NEDSyntaxValidator::isWithinInnerType(ASTNode *node)
 {
     for ( ; node != nullptr; node = node->getParent())
         if (node->getTagCode() == NED_TYPES)
@@ -271,7 +271,7 @@ void NEDSyntaxValidator::validateElement(ParametersElement *node)
 
 void NEDSyntaxValidator::validateElement(ParamElement *node)
 {
-    NEDElement *parent = node->getParent();
+    ASTNode *parent = node->getParent();
     if (parent)
         parent = parent->getParent();
 
@@ -312,9 +312,9 @@ void NEDSyntaxValidator::validateElement(PropertyElement *node)
 
     // properties cannot occur on submodule or connection parameters/gates.
     // structure: submodule>parameters>parameter>property
-    NEDElement *parent = node->getParent();
+    ASTNode *parent = node->getParent();
     if (parent && (parent->getTagCode() == NED_PARAM || parent->getTagCode() == NED_GATE)) {
-        NEDElement *container = parent->getParent()->getParent();
+        ASTNode *container = parent->getParent()->getParent();
         if (container && (container->getTagCode() == NED_SUBMODULE || container->getTagCode() == NED_CONNECTION))
             errors->addError(node, "Cannot modify parameter/gate properties in a submodule or connection");
     }
@@ -337,7 +337,7 @@ void NEDSyntaxValidator::validateElement(GateElement *node)
 {
     // param declarations cannot occur in submodules
     if (node->getType() != NED_GATETYPE_NONE) {
-        NEDElement *parent = node->getParent();
+        ASTNode *parent = node->getParent();
         if (parent)
             parent = parent->getParent();
         if (parent->getTagCode() == NED_SUBMODULE)
@@ -426,7 +426,7 @@ void NEDSyntaxValidator::validateElement(OperatorElement *node)
 
     // count arguments
     int args = 0;
-    for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
+    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         args++;
 
     // unary?
@@ -466,14 +466,14 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
             errors->addError(node, "Operator 'index' does not take arguments");
 
         // find expression and submodule node we're under
-        NEDElement *parent = node->getParent();
+        ASTNode *parent = node->getParent();
         while (parent && parent->getTagCode() != NED_EXPRESSION)
             parent = parent->getParent();
-        NEDElement *expr = parent;
+        ASTNode *expr = parent;
 
         while (parent && parent->getTagCode() != NED_SUBMODULE)
             parent = parent->getParent();
-        NEDElement *submod = parent;
+        ASTNode *submod = parent;
 
         if (!submod || submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size") == nullptr)
             errors->addError(node, "'index' may only occur in a submodule vector's definition");
@@ -494,13 +494,13 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
     else if (!strcmp(func, "input")) {
         if (args > 2)
             errors->addError(node, "Operator 'input' takes 0, 1 or 2 arguments");
-        NEDElement *op1 = node->getFirstChild();
-        NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
+        ASTNode *op1 = node->getFirstChild();
+        ASTNode *op2 = op1 ? op1->getNextSibling() : nullptr;
         if (args == 2)
             if (op2->getTagCode() != NED_LITERAL || ((LiteralElement *)op2)->getType() != NED_CONST_STRING)
                 errors->addError(node, "Second argument to 'input()' must be a string literal (prompt text)");
 
-        NEDElement *parent = node->getParent();
+        ASTNode *parent = node->getParent();
         if (parent->getTagCode() != NED_EXPRESSION)
             errors->addError(node, "'input()' occurs in wrong place");
         return;
@@ -510,8 +510,8 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
             errors->addError(node, "'xmldoc()' takes 1 or 2 arguments");
             return;
         }
-        NEDElement *op1 = node->getFirstChild();
-        NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
+        ASTNode *op1 = node->getFirstChild();
+        ASTNode *op2 = op1 ? op1->getNextSibling() : nullptr;
         if (op1->getTagCode() != NED_LITERAL || ((LiteralElement *)op1)->getType() != NED_CONST_STRING ||
             (op2 && (op2->getTagCode() != NED_LITERAL || ((LiteralElement *)op2)->getType() != NED_CONST_STRING)))
             errors->addError(node, "'xmldoc()' arguments must be string literals");
@@ -656,7 +656,7 @@ void NEDSyntaxValidator::validateElement(StructElement *node)
 
 void NEDSyntaxValidator::validateElement(FieldElement *node)
 {
-    NEDElement *classNode = node->getParent()->getParent();
+    ASTNode *classNode = node->getParent()->getParent();
     bool isStruct = !strcmp(classNode->getTagName(), "struct");
 
     if (node->getIsAbstract() && isStruct)

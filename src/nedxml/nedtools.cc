@@ -25,7 +25,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-void NEDTools::repairNEDElementTree(NEDElement *tree)
+void NEDTools::repairASTNodeTree(ASTNode *tree)
 {
     while (true) {
         // try DTD validation, and find first problem
@@ -34,14 +34,14 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
         dtdValidator.validate(tree);
         if (errors.empty())
             break;  // we're done
-        NEDElement *errorNode = errors.errorContext(0);
+        ASTNode *errorNode = errors.errorContext(0);
         if (!errorNode)
             break;  // this shouldn't happen, but if it does we can't go on
         if (!errorNode->getParent())
             break;  // we can't help if root node is wrong
 
         // throw out problem node, and try again
-        // printf("DBG: repairNEDElementTree: discarding <%s>\n", errnode->getTagName());
+        // printf("DBG: repairASTNodeTree: discarding <%s>\n", errnode->getTagName());
         errorNode->getParent()->removeChild(errorNode);
     }
 }
@@ -49,7 +49,7 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
 void NEDTools::splitToFiles(FilesElement *tree)
 {
     FilesElement *tmpTree = new FilesElement();
-    for (NEDElement *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
+    for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
         // ignore msg files
         if (child->getTagCode() != NED_NED_FILE)
             continue;
@@ -62,7 +62,7 @@ void NEDTools::splitToFiles(FilesElement *tree)
         splitFileName(fileNode->getFilename(), directory, filename);
 
         // go through NED components in the file, and create new NED files for them
-        for (NEDElement *child = fileNode->getFirstChild(); child; ) {
+        for (ASTNode *child = fileNode->getFirstChild(); child; ) {
             int type = child->getTagCode();
             if (type != NED_SIMPLE_MODULE && type != NED_COMPOUND_MODULE &&
                 type != NED_CHANNEL && type != NED_MODULE_INTERFACE &&
@@ -73,7 +73,7 @@ void NEDTools::splitToFiles(FilesElement *tree)
             }
 
             // process NED component
-            NEDElement *componentNode = child;
+            ASTNode *componentNode = child;
             const char *componentName = componentNode->getAttribute("name");
 
             // create new file for it
@@ -83,7 +83,7 @@ void NEDTools::splitToFiles(FilesElement *tree)
             tmpTree->appendChild(newFileNode);
 
             // copy comments and imports from old file
-            for (NEDElement *child2 = fileNode->getFirstChild(); child2; child2 = child2->getNextSibling())
+            for (ASTNode *child2 = fileNode->getFirstChild(); child2; child2 = child2->getNextSibling())
                 if (child2->getTagCode() == NED_COMMENT || child2->getTagCode() == NED_IMPORT)
                     newFileNode->appendChild(child2->dupTree());
 

@@ -92,9 +92,9 @@ static struct NED2ParserState
 {
     bool inTypes;
     bool inGroup;
-    std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
-    std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
-    std::stack<NEDElement *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
+    std::stack<ASTNode *> propertyscope; // top(): where to insert properties as we parse them
+    std::stack<ASTNode *> blockscope;    // top(): where to insert parameters, gates, etc
+    std::stack<ASTNode *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
 
     /* tmp flags, used with param, gate and conn */
     int paramType;
@@ -114,7 +114,7 @@ static struct NED2ParserState
     PropertyDeclNode *propertydecl;
     ExtendsNode *extends;
     InterfaceNameNode *interfacename;
-    NEDElement *component;  // compound/simple module, module interface, channel or channel interface
+    ASTNode *component;  // compound/simple module, module interface, channel or channel interface
     ParametersNode *parameters;
     ParamGroupNode *paramgroup;
     ParamNode *param;
@@ -149,7 +149,7 @@ static void restoreGlobalParserState()  // for error recovery
     ps = globalps;
 }
 
-static void assertNonEmpty(std::stack<NEDElement *>& somescope) {
+static void assertNonEmpty(std::stack<ASTNode *>& somescope) {
     // for error recovery: STL stack::top() crashes if stack is empty
     if (somescope.empty())
     {
@@ -286,14 +286,14 @@ channeldefinition
 channelheader
         : CHANNEL NAME
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@2));
                   //setComments(ps.component,@1,@2);
                 }
            opt_inheritance
         | CHANNEL WITHCPPCLASS NAME
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@3));
                   ((ChannelNode *)ps.component)->setIsWithcppclass(true);
                   //setComments(ps.component,@1,@2);
@@ -360,7 +360,7 @@ channelinterfacedefinition
 channelinterfaceheader
         : CHANNELINTERFACE NAME
                 {
-                  ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile);
                   ((ChannelInterfaceNode *)ps.component)->setName(toString(@2));
                   //setComments(ps.component,@1,@2);
                 }
@@ -409,7 +409,7 @@ simplemoduledefinition
 simplemoduleheader
         : SIMPLE NAME
                 {
-                  ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile );
                   ((SimpleModuleNode *)ps.component)->setName(toString(@2));
                   //setComments(ps.component,@1,@2);
                 }
@@ -451,7 +451,7 @@ compoundmoduledefinition
 compoundmoduleheader
         : MODULE NAME
                 {
-                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                   //setComments(ps.component,@1,@2);
                 }
@@ -493,7 +493,7 @@ networkdefinition
 networkheader
         : NETWORK NAME
                 {
-                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                   ((CompoundModuleNode *)ps.component)->setIsNetwork(true);
                   //setComments(ps.component,@1,@2);
@@ -533,7 +533,7 @@ moduleinterfacedefinition
 moduleinterfaceheader
         : INTERFACE NAME
                 {
-                  ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (ASTNode *)ps.types : (ASTNode *)ps.nedfile);
                   ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
                   //setComments(ps.component,@1,@2);
                 }
@@ -617,13 +617,13 @@ param
 param_typenamevalue
         : paramtype opt_function NAME
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
+                  ps.param = addParameter(ps.inGroup ? (ASTNode *)ps.paramgroup : (ASTNode *)ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                 }
         | paramtype opt_function NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
+                  ps.param = addParameter(ps.inGroup ? (ASTNode *)ps.paramgroup : (ASTNode *)ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                   addExpression(ps.param, "value",@5,$5);
@@ -631,23 +631,23 @@ param_typenamevalue
                 }
         | NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  ps.param = addParameter(ps.inGroup ? (ASTNode *)ps.paramgroup : (ASTNode *)ps.parameters, @1);
                   addExpression(ps.param, "value",@3,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  ps.param = addParameter(ps.inGroup ? (ASTNode *)ps.paramgroup : (ASTNode *)ps.parameters, @1);
                 }
         | TYPENAME '=' paramvalue  /* this is to assign module type with the "<> like Foo" syntax */
                 {
-                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
+                  ps.param = addParameter(ps.inGroup ? (ASTNode *)ps.paramgroup : (ASTNode *)ps.parameters, @1);
                   addExpression(ps.param, "value",@3,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | '/' pattern '/' '=' paramvalue
                 {
-                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters);
+                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inGroup ? (ASTNode *)ps.paramgroup : (ASTNode *)ps.parameters);
                   ps.pattern->setPattern(toString(@2));
                   addExpression(ps.pattern, "value",@5,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
@@ -867,33 +867,33 @@ gate
 gate_typenamesize
         : gatetype NAME
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.inGroup ? (ASTNode *)ps.gategroup : (ASTNode *)ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                 }
         | gatetype NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.inGroup ? (ASTNode *)ps.gategroup : (ASTNode *)ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                   ps.gate->setIsVector(true);
                 }
         | gatetype NAME vector
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate = addGate(ps.inGroup ? (ASTNode *)ps.gategroup : (ASTNode *)ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                   addVector(ps.gate, "vector-size",@3,$3);
                 }
         | NAME
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.inGroup ? (ASTNode *)ps.gategroup : (ASTNode *)ps.gates, @1);
                 }
         | NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.inGroup ? (ASTNode *)ps.gategroup : (ASTNode *)ps.gates, @1);
                   ps.gate->setIsVector(true);
                 }
         | NAME vector
                 {
-                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate = addGate(ps.inGroup ? (ASTNode *)ps.gategroup : (ASTNode *)ps.gates, @1);
                   addVector(ps.gate, "vector-size",@2,$2);
                 }
         ;
@@ -1232,13 +1232,13 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                 }
         ;
@@ -1263,20 +1263,20 @@ leftgate
 parentleftgate
         : NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                 }
         | NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
         | NAME PLUSPLUS
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (ASTNode*)ps.conngroup : (ASTNode*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGatePlusplus(true);
@@ -1585,7 +1585,7 @@ opt_semicolon : ';' | ;
 // general bison/flex stuff:
 //
 
-NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
+ASTNode *doParseNED2(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;

@@ -40,7 +40,7 @@ NEDCrossValidator::~NEDCrossValidator()
 {
 }
 
-NEDElement *NEDCrossValidator::getXXXDeclaration(const char *name, int tagcode1, int tagcode2)
+ASTNode *NEDCrossValidator::getXXXDeclaration(const char *name, int tagcode1, int tagcode2)
 {
     NEDTypeInfo *component = resolver->lookup(name);
     if (!component)
@@ -52,32 +52,32 @@ NEDElement *NEDCrossValidator::getXXXDeclaration(const char *name, int tagcode1,
     return component->getTree();
 }
 
-NEDElement *NEDCrossValidator::getModuleDeclaration(const char *name)
+ASTNode *NEDCrossValidator::getModuleDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE);
 }
 
-NEDElement *NEDCrossValidator::getChannelDeclaration(const char *name)
+ASTNode *NEDCrossValidator::getChannelDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_CHANNEL);
 }
 
-NEDElement *NEDCrossValidator::getModuleInterfaceDeclaration(const char *name)
+ASTNode *NEDCrossValidator::getModuleInterfaceDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_MODULE_INTERFACE);
 }
 
-NEDElement *NEDCrossValidator::getChannelInterfaceDeclaration(const char *name)
+ASTNode *NEDCrossValidator::getChannelInterfaceDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_CHANNEL_INTERFACE);
 }
 
-NEDElement *NEDCrossValidator::getEnumDeclaration(const char *name)
+ASTNode *NEDCrossValidator::getEnumDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_ENUM);
 }
 
-NEDElement *NEDCrossValidator::getClassDeclaration(const char *name)
+ASTNode *NEDCrossValidator::getClassDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_CLASS);
 }
@@ -147,7 +147,7 @@ void NEDCrossValidator::validateElement(ParamElement *node)
 
     // make sure parameter exists in module type
     const char *paramName = node->getName();
-    NEDElement *params = moduleTypeDecl->getFirstChildWithTag(NED_PARAMETERS);
+    ASTNode *params = moduleTypeDecl->getFirstChildWithTag(NED_PARAMETERS);
     if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName) == nullptr) {
         errors->addError(node, "module type '%s' has no parameter named '%s'", moduleTypeDecl->getAttribute("name"), paramName);
         return;
@@ -220,7 +220,7 @@ void NEDCrossValidator::validateElement(ConnectionsElement *node)
     // FIXME revise
 }
 
-void NEDCrossValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrc)
+void NEDCrossValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isInput, ASTNode *conn, bool isSrc)
 {
     // FIXME revise
     // check gate direction, check if vector
@@ -239,13 +239,13 @@ void NEDCrossValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isI
 
 void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
         const char *gateName, bool hasGateIndex,
-        NEDElement *parent, NEDElement *conn, bool isSrc)
+        ASTNode *parent, ASTNode *conn, bool isSrc)
 {
     // FIXME revise
     const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
     if (opp_isempty(submodName)) {
         // connected to parent module: check such gate is declared
-        NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);
+        ASTNode *gates = parent->getFirstChildWithTag(NED_GATES);
         GateElement *gate;
         if (!gates || (gate = (GateElement *)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName)) == nullptr)
             errors->addError(conn, "%s: compound module has no gate named '%s'", q, gateName);
@@ -254,7 +254,7 @@ void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodI
     }
     else {
         // check such submodule is declared
-        NEDElement *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
+        ASTNode *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
         SubmoduleElement *submod = nullptr;
         if (!submods || (submod = (SubmoduleElement *)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName)) == nullptr) {
             errors->addError(conn, "%s: compound module has no submodule named '%s'", q, submodName);
@@ -267,10 +267,10 @@ void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodI
                 errors->addError(conn, "%s: missing submodule index ('%s' is a vector submodule)", q, submodName);
 
             // check gate
-            NEDElement *submodType = getModuleDeclaration(submod->getType());
+            ASTNode *submodType = getModuleDeclaration(submod->getType());
             if (!submodType)
                 return;  // we gave error earlier if submod type is not present
-            NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
+            ASTNode *gates = submodType->getFirstChildWithTag(NED_GATES);
             GateElement *gate;
             if (!gates || (gate = (GateElement *)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName)) == nullptr)
                 errors->addError(conn, "%s: submodule '%s' has no gate named '%s'", q, submodName, gateName);
@@ -285,7 +285,7 @@ void NEDCrossValidator::validateElement(ConnectionElement *node)
     // FIXME revise
     // make sure submodule and gate names are valid, gate direction is OK
     // and that gates & modules are really vector (or really not)
-    NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
+    ASTNode *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
     if (!compound)
         INTERNAL_ERROR0(node, "occurs outside a compound-module");
 
@@ -385,7 +385,7 @@ void NEDCrossValidator::validateElement(EnumElement *node)
 {
     // check extends-name
     const char *baseName = node->getExtendsName();
-    NEDElement *base = getEnumDeclaration(baseName);
+    ASTNode *base = getEnumDeclaration(baseName);
     if (!base)
         errors->addError(node, "unknown base enum type '%s'", baseName);
 }
@@ -402,7 +402,7 @@ void NEDCrossValidator::validateElement(MessageElement *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = getClassDeclaration(baseClassName);
+    ASTNode *baseClass = getClassDeclaration(baseClassName);
     if (!baseClass)
         errors->addError(node, "unknown base class '%s'", baseClassName);
 }
@@ -411,7 +411,7 @@ void NEDCrossValidator::validateElement(PacketElement *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = getClassDeclaration(baseClassName);
+    ASTNode *baseClass = getClassDeclaration(baseClassName);
     if (!baseClass)
         errors->addError(node, "unknown base class '%s'", baseClassName);
 }
@@ -420,7 +420,7 @@ void NEDCrossValidator::validateElement(ClassElement *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = getClassDeclaration(baseClassName);
+    ASTNode *baseClass = getClassDeclaration(baseClassName);
     if (!baseClass)
         errors->addError(node, "unknown base class '%s'", baseClassName);
 }
@@ -429,7 +429,7 @@ void NEDCrossValidator::validateElement(StructElement *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = getClassDeclaration(baseClassName);
+    ASTNode *baseClass = getClassDeclaration(baseClassName);
     if (!baseClass)
         errors->addError(node, "unknown base class '%s'", baseClassName);
 }

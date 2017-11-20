@@ -150,7 +150,7 @@ static struct NED1ParserState
     ImportElement *import;
     ExtendsElement *extends;
     ChannelElement *channel;
-    NEDElement *module;  // in fact, CompoundModuleElement* or SimpleModule*
+    ASTNode *module;  // in fact, CompoundModuleElement* or SimpleModule*
     ParametersElement *params;
     ParamElement *param;
     ParametersElement *substparams;
@@ -963,7 +963,7 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
                   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule( toString(@1) );
@@ -971,7 +971,7 @@ leftmod
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
                   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule( toString(@1) );
@@ -998,7 +998,7 @@ leftgate
 parentleftgate
         : NAME vector
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
                   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
@@ -1007,7 +1007,7 @@ parentleftgate
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
                   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
@@ -1015,7 +1015,7 @@ parentleftgate
                 }
         | NAME PLUSPLUS
                 {
-                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (ASTNode *)ps.conngroup : (ASTNode*)ps.conns );
                   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
@@ -1337,7 +1337,7 @@ comma_or_semicolon : ',' | ';' ;
 //
 int ned1yylex_destroy();  // from lex.XXX.cc file
 
-NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
+ASTNode *doParseNED1(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -1406,7 +1406,7 @@ void yyerror(const char *s)
 void createSubstparamsElementIfNotExists()
 {
    // check if already exists (multiple blocks must be merged)
-   NEDElement *parent = ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod;
+   ASTNode *parent = ps.inNetwork ? (ASTNode *)ps.module : (ASTNode *)ps.submod;
    ps.substparams = (ParametersElement *)parent->getFirstChildWithTag(NED_PARAMETERS);
    if (!ps.substparams)
        ps.substparams = (ParametersElement *)createElementWithTag(NED_PARAMETERS, parent);

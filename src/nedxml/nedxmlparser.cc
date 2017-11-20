@@ -23,7 +23,7 @@
 namespace omnetpp {
 namespace nedxml {
 
-NEDElement *parseXML(const char *filename, ErrorStore *errors)
+ASTNode *parseXML(const char *filename, ErrorStore *errors)
 {
     NEDSAXHandler sh(filename, errors);
     SAXParser parser;

@@ -29,7 +29,7 @@ namespace nedxml {
 
 MsgTypeTable::~MsgTypeTable()
 {
-    for (NEDElement *node : importedMsgFiles)
+    for (ASTNode *node : importedMsgFiles)
         delete node;
 }
 

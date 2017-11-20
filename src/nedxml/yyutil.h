@@ -34,57 +34,57 @@ namespace nedxml {
 std::string slashifyFilename(const char *fname);
 const char *currentLocation();
 
-NEDElement *createElementWithTag(int tagcode, NEDElement *parent=nullptr);
-NEDElement *getOrCreateElementWithTag(int tagcode, NEDElement *parent);
+ASTNode *createElementWithTag(int tagcode, ASTNode *parent=nullptr);
+ASTNode *getOrCreateElementWithTag(int tagcode, ASTNode *parent);
 
-void storePos(NEDElement *node, YYLTYPE pos);
-void storePos(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
+void storePos(ASTNode *node, YYLTYPE pos);
+void storePos(ASTNode *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
-PropertyElement *addProperty(NEDElement *node, const char *name);  // directly under the node
-PropertyElement *addComponentProperty(NEDElement *node, const char *name); // into ParametersElement child of node
+PropertyElement *addProperty(ASTNode *node, const char *name);  // directly under the node
+PropertyElement *addComponentProperty(ASTNode *node, const char *name); // into ParametersElement child of node
 
-PropertyElement *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
-PropertyElement *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersElement child
-PropertyElement *setIsNetworkProperty(NEDElement *node); // into ParametersElement child
+PropertyElement *storeSourceCode(ASTNode *node, YYLTYPE tokenpos);  // directly under the node
+PropertyElement *storeComponentSourceCode(ASTNode *node, YYLTYPE tokenpos); // into ParametersElement child
+PropertyElement *setIsNetworkProperty(ASTNode *node); // into ParametersElement child
 
-void addComment(NEDElement *node, const char *locId, const char *comment, const char *defaultValue);
-void storeFileComment(NEDElement *node);
-void storeBannerComment(NEDElement *node, YYLTYPE tokenpos);
-void storeRightComment(NEDElement *node, YYLTYPE tokenpos);
-void storeTrailingComment(NEDElement *node, YYLTYPE tokenpos);
-void storeBannerAndRightComments(NEDElement *node, YYLTYPE pos);
-void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
-void storeInnerComments(NEDElement *node, YYLTYPE pos);
+void addComment(ASTNode *node, const char *locId, const char *comment, const char *defaultValue);
+void storeFileComment(ASTNode *node);
+void storeBannerComment(ASTNode *node, YYLTYPE tokenpos);
+void storeRightComment(ASTNode *node, YYLTYPE tokenpos);
+void storeTrailingComment(ASTNode *node, YYLTYPE tokenpos);
+void storeBannerAndRightComments(ASTNode *node, YYLTYPE pos);
+void storeBannerAndRightComments(ASTNode *node, YYLTYPE firstpos, YYLTYPE lastpos);
+void storeInnerComments(ASTNode *node, YYLTYPE pos);
 
-ParamElement *addParameter(NEDElement *params, YYLTYPE namepos);
-ParamElement *addParameter(NEDElement *params, const char *name, YYLTYPE namepos);
-GateElement *addGate(NEDElement *gates, YYLTYPE namepos);
+ParamElement *addParameter(ASTNode *params, YYLTYPE namepos);
+ParamElement *addParameter(ASTNode *params, const char *name, YYLTYPE namepos);
+GateElement *addGate(ASTNode *gates, YYLTYPE namepos);
 
 YYLTYPE trimQuotes(YYLTYPE vectorpos);
 YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
-void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
-void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2);
-void swapConnection(NEDElement *conn);
-void transferChildren(NEDElement *from, NEDElement *to);
+void swapAttributes(ASTNode *node, const char *attr1, const char *attr2);
+void swapExpressionChildren(ASTNode *node, const char *attr1, const char *attr2);
+void swapConnection(ASTNode *conn);
+void transferChildren(ASTNode *from, ASTNode *to);
 
 const char *toString(YYLTYPE);
 const char *toString(long);
 std::string removeSpaces(YYLTYPE pos);
 
-ExpressionElement *createExpression(NEDElement *expr);
-OperatorElement *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=nullptr, NEDElement *operand3=nullptr);
-FunctionElement *createFunction(const char *funcname, NEDElement *arg1=nullptr, NEDElement *arg2=nullptr, NEDElement *arg3=nullptr, NEDElement *arg4=nullptr, NEDElement *arg5=nullptr, NEDElement *arg6=nullptr, NEDElement *arg7=nullptr, NEDElement *arg8=nullptr, NEDElement *arg9=nullptr, NEDElement *arg10=nullptr);
+ExpressionElement *createExpression(ASTNode *expr);
+OperatorElement *createOperator(const char *op, ASTNode *operand1, ASTNode *operand2=nullptr, ASTNode *operand3=nullptr);
+FunctionElement *createFunction(const char *funcname, ASTNode *arg1=nullptr, ASTNode *arg2=nullptr, ASTNode *arg3=nullptr, ASTNode *arg4=nullptr, ASTNode *arg5=nullptr, ASTNode *arg6=nullptr, ASTNode *arg7=nullptr, ASTNode *arg8=nullptr, ASTNode *arg9=nullptr, ASTNode *arg10=nullptr);
 IdentElement *createIdent(YYLTYPE parampos);
-IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=nullptr);
+IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, ASTNode *moduleindexoperand=nullptr);
 LiteralElement *createPropertyValue(YYLTYPE textpos);
 LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
 LiteralElement *createLiteral(int type, const char *value, const char *text);
 LiteralElement *createStringLiteral(YYLTYPE textpos);
 LiteralElement *createQuantityLiteral(YYLTYPE textpos);
-NEDElement *unaryMinus(NEDElement *node);
+ASTNode *unaryMinus(ASTNode *node);
 
-void addOptionalExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
-void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
+void addOptionalExpression(ASTNode *elem, const char *attrname, YYLTYPE exprpos, ASTNode *expr);
+void addExpression(ASTNode *elem, const char *attrname, YYLTYPE exprpos, ASTNode *expr);
 
 std::string convertBackgroundDisplayString(const char *old);
 

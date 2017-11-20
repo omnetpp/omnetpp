@@ -25,7 +25,7 @@
 namespace omnetpp {
 namespace nedxml {
 
-class NEDElement;
+class ASTNode;
 
 /**
  * @brief Low-level routines throw an exception instead of calling NEDErrorStore->add().
@@ -44,7 +44,7 @@ class NEDXML_API NEDException : public std::runtime_error
     /**
      * The error message can be generated in a printf-like manner.
      */
-    NEDException(NEDElement *context, const char *messagefmt,...);
+    NEDException(ASTNode *context, const char *messagefmt,...);
 
     /**
      * Empty destructor with throw clause for gcc.

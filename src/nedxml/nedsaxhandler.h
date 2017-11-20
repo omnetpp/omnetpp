@@ -19,7 +19,7 @@
 
 
 #include "errorstore.h"
-#include "nedelement.h"
+#include "astnode.h"
 #include "saxparser.h"
 
 namespace omnetpp {
@@ -29,8 +29,8 @@ namespace nedxml {
 /**
  * @brief SAX handler (to be used with SAXParser) that builds a NED object tree.
  *
- * Elements of the tree are subclassed from NEDElement;
- * NEDElementFactory is used to actually create the objects.
+ * Elements of the tree are subclassed from ASTNode;
+ * ASTNodeFactory is used to actually create the objects.
  *
  * Usage:
  * <pre>
@@ -40,15 +40,15 @@ namespace nedxml {
  *    parser.setHandler(&nedsaxhandler);
  *    parser.parse(filename);
  *
- *    NEDElement *result = nedsaxhandler.getTree();
+ *    ASTNode *result = nedsaxhandler.getTree();
  * </pre>
  *
  * @ingroup XMLParser
  */
 class NEDXML_API NEDSAXHandler : public SAXHandler
 {
-    NEDElement *root;
-    NEDElement *current;
+    ASTNode *root;
+    ASTNode *current;
     const char *sourceFilename;
     ErrorStore *errors;
 
@@ -66,7 +66,7 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
     /**
      * Returns the object tree that was built up during XML parsing.
      */
-    virtual NEDElement *getTree();
+    virtual ASTNode *getTree();
 
     /** @name SAX event handlers */
     //@{

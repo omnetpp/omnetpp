@@ -54,9 +54,9 @@ namespace nedxml {
  * The NED-XML infrastructure is centered around data classes that are
  * the in-memory representation of NED. The data structure is an object tree,
  * where each XML element (e.g. &lt;param name="address" datatype="string"/&gt;)
- * is represented by an object. The central class is NEDElement, which provides
+ * is represented by an object. The central class is ASTNode, which provides
  * DOM-like generic methods to navigate the tree, enumerate and query attributes,
- * etc. Each XML element has a corresponding class, subclassed from NEDElement,
+ * etc. Each XML element has a corresponding class, subclassed from ASTNode,
  * e.g. for the &lt;param&gt; element the class is called ParamElement. Specific
  * element classes provide a stricter, more typed interface to access the data
  * tree.

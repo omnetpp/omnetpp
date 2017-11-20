@@ -1,11 +1,11 @@
 //==========================================================================
-// nedelement.h  -
+// astnode.h  -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 // Contents:
-//   class NEDElement
+//   class ASTNode
 //
 //==========================================================================
 
@@ -17,8 +17,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDELEMENT_H
-#define __OMNETPP_NEDXML_NEDELEMENT_H
+#ifndef __OMNETPP_NEDXML_ASTNODE_H
+#define __OMNETPP_NEDXML_ASTNODE_H
 
 #ifdef _MSC_VER
 // disable 4996: VC8.0 warnings on Unix syscalls
@@ -33,30 +33,30 @@ namespace nedxml {
 
 
 /**
- * @brief Subclass from this if you want to attach extra data to NEDElement objects.
+ * @brief Subclass from this if you want to attach extra data to ASTNode objects.
  *
  * @ingroup Data
  */
-class NEDXML_API NEDElementUserData
+class NEDXML_API UserData
 {
   public:
     /** Constructor */
-    NEDElementUserData() {}
+    UserData() {}
 
     /** Destructor */
-    virtual ~NEDElementUserData() {}
+    virtual ~UserData() {}
 };
 
 
 /**
  * @brief Stores a line:col..line:col region in a source file. Used for mapping
- * NEDElements back to the source code.
+ * ASTNodes back to the source code.
  *
  * @ingroup Data
  */
-struct NEDSourceRegion
+struct SourceRegion
 {
-    NEDSourceRegion() {startLine=startColumn=endLine=endColumn=0;}
+    SourceRegion() {startLine=startColumn=endLine=endColumn=0;}
     int startLine;
     int startColumn;
     int endLine;
@@ -65,25 +65,25 @@ struct NEDSourceRegion
 
 /**
  * Base class for objects in a NED object tree, the XML-based
- * in-memory representation for NED files. An instance of a NEDElement
+ * in-memory representation for NED files. An instance of an ASTNode
  * subclass represent an XML element.
- * NEDElement provides a DOM-like, generic access to the tree;
+ * ASTNode provides a DOM-like, generic access to the tree;
  * subclasses additionally provide a typed interface.
  *
  * @ingroup Data
  */
-class NEDXML_API NEDElement
+class NEDXML_API ASTNode
 {
   private:
     long id;
     std::string srcLoc;
-    NEDSourceRegion srcRegion;
-    NEDElement *parent;
-    NEDElement *firstChild;
-    NEDElement *lastChild;
-    NEDElement *prevSibling;
-    NEDElement *nextSibling;
-    NEDElementUserData *userData;
+    SourceRegion srcRegion;
+    ASTNode *parent;
+    ASTNode *firstChild;
+    ASTNode *lastChild;
+    ASTNode *prevSibling;
+    ASTNode *nextSibling;
+    UserData *userData;
 
     static long lastId;
     static long numCreated;
@@ -103,28 +103,28 @@ class NEDXML_API NEDElement
     /**
      * Constructor
      */
-    NEDElement();
+    ASTNode();
 
     /**
      * Constructor. Takes parent element.
      */
-    NEDElement(NEDElement *parent);
+    ASTNode(ASTNode *parent);
 
     /**
      * Destructor. Destroys children too.
      */
-    virtual ~NEDElement();
+    virtual ~ASTNode();
 
     /**
      * Creates and returns a duplicate of the element. Child elements
      * are not copied.
      */
-    virtual NEDElement *dup() const = 0;
+    virtual ASTNode *dup() const = 0;
 
     /**
      * Recursive version of dup(): duplicates the whole subtree.
      */
-    virtual NEDElement *dupTree() const;
+    virtual ASTNode *dupTree() const;
     //@}
 
     /** @name Common properties */
@@ -168,13 +168,13 @@ class NEDXML_API NEDElement
      * Returns the source region, containing a line:col region in the source file
      * that corresponds to this element.
      */
-    virtual const NEDSourceRegion& getSourceRegion() const;
+    virtual const SourceRegion& getSourceRegion() const;
 
     /**
      * Sets source region, containing a line:col region in the source file
      * that corresponds to this element. Called by the (NED/XML) parser.
      */
-    virtual void setSourceRegion(const NEDSourceRegion& region);
+    virtual void setSourceRegion(const SourceRegion& region);
     //@}
 
     /** @name Generic access to attributes (Methods have to be redefined in subclasses!) */
@@ -270,19 +270,19 @@ class NEDXML_API NEDElement
     /**
      * Returns the parent element, or nullptr if this element has no parent.
      */
-    virtual NEDElement *getParent() const;
+    virtual ASTNode *getParent() const;
 
     /**
      * Returns pointer to the first child element, or nullptr if this element
      * has no children.
      */
-    virtual NEDElement *getFirstChild() const;
+    virtual ASTNode *getFirstChild() const;
 
     /**
      * Returns pointer to the last child element, or nullptr if this element
      * has no children.
      */
-    virtual NEDElement *getLastChild() const;
+    virtual ASTNode *getLastChild() const;
 
     /**
      * Returns pointer to the next sibling of this element (i.e. the next child
@@ -292,27 +292,27 @@ class NEDXML_API NEDElement
      * the child list:
      *
      * <pre>
-     * for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
+     * for (ASTNode *child=node->getFirstChild(); child; child = child->getNextSibling())
      * {
      *    ...
      * }
      * </pre>
      *
      */
-    virtual NEDElement *getNextSibling() const;
+    virtual ASTNode *getNextSibling() const;
 
     /**
      * Returns pointer to the previous sibling of this element (i.e. the previous child
      * in the parent element). Returns nullptr if there're no elements before this one.
      */
-    virtual NEDElement *getPrevSibling() const;
+    virtual ASTNode *getPrevSibling() const;
 
     /**
      * Appends the given element at the end of the child element list.
      *
      * The node pointer passed should not be nullptr.
      */
-    virtual void appendChild(NEDElement *node);
+    virtual void appendChild(ASTNode *node);
 
     /**
      * Inserts the given element just before the specified child element
@@ -322,20 +322,20 @@ class NEDXML_API NEDElement
      * The where element must be a child of this element, or nullptr.
      * The node pointer passed should not be nullptr.
      */
-    virtual void insertChildBefore(NEDElement *where, NEDElement *newnode);
+    virtual void insertChildBefore(ASTNode *where, ASTNode *newnode);
 
     /**
      * Removes the given element from the child element list.
      *
      * The pointer passed should be a child of this element.
      */
-    virtual NEDElement *removeChild(NEDElement *node);
+    virtual ASTNode *removeChild(ASTNode *node);
 
     /**
      * Returns pointer to the first child element with the given tag code,
      * or nullptr if this element has no such children.
      */
-    virtual NEDElement *getFirstChildWithTag(int tagcode) const;
+    virtual ASTNode *getFirstChildWithTag(int tagcode) const;
 
     /**
      * Returns pointer to the next sibling of this element with the given
@@ -345,13 +345,13 @@ class NEDXML_API NEDElement
      * to loop through elements with a certain tag code in the child list:
      *
      * <pre>
-     * for (NEDElement *child=node->getFirstChildWithTag(tagcode); child; child = child->getNextSiblingWithTag(tagcode))
+     * for (ASTNode *child=node->getFirstChildWithTag(tagcode); child; child = child->getNextSiblingWithTag(tagcode))
      * {
      *     ...
      * }
      * </pre>
      */
-    virtual NEDElement *getNextSiblingWithTag(int tagcode) const;
+    virtual ASTNode *getNextSiblingWithTag(int tagcode) const;
 
     /**
      * Returns the number of child elements.
@@ -371,25 +371,25 @@ class NEDXML_API NEDElement
      * Returns first child element with the given tagcode and the given
      * attribute (optionally) having the given value. Returns nullptr if not found.
      */
-    NEDElement *getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue=nullptr);
+    ASTNode *getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue=nullptr);
 
     /**
      * Climb up in the element tree until it finds an element with the given tagcode.
      * Returns "this" if its tagcode already matches. Returns nullptr if not found.
      */
-    NEDElement *getParentWithTag(int tagcode);
+    ASTNode *getParentWithTag(int tagcode);
     //@}
 
     /** @name Counters */
     //@{
 
     /**
-     * Returns NEDElements constructed so far (this number can only increase).
+     * Returns ASTNodes constructed so far (this number can only increase).
      */
     static long getNumCreated() {return numCreated;}
 
     /**
-     * Returns NEDElements currently existing (created minus deleted).
+     * Returns the number of ASTNodes currently in existence (created minus deleted).
      * Useful for detecting memory leaks.
      */
     static long getNumExisting() {return numExisting;}
@@ -402,15 +402,18 @@ class NEDXML_API NEDElement
     /**
      * Replaces user data object with the given one.
      */
-    virtual void setUserData(NEDElementUserData *data);
+    virtual void setUserData(UserData *data);
 
     /**
      * Return pointer to the user data object, or nullptr if
      * setUserData() has not been called yet.
      */
-    virtual NEDElementUserData *getUserData() const;
+    virtual UserData *getUserData() const;
     //@}
 };
+
+typedef ASTNode NEDElement;
+typedef ASTNode MsgElement;
 
 } // namespace nedxml
 }  // namespace omnetpp

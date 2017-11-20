@@ -26,7 +26,7 @@
 namespace omnetpp {
 namespace nedxml {
 
-class NEDElement;
+class ASTNode;
 class NEDParser;
 
 } // namespace nedxml
@@ -43,7 +43,7 @@ struct my_yyltype {
    char *text;
 };
 #define YYLTYPE  struct my_yyltype
-#define YYSTYPE  omnetpp::nedxml::NEDElement*
+#define YYSTYPE  omnetpp::nedxml::ASTNode*
 
 namespace omnetpp {
 namespace nedxml {
@@ -57,9 +57,9 @@ void msgLexerSetRecognizeObsoleteKeywords(bool opt);
 } // namespace nedxml
 }  // namespace omnetpp
 
-omnetpp::nedxml::NEDElement *doParseNED2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
-omnetpp::nedxml::NEDElement *doParseNED1(omnetpp::nedxml::NEDParser *p, const char *nedtext);
-omnetpp::nedxml::NEDElement *doParseMSG2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
+omnetpp::nedxml::ASTNode *doParseNED2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
+omnetpp::nedxml::ASTNode *doParseNED1(omnetpp::nedxml::NEDParser *p, const char *nedtext);
+omnetpp::nedxml::ASTNode *doParseMSG2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
 
 
 #endif

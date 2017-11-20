@@ -109,7 +109,7 @@ class NEDXML_API MsgCompilerOld
       public:
         class FieldInfo {
           public:
-            NEDElement *nedElement;     // pointer to NED element
+            ASTNode *nedElement;     // pointer to NED element
 
             std::string fname;      // field name in MSG
             std::string ftype;      // field type in MSG
@@ -158,7 +158,7 @@ class NEDXML_API MsgCompilerOld
         };
         typedef std::vector<FieldInfo> Fieldlist;
 
-        NEDElement *nedElement;
+        ASTNode *nedElement;
         std::string keyword;        // struct/class/packet from MSG
         std::string msgname;        // class name from MSG
         std::string msgbase;        // base class name from MSG
@@ -196,7 +196,7 @@ class NEDXML_API MsgCompilerOld
         class EnumItem
         {
           public:
-            NEDElement *nedElement;
+            ASTNode *nedElement;
             std::string name;
             std::string value;
             std::string comment;
@@ -219,11 +219,11 @@ class NEDXML_API MsgCompilerOld
     StringVector lookupExistingClassName(const std::string& s);
     StringVector lookupExistingEnumName(const std::string& s);
     bool isClassDeclared(const std::string& classqname) { return classType.find(classqname) != classType.end(); }
-    void addClassType(const std::string& classqname, ClassType type, NEDElement *context);
+    void addClassType(const std::string& classqname, ClassType type, ASTNode *context);
     ClassType getClassType(const std::string& classqname);
-    ClassInfo extractClassInfo(NEDElement *node); // accepts StructElement, ClassElement, MessageElement, PacketElement
-    void extractClassDecl(NEDElement *node); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl
-    Properties extractPropertiesOf(NEDElement *node);
+    ClassInfo extractClassInfo(ASTNode *node); // accepts StructElement, ClassElement, MessageElement, PacketElement
+    void extractClassDecl(ASTNode *node); // accepts StructElementDecl, ClassElementDecl, MessageElementDecl, PacketElementDecl
+    Properties extractPropertiesOf(ASTNode *node);
     void prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::FieldInfo *it);
     void prepareForCodeGeneration(ClassInfo& classInfo);
     EnumInfo extractEnumInfo(EnumElement *node); // accepts EnumElement
@@ -231,9 +231,9 @@ class NEDXML_API MsgCompilerOld
     void generateStruct(const ClassInfo& classInfo);
     void generateDescriptorClass(const ClassInfo& a);
     void generateEnum(const EnumInfo& enumInfo);
-    void generateNamespaceBegin(NEDElement *element);
+    void generateNamespaceBegin(ASTNode *element);
     void generateNamespaceEnd();
-    std::string generatePreComment(NEDElement *nedElement);
+    std::string generatePreComment(ASTNode *nedElement);
     void generateTemplates();
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
