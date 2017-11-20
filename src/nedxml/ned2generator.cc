@@ -91,14 +91,6 @@ const char *NED2Generator::decreaseIndent(const char *indent)
 
 //---------------------------------------------------------------------------
 
-static bool _isNetwork(ASTNode *node)
-{
-    Assert(node->getTagCode() == NED_COMPOUND_MODULE || node->getTagCode() == NED_SIMPLE_MODULE);
-    return ASTNodeUtil::getLocalBoolProperty(node, "isNetwork");
-}
-
-//---------------------------------------------------------------------------
-
 void NED2Generator::generateChildren(ASTNode *node, const char *indent, const char *arg)
 {
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
@@ -352,7 +344,8 @@ void NED2Generator::doModuleInterface(ModuleInterfaceElement *node, const char *
 void NED2Generator::doCompoundModule(CompoundModuleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
-    OUT << indent << (_isNetwork(node) ? "network" : "module") << " " << node->getName();
+    bool isNetwork = ASTNodeUtil::getLocalBoolProperty(node, "isNetwork");
+    OUT << indent << (isNetwork ? "network" : "module") << " " << node->getName();
     printInheritance(node, indent);
     OUT << getRightComment(node);
     OUT << indent << "{\n";

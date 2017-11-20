@@ -90,14 +90,6 @@ const char *MsgGenerator::decreaseIndent(const char *indent)
 
 //---------------------------------------------------------------------------
 
-static bool _isNetwork(ASTNode *node)
-{
-    Assert(node->getTagCode() == NED_COMPOUND_MODULE || node->getTagCode() == NED_SIMPLE_MODULE);
-    return ASTNodeUtil::getLocalBoolProperty(node, "isNetwork");
-}
-
-//---------------------------------------------------------------------------
-
 void MsgGenerator::generateChildren(ASTNode *node, const char *indent, const char *arg)
 {
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
