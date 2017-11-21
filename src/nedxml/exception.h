@@ -1,5 +1,5 @@
 //==========================================================================
-// nedexception.h  -
+// exception.h  -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDEXCEPTION_H
-#define __OMNETPP_NEDXML_NEDEXCEPTION_H
+#ifndef __OMNETPP_NEDXML_EXCEPTION_H
+#define __OMNETPP_NEDXML_EXCEPTION_H
 
 #include <string>
 #include <exception>

@@ -22,7 +22,7 @@
 #include "omnetpp/platdep/platmisc.h"  // unlink()
 #include "msgcodegenerator.h"
 #include "msggenerator.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "nedutil.h"
 
 #include "omnetpp/simkerneldefs.h"

@@ -34,7 +34,7 @@
 #include "msgcompiler.h"
 #include "msgcompilerold.h"
 #include "nedparser.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "msgdtdvalidator.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"

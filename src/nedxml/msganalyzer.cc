@@ -25,7 +25,7 @@
 #include "common/stlutil.h"
 #include "msgcompiler.h"
 #include "msganalyzer.h"
-#include "nedexception.h"
+#include "exception.h"
 
 //#include "omnetpp/simkerneldefs.h"
 

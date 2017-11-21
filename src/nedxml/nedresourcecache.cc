@@ -21,7 +21,7 @@
 #include "common/fileglobber.h"
 #include "common/patternmatcher.h"
 #include "common/opp_ctype.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "nedresourcecache.h"
 
 #include "errorstore.h"

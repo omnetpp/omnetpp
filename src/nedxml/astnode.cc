@@ -23,7 +23,7 @@
 #include "astnode.h"
 
 #include "errorstore.h"
-#include "nedexception.h"
+#include "exception.h"
 
 namespace omnetpp {
 namespace nedxml {

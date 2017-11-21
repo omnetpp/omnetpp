@@ -25,7 +25,7 @@
 #include "common/stringutil.h"
 #include "omnetpp/platdep/platmisc.h"  // unlink()
 #include "msggenerator.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "nedutil.h"
 
 #include "omnetpp/simkerneldefs.h"

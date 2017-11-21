@@ -46,7 +46,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <cstring>
 #include "nedyydefs.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "msg2.tab.hh"
 
 #define yylloc msg2yylloc
@@ -82,7 +82,7 @@ using namespace omnetpp::nedxml;
 "//"                     { comment(); }
 
 "namespace"              { countChars(); return NAMESPACE; }
-"using"                  { countChars(); return USING; /*reserved for future use*/ } 
+"using"                  { countChars(); return USING; /*reserved for future use*/ }
 "cplusplus"              { countChars(); return CPLUSPLUS; }
 "import"                 { countChars(); return recognizeImportKeyword ? IMPORT : NAME; }
 "struct"                 { countChars(); return STRUCT; }
@@ -217,14 +217,14 @@ namespace nedxml {
 void msgLexerSetRecognizeImportKeyword(bool opt)
 {
     recognizeImportKeyword = opt;
-} 
+}
 
 void msgLexerSetRecognizeObsoleteKeywords(bool opt)
 {
     recognizeObsoleteKeywords = opt;
 }
- 
-} // namespace 
+
+} // namespace
 } // namespace
 
 int yywrap()

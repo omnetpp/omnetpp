@@ -18,7 +18,7 @@
 *--------------------------------------------------------------*/
 
 #include "common/stringutil.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "nedresourcecache.h"
 #include "nedcrossvalidator.h"
 

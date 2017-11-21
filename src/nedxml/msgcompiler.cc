@@ -24,7 +24,7 @@
 #include "common/fileutil.h"
 #include "msgcompiler.h"
 #include "nedparser.h"
-#include "nedexception.h"
+#include "exception.h"
 
 #include "omnetpp/simkerneldefs.h"
 

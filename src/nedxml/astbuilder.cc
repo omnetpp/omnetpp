@@ -19,7 +19,7 @@
 #include "errorstore.h"
 #include "nedelements.h"
 #include "msgelements.h"
-#include "nedexception.h"
+#include "exception.h"
 
 namespace omnetpp {
 namespace nedxml {

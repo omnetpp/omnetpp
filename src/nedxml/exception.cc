@@ -1,5 +1,5 @@
 //==========================================================================
-// nedexception.cc -
+// exception.cc -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -18,7 +18,7 @@
 #include <cstdarg>
 #include <cstdlib>
 #include "common/commonutil.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "astnode.h"
 
 using namespace omnetpp::common;

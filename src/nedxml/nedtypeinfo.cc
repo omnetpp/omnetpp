@@ -20,7 +20,7 @@
 #include "common/stlutil.h"
 #include "common/stringutil.h"
 #include "nedutil.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "nedtypeinfo.h"
 
 #include "errorstore.h"
