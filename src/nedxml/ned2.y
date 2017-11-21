@@ -737,15 +737,15 @@ pattern_value
 
 paramtype
         : DOUBLETYPE
-                { ps.paramType = NED_PARTYPE_DOUBLE; }
+                { ps.paramType = PARTYPE_DOUBLE; }
         | INTTYPE
-                { ps.paramType = NED_PARTYPE_INT; }
+                { ps.paramType = PARTYPE_INT; }
         | STRINGTYPE
-                { ps.paramType = NED_PARTYPE_STRING; }
+                { ps.paramType = PARTYPE_STRING; }
         | BOOLTYPE
-                { ps.paramType = NED_PARTYPE_BOOL; }
+                { ps.paramType = PARTYPE_BOOL; }
         | XMLTYPE
-                { ps.paramType = NED_PARTYPE_XML; }
+                { ps.paramType = PARTYPE_XML; }
         ;
 
 opt_volatile
@@ -893,7 +893,7 @@ property_value
         |  /*empty*/
                 {
                   LiteralElement *node = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
-                  node->setType(NED_CONST_SPEC); // and leave both value and text at ""
+                  node->setType(LIT_SPEC); // and leave both value and text at ""
                   $$ = node;
                 }
         ;
@@ -995,11 +995,11 @@ gate_typenamesize
 
 gatetype
         : INPUT_
-                { ps.gateType = NED_GATETYPE_INPUT; }
+                { ps.gateType = GATETYPE_INPUT; }
         | OUTPUT_
-                { ps.gateType = NED_GATETYPE_OUTPUT; }
+                { ps.gateType = GATETYPE_OUTPUT; }
         | INOUT_
-                { ps.gateType = NED_GATETYPE_INOUT; }
+                { ps.gateType = GATETYPE_INOUT; }
         ;
 
 /*
@@ -1426,14 +1426,14 @@ opt_subgate
                 {
                   const char *s = toString(@2);
                   if (!strcmp(s,"i"))
-                      ps.subgate = NED_SUBGATE_I;
+                      ps.subgate = SUBGATE_I;
                   else if (!strcmp(s,"o"))
-                      ps.subgate = NED_SUBGATE_O;
+                      ps.subgate = SUBGATE_O;
                   else
                        np->getErrors()->addError(currentLocation(), "invalid subgate spec '%s', must be 'i' or 'o'", toString(@2));
                 }
         |
-                { ps.subgate = NED_SUBGATE_NONE; }
+                { ps.subgate = SUBGATE_NONE; }
         ;
 
 channelspec
@@ -1646,16 +1646,16 @@ stringliteral
 
 boolliteral
         : TRUE_
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_BOOL, @1, @1); }
         | FALSE_
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_BOOL, @1, @1); }
         ;
 
 numliteral
         : INTCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_INT, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_INT, @1, @1); }
         | REALCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_DOUBLE, @1, @1); }
         | quantity
                 { if (np->getParseExpressionsFlag()) $$ = createQuantityLiteral(@1); }
         ;

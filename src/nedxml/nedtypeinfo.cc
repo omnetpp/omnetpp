@@ -306,12 +306,12 @@ void NEDTypeInfo::collectLocalDeclarations()
 
     if (ParametersElement *params = getParametersElement())
         for (ParamElement *param = params->getFirstParamChild(); param; param = param->getNextParamSibling())
-            if (param->getType() != NED_PARTYPE_NONE)
+            if (param->getType() != PARTYPE_NONE)
                 addToElementMap(localParamDecls, param);
 
     if (GatesElement *gates = getGatesElement())
         for (GateElement *gate = gates->getFirstGateChild(); gate; gate = gate->getNextGateSibling())
-            if (gate->getType() != NED_GATETYPE_NONE)
+            if (gate->getType() != GATETYPE_NONE)
                 addToElementMap(localGateDecls, gate);
 
     if (SubmodulesElement *submodulesNode = getSubmodulesElement())

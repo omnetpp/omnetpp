@@ -675,7 +675,7 @@ property_value
         |  /*empty*/
                 {
                   LiteralElement *node = (LiteralElement *)createMsgElementWithTag(NED_LITERAL);
-                  node->setType(NED_CONST_SPEC); // and leave both value and text at ""
+                  node->setType(LIT_SPEC); // and leave both value and text at ""
                   $$ = node;
                 }
         ;

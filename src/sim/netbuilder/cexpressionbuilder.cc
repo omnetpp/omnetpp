@@ -235,11 +235,11 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
 {
     const char *val = node->getValue();
     switch (node->getType()) {
-        case NED_CONST_BOOL:   elems[pos++] = !strcmp(val,"true"); break;
-        case NED_CONST_INT:    elems[pos++] = opp_atoll(node->getValue()); break; // this handles hex as well
-        case NED_CONST_DOUBLE: elems[pos++] = opp_atof(node->getValue()); break;
-        case NED_CONST_STRING: elems[pos++] = node->getValue(); break;
-        case NED_CONST_QUANTITY: {
+        case LIT_BOOL:   elems[pos++] = !strcmp(val,"true"); break;
+        case LIT_INT:    elems[pos++] = opp_atoll(node->getValue()); break; // this handles hex as well
+        case LIT_DOUBLE: elems[pos++] = opp_atof(node->getValue()); break;
+        case LIT_STRING: elems[pos++] = node->getValue(); break;
+        case LIT_QUANTITY: {
             std::string unit;
             elems[pos++] = UnitConversion::parseQuantity(node->getValue(), unit);
             elems[pos-1].setUnit(unit.c_str());

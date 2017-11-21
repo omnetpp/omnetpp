@@ -276,7 +276,7 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
 
     // param declarations cannot occur in submodules
     if (parent->getTagCode() == NED_SUBMODULE) {
-        if (node->getType() != NED_PARTYPE_NONE)
+        if (node->getType() != PARTYPE_NONE)
             errors->addError(node, "Cannot define new parameters within a submodule");
     }
 
@@ -288,7 +288,7 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
         errors->addError(node, "Parameter name patterns must contain a dot");
 
     // type+pattern are not compatible
-    if (node->getIsPattern() && node->getType() != NED_PARTYPE_NONE)
+    if (node->getIsPattern() && node->getType() != PARTYPE_NONE)
         errors->addError(node, "Name must be an identifier when defining a new parameter");
 
     // in module or channel interfaces, one cannot specify parameter values
@@ -335,7 +335,7 @@ void NEDSyntaxValidator::validateElement(TypesElement *node)
 void NEDSyntaxValidator::validateElement(GateElement *node)
 {
     // param declarations cannot occur in submodules
-    if (node->getType() != NED_GATETYPE_NONE) {
+    if (node->getType() != GATETYPE_NONE) {
         ASTNode *parent = node->getParent();
         if (parent)
             parent = parent->getParent();
@@ -496,7 +496,7 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
         ASTNode *op1 = node->getFirstChild();
         ASTNode *op2 = op1 ? op1->getNextSibling() : nullptr;
         if (args == 2)
-            if (op2->getTagCode() != NED_LITERAL || ((LiteralElement *)op2)->getType() != NED_CONST_STRING)
+            if (op2->getTagCode() != NED_LITERAL || ((LiteralElement *)op2)->getType() != LIT_STRING)
                 errors->addError(node, "Second argument to 'input()' must be a string literal (prompt text)");
 
         ASTNode *parent = node->getParent();
@@ -511,8 +511,8 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
         }
         ASTNode *op1 = node->getFirstChild();
         ASTNode *op2 = op1 ? op1->getNextSibling() : nullptr;
-        if (op1->getTagCode() != NED_LITERAL || ((LiteralElement *)op1)->getType() != NED_CONST_STRING ||
-            (op2 && (op2->getTagCode() != NED_LITERAL || ((LiteralElement *)op2)->getType() != NED_CONST_STRING)))
+        if (op1->getTagCode() != NED_LITERAL || ((LiteralElement *)op1)->getType() != LIT_STRING ||
+            (op2 && (op2->getTagCode() != NED_LITERAL || ((LiteralElement *)op2)->getType() != LIT_STRING)))
             errors->addError(node, "'xmldoc()' arguments must be string literals");
         return;
     }
@@ -552,13 +552,13 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
     if (opp_isempty(value))
         value = "";
 
-    if (type == NED_CONST_BOOL) {
+    if (type == LIT_BOOL) {
         // check bool
         if (strcmp(value, "true") && strcmp(value, "false"))
             errors->addError(node, "Bool constant should be 'true' or 'false'");
         // TBD check that if text is present, it's the same as value
     }
-    else if (type == NED_CONST_INT) {
+    else if (type == LIT_INT) {
         // check int
         char *s;
         (void)strtol(value, &s, 0);
@@ -566,7 +566,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
             errors->addError(node, "Invalid integer constant '%s'", value);
         // TBD check that if text is present, it's the same as value
     }
-    else if (type == NED_CONST_DOUBLE) {
+    else if (type == LIT_DOUBLE) {
         // check real
         char *s;
         setlocale(LC_NUMERIC, "C");
@@ -575,7 +575,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
             errors->addError(node, "Invalid real constant '%s'", value);
         // TBD check that if text is present, it's the same as value
     }
-    else if (type == NED_CONST_QUANTITY) {
+    else if (type == LIT_QUANTITY) {
         // check quantity
         try {
             // validate syntax and unit compatibility ("5s 2kg")
@@ -587,7 +587,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
         }
         // TBD check that if text is present, it's the same as value (modulo whitespace)
     }
-    else if (type == NED_CONST_STRING) {
+    else if (type == LIT_STRING) {
         // string: no restriction on value
         // TBD check that if text is present, it's a quoted version of the value
     }

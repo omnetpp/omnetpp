@@ -275,26 +275,26 @@ print H "};\n\n";
 
 if ($ned eq "ned") {
     print H "// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default\n";
-    print H "enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
-    print H "enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
-    print H "enum {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
-    print H "enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
+    print H "enum {GATETYPE_NONE, GATETYPE_INPUT, GATETYPE_OUTPUT, GATETYPE_INOUT};\n";
+    print H "enum {PARTYPE_NONE, PARTYPE_DOUBLE, PARTYPE_INT, PARTYPE_STRING, PARTYPE_BOOL, PARTYPE_XML};\n";
+    print H "enum {LIT_DOUBLE, LIT_QUANTITY, LIT_INT, LIT_STRING, LIT_BOOL, LIT_SPEC};\n";
+    print H "enum {SUBGATE_NONE, SUBGATE_I, SUBGATE_O};\n";
     print H "\n";
 
     print CC "static const char *gatetype_vals[] = {\"\", \"input\", \"output\", \"inout\"};\n";
-    print CC "static int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
+    print CC "static int gatetype_nums[] = {GATETYPE_NONE, GATETYPE_INPUT, GATETYPE_OUTPUT, GATETYPE_INOUT};\n";
     print CC "static const int gatetype_n = 4;\n";
     print CC "\n";
     print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
-    print CC "static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
+    print CC "static int partype_nums[] = {PARTYPE_NONE, PARTYPE_DOUBLE, PARTYPE_INT, PARTYPE_STRING, PARTYPE_BOOL, PARTYPE_XML};\n";
     print CC "static const int partype_n = 6;\n";
     print CC "\n";
     print CC "static const char *littype_vals[] = {\"double\", \"quantity\", \"int\", \"string\", \"bool\", \"spec\"};\n";
-    print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_QUANTITY, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
+    print CC "static int littype_nums[] = {LIT_DOUBLE, LIT_QUANTITY, LIT_INT, LIT_STRING, LIT_BOOL, LIT_SPEC};\n";
     print CC "static const int littype_n = 6;\n";
     print CC "\n";
     print CC "static const char *subgate_vals[] = {\"\", \"i\", \"o\"};\n";
-    print CC "static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
+    print CC "static int subgate_nums[] = {SUBGATE_NONE, SUBGATE_I, SUBGATE_O};\n";
     print CC "static const int subgate_n = 3;\n";
     print CC "\n";
 }

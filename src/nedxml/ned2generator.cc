@@ -409,12 +409,12 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
     if (node->getIsVolatile())
         OUT << "volatile ";
     switch (node->getType()) {
-        case NED_PARTYPE_NONE:   break;
-        case NED_PARTYPE_DOUBLE: OUT << "double "; break;
-        case NED_PARTYPE_INT:    OUT << "int "; break;
-        case NED_PARTYPE_STRING: OUT << "string "; break;
-        case NED_PARTYPE_BOOL:   OUT << "bool "; break;
-        case NED_PARTYPE_XML:    OUT << "xml "; break;
+        case PARTYPE_NONE:   break;
+        case PARTYPE_DOUBLE: OUT << "double "; break;
+        case PARTYPE_INT:    OUT << "int "; break;
+        case PARTYPE_STRING: OUT << "string "; break;
+        case PARTYPE_BOOL:   OUT << "bool "; break;
+        case PARTYPE_XML:    OUT << "xml "; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     OUT << node->getName();
@@ -489,10 +489,10 @@ void NED2Generator::doGate(GateElement *node, const char *indent, bool islast, c
     OUT << getBannerComment(node, indent);
     OUT << indent;
     switch (node->getType()) {
-        case NED_GATETYPE_NONE:   break;
-        case NED_GATETYPE_INPUT:  OUT << "input "; break;
-        case NED_GATETYPE_OUTPUT: OUT << "output "; break;
-        case NED_GATETYPE_INOUT:  OUT << "inout "; break;
+        case GATETYPE_NONE:   break;
+        case GATETYPE_INPUT:  OUT << "input "; break;
+        case GATETYPE_OUTPUT: OUT << "output "; break;
+        case GATETYPE_INOUT:  OUT << "inout "; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     OUT << node->getName();
@@ -685,9 +685,9 @@ void NED2Generator::printConnectionGate(ASTNode *conn, const char *modname, cons
 
     OUT << gatename;
     switch (gatesubg) {
-        case NED_SUBGATE_NONE: break;
-        case NED_SUBGATE_I: OUT << "$i"; break;
-        case NED_SUBGATE_O: OUT << "$o"; break;
+        case SUBGATE_NONE: break;
+        case SUBGATE_I: OUT << "$i"; break;
+        case SUBGATE_O: OUT << "$o"; break;
         default: INTERNAL_ERROR0(conn, "wrong subg type");
     }
     if (isplusplus)
@@ -872,7 +872,7 @@ void NED2Generator::doLiteral(LiteralElement *node, const char *indent, bool isl
     }
     else {
         // fallback: when original text is not present, use value
-        if (node->getType() == NED_CONST_STRING)
+        if (node->getType() == LIT_STRING)
             OUT << opp_quotestr(node->getValue());
         else
             OUT << node->getValue();

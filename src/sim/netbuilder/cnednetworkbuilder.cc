@@ -129,19 +129,19 @@ void cNEDNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNEDDe
 
 cPar::Type cNEDNetworkBuilder::translateParamType(int t)
 {
-    return t == NED_PARTYPE_DOUBLE ? cPar::DOUBLE :
-           t == NED_PARTYPE_INT ? cPar::INT :
-           t == NED_PARTYPE_STRING ? cPar::STRING :
-           t == NED_PARTYPE_BOOL ? cPar::BOOL :
-           t == NED_PARTYPE_XML ? cPar::XML :
+    return t == PARTYPE_DOUBLE ? cPar::DOUBLE :
+           t == PARTYPE_INT ? cPar::INT :
+           t == PARTYPE_STRING ? cPar::STRING :
+           t == PARTYPE_BOOL ? cPar::BOOL :
+           t == PARTYPE_XML ? cPar::XML :
            (cPar::Type)-1;
 }
 
 cGate::Type cNEDNetworkBuilder::translateGateType(int t)
 {
-    return t == NED_GATETYPE_INPUT ? cGate::INPUT :
-           t == NED_GATETYPE_OUTPUT ? cGate::OUTPUT :
-           t == NED_GATETYPE_INOUT ? cGate::INOUT :
+    return t == GATETYPE_INPUT ? cGate::INPUT :
+           t == GATETYPE_OUTPUT ? cGate::OUTPUT :
+           t == GATETYPE_INOUT ? cGate::INOUT :
            (cGate::Type)-1;
 }
 
@@ -164,7 +164,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
         // isSubComponent==true: we are called from assignSubcomponentParams().
         // if type==NONE, this is an inherited parameter (must have been added already)
-        bool isNewParam = !isSubcomponent && paramNode->getType() != NED_PARTYPE_NONE;
+        bool isNewParam = !isSubcomponent && paramNode->getType() != PARTYPE_NONE;
 
         // try to find an impl object with this value; we'll reuse it to optimize memory consumption
         cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
@@ -246,7 +246,7 @@ void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isS
 {
     try {
         // add gate if it's declared here
-        if (!isSubcomponent && gateNode->getType() != NED_GATETYPE_NONE)
+        if (!isSubcomponent && gateNode->getType() != GATETYPE_NONE)
             module->addGate(gateNode->getName(), translateGateType(gateNode->getType()), gateNode->getIsVector());
     }
     catch (std::exception& e) {
@@ -909,7 +909,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
         }
         else {
             // find gates and create connection in both ways
-            if (conn->getSrcGateSubg() != NED_SUBGATE_NONE || conn->getDestGateSubg() != NED_SUBGATE_NONE)
+            if (conn->getSrcGateSubg() != SUBGATE_NONE || conn->getDestGateSubg() != SUBGATE_NONE)
                 throw cRuntimeError(modp, "gate$i or gate$o used with bidirectional connections");
 
             // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
@@ -963,8 +963,8 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *compoundModule,
     // add "$i" or "$o" suffix to gate name if needed
     std::string tmp;
     const char *gateName2 = gateName;
-    if (subgate != NED_SUBGATE_NONE) {
-        const char *suffix = subgate == NED_SUBGATE_I ? "$i" : "$o";
+    if (subgate != SUBGATE_NONE) {
+        const char *suffix = subgate == SUBGATE_I ? "$i" : "$o";
         tmp = gateName;
         tmp += suffix;
         gateName2 = tmp.c_str();

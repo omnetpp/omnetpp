@@ -81,7 +81,7 @@ PropertyElement *storeSourceCode(ASTNode *node, YYLTYPE tokenpos)
     PropertyElement *prop = addProperty(node, "sourcecode");
     prop->setIsImplicit(true);
     PropertyKeyElement *propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, prop);
-    propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
+    propkey->appendChild(createLiteral(LIT_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
 
@@ -90,7 +90,7 @@ PropertyElement *storeComponentSourceCode(ASTNode *node, YYLTYPE tokenpos)
     PropertyElement *prop = addComponentProperty(node, "sourcecode");
     prop->setIsImplicit(true);
     PropertyKeyElement *propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, prop);
-    propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
+    propkey->appendChild(createLiteral(LIT_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
 
@@ -100,7 +100,7 @@ PropertyElement *setIsNetworkProperty(ASTNode *node)
     prop->setIsImplicit(true);
     // Note: the following is not needed, because @isNetwork already means @isNetwork(true)
     // PropertyKeyElement *propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, prop);
-    // propkey->appendChild(createLiteral(NED_CONST_BOOL, "true", ""));
+    // propkey->appendChild(createLiteral(LIT_BOOL, "true", ""));
     return prop;
 }
 
@@ -320,7 +320,7 @@ LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a st
     if (isString)
         return createStringLiteral(textpos);
     else
-        return createLiteral(NED_CONST_SPEC, textpos, textpos);
+        return createLiteral(LIT_SPEC, textpos, textpos);
 }
 
 LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
@@ -344,7 +344,7 @@ LiteralElement *createLiteral(int type, const char *value, const char *text)
 LiteralElement *createStringLiteral(YYLTYPE textpos)
 {
     LiteralElement *c = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
-    c->setType(NED_CONST_STRING);
+    c->setType(LIT_STRING);
 
     const char *text = toString(textpos);
     c->setText(text);
@@ -362,7 +362,7 @@ LiteralElement *createStringLiteral(YYLTYPE textpos)
 LiteralElement *createQuantityLiteral(YYLTYPE textpos)
 {
     LiteralElement *c = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
-    c->setType(NED_CONST_QUANTITY);
+    c->setType(LIT_QUANTITY);
 
     const char *text = toString(textpos);
     c->setText(text);
@@ -387,11 +387,11 @@ ASTNode *unaryMinus(ASTNode *node)
 
     LiteralElement *constNode = (LiteralElement *)node;
 
-    if (constNode->getType() == NED_CONST_QUANTITY)
+    if (constNode->getType() == LIT_QUANTITY)
         return createOperator("-", node);
 
     // only int and real constants can be negative, string, bool, etc cannot
-    if (constNode->getType() != NED_CONST_INT && constNode->getType() != NED_CONST_DOUBLE) {
+    if (constNode->getType() != LIT_INT && constNode->getType() != LIT_DOUBLE) {
         char msg[140];
         sprintf(msg, "unary minus not accepted before '%.100s'", constNode->getValue());
         np->error(msg, pos.li);

@@ -221,9 +221,9 @@ void NEDCrossValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isI
         errors->addError(conn, "%s: missing gate index ('%s' is a vector gate)", q, gate->getName());
 
     // check gate direction, check if vector
-    if (isInput && gate->getType() == NED_GATETYPE_OUTPUT)
+    if (isInput && gate->getType() == GATETYPE_OUTPUT)
         errors->addError(conn, "%s: input gate expected but '%s' is an output gate", q, gate->getName());
-    else if (!isInput && gate->getType() == NED_GATETYPE_INPUT)
+    else if (!isInput && gate->getType() == GATETYPE_INPUT)
         errors->addError(conn, "%s: output gate expected but '%s' is an input gate", q, gate->getName());
 }
 

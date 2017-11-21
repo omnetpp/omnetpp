@@ -264,7 +264,7 @@ void MsgGenerator::doLiteral(LiteralElement *node, const char *indent, bool isla
     }
     else {
         // fallback: when original text is not present, use value
-        if (node->getType() == NED_CONST_STRING)
+        if (node->getType() == LIT_STRING)
             OUT << opp_quotestr(node->getValue());
         else
             OUT << node->getValue();

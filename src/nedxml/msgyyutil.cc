@@ -54,7 +54,7 @@ static LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos
 static LiteralElement *createStringLiteral(YYLTYPE textpos)
 {
     LiteralElement *c = (LiteralElement *)createMsgElementWithTag(NED_LITERAL);
-    c->setType(NED_CONST_STRING);
+    c->setType(LIT_STRING);
 
     const char *text = toString(textpos);
     c->setText(text);
@@ -81,7 +81,7 @@ PropertyElement *storeSourceCode(ASTNode *node, YYLTYPE tokenpos)
     PropertyElement *prop = addProperty(node, "sourcecode");
     prop->setIsImplicit(true);
     PropertyKeyElement *propkey = (PropertyKeyElement *)createMsgElementWithTag(NED_PROPERTY_KEY, prop);
-    propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
+    propkey->appendChild(createLiteral(LIT_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
 
@@ -106,7 +106,7 @@ LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a st
     if (isString)
         return createStringLiteral(textpos);
     else
-        return createLiteral(NED_CONST_SPEC, textpos, textpos);
+        return createLiteral(LIT_SPEC, textpos, textpos);
 }
 
 //
