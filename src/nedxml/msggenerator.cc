@@ -32,8 +32,8 @@ using std::ostream;
 
 void generateMsg(ostream& out, ASTNode *node)
 {
-    MsgGenerator nedgen;
-    nedgen.generate(out, node, "");
+    MsgGenerator gen;
+    gen.generate(out, node, "");
 }
 
 //-----------------------------------------
@@ -140,7 +140,7 @@ void MsgGenerator::generateChildrenWithTypes(ASTNode *node, int tagcodes[], cons
 
 static const char *getComment(ASTNode *node, const char *locId)
 {
-    CommentElement *comment = (CommentElement *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
+    CommentElement *comment = (CommentElement *)node->getFirstChildWithAttribute(MSG_COMMENT, "locid", locId);
     return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : nullptr;
 }
 
@@ -174,7 +174,7 @@ static std::string formatComment(const char *comment, const char *indent, const 
 std::string MsgGenerator::concatInnerComments(ASTNode *node)
 {
     std::string ret;
-    for (ASTNode *child = node->getFirstChildWithTag(NED_COMMENT); child; child = child->getNextSiblingWithTag(NED_COMMENT)) {
+    for (ASTNode *child = node->getFirstChildWithTag(MSG_COMMENT); child; child = child->getNextSiblingWithTag(MSG_COMMENT)) {
         CommentElement *comment = (CommentElement *)child;
         if (!strcmp(comment->getLocid(), "inner"))
             ret += comment->getContent();
@@ -233,9 +233,9 @@ void MsgGenerator::doProperty(PropertyElement *node, const char *indent, bool is
         if (!opp_isempty(node->getIndex()))
             OUT << "[" << node->getIndex() << "]";
         const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
-        if (node->getFirstChildWithTag(NED_PROPERTY_KEY)) {
+        if (node->getFirstChildWithTag(MSG_PROPERTY_KEY)) {
             OUT << "(";
-            generateChildrenWithType(node, NED_PROPERTY_KEY, subindent, "; ");
+            generateChildrenWithType(node, MSG_PROPERTY_KEY, subindent, "; ");
             OUT << ")";
         }
         if (!sep && !indent)
@@ -248,10 +248,10 @@ void MsgGenerator::doProperty(PropertyElement *node, const char *indent, bool is
 void MsgGenerator::doPropertyKey(PropertyKeyElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << node->getName();
-    if (node->getFirstChildWithTag(NED_LITERAL)) {
+    if (node->getFirstChildWithTag(MSG_LITERAL)) {
         if (!opp_isempty(node->getName()))
             OUT << "=";
-        generateChildrenWithType(node, NED_LITERAL, increaseIndent(indent), ",");
+        generateChildrenWithType(node, MSG_LITERAL, increaseIndent(indent), ",");
     }
     if (!islast && sep)
         OUT << (sep ? sep : "");
@@ -437,7 +437,7 @@ void MsgGenerator::doField(FieldElement *node, const char *indent, bool islast, 
     else if (node->getIsVector())
         OUT << "[]";
     const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
-    generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
+    generateChildrenWithType(node, MSG_PROPERTY, subindent, " ");
     if (!opp_isempty(node->getDefaultValue()))
         OUT << " = " << node->getDefaultValue();
     OUT << ";" << getRightComment(node);
@@ -455,28 +455,28 @@ void MsgGenerator::generateItem(ASTNode *node, const char *indent, bool islast, 
     // dispatch
     int tagcode = node->getTagCode();
     switch (tagcode) {
-        case NED_FILES: doFiles(static_cast<FilesElement *>(node), indent, islast, arg); break;
-        case NED_MSG_FILE: doMsgFile(static_cast<MsgFileElement *>(node), indent, islast, arg); break;
-        case NED_IMPORT: doImport(static_cast<ImportElement *>(node), indent, islast, arg); break;
-        case NED_PROPERTY: doProperty(static_cast<PropertyElement *>(node), indent, islast, arg); break;
-        case NED_PROPERTY_KEY: doPropertyKey(static_cast<PropertyKeyElement *>(node), indent, islast, arg); break;
-        case NED_LITERAL: doLiteral(static_cast<LiteralElement *>(node), indent, islast, arg); break;
-        case NED_NAMESPACE: doNamespace(static_cast<NamespaceElement *>(node), indent, islast, arg); break;
-        case NED_CPLUSPLUS: doCplusplus(static_cast<CplusplusElement *>(node), indent, islast, arg); break;
-        case NED_STRUCT_DECL: doStructDecl(static_cast<StructDeclElement *>(node), indent, islast, arg); break;
-        case NED_CLASS_DECL: doClassDecl(static_cast<ClassDeclElement *>(node), indent, islast, arg); break;
-        case NED_MESSAGE_DECL: doMessageDecl(static_cast<MessageDeclElement *>(node), indent, islast, arg); break;
-        case NED_PACKET_DECL: doPacketDecl(static_cast<PacketDeclElement *>(node), indent, islast, arg); break;
-        case NED_ENUM_DECL: doEnumDecl(static_cast<EnumDeclElement *>(node), indent, islast, arg); break;
-        case NED_ENUM: doEnum(static_cast<EnumElement *>(node), indent, islast, arg); break;
-        case NED_ENUM_FIELDS: doEnumFields(static_cast<EnumFieldsElement *>(node), indent, islast, arg); break;
-        case NED_ENUM_FIELD: doEnumField(static_cast<EnumFieldElement *>(node), indent, islast, arg); break;
-        case NED_MESSAGE: doMessage(static_cast<MessageElement *>(node), indent, islast, arg); break;
-        case NED_PACKET: doPacket(static_cast<PacketElement *>(node), indent, islast, arg); break;
-        case NED_CLASS: doClass(static_cast<ClassElement *>(node), indent, islast, arg); break;
-        case NED_STRUCT: doStruct(static_cast<StructElement *>(node), indent, islast, arg); break;
-        case NED_FIELD: doField(static_cast<FieldElement *>(node), indent, islast, arg); break;
-        case NED_COMMENT: doComment(static_cast<CommentElement *>(node), indent, islast, arg); break;
+        case MSG_FILES: doFiles(static_cast<FilesElement *>(node), indent, islast, arg); break;
+        case MSG_MSG_FILE: doMsgFile(static_cast<MsgFileElement *>(node), indent, islast, arg); break;
+        case MSG_IMPORT: doImport(static_cast<ImportElement *>(node), indent, islast, arg); break;
+        case MSG_PROPERTY: doProperty(static_cast<PropertyElement *>(node), indent, islast, arg); break;
+        case MSG_PROPERTY_KEY: doPropertyKey(static_cast<PropertyKeyElement *>(node), indent, islast, arg); break;
+        case MSG_LITERAL: doLiteral(static_cast<LiteralElement *>(node), indent, islast, arg); break;
+        case MSG_NAMESPACE: doNamespace(static_cast<NamespaceElement *>(node), indent, islast, arg); break;
+        case MSG_CPLUSPLUS: doCplusplus(static_cast<CplusplusElement *>(node), indent, islast, arg); break;
+        case MSG_STRUCT_DECL: doStructDecl(static_cast<StructDeclElement *>(node), indent, islast, arg); break;
+        case MSG_CLASS_DECL: doClassDecl(static_cast<ClassDeclElement *>(node), indent, islast, arg); break;
+        case MSG_MESSAGE_DECL: doMessageDecl(static_cast<MessageDeclElement *>(node), indent, islast, arg); break;
+        case MSG_PACKET_DECL: doPacketDecl(static_cast<PacketDeclElement *>(node), indent, islast, arg); break;
+        case MSG_ENUM_DECL: doEnumDecl(static_cast<EnumDeclElement *>(node), indent, islast, arg); break;
+        case MSG_ENUM: doEnum(static_cast<EnumElement *>(node), indent, islast, arg); break;
+        case MSG_ENUM_FIELDS: doEnumFields(static_cast<EnumFieldsElement *>(node), indent, islast, arg); break;
+        case MSG_ENUM_FIELD: doEnumField(static_cast<EnumFieldElement *>(node), indent, islast, arg); break;
+        case MSG_MESSAGE: doMessage(static_cast<MessageElement *>(node), indent, islast, arg); break;
+        case MSG_PACKET: doPacket(static_cast<PacketElement *>(node), indent, islast, arg); break;
+        case MSG_CLASS: doClass(static_cast<ClassElement *>(node), indent, islast, arg); break;
+        case MSG_STRUCT: doStruct(static_cast<StructElement *>(node), indent, islast, arg); break;
+        case MSG_FIELD: doField(static_cast<FieldElement *>(node), indent, islast, arg); break;
+        case MSG_COMMENT: doComment(static_cast<CommentElement *>(node), indent, islast, arg); break;
         default: INTERNAL_ERROR1(node, "generateItem(): unknown tag '%s'", node->getTagName());
     }
 }

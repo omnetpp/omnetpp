@@ -267,7 +267,7 @@ bool processFile(const char *fname, ErrorStore *errors)
 
         int contentType = (ftype==NED_FILE || ftype==MSG_FILE) ? ftype :
                 (tree->getTagCode()==NED_NED_FILE || tree->getFirstChildWithTag(NED_NED_FILE)!=nullptr) ? NED_FILE :
-                        (tree->getTagCode()==NED_MSG_FILE || tree->getFirstChildWithTag(NED_MSG_FILE)!=nullptr) ? MSG_FILE :
+                        (tree->getTagCode()==MSG_MSG_FILE || tree->getFirstChildWithTag(MSG_MSG_FILE)!=nullptr) ? MSG_FILE :
                                 UNKNOWN_FILE;
 
         // DTD validation and additional syntax validation
@@ -340,9 +340,9 @@ bool processFile(const char *fname, ErrorStore *errors)
             }
             else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES ||
                                                    tree->getTagCode() == NED_NED_FILE ||
-                                                   tree->getTagCode() == NED_MSG_FILE))
+                                                   tree->getTagCode() == MSG_MSG_FILE))
             {
-                if (tree->getTagCode() == NED_NED_FILE || tree->getTagCode() == NED_MSG_FILE) {
+                if (tree->getTagCode() == NED_NED_FILE || tree->getTagCode() == MSG_MSG_FILE) {
                     // wrap the tree into a FilesElement
                     ASTNode *file = tree;
                     tree = new FilesElement();
@@ -356,7 +356,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                     // extract file name
                     if (child->getTagCode() == NED_NED_FILE)
                         strcpy(outfname, ((NedFileElement *)child)->getFilename());
-                    else if (child->getTagCode() == NED_MSG_FILE)
+                    else if (child->getTagCode() == MSG_MSG_FILE)
                         strcpy(outfname, ((MsgFileElement *)child)->getFilename());
                     else
                         continue;  // if there's anything else, ignore it

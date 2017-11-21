@@ -44,7 +44,7 @@ ASTNode *getOrCreateMsgElementWithTag(int tagcode, ASTNode *parent)
 //
 static LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
 {
-    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(NED_LITERAL);
+    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(MSG_LITERAL);
     c->setType(type);
     c->setValue(opp_trim(toString(valuepos)).c_str());
     c->setText(toString(textpos));
@@ -53,7 +53,7 @@ static LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos
 
 static LiteralElement *createStringLiteral(YYLTYPE textpos)
 {
-    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(NED_LITERAL);
+    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(MSG_LITERAL);
     c->setType(LIT_STRING);
 
     const char *text = toString(textpos);
@@ -71,7 +71,7 @@ static LiteralElement *createStringLiteral(YYLTYPE textpos)
 
 PropertyElement *addProperty(ASTNode *node, const char *name)
 {
-    PropertyElement *prop = (PropertyElement *)createMsgElementWithTag(NED_PROPERTY, node);
+    PropertyElement *prop = (PropertyElement *)createMsgElementWithTag(MSG_PROPERTY, node);
     prop->setName(name);
     return prop;
 }
@@ -80,7 +80,7 @@ PropertyElement *storeSourceCode(ASTNode *node, YYLTYPE tokenpos)
 {
     PropertyElement *prop = addProperty(node, "sourcecode");
     prop->setIsImplicit(true);
-    PropertyKeyElement *propkey = (PropertyKeyElement *)createMsgElementWithTag(NED_PROPERTY_KEY, prop);
+    PropertyKeyElement *propkey = (PropertyKeyElement *)createMsgElementWithTag(MSG_PROPERTY_KEY, prop);
     propkey->appendChild(createLiteral(LIT_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
@@ -118,7 +118,7 @@ void addComment(ASTNode *node, const char *locId, const char *text, const char *
     if (!text[0] || strcmp(text, defaultValue) == 0)
         return;
 
-    CommentElement *comment = (CommentElement *)createMsgElementWithTag(NED_COMMENT);
+    CommentElement *comment = (CommentElement *)createMsgElementWithTag(MSG_COMMENT);
     comment->setLocid(locId);
     comment->setContent(text);
     node->insertChildBefore(node->getFirstChild(), comment);

@@ -104,7 +104,7 @@ MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(ASTNode *node)
 {
     Properties props;
 
-    for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(NED_PROPERTY)); child; child = child->getNextPropertySibling()) {
+    for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); child; child = child->getNextPropertySibling()) {
         std::string propname = str(child->getAttribute("name"));
         std::string propval;
         for (PropertyKeyElement *key = child->getFirstPropertyKeyChild(); key; key = key->getNextPropertyKeySibling()) {
@@ -131,7 +131,7 @@ MsgAnalyzer::Properties MsgAnalyzer::extractPropertiesOf(ASTNode *node)
 MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(ASTNode *node, const std::string& namespaceName)
 {
     ClassInfo classInfo;
-    classInfo.nedElement = node;
+    classInfo.astNode = node;
     classInfo.props = extractPropertiesOf(node);
     std::string actually = getProperty(classInfo.props, "actually", "");
     classInfo.keyword = node->getTagName();
@@ -160,15 +160,15 @@ void MsgAnalyzer::ensureFieldsAnalyzed(ClassInfo& classInfo)
 
 void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
 {
-    ASTNode *node = classInfo.nedElement;
+    ASTNode *node = classInfo.astNode;
 
     classInfo.msgbase = str(node->getAttribute("extends-name"));
 
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_FIELD: {
+            case MSG_FIELD: {
                 FieldInfo field;
-                field.nedElement = child;
+                field.astNode = child;
                 field.fname = str(child->getAttribute("name"));
                 field.datatype = str(child->getAttribute("data-type"));
                 field.ftype = str(child->getAttribute("data-type"));
@@ -190,19 +190,15 @@ void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
                 break;
             }
 
-            case NED_PROPERTY:
+            case MSG_PROPERTY:
                 // skip properties here, properties already extracted
                 break;
 
-            case NED_PROPERTY_DECL:
-                errors->addError(child, "syntax error: property '%s' declaration unaccepted here", child->getTagName()); //TODO into some validator
-                break;
-
-            case NED_PROPERTY_KEY:
+            case MSG_PROPERTY_KEY:
                 errors->addError(child, "syntax error: property key '%s' unaccepted here", child->getTagName()); //TODO into some validator
                 break;
 
-            case NED_COMMENT:
+            case MSG_COMMENT:
                 break;
 
             default:
@@ -238,7 +234,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     else {
         classInfo.msgbaseqname = lookupExistingClassName(classInfo.msgbase, namespaceName);
         if (classInfo.msgbaseqname.empty())
-            errors->addError(classInfo.nedElement, "'%s': unknown base class '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
+            errors->addError(classInfo.astNode, "'%s': unknown base class '%s'", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
     }
 
     // resolve base class/struct
@@ -247,7 +243,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         baseClassInfo = &typeTable->getClassInfo(classInfo.msgbaseqname);
         ensureAnalyzed(*baseClassInfo);
         if (baseClassInfo->isprimitivetype)
-            errors->addError(classInfo.nedElement, "'%s': primitive type '%s' cannot be used as base class", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
+            errors->addError(classInfo.astNode, "'%s': primitive type '%s' cannot be used as base class", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
     }
 
     // determine class type
@@ -262,7 +258,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
             classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = true;
         else if (baseClassInfo != nullptr) {
             if (!baseClassInfo->isClass)
-                errors->addError(classInfo.nedElement, "%s: base type is not a class", classInfo.msgname.c_str());
+                errors->addError(classInfo.astNode, "%s: base type is not a class", classInfo.msgname.c_str());
             classInfo.iscObject = baseClassInfo->iscObject;
             classInfo.iscNamedObject = baseClassInfo->iscNamedObject;
             classInfo.iscOwnedObject = baseClassInfo->iscOwnedObject;
@@ -274,7 +270,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     else {
         // struct
         if (baseClassInfo != nullptr && baseClassInfo->isClass)
-            errors->addError(classInfo.nedElement, "%s: base type is not a struct", classInfo.msgname.c_str());
+            errors->addError(classInfo.astNode, "%s: base type is not a struct", classInfo.msgname.c_str());
     }
 
     // message must subclass from cMessage, packet ditto
@@ -284,7 +280,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     else if (classInfo.keyword == "packet")
         requiredSuperClass = "omnetpp::cPacket";
     if (!requiredSuperClass.empty() && !hasSuperclass(classInfo, requiredSuperClass))
-        errors->addError(classInfo.nedElement, "%s: base class is not a %s (must be derived from %s)", classInfo.msgname.c_str(), classInfo.keyword.c_str(), requiredSuperClass.c_str());
+        errors->addError(classInfo.astNode, "%s: base class is not a %s (must be derived from %s)", classInfo.msgname.c_str(), classInfo.keyword.c_str(), requiredSuperClass.c_str());
 
 
     // isPrimitive, isOpaque, byValue, data types, etc.
@@ -308,7 +304,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, "descriptor") != "readonly");
 
     if (!existingClass && isQualified(classInfo.msgname))
-        errors->addError(classInfo.nedElement, "class name may only contain '::' when generating descriptor for an existing class");
+        errors->addError(classInfo.astNode, "class name may only contain '::' when generating descriptor for an existing class");
 
     classInfo.gap = getPropertyAsBool(classInfo.props, "customize", false);
 
@@ -329,7 +325,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.omitgetverb = getPropertyAsBool(classInfo.props, "omitGetVerb", false);
     classInfo.fieldnamesuffix = getProperty(classInfo.props, "fieldNameSuffix", "");
     if (classInfo.omitgetverb && classInfo.fieldnamesuffix.empty()) {
-        errors->addWarning(classInfo.nedElement, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
+        errors->addWarning(classInfo.astNode, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
                                                  "adding '_var' suffix to data members to prevent name conflict between them and getter methods");
         classInfo.fieldnamesuffix = "_var";
     }
@@ -358,20 +354,20 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     Assert(!field->ftype.empty());
 
     if (field->fisabstract && !classInfo.isClass)
-        errors->addError(field->nedElement, "A struct cannot have abstract fields");
+        errors->addError(field->astNode, "A struct cannot have abstract fields");
 
     if (field->fisabstract && !field->fval.empty())
-        errors->addError(field->nedElement, "An abstract field cannot be assigned a default value");
+        errors->addError(field->astNode, "An abstract field cannot be assigned a default value");
 
     if (field->fisarray && field->farraysize.empty() && !classInfo.isClass)
-        errors->addError(field->nedElement, "A struct cannot have dynamic array fields");
+        errors->addError(field->astNode, "A struct cannot have dynamic array fields");
 
     if (field->fisabstract && !classInfo.gap)
-        errors->addError(field->nedElement, "abstract fields need '@customize(true)' property in '%s'", classInfo.msgname.c_str());
+        errors->addError(field->astNode, "abstract fields need '@customize(true)' property in '%s'", classInfo.msgname.c_str());
 
     field->ftypeqname = lookupExistingClassName(field->ftype, namespaceName, &classInfo);
     if (field->ftypeqname.empty()) {
-        errors->addError(field->nedElement, "unknown type '%s' for field '%s' in '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+        errors->addError(field->astNode, "unknown type '%s' for field '%s' in '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
         field->ftypeqname = "omnetpp::cObject";
     }
 
@@ -385,10 +381,10 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     if (classInfo.generate_class)
         if (field->iscOwnedObject && !classInfo.iscObject)
-            errors->addError(field->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+            errors->addError(field->astNode, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
 
     if (field->fispointer && field->fisprimitivetype) {
-        errors->addError(field->nedElement, "pointers not supported for primitive types in '%s'", classInfo.msgname.c_str());
+        errors->addError(field->astNode, "pointers not supported for primitive types in '%s'", classInfo.msgname.c_str());
         return;
     }
 
@@ -412,11 +408,11 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->enumqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(field->nedElement, "undeclared enum '%s' in field '%s' in '%s'", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+            errors->addError(field->astNode, "undeclared enum '%s' in field '%s' in '%s'", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
             field->enumqname = "";
         }
         else {
-            errors->addWarning(field->nedElement, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
+            errors->addWarning(field->astNode, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
             field->enumqname = found[0];
         }
         field->fprops["enum"] = field->enumqname; // need to overwrite it in props, because Qtenv will look up the enum by qname
@@ -513,7 +509,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     if (field->feditable || (classInfo.generate_setters_in_descriptor && field->fisprimitivetype && field->editNotDisabled))
         if (field->fromstring.empty())
-            errors->addError(field->nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str()); //TODO only if descriptor class is also generated
+            errors->addError(field->astNode, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str()); //TODO only if descriptor class is also generated
 }
 
 MsgAnalyzer::FieldInfo *MsgAnalyzer::findSuperclassField(ClassInfo& classInfo, const std::string& fieldName)
@@ -535,15 +531,15 @@ void MsgAnalyzer::analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field)
     Assert(field->ftype.empty()); // i.e. it is an inherited field
 
     if (field->fisabstract)
-        errors->addError(field->nedElement, "An abstract field needs a type");
+        errors->addError(field->astNode, "An abstract field needs a type");
     if (field->fisarray)
-        errors->addError(field->nedElement, "Cannot set array field of super class");
+        errors->addError(field->astNode, "Cannot set array field of super class");
     if (field->fval.empty())
-        errors->addError(field->nedElement, "Missing field value assigment");
+        errors->addError(field->astNode, "Missing field value assigment");
 
     FieldInfo *fieldDefinition = findSuperclassField(classInfo, field->fname);
     if (!fieldDefinition)
-        errors->addError(field->nedElement, "Unknown field '%s' (not found in any super class)", field->fname.c_str());
+        errors->addError(field->astNode, "Unknown field '%s' (not found in any super class)", field->fname.c_str());
     else {
         // copy stuff
         field->setter = fieldDefinition->setter;
@@ -554,7 +550,7 @@ void MsgAnalyzer::analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field)
 MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName)
 {
     EnumInfo enumInfo;
-    enumInfo.nedElement = node;
+    enumInfo.astNode = node;
     enumInfo.enumName = str(node->getAttribute("name"));
     enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
     enumInfo.isDeclaration = true;
@@ -564,7 +560,7 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumDecl(EnumDeclElement *node, const 
 MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std::string& namespaceName)
 {
     EnumInfo enumInfo;
-    enumInfo.nedElement = node;
+    enumInfo.astNode = node;
     enumInfo.enumName = str(node->getAttribute("name"));
     enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
     enumInfo.isDeclaration = false;
@@ -572,19 +568,19 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std:
     // prepare enum items:
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_ENUM_FIELDS:
+            case MSG_ENUM_FIELDS:
                 for (ASTNode *e = child->getFirstChild(); e; e = e->getNextSibling()) {
                     switch (e->getTagCode()) {
-                        case NED_ENUM_FIELD: {
+                        case MSG_ENUM_FIELD: {
                             EnumItem item;
-                            item.nedElement = e;
+                            item.astNode = e;
                             item.name = str(e->getAttribute("name"));
                             item.value = str(e->getAttribute("value"));
                             enumInfo.fieldlist.push_back(item);
                             break;
                         }
 
-                        case NED_COMMENT:
+                        case MSG_COMMENT:
                             break;
 
                         default:
@@ -593,7 +589,7 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *node, const std:
                 }
                 break;
 
-            case NED_COMMENT:
+            case MSG_COMMENT:
                 break;
 
             default:
@@ -622,7 +618,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *node, 
 
     // determine base class
     if (classInfo.msgbase != "")
-        errors->addError(classInfo.nedElement, "'%s': type '%s' cannot be used as base class of enum", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
+        errors->addError(classInfo.astNode, "'%s': type '%s' cannot be used as base class of enum", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
 
     classInfo.msgbaseqname = "";
 

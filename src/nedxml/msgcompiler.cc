@@ -146,15 +146,15 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
     std::string currentNamespace = "";
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_NAMESPACE:
+            case MSG_NAMESPACE:
                 currentNamespace = str(child->getAttribute("name"));
                 validateNamespaceName(currentNamespace, child); //TODO into syntax validator class!!!
                 break;
 
-            case NED_CPLUSPLUS:
+            case MSG_CPLUSPLUS:
                 break;
 
-            case NED_IMPORT: {
+            case MSG_IMPORT: {
                 std::string importName = child->getAttribute("import-spec");
                 if (!currentNamespace.empty())
                     errors->addError(child, "misplaced import '%s': imports are not allowed within a namespace", importName.c_str()); //TODO into syntax validator class!!!
@@ -165,41 +165,41 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
                  break;
              }
 
-            case NED_STRUCT_DECL:
-            case NED_CLASS_DECL:
-            case NED_MESSAGE_DECL:
-            case NED_PACKET_DECL:
+            case MSG_STRUCT_DECL:
+            case MSG_CLASS_DECL:
+            case MSG_MESSAGE_DECL:
+            case MSG_PACKET_DECL:
                 errors->addWarning(child, "type declarations are not needed with imports, and will be ignored"); //TODO into syntax validator class!!!
                 break;
 
-            case NED_ENUM_DECL: { // for enums already defined and registered in C++
+            case MSG_ENUM_DECL: { // for enums already defined and registered in C++
                 EnumInfo enumInfo = analyzer.extractEnumDecl(check_and_cast<EnumDeclElement *>(child), currentNamespace);
                 if (!typeTable.isEnumDefined(enumInfo.enumQName))
                     typeTable.addEnum(enumInfo);
                 break;
             }
 
-            case NED_ENUM: {
+            case MSG_ENUM: {
                 EnumInfo enumInfo = analyzer.extractEnumInfo(check_and_cast<EnumElement *>(child), currentNamespace);
                 if (isQualified(enumInfo.enumName))
-                    errors->addError(enumInfo.nedElement, "type name may not be qualified: '%s'", enumInfo.enumName.c_str()); //TODO into some validator class
+                    errors->addError(enumInfo.astNode, "type name may not be qualified: '%s'", enumInfo.enumName.c_str()); //TODO into some validator class
                 if (typeTable.isEnumDefined(enumInfo.enumQName))
-                    errors->addError(enumInfo.nedElement, "attempt to redefine '%s'", enumInfo.enumName.c_str());
+                    errors->addError(enumInfo.astNode, "attempt to redefine '%s'", enumInfo.enumName.c_str());
                 typeTable.addEnum(enumInfo);
                 ClassInfo classInfo = analyzer.extractClassInfoFromEnum(check_and_cast<EnumElement *>(child), currentNamespace);
                 if (typeTable.isClassDefined(classInfo.msgqname))
-                    errors->addError(classInfo.nedElement, "attempt to redefine '%s'", classInfo.msgname.c_str());
+                    errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.msgname.c_str());
                 typeTable.addClass(classInfo);
                 break;
             }
 
-            case NED_STRUCT:
-            case NED_CLASS:
-            case NED_MESSAGE:
-            case NED_PACKET: {
+            case MSG_STRUCT:
+            case MSG_CLASS:
+            case MSG_MESSAGE:
+            case MSG_PACKET: {
                 ClassInfo classInfo = analyzer.makeIncompleteClassInfo(child, currentNamespace);
                 if (typeTable.isClassDefined(classInfo.msgqname) && !containsKey(classInfo.props, str("overwritePreviousDefinition")))
-                    errors->addError(classInfo.nedElement, "attempt to redefine '%s'", classInfo.msgname.c_str());
+                    errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.msgname.c_str());
                 typeTable.addClass(classInfo);
                 break;
             }
@@ -263,7 +263,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
 
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_NAMESPACE:
+            case MSG_NAMESPACE:
                 // open namespace(s)
                 if (!currentNamespace.empty())
                     codegen.generateNamespaceEnd(currentNamespace);
@@ -271,7 +271,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 codegen.generateNamespaceBegin(currentNamespace);
                 break;
 
-            case NED_CPLUSPLUS: {
+            case MSG_CPLUSPLUS: {
                 // print C++ block
                 std::string body = str(child->getAttribute("body"));
                 std::string target = str(child->getAttribute("target"));
@@ -282,31 +282,31 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 break;
             }
 
-            case NED_IMPORT: {
+            case MSG_IMPORT: {
                 std::string importName = child->getAttribute("import-spec");
                 codegen.generateImport(importName);
                 break;
             }
 
-            case NED_ENUM: {
+            case MSG_ENUM: {
                 std::string qname = prefixWithNamespace(str(child->getAttribute("name")), currentNamespace);
                 const EnumInfo& enumInfo = typeTable.getEnumInfo(qname);
                 codegen.generateEnum(enumInfo);
                 break;
             }
 
-            case NED_STRUCT:
-            case NED_CLASS:
-            case NED_MESSAGE:
-            case NED_PACKET: {
+            case MSG_STRUCT:
+            case MSG_CLASS:
+            case MSG_MESSAGE:
+            case MSG_PACKET: {
                 std::string qname = prefixWithNamespace(str(child->getAttribute("name")), currentNamespace);
                 ClassInfo& classInfo = typeTable.getClassInfo(qname);
                 analyzer.ensureAnalyzed(classInfo);
                 analyzer.ensureFieldsAnalyzed(classInfo);
                 if (classInfo.generate_class) {
                     if (isQualified(classInfo.msgclass))
-                        errors->addError(classInfo.nedElement, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.msgclass.c_str());
-                    if (child->getTagCode() == NED_STRUCT)
+                        errors->addError(classInfo.astNode, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.msgclass.c_str());
+                    if (child->getTagCode() == MSG_STRUCT)
                         codegen.generateStruct(classInfo, opts.exportDef);
                     else
                         codegen.generateClass(classInfo, opts.exportDef);

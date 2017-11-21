@@ -155,7 +155,7 @@ foreach $element (@elements)
     $shortelementclass{$element} = $elementclass;
 
     # enum name
-    $enumname = 'NED_'.uc($element);
+    $enumname = $NED . '_'.uc($element);
     $enumname =~ s/-/_/g;
     $enumname{$element} = $enumname;
 
@@ -224,6 +224,11 @@ foreach $element (@elements)
     $att_enumnames{$element} = [ @enumnames ];
 }
 
+foreach $element (('files', 'comment', 'property', 'property-key', 'literal', 'import', 'unknown')) {
+    $sharedElements{$element} = 1;
+}
+
+
 #------------------------------------------------------------------------
 #
 # Data classes
@@ -266,11 +271,17 @@ print H "    NED_NULL = 0,  // 0 is reserved\n" if ($ned eq 'ned');
 print H "    dummy = 100,\n" if ($ned eq 'msg');
 foreach $element (@elements)
 {
-    next if ($ned eq 'msg' && ($element eq 'files' || $element eq 'package' || $element eq 'comment' || $element eq 'property' || $element eq 'property-key' || $element eq 'literal' || $element eq 'import' || $element eq 'unknown'));
-    print H "    $enumname{$element}";
-    print H "," unless ($element eq $elements[$#elements]);
-    print H "\n";
+    next if ($ned eq 'msg' && exists($sharedElements{$element}));
+    print H "    $enumname{$element},\n";
 }
+if ($ned eq 'msg') {
+    foreach $element (keys(%sharedElements)) {
+        my $nedEnumName = $enumname{$element};
+        $nedEnumName =~ s/^MSG_/NED_/; 
+        print H "    $enumname{$element} = $nedEnumName,\n";
+    }
+}
+
 print H "};\n\n";
 
 if ($ned eq "ned") {
@@ -301,7 +312,7 @@ if ($ned eq "ned") {
 
 foreach $element (@elements)
 {
-    next if ($ned eq 'msg' && ($element eq 'files' || $element eq 'package' || $element eq 'comment' || $element eq 'property' || $element eq 'property-key' || $element eq 'literal' || $element eq 'import' || $element eq 'unknown'));
+    next if ($ned eq 'msg' && exists($sharedElements{$element}));
 
     $elementclass = $elementclass{$element};
     $shortelementclass = $shortelementclass{$element};

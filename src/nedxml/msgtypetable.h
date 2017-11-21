@@ -43,7 +43,7 @@ class NEDXML_API MsgTypeTable
 
     class FieldInfo {
       public:
-        ASTNode *nedElement;     // pointer to NED element
+        ASTNode *astNode;     // pointer to field element in AST
 
         std::string fname;      // field name in MSG
         std::string ftype;      // field type in MSG
@@ -99,14 +99,14 @@ class NEDXML_API MsgTypeTable
         bool overrideSetter;   // @overridesetter|@override, uses when field setter function overrides a function in base class
 
       public:
-        FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), fnopack(false), feditable(false),fopaque(false) {}
+        FieldInfo() : astNode(nullptr), fisabstract(false), fispointer(false), fisarray(false), fnopack(false), feditable(false),fopaque(false) {}
     };
 
     class ClassInfo {
       public:
         typedef std::vector<FieldInfo> Fieldlist;
 
-        ASTNode *nedElement = nullptr;
+        ASTNode *astNode = nullptr;
         std::string keyword;        // struct/class/packet from MSG
         std::string msgname;        // class name from MSG
         std::string msgqname;
@@ -156,25 +156,25 @@ class NEDXML_API MsgTypeTable
     class EnumItem
     {
       public:
-        ASTNode *nedElement;
+        ASTNode *astNode;
         std::string name;
         std::string value;
         std::string comment;
       public:
-        EnumItem() : nedElement(nullptr) {}
+        EnumItem() : astNode(nullptr) {}
     };
 
     class EnumInfo
     {
       public:
-        ASTNode *nedElement;
+        ASTNode *astNode;
         std::string enumName;
         std::string enumQName;
         typedef std::vector<EnumItem> FieldList;
         bool isDeclaration = false; // i.e. not a definition
         FieldList fieldlist;
       public:
-        EnumInfo() : nedElement(nullptr) {}
+        EnumInfo() : astNode(nullptr) {}
     };
 
   private:

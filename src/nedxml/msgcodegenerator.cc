@@ -346,8 +346,8 @@ std::string MsgCodeGenerator::generatePreComment(ASTNode *nedElement)
 void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::string& exportDef)
 {
     H << "/**\n";
-    H << " * Class generated from <tt>" << SL(classInfo.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
-    H << generatePreComment(classInfo.nedElement);
+    H << " * Class generated from <tt>" << SL(classInfo.astNode->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
+    H << generatePreComment(classInfo.astNode);
 
     if (classInfo.gap) {
         H << " *\n";
@@ -912,7 +912,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
 void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef)
 {
     H << "/**\n";
-    H << " * Struct generated from " << SL(classInfo.nedElement->getSourceLocation()) << " by " PROGRAM ".\n";
+    H << " * Struct generated from " << SL(classInfo.astNode->getSourceLocation()) << " by " PROGRAM ".\n";
     H << " */\n";
     if (classInfo.msgbaseclass.empty()) {
         H << "struct " << TS(exportDef) << classInfo.msgclass << "\n";
@@ -1461,8 +1461,8 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)
 {
     H << "/**\n";
-    H << " * Enum generated from <tt>" << SL(enumInfo.nedElement->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
-    H << generatePreComment(enumInfo.nedElement);
+    H << " * Enum generated from <tt>" << SL(enumInfo.astNode->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
+    H << generatePreComment(enumInfo.astNode);
     H << " */\n";
 
     H << "enum " << enumInfo.enumName <<" {\n";

@@ -59,18 +59,18 @@ class NEDXML_API MsgGenerator
     ~MsgGenerator();
 
     /**
-     * Sets the indent size in the generated NED code. Default is 4 spaces.
+     * Sets the indent size in the generated MSG source code. Default is 4 spaces.
      */
     void setIndentSize(int indentsize);
 
     /**
-     * Generates NED code. Takes an output stream where the generated NED code
+     * Generates MSG source code. Takes an output stream where the generated code
      * will be written, the object tree and the base indentation.
      */
     void generate(std::ostream& out, ASTNode *node, const char *indent);
 
     /**
-     * Generates NED code and returns it as a string.
+     * Generates MSG source code and returns it as a string.
      */
     std::string generate(ASTNode *node, const char *indent);
 
@@ -84,13 +84,13 @@ class NEDXML_API MsgGenerator
     /** Dispatch to various doXXX() methods according to node type */
     void generateItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
 
-    /** Invoke generateNEDItem() on all children */
+    /** Invoke generateItem() on all children */
     void generateChildren(ASTNode *node, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNEDItem() on all children of the given tagcode */
+    /** Invoke generateItem() on all children of the given tagcode */
     void generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNEDItem() on children of the given tagcodes (NED_NULL-terminated array) */
+    /** Invoke generateItem() on children of the given tagcodes (NED_NULL-terminated array) */
     void generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg=nullptr);
 
     void doMsgClassOrStructBody(ASTNode *msgclassorstruct, const char *indent);
@@ -104,7 +104,7 @@ class NEDXML_API MsgGenerator
     std::string getTrailingComment(ASTNode *node);
     //@}
 
-    /** @name Generate NED code from the given element */
+    /** @name Generate MSG source code from the given element */
     //@{
     void doFiles(FilesElement *node, const char *indent, bool islast, const char *);
     void doMsgFile(MsgFileElement *node, const char *indent, bool islast, const char *);

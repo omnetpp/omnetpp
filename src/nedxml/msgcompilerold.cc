@@ -513,7 +513,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
      */
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_NAMESPACE:
+            case MSG_NAMESPACE:
                 // open namespace(s)
                 if (!namespaceName.empty()) {
                     generateNamespaceEnd();
@@ -522,7 +522,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
                 generateNamespaceBegin(child);
                 break;
 
-            case NED_CPLUSPLUS: {
+            case MSG_CPLUSPLUS: {
                 // print C++ block
                 std::string body = ptr2str(child->getAttribute("body"));
                 body = body.substr(body.find_first_not_of("\r\n"));
@@ -536,14 +536,14 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
                 break;
             }
 
-            case NED_STRUCT_DECL:
-            case NED_CLASS_DECL:
-            case NED_MESSAGE_DECL:
-            case NED_PACKET_DECL:
+            case MSG_STRUCT_DECL:
+            case MSG_CLASS_DECL:
+            case MSG_MESSAGE_DECL:
+            case MSG_PACKET_DECL:
                 extractClassDecl(child);
                 break;
 
-            case NED_ENUM_DECL: {
+            case MSG_ENUM_DECL: {
                 // forward declaration -- add to table
                 std::string name = ptr2str(child->getAttribute("name"));
                 if (RESERVED_WORDS.find(name) == RESERVED_WORDS.end())
@@ -554,14 +554,14 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
                 break;
             }
 
-            case NED_ENUM: {
+            case MSG_ENUM: {
                 EnumInfo info = extractEnumInfo(check_and_cast<EnumElement *>(child));
                 enumType[info.enumName] = info.enumQName;
                 generateEnum(info);
                 break;
             }
 
-            case NED_STRUCT: {
+            case MSG_STRUCT: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
                 addClassType(classInfo.msgname, classInfo.classtype, child);
@@ -572,9 +572,9 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
                 break;
             }
 
-            case NED_CLASS:
-            case NED_MESSAGE:
-            case NED_PACKET: {
+            case MSG_CLASS:
+            case MSG_MESSAGE:
+            case MSG_PACKET: {
                 ClassInfo classInfo = extractClassInfo(child);
                 prepareForCodeGeneration(classInfo);
                 addClassType(classInfo.msgqname, classInfo.classtype, child);
@@ -584,7 +584,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
                     generateDescriptorClass(classInfo);
                 break;
             }
-            case NED_IMPORT:
+            case MSG_IMPORT:
                 errors->addError(child, "imports are not available in legacy (OMNeT++ 4.x) mode");
                 break;
         }
@@ -603,7 +603,7 @@ MsgCompilerOld::Properties MsgCompilerOld::extractPropertiesOf(ASTNode *node)
 {
     Properties props;
 
-    for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(NED_PROPERTY)); child; child = child->getNextPropertySibling()) {
+    for (PropertyElement *child = static_cast<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); child; child = child->getNextPropertySibling()) {
         std::string propname = ptr2str(child->getAttribute("name"));
         std::string propval;
         for (PropertyKeyElement *key = child->getFirstPropertyKeyChild(); key; key = key->getNextPropertyKeySibling()) {
@@ -639,7 +639,7 @@ MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(ASTNode *node)
 
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_FIELD: {
+            case MSG_FIELD: {
                 ClassInfo::FieldInfo f;
                 f.nedElement = child;
                 f.fname = ptr2str(child->getAttribute("name"));
@@ -662,19 +662,15 @@ MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(ASTNode *node)
                 break;
             }
 
-            case NED_PROPERTY:
+            case MSG_PROPERTY:
                 // skip properties here, properties already extracted
                 break;
 
-            case NED_PROPERTY_DECL:
-                errors->addError(child, "syntax error: property '%s' declaration unaccepted here", child->getTagName());
-                break;
-
-            case NED_PROPERTY_KEY:
+            case MSG_PROPERTY_KEY:
                 errors->addError(child, "syntax error: property key '%s' unaccepted here", child->getTagName());
                 break;
 
-            case NED_COMMENT:
+            case MSG_COMMENT:
                 break;
 
             default:
@@ -2034,10 +2030,10 @@ MsgCompilerOld::EnumInfo MsgCompilerOld::extractEnumInfo(EnumElement *node)
     // prepare enum items:
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case NED_ENUM_FIELDS:
+            case MSG_ENUM_FIELDS:
                 for (ASTNode *e = child->getFirstChild(); e; e = e->getNextSibling()) {
                     switch (e->getTagCode()) {
-                        case NED_ENUM_FIELD: {
+                        case MSG_ENUM_FIELD: {
                             EnumInfo::EnumItem f;
                             f.nedElement = e;
                             f.name = ptr2str(e->getAttribute("name"));
@@ -2046,7 +2042,7 @@ MsgCompilerOld::EnumInfo MsgCompilerOld::extractEnumInfo(EnumElement *node)
                             break;
                         }
 
-                        case NED_COMMENT:
+                        case MSG_COMMENT:
                             break;
 
                         default:
@@ -2055,7 +2051,7 @@ MsgCompilerOld::EnumInfo MsgCompilerOld::extractEnumInfo(EnumElement *node)
                 }
                 break;
 
-            case NED_COMMENT:
+            case MSG_COMMENT:
                 break;
 
             default:
