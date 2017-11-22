@@ -501,12 +501,11 @@ void NED1Generator::doModuleParam(ParamElement *node, const char *indent, bool i
 {
     const char *parType = nullptr;
     switch (node->getType()) {
-        case NED_PARTYPE_NONE:   break;
-        case NED_PARTYPE_DOUBLE: case NED_PARTYPE_INT:
-                                 parType = node->getIsVolatile() ? "numeric" : "numeric const"; break;
-        case NED_PARTYPE_STRING: parType = "string"; break;
-        case NED_PARTYPE_BOOL:   parType = "bool"; break;
-        case NED_PARTYPE_XML:    parType = "xml"; break;
+        case PARTYPE_NONE:   break;
+        case PARTYPE_DOUBLE: case PARTYPE_INT: parType = node->getIsVolatile() ? "numeric" : "numeric const"; break;
+        case PARTYPE_STRING: parType = "string"; break;
+        case PARTYPE_BOOL:   parType = "bool"; break;
+        case PARTYPE_XML:    parType = "xml"; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
 
@@ -543,7 +542,7 @@ const char *NED1Generator::getPromptTextOf(ParamElement *param)
 
 void NED1Generator::doSubstParam(ParamElement *node, const char *indent, bool islast, const char *)
 {
-    if (node->getType() != NED_PARTYPE_NONE)
+    if (node->getType() != PARTYPE_NONE)
         errors->addWarning(node, NED2FEATURE "defining new parameter for a submodule");
 
     OUT << getBannerComment(node, indent);
@@ -656,10 +655,10 @@ void NED1Generator::doModuleGate(GateElement *node, const char *indent, bool isl
     OUT << getBannerComment(node, indent);
     OUT << indent;
     switch (node->getType()) {
-        case NED_GATETYPE_INPUT:  OUT << "in: "; break;
-        case NED_GATETYPE_OUTPUT: OUT << "out: "; break;
-        case NED_GATETYPE_INOUT:  errors->addWarning(node, NED2FEATURE "inout gate"); break;
-        case NED_GATETYPE_NONE:   errors->addWarning(node, NED2FEATURE "missing gate type"); break;
+        case GATETYPE_INPUT:  OUT << "in: "; break;
+        case GATETYPE_OUTPUT: OUT << "out: "; break;
+        case GATETYPE_INOUT:  errors->addWarning(node, NED2FEATURE "inout gate"); break;
+        case GATETYPE_NONE:   errors->addWarning(node, NED2FEATURE "missing gate type"); break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     OUT << node->getName();
@@ -675,7 +674,7 @@ void NED1Generator::doGatesize(GateElement *node, const char *indent, bool islas
 {
     OUT << getBannerComment(node, indent);
     OUT << indent;
-    if (node->getType() != NED_GATETYPE_NONE)
+    if (node->getType() != GATETYPE_NONE)
         errors->addWarning(node, NED2FEATURE "declaring new gates for submodules");
     OUT << node->getName();
     if (!hasExpression(node, "vector-size"))
@@ -885,7 +884,7 @@ void NED1Generator::printConnectionGate(ASTNode *conn, const char *modname, cons
     else
         printOptVector(conn, gateindexattr, indent);
 
-    if (gatesubg != NED_SUBGATE_NONE)
+    if (gatesubg != SUBGATE_NONE)
         errors->addWarning(conn, NED2FEATURE "subgate of inout gate");
 }
 
@@ -1081,7 +1080,7 @@ void NED1Generator::doLiteral(LiteralElement *node, const char *indent, bool isl
     }
     else {
         // fallback: when original text is not present, use value
-        if (node->getType() == NED_CONST_STRING)
+        if (node->getType() == LIT_STRING)
             OUT << opp_quotestr(node->getValue());
         else
             OUT << node->getValue();

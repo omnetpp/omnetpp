@@ -96,7 +96,7 @@
 #include "nedyydefs.h"
 #include "nedutil.h"
 #include "errorstore.h"
-#include "nedexception.h"
+#include "exception.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -365,7 +365,7 @@ displayblock
                   ps.params = (ParametersElement *)ps.module->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralElement *literal = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
-                  literal->setType(NED_CONST_STRING);
+                  literal->setType(LIT_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeBackgroundDisplayString(opp_parsequotedstr(toString(@3)).c_str());
                       literal->setValue(displaystring.c_str());
@@ -427,49 +427,49 @@ parameter
         : NAME
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setType(PARTYPE_DOUBLE);
                   ps.param->setIsVolatile(true); // because CONST is missing
                 }
         | NAME ':' NUMERICTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setType(PARTYPE_DOUBLE);
                   ps.param->setIsVolatile(true); // because CONST is missing
                 }
         | CONSTDECL NAME /* for compatibility */
                 {
                   ps.param = addParameter(ps.params, @2);
-                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setType(PARTYPE_DOUBLE);
                 }
         | NAME ':' CONSTDECL
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setType(PARTYPE_DOUBLE);
                 }
         | NAME ':' CONSTDECL NUMERICTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setType(PARTYPE_DOUBLE);
                 }
         | NAME ':' NUMERICTYPE CONSTDECL
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setType(PARTYPE_DOUBLE);
                 }
         | NAME ':' STRINGTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_STRING);
+                  ps.param->setType(PARTYPE_STRING);
                 }
         | NAME ':' BOOLTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_BOOL);
+                  ps.param->setType(PARTYPE_BOOL);
                 }
         | NAME ':' XMLTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
-                  ps.param->setType(NED_PARTYPE_XML);
+                  ps.param->setType(PARTYPE_XML);
                 }
         | NAME ':' ANYTYPE
                 {
@@ -519,7 +519,7 @@ gateI
         : NAME '[' ']'
                 {
                   ps.gate = addGate(ps.gates, @1);
-                  ps.gate->setType(NED_GATETYPE_INPUT);
+                  ps.gate->setType(GATETYPE_INPUT);
                   ps.gate->setIsVector(true);
                   storeBannerAndRightComments(ps.gate,@1,@3);
                   storePos(ps.gate, @$);
@@ -527,7 +527,7 @@ gateI
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
-                  ps.gate->setType(NED_GATETYPE_INPUT);
+                  ps.gate->setType(GATETYPE_INPUT);
                   storeBannerAndRightComments(ps.gate,@1);
                   storePos(ps.gate, @$);
                 }
@@ -542,7 +542,7 @@ gateO
         : NAME '[' ']'
                 {
                   ps.gate = addGate(ps.gates, @1);
-                  ps.gate->setType(NED_GATETYPE_OUTPUT);
+                  ps.gate->setType(GATETYPE_OUTPUT);
                   ps.gate->setIsVector(true);
                   storeBannerAndRightComments(ps.gate,@1,@3);
                   storePos(ps.gate, @$);
@@ -550,7 +550,7 @@ gateO
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
-                  ps.gate->setType(NED_GATETYPE_OUTPUT);
+                  ps.gate->setType(GATETYPE_OUTPUT);
                   storeBannerAndRightComments(ps.gate,@1,@1);
                   storePos(ps.gate, @$);
                 }
@@ -787,7 +787,7 @@ opt_submod_displayblock
                   ps.substparams = (ParametersElement *)ps.submod->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralElement *literal = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
-                  literal->setType(NED_CONST_STRING);
+                  literal->setType(LIT_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeSubmoduleDisplayString(opp_parsequotedstr(toString(@3)).c_str());
                       literal->setValue(displaystring.c_str());
@@ -899,7 +899,7 @@ opt_conn_displaystr
                   ps.property = addComponentProperty(ps.conn, "display");
                   ps.propkey = (PropertyKeyElement *)createNedElementWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralElement *literal = (LiteralElement *)createNedElementWithTag(NED_LITERAL);
-                  literal->setType(NED_CONST_STRING);
+                  literal->setType(LIT_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeConnectionDisplayString(opp_parsequotedstr(toString(@2)).c_str());
                       literal->setValue(displaystring.c_str());
@@ -1306,16 +1306,16 @@ stringliteral
 
 boolliteral
         : TRUE_
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_BOOL, @1, @1); }
         | FALSE_
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_BOOL, @1, @1); }
         ;
 
 numliteral
         : INTCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_INT, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_INT, @1, @1); }
         | REALCONSTANT
-                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(LIT_DOUBLE, @1, @1); }
         | quantity
                 { if (np->getParseExpressionsFlag()) $$ = createQuantityLiteral(@1); }
         ;

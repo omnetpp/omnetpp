@@ -31,7 +31,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <cstring>
 #include "nedyydefs.h"
-#include "nedexception.h"
+#include "exception.h"
 #include "ned1.tab.hh"
 
 #define yylloc ned1yylloc
