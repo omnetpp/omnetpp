@@ -78,7 +78,7 @@ bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
 bool opt_legacymode = false;       // --msg4
 std::vector<std::string> opt_importpath; // -I
-bool opt_generatedependencies = false; // -M
+bool opt_generatedependencies = false; // -MD
 std::string opt_dependenciesfile;  // -MF
 bool opt_phonytargets = false;     // -MP
 
@@ -131,7 +131,7 @@ void printUsage()
        "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
        "      name ends in _API, boilerplate code to conditionally define\n"
        "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
-       "  -M: turn on dependency generation for message files; see also: -MF, -MP\n"
+       "  -MD: turn on dependency generation for message files; see also: -MF, -MP\n"
        "  -MF <file>: save dependencies into the specified file; when absent,\n"
        "      dependencies will be written to the standard output\n"
        "  -MP: add a phony target for each dependency other than the main file,\n"
@@ -624,7 +624,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--msg4")) {
             opt_legacymode = true;
         }
-        else if (!strcmp(argv[i], "-M")) {
+        else if (!strcmp(argv[i], "-MD")) {
             opt_generatedependencies = true;
         }
         else if (!strcmp(argv[i], "-MF")) {
