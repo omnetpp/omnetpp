@@ -11,17 +11,20 @@
 %javaconst(1);
 
 %{
-#include "nedxml/nedelement.h"
-#include "nedxml/nederror.h"
+#include "nedxml/astnode.h"
+#include "nedxml/errorstore.h"
 #include "nedxml/nedparser.h"
-#include "nedxml/ned2generator.h"
-#include "nedxml/ned1generator.h"
+#include "nedxml/msgparser.h"
+#include "nedxml/nedgenerator.h"
+#include "nedxml/msggenerator.h"
 #include "nedxml/xmlgenerator.h"
 #include "nedxml/nedelements.h"
+#include "nedxml/msgelements.h"
 #include "nedxml/neddtdvalidator.h"
+#include "nedxml/msgdtdvalidator.h"
 #include "nedxml/nedtools.h"
 #include "nedxml/nedsyntaxvalidator.h"
-#include "nedxml/nedfilebuffer.h"
+#include "nedxml/sourcedocument.h"
 
 using namespace omnetpp::nedxml;
 %}
@@ -39,28 +42,27 @@ namespace std {
 namespace omnetpp { namespace nedxml {
 
 // parse functions return new objects, supposed to be deleted from Java
-%newobject NEDParser::parseNEDText(const char *);
-%newobject NEDParser::parseNEDFile(const char *);
-%newobject NEDParser::parseNEDExpression(const char *);
-%newobject createElementWithTag(int tagcode, NEDElement *parent);
+%newobject NedParser::parseNedText(const char *);
+%newobject NedParser::parseNedFile(const char *);
+%newobject NedParser::parseNedExpression(const char *);
+%newobject createElementWithTag(int tagcode, ASTNode *parent);
 
 // These are only public for technical reasons, shouldn't be wrapped
-%ignore NEDParser::getSource();
-%ignore NEDParser::getErrors();
-%ignore NEDParser::error(const char *, int);
+%ignore NedParser::getSource();
+%ignore NedParser::getErrors();
+%ignore NedParser::error(const char *, int);
 
 %ignore np;
 
-%ignore NEDElementUserData;
-%ignore NEDElement::setUserData(NEDElementUserData *);
-%ignore NEDElement::getUserData() const;
+%ignore UserData;
+%ignore ASTNode::setUserData(UserData *);
+%ignore ASTNode::getUserData() const;
 
-%ignore generateNED1(std::ostream&, NEDElement *, NEDErrorStore *);
-%ignore generateNED2(std::ostream&, NEDElement *, NEDErrorStore *);
-%ignore generateXML(std::ostream&, NEDElement *, bool, int);
-%ignore NEDInternalError;
+%ignore generateNed(std::ostream&, ASTNode *);
+%ignore generateXML(std::ostream&, ASTNode *, bool, int);
+%ignore NedInternalError;
 
-%ignore NEDTools::splitToFiles;
+%ignore NedTools::splitToFiles;
 
 %ignore NamespaceElement::getFirstCommentChild;
 %ignore PackageElement::getFirstCommentChild;
@@ -71,11 +73,11 @@ namespace omnetpp { namespace nedxml {
 
 
 // XXX for some reason, SWIG doesn't give a s&%$# about the following ignores:
-%ignore NEDElementStore::add(NEDElement *, const char *, ...);
-%ignore NEDElementStore::add(NEDElement *, int, const char *, ...);
-%ignore NEDGenerator1::generate(std::ostream&, NEDElement *, const char *);
-%ignore NEDGenerator2::generate(std::ostream&, NEDElement *, const char *);
-%ignore NEDXMLGenerator::generate(std::ostream&, NEDElement *);
+%ignore NedElementStore::add(ASTNode *, const char *, ...);
+%ignore NedElementStore::add(ASTNode *, int, const char *, ...);
+%ignore NedGenerator::generate(std::ostream&, ASTNode *, const char *);
+%ignore MsgGenerator::generate(std::ostream&, ASTNode *, const char *);
+%ignore XMLGenerator::generate(std::ostream&, ASTNode *);
 
 %ignore ltstr;
 
@@ -137,22 +139,20 @@ namespace omnetpp { namespace nedxml {
 
 /* Let's just grab the original header file here */
 %include "nedxml/nedxmldefs.h"
-%include "nedxml/nedelement.h"
-%include "nedxml/nederror.h"
+%include "nedxml/astnode.h"
+%include "nedxml/errorstore.h"
 %include "nedxml/nedparser.h"
-%include "nedxml/ned2generator.h"
-%include "nedxml/ned1generator.h"
+%include "nedxml/msgparser.h"
+%include "nedxml/nedgenerator.h"
+%include "nedxml/msggenerator.h"
 %include "nedxml/xmlgenerator.h"
 %include "nedxml/nedelements.h"
+%include "nedxml/msgelements.h"
 
 %include "nedxml/nedvalidator.h"
-%include "nedxml/neddtdvalidatorbase.h"
+%include "nedxml/msgvalidator.h"
 %include "nedxml/neddtdvalidator.h"
+%include "nedxml/msgdtdvalidator.h"
 %include "nedxml/nedtools.h"
 %include "nedxml/nedsyntaxvalidator.h"
-
-//%include "nedcompiler.h"
-//%include "nedxml/nedfilebuffer.h"
-//%include "nedsemanticvalidator.h"
-//%include "cppgenerator.h"
 

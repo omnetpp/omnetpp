@@ -50,7 +50,6 @@ import org.omnetpp.ned.model.pojo.CplusplusElement;
 import org.omnetpp.ned.model.pojo.EnumDeclElement;
 import org.omnetpp.ned.model.pojo.EnumElement;
 import org.omnetpp.ned.model.pojo.EnumFieldElement;
-import org.omnetpp.ned.model.pojo.EnumFieldsElement;
 import org.omnetpp.ned.model.pojo.ExpressionElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
@@ -830,11 +829,6 @@ public class NedValidator extends AbstractNedValidatorEx {
 
     @Override
     protected void validateElement(EnumElement node) {
-        validateChildren(node);
-    }
-
-    @Override
-    protected void validateElement(EnumFieldsElement node) {
         validateChildren(node);
     }
 

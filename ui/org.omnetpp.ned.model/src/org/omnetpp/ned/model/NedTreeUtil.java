@@ -11,24 +11,25 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.engine.NED1Generator;
-import org.omnetpp.ned.engine.NED2Generator;
-import org.omnetpp.ned.engine.NEDDTDValidator;
-import org.omnetpp.ned.engine.NEDElement;
-import org.omnetpp.ned.engine.NEDElementCode;
-import org.omnetpp.ned.engine.NEDErrorSeverity;
-import org.omnetpp.ned.engine.NEDErrorStore;
-import org.omnetpp.ned.engine.NEDParser;
-import org.omnetpp.ned.engine.NEDSourceRegion;
-import org.omnetpp.ned.engine.NEDSyntaxValidator;
-import org.omnetpp.ned.engine.NEDTools;
+import org.omnetpp.ned.engine.ASTNode;
+import org.omnetpp.ned.engine.ErrorStore;
+import org.omnetpp.ned.engine.MsgDtdValidator;
+import org.omnetpp.ned.engine.MsgParser;
+import org.omnetpp.ned.engine.MsgTagCode;
+import org.omnetpp.ned.engine.NedAstNodeFactory;
+import org.omnetpp.ned.engine.NedDtdValidator;
+import org.omnetpp.ned.engine.NedGenerator;
+import org.omnetpp.ned.engine.NedParser;
+import org.omnetpp.ned.engine.NedSyntaxValidator;
+import org.omnetpp.ned.engine.NedTools;
+import org.omnetpp.ned.engine.ProblemSeverity;
+import org.omnetpp.ned.engine.SourceRegion;
 import org.omnetpp.ned.engine.nedxml;
 import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.NedElementTags;
-import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
  * Utility functions working on NedElement trees. Conversions, serialization, dumping of trees.
@@ -46,15 +47,11 @@ public class NedTreeUtil {
     public static String generateNedSource(INedElement treeRoot, boolean keepSyntax) {
         // Debug.println(generateXmlFromPojoElementTree(treeRoot,""));
 
-        NEDErrorStore errors = new NEDErrorStore();
+        ErrorStore errors = new ErrorStore();
         errors.setPrintToStderr(false); // turn it on for debugging
-        NEDElement swigTree = pojo2swig(treeRoot);
-        String result;
-        if (keepSyntax && treeRoot instanceof NedFileElement && "1".equals(((NedFileElement)treeRoot).getVersion()))
-            result = new NED1Generator(errors).generate(swigTree, "");
-        else
-            result = new NED2Generator(errors).generate(swigTree, "");
-        // TODO check NEDErrorStore for conversion errors
+        ASTNode swigTree = pojo2swig(treeRoot);
+        String result = new NedGenerator().generate(swigTree, "");
+        // TODO check ErrorStore for conversion errors
         swigTree.delete();
         return result;
     }
@@ -63,7 +60,7 @@ public class NedTreeUtil {
      * Generate NEDXML from the given element tree.
      */
     public static String generateXML(INedElement tree, boolean srcLoc, int indentSize) {
-        NEDElement swigTree = pojo2swig(tree);
+        ASTNode swigTree = pojo2swig(tree);
         String result = nedxml.generateXML(swigTree, srcLoc, indentSize);
         swigTree.delete();
         return result;
@@ -73,7 +70,7 @@ public class NedTreeUtil {
      * Load and parse NED file to a NedElement tree. Returns a non-null,
      * DTD-conforming (but possibly incomplete) tree even in case of parse errors.
      * The passed displayFileName will only be used to fill in the NedFileElement element
-     * and source location attributes. Callers should check NEDErrorStore to determine
+     * and source location attributes. Callers should check ErrorStore to determine
      * whether a parse error occurred. All errors produced here will be syntax errors
      * (see NEDSYNTAXPROBLEM_MARKERID).
      */
@@ -95,14 +92,14 @@ public class NedTreeUtil {
 
     private static synchronized NedFileElementEx doParseNedSource(String source, String filesystemFilename, INedErrorStore errors, String displayFilename, INedTypeResolver resolver) {
         Assert.isTrue(displayFilename != null);
-        NEDElement swigTree = null;
+        ASTNode swigTree = null;
         try {
             // Debug.println("Parsing NED file started: " + filesystemFilename);
             // parse
-            NEDErrorStore swigErrors = new NEDErrorStore();
-            NEDParser np = new NEDParser(swigErrors);
+            ErrorStore swigErrors = new ErrorStore();
+            NedParser np = new NedParser(swigErrors);
             np.setParseExpressions(false);
-            swigTree = source!=null ? np.parseNEDText(source, displayFilename) : np.parseNEDFile(filesystemFilename, displayFilename);
+            swigTree = source!=null ? np.parseNedText(source, displayFilename) : np.parseNedFile(filesystemFilename, displayFilename);
             if (swigTree == null) {
                 // return an empty NedFileElement if parsing totally failed
                 NedFileElementEx fileNode = (NedFileElementEx)NedElementFactoryEx.getInstance().createElement(resolver, NedElementTags.NED_NED_FILE, null);
@@ -117,19 +114,19 @@ public class NedTreeUtil {
                 // due to parse errors before filling in the connection element was completed.
                 // Here we try to check and repair the tree by discarding elements that cause
                 // DTD validation error.
-                NEDTools.repairNEDElementTree(swigTree);
+                NedTools.repairNedAST(swigTree);
             }
 
             // run DTD validation (once again)
             int numMessages = swigErrors.numMessages();
-            NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
+            NedDtdValidator dtdvalidator = new NedDtdValidator(swigErrors);
             dtdvalidator.validate(swigTree);
             dumpSwigErrors(swigErrors); //XXX remove -- debugging only
 
             Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
             // additional syntax-related validation
-            NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
+            NedSyntaxValidator syntaxValidator = new NedSyntaxValidator(false, swigErrors);
             syntaxValidator.validate(swigTree);
 
             // convert tree to pure Java objects
@@ -150,14 +147,14 @@ public class NedTreeUtil {
 
     public static synchronized MsgFileElementEx parseMsgSource(String source, INedErrorStore errors, String filename) {
         Assert.isTrue(filename != null);
-        NEDElement swigTree = null;
+        ASTNode swigTree = null;
         try {
             // Debug.println("Parsing MSG file started: " + filename);
             // parse
-            NEDErrorStore swigErrors = new NEDErrorStore();
-            NEDParser np = new NEDParser(swigErrors);
-            np.setParseExpressions(false);
-            swigTree = source!=null ? np.parseMSGText(source, filename) : np.parseMSGFile(filename);
+            ErrorStore swigErrors = new ErrorStore();
+            MsgParser np = new MsgParser(swigErrors);
+            np.setMsgNewSyntaxFlag(true); //TODO configurable?
+            swigTree = source!=null ? np.parseMsgText(source, filename) : np.parseMsgFile(filename);
             if (swigTree == null) {
                 // return an empty MsgFileElement if parsing totally failed
                 MsgFileElementEx fileNode = (MsgFileElementEx)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_MSG_FILE, null);
@@ -167,28 +164,23 @@ public class NedTreeUtil {
             }
 
             // set the file name property in the nedFileElement
-            if (NEDElementCode.swigToEnum(swigTree.getTagCode()) == NEDElementCode.NED_MSG_FILE)
+            if (swigTree.getTagCode() == MsgTagCode.MSG_MSG_FILE.swigValue())
                 swigTree.setAttribute("filename", filename);
 
             if (!swigErrors.empty()) {
                 // There were parse errors, and the tree built may not be entirely correct.
-                // Typical problems are "mandatory attribute missing" especially with connections,
-                // due to parse errors before filling in the connection element was completed.
+                // Typical problems are "mandatory attribute missing".
                 // Here we try to check and repair the tree by discarding elements that cause
                 // DTD validation error.
-                NEDTools.repairNEDElementTree(swigTree);
+                NedTools.repairMsgAST(swigTree);
             }
 
             // run DTD validation (once again)
             int numMessages = swigErrors.numMessages();
-            NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
+            MsgDtdValidator dtdvalidator = new MsgDtdValidator(swigErrors);
             dtdvalidator.validate(swigTree);
             dumpSwigErrors(swigErrors); //XXX remove -- debugging only
-            Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
-
-            // additional syntax-related validation
-            NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
-            syntaxValidator.validate(swigTree);
+            Assert.isTrue(swigErrors.numMessages() == numMessages, "MSG tree fails DTD validation, even after repairs");
 
             // convert tree to pure Java objects
             INedElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors, null);
@@ -206,12 +198,12 @@ public class NedTreeUtil {
         }
     }
 
-    protected static void dumpSwigErrors(NEDErrorStore swigErrors) {
+    protected static void dumpSwigErrors(ErrorStore swigErrors) {
         int n = swigErrors.numMessages();
         if (n > 0) {
             Debug.println(n + " errors:");
             for (int i=0 ; i<n ; i++) {
-                NEDElement context = swigErrors.errorContext(i);
+                ASTNode context = swigErrors.errorContext(i);
                 Debug.println(
                         swigErrors.errorText(i)+
                         " loc: "+swigErrors.errorLocation(i) +
@@ -228,7 +220,7 @@ public class NedTreeUtil {
      * Converts a native C++ (SWIG-wrapped) NedElement tree to a plain java tree.
      * NOTE: There are two different NedElement types handled in this function.
      */
-    public static INedElement swig2pojo(NEDElement swigNode, INedElement parent, NEDErrorStore swigErrors, INedErrorStore errors, INedTypeResolver resolver /*null for msgs*/) {
+    public static INedElement swig2pojo(ASTNode swigNode, INedElement parent, ErrorStore swigErrors, INedErrorStore errors, INedTypeResolver resolver /*null for msgs*/) {
         // convert tree
         INedElement pojoTree = doSwig2pojo(swigNode, parent, swigErrors, errors, resolver);
 
@@ -238,8 +230,8 @@ public class NedTreeUtil {
         return pojoTree;
     }
 
-    protected static INedElement doSwig2pojo(NEDElement swigNode, INedElement parent, NEDErrorStore swigErrors, INedErrorStore errors, INedTypeResolver resolver /*null for msgs*/) {
-        INedElement pojoNode = NedElementFactoryEx.getInstance().createElement(resolver, swigNode.getTagCode(), parent);
+    protected static INedElement doSwig2pojo(ASTNode swigNode, INedElement parent, ErrorStore swigErrors, INedErrorStore errors, INedTypeResolver resolver /*null for msgs*/) {
+        INedElement pojoNode = NedElementFactoryEx.getInstance().createElement(resolver, swigNode.getTagName(), parent); //TODO by code, not by name!
 
         // set the attributes
         int numAttributes = swigNode.getNumAttributes();
@@ -248,7 +240,7 @@ public class NedTreeUtil {
 
         // copy source line number info
         pojoNode.setSourceLocation(swigNode.getSourceLocation());
-        NEDSourceRegion swigRegion = swigNode.getSourceRegion();
+        SourceRegion swigRegion = swigNode.getSourceRegion();
         if (swigRegion.getStartLine() != 0)
             pojoNode.setSourceRegion(new org.omnetpp.ned.model.NedSourceRegion(
                     swigRegion.getStartLine(), swigRegion.getStartColumn(),
@@ -258,34 +250,34 @@ public class NedTreeUtil {
         if (swigErrors != null && swigErrors.findFirstErrorFor(swigNode, 0) != -1) {
             int i = -1;
             while ((i = swigErrors.findFirstErrorFor(swigNode, i+1)) != -1) {
-                int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
+                int severity = getMarkerSeverityFor(ProblemSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
                 errors.add(severity, pojoNode, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
             }
         }
 
         // create child nodes
-        for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
+        for (ASTNode child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
             doSwig2pojo(child, pojoNode, swigErrors, errors, resolver);
 
         return pojoNode;
     }
 
-    protected static void copyGlobalErrors(NEDErrorStore swigErrors, INedElement targetElement, INedErrorStore targetErrorStore) {
+    protected static void copyGlobalErrors(ErrorStore swigErrors, INedElement targetElement, INedErrorStore targetErrorStore) {
         // piggyback errors which came without context node onto the given element
         if (swigErrors != null && swigErrors.findFirstErrorFor(null, 0) != -1) {
             int i = -1;
             while ((i = swigErrors.findFirstErrorFor(null, i+1)) != -1) {
-                int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
+                int severity = getMarkerSeverityFor(ProblemSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
                 targetErrorStore.add(severity, targetElement, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
             }
         }
     }
 
-    public static int getMarkerSeverityFor(NEDErrorSeverity severity) {
+    public static int getMarkerSeverityFor(ProblemSeverity severity) {
         switch (severity) {
-            case NED_SEVERITY_ERROR: return IMarker.SEVERITY_ERROR;
-            case NED_SEVERITY_WARNING: return IMarker.SEVERITY_WARNING;
-            case NED_SEVERITY_INFO: return IMarker.SEVERITY_INFO;
+            case SEVERITY_ERROR: return IMarker.SEVERITY_ERROR;
+            case SEVERITY_WARNING: return IMarker.SEVERITY_WARNING;
+            case SEVERITY_INFO: return IMarker.SEVERITY_INFO;
             default: throw new IllegalArgumentException();
         }
     }
@@ -300,14 +292,15 @@ public class NedTreeUtil {
         return line;
     }
 
+    private static NedAstNodeFactory nedElementFactory = new NedAstNodeFactory();
+
     /**
      * Converts a plain java NedElement tree to a native C++ (SWIG-wrapped) tree.
      * NOTE: There are two different NedElement types handled in this function.
      */
-    public static NEDElement pojo2swig(INedElement pojoNode) {
+    public static ASTNode pojo2swig(INedElement pojoNode) {
 
-        NEDElement swigNode = org.omnetpp.ned.engine.NEDElementFactory.getInstance()
-                .createElementWithTag(pojoNode.getTagCode());
+        ASTNode swigNode = nedElementFactory.createElementWithTag(pojoNode.getTagCode());
 
         // set the attributes
         for (int i = 0; i < pojoNode.getNumAttributes(); ++i) {
@@ -319,7 +312,7 @@ public class NedTreeUtil {
 
         // create child nodes
         for (INedElement child = pojoNode.getFirstChild(); child != null; child = child.getNextSibling()) {
-            NEDElement convertedChild = pojo2swig(child);
+            ASTNode convertedChild = pojo2swig(child);
             if (convertedChild != null)
                 swigNode.appendChild(convertedChild);
         }
@@ -331,24 +324,24 @@ public class NedTreeUtil {
      * Parses a NED expression passed as strings. Returns the parse tree, or null if there was a syntax error.
      */
     public static synchronized INedElement parseNedExpression(String source) {
-        NEDElement swigTree = null;
+        ASTNode swigTree = null;
         try {
             // parse
-            NEDErrorStore swigErrors = new NEDErrorStore();
-            NEDParser np = new NEDParser(swigErrors);
+            ErrorStore swigErrors = new ErrorStore();
+            NedParser np = new NedParser(swigErrors);
             np.setParseExpressions(true);
-            swigTree = np.parseNEDExpression(source);
+            swigTree = np.parseNedExpression(source);
             if (swigTree == null || !swigErrors.empty())
                 return null;
 
             // run DTD validation
-            NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
+            NedDtdValidator dtdvalidator = new NedDtdValidator(swigErrors);
             dtdvalidator.validate(swigTree);
             if (!swigErrors.empty())
                 return null;
 
             // additional syntax-related validation
-            NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
+            NedSyntaxValidator syntaxValidator = new NedSyntaxValidator(false, swigErrors);
             syntaxValidator.validate(swigTree);
             if (!swigErrors.empty())
                 return null;
@@ -369,9 +362,9 @@ public class NedTreeUtil {
      */
     public static boolean isExpressionValid(String expression) {
         Assert.isTrue(expression != null);
-        NEDErrorStore errors = new NEDErrorStore();
-        NEDParser np = new NEDParser(errors);
-        NEDElement swigTree = np.parseNEDExpression(expression);
+        ErrorStore errors = new ErrorStore();
+        NedParser np = new NedParser(errors);
+        ASTNode swigTree = np.parseNedExpression(expression);
         if (swigTree != null) swigTree.delete();
         return !errors.containsError();
     }
@@ -379,7 +372,7 @@ public class NedTreeUtil {
     /**
      * Converts a NedElement tree to an XML-like textual format. Useful for debugging.
      */
-    public static String generateXmlFromSwigElementTree(NEDElement swigNode, String indent) {
+    public static String generateXmlFromSwigElementTree(ASTNode swigNode, String indent) {
         String result = indent;
         result += "<" + swigNode.getTagName();
         for (int i = 0; i < swigNode.getNumAttributes(); ++i)
@@ -390,7 +383,7 @@ public class NedTreeUtil {
         }
         else {
             result += "> \n";
-            for (NEDElement child = swigNode.getFirstChild(); child != null; child = child
+            for (ASTNode child = swigNode.getFirstChild(); child != null; child = child
                     .getNextSibling())
                 result += generateXmlFromSwigElementTree(child, indent + "  ");
 

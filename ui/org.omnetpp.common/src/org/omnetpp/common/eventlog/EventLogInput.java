@@ -316,7 +316,7 @@ public class EventLogInput extends FileEditorInput
                 filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
 
             if (eventLogFilterParameters.enableModuleNEDTypeNameFilter)
-                filteredEventLog.setModuleNEDTypeNames(eventLogFilterParameters.getModuleNEDTypeNames());
+                filteredEventLog.setModuleNedTypeNames(eventLogFilterParameters.getModuleNEDTypeNames());
         }
 
         if (eventLogFilterParameters.enableTraceFilter) {

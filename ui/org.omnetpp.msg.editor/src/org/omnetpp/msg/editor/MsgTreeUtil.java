@@ -8,12 +8,11 @@
 package org.omnetpp.msg.editor;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.ned.engine.NED2Generator;
-import org.omnetpp.ned.engine.NEDDTDValidator;
-import org.omnetpp.ned.engine.NEDElement;
-import org.omnetpp.ned.engine.NEDErrorStore;
-import org.omnetpp.ned.engine.NEDParser;
-import org.omnetpp.ned.engine.NEDSyntaxValidator;
+import org.omnetpp.ned.engine.ASTNode;
+import org.omnetpp.ned.engine.ErrorStore;
+import org.omnetpp.ned.engine.MsgDtdValidator;
+import org.omnetpp.ned.engine.MsgGenerator;
+import org.omnetpp.ned.engine.MsgParser;
 
 /**
  * Parsing and manipulating MSG files
@@ -23,7 +22,7 @@ import org.omnetpp.ned.engine.NEDSyntaxValidator;
 public class MsgTreeUtil {
 
     public static boolean needsConversion(String string) {
-        NEDElement node = parse(string);
+        ASTNode node = parse(string);
         if (node == null)
             return false;
         boolean result = "1".equals(node.getAttribute("version"));
@@ -32,23 +31,22 @@ public class MsgTreeUtil {
     }
 
     public static String convertToNewSyntax(String string) {
-        NEDElement node = MsgTreeUtil.parse(string);
+        ASTNode node = MsgTreeUtil.parse(string);
         if (node == null)
             throw new IllegalArgumentException();
         node.setAttribute("version", "2");
-        String result = new NED2Generator(new NEDErrorStore()).generate(node, "");
+        String result = new MsgGenerator().generate(node, "");
         node.delete();
         return result;
     }
 
-    public static NEDElement parse(String source) {
-        NEDElement swigTree = null;
+    public static ASTNode parse(String source) {
+        ASTNode swigTree = null;
         try {
             // parse
-            NEDErrorStore swigErrors = new NEDErrorStore();
-            NEDParser np = new NEDParser(swigErrors);
-            np.setParseExpressions(false);
-            swigTree = np.parseMSGText(source, "buffer");
+            ErrorStore swigErrors = new ErrorStore();
+            MsgParser np = new MsgParser(swigErrors);
+            swigTree = np.parseMsgText(source, "buffer");
             if (swigTree == null)
                 return null;
 
@@ -59,14 +57,9 @@ public class MsgTreeUtil {
 
             // run DTD validation (once again)
             int numMessages = swigErrors.numMessages();
-            NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
+            MsgDtdValidator dtdvalidator = new MsgDtdValidator(swigErrors);
             dtdvalidator.validate(swigTree);
             Assert.isTrue(swigErrors.numMessages() == numMessages, "MSG tree produced by parser fails DTD validation");
-
-            // additional syntax-related validation
-            NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
-            syntaxValidator.validate(swigTree);
-            Assert.isTrue(swigErrors.numMessages() == numMessages, "MSG tree produced by parser fails syntax validation");
 
             return swigTree;
         }

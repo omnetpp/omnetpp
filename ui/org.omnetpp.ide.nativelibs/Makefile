@@ -77,6 +77,7 @@ nedxml.cxx : nedxml.i
 	-rm -f $(NEDXML_JAVADIR)/*.java
 	-mkdir -p $(NEDXML_JAVADIR)
 	$(SWIG) -c++ -java $(INCLUDES) -package $(NEDXML_JAVAPKG) -outdir $(NEDXML_JAVADIR) -o $@ $<
+	$(PERL) -pi.bak -e 's/\(omnetpp::nedxml::([A-Z_]+)\)/(NedTagCode.\1.swigValue())/g;' src/org/omnetpp/ned/engine/MsgTagCode.java
 
 scave.cxx : scave.i idlist.i
 	-rm -f $(SCAVE_JAVADIR)/*.java

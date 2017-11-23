@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.engine.NEDParser;
+import org.omnetpp.ned.engine.NedParser;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.INedErrorStore;
 import org.omnetpp.ned.model.NedTreeUtil;
@@ -196,7 +196,7 @@ public class NedTypeResolver implements INedTypeResolver {
      * Create channel and interface types that are predefined in NED.
      */
     protected void createBuiltInNedTypes() {
-        String source = NEDParser.getBuiltInDeclarations();
+        String source = NedParser.getBuiltInDeclarations();
         INedErrorStore errorStore = new SysoutNedErrorStore();
         builtInDeclarationsFile = NedTreeUtil.parseNedText(source, errorStore, "[builtin-declarations]", this);
         Assert.isTrue(errorStore.getNumProblems()==0);
