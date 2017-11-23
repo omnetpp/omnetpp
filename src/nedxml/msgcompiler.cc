@@ -127,6 +127,7 @@ void MsgCompiler::importBuiltinDefinitions()
 void MsgCompiler::processBuiltinImport(const char *txt, const char *fname)
 {
     NEDParser parser(errors);
+    parser.setMsgNewSyntaxFlag(true);
     ASTNode *tree = parser.parseMSGText(txt, fname);
     if (errors->containsError()) {
         delete tree;
@@ -219,6 +220,7 @@ void MsgCompiler::processImport(ASTNode *child, const std::string& currentDir)
     importedFiles.insert(fileName);
 
     NEDParser parser(errors);
+    parser.setMsgNewSyntaxFlag(true);
     ASTNode *tree = parser.parseMSGFile(fileName.c_str());
     if (errors->containsError()) {
         delete tree;

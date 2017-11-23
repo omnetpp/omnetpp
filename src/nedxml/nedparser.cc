@@ -106,6 +106,7 @@ NEDParser::NEDParser(ErrorStore *e)
     filename = nullptr;
     parseexpr = true;
     storesrc = false;
+    msgNewSyntax = true;
     errors = e;
 }
 
