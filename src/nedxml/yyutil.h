@@ -19,8 +19,8 @@
 
 #include <string>
 #include "astnode.h"
-#include "nedyydefs.h"
 #include "nedparser.h"
+#include "yydefs.h"
 
 namespace omnetpp {
 namespace nedxml {

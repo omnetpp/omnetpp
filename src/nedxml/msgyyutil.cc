@@ -17,9 +17,9 @@
 #include <cassert>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
-#include "nedyydefs.h"
 #include "msgyyutil.h"
 #include "sourcedocument.h"
+#include "yydefs.h"
 
 using namespace omnetpp::common;
 

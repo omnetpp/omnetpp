@@ -45,7 +45,7 @@ S  [ \t\v\n\r\f]
 
 %{
 #include <cstring>
-#include "nedyydefs.h"
+#include "yydefs.h"
 #include "exception.h"
 #include "msg2.tab.hh"
 

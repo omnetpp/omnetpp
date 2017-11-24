@@ -27,8 +27,8 @@
 
 #include "errorstore.h"
 #include "nedelements.h"
-#include "nedyydefs.h"
 #include "sourcedocument.h"
+#include "yydefs.h"
 
 using namespace omnetpp::common;
 

@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDYYDEFS.H - part of
+//  YYDEFS.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDYYDEFS_H
-#define __OMNETPP_NEDXML_NEDYYDEFS_H
+#ifndef __OMNETPP_NEDXML_YYDEFS_H
+#define __OMNETPP_NEDXML_YYDEFS_H
 
 #include "nedxmldefs.h"
 
@@ -33,7 +33,7 @@ class NEDParser;
 }  // namespace omnetpp
 
 #ifdef YYLTYPE
-#error 'YYLTYPE defined before nedyydefs.h -- type clash?'
+#error 'YYLTYPE defined before yydefs.h -- type clash?'
 #endif
 
 struct my_yyltype {

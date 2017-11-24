@@ -21,7 +21,7 @@
 
 #include "errorstore.h"
 #include "astnode.h"
-#include "nedyydefs.h"
+#include "yydefs.h"
 
 namespace omnetpp {
 namespace nedxml {

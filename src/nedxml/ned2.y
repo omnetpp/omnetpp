@@ -82,7 +82,7 @@
 #include <stack>
 #include "common/commonutil.h"
 #include "common/stringutil.h"
-#include "nedyydefs.h"
+#include "yydefs.h"
 #include "errorstore.h"
 #include "exception.h"
 
