@@ -14,49 +14,50 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDYYLIB_H
-#define __OMNETPP_NEDXML_NEDYYLIB_H
+#ifndef __OMNETPP_NEDXML_YYUTIL_H
+#define __OMNETPP_NEDXML_YYUTIL_H
 
 #include <string>
 #include "astnode.h"
-#include "nedparser.h"
 #include "yydefs.h"
 
 namespace omnetpp {
 namespace nedxml {
 
-#define NONREENTRANT_NED_PARSER(p) \
+extern bool parseInProgress;
+
+#define DETECT_PARSER_REENTRY() \
     struct Guard { \
-      Guard(NEDParser *parser) {if (np) throw opp_runtime_error("non-reentrant parser invoked again while parsing"); np=parser;} \
-      ~Guard() {np=nullptr;} \
-    } __guard(p);
+     Guard() {if (parseInProgress) throw opp_runtime_error("non-reentrant parser invoked again while parsing"); parseInProgress = true;} \
+      ~Guard() {parseInProgress = false;} \
+    } __guard;
 
 std::string slashifyFilename(const char *fname);
-const char *currentLocation();
+const char *currentLocation(ParseContext *np);
 
-ASTNode *createElementWithTag(ASTNodeFactory *factory, int tagcode, ASTNode *parent=nullptr);
-ASTNode *getOrCreateElementWithTag(ASTNodeFactory *factory, int tagcode, ASTNode *parent);
+ASTNode *createElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent=nullptr);
+ASTNode *getOrCreateElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent);
 
-void storePos(ASTNode *node, YYLTYPE pos);
-void storePos(ASTNode *node, YYLTYPE firstpos, YYLTYPE lastpos);
+void storePos(ParseContext *np, ASTNode *node, YYLoc pos);
+void storePos(ParseContext *np, ASTNode *node, YYLoc firstpos, YYLoc lastpos);
 
 void swapAttributes(ASTNode *node, const char *attr1, const char *attr2);
 void transferChildren(ASTNode *from, ASTNode *to);
 
-YYLTYPE trimQuotes(YYLTYPE vectorpos);
-YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
+YYLoc trimQuotes(YYLoc vectorpos);
+YYLoc trimDoubleBraces(YYLoc vectorpos);
 
-const char *toString(YYLTYPE);
+const char *toString(ParseContext *np, YYLoc);
 const char *toString(long);
-std::string removeSpaces(YYLTYPE pos);
+std::string removeSpaces(ParseContext *np, YYLoc pos);
 
-inline bool isEmpty(YYLTYPE pos) {
+inline bool isEmpty(YYLoc pos) {
     return pos.first_line > pos.last_line ||
            (pos.first_line == pos.last_line && pos.first_column >= pos.last_column);
 }
 
-inline YYLTYPE makeYYLTYPE(int fl, int fc, int ll, int lc) {
-    YYLTYPE pos;
+inline YYLoc makeYYLoc(int fl, int fc, int ll, int lc) { //TODO ctor!
+    YYLoc pos;
     pos.first_line = fl;
     pos.first_column = fc;
     pos.last_line = ll;
@@ -64,8 +65,8 @@ inline YYLTYPE makeYYLTYPE(int fl, int fc, int ll, int lc) {
     return pos;
 }
 
-inline YYLTYPE makeEmptyYYLTYPE() {
-    return makeYYLTYPE(1,0,1,0);
+inline YYLoc makeEmptyYYLoc() {  //TODO ctor!
+    return makeYYLoc(1,0,1,0);
 }
 
 } // namespace nedxml

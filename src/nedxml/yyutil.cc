@@ -17,21 +17,31 @@
 #include <cassert>
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
-#include "yyutil.h"
-#include "sourcedocument.h"
 #include "yydefs.h"
+#include "yyutil.h"
+#include "errorstore.h"
+#include "sourcedocument.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace nedxml {
 
+bool parseInProgress = false;
+
 // this global var is shared by all lexers
 LineColumn pos, prevpos;
 
+void ParseContext::error(const char *msg, int line)
+{
+    std::stringstream os;
+    os << filename << ":" << line;
+    errors->addError(os.str().c_str(), "%s", msg);
+}
+
 std::string slashifyFilename(const char *fname)
 {
-    std::string fnamewithslash = np->getFileName();
+    std::string fnamewithslash = fname;
     for (char *s = const_cast<char *>(fnamewithslash.data()); *s; s++)
         if (*s == '\\')
             *s = '/';
@@ -39,7 +49,7 @@ std::string slashifyFilename(const char *fname)
     return fnamewithslash;
 }
 
-const char *toString(YYLTYPE pos)
+const char *toString(ParseContext *np, YYLoc pos)
 {
     return np->getSource()->get(pos);
 }
@@ -51,7 +61,7 @@ const char *toString(long l)
     return buf;
 }
 
-std::string removeSpaces(YYLTYPE pos)
+std::string removeSpaces(ParseContext *np, YYLoc pos)
 {
     const char *s = np->getSource()->get(pos);
     std::string result;
@@ -62,30 +72,30 @@ std::string removeSpaces(YYLTYPE pos)
     return result;
 }
 
-const char *currentLocation()
+const char *currentLocation(ParseContext *np)
 {
     static char buf[200];
     sprintf(buf, "%s:%d", np->getFileName(), pos.li);
     return buf;
 }
 
-ASTNode *createElementWithTag(ASTNodeFactory *factory, int tagcode, ASTNode *parent)
+ASTNode *createElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent)
 {
     ASTNode *e = factory->createElementWithTag(tagcode);
-    e->setSourceLocation(currentLocation());
+    e->setSourceLocation(currentLocation(np));
     if (parent)
         parent->appendChild(e);
     return e;
 }
 
-ASTNode *getOrCreateElementWithTag(ASTNodeFactory *factory, int tagcode, ASTNode *parent)
+ASTNode *getOrCreateElementWithTag(ParseContext *np, ASTNodeFactory *factory, int tagcode, ASTNode *parent)
 {
     assert(parent);
     ASTNode *e = parent->getFirstChildWithTag(tagcode);
-    return e != nullptr ? e : createElementWithTag(factory, tagcode, parent);
+    return e != nullptr ? e : createElementWithTag(np, factory, tagcode, parent);
 }
 
-void storePos(ASTNode *node, YYLTYPE pos)
+void storePos(ParseContext *np, ASTNode *node, YYLoc pos)
 {
     np->getSource()->trimSpaceAndComments(pos);
 
@@ -98,15 +108,15 @@ void storePos(ASTNode *node, YYLTYPE pos)
     node->setSourceRegion(region);
 }
 
-void storePos(ASTNode *node, YYLTYPE firstpos, YYLTYPE lastpos)
+void storePos(ParseContext *np, ASTNode *node, YYLoc firstpos, YYLoc lastpos)
 {
-    YYLTYPE pos = firstpos;
+    YYLoc pos = firstpos;
     pos.last_line = lastpos.last_line;
     pos.last_column = lastpos.last_column;
-    storePos(node, pos);
+    storePos(np, node, pos);
 }
 
-YYLTYPE trimQuotes(YYLTYPE vectorpos)
+YYLoc trimQuotes(YYLoc vectorpos)
 {
     // should check it's really quotes that get chopped off
     vectorpos.first_column++;
@@ -114,7 +124,7 @@ YYLTYPE trimQuotes(YYLTYPE vectorpos)
     return vectorpos;
 }
 
-YYLTYPE trimDoubleBraces(YYLTYPE vectorpos)
+YYLoc trimDoubleBraces(YYLoc vectorpos)
 {
     // should check it's really '{{' and '}}' that get chopped off
     vectorpos.first_column += 2;

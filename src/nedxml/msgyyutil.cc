@@ -29,34 +29,34 @@ namespace msgyyutil { // for now
 
 static MSGAstNodeFactory factory;
 
-ASTNode *createMsgElementWithTag(int tagcode, ASTNode *parent)
+ASTNode *createMsgElementWithTag(ParseContext *np, int tagcode, ASTNode *parent)
 {
-    return createElementWithTag(&factory, tagcode, parent);
+    return createElementWithTag(np, &factory, tagcode, parent);
 }
 
-ASTNode *getOrCreateMsgElementWithTag(int tagcode, ASTNode *parent)
+ASTNode *getOrCreateMsgElementWithTag(ParseContext *np, int tagcode, ASTNode *parent)
 {
-    return getOrCreateElementWithTag(&factory, tagcode, parent);
+    return getOrCreateElementWithTag(np, &factory, tagcode, parent);
 }
 
 //
 // Properties
 //
-static LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
+static LiteralElement *createLiteral(ParseContext *np, int type, YYLoc valuepos, YYLoc textpos)
 {
-    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(MSG_LITERAL);
+    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(np, MSG_LITERAL);
     c->setType(type);
-    c->setValue(opp_trim(toString(valuepos)).c_str());
-    c->setText(toString(textpos));
+    c->setValue(opp_trim(toString(np, valuepos)).c_str());
+    c->setText(toString(np, textpos));
     return c;
 }
 
-static LiteralElement *createStringLiteral(YYLTYPE textpos)
+static LiteralElement *createStringLiteral(ParseContext *np, YYLoc textpos)
 {
-    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(MSG_LITERAL);
+    LiteralElement *c = (LiteralElement *)createMsgElementWithTag(np, MSG_LITERAL);
     c->setType(LIT_STRING);
 
-    const char *text = toString(textpos);
+    const char *text = toString(np, textpos);
     c->setText(text);
 
     try {
@@ -69,29 +69,29 @@ static LiteralElement *createStringLiteral(YYLTYPE textpos)
     return c;
 }
 
-PropertyElement *addProperty(ASTNode *node, const char *name)
+PropertyElement *addProperty(ParseContext *np, ASTNode *node, const char *name)
 {
-    PropertyElement *prop = (PropertyElement *)createMsgElementWithTag(MSG_PROPERTY, node);
+    PropertyElement *prop = (PropertyElement *)createMsgElementWithTag(np, MSG_PROPERTY, node);
     prop->setName(name);
     return prop;
 }
 
-PropertyElement *storeSourceCode(ASTNode *node, YYLTYPE tokenpos)
+PropertyElement *storeSourceCode(ParseContext *np, ASTNode *node, YYLoc tokenpos)
 {
-    PropertyElement *prop = addProperty(node, "sourcecode");
+    PropertyElement *prop = addProperty(np, node, "sourcecode");
     prop->setIsImplicit(true);
-    PropertyKeyElement *propkey = (PropertyKeyElement *)createMsgElementWithTag(MSG_PROPERTY_KEY, prop);
-    propkey->appendChild(createLiteral(LIT_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
+    PropertyKeyElement *propkey = (PropertyKeyElement *)createMsgElementWithTag(np, MSG_PROPERTY_KEY, prop);
+    propkey->appendChild(createLiteral(np, LIT_STRING, tokenpos, makeEmptyYYLoc()));  // don't store it twice
     return prop;
 }
 
-LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a string literal
+LiteralElement *createPropertyValue(ParseContext *np, YYLoc textpos)  // which is a spec or a string literal
 {
     np->getSource()->trimSpaceAndComments(textpos);
 
     bool isString = false;
     try {
-        const char *text = toString(textpos);
+        const char *text = toString(np, textpos);
         while (opp_isspace(*text))
             text++;
         if (*text == '"') {
@@ -104,72 +104,72 @@ LiteralElement *createPropertyValue(YYLTYPE textpos)  // which is a spec or a st
     catch (std::exception& e) {  /*not string*/
     }
     if (isString)
-        return createStringLiteral(textpos);
+        return createStringLiteral(np, textpos);
     else
-        return createLiteral(LIT_SPEC, textpos, textpos);
+        return createLiteral(np, LIT_SPEC, textpos, textpos);
 }
 
 //
 // Comments
 //
-void addComment(ASTNode *node, const char *locId, const char *text, const char *defaultValue)
+void addComment(ParseContext *np, ASTNode *node, const char *locId, const char *text, const char *defaultValue)
 {
     // don't store empty string or the default
     if (!text[0] || strcmp(text, defaultValue) == 0)
         return;
 
-    CommentElement *comment = (CommentElement *)createMsgElementWithTag(MSG_COMMENT);
+    CommentElement *comment = (CommentElement *)createMsgElementWithTag(np, MSG_COMMENT);
     comment->setLocid(locId);
     comment->setContent(text);
     node->insertChildBefore(node->getFirstChild(), comment);
 }
 
-void storeFileComment(ASTNode *node)
+void storeFileComment(ParseContext *np, ASTNode *node)
 {
-    addComment(node, "banner", np->getSource()->getFileComment(), "");
+    addComment(np, node, "banner", np->getSource()->getFileComment(), "");
 }
 
-void storeBannerComment(ASTNode *node, YYLTYPE tokenpos)
+void storeBannerComment(ParseContext *np, ASTNode *node, YYLoc tokenpos)
 {
-    addComment(node, "banner", np->getSource()->getBannerComment(tokenpos), "");
+    addComment(np, node, "banner", np->getSource()->getBannerComment(tokenpos), "");
 }
 
-void storeRightComment(ASTNode *node, YYLTYPE tokenpos)
+void storeRightComment(ParseContext *np, ASTNode *node, YYLoc tokenpos)
 {
-    addComment(node, "right", np->getSource()->getTrailingComment(tokenpos), "\n");
+    addComment(np, node, "right", np->getSource()->getTrailingComment(tokenpos), "\n");
 }
 
-void storeTrailingComment(ASTNode *node, YYLTYPE tokenpos)
+void storeTrailingComment(ParseContext *np, ASTNode *node, YYLoc tokenpos)
 {
-    addComment(node, "trailing", np->getSource()->getTrailingComment(tokenpos), "\n");
+    addComment(np, node, "trailing", np->getSource()->getTrailingComment(tokenpos), "\n");
 }
 
-void storeBannerAndRightComments(ASTNode *node, YYLTYPE pos)
+void storeBannerAndRightComments(ParseContext *np, ASTNode *node, YYLoc pos)
 {
     np->getSource()->trimSpaceAndComments(pos);
-    storeBannerComment(node, pos);
-    storeRightComment(node, pos);
-    storeInnerComments(node, pos);
+    storeBannerComment(np, node, pos);
+    storeRightComment(np, node, pos);
+    storeInnerComments(np, node, pos);
 }
 
-void storeBannerAndRightComments(ASTNode *node, YYLTYPE firstpos, YYLTYPE lastpos)
+void storeBannerAndRightComments(ParseContext *np, ASTNode *node, YYLoc firstpos, YYLoc lastpos)
 {
-    YYLTYPE pos = firstpos;
+    YYLoc pos = firstpos;
     pos.last_line = lastpos.last_line;
     pos.last_column = lastpos.last_column;
 
     np->getSource()->trimSpaceAndComments(pos);
-    storeBannerComment(node, pos);
-    storeRightComment(node, pos);
+    storeBannerComment(np, node, pos);
+    storeRightComment(np, node, pos);
 }
 
-void storeInnerComments(ASTNode *node, YYLTYPE pos)
+void storeInnerComments(ParseContext *np, ASTNode *node, YYLoc pos)
 {
     for (;;) {
         const char *comment = np->getSource()->getNextInnerComment(pos);  // updates "pos"
         if (!comment)
             break;
-        addComment(node, "inner", comment, "");
+        addComment(np, node, "inner", comment, "");
     }
 }
 

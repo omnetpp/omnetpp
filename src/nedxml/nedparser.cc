@@ -21,13 +21,11 @@
 #include <ctime>
 #include <sstream>
 #include <string>
-
 #include "common/opp_ctype.h"
 #include "nedparser.h"
-
 #include "errorstore.h"
-#include "nedelements.h"
 #include "sourcedocument.h"
+#include "nedelements.h"
 #include "yydefs.h"
 
 using namespace omnetpp::common;
@@ -37,9 +35,6 @@ namespace nedxml {
 
 #define MAGIC_PREFIX    "@expr@"  // note: must agree with ned2.lex
 
-NEDParser *np;
-
-//--------
 
 const char *NEDParser::getBuiltInDeclarations()
 {
@@ -102,17 +97,12 @@ const char *NEDParser::getBuiltInDeclarations()
 
 NEDParser::NEDParser(ErrorStore *e)
 {
-    nedsource = nullptr;
-    filename = nullptr;
-    parseexpr = true;
-    storesrc = false;
-    msgNewSyntax = true;
-    errors = e;
+    np.errors = e;
 }
 
 NEDParser::~NEDParser()
 {
-    delete nedsource;
+    delete np.source;
 }
 
 ASTNode *NEDParser::parseNEDFile(const char *osfname, const char *fname)
@@ -131,7 +121,7 @@ ASTNode *NEDParser::parseNEDText(const char *nedtext, const char *fname)
 
 ASTNode *NEDParser::parseNEDExpression(const char *nedexpression)
 {
-    parseexpr = true;
+    np.parseexpr = true;
     std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
     ASTNode *tree = parseNEDText(source.c_str(), "buffer");
     return tree ? tree->getFirstChild() : nullptr;  // unwrap from NedFileElement
@@ -157,11 +147,11 @@ bool NEDParser::loadFile(const char *osfname, const char *fname)
         fname = osfname;
 
     // init class members
-    if (nedsource)
-        delete nedsource;
-    nedsource = new SourceDocument();
-    filename = fname;
-    errors->clear();
+    if (np.source)
+        delete np.source;
+    np.source = new SourceDocument();
+    np.filename = fname;
+    np.errors->clear();
 
     // resolve "~" in file name
     char osfname2[1000];
@@ -173,8 +163,8 @@ bool NEDParser::loadFile(const char *osfname, const char *fname)
     }
 
     // load whole file into memory
-    if (!nedsource->readFile(osfname2)) {
-        errors->addError("", "cannot read %s", fname);
+    if (!np.source->readFile(osfname2)) {
+        np.errors->addError("", "cannot read %s", fname);
         return false;
     }
     return true;
@@ -186,15 +176,15 @@ bool NEDParser::loadText(const char *nedtext, const char *fname)
         fname = "buffer";
 
     // init vars
-    if (nedsource)
-        delete nedsource;
-    nedsource = new SourceDocument();
-    filename = fname;
-    errors->clear();
+    if (np.source)
+        delete np.source;
+    np.source = new SourceDocument();
+    np.filename = fname;
+    np.errors->clear();
 
-    // prepare nedsource object
-    if (!nedsource->setData(nedtext)) {
-        errors->addError("", "unable to allocate work memory");
+    // prepare np.source object
+    if (!np.source->setData(nedtext)) {
+        np.errors->addError("", "unable to allocate work memory");
         return false;
     }
     return true;
@@ -202,23 +192,16 @@ bool NEDParser::loadText(const char *nedtext, const char *fname)
 
 ASTNode *NEDParser::parseNED()
 {
-    errors->clear();
-    return ::doParseNED2(this, nedsource->getFullText());
+    np.errors->clear();
+    return ::doParseNED2(&np, np.source->getFullText());
 }
 
 ASTNode *NEDParser::parseMSG()
 {
-    errors->clear();
-    msgLexerSetRecognizeImportKeyword(msgNewSyntax);
-    msgLexerSetRecognizeObsoleteKeywords(!msgNewSyntax);
-    return ::doParseMSG2(this, nedsource->getFullText());
-}
-
-void NEDParser::error(const char *msg, int line)
-{
-    std::stringstream os;
-    os << filename << ":" << line;
-    errors->addError(os.str().c_str(), "%s", msg);
+    np.errors->clear();
+    msgLexerSetRecognizeImportKeyword(np.msgNewSyntax);
+    msgLexerSetRecognizeObsoleteKeywords(!np.msgNewSyntax);
+    return ::doParseMSG2(&np, np.source->getFullText());
 }
 
 }  // namespace nedxml

@@ -19,37 +19,50 @@
 
 #include "nedxmldefs.h"
 
-
 //
 // misc bison/flex related stuff, shared among *.lex, *.y and nedparser.cc/h files
 //
-namespace omnetpp {
-namespace nedxml {
-
-class ASTNode;
-class NEDParser;
-
-} // namespace nedxml
-}  // namespace omnetpp
 
 #ifdef YYLTYPE
 #error 'YYLTYPE defined before yydefs.h -- type clash?'
 #endif
 
-struct my_yyltype {
+namespace omnetpp {
+namespace nedxml {
+
+class ErrorStore;
+class SourceDocument;
+class ASTNode;
+
+struct YYLoc {
    int dummy;
    int first_line, first_column;
    int last_line, last_column;
    char *text;
 };
-#define YYLTYPE  struct my_yyltype
+
+#define YYLTYPE  omnetpp::nedxml::YYLoc
 #define YYSTYPE  omnetpp::nedxml::ASTNode*
 
-namespace omnetpp {
-namespace nedxml {
+//TODO cleanup
+struct ParseContext {
+    bool parseexpr = true;            // whether to parse NED expressions or not
+    bool msgNewSyntax = true;
+    bool storesrc = false;             // whether to fill in sourceCode attributes
+    const char *filename = nullptr;      // name of file being parsed
+    ErrorStore *errors = nullptr;        // accumulates error messages
+    SourceDocument *source = nullptr;    // represents the source file
+
+    bool getParseExpressionsFlag() {return parseexpr;}
+    bool getStoreSourceFlag()  {return storesrc;}
+    const char *getFileName() {return filename;}
+    ErrorStore *getErrors() {return errors;}
+    SourceDocument *getSource() {return source;}
+    void error(const char *msg, int line);
+};
 
 typedef struct {int li; int co;} LineColumn;
-extern LineColumn pos, prevpos;
+extern LineColumn pos, prevpos;  //FIXME into context!
 
 void msgLexerSetRecognizeImportKeyword(bool opt);
 void msgLexerSetRecognizeObsoleteKeywords(bool opt);
@@ -57,8 +70,8 @@ void msgLexerSetRecognizeObsoleteKeywords(bool opt);
 } // namespace nedxml
 }  // namespace omnetpp
 
-omnetpp::nedxml::ASTNode *doParseNED2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
-omnetpp::nedxml::ASTNode *doParseMSG2(omnetpp::nedxml::NEDParser *p, const char *nedtext);
+omnetpp::nedxml::ASTNode *doParseNED2(omnetpp::nedxml::ParseContext *np, const char *text);
+omnetpp::nedxml::ASTNode *doParseMSG2(omnetpp::nedxml::ParseContext *np, const char *text);
 
 
 #endif

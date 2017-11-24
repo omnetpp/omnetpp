@@ -14,15 +14,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "sourcedocument.h"
-
 #include <sys/stat.h>
 #include <cstring>
 #include <cstdio>
 #include <ctime>
 #include <cassert>
 #include "common/opp_ctype.h"
+#include "yydefs.h"
 #include "yyutil.h"
+#include "sourcedocument.h"
 
 using namespace omnetpp::common;
 
@@ -42,6 +42,8 @@ SourceDocument::SourceDocument()
 
     commentBufLen = 1024;
     commentBuf = new char[commentBufLen];
+
+    savedChar = 0;
 }
 
 SourceDocument::~SourceDocument()
@@ -210,7 +212,7 @@ char *SourceDocument::getPosition(int line, int column)
     return s;
 }
 
-const char *SourceDocument::get(YYLTYPE pos)
+const char *SourceDocument::get(YYLoc pos)
 {
     if (end) {
         *end = savedChar;
@@ -239,7 +241,7 @@ const char *SourceDocument::getFileComment()
 }
 
 // all subsequent comment and blank lines will be included, up to the _last blank_ line
-YYLTYPE SourceDocument::getFileCommentPos()
+YYLoc SourceDocument::getFileCommentPos()
 {
     if (end) {
         *end = savedChar;
@@ -260,7 +262,7 @@ YYLTYPE SourceDocument::getFileCommentPos()
         lastBlank = numLines;
 
     // return comment block
-    YYLTYPE commentPos;
+    YYLoc commentPos;
     commentPos.first_line = 1;
     commentPos.first_column = 0;
     commentPos.last_line = lastBlank+1;
@@ -282,12 +284,12 @@ int SourceDocument::topLineOfBannerComment(int li)
     return li;
 }
 
-const char *SourceDocument::getBannerComment(YYLTYPE pos)
+const char *SourceDocument::getBannerComment(YYLoc pos)
 {
     return stripComment(get(getBannerCommentPos(pos)));
 }
 
-YYLTYPE SourceDocument::getBannerCommentPos(YYLTYPE pos)
+YYLoc SourceDocument::getBannerCommentPos(YYLoc pos)
 {
     trimSpaceAndComments(pos);
     if (end) {
@@ -299,10 +301,10 @@ YYLTYPE SourceDocument::getBannerCommentPos(YYLTYPE pos)
     char *beg = getPosition(pos.first_line, pos.first_column);
     for (char *s = getPosition(pos.first_line, 0); s < beg; s++)
         if (*s != ' ' && *s != '\t')
-            return makeYYLTYPE(1, 0, 1, 0); // empty pos, will be returned as ""
+            return makeYYLoc(1, 0, 1, 0); // empty pos, will be returned as ""
 
     // return comment block
-    YYLTYPE commentPos;
+    YYLoc commentPos;
     commentPos.first_line = topLineOfBannerComment(pos.first_line);
     commentPos.first_column = 0;
     commentPos.last_line = pos.first_line;
@@ -314,12 +316,12 @@ YYLTYPE SourceDocument::getBannerCommentPos(YYLTYPE pos)
 //  also serves as "getRightComment"
 //  NOTE: only handles really trailing comments, ie. those after last_line.last_column
 //
-const char *SourceDocument::getTrailingComment(YYLTYPE pos)
+const char *SourceDocument::getTrailingComment(YYLoc pos)
 {
     return stripComment(get(getTrailingCommentPos(pos)));
 }
 
-YYLTYPE SourceDocument::getTrailingCommentPos(YYLTYPE pos)
+YYLoc SourceDocument::getTrailingCommentPos(YYLoc pos)
 {
     trimSpaceAndComments(pos);
     if (end) {
@@ -330,7 +332,7 @@ YYLTYPE SourceDocument::getTrailingCommentPos(YYLTYPE pos)
     // there must be no code after it on the same line
     char *endp = getPosition(pos.last_line, pos.last_column);
     if (lineContainsCode(endp))
-        return makeYYLTYPE(1, 0, 1, 0);  // empty pos, will be returned as ""
+        return makeYYLoc(1, 0, 1, 0);  // empty pos, will be returned as ""
 
     // seek 1st line after comment (lineAfter)
     int lineAfter;
@@ -349,7 +351,7 @@ YYLTYPE SourceDocument::getTrailingCommentPos(YYLTYPE pos)
     }
 
     // return comment block
-    YYLTYPE commentPos;
+    YYLoc commentPos;
     commentPos.first_line = pos.last_line;
     commentPos.first_column = pos.last_column;
     commentPos.last_line = lineAfter;
@@ -367,7 +369,7 @@ static const char *findCommentOnLine(const char *s)
     return s;
 }
 
-const char *SourceDocument::getNextInnerComment(YYLTYPE& pos)
+const char *SourceDocument::getNextInnerComment(YYLoc& pos)
 {
     // FIXME unfortunately, this will collect comments even from
     // inside single-line or multi-line string literals
@@ -385,7 +387,7 @@ const char *SourceDocument::getNextInnerComment(YYLTYPE& pos)
             while (lineAfter < pos.last_line && getLineType(lineAfter) != CODE_LINE)
                 lineAfter++;
 
-            YYLTYPE commentPos;
+            YYLoc commentPos;
             commentPos.first_line = pos.first_line;
             commentPos.first_column = commentColumn;
             commentPos.last_line = lineAfter;
@@ -405,9 +407,9 @@ const char *SourceDocument::getNextInnerComment(YYLTYPE& pos)
     return nullptr;
 }
 
-YYLTYPE SourceDocument::getFullTextPos()
+YYLoc SourceDocument::getFullTextPos()
 {
-    YYLTYPE pos;
+    YYLoc pos;
     pos.first_line = 1;
     pos.first_column = 0;
     pos.last_line = numLines+1;
@@ -451,7 +453,7 @@ char *SourceDocument::stripComment(const char *comment)
     return commentBuf;
 }
 
-void SourceDocument::trimSpaceAndComments(YYLTYPE& pos)
+void SourceDocument::trimSpaceAndComments(YYLoc& pos)
 {
     if (end) {
         *end = savedChar;
@@ -487,7 +489,7 @@ void SourceDocument::trimSpaceAndComments(YYLTYPE& pos)
 
     // TBD decrement last_line/last_column while they point into space/comment;
     // this is currently not needed though, as bison grammar doesn't produce
-    // YYLTYPEs with trailing spaces/comments.
+    // YYLocs with trailing spaces/comments.
 }
 
 }  // namespace nedxml

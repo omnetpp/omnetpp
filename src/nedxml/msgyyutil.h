@@ -24,21 +24,21 @@ namespace omnetpp {
 namespace nedxml {
 namespace msgyyutil { // for now
 
-ASTNode *createMsgElementWithTag(int tagcode, ASTNode *parent=nullptr);
-ASTNode *getOrCreateMsgElementWithTag(int tagcode, ASTNode *parent);
+ASTNode *createMsgElementWithTag(ParseContext *np, int tagcode, ASTNode *parent=nullptr);
+ASTNode *getOrCreateMsgElementWithTag(ParseContext *np, int tagcode, ASTNode *parent);
 
-PropertyElement *addProperty(ASTNode *node, const char *name);  // directly under the node
-PropertyElement *storeSourceCode(ASTNode *node, YYLTYPE tokenpos);
-LiteralElement *createPropertyValue(YYLTYPE textpos);
+PropertyElement *addProperty(ParseContext *np, ASTNode *node, const char *name);  // directly under the node
+PropertyElement *storeSourceCode(ParseContext *np, ASTNode *node, YYLoc tokenpos);
+LiteralElement *createPropertyValue(ParseContext *np, YYLoc textpos);
 
-void addComment(ASTNode *node, const char *locId, const char *comment, const char *defaultValue);
-void storeFileComment(ASTNode *node);
-void storeBannerComment(ASTNode *node, YYLTYPE tokenpos);
-void storeRightComment(ASTNode *node, YYLTYPE tokenpos);
-void storeTrailingComment(ASTNode *node, YYLTYPE tokenpos);
-void storeBannerAndRightComments(ASTNode *node, YYLTYPE pos);
-void storeBannerAndRightComments(ASTNode *node, YYLTYPE firstpos, YYLTYPE lastpos);
-void storeInnerComments(ASTNode *node, YYLTYPE pos);
+void addComment(ParseContext *np, ASTNode *node, const char *locId, const char *comment, const char *defaultValue);
+void storeFileComment(ParseContext *np, ASTNode *node);
+void storeBannerComment(ParseContext *np, ASTNode *node, YYLoc tokenpos);
+void storeRightComment(ParseContext *np, ASTNode *node, YYLoc tokenpos);
+void storeTrailingComment(ParseContext *np, ASTNode *node, YYLoc tokenpos);
+void storeBannerAndRightComments(ParseContext *np, ASTNode *node, YYLoc pos);
+void storeBannerAndRightComments(ParseContext *np, ASTNode *node, YYLoc firstpos, YYLoc lastpos);
+void storeInnerComments(ParseContext *np, ASTNode *node, YYLoc pos);
 
 } // namespace msgyyutil
 } // namespace nedxml

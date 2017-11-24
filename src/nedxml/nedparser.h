@@ -18,18 +18,14 @@
 #define __OMNETPP_NEDXML_NEDPARSER_H
 
 #include <cstdio>
-
-#include "errorstore.h"
-#include "astnode.h"
 #include "yydefs.h"
 
 namespace omnetpp {
 namespace nedxml {
 
+class ASTNode;
+class ErrorStore;
 class SourceDocument;
-class NEDParser;
-
-extern NEDParser *np;
 
 /* to EXPR_TYPE: */
 #define TYPE_NUMERIC   'N'
@@ -52,20 +48,9 @@ extern NEDParser *np;
 class NEDXML_API NEDParser
 {
   public:
-    // INTERNAL: error and debug handling, called from grammar file
-    void error(const char *msg, int line);
-
-    ErrorStore *getErrors() {return errors;}
-    SourceDocument *getSource() {return nedsource;}
+    ParseContext np;
 
   protected:
-    bool parseexpr;            // whether to parse expressions or not
-    bool msgNewSyntax;
-    bool storesrc;             // whether to fill in sourceCode attributes
-    const char *filename;      // name of file being parsed
-    ErrorStore *errors;        // accumulates error messages
-    SourceDocument *nedsource; // represents the source file
-
     bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
     ASTNode *parseNED();
@@ -93,32 +78,32 @@ class NEDXML_API NEDParser
      * expressions should be parsed or not.
      * Default is true.
      */
-    void setParseExpressions(bool b) {parseexpr = b;}
+    void setParseExpressions(bool b) {np.parseexpr = b;}
 
     /**
      * Affects operation of parseFile() and parseText(), specifies whether
      * sourceCode attributes in ASTNodes should be filled out.
      * Default is false.
      */
-    void setStoreSource(bool b) {storesrc = b;}
+    void setStoreSource(bool b) {np.storesrc = b;}
 
     /**
      * Returns the "parse expressions" flag; see setParseExpressions().
      */
-    bool getParseExpressionsFlag() {return parseexpr;}
+    bool getParseExpressionsFlag() {return np.parseexpr;}
 
     /**
      * Returns the "store source code" flag; see setStoreSource().
      */
-    bool getStoreSourceFlag() {return storesrc;}
+    bool getStoreSourceFlag() {return np.storesrc;}
 
-    void setMsgNewSyntaxFlag(bool b) {msgNewSyntax = b;}
-    bool getMsgNewSyntaxFlag() {return msgNewSyntax;}
+    void setMsgNewSyntaxFlag(bool b) {np.msgNewSyntax = b;}
+    bool getMsgNewSyntaxFlag() {return np.msgNewSyntax;}
 
     /**
      * May only be called during parsing. It returns the name of the source file being parsed.
      */
-    const char *getFileName() {return filename;}
+    const char *getFileName() {return np.filename;}
 
     /**
      * Parses the given NED file (osfname), and returns the result tree.

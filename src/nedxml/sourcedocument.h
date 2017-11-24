@@ -17,10 +17,12 @@
 #ifndef __OMNETPP_NEDXML_SOURCEDOCUMENT_H
 #define __OMNETPP_NEDXML_SOURCEDOCUMENT_H
 
-#include "nedparser.h"   // for YYLTYPE
+#include "nedxmldefs.h"
 
 namespace omnetpp {
 namespace nedxml {
+
+struct YYLoc;
 
 /**
  * @brief Stores the full text of a NED/MSG file.
@@ -60,9 +62,9 @@ class NEDXML_API SourceDocument
     int topLineOfBannerComment(int li);
     char *stripComment(const char *s);
 
-    YYLTYPE getFileCommentPos();
-    YYLTYPE getBannerCommentPos(YYLTYPE pos);
-    YYLTYPE getTrailingCommentPos(YYLTYPE pos);
+    YYLoc getFileCommentPos();
+    YYLoc getBannerCommentPos(YYLoc pos);
+    YYLoc getTrailingCommentPos(YYLoc pos);
 
   public:
     /**
@@ -96,7 +98,7 @@ class NEDXML_API SourceDocument
      * this also means you should NOT keep more than one pointer returned by
      * get()!
      */
-    const char *get(YYLTYPE pos);
+    const char *get(YYLoc pos);
 
     /**
      * Returns comment at top of file. Uses get()!
@@ -106,23 +108,23 @@ class NEDXML_API SourceDocument
     /**
      * Returns banner comment above text range passed in pos. Uses get()!
      */
-    const char *getBannerComment(YYLTYPE pos);
+    const char *getBannerComment(YYLoc pos);
 
     /**
      * Returns trailing comment below text range passed in pos. Uses get()!
      */
-    const char *getTrailingComment(YYLTYPE pos);
+    const char *getTrailingComment(YYLoc pos);
 
     /**
      * Returns the next comment inside the given region, and moves
      * the region's start past the comment. Uses get()!
      */
-    const char *getNextInnerComment(YYLTYPE& pos);
+    const char *getNextInnerComment(YYLoc& pos);
 
     /**
      * Returns 1:0...end.
      */
-    YYLTYPE getFullTextPos();
+    YYLoc getFullTextPos();
 
     /**
      * Returns pointer to the full source code. Uses get()!
@@ -133,7 +135,7 @@ class NEDXML_API SourceDocument
      * Shrinks the given region to exclude any leading/trailing whitespace
      * and comments.
      */
-    void trimSpaceAndComments(YYLTYPE& pos);
+    void trimSpaceAndComments(YYLoc& pos);
 };
 
 } // namespace nedxml
