@@ -86,7 +86,7 @@ class NEDXML_API MsgCompiler
     void importBuiltinDefinitions();
     void processBuiltinImport(const char *txt, const char *fname);
 
-    void processImport(ASTNode *child, const std::string& currentDir);
+    void processImport(ImportElement *importElem, const std::string& currentDir);
     std::string resolveImport(const std::string& importName, const std::string& currentDir);
     void collectTypes(MsgFileElement *fileElement);
     void generateCode(MsgFileElement *fileElement);

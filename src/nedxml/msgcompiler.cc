@@ -147,21 +147,24 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
     std::string currentNamespace = "";
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case MSG_NAMESPACE:
-                currentNamespace = str(child->getAttribute("name"));
+            case MSG_NAMESPACE: {
+                NamespaceElement *nsElem = check_and_cast<NamespaceElement *>(child);
+                currentNamespace = nsElem->getName();
                 validateNamespaceName(currentNamespace, child); //TODO into syntax validator class!!!
                 break;
+            }
 
             case MSG_CPLUSPLUS:
                 break;
 
             case MSG_IMPORT: {
-                std::string importName = child->getAttribute("import-spec");
+                ImportElement *importElem = check_and_cast<ImportElement *>(child);
+                std::string importName = importElem->getImportSpec();
                 if (!currentNamespace.empty())
                     errors->addError(child, "misplaced import '%s': imports are not allowed within a namespace", importName.c_str()); //TODO into syntax validator class!!!
                 if (!common::contains(importsSeen, importName)) {
                     importsSeen.insert(importName);
-                    processImport(child, currentDir);
+                    processImport(importElem, currentDir);
                 }
                  break;
              }
@@ -174,14 +177,16 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
                 break;
 
             case MSG_ENUM_DECL: { // for enums already defined and registered in C++
-                EnumInfo enumInfo = analyzer.extractEnumDecl(check_and_cast<EnumDeclElement *>(child), currentNamespace);
+                EnumDeclElement *enumDeclElem = check_and_cast<EnumDeclElement *>(child);
+                EnumInfo enumInfo = analyzer.extractEnumDecl(enumDeclElem, currentNamespace);
                 if (!typeTable.isEnumDefined(enumInfo.enumQName))
                     typeTable.addEnum(enumInfo);
                 break;
             }
 
             case MSG_ENUM: {
-                EnumInfo enumInfo = analyzer.extractEnumInfo(check_and_cast<EnumElement *>(child), currentNamespace);
+                EnumElement *enumElem = check_and_cast<EnumElement *>(child);
+                EnumInfo enumInfo = analyzer.extractEnumInfo(enumElem, currentNamespace);
                 if (isQualified(enumInfo.enumName))
                     errors->addError(enumInfo.astNode, "type name may not be qualified: '%s'", enumInfo.enumName.c_str()); //TODO into some validator class
                 if (typeTable.isEnumDefined(enumInfo.enumQName))
@@ -208,12 +213,12 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
     }
 }
 
-void MsgCompiler::processImport(ASTNode *child, const std::string& currentDir)
+void MsgCompiler::processImport(ImportElement *importElem, const std::string& currentDir)
 {
-    std::string importName = child->getAttribute("import-spec");
+    std::string importName = importElem->getImportSpec();
     std::string fileName = resolveImport(importName, currentDir);
     if (fileName == "") {
-        errors->addError(child, "cannot resolve import '%s'", importName.c_str());
+        errors->addError(importElem, "cannot resolve import '%s'", importName.c_str());
         return;
     }
 
@@ -259,24 +264,27 @@ std::string MsgCompiler::prefixWithNamespace(const std::string& name, const std:
 void MsgCompiler::generateCode(MsgFileElement *fileElement)
 {
     std::string currentNamespace = "";
-    NamespaceElement *firstNS = fileElement->getFirstNamespaceChild();
-    std::string firstNSName = firstNS ? str(firstNS->getAttribute("name")) : "";
+    NamespaceElement *firstNSElem = fileElement->getFirstNamespaceChild();
+    std::string firstNSName = firstNSElem ? firstNSElem->getName() : "";
     codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
 
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case MSG_NAMESPACE:
+            case MSG_NAMESPACE: {
                 // open namespace(s)
                 if (!currentNamespace.empty())
                     codegen.generateNamespaceEnd(currentNamespace);
-                currentNamespace = str(child->getAttribute("name"));
+                NamespaceElement *nsElem = check_and_cast<NamespaceElement *>(child);
+                currentNamespace = nsElem->getName();
                 codegen.generateNamespaceBegin(currentNamespace);
                 break;
+            }
 
             case MSG_CPLUSPLUS: {
                 // print C++ block
-                std::string body = str(child->getAttribute("body"));
-                std::string target = str(child->getAttribute("target"));
+                CplusplusElement *cppElem = check_and_cast<CplusplusElement *>(child);
+                std::string body = cppElem->getBody();
+                std::string target = cppElem->getTarget();
                 if (target == "" || target == "h" || target == "cc")
                     codegen.generateCplusplusBlock(target, body);
                 else
@@ -285,13 +293,15 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
             }
 
             case MSG_IMPORT: {
-                std::string importName = child->getAttribute("import-spec");
+                ImportElement *importElem = check_and_cast<ImportElement *>(child);
+                std::string importName = importElem->getImportSpec();
                 codegen.generateImport(importName);
                 break;
             }
 
             case MSG_ENUM: {
-                std::string qname = prefixWithNamespace(str(child->getAttribute("name")), currentNamespace);
+                EnumElement *enumElem = check_and_cast<EnumElement *>(child);
+                std::string qname = prefixWithNamespace(enumElem->getName(), currentNamespace);
                 const EnumInfo& enumInfo = typeTable.getEnumInfo(qname);
                 codegen.generateEnum(enumInfo);
                 break;

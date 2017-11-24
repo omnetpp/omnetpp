@@ -65,7 +65,7 @@ class NEDXML_API MsgAnalyzer
     void analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName);
     void analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field);
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
-    Properties extractPropertiesOf(ASTNode *node);
+    Properties extractProperties(ASTNode *node);
     bool hasSuperclass(ClassInfo& classInfo, const std::string& superclassQName);
     FieldInfo *findSuperclassField(ClassInfo& classInfo, const std::string& fieldName);
     bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
