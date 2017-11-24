@@ -698,7 +698,7 @@ opt_semicolon : ';' | ;
 //
 int msg2yylex_destroy();  // from lex.XXX.cc file
 
-ASTNode *doParseMSG2(ParseContext *np, const char *nedtext)
+ASTNode *doParseMSG2(ParseContext *np, const char *msgtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -717,7 +717,7 @@ ASTNode *doParseMSG2(ParseContext *np, const char *nedtext)
     yyout = stderr; // not used anyway
 
     // alloc buffer
-    struct yy_buffer_state *handle = yy_scan_string(nedtext);
+    struct yy_buffer_state *handle = yy_scan_string(msgtext);
     if (!handle)
         {np->getErrors()->addError("", "unable to allocate work memory"); return nullptr;}
 

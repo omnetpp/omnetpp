@@ -127,20 +127,6 @@ ASTNode *NEDParser::parseNEDExpression(const char *nedexpression)
     return tree ? tree->getFirstChild() : nullptr;  // unwrap from NedFileElement
 }
 
-ASTNode *NEDParser::parseMSGFile(const char *osfname, const char *fname)
-{
-    if (!loadFile(osfname, fname))
-        return nullptr;
-    return parseMSG();
-}
-
-ASTNode *NEDParser::parseMSGText(const char *nedtext, const char *fname)
-{
-    if (!loadText(nedtext, fname))
-        return nullptr;
-    return parseMSG();
-}
-
 bool NEDParser::loadFile(const char *osfname, const char *fname)
 {
     if (!fname)
@@ -194,14 +180,6 @@ ASTNode *NEDParser::parseNED()
 {
     np.errors->clear();
     return ::doParseNED2(&np, np.source->getFullText());
-}
-
-ASTNode *NEDParser::parseMSG()
-{
-    np.errors->clear();
-    msgLexerSetRecognizeImportKeyword(np.msgNewSyntax);
-    msgLexerSetRecognizeObsoleteKeywords(!np.msgNewSyntax);
-    return ::doParseMSG2(&np, np.source->getFullText());
 }
 
 }  // namespace nedxml

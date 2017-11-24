@@ -34,6 +34,7 @@
 #include "msgcompiler.h"
 #include "msgcompilerold.h"
 #include "nedparser.h"
+#include "msgparser.h"
 #include "exception.h"
 #include "msgdtdvalidator.h"
 #include "neddtdvalidator.h"
@@ -245,12 +246,17 @@ bool processFile(const char *fname, ErrorStore *errors)
         if (ftype == XML_FILE) {
             tree = parseXML(fname, errors);
         }
-        else if (ftype == NED_FILE || ftype == MSG_FILE) {
+        else if (ftype == NED_FILE) {
             NEDParser parser(errors);
             parser.setParseExpressions(!opt_unparsedexpr);
+            parser.setStoreSource(opt_storesrc);
+            tree = parser.parseNEDFile(fname);
+        }
+        else if (ftype == MSG_FILE) {
+            MsgParser parser(errors);
             parser.setMsgNewSyntaxFlag(opt_msgimports);
             parser.setStoreSource(opt_storesrc);
-            tree = (ftype == NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
+            tree = parser.parseMSGFile(fname);
         }
         if (errors->containsError()) {
             delete tree;

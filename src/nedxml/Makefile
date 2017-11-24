@@ -31,11 +31,11 @@ COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -loppcommon$D $(XML_LIBS)
 
-OBJS= $O/astnode.o $O/errorstore.o $O/exception.o \
+OBJS= $O/astnode.o $O/sourcedocument.o $O/errorstore.o $O/exception.o \
       $O/nedelements.o $O/nedvalidator.o $O/neddtdvalidator.o $O/dtdvalidationutils.o \
       $O/msgelements.o $O/msgvalidator.o $O/msgdtdvalidator.o \
       $O/nedsyntaxvalidator.o $O/nedcrossvalidator.o \
-      $O/sourcedocument.o $O/nedparser.o $O/nedyyutil.o $O/msgyyutil.o $O/yyutil.o\
+      $O/nedparser.o $O/nedyyutil.o $O/msgparser.o $O/msgyyutil.o $O/yyutil.o\
       $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o $O/nedutil.o \
       $O/ned2generator.o $O/msggenerator.o $O/xmlgenerator.o \
       $O/xmlastparser.o $O/astbuilder.o $O/saxparser_$(XMLPARSER).o \

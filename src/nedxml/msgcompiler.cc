@@ -23,7 +23,7 @@
 #include "common/stlutil.h"
 #include "common/fileutil.h"
 #include "msgcompiler.h"
-#include "nedparser.h"
+#include "msgparser.h"
 #include "exception.h"
 
 #include "omnetpp/simkerneldefs.h"
@@ -126,7 +126,7 @@ void MsgCompiler::importBuiltinDefinitions()
 
 void MsgCompiler::processBuiltinImport(const char *txt, const char *fname)
 {
-    NEDParser parser(errors);
+    MsgParser parser(errors);
     parser.setMsgNewSyntaxFlag(true);
     ASTNode *tree = parser.parseMSGText(txt, fname);
     if (errors->containsError()) {
@@ -219,7 +219,7 @@ void MsgCompiler::processImport(ASTNode *child, const std::string& currentDir)
 
     importedFiles.insert(fileName);
 
-    NEDParser parser(errors);
+    MsgParser parser(errors);
     parser.setMsgNewSyntaxFlag(true);
     ASTNode *tree = parser.parseMSGFile(fileName.c_str());
     if (errors->containsError()) {

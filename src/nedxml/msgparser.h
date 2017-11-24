@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDPARSER.H - part of
+//  MSGPARSER.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NEDPARSER_H
-#define __OMNETPP_NEDXML_NEDPARSER_H
+#ifndef __OMNETPP_NEDXML_MSGPARSER_H
+#define __OMNETPP_NEDXML_MSGPARSER_H
 
 #include <cstdio>
 #include "yydefs.h"
@@ -37,15 +37,15 @@ class SourceDocument;
 
 
 /**
- * @brief Parses NED files into an AST.
+ * @brief Parses MSG files into an AST.
  *
  * Elements of the tree are subclassed from ASTNode;
  * ASTNodeFactory is used to actually create the objects.
  * Internally this class uses a bison/flex grammar and SourceDocument.
  *
- * @ingroup MSGParser
+ * @ingroup MsgParser
  */
-class NEDXML_API NEDParser
+class NEDXML_API MsgParser
 {
   public:
     ParseContext np;
@@ -53,31 +53,18 @@ class NEDXML_API NEDParser
   protected:
     bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
-    ASTNode *parseNED();
+    ASTNode *parseMSG();
 
   public:
     /**
      * Constructor.
      */
-    NEDParser(ErrorStore *e);
+    MsgParser(ErrorStore *e);
 
     /**
      * Destructor.
      */
-    ~NEDParser();
-
-    /**
-     * Returns a NED source which contains declarations of
-     * built-in NED types.
-     */
-    static const char *getBuiltInDeclarations();
-
-    /**
-     * Affects operation of parseFile() and parseText(), specifies whether
-     * expressions should be parsed or not.
-     * Default is true.
-     */
-    void setParseExpressions(bool b) {np.parseexpr = b;}
+    ~MsgParser();
 
     /**
      * Affects operation of parseFile() and parseText(), specifies whether
@@ -87,36 +74,28 @@ class NEDXML_API NEDParser
     void setStoreSource(bool b) {np.storesrc = b;}
 
     /**
-     * Returns the "parse expressions" flag; see setParseExpressions().
-     */
-    bool getParseExpressionsFlag() {return np.parseexpr;}
-
-    /**
      * Returns the "store source code" flag; see setStoreSource().
      */
     bool getStoreSourceFlag() {return np.storesrc;}
 
+    void setMsgNewSyntaxFlag(bool b) {np.msgNewSyntax = b;}
+    bool getMsgNewSyntaxFlag() {return np.msgNewSyntax;}
+
     /**
-     * Parses the given NED file (osfname), and returns the result tree.
+     * Parse the given MSG (.msg) file and return the result tree.
      * Returns nullptr or partial tree if there was an error.
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    ASTNode *parseNEDFile(const char *osfname, const char *fname=nullptr);
+    ASTNode *parseMSGFile(const char *osfname, const char *fname=nullptr);
 
     /**
-     * Parse the given NED source and return the result tree.
+     * Parse the given MSG source and return the result tree.
      * Returns nullptr or partial tree if there was an error.
      * The fname parameter will be used to fill in the source location
-     * attributes; it defaults to "buffer".
+     * attributes; it defaults to osfname.
      */
-    ASTNode *parseNEDText(const char *nedtext, const char *fname=nullptr);
-
-    /**
-     * Parse the given text as a NED expression, and return the result tree.
-     * Returns nullptr or partial tree if there was an error.
-     */
-    ASTNode *parseNEDExpression(const char *nedexpression);
+    ASTNode *parseMSGText(const char *text, const char *fname=nullptr);
 };
 
 } // namespace nedxml
