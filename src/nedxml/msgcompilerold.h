@@ -74,7 +74,7 @@ class NEDXML_API MsgCompilerOld
   protected:
     struct TypeDesc
     {
-        const char *nedTypeName;
+        const char *msgTypeName;
         const char *cppTypeName;
         const char *fromstring;
         const char *tostring;
@@ -103,17 +103,17 @@ class NEDXML_API MsgCompilerOld
     MsgCompilerOptionsOld opts;
 
   protected:
-    typedef std::map<std::string, std::string> Properties;  //FIXME kell egy reszletesebb modell...
+    typedef std::map<std::string, std::string> Properties;
 
     class ClassInfo {
       public:
         class FieldInfo {
           public:
-            ASTNode *nedElement;     // pointer to NED element
+            ASTNode *astNode;
 
             std::string fname;      // field name in MSG
             std::string ftype;      // field type in MSG
-            std::string ftypeqname; // fully qualified C++ name of type //TODO should not be needed
+            std::string ftypeqname; // fully qualified C++ name of type
             std::string fval;       // value (or empty)
             bool fisabstract;
             bool fispointer;
@@ -122,7 +122,7 @@ class NEDXML_API MsgCompilerOld
             Properties fprops;      // field properties (name, first value of default key)
 
             // data needed for code generation
-            bool fisprimitivetype;  // whether primitive or compound type (TODO merge into ClassType?)
+            bool fisprimitivetype;  // whether primitive or compound type
             ClassType classtype;    // cobject/cnamedobject/cownedobject/...
             std::string datatype;   // member C++ datatype
             std::string argtype;    // setter C++ argument type
@@ -151,10 +151,10 @@ class NEDXML_API MsgCompilerOld
             bool fnopack;           // @nopack(true)
             bool feditable;         // @editable(true)
             bool editNotDisabled;   // true when field doesn't have property "@editable(false)"
-            bool fopaque;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
+            bool fopaque;         // @opaque(true)
 
           public:
-            FieldInfo() : nedElement(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
+            FieldInfo() : astNode(nullptr), fisabstract(false), fispointer(false), fisarray(false), classtype(UNKNOWN), fnopack(false), feditable(false),fopaque(false) {}
         };
         typedef std::vector<FieldInfo> Fieldlist;
 
@@ -179,7 +179,6 @@ class NEDXML_API MsgCompilerOld
         bool generate_descriptor;
         bool generate_setters_in_descriptor;
 
-        //TODO kellenek ezek?
         std::string msgqname;
         std::string msgbaseqname;
 

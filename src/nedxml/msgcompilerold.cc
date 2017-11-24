@@ -179,9 +179,9 @@ const char *MsgCompilerOld::_RESERVED_WORDS[] =
 
 void MsgCompilerOld::initDescriptors()
 {
-    for (int i = 0; _PRIMITIVE_TYPES[i].nedTypeName; ++i) {
-        PRIMITIVE_TYPES[_PRIMITIVE_TYPES[i].nedTypeName] = _PRIMITIVE_TYPES[i];
-        RESERVED_WORDS.insert(_PRIMITIVE_TYPES[i].nedTypeName);
+    for (int i = 0; _PRIMITIVE_TYPES[i].msgTypeName; ++i) {
+        PRIMITIVE_TYPES[_PRIMITIVE_TYPES[i].msgTypeName] = _PRIMITIVE_TYPES[i];
+        RESERVED_WORDS.insert(_PRIMITIVE_TYPES[i].msgTypeName);
     }
     for (int i = 0; _RESERVED_WORDS[i]; ++i) {
         RESERVED_WORDS.insert(_RESERVED_WORDS[i]);
@@ -641,9 +641,9 @@ MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(ASTNode *node)
         switch (child->getTagCode()) {
             case MSG_FIELD: {
                 ClassInfo::FieldInfo f;
-                f.nedElement = child;
+                f.astNode = child;
                 f.fname = ptr2str(child->getAttribute("name"));
-                f.datatype = ptr2str(child->getAttribute("data-type"));  // ha ez nincs, eltunnek a struct mezoi....
+                f.datatype = ptr2str(child->getAttribute("data-type"));
                 f.ftype = ptr2str(child->getAttribute("data-type"));
                 f.fval = ptr2str(child->getAttribute("default-value"));
                 f.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
@@ -684,7 +684,7 @@ MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(ASTNode *node)
 void MsgCompilerOld::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::FieldInfo *it)
 {
     if (it->fisabstract && !info.gap) {
-        errors->addError(it->nedElement, "abstract fields need '@customize(true)' property in '%s'\n", info.msgname.c_str());
+        errors->addError(it->astNode, "abstract fields need '@customize(true)' property in '%s'\n", info.msgname.c_str());
     }
 
     // determine field data type
@@ -697,7 +697,7 @@ void MsgCompilerOld::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::F
     else if (it->ftype.empty()) {
         // base class field assignment
         it->classtype = UNKNOWN;
-        it->fisprimitivetype = false; //FIXME we don't know
+        it->fisprimitivetype = false; // we don't know
     }
     else {
         it->fisprimitivetype = false;
@@ -708,23 +708,23 @@ void MsgCompilerOld::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::F
             it->ftypeqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+            errors->addError(it->astNode, "unknown type '%s' for field '%s' in '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
             it->ftypeqname = "omnetpp::cObject";
         }
         else {
-            errors->addError(it->nedElement, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
+            errors->addError(it->astNode, "unknown type '%s' for field '%s' in '%s'; possibilities: %s\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
             it->ftypeqname = found[0];
         }
 
         it->classtype = getClassType(it->ftypeqname);
 
         if (it->ftypeqname != "omnetpp::cObject")
-            it->ftypeqname = str("::") + it->ftypeqname; //FIXME why, really?
+            it->ftypeqname = str("::") + it->ftypeqname; // hmm
     }
 
     if (info.generate_class) {
         if (it->classtype == COWNEDOBJECT && info.classtype != COWNEDOBJECT) {
-            errors->addError(it->nedElement, "cannot use cOwnedObject field '%s %s' in struct or non-cOwnedObject class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
+            errors->addError(it->astNode, "cannot use cOwnedObject field '%s %s' in struct or non-cOwnedObject class '%s'\n", it->ftype.c_str(), it->fname.c_str(), info.msgname.c_str());
         }
     }
 
@@ -743,7 +743,7 @@ void MsgCompilerOld::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::F
             it->enumqname = found[0];
         }
         else if (found.empty()) {
-            errors->addError(it->nedElement, "undeclared enum '%s' in field '%s' in '%s'\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str());
+            errors->addError(it->astNode, "undeclared enum '%s' in field '%s' in '%s'\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str());
             it->enumqname = "";
             CC << "\n\n/*\n Undeclared enum: " << it->enumname << "\n";
             CC << "  Declared enums:\n";
@@ -752,7 +752,7 @@ void MsgCompilerOld::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::F
             CC << "\n*/\n\n";
         }
         else {
-            errors->addWarning(it->nedElement, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
+            errors->addWarning(it->astNode, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", it->enumname.c_str(), it->fname.c_str(), info.msgname.c_str(), join(found, ", ").c_str());
             it->enumqname = found[0];
         }
         it->fprops["enum"] = it->enumqname;  // need to modify the property in place
@@ -773,7 +773,7 @@ void MsgCompilerOld::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::F
 
     it->varsize = it->fname + "_arraysize";
     std::string sizetypeprop = getProperty(it->fprops, "sizetype");
-    it->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
+    it->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";
 
     // default method names
     if (info.classtype != STRUCT) {
@@ -892,7 +892,7 @@ void MsgCompilerOld::prepareForCodeGeneration(ClassInfo& info)
     }
 
     // check earlier declarations and register this class
-    if (isClassDeclared(info.msgqname) && false) // XXX add condition
+    if (isClassDeclared(info.msgqname) && false) // to do:  add condition
         errors->addError(info.nedElement, "attempt to redefine '%s'\n", info.msgname.c_str());
     addClassType(info.msgqname, info.classtype, info.nedElement);
 
@@ -1055,7 +1055,7 @@ void MsgCompilerOld::generateClass(const ClassInfo& info)
     H << "  protected:\n";
     for (ClassInfo::Fieldlist::const_iterator it = info.fieldlist.begin(); it != info.fieldlist.end(); ++it) {
         if (it->fispointer) {
-            errors->addError(it->nedElement, "pointers not supported yet in '%s'\n", info.msgname.c_str());
+            errors->addError(it->astNode, "pointers not supported yet in '%s'\n", info.msgname.c_str());
             return;
         }
         if (!it->fisabstract) {
@@ -1187,8 +1187,7 @@ void MsgCompilerOld::generateClass(const ClassInfo& info)
         std::string capfieldname = it.fname;
         capfieldname[0] = toupper(capfieldname[0]);
         std::string setter = "set" + capfieldname;
-        // FIXME setter function name - ezt a base class leirobol kellene venni
-        CC << "    this->" << setter << "(" << it.fval << ");\n";
+        CC << "    this->" << setter << "(" << it.fval << ");\n";  // note: we should take setter name from base class desc
     }
     if (!info.baseclassFieldlist.empty() && !info.fieldlist.empty())
         CC << "\n";
@@ -1931,7 +1930,7 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
         if (field.feditable || (info.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
             if (field.fromstring.empty()) {
-                errors->addError(field.nedElement, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
+                errors->addError(field.astNode, "Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str());
                 continue;
             }
             std::string fromstringCall = makeFuncall("value", field.fromstring);
@@ -1969,7 +1968,7 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
         CC << "    switch (field) {\n";
         for (size_t i = 0; i < fieldcount; i++) {
             const ClassInfo::FieldInfo& field = info.fieldlist[i];
-            bool opaque = field.fopaque;  // TODO: @opaque should rather be the attribute of the field's type, not the field itself
+            bool opaque = field.fopaque;
             if (!field.fisprimitivetype && !opaque) {
                 CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.ftype << "));\n";
             }
@@ -1993,7 +1992,7 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const ClassInfo::FieldInfo& field = info.fieldlist[i];
-        bool opaque = field.fopaque;  // # TODO: @opaque should rather be the attribute of the field's type, not the field itself
+        bool opaque = field.fopaque;
         if (!field.fisprimitivetype && !opaque) {
             std::string cast;
             std::string value;
@@ -2083,8 +2082,6 @@ void MsgCompilerOld::generateEnum(const EnumInfo& enumInfo)
     }
     H << "};\n\n";
 
-    // TODO generate a Register_Enum() macro call instead
-    // TODO why generating the enum and registering its descriptor (cEnum) aren't separate, independently usable operations as with classes?
     CC << "EXECUTE_ON_STARTUP(\n";
     CC << "    omnetpp::cEnum *e = omnetpp::cEnum::find(\"" << enumInfo.enumQName << "\");\n";
     CC << "    if (!e) omnetpp::enums.getInstance()->add(e = new omnetpp::cEnum(\"" << enumInfo.enumQName << "\"));\n";
