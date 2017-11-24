@@ -311,7 +311,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
             case MSG_CLASS:
             case MSG_MESSAGE:
             case MSG_PACKET: {
-                std::string qname = prefixWithNamespace(str(child->getAttribute("name")), currentNamespace);
+                std::string qname = prefixWithNamespace(child->getAttribute(ATT_NAME), currentNamespace);
                 ClassInfo& classInfo = typeTable.getClassInfo(qname);
                 analyzer.ensureAnalyzed(classInfo);
                 analyzer.ensureFieldsAnalyzed(classInfo);

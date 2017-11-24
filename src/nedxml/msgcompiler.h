@@ -109,6 +109,9 @@ class NEDXML_API MsgCompiler
      * object tree has already passed DTD and syntax validation.
      */
     void generate(MsgFileElement *fileElement, const char *hFile, const char *ccFile, StringSet& outImportedFiles);
+
+  private:
+    static constexpr const char* ATT_NAME = "name";
 };
 
 }  // namespace nedxml

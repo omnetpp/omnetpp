@@ -129,9 +129,9 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(ASTNode *node, const
     ClassInfo classInfo;
     classInfo.astNode = node;
     classInfo.props = extractProperties(node);
-    std::string actually = getProperty(classInfo.props, "actually", "");
+    std::string actually = getProperty(classInfo.props, PROP_ACTUALLY, "");
     classInfo.keyword = node->getTagName();
-    classInfo.msgname = actually != "" ? actually : str(node->getAttribute("name"));
+    classInfo.msgname = actually != "" ? actually : node->getAttribute(ATT_NAME);
     classInfo.namespacename = namespaceName;
     classInfo.msgqname = prefixWithNamespace(classInfo.msgname, namespaceName);
     return classInfo;
@@ -158,7 +158,7 @@ void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
 {
     ASTNode *node = classInfo.astNode;
 
-    classInfo.msgbase = str(node->getAttribute("extends-name"));
+    classInfo.msgbase = str(node->getAttribute(ATT_EXTENDS_NAME));
 
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
@@ -280,29 +280,29 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
 
     // isPrimitive, isOpaque, byValue, data types, etc.
-    classInfo.isprimitivetype = getPropertyAsBool(classInfo.props, "primitive", false);
-    classInfo.isopaque = getPropertyAsBool(classInfo.props, "opaque", classInfo.isprimitivetype); // primitive types are also opaque and passed by value
-    classInfo.byvalue = getPropertyAsBool(classInfo.props, "byvalue", classInfo.isprimitivetype);
-    classInfo.defaultvalue = getProperty(classInfo.props, "defaultvalue", "");
+    classInfo.isprimitivetype = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false);
+    classInfo.isopaque = getPropertyAsBool(classInfo.props, PROP_OPAQUE, classInfo.isprimitivetype); // primitive types are also opaque and passed by value
+    classInfo.byvalue = getPropertyAsBool(classInfo.props, PROP_BYVALUE, classInfo.isprimitivetype);
+    classInfo.defaultvalue = getProperty(classInfo.props, PROP_DEFAULTVALUE, "");
 
-    classInfo.datatype = getProperty(classInfo.props, "cpptype", "");
-    classInfo.argtype = getProperty(classInfo.props, "argtype", "");
-    classInfo.rettype  = getProperty(classInfo.props, "rettype", "");
+    classInfo.datatype = getProperty(classInfo.props, PROP_CPPTYPE, "");
+    classInfo.argtype = getProperty(classInfo.props, PROP_ARGTYPE, "");
+    classInfo.rettype = getProperty(classInfo.props, PROP_RETTYPE, "");
 
-    classInfo.tostring  = getProperty(classInfo.props, "tostring", "");
-    classInfo.fromstring  = getProperty(classInfo.props, "fromstring", "");
-    classInfo.maybe_c_str  = getProperty(classInfo.props, "maybe_c_str", "");
+    classInfo.tostring = getProperty(classInfo.props, PROP_TOSTRING, "");
+    classInfo.fromstring = getProperty(classInfo.props, PROP_FROMSTRING, "");
+    classInfo.maybe_c_str = getProperty(classInfo.props, PROP_MAYBECSTR, "");
 
     // generation gap
-    bool existingClass = getPropertyAsBool(classInfo.props, "existingClass", false);
+    bool existingClass = getPropertyAsBool(classInfo.props, PROP_EXISTINGCLASS, false);
     classInfo.generate_class = opts.generateClasses && !existingClass;
-    classInfo.generate_descriptor = opts.generateDescriptors && !classInfo.isopaque && getPropertyAsBool(classInfo.props, "descriptor", true);  // opaque also means no descriptor
-    classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, "descriptor") != "readonly");
+    classInfo.generate_descriptor = opts.generateDescriptors && !classInfo.isopaque && getPropertyAsBool(classInfo.props, PROP_DESCRIPTOR, true); // opaque also means no descriptor
+    classInfo.generate_setters_in_descriptor = opts.generateSettersInDescriptors && (getProperty(classInfo.props, PROP_DESCRIPTOR) != "readonly");
 
     if (!existingClass && isQualified(classInfo.msgname))
         errors->addError(classInfo.astNode, "class name may only contain '::' when generating descriptor for an existing class");
 
-    classInfo.gap = getPropertyAsBool(classInfo.props, "customize", false);
+    classInfo.gap = getPropertyAsBool(classInfo.props, PROP_CUSTOMIZE, false);
 
     if (classInfo.gap) {
         classInfo.msgclass = classInfo.msgname + "_Base";
@@ -318,8 +318,8 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.msgbaseclass = classInfo.msgbaseqname;
 
     // omitGetVerb / fieldNameSuffix
-    classInfo.omitgetverb = getPropertyAsBool(classInfo.props, "omitGetVerb", false);
-    classInfo.fieldnamesuffix = getProperty(classInfo.props, "fieldNameSuffix", "");
+    classInfo.omitgetverb = getPropertyAsBool(classInfo.props, PROP_OMITGETVERB, false);
+    classInfo.fieldnamesuffix = getProperty(classInfo.props, PROP_FIELDNAMESUFFIX, "");
     if (classInfo.omitgetverb && classInfo.fieldnamesuffix.empty()) {
         errors->addWarning(classInfo.astNode, "@omitGetVerb(true) and (implicit) @fieldNameSuffix(\"\") collide: "
                                                  "adding '_var' suffix to data members to prevent name conflict between them and getter methods");
@@ -327,12 +327,12 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     }
 
     // beforeChange
-    classInfo.beforeChange = getProperty(classInfo.props, "beforeChange", "");
+    classInfo.beforeChange = getProperty(classInfo.props, PROP_BEFORECHANGE, "");
     if (classInfo.beforeChange.empty() && baseClassInfo != nullptr)
         classInfo.beforeChange = baseClassInfo->beforeChange;
 
     // additional base classes (interfaces)
-    std::string s = getProperty(classInfo.props, "implements");
+    std::string s = getProperty(classInfo.props, PROP_IMPLEMENTS);
     if (!s.empty())
         classInfo.implements = StringTokenizer(s.c_str(), ",").asVector();
 }
@@ -389,15 +389,15 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (field->fval.empty() && !fieldClassInfo.defaultvalue.empty())
         field->fval = fieldClassInfo.defaultvalue;
 
-    field->fnopack = getPropertyAsBool(field->fprops, "nopack", false);
-    field->feditable = getPropertyAsBool(field->fprops, "editable", false);
-    field->editNotDisabled = getPropertyAsBool(field->fprops, "editable", true);
-    field->fopaque = getPropertyAsBool(field->fprops, "opaque", fieldClassInfo.isopaque);
-    field->overrideGetter = getPropertyAsBool(field->fprops, "overridegetter", false) || getPropertyAsBool(field->fprops, "override", false);
-    field->overrideSetter = getPropertyAsBool(field->fprops, "overridesetter", false) || getPropertyAsBool(field->fprops, "override", false);
+    field->fnopack = getPropertyAsBool(field->fprops, PROP_NOPACK, false);
+    field->feditable = getPropertyAsBool(field->fprops, PROP_EDITABLE, false);
+    field->editNotDisabled = getPropertyAsBool(field->fprops, PROP_EDITABLE, true);
+    field->fopaque = getPropertyAsBool(field->fprops, PROP_OPAQUE, fieldClassInfo.isopaque);
+    field->overrideGetter = getPropertyAsBool(field->fprops, PROP_OVERRIDEGETTER, false) || getPropertyAsBool(field->fprops, "override", false);
+    field->overrideSetter = getPropertyAsBool(field->fprops, PROP_OVERRIDESETTER, false) || getPropertyAsBool(field->fprops, "override", false);
 
     // resolve enum
-    field->enumname = getProperty(field->fprops, "enum");
+    field->enumname = getProperty(field->fprops, PROP_ENUM);
     if (!field->enumname.empty()) {
         StringVector found = typeTable->lookupExistingEnumName(field->enumname, namespaceName);
         if (found.size() == 1) {
@@ -411,7 +411,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             errors->addWarning(field->astNode, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
             field->enumqname = found[0];
         }
-        field->fprops["enum"] = field->enumqname; // need to overwrite it in props, because Qtenv will look up the enum by qname
+        field->fprops[PROP_ENUM] = field->enumqname; // need to overwrite it in props, because Qtenv will look up the enum by qname
     }
 
 //    if (hasProperty(field->fprops, "byvalue")) {
@@ -421,7 +421,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 //            errors->addError(field->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
 //    }
 
-    field->byvalue = getPropertyAsBool(field->fprops, "byvalue", fieldClassInfo.byvalue);
+    field->byvalue = getPropertyAsBool(field->fprops, PROP_BYVALUE, fieldClassInfo.byvalue);
 
     // fromstring/tostring
     field->fromstring = fieldClassInfo.fromstring;
@@ -430,8 +430,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->tostring = str("enum2string($, \"") + field->enumqname + "\")";
         field->fromstring = str("(") + field->enumqname + ")string2enum($, \"" + field->enumqname + "\")";
     }
-    field->fromstring = getProperty(field->fprops, "fromstring", field->fromstring);
-    field->tostring = getProperty(field->fprops, "tostring", field->tostring);
+    field->fromstring = getProperty(field->fprops, PROP_FROMSTRING, field->fromstring);
+    field->tostring = getProperty(field->fprops, PROP_TOSTRING, field->tostring);
 
     // variable name
     if (!classInfo.isClass) {
@@ -442,10 +442,10 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->argname = field->fname;
     }
 
-    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, "owned", field->iscOwnedObject);
+    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, PROP_OWNED, field->iscOwnedObject);
 
     field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
-    std::string sizetypeprop = getProperty(field->fprops, "sizetype");
+    std::string sizetypeprop = getProperty(field->fprops, PROP_SIZETYPE);
     field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // default method names
@@ -466,23 +466,23 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->mGetter = str("getMutable") + capfieldname;             //TODO "field->getter" (for compatibility) or "getMutable"  or "access"
 
         // allow customization of names
-        if (getProperty(field->fprops, "setter") != "")
-            field->setter = getProperty(field->fprops, "setter");
-        if (getProperty(field->fprops, "getter") != "")
-            field->getter = getProperty(field->fprops, "getter");
-        if (getProperty(field->fprops, "mgetter") != "")
-            field->mGetter = getProperty(field->fprops, "mgetter");
-        if (getProperty(field->fprops, "sizeSetter") != "")
-            field->alloc = getProperty(field->fprops, "sizeSetter");
-        if (getProperty(field->fprops, "sizeGetter") != "")
-            field->getsize = getProperty(field->fprops, "sizeGetter");
+        if (getProperty(field->fprops, PROP_SETTER) != "")
+            field->setter = getProperty(field->fprops, PROP_SETTER);
+        if (getProperty(field->fprops, PROP_GETTER) != "")
+            field->getter = getProperty(field->fprops, PROP_GETTER);
+        if (getProperty(field->fprops, PROP_MUTABLEGETTER) != "")
+            field->mGetter = getProperty(field->fprops, PROP_MUTABLEGETTER);
+        if (getProperty(field->fprops, PROP_SIZESETTER) != "")
+            field->alloc = getProperty(field->fprops, PROP_SIZESETTER);
+        if (getProperty(field->fprops, PROP_SIZEGETTER) != "")
+            field->getsize = getProperty(field->fprops, PROP_SIZEGETTER);
     }
 
     // data type, argument type, conversion to/from string...
-    field->datatype = getProperty(field->fprops, "cpptype", fieldClassInfo.datatype);
-    field->argtype = getProperty(field->fprops, "argtype", fieldClassInfo.argtype);
-    field->rettype = getProperty(field->fprops, "rettype", fieldClassInfo.rettype);
-    field->maybe_c_str = getProperty(field->fprops, "maybe_c_str", fieldClassInfo.maybe_c_str);
+    field->datatype = getProperty(field->fprops, PROP_CPPTYPE, fieldClassInfo.datatype);
+    field->argtype = getProperty(field->fprops, PROP_ARGTYPE, fieldClassInfo.argtype);
+    field->rettype = getProperty(field->fprops, PROP_RETTYPE, fieldClassInfo.rettype);
+    field->maybe_c_str = getProperty(field->fprops, PROP_MAYBECSTR, fieldClassInfo.maybe_c_str);
     if (field->datatype.empty())
         field->datatype = field->ftype;
     if (field->argtype.empty())
@@ -531,7 +531,7 @@ void MsgAnalyzer::analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field)
     if (field->fisarray)
         errors->addError(field->astNode, "Cannot set array field of super class");
     if (field->fval.empty())
-        errors->addError(field->astNode, "Missing field value assigment");
+        errors->addError(field->astNode, "Missing field value assignment");
 
     FieldInfo *fieldDefinition = findSuperclassField(classInfo, field->fname);
     if (!fieldDefinition)

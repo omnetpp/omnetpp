@@ -83,6 +83,41 @@ class NEDXML_API MsgAnalyzer
     EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);
     EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
     ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName);
+
+  private:
+    static constexpr const char* ATT_NAME = "name";
+    static constexpr const char* ATT_EXTENDS_NAME = "extends-name";
+
+    static constexpr const char* PROP_ACTUALLY = "actually";
+    static constexpr const char* PROP_PRIMITIVE = "primitive";
+    static constexpr const char* PROP_OPAQUE = "opaque";
+    static constexpr const char* PROP_BYVALUE = "byvalue";
+    static constexpr const char* PROP_DEFAULTVALUE = "defaultvalue";
+    static constexpr const char* PROP_CPPTYPE = "cpptype";
+    static constexpr const char* PROP_ARGTYPE = "argtype";
+    static constexpr const char* PROP_RETTYPE = "rettype";
+    static constexpr const char* PROP_TOSTRING = "tostring";
+    static constexpr const char* PROP_FROMSTRING = "fromstring";
+    static constexpr const char* PROP_MAYBECSTR = "maybe_c_str";
+    static constexpr const char* PROP_EXISTINGCLASS = "existingClass";
+    static constexpr const char* PROP_DESCRIPTOR = "descriptor";
+    static constexpr const char* PROP_OMITGETVERB = "omitGetVerb";
+    static constexpr const char* PROP_FIELDNAMESUFFIX = "fieldNameSuffix";
+    static constexpr const char* PROP_BEFORECHANGE = "beforeChange";
+    static constexpr const char* PROP_IMPLEMENTS = "implements";
+    static constexpr const char* PROP_NOPACK = "nopack";
+    static constexpr const char* PROP_OWNED = "owned";
+    static constexpr const char* PROP_EDITABLE = "editable";
+    static constexpr const char* PROP_OVERRIDEGETTER = "overridegetter";
+    static constexpr const char* PROP_OVERRIDESETTER = "overridesetter";
+    static constexpr const char* PROP_ENUM = "enum";
+    static constexpr const char* PROP_SIZETYPE = "sizetype";
+    static constexpr const char* PROP_SETTER = "setter";
+    static constexpr const char* PROP_GETTER = "getter";
+    static constexpr const char* PROP_MUTABLEGETTER = "mgetter";
+    static constexpr const char* PROP_SIZESETTER = "sizeSetter";
+    static constexpr const char* PROP_SIZEGETTER = "sizeGetter";
+    static constexpr const char* PROP_CUSTOMIZE = "customize";
 };
 
 } // namespace nedxml
