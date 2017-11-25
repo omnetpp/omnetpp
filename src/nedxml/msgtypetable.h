@@ -113,7 +113,9 @@ class NEDXML_API MsgTypeTable
         Properties props;           // class properties
 
         bool classInfoComplete = false;  // whether following fields are filled in
+        bool classBeingAnalyzed = false;
         bool fieldsComplete = false;  // whether fieldlist / baseclassFieldlist are filled in
+        bool fieldsBeingAnalyzed = false;
 
         std::string msgbaseqname;
         std::string msgbase;        // base class name from MSG

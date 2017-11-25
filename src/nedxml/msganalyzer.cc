@@ -134,14 +134,22 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(ASTNode *node, const
     classInfo.msgname = actually != "" ? actually : node->getAttribute(ATT_NAME);
     classInfo.namespacename = namespaceName;
     classInfo.msgqname = prefixWithNamespace(classInfo.msgname, namespaceName);
+    classInfo.msgbase = node->getAttribute(ATT_EXTENDS_NAME);
+    classInfo.isClass = (classInfo.keyword != "struct");
     return classInfo;
 }
 
 void MsgAnalyzer::ensureAnalyzed(ClassInfo& classInfo)
 {
     if (!classInfo.classInfoComplete) {
+        if (classInfo.classBeingAnalyzed) {
+            errors->addError(classInfo.astNode, "Recursive definition near '%s'", classInfo.msgname.c_str());
+            return;
+        }
+        classInfo.classBeingAnalyzed = true;
         extractClassInfo(classInfo);
         analyzeClassOrStruct(classInfo, classInfo.namespacename);
+        classInfo.classBeingAnalyzed = false;
         classInfo.classInfoComplete = true;
     }
 }
@@ -149,7 +157,13 @@ void MsgAnalyzer::ensureAnalyzed(ClassInfo& classInfo)
 void MsgAnalyzer::ensureFieldsAnalyzed(ClassInfo& classInfo)
 {
     if (!classInfo.fieldsComplete) {
+        if (classInfo.fieldsBeingAnalyzed) {
+            errors->addError(classInfo.astNode, "Recursive nesting near '%s'", classInfo.msgname.c_str());
+            return;
+        }
+        classInfo.fieldsBeingAnalyzed = true;
         analyzeFields(classInfo, classInfo.namespacename);
+        classInfo.fieldsBeingAnalyzed = false;
         classInfo.fieldsComplete = true;
     }
 }
@@ -157,8 +171,6 @@ void MsgAnalyzer::ensureFieldsAnalyzed(ClassInfo& classInfo)
 void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
 {
     ASTNode *node = classInfo.astNode;
-
-    classInfo.msgbase = str(node->getAttribute(ATT_EXTENDS_NAME));
 
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
@@ -243,7 +255,6 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     }
 
     // determine class type
-    classInfo.isClass = (classInfo.keyword != "struct");
     classInfo.iscObject = classInfo.iscNamedObject = classInfo.iscOwnedObject = false;
     if (classInfo.isClass) {
         if (classInfo.msgqname == "omnetpp::cObject")
