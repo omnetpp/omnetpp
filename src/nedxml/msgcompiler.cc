@@ -203,7 +203,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
             case MSG_CLASS:
             case MSG_MESSAGE:
             case MSG_PACKET: {
-                ClassInfo classInfo = analyzer.makeIncompleteClassInfo(child, currentNamespace);
+                ClassInfo classInfo = analyzer.extractClassInfo(child, currentNamespace);
                 if (typeTable.isClassDefined(classInfo.msgqname) && !containsKey(classInfo.props, str("overwritePreviousDefinition")))
                     errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.msgname.c_str());
                 typeTable.addClass(classInfo);

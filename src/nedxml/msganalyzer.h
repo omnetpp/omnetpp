@@ -59,7 +59,7 @@ class NEDXML_API MsgAnalyzer
     const MsgCompilerOptions& opts;
 
   protected:
-    void extractClassInfo(ClassInfo& classInfo);
+    void extractFields(ClassInfo& classInfo);
     void analyzeClassOrStruct(ClassInfo& classInfo, const std::string& namespaceName);
     void analyzeFields(ClassInfo& classInfo, const std::string& namespaceName);
     void analyzeField(ClassInfo& classInfo, FieldInfo *field, const std::string& namespaceName);
@@ -77,7 +77,7 @@ class NEDXML_API MsgAnalyzer
   public:
     MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, ErrorStore *errors);
     ~MsgAnalyzer();
-    ClassInfo makeIncompleteClassInfo(ASTNode *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
+    ClassInfo extractClassInfo(ASTNode *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void ensureAnalyzed(ClassInfo& classInfo);
     void ensureFieldsAnalyzed(ClassInfo& classInfo);
     EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);

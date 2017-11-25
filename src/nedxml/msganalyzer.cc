@@ -37,8 +37,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-#define SL(x)    (x)
-
 inline std::string str(const char *s)
 {
     return s ? s : "";
@@ -74,11 +72,20 @@ std::string join(const T& v, const std::string& delim)
     return s.str();
 }
 
-// Note: based on omnetpp 5.x checkandcast.h (merged check_and_cast and check_and_cast_failure)
-template<class P, class T>
+template<class P, class T> //TODO move these templates into common/?
 P check_and_cast(T *p)
 {
     assert(p);
+    P ret = dynamic_cast<P>(p);
+    assert(ret);
+    return ret;
+}
+
+template<class P, class T>
+P check_and_cast_nullable(T *p)
+{
+    if (p == nullptr)
+        return nullptr;
     P ret = dynamic_cast<P>(p);
     assert(ret);
     return ret;
@@ -100,31 +107,7 @@ MsgAnalyzer::~MsgAnalyzer()
 {
 }
 
-MsgAnalyzer::Properties MsgAnalyzer::extractProperties(ASTNode *node)
-{
-    Properties props;
-
-    for (PropertyElement *prop = static_cast<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); prop; prop = prop->getNextPropertySibling()) {
-        std::string propElem = prop->getName();
-        std::string propValue;
-        for (PropertyKeyElement *pkeyElem = prop->getFirstPropertyKeyChild(); pkeyElem; pkeyElem = pkeyElem->getNextPropertyKeySibling()) {
-            std::string keyName = pkeyElem->getName();
-            if (keyName.empty()) {
-                const char *sep = "";
-                for (LiteralElement *lit = pkeyElem->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling()) {
-                    propValue += propValue + sep + lit->getValue();
-                    sep = ",";
-                }
-            }
-        }
-        if (props.find(propElem) != props.end())
-            errors->addError(prop, "the property '%s' is duplicated", propElem.c_str());
-        props[propElem] = propValue;
-    }
-    return props;
-}
-
-MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(ASTNode *node, const std::string& namespaceName)
+MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::string& namespaceName)
 {
     ClassInfo classInfo;
     classInfo.astNode = node;
@@ -139,6 +122,57 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::makeIncompleteClassInfo(ASTNode *node, const
     return classInfo;
 }
 
+MsgAnalyzer::Properties MsgAnalyzer::extractProperties(ASTNode *node)
+{
+    Properties props;
+
+    for (PropertyElement *prop = check_and_cast_nullable<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); prop; prop = prop->getNextPropertySibling()) {
+        std::string propElem = prop->getName();
+        std::string propValue;
+        for (PropertyKeyElement *pkeyElem = prop->getFirstPropertyKeyChild(); pkeyElem; pkeyElem = pkeyElem->getNextPropertyKeySibling()) {
+            std::string keyName = pkeyElem->getName();
+            if (keyName.empty()) {
+                const char *sep = "";
+                for (LiteralElement *lit = pkeyElem->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling()) {
+                    propValue += propValue + sep + lit->getValue();
+                    sep = ",";
+                }
+            }
+        }
+        if (props.find(propElem) != props.end())
+            errors->addError(prop, "duplicate property '%s'", propElem.c_str());
+        props[propElem] = propValue;
+    }
+    return props;
+}
+
+void MsgAnalyzer::extractFields(ClassInfo& classInfo)
+{
+    ASTNode *node = classInfo.astNode;
+    for (FieldElement *fieldElem = check_and_cast_nullable<FieldElement*>(node->getFirstChildWithTag(MSG_FIELD)); fieldElem; fieldElem = fieldElem->getNextFieldSibling()) {
+        FieldInfo field;
+        field.astNode = fieldElem;
+        field.fname = fieldElem->getName();
+        field.datatype = fieldElem->getDataType();
+        field.ftype = fieldElem->getDataType();
+        field.fval = fieldElem->getDefaultValue();
+        field.fisabstract = fieldElem->getIsAbstract();
+        field.fispointer = opp_stringendswith(field.ftype.c_str(), "*");
+        if (field.fispointer)
+            field.ftype = opp_trim(opp_substringbeforelast(field.ftype.c_str(), "*"));
+        field.fisarray = fieldElem->getIsVector();
+        field.farraysize = fieldElem->getVectorSize();
+
+        field.fprops = extractProperties(fieldElem);
+
+        if (field.ftype.empty())
+            classInfo.baseclassFieldlist.push_back(field);
+        else
+            classInfo.fieldlist.push_back(field);
+    }
+}
+
+
 void MsgAnalyzer::ensureAnalyzed(ClassInfo& classInfo)
 {
     if (!classInfo.classInfoComplete) {
@@ -147,7 +181,7 @@ void MsgAnalyzer::ensureAnalyzed(ClassInfo& classInfo)
             return;
         }
         classInfo.classBeingAnalyzed = true;
-        extractClassInfo(classInfo);
+        extractFields(classInfo);
         analyzeClassOrStruct(classInfo, classInfo.namespacename);
         classInfo.classBeingAnalyzed = false;
         classInfo.classInfoComplete = true;
@@ -165,54 +199,6 @@ void MsgAnalyzer::ensureFieldsAnalyzed(ClassInfo& classInfo)
         analyzeFields(classInfo, classInfo.namespacename);
         classInfo.fieldsBeingAnalyzed = false;
         classInfo.fieldsComplete = true;
-    }
-}
-
-void MsgAnalyzer::extractClassInfo(ClassInfo& classInfo)
-{
-    ASTNode *node = classInfo.astNode;
-
-    for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
-        switch (child->getTagCode()) {
-            case MSG_FIELD: {
-                FieldElement *fieldElem = check_and_cast<FieldElement*>(child);
-                FieldInfo field;
-                field.astNode = child;
-                field.fname = fieldElem->getName();
-                field.datatype = fieldElem->getDataType();
-                field.ftype = fieldElem->getDataType();
-                field.fval = fieldElem->getDefaultValue();
-                field.fisabstract = fieldElem->getIsAbstract();
-                field.fispointer = opp_stringendswith(field.ftype.c_str(), "*");
-                if (field.fispointer)
-                    field.ftype = opp_trim(opp_substringbeforelast(field.ftype.c_str(), "*"));
-                field.fisarray = fieldElem->getIsVector();
-                field.farraysize = fieldElem->getVectorSize();
-
-                field.fprops = extractProperties(child);
-
-                if (field.ftype.empty())
-                    classInfo.baseclassFieldlist.push_back(field);
-                else
-                    classInfo.fieldlist.push_back(field);
-                break;
-            }
-
-            case MSG_PROPERTY:
-                // skip properties here, properties already extracted
-                break;
-
-            case MSG_PROPERTY_KEY:
-                errors->addError(child, "syntax error: property key '%s' unaccepted here", child->getTagName()); //TODO into some validator
-                break;
-
-            case MSG_COMMENT:
-                break;
-
-            default:
-                errors->addError(child, "unaccepted element: '%s'", child->getTagName());
-                break;
-        }
     }
 }
 
@@ -575,7 +561,7 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const 
     // prepare enum items
     EnumFieldsElement *enumFieldsElem = enumElem->getFirstEnumFieldsChild();
     if (enumFieldsElem) {
-        for (EnumFieldElement *fieldElem = static_cast<EnumFieldElement *>(enumFieldsElem->getFirstChildWithTag(MSG_ENUM_FIELD)); fieldElem; fieldElem = fieldElem->getNextEnumFieldSibling()) {
+        for (EnumFieldElement *fieldElem = check_and_cast_nullable<EnumFieldElement *>(enumFieldsElem->getFirstChildWithTag(MSG_ENUM_FIELD)); fieldElem; fieldElem = fieldElem->getNextEnumFieldSibling()) {
             EnumItem item;
             item.astNode = fieldElem;
             item.name = fieldElem->getName();
@@ -588,7 +574,7 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const 
 
 MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumElem, const std::string& namespaceName)
 {
-    ClassInfo classInfo = makeIncompleteClassInfo(enumElem, namespaceName);
+    ClassInfo classInfo = extractClassInfo(enumElem, namespaceName);
 /*
     @primitive;
     @descriptor(false);
