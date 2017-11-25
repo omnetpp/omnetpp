@@ -71,8 +71,9 @@ class NEDXML_API MsgCodeGenerator
     void generateDescriptorClass(const ClassInfo& a);
     void generateEnum(const EnumInfo& enumInfo);
     void generateImport(const std::string& importName);
-    void generateNamespaceBegin(const std::string& namespaceName);
-    void generateNamespaceEnd(const std::string& namespaceName);
+    void generateNamespaceBegin(const std::string& namespaceName, bool intoCcFile=true);
+    void generateNamespaceEnd(const std::string& namespaceName, bool intoCcFile=true);
+    void generateTypeAnnouncement(const ClassInfo& classInfo);
     std::string generatePreComment(ASTNode *nedElement);
     void generateCplusplusBlock(const std::string& target, const std::string& body);
     void generateTemplates();

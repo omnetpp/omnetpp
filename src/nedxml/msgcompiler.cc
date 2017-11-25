@@ -268,6 +268,37 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
     std::string firstNSName = firstNSElem ? firstNSElem->getName() : "";
     codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
 
+    // generate forward declarations so that cyclic references compile
+    for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
+        switch (child->getTagCode()) {
+            case MSG_NAMESPACE: {
+                // open namespace(s)
+                if (!currentNamespace.empty())
+                    codegen.generateNamespaceEnd(currentNamespace, false);
+                NamespaceElement *nsElem = check_and_cast<NamespaceElement *>(child);
+                currentNamespace = nsElem->getName();
+                codegen.generateNamespaceBegin(currentNamespace, false);
+                break;
+            }
+            case MSG_STRUCT:
+            case MSG_CLASS:
+            case MSG_MESSAGE:
+            case MSG_PACKET: {
+                std::string qname = prefixWithNamespace(child->getAttribute(ATT_NAME), currentNamespace);
+                ClassInfo& classInfo = typeTable.getClassInfo(qname);
+                analyzer.ensureAnalyzed(classInfo);
+                if (classInfo.generate_class)
+                    codegen.generateTypeAnnouncement(classInfo);
+                break;
+            }
+        }
+    }
+    if (!currentNamespace.empty()) {
+        codegen.generateNamespaceEnd(currentNamespace, false);
+        currentNamespace = "";
+    }
+
+    // generate classes, C++ blocks, etc.
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case MSG_NAMESPACE: {

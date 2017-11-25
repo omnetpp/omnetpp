@@ -1,0 +1,30 @@
+%description:
+Recursive declarations
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+//class A extends B {}
+//class B extends A {} //--> msgc error
+
+// class A { A a; } // c++ compile error
+
+class A { A *a; } // OK
+
+class AA { BB *b; }
+class BB { AA *a; }
+
+class AAA { BBB *b; }
+class BBB extends AAA { }
+
+%includes:
+#include "test_m.h"
+
+%activity:
+A a;
+AA aa;
+BB bb;
+AAA aaa;
+BBB bbb;
+

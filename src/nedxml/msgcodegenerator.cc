@@ -1550,30 +1550,40 @@ void MsgCodeGenerator::generateImport(const std::string& importName)
     H << "#include \"" << header << "\" // import " << importName << "\n\n";
 }
 
-void MsgCodeGenerator::generateNamespaceBegin(const std::string& namespaceName)
+void MsgCodeGenerator::generateNamespaceBegin(const std::string& namespaceName, bool intoCcFile)
 {
     H << std::endl;
     auto tokens = opp_split(namespaceName, "::");
     for (auto token : tokens) {
         H << "namespace " << token << " {\n";
-        CC << "namespace " << token << " {\n";
+        if (intoCcFile)
+            CC << "namespace " << token << " {\n";
     }
     H << std::endl;
-    CC << std::endl;
+    if (intoCcFile)
+        CC << std::endl;
 
-    generateTemplates();
+    if (intoCcFile)
+        generateTemplates();
 }
 
-void MsgCodeGenerator::generateNamespaceEnd(const std::string& namespaceName)
+void MsgCodeGenerator::generateNamespaceEnd(const std::string& namespaceName, bool intoCcFile)
 {
     auto tokens = opp_split(namespaceName, "::");
     std::reverse(tokens.begin(), tokens.end());
     for (auto token : tokens) {
         H << "} // namespace " << token << std::endl;
-        CC << "} // namespace " << token << std::endl;
+        if (intoCcFile)
+            CC << "} // namespace " << token << std::endl;
     }
     H << std::endl;
-    CC << std::endl;
+    if (intoCcFile)
+        CC << std::endl;
+}
+
+void MsgCodeGenerator::generateTypeAnnouncement(const ClassInfo& classInfo)
+{
+    H << (classInfo.isClass ? "class " : "struct ") << classInfo.msgname << ";\n";
 }
 
 void MsgCodeGenerator::generateCplusplusBlock(const std::string& target, const std::string& body0)
