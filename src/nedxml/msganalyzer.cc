@@ -284,6 +284,12 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         }
     }
 
+    if (classInfo.keyword == "message")
+        ; //TODO ensure base class really extends cMessage!
+    else if (classInfo.keyword == "packet")
+        ; //TODO ensure base class really extends cPacket!
+
+
     // isPrimitive, isOpaque, byValue, data types, etc.
     classInfo.isprimitivetype = getPropertyAsBool(classInfo.props, "primitive", false);
     classInfo.isopaque = getPropertyAsBool(classInfo.props, "opaque", classInfo.isprimitivetype); // primitive types are also opaque and passed by value
@@ -341,6 +347,7 @@ void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespa
 {
     for (auto& field : classInfo.fieldlist)
         analyzeField(classInfo, &field, namespaceName);
+//TODO base class fields: we need @setter to initialize it! so we must analyze!
 //    for (auto& field :  classInfo.baseclassFieldlist)
 //        analyzeField(classInfo, &field, namespaceName);
 }

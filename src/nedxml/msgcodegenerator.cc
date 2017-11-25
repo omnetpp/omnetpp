@@ -30,6 +30,9 @@
 
 #include "omnetpp/simkerneldefs.h"
 
+
+//TODO bug: dup() and parsimPack() generated into non-cObject classes ("class X {}")
+
 using namespace omnetpp::common;
 
 namespace omnetpp {

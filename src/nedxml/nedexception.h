@@ -47,7 +47,7 @@ class NEDXML_API NEDException : public std::runtime_error
     NEDException(NEDElement *context, const char *messagefmt,...);
 
     /**
-     * Empty desctructor with throw clause for gcc.
+     * Empty destructor with throw clause for gcc.
      */
     virtual ~NEDException() throw() {}
 
