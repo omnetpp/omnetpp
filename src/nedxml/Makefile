@@ -39,7 +39,7 @@ OBJS= $O/astnode.o $O/sourcedocument.o $O/errorstore.o $O/exception.o \
       $O/nedsyntaxvalidator.o $O/nedcrossvalidator.o \
       $O/nedparser.o $O/nedyyutil.o $O/msgparser.o $O/msgyyutil.o $O/yyutil.o\
       $O/ned2.tab.o $O/lex.ned2yy.o $O/nedtools.o $O/nedutil.o \
-      $O/ned2generator.o $O/msggenerator.o $O/xmlgenerator.o \
+      $O/nedgenerator.o $O/msggenerator.o $O/xmlgenerator.o \
       $O/xmlastparser.o $O/astbuilder.o $O/saxparser_$(XMLPARSER).o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
       $O/msgcompiler.o $O/msgtypetable.o $O/msganalyzer.o $O/msgcodegenerator.o \

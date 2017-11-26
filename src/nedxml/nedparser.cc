@@ -179,7 +179,7 @@ bool NedParser::loadText(const char *nedtext, const char *fname)
 ASTNode *NedParser::parseNed()
 {
     np.errors->clear();
-    return ::doParseNED2(&np, np.source->getFullText());
+    return ::doParseNed(&np, np.source->getFullText());
 }
 
 }  // namespace nedxml

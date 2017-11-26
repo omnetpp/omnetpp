@@ -1585,7 +1585,7 @@ opt_semicolon : ';' | ;
 // general bison/flex stuff:
 //
 
-ASTNode *doParseNED2(NedParser *p, const char *nedtext)
+ASTNode *doParseNed(NedParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;

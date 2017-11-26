@@ -27,21 +27,21 @@ namespace nedxml {
 
 
 /**
- * @brief Simple front-end to Ned2Generator.
+ * @brief Simple front-end to NedGenerator.
  *
  * @ingroup NedGenerator
  */
-NEDXML_API void generateNED2(std::ostream& out, ASTNode *node);
+NEDXML_API void generateNed(std::ostream& out, ASTNode *node);
 
 /**
- * @brief Generates NED code from a NED object tree.
+ * @brief Generates NED code from a NED AST.
  *
  * Assumes that the object tree has already passed all validation stages (DTD,
  * syntax, semantic).
  *
  * @ingroup NedGenerator
  */
-class NEDXML_API Ned2Generator
+class NEDXML_API NedGenerator
 {
   protected:
     int indentSize;
@@ -51,12 +51,12 @@ class NEDXML_API Ned2Generator
     /**
      * Constructor.
      */
-    Ned2Generator();
+    NedGenerator();
 
     /**
      * Destructor.
      */
-    ~Ned2Generator();
+    ~NedGenerator();
 
     /**
      * Sets the indent size in the generated NED code. Default is 4 spaces.

@@ -14,12 +14,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "nedgenerator.h"
+
 #include <cstring>
 #include <string>
 #include <sstream>
 #include "common/stringutil.h"
-#include "ned2generator.h"
-
 #include "errorstore.h"
 #include "nedutil.h"
 
@@ -32,9 +32,9 @@ using std::ostream;
 
 #define DEFAULTINDENT    "            "
 
-void generateNED2(ostream& out, ASTNode *node)
+void generateNed(ostream& out, ASTNode *node)
 {
-    Ned2Generator nedgen;
+    NedGenerator nedgen;
     nedgen.generate(out, node, "");
 }
 
@@ -42,36 +42,36 @@ void generateNED2(ostream& out, ASTNode *node)
 
 #define OUT    (*outp)
 
-Ned2Generator::Ned2Generator()
+NedGenerator::NedGenerator()
 {
     outp = nullptr;
     indentSize = 4;
 }
 
-Ned2Generator::~Ned2Generator()
+NedGenerator::~NedGenerator()
 {
 }
 
-void Ned2Generator::setIndentSize(int indentsiz)
+void NedGenerator::setIndentSize(int indentsiz)
 {
     indentSize = indentsiz;
 }
 
-void Ned2Generator::generate(ostream& out, ASTNode *node, const char *indent)
+void NedGenerator::generate(ostream& out, ASTNode *node, const char *indent)
 {
     outp = &out;
     generateNedItem(node, indent, false);
     outp = nullptr;
 }
 
-std::string Ned2Generator::generate(ASTNode *node, const char *indent)
+std::string NedGenerator::generate(ASTNode *node, const char *indent)
 {
     std::stringstream ss;
     generate(ss, node, indent);
     return ss.str();
 }
 
-const char *Ned2Generator::increaseIndent(const char *indent)
+const char *NedGenerator::increaseIndent(const char *indent)
 {
     // biggest possible indent: ~70 chars:
     static char spaces[] = "                                                                     ";
@@ -84,20 +84,20 @@ const char *Ned2Generator::increaseIndent(const char *indent)
     return newindent;
 }
 
-const char *Ned2Generator::decreaseIndent(const char *indent)
+const char *NedGenerator::decreaseIndent(const char *indent)
 {
     return indent + indentSize;
 }
 
 //---------------------------------------------------------------------------
 
-void Ned2Generator::generateChildren(ASTNode *node, const char *indent, const char *arg)
+void NedGenerator::generateChildren(ASTNode *node, const char *indent, const char *arg)
 {
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling())
         generateNedItem(child, indent, child == node->getLastChild(), arg);
 }
 
-void Ned2Generator::generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg)
+void NedGenerator::generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg)
 {
     // find last
     ASTNode *lastWithTag = nullptr;
@@ -122,7 +122,7 @@ static int isInVector(int a, int v[])
     return false;
 }
 
-void Ned2Generator::generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg)
+void NedGenerator::generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg)
 {
     // find last
     ASTNode *lastWithTag = nullptr;
@@ -140,7 +140,7 @@ void Ned2Generator::generateChildrenWithTypes(ASTNode *node, int tagcodes[], con
 
 //---------------------------------------------------------------------------
 
-void Ned2Generator::printInheritance(ASTNode *node, const char *indent)
+void NedGenerator::printInheritance(ASTNode *node, const char *indent)
 {
     if (node->getFirstChildWithTag(NED_EXTENDS)) {
         OUT << " extends ";
@@ -153,7 +153,7 @@ void Ned2Generator::printInheritance(ASTNode *node, const char *indent)
     }
 }
 
-bool Ned2Generator::hasExpression(ASTNode *node, const char *attr)
+bool NedGenerator::hasExpression(ASTNode *node, const char *attr)
 {
     if (!opp_isempty(node->getAttribute(attr))) {
         return true;
@@ -167,7 +167,7 @@ bool Ned2Generator::hasExpression(ASTNode *node, const char *attr)
     }
 }
 
-void Ned2Generator::printExpression(ASTNode *node, const char *attr, const char *indent)
+void NedGenerator::printExpression(ASTNode *node, const char *attr, const char *indent)
 {
     if (!opp_isempty(node->getAttribute(attr))) {
         OUT << node->getAttribute(attr);
@@ -180,7 +180,7 @@ void Ned2Generator::printExpression(ASTNode *node, const char *attr, const char 
     }
 }
 
-void Ned2Generator::printOptVector(ASTNode *node, const char *attr, const char *indent)
+void NedGenerator::printOptVector(ASTNode *node, const char *attr, const char *indent)
 {
     if (hasExpression(node, attr)) {
         OUT << "[";
@@ -224,7 +224,7 @@ static std::string formatComment(const char *comment, const char *indent, const 
     return ret;
 }
 
-std::string Ned2Generator::concatInnerComments(ASTNode *node)
+std::string NedGenerator::concatInnerComments(ASTNode *node)
 {
     std::string ret;
     for (ASTNode *child = node->getFirstChildWithTag(NED_COMMENT); child; child = child->getNextSiblingWithTag(NED_COMMENT)) {
@@ -235,26 +235,26 @@ std::string Ned2Generator::concatInnerComments(ASTNode *node)
     return ret;
 }
 
-std::string Ned2Generator::getBannerComment(ASTNode *node, const char *indent)
+std::string NedGenerator::getBannerComment(ASTNode *node, const char *indent)
 {
     const char *comment = getComment(node, "banner");
     std::string innerComments = concatInnerComments(node);
     return formatComment(comment, indent, "") + formatComment(innerComments.c_str(), indent, "");
 }
 
-std::string Ned2Generator::getRightComment(ASTNode *node)
+std::string NedGenerator::getRightComment(ASTNode *node)
 {
     const char *comment = getComment(node, "right");
     return formatComment(comment, nullptr, "\n");
 }
 
-std::string Ned2Generator::getInlineRightComment(ASTNode *node)
+std::string NedGenerator::getInlineRightComment(ASTNode *node)
 {
     const char *comment = getComment(node, "right");
     return formatComment(comment, nullptr, " ");
 }
 
-std::string Ned2Generator::getTrailingComment(ASTNode *node)
+std::string NedGenerator::getTrailingComment(ASTNode *node)
 {
     const char *comment = getComment(node, "trailing");
     return formatComment(comment, nullptr, "\n");
@@ -262,30 +262,30 @@ std::string Ned2Generator::getTrailingComment(ASTNode *node)
 
 //---------------------------------------------------------------------------
 
-void Ned2Generator::doFiles(FilesElement *node, const char *indent, bool, const char *)
+void NedGenerator::doFiles(FilesElement *node, const char *indent, bool, const char *)
 {
     generateChildren(node, indent);
 }
 
-void Ned2Generator::doNedFile(NedFileElement *node, const char *indent, bool, const char *)
+void NedGenerator::doNedFile(NedFileElement *node, const char *indent, bool, const char *)
 {
     OUT << getBannerComment(node, indent);
     generateChildren(node, indent);
 }
 
-void Ned2Generator::doPackage(PackageElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doPackage(PackageElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "package " << node->getName() << ";" << getRightComment(node);
 }
 
-void Ned2Generator::doImport(ImportElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doImport(ImportElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "import " << node->getImportSpec() << ";" << getRightComment(node);
 }
 
-void Ned2Generator::doPropertyDecl(PropertyDeclElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doPropertyDecl(PropertyDeclElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "property @" << node->getName();
@@ -299,21 +299,21 @@ void Ned2Generator::doPropertyDecl(PropertyDeclElement *node, const char *indent
     OUT << ";" << getRightComment(node);
 }
 
-void Ned2Generator::doExtends(ExtendsElement *node, const char *indent, bool islast, const char *sep)
+void NedGenerator::doExtends(ExtendsElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << node->getName();
     if (!islast && sep)
         OUT << (sep ? sep : "");
 }
 
-void Ned2Generator::doInterfaceName(InterfaceNameElement *node, const char *indent, bool islast, const char *sep)
+void NedGenerator::doInterfaceName(InterfaceNameElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << node->getName();
     if (!islast && sep)
         OUT << (sep ? sep : "");
 }
 
-void Ned2Generator::doSimpleModule(SimpleModuleElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doSimpleModule(SimpleModuleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "simple " << node->getName();
@@ -327,7 +327,7 @@ void Ned2Generator::doSimpleModule(SimpleModuleElement *node, const char *indent
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void Ned2Generator::doModuleInterface(ModuleInterfaceElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doModuleInterface(ModuleInterfaceElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "moduleinterface " << node->getName();
@@ -341,7 +341,7 @@ void Ned2Generator::doModuleInterface(ModuleInterfaceElement *node, const char *
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void Ned2Generator::doCompoundModule(CompoundModuleElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doCompoundModule(CompoundModuleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     bool isNetwork = ASTNodeUtil::getLocalBoolProperty(node, "isNetwork");
@@ -359,7 +359,7 @@ void Ned2Generator::doCompoundModule(CompoundModuleElement *node, const char *in
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void Ned2Generator::doChannelInterface(ChannelInterfaceElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doChannelInterface(ChannelInterfaceElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "channelinterface " << node->getName();
@@ -372,7 +372,7 @@ void Ned2Generator::doChannelInterface(ChannelInterfaceElement *node, const char
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void Ned2Generator::doChannel(ChannelElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doChannel(ChannelElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "channel ";
@@ -386,7 +386,7 @@ void Ned2Generator::doChannel(ChannelElement *node, const char *indent, bool isl
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void Ned2Generator::doParameters(ParametersElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doParameters(ParametersElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     if (!node->getIsImplicit())
@@ -398,7 +398,7 @@ void Ned2Generator::doParameters(ParametersElement *node, const char *indent, bo
     generateChildren(node, inlineParams ? nullptr : node->getIsImplicit() ? indent : increaseIndent(indent));
 }
 
-void Ned2Generator::doParam(ParamElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doParam(ParamElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     if (indent)
@@ -440,7 +440,7 @@ void Ned2Generator::doParam(ParamElement *node, const char *indent, bool islast,
         OUT << ";";
 }
 
-void Ned2Generator::doProperty(PropertyElement *node, const char *indent, bool islast, const char *sep)
+void NedGenerator::doProperty(PropertyElement *node, const char *indent, bool islast, const char *sep)
 {
     if (!node->getIsImplicit()) {
         // if sep==nullptr, print as standalone property (with indent and ";"), otherwise as inline property
@@ -465,7 +465,7 @@ void Ned2Generator::doProperty(PropertyElement *node, const char *indent, bool i
     }
 }
 
-void Ned2Generator::doPropertyKey(PropertyKeyElement *node, const char *indent, bool islast, const char *sep)
+void NedGenerator::doPropertyKey(PropertyKeyElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << node->getName();
     if (node->getFirstChildWithTag(NED_LITERAL)) {
@@ -477,14 +477,14 @@ void Ned2Generator::doPropertyKey(PropertyKeyElement *node, const char *indent, 
         OUT << (sep ? sep : "");
 }
 
-void Ned2Generator::doGates(GatesElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doGates(GatesElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "gates:" << getRightComment(node);
     generateChildren(node, increaseIndent(indent));
 }
 
-void Ned2Generator::doGate(GateElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doGate(GateElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent;
@@ -505,21 +505,21 @@ void Ned2Generator::doGate(GateElement *node, const char *indent, bool islast, c
     ;
 }
 
-void Ned2Generator::doTypes(TypesElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doTypes(TypesElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "types:" << getRightComment(node);
     generateChildren(node, increaseIndent(indent));
 }
 
-void Ned2Generator::doSubmodules(SubmodulesElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doSubmodules(SubmodulesElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "submodules:" << getRightComment(node);
     generateChildren(node, increaseIndent(indent));
 }
 
-void Ned2Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doSubmodule(SubmoduleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName();
@@ -559,7 +559,7 @@ void Ned2Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool
     }
 }
 
-void Ned2Generator::doConnections(ConnectionsElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doConnections(ConnectionsElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     if (node->getAllowUnconnected()) {
@@ -571,7 +571,7 @@ void Ned2Generator::doConnections(ConnectionsElement *node, const char *indent, 
     generateChildren(node, increaseIndent(indent));
 }
 
-void Ned2Generator::doConnection(ConnectionElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doConnection(ConnectionElement *node, const char *indent, bool islast, const char *)
 {
     // direction
     const char *arrow = node->getIsBidirectional() ? " <-->" : node->getIsForwardArrow() ? " -->" : " <--";
@@ -638,7 +638,7 @@ void Ned2Generator::doConnection(ConnectionElement *node, const char *indent, bo
     OUT << ";" << getRightComment(node);
 }
 
-void Ned2Generator::doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     if (node->getFirstChildWithTag(NED_LOOP) || node->getFirstChildWithTag(NED_CONDITION)) {
@@ -654,7 +654,7 @@ void Ned2Generator::doConnectionGroup(ConnectionGroupElement *node, const char *
     OUT << indent << "}" << getTrailingComment(node);
 }
 
-void Ned2Generator::doLoop(LoopElement *node, const char *indent, bool islast, const char *sep)
+void NedGenerator::doLoop(LoopElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << "for " << node->getParamName() << "=";
     printExpression(node, "from-value", indent);
@@ -665,7 +665,7 @@ void Ned2Generator::doLoop(LoopElement *node, const char *indent, bool islast, c
         OUT << (sep ? sep : "");
 }
 
-void Ned2Generator::doCondition(ConditionElement *node, const char *indent, bool islast, const char *sep)
+void NedGenerator::doCondition(ConditionElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << "if ";
     printExpression(node, "condition", indent);
@@ -673,7 +673,7 @@ void Ned2Generator::doCondition(ConditionElement *node, const char *indent, bool
         OUT << (sep ? sep : "");
 }
 
-void Ned2Generator::printConnectionGate(ASTNode *conn, const char *modname, const char *modindexattr,
+void NedGenerator::printConnectionGate(ASTNode *conn, const char *modname, const char *modindexattr,
         const char *gatename, const char *gateindexattr, bool isplusplus,
         int gatesubg, const char *indent)
 {
@@ -696,12 +696,12 @@ void Ned2Generator::printConnectionGate(ASTNode *conn, const char *modname, cons
         printOptVector(conn, gateindexattr, indent);
 }
 
-void Ned2Generator::doExpression(ExpressionElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doExpression(ExpressionElement *node, const char *indent, bool islast, const char *)
 {
     generateChildren(node, indent);
 }
 
-int Ned2Generator::getOperatorPrecedence(const char *op, int args)
+int NedGenerator::getOperatorPrecedence(const char *op, int args)
 {
     //
     // this method should always contain the same precendence rules as ebnf.y
@@ -767,14 +767,14 @@ int Ned2Generator::getOperatorPrecedence(const char *op, int args)
     return -1;
 }
 
-bool Ned2Generator::isOperatorLeftAssoc(const char *op)
+bool NedGenerator::isOperatorLeftAssoc(const char *op)
 {
     // only exponentiation is right assoc, all others are left assoc
     if (!strcmp(op,"^")) return false;
     return true;
 }
 
-void Ned2Generator::doOperator(OperatorElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doOperator(OperatorElement *node, const char *indent, bool islast, const char *)
 {
     ASTNode *op1 = node->getFirstChild();
     ASTNode *op2 = op1 ? op1->getNextSibling() : nullptr;
@@ -834,7 +834,7 @@ void Ned2Generator::doOperator(OperatorElement *node, const char *indent, bool i
     }
 }
 
-void Ned2Generator::doFunction(FunctionElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doFunction(FunctionElement *node, const char *indent, bool islast, const char *)
 {
     if (!strcmp(node->getName(), "index")) {
         OUT << node->getName();  // 'index' doesn't need parentheses
@@ -850,7 +850,7 @@ void Ned2Generator::doFunction(FunctionElement *node, const char *indent, bool i
     OUT << ")";
 }
 
-void Ned2Generator::doIdent(IdentElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doIdent(IdentElement *node, const char *indent, bool islast, const char *)
 {
     if (!opp_isempty(node->getModule())) {
         OUT << node->getModule();
@@ -865,7 +865,7 @@ void Ned2Generator::doIdent(IdentElement *node, const char *indent, bool islast,
     OUT << node->getName();
 }
 
-void Ned2Generator::doLiteral(LiteralElement *node, const char *indent, bool islast, const char *sep)
+void NedGenerator::doLiteral(LiteralElement *node, const char *indent, bool islast, const char *sep)
 {
     if (!opp_isempty(node->getText())) {
         OUT << node->getText();
@@ -881,14 +881,14 @@ void Ned2Generator::doLiteral(LiteralElement *node, const char *indent, bool isl
         OUT << (sep ? sep : "");
 }
 
-void Ned2Generator::doComment(CommentElement *node, const char *indent, bool islast, const char *)
+void NedGenerator::doComment(CommentElement *node, const char *indent, bool islast, const char *)
 {
     // ignore here: comments are taken care of individually where they occur
 }
 
 //---------------------------------------------------------------------------
 
-void Ned2Generator::generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg)
+void NedGenerator::generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg)
 {
     // dispatch
     int tagcode = node->getTagCode();

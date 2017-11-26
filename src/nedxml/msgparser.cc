@@ -111,7 +111,7 @@ ASTNode *MsgParser::parseMsg()
     np.errors->clear();
     msgLexerSetRecognizeImportKeyword(np.msgNewSyntax);
     msgLexerSetRecognizeObsoleteKeywords(!np.msgNewSyntax);
-    return ::doParseMSG2(&np, np.source->getFullText());
+    return ::doParseMsg(&np, np.source->getFullText());
 }
 
 }  // namespace nedxml

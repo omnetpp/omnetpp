@@ -698,7 +698,7 @@ opt_semicolon : ';' | ;
 //
 int msg2yylex_destroy();  // from lex.XXX.cc file
 
-ASTNode *doParseMSG2(ParseContext *np, const char *msgtext)
+ASTNode *doParseMsg(ParseContext *np, const char *msgtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;

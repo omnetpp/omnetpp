@@ -24,8 +24,8 @@
 #include "nedtypeinfo.h"
 
 #include "errorstore.h"
+#include "nedgenerator.h"
 #include "nedresourcecache.h"
-#include "ned2generator.h"
 
 using namespace omnetpp::common;
 
@@ -220,7 +220,7 @@ std::string NedTypeInfo::getNedSource() const
 {
     std::stringstream out;
     ErrorStore errors;
-    generateNED2(out, getTree());
+    generateNed(out, getTree());
     return out.str();
 }
 

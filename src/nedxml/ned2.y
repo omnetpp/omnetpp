@@ -125,7 +125,7 @@ using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
 using namespace omnetpp::nedxml::nedyyutil;
 
-static struct Ned2ParserState
+static struct NedParserState
 {
     bool inTypes;
     bool inConnGroup;
@@ -174,11 +174,11 @@ static struct Ned2ParserState
 
 static void resetParserState()
 {
-    static Ned2ParserState cleanps;
+    static NedParserState cleanps;
     ps = cleanps;
 }
 
-static Ned2ParserState globalps;  // for error recovery
+static NedParserState globalps;  // for error recovery
 
 static void restoreGlobalParserState()  // for error recovery
 {
@@ -1680,7 +1680,7 @@ opt_semicolon
 //
 int ned2yylex_destroy();  // from lex.XXX.cc file
 
-ASTNode *doParseNED2(ParseContext *np, const char *nedtext)
+ASTNode *doParseNed(ParseContext *np, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;

@@ -41,7 +41,7 @@
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
 #include "msggenerator.h"
-#include "ned2generator.h"
+#include "nedgenerator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
 #include "xmlastparser.h"
@@ -188,7 +188,7 @@ bool renameFileToBAK(const char *fname)
 void generateSource(std::ostream& out, ASTNode *node, ErrorStore *e, int contentType)
 {
     switch (contentType) {
-    case NED_FILE: generateNED2(out, node); break;
+    case NED_FILE: generateNed(out, node); break;
     case MSG_FILE: generateMsg(out, node); break;
     }
 }
