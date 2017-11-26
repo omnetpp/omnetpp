@@ -105,12 +105,12 @@ static char *expryyconcat(char *s1, char *s2, char *s3=nullptr)
 
 static void addFunction(const char *funcname, int argc)
 {
-    cNEDMathFunction *f = cNEDMathFunction::find(funcname, argc);
+    cNedMathFunction *f = cNedMathFunction::find(funcname, argc);
     if (f) {
         *e++ = f;
         return;
     }
-    cNEDFunction *nf = cNEDFunction::find(funcname);
+    cNedFunction *nf = cNedFunction::find(funcname);
     if (nf) {
         if (argc < nf->getMinArgs() || (argc > nf->getMaxArgs() && !nf->hasVarArgs()))
             yyerror(opp_stringf("function '%s' does not accept %d arguments", nf->getSignature(), argc).c_str());
@@ -257,24 +257,24 @@ funcname
 
 identifier
         : NAME
-                { *e++ = new NEDSupport::ParameterRef($1, true, false); delete [] $1; }
+                { *e++ = new NedSupport::ParameterRef($1, true, false); delete [] $1; }
         | THIS_ '.' NAME
-                { *e++ = new NEDSupport::ParameterRef($3, false, true); delete [] $3; }
+                { *e++ = new NedSupport::ParameterRef($3, false, true); delete [] $3; }
         | NAME '.' NAME
-                { *e++ = new NEDSupport::SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
+                { *e++ = new NedSupport::SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
         | NAME '[' expression ']' '.' NAME
-                { *e++ = new NEDSupport::SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
+                { *e++ = new NedSupport::SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
         ;
 
 special_expr
         : INDEX_
-                { *e++ = new NEDSupport::ModuleIndex(); }
+                { *e++ = new NedSupport::ModuleIndex(); }
         | INDEX_ '(' ')'
-                { *e++ = new NEDSupport::ModuleIndex(); }
+                { *e++ = new NedSupport::ModuleIndex(); }
         | SIZEOF_ '(' NAME ')'
-                { *e++ = new NEDSupport::Sizeof($3, true, false); delete [] $3; }
+                { *e++ = new NedSupport::Sizeof($3, true, false); delete [] $3; }
         | SIZEOF_ '(' THIS_ '.' NAME ')'
-                { *e++ = new NEDSupport::Sizeof($5, false, false); delete [] $5; }
+                { *e++ = new NedSupport::Sizeof($5, false, false); delete [] $5; }
         | SIZEOF_ '(' NAME '.' NAME ')'
                 { delete [] $3; delete [] $5; yyerror("sizeof(submodule.gate) notation not supported here"); }
         | SIZEOF_ '(' NAME '[' expression ']' '.' NAME ')'

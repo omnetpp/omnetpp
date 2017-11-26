@@ -28,14 +28,14 @@ namespace nedxml {
 
 #define BUFLEN    1024
 
-NEDException::NEDException(const char *messagefmt...) : std::runtime_error("")
+NedException::NedException(const char *messagefmt...) : std::runtime_error("")
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);
     msg = message;
 }
 
-NEDException::NEDException(ASTNode *context, const char *messagefmt...) : std::runtime_error("")
+NedException::NedException(ASTNode *context, const char *messagefmt...) : std::runtime_error("")
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);

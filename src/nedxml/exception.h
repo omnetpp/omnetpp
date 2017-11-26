@@ -28,9 +28,9 @@ namespace nedxml {
 class ASTNode;
 
 /**
- * @brief Low-level routines throw an exception instead of calling NEDErrorStore->add().
+ * @brief Low-level routines throw an exception instead of calling NedErrorStore->add().
  */
-class NEDXML_API NEDException : public std::runtime_error
+class NEDXML_API NedException : public std::runtime_error
 {
   protected:
     std::string msg;
@@ -39,17 +39,17 @@ class NEDXML_API NEDException : public std::runtime_error
     /**
      * The error message can be generated in a printf-like manner.
      */
-    NEDException(const char *messagefmt,...);
+    NedException(const char *messagefmt,...);
 
     /**
      * The error message can be generated in a printf-like manner.
      */
-    NEDException(ASTNode *context, const char *messagefmt,...);
+    NedException(ASTNode *context, const char *messagefmt,...);
 
     /**
      * Empty destructor with throw clause for gcc.
      */
-    virtual ~NEDException() throw() {}
+    virtual ~NedException() throw() {}
 
     /**
      * Returns the text of the error. Redefined from std::exception.

@@ -43,9 +43,9 @@ class SourceDocument;
  * ASTNodeFactory is used to actually create the objects.
  * Internally this class uses a bison/flex grammar and SourceDocument.
  *
- * @ingroup MSGParser
+ * @ingroup MsgParser
  */
-class NEDXML_API NEDParser
+class NEDXML_API NedParser
 {
   public:
     ParseContext np;
@@ -53,18 +53,18 @@ class NEDXML_API NEDParser
   protected:
     bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
-    ASTNode *parseNED();
+    ASTNode *parseNed();
 
   public:
     /**
      * Constructor.
      */
-    NEDParser(ErrorStore *e);
+    NedParser(ErrorStore *e);
 
     /**
      * Destructor.
      */
-    ~NEDParser();
+    ~NedParser();
 
     /**
      * Returns a NED source which contains declarations of
@@ -102,7 +102,7 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    ASTNode *parseNEDFile(const char *osfname, const char *fname=nullptr);
+    ASTNode *parseNedFile(const char *osfname, const char *fname=nullptr);
 
     /**
      * Parse the given NED source and return the result tree.
@@ -110,13 +110,13 @@ class NEDXML_API NEDParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to "buffer".
      */
-    ASTNode *parseNEDText(const char *nedtext, const char *fname=nullptr);
+    ASTNode *parseNedText(const char *nedtext, const char *fname=nullptr);
 
     /**
      * Parse the given text as a NED expression, and return the result tree.
      * Returns nullptr or partial tree if there was an error.
      */
-    ASTNode *parseNEDExpression(const char *nedexpression);
+    ASTNode *parseNedExpression(const char *nedexpression);
 };
 
 } // namespace nedxml

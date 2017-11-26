@@ -31,7 +31,7 @@ class ErrorStore;
  *
  * @ingroup Validation
  */
-class NEDXML_API DTDValidationUtils
+class NEDXML_API DtdValidationUtils
 {
   protected:
     ErrorStore *errors;
@@ -44,7 +44,7 @@ class NEDXML_API DTDValidationUtils
     };
 
   public:
-    DTDValidationUtils(ErrorStore *e) : errors(e) {}
+    DtdValidationUtils(ErrorStore *e) : errors(e) {}
     void checkSequence(ASTNode *node, int tags[], char mult[]);
     void checkChoice(ASTNode *node, int tags[], char mult);
     void checkSeqOfChoices(ASTNode *node, Choice choices[], int n);

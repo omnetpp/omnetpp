@@ -31,7 +31,7 @@ $buf =~ s/<!--.*?-->//sg;
 close(IN);
 
 $ned = $lang;
-$Ned = uc($lang); #TODO: ucfirst($lang);
+$Ned = ucfirst($lang);
 $NED = uc($lang);
 
 $shortfilename = $filename;
@@ -557,7 +557,7 @@ foreach $element (@elements)
     $startletter = $1;
     print CC "    if (tagname[0]=='$startletter' && !strcmp(tagname,\"$element\"))  return new $elementclass{$element}();\n";
 }
-print CC "    throw NEDException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
+print CC "    throw NedException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
 print CC "}\n\n";
 print CC "ASTNode *${Ned}AstNodeFactory::createElementWithTag(int tagcode)\n";
 print CC "{\n";
@@ -569,7 +569,7 @@ foreach $element (@elements)
     print CC "        case $enumname{$element}: return new $elementclass{$element}();\n";
 }
 print CC "    }\n";
-print CC "    throw NEDException(\"unknown tag code %d, cannot create object to represent it\", tagcode);\n";
+print CC "    throw NedException(\"unknown tag code %d, cannot create object to represent it\", tagcode);\n";
 print CC "}\n\n";
 print CC "} // namespace nedxml\n";
 print CC "} // namespace omnetpp\n\n";
@@ -652,9 +652,9 @@ foreach $element (@elements)
 print VAL_CC "            default: INTERNAL_ERROR1(node,\"validateElement(): unknown tag '%s'\", node->getTagName());\n";
 print VAL_CC "        }\n";
 print VAL_CC "    }\n";
-print VAL_CC "    catch (NEDException& e)\n";
+print VAL_CC "    catch (NedException& e)\n";
 print VAL_CC "    {\n";
-print VAL_CC "        INTERNAL_ERROR1(node,\"validateElement(): NEDException: %s\", e.what());\n";
+print VAL_CC "        INTERNAL_ERROR1(node,\"validateElement(): NedException: %s\", e.what());\n";
 print VAL_CC "    }\n";
 print VAL_CC "}\n\n";
 print VAL_CC "} // namespace nedxml\n";
@@ -689,14 +689,14 @@ print DTDVAL_H " * @brief GENERATED CLASS. Validates an ASTNode tree by the DTD.
 print DTDVAL_H " *\n";
 print DTDVAL_H " * \@ingroup Validation\n";
 print DTDVAL_H " */\n";
-print DTDVAL_H "class NEDXML_API ${Ned}DTDValidator : public ${Ned}ValidatorBase\n";
+print DTDVAL_H "class NEDXML_API ${Ned}DtdValidator : public ${Ned}ValidatorBase\n";
 print DTDVAL_H "{\n";
 print DTDVAL_H "  protected:\n";
-print DTDVAL_H "      typedef DTDValidationUtils::Choice Choice;\n";
-print DTDVAL_H "      DTDValidationUtils utils;\n";
+print DTDVAL_H "      typedef DtdValidationUtils::Choice Choice;\n";
+print DTDVAL_H "      DtdValidationUtils utils;\n";
 print DTDVAL_H "  public:\n";
-print DTDVAL_H "    ${Ned}DTDValidator(ErrorStore *e) : ${Ned}ValidatorBase(e), utils(e) {}\n";
-print DTDVAL_H "    virtual ~${Ned}DTDValidator() {}\n";
+print DTDVAL_H "    ${Ned}DtdValidator(ErrorStore *e) : ${Ned}ValidatorBase(e), utils(e) {}\n";
+print DTDVAL_H "    virtual ~${Ned}DtdValidator() {}\n";
 print DTDVAL_H "\n";
 print DTDVAL_H "  protected:\n";
 print DTDVAL_H "    /** \@name Validation functions */\n";
@@ -713,7 +713,7 @@ print DTDVAL_H "#endif\n\n";
 
 foreach $element (@elements)
 {
-    print DTDVAL_CC "void ${Ned}DTDValidator\:\:validateElement($elementclass{$element} *node)\n";
+    print DTDVAL_CC "void ${Ned}DtdValidator\:\:validateElement($elementclass{$element} *node)\n";
     print DTDVAL_CC "{\n";
     if ($elementdef{$element} =~ /^\(([^|]*)\)$/) {  # in parens, does not contain "|"
        @a = split(',',$1);

@@ -1154,7 +1154,7 @@ void MainWindow::showFindObjectsDialog(cObject *obj)
     connect(this, SIGNAL(setNewNetwork()), dialog, SLOT(invalidate()));
 }
 
-void MainWindow::on_actionLoadNEDFile_triggered()
+void MainWindow::on_actionLoadNedFile_triggered()
 {
     QString lastNedFile = getQtenv()->getPref("last-nedfile", ".").value<QString>();
 
@@ -1293,7 +1293,7 @@ void MainWindow::on_actionSimulation_triggered()
 }
 
 // inspectComponentTypes
-void MainWindow::on_actionNEDComponentTypes_triggered()
+void MainWindow::on_actionNedComponentTypes_triggered()
 {
     getQtenv()->inspect(componentTypes.getInstance(), INSP_DEFAULT, true);
 }

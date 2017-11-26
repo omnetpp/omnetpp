@@ -25,12 +25,12 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-void NEDTools::repairASTNodeTree(ASTNode *tree)
+void NedTools::repairASTNodeTree(ASTNode *tree)
 {
     while (true) {
         // try DTD validation, and find first problem
         ErrorStore errors;
-        NEDDTDValidator dtdValidator(&errors);
+        NedDtdValidator dtdValidator(&errors);
         dtdValidator.validate(tree);
         if (errors.empty())
             break;  // we're done
@@ -46,7 +46,7 @@ void NEDTools::repairASTNodeTree(ASTNode *tree)
     }
 }
 
-void NEDTools::splitToFiles(FilesElement *tree)
+void NedTools::splitToFiles(FilesElement *tree)
 {
     FilesElement *tmpTree = new FilesElement();
     for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {

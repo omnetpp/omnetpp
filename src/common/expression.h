@@ -152,7 +152,7 @@ class COMMON_API Expression
         void operator=(const char* _s);
 
         /**
-         * Function object, with an interface not unlike cNEDFunction.
+         * Function object, with an interface not unlike cNedFunction.
          * This object will be deleted by expression's destructor.
          */
         void operator=(Functor* _f);

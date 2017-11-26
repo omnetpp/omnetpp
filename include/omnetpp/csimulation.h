@@ -35,7 +35,7 @@ class cException;
 class cFutureEventSet;
 class cScheduler;
 class cParsimPartition;
-class cNEDFileLoader;
+class cNedFileLoader;
 class cFingerprintCalculator;
 class cModuleType;
 class cEnvir;

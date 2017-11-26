@@ -54,7 +54,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         MatchExpression moduleExpression;
         std::vector<PatternMatcher> moduleNames;
         std::vector<PatternMatcher> moduleClassNames;
-        std::vector<PatternMatcher> moduleNEDTypeNames;
+        std::vector<PatternMatcher> moduleNedTypeNames;
         std::vector<int> moduleIds; // events outside these modules will be filtered out, nullptr means include all
 
         // message filter
@@ -113,7 +113,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setModuleExpression(const char *moduleExpression) { if (moduleExpression) this->moduleExpression.setPattern(moduleExpression, false, true, false); }
         void setModuleNames(std::vector<std::string> &moduleNames) { setPatternMatchers(this->moduleNames, moduleNames, true); }
         void setModuleClassNames(std::vector<std::string> &moduleClassNames) { setPatternMatchers(this->moduleClassNames, moduleClassNames); }
-        void setModuleNEDTypeNames(std::vector<std::string> &moduleNEDTypeNames) { setPatternMatchers(this->moduleNEDTypeNames, moduleNEDTypeNames); }
+        void setModuleNedTypeNames(std::vector<std::string> &moduleNedTypeNames) { setPatternMatchers(this->moduleNedTypeNames, moduleNedTypeNames); }
         void setModuleIds(std::vector<int> &moduleIds) { this->moduleIds = moduleIds; }
 
         void setEnableMessageFilter(bool enableMessageFilter) { this->enableMessageFilter = enableMessageFilter; }

@@ -125,7 +125,7 @@ using namespace omnetpp::common;
 using namespace omnetpp::nedxml;
 using namespace omnetpp::nedxml::nedyyutil;
 
-static struct NED2ParserState
+static struct Ned2ParserState
 {
     bool inTypes;
     bool inConnGroup;
@@ -174,11 +174,11 @@ static struct NED2ParserState
 
 static void resetParserState()
 {
-    static NED2ParserState cleanps;
+    static Ned2ParserState cleanps;
     ps = cleanps;
 }
 
-static NED2ParserState globalps;  // for error recovery
+static Ned2ParserState globalps;  // for error recovery
 
 static void restoreGlobalParserState()  // for error recovery
 {
@@ -1737,7 +1737,7 @@ ASTNode *doParseNED2(ParseContext *np, const char *nedtext)
     {
         yyparse(np);
     }
-    catch (NEDException& e)
+    catch (NedException& e)
     {
         yyerror(np, (std::string("error during parsing: ")+e.what()).c_str());
         yy_delete_buffer(handle);

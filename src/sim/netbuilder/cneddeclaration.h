@@ -37,16 +37,16 @@ namespace common { class PatternMatcher; };
 using namespace omnetpp::nedxml;
 
 /**
- * @brief Extends NEDTypeInfo with property and cached expression storage,
+ * @brief Extends NedTypeInfo with property and cached expression storage,
  * suitable for the sim kernel (cDynamicModuleType/cDynamicChannelType).
  *
- * cNEDDeclarations are used during network setup (and dynamic module
+ * cNedDeclarations are used during network setup (and dynamic module
  * creation) to add gates and parameters to the freshly created module
  * object, and also to verify that module parameters are set correctly.
  *
- * Adds the following to NEDTypeInfo:
+ * Adds the following to NedTypeInfo:
  *
- *  - parameter and gate descriptions extracted from the NEDElement trees,
+ *  - parameter and gate descriptions extracted from the NedElement trees,
  *    also following the inheritance chain. Inherited parameters and
  *    gates are included, and values (parameters and gate sizes) are
  *    converted into and stored in cPar form.
@@ -54,7 +54,7 @@ using namespace omnetpp::nedxml;
  *
  * @ingroup Internals
  */
-class SIM_API cNEDDeclaration : public NEDTypeInfo
+class SIM_API cNedDeclaration : public NedTypeInfo
 {
   public:
     typedef omnetpp::common::PatternMatcher PatternMatcher;
@@ -80,7 +80,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     StringPatternDataMap submodulePatterns;  // contains patterns defined in the "submodules" section
 
     // super types in base-to-derived order, including (and ending with) the "this" pointer; empty if unfilled
-    std::vector<cNEDDeclaration*> inheritanceChain;
+    std::vector<cNedDeclaration*> inheritanceChain;
 
   protected:
     void putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const;
@@ -90,7 +90,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     void clearPropsMap(StringPropsMap& propsMap);
     void clearSharedParImplMap(SharedParImplMap& parimplMap);
 
-    static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
+    static cProperties *mergeProperties(const cProperties *baseprops, NedElement *parent);
     static void updateProperty(PropertyElement *propNode, cProperty *prop);
     static void updateDisplayProperty(PropertyElement *propNode, cProperty *prop);
 
@@ -107,12 +107,12 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     /**
      * Constructor. It takes the fully qualified name.
      */
-    cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree);
+    cNedDeclaration(NedResourceCache *resolver, const char *qname, bool isInnerType, NedElement *tree);
 
     /**
      * Destructor.
      */
-    virtual ~cNEDDeclaration();
+    virtual ~cNedDeclaration();
     //@}
 
     /** @name Misc */
@@ -120,13 +120,13 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     /**
      * Redefined to change return type (covariant return type)
      */
-    virtual cNEDDeclaration *getSuperDecl() const override;
+    virtual cNedDeclaration *getSuperDecl() const override;
 
     /**
      * Returns the inheritance chain. Starts with the base types, and ends
      * with the "this" pointer.
      */
-    virtual const std::vector<cNEDDeclaration*>& getInheritanceChain();
+    virtual const std::vector<cNedDeclaration*>& getInheritanceChain();
 
     /**
      * Returns the pattern-based parameter assignments on the type (i.e. the
@@ -154,8 +154,8 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
 
     /** @name Caching of pre-built cParImpls, so that we we do not have to build them from ASTNodes every time */
     //@{
-    virtual cParImpl *getSharedParImplFor(NEDElement *node);
-    virtual void putSharedParImplFor(NEDElement *node, cParImpl *value);
+    virtual cParImpl *getSharedParImplFor(NedElement *node);
+    virtual void putSharedParImplFor(NedElement *node, cParImpl *value);
     //@}
 };
 

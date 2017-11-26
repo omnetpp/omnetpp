@@ -223,7 +223,7 @@ static bool processFile(const char *fname, ErrorStore *errors)
             MsgParser parser(errors);
             parser.setMsgNewSyntaxFlag(opt_msgimports);
             parser.setStoreSource(opt_storesrc);
-            tree = parser.parseMSGFile(fname);
+            tree = parser.parseMsgFile(fname);
         }
 
         if (errors->containsError()) {
@@ -232,7 +232,7 @@ static bool processFile(const char *fname, ErrorStore *errors)
         }
 
         // DTD validation and additional syntax validation
-        MSGDTDValidator dtdvalidator(errors);
+        MsgDtdValidator dtdvalidator(errors);
         dtdvalidator.validate(tree);
         if (errors->containsError()) {
             delete tree;

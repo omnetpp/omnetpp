@@ -815,7 +815,7 @@ void MsgCompilerOld::prepareFieldForCodeGeneration(ClassInfo& info, ClassInfo::F
     }
     else {
         if (tdIt == PRIMITIVE_TYPES.end())
-            throw NEDException("Internal error - unknown primitive data type '%s'", it->ftype.c_str());
+            throw NedException("Internal error - unknown primitive data type '%s'", it->ftype.c_str());
         // defaults:
         it->datatype = tdIt->second.cppTypeName;
         it->argtype = tdIt->second.cppTypeName;
@@ -871,7 +871,7 @@ void MsgCompilerOld::prepareForCodeGeneration(ClassInfo& info)
             info.classtype = STRUCT;
         }
         else {
-            throw NEDException("Internal error: Invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
+            throw NedException("Internal error: Invalid keyword:'%s' at '%s'", info.keyword.c_str(), info.msgclass.c_str());
         }
         // if announced earlier as noncobject, accept that.
         if (isClassDeclared(info.msgqname)) {
@@ -932,7 +932,7 @@ void MsgCompilerOld::prepareForCodeGeneration(ClassInfo& info)
             info.msgbaseclass = "";
         }
         else {
-            throw NEDException("Internal error");
+            throw NedException("Internal error");
         }
     }
     else if (info.msgbase == "void") {
@@ -1508,11 +1508,11 @@ void MsgCompilerOld::generateStruct(const ClassInfo& info)
 
     for (const auto & it : info.fieldlist) {
         if (it.fisabstract)
-            throw NEDException("Abstract fields are not supported in a struct");
+            throw NedException("Abstract fields are not supported in a struct");
         if (it.classtype == COWNEDOBJECT)
-            throw NEDException("cOwnedObject fields are not supported in a struct");
+            throw NedException("cOwnedObject fields are not supported in a struct");
         if (it.fisarray && it.farraysize.empty())
-            throw NEDException("Dynamic arrays are not supported in a struct");
+            throw NedException("Dynamic arrays are not supported in a struct");
         if (it.fisarray && !it.farraysize.empty()) {
             if (it.fisprimitivetype && !it.fval.empty()) {
                 CC << "    for (" << it.fsizetype << " i=0; i<" << it.farraysize << "; i++)\n";
@@ -1907,7 +1907,7 @@ void MsgCompilerOld::generateDescriptorClass(const ClassInfo& info)
             }
         }
         else {
-            throw NEDException("Internal error");
+            throw NedException("Internal error");
         }
     }
     CC << "        default: return \"\";\n";

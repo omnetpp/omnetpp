@@ -30,12 +30,12 @@ cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {
 }
 
-cNEDDeclaration *cDynamicModuleType::getDecl() const
+cNedDeclaration *cDynamicModuleType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been
-    // thrown out of cNEDLoader to conserve memory
-    cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(getFullName());
-    ASSERT(decl->getType() == cNEDDeclaration::SIMPLE_MODULE || decl->getType() == cNEDDeclaration::COMPOUND_MODULE);
+    // thrown out of cNedLoader to conserve memory
+    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(getFullName());
+    ASSERT(decl->getType() == cNedDeclaration::SIMPLE_MODULE || decl->getType() == cNedDeclaration::COMPOUND_MODULE);
     return decl;
 }
 
@@ -46,7 +46,7 @@ std::string cDynamicModuleType::str() const
 
 std::string cDynamicModuleType::getNedSource() const
 {
-    return getDecl()->getNEDSource();
+    return getDecl()->getNedSource();
 }
 
 bool cDynamicModuleType::isNetwork() const
@@ -56,7 +56,7 @@ bool cDynamicModuleType::isNetwork() const
 
 bool cDynamicModuleType::isSimple() const
 {
-    return getDecl()->getType() == cNEDDeclaration::SIMPLE_MODULE;
+    return getDecl()->getType() == cNedDeclaration::SIMPLE_MODULE;
 }
 
 cModule *cDynamicModuleType::createModuleObject()
@@ -68,84 +68,84 @@ cModule *cDynamicModuleType::createModuleObject()
 
 void cDynamicModuleType::addParametersAndGatesTo(cModule *module)
 {
-    cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().addParametersAndGatesTo(module, decl);
+    cNedDeclaration *decl = getDecl();
+    cNedNetworkBuilder().addParametersAndGatesTo(module, decl);
 }
 
 void cDynamicModuleType::applyPatternAssignments(cComponent *component)
 {
-    cNEDNetworkBuilder().assignParametersFromPatterns(component);
+    cNedNetworkBuilder().assignParametersFromPatterns(component);
 }
 
 void cDynamicModuleType::setupGateVectors(cModule *module)
 {
-    cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().setupGateVectors(module, decl);
+    cNedDeclaration *decl = getDecl();
+    cNedNetworkBuilder().setupGateVectors(module, decl);
 }
 
 void cDynamicModuleType::buildInside(cModule *module)
 {
-    cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().buildInside(module, decl);
+    cNedDeclaration *decl = getDecl();
+    cNedNetworkBuilder().buildInside(module, decl);
 }
 
 cProperties *cDynamicModuleType::getProperties() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getProperties();
 }
 
 cProperties *cDynamicModuleType::getParamProperties(const char *paramName) const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getParamProperties(paramName);
 }
 
 cProperties *cDynamicModuleType::getGateProperties(const char *gateName) const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getGateProperties(gateName);
 }
 
 cProperties *cDynamicModuleType::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getSubmoduleProperties(submoduleName, submoduleType);
 }
 
 cProperties *cDynamicModuleType::getConnectionProperties(int connectionId, const char *channelType) const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getConnectionProperties(connectionId, channelType);
 }
 
 std::string cDynamicModuleType::getPackageProperty(const char *name) const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getPackageProperty(name);
 }
 
 const char *cDynamicModuleType::getImplementationClassName() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getImplementationClassName();
 }
 
 std::string cDynamicModuleType::getCxxNamespace() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getCxxNamespace();
 }
 
 const char *cDynamicModuleType::getSourceFileName() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getSourceFileName();
 }
 
 bool cDynamicModuleType::isInnerType() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->isInnerType();
 }
 

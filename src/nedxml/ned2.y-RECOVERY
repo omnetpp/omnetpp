@@ -88,7 +88,7 @@ void yyerror (const char *s);
 #include "nedutil.h"
 #include "nedyylib.h"
 
-static struct NED2ParserState
+static struct Ned2ParserState
 {
     bool inTypes;
     bool inGroup;
@@ -138,11 +138,11 @@ static struct NED2ParserState
 
 static void resetParserState()
 {
-    static NED2ParserState cleanps;
+    static Ned2ParserState cleanps;
     ps = cleanps;
 }
 
-static NED2ParserState globalps;  // for error recovery
+static Ned2ParserState globalps;  // for error recovery
 
 static void restoreGlobalParserState()  // for error recovery
 {
@@ -1585,7 +1585,7 @@ opt_semicolon : ';' | ;
 // general bison/flex stuff:
 //
 
-ASTNode *doParseNED2(NEDParser *p, const char *nedtext)
+ASTNode *doParseNED2(NedParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -1604,7 +1604,7 @@ ASTNode *doParseNED2(NEDParser *p, const char *nedtext)
     if (!handle)
         {np->getErrors()->add(NULL, "unable to allocate work memory"); return false;}
 
-    // create parser state and NEDFileNode
+    // create parser state and NedFileNode
     np = p;
     resetParserState();
     ps.nedfile = new NedFileNode();
@@ -1629,7 +1629,7 @@ ASTNode *doParseNED2(NEDParser *p, const char *nedtext)
     {
         ret = yyparse();
     }
-    catch (NEDException *e)
+    catch (NedException *e)
     {
         INTERNAL_ERROR1(NULL, "error during parsing: %s", e->errorMessage());
         yy_delete_buffer(handle);

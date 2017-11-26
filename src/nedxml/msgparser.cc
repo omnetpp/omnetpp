@@ -43,18 +43,18 @@ MsgParser::~MsgParser()
     delete np.source;
 }
 
-ASTNode *MsgParser::parseMSGFile(const char *osfname, const char *fname)
+ASTNode *MsgParser::parseMsgFile(const char *osfname, const char *fname)
 {
     if (!loadFile(osfname, fname))
         return nullptr;
-    return parseMSG();
+    return parseMsg();
 }
 
-ASTNode *MsgParser::parseMSGText(const char *text, const char *fname)
+ASTNode *MsgParser::parseMsgText(const char *text, const char *fname)
 {
     if (!loadText(text, fname))
         return nullptr;
-    return parseMSG();
+    return parseMsg();
 }
 
 bool MsgParser::loadFile(const char *osfname, const char *fname)
@@ -106,7 +106,7 @@ bool MsgParser::loadText(const char *text, const char *fname)
     return true;
 }
 
-ASTNode *MsgParser::parseMSG()
+ASTNode *MsgParser::parseMsg()
 {
     np.errors->clear();
     msgLexerSetRecognizeImportKeyword(np.msgNewSyntax);

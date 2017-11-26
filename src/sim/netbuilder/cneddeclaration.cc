@@ -31,13 +31,13 @@ namespace omnetpp {
 
 using namespace omnetpp::common;
 
-cNEDDeclaration::cNEDDeclaration(NEDResourceCache *resolver, const char *qname, bool isInnerType, NEDElement *tree) : NEDTypeInfo(resolver, qname, isInnerType, tree)
+cNedDeclaration::cNedDeclaration(NedResourceCache *resolver, const char *qname, bool isInnerType, NedElement *tree) : NedTypeInfo(resolver, qname, isInnerType, tree)
 {
     props = nullptr;
     patternsValid = false;
 }
 
-cNEDDeclaration::~cNEDDeclaration()
+cNedDeclaration::~cNedDeclaration()
 {
     if (props && props->removeRef() == 0)
         delete props;
@@ -59,7 +59,7 @@ cNEDDeclaration::~cNEDDeclaration()
     }
 }
 
-void cNEDDeclaration::clearPropsMap(StringPropsMap& propsMap)
+void cNedDeclaration::clearPropsMap(StringPropsMap& propsMap)
 {
     // decrement refs in the props maps, and delete object if refcount reaches zero
     for (auto & it : propsMap)
@@ -69,31 +69,31 @@ void cNEDDeclaration::clearPropsMap(StringPropsMap& propsMap)
     propsMap.clear();
 }
 
-void cNEDDeclaration::clearSharedParImplMap(SharedParImplMap& parimplMap)
+void cNedDeclaration::clearSharedParImplMap(SharedParImplMap& parimplMap)
 {
     for (auto & it : parimplMap)
         delete it.second;
     parimplMap.clear();
 }
 
-cNEDDeclaration *cNEDDeclaration::getSuperDecl() const
+cNedDeclaration *cNedDeclaration::getSuperDecl() const
 {
-    cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(NEDTypeInfo::getSuperDecl());
+    cNedDeclaration *decl = dynamic_cast<cNedDeclaration *>(NedTypeInfo::getSuperDecl());
     ASSERT(decl);
     return decl;
 }
 
-const std::vector<cNEDDeclaration*>& cNEDDeclaration::getInheritanceChain()
+const std::vector<cNedDeclaration*>& cNedDeclaration::getInheritanceChain()
 {
     if (inheritanceChain.empty()) {
-        for (cNEDDeclaration *d = this; d; d = d->numExtendsNames() == 0 ? nullptr : d->getSuperDecl())
+        for (cNedDeclaration *d = this; d; d = d->numExtendsNames() == 0 ? nullptr : d->getSuperDecl())
             inheritanceChain.push_back(d);
         std::reverse(inheritanceChain.begin(), inheritanceChain.end());
     }
     return inheritanceChain;
 }
 
-void cNEDDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const
+void cNedDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const
 {
     StringPropsMap::const_iterator it = propsMap.find(name);
     ASSERT(it == propsMap.end());  // XXX or?
@@ -101,13 +101,13 @@ void cNEDDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::strin
     props->addRef();
 }
 
-cProperties *cNEDDeclaration::getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const
+cProperties *cNedDeclaration::getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const
 {
     StringPropsMap::const_iterator it = propsMap.find(name);
     return it == propsMap.end() ? nullptr : it->second;
 }
 
-cProperties *cNEDDeclaration::getProperties() const
+cProperties *cNedDeclaration::getProperties() const
 {
     cProperties *props = doProperties();
     if (!props)
@@ -115,7 +115,7 @@ cProperties *cNEDDeclaration::getProperties() const
     return props;
 }
 
-cProperties *cNEDDeclaration::doProperties() const
+cProperties *cNedDeclaration::doProperties() const
 {
     if (props)
         return props;  // already computed
@@ -130,7 +130,7 @@ cProperties *cNEDDeclaration::doProperties() const
     return props;
 }
 
-cProperties *cNEDDeclaration::getParamProperties(const char *paramName) const
+cProperties *cNedDeclaration::getParamProperties(const char *paramName) const
 {
     cProperties *props = doParamProperties(paramName);
     if (!props)
@@ -138,7 +138,7 @@ cProperties *cNEDDeclaration::getParamProperties(const char *paramName) const
     return props;
 }
 
-cProperties *cNEDDeclaration::doParamProperties(const char *paramName) const
+cProperties *cNedDeclaration::doParamProperties(const char *paramName) const
 {
     cProperties *props = getFromPropsMap(paramPropsMap, paramName);
     if (props)
@@ -150,7 +150,7 @@ cProperties *cNEDDeclaration::doParamProperties(const char *paramName) const
 
     // update with local properties
     ParametersElement *paramsNode = getParametersElement();
-    NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : nullptr;
+    NedElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : nullptr;
     if (!paramNode && !props)
         return nullptr;  // error: parameter not found anywhere
     props = mergeProperties(props, paramNode);
@@ -158,7 +158,7 @@ cProperties *cNEDDeclaration::doParamProperties(const char *paramName) const
     return props;
 }
 
-cProperties *cNEDDeclaration::getGateProperties(const char *gateName) const
+cProperties *cNedDeclaration::getGateProperties(const char *gateName) const
 {
     cProperties *props = doGateProperties(gateName);
     if (!props)
@@ -166,7 +166,7 @@ cProperties *cNEDDeclaration::getGateProperties(const char *gateName) const
     return props;
 }
 
-cProperties *cNEDDeclaration::doGateProperties(const char *gateName) const
+cProperties *cNedDeclaration::doGateProperties(const char *gateName) const
 {
     cProperties *props = getFromPropsMap(gatePropsMap, gateName);
     if (props)
@@ -178,7 +178,7 @@ cProperties *cNEDDeclaration::doGateProperties(const char *gateName) const
 
     // update with local properties
     GatesElement *gatesNode = getGatesElement();
-    NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : nullptr;
+    NedElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : nullptr;
     if (!gateNode && !props)
         return nullptr;  // error: gate not found anywhere
     props = mergeProperties(props, gateNode);
@@ -186,7 +186,7 @@ cProperties *cNEDDeclaration::doGateProperties(const char *gateName) const
     return props;
 }
 
-cProperties *cNEDDeclaration::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
+cProperties *cNedDeclaration::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
     cProperties *props = doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
@@ -194,7 +194,7 @@ cProperties *cNEDDeclaration::getSubmoduleProperties(const char *submoduleName, 
     return props;
 }
 
-cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
+cProperties *cNedDeclaration::doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
     std::string key = std::string(submoduleName) + ":" + submoduleType;
     cProperties *props = getFromPropsMap(submodulePropsMap, key.c_str());
@@ -206,19 +206,19 @@ cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, c
     if (numExtendsNames() != 0)
         props = getSuperDecl()->doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
-        props = cNEDLoader::getInstance()->getDecl(submoduleType)->getProperties();
+        props = cNedLoader::getInstance()->getDecl(submoduleType)->getProperties();
 
     // update with local properties
-    NEDElement *subcomponentNode = getLocalSubmoduleElement(submoduleName);
+    NedElement *subcomponentNode = getLocalSubmoduleElement(submoduleName);
     if (!subcomponentNode && !props)
         return nullptr;  // error: no such submodule FIXME must not return nullptr!
-    NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
+    NedElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
     props = mergeProperties(props, paramsNode);
     putIntoPropsMap(submodulePropsMap, key.c_str(), props);
     return props;
 }
 
-cProperties *cNEDDeclaration::getConnectionProperties(int connectionId, const char *channelType) const
+cProperties *cNedDeclaration::getConnectionProperties(int connectionId, const char *channelType) const
 {
     cProperties *props = doConnectionProperties(connectionId, channelType);
     if (!props)
@@ -226,7 +226,7 @@ cProperties *cNEDDeclaration::getConnectionProperties(int connectionId, const ch
     return props;
 }
 
-cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const char *channelType) const
+cProperties *cNedDeclaration::doConnectionProperties(int connectionId, const char *channelType) const
 {
     std::string key = opp_stringf("%d:%s", connectionId, channelType);
     cProperties *props = getFromPropsMap(connectionPropsMap, key.c_str());
@@ -238,20 +238,20 @@ cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const cha
     if (numExtendsNames() != 0)
         props = getSuperDecl()->doConnectionProperties(connectionId, channelType);
     if (!props)
-        props = cNEDLoader::getInstance()->getDecl(channelType)->getProperties();
+        props = cNedLoader::getInstance()->getDecl(channelType)->getProperties();
 
     // update with local properties
     ConnectionElement *connectionNode = getLocalConnectionElement(connectionId);
     if (!connectionNode && !props)
         return nullptr;  // error: no such connection
 
-    NEDElement *paramsNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
+    NedElement *paramsNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_PARAMETERS) : nullptr;
     props = mergeProperties(props, paramsNode);
     putIntoPropsMap(connectionPropsMap, key.c_str(), props);
     return props;
 }
 
-cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDElement *parent)
+cProperties *cNedDeclaration::mergeProperties(const cProperties *baseprops, NedElement *parent)
 {
     // returns parent's properties merged with props; both can be nullptr.
     // retval is never nullptr but can be an empty cProperties.
@@ -260,12 +260,12 @@ cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDE
     cProperties *props = const_cast<cProperties *>(baseprops);
     if (!parent)
         return props ? props : new cProperties();
-    NEDElement *firstPropertyChild = parent->getFirstChildWithTag(NED_PROPERTY);
+    NedElement *firstPropertyChild = parent->getFirstChildWithTag(NED_PROPERTY);
     if (!firstPropertyChild)
         return props ? props : new cProperties();
 
     props = props ? props->dup() : new cProperties();
-    for (NEDElement *child = firstPropertyChild; child; child = child->getNextSiblingWithTag(NED_PROPERTY)) {
+    for (NedElement *child = firstPropertyChild; child; child = child->getNextSiblingWithTag(NED_PROPERTY)) {
         PropertyElement *propNode = (PropertyElement *)child;
         const char *propName = propNode->getName();
         const char *propIndex = propNode->getIndex();
@@ -282,11 +282,11 @@ cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDE
     return props;
 }
 
-void cNEDDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
+void cNedDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
 {
     prop->setIsImplicit(propNode->getIsImplicit());
 
-    for (NEDElement *child = propNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child = child->getNextSiblingWithTag(NED_PROPERTY_KEY)) {
+    for (NedElement *child = propNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child = child->getNextSiblingWithTag(NED_PROPERTY_KEY)) {
         PropertyKeyElement *propKeyNode = (PropertyKeyElement *)child;
         const char *key = propKeyNode->getName();
         if (!prop->containsKey(key))
@@ -294,7 +294,7 @@ void cNEDDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
 
         // collect values
         int k = 0;
-        for (NEDElement *child2 = propKeyNode->getFirstChildWithTag(NED_LITERAL); child2; child2 = child2->getNextSiblingWithTag(NED_LITERAL), k++) {
+        for (NedElement *child2 = propKeyNode->getFirstChildWithTag(NED_LITERAL); child2; child2 = child2->getNextSiblingWithTag(NED_LITERAL), k++) {
             LiteralElement *literalNode = (LiteralElement *)child2;
             const char *value = literalNode->getValue();  // XXX what about unitType()?
             if (value && *value) {
@@ -307,7 +307,7 @@ void cNEDDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
     }
 }
 
-void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty *prop)
+void cNedDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty *prop)
 {
     // @display() has to be treated specially
     // find new display string
@@ -335,14 +335,14 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     prop->setValue(cProperty::DEFAULTKEY, 0, d.str());
 }
 
-cParImpl *cNEDDeclaration::getSharedParImplFor(NEDElement *node)
+cParImpl *cNedDeclaration::getSharedParImplFor(NedElement *node)
 {
     SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
     // XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parimplMap.end() ? nullptr : it->second);
     return it == parimplMap.end() ? nullptr : it->second;
 }
 
-void cNEDDeclaration::putSharedParImplFor(NEDElement *node, cParImpl *value)
+void cNedDeclaration::putSharedParImplFor(NedElement *node, cParImpl *value)
 {
     // XXX printf("      putExpr: %ld -> %p\n", node->getId(), value);
     SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
@@ -351,11 +351,11 @@ void cNEDDeclaration::putSharedParImplFor(NEDElement *node, cParImpl *value)
         parimplMap[node->getId()] = value;
 }
 
-const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getParamPatterns()
+const std::vector<cNedDeclaration::PatternData>& cNedDeclaration::getParamPatterns()
 {
     if (!patternsValid) {
         // collect param assignment patterns from all super classes (in base-to-derived order)
-        for (cNEDDeclaration *d : getInheritanceChain()) {
+        for (cNedDeclaration *d : getInheritanceChain()) {
             ParametersElement *paramsNode = d->getParametersElement();
             if (paramsNode)
                 collectPatternsFrom(paramsNode, patterns);
@@ -365,7 +365,7 @@ const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getParamPatter
     return patterns;
 }
 
-const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getSubmoduleParamPatterns(const char *submoduleName)
+const std::vector<cNedDeclaration::PatternData>& cNedDeclaration::getSubmoduleParamPatterns(const char *submoduleName)
 {
     StringPatternDataMap::iterator it = submodulePatterns.find(submoduleName);
     if (it == submodulePatterns.end()) {
@@ -373,7 +373,7 @@ const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getSubmodulePa
         std::vector<PatternData>& v = submodulePatterns[submoduleName];  // create
 
         // collect param assignment patterns from all super classes (in base-to-derived order)
-        for (cNEDDeclaration *d : getInheritanceChain()) {
+        for (cNedDeclaration *d : getInheritanceChain()) {
             SubmodulesElement *submodsNode = d->getSubmodulesElement();
             if (!submodsNode)
                 continue;
@@ -390,7 +390,7 @@ const std::vector<cNEDDeclaration::PatternData>& cNEDDeclaration::getSubmodulePa
     return it->second;
 }
 
-void cNEDDeclaration::collectPatternsFrom(ParametersElement *paramsNode, std::vector<PatternData>& v)
+void cNedDeclaration::collectPatternsFrom(ParametersElement *paramsNode, std::vector<PatternData>& v)
 {
     // append pattern elements to v[]
     for (ParamElement *paramNode = paramsNode->getFirstParamChild(); paramNode; paramNode = paramNode->getNextParamSibling()) {

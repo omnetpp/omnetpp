@@ -35,12 +35,12 @@ namespace nedxml {
  * - @ref Example
  * - @ref DTD
  * - @ref Data
- * - @ref NEDParser
+ * - @ref NedParser
  * - @ref XMLParser
  * - @ref XMLGenerator
  * - @ref Validation
- * - @ref NEDResources
- * - @ref NEDGenerator
+ * - @ref NedResources
+ * - @ref NedGenerator
  * - @ref CppGenerator
  *
  */
@@ -169,7 +169,7 @@ namespace nedxml {
  */
 
 /**
- * @defgroup NEDParser NED Parsing
+ * @defgroup NedParser NED Parsing
  *
  * @brief Classes and functions for parsing NED and MSG files.
  */
@@ -193,14 +193,14 @@ namespace nedxml {
  */
 
 /**
- * @defgroup NEDResources  NED Resources
+ * @defgroup NedResources  NED Resources
  *
  * @brief Classes for storing NED/MSG files in parsed form, and looking up
  * types in them.
  */
 
 /**
- * @defgroup NEDGenerator  Generating NED
+ * @defgroup NedGenerator  Generating NED
  *
  * @brief Classes and functions for regenerating NED/MSG source from
  * their parsed form.

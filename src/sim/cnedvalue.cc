@@ -28,9 +28,9 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-const char *cNEDValue::OVERFLOW_MSG = "cNEDValue: Integer overflow casting %s to a smaller or unsigned integer type";
+const char *cNedValue::OVERFLOW_MSG = "cNEDValue: Integer overflow casting %s to a smaller or unsigned integer type";
 
-void cNEDValue::operator=(const cNEDValue& other)
+void cNedValue::operator=(const cNedValue& other)
 {
     type = other.type;
     switch (type) {
@@ -42,7 +42,7 @@ void cNEDValue::operator=(const cNEDValue& other)
     }
 }
 
-const char *cNEDValue::getTypeName(Type t)
+const char *cNedValue::getTypeName(Type t)
 {
     switch (t) {
         case UNDEF:  return "undef";
@@ -54,13 +54,13 @@ const char *cNEDValue::getTypeName(Type t)
     }
 }
 
-void cNEDValue::cannotCastError(Type t) const
+void cNedValue::cannotCastError(Type t) const
 {
-    throw cRuntimeError("cNEDValue: Cannot cast %s from type %s to %s",
+    throw cRuntimeError("cNedValue: Cannot cast %s from type %s to %s",
             str().c_str(), getTypeName(type), getTypeName(t));
 }
 
-void cNEDValue::set(const cPar& par)
+void cNedValue::set(const cPar& par)
 {
     switch (par.getType()) {
         case cPar::BOOL: *this = par.boolValue(); break;
@@ -72,35 +72,35 @@ void cNEDValue::set(const cPar& par)
     }
 }
 
-void cNEDValue::convertTo(const char *unit)
+void cNedValue::convertTo(const char *unit)
 {
     dbl = convertUnit(dbl, dblunit, unit);
     dblunit = unit;
 }
 
-double cNEDValue::convertUnit(double d, const char *unit, const char *targetUnit)
+double cNedValue::convertUnit(double d, const char *unit, const char *targetUnit)
 {
     // not inline because simkernel header files cannot refer to common/ headers (unitconversion.h)
     return UnitConversion::convertUnit(d, unit, targetUnit);
 }
 
-double cNEDValue::parseQuantity(const char *str, const char *expectedUnit)
+double cNedValue::parseQuantity(const char *str, const char *expectedUnit)
 {
     return UnitConversion::parseQuantity(str, expectedUnit);
 }
 
-double cNEDValue::parseQuantity(const char *str, std::string& outActualUnit)
+double cNedValue::parseQuantity(const char *str, std::string& outActualUnit)
 {
     return UnitConversion::parseQuantity(str, outActualUnit);
 }
 
-const char *cNEDValue::getPooled(const char *s)
+const char *cNedValue::getPooled(const char *s)
 {
     static StringPool stringPool;  // non-refcounted
     return stringPool.get(s);
 }
 
-std::string cNEDValue::str() const
+std::string cNedValue::str() const
 {
     char buf[32];
     switch (type) {
@@ -108,7 +108,7 @@ std::string cNEDValue::str() const
         case DOUBLE: sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
         case STRING: return opp_quotestr(s);
         case XML: return xml->str();
-        default: throw cRuntimeError("Internal error: Invalid cNEDValue type");
+        default: throw cRuntimeError("Internal error: Invalid cNedValue type");
     }
 }
 

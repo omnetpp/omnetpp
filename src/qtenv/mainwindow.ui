@@ -291,7 +291,7 @@ Total number of messages created since start of the simulation</string>
     </property>
     <addaction name="actionSetUpConfiguration"/>
     <addaction name="separator"/>
-    <addaction name="actionLoadNEDFile"/>
+    <addaction name="actionLoadNedFile"/>
     <addaction name="actionSetUpUnconfiguredNetwork"/>
     <addaction name="separator"/>
     <addaction name="actionOpenPrimaryIniFile"/>
@@ -331,7 +331,7 @@ Total number of messages created since start of the simulation</string>
      <property name="title">
       <string>Available &amp;Components</string>
      </property>
-     <addaction name="actionNEDComponentTypes"/>
+     <addaction name="actionNedComponentTypes"/>
      <addaction name="actionRegisteredClasses"/>
      <addaction name="actionNED_Functions"/>
      <addaction name="actionRegistered_Enums"/>
@@ -401,7 +401,7 @@ Total number of messages created since start of the simulation</string>
     <bool>false</bool>
    </attribute>
    <addaction name="actionSetUpConfiguration"/>
-   <addaction name="actionLoadNEDFile"/>
+   <addaction name="actionLoadNedFile"/>
    <addaction name="separator"/>
    <addaction name="actionOneStep"/>
    <addaction name="actionRun"/>
@@ -571,7 +571,7 @@ Total number of messages created since start of the simulation</string>
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="actionLoadNEDFile">
+  <action name="actionLoadNedFile">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/tools/loadned</normaloff>:/tools/loadned</iconset>
@@ -741,7 +741,7 @@ Total number of messages created since start of the simulation</string>
     <string>S&amp;imulation</string>
    </property>
   </action>
-  <action name="actionNEDComponentTypes">
+  <action name="actionNedComponentTypes">
    <property name="text">
     <string>&amp;NED Component Types</string>
    </property>

@@ -69,7 +69,7 @@ class SIM_API cParImpl : public cNamedObject
     typedef cPar::Type Type;
 
   protected:
-    cNEDValue evaluate(cExpression *expr, cComponent *context) const;
+    cNedValue evaluate(cExpression *expr, cComponent *context) const;
 
   public:
     /** @name Constructors, destructor, assignment. */

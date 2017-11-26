@@ -5,7 +5,7 @@
 //            Discrete System Simulation in C++
 //
 // Contents:
-//   class NEDSyntaxValidator
+//   class NedSyntaxValidator
 //
 //==========================================================================
 
@@ -98,7 +98,7 @@ static struct { const char *fname; int args; } known_funcs[] =
    {nullptr,0}
 };
 
-void NEDSyntaxValidator::checkExpressionAttributes(ASTNode *node, const char *attrs[], bool optional[], int n)
+void NedSyntaxValidator::checkExpressionAttributes(ASTNode *node, const char *attrs[], bool optional[], int n)
 {
     if (parsedExpressions) {
         // allow attribute values to be present, but check there are no
@@ -143,7 +143,7 @@ void NEDSyntaxValidator::checkExpressionAttributes(ASTNode *node, const char *at
     }
 }
 
-void NEDSyntaxValidator::checkEnumAttribute(ASTNode *node, const char *attr, const char *values[], int n)
+void NedSyntaxValidator::checkEnumAttribute(ASTNode *node, const char *attr, const char *values[], int n)
 {
     const char *value = node->getAttribute(attr);
     for (int i = 0; i < n; i++)
@@ -152,7 +152,7 @@ void NEDSyntaxValidator::checkEnumAttribute(ASTNode *node, const char *attr, con
     errors->addError(node, "Illegal attribute value '%s'", value);
 }
 
-void NEDSyntaxValidator::checkDottedNameAttribute(ASTNode *node, const char *attr, bool wildcardsAllowed)
+void NedSyntaxValidator::checkDottedNameAttribute(ASTNode *node, const char *attr, bool wildcardsAllowed)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -165,7 +165,7 @@ void NEDSyntaxValidator::checkDottedNameAttribute(ASTNode *node, const char *att
         }
 }
 
-void NEDSyntaxValidator::checkPropertyNameAttribute(ASTNode *node, const char *attr)
+void NedSyntaxValidator::checkPropertyNameAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -178,7 +178,7 @@ void NEDSyntaxValidator::checkPropertyNameAttribute(ASTNode *node, const char *a
         }
 }
 
-void NEDSyntaxValidator::checkPropertyIndexAttribute(ASTNode *node, const char *attr)
+void NedSyntaxValidator::checkPropertyIndexAttribute(ASTNode *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     assert(s);
@@ -191,7 +191,7 @@ void NEDSyntaxValidator::checkPropertyIndexAttribute(ASTNode *node, const char *
         }
 }
 
-bool NEDSyntaxValidator::isWithinSubcomponent(ASTNode *node)
+bool NedSyntaxValidator::isWithinSubcomponent(ASTNode *node)
 {
     // only returns true if node is within the BODY of a submodule or a connection
     // (i.e. returns *false* for a submodule vector size)
@@ -204,7 +204,7 @@ bool NEDSyntaxValidator::isWithinSubcomponent(ASTNode *node)
     return false;
 }
 
-bool NEDSyntaxValidator::isWithinInnerType(ASTNode *node)
+bool NedSyntaxValidator::isWithinInnerType(ASTNode *node)
 {
     for ( ; node != nullptr; node = node->getParent())
         if (node->getTagCode() == NED_TYPES)
@@ -213,62 +213,62 @@ bool NEDSyntaxValidator::isWithinInnerType(ASTNode *node)
     return false;
 }
 
-void NEDSyntaxValidator::validateElement(FilesElement *node)
+void NedSyntaxValidator::validateElement(FilesElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(NedFileElement *node)
+void NedSyntaxValidator::validateElement(NedFileElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(CommentElement *node)
+void NedSyntaxValidator::validateElement(CommentElement *node)
 {
     const char *values[] = { "banner", "right", "trailing", "inner" };
     checkEnumAttribute(node, "locid", values, 4);
 }
 
-void NEDSyntaxValidator::validateElement(PackageElement *node)
+void NedSyntaxValidator::validateElement(PackageElement *node)
 {
     checkDottedNameAttribute(node, "name", false);
 }
 
-void NEDSyntaxValidator::validateElement(ImportElement *node)
+void NedSyntaxValidator::validateElement(ImportElement *node)
 {
     checkDottedNameAttribute(node, "import-spec", true);
 }
 
-void NEDSyntaxValidator::validateElement(PropertyDeclElement *node)
+void NedSyntaxValidator::validateElement(PropertyDeclElement *node)
 {
     checkPropertyNameAttribute(node, "name");
 }
 
-void NEDSyntaxValidator::validateElement(ExtendsElement *node)
+void NedSyntaxValidator::validateElement(ExtendsElement *node)
 {
     checkDottedNameAttribute(node, "name", false);
 }
 
-void NEDSyntaxValidator::validateElement(InterfaceNameElement *node)
+void NedSyntaxValidator::validateElement(InterfaceNameElement *node)
 {
     checkDottedNameAttribute(node, "name", false);
 }
 
-void NEDSyntaxValidator::validateElement(SimpleModuleElement *node)
+void NedSyntaxValidator::validateElement(SimpleModuleElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ModuleInterfaceElement *node)
+void NedSyntaxValidator::validateElement(ModuleInterfaceElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(CompoundModuleElement *node)
+void NedSyntaxValidator::validateElement(CompoundModuleElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ParametersElement *node)
+void NedSyntaxValidator::validateElement(ParametersElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ParamElement *node)
+void NedSyntaxValidator::validateElement(ParamElement *node)
 {
     ASTNode *parent = node->getParent();
     if (parent)
@@ -304,7 +304,7 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(PropertyElement *node)
+void NedSyntaxValidator::validateElement(PropertyElement *node)
 {
     checkPropertyNameAttribute(node, "name");
     checkPropertyIndexAttribute(node, "index");
@@ -319,20 +319,20 @@ void NEDSyntaxValidator::validateElement(PropertyElement *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(PropertyKeyElement *node)
+void NedSyntaxValidator::validateElement(PropertyKeyElement *node)
 {
     checkPropertyNameAttribute(node, "name");
 }
 
-void NEDSyntaxValidator::validateElement(GatesElement *node)
+void NedSyntaxValidator::validateElement(GatesElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(TypesElement *node)
+void NedSyntaxValidator::validateElement(TypesElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(GateElement *node)
+void NedSyntaxValidator::validateElement(GateElement *node)
 {
     // param declarations cannot occur in submodules
     if (node->getType() != GATETYPE_NONE) {
@@ -344,11 +344,11 @@ void NEDSyntaxValidator::validateElement(GateElement *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(SubmodulesElement *node)
+void NedSyntaxValidator::validateElement(SubmodulesElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
+void NedSyntaxValidator::validateElement(SubmoduleElement *node)
 {
     const char *expr[] = { "like-expr", "vector-size" };
     bool opt[] = { true, true };
@@ -358,11 +358,11 @@ void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
     checkDottedNameAttribute(node, "like-type", false);
 }
 
-void NEDSyntaxValidator::validateElement(ConnectionsElement *node)
+void NedSyntaxValidator::validateElement(ConnectionsElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ConnectionElement *node)
+void NedSyntaxValidator::validateElement(ConnectionElement *node)
 {
     const char *expr[] = { "condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index", "like-expr" };
     bool opt[] = { true, true, true, true, true, true };
@@ -380,39 +380,39 @@ void NEDSyntaxValidator::validateElement(ConnectionElement *node)
     checkDottedNameAttribute(node, "like-type", false);
 }
 
-void NEDSyntaxValidator::validateElement(ChannelInterfaceElement *node)
+void NedSyntaxValidator::validateElement(ChannelInterfaceElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ChannelElement *node)
+void NedSyntaxValidator::validateElement(ChannelElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ConnectionGroupElement *node)
+void NedSyntaxValidator::validateElement(ConnectionGroupElement *node)
 {
     // TODO check loop vars are unique
 }
 
-void NEDSyntaxValidator::validateElement(LoopElement *node)
+void NedSyntaxValidator::validateElement(LoopElement *node)
 {
     const char *expr[] = {"from-value", "to-value"};
     bool opt[] = {false, false};
     checkExpressionAttributes(node, expr, opt, 2);
 }
 
-void NEDSyntaxValidator::validateElement(ConditionElement *node)
+void NedSyntaxValidator::validateElement(ConditionElement *node)
 {
     const char *expr[] = {"condition"};
     bool opt[] = {true};
     checkExpressionAttributes(node, expr, opt, 1);
 }
 
-void NEDSyntaxValidator::validateElement(ExpressionElement *node)
+void NedSyntaxValidator::validateElement(ExpressionElement *node)
 {
     // TODO
 }
 
-void NEDSyntaxValidator::validateElement(OperatorElement *node)
+void NedSyntaxValidator::validateElement(OperatorElement *node)
 {
     // check operator name is valid and argument count matches
     const char *op = node->getName();
@@ -453,7 +453,7 @@ void NEDSyntaxValidator::validateElement(OperatorElement *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(FunctionElement *node)
+void NedSyntaxValidator::validateElement(FunctionElement *node)
 {
     // if we know the function, check argument count
     const char *func = node->getName();
@@ -534,14 +534,14 @@ void NEDSyntaxValidator::validateElement(FunctionElement *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(IdentElement *node)
+void NedSyntaxValidator::validateElement(IdentElement *node)
 {
     const char *expr[] = { "module-index", "param-index" };
     bool opt[] = { true, true };
     checkExpressionAttributes(node, expr, opt, 2);
 }
 
-void NEDSyntaxValidator::validateElement(LiteralElement *node)
+void NedSyntaxValidator::validateElement(LiteralElement *node)
 {
     // verify syntax of constant
     int type = node->getType();
@@ -593,7 +593,7 @@ void NEDSyntaxValidator::validateElement(LiteralElement *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(UnknownElement *node)
+void NedSyntaxValidator::validateElement(UnknownElement *node)
 {
 }
 

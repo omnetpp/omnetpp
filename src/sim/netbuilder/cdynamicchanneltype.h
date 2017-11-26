@@ -26,7 +26,7 @@ namespace omnetpp {
 
 
 /**
- * @brief NEDXML-based cChannelType: takes all info from cNEDLoader
+ * @brief NEDXML-based cChannelType: takes all info from cNedLoader
  */
 class SIM_API cDynamicChannelType : public cChannelType
 {
@@ -41,7 +41,7 @@ class SIM_API cDynamicChannelType : public cChannelType
     virtual void applyPatternAssignments(cComponent *component) override;
 
     // internal utility function
-    cNEDDeclaration *getDecl() const;
+    cNedDeclaration *getDecl() const;
 
     // methods redefined from cComponentType
     virtual cProperties *getProperties() const override;

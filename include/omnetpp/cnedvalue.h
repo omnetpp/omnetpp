@@ -34,7 +34,7 @@ class cDynamicExpression;
  *
  * <b>Double vs long:</b>
  *
- * There is no <tt>long</tt> field in cNEDValue; the reason is that the NED
+ * There is no <tt>long</tt> field in cNedValue; the reason is that the NED
  * expression evaluator stores all numbers as <tt>double</tt>. The IEEE double's
  * mantissa is 53 bits, so <tt>double</tt> can accurately represent <tt>long</tt>
  * on 32-bit architectures. On 64-bit architectures the usual size of
@@ -48,24 +48,24 @@ class cDynamicExpression;
  * For performance reasons, the functions that store a measurement unit
  * will only store the <tt>const char *</tt> pointer and not copy the
  * string itself. Consequently, the passed unit pointers must stay valid
- * at least during the lifetime of the cNEDValue object, or even longer
- * if the same pointer propagates to other cNEDValue objects. It is recommended
+ * at least during the lifetime of the cNedValue object, or even longer
+ * if the same pointer propagates to other cNedValue objects. It is recommended
  * that you only pass pointers that stay valid during the entire simulation.
  * It is safe to use: (1) string constants from the code; (2) units strings
- * from other cNEDValues; and (3) stringpooled strings, e.g. from the
+ * from other cNedValues; and (3) stringpooled strings, e.g. from the
  * getPooled() method or from cStringPool.
  *
- * @see cDynamicExpression, cNEDFunction, Define_NED_Function()
+ * @see cDynamicExpression, cNedFunction, Define_NED_Function()
  * @ingroup SimSupport
  */
-class SIM_API cNEDValue
+class SIM_API cNedValue
 {
     friend class cDynamicExpression;
   public:
     /**
-     * Type of the value stored in a cNEDValue object.
+     * Type of the value stored in a cNedValue object.
      */
-    // Note: char codes need to be present and be consistent with cNEDFunction::getArgTypes()!
+    // Note: char codes need to be present and be consistent with cNedFunction::getArgTypes()!
     enum Type {UNDEF=0, BOOL='B', DOUBLE='D', STRING='S', XML='X', DBL=DOUBLE, STR=STRING} type;
 
   private:
@@ -87,21 +87,21 @@ class SIM_API cNEDValue
   public:
     /** @name Constructors */
     //@{
-    cNEDValue()  {type=UNDEF;}
-    cNEDValue(bool b)  {set(b);}
-    cNEDValue(intpar_t l)  {set(l);}
-    cNEDValue(double d)  {set(d);}
-    cNEDValue(double d, const char *unit)  {set(d,unit);}
-    cNEDValue(const char *s)  {set(s);}
-    cNEDValue(const std::string& s)  {set(s);}
-    cNEDValue(cXMLElement *x)  {set(x);}
-    cNEDValue(const cPar& par) {set(par);}
+    cNedValue()  {type=UNDEF;}
+    cNedValue(bool b)  {set(b);}
+    cNedValue(intpar_t l)  {set(l);}
+    cNedValue(double d)  {set(d);}
+    cNedValue(double d, const char *unit)  {set(d,unit);}
+    cNedValue(const char *s)  {set(s);}
+    cNedValue(const std::string& s)  {set(s);}
+    cNedValue(cXMLElement *x)  {set(x);}
+    cNedValue(const cPar& par) {set(par);}
     //@}
 
     /**
      * Assignment
      */
-    void operator=(const cNEDValue& other);
+    void operator=(const cNedValue& other);
 
     /** @name Type, unit conversion and misc. */
     //@{
@@ -161,7 +161,7 @@ class SIM_API cNEDValue
      * Returns a copy of the string that is guaranteed to stay valid
      * until the program exits. Multiple calls with identical strings as
      * parameter will return the same copy. Useful for getting measurement
-     * unit strings suitable for cNEDValue; see related class comment.
+     * unit strings suitable for cNedValue; see related class comment.
      *
      * @see cStringPool, setUnit(), convertTo()
      */
@@ -293,87 +293,87 @@ class SIM_API cNEDValue
     /**
      * Equivalent to set(bool).
      */
-    cNEDValue& operator=(bool b)  {set(b); return *this;}
+    cNedValue& operator=(bool b)  {set(b); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(char c)  {set((intpar_t)c); return *this;}
+    cNedValue& operator=(char c)  {set((intpar_t)c); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(unsigned char c)  {set((intpar_t)c); return *this;}
+    cNedValue& operator=(unsigned char c)  {set((intpar_t)c); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(short i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(short i)  {set((intpar_t)i); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(unsigned short i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(unsigned short i)  {set((intpar_t)i); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(int i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(int i)  {set((intpar_t)i); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(unsigned int i)  {set((intpar_t)i); return *this;}
+    cNedValue& operator=(unsigned int i)  {set((intpar_t)i); return *this;}
 
     /**
      * Equivalent to set(intpar_t).
      */
-    cNEDValue& operator=(long l)  {set((intpar_t)l); return *this;}
+    cNedValue& operator=(long l)  {set((intpar_t)l); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(unsigned long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+    cNedValue& operator=(unsigned long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
      * Equivalent to set(intpar_t).
      */
-    cNEDValue& operator=(long long l)  {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+    cNedValue& operator=(long long l)  {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
      * Converts the argument to long, and calls set(intpar_t).
      */
-    cNEDValue& operator=(unsigned long long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+    cNedValue& operator=(unsigned long long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
      * Equivalent to set(double).
      */
-    cNEDValue& operator=(double d)  {set(d); return *this;}
+    cNedValue& operator=(double d)  {set(d); return *this;}
 
     /**
      * Converts the argument to double, and calls set(double).
      */
-    cNEDValue& operator=(long double d)  {set((double)d); return *this;}
+    cNedValue& operator=(long double d)  {set((double)d); return *this;}
 
     /**
      * Equivalent to set(const char *).
      */
-    cNEDValue& operator=(const char *s)  {set(s); return *this;}
+    cNedValue& operator=(const char *s)  {set(s); return *this;}
 
     /**
      * Equivalent to set(const std::string&).
      */
-    cNEDValue& operator=(const std::string& s)  {set(s); return *this;}
+    cNedValue& operator=(const std::string& s)  {set(s); return *this;}
 
     /**
      * Equivalent to set(cXMLElement *).
      */
-    cNEDValue& operator=(cXMLElement *node)  {set(node); return *this;}
+    cNedValue& operator=(cXMLElement *node)  {set(node); return *this;}
 
     /**
      * Equivalent to set(const cPar&).
      */
-    cNEDValue& operator=(const cPar& par)  {set(par); return *this;}
+    cNedValue& operator=(const cPar& par)  {set(par); return *this;}
 
     /**
      * Equivalent to boolValue().
@@ -468,6 +468,9 @@ class SIM_API cNEDValue
     operator cXMLElement *() const  {return xmlValue();}
     //@}
 };
+
+// cNEDValue was renamed cNedValue in OMNeT++ 5.3; typedef added for compatibility
+typedef cNedValue cNEDValue;
 
 }  // namespace omnetpp
 

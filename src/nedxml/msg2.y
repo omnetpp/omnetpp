@@ -739,7 +739,7 @@ ASTNode *doParseMSG2(ParseContext *np, const char *msgtext)
     {
         yyparse(np);
     }
-    catch (NEDException& e)
+    catch (NedException& e)
     {
         yyerror(np, (std::string("error during parsing: ")+e.what()).c_str());
         yy_delete_buffer(handle);

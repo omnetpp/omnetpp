@@ -28,7 +28,7 @@ namespace nedxml {
  *
  * @ingroup Validation
  */
-class NEDXML_API NEDTools
+class NEDXML_API NedTools
 {
   public:
     /**
@@ -38,7 +38,7 @@ class NEDXML_API NEDTools
     static void repairASTNodeTree(ASTNode *tree);
 
     /**
-     * Splits each NEDFile under FilesElement to several files, to place
+     * Splits each NedFile under FilesElement to several files, to place
      * every module or interface into its own file.
      */
     static void splitToFiles(FilesElement *tree);

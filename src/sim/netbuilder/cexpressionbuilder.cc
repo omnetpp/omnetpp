@@ -36,7 +36,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 
 /* for debugging
-static void dump(NEDElement *node)
+static void dump(NedElement *node)
 {
     generateXML(std::cout, node, false);
     std::cout.flush();
@@ -52,7 +52,7 @@ cExpressionBuilder::~cExpressionBuilder()
 {
 }
 
-void cExpressionBuilder::doNode(NEDElement *node)
+void cExpressionBuilder::doNode(NedElement *node)
 {
     if (pos > limit)
         throw cRuntimeError("Expression too long");
@@ -69,14 +69,14 @@ void cExpressionBuilder::doNode(NEDElement *node)
 void cExpressionBuilder::doOperator(OperatorElement *node)
 {
     // push args first
-    for (NEDElement *op = node->getFirstChild(); op; op = op->getNextSibling())
+    for (NedElement *op = node->getFirstChild(); op; op = op->getNextSibling())
         doNode(op);
 
     // determine name and arg count
     const char *name = node->getName();
-    NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : nullptr;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : nullptr;
+    NedElement *op1 = node->getFirstChild();
+    NedElement *op2 = op1 ? op1->getNextSibling() : nullptr;
+    NedElement *op3 = op2 ? op2->getNextSibling() : nullptr;
 
     if (!op2) {
         // unary:
@@ -159,7 +159,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
     if (!strcmp(funcname, "index")) {
         if (!inSubcomponentScope)
             throw cRuntimeError("'index' operator is only supported in submodule parameters");
-        elems[pos++] = new NEDSupport::ModuleIndex();
+        elems[pos++] = new NedSupport::ModuleIndex();
     }
     else if (!strcmp(funcname, "const")) {
         throw cRuntimeError("'const' operator is not yet supported");  // TBD
@@ -176,20 +176,20 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         // if it's sizeof(parentModuleGateVector) or sizeof(submoduleVector),
         // we don't have to do it at runtime in the Sizeof functor class.
         if (opp_isempty(modulename))
-            elems[pos++] = new NEDSupport::Sizeof(ident, inSubcomponentScope, false);
+            elems[pos++] = new NedSupport::Sizeof(ident, inSubcomponentScope, false);
         else if (strcmp(modulename, "this") == 0)
-            elems[pos++] = new NEDSupport::Sizeof(ident, false, true);
+            elems[pos++] = new NedSupport::Sizeof(ident, false, true);
         else
             throw cRuntimeError("sizeof(module.ident) is not yet supported");  // TBD
     }
     else {  // normal function
             // push args first
-        for (NEDElement *child = node->getFirstChild(); child; child = child->getNextSibling())
+        for (NedElement *child = node->getFirstChild(); child; child = child->getNextSibling())
             doNode(child);
 
         // normal function: find it and add to reverse Polish expression
-        cNEDMathFunction *functype = cNEDMathFunction::find(funcname, argcount);
-        cNEDFunction *nedfunctype = cNEDFunction::find(funcname);
+        cNedMathFunction *functype = cNedMathFunction::find(funcname, argcount);
+        cNedFunction *nedfunctype = cNedFunction::find(funcname);
         if (functype)
             elems[pos++] = functype;
         else if (nedfunctype) {
@@ -204,8 +204,8 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
 
 bool cExpressionBuilder::isLoopVar(const char *parname)
 {
-    const char **varNames = NEDSupport::LoopVar::getVarNames();
-    int n = NEDSupport::LoopVar::getNumVars();
+    const char **varNames = NedSupport::LoopVar::getVarNames();
+    int n = NedSupport::LoopVar::getNumVars();
     for (int i = 0; i < n; i++)
         if (strcmp(varNames[i], parname) == 0)
             return true;
@@ -222,13 +222,13 @@ void cExpressionBuilder::doIdent(IdentElement *node)
         doNode(node->getFirstChild());  // push module index
 
     if (opp_isempty(modulename) && isLoopVar(parname))
-        elems[pos++] = new NEDSupport::LoopVar(parname);
+        elems[pos++] = new NedSupport::LoopVar(parname);
     else if (opp_isempty(modulename))
-        elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
+        elems[pos++] = new NedSupport::ParameterRef(parname, inSubcomponentScope, false);
     else if (strcmp(modulename, "this") == 0)
-        elems[pos++] = new NEDSupport::ParameterRef(parname, false, true);
+        elems[pos++] = new NedSupport::ParameterRef(parname, false, true);
     else
-        elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
+        elems[pos++] = new NedSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
 }
 
 void cExpressionBuilder::doLiteral(LiteralElement *node)

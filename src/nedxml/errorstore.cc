@@ -161,7 +161,7 @@ const char *ErrorStore::severityName(int severity)
 
 //---
 
-void NEDInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...)
+void NedInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...)
 {
     char message[BUFLEN];
     VSNPRINTF(message, BUFLEN, messagefmt);

@@ -131,7 +131,7 @@ string cMsgPar::str() const
 {
     char bb[128];
     bb[0] = 0;
-    cNEDMathFunction *ff;
+    cNedMathFunction *ff;
     const char *fn;
     const char *s;
 
@@ -152,7 +152,7 @@ string cMsgPar::str() const
             return string(bb);
 
         case 'F':
-            ff = cNEDMathFunction::findByPointer(func.f);
+            ff = cNedMathFunction::findByPointer(func.f);
             fn = ff ? ff->getName() : "unknown";
             switch (func.argc) {
                 case 0:
@@ -233,7 +233,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer) const
     buffer->pack(typeChar);
     buffer->pack(changedFlag);
 
-    cNEDMathFunction *ff;
+    cNedMathFunction *ff;
     switch (typeChar) {
         case 'S':
             buffer->pack(ls.sht);
@@ -252,7 +252,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer) const
             break;
 
         case 'F':
-            ff = cNEDMathFunction::findByPointer(func.f);
+            ff = cNedMathFunction::findByPointer(func.f);
             if (ff == nullptr)
                 throw cRuntimeError(this, "parsimPack(): Cannot transmit unregistered function");
 
@@ -300,7 +300,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(typeChar);
     buffer->unpack(changedFlag);
 
-    cNEDMathFunction *ff;
+    cNedMathFunction *ff;
     switch (typeChar) {
         case 'S':
             buffer->unpack(ls.sht);
@@ -322,7 +322,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
         case 'F':
             buffer->unpack(funcname);
             buffer->unpack(argc);
-            ff = cNEDMathFunction::find(funcname, argc);
+            ff = cNedMathFunction::find(funcname, argc);
             if (ff == nullptr) {
                 delete[] funcname;
                 throw cRuntimeError(this, "parsimUnpack(): Transmitted function '%s' with %d args not registered here",
@@ -880,7 +880,7 @@ bool cMsgPar::setfunction(char *text)
 
     // look up function name (temporarily overwriting '(' with a '\0')
     *args = '\0';
-    cNEDMathFunction *ff = cNEDMathFunction::find(text, argc);
+    cNedMathFunction *ff = cNedMathFunction::find(text, argc);
     *args = '(';
     if (ff == nullptr)
         return false;

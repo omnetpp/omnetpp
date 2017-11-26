@@ -50,12 +50,12 @@ void ASTBuilder::startElement(const char *name, const char **atts)
     bool unknown = false;
     try {
         try {
-            node = NEDAstNodeFactory().createElementWithTag(name);
-        } catch (NEDException& e) {
-            node = MSGAstNodeFactory().createElementWithTag(name);
+            node = NedAstNodeFactory().createElementWithTag(name);
+        } catch (NedException& e) {
+            node = MsgAstNodeFactory().createElementWithTag(name);
         }
     }
-    catch (NEDException& e) {
+    catch (NedException& e) {
         errors->addError(current, "error: %s", e.what());
         node = new UnknownElement();
         node->setAttribute("element", name);
@@ -71,7 +71,7 @@ void ASTBuilder::startElement(const char *name, const char **atts)
             try {
                 node->setAttribute(atts[i], atts[i+1]);
             }
-            catch (NEDException& e) {
+            catch (NedException& e) {
                 errors->addError(node, "error in attribute '%s': %s", atts[i], e.what());
             }
         }

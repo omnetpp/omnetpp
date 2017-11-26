@@ -368,7 +368,7 @@ bool FilteredEventLog::matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreat
     return matchesExpression(moduleExpression, moduleCreatedEntry) ||
            matchesPatterns(moduleNames, moduleCreatedEntry->fullName) ||
            matchesPatterns(moduleClassNames, moduleCreatedEntry->moduleClassName) ||
-           matchesPatterns(moduleNEDTypeNames, moduleCreatedEntry->nedTypeName) ||
+           matchesPatterns(moduleNedTypeNames, moduleCreatedEntry->nedTypeName) ||
            matchesList(moduleIds, moduleCreatedEntry->moduleId);
 }
 

@@ -950,12 +950,12 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
 
     for (const auto& field : classInfo.fieldlist) {
         if (field.fisabstract)
-            throw NEDException("Abstract fields are not supported in a struct");
+            throw NedException("Abstract fields are not supported in a struct");
         if (field.iscOwnedObject)
-            throw NEDException("cOwnedObject fields are not supported in a struct");
+            throw NedException("cOwnedObject fields are not supported in a struct");
         if (field.fisarray) {
             if (field.farraysize.empty()) {
-                throw NEDException("Dynamic arrays are not supported in a struct");
+                throw NedException("Dynamic arrays are not supported in a struct");
             }
             else {
                 if (!field.fval.empty()) {
@@ -1352,7 +1352,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             }
         }
         else {
-            throw NEDException("Internal error");
+            throw NedException("Internal error");
         }
     }
     CC << "        default: return \"\";\n";

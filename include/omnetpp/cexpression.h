@@ -84,9 +84,9 @@ class SIM_API cExpression : public cObject
     //@{
 
     /**
-     * Evaluate the expression and return the result in a cNEDValue.
+     * Evaluate the expression and return the result in a cNedValue.
      */
-    virtual cNEDValue evaluate(cComponent *context=nullptr) const = 0;
+    virtual cNedValue evaluate(cComponent *context=nullptr) const = 0;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;

@@ -5,7 +5,7 @@
 //            Discrete System Simulation in C++
 //
 // Contents:
-//   class NEDSyntaxValidator
+//   class NedSyntaxValidator
 //
 //==========================================================================
 
@@ -36,7 +36,7 @@ namespace nedxml {
  *
  * @ingroup Validation
  */
-class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
+class NEDXML_API NedSyntaxValidator : public NedValidatorBase
 {
   protected:
     bool parsedExpressions;
@@ -60,13 +60,13 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
      * parsed or unparsed expressions in the tree (This affects the validation
      * process.)
      */
-    NEDSyntaxValidator(bool parsedExpr, ErrorStore *e)
-        : NEDValidatorBase(e) {parsedExpressions=parsedExpr;}
+    NedSyntaxValidator(bool parsedExpr, ErrorStore *e)
+        : NedValidatorBase(e) {parsedExpressions=parsedExpr;}
 
     /**
      * Destructor.
      */
-    virtual ~NEDSyntaxValidator() {}
+    virtual ~NedSyntaxValidator() {}
 
   protected:
     /** @name Validator methods */

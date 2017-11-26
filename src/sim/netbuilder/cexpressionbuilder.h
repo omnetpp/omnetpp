@@ -48,7 +48,7 @@ class SIM_API cExpressionBuilder
     int limit; // allocated size of the elems[] vector
 
   protected:
-    void doNode(NEDElement *node);
+    void doNode(NedElement *node);
     void doOperator(OperatorElement *node);
     void doFunction(FunctionElement *node);
     void doIdent(IdentElement *node);

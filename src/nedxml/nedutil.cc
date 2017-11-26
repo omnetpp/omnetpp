@@ -61,11 +61,11 @@ LiteralElement *ASTNodeUtil::getTheOnlyValueFrom(PropertyElement *property)
     ASTNode *propertyKey = property->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     int count = property->getNumChildrenWithTag(NED_PROPERTY_KEY);
     if (count != (propertyKey ? 1 : 0))
-        throw NEDException(property, "Should contain a single value");
+        throw NedException(property, "Should contain a single value");
     if (!propertyKey)
         return nullptr;
     if (propertyKey->getNumChildrenWithTag(NED_LITERAL) >= 2)
-        throw NEDException(property, "Should contain a single value");
+        throw NedException(property, "Should contain a single value");
     return (LiteralElement *)propertyKey->getFirstChildWithTag(NED_LITERAL);
 }
 
@@ -78,7 +78,7 @@ bool ASTNodeUtil::propertyAsBool(PropertyElement *property)
         return true;  // so that @isNetwork is equivalent to @isNetwork(true)
     const char *value = literal->getValue();
     if (strcmp(value, "true") != 0 && strcmp(value, "false") != 0)
-        throw NEDException(property, "Boolean value expected");
+        throw NedException(property, "Boolean value expected");
     return value[0] == 't';
 }
 

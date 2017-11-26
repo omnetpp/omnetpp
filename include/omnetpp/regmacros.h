@@ -37,7 +37,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,NAME,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
  * @brief Like Define_NED_Math_Function(), but takes three arguments, the second one being the
@@ -47,7 +47,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
  * @brief Like Define_NED_Math_Function(), but takes category and description strings as well.
@@ -55,7 +55,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
  * @brief Like Define_NED_Math_Function2(), but takes category and description strings as well.
@@ -63,16 +63,16 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Math_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
- * @brief Registers a C/C++ function for use in NED and ini files; see cNEDFunction.
+ * @brief Registers a C/C++ function for use in NED and ini files; see cNedFunction.
  * FUNCTION is a pointer to the function, and SIGNATURE is the function's
  * signature in NED.
  *
  * The C++ function should have the following signature:
  * <pre>
- * cNEDValue f(cComponent *context, cNEDValue argv[], int argc)
+ * cNedValue f(cComponent *context, cNedValue argv[], int argc)
  * </pre>
  *
  * SIGNATURE is a string with the following syntax:
@@ -90,7 +90,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Function(FUNCTION,SIGNATURE) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDFunction(FUNCTION,SIGNATURE));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedFunction(FUNCTION,SIGNATURE));)
 
 /**
  * @brief Like Define_NED_Function(), but allows one to specify a category string
@@ -99,7 +99,7 @@ namespace omnetpp {
  * @hideinitializer
  */
 #define Define_NED_Function2(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNEDFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(omnetpp::nedFunctions.getInstance()->add(new omnetpp::cNedFunction(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
 
 /**
  * @brief Register class. This defines a factory object which makes it possible

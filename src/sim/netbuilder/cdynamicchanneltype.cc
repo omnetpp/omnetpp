@@ -30,12 +30,12 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {
 }
 
-cNEDDeclaration *cDynamicChannelType::getDecl() const
+cNedDeclaration *cDynamicChannelType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been
-    // thrown out of cNEDLoader to conserve memory
-    cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(getFullName());
-    ASSERT(decl->getType() == cNEDDeclaration::CHANNEL);
+    // thrown out of cNedLoader to conserve memory
+    cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(getFullName());
+    ASSERT(decl->getType() == cNedDeclaration::CHANNEL);
     return decl;
 }
 
@@ -46,7 +46,7 @@ std::string cDynamicChannelType::str() const
 
 std::string cDynamicChannelType::getNedSource() const
 {
-    return getDecl()->getNEDSource();
+    return getDecl()->getNedSource();
 }
 
 cChannel *cDynamicChannelType::createChannelObject()
@@ -57,24 +57,24 @@ cChannel *cDynamicChannelType::createChannelObject()
 
 void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
-    cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().addParametersAndGatesTo(channel, decl);  // adds only parameters, because channels have no gates
+    cNedDeclaration *decl = getDecl();
+    cNedNetworkBuilder().addParametersAndGatesTo(channel, decl);  // adds only parameters, because channels have no gates
 }
 
 void cDynamicChannelType::applyPatternAssignments(cComponent *component)
 {
-    cNEDNetworkBuilder().assignParametersFromPatterns(component);
+    cNedNetworkBuilder().assignParametersFromPatterns(component);
 }
 
 cProperties *cDynamicChannelType::getProperties() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getProperties();
 }
 
 cProperties *cDynamicChannelType::getParamProperties(const char *paramName) const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getParamProperties(paramName);
 }
 
@@ -95,31 +95,31 @@ cProperties *cDynamicChannelType::getConnectionProperties(int connectionId, cons
 
 std::string cDynamicChannelType::getPackageProperty(const char *name) const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getPackageProperty(name);
 }
 
 const char *cDynamicChannelType::getImplementationClassName() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getImplementationClassName();
 }
 
 std::string cDynamicChannelType::getCxxNamespace() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getCxxNamespace();
 }
 
 const char *cDynamicChannelType::getSourceFileName() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->getSourceFileName();
 }
 
 bool cDynamicChannelType::isInnerType() const
 {
-    cNEDDeclaration *decl = getDecl();
+    cNedDeclaration *decl = getDecl();
     return decl->isInnerType();
 }
 

@@ -18,7 +18,7 @@
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
 #include "common/opp_ctype.h"
-#include "nedxml/nedparser.h"  // NEDParser::getBuiltInDeclarations()
+#include "nedxml/nedparser.h"  // NedParser::getBuiltInDeclarations()
 #include "omnetpp/ccanvas.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cconfiguration.h"
@@ -273,16 +273,16 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
         table->sort();
         std::set<std::string> categories;
         for (int i = 0; i < table->size(); i++) {
-            cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
-            cNEDMathFunction *mf = dynamic_cast<cNEDMathFunction *>(table->get(i));
+            cNedFunction *nf = dynamic_cast<cNedFunction *>(table->get(i));
+            cNedMathFunction *mf = dynamic_cast<cNedMathFunction *>(table->get(i));
             categories.insert(nf ? nf->getCategory() : mf ? mf->getCategory() : "???");
         }
         for (auto category : categories) {
             out << "\n Category \"" << category << "\":\n";
             for (int i = 0; i < table->size(); i++) {
                 cObject *obj = table->get(i);
-                cNEDFunction *nf = dynamic_cast<cNEDFunction *>(table->get(i));
-                cNEDMathFunction *mf = dynamic_cast<cNEDMathFunction *>(table->get(i));
+                cNedFunction *nf = dynamic_cast<cNedFunction *>(table->get(i));
+                cNedMathFunction *mf = dynamic_cast<cNedMathFunction *>(table->get(i));
                 const char *fcat = nf ? nf->getCategory() : mf ? mf->getCategory() : "???";
                 const char *desc = nf ? nf->getDescription() : mf ? mf->getDescription() : "???";
                 if (fcat == category) {
@@ -300,7 +300,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             out << "Built-in NED declarations:\n\n";
             out << "---START---\n";
         }
-        out << NEDParser::getBuiltInDeclarations();
+        out << NedParser::getBuiltInDeclarations();
         if (verbose)
             out << "---END---\n";
         out << "\n";

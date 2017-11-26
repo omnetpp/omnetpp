@@ -1,4 +1,3 @@
-//==========================================================================
 //   CSTRINGPAR.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -129,7 +128,7 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
     if ((flags & FL_ISEXPR) == 0)
         return val;
     else {
-        cNEDValue v = evaluate(expr, context);
+        cNedValue v = evaluate(expr, context);
         if (v.type != cNEDValue::STRING)
             throw cRuntimeError(E_ECANTCAST, "string");
         return v.stringValue();

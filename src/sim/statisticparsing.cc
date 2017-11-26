@@ -127,7 +127,7 @@ class SourceExpressionResolver : public Expression::Resolver
         if (MathFunction::supports(funcname))
             return new MathFunction(funcname);
         else if (false)
-            ;  // TODO: recognize and handle custom functions (i.e. NEDFunctions!)
+            ;  // TODO: recognize and handle custom functions (i.e. NedFunctions!)
         else
             return new FilterOrRecorderReference(funcname, argcount);
     }
@@ -357,7 +357,7 @@ class RecorderExpressionResolver : public Expression::Resolver
         if (MathFunction::supports(funcname))
             return new MathFunction(funcname);
         else if (false)
-            ;  // TODO: recognize and handle custom functions (i.e. NEDFunctions!)
+            ;  // TODO: recognize and handle custom functions (i.e. NedFunctions!)
         else
             return new FilterOrRecorderReference(funcname, argcount);
     }

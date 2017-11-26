@@ -28,10 +28,14 @@ namespace omnetpp {
 /**
  * @brief A function that can be used with cDynamicExpression.
  *
- * @see cNEDFunction, Define_NED_Function().
+ * @see cNedFunction, Define_NED_Function().
  * @ingroup SimSupport
  */
-typedef cNEDValue (*NEDFunction)(cComponent *context, cNEDValue argv[], int argc);
+typedef cNedValue (*NedFunction)(cComponent *context, cNedValue argv[], int argc);
+
+// NEDFunction was renamed NedFunction in OMNeT++ 5.3; typedef added for compatibility
+typedef NedFunction NEDFunction;
+
 
 
 /**
@@ -41,7 +45,7 @@ typedef cNEDValue (*NEDFunction)(cComponent *context, cNEDValue argv[], int argc
  *
  * @ingroup Internals
  */
-class SIM_API cNEDFunction : public cNoncopyableOwnedObject
+class SIM_API cNedFunction : public cNoncopyableOwnedObject
 {
   private:
     std::string signature; // function signature, as passed to the ctor
@@ -49,13 +53,13 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     bool hasVarargs_;      // if true, signature contains "..." after the last typed arg
     char returnType;       // one of B,L,D,Q,S,X,*
     int minArgc, maxArgc;  // minimum and maximum argument count
-    NEDFunction f;         // function ptr
+    NedFunction f;         // function ptr
     std::string category;  // category string; only used when listing all functions
     std::string description;  // optional documentation string
 
   protected:
     void parseSignature(const char *signature);
-    void checkArgs(cNEDValue argv[], int argc);
+    void checkArgs(cNedValue argv[], int argc);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -76,12 +80,12 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      *    "string sprintf(format, ...)"
      *    "any max(...)"
      */
-    cNEDFunction(NEDFunction f, const char *signature, const char *category=nullptr, const char *description=nullptr);
+    cNedFunction(NedFunction f, const char *signature, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Destructor.
      */
-    virtual ~cNEDFunction() {}
+    virtual ~cNedFunction() {}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -97,13 +101,13 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     /**
      * Performs argument type checking, and invokes the function.
      */
-    cNEDValue invoke(cComponent *context, cNEDValue argv[], int argc);
+    cNedValue invoke(cComponent *context, cNedValue argv[], int argc);
 
     /**
      * Returns the function pointer. Do not call the function
      * directly, because that would bypass argument type validation.
      */
-    NEDFunction getFunctionPointer() const  {return f;}
+    NedFunction getFunctionPointer() const  {return f;}
 
     /**
      * Returns the functions signature, as passed to the constructor
@@ -157,18 +161,21 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     /**
      * Finds a registered function by name. Returns nullptr if not found.
      */
-    static cNEDFunction *find(const char *name);
+    static cNedFunction *find(const char *name);
 
     /**
      * Finds a registered function by name. Throws an error if not found.
      */
-    static cNEDFunction *get(const char *name);
+    static cNedFunction *get(const char *name);
 
     /**
      * Finds a registered function by function pointer.
      */
-    static cNEDFunction *findByPointer(NEDFunction f);
+    static cNedFunction *findByPointer(NedFunction f);
 };
+
+// cNEDFunction was renamed cNedFunction in OMNeT++ 5.3; typedef added for compatibility
+typedef cNedFunction cNEDFunction;
 
 }  // namespace omnetpp
 

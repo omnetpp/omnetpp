@@ -29,7 +29,7 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cNEDFunction::cNEDFunction(NEDFunction f, const char *signature,
+cNedFunction::cNedFunction(NedFunction f, const char *signature,
         const char *category, const char *description) :
     cNoncopyableOwnedObject(nullptr, false)
 {
@@ -93,7 +93,7 @@ static const char *syntaxErrorMessage =
     "'string', 'xml' and 'any'; names of optional args end in '?'; "
     "append ',...' to accept any number of additional args of any type";
 
-void cNEDFunction::parseSignature(const char *signature)
+void cNedFunction::parseSignature(const char *signature)
 {
     std::string str = opp_nulltoempty(signature);
     std::string typeAndName = opp_trim(opp_substringbefore(str, "("));
@@ -135,7 +135,7 @@ void cNEDFunction::parseSignature(const char *signature)
         minArgc = maxArgc;
 }
 
-void cNEDFunction::checkArgs(cNEDValue argv[], int argc)
+void cNedFunction::checkArgs(cNedValue argv[], int argc)
 {
     if (argc < minArgc || (argc > maxArgc && !hasVarargs_))
         throw cRuntimeError("%s: Called with wrong number of arguments", getName());
@@ -144,13 +144,13 @@ void cNEDFunction::checkArgs(cNEDValue argv[], int argc)
     for (int i = 0; i < n; i++) {
         char declType = argTypes[i];
         if (declType == 'D' || declType == 'L') {
-            if (argv[i].type != cNEDValue::DOUBLE)
+            if (argv[i].type != cNedValue::DOUBLE)
                 throw cRuntimeError(E_EBADARGS, getName());
             if (!opp_isempty(argv[i].getUnit()))
                 throw cRuntimeError(E_DIMLESS, getName());  //XXX better msg! only arg i is dimless
         }
         else if (declType == 'Q') {
-            if (argv[i].type != cNEDValue::DOUBLE)
+            if (argv[i].type != cNedValue::DOUBLE)
                 throw cRuntimeError(E_EBADARGS, getName());
         }
         else if (declType != '*' && argv[i].type != declType) {
@@ -159,25 +159,25 @@ void cNEDFunction::checkArgs(cNEDValue argv[], int argc)
     }
 }
 
-cNEDValue cNEDFunction::invoke(cComponent *context, cNEDValue argv[], int argc)
+cNedValue cNedFunction::invoke(cComponent *context, cNedValue argv[], int argc)
 {
     checkArgs(argv, argc);
     return f(context, argv, argc);
 }
 
-std::string cNEDFunction::str() const
+std::string cNedFunction::str() const
 {
     return getSignature();
 }
 
-cNEDFunction *cNEDFunction::find(const char *name)
+cNedFunction *cNedFunction::find(const char *name)
 {
-    return dynamic_cast<cNEDFunction *>(nedFunctions.getInstance()->find(name));
+    return dynamic_cast<cNedFunction *>(nedFunctions.getInstance()->find(name));
 }
 
-cNEDFunction *cNEDFunction::get(const char *name)
+cNedFunction *cNedFunction::get(const char *name)
 {
-    cNEDFunction *p = find(name);
+    cNedFunction *p = find(name);
     if (!p)
         throw cRuntimeError("NED function \"%s\" not found -- perhaps it wasn't registered "
                             "with the Define_NED_Function() macro, or its code is not linked in",
@@ -185,11 +185,11 @@ cNEDFunction *cNEDFunction::get(const char *name)
     return p;
 }
 
-cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
+cNedFunction *cNedFunction::findByPointer(NedFunction f)
 {
     cRegistrationList *a = nedFunctions.getInstance();
     for (int i = 0; i < a->size(); i++) {
-        cNEDFunction *ff = dynamic_cast<cNEDFunction *>(a->get(i));
+        cNedFunction *ff = dynamic_cast<cNedFunction *>(a->get(i));
         if (ff && ff->getFunctionPointer() == f)
             return ff;
     }

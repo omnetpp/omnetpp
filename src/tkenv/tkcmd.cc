@@ -174,7 +174,7 @@ int objectClasses_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectEnums_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectConfigEntries_cmd(ClientData, Tcl_Interp *, int, const char **);
 
-int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
+int loadNedFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *, int, const char **);
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
@@ -300,7 +300,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_configentries",objectConfigEntries_cmd},
 
    // Misc
-   { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
+   { "opp_loadnedfile",         loadNedFile_cmd        },   // args: <ptr> ret: <xml>
    { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
    { "opp_resizeimage",         resizeImage_cmd        },   // args: <destimage> <srcimage>
    { "opp_swapredandblue",      imageSwapRedAndBlue_cmd},   // args: <image>
@@ -2591,7 +2591,7 @@ int objectConfigEntries_cmd(ClientData, Tcl_Interp *interp, int argc, const char
     return TCL_OK;
 }
 
-int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int loadNedFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc != 2) {
         Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC);

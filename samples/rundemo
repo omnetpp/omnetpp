@@ -50,7 +50,7 @@ set first ""
 foreach line {
    {color1  "About..."         "README"}
    {color2  "Tictoc"           "tictoc"           "./tictoc"        "tictoc"}
-   {color3  "NEDDemo"          "neddemo"          "./neddemo"       "neddemo"}
+   {color3  "NedDemo"          "neddemo"          "./neddemo"       "neddemo"}
    {color3  "Histograms"       "histograms"       "./histograms"    "histograms"}
    {color4  "Fifo"             "fifo"             "./fifo"          "fifo"}
    {color4  "CQN"              "cqn"              "./cqn"           "cqn"}

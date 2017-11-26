@@ -722,7 +722,7 @@ class cFSM extends cOwnedObject
     string stateName @hint("Name of the current FSM state");
 }
 
-class cNEDMathFunction extends cNoncopyableOwnedObject
+class cNedMathFunction extends cNoncopyableOwnedObject
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -732,7 +732,7 @@ class cNEDMathFunction extends cNoncopyableOwnedObject
     int numArgs @hint("Number of \"double\" parameters this function takes");
 }
 
-class cNEDFunction extends cNoncopyableOwnedObject
+class cNedFunction extends cNoncopyableOwnedObject
 {
     @existingClass;
     @overwritePreviousDefinition;

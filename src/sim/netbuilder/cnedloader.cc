@@ -37,29 +37,29 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-cNEDLoader *cNEDLoader::inst;
+cNedLoader *cNedLoader::inst;
 
-EXECUTE_ON_SHUTDOWN(cNEDLoader::clear());
+EXECUTE_ON_SHUTDOWN(cNedLoader::clear());
 
-cNEDLoader *cNEDLoader::getInstance()
+cNedLoader *cNedLoader::getInstance()
 {
     if (!inst) {
-        inst = new cNEDLoader();
+        inst = new cNedLoader();
         inst->registerBuiltinDeclarations();
     }
     return inst;
 }
 
-void cNEDLoader::clear()
+void cNedLoader::clear()
 {
     delete inst;
     inst = nullptr;
 }
 
-void cNEDLoader::registerNEDType(const char *qname, bool isInnerType, NEDElement *node)
+void cNedLoader::registerNedType(const char *qname, bool isInnerType, NedElement *node)
 {
-    // wrap, and add to the table (Note: we cannot reuse base class impl, because it creates a NEDTypeInfo)
-    cNEDDeclaration *decl = new cNEDDeclaration(this, qname, isInnerType, node);
+    // wrap, and add to the table (Note: we cannot reuse base class impl, because it creates a NedTypeInfo)
+    cNedDeclaration *decl = new cNedDeclaration(this, qname, isInnerType, node);
     nedTypes[qname] = decl;
     nedTypeNames.clear();  // invalidate
 
@@ -73,9 +73,9 @@ void cNEDLoader::registerNEDType(const char *qname, bool isInnerType, NEDElement
         componentTypes.getInstance()->add(type);
 }
 
-cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
+cNedDeclaration *cNedLoader::getDecl(const char *qname) const
 {
-    cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(NEDResourceCache::getDecl(qname));
+    cNedDeclaration *decl = dynamic_cast<cNedDeclaration *>(NedResourceCache::getDecl(qname));
     ASSERT(decl);
     return decl;
 }

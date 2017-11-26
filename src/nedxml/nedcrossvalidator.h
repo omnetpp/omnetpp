@@ -5,7 +5,7 @@
 //            Discrete System Simulation in C++
 //
 // Contents:
-//   class NEDCrossValidator
+//   class NedCrossValidator
 //
 //==========================================================================
 
@@ -27,7 +27,7 @@
 namespace omnetpp {
 namespace nedxml {
 
-class NEDResourceCache;
+class NedResourceCache;
 
 
 // *** CURRENTLY NOT IN USE ***
@@ -38,11 +38,11 @@ class NEDResourceCache;
  *
  * @ingroup Validation
  */
-class NEDXML_API NEDCrossValidator : public NEDValidatorBase
+class NEDXML_API NedCrossValidator : public NedValidatorBase
 {
   protected:
     bool parsedExpressions;
-    NEDResourceCache *resolver;
+    NedResourceCache *resolver;
 
     // temporary variables:
     ASTNode *moduleTypeDecl;
@@ -64,10 +64,10 @@ class NEDXML_API NEDCrossValidator : public NEDValidatorBase
 
   public:
     /** Constructor */
-    NEDCrossValidator(bool parsedExpr, NEDResourceCache *resolver, ErrorStore *e);
+    NedCrossValidator(bool parsedExpr, NedResourceCache *resolver, ErrorStore *e);
 
     /** Destructor */
-    virtual ~NEDCrossValidator();
+    virtual ~NedCrossValidator();
 
   protected:
     /** @name Validator methods */

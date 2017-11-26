@@ -91,14 +91,14 @@ void cParImpl::setUnit(const char *s)
     unitp = unitStringPool.get(s);
 }
 
-cNEDValue cParImpl::evaluate(cExpression *expr, cComponent *context) const
+cNedValue cParImpl::evaluate(cExpression *expr, cComponent *context) const
 {
     static int depth;
     try {
         depth++;
         if (depth >= 5)
             throw cRuntimeError("Evaluation nesting too deep (circular parameter references?)");
-        cNEDValue ret = expr->evaluate(context);
+        cNedValue ret = expr->evaluate(context);
         depth--;
         return ret;
     }

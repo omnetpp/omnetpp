@@ -20,7 +20,7 @@
 
 namespace omnetpp {
 
-namespace NEDSupport {
+namespace NedSupport {
 
 class ModuleIndex : public cDynamicExpression::Functor
 {
@@ -30,7 +30,7 @@ class ModuleIndex : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return "index";}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'L';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -49,7 +49,7 @@ class ParameterRef : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return paramName.c_str();}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return '*';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -69,7 +69,7 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return paramName.c_str();}
     virtual const char *getArgTypes() const override {return withModuleIndex ? "L" : "";}
     virtual char getReturnType() const override {return '*';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -79,7 +79,7 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
 class LoopVar : public cDynamicExpression::Functor
 {
   private:
-    // the loopvar stack (vars of nested loops are pushed on the stack by cNEDNetworkBuilder)
+    // the loopvar stack (vars of nested loops are pushed on the stack by cNedNetworkBuilder)
     static const char *varNames[32];
     static long vars[32];
     static int varCount;
@@ -98,7 +98,7 @@ class LoopVar : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return varName.c_str();}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'L';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -118,16 +118,16 @@ class Sizeof : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return ident.c_str();}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'L';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) override;
+    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
 /*XXX TODO
-static cNEDValue getSizeofIdent(cComponent *context, cNEDValue args[], int numargs);
-static cNEDValue getSizeofGate(cComponent *context, cNEDValue args[], int numargs);
-static cNEDValue getSizeofParentModuleGate(cComponent *context, cNEDValue args[], int numargs);
-static cNEDValue getSizeofSiblingModuleGate(cComponent *context, cNEDValue args[], int numargs);
-static cNEDValue getSizeofIndexedSiblingModuleGate(cComponent *context, cNEDValue args[], int numargs);
+static cNedValue getSizeofIdent(cComponent *context, cNedValue args[], int numargs);
+static cNedValue getSizeofGate(cComponent *context, cNedValue args[], int numargs);
+static cNedValue getSizeofParentModuleGate(cComponent *context, cNedValue args[], int numargs);
+static cNedValue getSizeofSiblingModuleGate(cComponent *context, cNedValue args[], int numargs);
+static cNedValue getSizeofIndexedSiblingModuleGate(cComponent *context, cNedValue args[], int numargs);
 
 class Sizeof : public Functor
 {
@@ -138,7 +138,7 @@ class Sizeof : public Functor
   public:
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return 'L';}
-    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
+    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs) {return "index";}
 };
 */

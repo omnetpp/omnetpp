@@ -27,7 +27,7 @@
 namespace omnetpp {
 namespace nedxml {
 
-class NEDResourceCache;
+class NedResourceCache;
 
 /**
  * @brief Stores information on a NED type.
@@ -36,18 +36,18 @@ class NEDResourceCache;
  * module interface or channel interface). May be extended by subclassing.
  *
  * Represents NED declarations of modules, module interfaces, channels and
- * channel interfaces. All instances are created and managed by NEDResourceCache.
+ * channel interfaces. All instances are created and managed by NedResourceCache.
  *
- * @ingroup NEDResources
+ * @ingroup NedResources
  */
-class NEDXML_API NEDTypeInfo
+class NEDXML_API NedTypeInfo
 {
   public:
     enum Type {SIMPLE_MODULE, COMPOUND_MODULE, MODULEINTERFACE, CHANNEL, CHANNELINTERFACE};
 
   protected:
     // the resolver this type is in
-    NEDResourceCache *resolver;
+    NedResourceCache *resolver;
 
     Type type;
     std::string qualifiedName;
@@ -76,17 +76,17 @@ class NEDXML_API NEDTypeInfo
     NameToElementMap allLocalDecls;
 
   protected:
-    void checkComplianceToInterface(NEDTypeInfo *interfaceDecl);
+    void checkComplianceToInterface(NedTypeInfo *interfaceDecl);
     void collectLocalDeclarations();
     void addToElementMap(NameToElementMap& elementMap, ASTNode *node);
     void mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap);
 
   public:
     /** Constructor. It expects fully qualified name */
-    NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree);
+    NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree);
 
     /** Destructor */
-    virtual ~NEDTypeInfo();
+    virtual ~NedTypeInfo();
 
     /** Returns the simple name of the NED type */
     virtual const char *getName() const;
@@ -98,7 +98,7 @@ class NEDXML_API NEDTypeInfo
     virtual ASTNode *getTree() const;
 
     /** The NED type resolver this type is registered in */
-    NEDResourceCache *getResolver() const  {return resolver;}
+    NedResourceCache *getResolver() const  {return resolver;}
 
     /**
      * Returns the type of this declaration: simple module, compound module,
@@ -125,7 +125,7 @@ class NEDXML_API NEDTypeInfo
     /**
      * Returns the NED declaration.
      */
-    virtual std::string getNEDSource() const;
+    virtual std::string getNedSource() const;
 
     /**
      * Returns the number of "extends" names. This includes indirect
@@ -196,7 +196,7 @@ class NEDXML_API NEDTypeInfo
     virtual std::string getCxxNamespace() const;
 
     /** Returns the first "extends" clause, or nullptr */
-    virtual NEDTypeInfo *getSuperDecl() const;
+    virtual NedTypeInfo *getSuperDecl() const;
 
     /** @name Convenience method to query the tree */
     //@{

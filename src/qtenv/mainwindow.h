@@ -142,14 +142,14 @@ private slots:
     void onSimTimeLabelUnitsTriggered();
     void onEventNumLabelContextMenuRequested(QPoint pos);
     void onEventNumLabelGroupingTriggered();
-    void on_actionLoadNEDFile_triggered();
+    void on_actionLoadNedFile_triggered();
     void on_actionOpenPrimaryIniFile_triggered();
     void on_actionCreate_Snapshot_triggered();
     void on_actionConcludeSimulation_triggered();
     void on_actionNetwork_triggered();
     void on_actionScheduledEvents_triggered();
     void on_actionSimulation_triggered();
-    void on_actionNEDComponentTypes_triggered();
+    void on_actionNedComponentTypes_triggered();
     void on_actionRegisteredClasses_triggered();
     void on_actionNED_Functions_triggered();
     void on_actionRegistered_Enums_triggered();

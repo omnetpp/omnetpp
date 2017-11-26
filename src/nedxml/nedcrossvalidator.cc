@@ -5,7 +5,7 @@
 //            Discrete System Simulation in C++
 //
 // Contents:
-//   class NEDCrossValidator
+//   class NedCrossValidator
 //
 //==========================================================================
 
@@ -29,20 +29,20 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-NEDCrossValidator::NEDCrossValidator(bool parsedExpr, NEDResourceCache *res, ErrorStore *e)
-    : NEDValidatorBase(e)
+NedCrossValidator::NedCrossValidator(bool parsedExpr, NedResourceCache *res, ErrorStore *e)
+    : NedValidatorBase(e)
 {
     parsedExpressions = parsedExpr;
     resolver = res;
 }
 
-NEDCrossValidator::~NEDCrossValidator()
+NedCrossValidator::~NedCrossValidator()
 {
 }
 
-ASTNode *NEDCrossValidator::getXXXDeclaration(const char *name, int tagcode1, int tagcode2)
+ASTNode *NedCrossValidator::getXXXDeclaration(const char *name, int tagcode1, int tagcode2)
 {
-    NEDTypeInfo *component = resolver->lookup(name);
+    NedTypeInfo *component = resolver->lookup(name);
     if (!component)
         return nullptr;
 
@@ -52,71 +52,58 @@ ASTNode *NEDCrossValidator::getXXXDeclaration(const char *name, int tagcode1, in
     return component->getTree();
 }
 
-ASTNode *NEDCrossValidator::getModuleDeclaration(const char *name)
+ASTNode *NedCrossValidator::getModuleDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE);
 }
 
-ASTNode *NEDCrossValidator::getChannelDeclaration(const char *name)
+ASTNode *NedCrossValidator::getChannelDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_CHANNEL);
 }
 
-ASTNode *NEDCrossValidator::getModuleInterfaceDeclaration(const char *name)
+ASTNode *NedCrossValidator::getModuleInterfaceDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_MODULE_INTERFACE);
 }
 
-ASTNode *NEDCrossValidator::getChannelInterfaceDeclaration(const char *name)
+ASTNode *NedCrossValidator::getChannelInterfaceDeclaration(const char *name)
 {
     return getXXXDeclaration(name, NED_CHANNEL_INTERFACE);
 }
 
-void NEDCrossValidator::validateElement(FilesElement *node)
+void NedCrossValidator::validateElement(FilesElement *node)
 {
 }
 
-void NEDCrossValidator::validateElement(NedFileElement *node)
+void NedCrossValidator::validateElement(NedFileElement *node)
 {
 }
 
-void NEDCrossValidator::validateElement(CommentElement *node)
+void NedCrossValidator::validateElement(CommentElement *node)
 {
 }
 
-void NEDCrossValidator::validateElement(ImportElement *node)
+void NedCrossValidator::validateElement(ImportElement *node)
 {
 }
 
-void NEDCrossValidator::validateElement(PropertyDeclElement *node)
-{
-    // FIXME revise
-}
-
-void NEDCrossValidator::validateElement(ExtendsElement *node)
+void NedCrossValidator::validateElement(PropertyDeclElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(InterfaceNameElement *node)
+void NedCrossValidator::validateElement(ExtendsElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(SimpleModuleElement *node)
-{
-    // FIXME revise
-    // make sure module type name does not exist yet
-    if (getModuleDeclaration(node->getName()))
-        errors->addError(node, "redefinition of module with name '%s'", node->getName());
-}
-
-void NEDCrossValidator::validateElement(ModuleInterfaceElement *node)
+void NedCrossValidator::validateElement(InterfaceNameElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(CompoundModuleElement *node)
+void NedCrossValidator::validateElement(SimpleModuleElement *node)
 {
     // FIXME revise
     // make sure module type name does not exist yet
@@ -124,12 +111,25 @@ void NEDCrossValidator::validateElement(CompoundModuleElement *node)
         errors->addError(node, "redefinition of module with name '%s'", node->getName());
 }
 
-void NEDCrossValidator::validateElement(ParametersElement *node)
+void NedCrossValidator::validateElement(ModuleInterfaceElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(ParamElement *node)
+void NedCrossValidator::validateElement(CompoundModuleElement *node)
+{
+    // FIXME revise
+    // make sure module type name does not exist yet
+    if (getModuleDeclaration(node->getName()))
+        errors->addError(node, "redefinition of module with name '%s'", node->getName());
+}
+
+void NedCrossValidator::validateElement(ParametersElement *node)
+{
+    // FIXME revise
+}
+
+void NedCrossValidator::validateElement(ParamElement *node)
 {
     // FIXME code comes from substparamnode -- REVISE
     if (!moduleTypeDecl)
@@ -146,22 +146,22 @@ void NEDCrossValidator::validateElement(ParamElement *node)
     // TBD compile-time check for type mismatch
 }
 
-void NEDCrossValidator::validateElement(PropertyElement *node)
+void NedCrossValidator::validateElement(PropertyElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(PropertyKeyElement *node)
+void NedCrossValidator::validateElement(PropertyKeyElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(GatesElement *node)
+void NedCrossValidator::validateElement(GatesElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(GateElement *node)
+void NedCrossValidator::validateElement(GateElement *node)
 {
     // FIXME the following lines come from gatesizenode -- REVISE!
     if (!moduleTypeDecl)
@@ -185,17 +185,17 @@ void NEDCrossValidator::validateElement(GateElement *node)
 //        errors->addError(node, "gate '%s' is not a vector gate",gatename);
 }
 
-void NEDCrossValidator::validateElement(TypesElement *node)
+void NedCrossValidator::validateElement(TypesElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(SubmodulesElement *node)
+void NedCrossValidator::validateElement(SubmodulesElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(SubmoduleElement *node)
+void NedCrossValidator::validateElement(SubmoduleElement *node)
 {
     // FIXME revise
     // make sure module type exists
@@ -205,12 +205,12 @@ void NEDCrossValidator::validateElement(SubmoduleElement *node)
         errors->addError(node, "unknown module type '%s'", type_name);
 }
 
-void NEDCrossValidator::validateElement(ConnectionsElement *node)
+void NedCrossValidator::validateElement(ConnectionsElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isInput, ASTNode *conn, bool isSrc)
+void NedCrossValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isInput, ASTNode *conn, bool isSrc)
 {
     // FIXME revise
     // check gate direction, check if vector
@@ -227,7 +227,7 @@ void NEDCrossValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isI
         errors->addError(conn, "%s: output gate expected but '%s' is an input gate", q, gate->getName());
 }
 
-void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
+void NedCrossValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
         const char *gateName, bool hasGateIndex,
         ASTNode *parent, ASTNode *conn, bool isSrc)
 {
@@ -270,7 +270,7 @@ void NEDCrossValidator::validateConnGate(const char *submodName, bool hasSubmodI
     }
 }
 
-void NEDCrossValidator::validateElement(ConnectionElement *node)
+void NedCrossValidator::validateElement(ConnectionElement *node)
 {
     // FIXME revise
     // make sure submodule and gate names are valid, gate direction is OK
@@ -287,12 +287,12 @@ void NEDCrossValidator::validateElement(ConnectionElement *node)
     validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }
 
-void NEDCrossValidator::validateElement(ChannelInterfaceElement *node)
+void NedCrossValidator::validateElement(ChannelInterfaceElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(ChannelElement *node)
+void NedCrossValidator::validateElement(ChannelElement *node)
 {
     // FIXME revise
     // make sure channel type name does not exist yet
@@ -300,46 +300,46 @@ void NEDCrossValidator::validateElement(ChannelElement *node)
         errors->addError(node, "redefinition of channel with name '%s'", node->getName());
 }
 
-void NEDCrossValidator::validateElement(ConnectionGroupElement *node)
+void NedCrossValidator::validateElement(ConnectionGroupElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(LoopElement *node)
+void NedCrossValidator::validateElement(LoopElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(ConditionElement *node)
+void NedCrossValidator::validateElement(ConditionElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(ExpressionElement *node)
+void NedCrossValidator::validateElement(ExpressionElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(OperatorElement *node)
+void NedCrossValidator::validateElement(OperatorElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(FunctionElement *node)
+void NedCrossValidator::validateElement(FunctionElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(IdentElement *node)
+void NedCrossValidator::validateElement(IdentElement *node)
 {
     // FIXME revise
 }
 
-void NEDCrossValidator::validateElement(LiteralElement *node)
+void NedCrossValidator::validateElement(LiteralElement *node)
 {
 }
 
-void NEDCrossValidator::validateElement(UnknownElement *node)
+void NedCrossValidator::validateElement(UnknownElement *node)
 {
 }
 

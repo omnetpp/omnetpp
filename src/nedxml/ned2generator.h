@@ -1,5 +1,5 @@
 //==========================================================================
-//  NED2GENERATOR.H - part of
+//  NEDGENERATOR.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_NEDXML_NED2GENERATOR_H
-#define __OMNETPP_NEDXML_NED2GENERATOR_H
+#ifndef __OMNETPP_NEDXML_NEDGENERATOR_H
+#define __OMNETPP_NEDXML_NEDGENERATOR_H
 
 #include <iostream>
 
@@ -27,9 +27,9 @@ namespace nedxml {
 
 
 /**
- * @brief Simple front-end to NED2Generator.
+ * @brief Simple front-end to Ned2Generator.
  *
- * @ingroup NEDGenerator
+ * @ingroup NedGenerator
  */
 NEDXML_API void generateNED2(std::ostream& out, ASTNode *node);
 
@@ -39,9 +39,9 @@ NEDXML_API void generateNED2(std::ostream& out, ASTNode *node);
  * Assumes that the object tree has already passed all validation stages (DTD,
  * syntax, semantic).
  *
- * @ingroup NEDGenerator
+ * @ingroup NedGenerator
  */
-class NEDXML_API NED2Generator
+class NEDXML_API Ned2Generator
 {
   protected:
     int indentSize;
@@ -51,12 +51,12 @@ class NEDXML_API NED2Generator
     /**
      * Constructor.
      */
-    NED2Generator();
+    Ned2Generator();
 
     /**
      * Destructor.
      */
-    ~NED2Generator();
+    ~Ned2Generator();
 
     /**
      * Sets the indent size in the generated NED code. Default is 4 spaces.
@@ -82,15 +82,15 @@ class NEDXML_API NED2Generator
     //@}
 
     /** Dispatch to various doXXX() methods according to node type */
-    void generateNEDItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
+    void generateNedItem(ASTNode *node, const char *indent, bool islast, const char *arg=nullptr);;
 
-    /** Invoke generateNEDItem() on all children */
+    /** Invoke generateNedItem() on all children */
     void generateChildren(ASTNode *node, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNEDItem() on all children of the given tagcode */
+    /** Invoke generateNedItem() on all children of the given tagcode */
     void generateChildrenWithType(ASTNode *node, int tagcode, const char *indent, const char *arg=nullptr);
 
-    /** Invoke generateNEDItem() on children of the given tagcodes (NED_NULL-terminated array) */
+    /** Invoke generateNedItem() on children of the given tagcodes (NED_NULL-terminated array) */
     void generateChildrenWithTypes(ASTNode *node, int tagcodes[], const char *indent, const char *arg=nullptr);
 
     /** @name Utilities */
@@ -114,7 +114,7 @@ class NEDXML_API NED2Generator
     /** @name Generate NED code from the given element */
     //@{
     void doFiles(FilesElement *node, const char *indent, bool islast, const char *);
-    void doNEDFile(NedFileElement *node, const char *indent, bool islast, const char *);
+    void doNedFile(NedFileElement *node, const char *indent, bool islast, const char *);
     void doPackage(PackageElement *node, const char *indent, bool islast, const char *);
     void doImport(ImportElement *node, const char *indent, bool islast, const char *);
     void doPropertyDecl(PropertyDeclElement *node, const char *indent, bool islast, const char *);

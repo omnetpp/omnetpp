@@ -330,7 +330,7 @@ sub testcase_generatesources
     print "  generating files for `$testfilename':\n" if ($debug);
 
     # generate "package.ned"
-    $ned = $PackageNEDTemplate;
+    $ned = $PackageNedTemplate;
     $ned =~ s/\@TESTNAME\@/$testname/g;
     $nedfname = $workdir."/".$testname."/package.ned";
     writefile($nedfname, $ned);
@@ -347,7 +347,7 @@ sub testcase_generatesources
         $globalcode = $bodies{'global(1)'};
 
         # generate NED
-        $ned = $ModuleNEDTemplate;
+        $ned = $ModuleNedTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$module/g;
         $nedfname = $workdir."/".$testname."/test.ned";
@@ -374,7 +374,7 @@ sub testcase_generatesources
         $globalcode = $bodies{'global(1)'};
 
         # generate NED
-        $ned = $ModuleNEDTemplate;
+        $ned = $ModuleNedTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$module/g;
         $nedfname = $workdir."/".$testname."/test.ned";
@@ -901,11 +901,11 @@ sub exec_program()
 
 sub define_templates()
 {
-    $PackageNEDTemplate = '
+    $PackageNedTemplate = '
 @namespace(@TESTNAME@);
 ';
 
-    $ModuleNEDTemplate = '
+    $ModuleNedTemplate = '
 simple @MODULE@
 {
     @isNetwork(true);

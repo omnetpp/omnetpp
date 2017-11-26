@@ -36,7 +36,7 @@ namespace nedxml {
 #define MAGIC_PREFIX    "@expr@"  // note: must agree with ned2.lex
 
 
-const char *NEDParser::getBuiltInDeclarations()
+const char *NedParser::getBuiltInDeclarations()
 {
     return
         "package ned;\n"
@@ -95,39 +95,39 @@ const char *NEDParser::getBuiltInDeclarations()
 
 //--------
 
-NEDParser::NEDParser(ErrorStore *e)
+NedParser::NedParser(ErrorStore *e)
 {
     np.errors = e;
 }
 
-NEDParser::~NEDParser()
+NedParser::~NedParser()
 {
     delete np.source;
 }
 
-ASTNode *NEDParser::parseNEDFile(const char *osfname, const char *fname)
+ASTNode *NedParser::parseNedFile(const char *osfname, const char *fname)
 {
     if (!loadFile(osfname, fname))
         return nullptr;
-    return parseNED();
+    return parseNed();
 }
 
-ASTNode *NEDParser::parseNEDText(const char *nedtext, const char *fname)
+ASTNode *NedParser::parseNedText(const char *nedtext, const char *fname)
 {
     if (!loadText(nedtext, fname))
         return nullptr;
-    return parseNED();
+    return parseNed();
 }
 
-ASTNode *NEDParser::parseNEDExpression(const char *nedexpression)
+ASTNode *NedParser::parseNedExpression(const char *nedexpression)
 {
     np.parseexpr = true;
     std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
-    ASTNode *tree = parseNEDText(source.c_str(), "buffer");
+    ASTNode *tree = parseNedText(source.c_str(), "buffer");
     return tree ? tree->getFirstChild() : nullptr;  // unwrap from NedFileElement
 }
 
-bool NEDParser::loadFile(const char *osfname, const char *fname)
+bool NedParser::loadFile(const char *osfname, const char *fname)
 {
     if (!fname)
         fname = osfname;
@@ -156,7 +156,7 @@ bool NEDParser::loadFile(const char *osfname, const char *fname)
     return true;
 }
 
-bool NEDParser::loadText(const char *nedtext, const char *fname)
+bool NedParser::loadText(const char *nedtext, const char *fname)
 {
     if (!fname)
         fname = "buffer";
@@ -176,7 +176,7 @@ bool NEDParser::loadText(const char *nedtext, const char *fname)
     return true;
 }
 
-ASTNode *NEDParser::parseNED()
+ASTNode *NedParser::parseNed()
 {
     np.errors->clear();
     return ::doParseNED2(&np, np.source->getFullText());

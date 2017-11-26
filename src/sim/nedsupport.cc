@@ -30,13 +30,13 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-namespace NEDSupport {
+namespace NedSupport {
 
 ModuleIndex::ModuleIndex()
 {
 }
 
-cNEDValue ModuleIndex::evaluate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue ModuleIndex::evaluate(cComponent *context, cNedValue args[], int numargs)
 {
     ASSERT(numargs == 0 && context != nullptr);
     cModule *module = dynamic_cast<cModule *>(context);
@@ -59,7 +59,7 @@ ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool explicitKe
     this->explicitKeyword = explicitKeyword;
 }
 
-cNEDValue ParameterRef::evaluate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue ParameterRef::evaluate(cComponent *context, cNedValue args[], int numargs)
 {
     ASSERT(numargs == 0 && context != nullptr);
     cComponent *component = ofParent ? context->getParentModule() : context;
@@ -99,10 +99,10 @@ SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, con
     this->withModuleIndex = withModuleIndex;
 }
 
-cNEDValue SiblingModuleParameterRef::evaluate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue SiblingModuleParameterRef::evaluate(cComponent *context, cNedValue args[], int numargs)
 {
     ASSERT(context != nullptr);
-    ASSERT(!withModuleIndex || (withModuleIndex && numargs == 1 && args[0].type == cNEDValue::DOUBLE));
+    ASSERT(!withModuleIndex || (withModuleIndex && numargs == 1 && args[0].type == cNedValue::DOUBLE));
     cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);  // this works for channels too
     if (!compoundModule)
         throw cRuntimeError(context, E_ENOPARENT);
@@ -147,7 +147,7 @@ void LoopVar::reset()
     varCount = 0;
 }
 
-cNEDValue LoopVar::evaluate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue LoopVar::evaluate(cComponent *context, cNedValue args[], int numargs)
 {
     ASSERT(numargs == 0);
     const char *var = varName.c_str();
@@ -173,7 +173,7 @@ Sizeof::Sizeof(const char *ident, bool ofParent, bool explicitKeyword)
     this->explicitKeyword = explicitKeyword;
 }
 
-cNEDValue Sizeof::evaluate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue Sizeof::evaluate(cComponent *context, cNedValue args[], int numargs)
 {
     ASSERT(numargs == 0 && context != nullptr);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);
@@ -212,14 +212,14 @@ std::string Sizeof::str(std::string args[], int numargs)
 /*
 //TODO make error messages consistent
 
-typedef cNEDcNEDValue cNEDValue; // abbreviation for local use
+typedef cNEDcNedValue cNedValue; // abbreviation for local use
 
 //
 // internal function to support NED: resolves a sizeof(moduleOrGateVectorName) reference
 //
-cNEDValue cDynamicExpression::getSizeofIdent(cComponent *context, cNEDValue args[], int numargs)
+cNedValue cDynamicExpression::getSizeofIdent(cComponent *context, cNedValue args[], int numargs)
 {
-    ASSERT(numargs==1 && args[0].type==cNEDValue::STR);
+    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
     const char *ident = args[0].s.c_str();
 
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
@@ -246,9 +246,9 @@ cNEDValue cDynamicExpression::getSizeofIdent(cComponent *context, cNEDValue args
 //
 // internal function to support NED: resolves a sizeof(this.gateVectorName) reference
 //
-cNEDValue cDynamicExpression::getSizeofGate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue cDynamicExpression::getSizeofGate(cComponent *context, cNedValue args[], int numargs)
 {
-    ASSERT(numargs==1 && args[0].type==cNEDValue::STR);
+    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
     const char *gateName = args[0].s.c_str();
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module || !module->hasGate(gateName))
@@ -259,9 +259,9 @@ cNEDValue cDynamicExpression::getSizeofGate(cComponent *context, cNEDValue args[
 //
 // internal function to support NED: resolves a sizeof(parent.gateVectorName) reference
 //
-cNEDValue cDynamicExpression::getSizeofParentModuleGate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue cDynamicExpression::getSizeofParentModuleGate(cComponent *context, cNedValue args[], int numargs)
 {
-    ASSERT(numargs==1 && args[0].type==cNEDValue::STR);
+    ASSERT(numargs==1 && args[0].type==cNedValue::STR);
     const char *gateName = args[0].s.c_str();
     cModule *parentModule = dynamic_cast<cModule *>(context->getParentModule()); // this works for channels too
     if (!parentModule)
@@ -274,9 +274,9 @@ cNEDValue cDynamicExpression::getSizeofParentModuleGate(cComponent *context, cNE
 //
 // internal function to support NED: resolves a sizeof(module.gateName) reference
 //
-cNEDValue cDynamicExpression::getSizeofSiblingModuleGate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue cDynamicExpression::getSizeofSiblingModuleGate(cComponent *context, cNedValue args[], int numargs)
 {
-    ASSERT(numargs==2 && args[0].type==cNEDValue::STR && args[1].type==cNEDValue::STR);
+    ASSERT(numargs==2 && args[0].type==cNedValue::STR && args[1].type==cNedValue::STR);
     const char *siblingModuleName = args[0].s.c_str();
     const char *gateName = args[1].s.c_str();
 
@@ -292,9 +292,9 @@ cNEDValue cDynamicExpression::getSizeofSiblingModuleGate(cComponent *context, cN
 //
 // internal function to support NED: resolves a sizeof(module.gateName) reference
 //
-cNEDValue cDynamicExpression::getSizeofIndexedSiblingModuleGate(cComponent *context, cNEDValue args[], int numargs)
+cNedValue cDynamicExpression::getSizeofIndexedSiblingModuleGate(cComponent *context, cNedValue args[], int numargs)
 {
-    ASSERT(numargs==3 && args[0].type==cNEDValue::STR && args[1].type==cNEDValue::STR && args[2].type==cNEDValue::DBL);
+    ASSERT(numargs==3 && args[0].type==cNedValue::STR && args[1].type==cNedValue::STR && args[2].type==cNedValue::DBL);
     const char *gateName = args[1].s.c_str();
     const char *siblingModuleName = args[1].s.c_str();
     int siblingModuleIndex = (int)args[2].dbl;

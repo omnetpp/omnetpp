@@ -26,7 +26,7 @@ namespace omnetpp {
 
 
 /**
- * @brief NEDXML-based cModuleType: takes all info from cNEDLoader
+ * @brief NEDXML-based cModuleType: takes all info from cNedLoader
  */
 class SIM_API cDynamicModuleType : public cModuleType
 {
@@ -47,7 +47,7 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual void buildInside(cModule *module) override;
 
     // internal utility function
-    cNEDDeclaration *getDecl() const;
+    cNedDeclaration *getDecl() const;
 
     // methods redefined from cComponentType
     virtual cProperties *getProperties() const override;

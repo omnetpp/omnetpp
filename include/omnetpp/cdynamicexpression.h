@@ -24,8 +24,8 @@ namespace omnetpp {
 
 class cXMLElement;
 class cPar;
-class cNEDMathFunction;
-class cNEDFunction;
+class cNedMathFunction;
+class cNedFunction;
 
 /**
  * @brief A stack-based expression evaluator class, for dynamically created
@@ -66,8 +66,8 @@ class SIM_API cDynamicExpression : public cExpression
         //  - double (there is no long -- we calculate everything in double)
         //  - string
         //  - pointer to an "external" cXMLElement
-        //  - cNEDMathFunction: function with 0/1/2/3/4 double arguments
-        //  - cNEDFunction: function taking/returning cNEDValue (NEDFunction)
+        //  - cNedMathFunction: function with 0/1/2/3/4 double arguments
+        //  - cNedFunction: function taking/returning cNedValue (NedFunction)
         //  - functor
         //  - math operator (+-*/%^...)
         //  - constant subexpression
@@ -79,8 +79,8 @@ class SIM_API cDynamicExpression : public cExpression
             struct {double d; const char *unit;} d;
             const char *s; // points into stringPool
             cXMLElement *x;
-            cNEDMathFunction *f;
-            struct {cNEDFunction *f; int argc;} nf;
+            cNedMathFunction *f;
+            struct {cNedFunction *f; int argc;} nf;
             Functor *fu;
             OpType op;
             cExpression *constExpr;
@@ -159,16 +159,16 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: Call a function
          * taking 0..4 doubles and returning a double.
          */
-        void operator=(cNEDMathFunction *f);
+        void operator=(cNedMathFunction *f);
 
         /**
          * Effect during evaluation of the expression: call a function
-         * that function takes an array of cNEDValues and returns a cNEDValue.
+         * that function takes an array of cNedValues and returns a cNedValue.
          */
-        void set(cNEDFunction *f, int argc);
+        void set(cNedFunction *f, int argc);
 
         /**
-         * Function object, with an interface not unlike cNEDFunction.
+         * Function object, with an interface not unlike cNedFunction.
          * This object will be deleted by expression's destructor.
          */
         void operator=(Functor *f);
@@ -200,7 +200,7 @@ class SIM_API cDynamicExpression : public cExpression
         virtual const char *getArgTypes() const = 0;
         virtual int getNumArgs() const {return strlen(getArgTypes());}
         virtual char getReturnType() const = 0;
-        virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) = 0;
+        virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) = 0;
         virtual std::string str(std::string args[], int numargs) = 0;
         using cObject::str;
     };
@@ -264,11 +264,11 @@ class SIM_API cDynamicExpression : public cExpression
     virtual void setExpression(Elem e[], int size);
 
     /**
-     * Evaluate the expression, and return the results as a cNEDValue.
+     * Evaluate the expression, and return the results as a cNedValue.
      * Throws an error if the expression has some problem (i.e. stack
      * overflow/underflow, "cannot cast", "function not found", etc.)
      */
-    virtual cNEDValue evaluate(cComponent *context) const override;
+    virtual cNedValue evaluate(cComponent *context) const override;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;

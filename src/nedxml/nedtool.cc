@@ -247,16 +247,16 @@ bool processFile(const char *fname, ErrorStore *errors)
             tree = parseXML(fname, errors);
         }
         else if (ftype == NED_FILE) {
-            NEDParser parser(errors);
+            NedParser parser(errors);
             parser.setParseExpressions(!opt_unparsedexpr);
             parser.setStoreSource(opt_storesrc);
-            tree = parser.parseNEDFile(fname);
+            tree = parser.parseNedFile(fname);
         }
         else if (ftype == MSG_FILE) {
             MsgParser parser(errors);
             parser.setMsgNewSyntaxFlag(opt_msgimports);
             parser.setStoreSource(opt_storesrc);
-            tree = parser.parseMSGFile(fname);
+            tree = parser.parseMsgFile(fname);
         }
         if (errors->containsError()) {
             delete tree;
@@ -270,14 +270,14 @@ bool processFile(const char *fname, ErrorStore *errors)
 
         // DTD validation and additional syntax validation
         if (contentType == NED_FILE) {
-            NEDDTDValidator dtdvalidator(errors);
+            NedDtdValidator dtdvalidator(errors);
             dtdvalidator.validate(tree);
             if (errors->containsError()) {
                 delete tree;
                 return false;
             }
 
-            NEDSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
+            NedSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
             syntaxvalidator.validate(tree);
             if (errors->containsError()) {
                 delete tree;
@@ -285,7 +285,7 @@ bool processFile(const char *fname, ErrorStore *errors)
             }
         }
         else if (contentType == MSG_FILE) {
-            MSGDTDValidator dtdvalidator(errors);
+            MsgDtdValidator dtdvalidator(errors);
             dtdvalidator.validate(tree);
             if (errors->containsError()) {
                 delete tree;
@@ -348,7 +348,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                 }
 
                 if (opt_splitnedfiles)
-                    NEDTools::splitToFiles((FilesElement *)tree);
+                    NedTools::splitToFiles((FilesElement *)tree);
 
                 for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
                     // extract file name
@@ -716,7 +716,7 @@ int main(int argc, char **argv)
         }
 
         if (opt_splitnedfiles)
-            NEDTools::splitToFiles(outputtree);
+            NedTools::splitToFiles(outputtree);
 
         const char *outfname;
 

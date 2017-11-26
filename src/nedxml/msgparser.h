@@ -53,7 +53,7 @@ class NEDXML_API MsgParser
   protected:
     bool loadFile(const char *osfname, const char *fname);
     bool loadText(const char *nedtext, const char *fname);
-    ASTNode *parseMSG();
+    ASTNode *parseMsg();
 
   public:
     /**
@@ -87,7 +87,7 @@ class NEDXML_API MsgParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    ASTNode *parseMSGFile(const char *osfname, const char *fname=nullptr);
+    ASTNode *parseMsgFile(const char *osfname, const char *fname=nullptr);
 
     /**
      * Parse the given MSG source and return the result tree.
@@ -95,7 +95,7 @@ class NEDXML_API MsgParser
      * The fname parameter will be used to fill in the source location
      * attributes; it defaults to osfname.
      */
-    ASTNode *parseMSGText(const char *text, const char *fname=nullptr);
+    ASTNode *parseMsgText(const char *text, const char *fname=nullptr);
 };
 
 } // namespace nedxml

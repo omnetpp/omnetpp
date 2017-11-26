@@ -27,7 +27,7 @@ namespace omnetpp {
 /**
  * @brief Prototype for mathematical functions.
  *
- * @see cNEDMathFunction, Define_NED_Math_Function().
+ * @see cNedMathFunction, Define_NED_Math_Function().
  * @ingroup SimSupport
  */
 typedef double (*MathFunc)(...);
@@ -35,7 +35,7 @@ typedef double (*MathFunc)(...);
 /**
  * @brief Prototype for mathematical functions taking no arguments.
  *
- * @see cNEDMathFunction, Define_NED_Math_Function().
+ * @see cNedMathFunction, Define_NED_Math_Function().
  * @ingroup SimSupport
  */
 typedef double (*MathFuncNoArg)();
@@ -43,7 +43,7 @@ typedef double (*MathFuncNoArg)();
 /**
  * @brief Prototype for mathematical functions taking one argument.
  *
- * @see cNEDMathFunction, Define_NED_Math_Function().
+ * @see cNedMathFunction, Define_NED_Math_Function().
  * @ingroup SimSupport
  */
 typedef double (*MathFunc1Arg)(double);
@@ -51,7 +51,7 @@ typedef double (*MathFunc1Arg)(double);
 /**
  * @brief Prototype for mathematical functions taking two arguments.
  *
- * @see cNEDMathFunction, Define_NED_Math_Function().
+ * @see cNedMathFunction, Define_NED_Math_Function().
  * @ingroup SimSupport
  */
 typedef double (*MathFunc2Args)(double,double);
@@ -59,7 +59,7 @@ typedef double (*MathFunc2Args)(double,double);
 /**
  * @brief Prototype for mathematical functions taking three arguments.
  *
- * @see cNEDMathFunction, Define_NED_Math_Function().
+ * @see cNedMathFunction, Define_NED_Math_Function().
  * @ingroup SimSupport
  */
 typedef double (*MathFunc3Args)(double,double,double);
@@ -67,7 +67,7 @@ typedef double (*MathFunc3Args)(double,double,double);
 /**
  * @brief Prototype for mathematical functions taking four arguments.
  *
- * @see cNEDMathFunction, Define_NED_Math_Function().
+ * @see cNedMathFunction, Define_NED_Math_Function().
  * @ingroup SimSupport
  */
 typedef double (*MathFunc4Args)(double,double,double,double);
@@ -82,7 +82,7 @@ typedef double (*MathFunc4Args)(double,double,double,double);
  *
  * @ingroup Internals
  */
-class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
+class SIM_API cNedMathFunction : public cNoncopyableOwnedObject
 {
   private:
     MathFunc f;            // pointer to the function
@@ -96,33 +96,33 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFuncNoArg f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
+    cNedMathFunction(const char *name, MathFuncNoArg f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFunc1Arg f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
+    cNedMathFunction(const char *name, MathFunc1Arg f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
 
-    cNEDMathFunction(const char *name, MathFunc2Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
+    cNedMathFunction(const char *name, MathFunc2Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFunc3Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
+    cNedMathFunction(const char *name, MathFunc3Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Constructor.
      */
-    cNEDMathFunction(const char *name, MathFunc4Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
+    cNedMathFunction(const char *name, MathFunc4Args f, int argc=-1, const char *category=nullptr, const char *description=nullptr);
 
     /**
      * Destructor.
      */
-    virtual ~cNEDMathFunction() {}
+    virtual ~cNedMathFunction() {}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -191,19 +191,22 @@ class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
     /**
      * Finds a registered function by name. Returns nullptr if not found.
      */
-    static cNEDMathFunction *find(const char *name, int numArgs);
+    static cNedMathFunction *find(const char *name, int numArgs);
 
     /**
      * Finds a registered function by name. Throws an error if not found.
      */
-    static cNEDMathFunction *get(const char *name, int numArgs);
+    static cNedMathFunction *get(const char *name, int numArgs);
 
     /**
      * Finds a registered function by function pointer.
      */
-    static cNEDMathFunction *findByPointer(MathFunc f);
+    static cNedMathFunction *findByPointer(MathFunc f);
 
 };
+
+// cNEDMathFunction was renamed cNedMathFunction in OMNeT++ 5.3; typedef added for compatibility
+typedef cNedMathFunction cNEDMathFunction;
 
 }  // namespace omnetpp
 

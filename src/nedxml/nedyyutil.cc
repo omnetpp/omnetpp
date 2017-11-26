@@ -27,7 +27,7 @@ namespace omnetpp {
 namespace nedxml {
 namespace nedyyutil {  // for now
 
-static NEDAstNodeFactory factory;
+static NedAstNodeFactory factory;
 
 ASTNode *createNedElementWithTag(ParseContext *np, int tagcode, ASTNode *parent)
 {

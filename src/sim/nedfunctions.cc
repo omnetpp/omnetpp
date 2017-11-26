@@ -38,7 +38,7 @@ namespace omnetpp {
 void nedfunctions_dummy() {} //see util.cc
 
 #define DEF(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION, BODY) \
-    static cNEDValue FUNCTION(cComponent *contextComponent, cNEDValue argv[], int argc) {BODY} \
+    static cNedValue FUNCTION(cComponent *contextComponent, cNedValue argv[], int argc) {BODY} \
     Define_NED_Function2(FUNCTION, SIGNATURE, CATEGORY, DESCRIPTION);
 
 
@@ -73,7 +73,7 @@ DEF(nedf_fabs,
     "math",
     "Returns the absolute value of the quantity.",
 {
-    return cNEDValue(fabs((double)argv[0]), argv[0].getUnit());
+    return cNedValue(fabs((double)argv[0]), argv[0].getUnit());
 })
 
 DEF(nedf_fmod,
@@ -82,7 +82,7 @@ DEF(nedf_fmod,
     "Returns the floating-point remainder of x/y; unit conversion takes place if needed.",
 {
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(fmod((double)argv[0], argv1converted), argv[0].getUnit());
+    return cNedValue(fmod((double)argv[0], argv1converted), argv[0].getUnit());
 })
 
 DEF(nedf_min,
@@ -122,7 +122,7 @@ DEF(nedf_replaceUnit,
     "units",
     "Replaces the unit of x with the given unit.",
 {
-    const char *newUnit = cNEDValue::getPooled((const char *)argv[1]);
+    const char *newUnit = cNedValue::getPooled((const char *)argv[1]);
     argv[0].setUnit(newUnit);
     return argv[0];
 })
@@ -132,7 +132,7 @@ DEF(nedf_convertUnit,
     "units",
     "Converts x to the given unit.",
 {
-    const char *newUnit = cNEDValue::getPooled((const char *)argv[1]);
+    const char *newUnit = cNedValue::getPooled((const char *)argv[1]);
     argv[0].convertTo(newUnit);
     return argv[0];
 })
@@ -367,16 +367,16 @@ DEF(nedf_int,
     "Converts x to an integer (C++ long), and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error.",
 {
     switch (argv[0].getType()) {
-        case cNEDValue::BOOL:
+        case cNedValue::BOOL:
             return (bool)argv[0] ? 1L : 0L;
-        case cNEDValue::DOUBLE:
+        case cNedValue::DOUBLE:
             return (long)floor((double)argv[0]);
-        case cNEDValue::STRING:
+        case cNedValue::STRING:
             return (long)floor(opp_atof(argv[0].stringValue()));  //XXX catch & wrap exception?
-        case cNEDValue::XML:
+        case cNedValue::XML:
             throw cRuntimeError("int(): Cannot convert xml to int");
         default:
-            throw cRuntimeError("Internal error: Bad cNEDValue type");
+            throw cRuntimeError("Internal error: Bad cNedValue type");
     }
 })
 
@@ -386,16 +386,16 @@ DEF(nedf_double,
     "Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error.",
 {
     switch (argv[0].getType()) {
-        case cNEDValue::BOOL:
+        case cNedValue::BOOL:
             return (bool)argv[0] ? 1.0 : 0.0;
-        case cNEDValue::DOUBLE:
+        case cNedValue::DOUBLE:
             return (double)argv[0];
-        case cNEDValue::STRING:
+        case cNedValue::STRING:
             return opp_atof(argv[0].stringValue());  //XXX catch & wrap exception?
-        case cNEDValue::XML:
+        case cNedValue::XML:
             throw cRuntimeError("double(): Cannot convert xml to double");
         default:
-            throw cRuntimeError("Internal error: Bad cNEDValue type");
+            throw cRuntimeError("Internal error: Bad cNedValue type");
     }
 })
 
@@ -474,7 +474,7 @@ DEF(nedf_uniform,
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(contextComponent->uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNedValue(contextComponent->uniform((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_exponential,
@@ -483,7 +483,7 @@ DEF(nedf_exponential,
     "Returns a random number from the Exponential distribution",
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return cNEDValue(contextComponent->exponential((double)argv[0], rng), argv[0].getUnit());
+    return cNedValue(contextComponent->exponential((double)argv[0], rng), argv[0].getUnit());
 })
 
 DEF(nedf_normal,
@@ -493,7 +493,7 @@ DEF(nedf_normal,
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(contextComponent->normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNedValue(contextComponent->normal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_truncnormal,
@@ -503,7 +503,7 @@ DEF(nedf_truncnormal,
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(contextComponent->truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNedValue(contextComponent->truncnormal((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_gamma_d,
@@ -512,7 +512,7 @@ DEF(nedf_gamma_d,
     "Returns a random number from the Gamma distribution",
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return cNEDValue(contextComponent->gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
+    return cNedValue(contextComponent->gamma_d((double)argv[0], (double)argv[1], rng), argv[1].getUnit());
 })
 
 DEF(nedf_beta,
@@ -534,7 +534,7 @@ DEF(nedf_erlang_k,
     if (k < 0)
         throw cRuntimeError("erlang_k(): K parameter (number of phases) must be positive (k=%d)", k);
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return cNEDValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
+    return cNedValue(contextComponent->erlang_k(k, (double)argv[1], rng), argv[1].getUnit());
 })
 
 DEF(nedf_chi_square,
@@ -568,7 +568,7 @@ DEF(nedf_cauchy,
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(contextComponent->cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNedValue(contextComponent->cauchy((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_triang,
@@ -579,7 +579,7 @@ DEF(nedf_triang,
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
     double argv2converted = argv[2].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(contextComponent->triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
+    return cNedValue(contextComponent->triang((double)argv[0], argv1converted, argv2converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_lognormal,
@@ -598,7 +598,7 @@ DEF(nedf_weibull,
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
-    return cNEDValue(contextComponent->weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
+    return cNedValue(contextComponent->weibull((double)argv[0], argv1converted, rng), argv[0].getUnit());
 })
 
 DEF(nedf_pareto_shifted,
@@ -608,7 +608,7 @@ DEF(nedf_pareto_shifted,
 {
     int rng = argc == 4 ? (int)argv[3] : 0;
     double argv2converted = argv[2].doubleValueInUnit(argv[1].getUnit());
-    return cNEDValue(contextComponent->pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
+    return cNedValue(contextComponent->pareto_shifted((double)argv[0], (double)argv[1], argv2converted, rng), argv[1].getUnit());
 })
 
 // discrete
@@ -721,7 +721,7 @@ DEF(nedf_simTime,
     "misc",
     "Returns the current simulation time.",
 {
-    return cNEDValue(SIMTIME_DBL(simTime()), "s");
+    return cNedValue(SIMTIME_DBL(simTime()), "s");
 })
 
 DEF(nedf_select,
@@ -747,7 +747,7 @@ DEF(nedf_firstAvailable,
 {
     cRegistrationList *types = componentTypes.getInstance();
     for (int i = 0; i < argc; i++) {
-        if (argv[i].getType() != cNEDValue::STRING)
+        if (argv[i].getType() != cNedValue::STRING)
             throw cRuntimeError("firstAvailable(): String arguments expected");
         const char *name = argv[i].stringValue();
         cComponentType *c;

@@ -411,7 +411,7 @@ class NEDXML_API ASTNode
     //@}
 };
 
-typedef ASTNode NEDElement;
+typedef ASTNode NedElement;
 typedef ASTNode MsgElement;
 
 /**

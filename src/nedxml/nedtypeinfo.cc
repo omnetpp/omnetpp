@@ -32,7 +32,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree)
+NedTypeInfo::NedTypeInfo(NedResourceCache *resolver, const char *qname, bool isInnerType, ASTNode *tree)
 {
     this->resolver = resolver;
     this->qualifiedName = qname;
@@ -45,7 +45,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         case NED_MODULE_INTERFACE: type = MODULEINTERFACE; break;
         case NED_CHANNEL: type = CHANNEL; break;
         case NED_CHANNEL_INTERFACE: type = CHANNELINTERFACE; break;
-        default: throw NEDException("NEDTypeInfo: Element of wrong type (<%s>) passed into constructor", tree->getTagName());
+        default: throw NedException("NedTypeInfo: Element of wrong type (<%s>) passed into constructor", tree->getTagName());
     }
     bool isInterface = type == MODULEINTERFACE || type == CHANNELINTERFACE;
 
@@ -53,21 +53,21 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
     collectLocalDeclarations();
 
     // add "extends" and "like" names, after resolving them
-    NEDLookupContext context = NEDResourceCache::getParentContextOf(qname, tree);
+    NedLookupContext context = NedResourceCache::getParentContextOf(qname, tree);
     for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
         if (child->getTagCode() == NED_EXTENDS) {
             // resolve and store base type name
             const char *extendsName = ((ExtendsElement *)child)->getName();
-            std::string extendsQName = getResolver()->resolveNEDType(context, extendsName);
+            std::string extendsQName = getResolver()->resolveNedType(context, extendsName);
             Assert(!extendsQName.empty());
             extendsNames.push_back(extendsQName);
 
             // check the type
-            NEDTypeInfo *decl = getResolver()->lookup(extendsQName.c_str());
+            NedTypeInfo *decl = getResolver()->lookup(extendsQName.c_str());
             Assert(decl);
             bool moduleExtendsSimple = (getType() == COMPOUND_MODULE) && (decl->getType() == SIMPLE_MODULE);
             if (getType() != decl->getType() && !moduleExtendsSimple)
-                throw NEDException(getTree(), "A %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsQName.c_str());
+                throw NedException(getTree(), "A %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsQName.c_str());
 
             // collect interfaces from our base types
             if (isInterface)
@@ -82,15 +82,15 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         if (child->getTagCode() == NED_INTERFACE_NAME) {
             // resolve and store base type
             const char *interfaceName = ((InterfaceNameElement *)child)->getName();
-            std::string interfaceQName = getResolver()->resolveNEDType(context, interfaceName);
+            std::string interfaceQName = getResolver()->resolveNedType(context, interfaceName);
             Assert(!interfaceQName.empty());
             interfaceNames.push_back(interfaceQName);
 
             // check the type (must be an interface)
-            NEDTypeInfo *decl = getResolver()->lookup(interfaceQName.c_str());
+            NedTypeInfo *decl = getResolver()->lookup(interfaceQName.c_str());
             Assert(decl);
             if (decl->getType() != (getType() == CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
-                throw NEDException(getTree(), "Base type %s is expected to be a %s interface", interfaceQName.c_str(), (getType() == CHANNEL ? "channel" : "module"));
+                throw NedException(getTree(), "Base type %s is expected to be a %s interface", interfaceQName.c_str(), (getType() == CHANNEL ? "channel" : "module"));
 
             // we support all interfaces that our base interfaces extend
             for (int i = 0; i < decl->numExtendsNames(); i++)
@@ -101,7 +101,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
     if (!isInterface) {
         // check that we have all parameters and gates required by the interfaces we support
         for (auto & interfaceName : interfaceNames) {
-            NEDTypeInfo *interfaceDecl = getResolver()->lookup(interfaceName.c_str());
+            NedTypeInfo *interfaceDecl = getResolver()->lookup(interfaceName.c_str());
             Assert(interfaceDecl);
             checkComplianceToInterface(interfaceDecl);
         }
@@ -138,12 +138,12 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
     // TODO check that parameter, gate, submodule and inner type declarations don't conflict with those in super types
 }
 
-NEDTypeInfo::~NEDTypeInfo()
+NedTypeInfo::~NedTypeInfo()
 {
     // note: we don't delete "tree", as it belongs to resolver
 }
 
-const char *NEDTypeInfo::getName() const
+const char *NedTypeInfo::getName() const
 {
     // take substring after the last dot
     const char *qname = getFullName();
@@ -151,35 +151,35 @@ const char *NEDTypeInfo::getName() const
     return !lastdot ? qname : lastdot + 1;
 }
 
-const char *NEDTypeInfo::getFullName() const
+const char *NedTypeInfo::getFullName() const
 {
     return qualifiedName.c_str();
 }
 
-ASTNode *NEDTypeInfo::getTree() const
+ASTNode *NedTypeInfo::getTree() const
 {
     return tree;
 }
 
-const char *NEDTypeInfo::getSourceFileName() const
+const char *NedTypeInfo::getSourceFileName() const
 {
     NedFileElement *nedFile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
     return nedFile ? nedFile->getFilename() : nullptr;
 }
 
-std::string NEDTypeInfo::getPackage() const
+std::string NedTypeInfo::getPackage() const
 {
     ASTNode *nedFile = getTree()->getParentWithTag(NED_NED_FILE);
     PackageElement *packageDecl = nedFile ? (PackageElement *)nedFile->getFirstChildWithTag(NED_PACKAGE) : nullptr;
     return packageDecl ? packageDecl->getName() : "";
 }
 
-std::string NEDTypeInfo::getPackageProperty(const char *propertyName) const
+std::string NedTypeInfo::getPackageProperty(const char *propertyName) const
 {
     // find first such property in the current file, then in package.ned of this package and parent packages
     for (NedFileElement *nedFile = (NedFileElement *)getTree()->getParentWithTag(NED_NED_FILE);
          nedFile != nullptr;
-         nedFile = getResolver()->getParentPackageNEDFile(nedFile))
+         nedFile = getResolver()->getParentPackageNedFile(nedFile))
     {
         const char *propertyValue = ASTNodeUtil::getLocalStringProperty(nedFile, propertyName);
         if (propertyValue)
@@ -188,12 +188,12 @@ std::string NEDTypeInfo::getPackageProperty(const char *propertyName) const
     return "";
 }
 
-std::string NEDTypeInfo::getCxxNamespace() const
+std::string NedTypeInfo::getCxxNamespace() const
 {
     return getPackageProperty("namespace");
 }
 
-std::string NEDTypeInfo::str() const
+std::string NedTypeInfo::str() const
 {
     std::stringstream out;
     if (numExtendsNames() > 0) {
@@ -216,7 +216,7 @@ std::string NEDTypeInfo::str() const
     return out.str();
 }
 
-std::string NEDTypeInfo::getNEDSource() const
+std::string NedTypeInfo::getNedSource() const
 {
     std::stringstream out;
     ErrorStore errors;
@@ -224,14 +224,14 @@ std::string NEDTypeInfo::getNEDSource() const
     return out.str();
 }
 
-const char *NEDTypeInfo::getInterfaceName(int k) const
+const char *NedTypeInfo::getInterfaceName(int k) const
 {
     if (k < 0 || k >= (int)interfaceNames.size())
-        throw NEDException("NEDTypeInfo: Interface index %d out of range 0..%d", k, interfaceNames.size()-1);
+        throw NedException("NedTypeInfo: Interface index %d out of range 0..%d", k, interfaceNames.size()-1);
     return interfaceNames[k].c_str();
 }
 
-bool NEDTypeInfo::supportsInterface(const char *qname)
+bool NedTypeInfo::supportsInterface(const char *qname)
 {
     // linear search is OK because #interfaces is typically just one or two
     for (auto & interfaceName : interfaceNames)
@@ -241,60 +241,60 @@ bool NEDTypeInfo::supportsInterface(const char *qname)
     return false;
 }
 
-const char *NEDTypeInfo::getExtendsName(int k) const
+const char *NedTypeInfo::getExtendsName(int k) const
 {
     if (k < 0 || k >= (int)extendsNames.size())
-        throw NEDException("NEDTypeInfo: extendsName(): Index %d out of range 0..%d", k, extendsNames.size()-1);
+        throw NedException("NedTypeInfo: extendsName(): Index %d out of range 0..%d", k, extendsNames.size()-1);
     return extendsNames[k].c_str();
 }
 
-const char *NEDTypeInfo::getEnclosingTypeName() const
+const char *NedTypeInfo::getEnclosingTypeName() const
 {
     return isInner ? enclosingTypeName.c_str() : nullptr;
 }
 
-const char *NEDTypeInfo::getImplementationClassName() const
+const char *NedTypeInfo::getImplementationClassName() const
 {
     return implClassName.empty() ? nullptr : implClassName.c_str();
 }
 
-NEDTypeInfo *NEDTypeInfo::getSuperDecl() const
+NedTypeInfo *NedTypeInfo::getSuperDecl() const
 {
     const char *superName = getExtendsName(0);
     return getResolver()->getDecl(superName);
 }
 
-bool NEDTypeInfo::isNetwork() const
+bool NedTypeInfo::isNetwork() const
 {
     return ASTNodeUtil::getLocalBoolProperty(getTree(), "isNetwork");
 }
 
-TypesElement *NEDTypeInfo::getTypesElement() const
+TypesElement *NedTypeInfo::getTypesElement() const
 {
     return (TypesElement *)getTree()->getFirstChildWithTag(NED_TYPES);
 }
 
-ParametersElement *NEDTypeInfo::getParametersElement() const
+ParametersElement *NedTypeInfo::getParametersElement() const
 {
     return (ParametersElement *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
 }
 
-GatesElement *NEDTypeInfo::getGatesElement() const
+GatesElement *NedTypeInfo::getGatesElement() const
 {
     return (GatesElement *)getTree()->getFirstChildWithTag(NED_GATES);
 }
 
-SubmodulesElement *NEDTypeInfo::getSubmodulesElement() const
+SubmodulesElement *NedTypeInfo::getSubmodulesElement() const
 {
     return (SubmodulesElement *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
 }
 
-ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
+ConnectionsElement *NedTypeInfo::getConnectionsElement() const
 {
     return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }
 
-void NEDTypeInfo::collectLocalDeclarations()
+void NedTypeInfo::collectLocalDeclarations()
 {
     if (TypesElement *types = getTypesElement()) {
         for (ASTNode *child = types->getFirstChild(); child; child = child->getNextSibling()) {
@@ -338,32 +338,32 @@ void NEDTypeInfo::collectLocalDeclarations()
     mergeElementMap(allLocalDecls, localConnectionDecls);
 }
 
-void NEDTypeInfo::addToElementMap(NameToElementMap& elementMap, ASTNode *node)
+void NedTypeInfo::addToElementMap(NameToElementMap& elementMap, ASTNode *node)
 {
     std::string name = node->getAttribute("name");
     if (containsKey(elementMap, name))
-        throw NEDException(node, "Name '%s' is not unique within its component", name.c_str());
+        throw NedException(node, "Name '%s' is not unique within its component", name.c_str());
     elementMap[name] = node;
 }
 
-void NEDTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap)
+void NedTypeInfo::mergeElementMap(NameToElementMap& destMap, const NameToElementMap& elementMap)
 {
     for (const auto & it : elementMap) {
         const std::string& name = it.first;
         ASTNode *node = it.second;
         if (containsKey(destMap, name))
-            throw NEDException(node, "Name '%s' is not unique within its component", name.c_str());
+            throw NedException(node, "Name '%s' is not unique within its component", name.c_str());
         destMap[name] = node;
     }
 }
 
-SubmoduleElement *NEDTypeInfo::getLocalSubmoduleElement(const char *subcomponentName) const
+SubmoduleElement *NedTypeInfo::getLocalSubmoduleElement(const char *subcomponentName) const
 {
     auto it = localSubmoduleDecls.find(subcomponentName);
     return it != localSubmoduleDecls.end() ? (SubmoduleElement*)it->second : nullptr;
 }
 
-ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
+ConnectionElement *NedTypeInfo::getLocalConnectionElement(long id) const
 {
     if (id == -1)
         return nullptr;  // "not a NED connection"
@@ -386,7 +386,7 @@ ConnectionElement *NEDTypeInfo::getLocalConnectionElement(long id) const
     return nullptr;
 }
 
-SubmoduleElement *NEDTypeInfo::getSubmoduleElement(const char *name) const
+SubmoduleElement *NedTypeInfo::getSubmoduleElement(const char *name) const
 {
     SubmoduleElement *submodule = getLocalSubmoduleElement(name);
     if (submodule)
@@ -398,7 +398,7 @@ SubmoduleElement *NEDTypeInfo::getSubmoduleElement(const char *name) const
     return nullptr;
 }
 
-ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
+ConnectionElement *NedTypeInfo::getConnectionElement(long id) const
 {
     ConnectionElement *conn = getLocalConnectionElement(id);
     if (conn)
@@ -410,13 +410,13 @@ ConnectionElement *NEDTypeInfo::getConnectionElement(long id) const
     return nullptr;
 }
 
-ParamElement *NEDTypeInfo::findLocalParamDecl(const char *name) const
+ParamElement *NedTypeInfo::findLocalParamDecl(const char *name) const
 {
     auto it = localParamDecls.find(name);
     return it != localParamDecls.end() ? (ParamElement*)it->second : nullptr;
 }
 
-ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
+ParamElement *NedTypeInfo::findParamDecl(const char *name) const
 {
     ParamElement *param = findLocalParamDecl(name);
     if (param)
@@ -428,13 +428,13 @@ ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
     return nullptr;
 }
 
-GateElement *NEDTypeInfo::findLocalGateDecl(const char *name) const
+GateElement *NedTypeInfo::findLocalGateDecl(const char *name) const
 {
     auto it = localGateDecls.find(name);
     return it != localGateDecls.end() ? (GateElement*)it->second : nullptr;
 }
 
-GateElement *NEDTypeInfo::findGateDecl(const char *name) const
+GateElement *NedTypeInfo::findGateDecl(const char *name) const
 {
     GateElement *gate = findLocalGateDecl(name);
     if (gate)
@@ -446,7 +446,7 @@ GateElement *NEDTypeInfo::findGateDecl(const char *name) const
     return nullptr;
 }
 
-void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
+void NedTypeInfo::checkComplianceToInterface(NedTypeInfo *idecl)
 {
     // TODO check properties
 
@@ -457,20 +457,20 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
             // find param decl
             ParamElement *param = findParamDecl(iparam->getName());
             if (!param)
-                throw NEDException(getTree(), "%s type has no parameter '%s', required by interface '%s'",
+                throw NedException(getTree(), "%s type has no parameter '%s', required by interface '%s'",
                         (getType() == CHANNEL ? "Channel" : "Module"), iparam->getName(), idecl->getFullName());
 
             // check parameter type
             if (param->getType() != iparam->getType())
-                throw NEDException(param, "Type of parameter '%s' must be %s, as required by interface '%s'",
+                throw NedException(param, "Type of parameter '%s' must be %s, as required by interface '%s'",
                         param->getName(), iparam->getAttribute("type"), idecl->getFullName());
 
             // check parameter volatile flag
             if (param->getIsVolatile() && !iparam->getIsVolatile())
-                throw NEDException(param, "Parameter '%s' must not be volatile, as required by interface '%s'",
+                throw NedException(param, "Parameter '%s' must not be volatile, as required by interface '%s'",
                         param->getName(), idecl->getFullName());
             if (!param->getIsVolatile() && iparam->getIsVolatile())
-                throw NEDException(param, "Parameter '%s' must be volatile, as required by interface '%s'",
+                throw NedException(param, "Parameter '%s' must be volatile, as required by interface '%s'",
                         param->getName(), idecl->getFullName());
 
             // TODO check properties
@@ -484,20 +484,20 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
             // find gate decl
             GateElement *gate = findGateDecl(igate->getName());
             if (!gate)
-                throw NEDException(getTree(), "%s type has no gate '%s', required by interface '%s'",
+                throw NedException(getTree(), "%s type has no gate '%s', required by interface '%s'",
                         (getType() == CHANNEL ? "Channel" : "Module"), igate->getName(), idecl->getFullName());
 
             // check gate type
             if (gate->getType() != igate->getType())
-                throw NEDException(gate, "Type of gate '%s' must be %s, as required by interface '%s'",
+                throw NedException(gate, "Type of gate '%s' must be %s, as required by interface '%s'",
                         gate->getName(), igate->getAttribute("type"), idecl->getFullName());
 
             // check vector/nonvector
             if (!igate->getIsVector() && gate->getIsVector())
-                throw NEDException(gate, "Gate '%s' must not be a vector gate, as required by interface '%s'",
+                throw NedException(gate, "Gate '%s' must not be a vector gate, as required by interface '%s'",
                         gate->getName(), idecl->getFullName());
             if (igate->getIsVector() && !gate->getIsVector())
-                throw NEDException(gate, "Gate '%s' must be a vector gate, as required by interface '%s'",
+                throw NedException(gate, "Gate '%s' must be a vector gate, as required by interface '%s'",
                         gate->getName(), idecl->getFullName());
 
             // if both are vectors, check vector size specs are compatible
@@ -509,10 +509,10 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
                 bool ihasGatesize = !opp_isempty(igate->getVectorSize()) || igatesizeExpr != nullptr;
 
                 if (hasGatesize && !ihasGatesize)
-                    throw NEDException(gate, "Size of gate vector '%s' must be left unspecified, as required by interface '%s'",
+                    throw NedException(gate, "Size of gate vector '%s' must be left unspecified, as required by interface '%s'",
                             gate->getName(), idecl->getFullName());
                 if (!hasGatesize && ihasGatesize)
-                    throw NEDException(gate, "Size of gate vector '%s' must be specified as in interface '%s'",
+                    throw NedException(gate, "Size of gate vector '%s' must be specified as in interface '%s'",
                             gate->getName(), idecl->getFullName());
 
                 // if both gatesizes are given, check that they are actually the same
@@ -521,7 +521,7 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
                         ASTNodeUtil::compareTree(gatesizeExpr, igatesizeExpr) != 0 : // with parsed expressions
                         opp_strcmp(gate->getVectorSize(), igate->getVectorSize()) != 0;  // with unparsed expressions
                     if (mismatch)
-                        throw NEDException(gate, "Size of gate vector '%s' must be specified as in interface '%s'",
+                        throw NedException(gate, "Size of gate vector '%s' must be specified as in interface '%s'",
                                 gate->getName(), idecl->getFullName());
                 }
             }

@@ -134,17 +134,17 @@ class NEDXML_API ErrorStore
 };
 
 
-#define INTERNAL_ERROR0(context,msg) NEDInternalError(__FILE__,__LINE__,context,msg)
-#define INTERNAL_ERROR1(context,msg,arg1) NEDInternalError(__FILE__,__LINE__,context,msg,arg1)
-#define INTERNAL_ERROR2(context,msg,arg1,arg2)   NEDInternalError(__FILE__,__LINE__,context,msg,arg1,arg2)
-#define INTERNAL_ERROR3(context,msg,arg1,arg2,arg3) NEDInternalError(__FILE__,__LINE__,context,msg,arg1,arg2,arg3)
+#define INTERNAL_ERROR0(context,msg) NedInternalError(__FILE__,__LINE__,context,msg)
+#define INTERNAL_ERROR1(context,msg,arg1) NedInternalError(__FILE__,__LINE__,context,msg,arg1)
+#define INTERNAL_ERROR2(context,msg,arg1,arg2)   NedInternalError(__FILE__,__LINE__,context,msg,arg1,arg2)
+#define INTERNAL_ERROR3(context,msg,arg1,arg2,arg3) NedInternalError(__FILE__,__LINE__,context,msg,arg1,arg2,arg3)
 
 /**
  * Called when an internal error occurs. It prints an appropriate message, then calls abort().
  * This method is typically used via the INTERNAL_ERROR0()...INTERNAL_ERROR4() macros that
  * add the __FILE__, __LINE__ args implicitly.
  */
-void NEDInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...);
+void NedInternalError(const char *file, int line, ASTNode *context, const char *messagefmt, ...);
 
 
 } // namespace nedxml

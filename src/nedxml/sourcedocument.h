@@ -27,12 +27,12 @@ struct YYLoc;
 /**
  * @brief Stores the full text of a NED/MSG file.
  *
- * Used internally by NEDParser. Stores the full text of a source file,
+ * Used internally by NedParser. Stores the full text of a source file,
  * and makes it possible to retrieve parts of it by (line1,col1,line2,col2)
  * coordinates passed in an YYLTYPE structure. Also finds and retrieves
  * comments near a position passed in an YYLTYPE.
  *
- * @ingroup NEDParser
+ * @ingroup NedParser
  */
 class NEDXML_API SourceDocument
 {
