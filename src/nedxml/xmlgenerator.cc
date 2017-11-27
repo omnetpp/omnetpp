@@ -29,7 +29,7 @@ using std::endl;
 
 void generateXML(ostream& out, ASTNode *tree, bool srcloc, int indentsize)
 {
-    NEDXMLGenerator xmlgen;
+    XMLGenerator xmlgen;
     xmlgen.setIndentSize(indentsize);
     xmlgen.setSourceLocationAttributes(srcloc);
     xmlgen.generate(out, tree);
@@ -44,29 +44,29 @@ std::string generateXML(ASTNode *tree, bool srcloc, int indentsize)
 
 //-----------------------------------------
 
-NEDXMLGenerator::NEDXMLGenerator()
+XMLGenerator::XMLGenerator()
 {
     printSrcLoc = true;
     indentSize = 2;
 }
 
-NEDXMLGenerator::~NEDXMLGenerator()
+XMLGenerator::~XMLGenerator()
 {
 }
 
-void NEDXMLGenerator::setSourceLocationAttributes(bool srcloc)
+void XMLGenerator::setSourceLocationAttributes(bool srcloc)
 {
     printSrcLoc = srcloc;
 }
 
-void NEDXMLGenerator::setIndentSize(int indentsiz)
+void XMLGenerator::setIndentSize(int indentsiz)
 {
     indentSize = indentsiz;
     if (indentSize > 16)
         indentSize = 16;
 }
 
-void NEDXMLGenerator::generate(ostream& out, ASTNode *tree)
+void XMLGenerator::generate(ostream& out, ASTNode *tree)
 {
     // xml header
     out << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << endl;
@@ -75,14 +75,14 @@ void NEDXMLGenerator::generate(ostream& out, ASTNode *tree)
     doGenerate(out, tree, 0);
 }
 
-std::string NEDXMLGenerator::generate(ASTNode *tree)
+std::string XMLGenerator::generate(ASTNode *tree)
 {
     std::stringstream out;
     generate(out, tree);
     return out.str();
 }
 
-void NEDXMLGenerator::printAttrValue(ostream& out, const char *s)
+void XMLGenerator::printAttrValue(ostream& out, const char *s)
 {
     for ( ; *s; s++) {
         unsigned char c = *s;
@@ -101,7 +101,7 @@ void NEDXMLGenerator::printAttrValue(ostream& out, const char *s)
     }
 }
 
-void NEDXMLGenerator::doGenerate(ostream& out, ASTNode *node, int level)
+void XMLGenerator::doGenerate(ostream& out, ASTNode *node, int level)
 {
     const char *indent = "                ";
     indent = indent + strlen(indent) - indentSize;

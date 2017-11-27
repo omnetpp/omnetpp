@@ -26,25 +26,25 @@ namespace omnetpp {
 namespace nedxml {
 
 /**
- * @brief Simple front-end to NEDXMLGenerator.
+ * @brief Simple front-end to XMLGenerator.
  *
  * @ingroup XMLGenerator
  */
 NEDXML_API void generateXML(std::ostream& out, ASTNode *tree, bool srcloc, int indentsize = 4);
 
 /**
- * @brief Simple front-end to NEDXMLGenerator.
+ * @brief Simple front-end to XMLGenerator.
  *
  * @ingroup XMLGenerator
  */
 NEDXML_API std::string generateXML(ASTNode *tree, bool srcloc, int indentsize = 4);
 
 /**
- * @brief Serializes a NED object tree in XML format.
+ * @brief Serializes an AST in XML format.
  *
  * @ingroup XMLGenerator
  */
-class NEDXML_API NEDXMLGenerator
+class NEDXML_API XMLGenerator
 {
   protected:
     bool printSrcLoc;
@@ -56,12 +56,12 @@ class NEDXML_API NEDXMLGenerator
     /**
      * Constructor
      */
-    NEDXMLGenerator();
+    XMLGenerator();
 
     /**
      * Destructor
      */
-    virtual ~NEDXMLGenerator();
+    virtual ~XMLGenerator();
 
     /**
      * Enable or disable generation of src-loc attributes in the output XML.
