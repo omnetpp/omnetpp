@@ -381,7 +381,7 @@ void Inspector::closeEvent(QCloseEvent *)
     if (isToplevelInspector())
         setPref(PREF_GEOM, geometry());
 
-    getQtenv()->deleteInspector(this);
+    getQtenv()->deleteInspector(this); // !!!
     getQtenv()->storeInspectors(false);
 }
 

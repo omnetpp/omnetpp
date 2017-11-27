@@ -47,7 +47,7 @@ protected:
 
     void mousePressEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
-    void closeEvent(QCloseEvent *event) override;
+    void closeEvent(QCloseEvent *event) override; // DELETES THIS INSPECTOR
 
     void recreateModel();
 

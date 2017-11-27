@@ -198,8 +198,8 @@ void GenericObjectInspector::resizeEvent(QResizeEvent *event)
 
 void GenericObjectInspector::closeEvent(QCloseEvent *event)
 {
-    Inspector::closeEvent(event);
     setPref(PREF_MODE, (int)mode);
+    Inspector::closeEvent(event);
 }
 
 void GenericObjectInspector::onTreeViewActivated(const QModelIndex &index)
