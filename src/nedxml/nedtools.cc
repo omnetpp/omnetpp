@@ -19,13 +19,14 @@
 
 #include "errorstore.h"
 #include "neddtdvalidator.h"
+#include "msgdtdvalidator.h"
 
 using namespace omnetpp::common;
 
 namespace omnetpp {
 namespace nedxml {
 
-void NedTools::repairASTNodeTree(ASTNode *tree)
+void NedTools::repairNedAST(ASTNode *tree)
 {
     while (true) {
         // try DTD validation, and find first problem
@@ -46,7 +47,28 @@ void NedTools::repairASTNodeTree(ASTNode *tree)
     }
 }
 
-void NedTools::splitToFiles(FilesElement *tree)
+void NedTools::repairMsgAST(ASTNode *tree)
+{
+    while (true) {
+        // try DTD validation, and find first problem
+        ErrorStore errors;
+        MsgDtdValidator dtdValidator(&errors);
+        dtdValidator.validate(tree);
+        if (errors.empty())
+            break;  // we're done
+        ASTNode *errorNode = errors.errorContext(0);
+        if (!errorNode)
+            break;  // this shouldn't happen, but if it does we can't go on
+        if (!errorNode->getParent())
+            break;  // we can't help if root node is wrong
+
+        // throw out problem node, and try again
+        // printf("DBG: repairASTNodeTree: discarding <%s>\n", errnode->getTagName());
+        errorNode->getParent()->removeChild(errorNode);
+    }
+}
+
+void NedTools::splitNedFiles(FilesElement *tree)
 {
     FilesElement *tmpTree = new FilesElement();
     for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {

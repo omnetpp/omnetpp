@@ -348,7 +348,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                 }
 
                 if (opt_splitnedfiles)
-                    NedTools::splitToFiles((FilesElement *)tree);
+                    NedTools::splitNedFiles((FilesElement *)tree);
 
                 for (ASTNode *child = tree->getFirstChild(); child; child = child->getNextSibling()) {
                     // extract file name
@@ -716,7 +716,7 @@ int main(int argc, char **argv)
         }
 
         if (opt_splitnedfiles)
-            NedTools::splitToFiles(outputtree);
+            NedTools::splitNedFiles(outputtree);
 
         const char *outfname;
 

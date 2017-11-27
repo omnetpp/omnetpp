@@ -35,13 +35,19 @@ class NEDXML_API NedTools
      * Tries to makes an ASTNode tree comply with the DTD by gradually
      * discarding elements that fail DTD validation. Success is not guaranteed.
      */
-    static void repairASTNodeTree(ASTNode *tree);
+    static void repairNedAST(ASTNode *tree);
 
     /**
-     * Splits each NedFile under FilesElement to several files, to place
-     * every module or interface into its own file.
+     * Tries to makes an ASTNode tree comply with the DTD by gradually
+     * discarding elements that fail DTD validation. Success is not guaranteed.
      */
-    static void splitToFiles(FilesElement *tree);
+    static void repairMsgAST(ASTNode *tree);
+
+    /**
+     * Splits each NedFile under FilesElement to several files so that
+     * every module or interface is placed into its own file.
+     */
+    static void splitNedFiles(FilesElement *tree);
 };
 
 } // namespace nedxml
