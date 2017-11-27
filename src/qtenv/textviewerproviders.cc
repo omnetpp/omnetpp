@@ -111,6 +111,9 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
 
 QList<ModuleOutputContentProvider::TabStop> ModuleOutputContentProvider::getTabStops(int lineIndex)
 {
+    if (!isIndexValid())
+        rebuildIndex();
+
     QList<TabStop> tabStops;
 
     int numDiscarded = logBuffer->getNumEntriesDiscarded();
