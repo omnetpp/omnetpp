@@ -346,13 +346,13 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 {
     Assert(!field->ftype.empty());
 
-    if (field->fisabstract && !classInfo.isClass)
+    if (!classInfo.isClass && field->fisabstract)
         errors->addError(field->astNode, "A struct cannot have abstract fields");
 
     if (field->fisabstract && !field->fval.empty())
         errors->addError(field->astNode, "An abstract field cannot be assigned a default value");
 
-    if (field->fisarray && field->farraysize.empty() && !classInfo.isClass)
+    if (!classInfo.isClass && field->fisarray && field->farraysize.empty())
         errors->addError(field->astNode, "A struct cannot have dynamic array fields");
 
     if (field->fisabstract && !classInfo.gap)

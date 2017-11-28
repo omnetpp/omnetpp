@@ -361,21 +361,18 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         H << " *     void copy(const " << classInfo.realmsgclass << "& other) { ... }\n\n";
         H << " *   public:\n";
         if (classInfo.iscNamedObject) {
-            if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
+            if (classInfo.keyword == "message" || classInfo.keyword == "packet")
                 H << " *     " << classInfo.realmsgclass << "(const char *name=nullptr, short kind=0) : " << classInfo.msgclass << "(name,kind) {}\n";
-            }
-            else {
+            else
                 H << " *     " << classInfo.realmsgclass << "(const char *name=nullptr) : " << classInfo.msgclass << "(name) {}\n";
-            }
         }
         else {
             H << " *     " << classInfo.realmsgclass << "() : " << classInfo.msgclass << "() {}\n";
         }
         H << " *     " << classInfo.realmsgclass << "(const " << classInfo.realmsgclass << "& other) : " << classInfo.msgclass << "(other) {copy(other);}\n";
         H << " *     " << classInfo.realmsgclass << "& operator=(const " << classInfo.realmsgclass << "& other) {if (this==&other) return *this; " << classInfo.msgclass << "::operator=(other); copy(other); return *this;}\n";
-        if (classInfo.iscObject) {
+        if (classInfo.iscObject)
             H << " *     virtual " << classInfo.realmsgclass << " *dup() const override {return new " << classInfo.realmsgclass << "(*this);}\n";
-        }
         H << " *     // ADD CODE HERE to redefine and implement pure virtual functions from " << classInfo.msgclass << "\n";
         H << " * };\n";
         H << " * </pre>\n";
@@ -480,9 +477,8 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             getterIndexVar = "k";
             getterIndexArg = field.fsizetype + " " + getterIndexVar;
             setterIndexArg = getterIndexArg + ", ";
-            if (field.farraysize.empty()) {
+            if (field.farraysize.empty())
                 H << "    virtual void " << field.alloc << "(" << field.fsizetype << " size)" << pure << ";\n";
-            }
             H << "    virtual " << field.fsizetype << " " << field.getsize << "() const" << pure << ";\n";
         }
         if (field.fispointer) {
@@ -539,9 +535,8 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COBJECT);
     // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::CNAMEDOBJECT);
     // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COWNEDOBJECT);
-    for (const auto& it : classInfo.baseclassFieldlist) {
-        CC << "    this->" << it.setter << "(" << it.fval << ");\n";
-    }
+    for (const auto& baseclassField : classInfo.baseclassFieldlist)
+        CC << "    this->" << baseclassField.setter << "(" << baseclassField.fval << ");\n";
     if (!classInfo.baseclassFieldlist.empty() && !classInfo.fieldlist.empty())
         CC << "\n";
     for (const auto& field : classInfo.fieldlist) {
@@ -656,9 +651,8 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     CC << "" << classInfo.msgclass << "& " << classInfo.msgclass << "::operator=(const " << classInfo.msgclass << "& other)\n";
     CC << "{\n";
     CC << "    if (this==&other) return *this;\n";
-    if (classInfo.msgbaseclass != "") {
+    if (classInfo.msgbaseclass != "")
         CC << "    ::" << classInfo.msgbaseclass << "::operator=(other);\n";
-    }
     CC << "    copy(other);\n";
     CC << "    return *this;\n";
     CC << "}\n\n";
@@ -924,9 +918,8 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
     H << "    " << classInfo.msgclass << "();\n";
     for (const auto& field : classInfo.fieldlist) {
         H << "    " << field.datatype << " " << field.var;
-        if (field.fisarray) {
+        if (field.fisarray)
             H << "[" << field.farraysize << "]";
-        }
         H << ";\n";
     }
     H << "};\n\n";
@@ -975,33 +968,25 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
     // doPacking/doUnpacking go to the global namespace
     CC << "void __doPacking(omnetpp::cCommBuffer *b, const " << classInfo.msgclass << "& a)\n";
     CC << "{\n";
-    if (!classInfo.msgbaseclass.empty()) {
+    if (!classInfo.msgbaseclass.empty())
         CC << "    doParsimPacking(b,(::" << classInfo.msgbaseclass << "&)a);\n";
-    }
-
     for (const auto& field : classInfo.fieldlist) {
-        if (field.fisarray) {
+        if (field.fisarray)
             CC << "    doParsimArrayPacking(b,a." << field.var << "," << field.farraysize << ");\n";
-        }
-        else {
+        else
             CC << "    doParsimPacking(b,a." << field.var << ");\n";
-        }
     }
     CC << "}\n\n";
 
     CC << "void __doUnpacking(omnetpp::cCommBuffer *b, " << classInfo.msgclass << "& a)\n";
     CC << "{\n";
-    if (!classInfo.msgbaseclass.empty()) {
+    if (!classInfo.msgbaseclass.empty())
         CC << "    doParsimUnpacking(b,(::" << classInfo.msgbaseclass << "&)a);\n";
-    }
-
     for (const auto& field : classInfo.fieldlist) {
-        if (field.fisarray) {
+        if (field.fisarray)
             CC << "    doParsimArrayUnpacking(b,a." << field.var << "," << field.farraysize << ");\n";
-        }
-        else {
+        else
             CC << "    doParsimUnpacking(b,a." << field.var << ");\n";
-        }
     }
     CC << "}\n\n";
 }
@@ -1220,9 +1205,8 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         if (!ref.empty()) {
             CC << "        case " << i << ": {\n";
             CC << "            static const char *names[] = { ";
-            for (const auto& it : ref) {
+            for (const auto& it : ref)
                 CC << opp_quotestr(it.first) << ", ";
-            }
             CC << " nullptr };\n";
             CC << "            return names;\n";
             CC << "        }\n";
@@ -1438,12 +1422,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         // TODO: @opaque and @byValue should rather be the attribute of the field's type, not the field itself
         if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
             std::string value;
-            if (!classInfo.isClass) {
+            if (!classInfo.isClass)
                 value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");
-            }
-            else {
+            else
                 value = makeFuncall("pp", field.getter, field.fisarray);
-            }
             if (field.fispointer) {
                 CC << "        case " << i << ": return toVoidPtr(" << value << "); break;\n";
             }
