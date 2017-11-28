@@ -23,6 +23,7 @@
 #include "common/fileutil.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
+#include "common/opp_ctype.h"
 #include "msgcompiler.h"
 #include "msganalyzer.h"
 #include "exception.h"
@@ -419,6 +420,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 //    }
 
     field->byvalue = getPropertyAsBool(field->fprops, PROP_BYVALUE, fieldClassInfo.byvalue);
+    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, PROP_OWNED, field->iscOwnedObject);
 
     // fromstring/tostring
     field->fromstring = fieldClassInfo.fromstring;
@@ -429,21 +431,6 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     }
     field->fromstring = getProperty(field->fprops, PROP_FROMSTRING, field->fromstring);
     field->tostring = getProperty(field->fprops, PROP_TOSTRING, field->tostring);
-
-    // variable name
-    if (!classInfo.isClass) {
-        field->var = field->fname;
-    }
-    else {
-        field->var = field->fname + classInfo.fieldnamesuffix;
-        field->argname = field->fname;
-    }
-
-    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, PROP_OWNED, field->iscOwnedObject);
-
-    field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
-    std::string sizetypeprop = getProperty(field->fprops, PROP_SIZETYPE);
-    field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // default method names
     if (classInfo.isClass) {
@@ -457,7 +444,11 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->getsize = field->fname + "ArraySize";
         }
         else {
-            field->getter = str("get") + capfieldname;
+            std::string fname = field->fname;
+            bool is = fname.length() >= 3 && fname[0] == 'i' && fname[1] == 's' && opp_isupper(fname[2]);
+            bool has = fname.length() >= 4 && fname[0] == 'h' && fname[1] == 'a' && fname[1] == 's' && opp_isupper(fname[3]);
+            bool omitGet = (field->datatype == "bool") && (is || has);
+            field->getter = omitGet ? fname : (str("get") + capfieldname);
             field->getsize = str("get") + capfieldname + "ArraySize";
         }
         field->mGetter = str("getMutable") + capfieldname;             //TODO "field->getter" (for compatibility) or "getMutable"  or "access"
@@ -474,6 +465,21 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         if (getProperty(field->fprops, PROP_SIZEGETTER) != "")
             field->getsize = getProperty(field->fprops, PROP_SIZEGETTER);
     }
+
+    // variable name
+    if (!classInfo.isClass) {
+        field->var = field->fname;
+    }
+    else {
+        field->var = field->fname + classInfo.fieldnamesuffix;
+        if (field->var == field->getter)  // isFoo <--> isFoo() conflict
+            field->var += "_";
+        field->argname = field->fname;
+    }
+
+    field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
+    std::string sizetypeprop = getProperty(field->fprops, PROP_SIZETYPE);
+    field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // data type, argument type, conversion to/from string...
     field->datatype = getProperty(field->fprops, PROP_CPPTYPE, fieldClassInfo.datatype);
