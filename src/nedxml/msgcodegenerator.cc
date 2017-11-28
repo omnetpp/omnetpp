@@ -123,7 +123,7 @@ static const char *PARSIMPACK_BOILERPLATE =
     "{\n"
     "    int n;\n"
     "    doParsimUnpacking(buffer, n);\n"
-    "    for (int i=0; i<n; i++) {\n"
+    "    for (int i = 0; i < n; i++) {\n"
     "        l.push_back(T());\n"
     "        doParsimUnpacking(buffer, l.back());\n"
     "    }\n"
@@ -143,7 +143,7 @@ static const char *PARSIMPACK_BOILERPLATE =
     "{\n"
     "    int n;\n"
     "    doParsimUnpacking(buffer, n);\n"
-    "    for (int i=0; i<n; i++) {\n"
+    "    for (int i = 0; i < n; i++) {\n"
     "        T x;\n"
     "        doParsimUnpacking(buffer, x);\n"
     "        s.insert(x);\n"
@@ -166,7 +166,7 @@ static const char *PARSIMPACK_BOILERPLATE =
     "{\n"
     "    int n;\n"
     "    doParsimUnpacking(buffer, n);\n"
-    "    for (int i=0; i<n; i++) {\n"
+    "    for (int i = 0; i < n; i++) {\n"
     "        K k; V v;\n"
     "        doParsimUnpacking(buffer, k);\n"
     "        doParsimUnpacking(buffer, v);\n"
@@ -549,11 +549,11 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             if (field.fisarray) {
                 if (!field.farraysize.empty()) {
                     if (!field.fval.empty()) {
-                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
                     }
                     if (field.iscOwnedObject || field.fisownedpointer) {
-                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         if (field.fispointer) {
                             if (field.fisownedpointer)
                                 CC << "        if (this->" << field.var << " != nullptr) { take(this->" << field.var << "[i]); } // XXX\n";
@@ -594,11 +594,11 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             if (field.fisarray) {
                 if (!field.farraysize.empty()) {
                     if (field.fispointer) {
-                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        this->" << field.var << "[i] = nullptr;\n";
                     }
                     else if (field.iscOwnedObject) {
-                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++)\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        take(&(this->" << field.var << "[i]));\n";
                     }
                 }
@@ -633,7 +633,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 else if (!field.fispointer && field.iscOwnedObject)
                     s << "        drop(&(this->" << field.var << "[i]));\n";
                 if (!s.str().empty()) {
-                    CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
                     CC << s.str();
                     CC << "    }\n";
                 }
@@ -672,14 +672,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             if (field.fisarray) {
                 if (field.fispointer) {
                     if (field.fisownedpointer) {
-                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
                         CC << "        dropAndDelete(this->" << field.var << "[i]);\n";
                         CC << "    }\n";
                     }
                 }
                 if (field.farraysize.empty()) {
                     if (!field.fispointer && field.iscOwnedObject) {
-                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
                         CC << "        drop(&(this->" << field.var << "[i]));\n";
                         CC << "    }\n";
                     }
@@ -687,13 +687,13 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     CC << "    this->" << field.var << " = (other." << field.varsize << "==0) ? nullptr : new " << field.datatype << "[other." << field.varsize << "];\n";
                     CC << "    " << field.varsize << " = other." << field.varsize << ";\n";
                     if (!field.fispointer && field.iscOwnedObject) {
-                        CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
                         CC << "        take(&(this->" << field.var << "[i]));\n";
                         CC << "    }\n";
                     }
                 }
 
-                CC << "    for (" << field.fsizetype << " i=0; i<" << field.varsize << "; i++) {\n";
+                CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
                 if (field.fispointer) {
                     if (field.fisownedpointer) {
                         CC << "        this->" << field.var << "[i] = other." << field.var << "[i]->dup();\n";
@@ -858,14 +858,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 CC << maybe_handleChange_line;
                 CC << "    " << field.datatype << " *" << field.var << "2 = (size==0) ? nullptr : new " << field.datatype << "[size];\n";
                 CC << "    " << field.fsizetype << " sz = " << field.varsize << " < size ? " << field.varsize << " : size;\n";
-                CC << "    for (" << field.fsizetype << " i=0; i<sz; i++)\n";
+                CC << "    for (" << field.fsizetype << " i = 0; i < sz; i++)\n";
                 CC << "        " << field.var << "2[i] = this->" << field.var << "[i];\n";
                 if (field.fisprimitivetype) {
-                    CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
+                    CC << "    for (" << field.fsizetype << " i = sz; i < size; i++)\n";
                     CC << "        " << field.var << "2[i] = 0;\n"; //TODO not 0 but fval!
                 }
                 if (field.iscOwnedObject) {
-                    CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
+                    CC << "    for (" << field.fsizetype << " i = sz; i < size; i++)\n";
                     CC << "        take(&(" << field.var << "2[i]));\n";
                 }
                 CC << "    " << field.varsize << " = size;\n";
@@ -959,7 +959,7 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
             }
             else {
                 if (!field.fval.empty()) {
-                    CC << "    for (" << field.fsizetype << " i=0; i<" << field.farraysize << "; i++)\n";
+                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.farraysize << "; i++)\n";
                     CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
                 }
             }
@@ -1138,7 +1138,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             CC << "        " << flagss << ",\n";
         }
         CC << "    };\n";
-        CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeFlags[field] : 0;\n";
+        CC << "    return (field >= 0 && field < " << fieldcount << ") ? fieldTypeFlags[field] : 0;\n";
     }
     CC << "}\n";
     CC << "\n";
@@ -1161,7 +1161,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             CC << "        \"" << field.fname << "\",\n";
         }
         CC << "    };\n";
-        CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldNames[field] : nullptr;\n";
+        CC << "    return (field >= 0 && field < " << fieldcount << ") ? fieldNames[field] : nullptr;\n";
     }
     CC << "}\n";
     CC << "\n";
@@ -1175,7 +1175,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         for (size_t i = 0; i < classInfo.fieldlist.size(); ++i) {
             const FieldInfo& field = classInfo.fieldlist[i];
             char c = field.fname[0];
-            CC << "    if (fieldName[0]=='" << c << "' && strcmp(fieldName, \""<<field.fname<<"\")==0) return base+" << i << ";\n";
+            CC << "    if (fieldName[0] == '" << c << "' && strcmp(fieldName, \""<<field.fname<<"\") == 0) return base+" << i << ";\n";
         }
     }
     CC << "    return basedesc ? basedesc->findField(fieldName) : -1;\n";
@@ -1200,7 +1200,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             CC << "        \"" << field.ftypeqname << "\",\n";
         }
         CC << "    };\n";
-        CC << "    return (field>=0 && field<" << fieldcount << ") ? fieldTypeStrings[field] : nullptr;\n";
+        CC << "    return (field >= 0 && field < " << fieldcount << ") ? fieldTypeStrings[field] : nullptr;\n";
     }
     CC << "}\n";
     CC << "\n";
@@ -1334,7 +1334,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             if (!classInfo.isClass) {
                 if (field.fisarray) {
                     std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
-                    CC << "if (i>=" << arraySize << ") return \"\";\n                ";
+                    CC << "if (i >= " << arraySize << ") return \"\";\n                ";
                 }
                 CC << "return " << makeFuncall(str("pp->") + field.var + (field.fisarray ? "[i]" : ""), field.tostring) << ";\n";
             }
