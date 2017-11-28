@@ -120,7 +120,6 @@ class NEDXML_API MsgGenerator
     void doPacketDecl(PacketDeclElement *node, const char *indent, bool islast, const char *);
     void doEnumDecl(EnumDeclElement *node, const char *indent, bool islast, const char *);
     void doEnum(EnumElement *node, const char *indent, bool islast, const char *);
-    void doEnumFields(EnumFieldsElement *node, const char *indent, bool islast, const char *);
     void doEnumField(EnumFieldElement *node, const char *indent, bool islast, const char *);
     void doMessage(MessageElement *node, const char *indent, bool islast, const char *);
     void doPacket(PacketElement *node, const char *indent, bool islast, const char *);

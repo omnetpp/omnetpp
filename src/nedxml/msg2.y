@@ -120,7 +120,6 @@ static struct MSG2ParserState
     ClassElement *classp;
     StructElement *structp;
     ASTNode *msgclassorstruct;
-    EnumFieldsElement *enumfields;
     EnumFieldElement *enumfield;
     FieldElement *field;
     PropertyElement *property;
@@ -329,7 +328,6 @@ enum
                   ps.enump = (EnumElement *)createMsgElementWithTag(np, MSG_ENUM, ps.msgfile );
                   ps.enump->setName(toString(np, @2));
                   storeBannerAndRightComments(np, ps.enump,@1,@2);
-                  ps.enumfields = (EnumFieldsElement *)createMsgElementWithTag(np, MSG_ENUM_FIELDS, ps.enump);
                 }
           opt_enumfields '}' opt_semicolon
                 { storeTrailingComment(np, ps.enump,@$); }
@@ -348,13 +346,13 @@ enumfields
 enumfield
         : NAME ';'
                 {
-                  ps.enumfield = (EnumFieldElement *)createMsgElementWithTag(np, MSG_ENUM_FIELD, ps.enumfields);
+                  ps.enumfield = (EnumFieldElement *)createMsgElementWithTag(np, MSG_ENUM_FIELD, ps.enump);
                   ps.enumfield->setName(toString(np, @1));
                   storeBannerAndRightComments(np, ps.enumfield,@1,@1);
                 }
         | NAME '=' enumvalue ';'
                 {
-                  ps.enumfield = (EnumFieldElement *)createMsgElementWithTag(np, MSG_ENUM_FIELD, ps.enumfields);
+                  ps.enumfield = (EnumFieldElement *)createMsgElementWithTag(np, MSG_ENUM_FIELD, ps.enump);
                   ps.enumfield->setName(toString(np, @1));
                   ps.enumfield->setValue(toString(np, @3));
                   storeBannerAndRightComments(np, ps.enumfield,@1,@3);

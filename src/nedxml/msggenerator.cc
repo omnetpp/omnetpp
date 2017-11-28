@@ -348,13 +348,6 @@ void MsgGenerator::doEnum(EnumElement *node, const char *indent, bool islast, co
     OUT << getTrailingComment(node);
 }
 
-void MsgGenerator::doEnumFields(EnumFieldsElement *node, const char *indent, bool islast, const char *)
-{
-    OUT << getBannerComment(node, indent);
-    OUT << getRightComment(node);
-    generateChildren(node, indent);
-}
-
 void MsgGenerator::doEnumField(EnumFieldElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
@@ -469,7 +462,6 @@ void MsgGenerator::generateItem(ASTNode *node, const char *indent, bool islast, 
         case MSG_PACKET_DECL: doPacketDecl(static_cast<PacketDeclElement *>(node), indent, islast, arg); break;
         case MSG_ENUM_DECL: doEnumDecl(static_cast<EnumDeclElement *>(node), indent, islast, arg); break;
         case MSG_ENUM: doEnum(static_cast<EnumElement *>(node), indent, islast, arg); break;
-        case MSG_ENUM_FIELDS: doEnumFields(static_cast<EnumFieldsElement *>(node), indent, islast, arg); break;
         case MSG_ENUM_FIELD: doEnumField(static_cast<EnumFieldElement *>(node), indent, islast, arg); break;
         case MSG_MESSAGE: doMessage(static_cast<MessageElement *>(node), indent, islast, arg); break;
         case MSG_PACKET: doPacket(static_cast<PacketElement *>(node), indent, islast, arg); break;

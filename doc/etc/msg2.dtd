@@ -82,13 +82,11 @@
 
 <!-- Enums -->
 
-<!ELEMENT enum (comment*, enum-fields?)>
+<!ELEMENT enum (comment*, enum-field*)>
 <!ATTLIST enum
      name                CDATA     #REQUIRED
      extends-name        CDATA     #IMPLIED
      source-code         CDATA     #IMPLIED>
-
-<!ELEMENT enum-fields (comment*, enum-field*)>
 
 <!ELEMENT enum-field (comment*)>
 <!ATTLIST enum-field

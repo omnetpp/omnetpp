@@ -2029,33 +2029,20 @@ MsgCompilerOld::EnumInfo MsgCompilerOld::extractEnumInfo(EnumElement *node)
     // prepare enum items:
     for (ASTNode *child = node->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
-            case MSG_ENUM_FIELDS:
-                for (ASTNode *e = child->getFirstChild(); e; e = e->getNextSibling()) {
-                    switch (e->getTagCode()) {
-                        case MSG_ENUM_FIELD: {
-                            EnumInfo::EnumItem f;
-                            f.nedElement = e;
-                            f.name = ptr2str(e->getAttribute("name"));
-                            f.value = ptr2str(e->getAttribute("value"));
-                            info.fieldlist.push_back(f);
-                            break;
-                        }
+        case MSG_ENUM_FIELD: {
+            EnumInfo::EnumItem f;
+            f.nedElement = child;
+            f.name = ptr2str(child->getAttribute("name"));
+            f.value = ptr2str(child->getAttribute("value"));
+            info.fieldlist.push_back(f);
+            break;
+        }
 
-                        case MSG_COMMENT:
-                            break;
+        case MSG_COMMENT:
+            break;
 
-                        default:
-                            errors->addError(e, "unaccepted element '%s'", e->getTagName());
-                    }
-                }
-                break;
-
-            case MSG_COMMENT:
-                break;
-
-            default:
-                errors->addError(child, "unaccepted element '%s'", child->getTagName());
-                break;
+        default:
+            errors->addError(child, "unaccepted element '%s'", child->getTagName());
         }
     }
     return info;

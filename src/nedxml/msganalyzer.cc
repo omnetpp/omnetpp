@@ -559,15 +559,12 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const 
     enumInfo.isDeclaration = false;
 
     // prepare enum items
-    EnumFieldsElement *enumFieldsElem = enumElem->getFirstEnumFieldsChild();
-    if (enumFieldsElem) {
-        for (EnumFieldElement *fieldElem = check_and_cast_nullable<EnumFieldElement *>(enumFieldsElem->getFirstChildWithTag(MSG_ENUM_FIELD)); fieldElem; fieldElem = fieldElem->getNextEnumFieldSibling()) {
-            EnumItem item;
-            item.astNode = fieldElem;
-            item.name = fieldElem->getName();
-            item.value = fieldElem->getValue();
-            enumInfo.fieldlist.push_back(item);
-        }
+    for (EnumFieldElement *fieldElem = check_and_cast_nullable<EnumFieldElement *>(enumElem->getFirstChildWithTag(MSG_ENUM_FIELD)); fieldElem; fieldElem = fieldElem->getNextEnumFieldSibling()) {
+        EnumItem item;
+        item.astNode = fieldElem;
+        item.name = fieldElem->getName();
+        item.value = fieldElem->getValue();
+        enumInfo.fieldlist.push_back(item);
     }
     return enumInfo;
 }
