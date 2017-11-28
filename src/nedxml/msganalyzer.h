@@ -92,6 +92,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_PRIMITIVE = "primitive";
     static constexpr const char* PROP_OPAQUE = "opaque";
     static constexpr const char* PROP_BYVALUE = "byValue";
+    static constexpr const char* PROP_SUBCLASSABLE = "subclassable";
     static constexpr const char* PROP_DEFAULTVALUE = "defaultValue";
     static constexpr const char* PROP_CPPTYPE = "cppType";
     static constexpr const char* PROP_ARGTYPE = "argType";

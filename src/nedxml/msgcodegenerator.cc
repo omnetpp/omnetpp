@@ -822,9 +822,9 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 CC << "    " << field.fsizetype << " sz = " << field.varsize << " < size ? " << field.varsize << " : size;\n";
                 CC << "    for (" << field.fsizetype << " i = 0; i < sz; i++)\n";
                 CC << "        " << field.var << "2[i] = this->" << field.var << "[i];\n";
-                if (field.fisprimitivetype) {
-                    CC << "    for (" << field.fsizetype << " i = sz; i < size; i++)\n";
-                    CC << "        " << field.var << "2[i] = 0;\n"; //TODO not 0 but fval!
+                if (!field.fval.empty()) {
+                    CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
+                    CC << "        " << field.var << "2[i] = " << field.fval << ";\n";
                 }
                 if (field.iscOwnedObject) {
                     CC << "    for (" << field.fsizetype << " i = sz; i < size; i++)\n";
@@ -1068,8 +1068,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 flags.push_back("FD_ISCOBJECT");
             if (field.iscOwnedObject)
                 flags.push_back("FD_ISCOWNEDOBJECT");
-
-            if (field.feditable || (classInfo.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled))
+            if (field.feditable)
                 flags.push_back("FD_ISEDITABLE");
             std::string flagss;
             if (flags.empty())
@@ -1250,7 +1249,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const FieldInfo& field = classInfo.fieldlist[i];
-        if (!field.fisprimitivetype && field.fispointer && !field.iscObject) {
+        if (field.fispointer) {
             CC << "        case " << i << ": ";
             CC << "{ const " << field.ftype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value)); }\n";
         }
@@ -1281,12 +1280,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         std::string value = classInfo.isClass ?
                 makeFuncall("pp", field.getter, field.fisarray) :
                 (str("pp->") + field.var + (field.fisarray ? "[i]" : ""));
-        if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty()))
+        if (!field.tostring.empty())
             CC << "return " << makeFuncall(value, field.tostring) << ";\n";
-        else if (!field.fisprimitivetype)
-            CC << "{std::stringstream out; out << " << value << "; return out.str();}\n";
         else
-            throw NedException("Internal error");
+            CC << "{std::stringstream out; out << " << value << "; return out.str();}\n";
     }
     CC << "        default: return \"\";\n";
     CC << "    }\n";
@@ -1306,7 +1303,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const FieldInfo& field = classInfo.fieldlist[i];
-        if (field.feditable || (classInfo.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
+        if (field.feditable) {
             if (field.fromstring.empty())
                 throw opp_runtime_error("Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str()); // ensured by MsgAnalyzer
             CC << "        case " << i << ": ";
@@ -1342,8 +1339,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         CC << "    switch (field) {\n";
         for (size_t i = 0; i < fieldcount; i++) {
             const FieldInfo& field = classInfo.fieldlist[i];
-            // TODO: @opaque and @byValue should rather be the attribute of the field's type, not the field itself
-            if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
+            if (!field.fopaque && !field.byvalue) {
                 CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.ftype << "));\n";
             }
         }
@@ -1366,8 +1362,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const FieldInfo& field = classInfo.fieldlist[i];
-        // TODO: @opaque and @byValue should rather be the attribute of the field's type, not the field itself
-        if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
+        if (!field.byvalue) {
             std::string value;
             if (!classInfo.isClass)
                 value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");

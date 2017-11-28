@@ -60,7 +60,6 @@ class NEDXML_API MsgTypeTable
         Properties fprops;      // field properties (name, first value of default key)
 
         // data needed for code generation
-        bool fisprimitivetype;  // whether primitive or compound type (TODO merge into ClassType?)
         bool isClass; // or struct
         bool iscObject;
         bool iscNamedObject;
@@ -78,7 +77,7 @@ class NEDXML_API MsgTypeTable
         std::string setter;     // Setter function name
         std::string alloc;      // setArraySize() function name
         std::string getsize;    // array size getter function name
-        std::string tostring;   // function to convert data to string, defined in property @toString, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+        std::string tostring;   // function to convert data to string, defined in property @toString
                                 // if tostring begins a dot, then uses as member function, parentheses needed in property; otherwise tostring implemented as name of a normal function, do not use parentheses
                                 // std::string <function>(<datatype>);           // @toString(function)
                                 // std::string <function>(const <datatype>&);    // @toString(function)
@@ -86,7 +85,7 @@ class NEDXML_API MsgTypeTable
                                 // const char * <function>(const <datatype>&);   // @toString(function)
                                 // std::string <datatype>::<function>(...);      // @toString(.function(...))
                                 // const char * <datatype>::<function>(...);     // @toString(.function(...))
-        std::string fromstring; // function to convert string to data member, defined in property @fromString, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+        std::string fromstring; // function to convert string to data member, defined in property @fromString
                                 // <datatype> <function>(const char *);          // @fromString(function)
         std::string maybe_c_str;       // uses ".c_str()"
         std::string enumname;
@@ -125,6 +124,7 @@ class NEDXML_API MsgTypeTable
         bool iscObject;
         bool iscNamedObject;
         bool iscOwnedObject;
+        bool subclassable;
         std::string namespacename;
         std::string msgclass;
         std::string realmsgclass;
@@ -144,7 +144,6 @@ class NEDXML_API MsgTypeTable
         std::string defaultvalue;       // value (or empty)
         bool isopaque = false;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
         bool byvalue = false;           // @byValue, default value is false        // TODO: @byValue should rather be the attribute of the field's type, not the field itself
-        bool isprimitivetype = false;  // whether primitive or compound type (TODO merge into ClassType?)
         std::string datatype;   // member C++ datatype
         std::string argtype;    // setter C++ argument type
         std::string rettype;    // getter C++ return type

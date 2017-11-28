@@ -237,8 +237,8 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     if (classInfo.msgbaseqname != "") {
         baseClassInfo = &typeTable->getClassInfo(classInfo.msgbaseqname);
         ensureAnalyzed(*baseClassInfo);
-        if (baseClassInfo->isprimitivetype)
-            errors->addError(classInfo.astNode, "'%s': primitive type '%s' cannot be used as base class", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
+        if (!baseClassInfo->subclassable)
+            errors->addError(classInfo.astNode, "'%s': type '%s' cannot be used as base class", classInfo.msgname.c_str(), classInfo.msgbase.c_str());
     }
 
     // determine class type
@@ -277,10 +277,12 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
         errors->addError(classInfo.astNode, "%s: base class is not a %s (must be derived from %s)", classInfo.msgname.c_str(), classInfo.keyword.c_str(), requiredSuperClass.c_str());
 
 
-    // isPrimitive, isOpaque, byValue, data types, etc.
-    classInfo.isprimitivetype = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false);
-    classInfo.isopaque = getPropertyAsBool(classInfo.props, PROP_OPAQUE, classInfo.isprimitivetype); // primitive types are also opaque and passed by value
-    classInfo.byvalue = getPropertyAsBool(classInfo.props, PROP_BYVALUE, classInfo.isprimitivetype);
+    // isOpaque, byValue, data types, etc.
+    bool isPrimitive = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false); // @primitive is a shortcut for @opaque @byValue @subclassable(false)
+    classInfo.isopaque = getPropertyAsBool(classInfo.props, PROP_OPAQUE, isPrimitive);
+    classInfo.byvalue = getPropertyAsBool(classInfo.props, PROP_BYVALUE, isPrimitive);
+    classInfo.subclassable = getPropertyAsBool(classInfo.props, PROP_SUBCLASSABLE, !isPrimitive);
+
     classInfo.defaultvalue = getProperty(classInfo.props, PROP_DEFAULTVALUE, "");
 
     classInfo.datatype = getProperty(classInfo.props, PROP_CPPTYPE, "");
@@ -367,7 +369,6 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     ClassInfo& fieldClassInfo = typeTable->getClassInfo(field->ftypeqname);
     ensureAnalyzed(fieldClassInfo);
-    field->fisprimitivetype = fieldClassInfo.isprimitivetype;
     field->isClass = fieldClassInfo.isClass;
     field->iscObject = fieldClassInfo.iscObject;
     field->iscNamedObject = fieldClassInfo.iscNamedObject;
@@ -376,11 +377,6 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (classInfo.generate_class)
         if (field->iscOwnedObject && !classInfo.iscObject)
             errors->addError(field->astNode, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-
-    if (field->fispointer && field->fisprimitivetype) {
-        errors->addError(field->astNode, "pointers not supported for primitive types in '%s'", classInfo.msgname.c_str());
-        return;
-    }
 
     if (field->fispointer && field->fval.empty())
         field->fval = "nullptr";
@@ -411,13 +407,6 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         }
         field->fprops[PROP_ENUM] = field->enumqname; // need to overwrite it in props, because Qtenv will look up the enum by qname
     }
-
-//    if (hasProperty(field->fprops, "byvalue")) {
-//        if (field->fispointer)
-//            errors->addError(field->nedElement, "unaccepted @byValue property for pointer field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-//        else if (field->fisprimitivetype)
-//            errors->addError(field->nedElement, "unaccepted @byValue property for primitive type field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
-//    }
 
     field->byvalue = getPropertyAsBool(field->fprops, PROP_BYVALUE, fieldClassInfo.byvalue);
     field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, PROP_OWNED, field->iscOwnedObject);
@@ -506,9 +495,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->rettype = field->rettype + "&";
     }
 
-    if (field->feditable || (classInfo.generate_setters_in_descriptor && field->fisprimitivetype && field->editNotDisabled))
-        if (field->fromstring.empty())
-            errors->addError(field->astNode, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str()); //TODO only if descriptor class is also generated
+    if (field->feditable && field->fromstring.empty() && classInfo.generate_descriptor && classInfo.generate_setters_in_descriptor)
+        errors->addError(field->astNode, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str());
 }
 
 MsgAnalyzer::FieldInfo *MsgAnalyzer::findSuperclassField(ClassInfo& classInfo, const std::string& fieldName)
@@ -585,7 +573,6 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     @toString(enum2string($, "namespaceName::typeName"));
     @defaultValue(((namespaceName::typeName)-1));
  */
-    classInfo.isprimitivetype = true;
     classInfo.datatype = classInfo.msgqname;
     classInfo.fromstring = str("(") + classInfo.msgqname + ")string2enum($, \"" + classInfo.msgqname + "\")";
     classInfo.tostring = str("enum2string($, \"") + classInfo.msgqname + "\")";
@@ -604,10 +591,10 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     classInfo.iscNamedObject = false;
 
 
-    // isPrimitive, isOpaque, byValue, data types, etc.
-    classInfo.isprimitivetype = true;
+    // isOpaque, byValue, data types, etc.
     classInfo.isopaque = true;
     classInfo.byvalue = true;
+    classInfo.subclassable = false;
 
     classInfo.datatype = classInfo.msgqname;
     classInfo.argtype = classInfo.msgqname;
