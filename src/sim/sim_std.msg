@@ -92,10 +92,10 @@ class simtime_t
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
-    @byvalue;
-    @cpptype(omnetpp::simtime_t);
-    @fromstring(string2simtime($)); @tostring(simtime2string($));
-    @defaultvalue(SIMTIME_ZERO);
+    @byValue;
+    @cppType(omnetpp::simtime_t);
+    @fromString(string2simtime($)); @toString(simtime2string($));
+    @defaultValue(SIMTIME_ZERO);
 }
 
 class StringVector
@@ -180,7 +180,7 @@ class cComponent::SignalListenerList
     @overwritePreviousDefinition;
     @descriptor(readonly);
     string signalName @hint("Name of signal listened on");
-    cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @tostring(->str()) for cResultListeners
+    cIListener *listeners[] @getter(getListener) @sizeGetter(countListeners); //TODO @toString(->str()) for cResultListeners
 }
 
 class cComponent extends cDefaultList
@@ -192,8 +192,8 @@ class cComponent extends cDefaultList
     cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
     cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("Parameters");
     cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("Properties");
-    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @tostring(.str()) @group(parameters, gates) @hint("Signal listener lists");
-    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @tostring(->str()) @group(parameters, gates) @hint("Statistical results collected in this component");
+    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @toString(.str()) @group(parameters, gates) @hint("Signal listener lists");
+    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @toString(->str()) @group(parameters, gates) @hint("Statistical results collected in this component");
 }
 
 class cChannel extends cComponent
@@ -202,7 +202,7 @@ class cChannel extends cComponent
     @overwritePreviousDefinition;
     @descriptor(readonly);
     @icon(channel);
-    cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI") @editable @setter(setDisplayString) @fromstring($) @tostring(.str()) @getter(getDisplayString);
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this channel in the GUI") @editable @setter(setDisplayString) @fromString($) @toString(.str()) @getter(getDisplayString);
 }
 
 class cIdealChannel extends cChannel
@@ -243,7 +243,7 @@ class cModule extends cComponent
     int index @group(fields) @hint("If vector: index of this module in its module vector");
     int size @getter(size) @group(fields) @hint("If vector: size of module vector this module belongs to");
     bool builtinAnimationsAllowed @editable @group(fields) @hint("Whether built-in animations are enabled on this module's graphical inspector");
-    cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI") @editable @setter(setDisplayString) @fromstring($) @tostring(.str()) @getter(getDisplayString);
+    cDisplayString displayString @group(fields) @hint("Controls appearance of this module in the GUI") @editable @setter(setDisplayString) @fromString($) @toString(.str()) @getter(getDisplayString);
     cGate *gate[] @sizeGetter(gateCount) @getter(gateByOrdinal) @group(parameters, gates) @label(gates) @hint("Module gates");
     cCanvas *canvas @getter(getCanvasIfExists) @group(fields) @hint("Built-in canvas instance");
     cOsgCanvas *osgCanvas @getter(getOsgCanvasIfExists) @group(fields) @hint("Built-in 3D (OpenSceneGraph) canvas instance");
@@ -945,8 +945,8 @@ class cFigure::Point
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
-    @tostring(.str());
-    @fromstring(cFigure::parsePoint($));
+    @toString(.str());
+    @fromString(cFigure::parsePoint($));
 }
 
 class cFigure::Rectangle
@@ -955,8 +955,8 @@ class cFigure::Rectangle
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
-    @tostring(.str());
-    @fromstring(cFigure::parseRectangle($));
+    @toString(.str());
+    @fromString(cFigure::parseRectangle($));
 }
 
 class cFigure::Transform
@@ -965,8 +965,8 @@ class cFigure::Transform
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
-    @tostring(.str());
-    @fromstring(cFigure::parseTransform($));
+    @toString(.str());
+    @fromString(cFigure::parseTransform($));
 }
 
 class cFigure::Color
@@ -975,8 +975,8 @@ class cFigure::Color
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
-    @tostring(.str());
-    @fromstring(cFigure::parseColor($));
+    @toString(.str());
+    @fromString(cFigure::parseColor($));
 }
 
 class cFigure::Font
@@ -985,8 +985,8 @@ class cFigure::Font
     @overwritePreviousDefinition;
     @descriptor(false);
     @opaque;
-    @tostring(.str());
-    @fromstring(cFigure::parseFont($));
+    @toString(.str());
+    @fromString(cFigure::parseFont($));
 }
 
 class cFigure::Pixmap
@@ -1244,7 +1244,7 @@ class cResultFilter extends cResultListener
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @tostring(->str());
+    cResultListener *delegates[] @sizeGetter(getNumDelegates) @getter(getDelegate) @toString(->str());
 }
 
 class WarmupPeriodFilter extends cResultFilter
@@ -1352,7 +1352,7 @@ class ExpressionFilter extends cNumericResultFilter
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    string expression @tostring(.str());
+    string expression @toString(.str());
     double lastValue;
     simtime_t lastTimestamp;
 }
@@ -1511,7 +1511,7 @@ class ExpressionRecorder extends cNumericResultRecorder
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    string expression @tostring(.str());
+    string expression @toString(.str());
     double currentValue;
     double lastInputValue;
 }

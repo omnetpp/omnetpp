@@ -69,7 +69,7 @@ struct cOsgCanvas::Vec3d
     @existingClass;
     @descriptor(false);
     @opaque;
-    @tostring(.str()); 
+    @toString(.str()); 
     // TODO fromstr for Vec3d
 }
 
@@ -113,7 +113,7 @@ class cObjectOsgNode extends osg::Group
 {
     @existingClass;
     // the getter with the const_cast should not be necessary (hopefully) with a future version of msgc which will static_cast to a const pointer
-    cObject *object @getter(const_cast<cObject*>($->getObject())) @tostring(->str());
+    cObject *object @getter(const_cast<cObject*>($->getObject())) @toString(->str());
 }
 
 namespace osg;

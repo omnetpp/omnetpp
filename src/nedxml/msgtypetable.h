@@ -55,7 +55,7 @@ class NEDXML_API MsgTypeTable
                                 // "T *removeFoo()" also generated for owned pointer members
                                 //FIXME: should just be "owned" -- whether field type is cOwnedObject or not is already part of iscOwnedObject!
         bool fisarray;
-        bool byvalue;           // @byvalue, default value is false        // TODO: @byvalue should rather be the attribute of the field's type, not the field itself
+        bool byvalue;           // @byValue, default value is false        // TODO: @byValue should rather be the attribute of the field's type, not the field itself
         std::string farraysize; // array size in MSG, maybe empty for dynamic arrays
         Properties fprops;      // field properties (name, first value of default key)
 
@@ -73,21 +73,21 @@ class NEDXML_API MsgTypeTable
         std::string varsize;    // data member to store array size | value of farraysize
         std::string fsizetype;  // type for storing array size
         std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
-        std::string mGetter;    // const getter function name:  "T& mGetter();" default value is the value of getter, @mgetter
+        std::string mGetter;    // const getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
         std::string remover;    // remover function name (for owned pointers)
         std::string setter;     // Setter function name
         std::string alloc;      // setArraySize() function name
         std::string getsize;    // array size getter function name
-        std::string tostring;   // function to convert data to string, defined in property @tostring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+        std::string tostring;   // function to convert data to string, defined in property @toString, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
                                 // if tostring begins a dot, then uses as member function, parentheses needed in property; otherwise tostring implemented as name of a normal function, do not use parentheses
-                                // std::string <function>(<datatype>);           // @tostring(function)
-                                // std::string <function>(const <datatype>&);    // @tostring(function)
-                                // const char * <function>(<datatype>);          // @tostring(function)
-                                // const char * <function>(const <datatype>&);   // @tostring(function)
-                                // std::string <datatype>::<function>(...);      // @tostring(.function(...))
-                                // const char * <datatype>::<function>(...);     // @tostring(.function(...))
-        std::string fromstring; // function to convert string to data member, defined in property @fromstring, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
-                                // <datatype> <function>(const char *);          // @fromstring(function)
+                                // std::string <function>(<datatype>);           // @toString(function)
+                                // std::string <function>(const <datatype>&);    // @toString(function)
+                                // const char * <function>(<datatype>);          // @toString(function)
+                                // const char * <function>(const <datatype>&);   // @toString(function)
+                                // std::string <datatype>::<function>(...);      // @toString(.function(...))
+                                // const char * <datatype>::<function>(...);     // @toString(.function(...))
+        std::string fromstring; // function to convert string to data member, defined in property @fromString, default values for primitive types found in MsgCppGenerator::TypeMap MsgCppGenerator::PRIMITIVE_TYPES
+                                // <datatype> <function>(const char *);          // @fromString(function)
         std::string maybe_c_str;       // uses ".c_str()"
         std::string enumname;
         std::string enumqname;
@@ -95,8 +95,8 @@ class NEDXML_API MsgTypeTable
         bool feditable;         // @editable(true)
         bool editNotDisabled;   // true when field doesn't have property "@editable(false)"
         bool fopaque;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
-        bool overrideGetter;   // @overridegetter|@override, uses when field getter function overrides a function in base class
-        bool overrideSetter;   // @overridesetter|@override, uses when field setter function overrides a function in base class
+        bool overrideGetter;   // @@overrideGetter|@override, uses when field getter function overrides a function in base class
+        bool overrideSetter;   // @@overrideSetter|@override, uses when field setter function overrides a function in base class
 
       public:
         FieldInfo() : astNode(nullptr), fisabstract(false), fispointer(false), fisarray(false), fnopack(false), feditable(false),fopaque(false) {}
@@ -143,13 +143,13 @@ class NEDXML_API MsgTypeTable
 
         std::string defaultvalue;       // value (or empty)
         bool isopaque = false;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
-        bool byvalue = false;           // @byvalue, default value is false        // TODO: @byvalue should rather be the attribute of the field's type, not the field itself
+        bool byvalue = false;           // @byValue, default value is false        // TODO: @byValue should rather be the attribute of the field's type, not the field itself
         bool isprimitivetype = false;  // whether primitive or compound type (TODO merge into ClassType?)
         std::string datatype;   // member C++ datatype
         std::string argtype;    // setter C++ argument type
         std::string rettype;    // getter C++ return type
-        std::string tostring;   // function to convert data to string, defined in property @tostring
-        std::string fromstring; // function to convert string to data member, defined in property @fromstring
+        std::string tostring;   // function to convert data to string, defined in property @toString
+        std::string fromstring; // function to convert string to data member, defined in property @fromString
         std::string maybe_c_str;       // uses ".c_str()"
         std::string beforeChange;  // method to be called before mutator methods
 //??        bool feditable;         // @editable(true)

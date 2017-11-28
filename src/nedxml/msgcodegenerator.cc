@@ -1411,7 +1411,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         CC << "    switch (field) {\n";
         for (size_t i = 0; i < fieldcount; i++) {
             const FieldInfo& field = classInfo.fieldlist[i];
-            // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
+            // TODO: @opaque and @byValue should rather be the attribute of the field's type, not the field itself
             if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
                 CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.ftype << "));\n";
             }
@@ -1435,7 +1435,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const FieldInfo& field = classInfo.fieldlist[i];
-        // TODO: @opaque and @byvalue should rather be the attribute of the field's type, not the field itself
+        // TODO: @opaque and @byValue should rather be the attribute of the field's type, not the field itself
         if (!field.fisprimitivetype && !field.fopaque && !field.byvalue) {
             std::string value;
             if (!classInfo.isClass) {

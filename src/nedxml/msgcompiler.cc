@@ -38,34 +38,34 @@ namespace nedxml {
 
 static const char *BUILTIN_DEFINITIONS =
         R"ENDMARK(
-        class __bool { @actually(bool); @primitive; @cpptype(bool); @fromstring(string2bool($)); @tostring(bool2string($)); @defaultvalue(false); }
-        class __float { @actually(float); @primitive; @cpptype(float); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }
-        class __double { @actually(double); @primitive; @cpptype(double); @fromstring(string2double($)); @tostring(double2string($)); @defaultvalue(0); }
-        class __string { @actually(string); @primitive; @cpptype(omnetpp::opp_string); @argtype(const char *); @rettype(const char *); @maybe_c_str(.c_str()); @fromstring(($)); @tostring(oppstring2string($)); }
-        class __char { @actually(char); @primitive; @cpptype(char); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class __short { @actually(short); @primitive; @cpptype(short); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class __int { @actually(int); @primitive; @cpptype(int); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class __long { @actually(long); @primitive; @cpptype(long); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class __uchar { @actually(unsigned char); @primitive; @cpptype(unsigned char); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class __ushort { @actually(unsigned short); @primitive; @cpptype(unsigned short); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class __uint { @actually(unsigned int); @primitive; @cpptype(unsigned int); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class __ulong { @actually(unsigned long); @primitive; @cpptype(unsigned long); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class int8 { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class int8_t { @primitive; @cpptype(int8_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class int16 { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class int16_t { @primitive; @cpptype(int16_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class int32 { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class int32_t { @primitive; @cpptype(int32_t); @fromstring(string2long($)); @tostring(long2string($)); @defaultvalue(0); }
-        class uint8 { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class uint8_t { @primitive; @cpptype(uint8_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class uint16 { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class uint16_t { @primitive; @cpptype(uint16_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class uint32 { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class uint32_t { @primitive; @cpptype(uint32_t); @fromstring(string2ulong($)); @tostring(ulong2string($)); @defaultvalue(0); }
-        class int64 { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }
-        class int64_t { @primitive; @cpptype(int64_t); @fromstring(string2int64($)); @tostring(int642string($)); @defaultvalue(0); }
-        class uint64 { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }
-        class uint64_t { @primitive; @cpptype(uint64_t); @fromstring(string2uint64($)); @tostring(uint642string($)); @defaultvalue(0); }
+        class __bool { @actually(bool); @primitive; @cppType(bool); @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
+        class __float { @actually(float); @primitive; @cppType(float); @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
+        class __double { @actually(double); @primitive; @cppType(double); @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
+        class __string { @actually(string); @primitive; @cppType(omnetpp::opp_string); @argType(const char *); @returnType(const char *); @maybe_c_str(.c_str()); @fromString(($)); @toString(oppstring2string($)); }
+        class __char { @actually(char); @primitive; @cppType(char); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __short { @actually(short); @primitive; @cppType(short); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __int { @actually(int); @primitive; @cppType(int); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __long { @actually(long); @primitive; @cppType(long); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __uchar { @actually(unsigned char); @primitive; @cppType(unsigned char); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class __ushort { @actually(unsigned short); @primitive; @cppType(unsigned short); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class __uint { @actually(unsigned int); @primitive; @cppType(unsigned int); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class __ulong { @actually(unsigned long); @primitive; @cppType(unsigned long); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class int8 { @primitive; @cppType(int8_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int8_t { @primitive; @cppType(int8_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int16 { @primitive; @cppType(int16_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int16_t { @primitive; @cppType(int16_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int32 { @primitive; @cppType(int32_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int32_t { @primitive; @cppType(int32_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class uint8 { @primitive; @cppType(uint8_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint8_t { @primitive; @cppType(uint8_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint16 { @primitive; @cppType(uint16_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint16_t { @primitive; @cppType(uint16_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint32 { @primitive; @cppType(uint32_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint32_t { @primitive; @cppType(uint32_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class int64 { @primitive; @cppType(int64_t); @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
+        class int64_t { @primitive; @cppType(int64_t); @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
+        class uint64 { @primitive; @cppType(uint64_t); @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
+        class uint64_t { @primitive; @cppType(uint64_t); @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
         )ENDMARK";
 
 extern const char *SIM_STD_DEFINITIONS;  // contents of sim/sim_std.msg, stringified into sim_std_msg.cc

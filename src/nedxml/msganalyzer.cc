@@ -284,7 +284,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     classInfo.datatype = getProperty(classInfo.props, PROP_CPPTYPE, "");
     classInfo.argtype = getProperty(classInfo.props, PROP_ARGTYPE, "");
-    classInfo.rettype = getProperty(classInfo.props, PROP_RETTYPE, "");
+    classInfo.rettype = getProperty(classInfo.props, PROP_RETURNTYPE, "");
 
     classInfo.tostring = getProperty(classInfo.props, PROP_TOSTRING, "");
     classInfo.fromstring = getProperty(classInfo.props, PROP_FROMSTRING, "");
@@ -413,9 +413,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
 //    if (hasProperty(field->fprops, "byvalue")) {
 //        if (field->fispointer)
-//            errors->addError(field->nedElement, "unaccepted @byvalue property for pointer field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+//            errors->addError(field->nedElement, "unaccepted @byValue property for pointer field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
 //        else if (field->fisprimitivetype)
-//            errors->addError(field->nedElement, "unaccepted @byvalue property for primitive type field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
+//            errors->addError(field->nedElement, "unaccepted @byValue property for primitive type field '%s %s' in class '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
 //    }
 
     field->byvalue = getPropertyAsBool(field->fprops, PROP_BYVALUE, fieldClassInfo.byvalue);
@@ -478,7 +478,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     // data type, argument type, conversion to/from string...
     field->datatype = getProperty(field->fprops, PROP_CPPTYPE, fieldClassInfo.datatype);
     field->argtype = getProperty(field->fprops, PROP_ARGTYPE, fieldClassInfo.argtype);
-    field->rettype = getProperty(field->fprops, PROP_RETTYPE, fieldClassInfo.rettype);
+    field->rettype = getProperty(field->fprops, PROP_RETURNTYPE, fieldClassInfo.rettype);
     field->maybe_c_str = getProperty(field->fprops, PROP_MAYBECSTR, fieldClassInfo.maybe_c_str);
     if (field->datatype.empty())
         field->datatype = field->ftype;
@@ -575,9 +575,9 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
 /*
     @primitive;
     @descriptor(false);
-    @fromstring((namespaceName::typeName)string2enum($, "namespaceName::typeName"));
-    @tostring(enum2string($, "namespaceName::typeName"));
-    @defaultvalue(((namespaceName::typeName)-1));
+    @fromString((namespaceName::typeName)string2enum($, "namespaceName::typeName"));
+    @toString(enum2string($, "namespaceName::typeName"));
+    @defaultValue(((namespaceName::typeName)-1));
  */
     classInfo.isprimitivetype = true;
     classInfo.datatype = classInfo.msgqname;
