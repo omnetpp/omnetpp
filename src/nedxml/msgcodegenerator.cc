@@ -451,10 +451,11 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         H << "    " << classInfo.msgclass << "& operator=(const " << classInfo.msgclass << "& other);\n";
     }
     if (classInfo.iscObject) {
+        H << "    virtual " << classInfo.msgclass << " *dup() const override ";
         if (classInfo.gap)
-            H << "    virtual " << classInfo.msgclass << " *dup() const override {throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << classInfo.realmsgclass << "\");}\n";
+            H << "{throw omnetpp::cRuntimeError(\"You forgot to manually add a dup() function to class " << classInfo.realmsgclass << "\");}\n";
         else
-            H << "    virtual " << classInfo.msgclass << " *dup() const override {return new " << classInfo.msgclass << "(*this);}\n";
+            H << "{return new " << classInfo.msgclass << "(*this);}\n";
     }
     std::string maybe_override = classInfo.iscObject ? " override" : "";
     std::string maybe_handleChange = classInfo.beforeChange.empty() ? "" : (classInfo.beforeChange + ";");
@@ -473,6 +474,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         std::string getterIndexArg("");
         std::string setterIndexArg("");
 
+        // size setter, size getter
         if (field.fisarray) {
             getterIndexVar = "k";
             getterIndexArg = field.fsizetype + " " + getterIndexVar;
@@ -481,20 +483,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 H << "    virtual void " << field.alloc << "(" << field.fsizetype << " size)" << pure << ";\n";
             H << "    virtual " << field.fsizetype << " " << field.getsize << "() const" << pure << ";\n";
         }
-        if (field.fispointer) {
-            H << "    virtual const " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { " << maybe_handleChange << "return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
-            if (field.fisownedpointer)  //TODO fispointer or fisownedpointer?
-                H << "    virtual " << field.rettype << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
-        }
-        else if (!field.byvalue) {
-            H << "    virtual const " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { " << maybe_handleChange << "return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
-        }
-        else {
-            H << "    virtual " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-        }
 
+        // getter, setter, remover
+        std::string maybeConst = (field.fispointer || !field.byvalue) ? "const " : "";
+        H << "    virtual " << maybeConst << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+        if (field.fispointer || !field.byvalue)
+            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { " << maybe_handleChange << "return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
+        if (field.fispointer && field.fisownedpointer)  //TODO should be just "if (fispointer)"?
+            H << "    virtual " << field.rettype << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argtype << " " << field.argname << ")" << overrideSetter << pure << ";\n";
     }
     H << "};\n\n";
@@ -508,29 +504,13 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     }
 
     // constructor:
-    if (classInfo.iscNamedObject) {
-        if (classInfo.keyword == "message" || classInfo.keyword == "packet") {
-            // CAREFUL when assigning values to existing members gets implemented!
-            // The msg kind passed to the ctor should take priority!!!
-            CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const char *name, short kind) : ::" << classInfo.msgbaseclass << "(name,kind)\n";
-        }
-        else {
-            if (classInfo.msgbaseclass == "") {
-                CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const char *name)\n";
-            }
-            else {
-                CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const char *name) : ::" << classInfo.msgbaseclass << "(name)\n";
-            }
-        }
-    }
-    else {
-        if (classInfo.msgbaseclass == "") {
-            CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "()\n";
-        }
-        else {
-            CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "() : ::" << classInfo.msgbaseclass << "()\n";
-        }
-    }
+    bool isMessage = classInfo.keyword == "message" || classInfo.keyword == "packet";
+    std::string ctorArgs = isMessage ? "(const char *name, short kind)" : classInfo.iscNamedObject ? "(const char *name)" : "()";
+    std::string baseArgs = isMessage ? "(name, kind)" : classInfo.iscNamedObject ? "(name)" : "()";
+    CC << classInfo.msgclass << "::" << classInfo.msgclass << ctorArgs;
+    if (classInfo.msgbaseclass != "")
+        CC << " : ::" << classInfo.msgbaseclass << baseArgs << "\n";
+    CC << "\n";
     CC << "{\n";
     // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COBJECT);
     // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::CNAMEDOBJECT);
@@ -825,25 +805,13 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 CC << "}\n\n";
             }
 
-            if (field.byvalue) {
-                CC << "" << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
-                CC << "{\n";
-                if (field.fisarray) {
-                    CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
-                }
-                CC << "    return this->" << field.var << idx << field.maybe_c_str << ";\n";
-                CC << "}\n\n";
-            }
-            else {
-                CC << "const " << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
-                CC << "{\n";
-                if (field.fisarray) {
-                    CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
-                }
-                CC << "    return this->" << field.var << idx << field.maybe_c_str << ";\n";
-                CC << "}\n\n";
-
-            }
+            std::string maybeConst = !field.byvalue ? "const " : "";
+            CC << maybeConst << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
+            CC << "{\n";
+            if (field.fisarray)
+                CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
+            CC << "    return this->" << field.var << idx << field.maybe_c_str << ";\n";
+            CC << "}\n\n";
 
             // resize:
             if (field.fisarray && field.farraysize.empty()) {
@@ -942,25 +910,17 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
         CC << "\n";
 
     for (const auto& field : classInfo.fieldlist) {
-        if (field.fisabstract)
-            throw NedException("Abstract fields are not supported in a struct");
-        if (field.iscOwnedObject)
-            throw NedException("cOwnedObject fields are not supported in a struct");
+        Assert(!field.fisabstract); // ensured in the analyzer
+        Assert(!field.iscOwnedObject); // ensured in the analyzer
         if (field.fisarray) {
-            if (field.farraysize.empty()) {
-                throw NedException("Dynamic arrays are not supported in a struct");
-            }
-            else {
-                if (!field.fval.empty()) {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.farraysize << "; i++)\n";
-                    CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
-                }
+            Assert(!field.farraysize.empty()); // ensured in the analyzer
+            if (!field.fval.empty()) {
+                CC << "    for (" << field.fsizetype << " i = 0; i < " << field.farraysize << "; i++)\n";
+                CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
             }
         }
-        else {
-            if (!field.fval.empty()) {
-                CC << "    this->" << field.var << " = " << field.fval << ";\n";
-            }
+        else if (!field.fval.empty()) {
+            CC << "    this->" << field.var << " = " << field.fval << ";\n";
         }
     }
     CC << "}\n\n";
@@ -1313,31 +1273,20 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < fieldcount; i++) {
         const FieldInfo& field = classInfo.fieldlist[i];
-        if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty())) {
-            CC << "        case " << i << ": ";
-            if (!classInfo.isClass) {
-                if (field.fisarray) {
-                    std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
-                    CC << "if (i >= " << arraySize << ") return \"\";\n                ";
-                }
-                CC << "return " << makeFuncall(str("pp->") + field.var + (field.fisarray ? "[i]" : ""), field.tostring) << ";\n";
-            }
-            else {
-                CC << "return " << makeFuncall(makeFuncall("pp", field.getter, field.fisarray), field.tostring) << ";\n";
-            }
+        CC << "        case " << i << ": ";
+        if (!classInfo.isClass && field.fisarray) {
+            Assert(!field.farraysize.empty()); // struct may not contain dynamic arrays; checked by analyzer
+            CC << "if (i >= " << field.farraysize << ") return \"\";\n                ";
         }
-        else if (!field.fisprimitivetype) {
-            CC << "        case " << i << ": ";
-            if (!classInfo.isClass) {
-                CC << "{std::stringstream out; out << pp->" << field.var << (field.fisarray ? "[i]" : "") << "; return out.str();}\n";
-            }
-            else {
-                CC << "{std::stringstream out; out << " << makeFuncall("pp", field.getter, field.fisarray) << "; return out.str();}\n";
-            }
-        }
-        else {
+        std::string value = classInfo.isClass ?
+                makeFuncall("pp", field.getter, field.fisarray) :
+                (str("pp->") + field.var + (field.fisarray ? "[i]" : ""));
+        if (field.fisprimitivetype || (!field.fisprimitivetype && !field.tostring.empty()))
+            CC << "return " << makeFuncall(value, field.tostring) << ";\n";
+        else if (!field.fisprimitivetype)
+            CC << "{std::stringstream out; out << " << value << "; return out.str();}\n";
+        else
             throw NedException("Internal error");
-        }
     }
     CC << "        default: return \"\";\n";
     CC << "    }\n";
@@ -1360,18 +1309,16 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         if (field.feditable || (classInfo.generate_setters_in_descriptor && field.fisprimitivetype && field.editNotDisabled)) {
             if (field.fromstring.empty())
                 throw opp_runtime_error("Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str()); // ensured by MsgAnalyzer
-            std::string fromstringCall = makeFuncall("value", field.fromstring);
             CC << "        case " << i << ": ";
-            if (!classInfo.isClass) {
-                if (field.fisarray) {
-                    std::string arraySize = !field.farraysize.empty() ? field.farraysize : (str("pp->")+field.varsize);
-                    CC << "if (i>=" << arraySize << ") return false;\n                ";
-                }
+            if (!classInfo.isClass && field.fisarray) {
+                Assert(!field.farraysize.empty()); // struct may not contain dynamic arrays; checked by analyzer
+                CC << "if (i >= " << field.farraysize << ") return \"\";\n                ";
+            }
+            std::string fromstringCall = makeFuncall("value", field.fromstring); //TODO use op>> if there's no fromstring?
+            if (!classInfo.isClass)
                 CC << "pp->" << field.var << (field.fisarray ? "[i]" : "") << " = " << fromstringCall << "; return true;\n";
-            }
-            else {
+            else
                 CC << makeFuncall("pp", field.setter, field.fisarray, fromstringCall) << "; return true;\n";
-            }
         }
     }
     CC << "        default: return false;\n";
@@ -1426,12 +1373,8 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 value = str("pp->") + field.var + (field.fisarray ? "[i]" : "");
             else
                 value = makeFuncall("pp", field.getter, field.fisarray);
-            if (field.fispointer) {
-                CC << "        case " << i << ": return toVoidPtr(" << value << "); break;\n";
-            }
-            else {
-                CC << "        case " << i << ": return toVoidPtr(&" << value << "); break;\n";
-            }
+            std::string maybeAddressOf = field.fispointer ? "" : "&";
+            CC << "        case " << i << ": return toVoidPtr(" << maybeAddressOf << value << "); break;\n";
         }
     }
     CC << "        default: return nullptr;\n";
