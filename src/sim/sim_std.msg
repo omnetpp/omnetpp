@@ -330,7 +330,7 @@ class cArray extends cOwnedObject
     @descriptor(readonly);
     @icon(container);
     bool takeOwnership @group(fields) @editable @hint("Whether the array should own the objects inserted into it");
-    cOwnedObject *contents[] @getter(get) @sizeGetter(size) @hint("Objects contained in the array");
+    cObject *contents[] @getter(get) @sizeGetter(size) @hint("Objects contained in the array");
 }
 
 class cEvent extends cOwnedObject
@@ -808,7 +808,7 @@ class cQueue extends cOwnedObject
     @icon(queue);
     bool takeOwnership @group(fields) @editable @hint("Whether the queue should own the objects inserted into it");
     int length @hint("Number of items in the queue");
-    cOwnedObject *contents[] @getter(get) @sizeGetter(getLength) @hint("Queue contents");
+    cObject *contents[] @getter(get) @sizeGetter(getLength) @hint("Queue contents");
 }
 
 class cPacketQueue extends cQueue
@@ -825,7 +825,7 @@ class cHasher
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-   string hash @getter(str) @hint("The current hash value");
+    string hash @getter(str) @hint("The current hash value");
 }
 
 class cFingerprintCalculator extends cObject
