@@ -805,7 +805,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 CC << "}\n\n";
             }
 
-            std::string maybeConst = !field.byvalue ? "const " : "";
+            std::string maybeConst = (field.fispointer || !field.byvalue) ? "const " : "";
             CC << maybeConst << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
             CC << "{\n";
             if (field.fisarray)
