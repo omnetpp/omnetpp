@@ -793,9 +793,9 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     for (const auto& field : classInfo.fieldlist) {
         if (!field.fisabstract) {
             std::string idx = (field.fisarray) ? "[k]" : "";
-            std::string ref = (field.fispointer) ? "" : "&";
             std::string idxarg = (field.fisarray) ? (field.fsizetype + " k") : std::string("");
             std::string idxarg2 = (field.fisarray) ? (idxarg + ", ") : std::string("");
+            std::string indexedVar = str("this->") + field.var + idx;
 
             // getters:
             if (field.fisarray) {
@@ -810,7 +810,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             CC << "{\n";
             if (field.fisarray)
                 CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
-            CC << "    return " << makeFuncall(str("this->")+field.var+idx, field.getterconversion) + ";\n";
+            CC << "    return " << makeFuncall(indexedVar, field.getterconversion) + ";\n";
             CC << "}\n\n";
 
             // resize:
@@ -846,10 +846,10 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             if (field.fisownedpointer) {
                 CC << "    dropAndDelete(this->" << field.var << idx << ");\n";
             }
-            CC << "    this->" << field.var << idx << " = " << field.argname << ";\n";
+            CC << "    " << indexedVar << " = " << field.argname << ";\n";
             if (field.fisownedpointer) {
-                CC << "    if (this->" << field.var << idx << " != nullptr)\n";
-                CC << "        take(this->" << field.var << idx << ");\n";
+                CC << "    if (" << indexedVar << " != nullptr)\n";
+                CC << "        take(" << indexedVar << ");\n";
             }
             CC << "}\n\n";
 
@@ -861,9 +861,9 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 }
                 CC << maybe_handleChange_line;
-                CC << "    " << field.rettype << " retval = this->" << field.var << idx << ";\n";
+                CC << "    " << field.rettype << " retval = " << indexedVar << ";\n";
                 CC << "    drop(retval);\n";
-                CC << "    this->" << field.var << idx << " = nullptr;\n";
+                CC << "    " << indexedVar << " = nullptr;\n";
                 CC << "    return retval;\n";
                 CC << "}\n\n";
             }
