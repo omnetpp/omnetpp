@@ -19,7 +19,7 @@
 
 %token NAMESPACE CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE PACKET CLASS STRUCT ENUM NONCOBJECT
-%token EXTENDS ABSTRACT READONLY
+%token EXTENDS ABSTRACT
 %token IMPORT USING
 
 %token NAME PROPNAME DOUBLECOLON
@@ -100,7 +100,9 @@ static struct MSG2ParserState
 {
     /* tmp flags, used with msg fields */
     bool isAbstract;
-    bool isReadonly;
+    bool isConst;
+    bool isPointer;
+    std::string dataType;
 
     std::vector<ASTNode *> propvals; // temporarily collects property values
 
@@ -252,7 +254,7 @@ importspec
 
 importname
         : NAME
-        | MESSAGE | PACKET | CLASS | STRUCT | ENUM | ABSTRACT | READONLY  /* for convenience, we also allow some keywords to be used as folder names */
+        | MESSAGE | PACKET | CLASS | STRUCT | ENUM | ABSTRACT  /* for convenience, we also allow some keywords to be used as folder names */
         ;
 
 /*
@@ -486,35 +488,35 @@ fieldtypename
                 {
                   ps.field = (FieldElement *)createMsgElementWithTag(np, MSG_FIELD, ps.msgclassorstruct);
                   ps.field->setName(toString(np, @3));
-                  ps.field->setDataType(toString(np, @2));
+                  ps.field->setDataType(ps.dataType.c_str());
                   ps.field->setIsAbstract(ps.isAbstract);
-                  ps.field->setIsReadonly(ps.isReadonly);
+                  ps.field->setIsConst(ps.isConst);
+                  ps.field->setIsPointer(ps.isPointer);
                 }
         | fieldmodifiers NAME
                 {
                   ps.field = (FieldElement *)createMsgElementWithTag(np, MSG_FIELD, ps.msgclassorstruct);
                   ps.field->setName(toString(np, @2));
                   ps.field->setIsAbstract(ps.isAbstract);
-                  ps.field->setIsReadonly(ps.isReadonly);
                 }
         ;
 
 fieldmodifiers
         : ABSTRACT
-                { ps.isAbstract = true; ps.isReadonly = false; }
-        | READONLY
-                { ps.isAbstract = false; ps.isReadonly = true; }
-        | ABSTRACT READONLY
-                { ps.isAbstract = true; ps.isReadonly = true; }
-        | READONLY ABSTRACT
-                { ps.isAbstract = true; ps.isReadonly = true; }
+                { ps.isAbstract = true; }
         |
-                { ps.isAbstract = false; ps.isReadonly = false; }
+                { ps.isAbstract = false; }
         ;
 
 fielddatatype
         : fieldsimpledatatype
+                { ps.isConst = false; ps.isPointer = false; ps.dataType = toString(np, @1); }
         | fieldsimpledatatype '*'
+                { ps.isConst = false; ps.isPointer = true; ps.dataType = toString(np, @1); }
+        | CONST_ fieldsimpledatatype
+                { ps.isConst = true; ps.isPointer = false; ps.dataType = toString(np, @2);}
+        | CONST_ fieldsimpledatatype '*'
+                { ps.isConst = true; ps.isPointer = true; ps.dataType = toString(np, @2);}
         ;
 
 fieldsimpledatatype

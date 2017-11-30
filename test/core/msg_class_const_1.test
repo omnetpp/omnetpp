@@ -1,0 +1,81 @@
+%description:
+Check use of const wrt getter, setter, mutablegetter, pointers, byvalue/byref etc.
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class Foo {}
+class Bar { @byValue; }
+
+class TestClass
+{
+    // class passed by reference
+    Foo foo;
+    const Foo constFoo;
+    Foo *fooPtr;
+    const Foo *constFooPtr;
+
+    // class passed by value
+    Bar bar;
+    const Bar constBar;
+    Bar *barPtr;
+    Bar *constBarPtr;
+    
+    // also by value
+    int Int;
+    const int constInt;
+
+    // argtype != storage type; note: does not support pointers
+    string String;
+    const string constString;
+
+    // typedef; note: does not support pointers
+    int32_t Int32t;
+    const int32_t constInt32t;
+
+    // compiled to int32_t; note: does not support pointers
+    int32 Int32;
+    const int32 constInt32;
+};
+
+%includes:
+#include "test_m.h"
+
+%activity:
+TestClass x;
+
+%contains: test_m.h
+    // field getter/setter methods
+    virtual const Foo& getFoo() const;
+    virtual Foo& getMutableFoo() { return const_cast<Foo&>(const_cast<TestClass*>(this)->getFoo());}
+    virtual void setFoo(const Foo& foo);
+    virtual const Foo& getConstFoo() const;
+    virtual const Foo * getFooPtr() const;
+    virtual Foo * getMutableFooPtr() { return const_cast<Foo *>(const_cast<TestClass*>(this)->getFooPtr());}
+    virtual void setFooPtr(Foo * fooPtr);
+    virtual const Foo * getConstFooPtr() const;
+    virtual void setConstFooPtr(const Foo * constFooPtr);
+    virtual Bar getBar() const;
+    virtual void setBar(Bar bar);
+    virtual Bar getConstBar() const;
+    virtual const Bar * getBarPtr() const;
+    virtual Bar * getMutableBarPtr() { return const_cast<Bar *>(const_cast<TestClass*>(this)->getBarPtr());}
+    virtual void setBarPtr(Bar * barPtr);
+    virtual const Bar * getConstBarPtr() const;
+    virtual Bar * getMutableConstBarPtr() { return const_cast<Bar *>(const_cast<TestClass*>(this)->getConstBarPtr());}
+    virtual void setConstBarPtr(Bar * constBarPtr);
+    virtual int getInt() const;
+    virtual void setInt(int Int);
+    virtual int getConstInt() const;
+    virtual const char * getString() const;
+    virtual void setString(const char * String);
+    virtual const char * getConstString() const;
+    virtual int32_t getInt32t() const;
+    virtual void setInt32t(int32_t Int32t);
+    virtual int32_t getConstInt32t() const;
+    virtual int32_t getInt32() const;
+    virtual void setInt32(int32_t Int32);
+    virtual int32_t getConstInt32() const;
+};
+

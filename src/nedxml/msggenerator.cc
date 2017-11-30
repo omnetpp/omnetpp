@@ -420,10 +420,12 @@ void MsgGenerator::doField(FieldElement *node, const char *indent, bool islast, 
     OUT << indent;
     if (node->getIsAbstract())
         OUT << "abstract ";
-    if (node->getIsReadonly())
-        OUT << "readonly ";
+    if (node->getIsConst())
+        OUT << "const ";
     if (!opp_isempty(node->getDataType()))
         OUT << node->getDataType() << " ";
+    if (node->getIsPointer())
+        OUT << "*";
     OUT << node->getName();
     if (node->getIsVector() && !opp_isempty(node->getVectorSize()))
         OUT << "[" << node->getVectorSize() << "]";

@@ -124,7 +124,8 @@
      name                NMTOKEN   #REQUIRED
      data-type           CDATA     #IMPLIED
      is-abstract     (true|false)  "false"
-     is-readonly     (true|false)  "false"
+     is-const        (true|false)  "false"
+     is-pointer      (true|false)  "false"
      is-vector       (true|false)  "false"
      vector-size         CDATA     #IMPLIED
      default-value       CDATA     #IMPLIED>

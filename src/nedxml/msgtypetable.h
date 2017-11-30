@@ -46,10 +46,11 @@ class NEDXML_API MsgTypeTable
         ASTNode *astNode;     // pointer to field element in AST
 
         std::string fname;      // field name in MSG
-        std::string ftype;      // field type in MSG
+        std::string ftype;      // field type in MSG, without 'const' and '*' modifiers
         std::string ftypeqname; // fully qualified C++ name of type //TODO should not be needed
         std::string fval;       // value (or empty)
         bool fisabstract;
+        bool fisconst;
         bool fispointer;
         bool fisownedpointer;   // true, when should use dup()/delete/take()/drop()/dropAndDelete(); read from @owned, default value is true for cOwnedObject, otherwise false
                                 // "T *removeFoo()" also generated for owned pointer members
@@ -67,12 +68,14 @@ class NEDXML_API MsgTypeTable
         std::string datatype;   // member C++ datatype
         std::string argtype;    // setter C++ argument type
         std::string rettype;    // getter C++ return type
+        std::string mutablerettype; // mutableGetter C++ return type
         std::string var;        // name of data member variable
         std::string argname;    // setter argument name
         std::string varsize;    // data member to store array size | value of farraysize
         std::string fsizetype;  // type for storing array size
         std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
-        std::string mGetter;    // const getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
+        std::string mGetter;    // mutable getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
+        bool hasMutableGetter;
         std::string remover;    // remover function name (for owned pointers)
         std::string setter;     // Setter function name
         std::string alloc;      // setArraySize() function name
@@ -125,6 +128,7 @@ class NEDXML_API MsgTypeTable
         bool iscNamedObject;
         bool iscOwnedObject;
         bool subclassable;
+        bool supportsPtr;
         std::string namespacename;
         std::string msgclass;
         std::string realmsgclass;
@@ -144,9 +148,9 @@ class NEDXML_API MsgTypeTable
         std::string defaultvalue;       // value (or empty)
         bool isopaque = false;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
         bool byvalue = false;           // @byValue, default value is false        // TODO: @byValue should rather be the attribute of the field's type, not the field itself
-        std::string datatype;   // member C++ datatype
-        std::string argtype;    // setter C++ argument type
-        std::string rettype;    // getter C++ return type
+        std::string datatypebase;   // member C++ datatype
+        std::string argtypebase;    // setter C++ argument type
+        std::string returntypebase;    // getter C++ return type
         std::string tostring;   // function to convert data to string, defined in property @toString
         std::string fromstring; // function to convert string to data member, defined in property @fromString
         std::string getterconversion;       // uses ".c_str()"

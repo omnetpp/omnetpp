@@ -158,9 +158,8 @@ void MsgAnalyzer::extractFields(ClassInfo& classInfo)
         field.ftype = fieldElem->getDataType();
         field.fval = fieldElem->getDefaultValue();
         field.fisabstract = fieldElem->getIsAbstract();
-        field.fispointer = opp_stringendswith(field.ftype.c_str(), "*");
-        if (field.fispointer)
-            field.ftype = opp_trim(opp_substringbeforelast(field.ftype.c_str(), "*"));
+        field.fisconst = fieldElem->getIsConst();
+        field.fispointer = fieldElem->getIsPointer();
         field.fisarray = fieldElem->getIsVector();
         field.farraysize = fieldElem->getVectorSize();
 
@@ -278,16 +277,18 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
 
     // isOpaque, byValue, data types, etc.
-    bool isPrimitive = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false); // @primitive is a shortcut for @opaque @byValue @subclassable(false)
+    bool isPrimitive = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false); // @primitive is a shortcut for @opaque @byValue @subclassable(false) @supportsPtr(false)
     classInfo.isopaque = getPropertyAsBool(classInfo.props, PROP_OPAQUE, isPrimitive);
     classInfo.byvalue = getPropertyAsBool(classInfo.props, PROP_BYVALUE, isPrimitive);
     classInfo.subclassable = getPropertyAsBool(classInfo.props, PROP_SUBCLASSABLE, !isPrimitive);
+    classInfo.supportsPtr = getPropertyAsBool(classInfo.props, PROP_SUPPORTSPTR, !isPrimitive);
+
 
     classInfo.defaultvalue = getProperty(classInfo.props, PROP_DEFAULTVALUE, "");
 
-    classInfo.datatype = getProperty(classInfo.props, PROP_CPPTYPE, "");
-    classInfo.argtype = getProperty(classInfo.props, PROP_ARGTYPE, "");
-    classInfo.rettype = getProperty(classInfo.props, PROP_RETURNTYPE, "");
+    classInfo.datatypebase = getProperty(classInfo.props, PROP_CPPTYPE, "");
+    classInfo.argtypebase = getProperty(classInfo.props, PROP_ARGTYPE, "");
+    classInfo.returntypebase = getProperty(classInfo.props, PROP_RETURNTYPE, "");
 
     classInfo.tostring = getProperty(classInfo.props, PROP_TOSTRING, "");
     classInfo.fromstring = getProperty(classInfo.props, PROP_FROMSTRING, "");
@@ -402,11 +403,15 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->enumqname = "";
         }
         else {
-            errors->addWarning(field->astNode, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s\n", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
+            errors->addWarning(field->astNode, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s", field->enumname.c_str(), field->fname.c_str(), classInfo.msgname.c_str(), join(found, ", ").c_str());
             field->enumqname = found[0];
         }
         field->fprops[PROP_ENUM] = field->enumqname; // need to overwrite it in props, because Qtenv will look up the enum by qname
     }
+
+    bool supportsPtr = getPropertyAsBool(field->fprops, PROP_SUPPORTSPTR, fieldClassInfo.supportsPtr);
+    if (field->fispointer && !supportsPtr)
+        errors->addError(field->astNode, "'%s *' pointers are not allowed", field->ftype.c_str());
 
     field->byvalue = getPropertyAsBool(field->fprops, PROP_BYVALUE, fieldClassInfo.byvalue);
     field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, PROP_OWNED, field->iscOwnedObject);
@@ -473,28 +478,40 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
 
     // data type, argument type, conversion to/from string...
-    field->datatype = getProperty(field->fprops, PROP_CPPTYPE, fieldClassInfo.datatype);
-    field->argtype = getProperty(field->fprops, PROP_ARGTYPE, fieldClassInfo.argtype);
-    field->rettype = getProperty(field->fprops, PROP_RETURNTYPE, fieldClassInfo.rettype);
-    if (field->datatype.empty())
-        field->datatype = field->ftype;
-    if (field->argtype.empty())
-        field->argtype = field->datatype;
-    if (field->rettype.empty())
-        field->rettype = field->datatype;
+    std::string datatypeBase = getProperty(field->fprops, PROP_CPPTYPE, fieldClassInfo.datatypebase);
+    std::string argtypeBase = getProperty(field->fprops, PROP_ARGTYPE, fieldClassInfo.argtypebase);
+    std::string returntypeBase = getProperty(field->fprops, PROP_RETURNTYPE, fieldClassInfo.returntypebase);
 
-    if (field->fispointer) {
-        field->datatype = field->datatype + " *";
-        field->argtype = field->argtype + " *";
-        field->rettype = field->rettype + " *";
-    }
-    else if (field->byvalue) {
-        // leave as is
+    if (datatypeBase.empty()) datatypeBase = field->ftype;
+    if (argtypeBase.empty()) argtypeBase = datatypeBase;
+    if (returntypeBase.empty()) returntypeBase = datatypeBase;
+
+    //
+    // Intended const usage for various isPointer/isConst/byValue combinations:
+    //   Foo*:          setter: Foo*        getter: const Foo*    mgetter: Foo*
+    //   const Foo*:    setter: const Foo*  getter: const Foo*    mgetter: -
+    //   Foo:           setter: Foo&        getter: const Foo&    mgetter: Foo&
+    //   const Foo:     setter: -           getter: const Foo&    mgetter: -
+    //   int (byvalue): setter: int         getter: int           mgetter: -
+    //   const int:     setter: -           getter: int           mgetter: -
+    //   int*:          same as Foo*
+    //   const int*:    const Foo*
+    //
+
+    bool byRef = !field->fispointer && !field->byvalue;
+
+    field->datatype = decorateType(datatypeBase, field->fisconst, field->fispointer, false);
+    field->argtype = decorateType(argtypeBase, field->fisconst || byRef, field->fispointer, byRef);  //TODO check  "|| byRef" part -- removing it makes tests fail
+    if (!field->fispointer && field->byvalue) {
+        field->rettype = decorateType(returntypeBase, false, false, false);
+        field->argtype = decorateType(argtypeBase, false, false, false);
     }
     else {
-        field->argtype = str("const ") + field->argtype + "&";
-        field->rettype = field->rettype + "&";
+        field->rettype = decorateType(returntypeBase, true, field->fispointer, byRef);
+        field->mutablerettype = decorateType(returntypeBase, false, field->fispointer, byRef);
     }
+
+    field->hasMutableGetter = !field->fisconst && (field->fispointer ? true : !field->byvalue);
 
     if (field->feditable && field->fromstring.empty() && classInfo.generate_descriptor && classInfo.generate_setters_in_descriptor)
         errors->addError(field->astNode, "Field '%s' is editable, but fromstring() function is unspecified", field->fname.c_str());
@@ -574,7 +591,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     @toString(enum2string($, "namespaceName::typeName"));
     @defaultValue(((namespaceName::typeName)-1));
  */
-    classInfo.datatype = classInfo.msgqname;
+    classInfo.datatypebase = classInfo.msgqname;
     classInfo.fromstring = str("(") + classInfo.msgqname + ")string2enum($, \"" + classInfo.msgqname + "\")";
     classInfo.tostring = str("enum2string($, \"") + classInfo.msgqname + "\")";
     classInfo.defaultvalue = str("((") + classInfo.msgqname + ")-1)";
@@ -597,9 +614,9 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     classInfo.byvalue = true;
     classInfo.subclassable = false;
 
-    classInfo.datatype = classInfo.msgqname;
-    classInfo.argtype = classInfo.msgqname;
-    classInfo.rettype  = classInfo.msgqname;
+    classInfo.datatypebase = classInfo.msgqname;
+    classInfo.argtypebase = classInfo.msgqname;
+    classInfo.returntypebase  = classInfo.msgqname;
 
     classInfo.getterconversion  = "$";
 
@@ -629,6 +646,12 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
 std::string MsgAnalyzer::prefixWithNamespace(const std::string& name, const std::string& namespaceName)
 {
     return !namespaceName.empty() ? namespaceName + "::" + name : name;  // prefer name from local namespace
+}
+
+std::string MsgAnalyzer::decorateType(const std::string& typeName, bool isConst, bool isPointer, bool isRef)
+{
+    bool alreadyConst = opp_stringbeginswith(typeName.c_str(), "const ");  // use with "const char *"
+    return ((isConst && !alreadyConst) ? "const " : "") + typeName + (isPointer ? " *" : "") + (isRef ? "&" : "");
 }
 
 bool MsgAnalyzer::getPropertyAsBool(const Properties& p, const char *name, bool defval)

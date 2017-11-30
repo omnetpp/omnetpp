@@ -485,13 +485,15 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         }
 
         // getter, setter, remover
-        std::string maybeConst = (field.fispointer || !field.byvalue) ? "const " : "";
-        H << "    virtual " << maybeConst << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-        if (field.fispointer || !field.byvalue)
-            H << "    virtual " << field.rettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter << " { " << maybe_handleChange << "return const_cast<" << field.rettype << ">(const_cast<const " << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
-        if (field.fispointer && field.fisownedpointer)  //TODO should be just "if (fispointer)"?
-            H << "    virtual " << field.rettype << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
-        H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argtype << " " << field.argname << ")" << overrideSetter << pure << ";\n";
+        H << "    virtual " << field.rettype << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
+        if (field.hasMutableGetter) {
+            H << "    virtual " << field.mutablerettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter;
+            H << " { " << maybe_handleChange << "return const_cast<" << field.mutablerettype << ">(const_cast<" << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
+        }
+        if (field.fispointer && field.fisownedpointer)
+            H << "    virtual " << field.mutablerettype << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
+        if (field.fispointer || !field.fisconst)
+            H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argtype << " " << field.argname << ")" << overrideSetter << pure << ";\n";
     }
     H << "};\n\n";
 
@@ -644,6 +646,8 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         // CC << "// " << field.fname << ":\n";
         if (!field.fisabstract) {
             if (field.fisarray) {
+                if (!field.fispointer && field.fisconst)
+                    continue;
                 if (field.fispointer) {
                     if (field.fisownedpointer) {
                         CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
@@ -682,9 +686,8 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 }
                 else {
                     CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
-                    if (field.iscNamedObject) {
+                    if (field.iscNamedObject)
                         CC << "        this->" << field.var << "[i].setName(other." << field.var << "[i].getName());\n";
-                    }
                     CC << "    }\n";
                 }
             }
@@ -697,16 +700,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     }
                     else {
                         CC << "    this->" << field.var << " = other." << field.var << ";\n";
-                        if (field.iscNamedObject) {
+                        if (field.iscNamedObject)
                             CC << "    this->" << field.var << "->setName(other." << field.var << "->getName());\n";
-                        }
                     }
                 }
-                else {
+                else if (!field.fisconst) {
                     CC << "    this->" << field.var << " = other." << field.var << ";\n";
-                    if (field.iscNamedObject) {
+                    if (field.iscNamedObject)
                         CC << "    this->" << field.var << ".setName(other." << field.var << ".getName());\n";
-                    }
                 }
             }
         }
@@ -805,8 +806,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 CC << "}\n\n";
             }
 
-            std::string maybeConst = (field.fispointer || !field.byvalue) ? "const " : "";
-            CC << maybeConst << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
+            CC << field.rettype << " " << classInfo.msgclass << "::" << field.getter << "(" << idxarg << ")" << " const\n";
             CC << "{\n";
             if (field.fisarray)
                 CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
@@ -837,31 +837,36 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             }
 
             // setter:
-            CC << "void " << classInfo.msgclass << "::" << field.setter << "(" << idxarg2 << field.argtype << " " << field.argname << ")\n";
-            CC << "{\n";
-            if (field.fisarray) {
-                CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
-            }
-            CC << maybe_handleChange_line;
-            if (field.fisownedpointer) {
-                CC << "    dropAndDelete(this->" << field.var << idx << ");\n";
-            }
-            CC << "    " << indexedVar << " = " << field.argname << ";\n";
-            if (field.fisownedpointer) {
-                CC << "    if (" << indexedVar << " != nullptr)\n";
-                CC << "        take(" << indexedVar << ");\n";
-            }
-            CC << "}\n\n";
-
-            // remover:
-            if (field.fisownedpointer) {  //TODO fispointer or fisownedpointer?
-                CC << field.rettype << " " << classInfo.msgclass << "::" << field.remover << "(" << idxarg2 << field.argtype << " " << field.argname << ")\n";
+            if (field.fispointer || !field.fisconst) {
+                CC << "void " << classInfo.msgclass << "::" << field.setter << "(" << idxarg2 << field.argtype << " " << field.argname << ")\n";
                 CC << "{\n";
                 if (field.fisarray) {
                     CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
                 }
                 CC << maybe_handleChange_line;
-                CC << "    " << field.rettype << " retval = " << indexedVar << ";\n";
+                if (field.fisownedpointer) {
+                    CC << "    dropAndDelete(" << indexedVar << ");\n";
+                }
+                CC << "    " << indexedVar << " = " << field.argname << ";\n";
+                if (field.fisownedpointer) {
+                    CC << "    if (" << indexedVar << " != nullptr)\n";
+                    CC << "        take(" << indexedVar << ");\n";
+                }
+                CC << "}\n\n";
+            }
+
+            // remover:
+            if (field.fispointer && field.fisownedpointer) {
+                CC << field.mutablerettype << " " << classInfo.msgclass << "::" << field.remover << "(" << idxarg2 << field.argtype << " " << field.argname << ")\n";
+                CC << "{\n";
+                if (field.fisarray)
+                    CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
+                CC << maybe_handleChange_line;
+                CC << "    " << field.mutablerettype << " retval = ";
+                if (field.fisconst)
+                    CC << "const_cast<" << field.mutablerettype << ">(" << indexedVar << ");\n";
+                else
+                    CC << indexedVar << ";\n";
                 CC << "    drop(retval);\n";
                 CC << "    " << indexedVar << " = nullptr;\n";
                 CC << "    return retval;\n";
@@ -1251,7 +1256,11 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldlist[i];
         if (field.fispointer) {
             CC << "        case " << i << ": ";
-            CC << "{ const " << field.ftype << " *value = " << makeFuncall("pp", field.getter, field.fisarray) << "; return omnetpp::opp_typename(typeid(*value)); }\n";
+            CC << "{ " << field.rettype << " value = " << makeFuncall("pp", field.getter, field.fisarray) << "; ";
+            if (field.fisconst)
+                CC << "return omnetpp::opp_typename(typeid(*const_cast<" << field.mutablerettype << ">(value))); }\n";
+            else
+                CC << "return omnetpp::opp_typename(typeid(*value)); }\n";
         }
     }
     CC << "        default: return nullptr;\n";

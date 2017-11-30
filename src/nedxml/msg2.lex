@@ -17,11 +17,11 @@
 
 /*
  * MSG-2 reserved words:
- *    non-component:   cplusplus import
+ *    non-component:   cplusplus import namespace using
  *    component:       struct message class noncobject enum
  *    inheritance:     extends
- *    field types:     char short int long double unsigned
- *    field modifiers: abstract readonly
+ *    field types:     char short int long double unsigned string const true false
+ *    field modifiers: abstract
  */
 
 D  [0-9]
@@ -93,7 +93,6 @@ using namespace omnetpp::nedxml;
 "enum"                   { countChars(); return ENUM; }
 "extends"                { countChars(); return EXTENDS; }
 "abstract"               { countChars(); return ABSTRACT; }
-"readonly"               { countChars(); return READONLY; }
 
 "bool"                   { countChars(); return BOOLTYPE; }
 "char"                   { countChars(); return CHARTYPE; }

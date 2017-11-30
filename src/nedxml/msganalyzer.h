@@ -71,7 +71,7 @@ class NEDXML_API MsgAnalyzer
     bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
-    std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
+    std::string decorateType(const std::string& typeName, bool isConst, bool isPointer, bool isRef);
     std::string lookupExistingClassName(const std::string& name, const std::string& contextNamespace,  ClassInfo *contextClass=nullptr);
 
   public:
@@ -92,6 +92,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_PRIMITIVE = "primitive";
     static constexpr const char* PROP_OPAQUE = "opaque";
     static constexpr const char* PROP_BYVALUE = "byValue";
+    static constexpr const char* PROP_SUPPORTSPTR = "supportsPtr";
     static constexpr const char* PROP_SUBCLASSABLE = "subclassable";
     static constexpr const char* PROP_DEFAULTVALUE = "defaultValue";
     static constexpr const char* PROP_CPPTYPE = "cppType";
