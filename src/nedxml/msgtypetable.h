@@ -87,7 +87,7 @@ class NEDXML_API MsgTypeTable
                                 // const char * <datatype>::<function>(...);     // @toString(.function(...))
         std::string fromstring; // function to convert string to data member, defined in property @fromString
                                 // <datatype> <function>(const char *);          // @fromString(function)
-        std::string maybe_c_str;       // uses ".c_str()"
+        std::string getterconversion;  // currently only with strings: ".c_str()"
         std::string enumname;
         std::string enumqname;
         bool fnopack;           // @nopack(true)
@@ -149,7 +149,7 @@ class NEDXML_API MsgTypeTable
         std::string rettype;    // getter C++ return type
         std::string tostring;   // function to convert data to string, defined in property @toString
         std::string fromstring; // function to convert string to data member, defined in property @fromString
-        std::string maybe_c_str;       // uses ".c_str()"
+        std::string getterconversion;       // uses ".c_str()"
         std::string beforeChange;  // method to be called before mutator methods
 //??        bool feditable;         // @editable(true)
     };

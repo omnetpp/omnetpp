@@ -810,7 +810,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
             CC << "{\n";
             if (field.fisarray)
                 CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.varsize << " indexed by %lu\", (unsigned long)k);\n";
-            CC << "    return this->" << field.var << idx << field.maybe_c_str << ";\n";
+            CC << "    return " << makeFuncall(str("this->")+field.var+idx, field.getterconversion) + ";\n";
             CC << "}\n\n";
 
             // resize:

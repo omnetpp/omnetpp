@@ -291,7 +291,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     classInfo.tostring = getProperty(classInfo.props, PROP_TOSTRING, "");
     classInfo.fromstring = getProperty(classInfo.props, PROP_FROMSTRING, "");
-    classInfo.maybe_c_str = getProperty(classInfo.props, PROP_MAYBECSTR, "");
+    classInfo.getterconversion = getProperty(classInfo.props, PROP_GETTERCONVERSION, "$");
 
     // generation gap
     bool existingClass = getPropertyAsBool(classInfo.props, PROP_EXISTINGCLASS, false);
@@ -453,6 +453,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->alloc = getProperty(field->fprops, PROP_SIZESETTER);
         if (getProperty(field->fprops, PROP_SIZEGETTER) != "")
             field->getsize = getProperty(field->fprops, PROP_SIZEGETTER);
+
+        field->getterconversion = getProperty(field->fprops, PROP_GETTERCONVERSION, fieldClassInfo.getterconversion);
     }
 
     // variable name
@@ -474,7 +476,6 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->datatype = getProperty(field->fprops, PROP_CPPTYPE, fieldClassInfo.datatype);
     field->argtype = getProperty(field->fprops, PROP_ARGTYPE, fieldClassInfo.argtype);
     field->rettype = getProperty(field->fprops, PROP_RETURNTYPE, fieldClassInfo.rettype);
-    field->maybe_c_str = getProperty(field->fprops, PROP_MAYBECSTR, fieldClassInfo.maybe_c_str);
     if (field->datatype.empty())
         field->datatype = field->ftype;
     if (field->argtype.empty())
@@ -600,7 +601,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     classInfo.argtype = classInfo.msgqname;
     classInfo.rettype  = classInfo.msgqname;
 
-    classInfo.maybe_c_str  = "";
+    classInfo.getterconversion  = "$";
 
     //
     // produce all sorts of derived names

@@ -41,7 +41,7 @@ static const char *BUILTIN_DEFINITIONS =
         class __bool { @actually(bool); @primitive; @editable; @cppType(bool); @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
         class __float { @actually(float); @primitive; @editable; @cppType(float); @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
         class __double { @actually(double); @primitive; @editable; @cppType(double); @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
-        class __string { @actually(string); @primitive; @editable; @cppType(omnetpp::opp_string); @argType(const char *); @returnType(const char *); @maybe_c_str(.c_str()); @fromString(($)); @toString(oppstring2string($)); }
+        class __string { @actually(string); @primitive; @editable; @cppType(omnetpp::opp_string); @argType(const char *); @returnType(const char *); @getterConversion(.c_str()); @fromString(($)); @toString(oppstring2string($)); }
         class __char { @actually(char); @primitive; @editable; @cppType(char); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
         class __short { @actually(short); @primitive; @editable; @cppType(short); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
         class __int { @actually(int); @primitive; @editable; @cppType(int); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
