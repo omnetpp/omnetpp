@@ -39,7 +39,7 @@ class NEDXML_API MsgTypeTable
   public:
     typedef std::vector<std::string> StringVector;
 
-    typedef std::map<std::string, std::string> Properties;  //FIXME kell egy reszletesebb modell...
+    typedef std::map<std::string, std::string> Properties;
 
     class FieldInfo {
       public:
@@ -49,22 +49,21 @@ class NEDXML_API MsgTypeTable
         std::string ftype;      // field type in MSG, without 'const' and '*' modifiers
         std::string ftypeqname; // fully qualified C++ name of type //TODO should not be needed
         std::string fval;       // value (or empty). for arrays, this is the value for one array element (we have no syntax for initializing with a list of values)
-        bool fisabstract;
-        bool fisconst;
-        bool fispointer;
-        bool fisownedpointer;   // true, when should use dup()/delete/take()/drop()/dropAndDelete(); read from @owned, default value is true for cOwnedObject, otherwise false
-                                // "T *removeFoo()" also generated for owned pointer members
-                                //FIXME: should just be "owned" -- whether field type is cOwnedObject or not is already part of iscOwnedObject!
-        bool fisarray;
-        bool byvalue;           // @byValue, default value is false        // TODO: @byValue should rather be the attribute of the field's type, not the field itself
-        std::string farraysize; // array size in MSG, maybe empty for dynamic arrays
+        bool fisabstract;       // "abstract" keyword specified for field
+        bool fisconst;          // "const" keyword specified for field
+        bool fispointer;        // field is a pointer or pointer array ("*" syntax)
+        bool fisownedpointer;   // from @owned; if true, allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor).
+                                // if field type is also cOwnedObject, take()/drop() calls should be generated
+        bool fisarray;          // field is an array ("[]" or "[size]" syntax)
+        bool byvalue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters
+        std::string farraysize; // if field is an array: array size (string inside the square brackets)
         Properties fprops;      // field properties (name, first value of default key)
 
         // data needed for code generation
-        bool isClass; // or struct
-        bool iscObject;
-        bool iscNamedObject;
-        bool iscOwnedObject;
+        bool isClass;           // field type is a class (true) or struct (false)
+        bool iscObject;         // field type is derived from cObject
+        bool iscNamedObject;    // field type is derived from cNamedObject
+        bool iscOwnedObject;    // field type is derived from cOwnedObject
         std::string datatype;   // member C++ datatype
         std::string argtype;    // setter C++ argument type
         std::string rettype;    // getter C++ return type
@@ -75,13 +74,13 @@ class NEDXML_API MsgTypeTable
         std::string fsizetype;  // type for storing array size
         std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
         std::string mGetter;    // mutable getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
-        bool hasMutableGetter;
+        bool hasMutableGetter;  // whether a mutableGetter method needs to be generated
         std::string remover;    // remover function name (for owned pointers)
         std::string setter;     // Setter function name
         std::string alloc;      // setArraySize() function name
         std::string getsize;    // array size getter function name
         std::string tostring;   // function to convert data to string, defined in property @toString
-                                // if tostring begins a dot, then uses as member function, parentheses needed in property; otherwise tostring implemented as name of a normal function, do not use parentheses
+                                // if tostring begins with a dot, then it is taken as member function call, parentheses needed in property; otherwise toString is understood as name of a normal function, do not use parentheses
                                 // std::string <function>(<datatype>);           // @toString(function)
                                 // std::string <function>(const <datatype>&);    // @toString(function)
                                 // const char * <function>(<datatype>);          // @toString(function)
@@ -91,14 +90,14 @@ class NEDXML_API MsgTypeTable
         std::string fromstring; // function to convert string to data member, defined in property @fromString
                                 // <datatype> <function>(const char *);          // @fromString(function)
         std::string getterconversion;  // currently only with strings: ".c_str()"
-        std::string enumname;
-        std::string enumqname;
+        std::string enumname;   // from @enum
+        std::string enumqname;  // fully qualified type name of enum
         bool fnopack;           // @nopack(true)
-        bool feditable;         // @editable(true)
+        bool feditable;         // @editable(true): field value is editable in the UI via the descriptor's setFieldValueFromString() method
         bool editNotDisabled;   // true when field doesn't have property "@editable(false)"
-        bool fopaque;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
-        bool overrideGetter;   // @@overrideGetter|@override, uses when field getter function overrides a function in base class
-        bool overrideSetter;   // @@overrideSetter|@override, uses when field setter function overrides a function in base class
+        bool fopaque;           // @opaque(true), means that field type is treated as atomic (has no fields), i.e. has no descriptor
+        bool overrideGetter;    // @overrideGetter|@override, used when field getter function overrides a function in base class
+        bool overrideSetter;    // @overrideSetter|@override, used when field setter function overrides a function in base class
 
       public:
         FieldInfo() : astNode(nullptr), fisabstract(false), fispointer(false), fisarray(false), fnopack(false), feditable(false),fopaque(false) {}
