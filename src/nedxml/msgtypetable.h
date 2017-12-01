@@ -48,7 +48,7 @@ class NEDXML_API MsgTypeTable
         std::string fname;      // field name in MSG
         std::string ftype;      // field type in MSG, without 'const' and '*' modifiers
         std::string ftypeqname; // fully qualified C++ name of type //TODO should not be needed
-        std::string fval;       // value (or empty)
+        std::string fval;       // value (or empty). for arrays, this is the value for one array element (we have no syntax for initializing with a list of values)
         bool fisabstract;
         bool fisconst;
         bool fispointer;

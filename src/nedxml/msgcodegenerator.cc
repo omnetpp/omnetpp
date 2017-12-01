@@ -404,14 +404,14 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     for (const FieldInfo& field : classInfo.fieldlist) {
         if (!field.fisabstract) {
             if (field.fisarray && !field.farraysize.empty()) {
-                H << "    " << field.datatype << " " << field.var << "[" << field.farraysize << "];\n";
+                H << "    " << field.datatype << " " << field.var << "[" << field.farraysize << "]" << (field.fval == "0" ? " = {0}" : "") << ";\n"; // note: C++ has no syntax for filling a full array with a (nonzero) value in an expression
             }
             else if (field.fisarray && field.farraysize.empty()) {
-                H << "    " << field.datatype << " *" << field.var << "; // array ptr\n";
-                H << "    " << field.fsizetype << " " << field.varsize << ";\n";
+                H << "    " << field.datatype << " *" << field.var << " = nullptr;\n";
+                H << "    " << field.fsizetype << " " << field.varsize << " = 0;\n";
             }
             else {
-                H << "    " << field.datatype << " " << field.var << ";\n";
+                H << "    " << field.datatype << " " << field.var << (field.fval.empty() ? "" : str(" = ") + field.fval) << ";\n";
             }
         }
     }
@@ -525,7 +525,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
         if (!field.fisabstract) {
             if (field.fisarray) {
                 if (!field.farraysize.empty()) {
-                    if (!field.fval.empty()) {
+                    if (!field.fval.empty() && field.fval != "0") {
                         CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
                     }
@@ -539,15 +539,8 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                             CC << "        take(&(this->" << field.var << "[i]));\n";
                     }
                 }
-                else {
-                    CC << "    " << field.varsize << " = 0;\n";
-                    CC << "    this->" << field.var << " = nullptr;\n";
-                }
             }
             else {
-                if (!field.fval.empty()) {
-                    CC << "    this->" << field.var << " = " << field.fval << ";\n";
-                }
                 if (field.iscOwnedObject) {
                     if (field.fispointer)
                         CC << "    if (this->" << field.var << " != nullptr) { take(this->" << field.var << "); }\n";
@@ -657,17 +650,15 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                 }
                 if (field.farraysize.empty()) {
                     if (!field.fispointer && field.iscOwnedObject) {
-                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        drop(&(this->" << field.var << "[i]));\n";
-                        CC << "    }\n";
                     }
                     CC << "    delete [] this->" << field.var << ";\n";
                     CC << "    this->" << field.var << " = (other." << field.varsize << "==0) ? nullptr : new " << field.datatype << "[other." << field.varsize << "];\n";
                     CC << "    " << field.varsize << " = other." << field.varsize << ";\n";
                     if (!field.fispointer && field.iscOwnedObject) {
-                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
+                        CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        take(&(this->" << field.var << "[i]));\n";
-                        CC << "    }\n";
                     }
                 }
 
@@ -679,17 +670,16 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
                     }
                     else {
                         CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
-                        if (field.iscNamedObject) {
+                        if (field.iscNamedObject)
                             CC << "        this->" << field.var << "[i]->setName(other." << field.var << "[i]->getName());\n";
-                        }
                     }
                 }
                 else {
                     CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
                     if (field.iscNamedObject)
                         CC << "        this->" << field.var << "[i].setName(other." << field.var << "[i].getName());\n";
-                    CC << "    }\n";
                 }
+                CC << "    }\n";
             }
             else {
                 if (field.fispointer) {

@@ -35,7 +35,7 @@ x.getFooArraySize():3
 x.getFoo(2):99
 
 %contains: test_m.h
-    unsigned char foo_arraysize;
+    unsigned char foo_arraysize = 0;
 
 %contains: test_m.h
     virtual void setFooArraySize(unsigned char size);

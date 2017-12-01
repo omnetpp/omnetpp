@@ -362,6 +362,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (field->fisabstract && !classInfo.gap)
         errors->addError(field->astNode, "abstract fields need '@customize(true)' property in '%s'", classInfo.msgname.c_str());
 
+    if (field->fisarray && field->fisconst && !field->fispointer)
+        errors->addError(field->astNode, "Arrays of const values/objects are not supported");
+
     field->ftypeqname = lookupExistingClassName(field->ftype, namespaceName, &classInfo);
     if (field->ftypeqname.empty()) {
         errors->addError(field->astNode, "unknown type '%s' for field '%s' in '%s'", field->ftype.c_str(), field->fname.c_str(), classInfo.msgname.c_str());
