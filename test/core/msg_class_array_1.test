@@ -33,45 +33,45 @@ TestClass x;
 
 %contains: test_m.h
     // field getter/setter methods
-    virtual void setFooVecArraySize(unsigned int size);
-    virtual unsigned int getFooVecArraySize() const;
-    virtual const Foo& getFooVec(unsigned int k) const;
-    virtual Foo& getMutableFooVec(unsigned int k) { return const_cast<Foo&>(const_cast<TestClass*>(this)->getFooVec(k));}
-    virtual void setFooVec(unsigned int k, const Foo& fooVec);
-    virtual unsigned int getFooVec10ArraySize() const;
-    virtual const Foo& getFooVec10(unsigned int k) const;
-    virtual Foo& getMutableFooVec10(unsigned int k) { return const_cast<Foo&>(const_cast<TestClass*>(this)->getFooVec10(k));}
-    virtual void setFooVec10(unsigned int k, const Foo& fooVec10);
-    virtual void setBarVecArraySize(unsigned int size);
-    virtual unsigned int getBarVecArraySize() const;
-    virtual Bar getBarVec(unsigned int k) const;
-    virtual void setBarVec(unsigned int k, Bar barVec);
-    virtual unsigned int getBarVec10ArraySize() const;
-    virtual Bar getBarVec10(unsigned int k) const;
-    virtual void setBarVec10(unsigned int k, Bar barVec10);
-    virtual void setIntVecArraySize(unsigned int size);
-    virtual unsigned int getIntVecArraySize() const;
-    virtual int getIntVec(unsigned int k) const;
-    virtual void setIntVec(unsigned int k, int IntVec);
-    virtual unsigned int getIntVec10ArraySize() const;
-    virtual int getIntVec10(unsigned int k) const;
-    virtual void setIntVec10(unsigned int k, int IntVec10);
-    virtual void setFooPtrVecArraySize(unsigned int size);
-    virtual unsigned int getFooPtrVecArraySize() const;
-    virtual const Foo * getFooPtrVec(unsigned int k) const;
-    virtual Foo * getMutableFooPtrVec(unsigned int k) { return const_cast<Foo *>(const_cast<TestClass*>(this)->getFooPtrVec(k));}
-    virtual void setFooPtrVec(unsigned int k, Foo * fooPtrVec);
-    virtual void setConstFooPtrVecArraySize(unsigned int size);
-    virtual unsigned int getConstFooPtrVecArraySize() const;
-    virtual const Foo * getConstFooPtrVec(unsigned int k) const;
-    virtual void setConstFooPtrVec(unsigned int k, const Foo * constFooPtrVec);
-    virtual unsigned int getFooPtrVec10ArraySize() const;
-    virtual const Foo * getFooPtrVec10(unsigned int k) const;
-    virtual Foo * getMutableFooPtrVec10(unsigned int k) { return const_cast<Foo *>(const_cast<TestClass*>(this)->getFooPtrVec10(k));}
-    virtual void setFooPtrVec10(unsigned int k, Foo * fooPtrVec10);
-    virtual unsigned int getConstFooPtrVec10ArraySize() const;
-    virtual const Foo * getConstFooPtrVec10(unsigned int k) const;
-    virtual void setConstFooPtrVec10(unsigned int k, const Foo * constFooPtrVec10);
+    virtual void setFooVecArraySize(size_t size);
+    virtual size_t getFooVecArraySize() const;
+    virtual const Foo& getFooVec(size_t k) const;
+    virtual Foo& getMutableFooVec(size_t k) { return const_cast<Foo&>(const_cast<TestClass*>(this)->getFooVec(k));}
+    virtual void setFooVec(size_t k, const Foo& fooVec);
+    virtual size_t getFooVec10ArraySize() const;
+    virtual const Foo& getFooVec10(size_t k) const;
+    virtual Foo& getMutableFooVec10(size_t k) { return const_cast<Foo&>(const_cast<TestClass*>(this)->getFooVec10(k));}
+    virtual void setFooVec10(size_t k, const Foo& fooVec10);
+    virtual void setBarVecArraySize(size_t size);
+    virtual size_t getBarVecArraySize() const;
+    virtual Bar getBarVec(size_t k) const;
+    virtual void setBarVec(size_t k, Bar barVec);
+    virtual size_t getBarVec10ArraySize() const;
+    virtual Bar getBarVec10(size_t k) const;
+    virtual void setBarVec10(size_t k, Bar barVec10);
+    virtual void setIntVecArraySize(size_t size);
+    virtual size_t getIntVecArraySize() const;
+    virtual int getIntVec(size_t k) const;
+    virtual void setIntVec(size_t k, int IntVec);
+    virtual size_t getIntVec10ArraySize() const;
+    virtual int getIntVec10(size_t k) const;
+    virtual void setIntVec10(size_t k, int IntVec10);
+    virtual void setFooPtrVecArraySize(size_t size);
+    virtual size_t getFooPtrVecArraySize() const;
+    virtual const Foo * getFooPtrVec(size_t k) const;
+    virtual Foo * getMutableFooPtrVec(size_t k) { return const_cast<Foo *>(const_cast<TestClass*>(this)->getFooPtrVec(k));}
+    virtual void setFooPtrVec(size_t k, Foo * fooPtrVec);
+    virtual void setConstFooPtrVecArraySize(size_t size);
+    virtual size_t getConstFooPtrVecArraySize() const;
+    virtual const Foo * getConstFooPtrVec(size_t k) const;
+    virtual void setConstFooPtrVec(size_t k, const Foo * constFooPtrVec);
+    virtual size_t getFooPtrVec10ArraySize() const;
+    virtual const Foo * getFooPtrVec10(size_t k) const;
+    virtual Foo * getMutableFooPtrVec10(size_t k) { return const_cast<Foo *>(const_cast<TestClass*>(this)->getFooPtrVec10(k));}
+    virtual void setFooPtrVec10(size_t k, Foo * fooPtrVec10);
+    virtual size_t getConstFooPtrVec10ArraySize() const;
+    virtual const Foo * getConstFooPtrVec10(size_t k) const;
+    virtual void setConstFooPtrVec10(size_t k, const Foo * constFooPtrVec10);
 };
 
 

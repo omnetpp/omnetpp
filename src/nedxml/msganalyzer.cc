@@ -478,7 +478,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     field->varsize = field->farraysize.empty() ? (field->fname + "_arraysize") : field->farraysize;
     std::string sizetypeprop = getProperty(field->fprops, PROP_SIZETYPE);
-    field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "unsigned int";  // TODO change to size_t
+    field->fsizetype = !sizetypeprop.empty() ? sizetypeprop : "size_t";
 
     // data type, argument type, conversion to/from string...
     std::string datatypeBase = getProperty(field->fprops, PROP_CPPTYPE, fieldClassInfo.datatypebase);
