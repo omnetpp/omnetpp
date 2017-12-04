@@ -223,12 +223,12 @@ RunList ResultFileManager::getRunsInFile(ResultFile *file) const
     return out;
 }
 
-ResultFileList ResultFileManager::getFilesForRun(Run *run) const
+ResultFileList ResultFileManager::getFilesForRun(Run *run, bool includeComputed) const
 {
     READER_MUTEX
     ResultFileList out;
     for (int i = 0; i < (int)fileRunList.size(); i++)
-        if (fileRunList[i]->runRef == run && !fileRunList[i]->fileRef->isComputed())
+        if (fileRunList[i]->runRef == run && (includeComputed || !fileRunList[i]->fileRef->isComputed()))
             out.push_back(fileRunList[i]->fileRef);
     return out;
 }
@@ -1051,7 +1051,7 @@ ID ResultFileManager::addComputedScalar(const char *name, const char *module, co
     WRITER_MUTEX
 
     if (!computedScalarFile)
-        computedScalarFile = addFile("", "", ResultFile::FILETYPE_OMNETPP, true);
+        computedScalarFile = addFile("<computed>", "<none>", ResultFile::FILETYPE_OMNETPP, true);
     Run *run = getRunByName(runName);
     if (!run) {
         run = addRun(runName, true);
@@ -1090,8 +1090,10 @@ void ResultFileManager::clearComputedScalars()
 {
     WRITER_MUTEX
 
-    if (computedScalarFile)
+    if (computedScalarFile) {
         unloadFile(computedScalarFile);
+        computedScalarFile = nullptr;
+    }
 }
 
 /*
@@ -1247,10 +1249,12 @@ void ResultFileManager::unloadFile(ResultFile *file)
     // remove Runs that don't appear in other loaded files
     for (int i = 0; i < (int)runsPotentiallyToBeDeleted.size(); i++) {
         Run *runRef = runsPotentiallyToBeDeleted[i];
-        if (getFilesForRun(runRef).empty()) {
+        if (getFilesForRun(runRef, true).empty()) {
             // delete it.
             RunList::iterator it = std::find(runList.begin(), runList.end(), runRef);
             assert(it != runList.end());  // runs may occur only once in runsPotentiallyToBeDeleted, because runNames are not allowed to repeat in files
+
+            delete *it;
             runList.erase(it);
         }
     }

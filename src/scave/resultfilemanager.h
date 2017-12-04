@@ -435,7 +435,7 @@ class SCAVE_API ResultFileManager
     const RunList& getRuns() const {return runList;}
     FileRunList getFileRunsInFile(ResultFile *file) const;
     RunList getRunsInFile(ResultFile *file) const;
-    ResultFileList getFilesForRun(Run *run) const;
+    ResultFileList getFilesForRun(Run *run, bool includeComputed = false) const;
 
     const ResultItem& getItem(ID id) const;
     const ScalarResult& getScalar(ID id) const;
