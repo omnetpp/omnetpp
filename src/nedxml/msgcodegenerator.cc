@@ -636,6 +636,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             releaseElem << "    dropAndDelete(" << varElem(field) << ");\n";
         else if (field.fisownedpointer && !field.iscOwnedObject)
             releaseElem << "    delete " << varElem(field) << ";\n";
+        else if (field.fisdynamicarray && !field.fispointer && field.iscOwnedObject)
+            releaseElem << "    drop(&" << varElem(field) << ");\n";
 
         if (!field.fisarray)
             CC << releaseElem.str();
@@ -679,6 +681,9 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             copyElem << "    " << thisVarElem << " = " << otherVarElem << ";\n";
             if (field.iscNamedObject)
                 copyElem << "    " << thisVarElem << ".setName(" << otherVarElem << ".getName());\n";
+            if (field.fisdynamicarray && !field.fispointer && field.iscOwnedObject) {
+                copyElem << "    take(&" << thisVarElem << ");\n";
+            }
         }
 
         if (field.fisarray) {
@@ -823,10 +828,13 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             }
             CC << maybe_handleChange_line;
             if (field.fisownedpointer) {
-                CC << "    dropAndDelete(" << indexedVar << ");\n";
+                if (field.iscOwnedObject)
+                    CC << "    dropAndDelete(" << indexedVar << ");\n";
+                else
+                    CC << "    delete " << indexedVar << ";\n";
             }
             CC << "    " << indexedVar << " = " << field.argname << ";\n";
-            if (field.fisownedpointer) {
+            if (field.fisownedpointer && field.iscOwnedObject) {
                 CC << "    if (" << indexedVar << " != nullptr)\n";
                 CC << "        take(" << indexedVar << ");\n";
             }
@@ -845,8 +853,10 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                 CC << "const_cast<" << field.mutablerettype << ">(" << indexedVar << ");\n";
             else
                 CC << indexedVar << ";\n";
-            CC << "    if (retval != nullptr);\n";
-            CC << "        drop(retval);\n";
+            if (field.iscOwnedObject) {
+                CC << "    if (retval != nullptr)\n";
+                CC << "        drop(retval);\n";
+            }
             CC << "    " << indexedVar << " = nullptr;\n";
             CC << "    return retval;\n";
             CC << "}\n\n";
