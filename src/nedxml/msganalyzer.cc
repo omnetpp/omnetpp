@@ -625,6 +625,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     classInfo.isopaque = true;
     classInfo.byvalue = true;
     classInfo.subclassable = false;
+    classInfo.supportsPtr = false;
 
     classInfo.datatypebase = classInfo.msgqname;
     classInfo.argtypebase = classInfo.msgqname;

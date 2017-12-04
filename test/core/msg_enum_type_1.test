@@ -1,0 +1,49 @@
+%description:
+Check enum usage in messages and classes
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+enum MyEnum
+{
+    ECC = 1;
+    PECC = 2;
+    KIMEHECC = 5;
+};
+
+class MyClass
+{
+    MyEnum e1 = ECC;
+    MyEnum e2 = PECC;
+};
+
+message MyMessage
+{
+    MyClass cc;
+    MyEnum e1 = ECC;
+    MyEnum e2 = PECC;
+};
+
+
+%includes:
+#include "test_m.h"
+
+%activity:
+
+#define PRINT(X) EV << #X << ":" << X << endl
+
+MyClass x;
+MyMessage m;
+
+PRINT(x.getE1());
+PRINT(x.getE2());
+PRINT(m.getCc().getE1());
+PRINT(m.getCc().getE2());
+
+%contains: stdout
+x.getE1():1
+x.getE2():2
+m.getCc().getE1():1
+m.getCc().getE2():2
+
