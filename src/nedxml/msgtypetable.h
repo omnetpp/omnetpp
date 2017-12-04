@@ -77,7 +77,7 @@ class NEDXML_API MsgTypeTable
         bool hasMutableGetter;  // whether a mutableGetter method needs to be generated
         std::string remover;    // remover function name (for owned pointers)
         std::string setter;     // Setter function name
-        std::string alloc;      // setArraySize() function name
+        std::string sizeSetter; // setArraySize() function name
         std::string getsize;    // array size getter function name
         std::string tostring;   // function to convert data to string, defined in property @toString
                                 // if tostring begins with a dot, then it is taken as member function call, parentheses needed in property; otherwise toString is understood as name of a normal function, do not use parentheses

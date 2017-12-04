@@ -435,7 +435,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         capfieldname[0] = toupper(capfieldname[0]);
         field->setter = str("set") + capfieldname;
         field->remover = str("remove") + capfieldname;
-        field->alloc = str("set") + capfieldname + "ArraySize";
+        field->sizeSetter = str("set") + capfieldname + "ArraySize";
         if (classInfo.omitgetverb) {
             field->getter = field->fname;
             field->getsize = field->fname + "ArraySize";
@@ -458,7 +458,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         if (getProperty(field->fprops, PROP_MUTABLEGETTER) != "")
             field->mGetter = getProperty(field->fprops, PROP_MUTABLEGETTER);
         if (getProperty(field->fprops, PROP_SIZESETTER) != "")
-            field->alloc = getProperty(field->fprops, PROP_SIZESETTER);
+            field->sizeSetter = getProperty(field->fprops, PROP_SIZESETTER);
         if (getProperty(field->fprops, PROP_SIZEGETTER) != "")
             field->getsize = getProperty(field->fprops, PROP_SIZEGETTER);
 

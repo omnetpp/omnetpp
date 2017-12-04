@@ -485,7 +485,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
             getterIndexArg = field.fsizetype + " " + getterIndexVar;
             setterIndexArg = getterIndexArg + ", ";
             if (field.farraysize.empty())
-                H << "    virtual void " << field.alloc << "(" << field.fsizetype << " size)" << pure << ";\n";
+                H << "    virtual void " << field.sizeSetter << "(" << field.fsizetype << " size)" << pure << ";\n";
             H << "    virtual " << field.fsizetype << " " << field.getsize << "() const" << pure << ";\n";
         }
 
@@ -816,7 +816,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
 
             // resize:
             if (field.fisarray && field.farraysize.empty()) {
-                CC << "void " << classInfo.msgclass << "::" << field.alloc << "(" << field.fsizetype << " size)\n";
+                CC << "void " << classInfo.msgclass << "::" << field.sizeSetter << "(" << field.fsizetype << " size)\n";
                 CC << "{\n";
                 CC << maybe_handleChange_line;
                 CC << "    " << field.datatype << " *" << field.var << "2 = (size==0) ? nullptr : new " << field.datatype << "[size];\n";
