@@ -669,9 +669,10 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                 }
             }
             else {
-                if (field.iscNamedObject)
+                if (field.iscNamedObject) {
                     copyElem << "    if (" << otherVarElem << " != nullptr)\n";
-                copyElem << "        " << thisVarElem << "->setName(" << otherVarElem << "->getName());\n";
+                    copyElem << "        " << thisVarElem << "->setName(" << otherVarElem << "->getName());\n";
+                }
             }
         }
         else if (!field.fisconst) {
