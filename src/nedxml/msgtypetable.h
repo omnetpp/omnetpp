@@ -51,11 +51,13 @@ class NEDXML_API MsgTypeTable
         std::string fval;       // value (or empty). for arrays, this is the value for one array element (we have no syntax for initializing with a list of values)
         bool fisabstract;       // "abstract" keyword specified for field
         bool fisconst;          // "const" keyword specified for field
+        bool byvalue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters
         bool fispointer;        // field is a pointer or pointer array ("*" syntax)
         bool fisownedpointer;   // from @owned; if true, allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor).
                                 // if field type is also cOwnedObject, take()/drop() calls should be generated
         bool fisarray;          // field is an array ("[]" or "[size]" syntax)
-        bool byvalue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters
+        bool fisdynamicarray;    // if field is a dynamic array
+        bool fisfixedarray;      // if field is a fixed-size array
         std::string farraysize; // if field is an array: array size (string inside the square brackets)
         Properties fprops;      // field properties (name, first value of default key)
 

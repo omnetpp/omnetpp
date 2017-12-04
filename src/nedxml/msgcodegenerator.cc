@@ -409,10 +409,10 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
     H << "  protected:\n";
     for (const FieldInfo& field : classInfo.fieldlist) {
         if (!field.fisabstract) {
-            if (field.fisarray && !field.farraysize.empty()) {
+            if (field.fisfixedarray) {
                 H << "    " << field.datatype << " " << field.var << "[" << field.farraysize << "]" << (field.fval == "0" ? " = {0}" : "") << ";\n"; // note: C++ has no syntax for filling a full array with a (nonzero) value in an expression
             }
-            else if (field.fisarray && field.farraysize.empty()) {
+            else if (field.fisdynamicarray) {
                 H << "    " << field.datatype << " *" << field.var << " = nullptr;\n";
                 H << "    " << field.fsizetype << " " << field.varsize << " = 0;\n";
             }
@@ -484,7 +484,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
             getterIndexVar = "k";
             getterIndexArg = field.fsizetype + " " + getterIndexVar;
             setterIndexArg = getterIndexArg + ", ";
-            if (field.farraysize.empty())
+            if (field.fisdynamicarray)
                 H << "    virtual void " << field.sizeSetter << "(" << field.fsizetype << " size)" << pure << ";\n";
             H << "    virtual " << field.fsizetype << " " << field.getsize << "() const" << pure << ";\n";
         }
@@ -535,7 +535,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldlist) {
         if (!field.fisabstract) {
             if (field.fisarray) {
-                if (!field.farraysize.empty()) {
+                if (field.fisfixedarray) {
                     if (!field.fval.empty() && field.fval != "0") {
                         CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
@@ -573,7 +573,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldlist) {
         if (!field.fisabstract) {
             if (field.fisarray) {
-                if (!field.farraysize.empty()) {
+                if (field.fisfixedarray) {
                     if (field.fispointer) {
                         CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        this->" << field.var << "[i] = nullptr;\n";
@@ -619,7 +619,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                     CC << "    }\n";
                 }
 
-                if (field.farraysize.empty()) {
+                if (field.fisdynamicarray) {
                     CC << "    delete [] this->" << field.var << ";\n";
                 }
             }
@@ -659,7 +659,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                         CC << "    }\n";
                     }
                 }
-                if (field.farraysize.empty()) {
+                if (field.fisdynamicarray) {
                     if (!field.fispointer && field.iscOwnedObject) {
                         CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
                         CC << "        drop(&(this->" << field.var << "[i]));\n";
@@ -740,7 +740,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         }
         else {
             if (field.fisarray) {
-                if (field.farraysize.empty())
+                if (field.fisdynamicarray)
                     CC << "    b->pack(" << field.varsize << ");\n";
                 CC << "    doParsimArrayPacking(b,this->" << field.var << "," << field.varsize << ");\n";
             }
@@ -771,7 +771,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         }
         else {
             if (field.fisarray) {
-                if (!field.farraysize.empty()) {
+                if (field.fisfixedarray) {
                     CC << "    doParsimArrayUnpacking(b,this->" << field.var << "," << field.farraysize << ");\n";
                 }
                 else {
@@ -815,7 +815,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "}\n\n";
 
             // resize:
-            if (field.fisarray && field.farraysize.empty()) {
+            if (field.fisdynamicarray) {
                 CC << "void " << classInfo.msgclass << "::" << field.sizeSetter << "(" << field.fsizetype << " size)\n";
                 CC << "{\n";
                 CC << maybe_handleChange_line;
@@ -928,7 +928,7 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
         Assert(!field.fisabstract); // ensured in the analyzer
         Assert(!field.iscOwnedObject); // ensured in the analyzer
         if (field.fisarray) {
-            Assert(!field.farraysize.empty()); // ensured in the analyzer
+            Assert(field.fisfixedarray); // ensured in the analyzer
             if (!field.fval.empty()) {
                 CC << "    for (" << field.fsizetype << " i = 0; i < " << field.farraysize << "; i++)\n";
                 CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
@@ -1235,7 +1235,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldlist[i];
         if (field.fisarray) {
             CC << "        case " << i << ": ";
-            if (!field.farraysize.empty()) {
+            if (field.fisfixedarray) {
                 CC << "return " << field.farraysize << ";\n";
             }
             else if (!classInfo.isClass) {
@@ -1293,7 +1293,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldlist[i];
         CC << "        case " << i << ": ";
         if (!classInfo.isClass && field.fisarray) {
-            Assert(!field.farraysize.empty()); // struct may not contain dynamic arrays; checked by analyzer
+            Assert(field.fisfixedarray); // struct may not contain dynamic arrays; checked by analyzer
             CC << "if (i >= " << field.farraysize << ") return \"\";\n                ";
         }
         std::string value = classInfo.isClass ?
@@ -1327,7 +1327,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                 throw opp_runtime_error("Field '%s' is editable, but fromstring() function is unspecified", field.fname.c_str()); // ensured by MsgAnalyzer
             CC << "        case " << i << ": ";
             if (!classInfo.isClass && field.fisarray) {
-                Assert(!field.farraysize.empty()); // struct may not contain dynamic arrays; checked by analyzer
+                Assert(field.fisfixedarray); // struct may not contain dynamic arrays; checked by analyzer
                 CC << "if (i >= " << field.farraysize << ") return \"\";\n                ";
             }
             std::string fromstringCall = makeFuncall("value", field.fromstring); //TODO use op>> if there's no fromstring?

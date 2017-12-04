@@ -387,6 +387,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     if (field->fval.empty() && !fieldClassInfo.defaultvalue.empty())
         field->fval = fieldClassInfo.defaultvalue;
 
+    field->fisdynamicarray = field->fisarray && field->farraysize.empty();
+    field->fisfixedarray = field->fisarray && !field->farraysize.empty();
+
     field->fnopack = getPropertyAsBool(field->fprops, PROP_NOPACK, false);
     field->feditable = getPropertyAsBool(field->fprops, PROP_EDITABLE, false);
     field->editNotDisabled = getPropertyAsBool(field->fprops, PROP_EDITABLE, true);
