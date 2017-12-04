@@ -857,7 +857,7 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
 
             // remover:
             if (field.fispointer && field.fisownedpointer) {
-                CC << field.mutablerettype << " " << classInfo.msgclass << "::" << field.remover << "(" << idxarg2 << field.argtype << " " << field.argname << ")\n";
+                CC << field.mutablerettype << " " << classInfo.msgclass << "::" << field.remover << "(" << idxarg << ")\n";
                 CC << "{\n";
                 if (field.fisarray)
                     CC << "    if (k >= " << field.varsize << ") throw omnetpp::cRuntimeError(\"Array of size " << field.farraysize << " indexed by %lu\", (unsigned long)k);\n";
