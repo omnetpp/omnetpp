@@ -53,7 +53,7 @@ class NEDXML_API MsgTypeTable
         bool fisconst;          // "const" keyword specified for field
         bool byvalue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters
         bool fispointer;        // field is a pointer or pointer array ("*" syntax)
-        bool fisownedpointer;   // from @owned; if true, allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor).
+        bool fisownedpointer;   // from @owned; if true, field is a pointer or pointer array, and allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor).
                                 // if field type is also cOwnedObject, take()/drop() calls should be generated
         bool fisarray;          // field is an array ("[]" or "[size]" syntax)
         bool fisdynamicarray;    // if field is a dynamic array
@@ -78,6 +78,7 @@ class NEDXML_API MsgTypeTable
         std::string mGetter;    // mutable getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
         bool hasMutableGetter;  // whether a mutableGetter method needs to be generated
         std::string remover;    // remover function name (for owned pointers)
+        std::string dupper;     // @dupper; code to duplicate (one array element of) the field (for owned pointers)
         std::string setter;     // Setter function name
         std::string sizeSetter; // setArraySize() function name
         std::string getsize;    // array size getter function name
@@ -154,6 +155,7 @@ class NEDXML_API MsgTypeTable
         std::string returntypebase;    // getter C++ return type
         std::string tostring;   // function to convert data to string, defined in property @toString
         std::string fromstring; // function to convert string to data member, defined in property @fromString
+        std::string dupper;     // @dupper; code to clone a dynamically allocated object of this type (for owned pointer fields)
         std::string getterconversion;       // uses ".c_str()"
         std::string beforeChange;  // method to be called before mutator methods
 //??        bool feditable;         // @editable(true)

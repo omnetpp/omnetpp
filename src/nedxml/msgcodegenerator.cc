@@ -495,7 +495,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
             H << "    virtual " << field.mutablerettype << " " << field.mGetter << "(" << getterIndexArg << ")" << overrideGetter;
             H << " { " << maybe_handleChange << "return const_cast<" << field.mutablerettype << ">(const_cast<" << classInfo.msgclass << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
         }
-        if (field.fispointer && field.fisownedpointer)
+        if (field.fisownedpointer)
             H << "    virtual " << field.mutablerettype << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         if (field.fispointer || !field.fisconst)
             H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argtype << " " << field.argname << ")" << overrideSetter << pure << ";\n";
@@ -507,6 +507,21 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
+}
+
+inline std::string var(const MsgTypeTable::FieldInfo& field)
+{
+    return str("this->") + field.var;
+}
+
+inline std::string varElem(const MsgTypeTable::FieldInfo& field)
+{
+    return str("this->") + field.var + (field.fisarray ? "[i]" : "");
+}
+
+inline std::string forEachIndex(const MsgTypeTable::FieldInfo& field)
+{
+    return str("    for (") + field.fsizetype + " i = 0; i < " + field.varsize + "; i++)";
 }
 
 void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
@@ -522,12 +537,9 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     std::string baseArgs = isMessage ? "(name, kind)" : classInfo.iscNamedObject ? "(name)" : "()";
     CC << classInfo.msgclass << "::" << classInfo.msgclass << ctorArgs;
     if (classInfo.msgbaseclass != "")
-        CC << " : ::" << classInfo.msgbaseclass << baseArgs << "\n";
+        CC << " : ::" << classInfo.msgbaseclass << baseArgs;
     CC << "\n";
     CC << "{\n";
-    // CC << "    (void)static_cast<cObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COBJECT);
-    // CC << "    (void)static_cast<cNamedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::CNAMEDOBJECT);
-    // CC << "    (void)static_cast<cOwnedObject *>(this); //sanity check\n" if (info.fieldclasstype == ClassType::COWNEDOBJECT);
     for (const auto& baseclassField : classInfo.baseclassFieldlist)
         CC << "    this->" << baseclassField.setter << "(" << baseclassField.fval << ");\n";
     if (!classInfo.baseclassFieldlist.empty() && !classInfo.fieldlist.empty())
@@ -535,68 +547,40 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldlist) {
         if (field.fisabstract)
             continue;
-        if (field.fisarray) {
-            if (field.fisfixedarray) {
-                if (!field.fval.empty() && field.fval != "0") {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
-                    CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
-                }
-                if (field.iscOwnedObject || field.fisownedpointer) {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
-                    if (field.fispointer) {
-                        if (field.fisownedpointer)
-                            CC << "        if (this->" << field.var << " != nullptr) { take(this->" << field.var << "[i]); } // XXX\n";
-                    }
-                    else
-                        CC << "        take(&(this->" << field.var << "[i]));\n";
-                }
-            }
+
+        if (field.fisfixedarray && !field.fval.empty() && field.fval != "0")
+            CC << "    std::fill(" << var(field) << ", " << var(field) << " + " << field.varsize << ", " << field.fval << ");\n";
+
+        std::ostringstream takeElem;
+        if (field.iscOwnedObject) {
+            if (!field.fispointer)
+                takeElem << "    take(&" << varElem(field) << ");\n";
+            else if (field.fisownedpointer)
+                takeElem << "    if (" << varElem(field) << " != nullptr) take(" << varElem(field) << ");\n";
         }
-        else {
-            if (field.iscOwnedObject) {
-                if (field.fispointer)
-                    CC << "    if (this->" << field.var << " != nullptr) { take(this->" << field.var << "); }\n";
-                else
-                    CC << "    take(&(this->" << field.var << "));\n";
-            }
-        }
+
+        if (field.fisfixedarray && !takeElem.str().empty())
+            CC << forEachIndex(field) << "\n" << "    " << takeElem.str();
+        if (!field.fisarray)
+            CC << takeElem.str();
     }
     CC << "}\n\n";
 
     // copy constructor:
     CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "(const " << classInfo.msgclass << "& other)";
-    if (!classInfo.msgbaseclass.empty()) {
+    if (!classInfo.msgbaseclass.empty())
         CC << " : ::" << classInfo.msgbaseclass << "(other)";
-        //TODO @implements ???
-    }
     CC << "\n{\n";
     for (const auto& field : classInfo.fieldlist) {
         if (field.fisabstract)
             continue;
-        if (field.fisarray) {
-            if (field.fisfixedarray) {
-                if (field.fispointer) {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
-                    CC << "        this->" << field.var << "[i] = nullptr;\n";
-                }
-                else if (field.iscOwnedObject) {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
-                    CC << "        take(&(this->" << field.var << "[i]));\n";
-                }
-            }
-            else
-            {
-                CC << "    " << field.varsize << " = 0;\n";
-                CC << "    this->" << field.var << " = nullptr;\n";
-            }
-        }
-        else {
-            if (field.fispointer) {
-                CC << "    this->" << field.var << " = nullptr;\n";
-            }
-            else if (field.iscOwnedObject) {
-                CC << "    take(&(this->" << field.var << "));\n";
-            }
+        if (field.fisfixedarray && field.fisownedpointer)
+            CC << "    std::fill(" << var(field) << ", " << var(field) << " + " << field.varsize << ", nullptr);\n";
+        if (!field.fisarray && !field.fispointer && field.iscOwnedObject)
+            CC << "    take(&" << varElem(field) << ");\n";
+        if (field.fisfixedarray && !field.fispointer && field.iscOwnedObject) {
+            CC << forEachIndex(field) << "\n";
+            CC << "        take(&" << varElem(field) << ");\n";
         }
     }
     CC << "    copy(other);\n";
@@ -608,27 +592,21 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldlist) {
         if (field.fisabstract)
             continue;
+        std::ostringstream releaseElem;
+        if (field.fisownedpointer && field.iscOwnedObject)
+            releaseElem << "    dropAndDelete(" << varElem(field) << ");\n";
+        else if (field.fisownedpointer && !field.iscOwnedObject)
+            releaseElem << "    delete " << varElem(field) << ";\n";
+        else if (!field.fispointer && field.iscOwnedObject)
+            releaseElem << "    drop(&" << varElem(field) << ");\n";
         if (field.fisarray) {
-            std::ostringstream s;
-            if (field.fisownedpointer)
-                s << "        dropAndDelete(this->" << field.var << "[i]);\n";
-            else if (!field.fispointer && field.iscOwnedObject)
-                s << "        drop(&(this->" << field.var << "[i]));\n";
-            if (!s.str().empty()) {
-                CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
-                CC << s.str();
-                CC << "    }\n";
-            }
-
-            if (field.fisdynamicarray) {
-                CC << "    delete [] this->" << field.var << ";\n";
-            }
+            if (!releaseElem.str().empty())
+                CC << forEachIndex(field) << "\n" << opp_indentlines(releaseElem.str(), "    ");
+            if (field.fisdynamicarray)
+                CC << "    delete [] " << var(field) << ";\n";
         }
         else {
-            if (field.fisownedpointer)
-                CC << "    dropAndDelete(this->" << field.var << ");\n";
-            else if (!field.fispointer && field.iscOwnedObject)
-                CC << "    drop(&(this->" << field.var << "));\n";
+            CC << releaseElem.str();
         }
     }
     CC << "}\n\n";
@@ -636,7 +614,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     // operator = :
     CC << "" << classInfo.msgclass << "& " << classInfo.msgclass << "::operator=(const " << classInfo.msgclass << "& other)\n";
     CC << "{\n";
-    CC << "    if (this==&other) return *this;\n";
+    CC << "    if (this == &other) return *this;\n";
     if (classInfo.msgbaseclass != "")
         CC << "    ::" << classInfo.msgbaseclass << "::operator=(other);\n";
     CC << "    copy(other);\n";
@@ -647,70 +625,68 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     CC << "void " << classInfo.msgclass << "::copy(const " << classInfo.msgclass << "& other)\n";
     CC << "{\n";
     for (const auto& field : classInfo.fieldlist) {
-        // CC << "// " << field.fname << ":\n";
         if (field.fisabstract)
             continue;
-        if (field.fisarray) {
-            if (!field.fispointer && field.fisconst)
-                continue;
-            if (field.fispointer) {
-                if (field.fisownedpointer) {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
-                    CC << "        dropAndDelete(this->" << field.var << "[i]);\n";
-                    CC << "    }\n";
-                }
-            }
-            if (field.fisdynamicarray) {
-                if (!field.fispointer && field.iscOwnedObject) {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
-                    CC << "        drop(&(this->" << field.var << "[i]));\n";
-                }
-                CC << "    delete [] this->" << field.var << ";\n";
-                CC << "    this->" << field.var << " = (other." << field.varsize << "==0) ? nullptr : new " << field.datatype << "[other." << field.varsize << "];\n";
-                CC << "    " << field.varsize << " = other." << field.varsize << ";\n";
-                if (!field.fispointer && field.iscOwnedObject) {
-                    CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++)\n";
-                    CC << "        take(&(this->" << field.var << "[i]));\n";
-                }
-            }
+        if (!field.fispointer && field.fisconst)
+            continue;
 
-            CC << "    for (" << field.fsizetype << " i = 0; i < " << field.varsize << "; i++) {\n";
-            if (field.fispointer) {
-                if (field.fisownedpointer) {
-                    CC << "        this->" << field.var << "[i] = other." << field.var << "[i]->dup();\n";
-                    CC << "        take(this->" << field.var << "[i]);\n";
+        // delete old content (code similar to destructor code)
+        std::ostringstream releaseElem;
+        if (field.fisownedpointer && field.iscOwnedObject)
+            releaseElem << "    dropAndDelete(" << varElem(field) << ");\n";
+        else if (field.fisownedpointer && !field.iscOwnedObject)
+            releaseElem << "    delete " << varElem(field) << ";\n";
+
+        if (!field.fisarray)
+            CC << releaseElem.str();
+        if (field.fisarray && !releaseElem.str().empty())
+            CC << forEachIndex(field) << "\n" << opp_indentlines(releaseElem.str(), "    ");
+        if (field.fisdynamicarray)
+            CC << "    delete [] " << var(field) << ";\n";
+
+        // allocate new dynamic array
+        if (field.fisdynamicarray) {
+            CC << "    " << var(field) << " = (other." << field.varsize << "==0) ? nullptr : new " << field.datatype << "[other." << field.varsize << "];\n";
+            CC << "    " << field.varsize << " = other." << field.varsize << ";\n";
+        }
+
+        // copy new content
+        std::string thisVarElem = varElem(field);
+        std::string otherVarElem = str("other.") + field.var + (field.fisarray ? "[i]" : "");
+        std::ostringstream copyElem;
+        if (field.fispointer) {
+            copyElem << "    " << thisVarElem << " = " << otherVarElem << ";\n";
+            if (field.fisownedpointer) {
+                if (field.iscOwnedObject) {
+                    copyElem << "    if (" << thisVarElem << " != nullptr) {\n";
+                    copyElem << "        " << thisVarElem << " = " << thisVarElem  << "->dup();\n";
+                    copyElem << "        take(" << thisVarElem << ");\n";
+                    copyElem << "    }\n";
                 }
                 else {
-                    CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
-                    if (field.iscNamedObject)
-                        CC << "        this->" << field.var << "[i]->setName(other." << field.var << "[i]->getName());\n";
+                    copyElem << "    if (" << thisVarElem << " != nullptr)\n";
+                    copyElem << "        " << thisVarElem << " = " << makeFuncall(thisVarElem, field.dupper) << ";\n";
                 }
             }
             else {
-                CC << "        this->" << field.var << "[i] = other." << field.var << "[i];\n";
                 if (field.iscNamedObject)
-                    CC << "        this->" << field.var << "[i].setName(other." << field.var << "[i].getName());\n";
+                    copyElem << "    if (" << otherVarElem << " != nullptr)\n";
+                copyElem << "        " << thisVarElem << "->setName(" << otherVarElem << "->getName());\n";
             }
+        }
+        else if (!field.fisconst) {
+            copyElem << "    " << thisVarElem << " = " << otherVarElem << ";\n";
+            if (field.iscNamedObject)
+                copyElem << "    " << thisVarElem << ".setName(" << otherVarElem << ".getName());\n";
+        }
+
+        if (field.fisarray) {
+            CC << forEachIndex(field) << " {\n";
+            CC << opp_indentlines(copyElem.str(), "    ");
             CC << "    }\n";
         }
         else {
-            if (field.fispointer) {
-                if (field.fisownedpointer) {
-                    CC << "    dropAndDelete(this->" << field.var << ");\n";
-                    CC << "    this->" << field.var << " = other." << field.var << "->dup();\n";
-                    CC << "    take(this->" << field.var << ");\n";
-                }
-                else {
-                    CC << "    this->" << field.var << " = other." << field.var << ";\n";
-                    if (field.iscNamedObject)
-                        CC << "    this->" << field.var << "->setName(other." << field.var << "->getName());\n";
-                }
-            }
-            else if (!field.fisconst) {
-                CC << "    this->" << field.var << " = other." << field.var << ";\n";
-                if (field.iscNamedObject)
-                    CC << "    this->" << field.var << ".setName(other." << field.var << ".getName());\n";
-            }
+            CC << copyElem.str();
         }
     }
     CC << "}\n\n";
@@ -734,16 +710,17 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldlist) {
         if (field.fnopack)
             continue; // @nopack specified
-        if (field.fisabstract)
+        if (field.fisabstract) {
             CC << "    // field " << field.fname << " is abstract -- please do packing in customized class\n";
+        }
         else {
             if (field.fisarray) {
                 if (field.fisdynamicarray)
                     CC << "    b->pack(" << field.varsize << ");\n";
-                CC << "    doParsimArrayPacking(b,this->" << field.var << "," << field.varsize << ");\n";
+                CC << "    doParsimArrayPacking(b," << var(field) << "," << field.varsize << ");\n";
             }
             else {
-                CC << "    doParsimPacking(b,this->" << field.var << ");\n";
+                CC << "    doParsimPacking(b," << var(field) << ");\n";
             }
         }
     }
@@ -763,26 +740,27 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     for (const auto& field : classInfo.fieldlist) {
         if (field.fnopack)
             continue; // @nopack specified
-        if (field.fisabstract)
+        if (field.fisabstract) {
             CC << "    // field " << field.fname << " is abstract -- please do unpacking in customized class\n";
+        }
         else {
             if (field.fisarray) {
                 if (field.fisfixedarray) {
-                    CC << "    doParsimArrayUnpacking(b,this->" << field.var << "," << field.farraysize << ");\n";
+                    CC << "    doParsimArrayUnpacking(b," << var(field) << "," << field.farraysize << ");\n";
                 }
                 else {
-                    CC << "    delete [] this->" << field.var << ";\n";
+                    CC << "    delete [] " << var(field) << ";\n";
                     CC << "    b->unpack(" << field.varsize << ");\n";
-                    CC << "    if (" << field.varsize << "==0) {\n";
-                    CC << "        this->" << field.var << " = nullptr;\n";
+                    CC << "    if (" << field.varsize << " == 0) {\n";
+                    CC << "        " << var(field) << " = nullptr;\n";
                     CC << "    } else {\n";
-                    CC << "        this->" << field.var << " = new " << field.datatype << "[" << field.varsize << "];\n";
-                    CC << "        doParsimArrayUnpacking(b,this->" << field.var << "," << field.varsize << ");\n";
+                    CC << "        " << var(field) << " = new " << field.datatype << "[" << field.varsize << "];\n";
+                    CC << "        doParsimArrayUnpacking(b," << var(field) << "," << field.varsize << ");\n";
                     CC << "    }\n";
                 }
             }
             else {
-                CC << "    doParsimUnpacking(b,this->" << field.var << ");\n";
+                CC << "    doParsimUnpacking(b," << var(field) << ");\n";
             }
         }
     }
@@ -814,24 +792,24 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
 
         // resize:
         if (field.fisdynamicarray) {
-            CC << "void " << classInfo.msgclass << "::" << field.sizeSetter << "(" << field.fsizetype << " size)\n";
+            CC << "void " << classInfo.msgclass << "::" << field.sizeSetter << "(" << field.fsizetype << " newSize)\n";
             CC << "{\n";
             CC << maybe_handleChange_line;
-            CC << "    " << field.datatype << " *" << field.var << "2 = (size==0) ? nullptr : new " << field.datatype << "[size];\n";
-            CC << "    " << field.fsizetype << " sz = " << field.varsize << " < size ? " << field.varsize << " : size;\n";
-            CC << "    for (" << field.fsizetype << " i = 0; i < sz; i++)\n";
-            CC << "        " << field.var << "2[i] = this->" << field.var << "[i];\n";
+            CC << "    " << field.datatype << " *" << field.var << "2 = (newSize==0) ? nullptr : new " << field.datatype << "[newSize];\n";
+            CC << "    " << field.fsizetype << " minSize = " << field.varsize << " < newSize ? " << field.varsize << " : newSize;\n";
+            CC << "    for (" << field.fsizetype << " i = 0; i < minSize; i++)\n";
+            CC << "        " << field.var << "2[i] = " << var(field) << "[i];\n";
             if (!field.fval.empty()) {
-                CC << "    for (" << field.fsizetype << " i=sz; i<size; i++)\n";
+                CC << "    for (" << field.fsizetype << " i = minSize; i < newSize; i++)\n";
                 CC << "        " << field.var << "2[i] = " << field.fval << ";\n";
             }
-            if (field.iscOwnedObject) {
-                CC << "    for (" << field.fsizetype << " i = sz; i < size; i++)\n";
-                CC << "        take(&(" << field.var << "2[i]));\n";
-            }
-            CC << "    " << field.varsize << " = size;\n";
-            CC << "    delete [] this->" << field.var << ";\n";
-            CC << "    this->" << field.var << " = " << field.var << "2;\n";
+            if (!field.fispointer && field.iscOwnedObject)
+                CC << forEachIndex(field) << "\n" << "        drop(&" << varElem(field) << ");\n";
+            CC << "    delete [] " << var(field) << ";\n";
+            CC << "    " << var(field) << " = " << field.var << "2;\n";
+            CC << "    " << field.varsize << " = newSize;\n";
+            if (!field.fispointer && field.iscOwnedObject)
+                CC << forEachIndex(field) << "\n" << "        take(&" << varElem(field) << ");\n";
             CC << "}\n\n";
         }
 
@@ -855,7 +833,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         }
 
         // remover:
-        if (field.fispointer && field.fisownedpointer) {
+        if (field.fisownedpointer) {
             CC << field.mutablerettype << " " << classInfo.msgclass << "::" << field.remover << "(" << idxarg << ")\n";
             CC << "{\n";
             if (field.fisarray)
@@ -866,7 +844,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                 CC << "const_cast<" << field.mutablerettype << ">(" << indexedVar << ");\n";
             else
                 CC << indexedVar << ";\n";
-            CC << "    drop(retval);\n";
+            CC << "    if (retval != nullptr);\n";
+            CC << "        drop(retval);\n";
             CC << "    " << indexedVar << " = nullptr;\n";
             CC << "    return retval;\n";
             CC << "}\n\n";
@@ -915,9 +894,9 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
     CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "()\n";
     CC << "{\n";
     // override baseclass fields initial value
-    for (const auto& field : classInfo.baseclassFieldlist)
-        CC << "    this->" << field.var << " = " << field.fval << ";\n";
-
+    for (const auto& field : classInfo.baseclassFieldlist) {
+        CC << "    " << var(field) << " = " << field.fval << ";\n";
+    }
     if (!classInfo.baseclassFieldlist.empty() && !classInfo.fieldlist.empty())
         CC << "\n";
 
@@ -928,11 +907,11 @@ void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
             Assert(field.fisfixedarray); // ensured in the analyzer
             if (!field.fval.empty()) {
                 CC << "    for (" << field.fsizetype << " i = 0; i < " << field.farraysize << "; i++)\n";
-                CC << "        this->" << field.var << "[i] = " << field.fval << ";\n";
+                CC << "        " << var(field) << "[i] = " << field.fval << ";\n";
             }
         }
         else if (!field.fval.empty()) {
-            CC << "    this->" << field.var << " = " << field.fval << ";\n";
+            CC << "    " << var(field) << " = " << field.fval << ";\n";
         }
     }
     CC << "}\n\n";

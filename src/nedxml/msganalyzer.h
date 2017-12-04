@@ -101,6 +101,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_TOSTRING = "toString";
     static constexpr const char* PROP_FROMSTRING = "fromString";
     static constexpr const char* PROP_GETTERCONVERSION = "getterConversion";
+    static constexpr const char* PROP_DUPPER = "dupper";
     static constexpr const char* PROP_EXISTINGCLASS = "existingClass";
     static constexpr const char* PROP_DESCRIPTOR = "descriptor";
     static constexpr const char* PROP_OMITGETVERB = "omitGetVerb";

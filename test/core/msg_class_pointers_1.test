@@ -1,0 +1,110 @@
+%description:
+Check scalars/dynamic arrays/fixed arrays regarding owning/non-owning pointers,
+cOwnedObject/non-cOwnedObject objects; exercise ctor, copy ctor, op= and dtor.
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{ using namespace omnetpp; }} //TODO auto-generate
+
+class Foo {}
+class NamedFoo extends cNamedObject {}
+
+class TestClass extends cObject
+{
+    cMessage msg;
+    cMessage msgs[];
+    cMessage msgs10[10];
+    
+    cMessage *msgptr;
+    cMessage *msgptrNull;
+    cMessage *msgptrs[];
+    cMessage *msgptrs10[10];
+    
+    cMessage *ownedMsgptr @owned;
+    cMessage *ownedMsgptrNull @owned;
+    cMessage *ownedMsgptrs[] @owned;
+    cMessage *ownedMsgptrs10[10] @owned;
+
+
+    Foo foo;
+    Foo foos[];
+    Foo foos10[10];
+
+    Foo *fooptr;
+    Foo *fooptrNull;
+    Foo *fooptrs[];
+    Foo *fooptrs10[10];
+    
+    Foo *ownedFooptr @owned;
+    Foo *ownedFooptrNull @owned;
+    Foo *ownedFooptrs[] @owned;
+    Foo *ownedFooptrs10[10] @owned;
+
+
+    NamedFoo namedFoo;
+    NamedFoo namedFoos[];
+    NamedFoo namedFoos10[10];
+
+    NamedFoo *namedFooptr;
+    NamedFoo *namedFooptrNull;
+    NamedFoo *namedFooptrs[];
+    NamedFoo *namedFooptrs10[10];
+    
+    NamedFoo *ownedNamedFooptr @owned;
+    NamedFoo *ownedNamedFooptrNull @owned;
+    NamedFoo *ownedNamedFooptrs[] @owned;
+    NamedFoo *ownedNamedFooptrs10[10] @owned;
+
+};
+
+%includes:
+#include "test_m.h"
+
+%activity:
+cMessage aMsg;
+Foo aFoo;
+NamedFoo aNamedFoo;
+
+// create and fill a test object
+TestClass x;
+
+x.setMsgptr(&aMsg);
+x.setMsgptrsArraySize(5);
+x.setMsgptrs(2,&aMsg);
+x.setMsgptrs10(2,&aMsg);
+
+x.setOwnedMsgptr(new cMessage());
+x.setOwnedMsgptrsArraySize(5);
+x.setOwnedMsgptrs(2,new cMessage());
+x.setOwnedMsgptrs10(2,new cMessage());
+
+x.setFooptr(&aFoo);
+x.setFooptrsArraySize(5);
+x.setFooptrs(2,&aFoo);
+x.setFooptrs10(2,&aFoo);
+
+x.setOwnedFooptr(new Foo());
+x.setOwnedFooptrsArraySize(5);
+x.setOwnedFooptrs(2,new Foo());
+x.setOwnedFooptrs10(2,new Foo());
+
+x.setNamedFooptr(&aNamedFoo);
+x.setNamedFooptrsArraySize(5);
+x.setNamedFooptrs(2,&aNamedFoo);
+x.setNamedFooptrs10(2,&aNamedFoo);
+
+x.setOwnedNamedFooptr(new NamedFoo());
+x.setOwnedNamedFooptrsArraySize(5);
+x.setOwnedNamedFooptrs(2,new NamedFoo());
+x.setOwnedNamedFooptrs10(2,new NamedFoo());
+
+// now the actual test: copy constructor, op=, destructor (implicit)
+
+TestClass x2(x);
+TestClass x3; x3=x;
+
+%contains: test_m.h
+};
+

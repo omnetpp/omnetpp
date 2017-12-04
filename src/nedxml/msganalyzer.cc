@@ -293,6 +293,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.tostring = getProperty(classInfo.props, PROP_TOSTRING, "");
     classInfo.fromstring = getProperty(classInfo.props, PROP_FROMSTRING, "");
     classInfo.getterconversion = getProperty(classInfo.props, PROP_GETTERCONVERSION, "$");
+    classInfo.dupper = getProperty(classInfo.props, PROP_DUPPER, "");
 
     // generation gap
     bool existingClass = getPropertyAsBool(classInfo.props, PROP_EXISTINGCLASS, false);
@@ -420,7 +421,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         errors->addError(field->astNode, "'%s *' pointers are not allowed", field->ftype.c_str());
 
     field->byvalue = getPropertyAsBool(field->fprops, PROP_BYVALUE, fieldClassInfo.byvalue);
-    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, PROP_OWNED, field->iscOwnedObject);
+    field->fisownedpointer = field->fispointer && getPropertyAsBool(field->fprops, PROP_OWNED, false);
+    if (hasProperty(field->fprops, PROP_OWNED) && !field->fispointer)
+        errors->addWarning(field->astNode, "ignoring @owned property for non-pointer field '%s'", field->fname.c_str());
 
     // fromstring/tostring
     field->fromstring = fieldClassInfo.fromstring;
@@ -466,6 +469,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->getsize = getProperty(field->fprops, PROP_SIZEGETTER);
 
         field->getterconversion = getProperty(field->fprops, PROP_GETTERCONVERSION, fieldClassInfo.getterconversion);
+        field->dupper = getProperty(field->fprops, PROP_DUPPER, fieldClassInfo.dupper);
+        if (field->dupper.empty())
+            field->dupper = str("new ") + field->datatype + "(*$)";
     }
 
     // variable name
