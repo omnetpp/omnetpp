@@ -55,10 +55,13 @@ class NEDXML_API MsgCodeGenerator
     std::string headerGuard;
 
   protected:
-    void initDescriptors();
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
-
     std::string makeFuncall(const std::string& var, const std::string& funcTemplate, bool withIndex=false, const std::string& value="");
+
+    void generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef);
+    void generateClassImpl(const ClassInfo& classInfo);
+    void generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef);
+    void generateStructImpl(const ClassInfo& classInfo);
 
   public:
     void openFiles(const char *hFile, const char *ccFile);

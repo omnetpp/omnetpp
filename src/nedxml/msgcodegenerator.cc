@@ -345,6 +345,12 @@ std::string MsgCodeGenerator::generatePreComment(ASTNode *nedElement)
 
 void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::string& exportDef)
 {
+    generateClassDecl(classInfo, exportDef);
+    generateClassImpl(classInfo);
+}
+
+void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef)
+{
     H << "/**\n";
     H << " * Class generated from <tt>" << SL(classInfo.astNode->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(classInfo.astNode);
@@ -459,7 +465,6 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     }
     std::string maybe_override = classInfo.iscObject ? " override" : "";
     std::string maybe_handleChange = classInfo.beforeChange.empty() ? "" : (classInfo.beforeChange + ";");
-    std::string maybe_handleChange_line = classInfo.beforeChange.empty() ? "" : (str("    ") + classInfo.beforeChange + ";\n");
     H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const" << maybe_override << ";\n";
     H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b)" << maybe_override << ";\n";
     H << "\n";
@@ -497,13 +502,19 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
     }
     H << "};\n\n";
 
-    if (!classInfo.gap) {
-        if (classInfo.iscObject) {
-            CC << "Register_Class(" << classInfo.msgclass << ")\n\n";
-            H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
-            H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
-        }
+    if (!classInfo.gap && classInfo.iscObject) {
+        H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) {obj.parsimPack(b);}\n";
+        H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) {obj.parsimUnpack(b);}\n\n";
     }
+
+}
+
+void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
+{
+    std::string maybe_handleChange_line = classInfo.beforeChange.empty() ? "" : (str("    ") + classInfo.beforeChange + ";\n");
+
+    if (!classInfo.gap && classInfo.iscObject)
+        CC << "Register_Class(" << classInfo.msgclass << ")\n\n";
 
     // constructor:
     bool isMessage = classInfo.keyword == "message" || classInfo.keyword == "packet";
@@ -868,6 +879,12 @@ void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::stri
 
 void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef)
 {
+    generateStructDecl(classInfo, exportDef);
+    generateStructImpl(classInfo);
+}
+
+void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef)
+{
     H << "/**\n";
     H << " * Struct generated from " << SL(classInfo.astNode->getSourceLocation()) << " by " PROGRAM ".\n";
     H << " */\n";
@@ -893,7 +910,10 @@ void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::str
 
     H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << classInfo.realmsgclass << "& obj) { " << "__doPacking(b, obj); }\n";
     H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << classInfo.realmsgclass << "& obj) { " << "__doUnpacking(b, obj); }\n\n";
+}
 
+void MsgCodeGenerator::generateStructImpl(const ClassInfo& classInfo)
+{
     // Constructor:
     CC << "" << classInfo.msgclass << "::" << classInfo.msgclass << "()\n";
     CC << "{\n";
