@@ -43,46 +43,46 @@ class NEDXML_API MsgTypeTable
 
     class FieldInfo {
       public:
-        ASTNode *astNode;     // pointer to field element in AST
+        ASTNode *astNode;       // pointer to field element in AST
 
-        std::string fname;      // field name in MSG
-        std::string ftype;      // field type in MSG, without 'const' and '*' modifiers
-        std::string ftypeqname; // fully qualified C++ name of type //TODO should not be needed
-        std::string fval;       // value (or empty). for arrays, this is the value for one array element (we have no syntax for initializing with a list of values)
-        bool fisabstract;       // "abstract" keyword specified for field
-        bool fisconst;          // "const" keyword specified for field
-        bool byvalue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters
-        bool fispointer;        // field is a pointer or pointer array ("*" syntax)
-        bool fisownedpointer;   // from @owned; if true, field is a pointer or pointer array, and allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor).
+        std::string name;       // field name in MSG
+        std::string type;       // field type in MSG, without 'const' and '*' modifiers
+        std::string typeQName;  // fully qualified C++ name of type //TODO should not be needed
+        std::string value;      // value (or empty). for arrays, this is the value for one array element (we have no syntax for initializing with a list of values)
+        bool isAbstract;        // "abstract" keyword specified for field
+        bool isConst;           // "const" keyword specified for field
+        bool byValue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters
+        bool isPointer;         // field is a pointer or pointer array ("*" syntax)
+        bool isOwnedPointer;    // from @owned; if true, field is a pointer or pointer array, and allocated memory is owned by the object (needs to be duplicated in dup(), and deleted in destructor).
                                 // if field type is also cOwnedObject, take()/drop() calls should be generated
-        bool fisarray;          // field is an array ("[]" or "[size]" syntax)
-        bool fisdynamicarray;    // if field is a dynamic array
-        bool fisfixedarray;      // if field is a fixed-size array
-        std::string farraysize; // if field is an array: array size (string inside the square brackets)
-        Properties fprops;      // field properties (name, first value of default key)
+        bool isArray;           // field is an array ("[]" or "[size]" syntax)
+        bool isDynamicArray;    // if field is a dynamic array
+        bool isFixedArray;      // if field is a fixed-size array
+        std::string arraySize;  // if field is an array: array size (string inside the square brackets)
+        Properties props;       // field properties (name, first value of default key)
 
         // data needed for code generation
         bool isClass;           // field type is a class (true) or struct (false)
         bool iscObject;         // field type is derived from cObject
         bool iscNamedObject;    // field type is derived from cNamedObject
         bool iscOwnedObject;    // field type is derived from cOwnedObject
-        std::string datatype;   // member C++ datatype
-        std::string argtype;    // setter C++ argument type
-        std::string rettype;    // getter C++ return type
-        std::string mutablerettype; // mutableGetter C++ return type
+        std::string dataType;   // member C++ datatype
+        std::string argType;    // setter C++ argument type
+        std::string returnType; // getter C++ return type
+        std::string mutableReturnType; // mutableGetter C++ return type
         std::string var;        // name of data member variable
-        std::string argname;    // setter argument name
-        std::string varsize;    // data member to store array size | value of farraysize
-        std::string fsizetype;  // type for storing array size
+        std::string argName;    // setter argument name
+        std::string sizeVar;    // data member to store size of dynamic array
+        std::string sizeType;   // type of array sizes and array indices
         std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
-        std::string mGetter;    // mutable getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
+        std::string mutableGetter; // mutable getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
         bool hasMutableGetter;  // whether a mutableGetter method needs to be generated
         std::string remover;    // remover function name (for owned pointers)
         std::string dupper;     // @dupper; code to duplicate (one array element of) the field (for owned pointers)
         std::string setter;     // Setter function name
         std::string sizeSetter; // setArraySize() function name
-        std::string getsize;    // array size getter function name
-        std::string tostring;   // function to convert data to string, defined in property @toString
+        std::string sizeGetter; // array size getter function name
+        std::string toString;   // function to convert data to string, defined in property @toString
                                 // if tostring begins with a dot, then it is taken as member function call, parentheses needed in property; otherwise toString is understood as name of a normal function, do not use parentheses
                                 // std::string <function>(<datatype>);           // @toString(function)
                                 // std::string <function>(const <datatype>&);    // @toString(function)
@@ -90,20 +90,17 @@ class NEDXML_API MsgTypeTable
                                 // const char * <function>(const <datatype>&);   // @toString(function)
                                 // std::string <datatype>::<function>(...);      // @toString(.function(...))
                                 // const char * <datatype>::<function>(...);     // @toString(.function(...))
-        std::string fromstring; // function to convert string to data member, defined in property @fromString
+        std::string fromString; // function to convert string to data member, defined in property @fromString
                                 // <datatype> <function>(const char *);          // @fromString(function)
-        std::string getterconversion;  // currently only with strings: ".c_str()"
-        std::string enumname;   // from @enum
-        std::string enumqname;  // fully qualified type name of enum
-        bool fnopack;           // @nopack(true)
-        bool feditable;         // @editable(true): field value is editable in the UI via the descriptor's setFieldValueFromString() method
-        bool editNotDisabled;   // true when field doesn't have property "@editable(false)"
-        bool fopaque;           // @opaque(true), means that field type is treated as atomic (has no fields), i.e. has no descriptor
+        std::string getterConversion;  // currently only with strings: ".c_str()"
+        std::string enumName;   // from @enum
+        std::string enumQName;  // fully qualified type name of enum
+        bool nopack;            // @nopack(true)
+        bool isEditable;        // @editable(true): field value is editable in the UI via the descriptor's setFieldValueFromString() method
+        bool editNotDisabled;   // true when field doesn't have property "@editable(false)" TODO remove?
+        bool isOpaque;          // @opaque(true), means that field type is treated as atomic (has no fields), i.e. has no descriptor
         bool overrideGetter;    // @overrideGetter|@override, used when field getter function overrides a function in base class
         bool overrideSetter;    // @overrideSetter|@override, used when field setter function overrides a function in base class
-
-      public:
-        FieldInfo() : astNode(nullptr), fisabstract(false), fispointer(false), fisarray(false), fnopack(false), feditable(false),fopaque(false) {}
     };
 
     class ClassInfo {
@@ -112,53 +109,54 @@ class NEDXML_API MsgTypeTable
 
         ASTNode *astNode = nullptr;
         std::string keyword;        // struct/class/packet from MSG
-        std::string msgname;        // class name from MSG
-        std::string msgqname;
+        std::string name;           // class name from MSG
+        std::string qname;          // qualified name from MSG (namespace :: name)
         Properties props;           // class properties
 
         bool classInfoComplete = false;  // whether following fields are filled in
         bool classBeingAnalyzed = false;
-        bool fieldsComplete = false;  // whether fieldlist / baseclassFieldlist are filled in
+        bool fieldsComplete = false;   // whether fieldList and baseclassFieldlist are filled in
         bool fieldsBeingAnalyzed = false;
 
-        std::string msgbaseqname;
-        std::string msgbase;        // base class name from MSG
-        bool gap = false;                   // true if @customize
-        bool omitgetverb = false;
-        bool isClass; // or struct
-        bool iscObject;
-        bool iscNamedObject;
-        bool iscOwnedObject;
-        bool subclassable;
-        bool supportsPtr;
-        std::string namespacename;
-        std::string msgclass;
-        std::string realmsgclass;
-        std::string msgbaseclass;
-        std::string msgdescclass;
-        std::string fieldnamesuffix; // e.g. "_var"
-        Fieldlist fieldlist;        // list of fields
-        Fieldlist baseclassFieldlist;   //modified baseclass fields, e.g. baseclass.basefield = value
+        std::string extendsQName;      // fully qualified name of base type
+        std::string extendsName;       // base type's name from MSG
+        bool customize;                // from @customize
+        bool omitGetVerb;              // from @omitGetVerb
+        bool isClass;                  // true=class, false=struct
+        bool iscObject;                // whether type is subclassed from cObject
+        bool iscNamedObject;           // whether type is subclassed from cNamedObject
+        bool iscOwnedObject;           // whether type is subclassed from cOwnedObject
+        bool subclassable;             // whether this type can be subclasses (e.g. "int" or final classes cannot)
+        bool supportsPtr;              // whether type supports creating a pointer (or pointer array) from it
+        std::string namespaceName;
+        std::string className;         // name of actual C++ class or struct generated (<name>_Base when @customize is present)
+        std::string realClass;         // name of intended C++ class, usually the same as <name>
+        std::string baseClass;         // C++ base class
+        std::string descriptorClass;   // name of C++ descriptor class to be generated
+        std::string fieldNameSuffix;   // member variable suffix, e.g. "_var" or "_m"
 
-        bool generate_class = true;
-        bool generate_descriptor = true;
-        bool generate_setters_in_descriptor = true;
+        Fieldlist fieldList;           // list of fields
+        Fieldlist baseclassFieldlist;  // assignments to fields declared in super classes
 
+        bool generateClass = true;
+        bool generateDescriptor = true;
+        bool generateSettersInDescriptor = true;
 
-        StringVector implements;    //value vector from @implements
+        StringVector implements;       // values from @implements
 
-        std::string defaultvalue;       // value (or empty)
-        bool isopaque = false;         // @opaque(true)        // TODO: @opaque should rather be the attribute of the field's type, not the field itself
-        bool byvalue = false;           // @byValue, default value is false        // TODO: @byValue should rather be the attribute of the field's type, not the field itself
-        std::string datatypebase;   // member C++ datatype
-        std::string argtypebase;    // setter C++ argument type
-        std::string returntypebase;    // getter C++ return type
-        std::string tostring;   // function to convert data to string, defined in property @toString
-        std::string fromstring; // function to convert string to data member, defined in property @fromString
-        std::string dupper;     // @dupper; code to clone a dynamically allocated object of this type (for owned pointer fields)
-        std::string getterconversion;       // uses ".c_str()"
-        std::string beforeChange;  // method to be called before mutator methods
-//??        bool feditable;         // @editable(true)
+        // The following members describe how the class should behave when instantiated as field
+        std::string defaultValue;      // default value (or empty)
+        bool isOpaque;                 // from @opaque
+        bool byValue;                  // from @byValue, default value is false
+        std::string dataTypeBase;      // member C++ datatype
+        std::string argTypeBase;       // setter C++ argument type
+        std::string returnTypeBase;    // getter C++ return type
+        std::string toString;          // function to convert data to string, defined in property @toString
+        std::string fromString;        // function to convert string to data member, defined in property @fromString
+        std::string dupper;            // @dupper; code to clone a dynamically allocated object of this type (for owned pointer fields)
+        std::string getterConversion;  // uses ".c_str()"
+        std::string beforeChange;      // method to be called before mutator methods
+        //TODO bool isEditable;                 // @editable(true)
     };
 
     class EnumItem
@@ -168,8 +166,6 @@ class NEDXML_API MsgTypeTable
         std::string name;
         std::string value;
         std::string comment;
-      public:
-        EnumItem() : astNode(nullptr) {}
     };
 
     class EnumInfo
@@ -179,10 +175,8 @@ class NEDXML_API MsgTypeTable
         std::string enumName;
         std::string enumQName;
         typedef std::vector<EnumItem> FieldList;
-        bool isDeclaration = false; // i.e. not a definition
-        FieldList fieldlist;
-      public:
-        EnumInfo() : astNode(nullptr) {}
+        bool isDeclaration = false;   // i.e. not a definition
+        FieldList fieldList;
     };
 
   private:
@@ -205,7 +199,7 @@ class NEDXML_API MsgTypeTable
     ClassInfo& getClassInfo(const std::string& classqname);
     const EnumInfo& getEnumInfo(const std::string& qname);
     void storeMsgFile(ASTNode *tree) {importedMsgFiles.push_back(tree);}
-    void addClass(const ClassInfo& classInfo) {definedClasses[classInfo.msgqname] = classInfo;} // TODO assert not already there
+    void addClass(const ClassInfo& classInfo) {definedClasses[classInfo.qname] = classInfo;} // TODO assert not already there
     void addEnum(const EnumInfo& enumInfo) {definedEnums[enumInfo.enumQName] = enumInfo;}  //TODO assert not already there
 };
 

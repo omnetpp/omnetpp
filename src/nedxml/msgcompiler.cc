@@ -33,9 +33,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-//TODO has problems with circular references (stack overflow)
-//TODO incorrect decl order (i.e. derived class before base class, or field before its typedef) causes C++ not to compile (fwd decl would be needed)
-
 static const char *BUILTIN_DEFINITIONS =
         R"ENDMARK(
         class __bool { @actually(bool); @primitive; @editable; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
@@ -193,8 +190,8 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
                     errors->addError(enumInfo.astNode, "attempt to redefine '%s'", enumInfo.enumName.c_str());
                 typeTable.addEnum(enumInfo);
                 ClassInfo classInfo = analyzer.extractClassInfoFromEnum(check_and_cast<EnumElement *>(child), currentNamespace);
-                if (typeTable.isClassDefined(classInfo.msgqname))
-                    errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.msgname.c_str());
+                if (typeTable.isClassDefined(classInfo.qname))
+                    errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.name.c_str());
                 typeTable.addClass(classInfo);
                 break;
             }
@@ -204,8 +201,8 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
             case MSG_MESSAGE:
             case MSG_PACKET: {
                 ClassInfo classInfo = analyzer.extractClassInfo(child, currentNamespace);
-                if (typeTable.isClassDefined(classInfo.msgqname) && !containsKey(classInfo.props, str("overwritePreviousDefinition")))
-                    errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.msgname.c_str());
+                if (typeTable.isClassDefined(classInfo.qname) && !containsKey(classInfo.props, str("overwritePreviousDefinition")))
+                    errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.name.c_str());
                 typeTable.addClass(classInfo);
                 break;
             }
@@ -287,7 +284,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 std::string qname = prefixWithNamespace(child->getAttribute(ATT_NAME), currentNamespace);
                 ClassInfo& classInfo = typeTable.getClassInfo(qname);
                 analyzer.ensureAnalyzed(classInfo);
-                if (classInfo.generate_class)
+                if (classInfo.generateClass)
                     codegen.generateTypeAnnouncement(classInfo);
                 break;
             }
@@ -346,15 +343,15 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 ClassInfo& classInfo = typeTable.getClassInfo(qname);
                 analyzer.ensureAnalyzed(classInfo);
                 analyzer.ensureFieldsAnalyzed(classInfo);
-                if (classInfo.generate_class) {
-                    if (isQualified(classInfo.msgclass))
-                        errors->addError(classInfo.astNode, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.msgclass.c_str());
+                if (classInfo.generateClass) {
+                    if (isQualified(classInfo.className))
+                        errors->addError(classInfo.astNode, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.className.c_str());
                     if (child->getTagCode() == MSG_STRUCT)
                         codegen.generateStruct(classInfo, opts.exportDef);
                     else
                         codegen.generateClass(classInfo, opts.exportDef);
                 }
-                if (classInfo.generate_descriptor)
+                if (classInfo.generateDescriptor)
                     codegen.generateDescriptorClass(classInfo);
                 break;
             }
@@ -377,4 +374,3 @@ void MsgCompiler::validateNamespaceName(const std::string& namespaceName, ASTNod
 
 }  // namespace nedxml
 }  // namespace omnetpp
-;
