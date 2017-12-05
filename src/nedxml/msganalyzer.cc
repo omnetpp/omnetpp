@@ -179,13 +179,15 @@ void MsgAnalyzer::extractFields(ClassInfo& classInfo)
 
         field.props = extractProperties(fieldElem);
 
-        if (field.type.empty())
+        FieldInfo *duplicate = findField(classInfo, field.name);
+        if (duplicate != nullptr)
+            errors->addError(field.astNode, "Field '%s' already exists, see %s", field.name.c_str(), duplicate->astNode->getSourceLocation());
+        else if (field.type.empty())
             classInfo.baseclassFieldlist.push_back(field);
         else
             classInfo.fieldList.push_back(field);
     }
 }
-
 
 void MsgAnalyzer::ensureAnalyzed(ClassInfo& classInfo)
 {
@@ -541,6 +543,14 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
     if (field->isEditable && field->fromString.empty() && classInfo.generateDescriptor && classInfo.generateSettersInDescriptor)
         errors->addError(field->astNode, "Field '%s' is editable, but @fromString is unspecified", field->name.c_str());
+}
+
+MsgAnalyzer::FieldInfo *MsgAnalyzer::findField(ClassInfo& classInfo, const std::string& name)
+{
+    for (FieldInfo& field : classInfo.fieldList)
+        if (field.name == name)
+            return &field;
+    return nullptr;
 }
 
 MsgAnalyzer::FieldInfo *MsgAnalyzer::findSuperclassField(ClassInfo& classInfo, const std::string& fieldName)

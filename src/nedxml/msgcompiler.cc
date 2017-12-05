@@ -24,9 +24,8 @@
 #include "common/fileutil.h"
 #include "msgcompiler.h"
 #include "msgparser.h"
+#include "msgdtdvalidator.h"
 #include "exception.h"
-
-#include "omnetpp/simkerneldefs.h"
 
 using namespace omnetpp::common;
 
@@ -126,6 +125,13 @@ void MsgCompiler::processBuiltinImport(const char *txt, const char *fname)
     MsgParser parser(errors);
     parser.setMsgNewSyntaxFlag(true);
     ASTNode *tree = parser.parseMsgText(txt, fname);
+    if (errors->containsError()) {
+        delete tree;
+        return;
+    }
+
+    MsgDtdValidator dtdvalidator(errors);
+    dtdvalidator.validate(tree);
     if (errors->containsError()) {
         delete tree;
         return;

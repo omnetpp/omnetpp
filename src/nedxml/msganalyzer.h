@@ -67,6 +67,7 @@ class NEDXML_API MsgAnalyzer
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
     Properties extractProperties(ASTNode *node);
     bool hasSuperclass(ClassInfo& classInfo, const std::string& superclassQName);
+    FieldInfo *findField(ClassInfo& classInfo, const std::string& name);
     FieldInfo *findSuperclassField(ClassInfo& classInfo, const std::string& fieldName);
     bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
