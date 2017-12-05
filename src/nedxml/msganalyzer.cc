@@ -433,6 +433,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->props[PROP_ENUM] = field->enumQName; // need to overwrite it in props, because Qtenv will look up the enum by qname
     }
 
+    if (fieldClassInfo.isEnum)
+        field->props[PROP_ENUM] = field->typeQName;
+
     bool supportsPtr = getPropertyAsBool(field->props, PROP_SUPPORTSPTR, fieldClassInfo.supportsPtr);
     if (field->isPointer && !supportsPtr)
         errors->addError(field->astNode, "'%s *' pointers are not allowed", field->type.c_str());
@@ -647,6 +650,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     classInfo.iscObject = false;
     classInfo.iscOwnedObject = false;
     classInfo.iscNamedObject = false;
+    classInfo.isEnum = true;
 
 
     // isOpaque, byValue, data types, etc.

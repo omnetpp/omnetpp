@@ -126,6 +126,7 @@ class NEDXML_API MsgTypeTable
         bool iscObject;                // whether type is subclassed from cObject
         bool iscNamedObject;           // whether type is subclassed from cNamedObject
         bool iscOwnedObject;           // whether type is subclassed from cOwnedObject
+        bool isEnum = false;
         bool subclassable;             // whether this type can be subclasses (e.g. "int" or final classes cannot)
         bool supportsPtr;              // whether type supports creating a pointer (or pointer array) from it
         std::string namespaceName;

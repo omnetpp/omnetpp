@@ -22,7 +22,7 @@ message MyMessage
 {
     MyClass cc;
     MyEnum e1 = ECC;
-    MyEnum e2 = PECC;
+    int e2 @enum(MyEnum) = PECC;
 };
 
 
@@ -47,3 +47,12 @@ x.getE2():2
 m.getCc().getE1():1
 m.getCc().getE2():2
 
+%# four enum fields: three declared with enum type, one declared with @enum:
+%contains-regex: test_m.cc
+\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
+.*
+\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
+.*
+\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
+.*
+\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
