@@ -1,0 +1,41 @@
+%description:
+Tests cplusplus blocks that go into class/struct declarations
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class Foo {
+    int x = 6;
+    int y = 3;
+}
+
+cplusplus(Foo) {{
+  public:
+    int sum() const {return getX() + getY();}
+}}
+
+struct Bar {
+    int x = 1;
+    int y = 2;
+}
+
+cplusplus(Bar) {{
+    int sum() const {return x + y;}
+}}
+
+%includes:
+#include "test_m.h"
+
+%activity:
+const Foo foo;
+const Bar bar;
+EV << "Foo sum: " << foo.sum() << endl;
+EV << "Bar sum: " << bar.sum() << endl;
+EV << ".\n";
+
+%contains: stdout
+Foo sum: 9
+Bar sum: 3
+.
+

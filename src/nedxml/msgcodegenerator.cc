@@ -343,13 +343,13 @@ std::string MsgCodeGenerator::generatePreComment(ASTNode *nedElement)
     return o.str();
 }
 
-void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::string& exportDef)
+void MsgCodeGenerator::generateClass(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
 {
-    generateClassDecl(classInfo, exportDef);
+    generateClassDecl(classInfo, exportDef, extraCode);
     generateClassImpl(classInfo);
 }
 
-void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef)
+void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
 {
     H << "/**\n";
     H << " * Class generated from <tt>" << SL(classInfo.astNode->getSourceLocation()) << "</tt> by " PROGRAM ".\n";
@@ -502,6 +502,7 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
         if (field.isPointer || !field.isConst)
             H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter << pure << ";\n";
     }
+    H << extraCode;
     H << "};\n\n";
 
     if (!classInfo.customize && classInfo.iscObject) {
@@ -873,13 +874,13 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
     }
 }
 
-void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef)
+void MsgCodeGenerator::generateStruct(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
 {
-    generateStructDecl(classInfo, exportDef);
+    generateStructDecl(classInfo, exportDef, extraCode);
     generateStructImpl(classInfo);
 }
 
-void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef)
+void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std::string& exportDef, const std::string& extraCode)
 {
     H << "/**\n";
     H << " * Struct generated from " << SL(classInfo.astNode->getSourceLocation()) << " by " PROGRAM ".\n";
@@ -898,6 +899,7 @@ void MsgCodeGenerator::generateStructDecl(const ClassInfo& classInfo, const std:
             H << "[" << field.arraySize << "]";
         H << ";\n";
     }
+    H << extraCode;
     H << "};\n\n";
 
     H << "// helpers for local use\n";

@@ -240,8 +240,6 @@ void MsgCompiler::processImport(ImportElement *importElem, const std::string& cu
         return;
     }
 
-    //TODO perform all sorts of validations
-
     typeTable.storeMsgFile(tree); // keep AST until we're done because ClassInfo/FieldInfo refer to it...
 
     // extract declarations
@@ -275,8 +273,9 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
     NamespaceElement *firstNSElem = fileElement->getFirstNamespaceChild();
     std::string firstNSName = firstNSElem ? firstNSElem->getName() : "";
     codegen.generateProlog(fileElement->getFilename(), firstNSName, opts.exportDef);
+    std::map<std::string, std::string> classExtraCode;
 
-    // generate forward declarations so that cyclic references compile
+    // generate forward declarations so that cyclic references compile; also collect classExtraCode blocks
     for (ASTNode *child = fileElement->getFirstChild(); child; child = child->getNextSibling()) {
         switch (child->getTagCode()) {
             case MSG_NAMESPACE: {
@@ -297,6 +296,18 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 analyzer.ensureAnalyzed(classInfo);
                 if (classInfo.generateClass)
                     codegen.generateTypeAnnouncement(classInfo);
+                break;
+            }
+            case MSG_CPLUSPLUS: {
+                CplusplusElement *cppElem = check_and_cast<CplusplusElement *>(child);
+                std::string body = cppElem->getBody();
+                std::string target = cppElem->getTarget();
+                if (target != "" && target != "h" && target != "cc") { // target must be a type name
+                    std::string qname = prefixWithNamespace(target, currentNamespace);
+                    if (!typeTable.isClassDefined(qname))
+                        errors->addError(cppElem, "invalid target for cplusplus block: no such type '%s'", qname.c_str());
+                    classExtraCode[qname] = body;
+                }
                 break;
             }
         }
@@ -326,8 +337,6 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 std::string target = cppElem->getTarget();
                 if (target == "" || target == "h" || target == "cc")
                     codegen.generateCplusplusBlock(target, body);
-                else
-                    errors->addError(child, "unrecognized target '%s' for cplusplus block", target.c_str());
                 break;
             }
 
@@ -357,10 +366,11 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 if (classInfo.generateClass) {
                     if (isQualified(classInfo.className))
                         errors->addError(classInfo.astNode, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.className.c_str());
+                    std::string extraCode = containsKey(classExtraCode, classInfo.qname) ? classExtraCode[classInfo.qname] : "";
                     if (child->getTagCode() == MSG_STRUCT)
-                        codegen.generateStruct(classInfo, opts.exportDef);
+                        codegen.generateStruct(classInfo, opts.exportDef, extraCode);
                     else
-                        codegen.generateClass(classInfo, opts.exportDef);
+                        codegen.generateClass(classInfo, opts.exportDef, extraCode);
                 }
                 if (classInfo.generateDescriptor)
                     codegen.generateDescriptorClass(classInfo);
