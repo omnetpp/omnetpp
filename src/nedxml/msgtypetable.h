@@ -142,6 +142,8 @@ class NEDXML_API MsgTypeTable
         bool generateSettersInDescriptor = true;
 
         StringVector implements;       // values from @implements
+        std::string beforeChange;      // @beforeChange; method to be called before mutator methods
+        std::string str;               // @str; expression to be returned from str() method
 
         // The following members describe how the class should behave when instantiated as field
         std::string defaultValue;      // default value (or empty)
@@ -152,10 +154,9 @@ class NEDXML_API MsgTypeTable
         std::string argTypeBase;       // setter C++ argument type
         std::string returnTypeBase;    // getter C++ return type
         std::string toString;          // function to convert data to string, defined in property @toString
-        std::string fromString;        // function to convert string to data member, defined in property @fromString
+        std::string fromString;        // @fromString; function to convert string to data member, defined in property @fromString
         std::string dupper;            // @dupper; code to clone a dynamically allocated object of this type (for owned pointer fields)
-        std::string getterConversion;  // uses ".c_str()"
-        std::string beforeChange;      // method to be called before mutator methods
+        std::string getterConversion;  // @getterConversion; conversion from storage type to return type in getters
     };
 
     class EnumItem

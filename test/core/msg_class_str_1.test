@@ -1,0 +1,36 @@
+%description:
+Test that @str generates an str() method into the class
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class Point {
+   int x = 2;
+   int y = 4;
+   @str(std::string("Point(") + std::to_string(getX()) + "," + std::to_string(getY()) + ")");
+}
+
+class cPoint extends cObject {
+   int x = -1;
+   int y = 3;
+   @str(std::string("Point(") + std::to_string(getX()) + "," + std::to_string(getY()) + ")");
+}
+
+
+%includes:
+#include "test_m.h"
+
+%activity:
+Point p1;
+cPoint p2;
+
+EV << p1.str() << endl;
+EV << p2.str() << endl;
+EV << "." << endl;
+
+%contains: stdout
+Point(2,4)
+Point(-1,3)
+.
+

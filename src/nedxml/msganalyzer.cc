@@ -310,6 +310,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.fromString = getProperty(classInfo.props, PROP_FROMSTRING, "");
     classInfo.getterConversion = getProperty(classInfo.props, PROP_GETTERCONVERSION, "$");
     classInfo.dupper = getProperty(classInfo.props, PROP_DUPPER, "");
+    classInfo.str = getProperty(classInfo.props, PROP_STR, "");
 
     // generation gap
     bool existingClass = getPropertyAsBool(classInfo.props, PROP_EXISTINGCLASS, false);

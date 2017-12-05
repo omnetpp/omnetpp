@@ -465,6 +465,8 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
     }
     std::string maybe_override = classInfo.iscObject ? " override" : "";
     std::string maybe_handleChange = classInfo.beforeChange.empty() ? "" : (classInfo.beforeChange + ";");
+    if (!classInfo.str.empty())
+        H << "    virtual std::string str() const" << maybe_override << ";\n";
     H << "    virtual void parsimPack(omnetpp::cCommBuffer *b) const" << maybe_override << ";\n";
     H << "    virtual void parsimUnpack(omnetpp::cCommBuffer *b)" << maybe_override << ";\n";
     H << "\n";
@@ -696,6 +698,13 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         }
     }
     CC << "}\n\n";
+
+    if (!classInfo.str.empty()) {
+        CC << "std::string " << classInfo.className << "::str() const\n";
+        CC << "{\n";
+        CC << "    return " << classInfo.str << ";\n";
+        CC << "}\n\n";
+    }
 
     //
     // Note: This class may not be derived from cObject, and then this parsimPack()/
