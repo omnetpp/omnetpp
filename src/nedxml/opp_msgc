@@ -1,2 +1,2 @@
 #!/bin/sh
-$(dirname $0)/nedtool $*
+$(dirname $0)/msgtool $*

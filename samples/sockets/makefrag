@@ -1,1 +1,8 @@
-MSGC:=$(MSGC) --msgimports
+#
+# Customize Makefile to link with winsoc on windows
+# but without the user interface libs (oppenvir, oppcmdenv, opptkenv)
+#
+
+ifeq ($(PLATFORM),win32.x86_64)
+OMNETPP_LIBS += -lwsock32
+endif

@@ -76,7 +76,7 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = nullptr; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
-bool opt_msgimports = false;       // --msgimports
+bool opt_legacymode = false;       // --msg4
 std::vector<std::string> opt_importpath; // -I
 bool opt_generatedependencies = false; // -M
 std::string opt_dependenciesfile;  // -MF
@@ -131,7 +131,6 @@ void printUsage()
        "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
        "      name ends in _API, boilerplate code to conditionally define\n"
        "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
-       "  --msgimports: enable import and other features available from OMNeT++ 5.3\n"
        "  -M: turn on dependency generation for message files; see also: -MF, -MP\n"
        "  -MF <file>: save dependencies into the specified file; when absent,\n"
        "      dependencies will be written to the standard output\n"
@@ -139,6 +138,10 @@ void printUsage()
        "      causing each to depend on nothing. These dummy rules work around errors\n"
        "      make gives if you remove header files without updating the Makefile.\n"
        "  -Xnc: do not generate the classes, only object descriptions\n"
+       "  --msg4: legacy mode, for compiling msg files written for OMNeT++ 4.x and\n"
+       "      5.0..5.2. imports and pointers are not available in this mode. Hint:\n"
+       "      to activate, add a makefrag file to your project with the following\n"
+       "      content:\"MSGC:=$(MSGC) --msg4\"\n"
        "  -Xnd: do not generate object descriptions\n"
        "  -Xns: do not generate setters in object descriptions\n"
     );
@@ -254,7 +257,7 @@ bool processFile(const char *fname, ErrorStore *errors)
         }
         else if (ftype == MSG_FILE) {
             MsgParser parser(errors);
-            parser.setMsgNewSyntaxFlag(opt_msgimports);
+            parser.setMsgNewSyntaxFlag(!opt_legacymode);
             parser.setStoreSource(opt_storesrc);
             tree = parser.parseMsgFile(fname);
         }
@@ -377,16 +380,7 @@ bool processFile(const char *fname, ErrorStore *errors)
             else {
                 Assert(!opt_gensrc && !opt_genxml);  // already handled above
                 if (ftype == MSG_FILE) {
-                    if (opt_msgimports) {
-                        // new syntax (5.3 and up)
-                        msg_options.importPath = opt_importpath;
-                        MsgCompiler generator(msg_options, errors);
-                        std::set<std::string> dependencies;
-                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname, dependencies);
-                        if (opt_generatedependencies)
-                            generateDependencies(opt_dependenciesfile.c_str(), fname, outhdrfname, outfname, dependencies);
-                    }
-                    else {
+                    if (opt_legacymode) {
                         // legacy (4.x) mode
                         MsgCompilerOptionsOld options;
                         options.exportDef = msg_options.exportDef;
@@ -395,6 +389,14 @@ bool processFile(const char *fname, ErrorStore *errors)
                         options.generateSettersInDescriptors = msg_options.generateSettersInDescriptors;
                         MsgCompilerOld generator(errors, options);
                         generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
+                    }
+                    else {
+                        msg_options.importPath = opt_importpath;
+                        MsgCompiler generator(msg_options, errors);
+                        std::set<std::string> dependencies;
+                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname, dependencies);
+                        if (opt_generatedependencies)
+                            generateDependencies(opt_dependenciesfile.c_str(), fname, outhdrfname, outfname, dependencies);
                     }
                 }
                 else {
@@ -619,8 +621,8 @@ int main(int argc, char **argv)
                 msg_options.exportDef = argv[i];
             }
         }
-        else if (!strcmp(argv[i], "--msgimports")) {
-            opt_msgimports = true;
+        else if (!strcmp(argv[i], "--msg4")) {
+            opt_legacymode = true;
         }
         else if (!strcmp(argv[i], "-M")) {
             opt_generatedependencies = true;
