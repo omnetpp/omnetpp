@@ -121,6 +121,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_MUTABLEGETTER = "mutableGetter";
     static constexpr const char* PROP_SIZESETTER = "sizeSetter";
     static constexpr const char* PROP_SIZEGETTER = "sizeGetter";
+    static constexpr const char* PROP_ALLOWREPLACE = "allowReplace";
     static constexpr const char* PROP_STR = "str";
     static constexpr const char* PROP_CUSTOMIZE = "customize";
 };

@@ -77,6 +77,7 @@ class NEDXML_API MsgTypeTable
         std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
         std::string mutableGetter; // mutable getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
         bool hasMutableGetter;  // whether a mutableGetter method needs to be generated
+        bool allowReplace;      // @allowReplace; whether setter of an owned pointer field is allowed to delete an already-set object
         std::string remover;    // remover function name (for owned pointers)
         std::string dupper;     // @dupper; code to duplicate (one array element of) the field (for owned pointers)
         std::string setter;     // Setter function name

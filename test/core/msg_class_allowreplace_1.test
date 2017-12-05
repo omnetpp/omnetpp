@@ -1,0 +1,44 @@
+%description:
+Test @allowReplace that controls the behavior of owned pointer setters
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+class Foo {}
+
+class TestClass {
+   Foo *ownedFoo @owned; // default: replace not allowed
+   Foo *ownedFooAllow @owned @allowReplace;
+   Foo *ownedFooAllowTrue @owned @allowReplace(true);
+   Foo *ownedFooAllowFalse @owned @allowReplace(false);
+}
+
+%includes:
+#include "test_m.h"
+
+#define TRY(x)  try {EV << #x; x; EV << " --> OK\n"; } catch (std::exception& e) {EV << " --> ERROR: " << e.what() << endl; }
+
+%activity:
+TestClass x;
+
+x.setOwnedFoo(new Foo);
+x.setOwnedFooAllow(new Foo);
+x.setOwnedFooAllowTrue(new Foo);
+x.setOwnedFooAllowFalse(new Foo);
+
+TRY(x.setOwnedFoo(new Foo))
+TRY(x.setOwnedFooAllow(new Foo))
+TRY(x.setOwnedFooAllowTrue(new Foo))
+TRY(x.setOwnedFooAllowFalse(new Foo))
+
+EV << "." << endl;
+
+%contains: stdout
+x.setOwnedFoo(new Foo) --> ERROR: setOwnedFoo(): a value is already set, remove it first with removeOwnedFoo()
+x.setOwnedFooAllow(new Foo) --> OK
+x.setOwnedFooAllowTrue(new Foo) --> OK
+x.setOwnedFooAllowFalse(new Foo) --> ERROR: setOwnedFooAllowFalse(): a value is already set, remove it first with removeOwnedFooAllowFalse()
+.
+
+

@@ -471,7 +471,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->getter = omitGet ? fname : (str("get") + capfieldname);
             field->sizeGetter = str("get") + capfieldname + "ArraySize";
         }
-        field->mutableGetter = str("getMutable") + capfieldname;             //TODO "field->getter" (for compatibility) or "getMutable"  or "access"
+        field->mutableGetter = str("getMutable") + capfieldname; //TODO access?
+        field->allowReplace = getPropertyAsBool(field->props, PROP_ALLOWREPLACE, false);
 
         // allow customization of names
         if (getProperty(field->props, PROP_SETTER) != "")
@@ -490,6 +491,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         if (field->dupper.empty())
             field->dupper = str("new ") + field->dataType + "(*$)";
     }
+
+    //TODO warn for non-applicable properties like @allowReplace for non-ownedpointer fields
 
     // variable name
     if (!classInfo.isClass) {

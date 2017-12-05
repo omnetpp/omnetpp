@@ -838,7 +838,9 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             }
             CC << maybe_handleChange_line;
             if (field.isOwnedPointer) {
-                if (field.iscOwnedObject)
+                if (!field.allowReplace)
+                    CC << "    if (" << indexedVar << " != nullptr) throw omnetpp::cRuntimeError(\"" << field.setter << "(): a value is already set, remove it first with " << field.remover << "()\");\n";
+                else if (field.iscOwnedObject)
                     CC << "    dropAndDelete(" << indexedVar << ");\n";
                 else
                     CC << "    delete " << indexedVar << ";\n";
