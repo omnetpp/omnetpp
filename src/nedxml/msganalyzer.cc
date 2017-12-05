@@ -274,12 +274,12 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
 
     // isOpaque, byValue, data types, etc.
-    bool isPrimitive = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false); // @primitive is a shortcut for @opaque @byValue @subclassable(false) @supportsPtr(false)
+    bool isPrimitive = getPropertyAsBool(classInfo.props, PROP_PRIMITIVE, false); // @primitive is a shortcut for @opaque @byValue @editable @subclassable(false) @supportsPtr(false)
     classInfo.isOpaque = getPropertyAsBool(classInfo.props, PROP_OPAQUE, isPrimitive);
     classInfo.byValue = getPropertyAsBool(classInfo.props, PROP_BYVALUE, isPrimitive);
     classInfo.subclassable = getPropertyAsBool(classInfo.props, PROP_SUBCLASSABLE, !isPrimitive);
     classInfo.supportsPtr = getPropertyAsBool(classInfo.props, PROP_SUPPORTSPTR, !isPrimitive);
-
+    classInfo.isEditable = getPropertyAsBool(classInfo.props, PROP_EDITABLE, isPrimitive);
 
     classInfo.defaultValue = getProperty(classInfo.props, PROP_DEFAULTVALUE, "");
 
@@ -389,8 +389,8 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->isFixedArray = field->isArray && !field->arraySize.empty();
 
     field->nopack = getPropertyAsBool(field->props, PROP_NOPACK, false);
-    field->isEditable = getPropertyAsBool(field->props, PROP_EDITABLE, false);
-    field->editNotDisabled = getPropertyAsBool(field->props, PROP_EDITABLE, true);
+    bool isEditableDefault = fieldClassInfo.isEditable && !field->isConst && !field->isPointer && classInfo.generateSettersInDescriptor;
+    field->isEditable = getPropertyAsBool(field->props, PROP_EDITABLE, isEditableDefault);
     field->isOpaque = getPropertyAsBool(field->props, PROP_OPAQUE, fieldClassInfo.isOpaque);
     field->overrideGetter = getPropertyAsBool(field->props, PROP_OVERRIDEGETTER, false) || getPropertyAsBool(field->props, "override", false);
     field->overrideSetter = getPropertyAsBool(field->props, PROP_OVERRIDESETTER, false) || getPropertyAsBool(field->props, "override", false);
@@ -523,7 +523,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->hasMutableGetter = !field->isConst && (field->isPointer ? true : !field->byValue);
 
     if (field->isEditable && field->fromString.empty() && classInfo.generateDescriptor && classInfo.generateSettersInDescriptor)
-        errors->addError(field->astNode, "Field '%s' is editable, but fromstring() function is unspecified", field->name.c_str());
+        errors->addError(field->astNode, "Field '%s' is editable, but @fromString is unspecified", field->name.c_str());
 }
 
 MsgAnalyzer::FieldInfo *MsgAnalyzer::findSuperclassField(ClassInfo& classInfo, const std::string& fieldName)

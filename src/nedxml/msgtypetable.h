@@ -97,7 +97,6 @@ class NEDXML_API MsgTypeTable
         std::string enumQName;  // fully qualified type name of enum
         bool nopack;            // @nopack(true)
         bool isEditable;        // @editable(true): field value is editable in the UI via the descriptor's setFieldValueFromString() method
-        bool editNotDisabled;   // true when field doesn't have property "@editable(false)" TODO remove?
         bool isOpaque;          // @opaque(true), means that field type is treated as atomic (has no fields), i.e. has no descriptor
         bool overrideGetter;    // @overrideGetter|@override, used when field getter function overrides a function in base class
         bool overrideSetter;    // @overrideSetter|@override, used when field setter function overrides a function in base class
@@ -148,6 +147,7 @@ class NEDXML_API MsgTypeTable
         std::string defaultValue;      // default value (or empty)
         bool isOpaque;                 // from @opaque
         bool byValue;                  // from @byValue, default value is false
+        bool isEditable;               // from @editable
         std::string dataTypeBase;      // member C++ datatype
         std::string argTypeBase;       // setter C++ argument type
         std::string returnTypeBase;    // getter C++ return type
@@ -156,7 +156,6 @@ class NEDXML_API MsgTypeTable
         std::string dupper;            // @dupper; code to clone a dynamically allocated object of this type (for owned pointer fields)
         std::string getterConversion;  // uses ".c_str()"
         std::string beforeChange;      // method to be called before mutator methods
-        //TODO bool isEditable;                 // @editable(true)
     };
 
     class EnumItem

@@ -35,34 +35,34 @@ namespace nedxml {
 
 static const char *BUILTIN_DEFINITIONS =
         R"ENDMARK(
-        class __bool { @actually(bool); @primitive; @editable; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
-        class __float { @actually(float); @primitive; @editable; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
-        class __double { @actually(double); @primitive; @editable; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
-        class __string { @actually(string); @primitive; @editable; @cppType(omnetpp::opp_string); @argType(const char *); @returnType(const char *); @getterConversion(.c_str()); @fromString(($)); @toString(oppstring2string($)); }
-        class __char { @actually(char); @primitive; @editable; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class __short { @actually(short); @primitive; @editable; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class __int { @actually(int); @primitive; @editable; @toString(long2string($)); @defaultValue(0); }
-        class __long { @actually(long); @primitive; @editable; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class __uchar { @actually(unsigned char); @primitive; @editable; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class __ushort { @actually(unsigned short); @primitive; @editable; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class __uint { @actually(unsigned int); @primitive; @editable; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class __ulong { @actually(unsigned long); @primitive; @editable; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class int8_t { @primitive; @editable; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int16_t { @primitive; @editable; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int32_t { @primitive; @editable; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int64_t { @primitive; @editable; @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
-        class uint8_t { @primitive; @editable; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint16_t { @primitive; @editable; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint32_t { @primitive; @editable; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint64_t { @primitive; @editable; @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
-        class int8 { @primitive; @editable; @cppType(int8_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int16 { @primitive; @editable; @cppType(int16_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int32 { @primitive; @editable; @cppType(int32_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
-        class int64 { @primitive; @editable; @cppType(int64_t); @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
-        class uint8 { @primitive; @editable; @cppType(uint8_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint16 { @primitive; @editable; @cppType(uint16_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint32 { @primitive; @editable; @cppType(uint32_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
-        class uint64 { @primitive; @editable; @cppType(uint64_t); @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
+        class __bool { @actually(bool); @primitive; @fromString(string2bool($)); @toString(bool2string($)); @defaultValue(false); }
+        class __float { @actually(float); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
+        class __double { @actually(double); @primitive; @fromString(string2double($)); @toString(double2string($)); @defaultValue(0); }
+        class __string { @actually(string); @primitive; @cppType(omnetpp::opp_string); @argType(const char *); @returnType(const char *); @getterConversion(.c_str()); @fromString(($)); @toString(oppstring2string($)); }
+        class __char { @actually(char); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __short { @actually(short); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __int { @actually(int); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __long { @actually(long); @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class __uchar { @actually(unsigned char); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class __ushort { @actually(unsigned short); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class __uint { @actually(unsigned int); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class __ulong { @actually(unsigned long); @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class int8_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int16_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int32_t { @primitive; @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int64_t { @primitive; @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
+        class uint8_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint16_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint32_t { @primitive; @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint64_t { @primitive; @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
+        class int8 { @primitive; @cppType(int8_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int16 { @primitive; @cppType(int16_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int32 { @primitive; @cppType(int32_t); @fromString(string2long($)); @toString(long2string($)); @defaultValue(0); }
+        class int64 { @primitive; @cppType(int64_t); @fromString(string2int64($)); @toString(int642string($)); @defaultValue(0); }
+        class uint8 { @primitive; @cppType(uint8_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint16 { @primitive; @cppType(uint16_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint32 { @primitive; @cppType(uint32_t); @fromString(string2ulong($)); @toString(ulong2string($)); @defaultValue(0); }
+        class uint64 { @primitive; @cppType(uint64_t); @fromString(string2uint64($)); @toString(uint642string($)); @defaultValue(0); }
         )ENDMARK";
 
 extern const char *SIM_STD_DEFINITIONS;  // contents of sim/sim_std.msg, stringified into sim_std_msg.cc

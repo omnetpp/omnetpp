@@ -1311,7 +1311,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldList[i];
         if (field.isEditable) {
             if (field.fromString.empty())
-                throw opp_runtime_error("Field '%s' is editable, but fromstring() function is unspecified", field.name.c_str()); // ensured by MsgAnalyzer
+                throw opp_runtime_error("Field '%s' is editable, but @fromString is unspecified", field.name.c_str()); // ensured by MsgAnalyzer
             CC << "        case " << i << ": ";
             if (!classInfo.isClass && field.isArray) {
                 Assert(field.isFixedArray); // struct may not contain dynamic arrays; checked by analyzer
