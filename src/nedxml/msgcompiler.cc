@@ -99,13 +99,18 @@ void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const
         throw opp_runtime_error("MsgCompiler is a one-shot object, make a new instance to compile another file");
     used = true;
 
-    importBuiltinDefinitions();
+    try {
+        importBuiltinDefinitions();
 
-    collectTypes(fileElement);
+        collectTypes(fileElement);
 
-    codegen.openFiles(hFile, ccFile);
-    generateCode(fileElement);
-    codegen.closeFiles();
+        codegen.openFiles(hFile, ccFile);
+        generateCode(fileElement);
+        codegen.closeFiles();
+    }
+    catch (std::exception& e) {
+        errors->addError(fileElement, "Fatal: %s", e.what());
+    }
 
     if (errors->containsError())
         codegen.deleteFiles();
