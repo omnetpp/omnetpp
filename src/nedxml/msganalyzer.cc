@@ -461,6 +461,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         capfieldname[0] = toupper(capfieldname[0]);
         field->setter = str("set") + capfieldname;
         field->remover = str("remove") + capfieldname;
+        field->appender = str("append") + capfieldname;
         field->sizeSetter = str("set") + capfieldname + "ArraySize";
         if (classInfo.omitGetVerb) {
             field->getter = field->name;

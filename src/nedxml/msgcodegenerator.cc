@@ -501,6 +501,8 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
             H << "    virtual " << field.mutableReturnType << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         if (field.isPointer || !field.isConst)
             H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter << pure << ";\n";
+        if (field.isDynamicArray)
+            H << "    virtual void " << field.appender << "(" << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
     }
     H << extraCode;
     H << "};\n\n";
@@ -871,6 +873,21 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             }
             CC << "    " << indexedVar << " = nullptr;\n";
             CC << "    return retval;\n";
+            CC << "}\n\n";
+        }
+
+        // appender
+        if (field.isDynamicArray) {
+            CC << "void " << classInfo.className << "::" << field.appender << "(" << field.argType << " " << field.argName << ")\n";
+            CC << "{\n";
+            CC << maybe_handleChange_line;
+            CC << "    " << field.sizeSetter << "(" << field.sizeVar << " + 1);\n";
+            std::string lastElem = str("this->") + field.var + "[" + field.sizeVar + "-1]";
+            CC << "    " << lastElem << " = " << field.argName << ";\n";
+            if (field.isOwnedPointer && field.iscOwnedObject) {
+                CC << "    if (" << lastElem << " != nullptr)\n";
+                CC << "        take(" << lastElem << ");\n";
+            }
             CC << "}\n\n";
         }
     }

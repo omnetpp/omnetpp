@@ -80,7 +80,8 @@ class NEDXML_API MsgTypeTable
         bool allowReplace;      // @allowReplace; whether setter of an owned pointer field is allowed to delete an already-set object
         std::string remover;    // remover function name (for owned pointers)
         std::string dupper;     // @dupper; code to duplicate (one array element of) the field (for owned pointers)
-        std::string setter;     // Setter function name
+        std::string setter;     // @setter; setter function name
+        std::string appender;   // @appender; appender function name (appends element to dynamic array)
         std::string sizeSetter; // setArraySize() function name
         std::string sizeGetter; // array size getter function name
         std::string toString;   // function to convert data to string, defined in property @toString
