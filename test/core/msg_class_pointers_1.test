@@ -8,20 +8,38 @@ namespace @TESTNAME@;
 
 cplusplus {{ using namespace omnetpp; }} //TODO auto-generate
 
-class Foo {}
-class NamedFoo extends cNamedObject {}
+cplusplus {{
+class LeakDetector
+{
+    static long int count;
+  public:
+    LeakDetector() { EV << "create LeakDetector " << count++ << "\n"; }
+    ~LeakDetector() { EV << "destroy LeakDetector " << --count << "\n"; }
+};
+
+}}
+
+cplusplus(cc) {{
+long LeakDetector::count = 0;
+}}
+
+class LeakDetector {@existingClass; @descriptor(false);}
+
+class Foo { LeakDetector x; }
+
+class NamedFoo extends cNamedObject { LeakDetector y; }
 
 class TestClass extends cObject
 {
     cMessage msg;
     cMessage msgs[];
     cMessage msgs10[10];
-    
+
     cMessage *msgptr;
     cMessage *msgptrNull;
     cMessage *msgptrs[];
     cMessage *msgptrs10[10];
-    
+
     cMessage *ownedMsgptr @owned;
     cMessage *ownedMsgptrNull @owned;
     cMessage *ownedMsgptrs[] @owned;
@@ -36,7 +54,7 @@ class TestClass extends cObject
     Foo *fooptrNull;
     Foo *fooptrs[];
     Foo *fooptrs10[10];
-    
+
     Foo *ownedFooptr @owned;
     Foo *ownedFooptrNull @owned;
     Foo *ownedFooptrs[] @owned;
@@ -51,12 +69,11 @@ class TestClass extends cObject
     NamedFoo *namedFooptrNull;
     NamedFoo *namedFooptrs[];
     NamedFoo *namedFooptrs10[10];
-    
+
     NamedFoo *ownedNamedFooptr @owned;
     NamedFoo *ownedNamedFooptrNull @owned;
     NamedFoo *ownedNamedFooptrs[] @owned;
     NamedFoo *ownedNamedFooptrs10[10] @owned;
-
 };
 
 %includes:
@@ -108,3 +125,11 @@ TestClass x3; x3=x;
 %contains: test_m.h
 };
 
+%contains: stdout
+destroy LeakDetector 0
+
+%not-contains: stdout
+destroy LeakDetector -1
+
+%not-contains: stdout
+undisposed object:
