@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Scave Project Autoimport
 Bundle-SymbolicName: org.omnetpp.scave.autoimport;singleton:=true
-Bundle-Version: 5.2.0.qualifier
+Bundle-Version: 5.2.1.qualifier
 Bundle-Activator: org.omnetpp.scave.autoimport.Activator
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
