@@ -11,7 +11,7 @@
       to get a detailed picture of the state and history of the simulation at any
       point of its execution.
     </para>
-    <para> When used together with a C++ source-level debugger, Qtenv can significantly
+    <para> When used together with a &Cpp; source-level debugger, Qtenv can significantly
       speed up model development.
     </para>
     <para>Its most important features are:</para>
@@ -54,7 +54,7 @@
       <listitem>
         ``Event Number and Simulation Time'': These two labels on the right end of
         the toolbar display the event number of the last executed or the next future
-        event, and the current simulation time. The display format can be changed 
+        event, and the current simulation time. The display format can be changed
         from context menu.
       </listitem>
       <listitem>
@@ -193,7 +193,7 @@
       </sect3>
       <sect3>
         <title>Debug Next Event</title>
-        <para> This function is useful when you are running the simulation under a C++ source-level
+        <para> This function is useful when you are running the simulation under a &Cpp; source-level
           debugger. ``Debug Next Event'' will perform one simulation event just like ``Step'', but
           executes a software debugger breakpoint ([[int3]] or [[SIGTRAP]]) just before entering
           the module's event handling code ([[handleMessage()]] or [[activity()]]). This will
@@ -244,7 +244,7 @@
         <note>
           This built-in recording feature is able to produce a smooth video,
           in contrast to external screen-capture utilities. This is possible because it has
-          access to more information, and has more control over the process than external 
+          access to more information, and has more control over the process than external
           tools.
         </note>
       </sect3>
@@ -278,7 +278,7 @@
           ``Object Navigator'' or in other inspectors; by choosing one of the ``Open...''
           menu items from the context menu of an object displayed on the UI;
           via the ``Find/Inspect Objects'' dialog (see later); or even by directly entering
-          the C++ pointer of an object as a hex value. Inspector-related menu items are
+          the &Cpp; pointer of an object as a hex value. Inspector-related menu items are
           in the ``Inspect'' menu.</para>
         <picture file="pictures/Qtenv-inspect-menu.png">The Inspect menu</picture>
       </sect3>
@@ -303,13 +303,13 @@
           to be inspected.
         </para>
         <para> Preferences such as zoom level or open/closed state of a tree node are usually
-          maintained per object type (i.e. tied to the C++ class of the inspected object).
+          maintained per object type (i.e. tied to the &Cpp; class of the inspected object).
         </para>
       </sect3>
       <sect3>
         <title>Extending Qtenv</title>
         <para> It is possible for the user to contribute new inspector types without
-          modifying Qtenv code. For this, the inspector C++ code needs to include
+          modifying Qtenv code. For this, the inspector &Cpp; code needs to include
           Qtenv header files and link with the Qtenv library. One caveat is that the
           Qtenv headers are not public API and thus subject to change in a new version
           of &Omnetpp;.
@@ -320,12 +320,12 @@
 
   <sect1>
     <title>Using Qtenv with a Debugger</title>
-    <para>You  can use Qtenv together with a C++ debugger, which is mainly useful when
+    <para>You  can use Qtenv together with a &Cpp; debugger, which is mainly useful when
       developing new models. When you do that, there are a few things you need to know.
     </para>
     <para>Qtenv is a library that runs as part of the simulation program. This has
       a lot of implications, the most apparent being that when the simulation crashes
-      (due to a bug in the model's C++ code), it will bring down the whole OS process,
+      (due to a bug in the model's &Cpp; code), it will bring down the whole OS process,
       including the Qtenv GUI.
     </para>
     <para>The second consequence is that suspending the simulation program in a debugger
@@ -333,7 +333,7 @@
       runs in the same thread as the simulation program, so even if you only suspend
       the simulation's thread in the debugger, the UI will freeze.
     </para>
-    <para>The Qtenv UI deals with [[cObject]]s (the C++ methods that the GUI relies
+    <para>The Qtenv UI deals with [[cObject]]s (the &Cpp; methods that the GUI relies
       on are defined on [[cObject]]). All other data such as primitive variables,
       non-cObject classes and structs, STL containers etc, are hidden from Qtenv.
       You may wrap objects into [[cObject]]s to make them visible for Qtenv, that's what
@@ -359,7 +359,7 @@
        simulation schedulers, etc. Contents of the top row:
       </para>
       <orderedlist>
-        <listitem>Name, C++ class and ID of the next message (event) object</listitem>
+        <listitem>Name, &Cpp; class and ID of the next message (event) object</listitem>
         <listitem>The module where the next event will occur (i.e. the module where
           the message will be delivered)
         </listitem>
@@ -405,7 +405,7 @@
       <para> The timeline is often crowded, limiting its usefulness. To overcome this, you can hide
         uninteresting events from the timeline: right-click the event, and choose
         ``Exclude Messages Like 'x' From Animation'' from the context menu. This will
-        hide events with similar name and the same C++ class name from the timeline, and also
+        hide events with similar name and the same &Cpp; class name from the timeline, and also
         skip the animation when such messages are sent from one module to another.
         You can view and edit the list of excluded messages on the ``Filtering'' page of the
         ``Preferences'' dialog. (Tip: the timeline context menu provides a shortcut to that dialog).
@@ -865,8 +865,8 @@
   </sect1>
 -->
   <sect1>
-    <title>Qtenv and C++</title>
-    <para>This section describes which C++ API functions various parts of Qtenv employ
+    <title>Qtenv and &Cpp;</title>
+    <para>This section describes which &Cpp; API functions various parts of Qtenv employ
       to display data and otherwse perform their functions. Most functions are member
       functions of the [[cObject]] class.
     </para>

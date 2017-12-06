@@ -28,3 +28,6 @@
 
 <!-- do not change this, or change the replacement in _scripts/makedist too -->
 <!ENTITY Omnetpp "OMNeT&#x2060;+&#x2060;+">
+
+<!ENTITY Cpp "C&#x2060;+&#x2060;+">
+

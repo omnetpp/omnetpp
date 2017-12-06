@@ -11,7 +11,7 @@
       to get a detailed picture of the state and history of the simulation at any
       point of its execution.
     </para>
-    <para> When used together with a C++ source-level debugger, Tkenv can significantly
+    <para> When used together with a &Cpp; source-level debugger, Tkenv can significantly
       speed up model development.
     </para>
     <para>Its most important features are:</para>
@@ -169,7 +169,7 @@
       </sect3>
       <sect3>
         <title>Debug Next Event</title>
-        <para> This function is useful when you are running the simulation under a C++ source-level
+        <para> This function is useful when you are running the simulation under a &Cpp; source-level
           debugger. ``Debug Next Event'' will perform one simulation event just like ``Step'', but
           executes a software debugger breakpoint ([[int3]] or [[SIGTRAP]]) just before entering
           the module's event handling code ([[handleMessage()]] or [[activity()]]). This will
@@ -232,7 +232,7 @@
           ``Object Navigator'' or in other inspectors; by choosing one of the ``Open...''
           menu items from the context menu of an object displayed on the UI;
           via the ``Find/Inspect Objects'' dialog (see later); or even by directly entering
-          the C++ pointer of an object as a hex value. Inspector-related menu items are
+          the &Cpp; pointer of an object as a hex value. Inspector-related menu items are
           in the ``Inspect'' menu.</para>
         <picture file="pictures/Tkenv-inspect-menu.png">The Inspect menu</picture>
       </sect3>
@@ -257,13 +257,13 @@
           to be inspected.
         </para>
         <para> Preferences such as zoom level or open/closed state of a tree node are usually
-          maintained per object type (i.e. tied to the C++ class of the inspected object).
+          maintained per object type (i.e. tied to the &Cpp; class of the inspected object).
         </para>
       </sect3>
       <sect3>
         <title>Extending Tkenv</title>
         <para> It is possible for the user to contribute new inspector types without
-          modifying Tkenv code. For this, the inspector C++ code needs to include
+          modifying Tkenv code. For this, the inspector &Cpp; code needs to include
           Tkenv header files and link with the Tkenv library. One caveat is that the
           Tkenv headers are not public API and thus subject to change in a new version
           of &Omnetpp;.
@@ -274,12 +274,12 @@
 
   <sect1>
     <title>Using Tkenv with a Debugger</title>
-    <para>You  can use Tkenv together with a C++ debugger, which is mainly useful when
+    <para>You  can use Tkenv together with a &Cpp; debugger, which is mainly useful when
       developing new models. When you do that, there are a few things you need to know.
     </para>
     <para>Tkenv is a library that runs as part of the simulation program. This has
       a lot of implications, the most apparent being that when the simulation crashes
-      (due to a bug in the model's C++ code), it will bring down the whole OS process,
+      (due to a bug in the model's &Cpp; code), it will bring down the whole OS process,
       including the Tkenv GUI.
     </para>
     <para>The second consequence is that suspending the simulation program in a debugger
@@ -287,7 +287,7 @@
       and runs in the same thread as the simulation program, so even if you only suspend
       the simulation's thread in the debugger, the UI will freeze.
     </para>
-    <para>The Tkenv UI deals with [[cObject]]s (the C++ methods that the GUI relies
+    <para>The Tkenv UI deals with [[cObject]]s (the &Cpp; methods that the GUI relies
       on are defined on [[cObject]]). All other data such as primitive variables,
       non-cObject classes and structs, STL containers etc, are hidden from Tkenv.
       You may wrap objects into cObjects to make them visible for Tkenv, that's what
@@ -325,7 +325,7 @@
        simulation schedulers, etc. Contents of the second row:
       </para>
       <orderedlist>
-        <listitem>Name, C++ class and ID of the next message (event) object</listitem>
+        <listitem>Name, &Cpp; class and ID of the next message (event) object</listitem>
         <listitem>The module where the next event will occur (i.e. the module where
           the message will be delivered)
         </listitem>
@@ -355,7 +355,7 @@
         The timeline is often crowded, limiting its usefulness. To overcome this, you can hide
         uninteresting events from the timeline: right-click the event, and choose
         ``Exclude Messages Like 'x' from the Animation'' from the context menu. This will
-        hide events with same name and C++ class name from the timeline, and also skip
+        hide events with same name and &Cpp; class name from the timeline, and also skip
         the animation when such messages are sent from one module to another.
         You can view and edit the list of excluded messages on the ``Filtering'' page of the
         ``Preferences'' dialog. (Tip: the timeline context menu provides a shortcut to that dialog).
@@ -733,8 +733,8 @@
   </sect1>
 -->
   <sect1>
-    <title>Tkenv and C++</title>
-    <para>This section describes which C++ API functions various parts of Tkenv employ
+    <title>Tkenv and &Cpp;</title>
+    <para>This section describes which &Cpp; API functions various parts of Tkenv employ
       to display data and otherwse perform their functions. Most functions are member
       functions of the [[cObject]] class.
     </para>

@@ -13,7 +13,7 @@
     </para>
     <para>
       The generator has several project-specific settings that can be set from the project context
-      menu through the Properties menu item. The output folders for both NED documentation and C++ documentation
+      menu through the Properties menu item. The output folders for both NED documentation and &Cpp; documentation
       can be set separately. The doxygen-specific configuration is read from the text file doxy.cfg by default.
       The IDE provides a sensible default configuration for doxygen in case you do not want to go through all the
       available options. The generated HTML uses CSS to make its style customizable. You can provide your own style
@@ -34,7 +34,7 @@
     <para>
       The IDE can generate documentation for multiple projects at the same time. Other options control the content of
       the documentation including what kind of diagrams will be generated and whether NED sources should be included.
-      You can enable doxygen to generate C++ documentation that will be cross-linked from the NED documentation. The tool can
+      You can enable doxygen to generate &Cpp; documentation that will be cross-linked from the NED documentation. The tool can
       generate the output into each project as configured in the project-specific settings, or into a separate directory.
       The latter is useful for exporting standalone documentation for several complex projects at once.
     </para>
@@ -43,7 +43,7 @@
     </picture>
     <para>
       The NED generation process might take a while for big projects, so please be patient. For example, the INET project's
-      complete documentation including the C++ doxygen documentation takes a few minutes to build. You can follow the process
+      complete documentation including the &Cpp; doxygen documentation takes a few minutes to build. You can follow the process
       in the IDE's progress monitor.
     </para>
     <picture file="pictures/NEDDOC-Progress.png">

@@ -21,7 +21,7 @@
     </para>
 
     <para>
-      Debugging support comes from the Eclipse C/C++ Development Toolkit (CDT), and beyond
+      Debugging support comes from the Eclipse C/&Cpp; Development Toolkit (CDT), and beyond
       the basics (single-stepping, stack trace, breakpoints, watches, etc.) it also offers you
       several conveniences and advanced functionality such as inspection tooltips,
       conditional breakpoints and so on. Debugging with CDT also has extensive literature
@@ -41,8 +41,8 @@
     <para>
       Eclipse, and thus the IDE as well, uses ``launch configurations'' to store particulars
       of the program to be launched: what program to run, the list of arguments and
-      environment variables, and other options. Eclipse and its C/C++ Development Toolkit (CDT)
-      already comes with several types of launch configurations (e.g. "C/C++ Application"),
+      environment variables, and other options. Eclipse and its C/&Cpp; Development Toolkit (CDT)
+      already comes with several types of launch configurations (e.g. "C/&Cpp; Application"),
       and the IDE adds ``&Omnetpp; Simulation''. The same launch configuration can be used with
       the ``Run'', ``Debug'' and ``Profile'' buttons alike.
     </para>
@@ -342,7 +342,7 @@
   <sect1>
     <title>Debugging a Simulation</title>
     <para>
-      The &Omnetpp; IDE integrates with the CDT (C/C++ Development Tooling) of Eclipse which
+      The &Omnetpp; IDE integrates with the CDT (C/&Cpp; Development Tooling) of Eclipse which
       also includes debugging support. The CDT debugger UI relies on ``gdb'' for doing the
       actual work.
     </para>
@@ -379,7 +379,7 @@
       <title>Using the Debugger</title>
       <para>
         The CDT debugger provides functionality that can be expected from a good
-        C/C++ debugger: run control (run, suspend, step into, step over, return from function,
+        C/&Cpp; debugger: run control (run, suspend, step into, step over, return from function,
         drop to stack frame); breakpoints (also conditional and counting breakpoints);
         watchpoints (a.k.a. expression breakpoints, breakpoints that stop the execution
         whenever the value of a given expression changes); watching and inspecting variables;
@@ -402,7 +402,7 @@
       </tip>
       <para>
         More information on the debugger is available in the CDT documentation, which is
-        part of the IDE's Help system. See ``C/C++ Development User Guide'',
+        part of the IDE's Help system. See ``C/&Cpp; Development User Guide'',
         chapter ``Running and debugging projects''.
       </para>
     </sect2>
@@ -412,7 +412,7 @@
         Many programs contain data structures whose contents is difficult to comprehend
         by looking at "raw" variables in the program. One example is the [[std::map&lt;T&gt;]]
         class, which is essentially a dictionary but implemented with a binary tree, so
-        it is practically impossible to figure out with a C++ debugger what data
+        it is practically impossible to figure out with a &Cpp; debugger what data
         a concrete map instance contains.
       </para>
       <para>
@@ -425,7 +425,7 @@
       </para>
       <para>
         The &Omnetpp; IDE comes with pretty printers for container classes in the
-        standard C++ library ([[std::map&lt;T&gt;]], [[std::vector&lt;T&gt;]], etc.)
+        standard &Cpp; library ([[std::map&lt;T&gt;]], [[std::vector&lt;T&gt;]], etc.)
         and also for certain &Omnetpp; data types, for example [[simtime_t]]. These
         scripts are located under [[misc/gdb/]] in the &Omnetpp; root directory.
         The IDE also supports project-specific pretty printers: if the debugged
@@ -456,7 +456,7 @@
       <screen><![CDATA[disable pretty-printer global]]></screen>
       <para>
         Or, to only disable &Omnetpp;-specific pretty printers (but leave the standard
-        C++ library printers on):
+        &Cpp; library printers on):
       </para>
       <screen><![CDATA[disable pretty-printer global omnetpp;.*]]></screen>
       <para>

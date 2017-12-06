@@ -7,7 +7,7 @@
     simulation IDE is based on the Eclipse platform and extends it with new editors, views, wizards, and
     other functionality. &Omnetpp;
     adds functionality for creating and configuring models (NED and INI files), performing batch executions
-    and analyzing the simulation results, while Eclipse provides C++ editing, SVN/GIT integration and
+    and analyzing the simulation results, while Eclipse provides &Cpp; editing, SVN/GIT integration and
     other optional features (UML modeling, bug-tracker integration, database access, etc.) via various
     open-source and commercial plug-ins. The environment will be instantly recognizable to those at home with
     the Eclipse platform.
@@ -59,7 +59,7 @@
       your own workspace by selecting ``File | Switch Workspace | Other'' . You can switch between workspaces,
       as necessary. Please be aware that the &Omnetpp;
       IDE restarts with each switch in workspaces. This is normal. You can browse workspace content
-      in the ``Project Explorer'', ``Navigator'', ``C/C++ Projects'' and similar views. We recommend
+      in the ``Project Explorer'', ``Navigator'', ``C/&Cpp; Projects'' and similar views. We recommend
       using ``Project Explorer''.
     </para>
   </sect1>
@@ -70,7 +70,7 @@
       IDE defines the ``Simulation Perspective'' so that it is specifically geared towards the design of simulations. The
       ``Simulation Perspective'' is simply a set of conveniently selected views, arranged to make
       the creation of NED, INI and MSG files easier. If you are working with INI and NED files a lot, we
-      recommend selecting this perspective. Other perspectives are optimized for different tasks like C++
+      recommend selecting this perspective. Other perspectives are optimized for different tasks like &Cpp;
       development or debugging.
     </para>
   </sect1>
@@ -102,7 +102,7 @@
       one designated as an &Omnetpp; Project (in Eclipse lingo, it should have the &Omnetpp; Nature).
       The easiest way to create such a project is to use a wizard. Choose ``File|New|&Omnetpp; Project...''
       from the menu, specify a project name, and click the ``Finish'' button. If you do not plan
-      to write simple modules, you may unselect the ``C++ Support'' checkbox which will disable all C++
+      to write simple modules, you may unselect the ``&Cpp; Support'' checkbox which will disable all &Cpp;
       related features for the project.
       <picture file="pictures/Intro-NewProjectWizard.png">
         Creating a new &Omnetpp; project
@@ -126,7 +126,7 @@
     </para>
     <picture file="pictures/Intro-ProjectReferences.png">Setting project dependencies</picture>
     <para>
-      In the &Omnetpp; IDE, all NED types, C++ code and build artifacts (executables, libraries) in a project
+      In the &Omnetpp; IDE, all NED types, &Cpp; code and build artifacts (executables, libraries) in a project
       are available to other projects that reference the given project.
      </para>
     <note>
@@ -143,7 +143,7 @@
     <para>
       You may access the online help system from the ``Help | Help Contents'' menu item. The &Omnetpp;
       IDE is built on top of Eclipse, so if you are not familiar with Eclipse, we recommend reading
-      the ``Workbench User Guide'' and the ``C/C++ Development User Guide'' before starting to use &Omnetpp;-specific
+      the ``Workbench User Guide'' and the ``C/&Cpp; Development User Guide'' before starting to use &Omnetpp;-specific
       features.
     </para>
   </sect1>

@@ -590,7 +590,7 @@ attr enum "IDLE=0,TRANSMIT=1,RECEIVE=2"
       <title>Type Mode</title>
       <para>
 	The option called ``Type Mode'' can be used to switch between
-	displaying the C++ class name or the NED type name in parenthesis before
+	displaying the &Cpp; class name or the NED type name in parenthesis before
 	module names. This is rarely used, so it is only available from the context menu.
       </para>
     </sect2>
@@ -773,7 +773,7 @@ attr enum "IDLE=0,TRANSMIT=1,RECEIVE=2"
       <para>
 	This filter is the most complicated one. It allows filtering for events, which
 	either process or send specific messages. The messages can be selected based on
-	their C++ class name, message name, various message ids, and a match expression.
+	their &Cpp; class name, message name, various message ids, and a match expression.
 	The expression may refer to the raw data present in the lines marked with 'BS' in
 	the eventlog file.
       </para>

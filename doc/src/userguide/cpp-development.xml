@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 <chapter id="cpp-dev">
-  <title>C++ Development</title>
+  <title>&Cpp; Development</title>
   <sect1>
     <title>Introduction</title>
     <para>
       The &Omnetpp; IDE contains editors, views and other tools to assist you while developing
-      your C++ code. C++ files open in the IDE in the C++ source editor. The C++ source editor supports syntax
+      your &Cpp; code. &Cpp; files open in the IDE in the &Cpp; source editor. The &Cpp; source editor supports syntax
       highlighting, documentation tooltips, content assist, automatic indentation, code formatting,
       refactoring, and several other useful features. The IDE also allows you to configure the build,
       start the build process, launch simulations, and debug the model without leaving the IDE.
     </para>
     <para>
-      Most of these features are provided by the Eclipse CDT (C/C++ Development Tooling)
+      Most of these features are provided by the Eclipse CDT (C/&Cpp; Development Tooling)
       project (http://eclipse.org/cdt). This chapter briefly explains the basics of using CDT for
       developing simulation models. If you want to learn more about how to use CDT effectively, we
       recommend that you read the CDT documentation in the IDE help system (Help/Help Content).
@@ -72,10 +72,10 @@
     </para>
   </sect1>
   <sect1>
-    <title>Creating a C++ Project</title>
+    <title>Creating a &Cpp; Project</title>
     <para>
       To create an &Omnetpp;
-      project that supports C++ development, select ``File | New | &Omnetpp; Project''.
+      project that supports &Cpp; development, select ``File | New | &Omnetpp; Project''.
     </para>
     <picture file="pictures/Intro-NewProject.png">Creating
       an &Omnetpp;
@@ -84,11 +84,11 @@
     <para>
       This menu item will bring up the ``New &Omnetpp; Project'' wizard.
       The wizard lets you create an &Omnetpp;-specific project, which includes support
-      for NED, MSG and INI file editing, as well as C++ development of simple modules.
+      for NED, MSG and INI file editing, as well as &Cpp; development of simple modules.
     </para>
     <para> On the first page of the wizard, specify the project name and ensure that the ``Support
-      C++ Development'' checkbox is selected.</para>
-    <picture file="pictures/CPP-NewProjectWizard.png"> Setting project name and enabling C++ support</picture>
+      &Cpp; Development'' checkbox is selected.</para>
+    <picture file="pictures/CPP-NewProjectWizard.png"> Setting project name and enabling &Cpp; support</picture>
     <para> Select a project template. A template defines the initial content and layout of the
         project. </para>
     <picture file="pictures/CPP-NewProjectWizard1.png">Selecting a project template</picture>
@@ -106,25 +106,25 @@
   </sect1>
 
   <sect1>
-    <title>Editing C++ Code</title>
+    <title>Editing &Cpp; Code</title>
     <para>
       The &Omnetpp;
-      IDE comes with a C/C++ editor. In addition to standard editing features, the C/C++ editor
-      provides syntax highlighting, content assistance, and other C++ specific functionality.
+      IDE comes with a C/&Cpp; editor. In addition to standard editing features, the C/&Cpp; editor
+      provides syntax highlighting, content assistance, and other &Cpp; specific functionality.
       The source is continually parsed as you type, and errors and warnings are displayed as
       markers on the editor rulers.
     </para>
-    <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
+    <picture file="pictures/CPP-Editor.png">&Cpp; source editor</picture>
 
     <sect2>
-      <title>The C++ Editor</title>
+      <title>The &Cpp; Editor</title>
 
-      <para> The C++ source editor provides the usual features of Eclipse-based text editors,
+      <para> The &Cpp; source editor provides the usual features of Eclipse-based text editors,
         such as syntax highlighting, clipboard cut/copy/paste, unlimited undo/redo, folding,
         find/replace and incremental search.
       </para>
 
-      <para> The IDE scans and indexes the C++ files in your project in the background, and provides
+      <para> The IDE scans and indexes the &Cpp; files in your project in the background, and provides
         navigation and code analysis features on top of that knowledge; this database
         is kept up to date as you edit the source.
       </para>
@@ -137,7 +137,7 @@
             <para>Undo (<keycap>Ctrl+Z</keycap>), Redo (<keycap>Ctrl+Y</keycap>)</para>
           </listitem>
           <listitem>
-            <para>Switch between a C++ source and its matching header file (<keycap>Ctrl+TAB</keycap>)</para>
+            <para>Switch between a &Cpp; source and its matching header file (<keycap>Ctrl+TAB</keycap>)</para>
           </listitem>
           <listitem>
             <para>Indent/unindent code blocks (<keycap>TAB/Shift+TAB</keycap>)</para>
@@ -184,7 +184,7 @@
           Hitting <keycap>F3</keycap> or holding the <keycap>Ctrl</keycap>
           key and clicking an identifier will jump to the definition/declaration.
         </para>
-        <para>The Eclipse platform's bookmarking and navigation history facilities are also available in the C++ editor.</para>
+        <para>The Eclipse platform's bookmarking and navigation history facilities are also available in the &Cpp; editor.</para>
       </sect3>
       <sect3>
         <title>Commenting</title>
@@ -217,7 +217,7 @@
         </para>
       </sect3>
       <note>
-          Most features that depend on cross-references require the project to be indexed. The C/C++ index contains
+          Most features that depend on cross-references require the project to be indexed. The C/&Cpp; index contains
           the locations of functions, classes, enums, defines etc. from the whole project and referenced projects.
           The CDT does not keep the index up to date fully automatically, and occasionally you may need to
           manually request rebuilding or updating it. You can do so in the ``Index'' submenu of the project context menu.
@@ -226,8 +226,8 @@
 
     <sect2>
         <title>Include Browser View</title>
-        <para>Dropping a C++ file into the ``Include Browser View'' displays the include files used by the
-        C++ file (either directly or indirectly).</para>
+        <para>Dropping a &Cpp; file into the ``Include Browser View'' displays the include files used by the
+        &Cpp; file (either directly or indirectly).</para>
         <picture file="pictures/CPP-IncludeBrowserView.png">Include Browser</picture>
     </sect2>
     <sect2>
@@ -238,10 +238,10 @@
     </sect2>
     <sect2>
         <title>Type Hierarchy View</title>
-        <para>Displaying the C++ type hierarchy may be helpful for understanding
+        <para>Displaying the &Cpp; type hierarchy may be helpful for understanding
         the inheritance relationships among your classes (and among &Omnetpp; classes).
         </para>
-        <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
+        <picture file="pictures/CPP-TypeHierarchy.png">&Cpp; Type hierarchy</picture>
     </sect2>
   </sect1>
 
@@ -288,7 +288,7 @@
 	  During the build process, the makefile will print out only the names of the compiled files.
 	  If you want to see the full command line used to compile each file, specify
 	  [[V=1]] (verbose on) on the make command line. To add this option,
-	  open ``Project Properties | C/C++ Build | Behavior (tab)'' and replace [[all]] with [[all V=1]]
+	  open ``Project Properties | C/&Cpp; Build | Behavior (tab)'' and replace [[all]] with [[all V=1]]
 	  on the ``Build'' target line.
 	</note>
 
@@ -332,10 +332,10 @@
         <title>Problems View</title>
         <para>The ``Problems View'' contains the errors and warnings generated by the build process. You can
         browse the problem list and double-click any message to go to the problem location in the source file.
-        NED file and INI file problems are also reported in this view along with C++ problems. The editors
+        NED file and INI file problems are also reported in this view along with &Cpp; problems. The editors
         are annotated with these markers, too. Hover over an error marker in the editor window to get the
         corresponding message as a tooltip.</para>
-        <picture file="pictures/CPP-ProblemsView.png">C++ problems</picture>
+        <picture file="pictures/CPP-ProblemsView.png">&Cpp; problems</picture>
     </sect2>
   </sect1>
 
@@ -344,7 +344,7 @@
 
     <sect2>
         <title>Configuring the Build Process</title>
-        <para>The make invocation can be configured on ``C/C++ Build'' page of the ``Project Properties'' dialog.
+        <para>The make invocation can be configured on ``C/&Cpp; Build'' page of the ``Project Properties'' dialog.
         Most settings are already set correctly and do not need to be changed. One exception is the
         ``Enable parallel build'' option on the ``Behavior'' tab that you may want to enable, especially
         if you have a multi-core computer.</para>
@@ -356,7 +356,7 @@
         </warning>
 
         <para>We do not recommend that you change any setting on property pages under the
-        ``C/C++ Build'' tree node.</para>
+        ``C/&Cpp; Build'' tree node.</para>
     </sect2>
 
     <sect2>
@@ -400,7 +400,7 @@
             either directly or indirectly. By default, the build root folder is
             the project root.  This is usually fine, but if you really need to change
             the project build root, overwrite the ``Build location'' setting
-            in the ``C/C++ Build'' page of the same dialog.
+            in the ``C/&Cpp; Build'' page of the same dialog.
             </para>
 
             <note>
@@ -410,7 +410,7 @@
         </sect3>
 
         <sect3><title>Source Folders</title>
-            <para>In addition to makefiles, you also need to specify where your C++ files are
+            <para>In addition to makefiles, you also need to specify where your &Cpp; files are
             located (source folders). This is usually the [[src]] folder of the project,
             or, for small projects, the project root. It is also possible to exclude folders
             from a source folder. The controls on the right-bottom part of the dialog
@@ -421,7 +421,7 @@
 
             <note>
             Source folders and exclusions that you configure on this page actually
-            modify the contents of the ``Source Location'' tab of the ``C++ General | Paths and Symbols''
+            modify the contents of the ``Source Location'' tab of the ``&Cpp; General | Paths and Symbols''
             page of the project properties dialog; the changes will affect all build
             configurations.
             </note>
@@ -556,7 +556,7 @@
           <para>Source files:</para>
           <itemizedlist>
             <listitem>
-              ``C++ file extension'': You can specify the source file extension you are
+              ``&Cpp; file extension'': You can specify the source file extension you are
               using in the project ([[.cc]] or [[.cpp]]). We recommend that you use [[.cc]]
               in your projects. Makemake option: [[-e]]
             </listitem>
@@ -634,7 +634,7 @@
               ``More &raquo; Additional libraries to link with'': This box allows you to specify
               additional libraries to link with. Specify the library name without its path, possible prefix ([[lib]])
               and file extension, and also without the [[-l]] option. The library must be on the linker path;
-              the linker path can be edited on the ``Library Paths'' tab of the ``C/C++ General | Paths and Symbols''
+              the linker path can be edited on the ``Library Paths'' tab of the ``C/&Cpp; General | Paths and Symbols''
               page of the ``Project Properties'' dialog.
               Makemake option: [[-l]]
             </listitem>
@@ -696,7 +696,7 @@
               namely, the options that start with [[--meta:]] denote higher-level features offered
               by the IDE only. Meta options will be translated to [[opp_makemake]] options by the IDE.
               For example, [[--meta:auto-include-path]] will be resolved by the IDE to multiple
-              [[-I]] options, one for each directory in the C++ source trees of the project.
+              [[-I]] options, one for each directory in the &Cpp; source trees of the project.
               This field shows the [[opp_makemake]] options after the resolution of the meta options.
             </listitem>
           </itemizedlist>
@@ -762,7 +762,7 @@
       <title>What is a Project Feature</title>
       <para>
         Features can be defined per project. As already mentioned, a feature is a piece of the
-        project codebase that can be turned off as a whole, that is, excluded from the C++ sources
+        project codebase that can be turned off as a whole, that is, excluded from the &Cpp; sources
         (and thus from the build) and also from NED. Feature definitions are typically written
         and distributed by the author of the project; end users are only presented with the
         option of enabling/disabling those features. A feature definition contains:
@@ -795,18 +795,18 @@
         <listitem>
           ``NED packages.'' This is a space separated list of NED package names that identify the
           code that implements the feature. When you disable the feature, NED types defined in those
-          packages and their subpackages will be excluded; also, C++ code in the folders that correspond
+          packages and their subpackages will be excluded; also, &Cpp; code in the folders that correspond
           to the packages (i.e. in the same folders as excluded NED files) will also be excluded.
         </listitem>
         <listitem>
-          ``Extra C++ source folders.'' If the feature contains C++ code that lives outside NED source
+          ``Extra &Cpp; source folders.'' If the feature contains &Cpp; code that lives outside NED source
           folders (nontypical), those folders are listed here.
         </listitem>
         <listitem>
           ``Compile options,'' for example [[-DWITH_IPv6]]. When the feature is enabled, the compiler
-          options listed here are either added to the compiler command line of all C++ files
+          options listed here are either added to the compiler command line of all &Cpp; files
           or they can be used to generate a header file containing all these defines
-          so that header file can be included in all C++ files. A typical use of this field is
+          so that header file can be included in all &Cpp; files. A typical use of this field is
           defining symbols ([[WITH_xxx]]] that allows you to write conditional code
           that only compiles when a given feature is enabled. Currently only the [[-D]] option
           (``define symbol'') is supported here.
@@ -847,7 +847,7 @@
         Above the list there is a notification area in the dialog. If the IDE detects that
         your project's configuration is inconsistent with the feature enablements, it will display
         a warning there, and offer a way to automatically fix the problems. Fixing means that
-        the IDE will adjust the project's NED and C++ settings to make them consistent
+        the IDE will adjust the project's NED and &Cpp; settings to make them consistent
         with the feature enablements. Such check is also performed just before build.
       </para>
     </sect2>
@@ -865,18 +865,18 @@
           its NED packages will be excluded (added to the list), and vice versa.
         </listitem>
         <listitem>
-          C++ folder exclusions. This can be viewed/edited on the ``Makemake'' property page, and
-          also on the ``Source Location'' tab of the ``C/C++ General > Paths and Symbols''
+          &Cpp; folder exclusions. This can be viewed/edited on the ``Makemake'' property page, and
+          also on the ``Source Location'' tab of the ``C/&Cpp; General > Paths and Symbols''
           property page.
         </listitem>
         <listitem>
           Compile options. For example, if the feature defines preprocessor symbols ([[-DWITH_xxx]]),
           they can be used to generate a header file that contains the enabled macro definitions and
-          that file can be included in all C++ files.
+          that file can be included in all &Cpp; files.
         </listitem>
         <listitem>
           Linker options. For example, if the feature defines additional libraries to link with,
-          they will be displayed on the ``Libraries'' tab of the ``C/C++ General > Paths and Symbols''
+          they will be displayed on the ``Libraries'' tab of the ``C/&Cpp; General > Paths and Symbols''
           property page.
         </listitem>
       </itemizedlist>
@@ -1003,7 +1003,7 @@
         features are supported or this is only a generic Eclipse project).
       </listitem>
       <listitem>
-        [[.cproject]] : This file contains settings specific to C++ development, including
+        [[.cproject]] : This file contains settings specific to &Cpp; development, including
         the build configurations; and per-configuration settings such as source folder locations
         and exclusions, include paths, linker paths, symbols; the build command, error parsers,
         debugger settings and so on.
@@ -1030,7 +1030,7 @@
       </listitem>
     </itemizedlist>
     <para>
-      If you are creating a project where no C++ support is needed (i.e. you are using an existing
+      If you are creating a project where no &Cpp; support is needed (i.e. you are using an existing
       precompiled simulation library and you edit only NED and Ini files), the [[.cproject]] and
       [[.oppbuildspec]] files will not be present in your project.
     </para>
