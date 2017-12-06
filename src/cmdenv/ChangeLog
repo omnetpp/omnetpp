@@ -1,3 +1,12 @@
+2017-10-16  Attila Torok
+
+	* Fix: Prevent a division by zero causing a buffer overflow.
+
+	If the simtimeLimit was set to zero (--sim-time-limit=0s), 'simtimeRatio'
+	became NaN as a result of the division by zero. NaN was cast to int,
+	yielding a very large negative number (-2147483648). The final effect
+	was that we printed 47 bytes into a 32 byte long buffer.
+
 2017-09-18  ------ omnetpp-5.2 released ------
 
 2017-04-06  Andras Varga

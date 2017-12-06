@@ -1,3 +1,13 @@
+2017-10-18  Attila Torok
+
+	* Fix: Include windows.h with the correctly capitalized name.
+	On Windows it doesn't matter, but when cross-compiling on Linux, the
+	build failed.
+
+2017-11-10  Andras Varga
+
+	* cDynamicExpression: fixed leak in Elem::operator=() functions
+
 2017-09-18  ------ omnetpp-5.2 released ------
 
 2017-08-18  Rudolf Hornig

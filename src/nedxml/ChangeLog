@@ -1,3 +1,8 @@
+2017-10-18  Rudolf Hornig
+
+	* opp_msgc: It now uses the nedtool in the same bin directory where it
+	resides.
+
 2017-09-18  ------ omnetpp-5.2 released ------
 
 2017-04-06  Andras Varga

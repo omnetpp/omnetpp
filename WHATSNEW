@@ -6,6 +6,18 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 5.2.1 (December 2017)
+-----------------------------
+
+This is a maintenance release.
+
+ - Minor bug fixes and improvements in Qtenv.
+
+ - Other minor bug fixes
+
+See ChangeLogs in individual folders for details.
+
+
 OMNeT++ 5.2 (September 2017)
 ----------------------------
 

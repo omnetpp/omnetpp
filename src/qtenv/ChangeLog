@@ -1,3 +1,36 @@
+2017-11-27  Attila Torok
+
+	* Module Log view: fix occasional ASSERT failure. Fix was to add missing
+	index reconstruction to getTabStops() in ModuleOutputProvider.
+
+2017-10-01  Attila Torok
+
+	* Activate the MainWindow and toplevel Inspectors when needed.
+	Activation means that the given window now "has focus". The MainWindow as
+	re-activated after the saved inspectors are restored after network setup.
+	The top level inspectors are activated when they need to be given
+	attention - when their object is "inspected" again.
+
+2017-10-06  Attila Torok
+
+	*  Enable horizontal scrolling in the Object Tree (the top left one)
+
+2017-11-27  Attila Torok
+
+	* Generic Object Inspector: fix crash on closing an inspector
+
+2017-10-06  Attila Torok
+
+	* Generic Object Inspector: Stretch the highlight rectangle to viewport width.
+
+2017-09-29  Andras Varga
+
+	* Fix exit behavior after simulation error.
+	Do not ask for confirmation or offer calling finish. This is consistent
+	with both Tkenv behavior and the label of the Preferences checkbox
+	("Ask for confirmation when simulation is in progress" -- a failed
+	simulation does not count as "in progress")
+
 2017-09-18  ------ omnetpp-5.2 released ------
 
 2017-09-15  Attila Torok
