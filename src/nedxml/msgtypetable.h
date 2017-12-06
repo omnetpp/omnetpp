@@ -49,6 +49,7 @@ class NEDXML_API MsgTypeTable
         std::string type;       // field type in MSG, without 'const' and '*' modifiers
         std::string typeQName;  // fully qualified C++ name of type //TODO should not be needed
         std::string value;      // value (or empty). for arrays, this is the value for one array element (we have no syntax for initializing with a list of values)
+        std::string symbolicConstant; //
         bool isAbstract;        // "abstract" keyword specified for field
         bool isConst;           // "const" keyword specified for field
         bool byValue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters

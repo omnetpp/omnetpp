@@ -989,6 +989,12 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "{\n";
     CC << "  private:\n";
     CC << "    mutable const char **propertynames;\n";
+
+    CC << "    enum FieldConstants {\n";
+    for (auto& field : classInfo.fieldList)
+        CC << "        " << field.symbolicConstant << ",\n";
+    CC << "    };\n";
+
     CC << "  public:\n";
     CC << "    " << classInfo.descriptorClass << "();\n";
     CC << "    virtual ~" << classInfo.descriptorClass << "();\n";
@@ -1111,7 +1117,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
                     flagss = flagss + " | " + flags[i];
             }
 
-            CC << "        " << flagss << ",\n";
+            CC << "        " << flagss << ",    // " << field.symbolicConstant << "\n";
         }
         CC << "    };\n";
         CC << "    return (field >= 0 && field < " << numFields << ") ? fieldTypeFlags[field] : 0;\n";
@@ -1173,7 +1179,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     else {
         CC << "    static const char *fieldTypeStrings[] = {\n";
         for (const auto& field : classInfo.fieldList) {
-            CC << "        \"" << field.typeQName << "\",\n";
+            CC << "        \"" << field.typeQName << "\",    // " << field.symbolicConstant << "\n";
         }
         CC << "    };\n";
         CC << "    return (field >= 0 && field < " << numFields << ") ? fieldTypeStrings[field] : nullptr;\n";
@@ -1192,9 +1198,10 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    }\n";
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; ++i) {
-        const Properties& ref = classInfo.fieldList[i].props;
+        const FieldInfo& field = classInfo.fieldList[i];
+        const Properties& ref = field.props;
         if (!ref.empty()) {
-            CC << "        case " << i << ": {\n";
+            CC << "        case " << field.symbolicConstant << ": {\n";
             CC << "            static const char *names[] = { ";
             for (const auto& it : ref)
                 CC << opp_quotestr(it.first) << ", ";
@@ -1223,7 +1230,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         const FieldInfo& field = classInfo.fieldList[i];
         const Properties& ref = field.props;
         if (!ref.empty()) {
-            CC << "        case " << i << ":\n";
+            CC << "        case " << field.symbolicConstant << ":\n";
             for (const auto& it : ref) {
                 std::string prop = opp_quotestr(it.second);
                 CC << "            if (!strcmp(propertyname,\"" << it.first << "\")) return " << prop << ";\n";
@@ -1251,7 +1258,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
         if (field.isArray) {
-            CC << "        case " << i << ": ";
+            CC << "        case " << field.symbolicConstant << ": ";
             if (field.isFixedArray) {
                 CC << "return " << field.arraySize << ";\n";
             }
@@ -1282,7 +1289,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
         if (field.isPointer) {
-            CC << "        case " << i << ": ";
+            CC << "        case " << field.symbolicConstant << ": ";
             CC << "{ " << field.returnType << " value = " << makeFuncall("pp", field.getter, field.isArray) << "; ";
             if (field.isConst)
                 CC << "return omnetpp::opp_typename(typeid(*const_cast<" << field.mutableReturnType << ">(value))); }\n";
@@ -1308,7 +1315,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; i++) {
         const FieldInfo& field = classInfo.fieldList[i];
-        CC << "        case " << i << ": ";
+        CC << "        case " << field.symbolicConstant << ": ";
         if (!classInfo.isClass && field.isArray) {
             Assert(field.isFixedArray); // struct may not contain dynamic arrays; checked by analyzer
             CC << "if (i >= " << field.arraySize << ") return \"\";\n                ";
@@ -1342,7 +1349,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         if (field.isEditable) {
             if (field.fromString.empty())
                 throw opp_runtime_error("Field '%s' is editable, but @fromString is unspecified", field.name.c_str()); // ensured by MsgAnalyzer
-            CC << "        case " << i << ": ";
+            CC << "        case " << field.symbolicConstant << ": ";
             if (!classInfo.isClass && field.isArray) {
                 Assert(field.isFixedArray); // struct may not contain dynamic arrays; checked by analyzer
                 CC << "if (i >= " << field.arraySize << ") return \"\";\n                ";
@@ -1376,7 +1383,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         for (size_t i = 0; i < numFields; i++) {
             const FieldInfo& field = classInfo.fieldList[i];
             if (!field.isOpaque && !field.byValue) {
-                CC << "        case " << i << ": return omnetpp::opp_typename(typeid(" << field.type << "));\n";
+                CC << "        case " << field.symbolicConstant << ": return omnetpp::opp_typename(typeid(" << field.type << "));\n";
             }
         }
         CC << "        default: return nullptr;\n";
@@ -1405,7 +1412,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             else
                 value = makeFuncall("pp", field.getter, field.isArray);
             std::string maybeAddressOf = field.isPointer ? "" : "&";
-            CC << "        case " << i << ": return toVoidPtr(" << maybeAddressOf << value << "); break;\n";
+            CC << "        case " << field.symbolicConstant << ": return toVoidPtr(" << maybeAddressOf << value << "); break;\n";
         }
     }
     CC << "        default: return nullptr;\n";

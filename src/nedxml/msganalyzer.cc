@@ -389,6 +389,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->typeQName = "omnetpp::cObject";
     }
 
+    field->symbolicConstant = std::string("FIELD_")+field->name;
     ClassInfo& fieldClassInfo = typeTable->getClassInfo(field->typeQName);
     ensureAnalyzed(fieldClassInfo);
     field->isClass = fieldClassInfo.isClass;
