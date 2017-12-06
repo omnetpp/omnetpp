@@ -1025,7 +1025,12 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // ctor, dtor
     size_t numFields = classInfo.fieldList.size();
     std::string qualifiedrealmsgclass = prefixWithNamespace(classInfo.realClass, classInfo.namespaceName);
-    CC << "" << classInfo.descriptorClass << "::" << classInfo.descriptorClass << "() : omnetpp::cClassDescriptor(\"" << qualifiedrealmsgclass << "\", \"" << classInfo.baseClass << "\")\n";
+    CC << "" << classInfo.descriptorClass << "::" << classInfo.descriptorClass << "() : omnetpp::cClassDescriptor(";
+    if (classInfo.customize)
+        CC << "\"" << qualifiedrealmsgclass << "\"";
+    else
+        CC << "omnetpp::opp_typename(typeid(" << qualifiedrealmsgclass << "))";
+    CC << ", \"" << classInfo.baseClass << "\")\n";
     CC << "{\n";
     CC << "    propertynames = nullptr;\n";
     CC << "}\n";
