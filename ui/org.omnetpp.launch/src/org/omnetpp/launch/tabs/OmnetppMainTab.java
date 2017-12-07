@@ -566,11 +566,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SWITCH_CONFIG_BEFORE_BUILD, fSwitchBeforeBuildCombo.getSelectionIndex());
 
         try {
-            Set<IResource> assocRes = new HashSet<>();
-            if (configuration.getMappedResources() != null)
-                assocRes.addAll(Arrays.asList(configuration.getMappedResources()));
-            if (getIniFiles() != null)
-                assocRes.addAll(Arrays.asList(getIniFiles()));
+        	Set<IResource> assocRes = new HashSet<>();
+        	IResource[] mappedResources = configuration.getMappedResources();
+        	if (mappedResources != null)
+        		assocRes.addAll(Arrays.asList(mappedResources));
+        	IFile[] iniFiles = getIniFiles();
+        	if (iniFiles != null)
+        		for (IResource res : iniFiles)
+        			if (res.exists())  // note: under at least Eclipse Oxygen, we (performApply()) get invoked from each refresh() call (i.e. during typing!), resulting in invalid paths
+        				assocRes.add(res);
             configuration.setMappedResources(assocRes.toArray(new IResource[assocRes.size()]));
         } catch (CoreException e) {
             LaunchPlugin.logError(e);

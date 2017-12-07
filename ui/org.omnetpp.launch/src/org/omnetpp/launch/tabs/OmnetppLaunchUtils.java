@@ -535,10 +535,9 @@ public class OmnetppLaunchUtils {
 
         // Java CLASSPATH
         //FIXME do not overwrite CLASSPATH if it's already set by the user!
-        //FIXME use the inifile's project, not mappedResources!
         IResource[] resources = newCfg.getMappedResources();
         if (resources != null && resources.length != 0) {
-            String javaClasspath = getJavaClasspath(resources[0].getProject());
+            String javaClasspath = getJavaClasspath(OmnetppLaunchUtils.getMappedProject(newCfg));
             if (javaClasspath != null)
                 envir.put("CLASSPATH", javaClasspath);
         }
@@ -1053,7 +1052,7 @@ public class OmnetppLaunchUtils {
     public static IProject getMappedProject(ILaunchConfiguration config) throws CoreException {
         IResource[] res = config.getMappedResources();
         for (IResource r : res)
-            if (r instanceof IProject)
+            if (r.exists() && r instanceof IProject)
                 return (IProject)r;
 
         // fall back if no project was associated. Use the associated resoure's project itself
