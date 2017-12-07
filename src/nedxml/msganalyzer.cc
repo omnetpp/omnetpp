@@ -122,7 +122,7 @@ MsgAnalyzer::~MsgAnalyzer()
 {
 }
 
-MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::string& namespaceName)
+MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::string& namespaceName, bool isImported)
 {
     ClassInfo classInfo;
     classInfo.astNode = node;
@@ -134,6 +134,8 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::s
     classInfo.qname = prefixWithNamespace(classInfo.name, namespaceName);
     classInfo.extendsName = node->getAttribute(ATT_EXTENDS_NAME);
     classInfo.isClass = (classInfo.keyword != "struct");
+    classInfo.isEnum = false;
+    classInfo.isImported = isImported;
     return classInfo;
 }
 
@@ -626,9 +628,9 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const 
     return enumInfo;
 }
 
-MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumElem, const std::string& namespaceName)
+MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumElem, const std::string& namespaceName, bool isImported)
 {
-    ClassInfo classInfo = extractClassInfo(enumElem, namespaceName);
+    ClassInfo classInfo = extractClassInfo(enumElem, namespaceName, isImported);
 /*
     @primitive;
     @descriptor(false);

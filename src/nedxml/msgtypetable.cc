@@ -69,6 +69,14 @@ MsgTypeTable::StringVector MsgTypeTable::lookupExistingEnumName(const std::strin
     return ret;
 }
 
+MsgTypeTable::ClassInfo* MsgTypeTable::findClassInfo(const std::string& qname)
+{
+    auto it = definedClasses.find(qname);
+    if (it != definedClasses.end())
+        return &it->second;
+    return nullptr;
+}
+
 MsgTypeTable::ClassInfo& MsgTypeTable::getClassInfo(const std::string& qname)
 {
     auto it = definedClasses.find(qname);

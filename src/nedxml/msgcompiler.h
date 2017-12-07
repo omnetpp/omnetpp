@@ -88,7 +88,7 @@ class NEDXML_API MsgCompiler
 
     void processImport(ImportElement *importElem, const std::string& currentDir);
     std::string resolveImport(const std::string& importName, const std::string& currentDir);
-    void collectTypes(MsgFileElement *fileElement);
+    void collectTypes(MsgFileElement *fileElement, bool isImport);
     void generateCode(MsgFileElement *fileElement);
     std::string prefixWithNamespace(const std::string& name, const std::string& namespaceName);
     void validateNamespaceName(const std::string& namespaceName, ASTNode *element);

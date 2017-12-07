@@ -129,6 +129,7 @@ class NEDXML_API MsgTypeTable
         bool iscNamedObject;           // whether type is subclassed from cNamedObject
         bool iscOwnedObject;           // whether type is subclassed from cOwnedObject
         bool isEnum = false;
+        bool isImported;               // whether this type imported from an another msg file
         bool subclassable;             // whether this type can be subclasses (e.g. "int" or final classes cannot)
         bool supportsPtr;              // whether type supports creating a pointer (or pointer array) from it
         std::string namespaceName;
@@ -200,6 +201,7 @@ class NEDXML_API MsgTypeTable
     StringVector lookupExistingEnumName(const std::string& name, const std::string& contextNamespace);
     bool isClassDefined(const std::string& classqname) { return definedClasses.find(classqname) != definedClasses.end(); }
     bool isEnumDefined(const std::string& enumqname) { return definedEnums.find(enumqname) != definedEnums.end(); }
+    ClassInfo *findClassInfo(const std::string& classqname);
     ClassInfo& getClassInfo(const std::string& classqname);
     const EnumInfo& getEnumInfo(const std::string& qname);
     void storeMsgFile(ASTNode *tree) {importedMsgFiles.push_back(tree);}

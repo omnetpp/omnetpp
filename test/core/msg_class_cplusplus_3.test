@@ -1,0 +1,68 @@
+%description:
+Tests cplusplus blocks that go into class/struct declarations
+
+%file: test1.msg
+
+namespace @TESTNAME@;
+
+class Foo {
+    int x = 6;
+    int y = 3;
+}
+
+%file: test2.msg.bad
+
+import test1;
+
+namespace @TESTNAME@;
+
+enum Enum {
+    Enum_1 = 1;
+    Enum_2 = 2;
+}
+
+struct Bar {
+    int x = 1;
+    int y = 2;
+}
+
+struct BarExists {
+    @existingClass;
+    int x = 1;
+    int y = 2;
+}
+
+cplusplus(Foo) {{
+  public:
+    int sum() const {return getX() + getY();}
+}}
+
+cplusplus(Bar) {{
+    int sum() const {return x + y;}
+}}
+
+cplusplus(BarExists) {{
+    int sum() const {return x + y;}
+}}
+
+cplusplus(Enum) {{
+    int sum() const {return x + y;}
+}}
+
+cplusplus(Other) {{
+    int sum() const {return x + y;}
+}}
+
+%testprog: msgtool test2.msg.bad
+
+%ignore-exitcode: 1
+
+%contains: stderr
+: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_3::Foo' is imported
+%contains: stderr
+: Error: invalid target for cplusplus block: class generator for type 'msg_class_cplusplus_3::BarExists' is disabled
+%contains: stderr
+: Error: invalid target for cplusplus block: type 'msg_class_cplusplus_3::Enum' is enum
+%contains: stderr
+: Error: invalid target for cplusplus block: no such type 'msg_class_cplusplus_3::Other'
+

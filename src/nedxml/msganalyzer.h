@@ -78,12 +78,12 @@ class NEDXML_API MsgAnalyzer
   public:
     MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, ErrorStore *errors);
     ~MsgAnalyzer();
-    ClassInfo extractClassInfo(ASTNode *node, const std::string& namespaceName); // accepts StructElement, ClassElement, MessageElement, PacketElement
+    ClassInfo extractClassInfo(ASTNode *node, const std::string& namespaceName, bool isImported); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void ensureAnalyzed(ClassInfo& classInfo);
     void ensureFieldsAnalyzed(ClassInfo& classInfo);
     EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);
     EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
-    ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName);
+    ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName, bool isImported);
 
   private:
     static constexpr const char* ATT_NAME = "name";

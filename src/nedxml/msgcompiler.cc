@@ -102,7 +102,7 @@ void MsgCompiler::generate(MsgFileElement *fileElement, const char *hFile, const
     try {
         importBuiltinDefinitions();
 
-        collectTypes(fileElement);
+        collectTypes(fileElement, false);
 
         codegen.openFiles(hFile, ccFile);
         generateCode(fileElement);
@@ -146,10 +146,10 @@ void MsgCompiler::processBuiltinImport(const char *txt, const char *fname)
 
     // extract declarations
     MsgFileElement *fileElement = check_and_cast<MsgFileElement*>(tree);
-    collectTypes(fileElement);
+    collectTypes(fileElement, true);
 }
 
-void MsgCompiler::collectTypes(MsgFileElement *fileElement)
+void MsgCompiler::collectTypes(MsgFileElement *fileElement, bool isImported)
 {
     std::string currentDir = directoryOf(fileElement->getFilename());
     std::string currentNamespace = "";
@@ -200,7 +200,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
                 if (typeTable.isEnumDefined(enumInfo.enumQName))
                     errors->addError(enumInfo.astNode, "attempt to redefine '%s'", enumInfo.enumName.c_str());
                 typeTable.addEnum(enumInfo);
-                ClassInfo classInfo = analyzer.extractClassInfoFromEnum(check_and_cast<EnumElement *>(child), currentNamespace);
+                ClassInfo classInfo = analyzer.extractClassInfoFromEnum(check_and_cast<EnumElement *>(child), currentNamespace, isImported);
                 if (typeTable.isClassDefined(classInfo.qname))
                     errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.name.c_str());
                 typeTable.addClass(classInfo);
@@ -211,7 +211,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement)
             case MSG_CLASS:
             case MSG_MESSAGE:
             case MSG_PACKET: {
-                ClassInfo classInfo = analyzer.extractClassInfo(child, currentNamespace);
+                ClassInfo classInfo = analyzer.extractClassInfo(child, currentNamespace, isImported);
                 if (typeTable.isClassDefined(classInfo.qname) && !containsKey(classInfo.props, str("overwritePreviousDefinition")))
                     errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.name.c_str());
                 typeTable.addClass(classInfo);
@@ -244,7 +244,7 @@ void MsgCompiler::processImport(ImportElement *importElem, const std::string& cu
 
     // extract declarations
     MsgFileElement *fileElement = check_and_cast<MsgFileElement*>(tree);
-    collectTypes(fileElement);
+    collectTypes(fileElement, true);
 }
 
 std::string MsgCompiler::resolveImport(const std::string& importName, const std::string& currentDir)
@@ -304,9 +304,17 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 std::string target = cppElem->getTarget();
                 if (target != "" && target != "h" && target != "cc") { // target must be a type name
                     std::string qname = prefixWithNamespace(target, currentNamespace);
-                    if (!typeTable.isClassDefined(qname))
+                    ClassInfo *classInfo = typeTable.findClassInfo(qname);
+                    if (classInfo == nullptr)
                         errors->addError(cppElem, "invalid target for cplusplus block: no such type '%s'", qname.c_str());
-                    classExtraCode[qname] = body;
+                    else if (classInfo->isImported)
+                        errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is imported", qname.c_str());
+                    else if (classInfo->isEnum)
+                        errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is enum", qname.c_str());
+                    else if (!classInfo->generateClass)
+                        errors->addError(cppElem, "invalid target for cplusplus block: class generator for type '%s' is disabled", qname.c_str());  //TODO revise error message
+                    else
+                        classExtraCode[qname] = body;
                 }
                 break;
             }
