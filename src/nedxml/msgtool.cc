@@ -214,19 +214,27 @@ static bool processFile(const char *fname, ErrorStore *errors)
             else if (opp_stringendswith(fname, ".xml"))
                 ftype = XML_FILE;
             else
-                ftype = NED_FILE;
+                ftype = MSG_FILE;
         }
 
         // process input tree
         errors->clear();
-        if (ftype == XML_FILE) {
+        switch (ftype) {
+        case XML_FILE:
             tree = parseXML(fname, errors);
-        }
-        else if (ftype == MSG_FILE) {
+            break;
+        case MSG_FILE: {
             MsgParser parser(errors);
             parser.setMsgNewSyntaxFlag(!opt_legacymode);
             parser.setStoreSource(opt_storesrc);
             tree = parser.parseMsgFile(fname);
+            break;
+        }
+        case NED_FILE:
+            fprintf(stderr, "msgtool: NED files are not supported: '%s'\n", fname);
+            return false;
+        default:
+            assert(false);
         }
 
         if (errors->containsError()) {
