@@ -778,13 +778,22 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         if (StringUtils.isNotEmpty(name)) {
             IPath exePath = new Path(name);
             // on windows add the exe extension if not present
-            if (Platform.getOS().equals(Platform.OS_WIN32) && !"exe".equalsIgnoreCase(exePath.getFileExtension()))
+            boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
+            if (isWindows && !"exe".equalsIgnoreCase(exePath.getFileExtension()))
                 exePath = exePath.addFileExtension("exe");
-            IFile exefile = exePath.segmentCount() >1 ? ResourcesPlugin.getWorkspace().getRoot().getFile(exePath) : null;
+            IFile exeFile = exePath.segmentCount() >1 ? ResourcesPlugin.getWorkspace().getRoot().getFile(exePath) : null;
 
-            if (exefile == null || !exefile.isAccessible()) {
-                setErrorMessage("Simulation program does not exist or not accessible in workspace");
-                return false;
+            if (exeFile == null || !exeFile.isAccessible()) {
+                // file not accessible, so try with a _dbg suffix, too.
+                IPath dbgExePath = new Path(exePath.removeFileExtension().toPortableString()+"_dbg");
+                if (isWindows)
+                    dbgExePath = dbgExePath.addFileExtension("exe");
+                IFile dbgExeFile = ResourcesPlugin.getWorkspace().getRoot().getFile(dbgExePath);
+
+                if (!dbgExeFile.isAccessible()) {
+                    setErrorMessage("Simulation program does not exist or not accessible in workspace");
+                    return false;
+                }
             }
         }
 
