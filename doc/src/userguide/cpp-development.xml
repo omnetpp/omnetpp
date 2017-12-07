@@ -46,25 +46,23 @@
   <sect1>
     <title>Prerequisites</title>
     <para>
-      The &Omnetpp;
-      IDE (and the &Omnetpp;
-      simulation framework itself) requires a preinstalled compiler toolchain to function properly.
+      The &Omnetpp; IDE (and the &Omnetpp; simulation framework itself) requires a
+      preinstalled compiler toolchain to function properly.
       <itemizedlist>
         <listitem>
-          On Windows: The &Omnetpp;
-          distribution comes with a preconfigured MinGW compiler toolchain (MinGW is the Windows port of the
-          GCC/clang compiler.) You do not have to install or download anything. The IDE should be able to use the
-          MinGW/clang compiler out of box (you can also use the bundled GCC compiler.)
+          On Windows: The &Omnetpp;  distribution comes with a preconfigured MinGW compiler toolchain,
+          there is no need to manually install anything. By default, the IDE uses the Clang compiler
+          from MinGW, but it is also possible to switch to the GCC compiler (also part of MinGW).
           <commercial>&Omnetpp; can also use the Clang/C2 compiler from your Microsoft Visual Studio installation.</commercial>
         </listitem>
         <listitem>
-          On Linux: By default, the [[clang]] compiler is used, but &Omnetpp; falls back to use [[GCC]]
-          if [[clang]] is not present on the system. You have to install clang or GCC
+          On Linux: By default, the Clang compiler is used, but &Omnetpp; falls back to use GCC
+          if Clang is not present on the system. You have to install Clang or GCC
           on your system before trying to compile a simulation with &Omnetpp;. Please read the
           Install Guide for detailed instructions.
         </listitem>
         <listitem>
-          On maxOS: You should install Xcode Developer Tools to get compiler
+          On macOS: You need to install Xcode Developer Tools to get compiler
           support before trying to compile a simulation with &Omnetpp;.
           Please read the Install Guide for detailed instructions.
         </listitem>
@@ -74,13 +72,10 @@
   <sect1>
     <title>Creating a &Cpp; Project</title>
     <para>
-      To create an &Omnetpp;
-      project that supports &Cpp; development, select ``File | New | &Omnetpp; Project''.
+      To create an &Omnetpp; project that supports &Cpp; development, select
+      ``File | New | &Omnetpp; Project''.
     </para>
-    <picture file="pictures/Intro-NewProject.png">Creating
-      an &Omnetpp;
-      project
-    </picture>
+    <picture file="pictures/Intro-NewProject.png">Creating an &Omnetpp; project</picture>
     <para>
       This menu item will bring up the ``New &Omnetpp; Project'' wizard.
       The wizard lets you create an &Omnetpp;-specific project, which includes support
@@ -93,7 +88,7 @@
         project. </para>
     <picture file="pictures/CPP-NewProjectWizard1.png">Selecting a project template</picture>
     <para>Select a toolchain that is supported on your platform. Usually you will see only a single
-      supported toolchain, so you do not need to change anything on the page.</para>
+      supported toolchain, so there is no need to change anything on the page.</para>
     <picture file="pictures/CPP-NewProjectWizard2.png">Selecting a toolchain</picture>
     <para>Finally, select one or more from the preset build configurations. A configuration is a set of
         options that are associated with the build process. It is used mainly to build debug and release
@@ -217,10 +212,12 @@
         </para>
       </sect3>
       <note>
-          Most features that depend on cross-references require the project to be indexed. The C/&Cpp; index contains
-          the locations of functions, classes, enums, defines etc. from the whole project and referenced projects.
-          The CDT does not keep the index up to date fully automatically, and occasionally you may need to
-          manually request rebuilding or updating it. You can do so in the ``Index'' submenu of the project context menu.
+          Several features such as content assist, go to definition, type hierarchy and refactorings
+          rely on the ``Index''. The index contains the locations of all functions, classes, enums,
+          defines, etc. in the project and referenced projects. Initial indexing of large projects
+          may take a significant amount of time. The index is kept up to date mostly automatically,
+          but occasionally it may be necessary to manually request reindexing the project.
+          Index-related actions can be found in the ``Index'' submenu of the project's context menu.
       </note>
     </sect2>
 
@@ -255,16 +252,6 @@
         <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
         </para>
 
-        <note>
-        <para>
-        You may notice that the initial build of the project starts after a (sometimes long)
-        delay, which is spent on indexing the project. The index is CDT's database of
-        the project's classes, functions, methods, variables, macros, etc.;
-        features such as content assist, go to definition, class hierarchy and refactoring
-        are all based on the index.
-        </para>
-        </note>
-
         <sect3>
           <title>Build Output</title>
           <para>The build output (standard output and standard error) is displayed in the ``Console View''
@@ -295,9 +282,9 @@
         <sect3>
           <title>Cleaning the Project</title>
           <para>To clean the project, choose ``Clean...'' from the ``Project'' menu, or ``Clean Project'' from the
-             project context menu. This will invoke make with the [[clean]] target in the build root folder.
-             Often you may want to use the ``Clean Local'' item from the project context menu instead
-             of ``Clean Projects'', because it does not clean referenced projects (see next section).
+             project context menu. This will invoke [[make]] with the [[clean]] target in the project's
+             build root folder, and also in referenced projects. To only clean the local project and keep
+             referenced projects intact, use ``Clean Local'' item from the project context menu (see next section).
           </para>
         </sect3>
 
@@ -324,8 +311,7 @@
 
     <sect2>
         <title>Console View</title>
-        <para>The ``Console View'' displays the output of the build process.
-        </para>
+        <para>The ``Console View'' displays the output of the build process.</para>
         <picture file="pictures/CPP-ConsoleView.png">Build output in a console</picture>
     </sect2>
     <sect2>
@@ -352,7 +338,7 @@
         <warning>
         Do not set the number of parallel jobs to be significantly higher than the number of CPU cores
         you have. In particular, never turn on the ``Use unlimited jobs'' option, as it will start
-        an excessive number of processes and you will run out of physical memory!
+        an excessive number of compile processes, and can easy consume all available memory in the system.
         </warning>
 
         <para>We do not recommend that you change any setting on property pages under the
@@ -364,10 +350,13 @@
         <para>A project may have several build configurations, where each configuration describes
             the selected compiler toolchain, debug or release mode, any potential extra include and
             linker paths, defined symbols, etc. You can activate, create or delete build configurations
-            under the ``Build Configurations'' submenu of the project context menu. Be sure that
-            the name of the configuration contains the ``debug'' or ``release'' substring.
-            The IDE launcher uses the name of the configuration to switch the active configuration
-            depending whether you want to debug or run the simulation.</para>
+            under the ``Build Configurations'' submenu of the project context menu.
+        </para>
+        <note>
+            Make sure that the names of all configurations contain the ``"debug"'' or the ``"release"'' substring.
+            The IDE launcher uses the name of the configuration to switch the matching configuration
+            depending whether you want to debug or run the simulation.
+        </note>
     </sect2>
 
     <sect2>
@@ -742,9 +731,9 @@
         named ``Project Features'' lets you reduce build times by excluding or
         disabling parts of the model framework that you do not use for your
         simulation study. For example, when you are working on mobile ad-hoc simulations in INET,
-        you can disable compilation of the Ethernet model, the IPv6/MIPv6 code,
-        MPLS models and other unrelated protocol models. The word ``feature'' refers
-        to a piece of the project codebase that can be turned off as a whole.
+        you can disable the compilation of Ethernet, IPv6/MIPv6, MPLS, and other
+        unrelated protocol models. The word ``feature'' refers to a piece of
+        the project codebase that can be turned off as a whole.
       </para>
       <para>
         Additional benefits of project features include a less cluttered model palette
@@ -789,11 +778,11 @@
         <listitem>
           ``Required features.'' Some features may be built on top of others; for example, a HMIPv6
           protocol implementation relies on MIPv6, which in turn relies on IPv6. Thus, HMIPv6 can
-          only be enabled if MIPv6 and IPv6 are enabled as well. This is a space separated list of
+          only be enabled if MIPv6 and IPv6 are enabled as well. This is a space-separated list of
           feaure IDs.
         </listitem>
         <listitem>
-          ``NED packages.'' This is a space separated list of NED package names that identify the
+          ``NED packages.'' This is a space-separated list of NED package names that identify the
           code that implements the feature. When you disable the feature, NED types defined in those
           packages and their subpackages will be excluded; also, &Cpp; code in the folders that correspond
           to the packages (i.e. in the same folders as excluded NED files) will also be excluded.
@@ -978,12 +967,9 @@
           including the required feature dependencies.
         </listitem>
         <listitem>
-          Test. A rudimentary test can be verify that your project compiles at all, both
-          with the new feature enabled and disabled. For such build tests, the
-          ``Export build tester makefile'' function (at the bottom of the ``Project Features''
-          property page) can be quite useful: it creates a makefile that builds the
-          project in typical feature combinations. (It does not test ``2^N'' combinations because
-          that's usually prohibitive, only about ``2*N+2''.)
+          Test. At the minimum, test that your project compiles at all, both with the
+          new feature enabled and disabled. More thorough, automated tests can be built using
+          [[opp_featuretool]].
         </listitem>
       </itemizedlist>
     </sect2>

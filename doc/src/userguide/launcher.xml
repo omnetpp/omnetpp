@@ -98,19 +98,11 @@
         A blank launch configuration is created; you can give it a name at the top of the form
         that appears.
       </para>
-      <para>
-         The launcher automatically decides whether the release or debug build of the model
-         should be started. When running, release mode binaries are used automatically.
-         For debugging, debug builds are started (i.e. those where the binary ends with [[_dbg]]
-         suffix.) Before starting the simulation, the launcher ensures that the binary is
-         up to date and triggers a build process (and changes also the active configuration)
-         if necessary.
-      </para>
       <picture file="pictures/Launch-RunDialog.png">The Simulation Launcher</picture>
       <para> The ``Main'' tab of the configuration dialog was designed to make the launching of simulations as
-        easy as possible. The only required field is the Working directory; all others have defaults. If you
-        only select the working directory and the simulation program, it will start "Run 0" of the first
-        configuration from the [[omnetpp.ini]] file in the specified working directory.
+        easy as possible. The only required field is ``Working directory''; all others have defaults. If you
+        only select the working directory and the simulation program, it will start the first configuration
+        from the [[omnetpp.ini]] file in the specified working directory.
       </para>
       <tip>
         Hover your mouse above the controls in this dialog and you will receive tooltip help for the
@@ -124,21 +116,23 @@
       </note>
       <itemizedlist>
         <listitem>
-          <para> ``Executable'': You must set the name of the simulation executable here. This path is
-            relative to the workspace root. You may use the ``Browse...'' button to select the executable
-            directly. If your project output is a shared library, select "opp_run". The launcher dialog will
-            use the "opp_run" helper executable to launch your simulation in the shared library. Check whether
-            the "Dynamic Libraries" field in the advanced section contains the libraries you want to load.
+          <para> ``Executable'': You must set the name of the simulation executable here. This is a workspace
+            path. You may use the ``Browse...'' button to select the executable directly. If your project output
+            is a shared library, select ``opp_run''; it will cause the IDE to use the [[opp_run]] or the
+            [[opp_run_dbg]] helper executable with the [[-l]] option to run the simulation. Make sure that
+            the ``Dynamic Libraries'' field in the advanced section contains the libraries you want to load.
           </para>
         </listitem>
         <listitem>
-          <para> ``Working directory'': Set it to your working directory. Several of the below entries are
-            treated as relative to this directory. Changing the working directory may invalidate previously
+          <para> ``Working directory'': Specifies the working directory of the simulation program. This is a
+            workspace path. Note that values in several other fields in the dialog are treated as relative
+            to this directory, so changing the working directory may invalidate or change the meaning of previously
             selected entries in other fields of the dialog.</para>
         </listitem>
         <listitem>
           <para> ``Initialization file(s)'': You should specify one or more INI files that will be used to launch the
-            simulation. Specifying more than one file simply loads all those files in the specified order.
+            simulation. The default is [[omnetpp.ini]]. Specifying more than one file (separated by space)
+            will cause the simulation to load all those files in the specified order.
           </para>
         </listitem>
         <listitem>
@@ -154,29 +148,28 @@
           </para>
         </listitem>
         <listitem>
-          <para> ``Runs'': It is possible to specify which run(s) must be executed for the
-            simulation. If the executable name and the INI file were already selected, it is possible to hover
-            above the field to get more information about the possible run numbers. You can use comma and .. to
-            separate the run numbers; for example, 1,2,5..9,20 corresponds to run numbers 1,2,5,6,7,8,9,20.
-            Entering a single asterisk (*) corresponds to all run numbers. If you do not specify anything,
-            Run 0 will be executed. It is also possible to specify run filters. These are boolean expression
+          <para> ``Runs'': It is possible to specify which run(s) must be executed for the simulation.
+            An empty field corresponds to all runs. You can specify run numbers or a filter expression
+            that refers to iteration variables. Use the comma and .. to separate the run numbers;
+            for example, 1,2,5..9,20 corresponds to run numbers 1,2,5,6,7,8,9,20.
+            It is also possible to specify run filters, which are boolean expression
             involving constants and iteration variables (e.g. ``$numHosts&gt;5 and $numHosts&lt;10'').
             Running several simulations in this manner is called batch execution.
           </para>
-          <note>
-            Batch execution is possible only if you run your program in the command line environment. The simulation
-            was built to support command line environment (Cmdenv) and the User interface selection is
-            'Command line' (see User interface selection).
-          </note>
+          <tip>
+            If the executable name and the INI file were already selected, hover the mouse above the field
+            to get the list of matching runs.
+          </tip>
         </listitem>
         <listitem>
-          <para> ``User interface'': You can specify which UI environment should be used during execution;
-            currently command line (Cmdenv) and a QT based graphical runtime (Qtenv) is supported.
-            The executable must be linked with the correct UI library or the UI should be loaded dynamically.
+          <para> ``User interface'': You can specify which UI environment should be used during execution.
+            The dialog offers ``Cmdenv'' (command-line UI), ``Qtenv'' (Qt-based GUI), and ``Tkenv'' (legacy, Tk-based GUI).
+            If you have a custom user interface, its name can also be specified here.
+            Make sure that the code of the chosen UI library is available (linked into the executable/library
+            or loaded dynamically).
           </para>
           <note>
-            Batch execution and progress feedback during execution is supported only for the command line
-            environment.
+            Batch execution and progress feedback during simulation are only supported when using ``Cmdenv''.
           </note>
         </listitem>
         <listitem>
@@ -185,10 +178,6 @@
             after a certain number of runs executed. This way you can take advantage of
             multiple CPUs or CPU cores. You can set the number of CPUs to use and the number of
             runs to execute in a single process.</para>
-          <note>
-            This is usually an easier and more efficient way to exploit multiprocessing power than parallel
-            simulation (PDES).
-          </note>
           <warning>
             Use this option only if your simulation is CPU-limited and you have enough physical
             RAM to support all of the processes at the same time. Do not set it higher than the number of
@@ -197,51 +186,50 @@
         </listitem>
         <listitem>
           <para>
-          ``Simulation time limit'' and ``CPU time limit'' can be set also to limit the runtime length
-          if the simulation from the launch dialog in case those were not set from the INI file.
+            ``Simulation time limit'' and ``CPU time limit'' can be set also to limit the runtime length
+            if the simulation from the launch dialog in case those were not set from the INI file.
           </para>
         </listitem>
         <listitem>
           <para>``Output options'': Various options can be set regarding simulation output. These checkboxes
-            have three state: On, Off and Default (grayed.) Choosing "Default" uses the settings specified
-            in the INI file, however you may explicitly enable or disable the option overriding the INI setting.
-            This is useful if you want to temporarily switch the option on or off.</para>
+            may be in one of three states: checked (on), unchecked (off), and grayed (unspecified).
+            When a checkbox is the grayed state, the launcher lets the corresponding configuration option
+            from the INI file to take effect.
+            </para>
         </listitem>
         <listitem>
           <para>
-            Clicking on the ``More &gt;&gt;&gt;'' link will reveal additional (rarely used) controls.
+            Clicking on the ``More &gt;&gt;&gt;'' link will reveal additional controls.
           </para>
         </listitem>
         <listitem>
           <para>
             ``Dynamic libraries'': A simulation may load additional DLLs or shared libraries before execution
             or your entire simulation may be built as a shared library. The ``Browse'' button is available to
-            select one or more files (use <keycap>Ctrl</keycap> +
-            click for multiple selection). This option can be used to load simulation code (i.e. simple
-            modules), user interface libraries, or other extension libraries (scheduler, output file managers,
-            etc.). The special macro [[${opp_shared_libs:/workingdir}]] expands to all shared libraries
+            select one or more files (use <keycap>Ctrl</keycap> + click for multiple selection).
+            This option can be used to load simulation code (i.e. simple modules), user interface libraries,
+            or other extension libraries (scheduler, output file managers, etc.).
+            The special macro [[${opp_shared_libs:/workingdir}]] expands to all shared libraries
             provided by the current project or any other project on which you currently depend.
           </para>
           <note>
-            If your simulation is built as a shared library, you must use the "opp_run" stub executable
+            If your simulation is built as a shared library, you must use the [[opp_run]] stub executable
             to start it. opp_run is basically an empty &Omnetpp;
             executable which understands all command line options, but does not contain any simulation code.
           </note>
           <warning>
             If you use external shared libraries (i.e. libraries other than the ones provided by the current open
-            projects or &Omnetpp;
-            itself), you must ensure that the executable part has access to the shared library. On Windows, you
-            must set the [[PATH]], while on Linux and Mac you must set the [[LD_LIBRARY_PATH]] to point to the
+            projects or &Omnetpp; itself), you must ensure that the executable part has access to the shared library.
+            On Windows, you must set the [[PATH]], while on Linux and Mac you must set the [[LD_LIBRARY_PATH]] to point to the
             directory where the DLLs or shared libraries are located. You can set these variables either
             globally or in the ``Environment'' tab in the ``Launcher Configuration Dialog''.
           </warning>
         </listitem>
         <listitem>
           <para>
-            ``NED Source Path'': The directories where the NED files are read from (relative to the first
-            selected INI file.)
+            ``NED Source Path'': The directory or directories where the NED files are read from.
             <tip>
-              The variable [[${opp_ned_path:/workingdir}]] refers to an automatically calculated path (derived
+              The variable [[${opp_ned_path:/workingdir}]] refers to an automatically computed path (derived
               from project settings). If you want to add additional NED folders to the automatically
               calculated list, use the [[${opp_ned_path:/workingdir}:/my/additional/path]] syntax.
             </tip>
@@ -252,7 +240,7 @@
           </para>
         </listitem>
         <listitem>
-          <para> ``Additional arguments'': Other command line argument can be specified here and will be
+          <para> ``Additional arguments'': Other command line arguments can be specified here and will be
             passed to the simulation process.</para>
         </listitem>
         <listitem>
@@ -260,7 +248,7 @@
             ``Build before launch'': This section allows you to configure the behavior of
             automatic build before launching. Build scope can be set either to build ``this project and all
             its dependencies'', ``this project only'' or we can turn of autobuild before launch.
-            Active configuration switching on build can be also configured here (Ask, Switch, Never switch.)
+            Active configuration switching on build can be also configured here (``Ask'', ``Switch'', ``Never switch''.)
           </para>
         </listitem>
       </itemizedlist>
@@ -288,10 +276,21 @@
             </para>
           </listitem>
           <listitem>
-            <para>NED Source Path : adds a [[-n &lt;ned_source_path&gt;]] option</para>
+            <para>NED Source Path : adds a [[-n &lt;nedpath&gt;]] option</para>
           </listitem>
         </itemizedlist>
       </sect3>
+    </sect2>
+    <sect2>
+        <title>Debug vs. Release Launch</title>
+        <para>
+         The launcher automatically decides whether the release or debug build of the model
+         should be started. When running, release mode binaries are used automatically.
+         For debugging, debug builds are started (i.e. those where the binary ends with [[_dbg]]
+         suffix.) Before starting the simulation, the launcher ensures that the binary is
+         up to date and triggers a build process (and changes also the active configuration)
+         if necessary.
+        </para>
     </sect2>
   </sect1>
 
@@ -306,12 +305,12 @@
     </picture>
     <note>Batch running is supported only in the command line environment.</note>
     <para>
-      If you create a [[Configuration]] with one or more iteration variables, you will be able
-      to run your simulations to explore the parameter space defined by those variables. Practically,
-      the IDE creates the Cartesian product from these variables and assigns a run number
+      If you create an INI file configuration ([Config] section) with one or more iteration variables,
+      you will be able to run your simulations to explore the parameter space defined by those variables.
+      Practically, the IDE creates the Cartesian product from these variables and assigns a run number
       to each product. It is possible to execute one, several or all runs of the simulation
-      by specifying the ``Run number''
-      field in the ``Run Dialog''. You can specify a single number (e.g. 3), a combination
+      by specifying the ``Run number'' field in the ``Run Dialog''.
+      You can specify a single number (e.g. 3), a combination
       of several numbers (e.g. 2,3,6,7..11), all run numbers (using *) or boolean expressions
       using contstants and iteration variables (e.g. ``$numHosts&gt;5 and $numHosts&lt;10''.)
     </para>
@@ -459,9 +458,6 @@
         &Cpp; library printers on):
       </para>
       <screen><![CDATA[disable pretty-printer global omnetpp;.*]]></screen>
-      <para>
-        Pretty printer support was introduced in &Omnetpp; 4.3.
-      </para>
     </sect2>
   </sect1>
   <sect1>
@@ -541,8 +537,7 @@
       By default, the ``Console View'' automatically activates when a process is writing to it.
       If you are running several parallel processes, this might be an annoying behavior
       and might prevent you from switching to the ``Progress View''. You can switch off the auto-activation by disabling the
-      ``Show Console When Standard Out/Error Changes''
-      in the ``Console View'' toolbar.
+      ``Show Console When Standard Out/Error Changes'' in the ``Console View'' toolbar.
     </note>
 
     <sect3>
@@ -563,10 +558,8 @@
         the simulation.
       </note>
       <note>
-        By default, cmdenv reports progress only on every 100,000th event. If you want more frequent
-        progress reports, set the
-        [[cmdenv-status-frequency]]
-        option in your INI file to a lower value.
+        If you need more frequent progress updates, set the [[cmdenv-status-frequency]] option
+        in your INI file to a lower value.
       </note>
     </sect3>
   </sect1>
