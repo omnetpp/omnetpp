@@ -187,8 +187,8 @@ smheaders: {sourcedirs?$(SMFILES:.sm=_sm.h)}
 clean:
 	$(qecho) Cleaning $(TARGET)
 	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
-	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
-	$(Q)-rm -f $(TARGET_DIR)/$(TARGET:%.dll=%.lib)
+{~nolink:}	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
+{~nolink:}	$(Q)-rm -f $(TARGET_DIR)/$(TARGET:%.dll=%.lib)
 	$(Q)-rm -f $(call opp_rwildcard, . , *_m.{cc} *_m.h *_sm.{cc} *_sm.h)
 {@i:submakedirs}	-$(Q)cd {i} && $(MAKE) clean
 {/@}

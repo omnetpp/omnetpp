@@ -4,6 +4,7 @@
 #
 
 TARGET = embedding$(D)$(EXE_SUFFIX)
+TARGET_DIR = .
 
 OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 OMNETPP_LIBS = $(AS_NEEDED_OFF) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -18,4 +19,6 @@ $O/$(TARGET): $(OBJS) Makefile
 	@echo Creating executable: $@
 	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) $(OBJS) $(OMNETPP_LIBS)
 
-
+clean:
+	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
+	$(Q)-rm -f $(TARGET_DIR)/$(TARGET:%.dll=%.lib)
