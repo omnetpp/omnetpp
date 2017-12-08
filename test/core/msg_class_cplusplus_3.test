@@ -53,6 +53,10 @@ cplusplus(Other) {{
     int sum() const {return x + y;}
 }}
 
+cplusplus(Bar) {{
+    int avg() const {return (x + y)/2;}
+}}
+
 %testprog: msgtool test2.msg.bad
 
 %ignore-exitcode: 1
@@ -60,9 +64,11 @@ cplusplus(Other) {{
 %contains: stderr
 : Error: invalid target for cplusplus block: type 'msg_class_cplusplus_3::Foo' is imported
 %contains: stderr
-: Error: invalid target for cplusplus block: class generator for type 'msg_class_cplusplus_3::BarExists' is disabled
+: Error: invalid target for cplusplus block: class 'msg_class_cplusplus_3::BarExists' is not generated
 %contains: stderr
 : Error: invalid target for cplusplus block: type 'msg_class_cplusplus_3::Enum' is enum
 %contains: stderr
 : Error: invalid target for cplusplus block: no such type 'msg_class_cplusplus_3::Other'
+%contains: stderr
+: Error: invalid target for cplusplus block: duplicate block for type 'msg_class_cplusplus_3::Bar'
 

@@ -312,7 +312,9 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                     else if (classInfo->isEnum)
                         errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is enum", qname.c_str());
                     else if (!classInfo->generateClass)
-                        errors->addError(cppElem, "invalid target for cplusplus block: class generator for type '%s' is disabled", qname.c_str());  //TODO revise error message
+                        errors->addError(cppElem, "invalid target for cplusplus block: class '%s' is not generated", qname.c_str());
+                    else if (classExtraCode.find(qname) != classExtraCode.end())
+                        errors->addError(cppElem, "invalid target for cplusplus block: duplicate block for type '%s'", qname.c_str());
                     else
                         classExtraCode[qname] = body;
                 }
