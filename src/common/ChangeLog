@@ -1,3 +1,5 @@
+2017-12-08  ------ omnetpp-5.2.1 released ------
+
 2017-11-10  Andras Varga
 
 	* expression.h/cc: fixed leak in Expression::Elem::operator()= functions

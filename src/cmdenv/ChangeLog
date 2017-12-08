@@ -1,3 +1,5 @@
+2017-12-08  ------ omnetpp-5.2.1 released ------
+
 2017-10-16  Attila Torok
 
 	* Fix: Prevent a division by zero causing a buffer overflow.

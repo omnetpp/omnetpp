@@ -1,3 +1,5 @@
+2017-12-08  ------ omnetpp-5.2.1 released ------
+
 2017-10-18  Attila Torok
 
 	* Fix: Include windows.h with the correctly capitalized name.

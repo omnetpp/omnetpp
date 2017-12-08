@@ -13,7 +13,9 @@ This is a maintenance release.
 
  - Minor bug fixes and improvements in Qtenv.
 
- - Other minor bug fixes
+ - Other minor bug fixes.
+
+ - Updates to the C++ Development and Launcher chapters of the User Guide.
 
 See ChangeLogs in individual folders for details.
 

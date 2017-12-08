@@ -1,3 +1,5 @@
+2017-12-08  ------ omnetpp-5.2.1 released ------
+
 2017-12-04  Attila Torok
 
 	* ResultFileManager: crash fix: Prevent creating duplicate Run objects

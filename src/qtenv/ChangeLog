@@ -1,3 +1,5 @@
+2017-12-08  ------ omnetpp-5.2.1 released ------
+
 2017-11-27  Attila Torok
 
 	* Module Log view: fix occasional ASSERT failure. Fix was to add missing
