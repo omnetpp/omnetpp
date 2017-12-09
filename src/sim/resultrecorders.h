@@ -235,6 +235,18 @@ class SIM_API HistogramRecorder : public StatisticsRecorder
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
 };
 
+class SIM_API PSquareRecorder : public StatisticsRecorder
+{
+    public:
+        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+};
+
+class SIM_API KSplitRecorder : public StatisticsRecorder
+{
+    public:
+        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+};
+
 /**
  * @brief Result recorder that remembers the last value of a signal,
  * and in finish() it evaluates an expression and saves the result.

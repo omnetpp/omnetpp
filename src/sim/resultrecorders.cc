@@ -20,6 +20,8 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/checkandcast.h"
+#include "omnetpp/cpsquare.h"
+#include "omnetpp/cksplit.h"
 #include "resultrecorders.h"
 
 namespace omnetpp {
@@ -37,6 +39,8 @@ Register_ResultRecorder("avg", AverageRecorder);
 Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("stats", StatsRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
+Register_ResultRecorder("psquare", PSquareRecorder);
+Register_ResultRecorder("ksplit", KSplitRecorder);
 
 VectorRecorder::~VectorRecorder()
 {
@@ -373,6 +377,30 @@ void HistogramRecorder::init(cComponent *component, const char *statsName, const
     auto it = attrs.find("timeWeighted");
     bool weighted = it != attrs.end() && (it->second != "0" && it->second != "false");
     setStatistic(new cHistogram(nullptr, -1, cHistogram::MODE_AUTO, weighted));
+}
+
+void PSquareRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+{
+    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+
+    omnetpp::opp_string_map attrs = getStatisticAttributes();
+    auto it = attrs.find("timeWeighted");
+    bool weighted = it != attrs.end() && (it->second != "0" && it->second != "false");
+    if (weighted)
+        throw cRuntimeError("%s: cPSquare does not support weighted statistics", getClassName());
+    setStatistic(new cPSquare());
+}
+
+void KSplitRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+{
+    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+
+    omnetpp::opp_string_map attrs = getStatisticAttributes();
+    auto it = attrs.find("timeWeighted");
+    bool weighted = it != attrs.end() && (it->second != "0" && it->second != "false");
+    if (weighted)
+        throw cRuntimeError("%s: cKSplit does not support weighted statistics", getClassName());
+    setStatistic(new cKSplit());
 }
 
 //---
