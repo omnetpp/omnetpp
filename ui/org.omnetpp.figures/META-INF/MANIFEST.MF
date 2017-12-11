@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Figures
 Bundle-SymbolicName: org.omnetpp.figures
-Bundle-Version: 5.2.1.qualifier
+Bundle-Version: 5.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.

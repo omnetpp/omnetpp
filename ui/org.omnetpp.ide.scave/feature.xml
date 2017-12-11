@@ -2,7 +2,7 @@
 <feature
       id="org.omnetpp.ide.scave"
       label="OMNeT++ IDE Scalar and Vector Analysis Feature"
-      version="5.2.1.qualifier"
+      version="5.3.0.qualifier"
       provider-name="OpenSim Ltd.">
 
    <description url="http://omnetpp.org/">
