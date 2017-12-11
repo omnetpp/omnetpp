@@ -19,6 +19,8 @@ $O/$(TARGET): $(OBJS) Makefile
 	@echo Creating executable: $@
 	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) $(OBJS) $(OMNETPP_LIBS)
 
-clean:
+clean: clean-local
+
+clean-local:
 	$(Q)-rm -f $(TARGET_DIR)/$(TARGET)
 	$(Q)-rm -f $(TARGET_DIR)/$(TARGET:%.dll=%.lib)
