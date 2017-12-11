@@ -723,17 +723,34 @@ char *opp_ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
     return s;
 }
 
-long opp_strtol(const char *s, char **endptr)
+inline void check_garbage_after_int(const char *endptr, const char *s)
+{
+    while (opp_isspace(*endptr))
+        endptr++;
+    if (*endptr)
+        throw opp_runtime_error("'%s' is not a valid unsigned integer", s);
+}
+
+inline bool ishex(const char *s)
 {
     // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
     // C's octal notation is not explicit enough, and causes confusion e.g. with
     // the runnumber-width configuration option (bug #232)
+    return (s[0] == '0' && opp_toupper(s[1]) == 'X') ||
+        ((s[0] == '+' || s[0] == '-') && s[1] == '0' && opp_toupper(s[2]) == 'X');
+}
+
+inline void skip_whitespace(const char *&s)
+{
     while (opp_isspace(*s))
         s++;
-    bool ishex = (s[0] == '0' && opp_toupper(s[1]) == 'X') ||
-        ((s[0] == '+' || s[0] == '-') && s[1] == '0' && opp_toupper(s[2]) == 'X');
+}
+
+long opp_strtol(const char *s, char **endptr)
+{
+    skip_whitespace(s);
     errno = 0;
-    long d = strtol(s, endptr, ishex ? 16 : 10);
+    long d = strtol(s, endptr, ishex(s) ? 16 : 10);
     if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
         throw opp_runtime_error("Overflow converting '%s' to long", s);
     return d;
@@ -743,24 +760,15 @@ long opp_atol(const char *s)
 {
     char *endptr;
     long d = opp_strtol(s, &endptr);
-    while (opp_isspace(*endptr))
-        endptr++;
-    if (*endptr)
-        throw opp_runtime_error("'%s' is not a valid integer", s);
+    check_garbage_after_int(endptr, s);
     return d;
 }
 
 unsigned long opp_strtoul(const char *s, char **endptr)
 {
-    // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
-    // C's octal notation is not explicit enough, and causes confusion e.g. with
-    // the runnumber-width configuration option (bug #232)
-    while (opp_isspace(*s))
-        s++;
-    bool ishex = (s[0] == '0' && opp_toupper(s[1]) == 'X') ||
-        (s[0] == '+' && s[1] == '0' && opp_toupper(s[2]) == 'X');
+    skip_whitespace(s);
     errno = 0;
-    unsigned long d = strtoul(s, endptr, ishex ? 16 : 10);
+    unsigned long d = strtoul(s, endptr, ishex(s) ? 16 : 10);
     if (d == ULONG_MAX && errno == ERANGE)
         throw opp_runtime_error("Overflow converting '%s' to unsigned long", s);
     return d;
@@ -770,26 +778,17 @@ unsigned long opp_atoul(const char *s)
 {
     char *endptr;
     unsigned long d = opp_strtoul(s, &endptr);
-    while (opp_isspace(*endptr))
-        endptr++;
-    if (*endptr)
-        throw opp_runtime_error("'%s' is not a valid unsigned integer", s);
+    check_garbage_after_int(endptr, s);
     return d;
 }
 
 long long opp_strtoll(const char *s, char **endptr)
 {
-    // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
-    // C's octal notation is not explicit enough, and causes confusion e.g. with
-    // the runnumber-width configuration option (bug #232)
-    while (opp_isspace(*s))
-        s++;
-    bool ishex = (s[0] == '0' && opp_toupper(s[1]) == 'X') ||
-        ((s[0] == '+' || s[0] == '-') && s[1] == '0' && opp_toupper(s[2]) == 'X');
+    skip_whitespace(s);
     errno = 0;
-    long long d = strtoll(s, endptr, ishex ? 16 : 10);
+    long long d = strtoll(s, endptr, ishex(s) ? 16 : 10);
     if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
-        throw opp_runtime_error("Overflow converting '%s' to long", s);
+        throw opp_runtime_error("Overflow converting '%s' to long long", s);
     return d;
 }
 
@@ -797,26 +796,17 @@ long long opp_atoll(const char *s)
 {
     char *endptr;
     long long d = opp_strtoll(s, &endptr);
-    while (opp_isspace(*endptr))
-        endptr++;
-    if (*endptr)
-        throw opp_runtime_error("'%s' is not a valid integer", s);
+    check_garbage_after_int(endptr, s);
     return d;
 }
 
 unsigned long long opp_strtoull(const char *s, char **endptr)
 {
-    // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
-    // C's octal notation is not explicit enough, and causes confusion e.g. with
-    // the runnumber-width configuration option (bug #232)
-    while (opp_isspace(*s))
-        s++;
-    bool ishex = (s[0] == '0' && opp_toupper(s[1]) == 'X') ||
-        (s[0] == '+' && s[1] == '0' && opp_toupper(s[2]) == 'X');
+    skip_whitespace(s);
     errno = 0;
-    unsigned long long d = strtoull(s, endptr, ishex ? 16 : 10);
+    unsigned long long d = strtoull(s, endptr, ishex(s) ? 16 : 10);
     if (d == ULONG_MAX && errno == ERANGE)
-        throw opp_runtime_error("Overflow converting '%s' to unsigned long", s);
+        throw opp_runtime_error("Overflow converting '%s' to unsigned long long", s);
     return d;
 }
 
@@ -824,10 +814,7 @@ unsigned long long opp_atoull(const char *s)
 {
     char *endptr;
     unsigned long long d = opp_strtoull(s, &endptr);
-    while (opp_isspace(*endptr))
-        endptr++;
-    if (*endptr)
-        throw opp_runtime_error("'%s' is not a valid unsigned integer", s);
+    check_garbage_after_int(endptr, s);
     return d;
 }
 
