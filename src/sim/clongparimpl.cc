@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <limits>
+#include <inttypes.h> // PRI64d
 #include "omnetpp/clongparimpl.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
@@ -75,7 +76,9 @@ void cLongParImpl::setLongValue(long l)
 void cLongParImpl::setDoubleValue(double d)
 {
     deleteOld();
-    val = double_to_long(d);
+    if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
+        throw cRuntimeError(this, "Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
+    val = (intpar_t)d;
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
@@ -113,6 +116,8 @@ intpar_t cLongParImpl::longValue(cComponent *context) const
         if (v.type != cNEDValue::DBL)
             throw cRuntimeError(E_ECANTCAST, "long");
         double d = v.doubleValueInUnit(getUnit());
+        if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
+            throw cRuntimeError(this, "Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
         return (intpar_t)d;
     }
 }

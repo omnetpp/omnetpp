@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <limits>
 #include "omnetpp/cdoubleparimpl.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
@@ -102,7 +103,10 @@ bool cDoubleParImpl::boolValue(cComponent *) const
 
 intpar_t cDoubleParImpl::longValue(cComponent *context) const
 {
-    return doubleValue(context); //FIXME check overflow
+    double d = doubleValue(context);
+    if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
+        throw cRuntimeError("Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
+    return (intpar_t)d;
 }
 
 double cDoubleParImpl::doubleValue(cComponent *context) const

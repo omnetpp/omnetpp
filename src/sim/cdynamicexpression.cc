@@ -308,6 +308,8 @@ intpar_t cDynamicExpression::longValue(cComponent *context, const char *expected
     if (v.type != cNEDValue::DBL)
         throw cRuntimeError(E_ECANTCAST, "int");
     double d = UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
+    if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
+        throw cRuntimeError("Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
     return (intpar_t)d;
 }
 

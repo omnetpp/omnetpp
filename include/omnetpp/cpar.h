@@ -94,6 +94,11 @@ class SIM_API cPar : public cObject
     // internal: called each time after the value of this object changes.
     void afterChange();
 
+    // internal: checked conversion to various integer types
+    template<typename T> T checked_int_cast(intpar_t x) const {T res = x; if (x != res) intcastError(x); return res;}
+    template<typename T> T checked_uint_cast(intpar_t x) const {T res = x; if (x < 0 || x != (intpar_t)res) intcastError(x); return res;}
+    void intcastError(intpar_t x) const;
+
   public:
     // internal, used by cComponent::finalizeParameters()
     void read();
@@ -448,52 +453,52 @@ class SIM_API cPar : public cObject
     /**
      * Calls longValue() and converts the result to char.
      */
-    operator char() const  {return (char)longValue();}
+    operator char() const  {return checked_int_cast<char>(longValue());}
 
     /**
      * Calls longValue() and converts the result to unsigned char.
      */
-    operator unsigned char() const  {return (unsigned char)longValue();}
+    operator unsigned char() const  {return checked_uint_cast<unsigned char>(longValue());}
 
     /**
      * Calls longValue() and converts the result to int.
      */
-    operator int() const  {return (int)longValue();}
+    operator int() const  {return checked_int_cast<int>(longValue());}
 
     /**
      * Calls longValue() and converts the result to unsigned int.
      */
-    operator unsigned int() const  {return (unsigned int)longValue();}
+    operator unsigned int() const  {return checked_uint_cast<unsigned int>(longValue());}
 
     /**
      * Calls longValue() and converts the result to short.
      */
-    operator short() const  {return (short)longValue();}
+    operator short() const  {return checked_int_cast<short>(longValue());}
 
     /**
      * Calls longValue() and converts the result to unsigned short.
      */
-    operator unsigned short() const  {return (unsigned short)longValue();}
+    operator unsigned short() const  {return checked_uint_cast<unsigned short>(longValue());}
 
     /**
      * Calls longValue() and converts the result to long.
      */
-    operator long() const  {return longValue();}
+    operator long() const  {return checked_int_cast<long>(longValue());}
 
     /**
      * Calls longValue() and converts the result to unsigned long.
      */
-    operator unsigned long() const  {return longValue();}
+    operator unsigned long() const  {return checked_uint_cast<unsigned long>(longValue());}
 
     /**
      * Calls longValue() and converts the result to long long.
      */
-    operator long long() const  {return longValue();}
+    operator long long() const  {return checked_int_cast<long long>(longValue());}
 
     /**
      * Calls longValue() and converts the result to unsigned long long.
      */
-    operator unsigned long long() const  {return longValue();}
+    operator unsigned long long() const  {return checked_uint_cast<unsigned long long>(longValue());}
 
     /**
      * Equivalent to doubleValue().
