@@ -257,22 +257,32 @@ class FingerprintTestCase(SimulationTestCase):
         self.csvFile = csvFile
         self.wd = wd
         self.args = args
-        self.simtimelimit = simtimelimit
+        self.simtimelimit = simtimelimit   # CPU time limit is a safety guard: fingerprint checks shouldn't take forever
         self.fingerprint = fingerprint
         self.storeFingerprintCallback = storeFingerprintCallback
         self.storeExitcodeCallback = storeExitcodeCallback
         self.repeat = repeat
 
     def runTest(self):
-        # CPU time limit is a safety guard: fingerprint checks shouldn't take forever
         global omnetRoot, opp_run, nedPath, cpuTimeLimit, extraOppRunArgs
 
-        # run the simulation
+        # working directory and separator
+        sep = "\\" if sys.platform == 'win32' else '/'
         workingdir = _iif(self.wd.startswith('/'), omnetRoot + self.wd, self.wd)
+
+        # derive program name from working directory
         m = re.search('/([^/]+)/$', workingdir)
         if not m:
             assert False, "could not identify program name from working directory"
         program = m.group(1)
+        if os.path.exists(workingdir + sep + program):
+            program = "." + sep
+        elif os.path.exists(workingdir + sep + program + "_dbg"):
+            program = "." + sep + program + "_dbg"
+        else:
+            raise Exception("program not found in " + workingdir + " as " + program + " or " + program + "_dbg")
+
+        # program name
         wdname = '' + self.wd
         wdname = re.sub('/', '_', wdname);
         wdname = re.sub('[\W]+', '_', wdname);
@@ -282,8 +292,9 @@ class FingerprintTestCase(SimulationTestCase):
                 os.makedirs(resultdir)
             except OSError:
                 pass
-        sep = "\\" if sys.platform == 'win32' else '/'
-        command = "." + sep + program + " -u Cmdenv " + self.args + \
+
+        # run the simulation
+        command = program + " -u Cmdenv " + self.args + \
             _iif(self.simtimelimit != "", " --sim-time-limit=" + self.simtimelimit, "") + \
             " \"--fingerprint=" + self.fingerprint + "\" --cpu-time-limit=" + cpuTimeLimit + \
             " --vector-recording=false --scalar-recording=true" + \
