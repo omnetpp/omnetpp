@@ -183,7 +183,7 @@ void SimTime::split(SimTimeUnit unit, int64_t& outValue, SimTime& outRemainder) 
 const SimTime& SimTime::operator=(const cPar& p)
 {
     switch (p.getType()) {
-        case cPar::LONG: return operator=(p.longValue());
+        case cPar::INT: return operator=(p.intValue());
         case cPar::DOUBLE: return operator=(p.doubleValue());
         default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
     }
@@ -192,7 +192,7 @@ const SimTime& SimTime::operator=(const cPar& p)
 const SimTime& SimTime::operator*=(const cPar& p)
 {
     switch (p.getType()) {
-        case cPar::LONG: return operator*=(p.longValue());
+        case cPar::INT: return operator*=(p.intValue());
         case cPar::DOUBLE: return operator*=(p.doubleValue());
         default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
     }
@@ -201,7 +201,7 @@ const SimTime& SimTime::operator*=(const cPar& p)
 const SimTime& SimTime::operator/=(const cPar& p)
 {
     switch (p.getType()) {
-        case cPar::LONG: return operator/=(p.longValue());
+        case cPar::INT: return operator/=(p.intValue());
         case cPar::DOUBLE: return operator/=(p.doubleValue());
         default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
     }

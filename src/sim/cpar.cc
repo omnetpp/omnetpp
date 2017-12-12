@@ -109,7 +109,7 @@ void cPar::operator=(const cPar& other)
         switch (getType()) {
             case BOOL:   setBoolValue(other.boolValue()); break;
             case DOUBLE: setDoubleValue(other.doubleValue()); break;
-            case LONG:   setLongValue(other.longValue()); break;
+            case INT:    setIntValue(other.intValue()); break;
             case STRING: setStringValue(other.stdstringValue().c_str()); break;
             case XML:    setXMLValue(other.xmlValue()); break;
             default:     ASSERT(false);
@@ -131,7 +131,7 @@ const char *cPar::getTypeName(Type t)
     switch (t) {
         case BOOL:   return "bool";
         case DOUBLE: return "double";
-        case LONG:   return "long";
+        case INT:    return "int";
         case STRING: return "string";
         case XML:    return "xml";
         default:     return "???";
@@ -178,19 +178,20 @@ bool cPar::isExpression() const
 
 void cPar::intcastError(intpar_t x) const
 {
-    throw cRuntimeError(this, "Cannot cast %" PRId64 " to a smaller or unsigned integer type: out of range", (int64_t)x);
+    throw cRuntimeError(this, "Integer overflow: cannot cast %" PRId64 " to a smaller (or unsigned) integer type", (int64_t)x);
 }
 
 #define TRY(x) \
     try { x; } catch (std::exception& e) { throw cRuntimeError(E_PARAM, getFullName(), e.what()); }
+
 bool cPar::boolValue() const
 {
     TRY(return p->boolValue(evalContext));
 }
 
-intpar_t cPar::longValue() const
+intpar_t cPar::intValue() const
 {
-    TRY(return p->longValue(evalContext));
+    TRY(return p->intValue(evalContext));
 }
 
 double cPar::doubleValue() const
@@ -233,11 +234,11 @@ cPar& cPar::setBoolValue(bool b)
     return *this;
 }
 
-cPar& cPar::setLongValue(intpar_t l)
+cPar& cPar::setIntValue(intpar_t l)
 {
     beforeChange();
     copyIfShared();
-    p->setLongValue(l);
+    p->setIntValue(l);
     evalContext = nullptr;
     afterChange();
     return *this;

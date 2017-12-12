@@ -1,0 +1,74 @@
+%description:
+Test overflows
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        int zero = 0;
+        int minus1 = -1;
+        int minus129 = -129;
+        int plus128 = 128;
+        int plus256 = 256;
+        
+        int big = 9e18; // 2^63
+        int minusBig = -9e18;
+}
+
+%activity:
+#define TRY(code)  try { EV << #code << " --> "; code; EV << x << "\n"; } catch(std::exception& e) {EV << "ERROR: " << e.what() << "\n";}
+
+TRY(unsigned char x = par("minus1"));
+TRY(unsigned char x = par("plus256"));
+
+TRY(char x = par("minus129"));
+TRY(char x = par("plus128"));
+
+TRY(unsigned short x = par("minus1"));
+TRY(unsigned int x = par("minus1"));
+TRY(unsigned long x = par("minus1"));
+TRY(unsigned long long x = par("minus1"));
+
+TRY(unsigned short x = par("plus128"));
+TRY(unsigned int x = par("plus128"));
+TRY(unsigned long x = par("plus128"));
+TRY(unsigned long long x = par("plus128"));
+
+TRY(short x = par("minus1"));
+TRY(int x = par("minus1"));
+TRY(long x = par("minus1"));
+TRY(long long x = par("minus1"));
+
+TRY(int x = par("big"));
+TRY(int x = par("minusBig"));
+TRY(int64_t x = par("big"));
+TRY(int64_t x = par("minusBig"));
+
+EV << ".\n";
+
+%contains: stdout
+unsigned char x = par("minus1") --> ERROR: (omnetpp::cPar)minus1: Integer overflow casting -1 to a smaller or unsigned integer type
+unsigned char x = par("plus256") --> ERROR: (omnetpp::cPar)plus256: Integer overflow casting 256 to a smaller or unsigned integer type
+char x = par("minus129") --> ERROR: (omnetpp::cPar)minus129: Integer overflow casting -129 to a smaller or unsigned integer type
+char x = par("plus128") --> ERROR: (omnetpp::cPar)plus128: Integer overflow casting 128 to a smaller or unsigned integer type
+unsigned short x = par("minus1") --> ERROR: (omnetpp::cPar)minus1: Integer overflow casting -1 to a smaller or unsigned integer type
+unsigned int x = par("minus1") --> ERROR: (omnetpp::cPar)minus1: Integer overflow casting -1 to a smaller or unsigned integer type
+unsigned long x = par("minus1") --> ERROR: (omnetpp::cPar)minus1: Integer overflow casting -1 to a smaller or unsigned integer type
+unsigned long long x = par("minus1") --> ERROR: (omnetpp::cPar)minus1: Integer overflow casting -1 to a smaller or unsigned integer type
+unsigned short x = par("plus128") --> 128
+unsigned int x = par("plus128") --> 128
+unsigned long x = par("plus128") --> 128
+unsigned long long x = par("plus128") --> 128
+short x = par("minus1") --> -1
+int x = par("minus1") --> -1
+long x = par("minus1") --> -1
+long long x = par("minus1") --> -1
+int x = par("big") --> ERROR: (omnetpp::cPar)big: Integer overflow casting 9000000000000000000 to a smaller or unsigned integer type
+int x = par("minusBig") --> ERROR: (omnetpp::cPar)minusBig: Integer overflow casting -9000000000000000000 to a smaller or unsigned integer type
+int64_t x = par("big") --> 9000000000000000000
+int64_t x = par("minusBig") --> -9000000000000000000
+.
+
+

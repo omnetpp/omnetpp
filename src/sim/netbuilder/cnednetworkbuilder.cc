@@ -37,8 +37,8 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cdataratechannel.h"
 #include "omnetpp/ccomponenttype.h"
-#include "omnetpp/clongparimpl.h"
 #include "omnetpp/cboolparimpl.h"
+#include "omnetpp/cintparimpl.h"
 #include "omnetpp/cstringparimpl.h"
 #include "common/displaystring.h"
 #include "omnetpp/cconfiguration.h"
@@ -130,7 +130,7 @@ void cNEDNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNEDDe
 cPar::Type cNEDNetworkBuilder::translateParamType(int t)
 {
     return t == NED_PARTYPE_DOUBLE ? cPar::DOUBLE :
-           t == NED_PARTYPE_INT ? cPar::LONG :
+           t == NED_PARTYPE_INT ? cPar::INT :
            t == NED_PARTYPE_STRING ? cPar::STRING :
            t == NED_PARTYPE_BOOL ? cPar::BOOL :
            t == NED_PARTYPE_XML ? cPar::XML :
@@ -385,14 +385,14 @@ void cNEDNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool
                 if (!value) {
                     // not yet seen, compile and cache it
                     cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-                    value = new cLongParImpl();
+                    value = new cIntParImpl();
                     value->setName("gatesize-expression");
                     cExpressionBuilder::setExpression(value, dynamicExpr);
                     currentDecl->putSharedParImplFor(exprNode, value);
                 }
 
                 // evaluate the expression, and set the gate vector size
-                int gatesize = value->longValue(module);
+                int gatesize = value->intValue(module);
                 module->setGateSize(gateNode->getName(), gatesize);
             }
         }
@@ -1220,8 +1220,8 @@ cParImpl *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode,
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     try {
-        cParImpl *p = getOrCreateExpression(exprNode, cPar::LONG, nullptr, inSubcomponentScope);
-        return p->longValue(context);
+        cParImpl *p = getOrCreateExpression(exprNode, cPar::INT, nullptr, inSubcomponentScope);
+        return p->intValue(context);
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, exprNode);

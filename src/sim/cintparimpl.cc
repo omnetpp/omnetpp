@@ -1,5 +1,5 @@
 //==========================================================================
-//   CLONGPAR.CC  - part of
+//   CINTPAR.CC  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -17,24 +17,24 @@
 
 #include <limits>
 #include <inttypes.h> // PRI64d
-#include "omnetpp/clongparimpl.h"
+#include "omnetpp/cintparimpl.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
 
 namespace omnetpp {
 
-cLongParImpl::cLongParImpl()
+cIntParImpl::cIntParImpl()
 {
     val = 0;
 }
 
-cLongParImpl::~cLongParImpl()
+cIntParImpl::~cIntParImpl()
 {
     deleteOld();
 }
 
-void cLongParImpl::copy(const cLongParImpl& other)
+void cIntParImpl::copy(const cIntParImpl& other)
 {
     if (flags & FL_ISEXPR)
         expr = other.expr->dup();
@@ -42,7 +42,7 @@ void cLongParImpl::copy(const cLongParImpl& other)
         val = other.val;
 }
 
-void cLongParImpl::operator=(const cLongParImpl& other)
+void cIntParImpl::operator=(const cIntParImpl& other)
 {
     if (this == &other)
         return;
@@ -51,29 +51,29 @@ void cLongParImpl::operator=(const cLongParImpl& other)
     copy(other);
 }
 
-void cLongParImpl::parsimPack(cCommBuffer *buffer) const
+void cIntParImpl::parsimPack(cCommBuffer *buffer) const
 {
     //TBD
 }
 
-void cLongParImpl::parsimUnpack(cCommBuffer *buffer)
+void cIntParImpl::parsimUnpack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cLongParImpl::setBoolValue(bool b)
+void cIntParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "int/long");
 }
 
-void cLongParImpl::setLongValue(long l)
+void cIntParImpl::setIntValue(long l)
 {
     deleteOld();
     val = l;
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
-void cLongParImpl::setDoubleValue(double d)
+void cIntParImpl::setDoubleValue(double d)
 {
     deleteOld();
     if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
@@ -82,29 +82,29 @@ void cLongParImpl::setDoubleValue(double d)
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
-void cLongParImpl::setStringValue(const char *s)
+void cIntParImpl::setStringValue(const char *s)
 {
     throw cRuntimeError(this, E_BADCAST, "string", "int/long");
 }
 
-void cLongParImpl::setXMLValue(cXMLElement *node)
+void cIntParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, E_BADCAST, "XML", "int/long");
 }
 
-void cLongParImpl::setExpression(cExpression *e)
+void cIntParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_CONTAINSVALUE | FL_ISSET;
 }
 
-bool cLongParImpl::boolValue(cComponent *) const
+bool cIntParImpl::boolValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "int/long", "bool");
 }
 
-intpar_t cLongParImpl::longValue(cComponent *context) const
+intpar_t cIntParImpl::intValue(cComponent *context) const
 {
     if ((flags & FL_ISSET) == 0)
         throw cRuntimeError(E_PARNOTSET);
@@ -122,32 +122,32 @@ intpar_t cLongParImpl::longValue(cComponent *context) const
     }
 }
 
-double cLongParImpl::doubleValue(cComponent *context) const
+double cIntParImpl::doubleValue(cComponent *context) const
 {
-    return (double)longValue(context);
+    return (double)intValue(context);
 }
 
-const char *cLongParImpl::stringValue(cComponent *) const
-{
-    throw cRuntimeError(this, E_BADCAST, "int/long", "string");
-}
-
-std::string cLongParImpl::stdstringValue(cComponent *) const
+const char *cIntParImpl::stringValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "int/long", "string");
 }
 
-cXMLElement *cLongParImpl::xmlValue(cComponent *) const
+std::string cIntParImpl::stdstringValue(cComponent *) const
+{
+    throw cRuntimeError(this, E_BADCAST, "int/long", "string");
+}
+
+cXMLElement *cIntParImpl::xmlValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "int/long", "XML");
 }
 
-cExpression *cLongParImpl::getExpression() const
+cExpression *cIntParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : nullptr;
 }
 
-void cLongParImpl::deleteOld()
+void cIntParImpl::deleteOld()
 {
     if (flags & FL_ISEXPR) {
         delete expr;
@@ -155,22 +155,22 @@ void cLongParImpl::deleteOld()
     }
 }
 
-cPar::Type cLongParImpl::getType() const
+cPar::Type cIntParImpl::getType() const
 {
-    return cPar::LONG;
+    return cPar::INT;
 }
 
-bool cLongParImpl::isNumeric() const
+bool cIntParImpl::isNumeric() const
 {
     return true;
 }
 
-void cLongParImpl::convertToConst(cComponent *context)
+void cIntParImpl::convertToConst(cComponent *context)
 {
-    setLongValue(longValue(context));
+    setIntValue(intValue(context));
 }
 
-std::string cLongParImpl::str() const
+std::string cIntParImpl::str() const
 {
     if (flags & FL_ISEXPR)
         return expr->str();
@@ -185,7 +185,7 @@ std::string cLongParImpl::str() const
     }
 }
 
-void cLongParImpl::parse(const char *text)
+void cIntParImpl::parse(const char *text)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -203,13 +203,13 @@ void cLongParImpl::parse(const char *text)
         convertToConst(nullptr);
 }
 
-int cLongParImpl::compare(const cParImpl *other) const
+int cIntParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
     if (ret != 0)
         return ret;
 
-    const cLongParImpl *other2 = dynamic_cast<const cLongParImpl *>(other);
+    const cIntParImpl *other2 = dynamic_cast<const cIntParImpl *>(other);
     if (flags & FL_ISEXPR)
         return expr->compare(other2->expr);
     else

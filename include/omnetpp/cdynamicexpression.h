@@ -281,7 +281,7 @@ class SIM_API cDynamicExpression : public cExpression
      * throw an error if conversion from that type is not supported, or
      * the value of out of the range of intpar_t.
      */
-    virtual intpar_t longValue(cComponent *context, const char *expectedUnit=nullptr) override;
+    virtual intpar_t intValue(cComponent *context, const char *expectedUnit=nullptr) override;
 
     /**
      * Evaluate the expression and convert the result to double if possible;

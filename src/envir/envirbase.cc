@@ -1549,7 +1549,7 @@ void EnvirBase::setupRNGMapping(cComponent *component)
                 cNEDValue tmp = expr.evaluate(component);
                 if (!tmp.isNumeric())
                     throw opp_runtime_error("Numeric constant or expression expected");
-                physRng = tmp.longValue();
+                physRng = tmp;
             }
 
             if (physRng >= getNumRNGs())

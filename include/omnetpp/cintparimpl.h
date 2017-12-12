@@ -1,5 +1,5 @@
 //==========================================================================
-//   CLONGPARIMPL.H  - part of
+//   CINTPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,20 +13,19 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CLONGPARIMPL_H
-#define __OMNETPP_CLONGPARIMPL_H
+#ifndef __OMNETPP_CINTPARIMPL_H
+#define __OMNETPP_CINTPARIMPL_H
 
 #include "cparimpl.h"
 
 namespace omnetpp {
 
 /**
- * @brief A cParImpl subclass that stores a module/channel parameter
- * of the type long.
+ * @brief A cParImpl subclass that stores an integer module/channel parameter.
  *
  * @ingroup Internals
  */
-class SIM_API cLongParImpl : public cParImpl
+class SIM_API cIntParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -36,7 +35,7 @@ class SIM_API cLongParImpl : public cParImpl
     };
 
   private:
-    void copy(const cLongParImpl& other);
+    void copy(const cIntParImpl& other);
 
   protected:
     void deleteOld();
@@ -48,22 +47,22 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Constructor.
      */
-    explicit cLongParImpl();
+    explicit cIntParImpl();
 
     /**
      * Copy constructor.
      */
-    cLongParImpl(const cLongParImpl& other) : cParImpl(other) {copy(other);}
+    cIntParImpl(const cIntParImpl& other) : cParImpl(other) {copy(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cLongParImpl();
+    virtual ~cIntParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cLongParImpl& otherpar);
+    void operator=(const cIntParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -72,7 +71,7 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cLongParImpl *dup() const override  {return new cLongParImpl(*this);}
+    virtual cIntParImpl *dup() const override  {return new cIntParImpl(*this);}
 
     /**
      * Serializes the object into a buffer.
@@ -89,14 +88,14 @@ class SIM_API cLongParImpl : public cParImpl
     //@{
 
     /**
-     * Raises an error: cannot convert bool to long.
+     * Raises an error: cannot convert bool to integer.
      */
     virtual void setBoolValue(bool b) override;
 
     /**
      * Sets the value to the given integer.
      */
-    virtual void setLongValue(intpar_t l) override;
+    virtual void setIntValue(intpar_t l) override;
 
     /**
      * Converts from double.
@@ -104,12 +103,12 @@ class SIM_API cLongParImpl : public cParImpl
     virtual void setDoubleValue(double d) override;
 
     /**
-     * Raises an error: cannot convert string to long.
+     * Raises an error: cannot convert string to integer.
      */
     virtual void setStringValue(const char *s) override;
 
     /**
-     * Raises an error: cannot convert XML to long.
+     * Raises an error: cannot convert XML to integer.
      */
     virtual void setXMLValue(cXMLElement *node) override;
 
@@ -124,14 +123,14 @@ class SIM_API cLongParImpl : public cParImpl
     //@{
 
     /**
-     * Raises an error: cannot convert long to bool.
+     * Raises an error: cannot convert integer to bool.
      */
     virtual bool boolValue(cComponent *context) const override;
 
     /**
      * Returns the value of the parameter.
      */
-    virtual intpar_t longValue(cComponent *context) const override;
+    virtual intpar_t intValue(cComponent *context) const override;
 
     /**
      * Converts the value to double.
@@ -139,17 +138,17 @@ class SIM_API cLongParImpl : public cParImpl
     virtual double doubleValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert long to string.
+     * Raises an error: cannot convert integer to string.
      */
     virtual const char *stringValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert long to string.
+     * Raises an error: cannot convert integer to string.
      */
     virtual std::string stdstringValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert long to XML.
+     * Raises an error: cannot convert integer to XML.
      */
     virtual cXMLElement *xmlValue(cComponent *context) const override;
 
@@ -163,7 +162,7 @@ class SIM_API cLongParImpl : public cParImpl
     //@{
 
     /**
-     * Returns LONG.
+     * Returns INT.
      */
     virtual Type getType() const override;
 

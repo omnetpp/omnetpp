@@ -59,7 +59,7 @@
 #include "omnetpp/clcg32.h"
 #include "omnetpp/clistener.h"
 #include "omnetpp/clog.h"
-#include "omnetpp/clongparimpl.h"
+#include "omnetpp/cintparimpl.h"
 #include "omnetpp/cmersennetwister.h"
 #include "omnetpp/simtime.h"
 #include "omnetpp/simtimemath.h"

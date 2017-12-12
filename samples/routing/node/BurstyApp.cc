@@ -85,7 +85,7 @@ void BurstyApp::initialize()
     fsm.setName("fsm");
 
     destAddresses = cStringTokenizer(par("destAddresses").stdstringValue().c_str()).asIntVector();
-    myAddress = par("address").longValue();
+    myAddress = par("address");
     sleepTime = &par("sleepTime");
     burstTime = &par("burstTime");
     sendIATime = &par("sendIaTime");
@@ -189,7 +189,7 @@ void BurstyApp::generatePacket()
     EV << "generating packet " << pkname << endl;
 
     Packet *pk = new Packet(pkname);
-    pk->setByteLength(packetLengthBytes->longValue());
+    pk->setByteLength(packetLengthBytes->intValue());
     pk->setSrcAddr(myAddress);
     pk->setDestAddr(destAddress);
     send(pk, "out");

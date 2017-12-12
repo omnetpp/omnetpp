@@ -454,7 +454,7 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
             switch (par->getType()) {
               case cPar::BOOL: buffer += (par->boolValue() ? "1" : "0"); break;
               case cPar::STRING: buffer += par->stdstringValue(); break;
-              case cPar::LONG: buffer += opp_stringf("%" PRId64, (int64_t) par->longValue()); break;
+              case cPar::INT: buffer += opp_stringf("%" PRId64, (int64_t) par->intValue()); break;
               case cPar::DOUBLE: buffer += opp_stringf("%g", par->doubleValue()); break;
               default: throw cRuntimeError("Cannot substitute parameter %s into display string: Wrong data type", par->getFullPath().c_str());
             }
@@ -486,7 +486,7 @@ long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultVa
         return (long)atol(arg);
     cPar *par = resolveDisplayStringParamRef(arg, component, true);
     if (par && par->isNumeric())
-        return par->longValue();
+        return par->intValue();
     std::string buffer;
     const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
     return (long)atol(arg2);

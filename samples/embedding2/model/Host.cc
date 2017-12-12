@@ -60,7 +60,7 @@ void Host::handleMessage(cMessage *msg)
         state = TRANSMIT;
 
         cPacket *pk = new cPacket(pkname);
-        pk->setBitLength(pkLenBits->longValue());
+        pk->setBitLength(pkLenBits->intValue());
         simtime_t duration = pk->getBitLength() / txRate;
         sendDirect(pk, radioDelay, duration, server->gate("in"));
 

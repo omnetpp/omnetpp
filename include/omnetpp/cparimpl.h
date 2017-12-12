@@ -36,7 +36,7 @@ class cComponent;
  * memory by using shared storage for module parameters that have the same values.
  *
  * cParImpl is an abstract base class, which supports several data types via
- * subclasses: cLongParImpl, cDoubleParImpl, cBoolParImpl, cStringParImpl,
+ * subclasses: cIntParImpl, cDoubleParImpl, cBoolParImpl, cStringParImpl,
  * cXMLParImpl.
  *
  * @ingroup Internals
@@ -196,7 +196,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Sets the value to the given integer value.
      */
-    virtual void setLongValue(intpar_t l) = 0;
+    virtual void setIntValue(intpar_t l) = 0;
 
     /**
      * Sets the value to the given double value.
@@ -240,17 +240,17 @@ class SIM_API cParImpl : public cNamedObject
     virtual bool boolValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as an integer. The cParImpl type must be LONG or DOUBLE.
+     * Returns value as an integer. The cParImpl type must be INT or DOUBLE.
      */
-    virtual intpar_t longValue(cComponent *context) const = 0;
+    virtual intpar_t intValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as long. The cParImpl type must be LONG or DOUBLE.
+     * Returns value as a double. The cParImpl type must be INT or DOUBLE.
      */
     virtual double doubleValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as const char *. Only for STRING type.
+     * Returns value as const char *. The cParImpl type must be STRING.
      * This method may only be invoked when the parameter's value is a
      * string constant and not the result of expression evaluation, otherwise
      * an error is thrown. This practically means this method cannot be used
@@ -260,7 +260,7 @@ class SIM_API cParImpl : public cNamedObject
     virtual const char *stringValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as string. Only for string (S) type.
+     * Returns value as string. The cParImpl type must be STRING.
      */
     virtual std::string stdstringValue(cComponent *context) const = 0;
 

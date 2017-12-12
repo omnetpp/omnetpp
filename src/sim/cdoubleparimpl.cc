@@ -65,7 +65,7 @@ void cDoubleParImpl::setBoolValue(bool b)
     throw cRuntimeError(this, E_BADCAST, "bool", "double");
 }
 
-void cDoubleParImpl::setLongValue(intpar_t l)
+void cDoubleParImpl::setIntValue(intpar_t l)
 {
     deleteOld();
     val = l;
@@ -101,7 +101,7 @@ bool cDoubleParImpl::boolValue(cComponent *) const
     throw cRuntimeError(this, E_BADCAST, "double", "bool");
 }
 
-intpar_t cDoubleParImpl::longValue(cComponent *context) const
+intpar_t cDoubleParImpl::intValue(cComponent *context) const
 {
     double d = doubleValue(context);
     if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())

@@ -23,7 +23,7 @@
 #include "omnetpp/csimulation.h"
 
 #include "omnetpp/cboolparimpl.h"
-#include "omnetpp/clongparimpl.h"
+#include "omnetpp/cintparimpl.h"
 #include "omnetpp/cdoubleparimpl.h"
 #include "omnetpp/cstringparimpl.h"
 #include "omnetpp/cxmlparimpl.h"
@@ -143,7 +143,7 @@ cParImpl *cParImpl::createWithType(Type type)
     switch (type) {
         case cPar::BOOL:    return new cBoolParImpl();
         case cPar::DOUBLE:  return new cDoubleParImpl();
-        case cPar::LONG:    return new cLongParImpl();
+        case cPar::INT:    return new cIntParImpl();
         case cPar::STRING:  return new cStringParImpl();
         case cPar::XML:     return new cXMLParImpl();
         default: throw cRuntimeError("cParImpl::createWithType(): No such type: %d", type);

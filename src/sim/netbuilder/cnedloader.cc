@@ -24,7 +24,7 @@
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cpar.h"
-#include "omnetpp/clongparimpl.h"
+#include "omnetpp/cintparimpl.h"
 #include "omnetpp/cdoubleparimpl.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/cdisplaystring.h"

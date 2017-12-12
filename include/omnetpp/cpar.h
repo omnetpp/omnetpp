@@ -40,7 +40,7 @@ class cComponent;
  * declarations and the configuration. It is possible to change the
  * parameter value during runtime (see various setter methods and
  * operator='s), but not the type of the parameter (see getType()).
- * The type correspond to NED types (bool, double, long, string, xml),
+ * The type correspond to NED types (bool, double, int, string, xml),
  * and cannot be changed at runtime.
  *
  * The module or channel object can get notified when a parameter is
@@ -71,9 +71,10 @@ class SIM_API cPar : public cObject
     enum Type {
         BOOL = 'B',
         DOUBLE = 'D',
-        LONG = 'L',
+        INT = 'L',
         STRING = 'S',
-        XML = 'X'
+        XML = 'X',
+        LONG = INT // for backward compatibility
     };
 
   private:
@@ -217,9 +218,14 @@ class SIM_API cPar : public cObject
     cPar& setBoolValue(bool b);
 
     /**
-     * Sets the value to the given long value.
+     * Sets the value to the given integer value.
      */
-    cPar& setLongValue(long l);
+    cPar& setIntValue(intpar_t l);
+
+    /**
+     * Compatibility method, delegates to setIntValue().
+     */
+    _OPPDEPRECATED cPar& setLongValue(intpar_t l) {return setIntValue(l);}
 
     /**
      * Sets the value to the given double value.
@@ -277,19 +283,24 @@ class SIM_API cPar : public cObject
     bool boolValue() const;
 
     /**
-     * Returns value as intpar_t. The cPar type must be LONG or DOUBLE.
+     * Returns value as intpar_t. The cPar type must be INT or DOUBLE.
      */
-    intpar_t longValue() const;
+    intpar_t intValue() const;
 
     /**
-     * Returns value as double. The cPar type must be LONG or DOUBLE.
+     * Compatibility method, delegates to intValue().
+     */
+    _OPPDEPRECATED intpar_t longValue() const {return intValue();}
+
+    /**
+     * Returns value as double. The cPar type must be INT or DOUBLE.
      */
     double doubleValue() const;
 
     /**
      * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),
      * as declared with the @unit property of the parameter in NED,
-     * or nullptr if no unit was specified. Unit is only valid for LONG and DOUBLE
+     * or nullptr if no unit was specified. Unit is only valid for INT and DOUBLE
      * types.
      */
     const char *getUnit() const;
@@ -371,54 +382,54 @@ class SIM_API cPar : public cObject
     cPar& operator=(bool b)  {return setBoolValue(b);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(char c)  {return setLongValue(c);}
+    cPar& operator=(char c)  {return setIntValue(c);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned char c)  {return setLongValue(c);}
+    cPar& operator=(unsigned char c)  {return setIntValue(c);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(int i)  {return setLongValue(i);}
+    cPar& operator=(int i)  {return setIntValue(i);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned int i)  {return setLongValue(i);}
+    cPar& operator=(unsigned int i)  {return setIntValue(i);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(short i)  {return setLongValue(i);}
+    cPar& operator=(short i)  {return setIntValue(i);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned short i)  {return setLongValue(i);}
+    cPar& operator=(unsigned short i)  {return setIntValue(i);}
 
     /**
-     * Equivalent to setLongValue().
+     * Equivalent to setIntValue().
      */
-    cPar& operator=(long i)  {return setLongValue(i);}
+    cPar& operator=(long i)  {return setIntValue(i);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned long i) {return setLongValue(i);}
+    cPar& operator=(unsigned long i) {return setIntValue(i);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(long long i)  {return setLongValue(i);}
+    cPar& operator=(long long i)  {return setIntValue(i);}
 
     /**
-     * Delegates to setLongValue().
+     * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned long long i)  {return setLongValue(i);}
+    cPar& operator=(unsigned long long i)  {return setIntValue(i);} //TODO check range
 
     /**
      * Equivalent to setDoubleValue().
@@ -451,54 +462,54 @@ class SIM_API cPar : public cObject
     operator bool() const  {return boolValue();}
 
     /**
-     * Calls longValue() and converts the result to char.
+     * Calls intValue() and converts the result to char.
      */
-    operator char() const  {return checked_int_cast<char>(longValue());}
+    operator char() const  {return checked_int_cast<char>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to unsigned char.
+     * Calls intValue() and converts the result to unsigned char.
      */
-    operator unsigned char() const  {return checked_uint_cast<unsigned char>(longValue());}
+    operator unsigned char() const  {return checked_uint_cast<unsigned char>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to int.
+     * Calls intValue() and converts the result to int.
      */
-    operator int() const  {return checked_int_cast<int>(longValue());}
+    operator int() const  {return checked_int_cast<int>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to unsigned int.
+     * Calls intValue() and converts the result to unsigned int.
      */
-    operator unsigned int() const  {return checked_uint_cast<unsigned int>(longValue());}
+    operator unsigned int() const  {return checked_uint_cast<unsigned int>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to short.
+     * Calls intValue() and converts the result to short.
      */
-    operator short() const  {return checked_int_cast<short>(longValue());}
+    operator short() const  {return checked_int_cast<short>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to unsigned short.
+     * Calls intValue() and converts the result to unsigned short.
      */
-    operator unsigned short() const  {return checked_uint_cast<unsigned short>(longValue());}
+    operator unsigned short() const  {return checked_uint_cast<unsigned short>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to long.
+     * Calls intValue() and converts the result to long.
      */
-    operator long() const  {return checked_int_cast<long>(longValue());}
+    operator long() const  {return checked_int_cast<long>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to unsigned long.
+     * Calls intValue() and converts the result to unsigned long.
      */
-    operator unsigned long() const  {return checked_uint_cast<unsigned long>(longValue());}
+    operator unsigned long() const  {return checked_uint_cast<unsigned long>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to long long.
+     * Calls intValue() and converts the result to long long.
      */
-    operator long long() const  {return checked_int_cast<long long>(longValue());}
+    operator long long() const  {return checked_int_cast<long long>(intValue());}
 
     /**
-     * Calls longValue() and converts the result to unsigned long long.
+     * Calls intValue() and converts the result to unsigned long long.
      */
-    operator unsigned long long() const  {return checked_uint_cast<unsigned long long>(longValue());}
+    operator unsigned long long() const  {return checked_uint_cast<unsigned long long>(intValue());}
 
     /**
      * Equivalent to doubleValue().

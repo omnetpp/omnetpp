@@ -26,7 +26,6 @@ PRINT_CLASSNAME( cOutVector )
 PRINT_CLASSNAME( cPSquare )
 PRINT_CLASSNAME( cQueue )
 PRINT_CLASSNAME( cStdDev )
-PRINT_CLASSNAME( cWeightedStdDev )
 PRINT_CLASSNAME( cTopology )
 PRINT_CLASSNAME( cVarHistogram )
 
@@ -46,7 +45,6 @@ cOutVector: cOutVector
 cPSquare: cPSquare
 cQueue: cQueue
 cStdDev: cStdDev
-cWeightedStdDev: cWeightedStdDev
 cTopology: cTopology
 cVarHistogram: cVarHistogram
 

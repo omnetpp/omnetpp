@@ -99,7 +99,7 @@ class SIM_API cExpression : public cObject
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual intpar_t longValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
+    virtual intpar_t intValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to double if possible;

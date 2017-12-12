@@ -66,7 +66,7 @@ void cBoolParImpl::setBoolValue(bool b)
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
-void cBoolParImpl::setLongValue(intpar_t l)
+void cBoolParImpl::setIntValue(intpar_t l)
 {
     throw cRuntimeError(this, E_BADCAST, "int/long", "double");
 }
@@ -108,7 +108,7 @@ bool cBoolParImpl::boolValue(cComponent *context) const
     }
 }
 
-intpar_t cBoolParImpl::longValue(cComponent *) const
+intpar_t cBoolParImpl::intValue(cComponent *) const
 {
     throw cRuntimeError(this, E_BADCAST, "bool", "int/long");
 }
@@ -153,7 +153,7 @@ cPar::Type cBoolParImpl::getType() const
 
 bool cBoolParImpl::isNumeric() const
 {
-    return false;  // because doubleValue() and longValue() throws error
+    return false;  // because doubleValue() and intValue() throw error
 }
 
 void cBoolParImpl::convertToConst(cComponent *context)

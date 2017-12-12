@@ -302,7 +302,7 @@ bool cDynamicExpression::boolValue(cComponent *context)
     return v.bl;
 }
 
-intpar_t cDynamicExpression::longValue(cComponent *context, const char *expectedUnit)
+intpar_t cDynamicExpression::intValue(cComponent *context, const char *expectedUnit)
 {
     cNEDValue v = evaluate(context);
     if (v.type != cNEDValue::DBL)
@@ -368,7 +368,6 @@ cNEDValue cDynamicExpression::evaluate(cComponent *context) const
         ~Finally() { if (stk == _stk) _stkinuse = false; else delete[] stk; }
     } f(stk);
 
-    // printf("    evaluating: %s\n", str().c_str()); //XXX
     int tos = -1;
     for (int i = 0; i < size; i++) {
         Elem& e = elems[i];
@@ -698,8 +697,6 @@ cNEDValue cDynamicExpression::evaluate(cComponent *context) const
     }
     if (tos != 0)
         throw cRuntimeError(E_BADEXP);
-
-    // printf("        ==> returning %s\n", stk[tos].str().c_str()); //XXX
 
     return stk[tos];
 }

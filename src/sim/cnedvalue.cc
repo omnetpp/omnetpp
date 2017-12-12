@@ -62,7 +62,7 @@ void cNEDValue::set(const cPar& par)
     switch (par.getType()) {
         case cPar::BOOL: *this = par.boolValue(); break;
         case cPar::DOUBLE: *this = par.doubleValue(); dblunit = par.getUnit(); break;
-        case cPar::LONG: *this = par.doubleValue(); dblunit = par.getUnit(); break;
+        case cPar::INT: *this = par.doubleValue(); dblunit = par.getUnit(); break;
         case cPar::STRING: *this = par.stdstringValue(); break;
         case cPar::XML: *this = par.xmlValue(); break;
         default: throw cRuntimeError("Internal error: Bad cPar type: %s", par.getFullPath().c_str());

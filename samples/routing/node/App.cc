@@ -97,7 +97,7 @@ void App::handleMessage(cMessage *msg)
         EV << "generating packet " << pkname << endl;
 
         Packet *pk = new Packet(pkname);
-        pk->setByteLength(packetLengthBytes->longValue());
+        pk->setByteLength(packetLengthBytes->intValue());
         pk->setKind(intuniform(0, 7));
         pk->setSrcAddr(myAddress);
         pk->setDestAddr(destAddress);
