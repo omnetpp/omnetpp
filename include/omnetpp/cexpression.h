@@ -95,11 +95,11 @@ class SIM_API cExpression : public cObject
     virtual bool boolValue(cComponent *context=nullptr) = 0;
 
     /**
-     * Evaluate the expression and convert the result to long if possible;
+     * Evaluate the expression and convert the result to intpar_t if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual long longValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
+    virtual intpar_t longValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to double if possible;

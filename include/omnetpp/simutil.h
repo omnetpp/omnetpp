@@ -262,17 +262,6 @@ inline void opp_appendindex(char *s, unsigned int i)
    sprintf(s,"%d]",i);
 }
 
-inline long double_to_long(double d)
-{
-    // gcc feature: if double d=0xc0000000, (long)d yields 0x80000000 !
-    // This only happens with long: unsigned long is OK.
-    // This causes trouble if we in fact want to cast this long to unsigned long, see NED_expr_2.test.
-    // Workaround follows. Note: even the ul variable is needed: when inlining it, gcc will do the wrong cast!
-    long l = (long)d;
-    unsigned long ul = (unsigned long)d;
-    return d<0 ? l : ul;
-}
-
 // internal
 inline std::string double_to_str(double t)
 {

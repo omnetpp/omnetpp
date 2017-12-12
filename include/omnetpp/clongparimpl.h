@@ -32,7 +32,7 @@ class SIM_API cLongParImpl : public cParImpl
     // selector: flags & FL_ISEXPR
     union {
       cExpression *expr;
-      long val;
+      intpar_t val;
     };
 
   private:
@@ -94,9 +94,9 @@ class SIM_API cLongParImpl : public cParImpl
     virtual void setBoolValue(bool b) override;
 
     /**
-     * Sets the value to the given constant.
+     * Sets the value to the given integer.
      */
-    virtual void setLongValue(long l) override;
+    virtual void setLongValue(intpar_t l) override;
 
     /**
      * Converts from double.
@@ -131,7 +131,7 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Returns the value of the parameter.
      */
-    virtual long longValue(cComponent *context) const override;
+    virtual intpar_t longValue(cComponent *context) const override;
 
     /**
      * Converts the value to double.

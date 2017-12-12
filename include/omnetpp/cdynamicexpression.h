@@ -127,6 +127,12 @@ class SIM_API cDynamicExpression : public cExpression
 
         /**
          * Effect during evaluation of the expression: pushes the given number
+         * (which is converted to double) to the evaluation stack.
+         */
+        void operator=(long long l);
+
+        /**
+         * Effect during evaluation of the expression: pushes the given number
          * to the evaluation stack.
          */
         void operator=(double d);
@@ -271,10 +277,11 @@ class SIM_API cDynamicExpression : public cExpression
     virtual bool boolValue(cComponent *context) override;
 
     /**
-     * Evaluate the expression and convert the result to long if possible;
-     * throw an error if conversion from that type is not supported.
+     * Evaluate the expression and convert the result to intpar_t if possible;
+     * throw an error if conversion from that type is not supported, or
+     * the value of out of the range of intpar_t.
      */
-    virtual long longValue(cComponent *context, const char *expectedUnit=nullptr) override;
+    virtual intpar_t longValue(cComponent *context, const char *expectedUnit=nullptr) override;
 
     /**
      * Evaluate the expression and convert the result to double if possible;

@@ -777,6 +777,60 @@ unsigned long opp_atoul(const char *s)
     return d;
 }
 
+long long opp_strtoll(const char *s, char **endptr)
+{
+    // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
+    // C's octal notation is not explicit enough, and causes confusion e.g. with
+    // the runnumber-width configuration option (bug #232)
+    while (opp_isspace(*s))
+        s++;
+    bool ishex = (s[0] == '0' && opp_toupper(s[1]) == 'X') ||
+        ((s[0] == '+' || s[0] == '-') && s[1] == '0' && opp_toupper(s[2]) == 'X');
+    errno = 0;
+    long long d = strtoll(s, endptr, ishex ? 16 : 10);
+    if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
+        throw opp_runtime_error("Overflow converting '%s' to long", s);
+    return d;
+}
+
+long long opp_atoll(const char *s)
+{
+    char *endptr;
+    long long d = opp_strtoll(s, &endptr);
+    while (opp_isspace(*endptr))
+        endptr++;
+    if (*endptr)
+        throw opp_runtime_error("'%s' is not a valid integer", s);
+    return d;
+}
+
+unsigned long long opp_strtoull(const char *s, char **endptr)
+{
+    // accept decimal and hex numbers (0x), but ignore leading zero as octal prefix;
+    // C's octal notation is not explicit enough, and causes confusion e.g. with
+    // the runnumber-width configuration option (bug #232)
+    while (opp_isspace(*s))
+        s++;
+    bool ishex = (s[0] == '0' && opp_toupper(s[1]) == 'X') ||
+        (s[0] == '+' && s[1] == '0' && opp_toupper(s[2]) == 'X');
+    errno = 0;
+    unsigned long long d = strtoull(s, endptr, ishex ? 16 : 10);
+    if (d == ULONG_MAX && errno == ERANGE)
+        throw opp_runtime_error("Overflow converting '%s' to unsigned long", s);
+    return d;
+}
+
+unsigned long long opp_atoull(const char *s)
+{
+    char *endptr;
+    unsigned long long d = opp_strtoull(s, &endptr);
+    while (opp_isspace(*endptr))
+        endptr++;
+    if (*endptr)
+        throw opp_runtime_error("'%s' is not a valid unsigned integer", s);
+    return d;
+}
+
 double opp_strtod(const char *s, char **endptr)
 {
     setlocale(LC_NUMERIC, "C");

@@ -183,7 +183,7 @@ bool cPar::boolValue() const
     TRY(return p->boolValue(evalContext));
 }
 
-long cPar::longValue() const
+intpar_t cPar::longValue() const
 {
     TRY(return p->longValue(evalContext));
 }
@@ -228,7 +228,7 @@ cPar& cPar::setBoolValue(bool b)
     return *this;
 }
 
-cPar& cPar::setLongValue(long l)
+cPar& cPar::setLongValue(intpar_t l)
 {
     beforeChange();
     copyIfShared();

@@ -272,9 +272,9 @@ class SIM_API cPar : public cObject
     bool boolValue() const;
 
     /**
-     * Returns value as long. The cPar type must be LONG or DOUBLE.
+     * Returns value as intpar_t. The cPar type must be LONG or DOUBLE.
      */
-    long longValue() const;
+    intpar_t longValue() const;
 
     /**
      * Returns value as double. The cPar type must be LONG or DOUBLE.
@@ -366,44 +366,54 @@ class SIM_API cPar : public cObject
     cPar& operator=(bool b)  {return setBoolValue(b);}
 
     /**
-     * Converts the argument to long, and calls setLongValue().
+     * Delegates to setLongValue().
      */
-    cPar& operator=(char c)  {return setLongValue((long)c);}
+    cPar& operator=(char c)  {return setLongValue(c);}
 
     /**
-     * Converts the argument to long, and calls setLongValue().
+     * Delegates to setLongValue().
      */
-    cPar& operator=(unsigned char c)  {return setLongValue((long)c);}
+    cPar& operator=(unsigned char c)  {return setLongValue(c);}
 
     /**
-     * Converts the argument to long, and calls setLongValue().
+     * Delegates to setLongValue().
      */
-    cPar& operator=(int i)  {return setLongValue((long)i);}
+    cPar& operator=(int i)  {return setLongValue(i);}
 
     /**
-     * Converts the argument to long, and calls setLongValue().
+     * Delegates to setLongValue().
      */
-    cPar& operator=(unsigned int i)  {return setLongValue((long)i);}
+    cPar& operator=(unsigned int i)  {return setLongValue(i);}
 
     /**
-     * Converts the argument to long, and calls setLongValue().
+     * Delegates to setLongValue().
      */
-    cPar& operator=(short i)  {return setLongValue((long)i);}
+    cPar& operator=(short i)  {return setLongValue(i);}
 
     /**
-     * Converts the argument to long, and calls setLongValue().
+     * Delegates to setLongValue().
      */
-    cPar& operator=(unsigned short i)  {return setLongValue((long)i);}
+    cPar& operator=(unsigned short i)  {return setLongValue(i);}
 
     /**
      * Equivalent to setLongValue().
      */
-    cPar& operator=(long l)  {return setLongValue(l);}
+    cPar& operator=(long i)  {return setLongValue(i);}
 
     /**
-     * Converts the argument to long, and calls setLongValue().
+     * Delegates to setLongValue().
      */
-    cPar& operator=(unsigned long l) {return setLongValue((long)l);}
+    cPar& operator=(unsigned long i) {return setLongValue(i);}
+
+    /**
+     * Delegates to setLongValue().
+     */
+    cPar& operator=(long long i)  {return setLongValue(i);}
+
+    /**
+     * Delegates to setLongValue().
+     */
+    cPar& operator=(unsigned long long i)  {return setLongValue(i);}
 
     /**
      * Equivalent to setDoubleValue().
@@ -466,7 +476,7 @@ class SIM_API cPar : public cObject
     operator unsigned short() const  {return (unsigned short)longValue();}
 
     /**
-     * Equivalent to longValue().
+     * Calls longValue() and converts the result to long.
      */
     operator long() const  {return longValue();}
 
@@ -474,6 +484,16 @@ class SIM_API cPar : public cObject
      * Calls longValue() and converts the result to unsigned long.
      */
     operator unsigned long() const  {return longValue();}
+
+    /**
+     * Calls longValue() and converts the result to long long.
+     */
+    operator long long() const  {return longValue();}
+
+    /**
+     * Calls longValue() and converts the result to unsigned long long.
+     */
+    operator unsigned long long() const  {return longValue();}
 
     /**
      * Equivalent to doubleValue().

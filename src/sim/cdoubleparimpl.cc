@@ -64,7 +64,7 @@ void cDoubleParImpl::setBoolValue(bool b)
     throw cRuntimeError(this, E_BADCAST, "bool", "double");
 }
 
-void cDoubleParImpl::setLongValue(long l)
+void cDoubleParImpl::setLongValue(intpar_t l)
 {
     deleteOld();
     val = l;
@@ -100,9 +100,9 @@ bool cDoubleParImpl::boolValue(cComponent *) const
     throw cRuntimeError(this, E_BADCAST, "double", "bool");
 }
 
-long cDoubleParImpl::longValue(cComponent *context) const
+intpar_t cDoubleParImpl::longValue(cComponent *context) const
 {
-    return double_to_long(doubleValue(context));
+    return doubleValue(context); //FIXME check overflow
 }
 
 double cDoubleParImpl::doubleValue(cComponent *context) const

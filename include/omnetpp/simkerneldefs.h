@@ -77,6 +77,12 @@
  */
 typedef int64_t eventnumber_t;
 
+/**
+ * @brief Type for NED parameter values that store integers.
+ *
+ * @ingroup SimSupport
+ */
+typedef int64_t intpar_t;
 
 #endif
 

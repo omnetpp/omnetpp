@@ -236,7 +236,7 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
     const char *val = node->getValue();
     switch (node->getType()) {
         case NED_CONST_BOOL:   elems[pos++] = !strcmp(val,"true"); break;
-        case NED_CONST_INT:    elems[pos++] = opp_atol(node->getValue()); break; // this handles hex as well
+        case NED_CONST_INT:    elems[pos++] = opp_atoll(node->getValue()); break; // this handles hex as well
         case NED_CONST_DOUBLE: elems[pos++] = opp_atof(node->getValue()); break;
         case NED_CONST_STRING: elems[pos++] = node->getValue(); break;
         case NED_CONST_QUANTITY: {
@@ -249,8 +249,7 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
     }
 }
 
-cDynamicExpression *cExpressionBuilder::process(ExpressionElement *node,
-        bool inSubcomponentScope)
+cDynamicExpression *cExpressionBuilder::process(ExpressionElement *node, bool inSubcomponentScope)
 {
     // create dynamically evaluated expression (reverse Polish).
     // we don't know the size in advance, so first collect it in elems[1000],

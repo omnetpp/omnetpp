@@ -91,9 +91,9 @@ class SIM_API cXMLParImpl : public cParImpl
     virtual void setBoolValue(bool b) override;
 
     /**
-     * Raises an error: cannot convert long to XML.
+     * Raises an error: cannot convert integer to XML.
      */
-    virtual void setLongValue(long l) override;
+    virtual void setLongValue(intpar_t l) override;
 
     /**
      * Raises an error: cannot convert double to XML.
@@ -126,9 +126,9 @@ class SIM_API cXMLParImpl : public cParImpl
     virtual bool boolValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert XML to long.
+     * Raises an error: cannot convert XML to integer.
      */
-    virtual long longValue(cComponent *context) const override;
+    virtual intpar_t longValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert XML to double.

@@ -361,6 +361,40 @@ COMMON_API unsigned long opp_strtoul(const char *s, char **endptr);
 COMMON_API unsigned long opp_atoul(const char *s);
 
 /**
+ * Like the standard strtoll(), but throws opp_runtime_error if an overflow
+ * occurs during conversion. Accepts decimal and C-style hexadecimal
+ * notation, but not octal (leading zeroes are simply discarded and the number
+ * is interpreted as decimal).
+ */
+COMMON_API long long opp_strtoll(const char *s, char **endptr);
+
+/**
+ * Like the standard atoll(), but throws opp_runtime_error if an overflow
+ * occurs during conversion, or if there is (non-whitespace) trailing garbage
+ * after the number. Accepts decimal and C-style hexadecimal notation, but not
+ * octal (leading zeroes are simply discarded and the number is interpreted as
+ * decimal).
+ */
+COMMON_API long long opp_atoll(const char *s);
+
+/**
+ * Like the standard strtoull(), but throws opp_runtime_error if an overflow
+ * occurs during conversion. Accepts decimal and C-style hexadecimal
+ * notation, but not octal (leading zeroes are simply discarded and the number
+ * is interpreted as decimal).
+ */
+COMMON_API unsigned long long opp_strtoull(const char *s, char **endptr);
+
+/**
+ * Like the standard atoull(), but throws opp_runtime_error if an overflow
+ * occurs during conversion, or if there is (non-whitespace) trailing garbage
+ * after the number. Accepts decimal and C-style hexadecimal notation, but not
+ * octal (leading zeroes are simply discarded and the number is interpreted as
+ * decimal).
+ */
+COMMON_API unsigned long long opp_atoull(const char *s);
+
+/**
  * Like the standard strtod(), but throws opp_runtime_error if an overflow
  * occurs during conversion.
  */

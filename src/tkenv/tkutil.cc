@@ -22,6 +22,7 @@
 #include <ctime>
 #include <cassert>
 #include <sstream>
+#include <inttypes.h> // PRI64d
 
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
@@ -453,7 +454,7 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
             switch (par->getType()) {
               case cPar::BOOL: buffer += (par->boolValue() ? "1" : "0"); break;
               case cPar::STRING: buffer += par->stdstringValue(); break;
-              case cPar::LONG: buffer += opp_stringf("%ld", par->longValue()); break;
+              case cPar::LONG: buffer += opp_stringf("%" PRId64, (int64_t) par->longValue()); break;
               case cPar::DOUBLE: buffer += opp_stringf("%g", par->doubleValue()); break;
               default: throw cRuntimeError("Cannot substitute parameter %s into display string: Wrong data type", par->getFullPath().c_str());
             }

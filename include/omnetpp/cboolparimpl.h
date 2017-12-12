@@ -94,9 +94,9 @@ class SIM_API cBoolParImpl : public cParImpl
     virtual void setBoolValue(bool b) override;
 
     /**
-     * Raises an error: cannot convert long to bool.
+     * Raises an error: cannot convert integer to bool.
      */
-    virtual void setLongValue(long l) override;
+    virtual void setLongValue(intpar_t l) override;
 
     /**
      * Raises an error: cannot convert double to bool.
@@ -129,9 +129,9 @@ class SIM_API cBoolParImpl : public cParImpl
     virtual bool boolValue(cComponent *context) const override;
 
     /**
-     * Raises an error: cannot convert bool to long.
+     * Raises an error: cannot convert bool to integer.
      */
-    virtual long longValue(cComponent *context) const override;
+    virtual intpar_t longValue(cComponent *context) const override;
 
     /**
      * Raises an error: cannot convert bool to double.

@@ -194,9 +194,9 @@ class SIM_API cParImpl : public cNamedObject
     virtual void setBoolValue(bool b) = 0;
 
     /**
-     * Sets the value to the given long value.
+     * Sets the value to the given integer value.
      */
-    virtual void setLongValue(long l) = 0;
+    virtual void setLongValue(intpar_t l) = 0;
 
     /**
      * Sets the value to the given double value.
@@ -240,9 +240,9 @@ class SIM_API cParImpl : public cNamedObject
     virtual bool boolValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as long. The cParImpl type must be LONG or DOUBLE.
+     * Returns value as an integer. The cParImpl type must be LONG or DOUBLE.
      */
-    virtual long longValue(cComponent *context) const = 0;
+    virtual intpar_t longValue(cComponent *context) const = 0;
 
     /**
      * Returns value as long. The cParImpl type must be LONG or DOUBLE.

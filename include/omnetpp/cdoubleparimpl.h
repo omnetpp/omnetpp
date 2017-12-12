@@ -94,9 +94,9 @@ class SIM_API cDoubleParImpl : public cParImpl
     virtual void setBoolValue(bool b) override;
 
     /**
-     * Converts from long.
+     * Converts from integer.
      */
-    virtual void setLongValue(long l) override;
+    virtual void setLongValue(intpar_t l) override;
 
     /**
      * Sets the value to the given constant.
@@ -129,9 +129,9 @@ class SIM_API cDoubleParImpl : public cParImpl
     virtual bool boolValue(cComponent *context) const override;
 
     /**
-     * Converts the value to long.
+     * Converts the value to integer.
      */
-    virtual long longValue(cComponent *context) const override;
+    virtual intpar_t longValue(cComponent *context) const override;
 
     /**
      * Returns the value of the parameter.

@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <limits>
 #include "omnetpp/clongparimpl.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
@@ -100,7 +101,7 @@ bool cLongParImpl::boolValue(cComponent *) const
     throw cRuntimeError(this, E_BADCAST, "int/long", "bool");
 }
 
-long cLongParImpl::longValue(cComponent *context) const
+intpar_t cLongParImpl::longValue(cComponent *context) const
 {
     if ((flags & FL_ISSET) == 0)
         throw cRuntimeError(E_PARNOTSET);
@@ -111,7 +112,8 @@ long cLongParImpl::longValue(cComponent *context) const
         cNEDValue v = evaluate(expr, context);
         if (v.type != cNEDValue::DBL)
             throw cRuntimeError(E_ECANTCAST, "long");
-        return double_to_long(v.doubleValueInUnit(getUnit()));
+        double d = v.doubleValueInUnit(getUnit());
+        return (intpar_t)d;
     }
 }
 
@@ -169,7 +171,7 @@ std::string cLongParImpl::str() const
         return expr->str();
     else {
         char buf[32];
-        sprintf(buf, "%ld", val);
+        sprintf(buf, "%" PRId64, (int64_t)val);
         const char *unit = getUnit();
         if (!unit)
             return buf;

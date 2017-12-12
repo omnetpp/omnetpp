@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <cmath>
+#include <limits>
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
 #include "omnetpp/cdynamicexpression.h"
@@ -90,14 +91,6 @@ void cDynamicExpression::Elem::operator=(double _d)
     d.unit = nullptr;
 }
 
-void cDynamicExpression::Elem::operator=(long _l)
-{
-    deleteOld();
-    type = DBL;
-    d.d = _l;
-    d.unit = nullptr;
-}
-
 void cDynamicExpression::Elem::operator=(short _i)
 {
     deleteOld();
@@ -111,6 +104,22 @@ void cDynamicExpression::Elem::operator=(int _i)
     deleteOld();
     type = DBL;
     d.d = _i;
+    d.unit = nullptr;
+}
+
+void cDynamicExpression::Elem::operator=(long _l)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _l;
+    d.unit = nullptr;
+}
+
+void cDynamicExpression::Elem::operator=(long long _l)
+{
+    deleteOld();
+    type = DBL;
+    d.d = _l;
     d.unit = nullptr;
 }
 
@@ -293,12 +302,13 @@ bool cDynamicExpression::boolValue(cComponent *context)
     return v.bl;
 }
 
-long cDynamicExpression::longValue(cComponent *context, const char *expectedUnit)
+intpar_t cDynamicExpression::longValue(cComponent *context, const char *expectedUnit)
 {
     cNEDValue v = evaluate(context);
     if (v.type != cNEDValue::DBL)
-        throw cRuntimeError(E_ECANTCAST, "long");
-    return double_to_long(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
+        throw cRuntimeError(E_ECANTCAST, "int");
+    double d = UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
+    return (intpar_t)d;
 }
 
 double cDynamicExpression::doubleValue(cComponent *context, const char *expectedUnit)
