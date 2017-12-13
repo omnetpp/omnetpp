@@ -117,6 +117,15 @@ enum LogLevel
 #endif
 #endif
 
+constexpr bool defaultCompiletimeLogPredicate(LogLevel logLevel, LogLevel compiletimeLogLevel)
+{
+    // The COMPILETIME_LOGLEVEL macro is not used directly here,
+    // as that would prevent its redefinitions from taking effect.
+    // Rather, it is taken as a parameter, so COMPILETIME_LOGLEVEL
+    // is substituted at each call site with its current value.
+    return logLevel >= compiletimeLogLevel;
+}
+
 /**
  * @brief This predicate determines if a log statement gets compiled into the
  * executable.
@@ -127,7 +136,8 @@ enum LogLevel
  * @ingroup Logging
  */
 #ifndef COMPILETIME_LOG_PREDICATE
-#define COMPILETIME_LOG_PREDICATE(object, logLevel, category) (logLevel >= COMPILETIME_LOGLEVEL)
+#define COMPILETIME_LOG_PREDICATE(object, logLevel, category) \
+    (::omnetpp::defaultCompiletimeLogPredicate(logLevel, COMPILETIME_LOGLEVEL))
 #endif
 
 /**
@@ -195,7 +205,6 @@ class SIM_API cLog
     ((void)0, !(COMPILETIME_LOG_PREDICATE(object, logLevel, category) && \
     omnetpp::cLog::runtimeLogPredicate(object, logLevel, category))) ? \
     omnetpp::cLogProxy::dummyStream : omnetpp::cLogProxy(object, logLevel, category, __FILE__, __LINE__, __FUNCTION__)
-
 
 // Returns nullptr. Helper function for the logging macros.
 inline void *getThisPtr() {return nullptr;}
