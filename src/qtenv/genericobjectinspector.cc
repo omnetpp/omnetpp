@@ -99,19 +99,25 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
         toolbar->addWidget(spacer);
     }
 
+    QActionGroup *modeActionGroup = new QActionGroup(this);
     // mode selection
     toGroupedModeAction = toolbar->addAction(QIcon(":/tools/treemode_grouped"), "Switch to grouped mode", this, SLOT(toGroupedMode()));
     toGroupedModeAction->setCheckable(true);
+    toGroupedModeAction->setActionGroup(modeActionGroup);
     toFlatModeAction = toolbar->addAction(QIcon(":/tools/treemode_flat"), "Switch to flat mode", this, SLOT(toFlatMode()));
     toFlatModeAction->setCheckable(true);
+    toFlatModeAction->setActionGroup(modeActionGroup);
     toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/treemode_inher"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
     toInheritanceModeAction->setCheckable(true);
+    toInheritanceModeAction->setActionGroup(modeActionGroup);
     toolbar->addSeparator();
     toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Switch to children mode", this, SLOT(toChildrenMode()));
     toChildrenModeAction->setCheckable(true);
+    toChildrenModeAction->setActionGroup(modeActionGroup);
     toolbar->addSeparator();
     toPacketModeAction = toolbar->addAction(QIcon(":/tools/treemode_packet"), "Switch to packet mode", this, SLOT(toPacketMode()));
     toPacketModeAction->setCheckable(true);
+    toPacketModeAction->setActionGroup(modeActionGroup);
 
     toolbar->addSeparator();
 
