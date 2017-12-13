@@ -68,7 +68,8 @@ Thumbs.db
 /src/nedxml/nedelements.*
 /src/nedxml/nedvalidator.*
 /src/include/
-/ui/.metadata
+.metadata
+.settings
 /ui/org.omnetpp.runtime.nativelibs/src/org/omnetpp/runtime/nativelibs/simkernel/
 /ui/org.omnetpp.ide.nativelibs/*.cxx
 /ui/org.omnetpp.ide.nativelibs/src/org/omnetpp/*/engine/
@@ -98,10 +99,10 @@ Thumbs.db
 /samples/osg-satellites/osg-satellites
 /samples/rundemo.bat
 /samples/*/results/
+/samples/*/*/results/
 /samples/*/results.*/
 /samples/*/frames/
 /samples/*/*.mkv
-/samples/*/.settings
 /tmp/
 /ui/org.omnetpp.test.gui/test-workspace/.metadata
 /ui/_*/
@@ -111,6 +112,8 @@ Thumbs.db
 /test/eventlog/elog/generated/
 /test/eventlog/elog/filtered/
 /test/stress/results/
+/test/build/_buildlog
+/test/anim/*/Makefile
 /msys/
 /mingw/
 /samples/*/doc/
