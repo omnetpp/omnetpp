@@ -28,12 +28,12 @@ using omnetpp::envir::ObjectPrinter;
 // create and pack
 TestMessage msg("msg");
 msg.setSvArraySize(2);
-msg.getMutableS().i = 53;
-msg.getMutableS().s = "Hello";
-msg.getMutableSv(0).i = 17;
-msg.getMutableSv(0).s = "first";
-msg.getMutableSv(1).i = 26;
-msg.getMutableSv(1).s = "second";
+msg.getSForUpdate().i = 53;
+msg.getSForUpdate().s = "Hello";
+msg.getSvForUpdate(0).i = 17;
+msg.getSvForUpdate(0).s = "first";
+msg.getSvForUpdate(1).i = 26;
+msg.getSvForUpdate(1).s = "second";
 
 cFileCommBuffer *buffer = new cFileCommBuffer();
 msg.parsimPack(buffer);

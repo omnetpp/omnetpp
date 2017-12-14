@@ -1,0 +1,129 @@
+%description:
+Check arrays
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{ using namespace omnetpp; }} //TODO auto-generate
+
+cplusplus {{
+class LeakDetector
+{
+    static long int count;
+  public:
+    LeakDetector() { EV << "create LeakDetector " << count++ << "\n"; }
+    ~LeakDetector() { EV << "destroy LeakDetector " << --count << "\n"; }
+};
+
+}}
+
+cplusplus(cc) {{
+long LeakDetector::count = 0;
+}}
+
+
+class LeakDetector {@existingClass; @descriptor(false);}
+
+class Foo { LeakDetector x; }
+class Bar extends cMessage { LeakDetector x; }
+
+class TestClass extends cObject
+{
+    Foo fooVec[];
+    Foo *fooPtrVec[];
+    Foo *ownedFooPtrVec[] @owned;
+    Bar barVec[];
+    Bar *barPtrVec[];
+    Bar *ownedBarPtrVec[] @owned;
+
+
+};
+
+%includes:
+#include "test_m.h"
+
+%activity:
+Foo aFoo;
+Foo bFoo;
+Foo cFoo;
+Bar aBar("aBar");
+Bar bBar("bBar");
+Bar cBar("cBar");
+
+// create and fill a test object
+TestClass x;
+
+x.insertFooVec(aFoo);
+x.insertFooVec(cFoo);
+x.insertFooVec(1, bFoo);
+
+x.insertFooPtrVec(&aFoo);
+x.insertFooPtrVec(&cFoo);
+x.insertFooPtrVec(1, &bFoo);
+
+x.insertOwnedFooPtrVec(new Foo());
+x.insertOwnedFooPtrVec(new Foo());
+x.insertOwnedFooPtrVec(1, new Foo());
+
+x.insertBarVec(aBar);
+x.insertBarVec(cBar);
+x.insertBarVec(1, bBar);
+
+x.insertBarPtrVec(&aBar);
+x.insertBarPtrVec(&cBar);
+x.insertBarPtrVec(1, &bBar);
+
+x.insertOwnedBarPtrVec(new Bar("bar1"));
+x.insertOwnedBarPtrVec(new Bar("bar3"));
+x.insertOwnedBarPtrVec(1, new Bar("bar2"));
+
+// now the actual test: copy constructor, op=, destructor (implicit)
+
+TestClass x2(x);
+TestClass x3; x3=x;
+
+x.eraseFooVec(0);
+x.insertFooVec(aFoo);
+x.eraseFooVec(1);
+x.insertFooVec(bFoo);
+x.eraseFooVec(2);
+
+x.eraseFooPtrVec(0);
+x.insertFooPtrVec(&aFoo);
+x.eraseFooPtrVec(1);
+x.insertFooPtrVec(&bFoo);
+x.eraseFooPtrVec(2);
+
+x.eraseOwnedFooPtrVec(0);
+x.insertOwnedFooPtrVec(new Foo());
+x.eraseOwnedFooPtrVec(1);
+x.insertOwnedFooPtrVec(new Foo());
+x.eraseOwnedFooPtrVec(2);
+
+x.eraseBarVec(0);
+x.insertBarVec(aBar);
+x.eraseBarVec(1);
+x.insertBarVec(bBar);
+x.eraseBarVec(2);
+
+x.eraseBarPtrVec(0);
+x.insertBarPtrVec(&aBar);
+x.eraseBarPtrVec(1);
+x.insertBarPtrVec(&bBar);
+x.eraseBarPtrVec(2);
+
+x.eraseOwnedBarPtrVec(0);
+x.insertOwnedBarPtrVec(new Bar("bar4"));
+x.eraseOwnedBarPtrVec(1);
+x.insertOwnedBarPtrVec(new Bar("bar5"));
+x.eraseOwnedBarPtrVec(2);
+
+%contains: stdout
+destroy LeakDetector 0
+
+%not-contains: stdout
+destroy LeakDetector -1
+
+%not-contains: stdout
+undisposed object:

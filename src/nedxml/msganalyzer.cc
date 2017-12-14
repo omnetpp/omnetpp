@@ -311,7 +311,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     classInfo.toString = getProperty(classInfo.props, PROP_TOSTRING, "");
     classInfo.fromString = getProperty(classInfo.props, PROP_FROMSTRING, "");
     classInfo.getterConversion = getProperty(classInfo.props, PROP_GETTERCONVERSION, "$");
-    classInfo.dupper = getProperty(classInfo.props, PROP_DUPPER, "");
+    classInfo.clone = getProperty(classInfo.props, PROP_CLONE, "");
     classInfo.str = getProperty(classInfo.props, PROP_STR, "");
 
     // generation gap
@@ -463,8 +463,9 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         std::string capfieldname = field->name;
         capfieldname[0] = toupper(capfieldname[0]);
         field->setter = str("set") + capfieldname;
-        field->remover = str("remove") + capfieldname;
-        field->appender = str("append") + capfieldname;
+        field->dropper = str("drop") + capfieldname;
+        field->inserter = str("insert") + capfieldname;
+        field->eraser = str("erase") + capfieldname;
         field->sizeSetter = str("set") + capfieldname + "ArraySize";
         if (classInfo.omitGetVerb) {
             field->getter = field->name;
@@ -478,7 +479,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->getter = omitGet ? fname : (str("get") + capfieldname);
             field->sizeGetter = str("get") + capfieldname + "ArraySize";
         }
-        field->mutableGetter = str("getMutable") + capfieldname; //TODO access?
+        field->getterForUpdate = str("get") + capfieldname + "ForUpdate";
         field->allowReplace = getPropertyAsBool(field->props, PROP_ALLOWREPLACE, false);
 
         // allow customization of names
@@ -486,17 +487,21 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->setter = getProperty(field->props, PROP_SETTER);
         if (getProperty(field->props, PROP_GETTER) != "")
             field->getter = getProperty(field->props, PROP_GETTER);
-        if (getProperty(field->props, PROP_MUTABLEGETTER) != "")
-            field->mutableGetter = getProperty(field->props, PROP_MUTABLEGETTER);
+        if (getProperty(field->props, PROP_GETTERFORUPDATE) != "")
+            field->getterForUpdate = getProperty(field->props, PROP_GETTERFORUPDATE);
         if (getProperty(field->props, PROP_SIZESETTER) != "")
             field->sizeSetter = getProperty(field->props, PROP_SIZESETTER);
         if (getProperty(field->props, PROP_SIZEGETTER) != "")
             field->sizeGetter = getProperty(field->props, PROP_SIZEGETTER);
+        if (getProperty(field->props, PROP_INSERTER) != "")
+            field->inserter = getProperty(field->props, PROP_INSERTER);
+        if (getProperty(field->props, PROP_ERASER) != "")
+            field->eraser = getProperty(field->props, PROP_ERASER);
 
         field->getterConversion = getProperty(field->props, PROP_GETTERCONVERSION, fieldClassInfo.getterConversion);
-        field->dupper = getProperty(field->props, PROP_DUPPER, fieldClassInfo.dupper);
-        if (field->dupper.empty())
-            field->dupper = str("new ") + field->dataType + "(*$)";
+        field->clone = getProperty(field->props, PROP_CLONE, fieldClassInfo.clone);
+        if (field->clone.empty())
+            field->clone = str("new ") + field->dataType + "(*$)";
     }
 
     //TODO warn for non-applicable properties like @allowReplace for non-ownedpointer fields
@@ -550,7 +555,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->mutableReturnType = decorateType(returntypeBase, false, field->isPointer, byRef);
     }
 
-    field->hasMutableGetter = !field->isConst && (field->isPointer ? true : !field->byValue);
+    field->hasGetterForUpdate = !field->isConst && (field->isPointer ? true : !field->byValue);
 
     if (field->isEditable && field->fromString.empty() && classInfo.generateDescriptor && classInfo.generateSettersInDescriptor)
         errors->addError(field->astNode, "Field '%s' is editable, but @fromString is unspecified", field->name.c_str());
@@ -760,7 +765,7 @@ std::string MsgAnalyzer::lookupExistingClassName(const std::string& name, const 
                 break;
 
             // drop last segment
-            int pos = lookupNamespace.rfind("::");
+            auto pos = lookupNamespace.rfind("::");
             if (pos == std::string::npos)
                 pos = 0;
             lookupNamespace = lookupNamespace.substr(0, pos);

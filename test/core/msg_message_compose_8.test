@@ -24,9 +24,9 @@ MyMessage x;
 
 // access
 x.setQArraySize(3);
-x.getMutableQ(0).setName("q0"); x.getMutableQ(0).insert(new cMessage());
-x.getMutableQ(1).setName("q1");
-x.getMutableQ(2).setName("q2"); x.getMutableQ(2).insert(new cMessage()); x.getMutableQ(2).insert(new cMessage());
+x.getQForUpdate(0).setName("q0"); x.getQForUpdate(0).insert(new cMessage());
+x.getQForUpdate(1).setName("q1");
+x.getQForUpdate(2).setName("q2"); x.getQForUpdate(2).insert(new cMessage()); x.getQForUpdate(2).insert(new cMessage());
 PRINTOBJ(x.getQ(0));
 PRINTOBJ(x.getQ(1));
 PRINTOBJ(x.getQ(2));

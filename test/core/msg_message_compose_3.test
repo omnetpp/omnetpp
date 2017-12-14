@@ -28,9 +28,9 @@ MyMessage x;
 x.setBArraySize(3);
 
 // access
-x.getMutableB(0).bb=10;
-x.getMutableB(1).bb=11;
-x.getMutableB(2).bb=12;
+x.getBForUpdate(0).bb=10;
+x.getBForUpdate(1).bb=11;
+x.getBForUpdate(2).bb=12;
 x.setC('x');
 
 PRINT(x.getB(0).bb);

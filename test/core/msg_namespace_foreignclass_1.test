@@ -123,16 +123,16 @@ class Dummy extends cObject {
 inet::Dummy *dummy = new inet::Dummy();
 
 dummy->setAddress(::IPAddress());
-dummy->getMutableIntvec().push_back(13);
-dummy->getMutableAddrvec().push_back(::IPAddress());
+dummy->getIntvecForUpdate().push_back(13);
+dummy->getAddrvecForUpdate().push_back(::IPAddress());
 
 dummy->setInetAddress(inet::IPAddress());
-dummy->getMutableInetIntvec().push_back(42);
-dummy->getMutableInetAddrvec().push_back(inet::IPAddress());
+dummy->getInetIntvecForUpdate().push_back(42);
+dummy->getInetAddrvecForUpdate().push_back(inet::IPAddress());
 
 dummy->setForeignAddress(foreign::IPAddress());
-dummy->getMutableForeignIntvec().push_back(60);
-dummy->getMutableForeignAddrvec().push_back(foreign::IPAddress());
+dummy->getForeignIntvecForUpdate().push_back(60);
+dummy->getForeignAddrvecForUpdate().push_back(foreign::IPAddress());
 
 cClassDescriptor *desc = dummy->getDescriptor();
 for (int i = 0; i < desc->getFieldCount(); i++)

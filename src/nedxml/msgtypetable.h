@@ -47,9 +47,9 @@ class NEDXML_API MsgTypeTable
 
         std::string name;       // field name in MSG
         std::string type;       // field type in MSG, without 'const' and '*' modifiers
-        std::string typeQName;  // fully qualified C++ name of type //TODO should not be needed
+        std::string typeQName;  // fully qualified C++ name of type
         std::string value;      // value (or empty). for arrays, this is the value for one array element (we have no syntax for initializing with a list of values)
-        std::string symbolicConstant; //
+        std::string symbolicConstant; // symbolic name for local field index in the generated class descriptor
         bool isAbstract;        // "abstract" keyword specified for field
         bool isConst;           // "const" keyword specified for field
         bool byValue;           // @byValue(true); whether value should be passed by value (instead of by reference) in setters/getters
@@ -76,13 +76,14 @@ class NEDXML_API MsgTypeTable
         std::string sizeVar;    // data member to store size of dynamic array
         std::string sizeType;   // type of array sizes and array indices
         std::string getter;     // getter function name:  "T getter() const;" "const T& getter() const"  default value is getFoo
-        std::string mutableGetter; // mutable getter function name:  "T& mGetter();" default value is the value of getter, @mutableGetter
-        bool hasMutableGetter;  // whether a mutableGetter method needs to be generated
+        std::string getterForUpdate; // mutable getter function name:  "T& getterForUpdate();" default value is getFooForUpdate
+        bool hasGetterForUpdate; // whether a getterForUpdate method needs to be generated
         bool allowReplace;      // @allowReplace; whether setter of an owned pointer field is allowed to delete an already-set object
-        std::string remover;    // remover function name (for owned pointers)
-        std::string dupper;     // @dupper; code to duplicate (one array element of) the field (for owned pointers)
+        std::string dropper;    // dropper function name (for owned pointers: drop pointer from class and return to caller)
+        std::string clone;      // @clone; code to duplicate (one array element of) the field (for owned pointers)
         std::string setter;     // @setter; setter function name
-        std::string appender;   // @appender; appender function name (appends element to dynamic array)
+        std::string inserter;   // @inserter; inserter function name (insert element to dynamic array)
+        std::string eraser;     // @eraser; eraser function name (erase element from dynamic array)
         std::string sizeSetter; // setArraySize() function name
         std::string sizeGetter; // array size getter function name
         std::string toString;   // function to convert data to string, defined in property @toString
@@ -160,7 +161,7 @@ class NEDXML_API MsgTypeTable
         std::string returnTypeBase;    // getter C++ return type
         std::string toString;          // function to convert data to string, defined in property @toString
         std::string fromString;        // @fromString; function to convert string to data member, defined in property @fromString
-        std::string dupper;            // @dupper; code to clone a dynamically allocated object of this type (for owned pointer fields)
+        std::string clone;             // @clone; code to clone a dynamically allocated object of this type (for owned pointer fields)
         std::string getterConversion;  // @getterConversion; conversion from storage type to return type in getters
     };
 
@@ -191,7 +192,7 @@ class NEDXML_API MsgTypeTable
 
   protected:
     void initDescriptors();
-    std::string prefixWithNamespace(const std::string& namespaceName, const std::string& name) {  //TODO not needed
+    std::string prefixWithNamespace(const std::string& namespaceName, const std::string& name) {
         return !namespaceName.empty() ? namespaceName + "::" + name : name;
     }
 

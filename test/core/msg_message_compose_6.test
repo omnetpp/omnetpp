@@ -20,7 +20,7 @@ message MyMessage
 
 MyMessage x;
 
-cQueue& q = x.getMutableQ();
+cQueue& q = x.getQForUpdate();
 q.setName("queue");
 EV << q.getClassName() << ":" << q.getName() << ":" <<
       (q.getOwner()==&x ? "owned" : "not owned") << endl;

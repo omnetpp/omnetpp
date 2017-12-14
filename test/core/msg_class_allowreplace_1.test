@@ -28,6 +28,8 @@ x.setOwnedFooAllowTrue(new Foo);
 x.setOwnedFooAllowFalse(new Foo);
 
 TRY(x.setOwnedFoo(new Foo))
+TRY(delete x.dropOwnedFoo())
+TRY(x.setOwnedFoo(new Foo))
 TRY(x.setOwnedFooAllow(new Foo))
 TRY(x.setOwnedFooAllowTrue(new Foo))
 TRY(x.setOwnedFooAllowFalse(new Foo))
@@ -35,10 +37,10 @@ TRY(x.setOwnedFooAllowFalse(new Foo))
 EV << "." << endl;
 
 %contains: stdout
-x.setOwnedFoo(new Foo) --> ERROR: setOwnedFoo(): a value is already set, remove it first with removeOwnedFoo()
+x.setOwnedFoo(new Foo) --> ERROR: setOwnedFoo(): a value is already set, remove it first with dropOwnedFoo()
+delete x.dropOwnedFoo() --> OK
+x.setOwnedFoo(new Foo) --> OK
 x.setOwnedFooAllow(new Foo) --> OK
 x.setOwnedFooAllowTrue(new Foo) --> OK
-x.setOwnedFooAllowFalse(new Foo) --> ERROR: setOwnedFooAllowFalse(): a value is already set, remove it first with removeOwnedFooAllowFalse()
+x.setOwnedFooAllowFalse(new Foo) --> ERROR: setOwnedFooAllowFalse(): a value is already set, remove it first with dropOwnedFooAllowFalse()
 .
-
-

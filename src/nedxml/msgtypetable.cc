@@ -36,7 +36,6 @@ void MsgTypeTable::initDescriptors()
 {
 }
 
-
 MsgTypeTable::StringVector MsgTypeTable::lookupExistingEnumName(const std::string& name, const std::string& contextNamespace)
 {
     StringVector ret;

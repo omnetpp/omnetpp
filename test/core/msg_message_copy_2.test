@@ -47,12 +47,12 @@ void print(const char *what, MyMessage& x)
 
 // set up tester classes
 MyMessage x;
-x.getMutableMs().bb=11;
-x.getMutableMc().setBb(12);
-x.getMutableQ().setName("q"); x.getMutableQ().insert(new cMessage);
-x.getMutableMs2().bb=21;
-x.getMutableMc2().setBb(22);
-x.getMutableQ2().setName("q2"); x.getMutableQ2().insert(new cMessage); x.getMutableQ2().insert(new cMessage);
+x.getMsForUpdate().bb=11;
+x.getMcForUpdate().setBb(12);
+x.getQForUpdate().setName("q"); x.getQForUpdate().insert(new cMessage);
+x.getMs2ForUpdate().bb=21;
+x.getMc2ForUpdate().setBb(22);
+x.getQ2ForUpdate().setName("q2"); x.getQ2ForUpdate().insert(new cMessage); x.getQ2ForUpdate().insert(new cMessage);
 
 print("x", x);
 

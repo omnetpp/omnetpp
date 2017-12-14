@@ -102,7 +102,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_TOSTRING = "toString";
     static constexpr const char* PROP_FROMSTRING = "fromString";
     static constexpr const char* PROP_GETTERCONVERSION = "getterConversion";
-    static constexpr const char* PROP_DUPPER = "dupper";
+    static constexpr const char* PROP_CLONE = "clone";
     static constexpr const char* PROP_EXISTINGCLASS = "existingClass";
     static constexpr const char* PROP_DESCRIPTOR = "descriptor";
     static constexpr const char* PROP_OMITGETVERB = "omitGetVerb";
@@ -118,9 +118,11 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_SIZETYPE = "sizeType";
     static constexpr const char* PROP_SETTER = "setter";
     static constexpr const char* PROP_GETTER = "getter";
-    static constexpr const char* PROP_MUTABLEGETTER = "mutableGetter";
+    static constexpr const char* PROP_GETTERFORUPDATE = "getterForUpdate";
     static constexpr const char* PROP_SIZESETTER = "sizeSetter";
     static constexpr const char* PROP_SIZEGETTER = "sizeGetter";
+    static constexpr const char* PROP_INSERTER = "inserter";
+    static constexpr const char* PROP_ERASER = "eraser";
     static constexpr const char* PROP_ALLOWREPLACE = "allowReplace";
     static constexpr const char* PROP_STR = "str";
     static constexpr const char* PROP_CUSTOMIZE = "customize";

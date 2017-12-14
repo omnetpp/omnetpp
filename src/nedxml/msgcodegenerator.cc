@@ -493,16 +493,19 @@ void MsgCodeGenerator::generateClassDecl(const ClassInfo& classInfo, const std::
 
         // getter, setter, remover
         H << "    virtual " << field.returnType << " " << field.getter << "(" << getterIndexArg << ") const" << overrideGetter << pure << ";\n";
-        if (field.hasMutableGetter) {
-            H << "    virtual " << field.mutableReturnType << " " << field.mutableGetter << "(" << getterIndexArg << ")" << overrideGetter;
+        if (field.hasGetterForUpdate) {
+            H << "    virtual " << field.mutableReturnType << " " << field.getterForUpdate << "(" << getterIndexArg << ")" << overrideGetter;
             H << " { " << maybe_handleChange << "return const_cast<" << field.mutableReturnType << ">(const_cast<" << classInfo.className << "*>(this)->" << field.getter << "(" << getterIndexVar << "));}\n";
         }
         if (field.isOwnedPointer)
-            H << "    virtual " << field.mutableReturnType << " " << field.remover << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
+            H << "    virtual " << field.mutableReturnType << " " << field.dropper << "(" << getterIndexArg << ")" << overrideGetter << pure << ";\n";
         if (field.isPointer || !field.isConst)
             H << "    virtual void " << field.setter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter << pure << ";\n";
-        if (field.isDynamicArray)
-            H << "    virtual void " << field.appender << "(" << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
+        if (field.isDynamicArray) {
+            H << "    virtual void " << field.inserter << "(" << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
+            H << "    virtual void " << field.inserter << "(" << setterIndexArg << field.argType << " " << field.argName << ")" << overrideSetter /*TODO*/ << pure << ";\n";
+            H << "    virtual void " << field.eraser << "(" << getterIndexArg << ")" << overrideSetter /*TODO*/ << pure << ";\n";
+        }
     }
     H << extraCode;
     H << "};\n\n";
@@ -672,7 +675,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
                 }
                 else {
                     copyElem << "    if (" << thisVarElem << " != nullptr)\n";
-                    copyElem << "        " << thisVarElem << " = " << makeFuncall(thisVarElem, field.dupper) << ";\n";
+                    copyElem << "        " << thisVarElem << " = " << makeFuncall(thisVarElem, field.clone) << ";\n";
                 }
             }
             else {
@@ -808,7 +811,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         CC << "    return " << makeFuncall(indexedVar, field.getterConversion) + ";\n";
         CC << "}\n\n";
 
-        // resize:
+        // resizer:
         if (field.isDynamicArray) {
             CC << "void " << classInfo.className << "::" << field.sizeSetter << "(" << field.sizeType << " newSize)\n";
             CC << "{\n";
@@ -841,7 +844,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << maybe_handleChange_line;
             if (field.isOwnedPointer) {
                 if (!field.allowReplace)
-                    CC << "    if (" << indexedVar << " != nullptr) throw omnetpp::cRuntimeError(\"" << field.setter << "(): a value is already set, remove it first with " << field.remover << "()\");\n";
+                    CC << "    if (" << indexedVar << " != nullptr) throw omnetpp::cRuntimeError(\"" << field.setter << "(): a value is already set, remove it first with " << field.dropper << "()\");\n";
                 else if (field.iscOwnedObject)
                     CC << "    dropAndDelete(" << indexedVar << ");\n";
                 else
@@ -855,9 +858,9 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "}\n\n";
         }
 
-        // remover:
+        // dropper:
         if (field.isOwnedPointer) {
-            CC << field.mutableReturnType << " " << classInfo.className << "::" << field.remover << "(" << idxarg << ")\n";
+            CC << field.mutableReturnType << " " << classInfo.className << "::" << field.dropper << "(" << idxarg << ")\n";
             CC << "{\n";
             if (field.isArray)
                 CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
@@ -876,18 +879,67 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "}\n\n";
         }
 
-        // appender
+        // inserter
         if (field.isDynamicArray) {
-            CC << "void " << classInfo.className << "::" << field.appender << "(" << field.argType << " " << field.argName << ")\n";
+            CC << "void " << classInfo.className << "::" << field.inserter << "(" << idxarg2 << field.argType << " " << field.argName << ")\n";
             CC << "{\n";
             CC << maybe_handleChange_line;
-            CC << "    " << field.sizeSetter << "(" << field.sizeVar << " + 1);\n";
-            std::string lastElem = str("this->") + field.var + "[" + field.sizeVar + "-1]";
-            CC << "    " << lastElem << " = " << field.argName << ";\n";
+            CC << "    if (k > " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
+            CC << "    " << field.sizeType << " newSize = " << field.sizeVar << " + 1;\n";
+            CC << "    " << field.dataType << " *" << field.var << "2 = new " << field.dataType << "[newSize];\n";
+            CC << "    " << field.sizeType << " i;\n";
+            CC << "    for (i = 0; i < k; i++)\n";
+            CC << "        " << field.var << "2[i] = " << var(field) << "[i];\n";
+            CC << "    " << field.var << "2[k] = " << field.argName << ";\n";
             if (field.isOwnedPointer && field.iscOwnedObject) {
-                CC << "    if (" << lastElem << " != nullptr)\n";
-                CC << "        take(" << lastElem << ");\n";
+                CC << "    if (" << field.var << "2[k]" << " != nullptr)\n";
+                CC << "        take(" << field.var << "2[k]" << ");\n";
             }
+            CC << "    for (i = k + 1; i < newSize; i++)\n";
+            CC << "        " << field.var << "2[i] = " << var(field) << "[i-1];\n";
+            if (!field.isPointer && field.iscOwnedObject)
+                CC << forEachIndex(field) << "\n" << "        drop(&" << varElem(field) << ");\n";
+            CC << "    delete [] " << var(field) << ";\n";
+            CC << "    " << var(field) << " = " << field.var << "2;\n";
+            CC << "    " << field.sizeVar << " = newSize;\n";
+            if (!field.isPointer && field.iscOwnedObject)
+                CC << forEachIndex(field) << "\n" << "        take(&" << varElem(field) << ");\n";
+            CC << "}\n\n";
+
+            CC << "void " << classInfo.className << "::" << field.inserter << "(" << field.argType << " " << field.argName << ")\n";
+            CC << "{\n";
+            CC << "    " << field.inserter << "(" << field.sizeVar << ", " << field.argName << ");\n";
+            CC << "}\n\n";
+        }
+
+        // eraser
+        if (field.isDynamicArray) {
+            CC << "void " << classInfo.className << "::" << field.eraser << "(" << idxarg << ")\n";
+            CC << "{\n";
+            CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
+            CC << maybe_handleChange_line;
+            CC << "    " << field.sizeType << " newSize = " << field.sizeVar << " - 1;\n";
+            CC << "    " << field.dataType << " *" << field.var << "2 = new " << field.dataType << "[newSize];\n";
+            CC << "    " << field.sizeType << " i;\n";
+            CC << "    for (i = 0; i < k; i++)\n";
+            CC << "        " << field.var << "2[i] = " << var(field) << "[i];\n";
+            CC << "    for (i = k; i < newSize; i++)\n";
+            CC << "        " << field.var << "2[i] = " << var(field) << "[i+1];\n";
+            if (!field.isPointer && field.iscOwnedObject)
+                CC << forEachIndex(field) << "\n" << "        drop(&" << varElem(field) << ");\n";
+
+            if (field.isOwnedPointer) {
+                if (field.iscOwnedObject)
+                    CC << "    dropAndDelete(" << var(field) << "[k]);\n";
+                else
+                    CC << "    delete " << var(field) << "[k];\n";
+            }
+
+            CC << "    delete [] " << var(field) << ";\n";
+            CC << "    " << var(field) << " = " << field.var << "2;\n";
+            CC << "    " << field.sizeVar << " = newSize;\n";
+            if (!field.isPointer && field.iscOwnedObject)
+                CC << forEachIndex(field) << "\n" << "        take(&" << varElem(field) << ");\n";
             CC << "}\n\n";
         }
     }

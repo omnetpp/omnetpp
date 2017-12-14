@@ -26,7 +26,7 @@ class MyClass extends cOwnedObject
 
 MyClass x;
 
-x.getMutableB().setBb(11); PRINT(x.getB().getBb());
+x.getBForUpdate().setBb(11); PRINT(x.getB().getBb());
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout

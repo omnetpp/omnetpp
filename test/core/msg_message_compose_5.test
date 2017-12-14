@@ -38,7 +38,7 @@ message MyMessage
 
 MyMessage x;
 
-x.getMutableB().setA(11); PRINT(x.getB().getA());
+x.getBForUpdate().setA(11); PRINT(x.getB().getA());
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout
