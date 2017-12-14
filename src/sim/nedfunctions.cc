@@ -369,9 +369,9 @@ DEF(nedf_int,
     switch (argv[0].getType()) {
         case cNEDValue::BOOL:
             return (bool)argv[0] ? 1L : 0L;
-        case cNEDValue::DBL:
+        case cNEDValue::DOUBLE:
             return (long)floor((double)argv[0]);
-        case cNEDValue::STR:
+        case cNEDValue::STRING:
             return (long)floor(opp_atof(argv[0].stringValue()));  //XXX catch & wrap exception?
         case cNEDValue::XML:
             throw cRuntimeError("int(): Cannot convert xml to int");
@@ -388,9 +388,9 @@ DEF(nedf_double,
     switch (argv[0].getType()) {
         case cNEDValue::BOOL:
             return (bool)argv[0] ? 1.0 : 0.0;
-        case cNEDValue::DBL:
+        case cNEDValue::DOUBLE:
             return (double)argv[0];
-        case cNEDValue::STR:
+        case cNEDValue::STRING:
             return opp_atof(argv[0].stringValue());  //XXX catch & wrap exception?
         case cNEDValue::XML:
             throw cRuntimeError("double(): Cannot convert xml to double");
@@ -747,7 +747,7 @@ DEF(nedf_firstAvailable,
 {
     cRegistrationList *types = componentTypes.getInstance();
     for (int i = 0; i < argc; i++) {
-        if (argv[i].getType() != cNEDValue::STR)
+        if (argv[i].getType() != cNEDValue::STRING)
             throw cRuntimeError("firstAvailable(): String arguments expected");
         const char *name = argv[i].stringValue();
         cComponentType *c;

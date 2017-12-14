@@ -66,7 +66,7 @@ class SIM_API cNEDValue
      * Type of the value stored in a cNEDValue object.
      */
     // Note: char codes need to be present and be consistent with cNEDFunction::getArgTypes()!
-    enum Type {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;   // TODO rename
+    enum Type {UNDEF=0, BOOL='B', DOUBLE='D', STRING='S', XML='X', DBL=DOUBLE, STR=STRING} type;
 
   private:
     bool bl;
@@ -118,7 +118,7 @@ class SIM_API cNEDValue
     /**
      * Returns true if the stored value is of a numeric type.
      */
-    bool isNumeric() const {return type==DBL;}
+    bool isNumeric() const {return type==DOUBLE;}
 
     /**
      * Returns true if the value is not empty, i.e. type is not UNDEF.
@@ -179,32 +179,32 @@ class SIM_API cNEDValue
     /**
      * Sets the value to the given long value.
      */
-    void set(intpar_t l) {type=DBL; dbl=l; dblunit=nullptr;}
+    void set(intpar_t l) {type=DOUBLE; dbl=l; dblunit=nullptr;}
 
     /**
      * Sets the value to the given double value and measurement unit.
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void set(double d, const char *unit=nullptr) {type=DBL; dbl=d; dblunit=unit;}
+    void set(double d, const char *unit=nullptr) {type=DOUBLE; dbl=d; dblunit=unit;}
 
     /**
      * Sets the value to the given double value, preserving the current
-     * measurement unit. The object must already have the DBL type.
+     * measurement unit. The object must already have the DOUBLE type.
      */
-    void setPreservingUnit(double d) {assertType(DBL); dbl=d;}
+    void setPreservingUnit(double d) {assertType(DOUBLE); dbl=d;}
 
     /**
      * Sets the measurement unit to the given value, leaving the numeric part
-     * of the quantity unchanged. The object must already have the DBL type.
+     * of the quantity unchanged. The object must already have the DOUBLE type.
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void setUnit(const char *unit) {assertType(DBL); dblunit=unit;}
+    void setUnit(const char *unit) {assertType(DOUBLE); dblunit=unit;}
 
     /**
      * Permanently converts this value to the given unit. The value must
-     * already have the type DBL. If the current unit cannot be converted
+     * already have the type DOUBLE. If the current unit cannot be converted
      * to the given one, an error will be thrown. The unit string pointer
      * is expected to stay valid during the entire simulation (see related
      * class comment).
@@ -217,12 +217,12 @@ class SIM_API cNEDValue
      * Sets the value to the given string value. The string itself will be
      * copied. nullptr is also accepted and treated as an empty string.
      */
-    void set(const char *s) {type=STR; this->s=s?s:"";}
+    void set(const char *s) {type=STRING; this->s=s?s:"";}
 
     /**
      * Sets the value to the given string value.
      */
-    void set(const std::string& s) {type=STR; this->s=s;}
+    void set(const std::string& s) {type=STRING; this->s=s;}
 
     /**
      * Sets the value to the given cXMLElement.
@@ -244,7 +244,7 @@ class SIM_API cNEDValue
     bool boolValue() const {assertType(BOOL); return bl;}
 
     /**
-     * Returns value as integer. The type must be DBL (Note: there is no INT.)
+     * Returns value as integer. The type must be DOUBLE (Note: there is no INT.)
      */
     intpar_t intValue() const {assertType(DOUBLE); return (intpar_t)dbl;}
 
@@ -254,32 +254,32 @@ class SIM_API cNEDValue
     _OPPDEPRECATED intpar_t longValue() const {return intValue();}
 
     /**
-     * Returns value as double. The type must be DBL.
+     * Returns value as double. The type must be DOUBLE.
      */
-    double doubleValue() const {assertType(DBL); return dbl;}
+    double doubleValue() const {assertType(DOUBLE); return dbl;}
 
     /**
      * Returns the numeric value as a double converted to the given unit.
      * If the current unit cannot be converted to the given one, an error
-     * will be thrown. The type must be DBL.
+     * will be thrown. The type must be DOUBLE.
      */
     double doubleValueInUnit(const char *unit) const {return convertUnit(dbl, dblunit, unit);}
 
     /**
      * Returns the unit ("s", "mW", "Hz", "bps", etc), or nullptr if there was no
-     * unit was specified. Unit is only valid for the DBL type.
+     * unit was specified. Unit is only valid for the DOUBLE type.
      */
-    const char *getUnit() const {assertType(DBL); return dblunit;}
+    const char *getUnit() const {assertType(DOUBLE); return dblunit;}
 
     /**
-     * Returns value as const char *. The type must be STR.
+     * Returns value as const char *. The type must be STRING.
      */
-    const char *stringValue() const {assertType(STR); return s.c_str();}
+    const char *stringValue() const {assertType(STRING); return s.c_str();}
 
     /**
-     * Returns value as std::string. The type must be STR.
+     * Returns value as std::string. The type must be STRING.
      */
-    const std::string& stdstringValue() const {assertType(STR); return s;}
+    const std::string& stdstringValue() const {assertType(STRING); return s;}
 
     /**
      * Returns value as pointer to cXMLElement. The type must be XML.
@@ -296,52 +296,52 @@ class SIM_API cNEDValue
     cNEDValue& operator=(bool b)  {set(b); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(char c)  {set((intpar_t)c); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(unsigned char c)  {set((intpar_t)c); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(short i)  {set((intpar_t)i); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(unsigned short i)  {set((intpar_t)i); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(int i)  {set((intpar_t)i); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(unsigned int i)  {set((intpar_t)i); return *this;}
 
     /**
-     * Equivalent to set(long).
+     * Equivalent to set(intpar_t).
      */
     cNEDValue& operator=(long l)  {set((intpar_t)l); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(unsigned long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
-     * Equivalent to set(long).
+     * Equivalent to set(intpar_t).
      */
     cNEDValue& operator=(long long l)  {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
-     * Converts the argument to long, and calls set(long).
+     * Converts the argument to long, and calls set(intpar_t).
      */
     cNEDValue& operator=(unsigned long long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
 

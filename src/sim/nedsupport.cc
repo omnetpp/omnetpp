@@ -102,7 +102,7 @@ SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, con
 cNEDValue SiblingModuleParameterRef::evaluate(cComponent *context, cNEDValue args[], int numargs)
 {
     ASSERT(context != nullptr);
-    ASSERT(!withModuleIndex || (withModuleIndex && numargs == 1 && args[0].type == cNEDValue::DBL));
+    ASSERT(!withModuleIndex || (withModuleIndex && numargs == 1 && args[0].type == cNEDValue::DOUBLE));
     cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->getParentModule() : context);  // this works for channels too
     if (!compoundModule)
         throw cRuntimeError(context, E_ENOPARENT);

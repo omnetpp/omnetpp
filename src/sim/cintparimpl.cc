@@ -113,7 +113,7 @@ intpar_t cIntParImpl::intValue(cComponent *context) const
         return val;
     else {
         cNEDValue v = evaluate(expr, context);
-        if (v.type != cNEDValue::DBL)
+        if (v.type != cNEDValue::DOUBLE)
             throw cRuntimeError(E_ECANTCAST, "long");
         double d = v.doubleValueInUnit(getUnit());
         if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())

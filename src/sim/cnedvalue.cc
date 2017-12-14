@@ -36,8 +36,8 @@ void cNEDValue::operator=(const cNEDValue& other)
     switch (type) {
         case UNDEF: break;
         case BOOL: bl = other.bl; break;
-        case DBL: dbl = other.dbl; dblunit = other.dblunit; break;
-        case STR: s = other.s; break;
+        case DOUBLE: dbl = other.dbl; dblunit = other.dblunit; break;
+        case STRING: s = other.s; break;
         case XML: xml = other.xml; break;
     }
 }
@@ -47,8 +47,8 @@ const char *cNEDValue::getTypeName(Type t)
     switch (t) {
         case UNDEF:  return "undef";
         case BOOL:   return "bool";
-        case DBL:    return "double";
-        case STR:    return "string";
+        case DOUBLE: return "double";
+        case STRING: return "string";
         case XML:    return "xml";
         default:     return "???";
     }
@@ -68,7 +68,7 @@ void cNEDValue::set(const cPar& par)
         case cPar::INT: *this = par.doubleValue(); dblunit = par.getUnit(); break;
         case cPar::STRING: *this = par.stdstringValue(); break;
         case cPar::XML: *this = par.xmlValue(); break;
-        default: throw cRuntimeError("Internal error: Bad cPar type: %s", par.getFullPath().c_str());
+        default: throw cRuntimeError("Internal error: Invalid cPar type: %s", par.getFullPath().c_str());
     }
 }
 
@@ -105,10 +105,10 @@ std::string cNEDValue::str() const
     char buf[32];
     switch (type) {
         case BOOL: return bl ? "true" : "false";
-        case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
-        case STR:  return opp_quotestr(s);
-        case XML:  return xml->str();
-        default:   throw cRuntimeError("Internal error: Bad cNEDValue type");
+        case DOUBLE: sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
+        case STRING: return opp_quotestr(s);
+        case XML: return xml->str();
+        default: throw cRuntimeError("Internal error: Invalid cNEDValue type");
     }
 }
 

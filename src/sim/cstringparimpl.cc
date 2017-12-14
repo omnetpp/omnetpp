@@ -130,7 +130,7 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
         return val;
     else {
         cNEDValue v = evaluate(expr, context);
-        if (v.type != cNEDValue::STR)
+        if (v.type != cNEDValue::STRING)
             throw cRuntimeError(E_ECANTCAST, "string");
         return v.stringValue();
     }

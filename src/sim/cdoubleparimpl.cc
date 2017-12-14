@@ -118,7 +118,7 @@ double cDoubleParImpl::doubleValue(cComponent *context) const
         return val;
     else {
         cNEDValue v = evaluate(expr, context);
-        if (v.type != cNEDValue::DBL)
+        if (v.type != cNEDValue::DOUBLE)
             throw cRuntimeError(E_ECANTCAST, "double");
         return v.doubleValueInUnit(getUnit());
     }
