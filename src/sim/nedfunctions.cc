@@ -369,6 +369,8 @@ DEF(nedf_int,
     switch (argv[0].getType()) {
         case cNedValue::BOOL:
             return (intpar_t)( (bool)argv[0] ? 1 : 0 );
+        case cNedValue::INT:
+            return argv[0];
         case cNedValue::DOUBLE:
             return (intpar_t)floor((double)argv[0]);
         case cNedValue::STRING:
@@ -376,7 +378,7 @@ DEF(nedf_int,
         case cNedValue::XML:
             throw cRuntimeError("int(): Cannot convert xml to int");
         default:
-            throw cRuntimeError("Internal error: Bad cNedValue type");
+            throw cRuntimeError("Internal error: Invalid cNedValue type");
     }
 })
 
@@ -388,8 +390,10 @@ DEF(nedf_double,
     switch (argv[0].getType()) {
         case cNedValue::BOOL:
             return (bool)argv[0] ? 1.0 : 0.0;
+        case cNedValue::INT:
+            return (intpar_t)argv[0];
         case cNedValue::DOUBLE:
-            return (double)argv[0];
+            return argv[0];
         case cNedValue::STRING:
             return opp_atof(argv[0].stringValue());  //XXX catch & wrap exception?
         case cNedValue::XML:

@@ -16,7 +16,8 @@
 #ifndef __OMNETPP_SIMUTIL_H
 #define __OMNETPP_SIMUTIL_H
 
-#include <type_traits>
+#include <type_traits> // is_integer
+#include <limits>   // numeric_limits
 #include <cstring>  // for strlen, etc.
 #include <cstdarg>  // for va_list
 #include <cstdio>   // for sprintf
@@ -72,6 +73,20 @@ ToInt checked_int_cast(FromInt x, const cObject *context, const char *errmsg=nul
     if ((x<0) != (res<0) || x-res != 0)  // note: x!=res would result in warning: signed-unsigned comparison
         intCastError(std::to_string(x), context, errmsg);
     return res;
+}
+
+/**
+ * @brief Safe integer cast: it throws an exception if in case of an overflow,
+ * i.e. when if the target type cannot represent the value in the source type.
+ * The context argument will be used for the error message.
+ */
+template<typename ToInt>
+ToInt checked_int_cast(double d, const char *errmsg=nullptr)
+{
+    static_assert(std::is_integral<ToInt>::value, "checked_int_cast expects integer template argument");
+    if (d < std::numeric_limits<ToInt>::min() || d > std::numeric_limits<ToInt>::max())
+        intCastError(std::to_string(d), errmsg);
+    return (ToInt)d;
 }
 
 /**

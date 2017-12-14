@@ -143,14 +143,18 @@ void cNedFunction::checkArgs(cNedValue argv[], int argc)
     int n = std::min(argc, maxArgc);
     for (int i = 0; i < n; i++) {
         char declType = argTypes[i];
-        if (declType == 'D' || declType == 'L') {
-            if (argv[i].type != cNedValue::DOUBLE)
+        if (declType == 'L') {
+            if (argv[i].type != cNedValue::INT)
+                throw cRuntimeError(E_EBADARGS, getName());  // no implicit DOUBLE-to-INT conversion; TODO elaborate in error message!
+        }
+        else if (declType == 'D') {
+            if (argv[i].type != cNedValue::DOUBLE && argv[i].type != cNedValue::INT) // allow implicit INT-to-DOUBLE conversion
                 throw cRuntimeError(E_EBADARGS, getName());
-            if (!opp_isempty(argv[i].getUnit()))
+            if (argv[i].type == cNedValue::DOUBLE && !opp_isempty(argv[i].getUnit()))
                 throw cRuntimeError(E_DIMLESS, getName());  //XXX better msg! only arg i is dimless
         }
         else if (declType == 'Q') {
-            if (argv[i].type != cNedValue::DOUBLE)
+            if (argv[i].type != cNedValue::DOUBLE && argv[i].type != cNedValue::INT) // allow implicit INT-to-DOUBLE conversion
                 throw cRuntimeError(E_EBADARGS, getName());
         }
         else if (declType != '*' && argv[i].type != declType) {

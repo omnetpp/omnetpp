@@ -32,17 +32,6 @@ class cDynamicExpression;
  *
  * See notes below.
  *
- * <b>Double vs long:</b>
- *
- * There is no <tt>long</tt> field in cNedValue; the reason is that the NED
- * expression evaluator stores all numbers as <tt>double</tt>. The IEEE double's
- * mantissa is 53 bits, so <tt>double</tt> can accurately represent <tt>long</tt>
- * on 32-bit architectures. On 64-bit architectures the usual size of
- * <tt>long</tt> is 64 bits, so precision loss will occur when converting
- * very large integers to <tt>double</tt>. Note, however, that simulations
- * that trigger this precision loss would not be able to run on 32-bit
- * architectures at all.
- *
  * <b>Measurement unit strings:</b>
  *
  * For performance reasons, the functions that store a measurement unit
@@ -66,12 +55,13 @@ class SIM_API cNedValue
      * Type of the value stored in a cNedValue object.
      */
     // Note: char codes need to be present and be consistent with cNedFunction::getArgTypes()!
-    enum Type {UNDEF=0, BOOL='B', DOUBLE='D', STRING='S', XML='X', DBL=DOUBLE, STR=STRING} type;
+    enum Type {UNDEF=0, BOOL='B', INT='L', DOUBLE='D', STRING='S', XML='X', DBL=DOUBLE, STR=STRING} type;
 
   private:
     bool bl;
+    intpar_t intv;
     double dbl;
-    const char *dblunit; // string constants or pooled strings; may be nullptr
+    const char *unit; // for INT/DOUBLE; must point to string constant or pooled string; may be nullptr
     std::string s;
     cXMLElement *xml;
     static const char *OVERFLOW_MSG;
@@ -84,12 +74,15 @@ class SIM_API cNedValue
 #endif
     void cannotCastError(Type t) const;
 
+    void convertToDouble() {if (type==INT) {type=DOUBLE; dbl=intv;} else if (type!=DOUBLE) cannotCastError(DOUBLE);}
+
   public:
     /** @name Constructors */
     //@{
     cNedValue()  {type=UNDEF;}
     cNedValue(bool b)  {set(b);}
     cNedValue(intpar_t l)  {set(l);}
+    cNedValue(intpar_t l, const char *unit)  {set(l, unit);}
     cNedValue(double d)  {set(d);}
     cNedValue(double d, const char *unit)  {set(d,unit);}
     cNedValue(const char *s)  {set(s);}
@@ -118,7 +111,7 @@ class SIM_API cNedValue
     /**
      * Returns true if the stored value is of a numeric type.
      */
-    bool isNumeric() const {return type==DOUBLE;}
+    bool isNumeric() const {return type==DOUBLE || type==INT;}
 
     /**
      * Returns true if the value is not empty, i.e. type is not UNDEF.
@@ -177,16 +170,24 @@ class SIM_API cNedValue
     void set(bool b) {type=BOOL; bl=b;}
 
     /**
-     * Sets the value to the given long value.
-     */
-    void set(intpar_t l) {type=DOUBLE; dbl=l; dblunit=nullptr;}
-
-    /**
-     * Sets the value to the given double value and measurement unit.
+     * Sets the value to the given integer value and measurement unit (optional).
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void set(double d, const char *unit=nullptr) {type=DOUBLE; dbl=d; dblunit=unit;}
+    void set(intpar_t l, const char *unit=nullptr) {type=INT; intv=l; this->unit=unit;}
+
+    /**
+     * Sets the value to the given double value and measurement unit (optional).
+     * The unit string pointer is expected to stay valid during the entire
+     * duration of the simulation (see related class comment).
+     */
+    void set(double d, const char *unit=nullptr) {type=DOUBLE; dbl=d; this->unit=unit;}
+
+    /**
+     * Sets the value to the given integer value, preserving the current
+     * measurement unit. The object must already have the INT type.
+     */
+    void setPreservingUnit(intpar_t l) {assertType(INT); intv=l;}
 
     /**
      * Sets the value to the given double value, preserving the current
@@ -200,7 +201,7 @@ class SIM_API cNedValue
      * The unit string pointer is expected to stay valid during the entire
      * duration of the simulation (see related class comment).
      */
-    void setUnit(const char *unit) {assertType(DOUBLE); dblunit=unit;}
+    void setUnit(const char* unit);
 
     /**
      * Permanently converts this value to the given unit. The value must
@@ -244,9 +245,9 @@ class SIM_API cNedValue
     bool boolValue() const {assertType(BOOL); return bl;}
 
     /**
-     * Returns value as integer. The type must be DOUBLE (Note: there is no INT.)
+     * Returns value as integer. The type must be INT or DOUBLE.
      */
-    intpar_t intValue() const {assertType(DOUBLE); return (intpar_t)dbl;}
+    intpar_t intValue() const;
 
     /**
      * For compatibility; delegates to intValue().
@@ -254,22 +255,22 @@ class SIM_API cNedValue
     _OPPDEPRECATED intpar_t longValue() const {return intValue();}
 
     /**
-     * Returns value as double. The type must be DOUBLE.
+     * Returns value as double. The type must be DOUBLE or INT.
      */
-    double doubleValue() const {assertType(DOUBLE); return dbl;}
+    double doubleValue() const;
 
     /**
      * Returns the numeric value as a double converted to the given unit.
      * If the current unit cannot be converted to the given one, an error
-     * will be thrown. The type must be DOUBLE.
+     * will be thrown. The type must be DOUBLE or INT.
      */
-    double doubleValueInUnit(const char *unit) const {return convertUnit(dbl, dblunit, unit);}
+    double doubleValueInUnit(const char *targetUnit) const;
 
     /**
      * Returns the unit ("s", "mW", "Hz", "bps", etc), or nullptr if there was no
-     * unit was specified. Unit is only valid for the DOUBLE type.
+     * unit was specified. Unit is only valid for the DOUBLE and INT types.
      */
-    const char *getUnit() const {assertType(DOUBLE); return dblunit;}
+    const char *getUnit() const {return (type==DOUBLE || type==INT) ? unit : nullptr;}
 
     /**
      * Returns value as const char *. The type must be STRING.
