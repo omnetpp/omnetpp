@@ -19,6 +19,7 @@
 #include <string>
 #include "simkerneldefs.h"
 #include "cexception.h"
+#include "simutil.h"
 
 namespace omnetpp {
 
@@ -65,7 +66,7 @@ class SIM_API cNEDValue
      * Type of the value stored in a cNEDValue object.
      */
     // Note: char codes need to be present and be consistent with cNEDFunction::getArgTypes()!
-    enum Type {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
+    enum Type {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;   // TODO rename
 
   private:
     bool bl;
@@ -73,6 +74,7 @@ class SIM_API cNEDValue
     const char *dblunit; // string constants or pooled strings; may be nullptr
     std::string s;
     cXMLElement *xml;
+    static const char *OVERFLOW_MSG;
 
   private:
 #ifdef NDEBUG
@@ -87,7 +89,7 @@ class SIM_API cNEDValue
     //@{
     cNEDValue()  {type=UNDEF;}
     cNEDValue(bool b)  {set(b);}
-    cNEDValue(long l)  {set(l);}
+    cNEDValue(intpar_t l)  {set(l);}
     cNEDValue(double d)  {set(d);}
     cNEDValue(double d, const char *unit)  {set(d,unit);}
     cNEDValue(const char *s)  {set(s);}
@@ -177,7 +179,7 @@ class SIM_API cNEDValue
     /**
      * Sets the value to the given long value.
      */
-    void set(long l) {type=DBL; dbl=l; dblunit=nullptr;}
+    void set(intpar_t l) {type=DBL; dbl=l; dblunit=nullptr;}
 
     /**
      * Sets the value to the given double value and measurement unit.
@@ -242,9 +244,14 @@ class SIM_API cNEDValue
     bool boolValue() const {assertType(BOOL); return bl;}
 
     /**
-     * Returns value as long. The type must be DBL (Note: there is no LONG.)
+     * Returns value as integer. The type must be DBL (Note: there is no INT.)
      */
-    long longValue() const {assertType(DBL); return (long)dbl;}
+    intpar_t intValue() const {assertType(DOUBLE); return (intpar_t)dbl;}
+
+    /**
+     * For compatibility; delegates to intValue().
+     */
+    _OPPDEPRECATED intpar_t longValue() const {return intValue();}
 
     /**
      * Returns value as double. The type must be DBL.
@@ -291,45 +298,55 @@ class SIM_API cNEDValue
     /**
      * Converts the argument to long, and calls set(long).
      */
-    cNEDValue& operator=(char c)  {set((long)c); return *this;}
+    cNEDValue& operator=(char c)  {set((intpar_t)c); return *this;}
 
     /**
      * Converts the argument to long, and calls set(long).
      */
-    cNEDValue& operator=(unsigned char c)  {set((long)c); return *this;}
+    cNEDValue& operator=(unsigned char c)  {set((intpar_t)c); return *this;}
 
     /**
      * Converts the argument to long, and calls set(long).
      */
-    cNEDValue& operator=(int i)  {set((long)i); return *this;}
+    cNEDValue& operator=(short i)  {set((intpar_t)i); return *this;}
 
     /**
      * Converts the argument to long, and calls set(long).
      */
-    cNEDValue& operator=(unsigned int i)  {set((long)i); return *this;}
+    cNEDValue& operator=(unsigned short i)  {set((intpar_t)i); return *this;}
 
     /**
      * Converts the argument to long, and calls set(long).
      */
-    cNEDValue& operator=(short i)  {set((long)i); return *this;}
+    cNEDValue& operator=(int i)  {set((intpar_t)i); return *this;}
 
     /**
      * Converts the argument to long, and calls set(long).
      */
-    cNEDValue& operator=(unsigned short i)  {set((long)i); return *this;}
+    cNEDValue& operator=(unsigned int i)  {set((intpar_t)i); return *this;}
 
     /**
      * Equivalent to set(long).
      */
-    cNEDValue& operator=(long l)  {set(l); return *this;}
+    cNEDValue& operator=(long l)  {set((intpar_t)l); return *this;}
 
     /**
      * Converts the argument to long, and calls set(long).
      */
-    cNEDValue& operator=(unsigned long l) {set((long)l); return *this;}
+    cNEDValue& operator=(unsigned long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
 
     /**
-     * Equivalent to setDoubleValue().
+     * Equivalent to set(long).
+     */
+    cNEDValue& operator=(long long l)  {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+
+    /**
+     * Converts the argument to long, and calls set(long).
+     */
+    cNEDValue& operator=(unsigned long long l) {set(checked_int_cast<intpar_t>(l, OVERFLOW_MSG)); return *this;}
+
+    /**
+     * Equivalent to set(double).
      */
     cNEDValue& operator=(double d)  {set(d); return *this;}
 
@@ -364,51 +381,64 @@ class SIM_API cNEDValue
     operator bool() const  {return boolValue();}
 
     /**
-     * Calls longValue() and converts the result to char.
-     * Note that this is a potentially lossy operation.
+     * Calls intValue() and converts the result to char.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator char() const  {return (char)longValue();}
+    operator char() const  {return checked_int_cast<char>(intValue(), OVERFLOW_MSG);}
 
     /**
-     * Calls longValue() and converts the result to unsigned char.
-     * Note that this is a potentially lossy operation.
+     * Calls intValue() and converts the result to unsigned char.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned char() const  {return (unsigned char)longValue();}
+    operator unsigned char() const  {return checked_int_cast<unsigned char>(intValue(), OVERFLOW_MSG);}
 
     /**
-     * Calls longValue() and converts the result to int.
-     * Note that this is a potentially lossy operation.
+     * Calls intValue() and converts the result to int.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator int() const  {return (int)longValue();}
+    operator int() const  {return checked_int_cast<int>(intValue(), OVERFLOW_MSG);}
 
     /**
-     * Calls longValue() and converts the result to unsigned int.
-     * Note that this is a potentially lossy operation.
+     * Calls intValue() and converts the result to unsigned int.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned int() const  {return (unsigned int)longValue();}
+    operator unsigned int() const  {return checked_int_cast<unsigned int>(intValue(), OVERFLOW_MSG);}
 
     /**
-     * Calls longValue() and converts the result to short.
-     * Note that this is a potentially lossy operation.
+     * Calls intValue() and converts the result to short.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator short() const  {return (short)longValue();}
+    operator short() const  {return checked_int_cast<short>(intValue(), OVERFLOW_MSG);}
 
     /**
-     * Calls longValue() and converts the result to unsigned short.
-     * Note that this is a potentially lossy operation.
+     * Calls intValue() and converts the result to unsigned short.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned short() const  {return (unsigned short)longValue();}
+    operator unsigned short() const  {return checked_int_cast<unsigned short>(intValue(), OVERFLOW_MSG);}
 
     /**
-     * Equivalent to longValue().
+     * Calls intValue() and converts the result to long.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator long() const  {return longValue();}
+    operator long() const  {return checked_int_cast<long>(intValue(), OVERFLOW_MSG);}
 
     /**
-     * Calls longValue() and converts the result to unsigned long.
-     * Note that the result may be misleading!
+     * Calls intValue() and converts the result to unsigned long.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned long() const  {return longValue();}
+    operator unsigned long() const  {return checked_int_cast<unsigned long>(intValue(), OVERFLOW_MSG);}
+
+    /**
+     * Calls intValue() and converts the result to long long.
+     * An exception is thrown if the conversion would result in a data loss,
+     */
+    operator long long() const  {return checked_int_cast<long long>(intValue(), OVERFLOW_MSG);}
+
+    /**
+     * Calls intValue() and converts the result to unsigned long long.
+     * An exception is thrown if the conversion would result in a data loss,
+     */
+    operator unsigned long long() const  {return checked_int_cast<unsigned long long>(intValue(), OVERFLOW_MSG);}
 
     /**
      * Equivalent to doubleValue().

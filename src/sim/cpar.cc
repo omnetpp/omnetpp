@@ -176,11 +176,6 @@ bool cPar::isExpression() const
     return p->isExpression();
 }
 
-void cPar::intcastError(intpar_t x) const
-{
-    throw cRuntimeError(this, "Integer overflow: cannot cast %" PRId64 " to a smaller (or unsigned) integer type", (int64_t)x);
-}
-
 #define TRY(x) \
     try { x; } catch (std::exception& e) { throw cRuntimeError(E_PARAM, getFullName(), e.what()); }
 

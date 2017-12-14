@@ -78,7 +78,8 @@
 typedef int64_t eventnumber_t;
 
 /**
- * @brief Type for NED parameter values that store integers.
+ * @brief Type for NED parameter values that store integers. It is guaranteed
+ * to be signed and at least as wide as "long".
  *
  * @ingroup SimSupport
  */

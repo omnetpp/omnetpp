@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <inttypes.h>  // PRId64
 #include "common/stringutil.h"
 #include "common/stringpool.h"
 #include "common/unitconversion.h"
@@ -26,6 +27,8 @@
 using namespace omnetpp::common;
 
 namespace omnetpp {
+
+const char *cNEDValue::OVERFLOW_MSG = "cNEDValue: Integer overflow casting %s to a smaller or unsigned integer type";
 
 void cNEDValue::operator=(const cNEDValue& other)
 {

@@ -19,6 +19,7 @@
 #include "cownedobject.h"
 #include "cexpression.h"
 #include "cexception.h"
+#include "simutil.h"
 
 namespace omnetpp {
 
@@ -94,11 +95,6 @@ class SIM_API cPar : public cObject
     void beforeChange();
     // internal: called each time after the value of this object changes.
     void afterChange();
-
-    // internal: checked conversion to various integer types
-    template<typename T> T checked_int_cast(intpar_t x) const {T res = x; if (x != res) intcastError(x); return res;}
-    template<typename T> T checked_uint_cast(intpar_t x) const {T res = x; if (x < 0 || x != (intpar_t)res) intcastError(x); return res;}
-    void intcastError(intpar_t x) const;
 
   public:
     // internal, used by cComponent::finalizeParameters()
@@ -419,17 +415,17 @@ class SIM_API cPar : public cObject
     /**
      * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned long i) {return setIntValue(i);}
+    cPar& operator=(unsigned long i) {return setIntValue(checked_int_cast<intpar_t>(i, this));}
 
     /**
      * Delegates to setIntValue().
      */
-    cPar& operator=(long long i)  {return setIntValue(i);}
+    cPar& operator=(long long i)  {return setIntValue(checked_int_cast<intpar_t>(i, this));}
 
     /**
      * Delegates to setIntValue().
      */
-    cPar& operator=(unsigned long long i)  {return setIntValue(i);} //TODO check range
+    cPar& operator=(unsigned long long i)  {return setIntValue(checked_int_cast<intpar_t>(i, this));}
 
     /**
      * Equivalent to setDoubleValue().
@@ -463,53 +459,63 @@ class SIM_API cPar : public cObject
 
     /**
      * Calls intValue() and converts the result to char.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator char() const  {return checked_int_cast<char>(intValue());}
+    operator char() const  {return checked_int_cast<char>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to unsigned char.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned char() const  {return checked_uint_cast<unsigned char>(intValue());}
+    operator unsigned char() const  {return checked_int_cast<unsigned char>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to int.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator int() const  {return checked_int_cast<int>(intValue());}
+    operator int() const  {return checked_int_cast<int>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to unsigned int.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned int() const  {return checked_uint_cast<unsigned int>(intValue());}
+    operator unsigned int() const  {return checked_int_cast<unsigned int>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to short.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator short() const  {return checked_int_cast<short>(intValue());}
+    operator short() const  {return checked_int_cast<short>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to unsigned short.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned short() const  {return checked_uint_cast<unsigned short>(intValue());}
+    operator unsigned short() const  {return checked_int_cast<unsigned short>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to long.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator long() const  {return checked_int_cast<long>(intValue());}
+    operator long() const  {return checked_int_cast<long>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to unsigned long.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned long() const  {return checked_uint_cast<unsigned long>(intValue());}
+    operator unsigned long() const  {return checked_int_cast<unsigned long>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to long long.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator long long() const  {return checked_int_cast<long long>(intValue());}
+    operator long long() const  {return checked_int_cast<long long>(intValue(), this);}
 
     /**
      * Calls intValue() and converts the result to unsigned long long.
+     * An exception is thrown if the conversion would result in a data loss,
      */
-    operator unsigned long long() const  {return checked_uint_cast<unsigned long long>(intValue());}
+    operator unsigned long long() const  {return checked_int_cast<unsigned long long>(intValue(), this);}
 
     /**
      * Equivalent to doubleValue().

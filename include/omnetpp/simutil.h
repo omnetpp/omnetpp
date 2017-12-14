@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_SIMUTIL_H
 #define __OMNETPP_SIMUTIL_H
 
+#include <type_traits>
 #include <cstring>  // for strlen, etc.
 #include <cstdarg>  // for va_list
 #include <cstdio>   // for sprintf
@@ -29,13 +30,50 @@
 namespace omnetpp {
 
 // forward declarations
+class cObject;
 class cComponent;
 
 // logically belongs to csimulation.h but must be here because of declaration order
 enum {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
 
+
 /** @addtogroup Utilities */
 //@{
+
+// helpers for checked_int_cast
+void intCastError(const std::string& num, const char *errmsg=nullptr);
+void intCastError(const std::string& num, const cObject *context, const char *errmsg=nullptr);
+
+/**
+ * @brief Safe integer cast: it throws an exception if in case of an overflow,
+ * i.e. when if the target type cannot represent the value in the source type.
+ * The context argument will be used for the error message.
+ */
+template<typename ToInt, typename FromInt>
+ToInt checked_int_cast(FromInt x, const char *errmsg=nullptr)
+{
+    static_assert(std::is_integral<ToInt>::value && std::is_integral<FromInt>::value, "checked_int_cast expects integers");
+    ToInt res = x;
+    if ((x<0) != (res<0) || x-res != 0)  // note: x!=res would result in warning: signed-unsigned comparison
+        intCastError(std::to_string(x), errmsg);
+    return res;
+}
+
+/**
+ * @brief Safe integer cast: it throws an exception if in case of an overflow,
+ * i.e. when if the target type cannot represent the value in the source type.
+ * The context argument will be used for the error message.
+ */
+template<typename ToInt, typename FromInt>
+ToInt checked_int_cast(FromInt x, const cObject *context, const char *errmsg=nullptr)
+{
+    static_assert(std::is_integral<ToInt>::value && std::is_integral<FromInt>::value, "checked_int_cast expects integers");
+    ToInt res = x;
+    if ((x<0) != (res<0) || x-res != 0)  // note: x!=res would result in warning: signed-unsigned comparison
+        intCastError(std::to_string(x), context, errmsg);
+    return res;
+}
+
 /**
  * @brief Same as the standard strlen() function, except that it also accepts
  * nullptr and returns 0 for it.
