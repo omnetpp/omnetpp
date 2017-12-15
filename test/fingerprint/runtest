@@ -276,7 +276,7 @@ class FingerprintTestCase(SimulationTestCase):
             assert False, "could not identify program name from working directory"
         program = m.group(1)
         if os.path.exists(workingdir + sep + program):
-            program = "." + sep
+            program = "." + sep + program
         elif os.path.exists(workingdir + sep + program + "_dbg"):
             program = "." + sep + program + "_dbg"
         else:
