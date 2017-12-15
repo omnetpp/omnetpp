@@ -23,6 +23,8 @@ using namespace omnetpp;
 class Tester : public cSimpleModule
 {
     cRectangleFigure *bounds;
+    cTextFigure *zoom;
+
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

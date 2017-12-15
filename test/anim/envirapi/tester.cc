@@ -31,12 +31,17 @@ void Tester::initialize()
     // Loading an image with a custom name.
     getEnvir()->loadImage(resolveResourcePath("photos2/cgi/bunny.png").c_str(), "3d/hare");
 
-    // This rectangle will always be placed around this module is in its parent.
+    // This rectangle will always be placed around this module in its parent.
     bounds = new cRectangleFigure();
     bounds->setLineWidth(2);
     bounds->setLineColor("yellow");
     bounds->setZIndex(2);
     getParentModule()->getCanvas()->addFigure(bounds);
+
+    zoom = new cTextFigure();
+    zoom->setPosition({50, 350});
+    zoom->setText("Zoom level: ?");
+    getParentModule()->getCanvas()->addFigure(zoom);
 
     scheduleAt(simTime()+1, new cMessage());
 }
@@ -50,4 +55,5 @@ void Tester::handleMessage(cMessage *msg)
 void Tester::refreshDisplay() const
 {
     bounds->setBounds(getEnvir()->getSubmoduleBounds(this));
+    zoom->setText(("Zoom level: " + std::to_string(getEnvir()->getZoomLevel(getParentModule()))).c_str());
 }

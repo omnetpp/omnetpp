@@ -18,14 +18,13 @@ package envirapi;
 network EnvirApiTest
 {
     parameters:
-        @display("bgb=500,300");
-        @figure[explanation](type=text; pos=25,25; zIndex=2;
-            text="Testing the following cEnvir functions:\nappendToImagePath, loadImage, getSubmodulePosition.\nYou should see five images next to each other:\nLena, the Cornell box, a baboon, the Utah teapot, and the Stanford bunny.\nThe tester module is here to ask the environment to load the images\nat runtime from C++ code, see the initialize() function of the Tester class.\nIt also adds a red circle and a green rectangle which should always be\nin the center of, and around the submodule icon, respectively.\nThe dummy module and the connection to it serves no other purpose\nthan to make the positions change when the network is relayouted.");
-        @figure[lena](type=image; image="lena"; pos=50,250);
-        @figure[box](type=image; image="box"; pos=150,250);
-        @figure[baboon](type=image; image="baboon"; pos=250,250);
-        @figure[teapot](type=image; image="cgi/teapot"; pos=350,250);
-        @figure[bunny](type=image; image="3d/hare"; pos=450,250);
+        @display("bgb=500,400");
+        @figure[explanation](type=text; pos=25,25; zIndex=2; text="Testing the following cEnvir functions:\nappendToImagePath, loadImage, getSubmodulePosition.\nYou should see five images next to each other:\nLena, the Cornell box, a baboon, the Utah teapot, and the Stanford bunny.\nThe tester module is here to ask the environment to load the images\nat runtime from C++ code, see the initialize() function of the Tester class.\nIt also adds a yellow rectangle which should always be tightly around\nthe submodule icon.\nThe zoom level displayed in the corresponding text figure should always\nmatch (in at least one inspector) the inspector's real zoom level.\nThe dummy module and the connection to it serves no other purpose\nthan to make the positions change when the network is relayouted.");
+        @figure[lena](type=image; image="lena"; pos=50,300);
+        @figure[box](type=image; image="box"; pos=150,300);
+        @figure[baboon](type=image; image="baboon"; pos=250,300);
+        @figure[teapot](type=image; image="cgi/teapot"; pos=350,300);
+        @figure[bunny](type=image; image="3d/hare"; pos=450,300);
         @figure[submodules](zIndex=1);
     submodules:
         tester: Tester;
