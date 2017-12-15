@@ -317,6 +317,12 @@ class SIM_API cPar : public cObject
     std::string stdstringValue() const;
 
     /**
+     * Convenience method: returns true of the parameter contains an empty string.
+     * The cPar type must be STRING.
+     */
+    bool isEmptyString() const {return stdstringValue().empty();}
+
+    /**
      * Returns value as pointer to cXMLElement. The cPar type must be XML.
      *
      * The lifetime of the returned object tree is undefined, but it is
