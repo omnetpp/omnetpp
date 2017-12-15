@@ -218,6 +218,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       virtual void appendToImagePath(const char *directory) override;
       virtual void loadImage(const char *fileName, const char *imageName=nullptr) override;
       virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
+      virtual double getZoomLevel(const cModule *module) override;
       virtual double getAnimationTime() const override {return 0;}  // custom animations not supported
       virtual double getAnimationSpeed() const override {return 0;}
       virtual double getRemainingAnimationHoldTime() const override {return 0;}
@@ -268,7 +269,7 @@ class TKENV_API Tkenv : public omnetpp::envir::EnvirBase
       void redrawInspectors();
       Inspector *inspect(cObject *obj, int type, bool ignoreEmbedded, const char *geometry);
       void addEmbeddedInspector(const char *widget, Inspector *insp);
-      Inspector *findFirstInspector(cObject *obj, int type, bool ignoreEmbedded=false);
+      Inspector *findFirstInspector(const cObject *obj, int type, bool ignoreEmbedded=false);
       Inspector *findInspector(const char *widget);
       void deleteInspector(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}

@@ -825,7 +825,7 @@ void Tkenv::addEmbeddedInspector(const char *widget, Inspector *insp)
     insp->refresh();
 }
 
-Inspector *Tkenv::findFirstInspector(cObject *obj, int type, bool ignoreEmbedded)
+Inspector *Tkenv::findFirstInspector(const cObject *obj, int type, bool ignoreEmbedded)
 {
     for (auto insp : inspectors) {
         if (insp->getObject() == obj && insp->getType() == type && (!ignoreEmbedded || insp->isToplevel()))
@@ -1897,6 +1897,16 @@ cFigure::Rectangle Tkenv::getSubmoduleBounds(const cModule *submodule)
         }
     }
     return cFigure::Rectangle(NAN, NAN, NAN, NAN);
+}
+
+double Tkenv::getZoomLevel(const cModule *module)
+{
+    // an easy solution that works in most practical cases: take the value
+    // from the first open inspector that we find for this module
+    Inspector *insp = findFirstInspector(static_cast<const cObject *>(module), INSP_GRAPHICAL, false);
+    if (ModuleInspector *modinsp = dynamic_cast<ModuleInspector*>(insp))
+        return modinsp->getZoomLevel();
+    return NAN;
 }
 
 unsigned Tkenv::getExtraStackForEnvir() const

@@ -1264,7 +1264,7 @@ Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *paren
     return insp;
 }
 
-Inspector *Qtenv::findFirstInspector(cObject *obj, InspectorType type, bool ignoreEmbedded)
+Inspector *Qtenv::findFirstInspector(const cObject *obj, InspectorType type, bool ignoreEmbedded)
 {
     for (auto insp : inspectors) {
         if (insp->getObject() == obj && insp->getType() == type && (!ignoreEmbedded || insp->isToplevelInspector()))
@@ -1993,6 +1993,22 @@ cFigure::Rectangle Qtenv::getSubmoduleBounds(const cModule *submodule)
     // with the icon size factor, so that's why the division is there.
     QRectF r = moduleLayouter.getModuleRectangle(const_cast<cModule *>(submodule), 1.0, iconScale / zoomFactor);
     return cFigure::Rectangle(r.x(), r.y(), r.width(), r.height());
+}
+
+double Qtenv::getZoomLevel(const cModule *module)
+{
+    const cObject *object = static_cast<const cObject*>(module);
+
+    // This is the inspector (if any) which we will ask for the zoom level.
+    // It will only be guaranteed to be correct in this inspector, since the
+    // zoom level is not shared among different inspector instances viewing the
+    // same module. The one embedded module inspector takes precedence, but if
+    // it's not suitable, we try finding another one, a top-level.
+    ModuleInspector *primaryInsp = (mainNetworkView->getObject() == object)
+            ? mainNetworkView
+            : dynamic_cast<ModuleInspector*>(findFirstInspector(object, INSP_GRAPHICAL, true));
+
+    return primaryInsp ? primaryInsp->getZoomFactor() : NAN;
 }
 
 double Qtenv::getAnimationTime() const

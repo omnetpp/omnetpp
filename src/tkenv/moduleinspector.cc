@@ -360,6 +360,13 @@ ModuleInspector::Point ModuleInspector::getSubmodulePosition(const cModule *subm
     return it != submodPosMap.end() ? it->second : Point{NAN,NAN};
 }
 
+double ModuleInspector::getZoomLevel()
+{
+    // read $inspectordata($c:zoomfactor)
+    const char *s = Tcl_GetVar2(interp, "inspectordata", TCLCONST((std::string(canvas)+":zoomfactor").c_str()), TCL_GLOBAL_ONLY);
+    return opp_atof(s);
+}
+
 void ModuleInspector::refreshLayout()
 {
     // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --

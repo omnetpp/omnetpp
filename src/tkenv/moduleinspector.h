@@ -73,6 +73,7 @@ class TKENV_API ModuleInspector : public Inspector
       bool needsRedraw() {return needs_redraw;}
 
       Point getSubmodulePosition(const cModule *submodule);
+      double getZoomLevel();
 
       // implementations of inspector commands:
       virtual int getDefaultLayoutSeed(int argc, const char **argv);

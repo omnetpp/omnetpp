@@ -704,6 +704,11 @@ cFigure::Rectangle Cmdenv::getSubmoduleBounds(const cModule *submodule)
     return cFigure::Rectangle(NAN, NAN, NAN, NAN);
 }
 
+double Cmdenv::getZoomLevel(const cModule *module)
+{
+     return NAN;
+}
+
 void Cmdenv::printUISpecificHelp()
 {
     out << "Cmdenv-specific information:\n";

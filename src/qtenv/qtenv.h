@@ -245,6 +245,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual void appendToImagePath(const char *directory) override;
       virtual void loadImage(const char *fileName, const char *imageName=nullptr) override;
       virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) override;
+      virtual double getZoomLevel(const cModule *module) override;
 
       // smooth animation API
       virtual double getAnimationTime() const override;
@@ -362,7 +363,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
       Inspector *inspect(cObject *obj, InspectorType type=INSP_DEFAULT, bool ignoreEmbedded=false);
       Inspector *addEmbeddedInspector(InspectorFactory *factory, QWidget *parent);
-      Inspector *findFirstInspector(cObject *obj, InspectorType type, bool ignoreEmbedded=false);
+      Inspector *findFirstInspector(const cObject *obj, InspectorType type, bool ignoreEmbedded=false);
       void deleteInspector(Inspector *insp);
       const std::list<Inspector*>& getInspectors() {return inspectors;}
 

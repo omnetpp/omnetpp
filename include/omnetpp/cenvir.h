@@ -588,6 +588,22 @@ class SIM_API cEnvir
     virtual cFigure::Rectangle getSubmoduleBounds(const cModule *submodule) = 0;
 
     /**
+     * Returns the current zoom level of a graphical module inspector displaying
+     * the given module (its contents from the inside, not as a submodule icon),
+     * or NAN if not available. A value of 1.0 means 100% zoom (actual size),
+     * 0.5 means 50% (half size), and so on. The method may unconditionally
+     * return NAN if the simulation is running under Cmdenv or another
+     * non-graphical user interface.
+     *
+     * Also note that this method may return different values at different
+     * times, e.g. as a result of the user changing the zoom level, or even
+     * opening and closing inspectors. Visualization code relying on this method
+     * is advised to re-read the value in every refreshDisplay() call, and check
+     * whether it changed since last time.
+     */
+    virtual double getZoomLevel(const cModule *module) = 0;
+
+    /**
      * Returns the current animation time. Animation time starts from zero, and
      * monotonically increases with simulation time and also during zero-simtime
      * animations a.k.a. "holds". The method may return 0 if the simulation is
