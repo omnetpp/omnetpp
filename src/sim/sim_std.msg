@@ -385,7 +385,7 @@ class cPacket extends cMessage
     int64_t bitLength @group("packet") @editable @hint("Simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel");
     int64_t byteLength @group("packet") @editable @hint("Length in bytes, i.e. length in bits divided by eight");
     bool hasBitError @getter(hasBitError) @group("packet") @setter(setBitError) @editable @hint("Indicates that a bit error occurred when the message was sent through a channel with nonzero bit error rate");
-    cPacket *encapsulatedPacket @hint("Used with protocol stacks: stores an encapsulated higher-layer packet");
+    cPacket *encapsulatedPacket @packetData @hint("Used with protocol stacks: stores an encapsulated higher-layer packet");
     bool isReceptionStart @getter(isReceptionStart) @group(sending) @hint("When duration is nonzero: whether this message represents the start or the end of the frame reception");
     simtime_t duration @group(sending) @hint("Transmission time over a channel with datarate");
 }

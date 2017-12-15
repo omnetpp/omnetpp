@@ -297,12 +297,40 @@ cObject *TreeNode::getContainingCObjectPointer()
     return nullptr;
 }
 
+// simple internal helper. -1 is "explicitly disabled", 0 is "no preference", 1 is "enabled"
+static int propertyValueToTriState(const char *value)
+{
+    if (!value)
+        return 0;
+    else if (!strcmp("false", value))
+        return -1;
+    else
+        return 1;
+}
+
+bool TreeNode::fieldMatchesPropertyFilter(cClassDescriptor *containingDesc, int fieldIndex, const char *property)
+{
+    // XXX once field property overriding is implemented in msgc, using getFieldDeclaredOn will probably not cut it
+    cClassDescriptor *declDesc = cClassDescriptor::getDescriptorFor(containingDesc->getFieldDeclaredOn(fieldIndex));
+    int declProp = propertyValueToTriState(declDesc->getProperty(property));
+    int fieldProp = propertyValueToTriState(containingDesc->getFieldProperty(fieldIndex, property));
+
+    switch (declProp) {
+        case -1:
+            return false;
+        case 0:
+            return fieldProp == 1;
+        case 1:
+            return fieldProp != -1;
+    }
+    return true;
+}
+
 TreeNode::~TreeNode()
 {
     for (auto c : children)
         delete c;
 }
-
 
 SuperClassNode::SuperClassNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int superClassIndex, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode)
@@ -343,6 +371,16 @@ QVariant SuperClassNode::computeData(int role)
 QString SuperClassNode::computeNodeIdentifier()
 {
     return (parent ? parent->getNodeIdentifier() + "|" : "") + superDesc->getName();
+}
+
+bool SuperClassNode::matchesPropertyFilter(const QString &property)
+{
+    if (!isFilled())
+        fill();
+    for (int i = 0; i < getCurrentChildCount(); ++i)
+        if (getChild(i)->matchesPropertyFilter(property))
+            return true;
+    return false;
 }
 
 ChildObjectNode::ChildObjectNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, cObject *object, Mode mode)
@@ -545,6 +583,11 @@ QString FieldNode::computeNodeIdentifier()
     return (parent ? parent->getNodeIdentifier() + "|" : "") + containingDesc->getFieldName(fieldIndex);
 }
 
+bool FieldNode::matchesPropertyFilter(const QString &property)
+{
+    return fieldMatchesPropertyFilter(containingDesc, fieldIndex, property.toUtf8());
+}
+
 std::vector<TreeNode *> RootNode::makeChildren()
 {
     return makeObjectChildNodes(object, object ? cClassDescriptor::getDescriptorFor(object) : nullptr, false);
@@ -653,6 +696,16 @@ QVariant FieldGroupNode::computeData(int role)
 QString FieldGroupNode::computeNodeIdentifier()
 {
     return (parent ? parent->getNodeIdentifier() + "|" : "") + groupName.c_str();
+}
+
+bool FieldGroupNode::matchesPropertyFilter(const QString &property)
+{
+    if (!isFilled())
+        fill();
+    for (int i = 0; i < getCurrentChildCount(); ++i)
+        if (getChild(i)->matchesPropertyFilter(property))
+            return true;
+    return false;
 }
 
 std::vector<TreeNode *> ArrayElementNode::makeChildren()
@@ -768,6 +821,11 @@ cObject *ArrayElementNode::getCObjectPointer()
     return containingDesc->getFieldIsCObject(fieldIndex)
             ? static_cast<cObject *>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex))
             : nullptr;
+}
+
+bool ArrayElementNode::matchesPropertyFilter(const QString &property)
+{
+    return fieldMatchesPropertyFilter(containingDesc, fieldIndex, property.toUtf8());
 }
 
 }  // namespace qtenv

@@ -53,6 +53,7 @@ class TreeNode
     // helpers
     static cClassDescriptor *getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
     static int computeObjectChildCount(void *obj, cClassDescriptor *desc, Mode mode, bool excludeInherited = false);
+    static bool fieldMatchesPropertyFilter(cClassDescriptor *containingDesc, int fieldIndex, const char *property);
     // this is not static just to avoid having to pass mode and this (as parent)
     std::vector<TreeNode *> makeObjectChildNodes(void *obj, cClassDescriptor *desc, bool excludeInherited = false);
     // more helpers, not static only to check if "parent in model tree is parent in ownership tree"
@@ -126,6 +127,9 @@ class TreeNode
     // and arrival modules/gates in a message, etc.)
     virtual cObject *getContainingCObjectPointer();
 
+    // used by the PropertyFilteredGenericObjectTreeModel in PACKET mode
+    virtual bool matchesPropertyFilter(const QString &property) { return true; }
+
     virtual ~TreeNode();
 };
 
@@ -143,6 +147,8 @@ class SuperClassNode : public TreeNode
     int computeChildCount() override;
     QVariant computeData(int role) override;
     QString computeNodeIdentifier() override;
+    // currently unused, filtering is only done in PACKET mode, which sets FLAT mode on the source model
+    bool matchesPropertyFilter(const QString &property) override;
 };
 
 class ChildObjectNode : public TreeNode
@@ -182,6 +188,7 @@ class FieldNode : public TreeNode
     bool setData(const QVariant& value, int role) override;
     cObject *getCObjectPointer() override;
     QString computeNodeIdentifier() override;
+    bool matchesPropertyFilter(const QString &property) override;
 };
 
 class RootNode : public TreeNode
@@ -213,6 +220,8 @@ class FieldGroupNode : public TreeNode
     int computeChildCount() override;
     QVariant computeData(int role) override;
     QString computeNodeIdentifier() override;
+    // currently unused, filtering is only done in PACKET mode, which sets FLAT mode on the source model
+    bool matchesPropertyFilter(const QString &property) override;
 };
 
 class ArrayElementNode : public TreeNode
@@ -234,6 +243,7 @@ class ArrayElementNode : public TreeNode
     virtual bool setData(const QVariant& value, int role) override;
     QString computeNodeIdentifier() override;
     cObject *getCObjectPointer() override;
+    bool matchesPropertyFilter(const QString &property) override;
 };
 
 } // namespace qtenv

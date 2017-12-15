@@ -34,60 +34,27 @@ using namespace common;
 
 namespace qtenv {
 
-QSet<QString> GenericObjectTreeModel::getExpandedNodesIn(QTreeView *view, const QModelIndex& index)
-{
-    QSet<QString> result;
-    if (view->isExpanded(index)) {
-        result.insert(static_cast<TreeNode *>(index.internalPointer())->getNodeIdentifier());
-        int numChildren = rowCount(index);
-        for (int i = 0; i < numChildren; ++i) {
-            result.unite(getExpandedNodesIn(view, index.child(i, 0)));
-        }
-    }
-    return result;
-}
 
-void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString>& ids, const QModelIndex& index)
+void PropertyFilteredGenericObjectTreeModel::setRelevantProperty(const QString &relevantProperty)
 {
-    if (ids.contains(static_cast<TreeNode *>(index.internalPointer())->getNodeIdentifier())) {
-        view->expand(index);
-
-        int numChildren = rowCount(index);
-        for (int i = 0; i < numChildren; ++i)
-            expandNodesIn(view, ids, index.child(i, 0));
+    if (this->relevantProperty != relevantProperty) {
+        this->relevantProperty = relevantProperty;
+        invalidateFilter();
     }
 }
 
-QModelIndexList GenericObjectTreeModel::getVisibleNodesIn(QTreeView *view)
+bool PropertyFilteredGenericObjectTreeModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    QModelIndexList indices;
+    if (relevantProperty.isEmpty() || !sourceParent.isValid())
+        return true; // empty filter is pass-through, and always including the tree root
 
-    QModelIndex topIndex = view->indexAt(view->rect().topLeft());
-    QModelIndex bottomIndex = view->indexAt(view->rect().bottomLeft());
+    QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
 
-    for (QModelIndex i = topIndex; i != bottomIndex; i = view->indexBelow(i))
-        indices.append(i);
+    TreeNode *treeNode = static_cast<TreeNode *>(sourceIndex.internalPointer());
 
-    if (bottomIndex.isValid())
-        indices.append(bottomIndex);
-
-    return indices;
+    return treeNode ? treeNode->matchesPropertyFilter(relevantProperty) : true;
 }
 
-bool GenericObjectTreeModel::gatherMissingDataIn(QTreeView *view)
-{
-    bool changed = false;
-    QModelIndexList indices = getVisibleNodesIn(view);
-    for (auto i : indices) {
-        TreeNode *node = static_cast<TreeNode *>(i.internalPointer());
-        if (node->gatherDataIfMissing()) {
-            // not doing it, super slow, see caller
-            //emit dataChanged(i, i);
-            changed = true;
-        }
-    }
-    return changed;
-}
 
 GenericObjectTreeModel::GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent)
     : QAbstractItemModel(parent), rootNode(new RootNode(object, mode))
@@ -182,46 +149,6 @@ Qt::ItemFlags GenericObjectTreeModel::flags(const QModelIndex& index) const
     return flags;
 }
 
-QString GenericObjectTreeModel::getSelectedNodeIn(QTreeView *view)
-{
-    QModelIndexList selection = view->selectionModel()->selectedIndexes();
-
-    if (selection.isEmpty())
-        return "";
-
-    TreeNode *node = static_cast<TreeNode*>(selection.first().internalPointer());
-    return node->getNodeIdentifier();
-}
-
-void GenericObjectTreeModel::selectNodeIn(QTreeView *view, const QString &identifier)
-{
-    QModelIndexList visible = getVisibleNodesIn(view);
-
-    for (auto v : visible) {
-        TreeNode *node = static_cast<TreeNode*>(v.internalPointer());
-        if (node->getNodeIdentifier() == identifier) {
-            view->clearSelection();
-            view->selectionModel()->select(v, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-            view->setCurrentIndex(v);
-            break;
-        }
-    }
-}
-
-QSet<QString> GenericObjectTreeModel::getExpandedNodesIn(QTreeView *view)
-{
-    return getExpandedNodesIn(view, index(0, 0, QModelIndex()));
-}
-
-void GenericObjectTreeModel::expandNodesIn(QTreeView *view, const QSet<QString>& ids)
-{
-    bool wasAnimated = view->isAnimated();
-    view->setAnimated(false); // the last expanded node was animated without this, we don't need that
-    QModelIndex rootIndex = index(0, 0, QModelIndex());
-    expandNodesIn(view, ids, rootIndex);
-    view->setAnimated(wasAnimated); // restoring the view to how it was before
-}
-
 bool GenericObjectTreeModel::canFetchMore(const QModelIndex &parent) const
 {
     if (!parent.isValid())
@@ -239,29 +166,6 @@ void GenericObjectTreeModel::fetchMore(const QModelIndex &parent)
         node->fill();
         endInsertRows();
     }
-}
-
-bool GenericObjectTreeModel::gatherMissingDataIfSafeIn(QTreeView *view)
-{
-    bool changed = false;
-    if (getQtenv()->inspectorsAreFresh())
-        changed = gatherMissingDataIn(view);
-    return changed;
-}
-
-bool GenericObjectTreeModel::updateDataIn(QTreeView *view)
-{
-    bool changed = false;
-    QModelIndexList indices = getVisibleNodesIn(view);
-    for (auto i : indices) {
-        TreeNode *node = static_cast<TreeNode *>(i.internalPointer());
-        if (node->updateData()) {
-            changed = true;
-            // we should do this here, but we don't because it is super slow
-            //emit dataChanged(i, i);
-        }
-    }
-    return changed;
 }
 
 void GenericObjectTreeModel::refreshTreeStructure()

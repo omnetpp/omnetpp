@@ -19,6 +19,7 @@
 
 #include <QAbstractItemModel>
 #include <QMenu>
+#include <QSortFilterProxyModel>
 #include <QTreeView>
 #include "omnetpp/cobject.h"
 #include "omnetpp/cclassdescriptor.h"
@@ -37,6 +38,20 @@ struct QTENV_API HighlightRange {
     int length; // the number of highlighted characters
 };
 
+// This is used as a proxy for GenericObjectTreeModel.
+// If the relevant property is set (not empty), it will only show
+// elements (objects/fields) which have that property on them.
+class PropertyFilteredGenericObjectTreeModel : public QSortFilterProxyModel {
+    QString relevantProperty;
+
+public:
+    using QSortFilterProxyModel::QSortFilterProxyModel;
+
+    void setRelevantProperty(const QString &relevantProperty); // this is "packetData" in PACKET mode, and "" in all others
+
+    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+};
+
 // encapsulates the tree model, handles QModelIndexes, etc
 class QTENV_API GenericObjectTreeModel : public QAbstractItemModel
 {
@@ -44,21 +59,14 @@ class QTENV_API GenericObjectTreeModel : public QAbstractItemModel
 
     TreeNode *rootNode;
 
-    QSet<QString> getExpandedNodesIn(QTreeView *view, const QModelIndex &index);
-    void expandNodesIn(QTreeView *view, const QSet<QString> &ids, const QModelIndex &index);
-
-    QModelIndexList getVisibleNodesIn(QTreeView *view);
-
-    bool gatherMissingDataIn(QTreeView *view);
-
 public:
     // enum class so we can typedef it in TreeNode and the Inspector
     enum class Mode {
         GROUPED,
         FLAT,
-        CHILDREN,
         INHERITANCE,
-        //PACKET
+        CHILDREN,
+        PACKET   // this is never seen by this (source) model or the Nodes, only sets filtering in the proxy model, and FLAT mode in this one
     };
 
     GenericObjectTreeModel(cObject *object, Mode mode, QObject *parent = nullptr);
@@ -72,17 +80,8 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-    QString getSelectedNodeIn(QTreeView *view);
-    void selectNodeIn(QTreeView *view, const QString& identifier);
-
-    QSet<QString> getExpandedNodesIn(QTreeView *view);
-    void expandNodesIn(QTreeView *view, const QSet<QString> &ids);
-
     bool canFetchMore(const QModelIndex &parent) const override;
     void fetchMore(const QModelIndex &parent) override;
-
-    bool gatherMissingDataIfSafeIn(QTreeView *view);
-    bool updateDataIn(QTreeView *view);
 
     void refreshTreeStructure();
     void refreshNodeChildrenRec(const QModelIndex &index);

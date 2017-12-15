@@ -25,6 +25,7 @@
 #include "loginspector.h"
 #include "genericobjectinspector.h"
 #include "genericobjecttreemodel.h"
+#include "genericobjecttreenodes.h"
 #include "highlighteritemdelegate.h"
 #include "displayupdatecontroller.h"
 #include "inspectorutil.h"
@@ -103,10 +104,14 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     toGroupedModeAction->setCheckable(true);
     toFlatModeAction = toolbar->addAction(QIcon(":/tools/treemode_flat"), "Switch to flat mode", this, SLOT(toFlatMode()));
     toFlatModeAction->setCheckable(true);
-    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Switch to children mode", this, SLOT(toChildrenMode()));
-    toChildrenModeAction->setCheckable(true);
     toInheritanceModeAction = toolbar->addAction(QIcon(":/tools/treemode_inher"), "Switch to inheritance mode", this, SLOT(toInheritanceMode()));
     toInheritanceModeAction->setCheckable(true);
+    toolbar->addSeparator();
+    toChildrenModeAction = toolbar->addAction(QIcon(":/tools/treemode_children"), "Switch to children mode", this, SLOT(toChildrenMode()));
+    toChildrenModeAction->setCheckable(true);
+    toolbar->addSeparator();
+    toPacketModeAction = toolbar->addAction(QIcon(":/tools/treemode_packet"), "Switch to packet mode", this, SLOT(toPacketMode()));
+    toPacketModeAction->setCheckable(true);
 
     toolbar->addSeparator();
 
@@ -133,6 +138,8 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     layout->setSpacing(0);
     parent->setMinimumSize(20, 20);
 
+    proxyModel = new PropertyFilteredGenericObjectTreeModel(this);
+
     doSetMode(mode);
     recreateModel();
 
@@ -147,25 +154,31 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     connect(treeView->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(gatherVisibleDataIfSafe()));
 }
 
-GenericObjectInspector::~GenericObjectInspector()
-{
-    delete model;
-}
-
 void GenericObjectInspector::recreateModel()
 {
-    GenericObjectTreeModel *newModel = new GenericObjectTreeModel(object, mode, this);
-    treeView->setModel(newModel);
+    // the proxyModel doesn't need to be recreated
+    GenericObjectTreeModel *newSourceModel;
+
+    if (mode == Mode::PACKET) {
+        newSourceModel = new GenericObjectTreeModel(object, Mode::FLAT, this);
+        proxyModel->setRelevantProperty("packetData");
+    } else {
+        newSourceModel = new GenericObjectTreeModel(object, mode, this);
+        proxyModel->setRelevantProperty("");
+    }
+
+    proxyModel->setSourceModel(newSourceModel);
+    treeView->setModel(proxyModel);
 
     // expanding the top level item
-    treeView->expand(newModel->index(0, 0, QModelIndex()));
+    treeView->expand(proxyModel->index(0, 0, QModelIndex()));
 
-    delete model;
-    model = newModel;
+    delete sourceModel;
+    sourceModel = newSourceModel;
 
     gatherVisibleDataIfSafe();
 
-    connect(model, SIGNAL(dataEdited(const QModelIndex&)), this, SLOT(onDataEdited()));
+    connect(sourceModel, SIGNAL(dataEdited(const QModelIndex&)), this, SLOT(onDataEdited()));
 }
 
 void GenericObjectInspector::doSetMode(Mode mode)
@@ -177,8 +190,9 @@ void GenericObjectInspector::doSetMode(Mode mode)
 
     toGroupedModeAction->setChecked(mode == Mode::GROUPED);
     toFlatModeAction->setChecked(mode == Mode::FLAT);
-    toChildrenModeAction->setChecked(mode == Mode::CHILDREN);
     toInheritanceModeAction->setChecked(mode == Mode::INHERITANCE);
+    toChildrenModeAction->setChecked(mode == Mode::CHILDREN);
+    toPacketModeAction->setChecked(mode == Mode::PACKET);
 }
 
 void GenericObjectInspector::mousePressEvent(QMouseEvent *event)
@@ -204,7 +218,7 @@ void GenericObjectInspector::closeEvent(QCloseEvent *event)
 
 void GenericObjectInspector::onTreeViewActivated(const QModelIndex &index)
 {
-    auto object = model->getCObjectPointer(index);
+    auto object = sourceModel->getCObjectPointer(proxyModel->mapToSource(index));
     if (!object)
         return;
 
@@ -229,7 +243,7 @@ void GenericObjectInspector::onDataEdited()
 
 void GenericObjectInspector::gatherVisibleDataIfSafe()
 {
-    bool changed = model->gatherMissingDataIfSafeIn(treeView);
+    bool changed = gatherMissingDataIfSafe();
     if (changed) {
         // because properly doing it is super slow
         treeView->dataChanged(QModelIndex(), QModelIndex());
@@ -239,7 +253,7 @@ void GenericObjectInspector::gatherVisibleDataIfSafe()
 
 void GenericObjectInspector::createContextMenu(QPoint pos)
 {
-    cObject *object = model->getCObjectPointer(treeView->indexAt(pos));
+    cObject *object = sourceModel->getCObjectPointer(proxyModel->mapToSource(treeView->indexAt(pos)));
     if (object) {
         QVector<cObject *> objects;
         objects.push_back(object);
@@ -247,6 +261,126 @@ void GenericObjectInspector::createContextMenu(QPoint pos)
         menu->exec(treeView->mapToGlobal(pos));
         delete menu;
     }
+}
+
+bool GenericObjectInspector::gatherMissingDataIfSafe()
+{
+    bool changed = false;
+    if (getQtenv()->inspectorsAreFresh())
+        changed = gatherMissingData();
+    return changed;
+}
+
+bool GenericObjectInspector::updateData()
+{
+    bool changed = false;
+    QModelIndexList indices = getVisibleNodes();
+    for (auto i : indices) {
+        TreeNode *node = static_cast<TreeNode *>(proxyModel->mapToSource(i).internalPointer());
+        if (node->updateData()) {
+            changed = true;
+            // we should do this here, but we don't because it is super slow
+            //emit dataChanged(i, i);
+        }
+    }
+    return changed;
+}
+
+QString GenericObjectInspector::getSelectedNode()
+{
+    QModelIndexList selection = treeView->selectionModel()->selectedIndexes();
+
+    if (selection.isEmpty())
+        return "";
+
+    TreeNode *node = static_cast<TreeNode*>(proxyModel->mapToSource(selection.first()).internalPointer());
+    return node->getNodeIdentifier();
+}
+
+void GenericObjectInspector::selectNode(const QString &identifier)
+{
+    QModelIndexList visible = getVisibleNodes();
+
+    for (auto v : visible) {
+        TreeNode *node = static_cast<TreeNode*>(proxyModel->mapToSource(v).internalPointer());
+        if (node->getNodeIdentifier() == identifier) {
+            treeView->clearSelection();
+            treeView->selectionModel()->select(v, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+            treeView->setCurrentIndex(v);
+            break;
+        }
+    }
+}
+
+QSet<QString> GenericObjectInspector::getExpandedNodes()
+{
+    return getExpandedNodes(proxyModel->index(0, 0, QModelIndex()));
+}
+
+
+QSet<QString> GenericObjectInspector::getExpandedNodes(const QModelIndex &index)
+{
+    QSet<QString> result;
+    if (treeView->isExpanded(index)) {
+        result.insert(static_cast<TreeNode *>(proxyModel->mapToSource(index).internalPointer())->getNodeIdentifier());
+        int numChildren = proxyModel->rowCount(index);
+        for (int i = 0; i < numChildren; ++i) {
+            result.unite(getExpandedNodes(index.child(i, 0)));
+        }
+    }
+    return result;
+}
+
+void GenericObjectInspector::expandNodes(const QSet<QString> &ids)
+{
+    bool wasAnimated = treeView->isAnimated();
+    treeView->setAnimated(false); // the last expanded node was animated without this, we don't need that
+    QModelIndex rootIndex = proxyModel->index(0, 0, QModelIndex());
+    expandNodes(ids, rootIndex);
+    treeView->setAnimated(wasAnimated); // restoring the view to how it was before
+}
+
+
+void GenericObjectInspector::expandNodes(const QSet<QString> &ids, const QModelIndex &index)
+{
+    if (ids.contains(static_cast<TreeNode *>(proxyModel->mapToSource(index).internalPointer())->getNodeIdentifier())) {
+        treeView->expand(index);
+
+        int numChildren = proxyModel->rowCount(index);
+        for (int i = 0; i < numChildren; ++i)
+            expandNodes(ids, index.child(i, 0));
+    }
+}
+
+QModelIndexList GenericObjectInspector::getVisibleNodes()
+{
+    QModelIndexList indices;
+
+    QModelIndex topIndex = treeView->indexAt(treeView->rect().topLeft());
+    QModelIndex bottomIndex = treeView->indexAt(treeView->rect().bottomLeft());
+
+    for (QModelIndex i = topIndex; i != bottomIndex; i = treeView->indexBelow(i))
+        indices.append(i);
+
+    if (bottomIndex.isValid())
+        indices.append(bottomIndex);
+
+    return indices;
+}
+
+bool GenericObjectInspector::gatherMissingData()
+{
+    bool changed = false;
+    QModelIndexList indices = getVisibleNodes();
+    for (auto i : indices) {
+        TreeNode *node = static_cast<TreeNode *>(proxyModel->mapToSource(i).internalPointer());
+        if (node->gatherDataIfMissing()) {
+            // not doing it, super slow, see caller
+            //emit dataChanged(i, i);
+            changed = true;
+        }
+    }
+    return changed;
 }
 
 void GenericObjectInspector::setMode(Mode mode)
@@ -267,7 +401,7 @@ void GenericObjectInspector::doSetObject(cObject *obj)
         return;
     }
 
-    QSet<QString> expanded = model->getExpandedNodesIn(treeView);
+    QSet<QString> expanded = getExpandedNodes();
 
     bool isContainerLike = contains(containerTypes, std::string(getObjectBaseClass(obj)));
     auto defaultMode = isContainerLike ? Mode::CHILDREN : Mode::GROUPED;
@@ -275,23 +409,23 @@ void GenericObjectInspector::doSetObject(cObject *obj)
     doSetMode((Mode)getPref(PREF_MODE, (int)defaultMode).toInt());
     recreateModel();
 
-    model->expandNodesIn(treeView, expanded);
+    expandNodes(expanded);
 }
 
 void GenericObjectInspector::refresh()
 {
     Inspector::refresh();
     if (object) {
-        QString selected = model->getSelectedNodeIn(treeView);
+        QString selected = getSelectedNode();
 
-        QSet<QString> expanded = model->getExpandedNodesIn(treeView);
-        model->refreshTreeStructure();
+        QSet<QString> expanded = getExpandedNodes();
+        sourceModel->refreshTreeStructure();
 
-        model->expandNodesIn(treeView, expanded);
+        expandNodes(expanded);
         if (!selected.isEmpty())
-            model->selectNodeIn(treeView, selected);
+            selectNode(selected);
 
-        model->updateDataIn(treeView);
+        updateData();
 
         // this is a hack, proper item-wise datachanged is super slow
         treeView->dataChanged(QModelIndex(), QModelIndex());

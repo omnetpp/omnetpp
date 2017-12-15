@@ -41,9 +41,22 @@ class QTENV_API GenericObjectInspector : public Inspector
 public:
     using Mode = GenericObjectTreeModel::Mode;
 
+    GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
+
+    virtual void doSetObject(cObject *obj) override;
+    virtual void refresh() override;
+
 protected:
     QTreeView *treeView;
-    GenericObjectTreeModel *model = nullptr;
+    // This is the "source" model, producing the tree in all modes.
+    // The view never uses this directly, only through the proxyModel.
+    GenericObjectTreeModel *sourceModel = nullptr;
+    // This is a proxy, which is a transparent pass-through in all modes except in PACKET.
+    // In PACKET mode, it filters the source model (which should be set to FLAT mode in this case)
+    // to match a certain (object or field) property - "packetData" at the moment.
+    // The view is always connected to this model, so accessing TreeNodes
+    // (internalPointer, then static_cast) requires index mapping (mapToSource) first.
+    PropertyFilteredGenericObjectTreeModel *proxyModel = nullptr;
 
     void mousePressEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -54,8 +67,9 @@ protected:
     Mode mode = Mode::GROUPED;
     QAction *toGroupedModeAction;
     QAction *toFlatModeAction;
-    QAction *toChildrenModeAction;
     QAction *toInheritanceModeAction;
+    QAction *toChildrenModeAction;
+    QAction *toPacketModeAction;
 
     void doSetMode(Mode mode);
 
@@ -69,14 +83,28 @@ protected slots:
 
     void toGroupedMode()     { setMode(Mode::GROUPED);     }
     void toFlatMode()        { setMode(Mode::FLAT);        }
-    void toChildrenMode()    { setMode(Mode::CHILDREN);    }
     void toInheritanceMode() { setMode(Mode::INHERITANCE); }
+    void toChildrenMode()    { setMode(Mode::CHILDREN);    }
+    void toPacketMode()      { setMode(Mode::PACKET);      }
 
-public:
-    GenericObjectInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
-    ~GenericObjectInspector();
-    virtual void doSetObject(cObject *obj) override;
-    virtual void refresh() override;
+private:
+
+    // treeView manipulation/querying functions:
+
+    bool gatherMissingDataIfSafe();
+    bool gatherMissingData();
+    bool updateData();
+
+    QModelIndexList getVisibleNodes();
+
+    QString getSelectedNode();
+    void selectNode(const QString &identifier);
+
+    QSet<QString> getExpandedNodes();
+    QSet<QString> getExpandedNodes(const QModelIndex& index);
+
+    void expandNodes(const QSet<QString>& ids);
+    void expandNodes(const QSet<QString>& ids, const QModelIndex& index);
 };
 
 } // namespace qtenv
