@@ -39,7 +39,7 @@ void Test::activity()
 
 }; //namespace
 
-%exitcode: 1
+%exitcode: 0
 
 %contains: stdout
 p1: 1

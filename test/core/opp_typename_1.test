@@ -1,7 +1,8 @@
 %description:
 Test opp_typename (which is currently an internal function).
 
-%includes: //hmmm
+%includes:
+//hmmm
 
 class Alma {}; // in global namespace!
 

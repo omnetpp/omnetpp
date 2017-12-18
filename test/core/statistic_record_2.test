@@ -32,8 +32,6 @@ network Test
         node: Node;
 }
 
-%file: test.cc
-
 %inifile: test.ini
 [General]
 network = Test

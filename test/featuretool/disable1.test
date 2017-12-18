@@ -24,8 +24,6 @@ feature_d_folder
 
 %testprog: opp_featuretool disable --with-dependencies F_E
 
-#%ignore-exitcode: 1
-
 %postrun-command: ../../lib/fileExistingCheck
 
 %contains: postrun-command(1).out

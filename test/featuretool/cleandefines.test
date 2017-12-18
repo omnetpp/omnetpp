@@ -10,8 +10,6 @@ Generates makemake args
 
 %testprog: opp_featuretool defines
 
-#%ignore-exitcode: 1
-
 %postrun-command: ../../lib/fileExistingCheck
 
 %contains: postrun-command(1).out

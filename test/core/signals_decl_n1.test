@@ -56,7 +56,7 @@ network = Test
 cmdenv-express-mode = false
 check-signals = true
 
-%exitcode: 1
+%exitcode: 0
 
 %contains: stdout
 t=0s: emit "foo" type=long value=99

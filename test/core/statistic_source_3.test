@@ -36,8 +36,6 @@ network Test
         host2: Host;
 }
 
-%file: test.cc
-
 %inifile: test.ini
 [General]
 network = Test

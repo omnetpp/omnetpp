@@ -35,8 +35,6 @@ network Test extends Super
         b2.g2 <--> a2.g2;
 }
 
-%file: test.cc
-
 %contains: stdout
 module Test: Test {
     parameters:

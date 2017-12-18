@@ -65,8 +65,6 @@ network Test
         a.g <--> b.g;
 }
 
-%file: test.cc
-
 %contains: stdout
 module Test: Test {
     parameters:

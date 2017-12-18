@@ -10,7 +10,7 @@ not to the source submodule.
 simple UDP extends testlib.SignalSource
 {
     @signal[sentPk](type="long");
-    
+
     script = xml("<root>\
        <e at='init' name='sentPk' type='long' value='23'/> \
        <e at='init' name='sentPk' type='long' value='42'/> \
@@ -32,8 +32,6 @@ network Test
         host1: Host;
         host2: Host;
 }
-
-%file: test.cc
 
 %inifile: test.ini
 [General]

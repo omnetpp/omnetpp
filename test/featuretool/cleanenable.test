@@ -10,8 +10,6 @@ Enable a feature with dependencies
 
 %testprog: opp_featuretool enable --with-dependencies F_D
 
-#%ignore-exitcode: 1
-
 %postrun-command: ../../lib/fileExistingCheck
 
 %contains: postrun-command(1).out

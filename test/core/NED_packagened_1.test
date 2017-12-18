@@ -86,7 +86,7 @@ network Test {
 
 %exitcode: 0
 
-#%contains-regex: stdout
+%#contains-regex: stdout
 
 
 

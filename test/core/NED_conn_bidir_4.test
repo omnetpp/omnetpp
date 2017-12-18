@@ -48,9 +48,6 @@ network Test {
     connections allowunconnected:
 }
 
-
-%file: test.cc
-
 %contains: stdout
 module Test: Test {
     parameters:

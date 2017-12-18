@@ -21,8 +21,6 @@ network Test {
         n1.g++ <--> n2.g++;
 }
 
-%file: test.cc
-
 %contains: stdout
 module Test: Test {
     parameters:

@@ -26,8 +26,6 @@ feature_d_folder
 
 %testprog: opp_featuretool list && echo return: OK || echo return: ERROR
 
-#%ignore-exitcode: 1
-
 %postrun-command: ../../lib/fileExistingCheck
 
 %contains: postrun-command(1).out

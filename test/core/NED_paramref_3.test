@@ -53,8 +53,6 @@ network Test
         r.o[6] --> {delay=p*1s; datarate=r.p*1bps;} --> n[6].i[0];
 }
 
-%file: test.cc
-
 %contains: stdout
     submodules:
         module Test.r: RefNode {

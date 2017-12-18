@@ -28,8 +28,6 @@ network Test extends TestBase
 {
 }
 
-%file: test.cc
-
 %inifile: test.ini
 [General]
 network = Test

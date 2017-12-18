@@ -16,8 +16,6 @@ network Test
         node: Node;
 }
 
-%file: test.cc
-
 %exitcode: 1
 
 %contains: stderr

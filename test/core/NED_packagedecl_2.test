@@ -1,8 +1,6 @@
 %description:
 Test that "expected package" should match "declared package"
 
-%file: test.ned
-
 %file: foo/test.ned
 package foo;
 
@@ -18,5 +16,4 @@ network Test {
 %network: foo.bar.Test
 
 %exitcode: 0
-
 

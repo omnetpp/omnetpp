@@ -66,8 +66,6 @@ network Test
     connections allowunconnected:
 }
 
-%file: test.cc
-
 %inifile: test.ini
 [General]
 network = Test

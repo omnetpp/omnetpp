@@ -25,11 +25,9 @@ network TestBase
     connections allowunconnected:
 }
 
-network Test extends TestBase 
+network Test extends TestBase
 {
 }
-
-%file: test.cc
 
 %inifile: test.ini
 [General]

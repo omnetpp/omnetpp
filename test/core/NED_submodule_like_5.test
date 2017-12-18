@@ -45,8 +45,6 @@ network Test
         a.g$o --> a.g$i;
 }
 
-%file: test.cc
-
 %contains: stdout
 module Test: Test {
     parameters:

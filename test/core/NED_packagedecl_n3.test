@@ -5,6 +5,7 @@ Test that "expected package" should match "declared package"
 package org.omnetpp.test;
 
 %file: foo/test.ned
+module Foo {}
 
 %network: test.Test
 
@@ -15,5 +16,4 @@ package org.omnetpp.test;
 
 %contains-regex: stderr
 Declared package '' does not match expected package 'org.omnetpp.test.foo'
-
 

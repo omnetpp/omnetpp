@@ -39,8 +39,6 @@ network Test
         dump : Dump;
 }
 
-%file: test.cc
-
 %contains: stdout
 module Test: Test {
     parameters:
