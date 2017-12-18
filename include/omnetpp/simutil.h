@@ -111,6 +111,15 @@ SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
 SIM_API const char *opp_typename(const std::type_info& t);
 
 /**
+ * @brief Returns a monotonic time in nanoseconds since some unspecified
+ * starting point. This clock is not affected by discontinuous jumps in the
+ * system time (e.g. if the system administrator manually changes the clock).
+ * Note that the actual resolution (precision) of the clock may be less than
+ * nanoseconds.
+ */
+SIM_API int64_t opp_get_monotonic_clock_nsecs();  // in gettime.cc
+
+/**
  * @brief Returns a monotonic time in microseconds since some unspecified
  * starting point. This clock is not affected by discontinuous jumps in the
  * system time (e.g. if the system administrator manually changes the clock).
