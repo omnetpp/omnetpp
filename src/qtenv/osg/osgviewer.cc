@@ -315,7 +315,7 @@ osg::ref_ptr<osgViewer::CompositeViewer> OsgViewer::viewer = nullptr;
 OsgViewer::OsgViewer(QWidget *parent): IOsgViewer(parent)
 {
     if (!viewer.valid()) { // this is the validity of the pointer, not of the viewer
-#if OSG_VERSION_GREATER_OR_EQUAL(3, 5, 0)
+#if OSG_VERSION_GREATER_OR_EQUAL(3, 5, 3)
         osg::GraphicsContext::getWindowingSystemInterfaces()->addWindowingSystemInterface(WindowingSystemInterface::getInterface());
 #else
         osg::GraphicsContext::setWindowingSystemInterface(WindowingSystemInterface::getInterface());
