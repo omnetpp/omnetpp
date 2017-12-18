@@ -35,8 +35,6 @@ network Test extends Derived3 {
 }
 
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

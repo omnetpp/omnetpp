@@ -34,7 +34,5 @@ void Test::activity()
 
 }; //namespace
 
-%exitcode: 0
-
 %contains: stdout
 p1=3622.55

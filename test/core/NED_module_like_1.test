@@ -35,8 +35,6 @@ network Test
     connections allowunconnected:
 }
 
-%exitcode: 0
-
 %contains: stdout
 No more events
 

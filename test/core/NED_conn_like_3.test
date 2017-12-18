@@ -24,8 +24,6 @@ network Test
         a.out++ --> <> like IFooChannel --> b.in++;
 }
 
-%exitcode: 0
-
 %inifile: test.ini
 [General]
 #debug-on-errors = true

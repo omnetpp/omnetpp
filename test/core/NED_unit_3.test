@@ -39,8 +39,6 @@ void Test::activity()
 
 }; //namespace
 
-%exitcode: 0
-
 %contains: stdout
 p1: 1
 p2: 1

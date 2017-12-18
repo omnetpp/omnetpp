@@ -18,5 +18,3 @@ network TestNet {
 network = TestNet  # should be understood as foo.bar.TestNet
 cmdenv-express-mode = false
 
-%exitcode: 0
-

@@ -84,8 +84,6 @@ network Test {
 
 %env: NEDPATH=a;b;c;d;t
 
-%exitcode: 0
-
 %#contains-regex: stdout
 
 

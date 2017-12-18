@@ -35,8 +35,6 @@ network Test {
 }
 
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

@@ -18,8 +18,6 @@ network Test
         dump: Dump;
 }
 
-%exitcode: 0
-
 %inifile: test.ini
 [General]
 #debug-on-errors = true

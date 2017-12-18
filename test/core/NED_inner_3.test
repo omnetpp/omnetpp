@@ -23,8 +23,6 @@ network = Test
 cmdenv-express-mode = false
 **.a*.p = "inifile-a"
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

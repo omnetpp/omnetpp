@@ -50,8 +50,6 @@ network Test
 network = Test
 cmdenv-express-mode = false
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

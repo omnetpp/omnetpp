@@ -34,8 +34,6 @@ network = Test
 cmdenv-express-mode = false
 check-signals = true
 
-%exitcode: 0
-
 %contains: stdout
 t=0s: emit "m0" type=signals_decl_2::Foo value=
 t=0s: emit "m1" type=signals_decl_2::Foo value=

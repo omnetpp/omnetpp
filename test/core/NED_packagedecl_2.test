@@ -15,5 +15,3 @@ network Test {
 
 %network: foo.bar.Test
 
-%exitcode: 0
-

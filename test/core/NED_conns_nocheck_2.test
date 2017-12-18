@@ -18,8 +18,6 @@ network Test
     connections allowunconnected:
 }
 
-%exitcode: 0
-
 %contains-regex: stdout
 No more events
 

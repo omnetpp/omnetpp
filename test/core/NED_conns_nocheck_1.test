@@ -41,8 +41,6 @@ void Simple::activity()
 
 }; //namespace
 
-%exitcode: 0
-
 %contains-regex: stdout
 No more events
 

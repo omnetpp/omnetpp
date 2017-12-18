@@ -30,8 +30,6 @@ network Test
         for i=0..9 {a.out++ --> <"Channel"+string(1+intuniform(0,1))> like IFooChannel --> b.in++;}
 }
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

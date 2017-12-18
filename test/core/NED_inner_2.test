@@ -31,8 +31,6 @@ network Test {
     n1.g++ <--> C {cost=5;} <--> n2.g++;
 }
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

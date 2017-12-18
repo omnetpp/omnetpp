@@ -65,8 +65,6 @@ void Shadow::activity()
 
 }; //namespace
 
-%exitcode: 0
-
 %contains: stdout
 Initializing...
 Initializing module Test, stage 0

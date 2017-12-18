@@ -29,8 +29,6 @@ network Test
         a.g <--> <"Foo"> like IChannel <--> b.g;
 }
 
-%exitcode: 0
-
 %contains: stdout
 No more events
 

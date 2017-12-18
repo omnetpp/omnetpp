@@ -26,7 +26,5 @@ network Test
         b: <moduleType2> like IFooModule;
 }
 
-%exitcode: 0
-
 %network: test.Test
 

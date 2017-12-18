@@ -60,8 +60,6 @@ cmdenv-event-banners = false
 **.boxedSink.numGates = 3
 # Note: boxedSink.other will be assigned automatically
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

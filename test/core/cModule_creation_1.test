@@ -8,8 +8,6 @@ cModule *sink = sinkType->create("sink", this);
 sink->callInitialize();
 sendDirect(new cMessage("hello"), 1, 0, sink->gate("in"));
 
-%exitcode: 0
-
 %contains-regex: stdout
 Initializing Sink.*
 Sink received msg hello.*

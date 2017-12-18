@@ -15,5 +15,3 @@ network = Test
 cmdenv-express-mode = false
 *.param* = 42
 
-%exitcode: 0
-

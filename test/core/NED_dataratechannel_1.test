@@ -48,5 +48,3 @@ network Test
 %file: test.cc
 // prevent "no object files" linker error if test is run alone
 
-%exitcode: 0
-

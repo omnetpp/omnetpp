@@ -161,8 +161,6 @@ void Tester::activity()
 network = Test
 cmdenv-express-mode = false
 
-%exitcode: 0
-
 %contains: stdout
 Test + server = Test.server
 Test + host[2] = Test.host[2]

@@ -72,8 +72,6 @@ void Simple::activity()
 
 }; //namespace
 
-%exitcode: 0
-
 %contains: stdout
 Initializing module Test, stage 0
 Initializing module Test.a[0], stage 0

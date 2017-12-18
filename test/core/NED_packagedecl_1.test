@@ -21,6 +21,4 @@ network Test {
 
 %network: org.omnetpp.test.foo.bar.Test
 
-%exitcode: 0
-
 

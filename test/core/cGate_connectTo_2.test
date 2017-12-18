@@ -124,8 +124,6 @@ void Receiver::activity()
 
 }; //namespace
 
-%exitcode: 0
-
 %contains-regex: stdout
 out->getChannel\(\):chan
 .*

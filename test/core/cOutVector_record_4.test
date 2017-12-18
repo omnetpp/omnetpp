@@ -5,5 +5,3 @@ check that unnamed cOutVector doesn't core dump.
 cOutVector vec;
 vec.record(35);
 
-%exitcode: 0
-

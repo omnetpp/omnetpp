@@ -18,7 +18,5 @@ void SomeModule::activity()
     EV << "'" << getClassName() << "'" << endl;
 }
 
-%exitcode: 0
-
 %contains: stdout
 '@TESTNAME@::SomeModule'

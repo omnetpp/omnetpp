@@ -52,8 +52,6 @@ network Test
         b.g$o --> <aType> like IChannel2 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> a.g$i;  // and p1 should NOT be avialable here
 }
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:

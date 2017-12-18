@@ -35,8 +35,6 @@ network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
 
-%exitcode: 0
-
 %contains: stdout
 at 1.1: A pri=1
 at 1.1: B pri=1

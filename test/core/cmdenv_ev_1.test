@@ -40,8 +40,6 @@ void Module::finish()
     EV << "finish unterminated line";
 }
 
-%exitcode: 0
-
 %contains-regex: stdout
 initialize line 1
 initialize unterminated line

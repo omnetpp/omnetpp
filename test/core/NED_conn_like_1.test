@@ -30,7 +30,5 @@ network Test
         a.out++ --> <channelType2> like IFooChannel --> b.in++;
 }
 
-%exitcode: 0
-
 %network: test.Test
 

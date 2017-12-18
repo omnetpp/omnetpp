@@ -33,8 +33,6 @@ network Test
         dump: Dump;
 }
 
-%exitcode: 0
-
 %contains: stdout
 module Test: Test {
     parameters:
