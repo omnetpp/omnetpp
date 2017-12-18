@@ -5,7 +5,7 @@ Positive test: Check that declared signals are allowed to be emitted.
 
 namespace @TESTNAME@;
 
-class Foo {}
+class Foo extends cObject {}
 
 %file: test.ned
 

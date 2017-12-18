@@ -15,8 +15,8 @@ Negative test: trying to produce all error messages currently in the code, like:
 
 namespace @TESTNAME@;
 
-class Foo {}
-class Bar {}
+class Foo extends cObject {}
+class Bar extends cObject {}
 
 %file: test.ned
 
