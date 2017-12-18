@@ -5,10 +5,6 @@
 # Copyright (C) 2017 OpenSim Ltd.
 # Author: Zoltan Bojthe
 #
-# TODO: add a new flag (-f) to the 'defines' command to be able to generate a file
-#       with WITH_XXX variables in gnu make format that can be included in makefrag
-# TODO: to generate the WITH_XXX macros, use the feature_id with a 'WITH_' prefix instead
-#       of requiring the -DWITH_macro in the compiler flags in each feature.
 
 from __future__ import print_function
 import argparse
