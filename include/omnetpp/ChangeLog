@@ -1,6 +1,6 @@
 2017-12-15  Attila Torok
 
-	* cEnvir: Add getZoomLevel(). Access to the zoom level ib the GUI
+	* cEnvir: Add getZoomLevel(). Access to the zoom level in the GUI
 	sometimes allows better visualization.
 
 2017-01-16  Andras Varga
@@ -21,7 +21,7 @@
 2017-12-14  Andras Varga
 
 	* cNEDValue: similar changes as to cPar: use intpar_t instead of long;
-	renamed longValue() to intValue() and setLongValue() to setIntValue(); 
+	renamed longValue() to intValue() and setLongValue() to setIntValue();
 	renamed enum values (DBL->DOUBLE, STR->STRING); added overflow check to
 	integer cast operators; added conversions for the long long and unsigned
 	long long types as well.
