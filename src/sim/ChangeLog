@@ -1,3 +1,42 @@
+2017-12-18  Attila Torok
+
+	* gettime.cc: Added opp_get_monotonic_clock_nsecs().
+
+2017-01-16  Andras Varga
+
+	* cRealTimeScheduler: use opp_get_monotonic_clock_usecs() and int64_t
+	instead of gettimeofday() and timeval.
+
+2017-12-05  Andras Varga
+
+	* Renamed cNEDValue, cNEDFunction, NEDFunction, cNEDMathFunction
+	to cNedValue, cNedFunction, NedFunction, cNedMathFunction (NED->Ned).
+	Old names can still be used via compatibility typedefs.
+
+	* sim_std.msg: Adapted to message compiler changes, see src/nedxml/ChangeLog.
+
+2017-09-11  Zoltan Bojthe
+
+	* cPacket: Check that the length of the packet to be encapsulated is 
+	nonnegative.
+
+2016-11-18  Zoltan Bojthe
+
+	* cObject: dropAndDelete(): include actual owner in error message
+
+2017-12-14  Andras Varga
+
+	* cPar, cNEDValue, cExpression, cDynamicExpression, cParImpl, cLongParImpl:
+	Follow changes in the header files (mainly the long->intpar_t change and
+	its logical consequences, see include/omnetpp/ChangeLog.)
+
+2017-12-09  Andras Varga
+
+	* Reslt recorders: Added the "psquare" and "ksplit" recorders. They are 
+	useful for recording histogram information from a variable whose distribution
+	is not known in advance, and might change over time. Internally they rely
+	on the cPSquare and cKSplit classes, respectively.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-10-18  Attila Torok

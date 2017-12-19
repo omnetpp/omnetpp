@@ -1,3 +1,16 @@
+2017-10-17  Andras Varga
+
+	* stlutil.h: added missing contains() function
+
+2017-12-11  Andras Varga
+
+	* stringutil.h/cc: refactoring on opp_strto...() functions
+
+2017-12-12  Andras Varga
+
+	* stringutil.h/cc: added opp_strtoll(), opp_atoll(), opp_strtoull(),
+	opp_atoull()
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-11-10  Andras Varga

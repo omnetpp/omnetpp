@@ -1,14 +1,23 @@
+2017-11-22  Rudolf Hornig
+
+	* Makefile generator: follow opp_makemake change: generate dependency
+	files for .msg files too (if they use imports)
+
+2017-11-30  Andras Varga
+
+	* Updated for nedxml library changes
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-12-08  Rudolf Hornig
 
-	* ide launcher: fix for program name validation.
+	* Launcher: fix for program name validation.
 
 2017-09-18  ------ omnetpp-5.2 released ------
 
 2017-09-18  Andras Varga
 
-	* removed "Add OMNeT++ Support" from the "File" menu
+	* Removed "Add OMNeT++ Support" from the "File" menu
 
 	Reason: it did not add C++ support.
 

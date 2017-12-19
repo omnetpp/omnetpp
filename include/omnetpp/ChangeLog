@@ -1,3 +1,75 @@
+2017-12-15  Attila Torok
+
+	* cEnvir: Add getZoomLevel(). Access to the zoom level ib the GUI
+	sometimes allows better visualization.
+
+2017-01-16  Andras Varga
+
+	* cRealTimeScheduler: use opp_get_monotonic_clock_usecs() and int64_t
+	instead of gettimeofday() and timeval.
+
+2017-11-26  Andras Varga
+
+	* Renamed cNEDValue, cNEDFunction, NEDFunction, cNEDMathFunction
+	to cNedValue, cNedFunction, NedFunction, cNedMathFunction (NED->Ned).
+	Old names can still be used via compatibility typedefs.
+
+2017-10-19  Zoltan Bojthe
+
+	* cMessage: setControlInfo() made virtual
+
+2017-12-14  Andras Varga
+
+	* cNEDValue: similar changes as to cPar: use intpar_t instead of long;
+	renamed longValue() to intValue() and setLongValue() to setIntValue(); 
+	renamed enum values (DBL->DOUBLE, STR->STRING); added overflow check to
+	integer cast operators; added conversions for the long long and unsigned
+	long long types as well.
+
+2017-12-12  Andras Varga
+
+	* cPar: renamed longValue() to intValue(), setLongValue() to setIntValue(),
+	cLongParImpl to cIntParImpl, and LONG (enum value in cPar) to INT.
+	Similarly named methods in cExpression, cParImpl were renamed too. The old
+	names can still be used but cause deprecation warnings.
+
+	Motivation: To be consistent with NED that calls such parameter type "int".
+	There is no reason to keep the name "long" any longer (sic), because the
+	underlying C++ data type is no longer "long" but "intpar_t".
+
+	* cPar: Integer cast operators (operator int(), operator unsigned int(),
+	operator short(), etc.) now check for overflow. That is, if the value
+	doesn't fit into the target integer type, a runtime error will be raised.
+	Until now, such data losses were ignored.
+
+	BEST PRACTICE: For the above reason, cast operators should now be
+	preferred over .intValue()/.longValue():
+
+	  int numBytes = par("numBytes").longValue(); // UNSAFE: implicit cast, see below
+	  int numBytes = par("numBytes"); // SAFE: operator int() raises error when value overflows
+
+	In the first example when .longValue() is used, the compiler emits an
+	unchecked cast from intpar_t to int, so overflows go undetected. In the
+	second case, the compiler will generate a call to cPar's operator int()
+	which performs overflow check.
+
+
+2017-12-12  Andras Varga
+
+	* cPar: use intpar_t (currently an alias of int64_t) instead of long int
+	to represent integers. The main motivation is that long is only 32 bits
+	on some platforms (namely on Windows). cExpression, cDynamicExpression,
+	and the cParImpl classes are affected too.
+
+	* cPar: added conversion operators to/from the "long long" and
+	"long long int" types so that 64-bit value can be accessed on Windows
+	as well. (Note: intpar_t could not be added because it would conflict
+	with "long" on most platforms.)
+
+2017-12-13  Attila Torok
+
+	* clog.h: eliminate tautological-compare warnings by Clang at every use.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-11-10  Andras Varga

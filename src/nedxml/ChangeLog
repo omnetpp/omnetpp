@@ -1,3 +1,144 @@
+2017-12-14  Andras Varga
+
+	* A complete overhaul of the message compiler and related functionality,
+	over a period of several months, with help and input from Zoltan Bojthe.
+	See summary below.
+
+	Externally visible changes:
+
+	- Added opp_msgtool, which encapsulates the MSG-related parts of nedtool,
+	  and also acts as message compiler.
+
+	- opp_msgtool --msg4 option. This release makes non-backward-compatible
+	  changes to the MSG language; the --msg4 option can be used to put the
+	  message compiler into "legacy" mode and make it process existing msg files.
+
+	- Dependency generation added to the message compiler, useful with imports;
+	  see below.
+
+	- Added import support. A message file can now reference definitions in
+	  other message files using the "import" keyword. Type announcements are
+	  no longer needed (in fact, they are ignored with a warning), and there
+	  is now much less need for cplusplus blocks as well.
+
+	- cObject is no longer the default base class. This is another non-backward-
+	  compatible change: if a class yours needs to subclass cObject, modify the
+	  MSG file and add "extends cObject".
+
+	- Field getters now return const reference. Separate "get..ForUpdate()"
+	  getters that return non-const are generated to cover uses cases when the
+	  contained value (typically an object) needs to be modified in-place.
+
+	- Added targeted cplusplus blocks. The target needs to be added in
+	  parentheses just after the "cplusplus" keyword. The target can be "h"
+	  (the generated header file -- the default), "cc" (the generated .cc file),
+	  or the name of a type generated in the same MSG file (content is inserted
+	  in the declaration of the type, just before the closing curly bracket).
+
+	- Enum names can now be used as field type name, i.e. it is no longer
+	  necessary to write "int foo @enum(Foo)".
+
+	- Support for const fields (no setter).
+
+	- Support for pointer and owned pointer fields. Owned pointers are denoted
+	  with the @owned field property. Non-owned pointers are simply stored and
+	  returned; owned pointers imply delete-in-destructor and clone-on-dup
+	  behavior. Additionally, if the object is a cOwnedObject, take() and drop()
+	  calls are also generated in the code.
+
+	- More convenient dynamic arrays: inserter and eraser methods generated
+	  into the class, to make it easier to add/remove elements without explicit
+	  calls to setArraySize() methods.
+
+	- Support for pass-by-value for fields. Annotate the field with @byValue
+	  for that.
+
+	- Many more class and field properties that affect code generation, see list
+	  below.
+
+	- @byValue and many other properties can be specified on the class, and they
+	  are inherited by fields that instantiate that type.
+
+	- Changed C++ type for array sizes and indices to size_t.
+
+	- Better code for generated classes, e.g. inline field initializers,
+
+	- Better code generated for descriptors, e.g. symbolic constants for
+	  field indices.
+
+	A complete list of supported properties (descriptions will be added soon):
+	   @actually
+	   @primitive
+	   @opaque
+	   @byValue
+	   @supportsPtr
+	   @subclassable
+	   @defaultValue
+	   @cppType
+	   @argType
+	   @returnType
+	   @toString
+	   @fromString
+	   @getterConversion
+	   @clone
+	   @existingClass
+	   @descriptor
+	   @omitGetVerb
+	   @fieldNameSuffix
+	   @beforeChange
+	   @implements
+	   @nopack
+	   @owned
+	   @editable
+	   @overrideGetter
+	   @overrideSetter
+	   @enum
+	   @sizeType
+	   @setter
+	   @getter
+	   @getterForUpdate
+	   @sizeSetter
+	   @sizeGetter
+	   @inserter
+	   @eraser
+	   @allowReplace
+	   @str
+	   @customize
+
+	Implementation:
+
+	- The message compiler core was split up into three classes: MsgCompiler,
+	  MsgAnalyzer, MsgCodeGenerator. The legacy message compiler (for the
+	  --msg4 option) is the completely separate class MsgCompilerOld.
+
+	- Primitive types are now defined via built-in declarations, and not
+	  hardwired as code. This provides more flexibility.
+
+	- The message compiler is now aware of the OMNeT++ library classes, as if
+	  they were imported by default. Declarations come from the sim_std.msg
+	  file (which is now textually included by the message compiler.)
+
+	- Updated the list of reserved words (words that cannot be used as 
+	  identifiers in MSG files; it is the union of the words reserved by C++ 
+	  and by the MSG language.)
+
+	- Near-complete separation of the NED and MSG parts of the library.
+
+	- Several renames throughout the nedxml library, mostly motivated by the
+	  previous point. A partial list:
+
+	    - NEDElement -> ASTNode
+	    - NEDFileBuffer -> SourceDocument
+	    - NEDErrorStore -> ErrorStore
+	    - NEDXMLGenererator -> XMLGenerator
+	    - NED2, NED -> Ned, MSG2 -> Msg (in class and function names)
+	    - NED_xxx -> MSG_xxx
+	    - NED_PARTYPE_xxx -> PARTYPE_xxx, etc
+	    - NEDSAXHandler -> ASTBuilder
+	    - NEDXMLParser -> XMLASTParser
+	    - nedexception.h -> exception.h
+	    - nedyylib --> yyutil
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-10-18  Rudolf Hornig

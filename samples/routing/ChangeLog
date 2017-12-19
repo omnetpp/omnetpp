@@ -1,3 +1,10 @@
+2017-12-12  Andras Varga
+
+	* Follow cPar longValue()->intValue() rename
+
+	* Removed .intValue() calls and rely on the safer (overflow-checking)
+	cast-to-integer operators instead
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------

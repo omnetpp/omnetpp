@@ -1,3 +1,26 @@
+2017-12-18  Zoltan Bojthe
+
+	* opp_test: Reimplemented in Python
+
+2017-11-22  Rudolf Hornig
+
+	* opp_makemake: Generate dependency files for .msg files too (when they
+	use imports)
+
+2017-01-06  Zoltan Bojthe
+
+	* opp_featuretool: Show help when using without any arguments, or
+	when there is an error in the command-line arguments
+
+2017-11-17  Attila Torok
+
+	* opp_featuretool: Add note about command-specific arguments to
+	help.
+
+2017-11-15  Zoltan Bojthe
+
+	* opp_featuretool: Fixed bug in processing prerequisites
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------
@@ -77,7 +100,7 @@
 
 2017-01-30  Rudolf Hornig
 
-	* Fix: don't show warning on macOS after starting the ide the second time
+	* Fix: don't show warning on macOS after starting the IDE the second time
 
 2017-01-26  Rudolf Hornig
 

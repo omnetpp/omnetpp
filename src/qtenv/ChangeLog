@@ -1,3 +1,36 @@
+2017-12-15  Attila Torok
+
+	* Follow cEnvir change: Implemented getZoomLevel().
+
+2017-12-13  Attila Torok
+
+	* Generic Object Inspector: Group the mode switching actions into an ActionGroup.
+	This way, when the button of the already active mode is clicked (again),
+	it won't pop out (become "unchecked"), causing confusion.
+
+2017-12-15  Attila Torok
+
+	* Generic Object Inspector: "Packet" mode added. It is similar to the
+	"Flat", but only displays fields that have the @packetData property on them.
+
+2017-01-16  Andras Varga
+
+	* Replace gettimeofday() occurrences with opp_get_monotonic_clock_usecs(),
+	and struct timeval with plain int64_t.
+
+2017-11-28  Andras Varga
+
+	* osg/osg.msg: Updated to recent message compile changes (property names
+	camelized, etc).
+
+2017-11-26  Andras Varga
+
+	* Follow NED->Ned naming change in class/function names
+
+2017-12-12  Andras Varga
+
+	* Follow cPar longValue()->intValue() method rename and other changes.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-11-27  Attila Torok

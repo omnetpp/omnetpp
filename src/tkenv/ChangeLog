@@ -1,3 +1,20 @@
+2017-12-15  Attila Torok
+
+	* Follow cEnvir change: Implemented getZoomLevel().
+
+2017-01-16  Andras Varga
+
+	* Replace gettimeofday() occurrences with opp_get_monotonic_clock_usecs(),
+	and struct timeval with plain int64_t.
+
+2017-11-26  Andras Varga
+
+	* Follow NED->Ned naming change in class/function names
+
+2017-12-12  Andras Varga
+
+	* Follow cPar longValue()->intValue() name change.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------

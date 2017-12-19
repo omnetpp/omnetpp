@@ -1,3 +1,8 @@
+2017-01-16  Andras Varga
+
+	* scaveutils.h: remove unused TIME() macro; use the new(ish)
+	opp_get_monotonic_clock_usecs() function as replacement when necessary.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-12-04  Attila Torok

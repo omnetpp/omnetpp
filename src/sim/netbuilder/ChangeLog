@@ -1,3 +1,17 @@
+2017-11-26  Andras Varga
+
+	* Follow renames in the nedxml library: NEDElement -> ASTNode,
+	NED->Ned in class/function names, etc.
+
+2017-12-12  Andras Varga
+
+	* Follow cPar longValue()->intValue() method rename.
+
+2017-12-12  Andras Varga
+
+	* Follow cPar change: cPar now uses intpar_t (alias of int64_t) to
+	represent integers.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------
