@@ -173,9 +173,9 @@ std::vector<TreeNode *> TreeNode::makeObjectChildNodes(void *obj, cClassDescript
     return result;
 }
 
-cClassDescriptor *TreeNode::getDescriptorForField(void *object, cClassDescriptor *desc, int fieldIndex, int arrayIndex)
+cClassDescriptor *TreeNode::getDescriptorForField(void *obj, cClassDescriptor *desc, int fieldIndex, int arrayIndex)
 {
-    void *fieldPtr = desc->getFieldStructValuePointer(object, fieldIndex, arrayIndex);
+    void *fieldPtr = desc->getFieldStructValuePointer(obj, fieldIndex, arrayIndex);
     if (!fieldPtr)
         return nullptr;
 
@@ -185,11 +185,11 @@ cClassDescriptor *TreeNode::getDescriptorForField(void *object, cClassDescriptor
     }
 
     if (desc->getFieldIsCompound(fieldIndex)) {
-        const char *dynamicTypeName = desc->getFieldDynamicTypeString(object, fieldIndex, arrayIndex);
+        const char *dynamicTypeName = desc->getFieldDynamicTypeString(obj, fieldIndex, arrayIndex);
         if (dynamicTypeName) {
-            auto desc = cClassDescriptor::getDescriptorFor(dynamicTypeName);
-            if (desc)
-                return desc;
+            auto dynamicDesc = cClassDescriptor::getDescriptorFor(dynamicTypeName);
+            if (dynamicDesc)
+                return dynamicDesc;
         }
     }
 
@@ -333,12 +333,12 @@ static int propertyValueToTriState(const char *value)
         return 1;
 }
 
-bool TreeNode::fieldMatchesPropertyFilter(cClassDescriptor *containingDesc, int fieldIndex, const char *property)
+bool TreeNode::fieldMatchesPropertyFilter(cClassDescriptor *desc, int fieldIndex, const char *property)
 {
     // XXX once field property overriding is implemented in msgc, using getFieldDeclaredOn will probably not cut it
-    cClassDescriptor *declDesc = cClassDescriptor::getDescriptorFor(containingDesc->getFieldDeclaredOn(fieldIndex));
+    cClassDescriptor *declDesc = cClassDescriptor::getDescriptorFor(desc->getFieldDeclaredOn(fieldIndex));
     int declProp = propertyValueToTriState(declDesc->getProperty(property));
-    int fieldProp = propertyValueToTriState(containingDesc->getFieldProperty(fieldIndex, property));
+    int fieldProp = propertyValueToTriState(desc->getFieldProperty(fieldIndex, property));
 
     switch (declProp) {
         case -1:
