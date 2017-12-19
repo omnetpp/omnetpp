@@ -35,6 +35,8 @@
 #include <QDebug>
 #include <QGridLayout>
 #include <QMessageBox>
+#include <QApplication>
+#include <QClipboard>
 
 #define emit
 
@@ -266,6 +268,26 @@ void GenericObjectInspector::createContextMenu(QPoint pos)
         QMenu *menu = InspectorUtil::createInspectorContextMenu(objects, this);
         menu->exec(treeView->mapToGlobal(pos));
         delete menu;
+    }
+    else {
+        TreeNode *node = static_cast<TreeNode*>(proxyModel->mapToSource(treeView->indexAt(pos)).internalPointer());
+        if (node) {
+            QString text = node->getData(Qt::DisplayRole).toString();
+
+            // extractiong the "highlighted" blue region - the value
+            HighlightRange range = node->getData(Qt::UserRole).value<HighlightRange>();
+            text = text.mid(range.start, range.length);
+
+            QMenu *menu = new QMenu(this);
+            // The QMenu::addAction overload taking a lambda directly was only
+            // added in Qt 5.6, but we only require 5.4, so doing it this way.
+            QAction *copyAction = menu->addAction("&Copy Value");
+            connect(copyAction, &QAction::triggered, [text]() {
+                QApplication::clipboard()->setText(text, QClipboard::Clipboard);
+            });
+            menu->exec(treeView->mapToGlobal(pos));
+            delete menu;
+        }
     }
 }
 
