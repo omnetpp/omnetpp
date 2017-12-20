@@ -1,1 +1,1 @@
-@nedtool %*
+@opp_msgtool %*

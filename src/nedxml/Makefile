@@ -21,8 +21,8 @@ ifeq ($(PLATFORM),win32.x86_64)
     endif
   endif
 endif
-TARGET_EXE_FILES= $(OMNETPP_BIN_DIR)/nedtool$(EXE_SUFFIX) \
-                  $(OMNETPP_BIN_DIR)/msgtool$(EXE_SUFFIX) \
+TARGET_EXE_FILES= $(OMNETPP_BIN_DIR)/opp_nedtool$(EXE_SUFFIX) \
+                  $(OMNETPP_BIN_DIR)/opp_msgtool$(EXE_SUFFIX) \
                   $(OMNETPP_BIN_DIR)/opp_msgc
 
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/nedxml
@@ -96,15 +96,15 @@ $O/%$(A_LIB_SUFFIX) : $(OBJS)
 	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
 endif
 
-$O/nedtool$(EXE_SUFFIX): nedtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
+$O/opp_nedtool$(EXE_SUFFIX): opp_nedtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) nedtool.cc -o $@ $(LDFLAGS) -loppnedxml$D $(IMPLIBS)
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) opp_nedtool.cc -o $@ $(LDFLAGS) -loppnedxml$D $(IMPLIBS)
 
-$O/msgtool$(EXE_SUFFIX): msgtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
+$O/opp_msgtool$(EXE_SUFFIX): opp_msgtool.cc $(GENERATED_SOURCES) $(TARGET_LIB_FILES)
 	@mkdir -p $O
 	@echo Creating executable: $@
-	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) msgtool.cc -o $@ $(LDFLAGS) -loppnedxml$D $(IMPLIBS)
+	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) opp_msgtool.cc -o $@ $(LDFLAGS) -loppnedxml$D $(IMPLIBS)
 
 $O/opp_msgc:
 	@mkdir -p $O

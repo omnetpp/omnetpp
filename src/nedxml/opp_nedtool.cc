@@ -1,10 +1,10 @@
 //==========================================================================
-//  NEDTOOL.CC - part of
+//  OPP_NEDTOOL.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-// Contains: main() for nedtool
+// Contains: main() for opp_nedtool
 //
 //==========================================================================
 
@@ -87,19 +87,18 @@ MsgCompilerOptions msg_options;
 
 FilesElement *outputtree;
 
-//TODO split into nedtool and msgtool alias msgc!
 //TODO turn code into a class, like scavetool
 
 void printUsage()
 {
     fprintf(stderr,
-       "nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 Andras Varga, OpenSim Ltd.\n"
+       "opp_nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 Andras Varga, OpenSim Ltd.\n"
        "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
-       "Usage: nedtool [options] <file1> <file2> ...\n"
+       "Usage: opp_nedtool [options] <file1> <file2> ...\n"
        "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
        "syntax (check the difference below.) By default, if neither -n nor -x is\n"
-       "specified, nedtool generates C++ source.\n"
+       "specified, opp_nedtool generates C++ source.\n"
        "  -x: generate XML (you may need -y, -e and -p as well)\n"
        "  -n: generate source (NED or MSG; you may need -y and -e as well)\n"
        "  -P: pretty-print and/or convert 3.x NED files to the current syntax;\n"
@@ -113,7 +112,7 @@ void printUsage()
        "  -s <suffix>: suffix for generated files\n"
        "  -t <suffix>: when generating C++, suffix for generated header files\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
-       "      single XML file created by 'nedtool -m -x': replace original NED files\n"
+       "      single XML file created by 'opp_nedtool -m -x': replace original NED files\n"
        "  -u: with -m or -k: split NED files to one NED component per file\n" //XXX refine help text
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
@@ -178,11 +177,11 @@ bool renameFileToBAK(const char *fname)
     createFileNameWithSuffix(bakfname, fname, ".bak");
 
     if (unlink(bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "nedtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
+        fprintf(stderr, "opp_nedtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
         return false;
     }
     if (rename(fname, bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "nedtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
+        fprintf(stderr, "opp_nedtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
         return false;
     }
     return true;
@@ -400,7 +399,7 @@ bool processFile(const char *fname, ErrorStore *errors)
                     }
                 }
                 else {
-                    fprintf(stderr, "nedtool: generating C++ source from %s files is not supported\n",
+                    fprintf(stderr, "opp_nedtool: generating C++ source from %s files is not supported\n",
                             (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
                     delete tree;
                     return false;
@@ -413,7 +412,7 @@ bool processFile(const char *fname, ErrorStore *errors)
         }
     }
     catch (std::exception& e) {
-        fprintf(stderr, "nedtool: internal error: %s\n", e.what());
+        fprintf(stderr, "opp_nedtool: internal error: %s\n", e.what());
         delete tree;
         return false;
     }
@@ -431,7 +430,7 @@ bool processListFile(const char *listfilename, bool istemplistfile, ErrorStore *
 
     ifstream in(listfilename, ios::in);
     if (in.fail()) {
-        fprintf(stderr, "nedtool: cannot open list file '%s'\n", listfilename);
+        fprintf(stderr, "opp_nedtool: cannot open list file '%s'\n", listfilename);
         return false;
     }
 
@@ -441,13 +440,13 @@ bool processListFile(const char *listfilename, bool istemplistfile, ErrorStore *
         std::string dir, fnameonly;
         splitFileName(listfilename, dir, fnameonly);
         if (!getcwd(olddir, 1024)) {
-            fprintf(stderr, "nedtool: cannot get the name of current directory\n");
+            fprintf(stderr, "opp_nedtool: cannot get the name of current directory\n");
             return false;
         }
         if (opt_verbose)
             fprintf(stdout, "changing into '%s'...\n", dir.c_str());
         if (chdir(dir.c_str())) {
-            fprintf(stderr, "nedtool: cannot temporarily change to directory '%s' (does it exist?)\n", dir.c_str());
+            fprintf(stderr, "opp_nedtool: cannot temporarily change to directory '%s' (does it exist?)\n", dir.c_str());
             return false;
         }
     }
@@ -473,7 +472,7 @@ bool processListFile(const char *listfilename, bool istemplistfile, ErrorStore *
     }
 
     if (in.bad()) {
-        fprintf(stderr, "nedtool: error reading list file '%s'\n", listfilename);
+        fprintf(stderr, "opp_nedtool: error reading list file '%s'\n", listfilename);
         return false;
     }
     in.close();
@@ -482,7 +481,7 @@ bool processListFile(const char *listfilename, bool istemplistfile, ErrorStore *
         if (opt_verbose)
             fprintf(stdout, "changing back to '%s'...\n", olddir);
         if (chdir(olddir)) {
-            fprintf(stderr, "nedtool: cannot change back to directory '%s'\n", olddir);
+            fprintf(stderr, "opp_nedtool: cannot change back to directory '%s'\n", olddir);
             return false;
         }
     }
@@ -526,7 +525,7 @@ int main(int argc, char **argv)
             const char *arg = argv[i]+2;
             if (!*arg) {
                 if (++i == argc) {
-                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 arg = argv[i];
@@ -537,7 +536,7 @@ int main(int argc, char **argv)
             const char *arg = argv[i]+2;
             if (!*arg) {
                 if (++i == argc) {
-                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 arg = argv[i];
@@ -551,14 +550,14 @@ int main(int argc, char **argv)
             else if (!strcmp(arg, "off"))
                 opt_nextfiletype = UNKNOWN_FILE;
             else {
-                fprintf(stderr, "nedtool: unknown file type %s after -T\n", arg);
+                fprintf(stderr, "opp_nedtool: unknown file type %s after -T\n", arg);
                 return 1;
             }
         }
         else if (!strcmp(argv[i], "-s")) {
             i++;
             if (i == argc) {
-                fprintf(stderr, "nedtool: unexpected end of arguments after -s\n");
+                fprintf(stderr, "opp_nedtool: unexpected end of arguments after -s\n");
                 return 1;
             }
             opt_suffix = argv[i];
@@ -566,7 +565,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "-t")) {
             i++;
             if (i == argc) {
-                fprintf(stderr, "nedtool: unexpected end of arguments after -t\n");
+                fprintf(stderr, "opp_nedtool: unexpected end of arguments after -t\n");
                 return 1;
             }
             opt_hdrsuffix = argv[i];
@@ -599,7 +598,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "-o")) {
             i++;
             if (i == argc) {
-                fprintf(stderr, "nedtool: unexpected end of arguments after -o\n");
+                fprintf(stderr, "opp_nedtool: unexpected end of arguments after -o\n");
                 return 1;
             }
             opt_outputfile = argv[i];
@@ -615,7 +614,7 @@ int main(int argc, char **argv)
                 msg_options.exportDef = argv[i]+2;
             else {
                 if (++i == argc) {
-                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 msg_options.exportDef = argv[i];
@@ -629,7 +628,7 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "-MF")) {
             if (++i == argc) {
-                fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
                 return 1;
             }
             opt_dependenciesfile = argv[i];
@@ -641,7 +640,7 @@ int main(int argc, char **argv)
             const char *arg = argv[i]+2;
             if (!*arg) {
                 if (++i == argc) {
-                    fprintf(stderr, "nedtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 arg = argv[i];
@@ -656,12 +655,12 @@ int main(int argc, char **argv)
                 msg_options.generateSettersInDescriptors = false;
             }
             else {
-                fprintf(stderr, "nedtool: unknown option -X %s\n", arg);
+                fprintf(stderr, "opp_nedtool: unknown option -X %s\n", arg);
                 return 1;
             }
         }
         else if (argv[i][0] == '-') {
-            fprintf(stderr, "nedtool: unknown option %s\n", argv[i]);
+            fprintf(stderr, "opp_nedtool: unknown option %s\n", argv[i]);
             return 1;
         }
         else if (argv[i][0] == '@') {
@@ -674,23 +673,23 @@ int main(int argc, char **argv)
             // process individual files on the command line
             // FIXME these checks get bypassed with list files
             if (opt_genxml && opt_gensrc) {
-                fprintf(stderr, "nedtool: conflicting options -n (generate source) and -x (generate XML)\n");
+                fprintf(stderr, "opp_nedtool: conflicting options -n (generate source) and -x (generate XML)\n");
                 return 1;
             }
             if (opt_mergeoutput && opt_inplace) {
-                fprintf(stderr, "nedtool: conflicting options -m (merge files) and -k (replace original file)\n");
+                fprintf(stderr, "opp_nedtool: conflicting options -m (merge files) and -k (replace original file)\n");
                 return 1;
             }
             if (opt_inplace && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "nedtool: conflicting options: -k (replace original file) needs -n (generate source) or -x (generate XML)\n");
+                fprintf(stderr, "opp_nedtool: conflicting options: -k (replace original file) needs -n (generate source) or -x (generate XML)\n");
                 return 1;
             }
             if (opt_mergeoutput && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "nedtool: option -m not supported with C++ output\n");
+                fprintf(stderr, "opp_nedtool: option -m not supported with C++ output\n");
                 return 1;
             }
             if (opt_splitnedfiles && !opt_mergeoutput && !opt_inplace) {
-                fprintf(stderr, "nedtool: option -u ignored because -k or -m is not specified\n");  // XXX not too logical
+                fprintf(stderr, "opp_nedtool: option -u ignored because -k or -m is not specified\n");  // XXX not too logical
             }
 
 #if SHELL_EXPANDS_WILDCARDS
@@ -700,7 +699,7 @@ int main(int argc, char **argv)
             // we have to expand wildcards ourselves
             std::vector<std::string> filelist = FileGlobber(argv[i]).getFilenames();
             if (filelist.empty()) {
-                fprintf(stderr, "nedtool: not found: %s\n", argv[i]);
+                fprintf(stderr, "opp_nedtool: not found: %s\n", argv[i]);
                 return 1;
             }
             for (int i = 0; i < filelist.size(); i++)

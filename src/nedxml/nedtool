@@ -1,0 +1,3 @@
+#!/bin/sh
+echo >&2 'Warning: nedtool has been renamed to opp_nedtool, please update your scripts!' 
+$(dirname $0)/opp_nedtool $*

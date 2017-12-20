@@ -1,5 +1,5 @@
 //==========================================================================
-//  MSGTOOL.CC - part of
+//  OPP_MSGTOOL.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -80,13 +80,13 @@ static FilesElement *outputtree;
 static void printUsage()
 {
     fprintf(stderr,
-       "msgtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 Andras Varga, OpenSim Ltd.\n"
+       "opp_msgtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 Andras Varga, OpenSim Ltd.\n"
        "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
-       "Usage: msgtool [options] <file1> <file2> ...\n"
+       "Usage: opp_msgtool [options] <file1> <file2> ...\n"
        "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
        "syntax (check the difference below.) By default, if neither -n nor -x is\n"
-       "specified, msgtool generates C++ source.\n"
+       "specified, opp_msgtool generates C++ source.\n"
        "  -x: export AST as XML\n"
        "  -n: generate source\n"
        "  -P: pretty-print\n"
@@ -99,7 +99,7 @@ static void printUsage()
        "  -s <suffix>: suffix for generated files\n"
        "  -t <suffix>: when generating C++, suffix for generated header files\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
-       "      single XML file created by 'msgtool -m -x': replace original MSG files\n"
+       "      single XML file created by 'opp_msgtool -m -x': replace original MSG files\n"
        "  -S: with MSG parsing: include source code of components in XML\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
@@ -159,11 +159,11 @@ static bool renameFileToBAK(const char *fname)
     createFileNameWithSuffix(bakfname, fname, ".bak");
 
     if (unlink(bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "msgtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
+        fprintf(stderr, "opp_msgtool: cannot remove old backup file %s, leaving file %s unchanged\n", bakfname, fname);
         return false;
     }
     if (rename(fname, bakfname) != 0 && errno != ENOENT) {
-        fprintf(stderr, "msgtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
+        fprintf(stderr, "opp_msgtool: cannot rename original %s to %s, leaving file unchanged\n", fname, bakfname);
         return false;
     }
     return true;
@@ -231,7 +231,7 @@ static bool processFile(const char *fname, ErrorStore *errors)
             break;
         }
         case NED_FILE:
-            fprintf(stderr, "msgtool: NED files are not supported: '%s'\n", fname);
+            fprintf(stderr, "opp_msgtool: NED files are not supported: '%s'\n", fname);
             return false;
         default:
             assert(false);
@@ -351,7 +351,7 @@ static bool processFile(const char *fname, ErrorStore *errors)
         }
     }
     catch (std::exception& e) {
-        fprintf(stderr, "msgtool: internal error: %s\n", e.what());
+        fprintf(stderr, "opp_msgtool: internal error: %s\n", e.what());
         delete tree;
         return false;
     }
@@ -369,7 +369,7 @@ static bool processListFile(const char *listfilename, bool istemplistfile, Error
 
     ifstream in(listfilename, ios::in);
     if (in.fail()) {
-        fprintf(stderr, "msgtool: cannot open list file '%s'\n", listfilename);
+        fprintf(stderr, "opp_msgtool: cannot open list file '%s'\n", listfilename);
         return false;
     }
 
@@ -379,13 +379,13 @@ static bool processListFile(const char *listfilename, bool istemplistfile, Error
         std::string dir, fnameonly;
         splitFileName(listfilename, dir, fnameonly);
         if (!getcwd(olddir, 1024)) {
-            fprintf(stderr, "msgtool: cannot get the name of current directory\n");
+            fprintf(stderr, "opp_msgtool: cannot get the name of current directory\n");
             return false;
         }
         if (opt_verbose)
             fprintf(stdout, "changing into '%s'...\n", dir.c_str());
         if (chdir(dir.c_str())) {
-            fprintf(stderr, "msgtool: cannot temporarily change to directory '%s' (does it exist?)\n", dir.c_str());
+            fprintf(stderr, "opp_msgtool: cannot temporarily change to directory '%s' (does it exist?)\n", dir.c_str());
             return false;
         }
     }
@@ -411,7 +411,7 @@ static bool processListFile(const char *listfilename, bool istemplistfile, Error
     }
 
     if (in.bad()) {
-        fprintf(stderr, "msgtool: error reading list file '%s'\n", listfilename);
+        fprintf(stderr, "opp_msgtool: error reading list file '%s'\n", listfilename);
         return false;
     }
     in.close();
@@ -420,7 +420,7 @@ static bool processListFile(const char *listfilename, bool istemplistfile, Error
         if (opt_verbose)
             fprintf(stdout, "changing back to '%s'...\n", olddir);
         if (chdir(olddir)) {
-            fprintf(stderr, "msgtool: cannot change back to directory '%s'\n", olddir);
+            fprintf(stderr, "opp_msgtool: cannot change back to directory '%s'\n", olddir);
             return false;
         }
     }
@@ -463,7 +463,7 @@ int main(int argc, char **argv)
             const char *arg = argv[i]+2;
             if (!*arg) {
                 if (++i == argc) {
-                    fprintf(stderr, "msgtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 arg = argv[i];
@@ -474,7 +474,7 @@ int main(int argc, char **argv)
             const char *arg = argv[i]+2;
             if (!*arg) {
                 if (++i == argc) {
-                    fprintf(stderr, "msgtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 arg = argv[i];
@@ -486,14 +486,14 @@ int main(int argc, char **argv)
             else if (!strcmp(arg, "off"))
                 opt_nextfiletype = UNKNOWN_FILE;
             else {
-                fprintf(stderr, "msgtool: unknown file type %s after -T\n", arg);
+                fprintf(stderr, "opp_msgtool: unknown file type %s after -T\n", arg);
                 return 1;
             }
         }
         else if (!strcmp(argv[i], "-s")) {
             i++;
             if (i == argc) {
-                fprintf(stderr, "msgtool: unexpected end of arguments after -s\n");
+                fprintf(stderr, "opp_msgtool: unexpected end of arguments after -s\n");
                 return 1;
             }
             opt_suffix = argv[i];
@@ -501,7 +501,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "-t")) {
             i++;
             if (i == argc) {
-                fprintf(stderr, "msgtool: unexpected end of arguments after -t\n");
+                fprintf(stderr, "opp_msgtool: unexpected end of arguments after -t\n");
                 return 1;
             }
             opt_hdrsuffix = argv[i];
@@ -522,7 +522,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "-o")) {
             i++;
             if (i == argc) {
-                fprintf(stderr, "msgtool: unexpected end of arguments after -o\n");
+                fprintf(stderr, "opp_msgtool: unexpected end of arguments after -o\n");
                 return 1;
             }
             opt_outputfile = argv[i];
@@ -538,7 +538,7 @@ int main(int argc, char **argv)
                 msg_options.exportDef = argv[i]+2;
             else {
                 if (++i == argc) {
-                    fprintf(stderr, "msgtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 msg_options.exportDef = argv[i];
@@ -552,7 +552,7 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "-MF")) {
             if (++i == argc) {
-                fprintf(stderr, "msgtool: unexpected end of arguments after %s\n", argv[i-1]);
+                fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
                 return 1;
             }
             opt_dependenciesfile = argv[i];
@@ -564,7 +564,7 @@ int main(int argc, char **argv)
             const char *arg = argv[i]+2;
             if (!*arg) {
                 if (++i == argc) {
-                    fprintf(stderr, "msgtool: unexpected end of arguments after %s\n", argv[i-1]);
+                    fprintf(stderr, "opp_msgtool: unexpected end of arguments after %s\n", argv[i-1]);
                     return 1;
                 }
                 arg = argv[i];
@@ -579,12 +579,12 @@ int main(int argc, char **argv)
                 msg_options.generateSettersInDescriptors = false;
             }
             else {
-                fprintf(stderr, "msgtool: unknown option -X %s\n", arg);
+                fprintf(stderr, "opp_msgtool: unknown option -X %s\n", arg);
                 return 1;
             }
         }
         else if (argv[i][0] == '-') {
-            fprintf(stderr, "msgtool: unknown option %s\n", argv[i]);
+            fprintf(stderr, "opp_msgtool: unknown option %s\n", argv[i]);
             return 1;
         }
         else if (argv[i][0] == '@') {
@@ -597,19 +597,19 @@ int main(int argc, char **argv)
             // process individual files on the command line
             // FIXME these checks get bypassed with list files
             if (opt_genxml && opt_gensrc) {
-                fprintf(stderr, "msgtool: conflicting options -n (generate source) and -x (generate XML)\n");
+                fprintf(stderr, "opp_msgtool: conflicting options -n (generate source) and -x (generate XML)\n");
                 return 1;
             }
             if (opt_mergeoutput && opt_inplace) {
-                fprintf(stderr, "msgtool: conflicting options -m (merge files) and -k (replace original file)\n");
+                fprintf(stderr, "opp_msgtool: conflicting options -m (merge files) and -k (replace original file)\n");
                 return 1;
             }
             if (opt_inplace && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "msgtool: conflicting options: -k (replace original file) needs -n (generate source) or -x (generate XML)\n");
+                fprintf(stderr, "opp_msgtool: conflicting options: -k (replace original file) needs -n (generate source) or -x (generate XML)\n");
                 return 1;
             }
             if (opt_mergeoutput && !opt_genxml && !opt_gensrc) {
-                fprintf(stderr, "msgtool: option -m not supported with C++ output\n");
+                fprintf(stderr, "opp_msgtool: option -m not supported with C++ output\n");
                 return 1;
             }
 
@@ -620,7 +620,7 @@ int main(int argc, char **argv)
             // we have to expand wildcards ourselves
             std::vector<std::string> filelist = FileGlobber(argv[i]).getFilenames();
             if (filelist.empty()) {
-                fprintf(stderr, "msgtool: not found: %s\n", argv[i]);
+                fprintf(stderr, "opp_msgtool: not found: %s\n", argv[i]);
                 return 1;
             }
             for (int i = 0; i < filelist.size(); i++)

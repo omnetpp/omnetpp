@@ -93,7 +93,7 @@ ui:
 
 uilibs: $(JNILIBS)
 
-# dependencies (because of ver.h, opp_msgc [nedtool], etc)
+# dependencies (because of ver.h, opp_msgtool, etc)
 common layout eventlog scave nedxml sim envir cmdenv tkenv qtenv systemc makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv tkenv qtenv: common
 envir : sim
