@@ -222,6 +222,31 @@ QString TreeNode::getObjectFullNameOrPath(cObject *object)
               : object->getFullPath().c_str();
 }
 
+bool TreeNode::fieldIsUnsafePointer(void *obj, cClassDescriptor *desc, int fieldIndex)
+{
+    // Returns true if obj is a privateDup'd clone (so it was removed from
+    // the ownership tree, like the cMessage copies in the LogBuffer), and its
+    // fieldIndex-th field is a pointer, which is not inherited from a
+    // superclass in the "omnetpp" namespace (we assume that those are
+    // "less likely" to become dangling). In that case, as a precaution, the
+    // pointed object should not be accessed at all.
+
+    bool isUnsafePointer = false;
+
+    if (desc->getFieldIsPointer(fieldIndex) && desc->isOwnedObject()) {
+        // we need this to determine if this is privateDup'd
+        cOwnedObject *containingOwnedObject = static_cast<cOwnedObject *>(obj);
+
+        if (containingOwnedObject->getOwner() == nullptr)
+            isUnsafePointer = true; // it is a privateDup indeed
+
+        const char *declaredOn = desc->getFieldDeclaredOn(fieldIndex);
+        if (strstr(declaredOn, "omnetpp::") == declaredOn)
+            isUnsafePointer = false; // let's assume this inherited field is "safe"
+    }
+    return isUnsafePointer;
+}
+
 TreeNode::TreeNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, Mode mode)
     : mode(mode), parent(parent), indexInParent(indexInParent),
     containingObject(contObject), containingDesc(contDesc)
@@ -432,7 +457,8 @@ bool ChildObjectNode::isSameAs(TreeNode *other)
 FieldNode::FieldNode(TreeNode *parent, int indexInParent, void *contObject, cClassDescriptor *contDesc, int fieldIndex, Mode mode)
     : TreeNode(parent, indexInParent, contObject, contDesc, mode), fieldIndex(fieldIndex)
 {
-    if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)) {
+    if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)
+            && !fieldIsUnsafePointer(contObject, contDesc, fieldIndex)) {
         object = contDesc->getFieldStructValuePointer(contObject, fieldIndex, 0);
         desc = getDescriptorForField(contObject, contDesc, fieldIndex);
     }
@@ -485,6 +511,7 @@ QVariant FieldNode::computeData(int role)
     bool isCObject = containingDesc->getFieldIsCObject(fieldIndex);
     bool isCompound = containingDesc->getFieldIsCompound(fieldIndex);
     bool isArray = containingDesc->getFieldIsArray(fieldIndex);
+    bool isUnsafePointer = fieldIsUnsafePointer(containingObject, containingDesc, fieldIndex);
 
     QString fieldName = containingDesc->getFieldName(fieldIndex);
     QString objectClassName = objectCasted ? (QString(" (") + getObjectShortTypeName(objectCasted) + ")") : "";
@@ -496,7 +523,7 @@ QVariant FieldNode::computeData(int role)
     QString editable = isEditable() ? " [...] " : "";
     QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
 
-    if (isCompound && !isCObject && !isArray) {
+    if (isCompound && !isCObject && !isArray && !isUnsafePointer) {
         // Even if it's not a CObject, it can have a different dynamic type
         // than the declared static type, which we can get this way.
         const char *dynamicType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, 0);
@@ -508,22 +535,34 @@ QVariant FieldNode::computeData(int role)
     if (const char *label = containingDesc->getFieldProperty(fieldIndex, "label"))
         fieldName = label;
 
-    // it is a simple value (not an array, but may be compound - like color or transform)
-    if (!isArray && !isCObject)
-        fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
 
-    if (!isArray && isCObject) {
-        if (objectCasted) {
-            objectInfo = objectCasted->str().c_str();
-            if (objectInfo.length() > 0)
-                objectInfo = QString(": ") + objectInfo;
-        }
-        else
-            fieldValue = "nullptr";
-    }
-
-    if (isArray)
+    if (isArray) {
         arraySize = QString("[") + QVariant::fromValue(containingDesc->getFieldArraySize(containingObject, fieldIndex)).toString() + "]";
+    }
+    else {
+        if (isUnsafePointer) {
+            // not accessing the pointer, instead its value in hex, and some placeholder text is displayed
+            prefix = "<unsafe pointer: ";
+            fieldValue = voidPtrToStr(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0));
+            postfix = ">";
+        }
+        else {
+            if (isCObject) {
+                if (objectCasted) {
+                    objectInfo = objectCasted->str().c_str();
+                    if (objectInfo.length() > 0)
+                        objectInfo = QString(": ") + objectInfo;
+                }
+                else {
+                    fieldValue = "nullptr";
+                }
+            }
+            else {
+                // it is a simple value (not an array, but may be compound - like color or transform)
+                fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
+            }
+        }
+    }
 
     if (fieldType == "string" && !isArray)
         prefix = postfix = "'";
