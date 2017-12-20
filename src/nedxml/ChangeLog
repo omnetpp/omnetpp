@@ -4,14 +4,15 @@
 	over a period of several months, with help and input from Zoltan Bojthe.
 	See summary below.
 
-	Externally visible changes:
+	This release contains experimental features which can be enabled with
+    the --msg6 option. This experimental mode makes non-backward-compatible
+	changes to the MSG language. These features were motivated by the needs
+	of INET 4.
+
+	Features in experimental mode:
 
 	- Added opp_msgtool, which encapsulates the MSG-related parts of nedtool,
 	  and also acts as message compiler.
-
-	- opp_msgtool --msg4 option. This release makes non-backward-compatible
-	  changes to the MSG language; the --msg4 option can be used to put the
-	  message compiler into "legacy" mode and make it process existing msg files.
 
 	- Dependency generation added to the message compiler, useful with imports;
 	  see below.
@@ -118,8 +119,8 @@
 	  they were imported by default. Declarations come from the sim_std.msg
 	  file (which is now textually included by the message compiler.)
 
-	- Updated the list of reserved words (words that cannot be used as 
-	  identifiers in MSG files; it is the union of the words reserved by C++ 
+	- Updated the list of reserved words (words that cannot be used as
+	  identifiers in MSG files; it is the union of the words reserved by C++
 	  and by the MSG language.)
 
 	- Near-complete separation of the NED and MSG parts of the library.

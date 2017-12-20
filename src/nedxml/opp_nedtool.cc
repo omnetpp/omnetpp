@@ -76,7 +76,7 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = nullptr; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
-bool opt_legacymode = false;       // --msg4
+bool opt_legacymode = true;        // --msg6
 std::vector<std::string> opt_importpath; // -I
 bool opt_generatedependencies = false; // -MD
 std::string opt_dependenciesfile;  // -MF
@@ -137,10 +137,11 @@ void printUsage()
        "      causing each to depend on nothing. These dummy rules work around errors\n"
        "      make gives if you remove header files without updating the Makefile.\n"
        "  -Xnc: do not generate the classes, only object descriptions\n"
-       "  --msg4: legacy mode, for compiling msg files written for OMNeT++ 4.x and\n"
-       "      5.0..5.2. imports and pointers are not available in this mode. Hint:\n"
-       "      to activate, add a makefrag file to your project with the following\n"
-       "      content:\"MSGC:=$(MSGC) --msg4\"\n"
+       "  --msg6: Activate support for imports and other experimental features.\n"
+       "      Message files using the new features are not backward compatible\n"
+       "      and they need to be updated. For further info see src/nedxml/ChangeLog.\n"
+       "      Hint: To activate, add a makefrag file to your project with the\n"
+       "      following content:\"MSGC:=$(MSGC) --msg6\"\n"
        "  -Xnd: do not generate object descriptions\n"
        "  -Xns: do not generate setters in object descriptions\n"
     );
@@ -620,8 +621,8 @@ int main(int argc, char **argv)
                 msg_options.exportDef = argv[i];
             }
         }
-        else if (!strcmp(argv[i], "--msg4")) {
-            opt_legacymode = true;
+        else if (!strcmp(argv[i], "--msg6")) {
+            opt_legacymode = false;
         }
         else if (!strcmp(argv[i], "-MD")) {
             opt_generatedependencies = true;
