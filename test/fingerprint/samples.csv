@@ -1,147 +1,147 @@
-# workingdir,                        args,                                          simtimelimit, fingerprint
-# /samples/aloha/,                     -f akaroa.ini -c General -r 0,                5000s,         0000-0000           # AKAROA required
-/samples/aloha/,                     -f omnetpp.ini -c PureAloha1 -r 0,            5000s,         bb79-95ff/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAloha2 -r 0,            5000s,         7115-c344/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAloha3 -r 0,            5000s,         0195-e9f3/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 0,   5000s,         0171-a825/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 1,   5000s,         e375-7d59/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 2,   5000s,         c180-f4b0/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 3,   5000s,         f8d9-0c1f/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 4,   5000s,         a169-0850/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 5,   5000s,         ffd1-aa31/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 6,   5000s,         152b-d254/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 7,   5000s,         3044-94a3/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 8,   5000s,         1a9f-0c66/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 9,   5000s,         18f2-d7b0/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 10,  5000s,         f0d8-716f/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 11,  5000s,         8ce7-6478/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 12,  5000s,         f932-eb2f/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 13,  5000s,         055f-f7d5/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 14,  5000s,         91aa-d215/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 15,  5000s,         2656-a983/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 16,  5000s,         5687-c431/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 17,  5000s,         ec6e-d53f/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 18,  5000s,         14d8-5f84/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 19,  5000s,         b8d2-10b9/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 20,  5000s,         1883-9f38/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 21,  5000s,         5bc6-abbe/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 22,  5000s,         4888-2bca/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 23,  5000s,         b3a1-7aad/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 24,  5000s,         be88-7bf4/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 25,  5000s,         8448-0dbf/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 26,  5000s,         8f83-4804/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 27,  5000s,         ac56-77d8/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 28,  5000s,         e4b8-8a01/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 29,  5000s,         9b13-f3f8/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 30,  5000s,         b3b1-aba9/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 31,  5000s,         01b5-2155/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 32,  5000s,         8be0-6d15/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 33,  5000s,         39e0-8391/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 34,  5000s,         bad2-aebe/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 35,  5000s,         6eab-d53f/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 36,  5000s,         dc10-79bd/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 37,  5000s,         7d61-a9ff/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 38,  5000s,         540e-cabf/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 39,  5000s,         b039-3bca/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 40,  5000s,         c078-62e1/tplx
-/samples/aloha/,                     -f omnetpp.ini -c PureAlohaExperiment -r 41,  5000s,         d96f-4b5c/tplx
-/samples/aloha/,                     -f omnetpp.ini -c SlottedAloha1 -r 0,         5000s,         a612-970a/tplx
-/samples/aloha/,                     -f omnetpp.ini -c SlottedAloha2 -r 0,         5000s,         2542-bc36/tplx
-/samples/aloha/,                     -f omnetpp.ini -c SlottedAloha3 -r 0,         5000s,         1d5a-224b/tplx
+# workingdir,                        cmdLine,                                          simtimelimit, fingerprint,expected value,tags
+# /samples/aloha/,                     ./aloha -fakaroa.ini -c General -r 0,                5000s,         0000-0000,PASS,           # AKAROA required
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAloha1 -r 0,            5000s,         bb79-95ff/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAloha2 -r 0,            5000s,         7115-c344/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAloha3 -r 0,            5000s,         0195-e9f3/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 0,   5000s,         0171-a825/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 1,   5000s,         e375-7d59/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 2,   5000s,         c180-f4b0/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 3,   5000s,         f8d9-0c1f/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 4,   5000s,         a169-0850/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 5,   5000s,         ffd1-aa31/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 6,   5000s,         152b-d254/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 7,   5000s,         3044-94a3/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 8,   5000s,         1a9f-0c66/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 9,   5000s,         18f2-d7b0/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 10,  5000s,         f0d8-716f/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 11,  5000s,         8ce7-6478/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 12,  5000s,         f932-eb2f/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 13,  5000s,         055f-f7d5/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 14,  5000s,         91aa-d215/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 15,  5000s,         2656-a983/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 16,  5000s,         5687-c431/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 17,  5000s,         ec6e-d53f/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 18,  5000s,         14d8-5f84/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 19,  5000s,         b8d2-10b9/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 20,  5000s,         1883-9f38/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 21,  5000s,         5bc6-abbe/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 22,  5000s,         4888-2bca/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 23,  5000s,         b3a1-7aad/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 24,  5000s,         be88-7bf4/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 25,  5000s,         8448-0dbf/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 26,  5000s,         8f83-4804/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 27,  5000s,         ac56-77d8/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 28,  5000s,         e4b8-8a01/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 29,  5000s,         9b13-f3f8/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 30,  5000s,         b3b1-aba9/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 31,  5000s,         01b5-2155/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 32,  5000s,         8be0-6d15/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 33,  5000s,         39e0-8391/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 34,  5000s,         bad2-aebe/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 35,  5000s,         6eab-d53f/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 36,  5000s,         dc10-79bd/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 37,  5000s,         7d61-a9ff/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 38,  5000s,         540e-cabf/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 39,  5000s,         b039-3bca/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 40,  5000s,         c078-62e1/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAlohaExperiment -r 41,  5000s,         d96f-4b5c/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c SlottedAloha1 -r 0,         5000s,         a612-970a/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c SlottedAloha2 -r 0,         5000s,         2542-bc36/tplx,PASS,
+/samples/aloha/,                     ./aloha -f omnetpp.ini -c SlottedAloha3 -r 0,         5000s,         1d5a-224b/tplx,PASS,
 
-/samples/canvas/,                    -f omnetpp.ini -c CarDemo -r 0,               5000s,         7b9b-e4fe/tplx
+/samples/canvas/,                    ./canvas -f omnetpp.ini -c CarDemo -r 0,               5000s,         7b9b-e4fe/tplx,PASS,
 
-/samples/cqn/,                       -f omnetpp.ini -c CQN-B -r 0,                 5000s,         52a3-bb82/tplx
-/samples/cqn/,                       -f omnetpp.ini -c CQN-A -r 0,                 5000s,         aede-8872/tplx
-# /samples/cqn/parsim/,                -f omnetpp.ini -c LargeLookahead -r 0,        5000s,         0000-0000           # Parallel simulation
-# /samples/cqn/parsim/,                -f omnetpp.ini -c SmallLookahead -r 0,        5000s,         0000-0000           # Parallel simulation
+/samples/cqn/,                       ./cqn -f omnetpp.ini -c CQN-B -r 0,                 5000s,         52a3-bb82/tplx,PASS,
+/samples/cqn/,                       ./cqn -f omnetpp.ini -c CQN-A -r 0,                 5000s,         aede-8872/tplx,PASS,
+# /samples/cqn/parsim/,                ./cqn -f omnetpp.ini -c LargeLookahead -r 0,        5000s,         0000-0000           # Parallel simulation,PASS,
+# /samples/cqn/parsim/,                ./cqn -f omnetpp.ini -c SmallLookahead -r 0,        5000s,         0000-0000           # Parallel simulation,PASS,
 
-# /samples/database/example1/,         -f fifo-db-gen.ini -c General -r 0,           5000s,         0000-0000           # not a simulation
-# /samples/database/example1/,         -f fifo-db.ini -c General -r 0,               5000s,         0000-0000           # not a simulation
-# /samples/database/example2/,         -f net60mysql.ini -c Net60mysql -r 0,         5000s,         0000-0000           # not a simulation
+# /samples/database/example1/,         -./f fifo-db-gen.ini -c General -r 0,           5000s,         0000-0000           # not a simulation,PASS,
+# /samples/database/example1/,         -./f fifo-db.ini -c General -r 0,               5000s,         0000-0000           # not a simulation,PASS,
+# /samples/database/example2/,         -./f net60mysql.ini -c Net60mysql -r 0,         5000s,         0000-0000           # not a simulation,PASS,
 
-# /samples/dyna/,                      -f omnetpp.ini -c User -r 0,                  5000s,         0000-0000           # interactive
-/samples/dyna/,                      -f omnetpp.ini -c Small -r 0,                 5000s,         7f58-8a5c/tplx
-/samples/dyna/,                      -f omnetpp.ini -c Medium -r 0,                5000s,         9501-6ac1/tplx
-# /samples/dyna/,                      -f realtime.ini -c General -r 0,              5000s,         0000-0000           # real-time scheduler
+# /samples/dyna/,                      ./dyna -f omnetpp.ini -c User -r 0,                  5000s,         0000-0000           # interactive,PASS,
+/samples/dyna/,                      ./dyna -f omnetpp.ini -c Small -r 0,                 5000s,         7f58-8a5c/tplx,PASS,
+/samples/dyna/,                      ./dyna -f omnetpp.ini -c Medium -r 0,                5000s,         9501-6ac1/tplx,PASS,
+# /samples/dyna/,                      ./dyna -f realtime.ini -c General -r 0,              5000s,         0000-0000           # real-time scheduler,PASS,
 
-/samples/fifo/,                      -f omnetpp.ini -c Fifo1 -r 0,                  5000s,         9fb9-7a5a/tplx
-/samples/fifo/,                      -f omnetpp.ini -c Fifo2 -r 0,                  5000s,         c900-86d1/tplx
+/samples/fifo/,                      ./fifo -f omnetpp.ini -c Fifo1 -r 0,                  5000s,         9fb9-7a5a/tplx,PASS,
+/samples/fifo/,                      ./fifo -f omnetpp.ini -c Fifo2 -r 0,                  5000s,         c900-86d1/tplx,PASS,
 
-# /samples/histograms/,                -f omnetpp.ini -c User -r 0,                  5000s,         0000-0000           # interactive
+# /samples/histograms/,                ./histograms -f omnetpp.ini -c User -r 0,                  5000s,         0000-0000           # interactive,PASS,
 
-/samples/hypercube/,                 -f omnetpp.ini -c Hypercube1 -r 0,            5000s,         1dbc-daaa/tplx
-# /samples/neddemo/,                   -f omnetpp.ini -c General -r 0,               5000s,         0000-0000           # Tkenv specific, show dialog: choose network
-/samples/neddemo/,                   -f omnetpp.ini -c BinaryTree1 -r 0,  5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c BinaryTree2 -r 0,  5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c Chain -r 0,        5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c FullGraph -r 0,    5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c Grid -r 0,         5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c HexGrid -r 0,      5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c RandomGraph -r 0,  5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c Star -r 0,         5s,         0
-/samples/neddemo/,                   -f omnetpp.ini -c TriangleGrid -r 0, 5s,         0
+/samples/hypercube/,                 ./hypercube -f omnetpp.ini -c Hypercube1 -r 0,            5000s,         1dbc-daaa/tplx,PASS,
+# /samples/neddemo/,                   ./neddemo -f omnetpp.ini -c General -r 0,               5000s,         0000-0000           # Tkenv specific, show dialog: choose network,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c BinaryTree1 -r 0,  5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c BinaryTree2 -r 0,  5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c Chain -r 0,        5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c FullGraph -r 0,    5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c Grid -r 0,         5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c HexGrid -r 0,      5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c RandomGraph -r 0,  5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c Star -r 0,         5s,         0,PASS,
+/samples/neddemo/,                   ./neddemo -f omnetpp.ini -c TriangleGrid -r 0, 5s,         0,PASS,
 
-/samples/osg-earth/,                 -f omnetpp.ini -c BostonPark -r 0,            5000s,         598d-fe7e/tplx
-/samples/osg-earth/,                 -f omnetpp.ini -c BostonStreets -r 0,         5000s,         d2fe-f19f/tplx
+/samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonPark -r 0,            5000s,         598d-fe7e/tplx,PASS,
+/samples/osg-earth/,                 ./osg-earth -f omnetpp.ini -c BostonStreets -r 0,         5000s,         d2fe-f19f/tplx,PASS,
 
-/samples/osg-indoor/,                -f omnetpp.ini -c Office -r 0,                5000s,         69f4-5a68/tplx
+/samples/osg-indoor/,                ./osg-indoor -f omnetpp.ini -c Office -r 0,                5000s,         69f4-5a68/tplx,PASS,
 
-#/samples/osg-intro/,                 -f omnetpp.ini -c Simple3DModel -r 0,         5000s,         0000-0000
-#/samples/osg-intro/,                 -f omnetpp.ini -c OpenStreetMapGlobe -r 0,    5000s,         0000-0000
-#/samples/osg-intro/,                 -f omnetpp.ini -c OpenStreetMapFlat -r 0,     5000s,         0000-0000
-#/samples/osg-intro/,                 -f omnetpp.ini -c ReadyMapWithElevation -r 0, 5000s,         0000-0000
+#/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c Simple3DModel -r 0,         5000s,         0000-0000,PASS,
+#/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c OpenStreetMapGlobe -r 0,    5000s,         0000-0000,PASS,
+#/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c OpenStreetMapFlat -r 0,     5000s,         0000-0000,PASS,
+#/samples/osg-intro/,                 ./osg-intro -f omnetpp.ini -c ReadyMapWithElevation -r 0, 5000s,         0000-0000,PASS,
 
-/samples/osg-satellites/,            -f omnetpp.ini -c RandomOrbits -r 0,          5000s,         7adf-31e0/tplx
-/samples/osg-satellites/,            -f omnetpp.ini -c Geostationary -r 0,         5000s,         7adf-31e0/tplx
-/samples/osg-satellites/,            -f omnetpp.ini -c PolarOrbits -r 0,           5000s,         7adf-31e0/tplx
+/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c RandomOrbits -r 0,          5000s,         7adf-31e0/tplx,PASS,
+/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c Geostationary -r 0,         5000s,         7adf-31e0/tplx,PASS,
+/samples/osg-satellites/,            ./osg-satellites -f omnetpp.ini -c PolarOrbits -r 0,           5000s,         7adf-31e0/tplx,PASS,
 
-# /samples/queueinglibext/,            -f omnetpp.ini -c OneFifo -r 0,               5000s,         0000-0000           # opp_run
-/samples/queuenet/,                  -f omnetpp.ini -c OneFifo -r 0,               5000s,         be44-15dd/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c TandemFifos -r 0,           5000s,         4447-f11b/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c SmallCQN -r 0,              5000s,         41e6-7c0f/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c Ring -r 0,                  5000s,         df1b-cd8c/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c Terminal -r 0,              5000s,         4e97-d494/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c CallCenter -r 0,            5000s,         c505-72dc/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c ForkJoin -r 0,              5000s,         1206-7cca/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c ResourceAllocation -r 0,    5000s,         a92b-3249/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c AllocDealloc -r 0,          5000s,         dd7d-0876/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c CQN -r 0,                   5000s,         220c-3313/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c CQN -r 1,                   5000s,         cd2b-60bc/tplx
-/samples/queuenet/,                  -f omnetpp.ini -c CQN -r 2,                   5000s,         7c5c-2489/tplx
+# /samples/queueinglibext/,            ./queueinglibext -f omnetpp.ini -c OneFifo -r 0,               5000s,         0000-0000           # opp_run,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c OneFifo -r 0,               5000s,         be44-15dd/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c TandemFifos -r 0,           5000s,         4447-f11b/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c SmallCQN -r 0,              5000s,         41e6-7c0f/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c Ring -r 0,                  5000s,         df1b-cd8c/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c Terminal -r 0,              5000s,         4e97-d494/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c CallCenter -r 0,            5000s,         c505-72dc/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c ForkJoin -r 0,              5000s,         1206-7cca/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c ResourceAllocation -r 0,    5000s,         a92b-3249/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c AllocDealloc -r 0,          5000s,         dd7d-0876/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c CQN -r 0,                   5000s,         220c-3313/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c CQN -r 1,                   5000s,         cd2b-60bc/tplx,PASS,
+/samples/queuenet/,                  ./queuenet -f omnetpp.ini -c CQN -r 2,                   5000s,         7c5c-2489/tplx,PASS,
 
-/samples/routing/,                   -f omnetpp.ini -c Net60StoreAndForward -r 0,   1s,         2300-8c3d/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net60CutThrough -r 0,        1s,         5fff-a24d/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net60Bursty -r 0,            100s,         9944-16d5/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net60a -r 0,                 100s,         3189-8898/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net5 -r 0,                   100s,         eea2-02ed/tplx
-/samples/routing/,                   -f omnetpp.ini -c Net10 -r 0,                  100s,         0d50-ba0d/tplx
-/samples/routing/,                   -f omnetpp.ini -c RandomGraph -r 0,            100s,         c269-5faa/tplx
-/samples/routing/,                   -f omnetpp.ini -c Mesh -r 0,                   100s,         c193-28a7/tplx
-/samples/routing/,                   -f omnetpp.ini -c RandomMesh -r 0,             100s,         3ffa-c408/tplx
-/samples/routing/,                   -f omnetpp.ini -c NetBuilder -r 0,             100s,         1b25-73f9/tplx
-# /samples/routing/parsim/,            -f omnetpp.ini -c Net60-parsim -r 0,          5000s,         0000-0000           # Parallel simulation
-# /samples/routing/parsim/,            -f omnetpp.ini -c Net10-parsim -r 0,          5000s,         0000-0000           # Parallel simulation
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net60StoreAndForward -r 0,   1s,         2300-8c3d/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net60CutThrough -r 0,        1s,         5fff-a24d/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net60Bursty -r 0,            100s,         9944-16d5/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net60a -r 0,                 100s,         3189-8898/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net5 -r 0,                   100s,         eea2-02ed/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net10 -r 0,                  100s,         0d50-ba0d/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c RandomGraph -r 0,            100s,         c269-5faa/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Mesh -r 0,                   100s,         c193-28a7/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c RandomMesh -r 0,             100s,         3ffa-c408/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c NetBuilder -r 0,             100s,         1b25-73f9/tplx,PASS,
+# /samples/routing/parsim/,            ./routing -f omnetpp.ini -c Net60-parsim -r 0,          5000s,         0000-0000,PASS,           # Parallel simulation
+# /samples/routing/parsim/,            ./routing -f omnetpp.ini -c Net10-parsim -r 0,          5000s,         0000-0000,PASS,           # Parallel simulation
 
-# /samples/sockets/,                   -f omnetpp.ini -c HTTPExample -r 0,           5000s,         0000-0000           # real-time scheduler, open some sockets
-# /samples/sockets/,                   -f omnetpp.ini -c TelnetExample -r 0,         5000s,         0000-0000           # real-time scheduler, open some sockets
-# /samples/systemc-embedding/,         -f omnetpp.ini -c example1 -r 0,              5000s,         0000-0000           # SYSTEM-C required
-# /samples/systemc-embedding/,         -f omnetpp.ini -c example2 -r 0,              5000s,         0000-0000           # SYSTEM-C required
-# /samples/systemc-embedding/,         -f omnetpp.ini -c example3 -r 0,              5000s,         0000-0000           # SYSTEM-C required
+# /samples/sockets/,                   ./sockets -f omnetpp.ini -c HTTPExample -r 0,           5000s,         0000-0000,PASS,           # real-time scheduler, open some sockets
+# /samples/sockets/,                   ./sockets -f omnetpp.ini -c TelnetExample -r 0,         5000s,         0000-0000,PASS,           # real-time scheduler, open some sockets
+# /samples/systemc-embedding/,         -./f omnetpp.ini -c example1 -r 0,              5000s,         0000-0000,PASS,           # SYSTEM-C required
+# /samples/systemc-embedding/,         -./f omnetpp.ini -c example2 -r 0,              5000s,         0000-0000,PASS,           # SYSTEM-C required
+# /samples/systemc-embedding/,         -./f omnetpp.ini -c example3 -r 0,              5000s,         0000-0000,PASS,           # SYSTEM-C required
 
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc1 -r 0,               5000s,         e9cf-0f6e/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc2 -r 0,               5000s,         06b4-e015/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc3 -r 0,               5000s,         266c-3319/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc4 -r 0,               5000s,         c380-5cab/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc5 -r 0,               5000s,         b051-a193/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc6 -r 0,               5000s,         eaf3-b353/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc7 -r 0,               5000s,         96c7-aa5b/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc8 -r 0,               5000s,         1963-63ae/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc9 -r 0,               5000s,         bc4a-3978/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc10 -r 0,              5000s,         21c5-fea4/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc11 -r 0,              5000s,         7490-abf1/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc12 -r 0,              5000s,         8b6f-540e/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc13 -r 0,              5000s,         0269-90c4/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc14 -r 0,              5000s,         b4c3-3a6e/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc15 -r 0,              5000s,         e596-6f3b/tplx
-/samples/tictoc/,                    -f omnetpp.ini -c Tictoc16 -r 0,              5000s,         1669-90c4/tplx
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc1 -r 0,               5000s,         e9cf-0f6e/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc2 -r 0,               5000s,         06b4-e015/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc3 -r 0,               5000s,         266c-3319/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc4 -r 0,               5000s,         c380-5cab/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc5 -r 0,               5000s,         b051-a193/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc6 -r 0,               5000s,         eaf3-b353/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc7 -r 0,               5000s,         96c7-aa5b/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc8 -r 0,               5000s,         1963-63ae/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc9 -r 0,               5000s,         bc4a-3978/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc10 -r 0,              5000s,         21c5-fea4/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc11 -r 0,              5000s,         7490-abf1/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc12 -r 0,              5000s,         8b6f-540e/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc13 -r 0,              5000s,         0269-90c4/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc14 -r 0,              5000s,         b4c3-3a6e/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc15 -r 0,              5000s,         e596-6f3b/tplx,PASS,
+/samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc16 -r 0,              5000s,         1669-90c4/tplx,PASS,

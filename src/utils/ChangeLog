@@ -1,3 +1,10 @@
+2017-12-20  Rudolf Hornig
+
+	* opp_fingerprinttest: Added a new tool that allows running fingerprint
+	tests against a model. Tests can be defined in a CSV file describing the
+	working directory, command line, simulation time limit, expeted fingerprint 
+	hash and the expected result.
+
 2017-12-18  Zoltan Bojthe
 
 	* opp_test: Reimplemented in Python

@@ -1,3 +1,7 @@
+2017-12-20  Rudolf Hornig
+
+	* test: Fingerprint test is now implemented using the new opp_fingerprinttest tool.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------
