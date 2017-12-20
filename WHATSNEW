@@ -5,6 +5,19 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 5.3 Preview 1 (December 2017)
+-------------------------------------
+
+Highlights:
+
+  - Revised message compiler, added import support and more.
+    See src/nedxml/ChangeLog for details.
+
+  - cPar: integer representation changed from long to int64_t.
+    See src/include/omnetpp/ChangeLog for details.
+
+  - Several smaller improvements and bugfixes.
+
 
 OMNeT++ 5.2.1 (December 2017)
 -----------------------------
