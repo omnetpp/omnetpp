@@ -53,8 +53,7 @@ class TreeNode
     // helpers
     static cClassDescriptor *getDescriptorForField(void *obj, cClassDescriptor *desc, int fieldIndex, int arrayIndex = 0);
     static int computeObjectChildCount(void *obj, cClassDescriptor *desc, Mode mode, bool excludeInherited = false);
-    static bool fieldIsUnsafePointer(void *obj, cClassDescriptor *desc, int fieldIndex); // see implementation for docs
-    static bool fieldMatchesPropertyFilter(cClassDescriptor *desc, int fieldIndex, const char *property);
+    static bool fieldMatchesPropertyFilter(cClassDescriptor *containingDesc, int fieldIndex, const char *property);
     // this is not static just to avoid having to pass mode and this (as parent)
     std::vector<TreeNode *> makeObjectChildNodes(void *obj, cClassDescriptor *desc, bool excludeInherited = false);
     // more helpers, not static only to check if "parent in model tree is parent in ownership tree"
