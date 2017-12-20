@@ -23,10 +23,10 @@
 #include "platdep/platdefs.h"
 
 // OMNeT++ version, (major<<8)|minor
-#define OMNETPP_VERSION  0x0502
+#define OMNETPP_VERSION  0x0503
 
 // OMNeT++ build number
-#define OMNETPP_BUILDNUM   1012
+#define OMNETPP_BUILDNUM   1013
 
 // uncomment to switch fingerprint computation algorithm to OMNeT++ 4.x compatible mode
 //#define USE_OMNETPP4x_FINGERPRINTS
