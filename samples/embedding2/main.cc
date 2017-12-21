@@ -69,7 +69,7 @@ class MinimalEnv : public cNullEnvir
         if (strcmp(par->getName(), "iaTime") == 0)
             par->parse(iaTime.c_str());
         else if (strcmp(par->getName(), "numHosts") == 0)
-            par->setLongValue(numHosts);
+            par->setIntValue(numHosts);
         else if (par->containsValue())
             par->acceptDefault();
         else
