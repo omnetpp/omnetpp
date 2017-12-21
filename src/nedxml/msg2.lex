@@ -65,7 +65,7 @@ void extendCount();
 int debugPrint(int c);
 
 static bool recognizeObsoleteKeywords = false;
-static bool recognizeImportKeyword = true;
+static bool recognizeNewKeywords = true;
 
 static int parenDepth = 0;
 
@@ -82,14 +82,14 @@ using namespace omnetpp::nedxml;
 "//"                     { comment(); }
 
 "namespace"              { countChars(); return NAMESPACE; }
-"using"                  { countChars(); return USING; /*reserved for future use*/ }
+"using"                  { countChars(); return recognizeNewKeywords ? USING : NAME; /*reserved for future use*/ }
 "cplusplus"              { countChars(); return CPLUSPLUS; }
-"import"                 { countChars(); return recognizeImportKeyword ? IMPORT : NAME; }
+"import"                 { countChars(); return recognizeNewKeywords ? IMPORT : NAME; }
 "struct"                 { countChars(); return STRUCT; }
 "message"                { countChars(); return MESSAGE; /*TODO maybe: recognizeObsoleteKeywords ? MESSAGE : NAME;*/ }
 "packet"                 { countChars(); return PACKET; /*TODO maybe: recognizeObsoleteKeywords ? PACKET : NAME;*/ }
 "class"                  { countChars(); return CLASS; }
-"noncobject"             { countChars(); return recognizeObsoleteKeywords ? NONCOBJECT : NAME; }
+"noncobject"             { countChars(); return NONCOBJECT; /*TODO maybe: recognizeObsoleteKeywords ? NONCOBJECT : NAME;*/ }
 "enum"                   { countChars(); return ENUM; }
 "extends"                { countChars(); return EXTENDS; }
 "abstract"               { countChars(); return ABSTRACT; }
@@ -101,7 +101,7 @@ using namespace omnetpp::nedxml;
 "long"                   { countChars(); return LONGTYPE; }
 "double"                 { countChars(); return DOUBLETYPE; }
 "unsigned"               { countChars(); return UNSIGNED_; }
-"const"                  { countChars(); return CONST_; /*reserved for future use*/ }
+"const"                  { countChars(); return recognizeNewKeywords ? CONST_ : NAME; /*reserved for future use*/ }
 "string"                 { countChars(); return STRINGTYPE; }
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }
@@ -213,9 +213,9 @@ using namespace omnetpp::nedxml;
 namespace omnetpp {
 namespace nedxml {
 
-void msgLexerSetRecognizeImportKeyword(bool opt)
+void msgLexerSetRecognizeNewKeywords(bool opt)
 {
-    recognizeImportKeyword = opt;
+    recognizeNewKeywords = opt;
 }
 
 void msgLexerSetRecognizeObsoleteKeywords(bool opt)

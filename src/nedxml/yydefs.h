@@ -64,7 +64,7 @@ struct ParseContext {
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;  //FIXME into context!
 
-void msgLexerSetRecognizeImportKeyword(bool opt);
+void msgLexerSetRecognizeNewKeywords(bool opt);
 void msgLexerSetRecognizeObsoleteKeywords(bool opt);
 
 } // namespace nedxml
