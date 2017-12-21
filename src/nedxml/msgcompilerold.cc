@@ -647,9 +647,7 @@ MsgCompilerOld::ClassInfo MsgCompilerOld::extractClassInfo(ASTNode *node)
                 f.ftype = ptr2str(child->getAttribute("data-type"));
                 f.fval = ptr2str(child->getAttribute("default-value"));
                 f.fisabstract = ptr2str(child->getAttribute("is-abstract")) == "true";
-                f.fispointer = (f.ftype[f.ftype.length()-1] == '*');
-                if (f.fispointer)
-                    f.ftype = f.ftype.substr(0, f.ftype.find_last_not_of(" \t*")+1);
+                f.fispointer = ptr2str(child->getAttribute("is-pointer")) == "true";
                 f.fisarray = ptr2str(child->getAttribute("is-vector")) == "true";
                 f.farraysize = ptr2str(child->getAttribute("vector-size"));
 
