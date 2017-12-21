@@ -1,0 +1,101 @@
+%description:
+Test functions in include/platdep/timeval.h
+
+%includes:
+#include <omnetpp/platdep/timeutil.h>
+#include <omnetpp.h>
+
+%global:
+
+#define  SEC    1000000
+#define  USEC   1e-6
+
+#define PRINT(x)   EV << #x << "= " << (x).tv_sec << "s " << (x).tv_usec << "us\n";
+#define PRINTL(x)  EV << #x << "= " << (x) << "\n";
+
+timeval tval(long sec, long usec) {
+    timeval t;
+    t.tv_sec = sec;
+    t.tv_usec = usec;
+    return t;
+}
+
+%activity:
+timeval a = tval(123, 456);
+PRINT(a);
+EV << "\n";
+
+PRINT(timeval_add(a, 0));
+PRINT(timeval_add(a, 3*USEC));
+PRINT(timeval_add(a, 1));
+PRINT(timeval_add(a, 1-3*USEC));
+PRINT(timeval_add(a, 1-500*USEC));
+EV << "\n";
+
+PRINT(timeval_add(a, tval(0,0)));
+PRINT(timeval_add(a, tval(0,3)));
+PRINT(timeval_add(a, tval(1,0)));
+PRINT(timeval_add(a, tval(0,SEC-3)));
+PRINT(timeval_add(a, tval(0,SEC-500)));
+EV << "\n";
+
+PRINT(timeval_substract(a, 0));
+PRINT(timeval_substract(a, 3*USEC));
+PRINT(timeval_substract(a, 1));
+PRINT(timeval_substract(a, 500*USEC));
+PRINT(timeval_substract(a, 1+500*USEC));
+EV << "\n";
+
+PRINT(timeval_substract(a, tval(0,0)));
+PRINT(timeval_substract(a, tval(0,3)));
+PRINT(timeval_substract(a, tval(1,0)));
+PRINT(timeval_substract(a, tval(0,500)));
+PRINT(timeval_substract(a, tval(1,500)));
+EV << "\n";
+
+PRINTL(timeval_msec(tval(123,789)));
+PRINTL(timeval_msec(tval(123,456789)));
+EV << "\n";
+
+// timeval_diff_usec: User must take care that result doesn't overflow
+PRINTL(timeval_diff_usec(tval(123,456), tval(123,456)));
+PRINTL(timeval_diff_usec(tval(123,456), tval(123,450)));
+PRINTL(timeval_diff_usec(tval(123,456), tval(120,457)));
+EV << ".\n";
+
+%contains: stdout
+a= 123s 456us
+
+timeval_add(a, 0)= 123s 456us
+timeval_add(a, 3*USEC)= 123s 459us
+timeval_add(a, 1)= 124s 456us
+timeval_add(a, 1-3*USEC)= 124s 453us
+timeval_add(a, 1-500*USEC)= 123s 999956us
+
+timeval_add(a, tval(0,0))= 123s 456us
+timeval_add(a, tval(0,3))= 123s 459us
+timeval_add(a, tval(1,0))= 124s 456us
+timeval_add(a, tval(0,SEC-3))= 124s 453us
+timeval_add(a, tval(0,SEC-500))= 123s 999956us
+
+timeval_substract(a, 0)= 123s 456us
+timeval_substract(a, 3*USEC)= 123s 453us
+timeval_substract(a, 1)= 122s 456us
+timeval_substract(a, 500*USEC)= 122s 999956us
+timeval_substract(a, 1+500*USEC)= 121s 999957us
+
+timeval_substract(a, tval(0,0))= 123s 456us
+timeval_substract(a, tval(0,3))= 123s 453us
+timeval_substract(a, tval(1,0))= 122s 456us
+timeval_substract(a, tval(0,500))= 122s 999956us
+timeval_substract(a, tval(1,500))= 121s 999956us
+
+timeval_msec(tval(123,789))= 123000
+timeval_msec(tval(123,456789))= 123456
+
+timeval_diff_usec(tval(123,456), tval(123,456))= 0
+timeval_diff_usec(tval(123,456), tval(123,450))= 6
+timeval_diff_usec(tval(123,456), tval(120,457))= 2999999
+.
+
+
