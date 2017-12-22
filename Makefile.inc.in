@@ -8,9 +8,6 @@ OMNETPP_VERSION = @OMNETPP_VERSION@
 OMNETPP_BUILDID = @OMNETPP_BUILDID@
 OMNETPP_EDITION = @OMNETPP_EDITION@
 
-# variable to show that the message compiler has a temporary patch applied
-OMNETPP_MSGC_PATCH_VER = 1
-
 #
 # Optional features (set to "yes" to enable the feature)
 #
