@@ -66,7 +66,7 @@ void cIntParImpl::setBoolValue(bool b)
     throw cRuntimeError(this, E_BADCAST, "bool", "int/long");
 }
 
-void cIntParImpl::setIntValue(long l)
+void cIntParImpl::setIntValue(intpar_t l)
 {
     deleteOld();
     val = l;
