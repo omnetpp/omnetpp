@@ -216,6 +216,7 @@ class NEDXML_API MsgTypeTable
     };
 
   private:
+    Properties globalProperties;
     std::map<std::string,ClassInfo> definedClasses;
     std::map<std::string,EnumInfo> definedEnums;
     std::vector<ASTNode*> importedMsgFiles;
@@ -235,7 +236,9 @@ class NEDXML_API MsgTypeTable
     ClassInfo *findClassInfo(const std::string& classqname);
     ClassInfo& getClassInfo(const std::string& classqname);
     const EnumInfo& getEnumInfo(const std::string& qname);
+    const Properties getGlobalProperties() const {return globalProperties;}
     void storeMsgFile(ASTNode *tree) {importedMsgFiles.push_back(tree);}
+    void addGlobalProperty(const Property& p) {globalProperties.add(p);}
     void addClass(const ClassInfo& classInfo) {definedClasses[classInfo.qname] = classInfo;} // TODO assert not already there
     void addEnum(const EnumInfo& enumInfo) {definedEnums[enumInfo.enumQName] = enumInfo;}  //TODO assert not already there
 };

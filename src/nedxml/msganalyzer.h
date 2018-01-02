@@ -85,6 +85,7 @@ class NEDXML_API MsgAnalyzer
     EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);
     EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
     ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName, bool isImported);
+    Property extractProperty(PropertyElement *propertyElem);
 
   public:
     static constexpr const char* ATT_NAME = "name";

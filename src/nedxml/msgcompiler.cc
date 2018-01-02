@@ -214,8 +214,14 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement, bool isImported)
                     importsSeen.insert(importName);
                     processImport(importElem, currentDir);
                 }
-                 break;
-             }
+                break;
+            }
+
+            case MSG_PROPERTY: {
+                PropertyElement *propertyElem = check_and_cast<PropertyElement *>(child);
+                typeTable.addGlobalProperty(analyzer.extractProperty(propertyElem));
+                break;
+            }
 
             case MSG_STRUCT_DECL:
             case MSG_CLASS_DECL:

@@ -129,21 +129,26 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::s
 MsgAnalyzer::Properties MsgAnalyzer::extractProperties(ASTNode *node)
 {
     Properties props;
-
     for (PropertyElement *propElem = check_and_cast_nullable<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); propElem; propElem = propElem->getNextPropertySibling()) {
-        std::string propName = propElem->getName();
-        std::string propIndex = propElem->getIndex();
-        Property property(propName, propIndex, node);
-        for (PropertyKeyElement *keyElem = propElem->getFirstPropertyKeyChild(); keyElem; keyElem = keyElem->getNextPropertyKeySibling()) {
-            std::string keyName = keyElem->getName();
-            for (LiteralElement *lit = keyElem->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling())
-                property.addValue(keyName, lit->getValue());
-        }
-        if (props.contains(propName, propIndex))
+        Property property = extractProperty(propElem);
+        if (props.contains(property.getName(), property.getIndex()))
             errors->addError(node, "duplicate property '%s'", property.getIndexedName().c_str());
         props.add(property);
     }
     return props;
+}
+
+MsgAnalyzer::Property MsgAnalyzer::extractProperty(PropertyElement *propElem)
+{
+    std::string propName = propElem->getName();
+    std::string propIndex = propElem->getIndex();
+    Property property(propName, propIndex, propElem);
+    for (PropertyKeyElement *keyElem = propElem->getFirstPropertyKeyChild(); keyElem; keyElem = keyElem->getNextPropertyKeySibling()) {
+        std::string keyName = keyElem->getName();
+        for (LiteralElement *lit = keyElem->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling())
+            property.addValue(keyName, lit->getValue());
+    }
+    return property;
 }
 
 void MsgAnalyzer::extractFields(ClassInfo& classInfo)
