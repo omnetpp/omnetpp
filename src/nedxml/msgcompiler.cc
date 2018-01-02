@@ -181,7 +181,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement, bool isImported)
             case MSG_CLASS_DECL:
             case MSG_MESSAGE_DECL:
             case MSG_PACKET_DECL:
-                errors->addWarning(child, "type declarations are not needed with imports, and will be ignored"); //TODO into syntax validator class!!!
+                errors->addError(child, "Type declarations are not needed with imports, try invoking the message compiler in legacy (4.x) mode using the --msg4 option");
                 break;
 
             case MSG_ENUM_DECL: { // for enums already defined and registered in C++

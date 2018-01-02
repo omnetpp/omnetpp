@@ -65,7 +65,7 @@ bool opt_mergeoutput = false;      // -m
 bool opt_verbose = false;          // -V
 const char *opt_outputfile = nullptr; // -o
 bool opt_here = false;             // -h
-bool opt_legacymode = true;        // --msg6
+bool opt_legacymode = true;        // --msg4/--msg6
 std::vector<std::string> opt_importpath; // -I
 bool opt_generatedependencies = false; // -MD
 std::string opt_dependenciesfile;  // -MF
@@ -120,6 +120,8 @@ static void printUsage()
        "      and they need to be updated. For further info see src/nedxml/ChangeLog.\n"
        "      Hint: To activate, add a makefrag file to your project with the\n"
        "      following content:\"MSGC:=$(MSGC) --msg6\"\n"
+       "  --msg4: The opposite of --msg6: Force OMNeT++ 4.x compatible message file\n"
+       "      processing.\n"
        "  @listfile: listfile should contain one file per line (@ or @@ listfiles\n"
        "      also accepted). Files are interpreted as relative to the listfile.\n"
        "      @ listfiles can be invoked from anywhere, with the same effect.\n"
@@ -445,6 +447,8 @@ int main(int argc, char **argv)
     ErrorStore *errors = &errorstore;
     errors->setPrintToStderr(true);
 
+    bool msg4=false, msg6=false;
+
     // process options
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-x")) {
@@ -547,6 +551,11 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "--msg6")) {
             opt_legacymode = false;
+            msg6 = true;
+        }
+        else if (!strcmp(argv[i], "--msg4")) {
+            opt_legacymode = true;
+            msg4 = true;
         }
         else if (!strcmp(argv[i], "-MD")) {
             opt_generatedependencies = true;
@@ -629,6 +638,11 @@ int main(int argc, char **argv)
                     return 1;
 
 #endif
+        }
+
+        if (msg4 && msg6) {
+            fprintf(stderr, "opp_msgtool: conflicting options: --msg4, --msg6\n");
+            return 1;
         }
     }
 

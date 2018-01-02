@@ -524,6 +524,9 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
 
             case MSG_CPLUSPLUS: {
                 // print C++ block
+                std::string target = ptr2str(child->getAttribute("target"));
+                if (!target.empty())
+                    errors->addError(child, "Targets for cplusplus blocks are not supported in legacy (4.x) mode, try invoking the message compiler with --msg6");
                 std::string body = ptr2str(child->getAttribute("body"));
                 body = body.substr(body.find_first_not_of("\r\n"));
                 size_t pos = body.find_last_not_of("\r\n");
@@ -585,7 +588,7 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement)
                 break;
             }
             case MSG_IMPORT:
-                errors->addError(child, "imports are not available in legacy (OMNeT++ 4.x) mode");
+                errors->addError(child, "Imports are not supported in legacy (4.x) mode, try invoking the message compiler with --msg6");
                 break;
         }
     }

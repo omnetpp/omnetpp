@@ -76,7 +76,7 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = nullptr; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
-bool opt_legacymode = true;        // --msg6
+bool opt_legacymode = true;        // --msg4/--msg6
 std::vector<std::string> opt_importpath; // -I
 bool opt_generatedependencies = false; // -MD
 std::string opt_dependenciesfile;  // -MF
@@ -126,7 +126,7 @@ void printUsage()
        "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
        "      the current working directory. @@ listfiles can be put anywhere,\n"
        "      including /tmp -- effect only depends on the working directory.\n"
-       "Message (.msg) file specific options:\n"
+       "Message (.msg) file specific options (deprecated, use opp_msgtool):\n"
        "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
        "      name ends in _API, boilerplate code to conditionally define\n"
        "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
@@ -137,13 +137,15 @@ void printUsage()
        "      causing each to depend on nothing. These dummy rules work around errors\n"
        "      make gives if you remove header files without updating the Makefile.\n"
        "  -Xnc: do not generate the classes, only object descriptions\n"
+       "  -Xnd: do not generate object descriptions\n"
+       "  -Xns: do not generate setters in object descriptions\n"
        "  --msg6: Activate support for imports and other experimental features.\n"
        "      Message files using the new features are not backward compatible\n"
        "      and they need to be updated. For further info see src/nedxml/ChangeLog.\n"
        "      Hint: To activate, add a makefrag file to your project with the\n"
        "      following content:\"MSGC:=$(MSGC) --msg6\"\n"
-       "  -Xnd: do not generate object descriptions\n"
-       "  -Xns: do not generate setters in object descriptions\n"
+       "  --msg4: The opposite of --msg6: Force OMNeT++ 4.x compatible message file\n"
+       "      processing.\n"
     );
 }
 
@@ -243,6 +245,9 @@ bool processFile(const char *fname, ErrorStore *errors)
             else
                 ftype = NED_FILE;
         }
+
+        if (ftype == MSG_FILE)
+            fprintf(stdout, "opp_nedtool: %s: warning: use opp_msgtool for processing msg files\n", fname);
 
         // process input tree
         errors->clear();
@@ -506,6 +511,8 @@ int main(int argc, char **argv)
     ErrorStore *errors = &errorstore;
     errors->setPrintToStderr(true);
 
+    bool msg4=false, msg6=false;
+
     // process options
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-x")) {
@@ -623,6 +630,11 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "--msg6")) {
             opt_legacymode = false;
+            msg6 = true;
+        }
+        else if (!strcmp(argv[i], "--msg4")) {
+            opt_legacymode = true;
+            msg4 = true;
         }
         else if (!strcmp(argv[i], "-MD")) {
             opt_generatedependencies = true;
@@ -709,6 +721,12 @@ int main(int argc, char **argv)
 
 #endif
         }
+
+        if (msg4 && msg6) {
+            fprintf(stderr, "opp_nedtool: conflicting options: --msg4, --msg6\n");
+            return 1;
+        }
+
     }
 
     if (opt_mergeoutput) {
