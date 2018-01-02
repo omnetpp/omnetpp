@@ -57,19 +57,6 @@ static std::string makeIdentifier(const std::string& qname)
     return tmp;
 }
 
-template<typename T>
-std::string join(const T& v, const std::string& delim)
-{
-    std::ostringstream s;
-    for (typename T::const_iterator i = v.begin(); i != v.end(); ++i) {
-        if (i != v.begin()) {
-            s << delim;
-        }
-        s << *i;
-    }
-    return s.str();
-}
-
 template<class P, class T> //TODO move these templates into common/?
 P check_and_cast(T *p)
 {
@@ -143,22 +130,18 @@ MsgAnalyzer::Properties MsgAnalyzer::extractProperties(ASTNode *node)
 {
     Properties props;
 
-    for (PropertyElement *prop = check_and_cast_nullable<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); prop; prop = prop->getNextPropertySibling()) {
-        std::string propElem = prop->getName();
-        std::string propValue;
-        for (PropertyKeyElement *pkeyElem = prop->getFirstPropertyKeyChild(); pkeyElem; pkeyElem = pkeyElem->getNextPropertyKeySibling()) {
-            std::string keyName = pkeyElem->getName();
-            if (keyName.empty()) {
-                const char *sep = "";
-                for (LiteralElement *lit = pkeyElem->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling()) {
-                    propValue += propValue + sep + lit->getValue();
-                    sep = ",";
-                }
-            }
+    for (PropertyElement *propElem = check_and_cast_nullable<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); propElem; propElem = propElem->getNextPropertySibling()) {
+        std::string propName = propElem->getName();
+        std::string propIndex = propElem->getIndex();
+        Property property(propName, propIndex, node);
+        for (PropertyKeyElement *keyElem = propElem->getFirstPropertyKeyChild(); keyElem; keyElem = keyElem->getNextPropertyKeySibling()) {
+            std::string keyName = keyElem->getName();
+            for (LiteralElement *lit = keyElem->getFirstLiteralChild(); lit; lit = lit->getNextLiteralSibling())
+                property.addValue(keyName, lit->getValue());
         }
-        if (props.find(propElem) != props.end())
-            errors->addError(prop, "duplicate property '%s'", propElem.c_str());
-        props[propElem] = propValue;
+        if (props.contains(propName, propIndex))
+            errors->addError(node, "duplicate property '%s'", property.getIndexedName().c_str());
+        props.add(property);
     }
     return props;
 }
@@ -430,14 +413,20 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
             field->enumQName = "";
         }
         else {
-            errors->addWarning(field->astNode, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s", field->enumName.c_str(), field->name.c_str(), classInfo.name.c_str(), join(found, ", ").c_str());
+            errors->addWarning(field->astNode, "ambiguous enum '%s' in field '%s' in '%s';  possibilities: %s", field->enumName.c_str(), field->name.c_str(), classInfo.name.c_str(), opp_join(found, ", ").c_str());
             field->enumQName = found[0];
         }
-        field->props[PROP_ENUM] = field->enumQName; // need to overwrite it in props, because Qtenv will look up the enum by qname
+        // need to overwrite it in props, because Qtenv will look up the enum by qname
+        Property newProp(PROP_ENUM, "", field->astNode);
+        newProp.addValue("", field->enumQName);
+        field->props.add(newProp);
     }
 
-    if (fieldClassInfo.isEnum)
-        field->props[PROP_ENUM] = field->typeQName;
+    if (fieldClassInfo.isEnum) {
+        Property newProp(PROP_ENUM, "", field->astNode);
+        newProp.addValue("", field->typeQName);
+        field->props.add(newProp);
+    }
 
     bool supportsPtr = getPropertyAsBool(field->props, PROP_SUPPORTSPTR, fieldClassInfo.supportsPtr);
     if (field->isPointer && !supportsPtr)
@@ -708,22 +697,39 @@ std::string MsgAnalyzer::decorateType(const std::string& typeName, bool isConst,
     return ((isConst && !alreadyConst) ? "const " : "") + typeName + (isPointer ? " *" : "") + (isRef ? "&" : "");
 }
 
-bool MsgAnalyzer::getPropertyAsBool(const Properties& p, const char *name, bool defval)
+bool MsgAnalyzer::getPropertyAsBool(const Properties& props, const char *name, bool defval)
 {
-    Properties::const_iterator it = p.find(name);
-    if (it == p.end())
+    const Property *p = props.get(name);
+    if (p == nullptr)
         return defval;
-    if (it->second == "false")
-        return false;
-    return true;
+    const auto& values = p->getValue("");
+    if (values.empty())
+        return true;
+    else  if (values.size() == 1) {
+        if (values[0] == "false")
+            return false;
+        if (values[0] == "true")
+            return true;
+        //FIXME @descriptor(readonly) vs getPropertyAsBool("descriptor")
+//      errors->addError(it->second.getASTNode(), "invalid value in boolean property '%s':'%s'", name, values[0].c_str());
+        return defval;
+    }
+    errors->addError(p->getASTNode(), "property '%s' is not simple", name); //TODO revise msg
+    return defval;
 }
 
-std::string MsgAnalyzer::getProperty(const Properties& p, const char *name, const std::string& defval)
+std::string MsgAnalyzer::getProperty(const Properties& props, const char *name, const std::string& defval)
 {
-    Properties::const_iterator it = p.find(name);
-    if (it == p.end())
+    const Property *p = props.get(name);
+    if (p == nullptr)
         return defval;
-    return it->second;
+    const auto& values = p->getValue("");
+    if (values.empty())
+        return "";
+    else if (values.size() == 1)
+        return values[0];
+    errors->addError(p->getASTNode(), "property '%s' is not simple", name); //TODO revise msg
+    return "";
 }
 
 std::string MsgAnalyzer::lookupExistingClassName(const std::string& name, const std::string& contextNamespace,  ClassInfo *contextClass)

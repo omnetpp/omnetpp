@@ -1106,8 +1106,8 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "{\n";
     CC << "    if (!propertynames) {\n";
     CC << "        static const char *names[] = { ";
-    for (const auto& prop : classInfo.props) {
-        CC << opp_quotestr(prop.first) << ", ";
+    for (const auto& prop : classInfo.props.getAll()) {
+        CC << opp_quotestr(prop.getIndexedName()) << ", ";
     }
     CC << " nullptr };\n";
     CC << "        omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
@@ -1121,8 +1121,8 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     // getProperty()
     CC << "const char *" << classInfo.descriptorClass << "::getProperty(const char *propertyname) const\n";
     CC << "{\n";
-    for (const auto& prop : classInfo.props) {
-        CC << "    if (!strcmp(propertyname,"<< opp_quotestr(prop.first) << ")) return " << opp_quotestr(prop.second) << ";\n";
+    for (const auto& prop : classInfo.props.getAll()) {
+        CC << "    if (!strcmp(propertyname, " << opp_quotestr(prop.getIndexedName()) << ")) return " << opp_quotestr(prop.getValueAsString()) << ";\n";
     }
     CC << "    omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     CC << "    return basedesc ? basedesc->getProperty(propertyname) : nullptr;\n";
@@ -1256,12 +1256,12 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
     CC << "    switch (field) {\n";
     for (size_t i = 0; i < numFields; ++i) {
         const FieldInfo& field = classInfo.fieldList[i];
-        const Properties& ref = field.props;
-        if (!ref.empty()) {
+        const Properties& props = field.props;
+        if (!props.empty()) {
             CC << "        case " << field.symbolicConstant << ": {\n";
             CC << "            static const char *names[] = { ";
-            for (const auto& it : ref)
-                CC << opp_quotestr(it.first) << ", ";
+            for (const auto& prop : props.getAll())
+                CC << opp_quotestr(prop.getIndexedName()) << ", ";
             CC << " nullptr };\n";
             CC << "            return names;\n";
             CC << "        }\n";
@@ -1285,12 +1285,11 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 
     for (size_t i = 0; i < numFields; ++i) {
         const FieldInfo& field = classInfo.fieldList[i];
-        const Properties& ref = field.props;
-        if (!ref.empty()) {
+        const Properties& props = field.props;
+        if (!props.empty()) {
             CC << "        case " << field.symbolicConstant << ":\n";
-            for (const auto& it : ref) {
-                std::string prop = opp_quotestr(it.second);
-                CC << "            if (!strcmp(propertyname,\"" << it.first << "\")) return " << prop << ";\n";
+            for (const auto& prop : props.getAll()) {
+                CC << "            if (!strcmp(propertyname, " << opp_quotestr(prop.getIndexedName()) << ")) return " << opp_quotestr(prop.getValueAsString()) << ";\n";
             }
             CC << "            return nullptr;\n";
         }

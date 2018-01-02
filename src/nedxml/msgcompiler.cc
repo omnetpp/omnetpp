@@ -252,7 +252,7 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement, bool isImported)
             case MSG_MESSAGE:
             case MSG_PACKET: {
                 ClassInfo classInfo = analyzer.extractClassInfo(child, currentNamespace, isImported);
-                if (typeTable.isClassDefined(classInfo.qname) && !containsKey(classInfo.props, str("overwritePreviousDefinition")))
+                if (typeTable.isClassDefined(classInfo.qname) && !classInfo.props.contains(MsgAnalyzer::PROP_OVERWRITEPREVIOUSDEFINITION))
                     errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.name.c_str());
                 typeTable.addClass(classInfo);
                 break;

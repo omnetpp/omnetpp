@@ -91,5 +91,53 @@ const MsgTypeTable::EnumInfo& MsgTypeTable::getEnumInfo(const std::string& qname
     return it->second;
 }
 
+std::string MsgTypeTable::Property::getIndexedName() const
+{
+    if (index.empty())
+        return name;
+    else
+        return name + "[" + index + "]";
+}
+
+MsgTypeTable::StringVector MsgTypeTable::Property::getValue(const std::string& key) const
+{
+    static const StringVector empty;
+    const auto& prop = propertyValue.find(key);
+    if (prop != propertyValue.end())
+        return prop->second;
+    return empty;
+}
+
+std::string MsgTypeTable::Property::getValueAsString() const
+{
+    std::stringstream ss;
+    const char *separ = "";
+    for (auto it = propertyValue.begin(); it != propertyValue.end(); ++it) {
+        ss << separ;
+        separ = ";";
+        if (!it->first.empty())
+            ss << it->first << "=";
+        const char *separ2 = "";
+        for (const auto& s: it->second) {
+            ss << separ2 << s;
+            separ2 = ",";
+        }
+    }
+    return ss.str();
+}
+
+void MsgTypeTable::Property::addValue(const std::string& key, const std::string& value)
+{
+    propertyValue[key].push_back(value);
+}
+
+const MsgTypeTable::Property *MsgTypeTable::Properties::get(const std::string& name, const std::string& index) const
+{
+    for (const Property& p : properties)
+        if (p.getName() == name && p.getIndex() == index)
+            return &p;
+    return nullptr;
+}
+
 }  // namespace nedxml
 }  // namespace omnetpp

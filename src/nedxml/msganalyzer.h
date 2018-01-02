@@ -44,6 +44,7 @@ class NEDXML_API MsgAnalyzer
   public:
     typedef std::set<std::string> StringSet;
     typedef std::vector<std::string> StringVector;
+    typedef MsgTypeTable::Property Property;
     typedef MsgTypeTable::Properties Properties;
     typedef MsgTypeTable::FieldInfo FieldInfo;
     typedef MsgTypeTable::ClassInfo ClassInfo;
@@ -69,7 +70,7 @@ class NEDXML_API MsgAnalyzer
     bool hasSuperclass(ClassInfo& classInfo, const std::string& superclassQName);
     FieldInfo *findField(ClassInfo& classInfo, const std::string& name);
     FieldInfo *findSuperclassField(ClassInfo& classInfo, const std::string& fieldName);
-    bool hasProperty(const Properties& p, const char *name)  { return (p.find(name) != p.end()); }
+    bool hasProperty(const Properties& p, const char *name)  {return p.get(name) != nullptr;}
     bool getPropertyAsBool(const Properties& p, const char *name, bool defval);
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
     std::string decorateType(const std::string& typeName, bool isConst, bool isPointer, bool isRef);
@@ -85,7 +86,7 @@ class NEDXML_API MsgAnalyzer
     EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
     ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName, bool isImported);
 
-  private:
+  public:
     static constexpr const char* ATT_NAME = "name";
     static constexpr const char* ATT_EXTENDS_NAME = "extends-name";
 
@@ -126,6 +127,7 @@ class NEDXML_API MsgAnalyzer
     static constexpr const char* PROP_ALLOWREPLACE = "allowReplace";
     static constexpr const char* PROP_STR = "str";
     static constexpr const char* PROP_CUSTOMIZE = "customize";
+    static constexpr const char* PROP_OVERWRITEPREVIOUSDEFINITION = "overwritePreviousDefinition";
 };
 
 } // namespace nedxml

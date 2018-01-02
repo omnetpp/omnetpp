@@ -39,7 +39,37 @@ class NEDXML_API MsgTypeTable
   public:
     typedef std::vector<std::string> StringVector;
 
-    typedef std::map<std::string, std::string> Properties;
+    class Property
+    {
+      protected:
+        ASTNode *astNode = nullptr;       // pointer to property element in AST
+        std::string name;
+        std::string index;
+        std::map<std::string, StringVector> propertyValue;
+      public:
+        Property() {}
+        Property(const std::string& name, const std::string& index, ASTNode *astNode) : astNode(astNode), name(name), index(index) {}
+        Property(const Property& other) : astNode(other.astNode), name(other.name), index(other.index), propertyValue(other.propertyValue) {}
+        const std::string& getName() const {return name;}
+        const std::string& getIndex() const {return index;}
+        std::string getIndexedName() const;
+        ASTNode *getASTNode() const {return astNode;}
+        StringVector getValue(const std::string& index="") const;
+        std::string getValueAsString() const;
+        void addValue(const std::string& key, const std::string& value);
+    };
+
+    class Properties
+    {
+      protected:
+        std::vector<Property> properties;
+      public:
+        void add(const Property& p) {properties.push_back(p);}
+        bool empty() const {return properties.empty();}
+        const std::vector<Property>& getAll() const {return properties;}
+        const Property *get(const std::string& name, const std::string& index="") const;
+        bool contains(const std::string& name, const std::string& index="") const {return get(name, index) != nullptr;}
+    };
 
     class FieldInfo {
       public:
