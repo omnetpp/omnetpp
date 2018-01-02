@@ -155,7 +155,7 @@ DEF(nedf_length,
     "strings",
     "Returns the length of the string",
 {
-    return (long)argv[0].stdstringValue().size();
+    return (intpar_t)argv[0].stdstringValue().size();
 })
 
 DEF(nedf_contains,
@@ -308,7 +308,7 @@ DEF(nedf_indexOf,
     "strings",
     "Returns the position of the first occurrence of substring substr in s, or -1 if s does not contain substr.",
 {
-    return (long)argv[0].stdstringValue().find(argv[1].stdstringValue());
+    return (intpar_t)argv[0].stdstringValue().find(argv[1].stdstringValue());
 })
 
 DEF(nedf_choose,
@@ -368,11 +368,11 @@ DEF(nedf_int,
 {
     switch (argv[0].getType()) {
         case cNedValue::BOOL:
-            return (bool)argv[0] ? 1L : 0L;
+            return (intpar_t)( (bool)argv[0] ? 1 : 0 );
         case cNedValue::DOUBLE:
-            return (long)floor((double)argv[0]);
+            return (intpar_t)floor((double)argv[0]);
         case cNedValue::STRING:
-            return (long)floor(opp_atof(argv[0].stringValue()));  //XXX catch & wrap exception?
+            return (intpar_t)floor(opp_atof(argv[0].stringValue()));  //XXX catch & wrap exception?
         case cNedValue::XML:
             throw cRuntimeError("int(): Cannot convert xml to int");
         default:
@@ -438,7 +438,7 @@ DEF(nedf_parentIndex,
         throw cRuntimeError("parentIndex(): '%s' has no parent module", contextComponent->getFullPath().c_str());
     if (!mod->isVector())
         throw cRuntimeError("parentIndex(): Module '%s' is not a vector", mod->getFullPath().c_str());
-    return (long)mod->getIndex();
+    return (intpar_t)mod->getIndex();
 })
 
 DEF(nedf_ancestorIndex,
@@ -458,7 +458,7 @@ DEF(nedf_ancestorIndex,
         throw cRuntimeError("ancestorIndex(): Argument is larger than current nesting level");
     if (!mod->isVector())
         throw cRuntimeError("ancestorIndex(): Module '%s' is not a vector", mod->getFullPath().c_str());
-    return (long)mod->getIndex();
+    return (intpar_t)mod->getIndex();
 })
 
 
@@ -619,7 +619,7 @@ DEF(nedf_intuniform,
     "Returns a random number from the Intuniform distribution",
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return (long)contextComponent->intuniform((int)argv[0], (int)argv[1], rng);
+    return (intpar_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng);
 })
 
 DEF(nedf_bernoulli,
@@ -628,7 +628,7 @@ DEF(nedf_bernoulli,
     "Returns a random number from the Bernoulli distribution",
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return (long)contextComponent->bernoulli((double)argv[0], rng);
+    return (intpar_t)contextComponent->bernoulli((double)argv[0], rng);
 })
 
 DEF(nedf_binomial,
@@ -637,7 +637,7 @@ DEF(nedf_binomial,
     "Returns a random number from the Binomial distribution",
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return (long)contextComponent->binomial((int)argv[0], (double)argv[1], rng);
+    return (intpar_t)contextComponent->binomial((int)argv[0], (double)argv[1], rng);
 })
 
 DEF(nedf_geometric,
@@ -646,7 +646,7 @@ DEF(nedf_geometric,
     "Returns a random number from the Geometric distribution",
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return (long)contextComponent->geometric((double)argv[0], rng);
+    return (intpar_t)contextComponent->geometric((double)argv[0], rng);
 })
 
 DEF(nedf_negbinomial,
@@ -655,7 +655,7 @@ DEF(nedf_negbinomial,
     "Returns a random number from the Negbinomial distribution",
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return (long)contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
+    return (intpar_t)contextComponent->negbinomial((int)argv[0], (double)argv[1], rng);
 })
 
 DEF(nedf_poisson,
@@ -664,7 +664,7 @@ DEF(nedf_poisson,
     "Returns a random number from the Poisson distribution",
 {
     int rng = argc == 2 ? (int)argv[1] : 0;
-    return (long)contextComponent->poisson((double)argv[0], rng);
+    return (intpar_t)contextComponent->poisson((double)argv[0], rng);
 })
 
 //

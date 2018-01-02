@@ -153,7 +153,7 @@ cNedValue LoopVar::evaluate(cComponent *context, cNedValue args[], int numargs)
     const char *var = varName.c_str();
     for (int i = 0; i < varCount; i++)
         if (strcmp(var, varNames[i]) == 0)
-            return vars[i];
+            return (intpar_t)vars[i];
 
     throw cRuntimeError(context, "Loop variable %s not found", varName.c_str());
 }
@@ -186,7 +186,7 @@ cNedValue Sizeof::evaluate(cComponent *context, cNedValue args[], int numargs)
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
     // Note: it might NOT mean gate vector of this module
     if (module->hasGate(ident.c_str())) {
-        return (long)module->gateSize(ident.c_str());  // returns 1 if it's not a vector
+        return (intpar_t)module->gateSize(ident.c_str());  // returns 1 if it's not a vector
     }
     else {
         // Find ident among submodules. If there's no such submodule, it may
@@ -194,8 +194,8 @@ cNedValue Sizeof::evaluate(cComponent *context, cNedValue args[], int numargs)
         // size -- we cannot tell, so we have to return 0 (and cannot throw error).
         cModule *siblingModule = module->getSubmodule(ident.c_str(), 0);  // returns nullptr if submodule is not a vector
         if (!siblingModule && module->getSubmodule(ident.c_str()))
-            return 1L;  // return 1 if submodule exists but not a vector
-        return (long)(siblingModule ? siblingModule->getVectorSize() : 0L);
+            return (intpar_t)1;  // return 1 if submodule exists but not a vector
+        return (intpar_t)(siblingModule ? siblingModule->getVectorSize() : 0L);
     }
 }
 
@@ -229,7 +229,7 @@ cNedValue cDynamicExpression::getSizeofIdent(cComponent *context, cNedValue args
         throw cRuntimeError(context, "sizeof(%s) occurs in wrong context", ident);
     if (parentModule->hasGate(ident))
     {
-        return (long) parentModule->gateSize(ident); // returns 1 if it's not a vector
+        return (intpar_t) parentModule->gateSize(ident); // returns 1 if it's not a vector
     }
     else
     {
@@ -238,8 +238,8 @@ cNedValue cDynamicExpression::getSizeofIdent(cComponent *context, cNedValue args
         // size -- we cannot tell, so we have to return 0.
         cModule *siblingModule = parentModule->getSubmodule(ident, 0); // returns nullptr if submodule is not a vector
         if (!siblingModule && parentModule->getSubmodule(ident))
-            return 1L; // return 1 if submodule exists but not a vector
-        return (long) siblingModule ? siblingModule->size() : 0L;
+            return (intpar_t)1; // return 1 if submodule exists but not a vector
+        return (intpar_t) siblingModule ? siblingModule->size() : 0L;
     }
 }
 
@@ -253,7 +253,7 @@ cNedValue cDynamicExpression::getSizeofGate(cComponent *context, cNedValue args[
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module || !module->hasGate(gateName))
         throw cRuntimeError(context, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (long) module->gateSize(gateName); // returns 1 if it's not a vector
+    return (intpar_t) module->gateSize(gateName); // returns 1 if it's not a vector
 }
 
 //
@@ -268,7 +268,7 @@ cNedValue cDynamicExpression::getSizeofParentModuleGate(cComponent *context, cNe
         throw cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
     if (!parentModule->hasGate(gateName))
         throw cRuntimeError(context, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (long) parentModule->gateSize(gateName); // returns 1 if it's not a vector
+    return (intpar_t) parentModule->gateSize(gateName); // returns 1 if it's not a vector
 }
 
 //
@@ -286,7 +286,7 @@ cNedValue cDynamicExpression::getSizeofSiblingModuleGate(cComponent *context, cN
     cModule *siblingModule = parentModule->getSubmodule(siblingModuleName); // returns nullptr if submodule is not a vector
     if (!siblingModule->hasGate(gateName))
         throw cRuntimeError(context, "Error evaluating sizeof(): No such gate: '%s'", gateName);
-    return (long) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
+    return (intpar_t) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
 }
 
 //
@@ -304,6 +304,6 @@ cNedValue cDynamicExpression::getSizeofIndexedSiblingModuleGate(cComponent *cont
         throw cRuntimeError(context,"sizeof(): Cannot find submodule %[%d]",
                                 siblingModuleName, siblingModuleIndex,
                                 siblingModuleName, siblingModuleIndex, gateName);
-    return (long) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
+    return (intpar_t) siblingModule->gateSize(gateName); // returns 1 if it's not a vector
 }
 */
