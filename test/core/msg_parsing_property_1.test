@@ -23,7 +23,7 @@ packet Foo {
    @baz(a=f(g(x))+2; b=[1,2,3]; c={printf("x=%d; y=%d",x,y);});
 }
 
-%testprog: nedtool -x -T msg test.msg_
+%testprog: opp_msgtool -x -T msg test.msg_
 
 %contains: test_m.xml
 <?xml version="1.0" encoding="ISO-8859-1"?>

@@ -57,7 +57,7 @@ cplusplus(Bar) {{
     int avg() const {return (x + y)/2;}
 }}
 
-%testprog: msgtool test2.msg.bad
+%testprog: opp_msgtool --msg6 test2.msg.bad
 
 %ignore-exitcode: 1
 

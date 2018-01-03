@@ -49,10 +49,10 @@ m.getCc().getE2():2
 
 %# four enum fields: three declared with enum type, one declared with @enum:
 %contains-regex: test_m.cc
-\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
+\s+if \(\!strcmp\(propertyname, *"enum"\)\) return "msg_enum_type_1::MyEnum";
 .*
-\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
+\s+if \(\!strcmp\(propertyname, *"enum"\)\) return "msg_enum_type_1::MyEnum";
 .*
-\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
+\s+if \(\!strcmp\(propertyname, *"enum"\)\) return "msg_enum_type_1::MyEnum";
 .*
-\s+if \(\!strcmp\(propertyname,"enum"\)\) return "msg_enum_type_1::MyEnum";
+\s+if \(\!strcmp\(propertyname, *"enum"\)\) return "msg_enum_type_1::MyEnum";
