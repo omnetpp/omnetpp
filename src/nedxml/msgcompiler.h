@@ -65,6 +65,7 @@ class NEDXML_API MsgCompiler
   public:
     typedef std::set<std::string> StringSet;
     typedef std::vector<std::string> StringVector;
+    typedef MsgTypeTable::Property Property;
     typedef MsgTypeTable::Properties Properties;
     typedef MsgTypeTable::FieldInfo FieldInfo;
     typedef MsgTypeTable::ClassInfo ClassInfo;

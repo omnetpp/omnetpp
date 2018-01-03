@@ -219,7 +219,9 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement, bool isImported)
 
             case MSG_PROPERTY: {
                 PropertyElement *propertyElem = check_and_cast<PropertyElement *>(child);
-                typeTable.addGlobalProperty(analyzer.extractProperty(propertyElem));
+                Property property = analyzer.extractProperty(propertyElem);
+                typeTable.addGlobalProperty(property);
+                analyzer.validateFileProperty(property); // do not swap with previous
                 break;
             }
 

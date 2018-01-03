@@ -76,6 +76,13 @@ void std_sim_descriptor_dummy() {}
 
 namespace omnetpp;
 
+@property[icon](type=string; usage=class; desc="Icon for objects of this class in Qtenv inspectors");
+@property[label](type=string; usage=field; desc="When specified, this string will be displayed as field name in Qtenv inspectors");
+@property[hint](type=string; usage=field; desc="Short description of the field, displayed in Qtenv inspectors as tooltip");
+@property[group](type=string; usage=field; desc="Used for grouping of fields in Qtenv inspectors");
+@property[packetData](type=string; usage=class,field; desc="Denotes packet data in frameworks such as INET; used in Qtenv inspectors");
+@property[eventlog](type=string; usage=field; desc="When @eventlog(skip) is given, eventlog recording will skip this field when serializing objects");
+
 enum cPar::Type;
 enum cGate::Type;
 enum cFigure::LineStyle;

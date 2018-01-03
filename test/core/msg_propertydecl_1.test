@@ -1,0 +1,24 @@
+%description:
+Verify that properties need to be decared with @property
+
+%file: test.msg_
+
+@foo1;
+@foo2[index];
+
+packet Foo {
+  @bar1;
+  @bar2[index];
+  int x @baz1 @baz2[index];
+}
+
+%testprog: opp_msgtool --msg6 -T msg test.msg_
+
+%contains-regex: stderr
+.*: Warning: Unknown property @foo1 \(missing declaration via @property\?\)
+.*: Warning: Unknown property @foo2 \(missing declaration via @property\?\)
+.*: Warning: Unknown property @bar1 \(missing declaration via @property\?\)
+.*: Warning: Unknown property @bar2 \(missing declaration via @property\?\)
+.*: Warning: Unknown property @baz1 \(missing declaration via @property\?\)
+.*: Warning: Unknown property @baz2 \(missing declaration via @property\?\)
+

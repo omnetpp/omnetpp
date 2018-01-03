@@ -75,6 +75,7 @@ class NEDXML_API MsgAnalyzer
     std::string getProperty(const Properties& p, const char *name, const std::string& defval = std::string());
     std::string decorateType(const std::string& typeName, bool isConst, bool isPointer, bool isRef);
     std::string lookupExistingClassName(const std::string& name, const std::string& contextNamespace,  ClassInfo *contextClass=nullptr);
+    void validateProperty(const Property& property, const char *usage);
 
   public:
     MsgAnalyzer(const MsgCompilerOptions& opts, MsgTypeTable *typeTable, ErrorStore *errors);
@@ -86,11 +87,13 @@ class NEDXML_API MsgAnalyzer
     EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
     ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName, bool isImported);
     Property extractProperty(PropertyElement *propertyElem);
+    void validateFileProperty(const Property& property);
 
   public:
     static constexpr const char* ATT_NAME = "name";
     static constexpr const char* ATT_EXTENDS_NAME = "extends-name";
 
+    static constexpr const char* PROP_PROPERTY = "property";
     static constexpr const char* PROP_ACTUALLY = "actually";
     static constexpr const char* PROP_PRIMITIVE = "primitive";
     static constexpr const char* PROP_OPAQUE = "opaque";

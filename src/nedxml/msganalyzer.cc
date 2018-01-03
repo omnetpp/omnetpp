@@ -128,11 +128,13 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::s
 
 MsgAnalyzer::Properties MsgAnalyzer::extractProperties(ASTNode *node)
 {
+    const char *usage = node->getTagCode()==MSG_FIELD ? "field" : node->getTagCode()==MSG_MSG_FILE ? "file" : "class";
     Properties props;
     for (PropertyElement *propElem = check_and_cast_nullable<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); propElem; propElem = propElem->getNextPropertySibling()) {
         Property property = extractProperty(propElem);
         if (props.contains(property.getName(), property.getIndex()))
             errors->addError(node, "duplicate property '%s'", property.getIndexedName().c_str());
+        validateProperty(property, usage);
         props.add(property);
     }
     return props;
@@ -788,6 +790,24 @@ std::string MsgAnalyzer::lookupExistingClassName(const std::string& name, const 
             return qname;
     }
     return "";
+}
+
+void MsgAnalyzer::validateProperty(const Property& property, const char *usage)
+{
+    const Property *propertyDecl = typeTable->getGlobalProperties().get(PROP_PROPERTY, property.getName());
+    if (propertyDecl == nullptr) {
+        errors->addWarning(property.getASTNode(), "Unknown property @%s (missing declaration via @property?)", property.getName().c_str());
+        return;
+    }
+
+    const auto& allowedUsages = propertyDecl->getValue("usage");
+    if (!allowedUsages.empty() && !contains(allowedUsages, str(usage)))
+        errors->addWarning(property.getASTNode(), "@%s cannot be used as %s property (see see corresponding @property declaration)", property.getName().c_str(), usage);
+}
+
+void MsgAnalyzer::validateFileProperty(const Property& property)
+{
+    validateProperty(property, "file");
 }
 
 }  // namespace nedxml

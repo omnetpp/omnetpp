@@ -1,0 +1,26 @@
+%description:
+Verify that properties need to be declared with @property
+
+%file: test.msg_
+
+@property[foo1](usage=file);
+@property[foo2](usage=class,file);
+@property[bar1](usage=class);
+@property[bar2](usage=class,file);
+@property[baz1](usage=field);
+@property[baz2](usage=class,field);
+
+@foo1;
+@foo2;
+
+packet Foo {
+  @bar1;
+  @bar2;
+  int x @baz1 @baz2;
+}
+
+%testprog: opp_msgtool --msg6 -T msg test.msg_
+
+%not-contains: stderr
+Warning
+

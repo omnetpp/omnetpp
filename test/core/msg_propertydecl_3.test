@@ -1,0 +1,23 @@
+%description:
+Verify that properties need to be declared with @property
+
+%file: test.msg_
+
+@property[foo1](usage=field);
+@property[bar1](usage=file);
+@property[baz1](usage=class);
+
+@foo1;
+
+packet Foo {
+  @bar1;
+  int x @baz1;
+}
+
+%testprog: opp_msgtool --msg6 -T msg test.msg_
+
+%contains-regex: stderr
+.*: Warning: @foo1 cannot be used as file property \(see see corresponding @property declaration\)
+.*: Warning: @bar1 cannot be used as class property \(see see corresponding @property declaration\)
+.*: Warning: @baz1 cannot be used as field property \(see see corresponding @property declaration\)
+
