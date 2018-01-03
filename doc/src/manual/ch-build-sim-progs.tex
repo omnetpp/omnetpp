@@ -167,19 +167,19 @@ The generated \ttt{Makefile} supports the following targets:
 \label{sec:build-sim-progs:debug-and-release-builds}
 
 \fprog{opp\_makemake} generates a Makefile that can create both release and debug builds.
-By default it creates debug version, but it is easy to override this behavior by
+By default it creates release version, but it is easy to override this behavior by
 defining the \ttt{MODE} variable on the \fprog{make} command line.
 
 \begin{commandline}
-$ make MODE=release
+$ make MODE=debug
 \end{commandline}
 
-It is also possible to generate a Makefile that defaults to release builds.
+It is also possible to generate a Makefile that defaults to debug builds.
 This can be achieved by adding the \fopt{-{}-mode} option to the \fprog{opp\_makemake}
 command line.
 
 \begin{commandline}
-$ opp_makemake --mode release
+$ opp_makemake --mode debug
 \end{commandline}
 
 \subsection{Debugging the Makefile}
