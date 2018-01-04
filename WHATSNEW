@@ -5,6 +5,16 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 5.3 Preview 2 (January 2018)
+------------------------------------
+
+Highlights:
+
+  - Fixes for build problems on macOS and Windows.
+
+  - msgc: added --msg4 option to force backward compatible mode.
+
+
 OMNeT++ 5.3 Preview 1 (December 2017)
 -------------------------------------
 
