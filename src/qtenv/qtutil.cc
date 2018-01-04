@@ -510,8 +510,10 @@ long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultVa
     if (!displayStringContainsParamRefs(arg))
         return (long)atol(arg);
     cPar *par = resolveDisplayStringParamRef(arg, component, true);
-    if (par && par->isNumeric())
-        return par->intValue();
+    if (par && par->getType() == cPar::INT)
+        return (long)par->intValue();
+    if (par && par->getType() == cPar::DOUBLE)
+        return (long)par->doubleValue();
     std::string buffer;
     const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);
     return (long)atol(arg2);
@@ -524,7 +526,9 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
     if (!displayStringContainsParamRefs(arg))
         return atof(arg);
     cPar *par = resolveDisplayStringParamRef(arg, component, true);
-    if (par && par->isNumeric())
+    if (par && par->getType() == cPar::INT)
+        return par->intValue();
+    if (par && par->getType() == cPar::DOUBLE)
         return par->doubleValue();
     std::string buffer;
     const char *arg2 = substituteDisplayStringParamRefs(arg, buffer, component, true);

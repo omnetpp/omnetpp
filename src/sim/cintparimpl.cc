@@ -63,7 +63,7 @@ void cIntParImpl::parsimUnpack(cCommBuffer *buffer)
 
 void cIntParImpl::setBoolValue(bool b)
 {
-    throw cRuntimeError(this, E_BADCAST, "bool", "int/long");
+    throw cRuntimeError(this, E_BADCAST, "bool", "integer");
 }
 
 void cIntParImpl::setIntValue(intpar_t l)
@@ -75,21 +75,17 @@ void cIntParImpl::setIntValue(intpar_t l)
 
 void cIntParImpl::setDoubleValue(double d)
 {
-    deleteOld();
-    if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
-        throw cRuntimeError(this, "Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
-    val = (intpar_t)d;
-    flags |= FL_CONTAINSVALUE | FL_ISSET;
+    throw cRuntimeError(this, E_BADCAST, "double", "integer");
 }
 
 void cIntParImpl::setStringValue(const char *s)
 {
-    throw cRuntimeError(this, E_BADCAST, "string", "int/long");
+    throw cRuntimeError(this, E_BADCAST, "string", "integer");
 }
 
 void cIntParImpl::setXMLValue(cXMLElement *node)
 {
-    throw cRuntimeError(this, E_BADCAST, "XML", "int/long");
+    throw cRuntimeError(this, E_BADCAST, "XML", "integer");
 }
 
 void cIntParImpl::setExpression(cExpression *e)
@@ -101,7 +97,7 @@ void cIntParImpl::setExpression(cExpression *e)
 
 bool cIntParImpl::boolValue(cComponent *) const
 {
-    throw cRuntimeError(this, E_BADCAST, "int/long", "bool");
+    throw cRuntimeError(this, E_BADCAST, "integer", "bool");
 }
 
 intpar_t cIntParImpl::intValue(cComponent *context) const
@@ -113,33 +109,28 @@ intpar_t cIntParImpl::intValue(cComponent *context) const
         return val;
     else {
         cNedValue v = evaluate(expr, context);
-        if (v.type != cNedValue::DOUBLE)
-            throw cRuntimeError(E_ECANTCAST, "long");
-        double d = v.doubleValueInUnit(getUnit());
-        if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
-            throw cRuntimeError(this, "Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
-        return (intpar_t)d;
+        return v.doubleValueInUnit(getUnit()); // allows conversion from INT
     }
 }
 
 double cIntParImpl::doubleValue(cComponent *context) const
 {
-    return (double)intValue(context);
+    throw cRuntimeError(this, E_BADCAST, "integer", "double");
 }
 
 const char *cIntParImpl::stringValue(cComponent *) const
 {
-    throw cRuntimeError(this, E_BADCAST, "int/long", "string");
+    throw cRuntimeError(this, E_BADCAST, "integer", "string");
 }
 
 std::string cIntParImpl::stdstringValue(cComponent *) const
 {
-    throw cRuntimeError(this, E_BADCAST, "int/long", "string");
+    throw cRuntimeError(this, E_BADCAST, "integer", "string");
 }
 
 cXMLElement *cIntParImpl::xmlValue(cComponent *) const
 {
-    throw cRuntimeError(this, E_BADCAST, "int/long", "XML");
+    throw cRuntimeError(this, E_BADCAST, "integer", "XML");
 }
 
 cExpression *cIntParImpl::getExpression() const

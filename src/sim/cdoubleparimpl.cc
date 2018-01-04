@@ -67,9 +67,7 @@ void cDoubleParImpl::setBoolValue(bool b)
 
 void cDoubleParImpl::setIntValue(intpar_t l)
 {
-    deleteOld();
-    val = l;
-    flags |= FL_CONTAINSVALUE | FL_ISSET;
+    throw cRuntimeError(this, E_BADCAST, "integer", "double");
 }
 
 void cDoubleParImpl::setDoubleValue(double d)
@@ -103,10 +101,7 @@ bool cDoubleParImpl::boolValue(cComponent *) const
 
 intpar_t cDoubleParImpl::intValue(cComponent *context) const
 {
-    double d = doubleValue(context);
-    if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
-        throw cRuntimeError("Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
-    return (intpar_t)d;
+    throw cRuntimeError(this, E_BADCAST, "double", "integer");
 }
 
 double cDoubleParImpl::doubleValue(cComponent *context) const
@@ -118,9 +113,7 @@ double cDoubleParImpl::doubleValue(cComponent *context) const
         return val;
     else {
         cNedValue v = evaluate(expr, context);
-        if (v.type != cNEDValue::DOUBLE)
-            throw cRuntimeError(E_ECANTCAST, "double");
-        return v.doubleValueInUnit(getUnit());
+        return v.doubleValueInUnit(getUnit()); // allows conversion from INT
     }
 }
 

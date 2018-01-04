@@ -279,7 +279,8 @@ class SIM_API cPar : public cObject
     bool boolValue() const;
 
     /**
-     * Returns value as intpar_t. The cPar type must be INT or DOUBLE.
+     * Returns value as intpar_t. The cPar type must be INT.
+     * Note: Implicit conversion from DOUBLE is intentionally missing.
      */
     intpar_t intValue() const;
 
@@ -289,15 +290,22 @@ class SIM_API cPar : public cObject
     _OPPDEPRECATED intpar_t longValue() const {return intValue();}
 
     /**
-     * Returns value as double. The cPar type must be INT or DOUBLE.
+     * Returns value as double. The cPar type must be DOUBLE.
+     * Note: Implicit conversion from INT is intentionally missing.
      */
     double doubleValue() const;
 
     /**
-     * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),
-     * as declared with the @unit property of the parameter in NED,
-     * or nullptr if no unit was specified. Unit is only valid for INT and DOUBLE
-     * types.
+     * Returns the numeric value as a double converted to the given unit.
+     * If the current unit cannot be converted to the given one, an error
+     * will be thrown. The type must be DOUBLE or INT.
+     */
+    double doubleValueInUnit(const char *targetUnit) const;
+
+    /**
+     * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc) as declared
+     * with the @unit property of the parameter in NED, or nullptr if no unit
+     * was specified. Unit is only valid for INT and DOUBLE types.
      */
     const char *getUnit() const;
 

@@ -240,12 +240,15 @@ class SIM_API cParImpl : public cNamedObject
     virtual bool boolValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as an integer. The cParImpl type must be INT or DOUBLE.
+     * Returns value as an integer. The cParImpl type must be INT.
+     * Note: There is intentionally no implicit conversion from DOUBLE.
+     * Note: Implicit conversion from DOUBLE is intentionally missing.
      */
     virtual intpar_t intValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as a double. The cParImpl type must be INT or DOUBLE.
+     * Returns value as a double. The cParImpl type must be DOUBLE.
+     * Note: Implicit conversion from INT is intentionally missing.
      */
     virtual double doubleValue(cComponent *context) const = 0;
 

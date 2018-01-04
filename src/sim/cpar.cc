@@ -27,6 +27,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cmodelchange.h"
+#include "common/unitconversion.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -192,6 +193,14 @@ intpar_t cPar::intValue() const
 double cPar::doubleValue() const
 {
     TRY(return p->doubleValue(evalContext));
+}
+
+double cPar::doubleValueInUnit(const char *targetUnit) const
+{
+    if (getType() == INT)
+        return UnitConversion::convertUnit((double)intValue(), getUnit(), targetUnit); // note: possible precision loss
+    else
+        return UnitConversion::convertUnit(doubleValue(), getUnit(), targetUnit); // OK for DOUBLE, error for all others
 }
 
 const char *cPar::getUnit() const

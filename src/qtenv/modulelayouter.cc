@@ -233,9 +233,9 @@ void ModuleLayouter::ensureLayouted(cModule *module)
     graphLayouter->setSeed(layoutSeeds[fullName]);
 
     // background size
-    int sx = resolveLongDispStrArg(ds.getTagArg("bgb", 0), module, 0);
-    int sy = resolveLongDispStrArg(ds.getTagArg("bgb", 1), module, 0);
-    int border = 30;
+    double sx = resolveDoubleDispStrArg(ds.getTagArg("bgb", 0), module, 0);
+    double sy = resolveDoubleDispStrArg(ds.getTagArg("bgb", 1), module, 0);
+    double border = 30;
     if (sx != 0 && sx < 2*border)
         border = sx/2;
     if (sy != 0 && sy < 2*border)
