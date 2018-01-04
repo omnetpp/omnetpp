@@ -22,7 +22,7 @@
 #include <ctime>
 #include <cassert>
 #include <sstream>
-#include <inttypes.h> // PRI64d
+#include <cinttypes> // PRI64d
 
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"

@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <inttypes.h>  // PRId64
+#include <cinttypes>  // PRId64
 #include "common/stringutil.h"
 #include "common/stringpool.h"
 #include "common/unitconversion.h"
