@@ -11,6 +11,161 @@
   </style>
 <body>
 
+<h1>What's New in OMNeT++/OMNEST 5.2</h1>
+
+<h2>Qtenv</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Enhanced Animation Parameters Dialog</b></p></td>
+<td><p>Improved the appearance and usability of the Animation Parameters dialog.
+</p>
+<img width="600" src="images/52-qtenv-animcontrols.png" border="0"><br>
+</td></tr>
+
+</tbody></table>
+
+
+<h2>IDE</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Automatic Configuration Switching on Launch</b></p></td>
+<td><p>The launcher now switches the project (and optionally all projects it
+        depends on) to the appropriate build configuration if necessary: Run
+        and Profile will perform RELEASE build, Debug will perform DEBUG build.
+</p>
+<img width="500" src="images/52-ide-switchconfig.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Build Before Launch Configuration</b></p></td>
+<td><p>A new "Build before launch" section was added to the Launch config
+        dialog, which allows you to control whether to switch build configuration
+        automatically or to ask before the build. The scope of build can also
+        configured; options are: "None", "This project", or "Project + dependencies".
+</p>
+<img width="800" src="images/52-ide-buildbeforelaunch.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Better Progress Reporting</b></p></td>
+<td><p>Better progress reporting and cancellation for batch runs in the Progress View:
+       It is now possible to cancel either individual runs or the whole batch.
+</p>
+<img width="800" src="images/52-ide-progress.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Statistics Data in the Analysis Tool</b></p></td>
+<td><p>The Histograms tab on the Browse Data page now includes "statistics"-
+        type results as well.  Additional columns on the page: "Kind", "SumWeights",
+        "#Bins", "Hist.Range". "Kind" indicates whether a result item is a "statistic"
+        or a "histogram", and whether it is weighted or unweighted.
+</p>
+<img width="800" src="images/52-ide-histograms.png" border="0"><br>
+</td></tr>
+
+</tbody></table>
+
+<!-- ------------------------------------------------------------- -->
+<h1>What's New in OMNeT++/OMNEST 5.1</h1>
+
+<h2>Qtenv</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Updated Toolbar</b></p></td>
+<td><p>The simulation time display now has digit grouping and units turned on by
+       default for better readability. Settings can be changed in the context menu.
+</p>
+<img width="800" src="images/51-qtenv-toolbar.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Packet Animation Support</b></p></td>
+<td><p>Improvements on built-in animations: Messages sent with a nonzero propagation
+        delay are now animated properly (not instantaneously). Packets of nonzero
+        length are now displayed as "strips" when transmitted on a link with a
+        transmission rate and propagation delay. The animation of method call
+        hierarchies now represents the call graph better.
+</p>
+<img width="800" src="images/51-qtenv-anim1.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Smooth Animation API</b></p></td>
+<td><p>Added support for smooth custom animations. This means that simulation time is
+       interpolated between events, and the animation can be stopped between events.
+       The updated 'aloha' example highlights the use of the new smooth animation API.
+       The server and all hosts now have fixed positions (still random but
+       deterministic, and not using auto-layouting), so that their individual
+       propagation delays can be computed. Each transmitted packet is visualized
+       with a ring and many concentric circles, illustrating the propagation of the
+       electromagnetic wave. The visualization is faithful, e.g. multiple signals
+       visually overlapping at a receiver actually means a collision.
+</p>
+<img width="500" src="images/51-qtenv-anim2.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Animation Parameters</b></p></td>
+<td><p>A new 'Animation Parameters' window has been added where
+       one can view the current animation speed, framerate, and
+       other metrics.
+</p>
+<img width="800" src="images/51-qtenv-animcontrols.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Video Recording Support</b></p></td>
+<td><p>Added built-in support to record animation into a high quality video.
+       Press the record button on the toolbar for instructions.
+</p>
+<img width="600" src="images/51-qtenv-videorecording.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Histogram Inspectors</b></p></td>
+<td><p>Added graphical inspectors for histograms. They are enabled for any
+       cStatistic-based histogram objects, i.e. they are currently not available
+       for @statistic-based output histograms.
+</p>
+<img width="800" src="images/51-qtenv-histograms.png" border="0"><br>
+</td></tr>
+
+<tr><td><p align="right"><b>Vector Inspectors</b></p></td>
+<td><p>Added graphical inspectors for output vectors.
+</p>
+<img width="800" src="images/51-qtenv-vectors.png" border="0"><br>
+</td></tr>
+
+</tbody></table>
+
+<h2>IDE</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>IDE Launcher</b></p></td>
+<td><p>In the Run/Debug Configurations dialog, the "OMNeT++ Simulation" form page
+        has been revised for usability and to better support simulation campaigns.
+        The launcher (code that schedules and actually runs the simulations and
+        arranges feedback in the Progress view and the Console) has also been
+        improved: The "Runs" form field now accepts a run filter expression that
+        can refer to iteration variables. Batch execution of simulations is now
+        controlled with two new spinner widgets ("Number of CPUs to use", "Runs per process".)
+        The form page now allows specifying time limits for the simulation
+        ("Simulation time limit", "CPU time limit" fields.) User interface selection
+        uses an editable combo instead of radio buttons. Added content assist
+        for Additional Arguments field and finally, the radio buttons have been replaced
+        by tri-state checkboxes (with on/off/grayed states, where the grayed state
+        means "no setting specified, let the inifile setting take effect".)
+        The consequent space saving allowed other options to be added to the form page:
+        "Verbose", "Stop batch on error", "Express mode", "Save stdout",
+        "Record scalar results", "Record vector results","Record eventlog".
+</p>
+<img width="800" src="images/51-ide-launcher.png" border="0"><br>
+</td></tr>
+
+</tbody></table>
+
+<!-- ------------------------------------------------------------- -->
 <h1>What's New in OMNeT++/OMNEST 5.0</h1>
 
 <h2>Tkenv</h2>
