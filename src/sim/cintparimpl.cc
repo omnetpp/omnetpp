@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <limits>
-#include <cinttypes> // PRI64d
+#include <cinttypes> // PRId64
 #include "omnetpp/cintparimpl.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"

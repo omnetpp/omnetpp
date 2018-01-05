@@ -22,7 +22,7 @@
 #include <ctime>
 #include <cassert>
 #include <sstream>
-#include <cinttypes> // PRI64d
+#include <cinttypes> // PRId64
 #include <QPainter>
 #include <QGraphicsView>
 #include <QGraphicsEffect>
