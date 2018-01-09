@@ -14,8 +14,8 @@ import node.Node;
 network Mesh
 {
     parameters:
-        double height @prompt("Number of rows") = default(9);
-        double width @prompt("Number of columns") = default(7);
+        int height @prompt("Number of rows") = default(9);
+        int width @prompt("Number of columns") = default(7);
     types:
         channel C extends ned.DatarateChannel
         {

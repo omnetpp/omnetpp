@@ -14,7 +14,7 @@ import node.Node;
 network RandomGraph
 {
     parameters:
-        double n @prompt("Number of nodes") = default(15);
+        int n @prompt("Number of nodes") = default(15);
     submodules:
         node[n]: Node {
             parameters:

@@ -112,10 +112,10 @@
 
 /samples/routing/,                   ./routing -f omnetpp.ini -c Net60StoreAndForward -r 0,   1s,         2300-8c3d/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c Net60CutThrough -r 0,        1s,         5fff-a24d/tplx,PASS,
-/samples/routing/,                   ./routing -f omnetpp.ini -c Net60Bursty -r 0,            100s,         9944-16d5/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net60Bursty -r 0,            100s,         e4f0-31fd/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c Net60a -r 0,                 100s,         3189-8898/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c Net5 -r 0,                   100s,         eea2-02ed/tplx,PASS,
-/samples/routing/,                   ./routing -f omnetpp.ini -c Net10 -r 0,                  100s,         0d50-ba0d/tplx,PASS,
+/samples/routing/,                   ./routing -f omnetpp.ini -c Net10 -r 0,                  100s,         b3f8-d998/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c RandomGraph -r 0,            100s,         c269-5faa/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c Mesh -r 0,                   100s,         c193-28a7/tplx,PASS,
 /samples/routing/,                   ./routing -f omnetpp.ini -c RandomMesh -r 0,             100s,         3ffa-c408/tplx,PASS,
@@ -145,3 +145,4 @@
 /samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc14 -r 0,              5000s,         b4c3-3a6e/tplx,PASS,
 /samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc15 -r 0,              5000s,         e596-6f3b/tplx,PASS,
 /samples/tictoc/,                    ./tictoc -f omnetpp.ini -c Tictoc16 -r 0,              5000s,         1669-90c4/tplx,PASS,
+

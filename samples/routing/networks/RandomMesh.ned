@@ -14,8 +14,8 @@ import node.Node;
 network RandomMesh
 {
     parameters:
-        double height @prompt("Number of rows") = default(8);
-        double width @prompt("Number of columns") = default(8);
+        int height @prompt("Number of rows") = default(8);
+        int width @prompt("Number of columns") = default(8);
     types:
         channel C extends ned.DatarateChannel
         {

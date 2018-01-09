@@ -8,8 +8,8 @@ simple Test
     parameters:
         @isNetwork;
         // 2^63 = 9.223372037e18
-        int justOK = 9.2e18;
-        int tooBig = 9.3e18;
+        int justOK = int(9.2e18);
+        int tooBig = int(9.3e18);
 }
 
 %activity:
@@ -17,7 +17,6 @@ EV << ".\n";
 
 %exitcode: 1
 
-%contains: stderr
-tooBig: Cannot cast 9.3e+18 to integer: value is out of the range of intpar_t, a 64-bit type
-
+%contains-regex: stderr
+Integer overflow casting 9300000000000000000\.0+ to a smaller or unsigned integer type
 

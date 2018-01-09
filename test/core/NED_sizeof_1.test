@@ -33,7 +33,7 @@ simple Simple
 module Compound
 {
     parameters:
-        double a;
+        int a;
     gates:
         input in0[];
         input in1[];

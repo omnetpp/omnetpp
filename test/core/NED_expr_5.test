@@ -54,11 +54,8 @@ Define_Module(Test);
 
 void Test::activity()
 {
-    for (int i=0; i<getNumParams(); i++) {
-        EV << par(i).getName() << "=";
-        par(i).isNumeric() ? EV << par(i).doubleValue() : EV << par(i).stringValue();
-        EV << endl;
-    }
+    for (int i=0; i<getNumParams(); i++)
+        EV << par(i).getName() << "=" << par(i).str() << endl;
     EV << ".\n";
 }
 
@@ -77,15 +74,15 @@ p08=1
 p09=0
 p10=0
 i1=1
-a1=one
-b1=one
+a1="one"
+b1="one"
 i2=2
-a2=two
-b2=two
+a2="two"
+b2="two"
 i3=3
-a3=three
-b3=three
+a3="three"
+b3="three"
 i4=4
-a4=big
-b4=big
+a4="big"
+b4="big"
 .

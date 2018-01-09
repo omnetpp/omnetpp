@@ -13,7 +13,7 @@ simple Test
         volatile double p02 = int(!true);  // negation
         volatile double p03 = int(!false); // negation
 
-        volatile double p06 = ~3;    // bitwise complement (yields positive number)
+        volatile double p06 = ~3;    // bitwise complement (one's complement, yields -1*x-1 for x)
         volatile double p07 = 12^3;  // power of
         volatile double p08 = 12*3;  // multiply
         volatile double p09 = 12/3;  // divide
@@ -77,8 +77,8 @@ simple Test
         volatile double p52 = 7 / 4;       // integer divide with non integer result
         volatile double p53 = 7.8 % 4.1;     // non integer modulus
         volatile double p54 = 7.2 % 4.8;     // non integer modulus
-	volatile double p55 = (-7.8)%4.1;    // non integer negative
-	volatile double p56 = (-7.1)%4.8;    // non integer negative
+        volatile double p55 = (-7.8)%4.1;    // non integer negative
+        volatile double p56 = (-7.1)%4.8;    // non integer negative
 }
 
 %file: test.cc
@@ -115,7 +115,7 @@ p00=-3
 p01=-5
 p02=0
 p03=1
-p06=[0-9eE+.]+
+p06=-4
 p07=1728
 p08=36
 p09=4
@@ -167,3 +167,4 @@ p54=3
 p55=-3
 p56=-3
 \.
+

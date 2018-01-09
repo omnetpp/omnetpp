@@ -90,7 +90,7 @@ EV << ".\n";
 -(1m+1m) ==> -2m
 -(1km+1km) ==> -2km
 
-~(1+1) ==> _maxlong_
+~(1+1) ==> -3
 ~(1m+1m) ==> '~' expects dimensionless arguments
 ~(1km+1km) ==> '~' expects dimensionless arguments
 

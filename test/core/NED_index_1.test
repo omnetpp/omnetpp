@@ -24,7 +24,7 @@ simple Simple
 module Compound
 {
     parameters:
-        double a;
+        int a;
     submodules:
         sub[3]: Simple {
             parameters:

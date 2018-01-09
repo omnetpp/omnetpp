@@ -12,9 +12,9 @@ simple Test
         int minus129 = -129;
         int plus128 = 128;
         int plus256 = 256;
-        
-        int big = 9e18; // 2^63
-        int minusBig = -9e18;
+
+        int big = int(9e18); // 2^63
+        int minusBig = int(-9e18);
 }
 
 %activity:
@@ -70,5 +70,4 @@ int x = par("minusBig") --> ERROR: (omnetpp::cPar)minusBig: Integer overflow cas
 int64_t x = par("big") --> 9000000000000000000
 int64_t x = par("minusBig") --> -9000000000000000000
 .
-
 
