@@ -63,7 +63,8 @@ class SIM_API cDynamicExpression : public cExpression
       private:
         // Types:
         //  - bool
-        //  - double (there is no long -- we calculate everything in double)
+        //  - intpar_t
+        //  - double
         //  - string
         //  - pointer to an "external" cXMLElement
         //  - cNedMathFunction: function with 0/1/2/3/4 double arguments
@@ -72,10 +73,11 @@ class SIM_API cDynamicExpression : public cExpression
         //  - math operator (+-*/%^...)
         //  - constant subexpression
         //
-        enum Type {UNDEF, BOOL, DBL, STR, XML, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
+        enum Type {UNDEF, BOOL, INT, DBL, STR, XML, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
         static cStringPool stringPool;
         union {
             bool b;
+            struct {intpar_t i; const char *unit;} i;
             struct {double d; const char *unit;} d;
             const char *s; // points into stringPool
             cXMLElement *x;
@@ -88,7 +90,6 @@ class SIM_API cDynamicExpression : public cExpression
 
       private:
         void copy(const Elem& other);
-
         void deleteOld();
 
       public:
@@ -111,25 +112,7 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int i);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) to the evaluation stack.
-         */
-        void operator=(short i);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) to the evaluation stack.
-         */
-        void operator=(long l);
-
-        /**
-         * Effect during evaluation of the expression: pushes the given number
-         * (which is converted to double) to the evaluation stack.
-         */
-        void operator=(long long l);
+        void operator=(intpar_t i);
 
         /**
          * Effect during evaluation of the expression: pushes the given number
@@ -138,10 +121,10 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(double d);
 
         /**
-         * Sets the unit of an Elem previously set to a double value.
-         * The type must already be DBL, or an error gets thrown.
+         * Sets the unit of an Elem previously set to a double or integer value.
+         * The type must already be DBL or INT, or an error gets thrown.
          */
-        void setUnit(const char *s)  {ASSERT(type==DBL); d.unit = stringPool.get(s);}
+        void setUnit(const char *s);
 
         /**
          * Effect during evaluation of the expression: pushes the given string
@@ -187,6 +170,16 @@ class SIM_API cDynamicExpression : public cExpression
          * For cDynamicExpression::compare()
          */
         int compare(const Elem& other) const;
+
+        /**
+         * Returns the string representation of the given operator.
+         */
+        static const char *getOpName(OpType op);
+
+        /**
+         * Returns the string representation of this element.
+         */
+        std::string str() const;
     };
 
     /**
@@ -211,6 +204,7 @@ class SIM_API cDynamicExpression : public cExpression
 
   private:
     void copy(const cDynamicExpression& other);
+    void bringToCommonTypeAndUnit(cNedValue& a, cNedValue& b) const;
 
   public:
     /** @name Constructors, destructor, assignment. */

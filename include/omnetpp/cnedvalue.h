@@ -72,7 +72,7 @@ class SIM_API cNedValue
 #else
     void assertType(Type t) const {if (type!=t) cannotCastError(t);}
 #endif
-    void cannotCastError(Type t) const;
+    [[noreturn]] void cannotCastError(Type t) const;
 
     void convertToDouble() {if (type==INT) {type=DOUBLE; dbl=intv;} else if (type!=DOUBLE) cannotCastError(DOUBLE);}
 
@@ -253,6 +253,13 @@ class SIM_API cNedValue
      * For compatibility; delegates to intValue().
      */
     _OPPDEPRECATED intpar_t longValue() const {return intValue();}
+
+    /**
+     * Returns the numeric value as an integer converted to the given unit.
+     * If the current unit cannot be converted to the given one, an error
+     * will be thrown. The type must be DOUBLE or INT.
+     */
+    intpar_t intValueInUnit(const char *targetUnit) const;
 
     /**
      * Returns value as double. The type must be DOUBLE or INT.

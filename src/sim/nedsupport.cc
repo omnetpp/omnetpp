@@ -42,7 +42,7 @@ cNedValue ModuleIndex::evaluate(cComponent *context, cNedValue args[], int numar
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module)
         throw cRuntimeError(context, "Cannot evaluate 'index' operator in expression: Context is not a module");
-    return (double)module->getIndex();
+    return (intpar_t)module->getIndex();
 }
 
 std::string ModuleIndex::str(std::string args[], int numargs)

@@ -49,9 +49,9 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
 {
   private:
     std::string signature; // function signature, as passed to the ctor
-    std::string argTypes;  // sequence of B,L,D,Q,S,X,*
+    std::string argTypes;  // sequence of B,L,T,D,Q,S,X,*
     bool hasVarargs_;      // if true, signature contains "..." after the last typed arg
-    char returnType;       // one of B,L,D,Q,S,X,*
+    char returnType;       // one of B,L,T,D,Q,S,X,*
     int minArgc, maxArgc;  // minimum and maximum argument count
     NedFunction f;         // function ptr
     std::string category;  // category string; only used when listing all functions
@@ -67,7 +67,7 @@ class SIM_API cNedFunction : public cNoncopyableOwnedObject
     /**
      * Constructor. Signature is expected in the following syntax:
      *     returntype name(argtype argname,...),
-     * where types can be bool, long, double, quantity, string, xml, any;
+     * where types can be bool, long, double, quantity, intquantity, string, xml, any;
      * names of optional arguments end in '?'. The object name will be the
      * function name, as extracted from the signature string. The signature
      * may end in an ellipsis, i.e. "...", to mean that any number of

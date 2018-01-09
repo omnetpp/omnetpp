@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <limits>
+#include <cinttypes>
 #include "common/stringutil.h"
 #include "common/unitconversion.h"
 #include "omnetpp/cdynamicexpression.h"
@@ -83,51 +84,27 @@ void cDynamicExpression::Elem::set(cNedFunction* f, int argc)
     nf.argc = argc;
 }
 
+void cDynamicExpression::Elem::operator=(bool _b)
+{
+    deleteOld();
+    type = BOOL;
+    b = _b;
+}
+
+void cDynamicExpression::Elem::operator=(intpar_t _i)
+{
+    deleteOld();
+    type = INT;
+    i.i = _i;
+    i.unit = nullptr;
+}
+
 void cDynamicExpression::Elem::operator=(double _d)
 {
     deleteOld();
     type = DBL;
     d.d = _d;
     d.unit = nullptr;
-}
-
-void cDynamicExpression::Elem::operator=(short _i)
-{
-    deleteOld();
-    type = DBL;
-    d.d = _i;
-    d.unit = nullptr;
-}
-
-void cDynamicExpression::Elem::operator=(int _i)
-{
-    deleteOld();
-    type = DBL;
-    d.d = _i;
-    d.unit = nullptr;
-}
-
-void cDynamicExpression::Elem::operator=(long _l)
-{
-    deleteOld();
-    type = DBL;
-    d.d = _l;
-    d.unit = nullptr;
-}
-
-void cDynamicExpression::Elem::operator=(long long _l)
-{
-    deleteOld();
-    type = DBL;
-    d.d = _l;
-    d.unit = nullptr;
-}
-
-void cDynamicExpression::Elem::operator=(bool _b)
-{
-    deleteOld();
-    type = BOOL;
-    b = _b;
 }
 
 void cDynamicExpression::Elem::operator=(cNedMathFunction* _f)
@@ -174,6 +151,15 @@ void cDynamicExpression::Elem::operator=(const char* _s)
     s = stringPool.get(_s);
 }
 
+void cDynamicExpression::Elem::setUnit(const char *s)
+{
+    switch(type) {
+    case INT: i.unit = stringPool.get(s); break;
+    case DBL: d.unit = stringPool.get(s); break;
+    default: throw cRuntimeError("Cannot set unit for this Elem type");
+    }
+}
+
 int cDynamicExpression::Elem::compare(const Elem& other) const
 {
     if (type != other.type)
@@ -182,6 +168,7 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
     switch (type) {
 #define CMP(x)    (x == other.x ? 0 : x < other.x ? -1 : 1)
         case BOOL: return (int)other.b - (int)b;
+        case INT: return i.i == other.i.i ? omnetpp::opp_strcmp(i.unit, other.i.unit) : i.i < other.i.i ? -1 : 1;
         case DBL: return d.d == other.d.d ? omnetpp::opp_strcmp(d.unit, other.d.unit) : d.d < other.d.d ? -1 : 1;
         case STR: return CMP(s);
         case XML: return CMP(x);
@@ -192,6 +179,51 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
         case CONSTSUBEXPR: return constExpr->compare(other.constExpr);
         default: throw cRuntimeError("Internal error: Bad Elem type");
 #undef CMP
+    }
+}
+
+const char *cDynamicExpression::Elem::getOpName(OpType op)
+{
+    switch (op) {
+        case ADD: return "+";
+        case SUB: return "-";
+        case MUL: return "*";
+        case DIV: return "/";
+        case MOD: return "%";
+        case POW: return "^";
+        case EQ: return "==";
+        case NE: return "!=";
+        case LT: return "<";
+        case GT: return ">";
+        case LE: return "<=";
+        case GE: return ">=";
+        case AND: return "&&";
+        case OR: return "||";
+        case XOR: return "##";
+        case BIN_AND: return "&";
+        case BIN_OR: return "|";
+        case BIN_XOR: return "#";
+        case LSHIFT: return "<<";
+        case RSHIFT: return ">>";
+        default: return "<unknown operator>";
+    }
+}
+
+std::string cDynamicExpression::Elem::str() const
+{
+    char buf[32];
+    switch (type) {
+        case BOOL: return b ? "true" : "false";
+        case INT: sprintf(buf, "%" PRId64 "%s", (int64_t) i.i, opp_nulltoempty(i.unit)); return buf;
+        case DBL: sprintf(buf, "%g%s", d.d, opp_nulltoempty(d.unit)); return buf;
+        case STR: return opp_quotestr(s ? s : "");;
+        case XML: return x==nullptr ? "<nullptr>" : std::string("<") + x->getTagName() +">@" + x->getSourceLocation();
+        case MATHFUNC: return std::string(f->getName()) + "()";
+        case NEDFUNC: return std::string(nf.f->getName()) + "()";
+        case FUNCTOR: return "";
+        case CONSTSUBEXPR: return "const()";
+        case OP: return std::string("operator \"") + getOpName(op) + "\"";
+        default: return "<unknown expression element>";
     }
 }
 
@@ -268,6 +300,7 @@ bool cDynamicExpression::isAConstant() const
         switch (elems[i].type) {
             // literals and anything calculated from them are OK
             case Elem::BOOL:
+            case Elem::INT:
             case Elem::DBL:
             case Elem::STR:
             case Elem::XML:
@@ -297,56 +330,163 @@ void cDynamicExpression::evaluateConstSubexpressions(cComponent *context)
 bool cDynamicExpression::boolValue(cComponent *context)
 {
     cNedValue v = evaluate(context);
-    if (v.type != cNedValue::BOOL)
-        throw cRuntimeError(E_ECANTCAST, "bool");
-    return v.bl;
+    return v.boolValue();
 }
 
 intpar_t cDynamicExpression::intValue(cComponent *context, const char *expectedUnit)
 {
     cNedValue v = evaluate(context);
-    if (v.type != cNEDValue::DOUBLE)
-        throw cRuntimeError(E_ECANTCAST, "int");
-    double d = UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
-    if (d < std::numeric_limits<intpar_t>::min() || d > std::numeric_limits<intpar_t>::max())
-        throw cRuntimeError("Cannot cast %g to integer: value is out of the range of intpar_t, a %d-bit type", d, 8*sizeof(intpar_t));
-    return (intpar_t)d;
+    return expectedUnit == nullptr ? v.intValue() : (intpar_t)v.doubleValueInUnit(expectedUnit);
 }
 
 double cDynamicExpression::doubleValue(cComponent *context, const char *expectedUnit)
 {
     cNedValue v = evaluate(context);
-    if (v.type != cNEDValue::DOUBLE)
-        throw cRuntimeError(E_ECANTCAST, "double");
-    return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
+    return expectedUnit == nullptr ? v.doubleValue() : v.doubleValueInUnit(expectedUnit);
 }
 
 std::string cDynamicExpression::stringValue(cComponent *context)
 {
     cNedValue v = evaluate(context);
-    if (v.type != cNEDValue::STRING)
-        throw cRuntimeError(E_ECANTCAST, "string");
-    return v.s;
+    return v.stringValue();
 }
 
 cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
 {
     cNedValue v = evaluate(context);
-    if (v.type != cNedValue::XML)
-        throw cRuntimeError(E_ECANTCAST, "XML element");
-    return v.xml;
+    return v.xmlValue();
 }
-
-#define ulong(x)    ((unsigned long)(x))
 
 inline double trunc(double x)
 {
     return x < 0.0 ? ceil(x) : floor(x);
 }
 
-static const int stksize = 20;
+inline intpar_t shift(intpar_t a, intpar_t b)
+{
+    // positive b = left shift, negative b = (arithmetic) right shift
+    // note: result of ">>" and "<<" is undefined if shift is larger or equal to the width of the integer
+    const int width = 8*sizeof(a);
+    if (b > 0)
+        return b < width ? (a << b) : 0;
+    else
+        return -width < b ? (a >> -b) : a > 0 ? 0 : ~(intpar_t)0;
+}
+
+inline intpar_t safeAdd(intpar_t a, intpar_t b)
+{
+#ifdef __GNUC__  // and compatibles like clang
+    intpar_t res;
+    if (__builtin_add_overflow(a, b, &res))
+        throw cRuntimeError("Integer overflow adding %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
+    return res;
+#else
+    return a + b;  // unchecked
+#endif
+}
+
+inline intpar_t safeMul(intpar_t a, intpar_t b)
+{
+#ifdef __GNUC__  // and compatibles like clang
+    intpar_t res;
+    if ( __builtin_mul_overflow(a, b, &res))
+        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
+    return res;
+#else
+    return a * b;  // unchecked
+#endif
+}
+
+inline intpar_t intPow(intpar_t base, intpar_t exp)
+{
+    ASSERT(exp >= 0);
+    int result = 1;
+    while (exp)
+    {
+        if (exp & 1)
+            result = safeMul(result, base);
+        exp >>= 1;
+        base = safeMul(base, base);
+    }
+    return result;
+}
+
+void cDynamicExpression::bringToCommonTypeAndUnit(cNedValue& a, cNedValue& b) const
+{
+    if (a.getType() == cNEDValue::INT && b.getType() == cNEDValue::INT) {
+        // if conversion factor is an integer, try doing it using integer arithmetic
+        // by converting values into the smaller unit; e.g. if one is KiB and the
+        // other is MiB, convert MiB value into KiB.
+        double c = UnitConversion::getConversionFactor(a.getUnit(), b.getUnit());
+        double c2 = UnitConversion::getConversionFactor(b.getUnit(), a.getUnit());
+        if (c == 1)
+            return; // done
+        else if (c > 1 && c == floor(c)) {
+            a.intv = safeMul((intpar_t)c, a.intv);
+            a.unit = b.unit;
+            return;
+        }
+        else if (c2 > 1 && c2 == floor(c2)) {
+            b.intv = safeMul((intpar_t)c2, b.intv);
+            b.unit = a.unit;
+            return;
+        }
+        // else fall through to computing the result in doubles
+    }
+
+    // do it in double, or fail due to incompatible units
+    a.convertToDouble();
+    b.convertToDouble();
+    a.dbl = UnitConversion::convertUnit(a.dbl, a.unit, b.unit);
+    a.unit = b.unit;
+}
+
+static void errorBooleanArgExpected(const cNedValue& actual)
+{
+    throw cRuntimeError("Boolean argument expected, got %s", cNEDValue::getTypeName(actual.getType()));
+}
+
+static void errorBooleanArgsExpected(const cNedValue& actual1, const cNedValue& actual2)
+{
+    throw cRuntimeError("Boolean arguments expected, got %s and %s", cNEDValue::getTypeName(actual1.getType()), cNEDValue::getTypeName(actual2.getType()));
+}
+
+static void errorNumericArgExpected(const cNedValue& actual)
+{
+    throw cRuntimeError("Numeric argument expected, got %s", cNEDValue::getTypeName(actual.getType()));
+}
+
+static void errorNumericArgsExpected(const cNedValue& actual1, const cNedValue& actual2)
+{
+    throw cRuntimeError("Numeric arguments expected, got %s and %s", cNEDValue::getTypeName(actual1.getType()), cNEDValue::getTypeName(actual2.getType()));
+}
+
+static void errorIntegerArgExpected(const cNedValue& actual)
+{
+    const char *hint = actual.getType() == cNedValue::DOUBLE ? ", use int() to cast from double" : "";
+    throw cRuntimeError("Integer argument expected, got %s%s", cNEDValue::getTypeName(actual.getType()), hint);
+}
+
+static void errorIntegerArgsExpected(const cNedValue& actual1, const cNedValue& actual2)
+{
+    bool hasDouble = actual1.getType() == cNedValue::DOUBLE || actual2.getType() == cNedValue::DOUBLE;
+    const char *hint = hasDouble ? ", use int() to cast from double" : "";
+    throw cRuntimeError("Integer argument expected, got %s and %s%s", cNEDValue::getTypeName(actual1.getType()), cNEDValue::getTypeName(actual2.getType()), hint);
+}
+
+static void errorDimlessArgExpected(const cNedValue& actual)
+{
+    throw cRuntimeError("Dimensionless argument expected, got %s", actual.str().c_str());
+}
+
+static void errorDimlessArgsExpected(const cNedValue& actual1, const cNedValue& actual2)
+{
+    throw cRuntimeError("Dimensionless argument expected, got %s and %s", actual1.str().c_str(), actual2.str().c_str());
+}
+
 
 // we have a static stack to avoid new[] and call to cNedValue ctor stksize times
+static const int stksize = 20;
 static cNedValue _stk[stksize];
 static bool _stkinuse = false;
 
@@ -369,13 +509,20 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
     } f(stk);
 
     int tos = -1;
-    for (int i = 0; i < size; i++) {
+    int i;
+    for (i = 0; i < size; i++) {
         Elem& e = elems[i];
         switch (e.type) {
             case Elem::BOOL:
                 if (tos >= stksize-1)
                     throw cRuntimeError(E_ESTKOFLOW);
                 stk[++tos] = e.b;
+                break;
+
+            case Elem::INT:
+                if (tos >= stksize-1)
+                    throw cRuntimeError(E_ESTKOFLOW);
+                stk[++tos].set(e.i.i, e.i.unit);
                 break;
 
             case Elem::DBL:
@@ -398,52 +545,51 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
 
             case Elem::MATHFUNC:
                 switch (e.f->getNumArgs()) {
-                    case 0:
+                    case 0: {
                         stk[++tos] = e.f->getMathFuncNoArg()();
                         break;
+                    }
 
-                    case 1:
+                    case 1: {
                         if (tos < 0)
                             throw cRuntimeError(E_ESTKUFLOW);
-                        if (stk[tos].type != cNedValue::DOUBLE)
-                            throw cRuntimeError(E_EBADARGS, e.f->getName());
-                        if (!opp_isempty(stk[tos].dblunit))
-                            throw cRuntimeError(E_DIMLESS, e.f->getName());
-                        stk[tos] = e.f->getMathFunc1Arg()(stk[tos].dbl);
+                        double arg1 = stk[tos];
+                        stk[tos] = e.f->getMathFunc1Arg()(arg1);
                         break;
+                    }
 
-                    case 2:
+                    case 2: {
                         if (tos < 1)
                             throw cRuntimeError(E_ESTKUFLOW);
-                        if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                            throw cRuntimeError(E_EBADARGS, e.f->getName());
-                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                            throw cRuntimeError(E_DIMLESS, e.f->getName());
-                        stk[tos-1] = e.f->getMathFunc2Args()(stk[tos-1].dbl, stk[tos].dbl);
+                        double arg1 = stk[tos-1];
+                        double arg2 = stk[tos];
+                        stk[tos-1] = e.f->getMathFunc2Args()(arg1, arg2);
                         tos--;
                         break;
+                    }
 
-                    case 3:
+                    case 3: {
                         if (tos < 2)
                             throw cRuntimeError(E_ESTKUFLOW);
-                        if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE || stk[tos-2].type != cNedValue::DOUBLE)
-                            throw cRuntimeError(E_EBADARGS, e.f->getName());
-                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit) || !opp_isempty(stk[tos-2].dblunit))
-                            throw cRuntimeError(E_DIMLESS, e.f->getName());
-                        stk[tos-2] = e.f->getMathFunc3Args()(stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
+                        double arg1 = stk[tos-2];
+                        double arg2 = stk[tos-1];
+                        double arg3 = stk[tos];
+                        stk[tos-2] = e.f->getMathFunc3Args()(arg1, arg2, arg3);
                         tos -= 2;
                         break;
+                    }
 
-                    case 4:
+                    case 4: {
                         if (tos < 3)
                             throw cRuntimeError(E_ESTKUFLOW);
-                        if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE || stk[tos-2].type != cNedValue::DOUBLE || stk[tos-3].type != cNedValue::DOUBLE)
-                            throw cRuntimeError(E_EBADARGS, e.f->getName());
-                        if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit) || !opp_isempty(stk[tos-2].dblunit) || !opp_isempty(stk[tos-3].dblunit))
-                            throw cRuntimeError(E_DIMLESS, e.f->getName());
-                        stk[tos-3] = e.f->getMathFunc4Args()(stk[tos-3].dbl, stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
+                        double arg1 = stk[tos-3];
+                        double arg2 = stk[tos-2];
+                        double arg3 = stk[tos-1];
+                        double arg4 = stk[tos];
+                        stk[tos-3] = e.f->getMathFunc4Args()(arg1, arg2, arg3, arg4);
                         tos -= 3;
                         break;
+                    }
 
                     default:
                         throw cRuntimeError(E_BADEXP);
@@ -467,9 +613,11 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                 if (argPos < 0)
                     throw cRuntimeError(E_ESTKUFLOW);
                 const char *argtypes = e.fu->getArgTypes();
-                for (int i = 0; i < numArgs; i++)
-                    if (argtypes[i] != '*' && stk[argPos+i].type != (argtypes[i] == 'L' ? 'D' : argtypes[i]))
+                for (int i = 0; i < numArgs; i++) {
+                    bool ok = argtypes[i] == '*' || argtypes[i] == stk[argPos+i].type || (argtypes[i] == 'L' && stk[argPos+i].type == cNedValue::DOUBLE); // allow int-to-double, but not double-to-int implicit conversion
+                    if (!ok)
                         throw cRuntimeError(E_EBADARGS, e.fu->getFullName());
+                }
 
                 // note: unit checking is left to the function itself
                 stk[argPos] = e.fu->evaluate(context, stk+argPos, numArgs);
@@ -482,183 +630,233 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                 throw cRuntimeError("evaluate: Constant subexpressions must have already been evaluated");
 
             case Elem::OP:
-                if (e.op == NEG || e.op == NOT || e.op == BIN_NOT) {
-                    // unary
-                    if (tos < 0)
-                        throw cRuntimeError(E_ESTKUFLOW);
-                    switch (e.op) {
-                        case NEG:
-                            if (stk[tos].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "-");
-                            stk[tos].dbl = -stk[tos].dbl;
-                            break;
+                try {
+                    if (e.op == NEG || e.op == NOT || e.op == BIN_NOT) {
+                        // unary
+                        if (tos < 0)
+                            throw cRuntimeError(E_ESTKUFLOW);
+                        switch (e.op) {
+                            case NEG:
+                                if (stk[tos].type == cNedValue::INT)
+                                    stk[tos].intv = -stk[tos].intv;
+                                else if (stk[tos].type == cNedValue::DOUBLE)
+                                    stk[tos].dbl = -stk[tos].dbl;
+                                else
+                                    errorNumericArgExpected(stk[tos]);
+                                break;
 
-                        case NOT:
-                            if (stk[tos].type != cNedValue::BOOL)
-                                throw cRuntimeError(E_EBADARGS, "!");
-                            stk[tos].bl = !stk[tos].bl;
-                            break;
+                            case NOT:
+                                if (stk[tos].type != cNedValue::BOOL)
+                                    errorBooleanArgExpected(stk[tos]);
+                                stk[tos].bl = !stk[tos].bl;
+                                break;
 
-                        case BIN_NOT:
-                            if (stk[tos].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "~");
-                            if (!opp_isempty(stk[tos].dblunit))
-                                throw cRuntimeError(E_DIMLESS, "~");
-                            stk[tos].dbl = ~ulong(stk[tos].dbl);
-                            break;
+                            case BIN_NOT:
+                                if (stk[tos].type != cNedValue::INT)
+                                    errorIntegerArgExpected(stk[tos]);
+                                if (!opp_isempty(stk[tos].unit))
+                                    errorDimlessArgExpected(stk[tos]);
+                                stk[tos].intv = ~stk[tos].intv;
+                                break;
 
-                        default:
-                            ASSERT(false);
+                            default:
+                                ASSERT(false);
+                        }
                     }
-                }
-                else if (e.op == IIF) {
-                    // tertiary
-                    if (tos < 2)
-                        throw cRuntimeError(E_ESTKUFLOW);
-                    // 1st arg must be bool, others 2nd and 3rd can be anything
-                    if (stk[tos-2].type != cNedValue::BOOL)
-                        throw cRuntimeError(E_EBADARGS, "?:");
-                    stk[tos-2] = (stk[tos-2].bl ? stk[tos-1] : stk[tos]);
-                    tos -= 2;
-                }
-                else {
-                    // binary
-                    if (tos < 1)
-                        throw cRuntimeError(E_ESTKUFLOW);
-                    switch (e.op) {
-                        case ADD:
-                            // double addition or string concatenation
-                            if (stk[tos-1].type == cNedValue::DOUBLE && stk[tos].type == cNedValue::DOUBLE) {
-                                stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
-                                stk[tos-1].dbl = stk[tos-1].dbl + stk[tos].dbl;
-                            }
-                            else if (stk[tos-1].type == cNedValue::STRING && stk[tos].type == cNedValue::STRING)
-                                stk[tos-1].s = stk[tos-1].s + stk[tos].s;
-                            else
-                                throw cRuntimeError(E_EBADARGS, "+");
-                            tos--;
-                            break;
+                    else if (e.op == IIF) {
+                        // ternary
+                        if (tos < 2)
+                            throw cRuntimeError(E_ESTKUFLOW);
+                        if (stk[tos-2].type != cNedValue::BOOL)
+                            errorBooleanArgExpected(stk[tos-2]);
+                        stk[tos-2] = stk[tos-2].bl ? stk[tos-1] : stk[tos];
+                        tos -= 2;
+                    }
+                    else {
+                        // binary
+                        if (tos < 1)
+                            throw cRuntimeError(E_ESTKUFLOW);
+                        switch (e.op) {
+                            case SUB:
+                                // negate second argument, then fall through to double
+                                if (stk[tos].type == cNedValue::DOUBLE)
+                                    stk[tos].dbl = -stk[tos].dbl;
+                                else if (stk[tos].type == cNedValue::INT)
+                                    stk[tos].intv = -stk[tos].intv; //TODO error for -MAXINT
+                                else
+                                    errorNumericArgExpected(stk[tos]);
+                                /* no break -- TODO use [[fallthrough]] once we go for C++17 */
 
-                        case SUB:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "-");
-                            stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
-                            stk[tos-1].dbl = stk[tos-1].dbl - stk[tos].dbl;
-                            tos--;
-                            break;
+                            case ADD:
+                                // numeric addition or string concatenation
+                                if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT) {  // both ints -> integer addition
+                                    bringToCommonTypeAndUnit(stk[tos], stk[tos-1]);
+                                    if (stk[tos].type == cNedValue::INT)
+                                        stk[tos-1].intv = safeAdd(stk[tos-1].intv, stk[tos].intv);
+                                    else //DOUBLE
+                                        stk[tos-1].dbl = stk[tos-1].dbl + stk[tos].dbl;
+                                }
+                                else if (stk[tos-1].type == cNedValue::DOUBLE || stk[tos].type == cNedValue::DOUBLE) { // at least one is double -> double addition
+                                    stk[tos-1].convertToDouble();
+                                    stk[tos].convertToDouble();
+                                    stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].unit, stk[tos-1].unit);
+                                    stk[tos-1].dbl = stk[tos-1].dbl + stk[tos].dbl;
+                                }
+                                else if (stk[tos-1].type == cNedValue::STRING && stk[tos].type == cNedValue::STRING)
+                                    stk[tos-1].s = stk[tos-1].s + stk[tos].s;
+                                else
+                                    errorNumericArgsExpected(stk[tos-1], stk[tos]);
+                                tos--;
+                                break;
 
-                        case MUL:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "*");
-                            if (!opp_isempty(stk[tos].dblunit) && !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError("Multiplying two quantities with units is not supported");
-                            stk[tos-1].dbl = stk[tos-1].dbl * stk[tos].dbl;
-                            if (opp_isempty(stk[tos-1].dblunit))
-                                stk[tos-1].dblunit = stk[tos].dblunit;
-                            tos--;
-                            break;
+                            case MUL:
+                                if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT) {  // both are integers -> integer multiplication
+                                    if (!opp_isempty(stk[tos].unit) && !opp_isempty(stk[tos-1].unit))
+                                        throw cRuntimeError("Multiplying two quantities with units is not supported");
+                                    stk[tos-1].intv = safeMul(stk[tos-1].intv, stk[tos].intv);
+                                    if (opp_isempty(stk[tos-1].unit))
+                                        stk[tos-1].unit = stk[tos].unit;
+                                }
+                                else if (stk[tos-1].type == cNedValue::DOUBLE || stk[tos].type == cNedValue::DOUBLE) { // at least one is double -> double multiplication
+                                    if (!opp_isempty(stk[tos].unit) && !opp_isempty(stk[tos-1].unit))
+                                        throw cRuntimeError("Multiplying two quantities with units is not supported");
+                                    stk[tos-1].convertToDouble();
+                                    stk[tos].convertToDouble();
+                                    stk[tos-1].dbl = stk[tos-1].dbl * stk[tos].dbl;
+                                    if (opp_isempty(stk[tos-1].unit))
+                                        stk[tos-1].unit = stk[tos].unit;
+                                }
+                                else
+                                    errorNumericArgsExpected(stk[tos-1], stk[tos]);
+                                tos--;
+                                break;
 
-                        case DIV:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "/");
-                            // for now we only support num/num, unit/num, and unit/unit if the two units are convertible
-                            if (!opp_isempty(stk[tos].dblunit))
-                                stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
-                            stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;
-                            if (!opp_isempty(stk[tos].dblunit))
-                                stk[tos-1].dblunit = nullptr;
-                            tos--;
-                            break;
+                            case DIV:
+                                // even if both args are integer, we perform the division in double, to reduce surprises;
+                                // for now we only support num/num, unit/num, plus and unit/unit only if the two units are convertible
+                                stk[tos-1].convertToDouble();
+                                stk[tos].convertToDouble();
+                                if (!opp_isempty(stk[tos].unit))
+                                    stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].unit, stk[tos-1].unit);
+                                stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;
+                                if (!opp_isempty(stk[tos].unit))
+                                    stk[tos-1].unit = nullptr;
+                                tos--;
+                                break;
 
-                        case MOD:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "%");
-                            if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError(E_DIMLESS, "%");
-                            stk[tos-1].dbl = fmod(trunc(stk[tos-1].dbl), trunc(stk[tos].dbl));
-                            tos--;
-                            break;
+                            case MOD:
+                                if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT) {  // both ints -> integer modulo
+                                    if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                        errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                    stk[tos-1].intv = stk[tos-1].intv % stk[tos].intv;  //TODO result differs from fmod's result for negative numbers
+                                }
+                                else if (stk[tos-1].type == cNedValue::DOUBLE || stk[tos].type == cNedValue::DOUBLE) { // at least one is double -> double modulo
+                                    stk[tos-1].convertToDouble();
+                                    stk[tos].convertToDouble();
+                                    if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                        errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                    stk[tos-1].dbl = fmod(trunc(stk[tos-1].dbl), trunc(stk[tos].dbl));
+                                }
+                                else
+                                    errorNumericArgsExpected(stk[tos-1], stk[tos]);
+                                tos--;
+                                break;
 
-                        case POW:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "^");
-                            if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError(E_DIMLESS, "^");
-                            stk[tos-1].dbl = pow(stk[tos-1].dbl, stk[tos].dbl);
-                            tos--;
-                            break;
+                            case POW:
+                                if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT && stk[tos].intv >= 0) {  // both ints, 0 or positive exponent -> integer power-of
+                                    if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                        errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                    stk[tos-1].intv = intPow(stk[tos-1].intv, stk[tos].intv);
+                                }
+                                else {
+                                    stk[tos-1].convertToDouble();
+                                    stk[tos].convertToDouble();
+                                    if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                        errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                    stk[tos-1].dbl = pow(stk[tos-1].dbl, stk[tos].dbl);
+                                }
+                                tos--;
+                                break;
 
-                        case AND:
-                            if (stk[tos].type != cNedValue::BOOL || stk[tos-1].type != cNedValue::BOOL)
-                                throw cRuntimeError(E_EBADARGS, "&&");
-                            stk[tos-1].bl = stk[tos-1].bl && stk[tos].bl;
-                            tos--;
-                            break;
+                            case AND:
+                                if (stk[tos].type != cNedValue::BOOL || stk[tos-1].type != cNedValue::BOOL)
+                                    errorBooleanArgsExpected(stk[tos-1], stk[tos]);
+                                stk[tos-1].bl = stk[tos-1].bl && stk[tos].bl;
+                                tos--;
+                                break;
 
-                        case OR:
-                            if (stk[tos].type != cNedValue::BOOL || stk[tos-1].type != cNedValue::BOOL)
-                                throw cRuntimeError(E_EBADARGS, "||");
-                            stk[tos-1].bl = stk[tos-1].bl || stk[tos].bl;
-                            tos--;
-                            break;
+                            case OR:
+                                if (stk[tos].type != cNedValue::BOOL || stk[tos-1].type != cNedValue::BOOL)
+                                    errorBooleanArgsExpected(stk[tos-1], stk[tos]);
+                                stk[tos-1].bl = stk[tos-1].bl || stk[tos].bl;
+                                tos--;
+                                break;
 
-                        case XOR:
-                            if (stk[tos].type != cNedValue::BOOL || stk[tos-1].type != cNedValue::BOOL)
-                                throw cRuntimeError(E_EBADARGS, "##");
-                            stk[tos-1].bl = stk[tos-1].bl != stk[tos].bl;
-                            tos--;
-                            break;
+                            case XOR:
+                                if (stk[tos].type != cNedValue::BOOL || stk[tos-1].type != cNedValue::BOOL)
+                                    errorBooleanArgsExpected(stk[tos-1], stk[tos]);
+                                stk[tos-1].bl = stk[tos-1].bl != stk[tos].bl;
+                                tos--;
+                                break;
 
-                        case BIN_AND:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "&");
-                            if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError(E_DIMLESS, "&");
-                            stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) & ulong(stk[tos].dbl));
-                            tos--;
-                            break;
+                            case BIN_AND:
+                                if (stk[tos].type != cNedValue::INT || stk[tos-1].type != cNedValue::INT)
+                                    errorIntegerArgsExpected(stk[tos-1], stk[tos]);
+                                if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                    errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                stk[tos-1].intv = stk[tos-1].intv & stk[tos].intv;
+                                tos--;
+                                break;
 
-                        case BIN_OR:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "|");
-                            if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError(E_DIMLESS, "|");
-                            stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) | ulong(stk[tos].dbl));
-                            tos--;
-                            break;
+                            case BIN_OR:
+                                if (stk[tos].type != cNedValue::INT || stk[tos-1].type != cNedValue::INT)
+                                    errorIntegerArgsExpected(stk[tos-1], stk[tos]);
+                                if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                    errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                stk[tos-1].intv = stk[tos-1].intv | stk[tos].intv;
+                                tos--;
+                                break;
 
-                        case BIN_XOR:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "#");
-                            if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError(E_DIMLESS, "#");
-                            stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) ^ ulong(stk[tos].dbl));
-                            tos--;
-                            break;
+                            case BIN_XOR:
+                                if (stk[tos].type != cNedValue::INT || stk[tos-1].type != cNedValue::INT)
+                                    errorIntegerArgsExpected(stk[tos-1], stk[tos]);
+                                if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                    errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                stk[tos-1].intv = stk[tos-1].intv ^ stk[tos].intv;
+                                tos--;
+                                break;
 
-                        case LSHIFT:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, "<<");
-                            if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError(E_DIMLESS, "<<");
-                            stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) << ulong(stk[tos].dbl));
-                            tos--;
-                            break;
+                            case LSHIFT:
+                                if (stk[tos].type != cNedValue::INT || stk[tos-1].type != cNedValue::INT)
+                                    errorIntegerArgsExpected(stk[tos-1], stk[tos]);
+                                if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                    errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                stk[tos-1].intv = shift(stk[tos-1].intv, stk[tos].intv);
+                                tos--;
+                                break;
 
-                        case RSHIFT:
-                            if (stk[tos].type != cNedValue::DOUBLE || stk[tos-1].type != cNedValue::DOUBLE)
-                                throw cRuntimeError(E_EBADARGS, ">>");
-                            if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                                throw cRuntimeError(E_DIMLESS, ">>");
-                            stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) >> ulong(stk[tos].dbl));
-                            tos--;
-                            break;
+                            case RSHIFT:
+                                if (stk[tos].type != cNedValue::INT || stk[tos-1].type != cNedValue::INT)
+                                    errorIntegerArgsExpected(stk[tos-1], stk[tos]);
+                                if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
+                                    errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                if (stk[tos].intv < 0 && stk[tos].intv == -stk[tos].intv) // -MAXINT has no positive equivalent
+                                    stk[tos-1].intv = 0;
+                                else
+                                    stk[tos-1].intv = shift(stk[tos-1].intv, -stk[tos].intv);
+                                tos--;
+                                break;
 
 #define COMPARISON(RELATION) \
-                                 if (stk[tos-1].type==cNedValue::DBL && stk[tos].type==cNedValue::DBL) { \
-                                     stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit); \
+                                 if (stk[tos-1].type==cNedValue::INT && stk[tos].type==cNedValue::INT) { \
+                                    bringToCommonTypeAndUnit(stk[tos], stk[tos-1]); \
+                                    stk[tos-1] = (stk[tos-1].intv RELATION stk[tos].intv); \
+                                 } else if (stk[tos-1].type==cNedValue::DOUBLE || stk[tos].type==cNedValue::DOUBLE) { \
+                                     stk[tos-1].convertToDouble(); \
+                                     stk[tos].convertToDouble(); \
+                                     stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].unit, stk[tos-1].unit); \
                                      stk[tos-1] = (stk[tos-1].dbl RELATION stk[tos].dbl); \
-                                 } else if (stk[tos-1].type==cNedValue::STR && stk[tos].type==cNedValue::STR) \
+                                 } else if (stk[tos-1].type==cNedValue::STRING && stk[tos].type==cNedValue::STRING) \
                                      stk[tos-1] = (stk[tos-1].s RELATION stk[tos].s); \
                                  else if (stk[tos-1].type==cNedValue::BOOL && stk[tos].type==cNedValue::BOOL) \
                                      stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
@@ -666,35 +864,41 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                                      throw cRuntimeError(E_EBADARGS,#RELATION); \
                                  tos--;
 
-                        case EQ:
-                            COMPARISON(==);
-                            break;
-                        case NE:
-                            COMPARISON(!=);
-                            break;
-                        case LT:
-                            COMPARISON(<);
-                            break;
-                        case LE:
-                            COMPARISON(<=);
-                            break;
-                        case GT:
-                            COMPARISON(>);
-                            break;
-                        case GE:
-                            COMPARISON(>=);
-                            break;
+                            case EQ:
+                                COMPARISON(==);
+                                break;
+                            case NE:
+                                COMPARISON(!=);
+                                break;
+                            case LT:
+                                COMPARISON(<);
+                                break;
+                            case LE:
+                                COMPARISON(<=);
+                                break;
+                            case GT:
+                                COMPARISON(>);
+                                break;
+                            case GE:
+                                COMPARISON(>=);
+                                break;
 #undef COMPARISON
-                        default:
-                            throw cRuntimeError(E_BADEXP);
+                            default:
+                                throw cRuntimeError(E_BADEXP);
+                        }
                     }
+                }
+                catch (std::exception& ex) {
+                    std::string msg = std::string(Elem::getOpName(e.op)) + ": " + ex.what();
+                    throw cRuntimeError(msg.c_str());
                 }
                 break;
 
             default:
                 throw cRuntimeError(E_BADEXP);
         }
-    }
+    } // for
+
     if (tos != 0)
         throw cRuntimeError(E_BADEXP);
 
@@ -705,7 +909,7 @@ std::string cDynamicExpression::str() const
 {
     // We perform the same algorithm as during evaluation (i.e. stack machine),
     // only instead of actual calculations we store the result as string.
-    // We need to keep track of operator precendences to be able to add parens where needed.
+    // We need to keep track of operator precedences to be able to add parens where needed.
 
     try {
         const int stksize = 20;
@@ -722,6 +926,16 @@ std::string cDynamicExpression::str() const
                     strstk[++tos] = (e.b ? "true" : "false");
                     pristk[tos] = 0;
                     break;
+
+                case Elem::INT: {
+                    if (tos >= stksize-1)
+                        throw cRuntimeError(E_ESTKOFLOW);
+                    char buf[32];
+                    sprintf(buf, "%" PRId64, (int64_t) e.i.i);
+                    strstk[++tos] = buf;
+                    pristk[tos] = 0;
+                    break;
+                }
 
                 case Elem::DBL: {
                     if (tos >= stksize-1)
@@ -743,7 +957,7 @@ std::string cDynamicExpression::str() const
                 case Elem::XML:
                     if (tos >= stksize-1)
                         throw cRuntimeError(E_ESTKOFLOW);
-                    strstk[++tos] = std::string("<") + (e.x ? e.x->getTagName() : "null") +">";  // FIXME plus location info?
+                    strstk[++tos] = e.x==nullptr ? "<nullptr>" : std::string("<") + e.x->getTagName() + ">@" + e.x->getSourceLocation();
                     pristk[tos] = 0;
                     break;
 
@@ -789,6 +1003,7 @@ std::string cDynamicExpression::str() const
                             case BIN_NOT: op = " ~"; break;
                             default: op = " ???";
                         }
+
                         strstk[tos] = std::string(op) + strstk[tos];  // pri=0: never needs parens
                         pristk[tos] = 0;
                     }

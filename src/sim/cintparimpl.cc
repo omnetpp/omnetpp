@@ -109,7 +109,7 @@ intpar_t cIntParImpl::intValue(cComponent *context) const
         return val;
     else {
         cNedValue v = evaluate(expr, context);
-        return v.doubleValueInUnit(getUnit()); // allows conversion from INT
+        return v.intValueInUnit(getUnit());
     }
 }
 

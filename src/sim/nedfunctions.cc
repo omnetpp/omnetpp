@@ -372,9 +372,9 @@ DEF(nedf_int,
         case cNedValue::INT:
             return argv[0];
         case cNedValue::DOUBLE:
-            return (intpar_t)floor((double)argv[0]);
+            return checked_int_cast<intpar_t>(floor((double)argv[0]));
         case cNedValue::STRING:
-            return (intpar_t)floor(opp_atof(argv[0].stringValue()));  //XXX catch & wrap exception?
+            return checked_int_cast<intpar_t>(floor(opp_atof(argv[0].stringValue())));
         case cNedValue::XML:
             throw cRuntimeError("int(): Cannot convert xml to int");
         default:
@@ -618,12 +618,14 @@ DEF(nedf_pareto_shifted,
 // discrete
 
 DEF(nedf_intuniform,
-    "int intuniform(int a, int b, int rng?)",
+    "int intuniform(intquantity a, intquantity b, int rng?)",
     "random/discrete",
     "Returns a random number from the Intuniform distribution",
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
-    return (intpar_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng);
+    if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)
+        throw cRuntimeError("intuniform(%s,%s): arguments must have the same unit", argv[0].stdstringValue().c_str(), argv[1].stdstringValue().c_str()); //TODO convert to smaller unit instead
+    return cNedValue((intpar_t)contextComponent->intuniform((int)argv[0], (int)argv[1], rng), argv[1].getUnit());
 })
 
 DEF(nedf_bernoulli,

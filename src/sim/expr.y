@@ -307,7 +307,12 @@ numliteral
         | quantity
                 {
                   std::string unit;
-                  *e++ = parseQuantity($1, unit);
+                  double d = parseQuantity($1, unit);
+                  bool isInteger = (d == floor(d)) && d >= std::numeric_limits<intpar_t>::min() && d <= std::numeric_limits<intpar_t>::max(); // note: it would be slightly better to try parsing it in integer in the first place
+                  if (isInteger)
+                      *e++ = (int64_t)d;
+                  else
+                      *e++ = d;
                   if (!unit.empty())
                       (e-1)->setUnit(unit.c_str());
                   delete [] $1;

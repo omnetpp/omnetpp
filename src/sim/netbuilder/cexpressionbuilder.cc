@@ -236,12 +236,17 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
     const char *val = node->getValue();
     switch (node->getType()) {
         case LIT_BOOL:   elems[pos++] = !strcmp(val,"true"); break;
-        case LIT_INT:    elems[pos++] = opp_atoll(node->getValue()); break; // this handles hex as well
+        case LIT_INT:    elems[pos++] = (intpar_t)opp_atoll(node->getValue()); break; // this handles hex as well
         case LIT_DOUBLE: elems[pos++] = opp_atof(node->getValue()); break;
         case LIT_STRING: elems[pos++] = node->getValue(); break;
         case LIT_QUANTITY: {
             std::string unit;
-            elems[pos++] = UnitConversion::parseQuantity(node->getValue(), unit);
+            double d = UnitConversion::parseQuantity(node->getValue(), unit);
+            bool isInteger = (d == floor(d)) && d >= std::numeric_limits<intpar_t>::min() && d <= std::numeric_limits<intpar_t>::max(); // note: it would be slightly better to try parsing it in integer in the first place
+            if (isInteger)
+                elems[pos++] = (int64_t)d;
+            else
+                elems[pos++] = d;
             elems[pos-1].setUnit(unit.c_str());
             break;
         }

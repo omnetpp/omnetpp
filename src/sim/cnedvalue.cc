@@ -56,9 +56,12 @@ const char *cNedValue::getTypeName(Type t)
     }
 }
 
-void cNedValue::cannotCastError(Type t) const
+void cNedValue::cannotCastError(Type targetType) const
 {
-    throw cRuntimeError("Cannot cast %s from type %s to %s", str().c_str(), getTypeName(type), getTypeName(t));
+    const char *note = (getType() == DOUBLE && targetType==INT) ?
+            " (note: no implicit conversion from double to int)" : "";
+    throw cRuntimeError("Cannot cast %s from type %s to %s%s",
+            str().c_str(), getTypeName(type), getTypeName(targetType), note);
 }
 
 void cNedValue::set(const cPar& par)
@@ -77,11 +80,37 @@ intpar_t cNedValue::intValue() const
 {
     if (type == INT)
         return intv;
-    else if (type == DOUBLE)
-        return checked_int_cast<intpar_t>(dbl, OVERFLOW_MSG);
     else
         cannotCastError(INT);
-    return 0;
+}
+
+//TODO these should be in some utils.cc file
+inline intpar_t safeMul(intpar_t a, intpar_t b)
+{
+#ifdef __GNUC__  // and compatibles like clang
+    intpar_t res;
+    if ( __builtin_mul_overflow(a, b, &res))
+        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
+    return res;
+#else
+    return a * b;  // unchecked
+#endif
+}
+
+intpar_t cNedValue::intValueInUnit(const char *targetUnit) const
+{
+    if (type == INT) {
+        double c = UnitConversion::getConversionFactor(getUnit(), targetUnit);
+        if (c == 1)
+            return intv;
+        else if (c > 1 && c == floor(c))
+            return safeMul((intpar_t)c, intv);
+        else
+            throw cRuntimeError("Cannot convert integer from unit %s to %s: no conversion or conversion rate is not integer", getUnit(), targetUnit);
+    }
+    else {
+        cannotCastError(INT);
+    }
 }
 
 double cNedValue::doubleValue() const

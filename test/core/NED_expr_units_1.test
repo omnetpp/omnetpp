@@ -1,0 +1,51 @@
+%description:
+Test the shift operator in NED expressions (they are implemented
+with cDynamicExpression). 64-bit signed arithmetic.
+
+%global:
+
+void test(const char *expr)
+{
+    cDynamicExpression e;
+    e.parse(expr);
+    std::string result;
+    try {
+        cNedValue v = e.evaluate(nullptr);
+        result = v.str() + "  (" + cNedValue::getTypeName(v.getType()) + ")";
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    EV << expr << " ==> " << result << "\n";
+}
+
+void test(const char *s1, const std::string& s2, const char *s3)
+{
+    test((std::string(s1) + " " + s2 + " " + s3).c_str());
+}
+
+%activity:
+test("1MiB");
+test("1.1MiB");
+test("1KiB 1B");
+test("1B 1KiB");
+
+test("1MiB+1KiB");
+test("1KiB+1MiB");
+
+test("1MiB-1KiB");
+test("1KiB-1MiB");
+
+
+EV << ".\n";
+
+%contains: stdout
+1MiB ==> 1MiB  (integer)
+1.1MiB ==> 1.1MiB  (double)
+1KiB 1B ==> 1025B  (integer)
+1B 1KiB ==> 1.00098KiB  (double)
+1MiB+1KiB ==> 1025KiB  (integer)
+1KiB+1MiB ==> 1025KiB  (integer)
+1MiB-1KiB ==> 1023KiB  (integer)
+1KiB-1MiB ==> -1023KiB  (integer)
+.
+
