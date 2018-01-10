@@ -482,6 +482,7 @@ QVariant FieldNode::computeData(int role)
 
     // the rest is for the regular, non-root nodes
 
+    bool isPointer = containingDesc->getFieldIsPointer(fieldIndex);
     bool isCObject = containingDesc->getFieldIsCObject(fieldIndex);
     bool isCompound = containingDesc->getFieldIsCompound(fieldIndex);
     bool isArray = containingDesc->getFieldIsArray(fieldIndex);
@@ -495,8 +496,9 @@ QVariant FieldNode::computeData(int role)
     QString equals = " = ";
     QString editable = isEditable() ? " [...] " : "";
     QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
+    void *valuePointer = isCompound && !isCObject && !isArray ? containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0) : nullptr;
 
-    if (isCompound && !isCObject && !isArray) {
+    if (isCompound && !isCObject && !isArray && valuePointer) {
         // Even if it's not a CObject, it can have a different dynamic type
         // than the declared static type, which we can get this way.
         const char *dynamicType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, 0);
@@ -518,13 +520,13 @@ QVariant FieldNode::computeData(int role)
         }
     }
 
-    if (!isArray && isCObject) {
+    if (!isArray && isPointer) {
         if (objectCasted) {
             objectInfo = objectCasted->str().c_str();
             if (objectInfo.length() > 0)
                 objectInfo = QString(": ") + objectInfo;
         }
-        else
+        else if (!valuePointer)
             fieldValue = "nullptr";
     }
 
