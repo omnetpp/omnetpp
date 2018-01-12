@@ -19,6 +19,7 @@
 #include <algorithm>
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
+#include "common/unitconversion.h"
 #include "omnetpp/distrib.h"
 #include "omnetpp/cnedmathfunction.h"
 #include "omnetpp/cnedfunction.h"
@@ -362,9 +363,9 @@ DEF(nedf_expand,
 })
 
 DEF(nedf_int,
-    "int int(any x)",
+    "intquantity int(any x)",
     "conversion",
-    "Converts x to an integer (C++ long), and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error.",
+    "Converts x to int, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error. Units are preserved.",
 {
     switch (argv[0].getType()) {
         case cNedValue::BOOL:
@@ -372,9 +373,12 @@ DEF(nedf_int,
         case cNedValue::INT:
             return argv[0];
         case cNedValue::DOUBLE:
-            return checked_int_cast<intpar_t>(floor((double)argv[0]));
-        case cNedValue::STRING:
-            return checked_int_cast<intpar_t>(floor(opp_atof(argv[0].stringValue())));
+            return cNedValue(checked_int_cast<intpar_t>(floor(argv[0].doubleValue())), argv[0].getUnit());
+        case cNedValue::STRING: {
+            std::string unit;
+            double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
+            return cNedValue(checked_int_cast<intpar_t>(floor(d)), cNedValue::getPooled(unit.c_str()));
+        }
         case cNedValue::XML:
             throw cRuntimeError("int(): Cannot convert xml to int");
         default:
@@ -383,19 +387,22 @@ DEF(nedf_int,
 })
 
 DEF(nedf_double,
-    "double double(any x)",
+    "quantity double(any x)",
     "conversion",
-    "Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error.",
+    "Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error. Units are preserved.",
 {
     switch (argv[0].getType()) {
         case cNedValue::BOOL:
             return (bool)argv[0] ? 1.0 : 0.0;
         case cNedValue::INT:
-            return (intpar_t)argv[0];
+            return cNedValue((double)argv[0].intValue(), argv[0].getUnit());
         case cNedValue::DOUBLE:
             return argv[0];
-        case cNedValue::STRING:
-            return opp_atof(argv[0].stringValue());  //XXX catch & wrap exception?
+        case cNedValue::STRING: {
+            std::string unit;
+            double d = UnitConversion::parseQuantity(argv[0].stringValue(), unit);
+            return cNedValue(d, cNedValue::getPooled(unit.c_str()));
+        }
         case cNedValue::XML:
             throw cRuntimeError("double(): Cannot convert xml to double");
         default:
