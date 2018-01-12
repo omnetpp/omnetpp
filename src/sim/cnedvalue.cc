@@ -100,6 +100,8 @@ inline intpar_t safeMul(intpar_t a, intpar_t b)
 intpar_t cNedValue::intValueInUnit(const char *targetUnit) const
 {
     if (type == INT) {
+        if (intv == 0 && opp_isempty(unit))
+            return 0;  // accept 0 without unit
         double c = UnitConversion::getConversionFactor(getUnit(), targetUnit);
         if (c == 1)
             return intv;
