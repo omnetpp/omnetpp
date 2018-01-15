@@ -1,0 +1,36 @@
+%description:
+Test weighted histogram collection methods.
+
+%global:
+
+static void dumpBins(const cHistogram& hist)
+{
+    EV << "under: " << hist.getUnderflowSumWeights() << std::endl;
+
+    for (int i = 0; i < hist.getNumCells(); ++i)
+        EV << hist.getBasepoint(i) << " .. " << hist.getBasepoint(i+1) << " : " << hist.getCellValue(i) << std::endl;
+
+    EV << "over: " << hist.getOverflowSumWeights() << std::endl;
+}
+
+%activity:
+
+cHistogram hist("hist", nullptr, true);
+hist.createUniformBins(0, 6, 2);
+
+hist.collect2(-1, 0.1); // underflow
+hist.collect2(0, 3.5);
+hist.collect2(3, 0);
+hist.collect2(5, 1.2);
+hist.collect2(5, 2);
+hist.collect2(6, 2); // overflow
+hist.collect2(7, 1.2);
+dumpBins(hist);
+
+
+%contains: stdout
+under: 0.1
+0 .. 2 : 3.5
+2 .. 4 : 0
+4 .. 6 : 3.2
+over: 3.2

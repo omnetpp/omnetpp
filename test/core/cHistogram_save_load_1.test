@@ -1,0 +1,133 @@
+%description:
+Test histogram saving and loading.
+
+%activity:
+
+cHistogram hist("hist", new cFixedRangeHistogramStrategy(40, 60));
+
+for (int i=0; i<200; i++)
+    hist.collect(normal(50, 10));
+
+FILE *f = fopen("hist.txt", "w");
+hist.saveToFile(f);
+fclose(f);
+
+cHistogram hist2("hist2", nullptr);
+
+FILE *f2 = fopen("hist.txt", "r");
+hist2.loadFromFile(f2);
+fclose(f2);
+
+FILE *f3 = fopen("hist2.txt", "w");
+hist2.saveToFile(f3);
+fclose(f3);
+
+%contains: hist.txt
+200	 #= num_vals
+22.6488 78.8606	 #= min, max
+0	 #= weighted
+9947.06	 #= sum
+515689	 #= sum_squared_vals
+42	 #= num_underflows
+32	 #= num_overflows
+42	 #= underflow
+32	 #= overflow
+20	 #= num_bins
+#= bin_edges
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+#= bin_values
+ 2
+ 6
+ 7
+ 4
+ 9
+ 5
+ 11
+ 7
+ 7
+ 5
+ 12
+ 5
+ 5
+ 7
+ 3
+ 4
+ 5
+ 6
+ 14
+ 2
+
+%contains: hist2.txt
+200	 #= num_vals
+22.6488 78.8606	 #= min, max
+0	 #= weighted
+9947.06	 #= sum
+515689	 #= sum_squared_vals
+42	 #= num_underflows
+32	 #= num_overflows
+42	 #= underflow
+32	 #= overflow
+20	 #= num_bins
+#= bin_edges
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+#= bin_values
+ 2
+ 6
+ 7
+ 4
+ 9
+ 5
+ 11
+ 7
+ 7
+ 5
+ 12
+ 5
+ 5
+ 7
+ 3
+ 4
+ 5
+ 6
+ 14
+ 2

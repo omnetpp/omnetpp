@@ -85,7 +85,7 @@ for (int i=0; i<FIRSTVALS+10; i++)
         EV << "\n";
     }
 
-    // test str() 
+    // test str()
     for (int k=0; k<nh; k++)
         h[k]->str();
 
@@ -125,20 +125,20 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[19]         double-psquare:  0 cells, DBL_MIN..DBL_MIN
 
 1 observations:
- h[0]               int-fixed: 10 cells, 10..20
+ h[0]               int-fixed: collecting
  h[1]                int-auto: collecting
  h[2]           int-autoupper: collecting
  h[3]           int-autolower: collecting
- h[4]         int-fixed-5cell:  5 cells, 10..20
+ h[4]         int-fixed-5cell: collecting
  h[5]          int-auto-5cell: collecting
  h[6]     int-autoupper-5cell: collecting
  h[7]     int-autolower-5cell: collecting
  h[8]        int-varhist-auto: collecting
- h[9]            double-fixed: 30 cells, 10..20
+ h[9]            double-fixed: collecting
  h[10]            double-auto: collecting
  h[11]       double-autoupper: collecting
  h[12]       double-autolower: collecting
- h[13]     double-fixed-5cell:  5 cells, 10..20
+ h[13]     double-fixed-5cell: collecting
  h[14]      double-auto-5cell: collecting
  h[15] double-autoupper-5cell: collecting
  h[16] double-autolower-5cell: collecting
@@ -147,20 +147,20 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[19]         double-psquare:  0 cells, 15..15
 
 99 observations:
- h[0]               int-fixed: 10 cells, 10..20
+ h[0]               int-fixed: collecting
  h[1]                int-auto: collecting
  h[2]           int-autoupper: collecting
  h[3]           int-autolower: collecting
- h[4]         int-fixed-5cell:  5 cells, 10..20
+ h[4]         int-fixed-5cell: collecting
  h[5]          int-auto-5cell: collecting
  h[6]     int-autoupper-5cell: collecting
  h[7]     int-autolower-5cell: collecting
  h[8]        int-varhist-auto: collecting
- h[9]            double-fixed: 30 cells, 10..20
+ h[9]            double-fixed: collecting
  h[10]            double-auto: collecting
  h[11]       double-autoupper: collecting
  h[12]       double-autolower: collecting
- h[13]     double-fixed-5cell:  5 cells, 10..20
+ h[13]     double-fixed-5cell: collecting
  h[14]      double-auto-5cell: collecting
  h[15] double-autoupper-5cell: collecting
  h[16] double-autolower-5cell: collecting

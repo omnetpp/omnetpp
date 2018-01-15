@@ -1,0 +1,26 @@
+%description:
+Test fixed range histogram strategy.
+
+%global:
+
+static void dumpBins(const cHistogram& hist)
+{
+    for (int i = 0; i <= hist.getNumCells(); ++i)
+        EV << hist.getBasepoint(i) << " ";
+
+    EV << std::endl;
+}
+
+%activity:
+
+cHistogram hist("reals", new cFixedRangeHistogramStrategy(-1.5, 1.5, 0.5, cIHistogramStrategy::MODE_REALS));
+hist.collect(0);
+dumpBins(hist);
+
+cHistogram hist2("integers", new cFixedRangeHistogramStrategy(-10, 10, 2, cIHistogramStrategy::MODE_INTEGERS));
+hist2.collect(0);
+dumpBins(hist2);
+
+%contains: stdout
+-1.5 -1 -0.5 0 0.5 1 1.5
+-10 -8 -6 -4 -2 0 2 4 6 8 10

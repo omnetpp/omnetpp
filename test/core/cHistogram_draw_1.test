@@ -1,0 +1,77 @@
+%description:
+Test drawing random numbers from a histogram.
+
+%global:
+
+static void dumpBins(const cHistogram& hist)
+{
+    EV << "under: " << hist.getUnderflowSumWeights() << std::endl;
+
+    for (int i = 0; i < hist.getNumCells(); ++i) {
+        EV << hist.getBasepoint(i) << " .. " << hist.getBasepoint(i+1) << " : " << hist.getCellValue(i) << std::endl;
+    }
+
+    EV << "over: " << hist.getOverflowSumWeights() << std::endl;
+}
+
+%activity:
+
+cHistogram hist("hist", new cFixedRangeHistogramStrategy(40, 60));
+
+for (int i = 0; i < 1000000; i++)
+    hist.collect(normal(50, 10));
+
+dumpBins(hist);
+
+cHistogram hist2("hist2", new cFixedRangeHistogramStrategy(40, 60));
+
+for (int i = 0; i < 1000000; i++)
+    hist2.collect(hist.draw());
+
+dumpBins(hist2);
+
+%contains: stdout
+under: 159045
+40 .. 41 : 25432
+41 .. 42 : 27903
+42 .. 43 : 30154
+43 .. 44 : 32251
+44 .. 45 : 33788
+45 .. 46 : 36232
+46 .. 47 : 37452
+47 .. 48 : 38365
+48 .. 49 : 39396
+49 .. 50 : 39905
+50 .. 51 : 40086
+51 .. 52 : 39261
+52 .. 53 : 38817
+53 .. 54 : 37326
+54 .. 55 : 35834
+55 .. 56 : 34124
+56 .. 57 : 32444
+57 .. 58 : 30070
+58 .. 59 : 27692
+59 .. 60 : 25427
+over: 158996
+under: 159176
+40 .. 41 : 25897
+41 .. 42 : 27767
+42 .. 43 : 30289
+43 .. 44 : 32227
+44 .. 45 : 33832
+45 .. 46 : 36221
+46 .. 47 : 37461
+47 .. 48 : 38109
+48 .. 49 : 39199
+49 .. 50 : 39431
+50 .. 51 : 39913
+51 .. 52 : 39159
+52 .. 53 : 38824
+53 .. 54 : 37621
+54 .. 55 : 35823
+55 .. 56 : 34397
+56 .. 57 : 32666
+57 .. 58 : 29936
+58 .. 59 : 27925
+59 .. 60 : 25209
+over: 158918

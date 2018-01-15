@@ -1,0 +1,64 @@
+%description:
+Test histogram bin creation methods.
+
+Test case 1: start with all scalar results enabled
+
+%global:
+
+static void dumpBins(const cHistogram& hist)
+{
+    for (size_t i = 0; i <= hist.getNumCells(); ++i)
+        EV << hist.getBasepoint(i) << " ";
+
+    EV << std::endl;
+}
+
+%activity:
+
+cHistogram hist("hist");
+hist.createUniformBins(0, 20, 1);
+dumpBins(hist);
+
+
+hist.clear();
+hist.createUniformBins(0, 20, 3); // should end at 21
+dumpBins(hist);
+
+
+hist.extendBinsTo(30, 5); // should add two bins to the end, ending at 31
+dumpBins(hist);
+
+
+hist.extendBinsTo(-2, 4); // should add one bin to the beginning, starting at -4
+dumpBins(hist);
+
+hist.mergeBins(5); // only two bins will remain
+dumpBins(hist);
+
+
+hist.mergeBins(2); // only one bin will remain
+dumpBins(hist);
+
+
+hist.clear();
+
+hist.setBinEdges({10, 100, 1000});
+dumpBins(hist);
+
+hist.appendBins({1010, 1020});
+dumpBins(hist);
+
+hist.prependBins({-200, -100});
+dumpBins(hist);
+
+
+%contains: stdout
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0 3 6 9 12 15 18 21
+0 3 6 9 12 15 18 21 26 31
+-4 0 3 6 9 12 15 18 21 26 31
+-4 12 31
+-4 31
+10 100 1000
+10 100 1000 1010 1020
+-200 -100 10 100 1000 1010 1020

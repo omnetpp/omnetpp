@@ -1,0 +1,57 @@
+%description:
+Test drawing random integers from a histogram.
+
+%global:
+
+static void dumpBins(const cHistogram& hist)
+{
+    EV << "under: " << hist.getUnderflowSumWeights() << std::endl;
+
+    for (int i = 0; i < hist.getNumCells(); ++i) {
+        EV << hist.getBasepoint(i) << " .. " << hist.getBasepoint(i+1) << " : " << hist.getCellValue(i) << std::endl;
+    }
+
+    EV << "over: " << hist.getOverflowSumWeights() << std::endl;
+}
+
+%activity:
+
+cHistogram hist("hist", new cFixedRangeHistogramStrategy(-10, 10, 2, cIHistogramStrategy::MODE_INTEGERS));
+
+for (int i = 0; i < 1000000; i++)
+    hist.collect(floor(normal(0, 4)));
+
+dumpBins(hist);
+
+cHistogram hist2("hist2", new cFixedRangeHistogramStrategy(-10, 10, 2, cIHistogramStrategy::MODE_INTEGERS));
+
+for (int i = 0; i < 1000000; i++)
+    hist2.collect(floor(hist.draw()));
+
+dumpBins(hist2);
+
+%contains: stdout
+under: 6289
+-10 .. -8 : 16507
+-8 .. -6 : 44215
+-6 .. -4 : 92034
+-4 .. -2 : 149528
+-2 .. 0 : 191350
+0 .. 2 : 191324
+2 .. 4 : 149757
+4 .. 6 : 91765
+6 .. 8 : 44357
+8 .. 10 : 16585
+over: 6289
+under: 6316
+-10 .. -8 : 16495
+-8 .. -6 : 44312
+-6 .. -4 : 92053
+-4 .. -2 : 150012
+-2 .. 0 : 190421
+0 .. 2 : 191340
+2 .. 4 : 150133
+4 .. 6 : 91726
+6 .. 8 : 44199
+8 .. 10 : 16636
+over: 6357

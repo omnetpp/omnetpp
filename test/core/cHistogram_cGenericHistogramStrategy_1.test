@@ -1,0 +1,54 @@
+%description:
+Test auto range histogram strategy.
+
+%global:
+
+static void dumpBins(cHistogram& hist)
+{
+    for (int i = 0; i <= hist.getNumCells(); ++i)
+        EV << hist.getBasepoint(i) << " ";
+
+    EV << std::endl;
+}
+
+
+static void collectAndDump(cRNG* rng, cHistogram& hist, double a, double b)
+{
+    for (int i=0; i<200; i++)
+        hist.collect(uniform(rng, a, b));
+    dumpBins(hist);
+}
+
+%activity:
+
+cHistogram hist1("fixed", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_REALS));
+cHistogram hist2("auto1", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_REALS));
+cHistogram hist3("auto2", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_REALS));
+cHistogram hist4("auto3", new cGenericHistogramStrategy(50, cIHistogramStrategy::MODE_REALS));
+
+cHistogram hist1i("fixed_i", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_INTEGERS));
+cHistogram hist2i("auto1_i", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_INTEGERS));
+cHistogram hist3i("auto2_i", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_INTEGERS));
+cHistogram hist4i("auto3_i", new cGenericHistogramStrategy(50, cIHistogramStrategy::MODE_INTEGERS));
+
+collectAndDump(getRNG(0), hist1,  0, 1);
+collectAndDump(getRNG(0), hist1i, 0, 1);
+
+collectAndDump(getRNG(0), hist2,  0, 1000);
+collectAndDump(getRNG(0), hist2i, 0, 1000);
+
+collectAndDump(getRNG(0), hist3,  990, 1000);
+collectAndDump(getRNG(0), hist3i, 990, 1000);
+
+collectAndDump(getRNG(0), hist4,  700, 1000);
+collectAndDump(getRNG(0), hist4i, 700, 1000);
+
+%contains: stdout
+-0.2 -0.1 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1 1.1 1.2
+0 1
+-200 -100 0 100 200 300 400 500 600 700 800 900 1000 1100 1200
+-200 -100 0 100 200 300 400 500 600 700 800 900 1000 1100
+987 988 989 990 991 992 993 994 995 996 997 998 999 1000 1001 1002
+987 988 989 990 991 992 993 994 995 996 997 998 999 1000 1001 1002
+620 630 640 650 660 670 680 690 700 710 720 730 740 750 760 770 780 790 800 810 820 830 840 850 860 870 880 890 900 910 920 930 940 950 960 970 980 990 1000 1010 1020 1030 1040 1050 1060 1070
+620 630 640 650 660 670 680 690 700 710 720 730 740 750 760 770 780 790 800 810 820 830 840 850 860 870 880 890 900 910 920 930 940 950 960 970 980 990 1000 1010 1020 1030 1040 1050 1060
