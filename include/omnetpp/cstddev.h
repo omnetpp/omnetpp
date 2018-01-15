@@ -224,6 +224,10 @@ class SIM_API cStdDev : public cStatistic
     //@}
 };
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 /**
  * @brief Statistics class to collect doubles and calculate weighted statistics
@@ -233,11 +237,7 @@ class SIM_API cStdDev : public cStatistic
  *
  * @ingroup Statistics
  */
-class
-#ifndef __GNUC__
-      _OPPDEPRECATED  // GCC cannot properly handle class deprecations -- it already issues tons of warnings when the header file is included, not only on actual usage. Clang is OK.
-#endif
-      SIM_API cWeightedStdDev : public cStdDev
+class _OPPDEPRECATED SIM_API cWeightedStdDev : public cStdDev
 {
   public:
     /** @name Constructors, destructor, assignment. */
@@ -245,7 +245,7 @@ class
     /**
      * Constructor.
      */
-    _OPPDEPRECATED explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name, true)  {}  // extra deprecation because of GCC bug, see above
+    explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name, true)  {}
 
     /**
      * Copy constructor.
@@ -264,6 +264,10 @@ class
     virtual cWeightedStdDev *dup() const override  {return new cWeightedStdDev(*this);}
     //@}
 };
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 }  // namespace omnetpp
 

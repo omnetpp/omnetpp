@@ -53,7 +53,6 @@
 #include "omnetpp/cfsm.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cgate.h"
-#include "omnetpp/chistogram.h"
 #include "omnetpp/cksplit.h"
 #include "omnetpp/clcg32.h"
 #include "omnetpp/clistener.h"

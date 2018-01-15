@@ -296,6 +296,8 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 #include "omnetpp/cstlwatch.h"
 #include "omnetpp/clcg32.h"
 #include "omnetpp/cmersennetwister.h"
+#include "omnetpp/clegacyhistogram.h"
+#include "omnetpp/cvarhist.h"
 #include "omnetpp/cksplit.h"
 #include "omnetpp/cpsquare.h"
 #include "omnetpp/cstringtokenizer.h"
@@ -305,7 +307,6 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 #include "omnetpp/cpacketqueue.h"
 #include "omnetpp/cfsm.h"
 #include "omnetpp/coutvector.h"
-#include "omnetpp/cvarhist.h"
 #include "omnetpp/cfingerprint.h"
 
 using namespace omnetpp::common;
@@ -353,8 +354,8 @@ void _sim_dummy_func()
     fsm.str();
     cOutVector ov;
     ov.str();
-    cVarHistogram vh;
-    vh.draw();
+    cLegacyHistogram lh;
+    lh.draw();
 #ifdef USE_OMNETPP4x_FINGERPRINTS
     cOmnetpp4xFingerprintCalculator fp;
     fp.initialize(nullptr, nullptr);

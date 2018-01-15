@@ -46,7 +46,6 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cxmlelement.h"
-#include "omnetpp/chistogram.h"
 #include "omnetpp/cobjectfactory.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cfingerprint.h"

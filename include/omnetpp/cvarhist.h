@@ -16,10 +16,14 @@
 #ifndef __OMNETPP_CVARHIST_H
 #define __OMNETPP_CVARHIST_H
 
-#include "chistogram.h"
+#include "clegacyhistogram.h"
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 namespace omnetpp {
-
 
 /**
  * @brief Variable bin size histogram.
@@ -33,7 +37,7 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
-class SIM_API cVarHistogram : public cHistogramBase
+class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
 {
   public:
     /**
@@ -71,7 +75,7 @@ class SIM_API cVarHistogram : public cHistogramBase
     /**
      * Copy constructor.
      */
-    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r) {cellLowerBounds=nullptr;copy(r);}
+    cVarHistogram(const cVarHistogram& r) : cLegacyHistogramBase(r) {cellLowerBounds=nullptr;copy(r);}
 
     /**
      * Constructor. The third argument can be one of HIST_TR_NO_TRANSFORM,
@@ -195,6 +199,9 @@ class SIM_API cVarHistogram : public cHistogramBase
 
 }  // namespace omnetpp
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif
 

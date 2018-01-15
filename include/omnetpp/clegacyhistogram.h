@@ -1,5 +1,5 @@
 //==========================================================================
-//  CHISTOGRAM.H - part of
+//  CLEGACYHISTOGRAM.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,31 +13,38 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CHISTOGRAM_H
-#define __OMNETPP_CHISTOGRAM_H
+#ifndef __OMNETPP_CLEGACYHISTOGRAM_H
+#define __OMNETPP_CLEGACYHISTOGRAM_H
 
+#include <cmath>
 #include "cdensityestbase.h"
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 namespace omnetpp {
 
-
 /**
  * @brief Base class for histogram classes. It adds a vector of counters to
- * cDensityEstBase.
+ * cPrecollectionBasedDensityEst.
+ *
+ * DEPRECATED CLASS, do not use for new classes.
  *
  * @ingroup Statistics
  */
-class SIM_API cHistogramBase : public cDensityEstBase
+class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cDensityEstBase
 {
   protected:
     int numCells;     // number of histogram cells or bins
     double *cellv;    // counts, type double because of weighted statistics
 
   private:
-    void copy(const cHistogramBase& other);
+    void copy(const cLegacyHistogramBase& other);
 
   protected:
-    // abstract method in cDensityEstBase
+    // abstract method in cPrecollectionBasedDensityEst
     virtual void doMergeCellValues(const cDensityEstBase *other) override;
 
   public:
@@ -47,22 +54,22 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cHistogramBase(const cHistogramBase& r) : cDensityEstBase(r) {cellv=nullptr;copy(r);}
+    cLegacyHistogramBase(const cLegacyHistogramBase& r) : cDensityEstBase(r) {cellv=nullptr;copy(r);}
 
     /**
      * Constructor.
      */
-    cHistogramBase(const char *name, int numcells, bool weighted=false);
+    cLegacyHistogramBase(const char *name, int numcells, bool weighted=false);
 
     /**
      * Destructor.
      */
-    virtual ~cHistogramBase();
+    virtual ~cLegacyHistogramBase();
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
-    cHistogramBase& operator=(const cHistogramBase& res);
+    cLegacyHistogramBase& operator=(const cLegacyHistogramBase& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -129,6 +136,8 @@ class SIM_API cHistogramBase : public cDensityEstBase
 /**
  * @brief Implements an equidistant histogram.
  *
+ * DEPRECATED CLASS, use cHistogram instead.
+ *
  * The histogram can operate in two modes. In INTEGERS mode, cell boundaries
  * are whole numbers; in DOUBLES mode, they can be real numbers. The operating
  * mode can be chosen with a constructor argument or with the setMode() method;
@@ -145,7 +154,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
  * bound; range upper bound. See the setNumCells(), setCellSize(),
  * setNumFirstVals(), setRangeAuto(), setRangeAutoUpper(), and
  * setRangeAutoLower() methods (many of them are inherited from
- * cDensityEstBase and cHistogramBase).
+ * cPrecollectionBasedDensityEst and cLegacyHistogramBase).
  *
  * Especially in INTEGERS mode, if the cells cannot be set up to satisfy all
  * explicitly given constraints (for example, if the explicitly specified
@@ -162,13 +171,13 @@ class SIM_API cHistogramBase : public cDensityEstBase
  * Automatic mode:
  *
  * \code
- * cHistogram h("histogram");
+ * cLegacyHistogram h("histogram");
  * \endcode
  *
  * Setting up a 50-cell histogram on the range [0.0, 5.0) (cell size = 0.1):
  *
  * \code
- * cHistogram h("histogram", 50, cHistogram::MODE_DOUBLES);
+ * cLegacyHistogram h("histogram", 50, cLegacyHistogram::MODE_DOUBLES);
  * h.setRange(0,5);
  * \endcode
  *
@@ -176,13 +185,13 @@ class SIM_API cHistogramBase : public cDensityEstBase
  * is unknown:
  *
  * \code
- * cHistogram h("histogram");
+ * cLegacyHistogram h("histogram");
  * h.setRangeAutoUpper(0);  // sets zero as lower bound
  * \endcode
  *
  * @ingroup Statistics
  */
-class SIM_API cHistogram : public cHistogramBase
+class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
 {
   public:
     enum HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
@@ -192,7 +201,7 @@ class SIM_API cHistogram : public cHistogramBase
     double cellSize;  // cell (bin) size; <=0 if unset
 
   private:
-    void copy(const cHistogram& other);
+    void copy(const cLegacyHistogram& other);
 
   protected:
     virtual void setupRangeInteger();
@@ -206,17 +215,17 @@ class SIM_API cHistogram : public cHistogramBase
     /**
      * Copy constructor.
      */
-    cHistogram(const cHistogram& r) : cHistogramBase(r) {copy(r);}
+    cLegacyHistogram(const cLegacyHistogram& r) : cLegacyHistogramBase(r) {copy(r);}
 
     /**
      * Constructor.
      */
-    explicit cHistogram(const char *name=nullptr, int numcells=-1, HistogramMode mode=MODE_AUTO, bool weighted=false);
+    explicit cLegacyHistogram(const char *name=nullptr, int numcells=-1, HistogramMode mode=MODE_AUTO, bool weighted=false);
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
-    cHistogram& operator=(const cHistogram& res);
+    cLegacyHistogram& operator=(const cLegacyHistogram& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -335,12 +344,14 @@ class SIM_API cHistogram : public cHistogramBase
 /**
  * @brief Equidistant histogram for integers.
  *
- * This class is just a cHistogram preconfigured for collecting integers,
+ * DEPRECATED CLASS, use cHistogram instead.
+ *
+ * This class is just a cLegacyHistogram preconfigured for collecting integers,
  * that is, it operates in INTEGERS mode.
  *
  * @ingroup Statistics
  */
-class SIM_API cLongHistogram : public cHistogram
+class _OPPDEPRECATED SIM_API cLongHistogram : public cLegacyHistogram
 {
   private:
     void copy(const cLongHistogram& other) {}
@@ -351,13 +362,13 @@ class SIM_API cLongHistogram : public cHistogram
     /**
      * Copy constructor.
      */
-    cLongHistogram(const cLongHistogram& r) : cHistogram(r) {copy(r);}
+    cLongHistogram(const cLongHistogram& r) : cLegacyHistogram(r) {copy(r);}
 
     /**
      * Constructor.
      */
     explicit cLongHistogram(const char *name=nullptr, int numcells=-1, bool weighted=false) :
-        cHistogram(name, numcells, MODE_INTEGERS, weighted) {}
+        cLegacyHistogram(name, numcells, MODE_INTEGERS, weighted) {}
 
     /**
      * Destructor.
@@ -388,7 +399,7 @@ class SIM_API cLongHistogram : public cHistogram
      * Collects one value. Internally, the double value is converted to an
      * integer using floor() before any processing.
      */
-    virtual void collect(double value) override {cHistogram::collect(floor(value));}
+    virtual void collect(double value) override {cLegacyHistogram::collect(std::floor(value));}
 
     /**
      * Convenience method, delegates to collect(double).
@@ -400,12 +411,14 @@ class SIM_API cLongHistogram : public cHistogram
 /**
  * @brief Equidistant histogram for doubles.
  *
- * This class is just a cHistogram preconfigured for collecting doubles,
+ * DEPRECATED CLASS, use cHistogram instead.
+ *
+ * This class is just a cLegacyHistogram preconfigured for collecting doubles,
  * that is, it operates in DOUBLES mode.
  *
  * @ingroup Statistics
  */
-class SIM_API cDoubleHistogram : public cHistogram
+class _OPPDEPRECATED SIM_API cDoubleHistogram : public cLegacyHistogram
 {
   private:
     void copy(const cDoubleHistogram& other) {}
@@ -417,13 +430,13 @@ class SIM_API cDoubleHistogram : public cHistogram
     /**
      * Copy constructor
      */
-    cDoubleHistogram(const cDoubleHistogram& r) : cHistogram(r) {copy(r);}
+    cDoubleHistogram(const cDoubleHistogram& r) : cLegacyHistogram(r) {copy(r);}
 
     /**
      * Constructor.
      */
     explicit cDoubleHistogram(const char *name=nullptr, int numcells=-1, bool weighted=false) :
-        cHistogram(name, numcells, MODE_DOUBLES, weighted) {}
+        cLegacyHistogram(name, numcells, MODE_DOUBLES, weighted) {}
 
     /**
      * Destructor.
@@ -449,6 +462,9 @@ class SIM_API cDoubleHistogram : public cHistogram
 
 }  // namespace omnetpp
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif
 

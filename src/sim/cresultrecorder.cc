@@ -19,7 +19,6 @@
 #include "common/stringutil.h"
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cproperty.h"
-#include "omnetpp/chistogram.h"
 #include "omnetpp/cstringtokenizer.h"
 
 using namespace omnetpp::common;

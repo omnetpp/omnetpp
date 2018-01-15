@@ -632,35 +632,35 @@ class cDensityEstBase::Cell
     @opaque;
 }
 
-class cHistogramBase extends cDensityEstBase
+class cLegacyHistogramBase extends cDensityEstBase
 {
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
-class cHistogram extends cHistogramBase
+class cLegacyHistogram extends cLegacyHistogramBase
 {
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
-class cVarHistogram extends cHistogramBase
+class cVarHistogram extends cLegacyHistogramBase
 {
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
-class cLongHistogram extends cHistogram
+class cLongHistogram extends cLegacyHistogram
 {
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
 }
 
-class cDoubleHistogram extends cHistogram
+class cDoubleHistogram extends cLegacyHistogram
 {
     @existingClass;
     @overwritePreviousDefinition;

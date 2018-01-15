@@ -34,6 +34,11 @@
 #include "omnetpp/ccommbuffer.h"
 #endif
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 namespace omnetpp {
 
 #define MIN(a, b)    ((a) < (b) ? (a) : (b))
@@ -42,7 +47,7 @@ namespace omnetpp {
 Register_Class(cVarHistogram);
 
 cVarHistogram::cVarHistogram(const char *name, int maxnumcells, TransformType transformtype) :
-    cHistogramBase(name, -1)
+    cLegacyHistogramBase(name, -1)
 {
     // num_cells==-1 means that no bin boundaries are defined (num_cells+1 is 0)
     rangeMode = RANGE_NOTSET;
@@ -66,7 +71,7 @@ void cVarHistogram::parsimPack(cCommBuffer *buffer) const
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cHistogramBase::parsimPack(buffer);
+    cLegacyHistogramBase::parsimPack(buffer);
 
     buffer->pack(maxNumCells);
     if (buffer->packFlag(cellLowerBounds != nullptr))
@@ -79,7 +84,7 @@ void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cHistogramBase::parsimUnpack(buffer);
+    cLegacyHistogramBase::parsimUnpack(buffer);
 
     buffer->unpack(maxNumCells);
     if (buffer->checkFlag()) {
@@ -145,7 +150,7 @@ cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res)
 {
     if (this == &res)
         return *this;
-    cHistogramBase::operator=(res);
+    cLegacyHistogramBase::operator=(res);
     copy(res);
     return *this;
 }
@@ -337,7 +342,7 @@ void cVarHistogram::collectTransformed2(double value, double weight)
 
 void cVarHistogram::clearResult()
 {
-    cHistogramBase::clearResult();
+    cLegacyHistogramBase::clearResult();
 
     delete[] cellLowerBounds;
     cellLowerBounds = nullptr;
@@ -427,7 +432,7 @@ double cVarHistogram::getCDF(double) const
 
 void cVarHistogram::saveToFile(FILE *f) const
 {
-    cHistogramBase::saveToFile(f);
+    cLegacyHistogramBase::saveToFile(f);
 
     fprintf(f, "%d\t #= transform_type\n", transformType);
     fprintf(f, "%u\t #= max_num_cells\n", maxNumCells);
@@ -441,7 +446,7 @@ void cVarHistogram::saveToFile(FILE *f) const
 
 void cVarHistogram::loadFromFile(FILE *f)
 {
-    cHistogramBase::loadFromFile(f);
+    cLegacyHistogramBase::loadFromFile(f);
 
     int tmp;
     freadvarsf(f, "%d\t #= transform_type", &tmp); transformType = (TransformType)tmp;
@@ -468,3 +473,6 @@ void cVarHistogram::loadFromFile(FILE *f)
 
 }  // namespace omnetpp
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif

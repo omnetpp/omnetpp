@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "omnetpp/cproperty.h"
-#include "omnetpp/chistogram.h"
+#include "omnetpp/clegacyhistogram.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cstatistic.h"
 #include "omnetpp/checkandcast.h"
@@ -376,7 +376,7 @@ void HistogramRecorder::init(cComponent *component, const char *statsName, const
     omnetpp::opp_string_map attrs = getStatisticAttributes();
     auto it = attrs.find("timeWeighted");
     bool weighted = it != attrs.end() && (it->second != "0" && it->second != "false");
-    setStatistic(new cHistogram(nullptr, -1, cHistogram::MODE_AUTO, weighted));
+    setStatistic(new cLegacyHistogram(nullptr, -1, cLegacyHistogram::MODE_AUTO, weighted));
 }
 
 void PSquareRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
