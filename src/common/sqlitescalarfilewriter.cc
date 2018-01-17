@@ -139,7 +139,7 @@ void SqliteScalarFileWriter::prepareStatements()
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum"
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticAttr (statId, attrName, attrValue) VALUES (?, ?, ?);");
-    prepareStatement(add_statistic_bin_stmt, "INSERT INTO histogramBin (statId, baseValue, cellValue) VALUES (?, ?, ?);");
+    prepareStatement(add_statistic_bin_stmt, "INSERT INTO histogramBin (statId, lowerEdge, binValue) VALUES (?, ?, ?);");
 }
 
 void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments)
@@ -291,12 +291,12 @@ void SqliteScalarFileWriter::writeStatisticAttr(sqlite_int64 statisticId, const 
     checkOK(sqlite3_clear_bindings(add_statistic_attr_stmt));
 }
 
-void SqliteScalarFileWriter::writeStatisticBin(sqlite_int64 statisticId, double binEdge, unsigned long binValue)
+void SqliteScalarFileWriter::writeStatisticBin(sqlite_int64 statisticId, double lowerEdge, double binValue)
 {
     checkOK(sqlite3_reset(add_statistic_bin_stmt));
     checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 1, statisticId));
-    checkOK(sqlite3_bind_double(add_statistic_bin_stmt, 2, binEdge));
-    checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 3, binValue));
+    checkOK(sqlite3_bind_double(add_statistic_bin_stmt, 2, lowerEdge));
+    checkOK(sqlite3_bind_double(add_statistic_bin_stmt, 3, binValue));
     checkDone(sqlite3_step(add_statistic_bin_stmt));
     checkOK(sqlite3_clear_bindings(add_statistic_bin_stmt));
 }
