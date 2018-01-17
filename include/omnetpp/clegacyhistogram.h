@@ -104,7 +104,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
      * Transforms the table of pre-collected values into an internal
      * histogram structure.
      */
-    virtual void transform() override;
+    virtual void setUpBins() override;
 
     /**
      * Returns the number of histogram bins used.
@@ -253,13 +253,13 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed(double value) override;
+    virtual void collectIntoHistogram(double value) override;
 
     /**
      * Called internally by collect2(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed2(double value, double weight) override;
+    virtual void collectWeightedIntoHistogram(double value, double weight) override;
 
     /**
      * Called internally by transform(), this method should determine and set up

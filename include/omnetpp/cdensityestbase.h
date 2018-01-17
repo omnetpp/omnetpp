@@ -82,14 +82,15 @@ class SIM_API cDensityEstBase : public cStdDev
     /** @name Accessing histogram bins. */
     //@{
     /**
-     * Returns true if histogram is already available. See transform().
+     * Returns true if histogram is already available. See setUpBins().
      */
-    virtual bool isTransformed() const = 0;
+    virtual bool binsAlreadySetUp() const = 0;
 
     /**
-     * Transforms the array of pre-collected values into histogram structure.
+     * Sets up histogram bins, possible based on data collected during a
+     * precollection phase.
      */
-    virtual void transform() = 0;
+    virtual void setUpBins() = 0;
 
     /**
      * Returns the number of histogram bins.
@@ -162,6 +163,16 @@ class SIM_API cDensityEstBase : public cStdDev
 
     /** @name Methods deprecated due to renaming. */
     //@{
+
+    /**
+     * Deprecated, use binsAlreadySetUp() instead.
+     */
+    _OPPDEPRECATED virtual bool isTransformed() const final {return binsAlreadySetUp();}
+
+    /**
+     * Deprecated, use setUpBins() instead.
+     */
+    _OPPDEPRECATED virtual void transform() final {setUpBins();}
 
     /**
      * Deprecated, use getNumBins() instead.
@@ -440,7 +451,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
      * Updating the underflow/overflow bins must be handled within this function.
      * This is a pure virtual function; it must be redefined in subclasses.
      */
-    virtual void collectTransformed(double value) = 0;
+    virtual void collectIntoHistogram(double value) = 0;
 
     /**
      * Called internally by collect(), this method collects a value
@@ -448,7 +459,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
      * Updating the underflow/overflow bins must be handled within this function.
      * This is a pure virtual function; it must be redefined in subclasses.
      */
-    virtual void collectTransformed2(double value, double weight) = 0;
+    virtual void collectWeightedIntoHistogram(double value, double weight) = 0;
 
   public:
     /** @name Redefined methods */
@@ -456,7 +467,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     /**
      * Returns whether the object is transformed. See transform().
      */
-    virtual bool isTransformed() const override {return transformed;}
+    virtual bool binsAlreadySetUp() const override {return transformed;}
 
     /**
      * Returns number of observations that were below the histogram range,

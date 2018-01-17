@@ -328,12 +328,12 @@ void cHistogram::mergeBins(size_t groupSize)
     binEdges.resize(newNumBins + 1);
 }
 
-bool cHistogram::isTransformed() const
+bool cHistogram::binsAlreadySetUp() const
 {
     return strategy ? strategy->binsCreated() : getNumBins() > 0;
 }
 
-void cHistogram::transform()
+void cHistogram::setUpBins()
 {
     if (strategy)
         strategy->createBins();

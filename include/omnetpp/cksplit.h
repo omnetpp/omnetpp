@@ -234,12 +234,12 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
      * Called internally by collect(), this method updates the k-split
      * data structure with the new value.
      */
-    virtual void collectTransformed(double val) override;
+    virtual void collectIntoHistogram(double val) override;
 
     /**
      * Called internally by collect().
      */
-    virtual void collectTransformed2(double value, double weight) override;
+    virtual void collectWeightedIntoHistogram(double value, double weight) override;
 
   public:
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -248,7 +248,7 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     /**
      * Transforms the table of pre-collected values into the k-split data structure.
      */
-    virtual void transform() override;
+    virtual void setUpBins() override;
 
     /**
      * Returns the number of histogram cells used.

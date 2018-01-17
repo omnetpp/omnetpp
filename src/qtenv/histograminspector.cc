@@ -108,7 +108,7 @@ void HistogramInspector::refresh()
     statusBar->showMessage(generalInfo());
 
     // can we draw anything at all?
-    if (!distr->isTransformed() || distr->getNumBins() == 0)
+    if (!distr->binsAlreadySetUp() || distr->getNumBins() == 0)
         return;
 
     bool isMinYAutoscaled, isMaxYAutoscaled, isMaxXAutoscaled, isMinXAutoscaled;
@@ -203,7 +203,7 @@ void HistogramInspector::xRangeCorrection(double& minX, double& maxX, bool isMin
 QString HistogramInspector::generalInfo()
 {
     cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
-    if (!d->isTransformed())
+    if (!d->binsAlreadySetUp())
         return QString("(collecting initial values, N=%1)").arg(QString::number(d->getCount()));
     else
         return QString("Histogram: (%1...%2)  N=%3  #bins=%4").arg(

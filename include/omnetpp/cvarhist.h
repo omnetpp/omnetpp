@@ -134,19 +134,19 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
      * Transforms the table of precollected values into an internal
      * histogram structure.
      */
-    virtual void transform() override;
+    virtual void setUpBins() override;
 
     /**
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed(double value) override;
+    virtual void collectIntoHistogram(double value) override;
 
     /**
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
      */
-    virtual void collectTransformed2(double value, double weight) override;
+    virtual void collectWeightedIntoHistogram(double value, double weight) override;
 
     /**
      * Generates a random number based on the collected data.

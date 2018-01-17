@@ -48,7 +48,7 @@ cDensityEstBase::Bin cDensityEstBase::getBinInfo(int k) const
 
 double cDensityEstBase::getPDF(double x) const
 {
-    if (!isTransformed())
+    if (!binsAlreadySetUp())
         throw cRuntimeError(this, "");
 
     if (x < getMin())
@@ -245,7 +245,7 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
 
     const cPrecollectionBasedDensityEst *otherd = (const cPrecollectionBasedDensityEst *)other;
 
-    if (!otherd->isTransformed()) {
+    if (!otherd->binsAlreadySetUp()) {
         // easiest and exact solution: simply recollect the observations
         // the other object has collected
         for (int i = 0; i < otherd->numValues; i++)
@@ -259,8 +259,8 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
         cDensityEstBase::merge(otherd);
 
         // force this object to be transformed as well
-        if (!isTransformed())
-            transform();
+        if (!binsAlreadySetUp())
+            setUpBins();
 
         // make sure that bins are aligned
         if (getNumBins() != otherd->getNumBins())
@@ -304,7 +304,7 @@ void cPrecollectionBasedDensityEst::clearResult()
 
 void cPrecollectionBasedDensityEst::setRange(double lower, double upper)
 {
-    if (numValues > 0 || isTransformed())
+    if (numValues > 0 || binsAlreadySetUp())
         throw cRuntimeError(this, "setRange() can only be called before collecting any values");
 
     rangeMode = RANGE_FIXED;
@@ -320,7 +320,7 @@ void cPrecollectionBasedDensityEst::setRange(double lower, double upper)
 
 void cPrecollectionBasedDensityEst::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
-    if (numValues > 0 || isTransformed())
+    if (numValues > 0 || binsAlreadySetUp())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTO;
@@ -337,7 +337,7 @@ void cPrecollectionBasedDensityEst::setRangeAuto(int num_fstvals, double range_e
 
 void cPrecollectionBasedDensityEst::setRangeAutoLower(double upper, int numPrecoll, double rangeExtFact)
 {
-    if (numValues > 0 || isTransformed())
+    if (numValues > 0 || binsAlreadySetUp())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTOLOWER;
@@ -354,7 +354,7 @@ void cPrecollectionBasedDensityEst::setRangeAutoLower(double upper, int numPreco
 
 void cPrecollectionBasedDensityEst::setRangeAutoUpper(double lower, int numPrecoll, double rangeExtFact)
 {
-    if (numValues > 0 || isTransformed())
+    if (numValues > 0 || binsAlreadySetUp())
         throw cRuntimeError(this, "setRange...() can only be called before collecting any values");
 
     rangeMode = RANGE_AUTOUPPER;
@@ -371,7 +371,7 @@ void cPrecollectionBasedDensityEst::setRangeAutoUpper(double lower, int numPreco
 
 void cPrecollectionBasedDensityEst::setNumPrecollectedValues(int numPrecoll)
 {
-    if (numValues > 0 || isTransformed())
+    if (numValues > 0 || binsAlreadySetUp())
         throw cRuntimeError(this, "setNumPrecollectedValues() can only be called before collecting any values");
 
     numPrecollected = numPrecoll;
@@ -435,41 +435,41 @@ void cPrecollectionBasedDensityEst::setupRange()
 
 void cPrecollectionBasedDensityEst::collect(double value)
 {
-    if (!isTransformed() && rangeMode == RANGE_FIXED)
-        transform();
+    if (!binsAlreadySetUp() && rangeMode == RANGE_FIXED)
+        setUpBins();
 
     cDensityEstBase::collect(value);
 
-    if (!isTransformed()) {
+    if (!binsAlreadySetUp()) {
         ASSERT(precollectedValues);
         precollectedValues[numValues-1] = value;
 
         if (numValues == numPrecollected)
-            transform();
+            setUpBins();
     }
     else {
-        collectTransformed(value);  // must maintain underflow/overflow bins
+        collectIntoHistogram(value);  // must maintain underflow/overflow bins
     }
 }
 
 void cPrecollectionBasedDensityEst::collectWeighted(double value, double weight)
 {
-    if (!isTransformed() && rangeMode == RANGE_FIXED)
-        transform();
+    if (!binsAlreadySetUp() && rangeMode == RANGE_FIXED)
+        setUpBins();
 
     cDensityEstBase::collectWeighted(value, weight);
 
-    if (!isTransformed()) {
+    if (!binsAlreadySetUp()) {
         ASSERT(precollectedValues);
         ASSERT(precollectedWeights);
         precollectedValues[numValues-1] = value;
         precollectedWeights[numValues-1] = weight;
 
         if (numValues == numPrecollected)
-            transform();
+            setUpBins();
     }
     else {
-        collectTransformed2(value, weight);  // must maintain underflow/overflow bins
+        collectWeightedIntoHistogram(value, weight);  // must maintain underflow/overflow bins
     }
 }
 

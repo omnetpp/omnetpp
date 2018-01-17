@@ -194,11 +194,11 @@ void cKSplit::doMergeBinValues(const cPrecollectionBasedDensityEst *other)
     ASSERT(false);  // never comes here, as merge() already throws an error
 }
 
-void cKSplit::transform()
+void cKSplit::setUpBins()
 {
     ASSERT(!weighted);
 
-    if (isTransformed())
+    if (binsAlreadySetUp())
         throw cRuntimeError(this, "transform(): Histogram already transformed");
 
     setupRange();
@@ -209,7 +209,7 @@ void cKSplit::transform()
     // insert observations again, with cell splits disabled now.
 
     for (int i = 0; i < numValues; i++)
-        collectTransformed(precollectedValues[i]);
+        collectIntoHistogram(precollectedValues[i]);
 
     resetGrids(rootGridIndex);
 
@@ -239,7 +239,7 @@ void cKSplit::createRootGrid()
         cell = 0;
 }
 
-void cKSplit::collectTransformed(double x)
+void cKSplit::collectIntoHistogram(double x)
 {
     // see if x fits into current range and act accordingly
     if (x >= rangeMin && x < rangeMax)
@@ -256,7 +256,7 @@ void cKSplit::collectTransformed(double x)
     }
 }
 
-void cKSplit::collectTransformed2(double value, double weight)
+void cKSplit::collectWeightedIntoHistogram(double value, double weight)
 {
     ASSERT(false); // weighted case is unsupported
 }
@@ -505,7 +505,7 @@ int cKSplit::getTreeDepth(Grid& grid) const
 
 void cKSplit::printGrids() const
 {
-    if (!isTransformed()) {
+    if (!binsAlreadySetUp()) {
         EV << "collecting initial observations; no grids yet.\n";
         return;
     }
@@ -552,7 +552,7 @@ void cKSplit::iteratorToCell(int cell_nr) const
 
 int cKSplit::getNumBins() const
 {
-    if (!isTransformed())
+    if (!binsAlreadySetUp())
         return 0;
     return numCells;
 }
@@ -662,7 +662,7 @@ double cKSplit::draw() const
 
 double cKSplit::getPDF(double x) const
 {
-    if (!isTransformed())
+    if (!binsAlreadySetUp())
         return 0;
 
     int i;

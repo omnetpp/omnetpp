@@ -117,9 +117,9 @@ void cLegacyHistogramBase::clearResult()
     cellv = nullptr;
 }
 
-void cLegacyHistogramBase::transform()
+void cLegacyHistogramBase::setUpBins()
 {
-    if (isTransformed())
+    if (binsAlreadySetUp())
         throw cRuntimeError(this, "transform(): Histogram already transformed");
 
     setupRange();  // this will set num_cells if it was unspecified (-1)
@@ -130,9 +130,9 @@ void cLegacyHistogramBase::transform()
 
     for (int i = 0; i < numValues; i++)
         if (!weighted)
-            collectTransformed(precollectedValues[i]);
+            collectIntoHistogram(precollectedValues[i]);
         else
-            collectTransformed2(precollectedValues[i], precollectedWeights[i]);
+            collectWeightedIntoHistogram(precollectedValues[i], precollectedWeights[i]);
 
     delete[] precollectedValues;
     precollectedValues = nullptr;
@@ -142,7 +142,7 @@ void cLegacyHistogramBase::transform()
 
 int cLegacyHistogramBase::getNumBins() const
 {
-    if (!isTransformed())
+    if (!binsAlreadySetUp())
         return 0;
     return numCells;
 }
@@ -226,14 +226,14 @@ cLegacyHistogram& cLegacyHistogram::operator=(const cLegacyHistogram& res)
 
 void cLegacyHistogram::setMode(HistogramMode mode)
 {
-    if (isTransformed())
+    if (binsAlreadySetUp())
         throw cRuntimeError(this, "setMode() cannot be called when bins have been set up already");
     this->mode = mode;
 }
 
 void cLegacyHistogram::setCellSize(double d)
 {
-    if (isTransformed())
+    if (binsAlreadySetUp())
         throw cRuntimeError(this, "setCellSize() cannot be called when bins have been set up already");
     cellSize = d;
 }
@@ -404,12 +404,12 @@ double cLegacyHistogram::draw() const
     }
 }
 
-void cLegacyHistogram::collectTransformed(double value)
+void cLegacyHistogram::collectIntoHistogram(double value)
 {
-    collectTransformed2(value, 1.0);
+    collectWeightedIntoHistogram(value, 1.0);
 }
 
-void cLegacyHistogram::collectTransformed2(double value, double weight)
+void cLegacyHistogram::collectWeightedIntoHistogram(double value, double weight)
 {
     int k = (int)floor((value - rangeMin) / cellSize);
     if (k < 0 || value < rangeMin) {
@@ -426,7 +426,7 @@ void cLegacyHistogram::collectTransformed2(double value, double weight)
 
 double cLegacyHistogram::getPDF(double x) const
 {
-    if (!isTransformed())
+    if (!binsAlreadySetUp())
         throw cRuntimeError(this, "getPDF(x) cannot be called before histogram is transformed");
 
     int k = (int)floor((x - rangeMin) / cellSize);

@@ -167,12 +167,21 @@ class SIM_API cHistogram : public cDensityEstBase
      */
     cIHistogramStrategy *getStrategy() const {return strategy;}
 
-    virtual bool isTransformed() const override;
-    virtual void transform() override;
+    /**
+     * Returns true if histogram is already available. See setUpBins().
+     */
+    virtual bool binsAlreadySetUp() const override;
+
+    /**
+     * Sets up histogram bins using the installed strategy (see cIHistogramStrategy).
+     * The histogram strategy class may use precollection to gather information
+     * for laying out the bins.
+     */
+    virtual void setUpBins() override;
 
     /**
      * Configures a histogram with bins defined by 'edges'.
-     * Can only be called once, and only while there are no bins defined.
+     * Can only be called once, and only when there are no bins defined.
      * 'edges' must contain at least two values, and it must be strictly increasing.
      */
     virtual void setBinEdges(const std::vector<double>& edges);

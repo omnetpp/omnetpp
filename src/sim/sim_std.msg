@@ -617,6 +617,7 @@ class cDensityEstBase extends cStdDev
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
+    bool binsAlreadySetUp @getter(binsAlreadySetUp) @group(histogram) @hint("If false, the object is still collecting initial observations to gather information for laying out histogram bins");
     int64_t numUnderflows @group(histogram) @hint("Number of observations below the first histogram bin");
     int64_t numOverflows @group(histogram) @hint("Number of observations above the last histogram bin");
     double underflowSumWeights  @group(histogram) @hint("Total weight of observations above the last histogram bin");
@@ -638,7 +639,6 @@ class cHistogram extends cDensityEstBase
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(false);
-    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram bins");
 }
 
 class cPrecollectionBasedDensityEst extends cDensityEstBase
@@ -646,7 +646,6 @@ class cPrecollectionBasedDensityEst extends cDensityEstBase
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram bins");
 }
 
 class cLegacyHistogramBase extends cPrecollectionBasedDensityEst

@@ -199,8 +199,8 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
         // check that recording the histogram is enabled
         bool binsEnabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
         if (binsEnabled) {
-            if (!histogram->isTransformed())
-                histogram->transform();
+            if (!histogram->binsAlreadySetUp())
+                histogram->setUpBins();
 
             Histogram bins;
             int n = histogram->getNumBins();

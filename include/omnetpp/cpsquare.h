@@ -99,13 +99,13 @@ class SIM_API cPSquare : public cDensityEstBase
      * Returns true if histogram is already available. This cPSquare implementation
      * always returns true, since the algorithm does not contain a precollection stage.
      */
-    virtual bool isTransformed() const override {return true;}
+    virtual bool binsAlreadySetUp() const override {return true;}
 
     /**
      * Transforms the array of pre-collected values into histogram structure.
      * This cPSquare implementation does nothing.
      */
-    virtual void transform() override {}
+    virtual void setUpBins() override {}
 
     /**
      * Collects one observation.

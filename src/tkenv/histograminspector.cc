@@ -78,7 +78,7 @@ void HistogramInspector::refresh()
     CHK(Tcl_VarEval(interp, windowName, ".bot.info config -text {", buf, "}", TCL_NULL));
 
     // can we draw anything at all?
-    if (!distr->isTransformed() || distr->getNumBins() == 0)
+    if (!distr->binsAlreadySetUp() || distr->getNumBins() == 0)
         return;
 
     long num_vals = distr->getCount();
@@ -141,7 +141,7 @@ void HistogramInspector::refresh()
 void HistogramInspector::generalInfo(char *buf)
 {
     cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
-    if (!d->isTransformed())
+    if (!d->binsAlreadySetUp())
         sprintf(buf, "(collecting initial values, N=%ld)", d->getCount());
     else
         sprintf(buf, "Histogram: (%g...%g)  N=%ld  #bins=%d",

@@ -96,7 +96,7 @@ void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 
 void cVarHistogram::addBinBound(double x)
 {
-    if (isTransformed())
+    if (binsAlreadySetUp())
         throw cRuntimeError(this, "Cannot add bin bound after transform()");
 
     // create bin_bounds if not exists
@@ -259,11 +259,11 @@ void cVarHistogram::createEquiprobableCells()
     numCells = bin+1;  // maybe num_cells < max_num_cells
 }
 
-void cVarHistogram::transform()
+void cVarHistogram::setUpBins()
 {
     ASSERT(!weighted);
 
-    if (isTransformed())
+    if (binsAlreadySetUp())
         throw cRuntimeError(this, "transform(): Histogram already transformed");
 
     setupRange();
@@ -292,7 +292,7 @@ void cVarHistogram::transform()
             cellv[i] = 0;
 
         for (int i = 0; i < numValues; i++)
-            collectTransformed(precollectedValues[i]);
+            collectIntoHistogram(precollectedValues[i]);
     }
 
     delete[] precollectedValues;
@@ -301,7 +301,7 @@ void cVarHistogram::transform()
     transformed = true;
 }
 
-void cVarHistogram::collectTransformed(double val)
+void cVarHistogram::collectIntoHistogram(double val)
 {
     if (val < rangeMin) {  // rangemin == cellLowerBounds[0]
         numUnderflows++;
@@ -335,7 +335,7 @@ void cVarHistogram::collectTransformed(double val)
     }
 }
 
-void cVarHistogram::collectTransformed2(double value, double weight)
+void cVarHistogram::collectWeightedIntoHistogram(double value, double weight)
 {
     ASSERT(false); // weighted case is unsupported
 }
@@ -398,7 +398,7 @@ double cVarHistogram::getPDF(double x) const
     if (!numValues)
         return 0.0;
 
-    if (!isTransformed())
+    if (!binsAlreadySetUp())
         throw cRuntimeError(this, "getPDF(x) cannot be called before histogram is transformed");
 
     if (x < rangeMin || x >= rangeMax)
