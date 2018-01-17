@@ -232,7 +232,7 @@ class SIM_API cStatistic : public cRandom
      * statistic will be the object name (see getFullName()).
      *
      * Note that this operation may have side effect: if this object is a
-     * histogram, the method may invoke the transform() on the histogram
+     * histogram, the method may invoke the setUpBins() on the histogram
      * object, to force it set up histogram bins before recording.
      */
     virtual void record()  {recordAs(nullptr, nullptr);}
@@ -243,7 +243,7 @@ class SIM_API cStatistic : public cRandom
      * will be the object name (see getName()).
      *
      * Note that this operation may have side effect: if this object is a
-     * histogram, the method may invoke the transform() on the histogram
+     * histogram, the method may invoke the setUpBins() on the histogram
      * object, to force it set up histogram bins before recording.
      */
     virtual void recordWithUnit(const char *unit)  {recordAs(nullptr, unit);}
@@ -253,7 +253,7 @@ class SIM_API cStatistic : public cRandom
      * and optionally, the given unit (e.g. "s", "m/s", etc).
      *
      * Note that this operation may have side effect: if this object is a
-     * histogram, the method may invoke the transform() on the histogram
+     * histogram, the method may invoke the setUpBins() on the histogram
      * object, to force it set up histogram bins before recording.
      */
     virtual void recordAs(const char *name, const char *unit=nullptr);

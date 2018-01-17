@@ -97,7 +97,7 @@ void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 void cVarHistogram::addBinBound(double x)
 {
     if (binsAlreadySetUp())
-        throw cRuntimeError(this, "Cannot add bin bound after transform()");
+        throw cRuntimeError(this, "Cannot add bin bound after setUpBins()");
 
     // create bin_bounds if not exists
     if (cellLowerBounds == nullptr)
@@ -170,7 +170,7 @@ static int compareDoubles(const void *p1, const void *p2)
 
 void cVarHistogram::createEquiprobableCells()
 {
-    // this method is called from transform() if equi-probable bins (automatic setup) was requested
+    // this method is called from setUpBins() if equi-probable bins (automatic setup) was requested
     if (numCells > 0)
         throw cRuntimeError(this, "Some bin bounds already present when making equi-probable bins");
 
@@ -264,7 +264,7 @@ void cVarHistogram::setUpBins()
     ASSERT(!weighted);
 
     if (binsAlreadySetUp())
-        throw cRuntimeError(this, "transform(): Histogram already transformed");
+        throw cRuntimeError(this, "setUpBins(): Histogram bin already set up");
 
     setupRange();
 
@@ -399,7 +399,7 @@ double cVarHistogram::getPDF(double x) const
         return 0.0;
 
     if (!binsAlreadySetUp())
-        throw cRuntimeError(this, "getPDF(x) cannot be called before histogram is transformed");
+        throw cRuntimeError(this, "getPDF(x) cannot be called before histogram bins have been set up");
 
     if (x < rangeMin || x >= rangeMax)
         return 0.0;

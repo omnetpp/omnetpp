@@ -232,13 +232,13 @@ class SIM_API cDensityEstBase : public cStdDev
  *     the bins are layed out.
  *  3. Then the initial values that have been stored up to this point
  *     will be transferred into the new histogram structure and their
- *     store is deleted -- this is done by the transform() function.
+ *     store is deleted -- this is done by the setUpBins() function.
  *
  * You may also explicitly specify the lower or upper limit and have
  * the other end of the range estimated automatically. The setRange...()
  * member functions of cPrecollectionBasedDensityEst deal with setting
  * up the histogram range. It also provides pure virtual functions
- * transform() etc.
+ * setUpBins() etc.
  *
  * Subsequent observations are placed in the histogram structure.
  * If an observation falls out of the histogram range, the underflow
@@ -336,10 +336,10 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     //@{
 
     /**
-     * Collects one value. Before the histogram was transformed, this method
+     * Collects one value. In the precollection phase, this method
      * simply adds the value to the table of pre-collected values.
-     * When the number of pre-collected observations reaches a limit, the transform()
-     * method is called. After transformation, it calls collectTransformed()
+     * When the number of pre-collected observations reaches a limit, the setUpBins()
+     * method is called. After transformation, it calls collectIntoHistogram()
      * to update the stored statistics with this value.
      */
     virtual void collect(double value) override;
@@ -419,26 +419,26 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
 
     /**
      * Sets the number of values to be pre-collected before transformation takes
-     * place. See transform().
+     * place. See setUpBins().
      */
     virtual void setNumPrecollectedValues(int numPrecollect);
 
     /**
      * Returns the number of values to be pre-collected before transformation
-     * takes place. See transform().
+     * takes place. See setUpBins().
      */
     virtual int getNumPrecollectedValues() const {return numPrecollected;}
 
     /**
      * Returns the range extension factor, used with histogram range setup.
-     * See setRangeAuto() and transform().
+     * See setRangeAuto() and setUpBins().
      */
     virtual double getRangeExtensionFactor() const {return rangeExtFactor;}
     //@}
 
   protected:
     /**
-     * Called internally by transform(), this method should determine and set up
+     * Called internally by setUpBins(), this method should determine and set up
      * the histogram range, based on the pre-collected data and the range setup
      * method selected by calls to the setRange(), setRangeAuto(), setRangeAutoLower(),
      * setRangeAutoUpper() methods.
@@ -447,7 +447,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
 
     /**
      * Called internally by collect(), this method collects a value
-     * after the histogram has been transformed.
+     * after the histogram bins have been set up.
      * Updating the underflow/overflow bins must be handled within this function.
      * This is a pure virtual function; it must be redefined in subclasses.
      */
@@ -455,7 +455,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
 
     /**
      * Called internally by collect(), this method collects a value
-     * after the histogram has been transformed.
+     * after the histogram bin have been set up.
      * Updating the underflow/overflow bins must be handled within this function.
      * This is a pure virtual function; it must be redefined in subclasses.
      */
@@ -465,7 +465,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     /** @name Redefined methods */
     //@{
     /**
-     * Returns whether the object is transformed. See transform().
+     * Returns true if the histogram bins have already been set up. See setUpBins().
      */
     virtual bool binsAlreadySetUp() const override {return transformed;}
 

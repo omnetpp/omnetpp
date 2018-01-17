@@ -217,7 +217,7 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
 
     /**
      * Records a histogram or statistic object into the scalar result file.
-     * This operation may invoke the transform() method on the histogram object.
+     * This operation may invoke the setUpBins() method on the histogram object.
      */
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) = 0;
 

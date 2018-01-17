@@ -33,7 +33,7 @@ namespace omnetpp {
  *
  * The histogram range (rangemin, rangemax) is chosen after precollection
  * of the initial observations has finished. It is not possible to add
- * bin boundaries when histogram is already transformed.
+ * bins after the histogram has already been set up.
  *
  * @ingroup Statistics
  */
@@ -131,20 +131,19 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
     virtual void clearResult() override;
 
     /**
-     * Transforms the table of precollected values into an internal
-     * histogram structure.
+     * Sets up the bins using the precollected observations.
      */
     virtual void setUpBins() override;
 
     /**
      * Called internally by collect(), this method collects a value
-     * after the histogram has been transformed.
+     * after the histogram bins have been set up.
      */
     virtual void collectIntoHistogram(double value) override;
 
     /**
      * Called internally by collect(), this method collects a value
-     * after the histogram has been transformed.
+     * after the histogram bins have been set up.
      */
     virtual void collectWeightedIntoHistogram(double value, double weight) override;
 
@@ -191,7 +190,7 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
      * Adds a new bin (bin) boundary. This method can only be called
      * if HIST_TR_NO_TRANSFORM was specified in the constructor call,
      * and only when the object is still in the initial data collection phase
-     * (that is, transform() has been invoked yet).
+     * (that is, setUpBins() has been invoked yet).
      */
     virtual void addBinBound(double x);
     //@}

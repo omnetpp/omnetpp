@@ -251,18 +251,18 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
   protected:
     /**
      * Called internally by collect(), this method collects a value
-     * after the histogram has been transformed.
+     * after histogram bins have been set up.
      */
     virtual void collectIntoHistogram(double value) override;
 
     /**
      * Called internally by collect2(), this method collects a value
-     * after the histogram has been transformed.
+     * after histogram bins have been set up.
      */
     virtual void collectWeightedIntoHistogram(double value, double weight) override;
 
     /**
-     * Called internally by transform(), this method should determine and set up
+     * Called internally by setUpBins(), this method should determine and set up
      * the histogram range. It also calculates the bin size.
      */
     virtual void setupRange() override;

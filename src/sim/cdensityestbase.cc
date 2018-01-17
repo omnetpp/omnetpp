@@ -258,7 +258,7 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
         // merge the base class
         cDensityEstBase::merge(otherd);
 
-        // force this object to be transformed as well
+        // force this object to set up the bins as well
         if (!binsAlreadySetUp())
             setUpBins();
 

@@ -199,7 +199,7 @@ void cKSplit::setUpBins()
     ASSERT(!weighted);
 
     if (binsAlreadySetUp())
-        throw cRuntimeError(this, "transform(): Histogram already transformed");
+        throw cRuntimeError(this, "setUpBins(): Histogram bins already set up");
 
     setupRange();
     createRootGrid();

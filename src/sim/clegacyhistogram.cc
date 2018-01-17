@@ -120,7 +120,7 @@ void cLegacyHistogramBase::clearResult()
 void cLegacyHistogramBase::setUpBins()
 {
     if (binsAlreadySetUp())
-        throw cRuntimeError(this, "transform(): Histogram already transformed");
+        throw cRuntimeError(this, "setUpBins(): Histogram bins already set up");
 
     setupRange();  // this will set num_cells if it was unspecified (-1)
 
@@ -427,7 +427,7 @@ void cLegacyHistogram::collectWeightedIntoHistogram(double value, double weight)
 double cLegacyHistogram::getPDF(double x) const
 {
     if (!binsAlreadySetUp())
-        throw cRuntimeError(this, "getPDF(x) cannot be called before histogram is transformed");
+        throw cRuntimeError(this, "getPDF(x) cannot be called before histogram bins have been set up");
 
     int k = (int)floor((x - rangeMin) / cellSize);
     if (k < 0 || x < rangeMin || k >= numCells || x >= rangeMax)
