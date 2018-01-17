@@ -222,7 +222,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
         writeStatisticField("sqrsum", statistic->getSqrSum());
     }
     else {
-        writeStatisticField("weights", statistic->getWeights());
+        writeStatisticField("weights", statistic->getSumWeights());
         writeStatisticField("weightedSum", statistic->getWeightedSum());
         writeStatisticField("sqrSumWeights", statistic->getSqrSumWeights());
         writeStatisticField("weightedSqrSum", statistic->getWeightedSqrSum());

@@ -252,7 +252,7 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
             if (!otherd->isWeighted())
                 collect(otherd->precollectedValues[i]);
             else
-                collect2(otherd->precollectedValues[i], otherd->precollectedWeights[i]);
+                collectWeighted(otherd->precollectedValues[i], otherd->precollectedWeights[i]);
     }
     else {
         // merge the base class
@@ -452,12 +452,12 @@ void cPrecollectionBasedDensityEst::collect(double value)
     }
 }
 
-void cPrecollectionBasedDensityEst::collect2(double value, double weight)
+void cPrecollectionBasedDensityEst::collectWeighted(double value, double weight)
 {
     if (!isTransformed() && rangeMode == RANGE_FIXED)
         transform();
 
-    cDensityEstBase::collect2(value, weight);
+    cDensityEstBase::collectWeighted(value, weight);
 
     if (!isTransformed()) {
         ASSERT(precollectedValues);

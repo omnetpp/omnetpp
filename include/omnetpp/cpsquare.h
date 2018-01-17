@@ -117,8 +117,8 @@ class SIM_API cPSquare : public cDensityEstBase
      * Collects one observation with a given weight. Throws an error,
      * as cPSquare does not support weighted statistics.
      */
-    virtual void collect2(double value, double weight) override;
-    using cStatistic::collect2;
+    virtual void collectWeighted(double value, double weight) override;
+    using cStatistic::collectWeighted;
 
     /**
      * Returns the number of cells used.

@@ -91,9 +91,9 @@ void cHistogram::collect(double value)
         collectIntoHistogram(value); // error
 }
 
-void cHistogram::collect2(double value, double weight)
+void cHistogram::collectWeighted(double value, double weight)
 {
-    cDensityEstBase::collect2(value, weight);
+    cDensityEstBase::collectWeighted(value, weight);
 
     if (strategy != nullptr)
         strategy->collectWeighted(value, weight);
@@ -119,7 +119,7 @@ double cHistogram::draw() const
 {
     // warn/error if there are overflows/underflows? (by sumweights, not by number)
 
-    double binValueSum = getWeights();
+    double binValueSum = getSumWeights();
 
     double rand = uniform(getRNG(), 0, binValueSum);
 

@@ -337,7 +337,7 @@ void StatisticsRecorder::collect(simtime_t_cref t, double value, cObject *detail
     }
     else {
         if (!std::isnan(lastValue))
-            statistic->collect2(lastValue, t - lastTime);
+            statistic->collectWeighted(lastValue, t - lastTime);
         lastTime = t;
         lastValue = value;
     }
@@ -346,7 +346,7 @@ void StatisticsRecorder::collect(simtime_t_cref t, double value, cObject *detail
 void StatisticsRecorder::finish(cResultFilter *prev)
 {
     if (statistic->isWeighted() && !std::isnan(lastValue))
-        statistic->collect2(lastValue, simTime() - lastTime);
+        statistic->collectWeighted(lastValue, simTime() - lastTime);
 
     opp_string_map attributes = getStatisticAttributes();
     getEnvir()->recordStatistic(getComponent(), getResultName().c_str(), statistic, &attributes);
@@ -376,7 +376,7 @@ void HistogramRecorder::init(cComponent *component, const char *statsName, const
     omnetpp::opp_string_map attrs = getStatisticAttributes();
     auto it = attrs.find("timeWeighted");
     bool weighted = it != attrs.end() && (it->second != "0" && it->second != "false");
-    setStatistic(new cHistogram());
+    setStatistic(new cHistogram(nullptr, weighted));
 }
 
 void PSquareRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)

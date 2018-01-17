@@ -108,22 +108,42 @@ class SIM_API cStatistic : public cRandom
     /**
      * Collects one value with a given weight.
      */
-    virtual void collect2(double value, double weight);
+    virtual void collectWeighted(double value, double weight);
 
     /**
-     * Convenience method, delegates to collect2(double, double).
+     * Convenience method, delegates to collectWeighted(double, double).
      */
-    virtual void collect2(SimTime value, double weight) {collect2(value.dbl(), weight);}
+    virtual void collectWeighted(SimTime value, double weight) {collectWeighted(value.dbl(), weight);}
 
     /**
-     * Convenience method, delegates to collect2(double, double).
+     * Convenience method, delegates to collectWeighted(double, double).
      */
-    virtual void collect2(double value, SimTime weight) {collect2(value, weight.dbl());}
+    virtual void collectWeighted(double value, SimTime weight) {collectWeighted(value, weight.dbl());}
 
     /**
-     * Convenience method, delegates to collect2(double, double).
+     * Convenience method, delegates to collectWeighted(double, double).
      */
-    virtual void collect2(SimTime value, SimTime weight) {collect2(value.dbl(), weight.dbl());}
+    virtual void collectWeighted(SimTime value, SimTime weight) {collectWeighted(value.dbl(), weight.dbl());}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(double value, double weight) final {collectWeighted(value, weight);}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(SimTime value, double weight) final {collectWeighted(value, weight);}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(double value, SimTime weight) final {collectWeighted(value, weight);}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(SimTime value, SimTime weight) final {collectWeighted(value, weight);}
 
     /**
      * Updates this object with data coming from another statistics
@@ -192,7 +212,12 @@ class SIM_API cStatistic : public cRandom
     /**
      * Returns the sum of weights.
      */
-    virtual double getWeights() const = 0;
+    virtual double getSumWeights() const = 0;
+
+    /**
+     * Please use getSumWeights() to obtain the sum of weights.
+     */
+    _OPPDEPRECATED virtual double getWeights() const final {return getSumWeights();}
 
     /**
      * Returns the sum of weight*value products.
@@ -215,7 +240,7 @@ class SIM_API cStatistic : public cRandom
     /**
      * Please use draw() to obtain a random number from the collected data.
      */
-    _OPPDEPRECATED double random() const {return draw();}
+    _OPPDEPRECATED virtual double random() const final {return draw();}
     //@}
 
     /** @name Writing to text file, reading from text file, recording to scalar file. */

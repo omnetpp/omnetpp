@@ -197,7 +197,7 @@ void cPSquare::collect(double val)
 }
 
 
-void cPSquare::collect2(double value, double weight)
+void cPSquare::collectWeighted(double value, double weight)
 {
     throw cRuntimeError(this, "cPSquare does not support weighted statistics");
 }

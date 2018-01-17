@@ -70,7 +70,7 @@ std::string cStdDev::str() const
     std::stringstream out;
     out << "count=" << getCount();
     if (isWeighted())
-        out << " sumweights=" << getWeights();
+        out << " sumweights=" << getSumWeights();
     out << " mean=" << getMean();
     out << " stddev=" << getStddev();
     out << " min=" << getMin();
@@ -136,7 +136,7 @@ cStdDev& cStdDev::operator=(const cStdDev& res)
 void cStdDev::collect(double value)
 {
     if (weighted)
-        throw cRuntimeError(this, "Use collect2(value, weight) to add observations to a weighted statistics");
+        throw cRuntimeError(this, "Use collectWeighted(value, weight) to add observations to a weighted statistics");
     if (std::isnan(value))
         throw cRuntimeError(this, "collect(): NaN values are not allowed");
     numValues++;
@@ -150,12 +150,12 @@ void cStdDev::collect(double value)
     sumWeightedSquaredValues += value * value;
 }
 
-void cStdDev::collect2(double value, double weight)
+void cStdDev::collectWeighted(double value, double weight)
 {
     if (!weighted)
         throw cRuntimeError(this, "Use collect(value) to add observations to an unweighted statistics");
     if (!std::isfinite(weight) || weight < 0)
-        throw cRuntimeError(this, "collect2(): weight must be nonnegative and finite (%g)", weight); // zero is OK
+        throw cRuntimeError(this, "collectWeighted(): weight must be nonnegative and finite (%g)", weight); // zero is OK
     if (std::isnan(value))
         throw cRuntimeError(this, "collect(): NaN values are not allowed");
 
@@ -186,7 +186,7 @@ void cStdDev::merge(const cStatistic *other)
     if (other->getCount() > 0 && (origCount == 0 || maxValue < other->getMax()))
         maxValue = other->getMax();
 
-    sumWeights += other->getWeights();
+    sumWeights += other->getSumWeights();
     sumWeightedValues += other->getWeightedSum();
     sumSquaredWeights += other->getSqrSumWeights();
     sumWeightedSquaredValues += other->getWeightedSqrSum();

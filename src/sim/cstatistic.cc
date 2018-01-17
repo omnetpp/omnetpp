@@ -86,9 +86,9 @@ cStatistic& cStatistic::operator=(const cStatistic& res)
     return *this;
 }
 
-void cStatistic::collect2(double, double)
+void cStatistic::collectWeighted(double, double)
 {
-    throw cRuntimeError(this, "collect2() not implemented");
+    throw cRuntimeError(this, "collectWeighted() not implemented");
 }
 
 void cStatistic::recordAs(const char *scalarname, const char *unit)

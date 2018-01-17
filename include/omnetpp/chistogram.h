@@ -126,8 +126,8 @@ class SIM_API cHistogram : public cDensityEstBase
      * negative. (Zero-weight observations are allowed, but will not affect
      * mean and stddev, nor the bin values.)
      */
-    virtual void collect2(double value, double weight) override;
-    using cDensityEstBase::collect2;
+    virtual void collectWeighted(double value, double weight) override;
+    using cDensityEstBase::collectWeighted;
 
     /**
      * Clears the results collected so far.

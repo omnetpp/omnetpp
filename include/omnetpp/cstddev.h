@@ -118,8 +118,8 @@ class SIM_API cStdDev : public cStatistic
      * negative. (Zero-weight observations are allowed, but will not affect
      * mean and stddev.)
      */
-    virtual void collect2(double value, double weight) override;
-    using cStatistic::collect2;
+    virtual void collectWeighted(double value, double weight) override;
+    using cStatistic::collectWeighted;
 
     /**
      * Merge another statistics object into this one.
@@ -180,7 +180,7 @@ class SIM_API cStdDev : public cStatistic
      * Returns the sum of weights. (For unweighted statistics, all weights are
      * taken to be 1.0.)
      */
-    virtual double getWeights() const override  {return sumWeights;}
+    virtual double getSumWeights() const override  {return sumWeights;}
 
     /**
      * Returns the sum of weight*value products. (For unweighted statistics, all

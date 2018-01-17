@@ -299,8 +299,8 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
      * negative. (Zero-weight observations are allowed, but will not affect
      * mean and stddev.)
      */
-    virtual void collect2(double value, double weight) override;
-    using cStatistic::collect2;
+    virtual void collectWeighted(double value, double weight) override;
+    using cStatistic::collectWeighted;
 
     /**
      * Updates this object with data coming from another statistics
