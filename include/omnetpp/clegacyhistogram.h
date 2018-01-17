@@ -107,7 +107,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
     virtual void transform() override;
 
     /**
-     * Returns the number of histogram cells used.
+     * Returns the number of histogram bins used.
      */
     virtual int getNumBins() const override;
 
@@ -125,7 +125,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
     /** @name New member functions. */
     //@{
     /**
-     * Sets the number of cells. Cannot be called when the cells have been
+     * Sets the number of bins. Cannot be called when the bins have been
      * set up already.
      */
     virtual void setNumCells(int numcells);
@@ -138,32 +138,32 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
  *
  * DEPRECATED CLASS, use cHistogram instead.
  *
- * The histogram can operate in two modes. In INTEGERS mode, cell boundaries
+ * The histogram can operate in two modes. In INTEGERS mode, bin boundaries
  * are whole numbers; in DOUBLES mode, they can be real numbers. The operating
  * mode can be chosen with a constructor argument or with the setMode() method;
  * the default behavior is to choose the mode automatically, by inspecting
  * precollected observations.
  *
- * By default, the number of cells is chosen automatically, and the histogram
+ * By default, the number of bins is chosen automatically, and the histogram
  * range is determined by precollecting a number of observations and extending
  * their range by a range extension factor.
  *
  * It is possible to explicitly set any of the following values (and the rest
- * will be chosen or computed automatically): number of cells; cell size;
+ * will be chosen or computed automatically): number of bins; bin size;
  * number of observations to precollect; range extension factor; range lower
  * bound; range upper bound. See the setNumCells(), setCellSize(),
  * setNumFirstVals(), setRangeAuto(), setRangeAutoUpper(), and
  * setRangeAutoLower() methods (many of them are inherited from
  * cPrecollectionBasedDensityEst and cLegacyHistogramBase).
  *
- * Especially in INTEGERS mode, if the cells cannot be set up to satisfy all
+ * Especially in INTEGERS mode, if the bins cannot be set up to satisfy all
  * explicitly given constraints (for example, if the explicitly specified
- * range is not an integer multiple of the explicitly specified cell size),
+ * range is not an integer multiple of the explicitly specified bin size),
  * an error will be thrown.
  *
  * Informational defaults for the various configuration values (subject to change
  * without notice in any release): number of values to precollect: 100;
- * range extension factor: 2.0; number of cells: 200 in INTEGERS mode and 30 in
+ * range extension factor: 2.0; number of bins: 200 in INTEGERS mode and 30 in
  * DOUBLES mode.
  *
  * Examples:
@@ -174,7 +174,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
  * cLegacyHistogram h("histogram");
  * \endcode
  *
- * Setting up a 50-cell histogram on the range [0.0, 5.0) (cell size = 0.1):
+ * Setting up a 50-bin histogram on the range [0.0, 5.0) (bin size = 0.1):
  *
  * \code
  * cLegacyHistogram h("histogram", 50, cLegacyHistogram::MODE_DOUBLES);
@@ -263,7 +263,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
 
     /**
      * Called internally by transform(), this method should determine and set up
-     * the histogram range. It also calculates the cell size.
+     * the histogram range. It also calculates the bin size.
      */
     virtual void setupRange() override;
 
@@ -272,12 +272,12 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
     //@{
 
     /**
-     * Returns the kth cell boundary.
+     * Returns the kth bin boundary.
      */
     virtual double getBinEdge(int k) const override;
 
     /**
-     * Returns the number of observations that fell into the kth histogram cell.
+     * Returns the number of observations that fell into the kth histogram bin.
      */
     virtual double getBinValue(int k) const override;
 
@@ -315,7 +315,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
     //@{
     /**
      * Sets the histogram mode: MODE_AUTO, MODE_INTEGERS or MODE_DOUBLES.
-     * Cannot be called when the cells have been set up already.
+     * Cannot be called when the bins have been set up already.
      */
     virtual void setMode(HistogramMode mode);
 
@@ -326,13 +326,13 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
     virtual HistogramMode getMode() const {return mode;}
 
     /**
-     * Sets the cell size. Cannot be called when the cells have been
+     * Sets the bin size. Cannot be called when the bins have been
      * set up already.
      */
     virtual void setCellSize(double d);
 
     /**
-     * Returns the cell size, or 0 when unknow (i.e. the cells have not
+     * Returns the bin size, or 0 when unknow (i.e. the bins have not
      * been set up yet, and setCellSize() has not been called).
      */
     virtual double getCellSize() const {return cellSize;}

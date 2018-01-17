@@ -46,10 +46,10 @@ class HistogramView : public QGraphicsView
     int mapYToView(const double y) const;
 
     void showInfo(QPoint mousePos);
-    void getCellInfo(char *buf, int cell);
+    void getCellInfo(char *buf, int bin);
 
   signals:
-    void showCellInfo(int cell);
+    void showCellInfo(int bin);
 
   protected:
     void mouseMoveEvent(QMouseEvent *event) override;

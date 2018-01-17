@@ -291,12 +291,12 @@ void SqliteScalarFileWriter::writeStatisticAttr(sqlite_int64 statisticId, const 
     checkOK(sqlite3_clear_bindings(add_statistic_attr_stmt));
 }
 
-void SqliteScalarFileWriter::writeStatisticBin(sqlite_int64 statisticId, double basePoint, unsigned long cellValue)
+void SqliteScalarFileWriter::writeStatisticBin(sqlite_int64 statisticId, double binEdge, unsigned long binValue)
 {
     checkOK(sqlite3_reset(add_statistic_bin_stmt));
     checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 1, statisticId));
-    checkOK(sqlite3_bind_double(add_statistic_bin_stmt, 2, basePoint));
-    checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 3, cellValue));
+    checkOK(sqlite3_bind_double(add_statistic_bin_stmt, 2, binEdge));
+    checkOK(sqlite3_bind_int64(add_statistic_bin_stmt, 3, binValue));
     checkDone(sqlite3_step(add_statistic_bin_stmt));
     checkOK(sqlite3_clear_bindings(add_statistic_bin_stmt));
 }

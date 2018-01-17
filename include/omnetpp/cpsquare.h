@@ -55,7 +55,7 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Constructor.
      */
-    explicit cPSquare(const char *name=nullptr, int cells=10);
+    explicit cPSquare(const char *name=nullptr, int bins=10);
 
     /**
      * Destructor.
@@ -121,7 +121,7 @@ class SIM_API cPSquare : public cDensityEstBase
     using cStatistic::collectWeighted;
 
     /**
-     * Returns the number of cells used.
+     * Returns the number of bins used.
      */
     virtual int getNumBins() const override;
 

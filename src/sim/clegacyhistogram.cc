@@ -176,7 +176,7 @@ void cLegacyHistogramBase::loadFromFile(FILE *f)
 void cLegacyHistogramBase::setNumCells(int numcells)
 {
     if (cellv)
-        throw cRuntimeError(this, "setNumCells(): Too late, cells already set up");
+        throw cRuntimeError(this, "setNumCells(): Too late, bins already set up");
     numCells = numcells;
 }
 
@@ -227,14 +227,14 @@ cLegacyHistogram& cLegacyHistogram::operator=(const cLegacyHistogram& res)
 void cLegacyHistogram::setMode(HistogramMode mode)
 {
     if (isTransformed())
-        throw cRuntimeError(this, "setMode() cannot be called when cells have been set up already");
+        throw cRuntimeError(this, "setMode() cannot be called when bins have been set up already");
     this->mode = mode;
 }
 
 void cLegacyHistogram::setCellSize(double d)
 {
     if (isTransformed())
-        throw cRuntimeError(this, "setCellSize() cannot be called when cells have been set up already");
+        throw cRuntimeError(this, "setCellSize() cannot be called when bins have been set up already");
     cellSize = d;
 }
 
@@ -285,7 +285,7 @@ void cLegacyHistogram::setupRangeInteger()
     rangeMax = ceil(rangeMax);
 
     if (rangeMode == RANGE_FIXED) {
-#define COMPLAINT    "Cannot set up cells to satisfy constraints"
+#define COMPLAINT    "Cannot set up bins to satisfy constraints"
         long range = (long)(rangeMax - rangeMin);
 
         if (numCells > 0 && cellSize > 0) {
@@ -310,7 +310,7 @@ void cLegacyHistogram::setupRangeInteger()
                     break;
 
             if (cellSize > maxCellsize)
-                throw cRuntimeError(this, COMPLAINT ": Specified range is too large, and cannot divide it to 10..200 equal-sized cells");
+                throw cRuntimeError(this, COMPLAINT ": Specified range is too large, and cannot divide it to 10..200 equal-sized bins");
             numCells = range / cellSize;
         }
 #undef COMPLAINT
@@ -369,7 +369,7 @@ void cLegacyHistogram::setupRangeInteger()
 void cLegacyHistogram::setupRangeDouble()
 {
     if (numCells == -1)
-        numCells = 30;  // to allow merging every 2, 3, 5, 6 adjacent cells in post-processing
+        numCells = 30;  // to allow merging every 2, 3, 5, 6 adjacent bins in post-processing
     cellSize = (rangeMax - rangeMin) / numCells;
 }
 
@@ -386,7 +386,7 @@ double cLegacyHistogram::draw() const
     else {
         long m = intrand(rng, numValues - numUnderflows - numOverflows);
 
-        // select a random cell (k-1) and return a random number from it
+        // select a random bin (k-1) and return a random number from it
         int k;
         for (k = 0; m >= 0; k++)
             m -= cellv[k];
@@ -398,7 +398,7 @@ double cLegacyHistogram::draw() const
             return ceil(rangeMin) + (k-1) * (long)cellSize + intrand(rng, (long)cellSize);
         }
         else {
-            // return an uniform double from the given cell
+            // return an uniform double from the given bin
             return rangeMin + (k-1) * cellSize + dblrand(rng) * cellSize;
         }
     }
@@ -448,7 +448,7 @@ double cLegacyHistogram::getBinEdge(int k) const
     //   k=num_cells   : rangemax
 
     if (k < 0 || k > numCells)
-        throw cRuntimeError(this, "Invalid basepoint index %u", k);
+        throw cRuntimeError(this, "Invalid bin edge index %u", k);
 
     if (k == numCells)
         return rangeMax;
@@ -459,7 +459,7 @@ double cLegacyHistogram::getBinEdge(int k) const
 double cLegacyHistogram::getBinValue(int k) const
 {
     if (k < 0 || k > numCells)
-        throw cRuntimeError(this, "Invalid cell index %u", k);
+        throw cRuntimeError(this, "Invalid bin index %u", k);
     return cellv[k];
 }
 

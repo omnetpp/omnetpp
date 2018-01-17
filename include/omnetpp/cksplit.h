@@ -146,7 +146,7 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     DivFunc divFunc;          // function to calc. lambda for cell division
     double *divData;          // data array to pass to div. function
 
-    mutable Iterator *iter;   // iterator used by getBasepoint(), getCellValue() etc.
+    mutable Iterator *iter;   // iterator used by getBinEdge(), getBinValue() etc.
     mutable long iterNumValues; // numValues when iterator was created
 
   private:
@@ -174,7 +174,7 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     // internal:
     void expandGridVector();
 
-    // internal: helper for getBasepoint(), getCellValue()
+    // internal: helper for getBinEdge(), getBinValue()
     void iteratorToCell(int cell_nr) const;
 
     // abstract method in cPrecollectionBasedDensityEst

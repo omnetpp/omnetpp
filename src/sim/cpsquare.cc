@@ -148,10 +148,10 @@ void cPSquare::collect(double val)
         q[i] = val;
     }
     else {
-        // now numObs==b+1, number of observations is enough to produce 'b' cells,
+        // now numObs==b+1, number of observations is enough to produce 'b' bins,
         // estimation has to be done
 
-        int k = 0;  // the cell number in which 'val' falls
+        int k = 0;  // the bin number in which 'val' falls
 
         for (int i = 1; i <= numBins+1; i++) {
             if (val <= q[i]) {

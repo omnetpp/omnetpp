@@ -28,12 +28,12 @@ namespace omnetpp {
 /**
  * @brief Variable bin size histogram.
  *
- * One may add cell (bin) boundaries manually, or let the object create
- * cells with approximately equal number of observations in them.
+ * One may add bin (bin) boundaries manually, or let the object create
+ * bins with approximately equal number of observations in them.
  *
  * The histogram range (rangemin, rangemax) is chosen after precollection
  * of the initial observations has finished. It is not possible to add
- * cell boundaries when histogram is already transformed.
+ * bin boundaries when histogram is already transformed.
  *
  * @ingroup Statistics
  */
@@ -45,14 +45,14 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
      */
     enum TransformType {
        HIST_TR_NO_TRANSFORM, ///< no transformation; uses bin boundaries previously defined by addBinBound()/appendBinBound()
-       HIST_TR_AUTO_EPC_DBL, ///< automatically creates equi-probable cells
+       HIST_TR_AUTO_EPC_DBL, ///< automatically creates equi-probable bins
        HIST_TR_AUTO_EPC_INT  ///< a variation of HIST_TR_AUTO_EPC_DBL
     };
 
   protected:
     TransformType transformType;
 
-    // cell lower boundaries, plus an extra one for the upper bound of the last cell
+    // bin lower boundaries, plus an extra one for the upper bound of the last bin
     // Note: cellLowerBounds[0] = rangeMin, and cellLowerBounds[numCells] = rangeMax
     double *cellLowerBounds;
     int maxNumCells;      // allocated size of cellLowerBounds[] during setup
@@ -62,8 +62,8 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
 
   protected:
     /**
-     * Used internally to create equiprobable cells from the precollected
-     * observations. This cannot be mixed with manually adding cell boundaries
+     * Used internally to create equiprobable bins from the precollected
+     * observations. This cannot be mixed with manually adding bin boundaries
      * -- if there are already some, an error is raised.
      */
     void createEquiprobableCells();
@@ -80,8 +80,8 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
     /**
      * Constructor. The third argument can be one of HIST_TR_NO_TRANSFORM,
      * HIST_TR_AUTO_EPC_DBL, HIST_TR_AUTO_EPC_INT. With HIST_TR_NO_TRANSFORM,
-     * you can set up cells manually (see addBinBound()), in the other two
-     * cases it tries to create equiprobably cells.
+     * you can set up bins manually (see addBinBound()), in the other two
+     * cases it tries to create equiprobably bins.
      */
     explicit cVarHistogram(const char *name=nullptr,
                            int numcells=11,
@@ -164,12 +164,12 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
     virtual double getCDF(double x) const override;
 
     /**
-     * Returns the kth cell boundary.
+     * Returns the kth bin boundary.
      */
     virtual double getBinEdge(int k) const override;
 
     /**
-     * Returns the number of observations that fell into the kth histogram cell.
+     * Returns the number of observations that fell into the kth histogram bin.
      */
     virtual double getBinValue(int k) const override;
 
@@ -188,7 +188,7 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
     //@{
 
     /**
-     * Adds a new bin (cell) boundary. This method can only be called
+     * Adds a new bin (bin) boundary. This method can only be called
      * if HIST_TR_NO_TRANSFORM was specified in the constructor call,
      * and only when the object is still in the initial data collection phase
      * (that is, transform() has been invoked yet).

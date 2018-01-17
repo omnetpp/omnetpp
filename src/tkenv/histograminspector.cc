@@ -83,7 +83,7 @@ void HistogramInspector::refresh()
 
     long num_vals = distr->getCount();
     int basepts = distr->getNumBins()+1;
-    int cell;
+    int bin;
     double cell_lower, cell_upper;
 
     double xmin = distr->getBinEdge(0);
@@ -92,12 +92,12 @@ void HistogramInspector::refresh()
     // determine maximum height (will be used for y scaling)
     double ymax = -1.0;  // a good start because all y values are >=0
     cell_upper = distr->getBinEdge(0);
-    for (cell = 0; cell < basepts-1; cell++) {
-        // get cell
+    for (bin = 0; bin < basepts-1; bin++) {
+        // get bin
         cell_lower = cell_upper;
-        cell_upper = distr->getBinEdge(cell+1);
+        cell_upper = distr->getBinEdge(bin+1);
         // calculate height
-        double y = distr->getBinValue(cell) / (double)(num_vals) / (cell_upper-cell_lower);
+        double y = distr->getBinValue(bin) / (double)(num_vals) / (cell_upper-cell_lower);
         if (y > ymax)
             ymax = y;
     }
@@ -117,15 +117,15 @@ void HistogramInspector::refresh()
 
     // draw the histogram
     cell_upper = distr->getBinEdge(0);
-    for (cell = 0; cell < basepts-1; cell++) {
+    for (bin = 0; bin < basepts-1; bin++) {
         char tag[16];
-        sprintf(tag, "cell%d", cell);
+        sprintf(tag, "bin%d", bin);
 
-        // get cell
+        // get bin
         cell_lower = cell_upper;
-        cell_upper = distr->getBinEdge(cell+1);
+        cell_upper = distr->getBinEdge(bin+1);
         // calculate height
-        double y = distr->getBinValue(cell) / (double)(num_vals) / (cell_upper-cell_lower);
+        double y = distr->getBinValue(bin) / (double)(num_vals) / (cell_upper-cell_lower);
         // prepare rectangle coordinates
         char coords[64];
         sprintf(coords, "%d %d %d %d", X(cell_lower), Y(0), X(cell_upper), Y(y));
@@ -144,21 +144,21 @@ void HistogramInspector::generalInfo(char *buf)
     if (!d->isTransformed())
         sprintf(buf, "(collecting initial values, N=%ld)", d->getCount());
     else
-        sprintf(buf, "Histogram: (%g...%g)  N=%ld  #cells=%d",
+        sprintf(buf, "Histogram: (%g...%g)  N=%ld  #bins=%d",
                 d->getBinEdge(0), d->getBinEdge(d->getNumBins()),
                 d->getCount(),
                 d->getNumBins()
                 );
 }
 
-void HistogramInspector::getCellInfo(char *buf, int cell)
+void HistogramInspector::getCellInfo(char *buf, int bin)
 {
     cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
-    double count = d->getBinValue(cell);
-    double cell_lower = d->getBinEdge(cell);
-    double cell_upper = d->getBinEdge(cell+1);
+    double count = d->getBinValue(bin);
+    double cell_lower = d->getBinEdge(bin);
+    double cell_upper = d->getBinEdge(bin+1);
     sprintf(buf, "Cell #%d:  (%g...%g)  n=%g  PDF=%g",
-            cell,
+            bin,
             cell_lower, cell_upper,
             count,
             count / (double)(d->getCount()) / (cell_upper-cell_lower)
@@ -172,7 +172,7 @@ int HistogramInspector::inspectorCommand(int argc, const char **argv)
         return TCL_ERROR;
     }
 
-    if (strcmp(argv[0], "cell") == 0) {  // 'opp_inspectorcommand <inspector> cell ...'
+    if (strcmp(argv[0], "bin") == 0) {  // 'opp_inspectorcommand <inspector> bin ...'
         if (argc > 2) {
             Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC);
             return TCL_ERROR;

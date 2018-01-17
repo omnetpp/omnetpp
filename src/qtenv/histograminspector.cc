@@ -165,9 +165,9 @@ double HistogramInspector::maxY()
     // determine maximum height (will be used for y scaling)
     double maxY = -1.0;  // a good start because all y values are >=0
     cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
-    for (int cell = 0; cell < distr->getNumBins(); cell++) {
+    for (int bin = 0; bin < distr->getNumBins(); bin++) {
         // calculate height
-        double y = chartType == HistogramView::SHOW_PDF ? distr->getBinPDF(cell) : distr->getBinValue(cell);
+        double y = chartType == HistogramView::SHOW_PDF ? distr->getBinPDF(bin) : distr->getBinValue(bin);
         if (y > maxY)
             maxY = y;
     }
@@ -206,29 +206,29 @@ QString HistogramInspector::generalInfo()
     if (!d->isTransformed())
         return QString("(collecting initial values, N=%1)").arg(QString::number(d->getCount()));
     else
-        return QString("Histogram: (%1...%2)  N=%3  #cells=%4").arg(
+        return QString("Histogram: (%1...%2)  N=%3  #bins=%4").arg(
                 QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
                 QString::number(d->getCount()), QString::number(d->getNumBins()));
 }
 
-void HistogramInspector::onShowCellInfo(int cell)
+void HistogramInspector::onShowCellInfo(int bin)
 {
     if (!object) {
         statusBar->showMessage("");
         return;
     }
 
-    if (cell == -1) {
+    if (bin == -1) {
         statusBar->showMessage(generalInfo());
         return;
     }
 
     cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
-    double count = d->getBinValue(cell);
-    double cell_lower = d->getBinEdge(cell);
-    double cell_upper = d->getBinEdge(cell+1);
+    double count = d->getBinValue(bin);
+    double cell_lower = d->getBinEdge(bin);
+    double cell_upper = d->getBinEdge(bin+1);
     QString text = "Cell #%1:  [%2...%3)  n=%4  PDF=%5";
-    text = text.arg(QString::number(cell), QString::number(cell_lower), QString::number(cell_upper),
+    text = text.arg(QString::number(bin), QString::number(cell_lower), QString::number(cell_upper),
                 QString::number(count), QString::number(count / (double)(d->getCount()) / (cell_upper-cell_lower)));
 
     statusBar->showMessage(text);

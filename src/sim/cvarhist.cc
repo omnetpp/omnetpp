@@ -58,7 +58,7 @@ cVarHistogram::cVarHistogram(const char *name, int maxnumcells, TransformType tr
 
     if ((transformType == HIST_TR_AUTO_EPC_DBL ||
          transformType == HIST_TR_AUTO_EPC_INT) && maxNumCells < 2)
-        throw cRuntimeError(this, "constructor: The maximal number of cells should be >=2");
+        throw cRuntimeError(this, "constructor: The maximal number of bins should be >=2");
 }
 
 cVarHistogram::~cVarHistogram()
@@ -170,16 +170,16 @@ static int compareDoubles(const void *p1, const void *p2)
 
 void cVarHistogram::createEquiprobableCells()
 {
-    // this method is called from transform() if equi-probable cells (automatic setup) was requested
+    // this method is called from transform() if equi-probable bins (automatic setup) was requested
     if (numCells > 0)
-        throw cRuntimeError(this, "Some bin bounds already present when making equi-probable cells");
+        throw cRuntimeError(this, "Some bin bounds already present when making equi-probable bins");
 
-    // setRange() methods must not be used with cVarHistogram's equi-probable cell auto-setup mode,
+    // setRange() methods must not be used with cVarHistogram's equi-probable bin auto-setup mode,
     // so range_mode should still be the RANGE_NOTSET that we set in the ctor
     if (rangeMode != RANGE_NOTSET)
         throw cRuntimeError(this, "setRange..() only supported with HIST_TR_NO_TRANSFORM mode");
 
-    // this version automatically sets the cell boundaries...
+    // this version automatically sets the bin boundaries...
     ASSERT(maxNumCells >= 2);  // maybe 1 is enough...
 
     // allocate cellv and bin_bounds
@@ -188,24 +188,24 @@ void cVarHistogram::createEquiprobableCells()
 
     qsort(precollectedValues, numValues, sizeof(double), compareDoubles);
 
-    // expected sample number per cell
+    // expected sample number per bin
     double esnpc = numValues / (double)maxNumCells;
 
-    int cell;  // index of cell being constructed
-    int prevIndex;  // index of first observation in precollectedValues[] that will go into cellv[cell]
-    int index;  // index of first observation in precollectedValues[] that will be left for the next cell (cellv[cell+1])
+    int bin;  // index of bin being constructed
+    int prevIndex;  // index of first observation in precollectedValues[] that will go into cellv[bin]
+    int index;  // index of first observation in precollectedValues[] that will be left for the next bin (cellv[bin+1])
 
     double prevBoundary;  // previous value of boundary
     double boundary;  // precollectedValues[index]
 
-    // construct cells; last cell will be handled separately
-    for (cell = 0, prevIndex = 0, prevBoundary = precollectedValues[prevIndex],
+    // construct bins; last bin will be handled separately
+    for (bin = 0, prevIndex = 0, prevBoundary = precollectedValues[prevIndex],
          rangeMin = cellLowerBounds[0] = precollectedValues[0], index = prevIndex + (int)esnpc;
 
-         cell < maxNumCells-1 && index < numValues;
+         bin < maxNumCells-1 && index < numValues;
 
-         cell++, prevIndex = index, prevBoundary = boundary,
-         index = (int)MAX(prevIndex + esnpc, (cell+1) * esnpc))
+         bin++, prevIndex = index, prevBoundary = boundary,
+         index = (int)MAX(prevIndex + esnpc, (bin+1) * esnpc))
     {
         boundary = precollectedValues[index];
         if (boundary == prevBoundary) {
@@ -216,7 +216,7 @@ void cVarHistogram::createEquiprobableCells()
             // remark: either j == num_vals or
             //  prev_boundary == firstvals[j-1] < firstvals[j] holds
             if (j == numValues)
-                break;  // the cell-th cell/bin will be the last cell/bin
+                break;  // the bin-th bin will be the last bin
             else {
                 index = j;  // a greater one was found
                 boundary = precollectedValues[index];
@@ -235,28 +235,28 @@ void cVarHistogram::createEquiprobableCells()
                 ;  // may run 0 or more times
             index = j+1;  // unnecessary if cycle ran 0 times
         }
-        cellLowerBounds[cell+1] = boundary;
-        cellv[cell] = index - prevIndex;
+        cellLowerBounds[bin+1] = boundary;
+        cellv[bin] = index - prevIndex;
     }
 
-    // the last cell/bin:
-    cellv[cell] = numValues - prevIndex;
+    // the last bin:
+    cellv[bin] = numValues - prevIndex;
 
     // the last boundary:
-    rangeMax = cellLowerBounds[cell+1] = precollectedValues[numValues-1];
+    rangeMax = cellLowerBounds[bin+1] = precollectedValues[numValues-1];
 
     // correction of the last boundary (depends on DBL/INT)
     if (transformType == HIST_TR_AUTO_EPC_DBL) {
         double range = precollectedValues[numValues-1] - precollectedValues[0];
         double epsilon = range * 1e-6;  // hack: value < boundary; not '<='
-        rangeMax = cellLowerBounds[cell+1] += epsilon;
+        rangeMax = cellLowerBounds[bin+1] += epsilon;
     }
     else if (transformType == HIST_TR_AUTO_EPC_INT) {
-        rangeMax = cellLowerBounds[cell+1] += 1;  // hack: take the next integer
+        rangeMax = cellLowerBounds[bin+1] += 1;  // hack: take the next integer
     }
 
-    // remark: cellv[0]...cellv[cell] are the valid cells
-    numCells = cell+1;  // maybe num_cells < max_num_cells
+    // remark: cellv[0]...cellv[bin] are the valid bins
+    numCells = bin+1;  // maybe num_cells < max_num_cells
 }
 
 void cVarHistogram::transform()
@@ -286,7 +286,7 @@ void cVarHistogram::transform()
                 addBinBound(rangeMax);
         }
 
-        // create cell vector and insert observations
+        // create bin vector and insert observations
         cellv = new double[numCells];
         for (int i = 0; i < numCells; i++)
             cellv[i] = 0;
@@ -312,7 +312,7 @@ void cVarHistogram::collectTransformed(double val)
         overflowSumWeights += 1;
     }
     else {
-        // sample falls in the range of ordinary cells/bins (rangeMin <= val < rangeMax),
+        // sample falls in the range of ordinary bins/bins (rangeMin <= val < rangeMax),
         // perform binary search
         int lowerIndex, upperIndex, index;
         for (lowerIndex = 0, upperIndex = numCells,
@@ -353,7 +353,7 @@ double cVarHistogram::getBinEdge(int k) const
     if (k < numCells+1)
         return cellLowerBounds[k];
     else
-        throw cRuntimeError(this, "Invalid basepoint index %u", k);
+        throw cRuntimeError(this, "Invalid bin edge index %u", k);
 }
 
 double cVarHistogram::getBinValue(int k) const
@@ -361,7 +361,7 @@ double cVarHistogram::getBinValue(int k) const
     if (k < numCells)
         return cellv[k];
     else
-        throw cRuntimeError(this, "Invalid cell index %u", k);
+        throw cRuntimeError(this, "Invalid bin index %u", k);
 }
 
 double cVarHistogram::draw() const

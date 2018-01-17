@@ -59,7 +59,7 @@ class QTENV_API HistogramInspector : public Inspector
     QString generalInfo();
 
   private slots:
-    void onShowCellInfo(int cell);
+    void onShowCellInfo(int bin);
     void onCustomContextMenuRequested(QPoint pos);
     void onShowCounts();
     void onShowPDF();

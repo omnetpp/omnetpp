@@ -233,7 +233,7 @@ class SIM_API cStatistic : public cRandom
      *
      * Note that this operation may have side effect: if this object is a
      * histogram, the method may invoke the transform() on the histogram
-     * object, to force it set up histogram cells before recording.
+     * object, to force it set up histogram bins before recording.
      */
     virtual void record()  {recordAs(nullptr, nullptr);}
 
@@ -244,7 +244,7 @@ class SIM_API cStatistic : public cRandom
      *
      * Note that this operation may have side effect: if this object is a
      * histogram, the method may invoke the transform() on the histogram
-     * object, to force it set up histogram cells before recording.
+     * object, to force it set up histogram bins before recording.
      */
     virtual void recordWithUnit(const char *unit)  {recordAs(nullptr, unit);}
 
@@ -254,7 +254,7 @@ class SIM_API cStatistic : public cRandom
      *
      * Note that this operation may have side effect: if this object is a
      * histogram, the method may invoke the transform() on the histogram
-     * object, to force it set up histogram cells before recording.
+     * object, to force it set up histogram bins before recording.
      */
     virtual void recordAs(const char *name, const char *unit=nullptr);
     //@}

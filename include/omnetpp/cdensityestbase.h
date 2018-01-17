@@ -29,13 +29,13 @@ class SIM_API cDensityEstBase : public cStdDev
 {
   public:
     /**
-     * @brief Information about a histogram cell. This struct is not used
+     * @brief Information about a histogram bin. This struct is not used
      * internally by the histogram classes, only to return information to the user.
      */
     struct Bin
     {
-        double lower;  // lower cell bound (inclusive)
-        double upper;  // lower cell bound (exclusive)
+        double lower;  // lower bin bound (inclusive)
+        double upper;  // lower bin bound (exclusive)
         double value;  // counter (or its estimate)
         double relativeFreq;  // value / total
         Bin() {lower=upper=value=relativeFreq=0;}
@@ -79,8 +79,7 @@ class SIM_API cDensityEstBase : public cStdDev
     }
     //@}
 
-
-    /** @name Accessing histogram cells. */
+    /** @name Accessing histogram bins. */
     //@{
     /**
      * Returns true if histogram is already available. See transform().
@@ -107,7 +106,7 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual double getBinEdge(int k) const = 0;
 
     /**
-     * Returns the number of observations that fell into the kth histogram cell.
+     * Returns the number of observations that fell into the kth histogram bin.
      */
     virtual double getBinValue(int k) const = 0;
 
@@ -141,7 +140,7 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual double getOverflowSumWeights() const = 0;
 
     /**
-     * Combines the functionality of getBasepoint(), getCellValue() and getCellPDF() into a
+     * Combines the functionality of getBinEdge(), getBinValue() and getBinPDF() into a
      * single call.
      */
     virtual Bin getBinInfo(int k) const;
@@ -209,7 +208,7 @@ class SIM_API cDensityEstBase : public cStdDev
  *
  * DEPRECATED CLASS, do not use for new classes.
  *
- * For the histogram classes, you need to specify the number of cells
+ * For the histogram classes, you need to specify the number of bins
  * and the range. Range can either be set explicitly or you can choose
  * automatic range determination.
  *
@@ -219,7 +218,7 @@ class SIM_API cDensityEstBase : public cStdDev
  *     histogram is set up. The range (min, max) of the  initial values
  *     is expanded rangeExtensionFactoror times, and the result will become
  *     the histogram's range (rangeMin, rangeMax). Based on the range,
- *     the cells are layed out.
+ *     the bins are layed out.
  *  3. Then the initial values that have been stored up to this point
  *     will be transferred into the new histogram structure and their
  *     store is deleted -- this is done by the transform() function.
@@ -251,7 +250,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     };
 
   protected:
-    // we can precollect observations to automatically determine the range before histogram cells are set up
+    // we can precollect observations to automatically determine the range before histogram bins are set up
     bool transformed;   // whether precollected values have been transformed into a histogram
     double *precollectedValues;
     double *precollectedWeights; // nullptr for unweighted
@@ -438,7 +437,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     /**
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
-     * Updating the underflow/overflow cells must be handled within this function.
+     * Updating the underflow/overflow bins must be handled within this function.
      * This is a pure virtual function; it must be redefined in subclasses.
      */
     virtual void collectTransformed(double value) = 0;
@@ -446,7 +445,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     /**
      * Called internally by collect(), this method collects a value
      * after the histogram has been transformed.
-     * Updating the underflow/overflow cells must be handled within this function.
+     * Updating the underflow/overflow bins must be handled within this function.
      * This is a pure virtual function; it must be redefined in subclasses.
      */
     virtual void collectTransformed2(double value, double weight) = 0;

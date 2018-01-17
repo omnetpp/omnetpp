@@ -90,7 +90,7 @@ void HistogramView::showInfo(QPoint mousePos)
         actual = nullptr;
     }
 
-    int cell = -1;
+    int bin = -1;
     for (QGraphicsItem *item : items(mousePos))
         if (QGraphicsRectItem *rect = dynamic_cast<QGraphicsRectItem *>(item)) {
             if (rect == gridItem->getDiagramFrame())
@@ -102,13 +102,13 @@ void HistogramView::showInfo(QPoint mousePos)
                 rect->setPen(HIGHLIGHT_LINE_COLOR);
                 rect->setZValue(1);
             }
-            cell = rect->data(0).toInt();
+            bin = rect->data(0).toInt();
 
             actual = rect;
             break;
         }
 
-    emit showCellInfo(cell);
+    emit showCellInfo(bin);
 }
 
 void HistogramView::setMinX(const double minX)
@@ -154,12 +154,12 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cDensityEstB
 
     // draw the histogram
     int prevLeftX = mapXToView(distr->getBinEdge(0));
-    for (int cell = 0; cell < distr->getNumBins(); cell++) {
+    for (int bin = 0; bin < distr->getNumBins(); bin++) {
         // calculate height
-        double y = type == SHOW_PDF ? distr->getBinPDF(cell) : distr->getBinValue(cell);
+        double y = type == SHOW_PDF ? distr->getBinPDF(bin) : distr->getBinValue(bin);
 
         // draw rectangle
-        int width = std::max(1, mapXToView(distr->getBinEdge(cell+1)) - prevLeftX);
+        int width = std::max(1, mapXToView(distr->getBinEdge(bin+1)) - prevLeftX);
         if (y < minY) {
             prevLeftX += width;
             continue;
@@ -182,7 +182,7 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cDensityEstB
             pen.setColor(HISTOGRAM_COLOR);
 
         QGraphicsRectItem *item = new QGraphicsRectItem(QRectF(prevLeftX, rectMinY, width, height), gridItem->getDiagramFrame());
-        item->setData(0, cell);
+        item->setData(0, bin);
         item->setPen(pen);
         item->setBrush(brush);
         prevLeftX += width;

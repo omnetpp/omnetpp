@@ -158,9 +158,9 @@ namespace omnetpp {
  *      It is the only weighted statistics class.
  *    - cLongHistogram and cDoubleHistogram are descendants of cStdDev and
  *      also keep an approximation of the distribution of the observations
- *      using equidistant (equal-sized) cell histograms.
- *    - cVarHistogram implements a histogram where cells do not need to be
- *      the same size. You can manually add the cell (bin) boundaries,
+ *      using equidistant (equal-sized) bin histograms.
+ *    - cVarHistogram implements a histogram where bins do not need to be
+ *      the same size. You can manually add the bin (bin) boundaries,
  *      or alternatively, automatically have a partitioning created where
  *      each bin has the same number of observations (or as close to that
  *      as possible).

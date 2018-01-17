@@ -262,18 +262,18 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
         if (!isTransformed())
             transform();
 
-        // make sure that cells are aligned
+        // make sure that bins are aligned
         if (getNumBins() != otherd->getNumBins())
-            throw cRuntimeError(this, "Cannot merge (%s)%s: Different number of histogram cells (%d vs %d)",
+            throw cRuntimeError(this, "Cannot merge (%s)%s: Different number of histogram bins (%d vs %d)",
                     otherd->getClassName(), otherd->getFullPath().c_str(), getNumBins(), otherd->getNumBins());
         int n = getNumBins();
         for (int i = 0; i <= n; i++)
             if (getBinEdge(i) != otherd->getBinEdge(i))
-                throw cRuntimeError(this, "Cannot merge (%s)%s: Histogram cells are not aligned",
+                throw cRuntimeError(this, "Cannot merge (%s)%s: Histogram bins are not aligned",
                         otherd->getClassName(), otherd->getFullPath().c_str());
 
 
-        // merge underflow/overflow cells
+        // merge underflow/overflow bins
         numUnderflows += otherd->getNumUnderflows();
         numOverflows += otherd->getNumOverflows();
         underflowSumWeights += otherd->getUnderflowSumWeights();
@@ -448,7 +448,7 @@ void cPrecollectionBasedDensityEst::collect(double value)
             transform();
     }
     else {
-        collectTransformed(value);  // must maintain underflow/overflow cells
+        collectTransformed(value);  // must maintain underflow/overflow bins
     }
 }
 
@@ -469,7 +469,7 @@ void cPrecollectionBasedDensityEst::collectWeighted(double value, double weight)
             transform();
     }
     else {
-        collectTransformed2(value, weight);  // must maintain underflow/overflow cells
+        collectTransformed2(value, weight);  // must maintain underflow/overflow bins
     }
 }
 

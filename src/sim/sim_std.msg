@@ -638,7 +638,7 @@ class cHistogram extends cDensityEstBase
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(false);
-    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram cells");
+    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram bins");
 }
 
 class cPrecollectionBasedDensityEst extends cDensityEstBase
@@ -646,7 +646,7 @@ class cPrecollectionBasedDensityEst extends cDensityEstBase
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram cells");
+    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram bins");
 }
 
 class cLegacyHistogramBase extends cPrecollectionBasedDensityEst
