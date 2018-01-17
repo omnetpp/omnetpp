@@ -28,7 +28,7 @@ Define_Module(HistogramDemo);
 void HistogramDemo::activity()
 {
     int numObs = par("numObservations");
-    int numCells = par("numCells");
+    int numBins = par("numBins");
     bool useFixedRange = par("useFixedRange");
     int numFirstVals = par("numFirstVals");
     double rangeExtFactor = par("rangeExtFactor");
@@ -36,10 +36,10 @@ void HistogramDemo::activity()
     int i = 0;
     WATCH(i);
 
-    EV << "Creating 5 distribution approximation objects, of types:\n";
-    EV << "cDoubleHistogram, cLongHistogram, cVarHistogram, cPSquare, cKSplit.\n";
+    EV << "Creating density estimation objects:\n";
+    EV << "cHistogram, cPSquare, cKSplit.\n";
     EV << "Parameters:\n";
-    EV << " number of cells: " << numCells << endl;
+    EV << " number of bins: " << numBins << endl;
     EV << (useFixedRange ? " range: [0,100)" : "automatic range estimation") << endl;
     if (!useFixedRange) {
         EV << " observations used for range estimation: " << numFirstVals << endl;
@@ -47,42 +47,25 @@ void HistogramDemo::activity()
     }
     EV << endl;
 
-    cDoubleHistogram dblhist("DoubleHistogram", numCells);
-    cLongHistogram longhist("LongHistogram", numCells);
-    cVarHistogram varhist("VarHistogram", numCells, cVarHistogram::HIST_TR_AUTO_EPC_DBL);
-    cPSquare psquare("PSquare", numCells);
+    cHistogram hist("Histogram");
+    cPSquare psquare("PSquare", numBins);
     cKSplit ksplit("K-Split");
 
     if (useFixedRange) {
-        dblhist.setRange(0, 100);
-        longhist.setRange(0, 100);
+        hist.setStrategy(new cFixedRangeHistogramStrategy(0, 100));
         ksplit.setRange(0, 100);
     }
     else {
-        // 0.0 is lower limit
-        dblhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
-        longhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+        auto strategy = new cAutoRangeHistogramStrategy(0, NAN, numBins);
+        strategy->setNumToPrecollect(numFirstVals);
+        strategy->setRangeExtensionFactor(rangeExtFactor);
+        hist.setStrategy(strategy);
         ksplit.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
     }
-    varhist.setNumPrecollectedValues(numFirstVals);
 
-    FILE *f = fopen("hist.dat", "r");
-    if (f && getEnvir()->askYesNo("HIST: Saved histogram file `hist.dat' found,"
-                                  " load it and continue collecting from there?"))
-    {
-        longhist.loadFromFile(f);
-        dblhist.loadFromFile(f);
-        psquare.loadFromFile(f);
-        varhist.loadFromFile(f);
-        ksplit.loadFromFile(f);
-        fclose(f);
-    }
-
-    EV << "If Tkenv is used (it is the default), you may click the Contents tab\n"
-          "of the module inspector window, and double-click the items to open\n"
-          "graphical inspector for the distributions.\n\n";
-    EV << "An alternative is to load 'inspect.lst' by selecting Options|Load inspector list\n"
-          "from the menu; this will also open the inspector windows.\n";
+    EV << "If Qtenv is used (it is the default), you may click the Children mode\n"
+          "button of the object inspector, and double-click the items to open\n"
+          "graphical inspectors for the distributions.\n\n";
 
     EV << endl;
     wait(0);
@@ -91,13 +74,11 @@ void HistogramDemo::activity()
     EV << "(exponential(30) with P=0.5 and normal(80, 10) with P=0.5)\n";
     for (i = 0; i < numObs; i++) {
         double d = (intrand(2) == 0) ? exponential(30) : normal(80, 10);
-        EV << " adding " << d << endl;
 
-        longhist.collect(d);
-        dblhist.collect(d);
+        EV << " adding " << d << endl;
+        hist.collect(d);
         psquare.collect(d);
         ksplit.collect(d);
-        varhist.collect(d);
 
         wait(1);
     }
@@ -115,20 +96,9 @@ void HistogramDemo::activity()
     EV << "Writing snapshot file...\n";
     snapshot(this);
 
-    EV << "Saving all four objects to `hist.dat'...\n";
-    f = fopen("hist.dat", "w");
-    longhist.saveToFile(f);
-    dblhist.saveToFile(f);
-    psquare.saveToFile(f);
-    varhist.saveToFile(f);
-    ksplit.saveToFile(f);
-    fclose(f);
-
-    longhist.record();
-    dblhist.record();
     psquare.record();
     ksplit.record();
-    varhist.record();
+    hist.record();
 
     endSimulation();
 }

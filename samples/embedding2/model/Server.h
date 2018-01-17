@@ -39,8 +39,8 @@ class Server : public cSimpleModule
     cOutVector collisionMultiplicityVector;
     cOutVector collisionLengthVector;
     cOutVector channelUtilizationVector;
-    cLongHistogram collisionMultiplicityHistogram;
-    cDoubleHistogram collisionLengthHistogram;
+    cHistogram collisionMultiplicityHistogram;
+    cHistogram collisionLengthHistogram;
 
   public:
     Server();

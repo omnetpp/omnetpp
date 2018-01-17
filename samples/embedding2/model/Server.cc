@@ -57,9 +57,7 @@ void Server::initialize()
     channelUtilizationVector.setInterpolationMode(cOutVector::LINEAR);
 
     collisionMultiplicityHistogram.setName("collision multiplicity");
-    collisionMultiplicityHistogram.setRangeAutoUpper(0.0);
     collisionLengthHistogram.setName("collision length");
-    collisionLengthHistogram.setRangeAutoUpper(0.0);
 
 }
 

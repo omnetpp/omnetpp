@@ -29,7 +29,7 @@ class Txc15 : public cSimpleModule
   private:
     long numSent;
     long numReceived;
-    cLongHistogram hopCountStats;
+    cHistogram hopCountStats;
     cOutVector hopCountVector;
 
   protected:
@@ -53,7 +53,6 @@ void Txc15::initialize()
     WATCH(numReceived);
 
     hopCountStats.setName("hopCountStats");
-    hopCountStats.setRangeAutoUpper(0, 10, 1.5);
     hopCountVector.setName("HopCount");
 
     // Module 0 sends the first message
