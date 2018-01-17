@@ -20,6 +20,9 @@
 
 namespace omnetpp {
 
+/**
+ * TODO
+ */
 class SIM_API cIHistogramStrategy : public cObject
 {
     friend class cHistogram;
@@ -34,10 +37,13 @@ class SIM_API cIHistogramStrategy : public cObject
     virtual void collect(double value) = 0;
     virtual void collectWeighted(double value, double weight) = 0;
 
-    virtual bool binsCreated() const = 0;
-    virtual void createBins() = 0;
+    virtual bool binsAlreadySetUp() const = 0;
+    virtual void setUpBins() = 0;
 };
 
+/**
+ * TODO
+ */
 class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
 {
   protected:
@@ -46,7 +52,8 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
     double binSize;
     HistogramMode mode;  // may not be AUTO
 
-    virtual void setupBins();
+  protected:
+    virtual void createBins();
 
   public:
     cFixedRangeHistogramStrategy(double lo, double hi, double binSize=1, HistogramMode mode=MODE_REALS) :
@@ -64,42 +71,43 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
     virtual void collect(double value) override;
     virtual void collectWeighted(double value, double weight) override;
 
-    virtual bool binsCreated() const override {return hist->getNumBins() > 0;}
-    virtual void createBins() override {};
+    virtual bool binsAlreadySetUp() const override {return hist->getNumBins() > 0;}
+    virtual void setUpBins() override {}
 };
 
+/**
+ * TODO
+ */
 class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
 {
   protected:
+    bool inPrecollection = true;
     size_t numToPrecollect = 100;
-
     std::vector<double> values;
     std::vector<double> weights; // if weighted
 
-    bool inPrecollection = true;
+  protected:
     virtual void moveValuesIntoHistogram();
 
   public:
-
     int getNumToPrecollect() const {return numToPrecollect;}
     void setNumToPrecollect(int numToPrecollect) {this->numToPrecollect = numToPrecollect;}
-
-    virtual bool binsCreated() const override;
-    // should be called when the histogram has to be finalized (recorded) before precollection is over
-    virtual void createBins() override;
+    virtual bool binsAlreadySetUp() const override;
 };
 
+/**
+ * TODO
+ */
 class cGenericHistogramStrategy : public cPrecollectionBasedHistogramStrategy
 {
   private:
     double rangeExtensionFactor = 1.5;
     double binSize = NAN;
     int desiredNumBins;
-
     HistogramMode mode = MODE_AUTO;
 
   protected:
-    virtual void setupBins();
+    virtual void createBins();
     double computeBinSize(double& rangeMin, double& rangeMax);
     double computeIntegerBinSize(double& rangeMin, double& rangeMax);
 
@@ -109,10 +117,14 @@ class cGenericHistogramStrategy : public cPrecollectionBasedHistogramStrategy
     double getBinSize() const {return binSize;}
     HistogramMode getMode() const {return mode;}
 
+    virtual void setUpBins() override {createBins(); moveValuesIntoHistogram();}
     virtual void collect(double value) override;
     virtual void collectWeighted(double value, double weight) override;
 };
 
+/**
+ * TODO
+ */
 // note: when constraints are overdetermined, "best effort" will be made to satisfy them:
 // at least as numBins bins created; histogram range to include the [lo,hi) interval, etc.
 class cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramStrategy
@@ -130,7 +142,7 @@ class cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramStrategy
     // TODO maybe add maxNumBins? i.e. when #bins exceeds maxNumBins, call mergeBins() with appropriate "n"
 
   protected:
-    virtual void setupBins();
+    virtual void createBins();
     double computeDoubleBinSize(double& rangeMin, double& rangeMax);
     double computeIntegerBinSize(double& rangeMin, double& rangeMax);
 
@@ -154,6 +166,7 @@ class cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramStrategy
     double getRangeExtensionFactor() const {return rangeExtensionFactor;}
     void setRangeExtensionFactor(double rangeExtensionFactor) {this->rangeExtensionFactor = rangeExtensionFactor;}
 
+    virtual void setUpBins() override {createBins(); moveValuesIntoHistogram();}
     virtual void collect(double value) override;
     virtual void collectWeighted(double value, double weight) override;
 };

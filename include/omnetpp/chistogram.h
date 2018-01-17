@@ -26,16 +26,14 @@ class cAutoRangeHistogramStrategy;
 /**
  * @brief A
  *
+ * TODO explan strategy
+ *
  * @ingroup Statistics
  */
 class SIM_API cHistogram : public cDensityEstBase
 {
-  public:
-    enum _OPPDEPRECATED HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES}; // for use by histogram setup strategy classes
-
   protected:
-    // Owned. It is nullptr exactly if the histogram was loaded from a file.
-    cIHistogramStrategy *strategy = nullptr;
+    cIHistogramStrategy *strategy = nullptr; // owned
 
     std::vector<double> binEdges;
     std::vector<double> binValues; // one less than bin edges
@@ -47,27 +45,26 @@ class SIM_API cHistogram : public cDensityEstBase
     // INTERNAL, only for cIHistogramSetupStrategy implementations!
     // Directly collects the value into the existing bins, without delegating to the setupStrategy.
     virtual void collectIntoHistogram(double value, double weight=1);
+    void dump() const; // for debugging
 
   private:
     void copy(const cHistogram& other);
-
     cAutoRangeHistogramStrategy *getOrCreateAutoRangeStrategy() const;
 
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
 
-    void dump() const; // for debugging
+    /**
+     * Constructor. Installs GenericStrategy. To create a histogram without a strategy object,
+     * use the other constructor and pass nullptr for the 'strategy' parameter.
+     */
+    explicit cHistogram(const char *name=nullptr, bool weighted=false);
 
     /**
      * Constructor.
      */
-    explicit cHistogram(const char *name = nullptr, bool weighted = false);
-
-    /**
-     * Constructor.
-     */
-    explicit cHistogram(const char *name, cIHistogramStrategy *strategy, bool weighted = false);
+    explicit cHistogram(const char *name, cIHistogramStrategy *strategy, bool weighted=false);
 
     /**
      * Copy constructor.
@@ -84,7 +81,6 @@ class SIM_API cHistogram : public cDensityEstBase
      * Destructor.
      */
     virtual ~cHistogram();
-
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -109,7 +105,6 @@ class SIM_API cHistogram : public cDensityEstBase
      * See cObject for more details.
      */
     virtual void parsimUnpack(cCommBuffer *buffer) override;
-
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -136,8 +131,6 @@ class SIM_API cHistogram : public cDensityEstBase
 
     /**
      * Returns a random number from the distribution represented by the histogram.
-     * The returned value is always in the range covered by the bins, the underflow
-     * and overflow values are ignored.
      */
     virtual double draw() const override;
 
@@ -151,6 +144,10 @@ class SIM_API cHistogram : public cDensityEstBase
      */
     virtual void loadFromFile(FILE *f) override;
 
+    /**
+     * Merge another statistics object into this one.
+     */
+    virtual void merge(const cStatistic *other) override;
     //@}
 
     /** @name Configuring and querying the histogram. */
@@ -220,11 +217,12 @@ class SIM_API cHistogram : public cDensityEstBase
     virtual void extendBinsTo(double value, double step);
 
     /**
+     * TODO not half! TODO also work if #bins in not a multiple; assumes uniform bins
      * Cuts the number of bins in half, by merging each consecutive pair of bins into one.
      * Can only be called if there are at least two bins, and the number of bins is even.
      *
-     * If there are an odd number of bins, you can use extendBinsTo(getBinEdges().back(), <binsize>)
-     * to easily append a new empty bin of width <binsize> to the end before calling this function.
+     * If there are an odd number of bins, you can use extendBinsTo(getBinEdges().back(), binSize)
+     * to append empty bins before calling this function.
      */
     virtual void mergeBins(size_t groupSize);
 
@@ -244,19 +242,16 @@ class SIM_API cHistogram : public cDensityEstBase
      * Returns the number of bins in the histogram.
      */
     int getNumBins() const override {return binValues.size();}
-    // rename to: getNumBins
 
     /**
-     * Returns the 'k'-th bin edge of the histogram. The i-th bin is delimited by the i-th and i+1-th edge.
+     * Returns the k'th bin edge of the histogram. The k'th bin is delimited by the edge k and k+1.
      */
-    double getBinEdge(int k) const override {return binEdges.at(k);} // bin[k] has edges [k] and [k+1]
-    // rename to: getBinEdge
+    double getBinEdge(int k) const override {return binEdges.at(k);}
 
     /**
-     * Returns the value of the 'k'-th bin of the histogram.
+     * Returns the value of the k'th bin of the histogram.
      */
     double getBinValue(int k) const override {return binValues.at(k);}
-    // rename to: getBinValue
 
     /**
      * Returns the weighted sum of the underflown values.
@@ -277,13 +272,11 @@ class SIM_API cHistogram : public cDensityEstBase
      * Returns the number of overflown values, without regard to their weights.
      */
     virtual int64_t getNumOverflows() const override { return numOverflows; }
-
     //@}
-
 
     /** @name Legacy API. */
     //@{
-
+    enum _OPPDEPRECATED HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
     cHistogram(const char *name, int numCells);
     _OPPDEPRECATED virtual void setMode(HistogramMode mode);
     _OPPDEPRECATED virtual void setRange(double lower, double upper);
@@ -297,7 +290,6 @@ class SIM_API cHistogram : public cDensityEstBase
     _OPPDEPRECATED virtual void setNumCells(int numCells);
     _OPPDEPRECATED virtual void setCellSize(double d);
     _OPPDEPRECATED virtual double getCellSize() const;
-
     //@}
 };
 

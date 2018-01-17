@@ -199,6 +199,12 @@ void cHistogram::loadFromFile(FILE *f)
     }
 }
 
+void cHistogram::merge(const cStatistic *other)
+{
+    //TODO implement!!!
+    throw cRuntimeError(this, "cHistogram does not support merging");
+}
+
 void cHistogram::setStrategy(cIHistogramStrategy *strategy)
 {
     if (getCount() != 0)
@@ -299,8 +305,6 @@ void cHistogram::extendBinsTo(double value, double step)
         binEdges.push_back(binEdges.back() + step);
         binValues.push_back(0);
     }
-
-    //dump();
 }
 
 void cHistogram::mergeBins(size_t groupSize)
@@ -330,13 +334,13 @@ void cHistogram::mergeBins(size_t groupSize)
 
 bool cHistogram::binsAlreadySetUp() const
 {
-    return strategy ? strategy->binsCreated() : getNumBins() > 0;
+    return strategy ? strategy->binsAlreadySetUp() : getNumBins() > 0;
 }
 
 void cHistogram::setUpBins()
 {
     if (strategy)
-        strategy->createBins();
+        strategy->setUpBins();
 }
 
 void cHistogram::collectIntoHistogram(double value, double weight)
@@ -383,7 +387,7 @@ cAutoRangeHistogramStrategy *cHistogram::getOrCreateAutoRangeStrategy() const
         mutableThis->setStrategy(strat);
         return strat;
     }
-    else if (auto genericStrat = dynamic_cast<cGenericHistogramStrategy *>(strategy)) {
+    else if (dynamic_cast<cGenericHistogramStrategy *>(strategy) != nullptr) {
         // silently replacing the default strategy if still empty
         auto strat = new cAutoRangeHistogramStrategy();
         mutableThis->setStrategy(strat);

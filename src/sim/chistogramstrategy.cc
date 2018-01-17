@@ -30,7 +30,7 @@ void cIHistogramStrategy::init(cHistogram *hist)
 
 //----
 
-void cFixedRangeHistogramStrategy::setupBins()
+void cFixedRangeHistogramStrategy::createBins()
 {
     // validate parameters
     if (mode == MODE_AUTO)
@@ -56,7 +56,7 @@ void cFixedRangeHistogramStrategy::setupBins()
 void cFixedRangeHistogramStrategy::collect(double value)
 {
     if (hist->getCount() == 1)
-        setupBins();
+        createBins();
     ASSERT(hist->getNumBins() > 0);
     hist->collectIntoHistogram(value);
 }
@@ -64,7 +64,7 @@ void cFixedRangeHistogramStrategy::collect(double value)
 void cFixedRangeHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (hist->getCount() == 1)
-        setupBins();
+        createBins();
     ASSERT(hist->getNumBins() > 0);
     hist->collectIntoHistogram(value, weight);
 }
@@ -84,14 +84,9 @@ void cPrecollectionBasedHistogramStrategy::moveValuesIntoHistogram()
     weights.clear();
 }
 
-bool cPrecollectionBasedHistogramStrategy::binsCreated() const
+bool cPrecollectionBasedHistogramStrategy::binsAlreadySetUp() const
 {
     return hist && hist->getNumBins() > 0 && values.empty();
-}
-
-void cPrecollectionBasedHistogramStrategy::createBins()
-{
-    moveValuesIntoHistogram();
 }
 
 //----
@@ -111,7 +106,7 @@ void cGenericHistogramStrategy::collect(double value)
     else {
         values.push_back(value);
         if (values.size() == numToPrecollect) {
-            setupBins();
+            createBins();
             ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
         }
@@ -134,7 +129,7 @@ void cGenericHistogramStrategy::collectWeighted(double value, double weight)
         values.push_back(value);
         weights.push_back(weight);
         if (values.size() == numToPrecollect) {
-            setupBins();
+            createBins();
             ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
         }
@@ -170,11 +165,12 @@ static double roundToOneTwoFive(double x)
     return result;
 }
 
-void cGenericHistogramStrategy::setupBins()
+void cGenericHistogramStrategy::createBins()
 {
+    bool empty = hist->getCount() == 0;
+
     // determine mode (integers or reals) from precollected observations
     HistogramMode mode = this->mode;
-    bool empty = hist->getCount() == 1;
 
     if (mode == MODE_AUTO) {
         bool allIntegers = true;
@@ -240,7 +236,7 @@ void cAutoRangeHistogramStrategy::collect(double value)
     if (inPrecollection) {
         values.push_back(value);
         if (values.size() >= numToPrecollect) {
-            setupBins();
+            createBins();
             ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
             inPrecollection = false;
@@ -257,7 +253,7 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
         values.push_back(value);
         weights.push_back(weight);
         if (values.size() >= numToPrecollect) {
-            setupBins();
+            createBins();
             ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
             inPrecollection = false;
@@ -268,11 +264,12 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
     }
 }
 
-void cAutoRangeHistogramStrategy::setupBins()
+void cAutoRangeHistogramStrategy::createBins()
 {
+    bool empty = hist->getCount() == 0;
+
     // determine mode (integers or reals) from precollected observations
     HistogramMode mode = this->mode;
-    bool empty = hist->getCount() == 1;
     if (mode == MODE_AUTO) {
         bool allIntegers = true;
         bool allZeroes = true;
