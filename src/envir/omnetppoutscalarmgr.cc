@@ -178,13 +178,13 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
                 histogram->transform();
 
             Histogram bins;
-            int n = histogram->getNumCells();
+            int n = histogram->getNumBins();
             if (n > 0) {
                 bins.reserveBins(n+2);
-                bins.addBin(MinusInfinity, histogram->getUnderflowCell());
+                bins.addBin(MinusInfinity, histogram->getNumUnderflows());
                 for (int i = 0; i < n; i++)
-                    bins.addBin(histogram->getBasepoint(i), histogram->getCellValue(i));
-                bins.addBin(histogram->getBasepoint(n), histogram->getOverflowCell());
+                    bins.addBin(histogram->getBinEdge(i), histogram->getBinValue(i));
+                bins.addBin(histogram->getBinEdge(n), histogram->getNumOverflows());
                 writer.recordHistogram(componentFullPath, name, stats, bins, convertMap(attributes));
                 savedAsHistogram = true;
             }

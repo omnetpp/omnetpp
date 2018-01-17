@@ -64,7 +64,7 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
     virtual void collect(double value) override;
     virtual void collectWeighted(double value, double weight) override;
 
-    virtual bool binsCreated() const override {return hist->getNumCells() > 0;}
+    virtual bool binsCreated() const override {return hist->getNumBins() > 0;}
     virtual void createBins() override {};
 };
 

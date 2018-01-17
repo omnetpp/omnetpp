@@ -56,8 +56,8 @@ inline std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
     return os << "\"" << d.str() << "\"";
 }
 
-inline std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Cell& cell) {
-    return os << "[" << cell.lower << ", " << cell.upper << ")  ==>  " << cell.value << " (" << cell.relativeFreq << ")";
+inline std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Bin& bin) {
+    return os << "[" << bin.lower << ", " << bin.upper << ")  ==>  " << bin.value << " (" << bin.relativeFreq << ")";
 }
 
 using namespace canvas_stream_ops;
@@ -617,13 +617,15 @@ class cDensityEstBase extends cStdDev
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    unsigned long underflowCell @group(histogram) @hint("Number of observations below the first histogram cell");
-    unsigned long overflowCell @group(histogram) @hint("Number of observations above the last histogram cell");
-    int numCells @group(histogram) @hint("Number of cells in the histogram");
-    cDensityEstBase::Cell cellInfo[] @getter(internalGetCellInfo) @sizeGetter(getNumCells) @group(histogram) @hint("Histogram cell bounds, observation count in the cell, and density estimate in the cell");
+    int64_t numUnderflows @group(histogram) @hint("Number of observations below the first histogram bin");
+    int64_t numOverflows @group(histogram) @hint("Number of observations above the last histogram bin");
+    double underflowSumWeights  @group(histogram) @hint("Total weight of observations above the last histogram bin");
+    double overflowSumWeights @group(histogram) @hint("Total weight of observations above the last histogram bin");
+    int numBins @group(histogram) @hint("Number of bins in the histogram");
+    cDensityEstBase::Bin binInfo[] @getter(internalGetBinInfo) @sizeGetter(getNumBins) @group(histogram) @hint("Histogram bin bounds, observation count in the bin, and density estimate in the bin");
 }
 
-class cDensityEstBase::Cell
+class cDensityEstBase::Bin
 {
     @existingClass;
     @overwritePreviousDefinition;

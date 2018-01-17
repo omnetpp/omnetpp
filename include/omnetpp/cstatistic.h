@@ -126,26 +126,6 @@ class SIM_API cStatistic : public cRandom
     virtual void collectWeighted(SimTime value, SimTime weight) {collectWeighted(value.dbl(), weight.dbl());}
 
     /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(double value, double weight) final {collectWeighted(value, weight);}
-
-    /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(SimTime value, double weight) final {collectWeighted(value, weight);}
-
-    /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(double value, SimTime weight) final {collectWeighted(value, weight);}
-
-    /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(SimTime value, SimTime weight) final {collectWeighted(value, weight);}
-
-    /**
      * Updates this object with data coming from another statistics
      * object. The result is as if this object had collected all the
      * observations fed into the other object as well.
@@ -215,11 +195,6 @@ class SIM_API cStatistic : public cRandom
     virtual double getSumWeights() const = 0;
 
     /**
-     * Please use getSumWeights() to obtain the sum of weights.
-     */
-    _OPPDEPRECATED virtual double getWeights() const final {return getSumWeights();}
-
-    /**
      * Returns the sum of weight*value products.
      */
     virtual double getWeightedSum() const = 0;
@@ -233,14 +208,6 @@ class SIM_API cStatistic : public cRandom
      * Returns the sum of weight*value*value products.
      */
     virtual double getWeightedSqrSum() const = 0;
-    //@}
-
-    /** @name Generating random numbers based on the collected data */
-    //@{
-    /**
-     * Please use draw() to obtain a random number from the collected data.
-     */
-    _OPPDEPRECATED virtual double random() const final {return draw();}
     //@}
 
     /** @name Writing to text file, reading from text file, recording to scalar file. */
@@ -290,6 +257,39 @@ class SIM_API cStatistic : public cRandom
      * object, to force it set up histogram cells before recording.
      */
     virtual void recordAs(const char *name, const char *unit=nullptr);
+    //@}
+
+    /** @name Methods deprecated due to renaming. */
+    //@{
+    /**
+     * Please use getSumWeights() to obtain the sum of weights.
+     */
+    _OPPDEPRECATED virtual double getWeights() const final {return getSumWeights();}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(double value, double weight) final {collectWeighted(value, weight);}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(SimTime value, double weight) final {collectWeighted(value, weight);}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(double value, SimTime weight) final {collectWeighted(value, weight);}
+
+    /**
+     * Deprecated method, please use collectWeighted() instead.
+     */
+    _OPPDEPRECATED virtual void collect2(SimTime value, SimTime weight) final {collectWeighted(value, weight);}
+
+    /**
+     * Deprecated method, please use draw() to obtain a random number from the collected data.
+     */
+    _OPPDEPRECATED virtual double random() const final {return draw();}
     //@}
 };
 

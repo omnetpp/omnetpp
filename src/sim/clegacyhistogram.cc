@@ -103,10 +103,10 @@ cLegacyHistogramBase& cLegacyHistogramBase::operator=(const cLegacyHistogramBase
     return *this;
 }
 
-void cLegacyHistogramBase::doMergeCellValues(const cPrecollectionBasedDensityEst *other)
+void cLegacyHistogramBase::doMergeBinValues(const cPrecollectionBasedDensityEst *other)
 {
     for (int i = 0; i < numCells; i++)
-        cellv[i] += other->getCellValue(i);
+        cellv[i] += other->getBinValue(i);
 }
 
 void cLegacyHistogramBase::clearResult()
@@ -140,7 +140,7 @@ void cLegacyHistogramBase::transform()
     transformed = true;
 }
 
-int cLegacyHistogramBase::getNumCells() const
+int cLegacyHistogramBase::getNumBins() const
 {
     if (!isTransformed())
         return 0;
@@ -441,7 +441,7 @@ double cLegacyHistogram::getCDF(double) const
     throw cRuntimeError(this, "getCDF() not implemented");
 }
 
-double cLegacyHistogram::getBasepoint(int k) const
+double cLegacyHistogram::getBinEdge(int k) const
 {
     //   k=0           : rangemin
     //   k=1,2,...     : rangemin + k*cellsize
@@ -456,7 +456,7 @@ double cLegacyHistogram::getBasepoint(int k) const
         return rangeMin + k * cellSize;
 }
 
-double cLegacyHistogram::getCellValue(int k) const
+double cLegacyHistogram::getBinValue(int k) const
 {
     if (k < 0 || k > numCells)
         throw cRuntimeError(this, "Invalid cell index %u", k);

@@ -57,7 +57,7 @@ void cFixedRangeHistogramStrategy::collect(double value)
 {
     if (hist->getCount() == 1)
         setupBins();
-    ASSERT(hist->getNumCells() > 0);
+    ASSERT(hist->getNumBins() > 0);
     hist->collectIntoHistogram(value);
 }
 
@@ -65,7 +65,7 @@ void cFixedRangeHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (hist->getCount() == 1)
         setupBins();
-    ASSERT(hist->getNumCells() > 0);
+    ASSERT(hist->getNumBins() > 0);
     hist->collectIntoHistogram(value, weight);
 }
 
@@ -86,7 +86,7 @@ void cPrecollectionBasedHistogramStrategy::moveValuesIntoHistogram()
 
 bool cPrecollectionBasedHistogramStrategy::binsCreated() const
 {
-    return hist && hist->getNumCells() > 0 && values.empty();
+    return hist && hist->getNumBins() > 0 && values.empty();
 }
 
 void cPrecollectionBasedHistogramStrategy::createBins()
@@ -98,11 +98,11 @@ void cPrecollectionBasedHistogramStrategy::createBins()
 
 void cGenericHistogramStrategy::collect(double value)
 {
-    if (hist->getNumCells() > 0) {
+    if (hist->getNumBins() > 0) {
         hist->extendBinsTo(value, binSize);
         hist->collectIntoHistogram(value);
-        if (hist->getNumCells() >= 2 * desiredNumBins) {
-            if (hist->getNumCells() % 2 == 1)
+        if (hist->getNumBins() >= 2 * desiredNumBins) {
+            if (hist->getNumBins() % 2 == 1)
                 hist->extendBinsTo(hist->getBinEdges().back(), binSize);
             hist->mergeBins(2);
             binSize *= 2.0;
@@ -112,7 +112,7 @@ void cGenericHistogramStrategy::collect(double value)
         values.push_back(value);
         if (values.size() == numToPrecollect) {
             setupBins();
-            ASSERT(hist->getNumCells() > 0);
+            ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
         }
     }
@@ -120,11 +120,11 @@ void cGenericHistogramStrategy::collect(double value)
 
 void cGenericHistogramStrategy::collectWeighted(double value, double weight)
 {
-    if (hist->getNumCells() > 0) {
+    if (hist->getNumBins() > 0) {
         hist->extendBinsTo(value, binSize);
         hist->collectIntoHistogram(value, weight);
-        if (hist->getNumCells() >= 2 * desiredNumBins) {
-            if (hist->getNumCells() % 2 == 1)
+        if (hist->getNumBins() >= 2 * desiredNumBins) {
+            if (hist->getNumBins() % 2 == 1)
                             hist->extendBinsTo(hist->getBinEdges().back(), binSize);
             hist->mergeBins(2);
             binSize *= 2.0;
@@ -135,7 +135,7 @@ void cGenericHistogramStrategy::collectWeighted(double value, double weight)
         weights.push_back(weight);
         if (values.size() == numToPrecollect) {
             setupBins();
-            ASSERT(hist->getNumCells() > 0);
+            ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
         }
     }
@@ -241,7 +241,7 @@ void cAutoRangeHistogramStrategy::collect(double value)
         values.push_back(value);
         if (values.size() >= numToPrecollect) {
             setupBins();
-            ASSERT(hist->getNumCells() > 0);
+            ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
             inPrecollection = false;
         }
@@ -258,7 +258,7 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
         weights.push_back(weight);
         if (values.size() >= numToPrecollect) {
             setupBins();
-            ASSERT(hist->getNumCells() > 0);
+            ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
             inPrecollection = false;
         }

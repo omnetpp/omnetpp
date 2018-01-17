@@ -35,7 +35,7 @@ namespace omnetpp {
 class SIM_API cPSquare : public cDensityEstBase
 {
   protected:
-    int numCells;      // number of cells
+    int numBins;       // number of bins
     long numObs;       // number of observations
     int *n;            // array of positions
     double *q;         // array of heights
@@ -123,31 +123,31 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Returns the number of cells used.
      */
-    virtual int getNumCells() const override;
+    virtual int getNumBins() const override;
 
     /**
-     * Returns the kth cell boundary. Note that because of the P2 algorithm,
-     * cell boundaries are shifting during data collection, thus getCellValue() and
-     * other methods based on getCellValue() and getBasepoint() return approximate values.
+     * Returns the kth bin boundary. Note that because of the P2 algorithm,
+     * bin boundaries are shifting during data collection, thus getBinValue() and
+     * other methods based on getBinValue() and getBinEdge() return approximate values.
      */
-    virtual double getBasepoint(int k) const override;
+    virtual double getBinEdge(int k) const override;
 
     /**
-     * Returns the number of observations that fell into the kth histogram cell.
+     * Returns the number of observations in the kth histogram bin.
      */
-    virtual double getCellValue(int k) const override;
+    virtual double getBinValue(int k) const override;
 
     /**
      * Returns number of observations that were below the histogram range,
      * independent of their weights. In cPSquare, this method always returns 0.
      */
-    virtual int64_t getUnderflowCell() const override {return 0;}
+    virtual int64_t getNumUnderflows() const override {return 0;}
 
     /**
      * Returns number of observations that were above the histogram range,
      * independent of their weights. In cPSquare, this method always returns 0.
      */
-    virtual int64_t getOverflowCell() const override {return 0;}
+    virtual int64_t getNumOverflows() const override {return 0;}
 
     /**
      * Returns the total weight of the observations that were below the histogram range.

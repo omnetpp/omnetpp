@@ -240,12 +240,12 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
             if (!histogram->isTransformed())
                 histogram->transform();
 
-            int n = histogram->getNumCells();
+            int n = histogram->getNumBins();
             if (n > 0) {
-                check(fprintf(f, "bin\t-inf\t%" PRId64 "\n", histogram->getUnderflowCell()));
+                check(fprintf(f, "bin\t-inf\t%.*g\n", prec, histogram->getUnderflowSumWeights()));
                 for (int i = 0; i < n; i++)
-                    check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBasepoint(i), prec, histogram->getCellValue(i)));
-                check(fprintf(f, "bin\t%.*g\t%" PRId64 "\n", prec, histogram->getBasepoint(n), histogram->getOverflowCell()));
+                    check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBinEdge(i), prec, histogram->getBinValue(i)));
+                check(fprintf(f, "bin\t%.*g\t%.*g\n", prec, histogram->getBinEdge(n), prec, histogram->getOverflowSumWeights()));
             }
         }
     }

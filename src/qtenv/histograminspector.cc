@@ -108,7 +108,7 @@ void HistogramInspector::refresh()
     statusBar->showMessage(generalInfo());
 
     // can we draw anything at all?
-    if (!distr->isTransformed() || distr->getNumCells() == 0)
+    if (!distr->isTransformed() || distr->getNumBins() == 0)
         return;
 
     bool isMinYAutoscaled, isMaxYAutoscaled, isMaxXAutoscaled, isMinXAutoscaled;
@@ -120,8 +120,8 @@ void HistogramInspector::refresh()
         isMinXAutoscaled = isPDFMinXAutoscaled;
         minYVal = pdfMinY;
         maxYVal = isPDFMaxYAutoscaled ? maxY() : pdfMaxY;
-        minXVal = isPDFMinXAutoscaled ? distr->getBasepoint(0) : pdfMinX;
-        maxXVal = isPDFMaxXAutoscaled ? distr->getBasepoint(distr->getNumCells()) : pdfMaxX;
+        minXVal = isPDFMinXAutoscaled ? distr->getBinEdge(0) : pdfMinX;
+        maxXVal = isPDFMaxXAutoscaled ? distr->getBinEdge(distr->getNumBins()) : pdfMaxX;
     }
     else {
         isMinYAutoscaled = isCountsMinYAutoscaled;
@@ -130,8 +130,8 @@ void HistogramInspector::refresh()
         isMinXAutoscaled = isCountsMinXAutoscaled;
         minYVal = countsMinY;
         maxYVal = isCountsMaxYAutoscaled ? maxY() : countsMaxY;
-        minXVal = isCountsMinXAutoscaled ? distr->getBasepoint(0) : countsMinX;
-        maxXVal = isCountsMaxXAutoscaled ? distr->getBasepoint(distr->getNumCells()) : countsMaxX;
+        minXVal = isCountsMinXAutoscaled ? distr->getBinEdge(0) : countsMinX;
+        maxXVal = isCountsMaxXAutoscaled ? distr->getBinEdge(distr->getNumBins()) : countsMaxX;
     }
 
     if (minXVal >= maxXVal)
@@ -165,9 +165,9 @@ double HistogramInspector::maxY()
     // determine maximum height (will be used for y scaling)
     double maxY = -1.0;  // a good start because all y values are >=0
     cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
-    for (int cell = 0; cell < distr->getNumCells(); cell++) {
+    for (int cell = 0; cell < distr->getNumBins(); cell++) {
         // calculate height
-        double y = chartType == HistogramView::SHOW_PDF ? distr->getCellPDF(cell) : distr->getCellValue(cell);
+        double y = chartType == HistogramView::SHOW_PDF ? distr->getBinPDF(cell) : distr->getBinValue(cell);
         if (y > maxY)
             maxY = y;
     }
@@ -207,8 +207,8 @@ QString HistogramInspector::generalInfo()
         return QString("(collecting initial values, N=%1)").arg(QString::number(d->getCount()));
     else
         return QString("Histogram: (%1...%2)  N=%3  #cells=%4").arg(
-                QString::number(d->getBasepoint(0)), QString::number(d->getBasepoint(d->getNumCells())),
-                QString::number(d->getCount()), QString::number(d->getNumCells()));
+                QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
+                QString::number(d->getCount()), QString::number(d->getNumBins()));
 }
 
 void HistogramInspector::onShowCellInfo(int cell)
@@ -224,9 +224,9 @@ void HistogramInspector::onShowCellInfo(int cell)
     }
 
     cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
-    double count = d->getCellValue(cell);
-    double cell_lower = d->getBasepoint(cell);
-    double cell_upper = d->getBasepoint(cell+1);
+    double count = d->getBinValue(cell);
+    double cell_lower = d->getBinEdge(cell);
+    double cell_upper = d->getBinEdge(cell+1);
     QString text = "Cell #%1:  [%2...%3)  n=%4  PDF=%5";
     text = text.arg(QString::number(cell), QString::number(cell_lower), QString::number(cell_upper),
                 QString::number(count), QString::number(count / (double)(d->getCount()) / (cell_upper-cell_lower)));

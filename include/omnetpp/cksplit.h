@@ -178,7 +178,7 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     void iteratorToCell(int cell_nr) const;
 
     // abstract method in cPrecollectionBasedDensityEst
-    virtual void doMergeCellValues(const cPrecollectionBasedDensityEst *other) override;
+    virtual void doMergeBinValues(const cPrecollectionBasedDensityEst *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -253,17 +253,17 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int getNumCells() const override;
+    virtual int getNumBins() const override;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double getBasepoint(int k) const override;
+    virtual double getBinEdge(int k) const override;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const override;
+    virtual double getBinValue(int k) const override;
 
     /**
      * Returns the value of the Probability Density Function at a given x.

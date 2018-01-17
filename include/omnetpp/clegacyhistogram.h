@@ -45,7 +45,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
 
   protected:
     // abstract method in cPrecollectionBasedDensityEst
-    virtual void doMergeCellValues(const cPrecollectionBasedDensityEst *other) override;
+    virtual void doMergeBinValues(const cPrecollectionBasedDensityEst *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -109,7 +109,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int getNumCells() const override;
+    virtual int getNumBins() const override;
 
     /**
      * Writes the contents of the object into a text file.
@@ -274,12 +274,12 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
     /**
      * Returns the kth cell boundary.
      */
-    virtual double getBasepoint(int k) const override;
+    virtual double getBinEdge(int k) const override;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const override;
+    virtual double getBinValue(int k) const override;
 
     /**
      * Returns the value of the Probability Density Function at a given x.

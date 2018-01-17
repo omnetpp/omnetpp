@@ -189,7 +189,7 @@ void cKSplit::merge(const cStatistic *other)
     throw cRuntimeError(this, "The cKSplit class does not support merge()");
 }
 
-void cKSplit::doMergeCellValues(const cPrecollectionBasedDensityEst *other)
+void cKSplit::doMergeBinValues(const cPrecollectionBasedDensityEst *other)
 {
     ASSERT(false);  // never comes here, as merge() already throws an error
 }
@@ -550,14 +550,14 @@ void cKSplit::iteratorToCell(int cell_nr) const
 
 }
 
-int cKSplit::getNumCells() const
+int cKSplit::getNumBins() const
 {
     if (!isTransformed())
         return 0;
     return numCells;
 }
 
-double cKSplit::getCellValue(int nr) const
+double cKSplit::getBinValue(int nr) const
 {
     if (nr >= numCells)
         return 0.0;
@@ -566,7 +566,7 @@ double cKSplit::getCellValue(int nr) const
     return iter->getCellValue();
 }
 
-double cKSplit::getBasepoint(int nr) const
+double cKSplit::getBinEdge(int nr) const
 {
     if (nr >= numCells)
         return rangeMax;

@@ -124,22 +124,22 @@ double cHistogram::draw() const
     double rand = uniform(getRNG(), 0, binValueSum);
 
     if (rand < getUnderflowSumWeights())
-        return uniform(getRNG(), getMin(), getBasepoint(0));
+        return uniform(getRNG(), getMin(), getBinEdge(0));
 
     rand -= getUnderflowSumWeights();
 
     // selecting a bin, each with a probability proportional to its value
-    for (int i = 0; i < getNumCells(); ++i) {
-        double binValue = getCellValue(i);
+    for (int i = 0; i < getNumBins(); ++i) {
+        double binValue = getBinValue(i);
         if (rand < binValue)
             // we can't do better than uniform within a single bin
-            return uniform(getRNG(), getBasepoint(i), getBasepoint(i + 1));
+            return uniform(getRNG(), getBinEdge(i), getBinEdge(i + 1));
         else
             // we're not yet at the selected bin yet
             rand -= binValue;
     }
 
-    return uniform(getRNG(), getBasepoint(getNumCells()), getMax());
+    return uniform(getRNG(), getBinEdge(getNumBins()), getMax());
 }
 
 void cHistogram::saveToFile(FILE *f) const
@@ -154,9 +154,9 @@ void cHistogram::saveToFile(FILE *f) const
     fprintf(f, "%g\t #= underflow\n", underflowSumWeights);
     fprintf(f, "%g\t #= overflow\n", overflowSumWeights);
 
-    fprintf(f, "%d\t #= num_bins\n", getNumCells());
+    fprintf(f, "%d\t #= num_bins\n", getNumBins());
 
-    if (getNumCells() > 0) {
+    if (getNumBins() > 0) {
         fprintf(f, "#= bin_edges\n");
         for (double e : binEdges)
             fprintf(f, " %g\n", e);
@@ -330,7 +330,7 @@ void cHistogram::mergeBins(size_t groupSize)
 
 bool cHistogram::isTransformed() const
 {
-    return strategy ? strategy->binsCreated() : getNumCells() > 0;
+    return strategy ? strategy->binsCreated() : getNumBins() > 0;
 }
 
 void cHistogram::transform()

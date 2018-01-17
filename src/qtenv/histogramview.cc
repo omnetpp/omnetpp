@@ -153,13 +153,13 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cDensityEstB
         return;
 
     // draw the histogram
-    int prevLeftX = mapXToView(distr->getBasepoint(0));
-    for (int cell = 0; cell < distr->getNumCells(); cell++) {
+    int prevLeftX = mapXToView(distr->getBinEdge(0));
+    for (int cell = 0; cell < distr->getNumBins(); cell++) {
         // calculate height
-        double y = type == SHOW_PDF ? distr->getCellPDF(cell) : distr->getCellValue(cell);
+        double y = type == SHOW_PDF ? distr->getBinPDF(cell) : distr->getBinValue(cell);
 
         // draw rectangle
-        int width = std::max(1, mapXToView(distr->getBasepoint(cell+1)) - prevLeftX);
+        int width = std::max(1, mapXToView(distr->getBinEdge(cell+1)) - prevLeftX);
         if (y < minY) {
             prevLeftX += width;
             continue;

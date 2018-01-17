@@ -47,14 +47,14 @@ cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
     copy(r);
 }
 
-cPSquare::cPSquare(const char *name, int cells) : cDensityEstBase(name)
+cPSquare::cPSquare(const char *name, int bins) : cDensityEstBase(name)
 {
-    numCells = cells;
+    numBins = bins;
     numObs = 0;
-    n = new int[numCells+2];
-    q = new double[numCells+2];
+    n = new int[numBins+2];
+    q = new double[numBins+2];
 
-    for (int i = 0; i <= numCells+1; i++) {
+    for (int i = 0; i <= numBins+1; i++) {
         n[i] = i;
         q[i] = -DBL_MAX;
     }
@@ -73,13 +73,13 @@ void cPSquare::parsimPack(cCommBuffer *buffer) const
 #else
     cDensityEstBase::parsimPack(buffer);
 
-    buffer->pack(numCells);
+    buffer->pack(numBins);
     buffer->pack(numObs);
 
     if (buffer->packFlag(n != nullptr))
-        buffer->pack(n, numCells + 2);
+        buffer->pack(n, numBins + 2);
     if (buffer->packFlag(q != nullptr))
-        buffer->pack(q, numCells + 2);
+        buffer->pack(q, numBins + 2);
 #endif
 }
 
@@ -90,17 +90,17 @@ void cPSquare::parsimUnpack(cCommBuffer *buffer)
 #else
     cDensityEstBase::parsimUnpack(buffer);
 
-    buffer->unpack(numCells);
+    buffer->unpack(numBins);
     buffer->unpack(numObs);
 
     if (buffer->checkFlag()) {
-        n = new int[numCells + 2];
-        buffer->unpack(n, numCells + 2);
+        n = new int[numBins + 2];
+        buffer->unpack(n, numBins + 2);
     }
 
     if (buffer->checkFlag()) {
-        q = new double[numCells + 2];
-        buffer->unpack(q, numCells + 2);
+        q = new double[numBins + 2];
+        buffer->unpack(q, numBins + 2);
     }
 #endif
 }
@@ -108,12 +108,12 @@ void cPSquare::parsimUnpack(cCommBuffer *buffer)
 void cPSquare::copy(const cPSquare& res)
 {
     numObs = res.numObs;
-    numCells = res.numCells;
+    numBins = res.numBins;
     delete[] n;
     delete[] q;
-    n = new int[numCells+2];
-    q = new double[numCells+2];
-    for (int i = 0; i <= numCells+1; i++) {
+    n = new int[numBins+2];
+    q = new double[numBins+2];
+    for (int i = 0; i <= numBins+1; i++) {
         n[i] = res.n[i];
         q[i] = res.q[i];
     }
@@ -134,9 +134,9 @@ void cPSquare::collect(double val)
 
     numObs++;  // an extra observation is added
 
-    if (numObs <= numCells+1) {
+    if (numObs <= numBins+1) {
         // old code:
-        // q[numcells+2-numobs] = val;
+        // q[numBins+2-numObs] = val;
         // places val in front, because qsort puts everything at the end,
         // because initialized with q[i]=-max
         // qsort(q, numcells+2, sizeof(*q), CompDouble);
@@ -153,7 +153,7 @@ void cPSquare::collect(double val)
 
         int k = 0;  // the cell number in which 'val' falls
 
-        for (int i = 1; i <= numCells+1; i++) {
+        for (int i = 1; i <= numBins+1; i++) {
             if (val <= q[i]) {
                 if (i == 1) {
                     q[1] = val;
@@ -165,17 +165,17 @@ void cPSquare::collect(double val)
                 break;
             }
         }
-        if (k == 0) {  // the new value falls outside of the current cells
-            q[numCells+1] = val;
-            k = numCells;
+        if (k == 0) {  // the new value falls outside of the current bins
+            q[numBins+1] = val;
+            k = numBins;
         }
-        for (int i = k+1; i <= numCells+1; i++) {
+        for (int i = k+1; i <= numBins+1; i++) {
             n[i] = n[i]+1;
         }
 
         double d, qd;
-        for (int i = 2; i <= numCells; i++) {
-            d = 1 + (i-1) * (numObs-1) / (double)numCells - n[i];
+        for (int i = 2; i <= numBins; i++) {
+            d = 1 + (i-1) * (numObs-1) / (double)numBins - n[i];
 
             if ((d >= 1 && n[i+1]-n[i] > 1) || (d <= -1 && n[i-1]-n[i] < -1)) {
                 // if it is possible to adjust the marker position
@@ -213,12 +213,12 @@ double cPSquare::draw() const
     int k = 0, l;
     cRNG *rng = getRNG();
 
-    if (numObs < numCells+1)
-        throw cRuntimeError(this, "Must collect at least num_cells values before random() can be used");
+    if (numObs < numBins+1)
+        throw cRuntimeError(this, "Must collect at least as many values as bins before calling random()");
 
     s = numObs * dblrand(rng);
 
-    for (int i = 1; i <= numCells+1; i++) {
+    for (int i = 1; i <= numBins+1; i++) {
         if (s < n[i]) {
             k = i;
             l = k-1;
@@ -229,30 +229,30 @@ double cPSquare::draw() const
     if (k == 1)
         l = k;
 
-    if (numObs < numCells+1) {
-        k += numCells-numObs+1;
-        l += numCells-numObs+1;
+    if (numObs < numBins+1) {
+        k += numBins-numObs+1;
+        l += numBins-numObs+1;
     }
 
     return dblrand(rng)*(q[k]-q[l])+q[l];
 }
 
-int cPSquare::getNumCells() const
+int cPSquare::getNumBins() const
 {
     if (numObs < 2)
         return 0;
-    else if (numObs < numCells)
+    else if (numObs < numBins)
         return numObs-1;
     else
-        return numCells;
+        return numBins;
 }
 
-double cPSquare::getBasepoint(int k) const
+double cPSquare::getBinEdge(int k) const
 {
     return q[k+1];
 }
 
-double cPSquare::getCellValue(int k) const
+double cPSquare::getBinValue(int k) const
 {
     return n[k+2] - n[k+1] + (k == 0);
 }
@@ -261,16 +261,16 @@ void cPSquare::saveToFile(FILE *f) const
 {
     cDensityEstBase::saveToFile(f);
 
-    fprintf(f, "%u\t #= numcells\n", numCells);
+    fprintf(f, "%u\t #= numbins\n", numBins);
     fprintf(f, "%ld\t #= numobs\n", numObs);
 
     int i;
     fprintf(f, "#= n[]\n");
-    for (i = 0; i < numCells+2; i++)
+    for (i = 0; i < numBins+2; i++)
         fprintf(f, " %d\n", n[i]);
 
     fprintf(f, "#= q[]\n");
-    for (i = 0; i < numCells+2; i++)
+    for (i = 0; i < numBins+2; i++)
         fprintf(f, " %lg\n", q[i]);
 }
 
@@ -278,16 +278,16 @@ void cPSquare::loadFromFile(FILE *f)
 {
     cDensityEstBase::loadFromFile(f);
 
-    freadvarsf(f, "%u\t #= numcells", &numCells);
+    freadvarsf(f, "%u\t #= numbins", &numBins);
     freadvarsf(f, "%ld\t #= numobs", &numObs);
 
     int i;
     freadvarsf(f, "#= n[]");
-    for (i = 0; i < numCells+2; i++)
+    for (i = 0; i < numBins+2; i++)
         freadvarsf(f, " %d", &n[i]);
 
     freadvarsf(f, "#= q[]");
-    for (i = 0; i < numCells+2; i++)
+    for (i = 0; i < numBins+2; i++)
         freadvarsf(f, " %lg", &q[i]);
 }
 

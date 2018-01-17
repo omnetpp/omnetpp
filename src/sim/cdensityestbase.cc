@@ -34,15 +34,15 @@ using namespace std;
 namespace omnetpp {
 
 
-cDensityEstBase::Cell cDensityEstBase::getCellInfo(int k) const
+cDensityEstBase::Bin cDensityEstBase::getBinInfo(int k) const
 {
-    if (k < 0 || k >= getNumCells())
-        return Cell();
-    Cell c;
-    c.lower = getBasepoint(k);
-    c.upper = getBasepoint(k+1);
-    c.value = getCellValue(k);
-    c.relativeFreq = getCellPDF(k);
+    if (k < 0 || k >= getNumBins())
+        return Bin();
+    Bin c;
+    c.lower = getBinEdge(k);
+    c.upper = getBinEdge(k+1);
+    c.value = getBinValue(k);
+    c.relativeFreq = getBinPDF(k);
     return c;
 }
 
@@ -54,22 +54,22 @@ double cDensityEstBase::getPDF(double x) const
     if (x < getMin())
         return 0;
 
-    if (x < getBasepoint(0))
-        return getUnderflowSumWeights() / (getBasepoint(0) - getMin());
+    if (x < getBinEdge(0))
+        return getUnderflowSumWeights() / (getBinEdge(0) - getMin());
 
-    int numCells = getNumCells();
+    int numBins = getNumBins();
 
-    // returns 0..1; assumes constant PDF within a cell
-    for (int i = 0; i < numCells; ++i) {
-        double cellLo = getBasepoint(i);
-        double cellHi = getBasepoint(i + 1);
+    // returns 0..1; assumes constant PDF within a bin
+    for (int i = 0; i < numBins; ++i) {
+        double lowerEdge = getBinEdge(i);
+        double upperEdge = getBinEdge(i + 1);
 
-        if (x < cellHi)
-            return getCellValue(i) / (cellHi-cellLo);
+        if (x < upperEdge)
+            return getBinValue(i) / (upperEdge-lowerEdge);
     }
 
     if (x < getMax())
-        return getOverflowSumWeights() / (getMax() - getBasepoint(numCells));
+        return getOverflowSumWeights() / (getMax() - getBinEdge(numBins));
 
     return 0;
 }
@@ -80,41 +80,41 @@ double cDensityEstBase::getCDF(double x) const
     if (x < getMin())
         return 0;
 
-    if (x < getBasepoint(0))
-        return getUnderflowSumWeights() * ((x - getMin()) / (getBasepoint(0) - getMin()));
+    if (x < getBinEdge(0))
+        return getUnderflowSumWeights() * ((x - getMin()) / (getBinEdge(0) - getMin()));
 
-    int numCells = getNumCells();
+    int numBins = getNumBins();
 
     // returns 0..1; uses linear approximation between two markers
-    for (int i = 0; i < numCells; ++i) {
-        double cellLo = getBasepoint(i);
-        double cellHi = getBasepoint(i + 1);
+    for (int i = 0; i < numBins; ++i) {
+        double lowerEdge = getBinEdge(i);
+        double upperEdge = getBinEdge(i + 1);
 
-        if (x < cellHi)
-            return getCellValue(i) * ((x - cellLo) / (cellHi - cellLo));
+        if (x < upperEdge)
+            return getBinValue(i) * ((x - lowerEdge) / (upperEdge - lowerEdge));
     }
 
     if (x < getMax())
-        return getOverflowSumWeights() * ((x - getBasepoint(numCells)) / (getMax() - getBasepoint(numCells)));
+        return getOverflowSumWeights() * ((x - getBinEdge(numBins)) / (getMax() - getBinEdge(numBins)));
 
     return 1;
 }
 
 
-const cDensityEstBase::Cell& cDensityEstBase::internalGetCellInfo(int k) const
+const cDensityEstBase::Bin& cDensityEstBase::internalGetBinInfo(int k) const
 {
     // only for use in sim_std.msg (each call overwrites the static buffer!)
-    static Cell buf;
-    buf = getCellInfo(k);
+    static Bin buf;
+    buf = getBinInfo(k);
     return buf;
 }
 
-double cDensityEstBase::getCellPDF(int k) const
+double cDensityEstBase::getBinPDF(int k) const
 {
     if (numValues == 0)
         return 0.0;
-    double cellSize = getBasepoint(k+1) - getBasepoint(k);
-    return cellSize == 0 ? 0.0 : getCellValue(k) / cellSize / getCount();
+    double binSize = getBinEdge(k+1) - getBinEdge(k);
+    return binSize == 0 ? 0.0 : getBinValue(k) / binSize / getCount();
 }
 
 
@@ -263,24 +263,24 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
             transform();
 
         // make sure that cells are aligned
-        if (getNumCells() != otherd->getNumCells())
+        if (getNumBins() != otherd->getNumBins())
             throw cRuntimeError(this, "Cannot merge (%s)%s: Different number of histogram cells (%d vs %d)",
-                    otherd->getClassName(), otherd->getFullPath().c_str(), getNumCells(), otherd->getNumCells());
-        int n = getNumCells();
+                    otherd->getClassName(), otherd->getFullPath().c_str(), getNumBins(), otherd->getNumBins());
+        int n = getNumBins();
         for (int i = 0; i <= n; i++)
-            if (getBasepoint(i) != otherd->getBasepoint(i))
+            if (getBinEdge(i) != otherd->getBinEdge(i))
                 throw cRuntimeError(this, "Cannot merge (%s)%s: Histogram cells are not aligned",
                         otherd->getClassName(), otherd->getFullPath().c_str());
 
 
         // merge underflow/overflow cells
-        numUnderflows += otherd->getUnderflowCell();
-        numOverflows += otherd->getOverflowCell();
+        numUnderflows += otherd->getNumUnderflows();
+        numOverflows += otherd->getNumOverflows();
         underflowSumWeights += otherd->getUnderflowSumWeights();
         overflowSumWeights += otherd->getOverflowSumWeights();
 
-        // then merge cell counters
-        doMergeCellValues(otherd);
+        // then merge bin values
+        doMergeBinValues(otherd);
     }
 }
 

@@ -348,7 +348,7 @@ void cVarHistogram::clearResult()
     cellLowerBounds = nullptr;
 }
 
-double cVarHistogram::getBasepoint(int k) const
+double cVarHistogram::getBinEdge(int k) const
 {
     if (k < numCells+1)
         return cellLowerBounds[k];
@@ -356,7 +356,7 @@ double cVarHistogram::getBasepoint(int k) const
         throw cRuntimeError(this, "Invalid basepoint index %u", k);
 }
 
-double cVarHistogram::getCellValue(int k) const
+double cVarHistogram::getBinValue(int k) const
 {
     if (k < numCells)
         return cellv[k];

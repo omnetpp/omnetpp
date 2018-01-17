@@ -166,12 +166,12 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
     /**
      * Returns the kth cell boundary.
      */
-    virtual double getBasepoint(int k) const override;
+    virtual double getBinEdge(int k) const override;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const override;
+    virtual double getBinValue(int k) const override;
 
     /**
      * Writes the contents of the object into a text file.

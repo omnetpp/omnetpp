@@ -234,19 +234,19 @@ class SIM_API cHistogram : public cDensityEstBase
     /**
      * Returns the number of bins in the histogram.
      */
-    int getNumCells() const override {return binValues.size();}
+    int getNumBins() const override {return binValues.size();}
     // rename to: getNumBins
 
     /**
      * Returns the 'k'-th bin edge of the histogram. The i-th bin is delimited by the i-th and i+1-th edge.
      */
-    double getBasepoint(int k) const override {return binEdges.at(k);} // bin[k] has edges [k] and [k+1]
+    double getBinEdge(int k) const override {return binEdges.at(k);} // bin[k] has edges [k] and [k+1]
     // rename to: getBinEdge
 
     /**
      * Returns the value of the 'k'-th bin of the histogram.
      */
-    double getCellValue(int k) const override {return binValues.at(k);}
+    double getBinValue(int k) const override {return binValues.at(k);}
     // rename to: getBinValue
 
     /**
@@ -262,12 +262,12 @@ class SIM_API cHistogram : public cDensityEstBase
     /**
      * Returns the number of underflown values, without regard to their weights.
      */
-    virtual int64_t getUnderflowCell() const override { return numUnderflows; }
+    virtual int64_t getNumUnderflows() const override { return numUnderflows; }
 
     /**
      * Returns the number of overflown values, without regard to their weights.
      */
-    virtual int64_t getOverflowCell() const override { return numOverflows; }
+    virtual int64_t getNumOverflows() const override { return numOverflows; }
 
     //@}
 

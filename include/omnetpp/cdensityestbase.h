@@ -29,17 +29,16 @@ class SIM_API cDensityEstBase : public cStdDev
 {
   public:
     /**
-     * @brief Information about a cell. This struct is not used internally by
-     * histogram and histogram-like classes, only to return information
-     * to the user.
+     * @brief Information about a histogram cell. This struct is not used
+     * internally by the histogram classes, only to return information to the user.
      */
-    struct Cell
+    struct Bin
     {
         double lower;  // lower cell bound (inclusive)
         double upper;  // lower cell bound (exclusive)
         double value;  // counter (or its estimate)
         double relativeFreq;  // value / total
-        Cell() {lower=upper=value=relativeFreq=0;}
+        Bin() {lower=upper=value=relativeFreq=0;}
     };
 
   private:
@@ -47,7 +46,7 @@ class SIM_API cDensityEstBase : public cStdDev
 
   public:
     // internal, for use in sim_std.msg; note: each call overwrites the previous value!
-    const Cell& internalGetCellInfo(int k) const;
+    const Bin& internalGetBinInfo(int k) const;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -94,41 +93,42 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual void transform() = 0;
 
     /**
-     * Returns the number of histogram cells used.
+     * Returns the number of histogram bins.
      */
-    virtual int getNumCells() const = 0;
+    virtual int getNumBins() const = 0;
 
     /**
-     * Returns the kth histogram cell boundary. Legal values for k are 0 through
-     * getNumCells(), that is, there's one more basepoint than the number of cells.
-     * getBasepoint(0) returns the lower bound of the first cell, and
-     * getBasepoint(getNumCells()) returns the upper bound of the last cell.
+     * Returns the kth histogram bin edge. Legal values for k are 0 through
+     * getNumBins(), that is, there's one more edge the number of bins.
+     * getBinEdge(0) returns the lower bound of the first bin, and
+     * getBinEdge(getNumBins()) returns the upper bound of the last bin.
+     * The lower bound is inclusive, the upper bound is exclusive.
      */
-    virtual double getBasepoint(int k) const = 0;
+    virtual double getBinEdge(int k) const = 0;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double getCellValue(int k) const = 0;
+    virtual double getBinValue(int k) const = 0;
 
     /**
      * Returns the estimated value of the Probability Density Function
-     * within the kth cell. This method simply divides the number of observations
-     * in cell k with the cell size and the number of total observations collected.
+     * within bin k. This method simply divides the number of observations
+     * in bin k with the bin size and the number of total observations collected.
      */
-    virtual double getCellPDF(int k) const;
+    virtual double getBinPDF(int k) const;
 
     /**
      * Returns number of observations that were below the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getUnderflowCell() const = 0;
+    virtual int64_t getNumUnderflows() const = 0;
 
     /**
      * Returns number of observations that were above the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getOverflowCell() const = 0;
+    virtual int64_t getNumOverflows() const = 0;
 
     /**
      * Returns the total weight of the observations that were below the histogram range.
@@ -144,7 +144,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Combines the functionality of getBasepoint(), getCellValue() and getCellPDF() into a
      * single call.
      */
-    virtual Cell getCellInfo(int k) const;
+    virtual Bin getBinInfo(int k) const;
     //@}
 
     /** @name Density and cumulated density approximation functions. */
@@ -160,6 +160,47 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual double getCDF(double x) const;
     //@}
+
+    /** @name Methods deprecated due to renaming. */
+    //@{
+
+    /**
+     * Deprecated, use getNumBins() instead.
+     */
+    _OPPDEPRECATED virtual int getNumCells() const final {return getNumBins();}
+
+    /**
+     * Deprecated, use getBinEdge() instead.
+     */
+    _OPPDEPRECATED virtual double getBasepoint(int k) const final {return getBinEdge(k);}
+
+    /**
+     * Deprecated, use getBinValue() instead.
+     */
+    _OPPDEPRECATED virtual double getCellValue(int k) const final {return getBinValue(k);}
+
+    /**
+     * Deprecated, use getBinPDF() instead.
+     */
+    _OPPDEPRECATED virtual double getCellPDF(int k) const final {return getBinPDF(k);}
+
+    /**
+     * Deprecated, use getNumUnderflows() instead.
+     */
+    _OPPDEPRECATED virtual int64_t getUnderflowCell() const final {return getNumUnderflows();}
+
+    /**
+     * Deprecated, use getNumUnderflows() instead.
+     */
+    _OPPDEPRECATED virtual int64_t getOverflowCell() const final {return getNumOverflows();}
+
+    /**
+     * Deprecated, use getBinInfo() instead.
+     */
+    _OPPDEPRECATED virtual Bin getCellInfo(int k) const final {return getBinInfo(k);}
+
+    //@}
+
 };
 
 
@@ -234,7 +275,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     static void plotline (std::ostream& os, const char *pref, double xval, double count, double a);
 
     // part of merge(); to be implemented in subclasses
-    virtual void doMergeCellValues(const cPrecollectionBasedDensityEst *other) = 0;
+    virtual void doMergeBinValues(const cPrecollectionBasedDensityEst *other) = 0;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -422,13 +463,13 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
      * Returns number of observations that were below the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getUnderflowCell() const override {return numUnderflows;}
+    virtual int64_t getNumUnderflows() const override {return numUnderflows;}
 
     /**
      * Returns number of observations that were above the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getOverflowCell() const override {return numOverflows;}
+    virtual int64_t getNumOverflows() const override {return numOverflows;}
 
     /**
      * Returns the total weight of the observations that were below the histogram range.
