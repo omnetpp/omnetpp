@@ -120,15 +120,7 @@ fclose(f);
 0	 #= weighted
 55653.6	 #= sum
 4.22383e+06	 #= sum_squared_vals
-1	 #= transformed
-0	 #= range_mode
-2	 #= range_ext_factor
-0 0	 #= range
-0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= numcells
+10	 #= numbins
 1000	 #= numobs
 #= n[]
  0
@@ -401,15 +393,7 @@ fclose(f);
 0	 #= weighted
 55653.6	 #= sum
 4.22383e+06	 #= sum_squared_vals
-1	 #= transformed
-0	 #= range_mode
-2	 #= range_ext_factor
-0 0	 #= range
-0 0	 #= cell_under, cell_over
-0 0	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= numcells
+10	 #= numbins
 1000	 #= numobs
 #= n[]
  0
@@ -610,5 +594,4 @@ fclose(f);
 1000	 #= total
 0	 #= mother
 -1 1	 #= cells[0], cells[1]
-
 
