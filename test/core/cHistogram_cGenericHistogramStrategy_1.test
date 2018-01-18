@@ -5,8 +5,8 @@ Test auto range histogram strategy.
 
 static void dumpBins(cHistogram& hist)
 {
-    for (int i = 0; i <= hist.getNumCells(); ++i)
-        EV << hist.getBasepoint(i) << " ";
+    for (int i = 0; i <= hist.getNumBins(); ++i)
+        EV << hist.getBinEdge(i) << " ";
 
     EV << std::endl;
 }

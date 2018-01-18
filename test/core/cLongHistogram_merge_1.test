@@ -7,10 +7,10 @@ void print(cLongHistogram& s)
     EV << s.getName() << " n=" << s.getCount()
        << " min=" << s.getMin() << " max=" << s.getMax()
        << " mean=" << s.getMean() << " stddev=" << s.getStddev() << endl;
-    EV << s.getUnderflowCell();
-    for (int i=0; i<s.getNumCells(); i++)
-        EV << " | >=" << s.getBasepoint(i) << ":" << s.getCellValue(i);
-    EV << " | >=" << s.getBasepoint(s.getNumCells()) << ":" << s.getOverflowCell();
+    EV << s.getUnderflowSumWeights();
+    for (int i=0; i<s.getNumBins(); i++)
+        EV << " | >=" << s.getBinEdge(i) << ":" << s.getBinValue(i);
+    EV << " | >=" << s.getBinEdge(s.getNumBins()) << ":" << s.getOverflowSumWeights();
     EV << "\n";
 }
 

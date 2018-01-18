@@ -18,9 +18,9 @@ h.collect(12);
 h.collect(20);
 
 EV << "n=" << h.getCount() << ":mean=" << h.getMean() << ":stddev=" << h.getStddev() << endl;
-EV << "under=" << h.getUnderflowCell() << ":over=" << h.getOverflowCell() << endl;
-for (int k=0; k<h.getNumCells(); k++)
-    EV << h.getBasepoint(k) << ":" << h.getBasepoint(k+1) << ":" << h.getCellValue(k) << endl;
+EV << "under=" << h.getNumUnderflows() << ":over=" << h.getNumOverflows() << endl;
+for (int k=0; k<h.getNumBins(); k++)
+    EV << h.getBinEdge(k) << ":" << h.getBinEdge(k+1) << ":" << h.getBinValue(k) << endl;
 
 %contains-regex: stdout
 n=7:mean=13\.142.*:stddev=4\.488.*

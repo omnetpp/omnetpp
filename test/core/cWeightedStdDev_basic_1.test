@@ -9,7 +9,7 @@ uses the "N" formula (N-1 gets nasty in the weighted case).
 %global:
 void print(cStdDev& s)
 {
-    EV << "n=" << s.getCount() << " w=" << s.getWeights()
+    EV << "n=" << s.getCount() << " w=" << s.getSumWeights()
          << " min=" << s.getMin() << " max=" << s.getMax()
          << " mean=" << s.getMean() << " stddev=" << s.getStddev()
          << " var=" << s.getVariance() << endl;
@@ -25,7 +25,7 @@ for (int i=0; i<100000; i++)
     double d = dblrand() - 0.2;
     int weight = intuniform(0,5);
     for (int j=0; j<weight; j++) s.collect(d);
-    ws.collect2(d, weight);
+    ws.collectWeighted(d, weight);
 }
 
 print(s);

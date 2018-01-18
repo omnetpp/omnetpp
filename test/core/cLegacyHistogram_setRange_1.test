@@ -75,11 +75,11 @@ for (int i=0; i<FIRSTVALS+10; i++)
         EV << i << " observations:\n";
         for (int k=0; k<nh; k++) {
             EV << " h[" << k << "] " << std::setw(k<10?23:22) << h[k]->getName() << ": ";
-            if (!h[k]->isTransformed())
+            if (!h[k]->binsAlreadySetUp())
                 EV << "collecting\n";
             else {
-                int nc = h[k]->getNumCells();
-                EV << std::setw(2) << nc << " cells, " << h[k]->getBasepoint(0) << ".." << h[k]->getBasepoint(nc) << "\n";
+                int nc = h[k]->getNumBins();
+                EV << std::setw(2) << nc << " cells, " << h[k]->getBinEdge(0) << ".." << h[k]->getBinEdge(nc) << "\n";
             }
         }
         EV << "\n";

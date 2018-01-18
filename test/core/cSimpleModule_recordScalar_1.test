@@ -14,7 +14,7 @@ for (int i=1; i<=10; i++)
 recordStatistic(&stats, "m");
 
 for (int i=1; i<=10; i++)
-    weightedStats.collect2(i*i,i);
+    weightedStats.collectWeighted(i*i,i);
 recordStatistic(&weightedStats, "m");
 
 %contains-regex: results/General-#0.sca

@@ -7,7 +7,7 @@ to their gcc equivalent.
 %global:
 void print(cStdDev& s)
 {
-    EV << s.getName() << " n=" << s.getCount() << " w=" << s.getWeights()
+    EV << s.getName() << " n=" << s.getCount() << " w=" << s.getSumWeights()
          << " min=" << s.getMin() << " max=" << s.getMax()
          << " mean=" << s.getMean() << " stddev=" << s.getStddev()
          << " var=" << s.getVariance() << endl;
@@ -23,15 +23,15 @@ void collect(cModule *mod, int na, int nb)
     {
         double d = 5*mod->dblrand()+8;
         double weight = mod->dblrand();
-        s.collect2(d, weight);
-        a.collect2(d, weight);
+        s.collectWeighted(d, weight);
+        a.collectWeighted(d, weight);
     }
     for (int i=0; i<nb; i++)
     {
         double d = mod->dblrand()*10;
         double weight = 1+5*mod->dblrand();
-        s.collect2(d, weight);
-        b.collect2(d, weight);
+        s.collectWeighted(d, weight);
+        b.collectWeighted(d, weight);
     }
 
     print(a);
