@@ -1,9 +1,9 @@
 %description:
-check that a cStdDev refuses to merge a cWeightedStdDev
+check that an unweighted cStdDev refuses to merge a weighted one
 
 %activity:
 cStdDev a("a");
-cWeightedStdDev b("b");
+cStdDev b("b", true);
 
 a.merge(&b);
 
@@ -11,5 +11,5 @@ a.merge(&b);
 
 %subst: /omnetpp:://
 %contains: stderr
-(cStdDev)a: Cannot merge weighted statistics (cWeightedStdDev)Test.b into unweighted
+(cStdDev)a: Cannot merge weighted statistics (cStdDev)Test.b into unweighted statistics
 

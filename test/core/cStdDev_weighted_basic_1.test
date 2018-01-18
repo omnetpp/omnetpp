@@ -1,9 +1,9 @@
 %description:
-Basic cWeightedStdDev test: for integer weights it should yield the same
-results as cStdDev with collect() called those many times.
+Basic weighted cStdDev test: for integer weights it should yield the same
+results as unweighted cStdDev with collect() called those many times.
 
 Note: there might be a small difference in getStddev() values between the two
-for smaller N's, because cStdDev uses the "N-1" formula, while cWeigtedStdDev
+for smaller N's, because unweighted uses the "N-1" formula, while weighted
 uses the "N" formula (N-1 gets nasty in the weighted case).
 
 %global:
@@ -17,8 +17,8 @@ void print(cStdDev& s)
 
 %activity:
 
-cStdDev s;
-cWeightedStdDev ws;
+cStdDev s("unweighted");
+cStdDev ws("weighted", true);
 
 for (int i=0; i<100000; i++)
 {

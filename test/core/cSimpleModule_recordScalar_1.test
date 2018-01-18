@@ -4,7 +4,7 @@ check that recordScalar()/recordStatistic() methods work OK.
 %activity:
 
 cStdDev stats("stats");
-cWeightedStdDev weightedStats("weighted stats");
+cStdDev weightedStats("weighted stats", true);
 
 recordScalar("one", 24.2);
 recordScalar("two", -1.3);

@@ -1,5 +1,5 @@
 %description:
-merging two cWeightedStdDev objects
+merging two weighted cStdDev objects
 
 Note: MSVC prints NaN as -1.#IND and 1.#QNAN, so we need to %subst them
 to their gcc equivalent.
@@ -15,19 +15,18 @@ void print(cStdDev& s)
 
 void collect(cModule *mod, int na, int nb)
 {
-    cWeightedStdDev a("a");
-    cWeightedStdDev b("b");
-    cWeightedStdDev s("ref");
+    cStdDev a("a", true);
+    cStdDev b("b", true);
+    cStdDev s("ref", true);
 
-    for (int i=0; i<na; i++)
-    {
+    for (int i=0; i<na; i++) {
         double d = 5*mod->dblrand()+8;
         double weight = mod->dblrand();
         s.collectWeighted(d, weight);
         a.collectWeighted(d, weight);
     }
-    for (int i=0; i<nb; i++)
-    {
+
+    for (int i=0; i<nb; i++) {
         double d = mod->dblrand()*10;
         double weight = 1+5*mod->dblrand();
         s.collectWeighted(d, weight);
@@ -89,3 +88,4 @@ b n=0 w=0 min=nan max=nan mean=nan stddev=nan var=nan
 a+b n=5 w=3.25445 min=9.79754 max=12.7187 mean=11.0909 stddev=1.28883 var=1.66109
 ref n=5 w=3.25445 min=9.79754 max=12.7187 mean=11.0909 stddev=1.28883 var=1.66109
 ---
+
