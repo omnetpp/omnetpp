@@ -36,10 +36,6 @@ field sum 1984
 field sqrsum 40348
 attr source foo
 bin	-inf	0
-bin	4	0
-bin	5	0
-bin	6	0
-bin	7	0
 bin	8	0
 bin	9	0
 bin	10	0
@@ -65,10 +61,6 @@ bin	29	0
 bin	30	0
 bin	31	0
 bin	32	0
-bin	33	0
-bin	34	0
-bin	35	0
-bin	36	0
 statistic Test.node nobins:histogram
 field count 100
 field mean 19.84
