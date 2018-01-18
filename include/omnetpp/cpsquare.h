@@ -25,7 +25,10 @@ namespace omnetpp {
 
 /**
  * @brief Implements the P<sup>2</sup> algorithm, which calculates quantile
- * values without storing the observations.
+ * values without storing the observations. See the seminal paper titled
+ * "The P^2 Algorithm for Dynamic Statistical Computing Calculation of
+ * Quantiles and Histograms Without Storing Observations" by Raj Jain and
+ * Imrich Chlamtac.
  *
  * @ingroup Statistics
  */
@@ -39,10 +42,6 @@ class SIM_API cPSquare : public cDensityEstBase
 
   protected:
     void copy(const cPSquare& other);
-
-  protected:
-    // abstract method in cDensityEstBase
-    virtual void doMergeCellValues(const cDensityEstBase *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -93,60 +92,33 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual void parsimUnpack(cCommBuffer *buffer) override;
     //@}
 
-  private:
-    // internal: issues error message
-    void raiseError();
-
-  protected:
-    /**
-     * Called internally by collect(), this method updates the P2 data structure
-     * with the new value.
-     */
-    virtual void collectTransformed(double value) override;
-
-    /**
-     * Called internally by collect().
-     */
-    virtual void collectTransformed2(double value, double weight) override;
-
   public:
-    /** @name Redefined member functions from cStatistic and its subclasses. */
+    /** @name Redefined member functions from cStatistic */
     //@{
+    /**
+     * Returns true if histogram is already available. This cPSquare implementation
+     * always returns true, since the algorithm does not contain a precollection stage.
+     */
+    virtual bool isTransformed() const override {return true;}
 
     /**
-     * This method is not used with cPSquare, but it could not remain pure virtual.
+     * Transforms the array of pre-collected values into histogram structure.
+     * This cPSquare implementation does nothing.
      */
     virtual void transform() override {}
 
     /**
-     * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm does not require them), but they could not remain pure virtual.
+     * Collects one observation.
      */
-    virtual void setRange(double,double) override {raiseError();}
+    virtual void collect(double value) override;
+    using cStatistic::collect;
 
     /**
-     * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm does not require them), but they could not remain pure virtual.
+     * Collects one observation with a given weight. Throws an error,
+     * as cPSquare does not support weighted statistics.
      */
-    virtual void setRangeAuto(int,double) override {raiseError();}
-
-    /**
-     * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm does not require them), but they could not remain pure virtual.
-     */
-    virtual void setRangeAutoLower(double,int,double) override {raiseError();}
-
-    /**
-     * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm does not require them), but they could not remain pure virtual.
-     */
-    virtual void setRangeAutoUpper(double,int,double) override {raiseError();}
-
-    /**
-     * setRange() and setNumFirstVals() methods are not used with cPSquare
-     * (the algorithm does not require them), but they could not remain pure virtual.
-     */
-    virtual void setNumPrecollectedValues(int) override {raiseError();}
+    virtual void collect2(double value, double weight) override;
+    using cStatistic::collect2;
 
     /**
      * Returns the number of cells used.
@@ -166,14 +138,28 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual double getCellValue(int k) const override;
 
     /**
-     * Returns the value of the Cumulated Density Function at a given x.
+     * Returns number of observations that were below the histogram range,
+     * independent of their weights. In cPSquare, this method always returns 0.
      */
-    virtual double getCDF(double x) const override;
+    virtual int64_t getUnderflowCell() const override {return 0;}
 
     /**
-     * Returns the value of the Probability Density Function at a given x.
+     * Returns number of observations that were above the histogram range,
+     * independent of their weights. In cPSquare, this method always returns 0.
      */
-    virtual double getPDF(double x) const override;
+    virtual int64_t getOverflowCell() const override {return 0;}
+
+    /**
+     * Returns the total weight of the observations that were below the histogram range.
+     * In cPSquare, this method always returns 0.
+     */
+    virtual double getUnderflowSumWeights() const override {return 0;}
+
+    /**
+     * Returns the total weight of the observations that were above the histogram range.
+     * In cPSquare, this method always returns 0.
+     */
+    virtual double getOverflowSumWeights() const override {return 0;}
 
     /**
      * Generates a random number based on the collected data.

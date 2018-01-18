@@ -34,7 +34,7 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
-class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cDensityEstBase
+class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDensityEst
 {
   protected:
     int numCells;     // number of histogram cells or bins
@@ -45,7 +45,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cDensityEstBase
 
   protected:
     // abstract method in cPrecollectionBasedDensityEst
-    virtual void doMergeCellValues(const cDensityEstBase *other) override;
+    virtual void doMergeCellValues(const cPrecollectionBasedDensityEst *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -54,7 +54,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cLegacyHistogramBase(const cLegacyHistogramBase& r) : cDensityEstBase(r) {cellv=nullptr;copy(r);}
+    cLegacyHistogramBase(const cLegacyHistogramBase& r) : cPrecollectionBasedDensityEst(r) {cellv=nullptr;copy(r);}
 
     /**
      * Constructor.

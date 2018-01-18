@@ -31,7 +31,7 @@ namespace omnetpp {
  * @ingroup Statistics
  * @see Iterator Grid
  */
-class SIM_API cKSplit : public cDensityEstBase
+class SIM_API cKSplit : public cPrecollectionBasedDensityEst
 {
   public:
     // K is the grid size of the algorithm. It must be 2, or a >=3 odd number.
@@ -177,8 +177,8 @@ class SIM_API cKSplit : public cDensityEstBase
     // internal: helper for getBasepoint(), getCellValue()
     void iteratorToCell(int cell_nr) const;
 
-    // abstract method in cDensityEstBase
-    virtual void doMergeCellValues(const cDensityEstBase *other) override;
+    // abstract method in cPrecollectionBasedDensityEst
+    virtual void doMergeCellValues(const cPrecollectionBasedDensityEst *other) override;
 
   public:
     /** @name Constructors, destructor, assignment. */

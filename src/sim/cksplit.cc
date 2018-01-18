@@ -74,14 +74,14 @@ double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, double *d)
 
 //----
 
-cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase(r)
+cKSplit::cKSplit(const cKSplit& r) : cPrecollectionBasedDensityEst(r)
 {
     gridv = nullptr;
     iter = nullptr;
     copy(r);
 }
 
-cKSplit::cKSplit(const char *name) : cDensityEstBase(name)
+cKSplit::cKSplit(const char *name) : cPrecollectionBasedDensityEst(name)
 {
     if (K < 2 || (K > 2 && K != 2 * (int)(K / 2) + 1))
         throw cRuntimeError("cKSplit: K must be 2 or a >=3 odd number");
@@ -150,7 +150,7 @@ cKSplit& cKSplit::operator=(const cKSplit& res)
 {
     if (this == &res)
         return *this;
-    cDensityEstBase::operator=(res);
+    cPrecollectionBasedDensityEst::operator=(res);
     copy(res);
     return *this;
 }
@@ -189,7 +189,7 @@ void cKSplit::merge(const cStatistic *other)
     throw cRuntimeError(this, "The cKSplit class does not support merge()");
 }
 
-void cKSplit::doMergeCellValues(const cDensityEstBase *other)
+void cKSplit::doMergeCellValues(const cPrecollectionBasedDensityEst *other)
 {
     ASSERT(false);  // never comes here, as merge() already throws an error
 }
@@ -705,7 +705,7 @@ double cKSplit::getCDF(double) const
 
 void cKSplit::saveToFile(FILE *f) const
 {
-    cDensityEstBase::saveToFile(f);
+    cPrecollectionBasedDensityEst::saveToFile(f);
 
     fprintf(f, "%d\t #= num_cells\n", numCells);
     fprintf(f, "%d\t #= gridv_size\n", gridvSize);
@@ -733,7 +733,7 @@ void cKSplit::saveToFile(FILE *f) const
 
 void cKSplit::loadFromFile(FILE *f)
 {
-    cDensityEstBase::loadFromFile(f);
+    cPrecollectionBasedDensityEst::loadFromFile(f);
 
     freadvarsf(f, "%d\t #= num_cells", &numCells);
     freadvarsf(f, "%d\t #= gridv_size", &gridvSize);

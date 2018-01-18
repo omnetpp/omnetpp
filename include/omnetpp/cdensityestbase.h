@@ -21,7 +21,152 @@
 namespace omnetpp {
 
 /**
- * @brief Abstract base class for density estimation classes.
+ * @brief Interface and base class for histogram-like density estimation classes.
+ *
+ * TODO
+ */
+class SIM_API cDensityEstBase : public cStdDev
+{
+  public:
+    /**
+     * @brief Information about a cell. This struct is not used internally by
+     * histogram and histogram-like classes, only to return information
+     * to the user.
+     */
+    struct Cell
+    {
+        double lower;  // lower cell bound (inclusive)
+        double upper;  // lower cell bound (exclusive)
+        double value;  // counter (or its estimate)
+        double relativeFreq;  // value / total
+        Cell() {lower=upper=value=relativeFreq=0;}
+    };
+
+  private:
+    void copy(const cDensityEstBase& other) {}
+
+  public:
+    // internal, for use in sim_std.msg; note: each call overwrites the previous value!
+    const Cell& internalGetCellInfo(int k) const;
+
+  public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
+    /**
+     * Copy constructor.
+     */
+    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {}
+
+    /**
+     * Constructor.
+     */
+    explicit cDensityEstBase(const char *name=nullptr, bool weighted=false) : cStdDev(name, weighted) {}
+
+    /**
+     * Destructor.
+     */
+    virtual ~cDensityEstBase() {};
+
+    /**
+     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
+     */
+    cDensityEstBase& operator=(const cDensityEstBase& res) {
+        if (this == &res)
+           return *this;
+       cStdDev::operator=(res);
+       copy(res);
+       return *this;
+    }
+    //@}
+
+
+    /** @name Accessing histogram cells. */
+    //@{
+    /**
+     * Returns true if histogram is already available. See transform().
+     */
+    virtual bool isTransformed() const = 0;
+
+    /**
+     * Transforms the array of pre-collected values into histogram structure.
+     */
+    virtual void transform() = 0;
+
+    /**
+     * Returns the number of histogram cells used.
+     */
+    virtual int getNumCells() const = 0;
+
+    /**
+     * Returns the kth histogram cell boundary. Legal values for k are 0 through
+     * getNumCells(), that is, there's one more basepoint than the number of cells.
+     * getBasepoint(0) returns the lower bound of the first cell, and
+     * getBasepoint(getNumCells()) returns the upper bound of the last cell.
+     */
+    virtual double getBasepoint(int k) const = 0;
+
+    /**
+     * Returns the number of observations that fell into the kth histogram cell.
+     */
+    virtual double getCellValue(int k) const = 0;
+
+    /**
+     * Returns the estimated value of the Probability Density Function
+     * within the kth cell. This method simply divides the number of observations
+     * in cell k with the cell size and the number of total observations collected.
+     */
+    virtual double getCellPDF(int k) const;
+
+    /**
+     * Returns number of observations that were below the histogram range,
+     * independent of their weights.
+     */
+    virtual int64_t getUnderflowCell() const = 0;
+
+    /**
+     * Returns number of observations that were above the histogram range,
+     * independent of their weights.
+     */
+    virtual int64_t getOverflowCell() const = 0;
+
+    /**
+     * Returns the total weight of the observations that were below the histogram range.
+     */
+    virtual double getUnderflowSumWeights() const = 0;
+
+    /**
+     * Returns the total weight of the observations that were above the histogram range.
+     */
+    virtual double getOverflowSumWeights() const = 0;
+
+    /**
+     * Combines the functionality of getBasepoint(), getCellValue() and getCellPDF() into a
+     * single call.
+     */
+    virtual Cell getCellInfo(int k) const;
+    //@}
+
+    /** @name Density and cumulated density approximation functions. */
+    //@{
+
+    /**
+     * Returns the estimated value of the Probability Density Function at a given x.
+     */
+    virtual double getPDF(double x) const;
+
+    /**
+     * Returns the estimated value of the Cumulative Density Function at a given x.
+     */
+    virtual double getCDF(double x) const;
+    //@}
+};
+
+
+/**
+ * @brief Base class for histogram-like density estimation classes.
+ *
+ * DEPRECATED CLASS, do not use for new classes.
  *
  * For the histogram classes, you need to specify the number of cells
  * and the range. Range can either be set explicitly or you can choose
@@ -40,7 +185,7 @@ namespace omnetpp {
  *
  * You may also explicitly specify the lower or upper limit and have
  * the other end of the range estimated automatically. The setRange...()
- * member functions of cDensityEstBase deal with setting
+ * member functions of cPrecollectionBasedDensityEst deal with setting
  * up the histogram range. It also provides pure virtual functions
  * transform() etc.
  *
@@ -50,7 +195,7 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
-class SIM_API cDensityEstBase : public cStdDev
+class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
 {
   public:
     /**
@@ -62,20 +207,6 @@ class SIM_API cDensityEstBase : public cStdDev
         RANGE_AUTOUPPER, // like RANGE_AUTO, but lower limit is fixed
         RANGE_FIXED,     // fixed range (lower, upper)
         RANGE_NOTSET     // not set, but it is OK (cVarHistogram only)
-    };
-
-    /**
-     * @brief Information about a cell. This struct is not used internally by
-     * histogram and histogram-like classes, only to return information
-     * to the user.
-     */
-    struct Cell
-    {
-        double lower;  // lower cell bound (inclusive)
-        double upper;  // lower cell bound (exclusive)
-        double value;  // counter (or its estimate)
-        double relativeFreq;  // value / total
-        Cell() {lower=upper=value=relativeFreq=0;}
     };
 
   protected:
@@ -97,16 +228,13 @@ class SIM_API cDensityEstBase : public cStdDev
     double overflowSumWeights;
 
   private:
-    void copy(const cDensityEstBase& other);
+    void copy(const cPrecollectionBasedDensityEst& other);
 
   protected:
     static void plotline (std::ostream& os, const char *pref, double xval, double count, double a);
 
     // part of merge(); to be implemented in subclasses
-    virtual void doMergeCellValues(const cDensityEstBase *other) = 0;
-  public:
-    // internal, for use in sim_std.msg; note: each call overwrites the previous value!
-    const Cell& internalGetCellInfo(int k) const;
+    virtual void doMergeCellValues(const cPrecollectionBasedDensityEst *other) = 0;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -115,22 +243,22 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {precollectedValues=nullptr; precollectedWeights=nullptr; copy(other);}
+    cPrecollectionBasedDensityEst(const cPrecollectionBasedDensityEst& other) : cDensityEstBase(other) {precollectedValues=nullptr; precollectedWeights=nullptr; copy(other);}
 
     /**
      * Constructor.
      */
-    explicit cDensityEstBase(const char *name=nullptr, bool weighted=false);
+    explicit cPrecollectionBasedDensityEst(const char *name=nullptr, bool weighted=false);
 
     /**
      * Destructor.
      */
-    virtual ~cDensityEstBase();
+    virtual ~cPrecollectionBasedDensityEst();
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
-    cDensityEstBase& operator=(const cDensityEstBase& res);
+    cPrecollectionBasedDensityEst& operator=(const cPrecollectionBasedDensityEst& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -178,7 +306,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Updates this object with data coming from another statistics
      * object -- as if this object had collected observations fed
      * into the other object as well. Throws an error if the other
-     * object is not a cDensityEstBase.
+     * object is not a cPrecollectionBasedDensityEst.
      */
     virtual void merge(const cStatistic *other) override;
 
@@ -283,103 +411,34 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual void collectTransformed2(double value, double weight) = 0;
 
   public:
-
-    /** @name Transformation. */
+    /** @name Redefined methods */
     //@{
-
     /**
      * Returns whether the object is transformed. See transform().
      */
-    virtual bool isTransformed() const   {return transformed;}
-
-    /**
-     * Transforms the table of pre-collected values into an internal
-     * histogram structure. This is a pure virtual function. Implementations
-     * of transform() are expected to call setupRange(), and set the
-     * transformed flag when transformation was successfully done.
-     */
-    virtual void transform() = 0;
-    //@}
-
-    /** @name Accessing histogram cells. */
-    //@{
-
-    /**
-     * Returns the number of histogram cells used.
-     * This method is pure virtual, implementation is provided in subclasses.
-     */
-    virtual int getNumCells() const = 0;
-
-    /**
-     * Returns the kth histogram cell boundary. Legal values for k are 0 through
-     * getNumCells(), that is, there's one more basepoint than the number of cells.
-     * getBasepoint(0) returns the lower bound of the first cell, and
-     * getBasepoint(getNumCells()) returns the upper bound of the last cell.
-     * This method is pure virtual, implementation is provided in subclasses.
-     */
-    virtual double getBasepoint(int k) const = 0;
-
-    /**
-     * Returns the number of observations that fell into the kth histogram cell.
-     * Before transformation, this method may return zero. See transform().
-     * This method is pure virtual, implementation is provided in subclasses.
-     */
-    virtual double getCellValue(int k) const = 0;
-
-    /**
-     * Returns the estimated value of the Probability Density Function
-     * within the kth cell. This method simply divides the number of observations
-     * in cell k with the cell size and the number of total observations collected.
-     * Note that before transformation, getCellValue() and also this method may return zero.
-     * See transform().
-     */
-    virtual double getCellPDF(int k) const;
+    virtual bool isTransformed() const override {return transformed;}
 
     /**
      * Returns number of observations that were below the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getUnderflowCell() const {return numUnderflows;}
+    virtual int64_t getUnderflowCell() const override {return numUnderflows;}
 
     /**
      * Returns number of observations that were above the histogram range,
      * independent of their weights.
      */
-    virtual int64_t getOverflowCell() const {return numOverflows;}
+    virtual int64_t getOverflowCell() const override {return numOverflows;}
 
     /**
      * Returns the total weight of the observations that were below the histogram range.
      */
-    virtual double getUnderflowSumWeights() const {return underflowSumWeights;}
+    virtual double getUnderflowSumWeights() const override {return underflowSumWeights;}
 
     /**
      * Returns the total weight of the observations that were above the histogram range.
      */
-    virtual double getOverflowSumWeights() const {return overflowSumWeights;}
-
-    /**
-     * Combines the functionality of getBasepoint(), getCellValue() and getCellPDF() into a
-     * single call.
-     */
-    virtual Cell getCellInfo(int k) const;
-    //@}
-
-    /** @name Density and cumulated density approximation functions. */
-    //@{
-
-    /**
-     * Returns the estimated value of the Probability Density Function at a given x.
-     * This is a pure virtual function, implementation is provided
-     * in subclasses implementing concrete histogram types.
-     */
-    virtual double getPDF(double x) const = 0;
-
-    /**
-     * Returns the estimated value of the Cumulative Density Function at a given x.
-     * This is a pure virtual function, implementation is provided
-     * in subclasses implementing concrete histogram types.
-     */
-    virtual double getCDF(double x) const = 0;
+    virtual double getOverflowSumWeights() const override {return overflowSumWeights;}
     //@}
 };
 

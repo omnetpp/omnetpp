@@ -4,12 +4,6 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//   Member functions of
-//    cLegacyHistogramBase    : common base class for histogram classes
-//    cLegacyHistogram        : equi-distant histogram
-//    cLongHistogram    : long integer histogram
-//    cDoubleHistogram  : double histogram
-//
 //   Authors: Andras Varga, Gabor Lencse
 //
 //=========================================================================
@@ -52,7 +46,7 @@ Register_Class(cLongHistogram);
 Register_Class(cDoubleHistogram);
 
 cLegacyHistogramBase::cLegacyHistogramBase(const char *name, int numcells, bool weighted) :
-        cDensityEstBase(name, weighted)
+    cPrecollectionBasedDensityEst(name, weighted)
 {
     cellv = nullptr;
     numCells = numcells;
@@ -68,7 +62,7 @@ void cLegacyHistogramBase::parsimPack(cCommBuffer *buffer) const
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimPack(buffer);
+    cPrecollectionBasedDensityEst::parsimPack(buffer);
     buffer->pack(numCells);
 
     if (buffer->packFlag(cellv != nullptr))
@@ -81,7 +75,7 @@ void cLegacyHistogramBase::parsimUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimUnpack(buffer);
+    cPrecollectionBasedDensityEst::parsimUnpack(buffer);
     buffer->pack(numCells);
 
     if (buffer->checkFlag()) {
@@ -104,12 +98,12 @@ void cLegacyHistogramBase::copy(const cLegacyHistogramBase& res)
 
 cLegacyHistogramBase& cLegacyHistogramBase::operator=(const cLegacyHistogramBase& res)
 {
-    cDensityEstBase::operator=(res);
+    cPrecollectionBasedDensityEst::operator=(res);
     copy(res);
     return *this;
 }
 
-void cLegacyHistogramBase::doMergeCellValues(const cDensityEstBase *other)
+void cLegacyHistogramBase::doMergeCellValues(const cPrecollectionBasedDensityEst *other)
 {
     for (int i = 0; i < numCells; i++)
         cellv[i] += other->getCellValue(i);
@@ -117,7 +111,7 @@ void cLegacyHistogramBase::doMergeCellValues(const cDensityEstBase *other)
 
 void cLegacyHistogramBase::clearResult()
 {
-    cDensityEstBase::clearResult();
+    cPrecollectionBasedDensityEst::clearResult();
 
     delete[] cellv;
     cellv = nullptr;
@@ -155,7 +149,7 @@ int cLegacyHistogramBase::getNumCells() const
 
 void cLegacyHistogramBase::saveToFile(FILE *f) const
 {
-    cDensityEstBase::saveToFile(f);
+    cPrecollectionBasedDensityEst::saveToFile(f);
     fprintf(f, "%d\t #= num_cells\n", numCells);
     fprintf(f, "%d\t #= cellv[] exists\n", cellv != nullptr);
     if (cellv)
@@ -165,7 +159,7 @@ void cLegacyHistogramBase::saveToFile(FILE *f) const
 
 void cLegacyHistogramBase::loadFromFile(FILE *f)
 {
-    cDensityEstBase::loadFromFile(f);
+    cPrecollectionBasedDensityEst::loadFromFile(f);
     freadvarsf(f, "%d\t #= num_cells", &numCells);
 
     int cellv_exists;

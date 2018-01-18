@@ -617,7 +617,6 @@ class cDensityEstBase extends cStdDev
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(readonly);
-    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram cells");
     unsigned long underflowCell @group(histogram) @hint("Number of observations below the first histogram cell");
     unsigned long overflowCell @group(histogram) @hint("Number of observations above the last histogram cell");
     int numCells @group(histogram) @hint("Number of cells in the histogram");
@@ -632,7 +631,15 @@ class cDensityEstBase::Cell
     @opaque;
 }
 
-class cLegacyHistogramBase extends cDensityEstBase
+class cPrecollectionBasedDensityEst extends cDensityEstBase
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(readonly);
+    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram cells");
+}
+
+class cLegacyHistogramBase extends cPrecollectionBasedDensityEst
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -667,7 +674,7 @@ class cDoubleHistogram extends cLegacyHistogram
     @descriptor(readonly);
 }
 
-class cKSplit extends cDensityEstBase
+class cKSplit extends cPrecollectionBasedDensityEst
 {
     @existingClass;
     @overwritePreviousDefinition;

@@ -49,10 +49,6 @@ cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
 
 cPSquare::cPSquare(const char *name, int cells) : cDensityEstBase(name)
 {
-    transformed = true;
-    delete [] precollectedValues;
-    precollectedValues = nullptr;
-
     numCells = cells;
     numObs = 0;
     n = new int[numCells+2];
@@ -132,13 +128,10 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
     return *this;
 }
 
-void cPSquare::raiseError()
+void cPSquare::collect(double val)
 {
-    throw cRuntimeError(this, "setRange..() and setNumFirstVals() make no sense with cPSquare");
-}
+    cDensityEstBase::collect(val);
 
-void cPSquare::collectTransformed(double val)
-{
     numObs++;  // an extra observation is added
 
     if (numObs <= numCells+1) {
@@ -203,19 +196,15 @@ void cPSquare::collectTransformed(double val)
     }
 }
 
-void cPSquare::collectTransformed2(double value, double weight)
+
+void cPSquare::collect2(double value, double weight)
 {
-    ASSERT(false); // weighted case is unsupported
+    throw cRuntimeError(this, "cPSquare does not support weighted statistics");
 }
 
 void cPSquare::merge(const cStatistic *other)
 {
-    throw cRuntimeError(this, "The cPSquare class does not support merge()");
-}
-
-void cPSquare::doMergeCellValues(const cDensityEstBase *other)
-{
-    ASSERT(false);  // never comes here, as merge() already throws an error
+    throw cRuntimeError(this, "cPSquare does not support merge()");
 }
 
 double cPSquare::draw() const
@@ -266,26 +255,6 @@ double cPSquare::getBasepoint(int k) const
 double cPSquare::getCellValue(int k) const
 {
     return n[k+2] - n[k+1] + (k == 0);
-}
-
-double cPSquare::getCDF(double x) const
-{
-    // returns 0..1; uses linear approximation between two markers
-    for (int i = 1; i < numCells+2; i++)
-        if (q[i] > x)
-            return ((x-q[i-1]) / (q[i]-q[i-1]) * (n[i]-n[i-1] + (i == 1)) + n[i-1] + (i == 1)) / numObs;
-
-    return 1.0;
-}
-
-double cPSquare::getPDF(double x) const
-{
-    // returns 0..1; assumes constant PDF within a cell
-    for (int i = 1; i < numCells+2; i++)
-        if (q[i] > x)
-            return (n[i]-n[i-1] + (i == 1))/(q[i]-q[i-1])/numObs;
-
-    return 0;
 }
 
 void cPSquare::saveToFile(FILE *f) const
