@@ -3,6 +3,11 @@ dup() of cLongHistogram
 
 %activity:
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 FILE *f = fopen("histograms.out", "w");
 if (!f)
     throw cRuntimeError("cannot open output file for histograms");
@@ -29,6 +34,10 @@ h.saveToFile(f);
 h2 = h.dup(); h2->saveToFile(f); delete h2;
 
 fclose(f);
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 %subst: /omnetpp:://
 %contains: histograms.out

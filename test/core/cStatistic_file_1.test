@@ -2,6 +2,11 @@
 Test saveToFile()/loadFromFile() for various histogram classes.
 
 %activity:
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 int numCells = 10;
 int numFirstVals = 100;
 double rangeExtFactor = 1.3;
@@ -11,6 +16,7 @@ cLongHistogram longhist("LongHistogram", numCells);
 cVarHistogram varhist("VarHistogram", numCells, cVarHistogram::HIST_TR_AUTO_EPC_DBL);
 cPSquare psquare("PSquare", numCells);
 cKSplit ksplit("K-Split");
+// NOTE: Something equivalent already exists for cHistogram.
 
 dblhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
 longhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
@@ -48,6 +54,10 @@ psquare.saveToFile(f);
 varhist.saveToFile(f);
 ksplit.saveToFile(f);
 fclose(f);
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 %postrun-command: diff pass1.txt pass2.txt
 

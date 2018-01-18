@@ -6,6 +6,11 @@ cLegacyHistogram and various setRange() methods
 
 %activity:
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 const int FIRSTVALS=100;
 const double RANGEEXT=1.5;
 
@@ -98,6 +103,10 @@ for (int i=0; i<FIRSTVALS+10; i++)
     for (int k=nih; k<nh; k++)
         h[k]->collect(doublevalue);
 }
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 %subst: /-1\.7[0-9]+e\+308/DBL_MIN/
 

@@ -3,6 +3,11 @@ test saveToFile()/loadFromFile() for cLongHistogram
 
 %activity:
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 cLongHistogram h;
 
 h.setNumCells(10);   // 10 cells
@@ -33,6 +38,10 @@ fclose(f2);
 FILE *f3=fopen("h2.dat","w");
 h2.saveToFile(f3);
 fclose(f3);
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 %subst: /omnetpp:://
 %contains: h.dat

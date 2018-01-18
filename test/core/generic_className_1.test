@@ -1,23 +1,13 @@
 %description:
 Test the getClassName() methods of several classes.
 
-The following classes cannot be tested because they're abstract (instantiation
-not possible) or internally used classes:
-
-cDensityEstBase, cTransientDetection, cAccuracyDetection, cGate, cHistogramBase,
-cEqdHistogramBase, cModule, cSimpleModule, cModule, cSimulation,
-cStatistic, cModuleType, cChannelType, cWatch, cPar, etc...
-
 %activity:
 
 #define PRINT_CLASSNAME(T) {T a##T; EV << #T ": " << a##T.getClassName() << endl;}
 
 PRINT_CLASSNAME( cArray )
-PRINT_CLASSNAME( cTDExpandingWindows )
-PRINT_CLASSNAME( cADByStddev )
 PRINT_CLASSNAME( cFSM )
-PRINT_CLASSNAME( cLongHistogram )
-PRINT_CLASSNAME( cDoubleHistogram )
+PRINT_CLASSNAME( cHistogram )
 PRINT_CLASSNAME( cKSplit )
 PRINT_CLASSNAME( cMessage )
 PRINT_CLASSNAME( cEventHeap )
@@ -27,16 +17,12 @@ PRINT_CLASSNAME( cPSquare )
 PRINT_CLASSNAME( cQueue )
 PRINT_CLASSNAME( cStdDev )
 PRINT_CLASSNAME( cTopology )
-PRINT_CLASSNAME( cVarHistogram )
 
 %subst: /omnetpp:://
 %contains: stdout
 cArray: cArray
-cTDExpandingWindows: cTDExpandingWindows
-cADByStddev: cADByStddev
 cFSM: cFSM
-cLongHistogram: cLongHistogram
-cDoubleHistogram: cDoubleHistogram
+cHistogram: cHistogram
 cKSplit: cKSplit
 cMessage: cMessage
 cEventHeap: cEventHeap
@@ -46,5 +32,4 @@ cPSquare: cPSquare
 cQueue: cQueue
 cStdDev: cStdDev
 cTopology: cTopology
-cVarHistogram: cVarHistogram
 

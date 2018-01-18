@@ -7,6 +7,11 @@ Test functions in include/platdep/timeval.h
 
 %global:
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #define  SEC    1000000
 #define  USEC   1e-6
 
@@ -63,6 +68,10 @@ PRINTL(timeval_diff_usec(tval(123,456), tval(123,450)));
 PRINTL(timeval_diff_usec(tval(123,456), tval(120,457)));
 EV << ".\n";
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
 %contains: stdout
 a= 123s 456us
 
@@ -97,5 +106,4 @@ timeval_diff_usec(tval(123,456), tval(123,456))= 0
 timeval_diff_usec(tval(123,456), tval(123,450))= 6
 timeval_diff_usec(tval(123,456), tval(120,457))= 2999999
 .
-
 

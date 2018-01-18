@@ -3,6 +3,11 @@ basic use of cDoubleHistogram
 
 %activity:
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 cDoubleHistogram h;
 
 h.setNumCells(10);   // 10 cells
@@ -21,6 +26,10 @@ EV << "n=" << h.getCount() << ":mean=" << h.getMean() << ":stddev=" << h.getStdd
 EV << "under=" << h.getNumUnderflows() << ":over=" << h.getNumOverflows() << endl;
 for (int k=0; k<h.getNumBins(); k++)
     EV << h.getBinEdge(k) << ":" << h.getBinEdge(k+1) << ":" << h.getBinValue(k) << endl;
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 %contains-regex: stdout
 n=7:mean=13\.142.*:stddev=4\.488.*

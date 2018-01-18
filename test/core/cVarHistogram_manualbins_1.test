@@ -2,7 +2,14 @@
 Verify collection after setting up bins manually.
 Note: here don't precollect values before adding the bins, but that would also be possible
 
+NOTE: Something equivalent already exists for cHistogram.
+
 %activity:
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 cVarHistogram hist("hist", 100, cVarHistogram::HIST_TR_NO_TRANSFORM);
 
@@ -15,6 +22,10 @@ for (int i = 0; i < 100; i++)
     hist.collect(i);
 
 hist.record();
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 %contains: results/General-#0.sca
 statistic Test hist

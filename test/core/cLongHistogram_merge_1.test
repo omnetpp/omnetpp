@@ -2,6 +2,12 @@
 merging two cLongHistogram objects
 
 %global:
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 void print(cLongHistogram& s)
 {
     EV << s.getName() << " n=" << s.getCount()
@@ -44,6 +50,10 @@ void collect(cModule *mod, int na, int nb)
     print(s);
     EV << "---\n";
 }
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 %activity:
 collect(this,50,80);
