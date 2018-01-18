@@ -1,5 +1,5 @@
 %description:
-Check inheriting from a non-cOwnedObject-rooted class
+Check inheriting from a non-cObject-rooted class
 
 %file: test.msg
 
@@ -16,6 +16,7 @@ class MyClass extends Base
 };
 
 %includes:
+#include <type_traits>
 #include "test_m.h"
 
 %activity:
@@ -23,7 +24,7 @@ class MyClass extends Base
 #define PRINT(X) EV << #X << ":" << X << endl
 
 MyClass x;
-EV << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
+EV << (std::is_base_of<cObject,MyClass>::value ? "cObject" : "generic") << endl;
 x.setB(11); PRINT(x.getB());
 x.setC('x'); PRINT(x.getC());
 

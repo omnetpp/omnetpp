@@ -19,6 +19,7 @@ class MyClass
 };
 
 %includes:
+#include <type_traits>
 #include "test_m.h"
 
 %activity:
@@ -28,7 +29,7 @@ class MyClass
 MyClass x;
 
 // test it's NOT subclassed from cObject
-ASSERT(dynamic_cast<cObject *>(&x) == nullptr);
+ASSERT((std::is_base_of<cObject,MyClass>::value == false));
 
 // scalar fields
 x.setB(true); PRINT(x.getB());

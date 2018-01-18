@@ -17,6 +17,7 @@ message Derived2 extends omnetpp::cMessage { }  // extends OMNeT++ cMessage
 
 
 %includes:
+#include <type_traits>
 #include "test_m.h"
 
 %activity:
@@ -28,9 +29,9 @@ message Derived2 extends omnetpp::cMessage { }  // extends OMNeT++ cMessage
 ::@TESTNAME@::Derived1 d1;
 ::@TESTNAME@::Derived2 d2;
 
-// assest that the correct cMessage base class was generated for Derived1 and Derived2
-ASSERT(dynamic_cast<::@TESTNAME@::cMessage*>(&d1) != nullptr);
-ASSERT(dynamic_cast<::@TESTNAME@::cMessage*>(&d2) == nullptr);
+// assert that the correct cMessage base class was generated for Derived1 and Derived2
+ASSERT((std::is_base_of<::@TESTNAME@::cMessage,::@TESTNAME@::Derived1>::value == true));
+ASSERT((std::is_base_of<::@TESTNAME@::cMessage,::@TESTNAME@::Derived2>::value == false));
 
 // check descriptor full name
 EV << x.getDescriptor()->getFullName() << "\n";
