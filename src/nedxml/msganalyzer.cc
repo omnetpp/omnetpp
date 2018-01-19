@@ -496,8 +496,12 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
 
         field->getterConversion = getProperty(field->props, PROP_GETTERCONVERSION, fieldClassInfo.getterConversion);
         field->clone = getProperty(field->props, PROP_CLONE, fieldClassInfo.clone);
-        if (field->clone.empty())
-            field->clone = str("new ") + field->dataType + "(*$)";
+        if (field->clone.empty()) {
+            if (field->iscObject)
+                field->clone = "->dup()";
+            else
+                field->clone = str("new ") + field->dataType + "(*$)";
+        }
     }
 
     //TODO warn for non-applicable properties like @allowReplace for non-ownedpointer fields

@@ -667,22 +667,13 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         if (field.isPointer) {
             copyElem << "    " << thisVarElem << " = " << otherVarElem << ";\n";
             if (field.isOwnedPointer) {
-                if (field.iscOwnedObject) {
-                    copyElem << "    if (" << thisVarElem << " != nullptr) {\n";
-                    copyElem << "        " << thisVarElem << " = " << thisVarElem  << "->dup();\n";
+                copyElem << "    if (" << thisVarElem << " != nullptr) {\n";
+                copyElem << "        " << thisVarElem << " = " << makeFuncall(thisVarElem, field.clone) << ";\n";
+                if (field.iscOwnedObject)
                     copyElem << "        take(" << thisVarElem << ");\n";
-                    copyElem << "    }\n";
-                }
-                else {
-                    copyElem << "    if (" << thisVarElem << " != nullptr)\n";
-                    copyElem << "        " << thisVarElem << " = " << makeFuncall(thisVarElem, field.clone) << ";\n";
-                }
-            }
-            else {
-                if (field.iscNamedObject) {
-                    copyElem << "    if (" << otherVarElem << " != nullptr)\n";
+                if (field.iscNamedObject)
                     copyElem << "        " << thisVarElem << "->setName(" << otherVarElem << "->getName());\n";
-                }
+                copyElem << "    }\n";
             }
         }
         else if (!field.isConst) {
