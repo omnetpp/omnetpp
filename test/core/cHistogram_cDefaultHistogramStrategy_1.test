@@ -21,15 +21,15 @@ static void collectAndDump(cRNG* rng, cHistogram& hist, double a, double b)
 
 %activity:
 
-cHistogram hist1("fixed", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_REALS));
-cHistogram hist2("auto1", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_REALS));
-cHistogram hist3("auto2", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_REALS));
-cHistogram hist4("auto3", new cGenericHistogramStrategy(50, cIHistogramStrategy::MODE_REALS));
+cHistogram hist1("fixed", new cDefaultHistogramStrategy(10, cHistogram::MODE_REALS));
+cHistogram hist2("auto1", new cDefaultHistogramStrategy(10, cHistogram::MODE_REALS));
+cHistogram hist3("auto2", new cDefaultHistogramStrategy(10, cHistogram::MODE_REALS));
+cHistogram hist4("auto3", new cDefaultHistogramStrategy(50, cHistogram::MODE_REALS));
 
-cHistogram hist1i("fixed_i", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_INTEGERS));
-cHistogram hist2i("auto1_i", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_INTEGERS));
-cHistogram hist3i("auto2_i", new cGenericHistogramStrategy(10, cIHistogramStrategy::MODE_INTEGERS));
-cHistogram hist4i("auto3_i", new cGenericHistogramStrategy(50, cIHistogramStrategy::MODE_INTEGERS));
+cHistogram hist1i("fixed_i", new cDefaultHistogramStrategy(10, cHistogram::MODE_INTEGERS));
+cHistogram hist2i("auto1_i", new cDefaultHistogramStrategy(10, cHistogram::MODE_INTEGERS));
+cHistogram hist3i("auto2_i", new cDefaultHistogramStrategy(10, cHistogram::MODE_INTEGERS));
+cHistogram hist4i("auto3_i", new cDefaultHistogramStrategy(50, cHistogram::MODE_INTEGERS));
 
 collectAndDump(getRNG(0), hist1,  0, 1);
 collectAndDump(getRNG(0), hist1i, 0, 1);

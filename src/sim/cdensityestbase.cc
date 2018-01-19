@@ -240,7 +240,7 @@ cPrecollectionBasedDensityEst& cPrecollectionBasedDensityEst::operator=(const cP
 void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
 {
     if (dynamic_cast<const cPrecollectionBasedDensityEst *>(other) == nullptr)
-        throw cRuntimeError(this, "Cannot merge non-histogram (non-cPrecollectionBasedDensityEst) statistics (%s)%s into a histogram type",
+        throw cRuntimeError(this, "Cannot merge non-cPrecollectionBasedDensityEst statistics (%s)%s into a histogram type",
                 other->getClassName(), other->getFullPath().c_str());
 
     const cPrecollectionBasedDensityEst *otherd = (const cPrecollectionBasedDensityEst *)other;
@@ -271,7 +271,6 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
             if (getBinEdge(i) != otherd->getBinEdge(i))
                 throw cRuntimeError(this, "Cannot merge (%s)%s: Histogram bins are not aligned",
                         otherd->getClassName(), otherd->getFullPath().c_str());
-
 
         // merge underflow/overflow bins
         numUnderflows += otherd->getNumUnderflows();

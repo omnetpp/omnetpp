@@ -126,7 +126,6 @@ class SIM_API cStdDev : public cStatistic
      */
     virtual void merge(const cStatistic *other) override;
 
-
     /**
      * Returns the number of values collected, regardless of their weights.
      */

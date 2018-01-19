@@ -13,12 +13,44 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <omnetpp/chistogram.h>
 #include <algorithm>
+#include <omnetpp/chistogram.h>
 #include "omnetpp/chistogramstrategy.h"
 #include "omnetpp/distrib.h"
 
+#ifdef WITH_PARSIM
+#include "omnetpp/ccommbuffer.h"
+#endif
+
 namespace omnetpp {
+
+cHistogram::cHistogram(const char *name, bool weighted)
+    : cHistogram(name, new cDefaultHistogramStrategy, weighted)
+{
+}
+
+cHistogram::cHistogram(const char *name, cIHistogramStrategy *strategy, bool weighted)
+    : cDensityEstBase(name, weighted)
+{
+    setStrategy(strategy);
+}
+
+cHistogram::cHistogram(const char *name, int numBins) : cHistogram(name)
+{
+    setNumBins(numBins);
+}
+
+cHistogram& cHistogram::operator=(const cHistogram& other)
+{
+    cDensityEstBase::operator=(other);
+    copy(other);
+    return *this;
+}
+
+cHistogram::~cHistogram()
+{
+    delete strategy;
+}
 
 void cHistogram::copy(const cHistogram& other)
 {
@@ -39,46 +71,62 @@ void cHistogram::copy(const cHistogram& other)
 void cHistogram::dump() const
 {
     std::cout << underflowSumWeights;
-
     for (size_t i = 0; i < binValues.size(); ++i)
         std::cout << " |" << binEdges[i] << binValues[i];
-
     std::cout << " |" << binEdges.back() << " " << overflowSumWeights << std::endl;
-}
-
-
-cHistogram::cHistogram(const char *name, bool weighted)
-    : cHistogram(name, new cDefaultHistogramStrategy, weighted)
-{
-}
-
-cHistogram::cHistogram(const char *name, cIHistogramStrategy *strategy, bool weighted)
-    : cDensityEstBase(name, weighted)
-{
-    setStrategy(strategy);
-}
-
-cHistogram& cHistogram::operator=(const cHistogram& other)
-{
-    cDensityEstBase::operator=(other);
-    copy(other);
-    return *this;
-}
-
-cHistogram::~cHistogram()
-{
-    delete strategy;
 }
 
 void cHistogram::parsimPack(cCommBuffer *buffer) const
 {
-    // the setupStrategy pointer makes this difficult/infeasible/cumbersome
-    throw cRuntimeError(this, "parsimPack() not implemented");
+#ifndef WITH_PARSIM
+    throw cRuntimeError(this, E_NOPARSIM);
+#else
+    cDensityEstBase::parsimPack(buffer);
+
+    buffer->pack(binEdges.size());
+    for (double binEdge : binEdges)
+        buffer->pack(binEdge);
+
+    buffer->pack(binValues.size());
+    for (double binValue : binValues)
+        buffer->pack(binValue);
+
+    buffer->pack(numUnderflows);
+    buffer->pack(numOverflows);
+    buffer->pack(underflowSumWeights);
+    buffer->pack(overflowSumWeights);
+
+    if (buffer->packFlag(strategy != nullptr))
+        buffer->packObject(strategy);
+#endif
 }
 
 void cHistogram::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this, "parsimUnpack() not implemented");
+#ifndef WITH_PARSIM
+    throw cRuntimeError(this, E_NOPARSIM);
+#else
+    cDensityEstBase::parsimUnpack(buffer);
+
+    size_t n;
+    buffer->unpack(n);
+    binEdges.resize(n);
+    for (size_t i = 0; i < n; n++)
+        buffer->unpack(binEdges[i]);
+
+    buffer->unpack(n);
+    binValues.resize(n);
+    for (size_t i = 0; i < n; n++)
+        buffer->unpack(binValues[i]);
+
+    buffer->unpack(numUnderflows);
+    buffer->unpack(numOverflows);
+    buffer->unpack(underflowSumWeights);
+    buffer->unpack(overflowSumWeights);
+
+    if (buffer->checkFlag())
+        setStrategy((cIHistogramStrategy *)buffer->unpackObject());
+#endif
 }
 
 void cHistogram::collect(double value)
@@ -105,6 +153,9 @@ void cHistogram::clear()
 {
     cDensityEstBase::clear();
 
+    if (strategy != nullptr)
+        strategy->clear();
+
     binEdges.clear();
     binValues.clear();
 
@@ -117,10 +168,7 @@ void cHistogram::clear()
 
 double cHistogram::draw() const
 {
-    // warn/error if there are overflows/underflows? (by sumweights, not by number)
-
     double binValueSum = getSumWeights();
-
     double rand = uniform(getRNG(), 0, binValueSum);
 
     if (rand < getUnderflowSumWeights())
@@ -199,10 +247,51 @@ void cHistogram::loadFromFile(FILE *f)
     }
 }
 
-void cHistogram::merge(const cStatistic *other)
+void cHistogram::merge(const cStatistic *stat)
 {
-    //TODO implement!!!
-    throw cRuntimeError(this, "cHistogram does not support merging");
+    const cDensityEstBase *other = dynamic_cast<const cDensityEstBase *>(stat);
+    if (other == nullptr)
+        throw cRuntimeError(this, "merge(): Cannot merge non-cDensityEstBase statistics (%s)%s into a histogram",  stat->getClassName(), stat->getFullPath().c_str());
+    if (!other->binsAlreadySetUp())
+        throw cRuntimeError(this, "merge(): Object (%s)%s does not have histogram bins set up yet", other->getClassName(), other->getFullPath().c_str());
+    if (!binsAlreadySetUp())
+        throw cRuntimeError(this, "merge(): No histogram bins set up yet (try setUpBins())");
+
+    // merge the base class
+    cDensityEstBase::merge(other);
+
+    // prepend/append extra bins
+    std::vector<double> edgesToPrepend, edgesToAppend;
+    for (int i = 0; i < other->getNumBins()+1; i++) {
+        double edge = other->getBinEdge(i);
+        if (edge < binEdges.front())
+            edgesToPrepend.push_back(edge);
+        if (edge > binEdges.back())
+            edgesToAppend.push_back(edge);
+    }
+    prependBins(edgesToPrepend);
+    appendBins(edgesToAppend);
+
+
+    // check bin edges
+    //TODO current check is too strict: if other's bins can be obtained by splitting our bins (i.e. our bin edges are a subset of other's bin edges), that's also OK
+    if (getNumBins() != other->getNumBins())
+        throw cRuntimeError(this, "Cannot merge (%s)%s: Different number of histogram bins (%d vs %d)",
+                other->getClassName(), other->getFullPath().c_str(), getNumBins(), other->getNumBins());
+    int n = getNumBins();
+    for (int i = 0; i <= n; i++)
+        if (getBinEdge(i) != other->getBinEdge(i))
+            throw cRuntimeError(this, "Cannot merge (%s)%s: Histogram bins are not aligned", other->getClassName(), other->getFullPath().c_str());
+
+    // merge underflow/overflow bins
+    numUnderflows += other->getNumUnderflows();
+    numOverflows += other->getNumOverflows();
+    underflowSumWeights += other->getUnderflowSumWeights();
+    overflowSumWeights += other->getOverflowSumWeights();
+
+    // merge bin values
+    for (int i = 0; i < getNumBins(); i++)
+        binValues[i] += other->getBinValue(i);
 }
 
 void cHistogram::setStrategy(cIHistogramStrategy *strategy)
@@ -213,7 +302,7 @@ void cHistogram::setStrategy(cIHistogramStrategy *strategy)
     delete this->strategy;
     this->strategy = strategy;
     if (strategy != nullptr)
-        strategy->init(this);
+        strategy->setHistogram(this);
 }
 
 void cHistogram::setBinEdges(const std::vector<double>& edges)
@@ -248,22 +337,21 @@ void cHistogram::createUniformBins(double lo, double hi, double step)
         binEdges.push_back(lo + i * step);
 
     setBinEdges(binEdges);
-
-    //dump();
 }
 
 void cHistogram::prependBins(const std::vector<double>& edges)
 {
     if (binEdges.size() == 0)
         throw cRuntimeError(this, "prependBins() cannot be called if no bins exist yet");
-
-    ASSERT(binEdges.size() == binValues.size() + 1);
-    ASSERT(numUnderflows == 0);
-
+    if (numUnderflows != 0)
+        throw cRuntimeError(this, "prependBins() cannot be called if some observations have already been counted as underflows");
     for (size_t i = 0; i < edges.size() - 1; ++i)
-        ASSERT(edges[i] < edges[i + 1]);
-    ASSERT(edges.back() < binEdges.front());
+        if (edges[i] >= edges[i + 1])
+            throw cRuntimeError(this, "prependBins(): new edges must be in strictly increasing order");
+    if (!edges.empty() && edges.back() >= binEdges.front())
+        throw cRuntimeError(this, "prependBins(): new edges overlap with existing histogram range");
 
+    ASSERT(binEdges.size() == binValues.size() + 1); // histogram is sane
     binEdges.insert(binEdges.begin(), edges.begin(), edges.end());
     binValues.insert(binValues.begin(), edges.size(), 0.0);
 }
@@ -272,23 +360,28 @@ void cHistogram::appendBins(const std::vector<double>& edges)
 {
     if (binEdges.size() == 0)
         throw cRuntimeError(this, "appendBins() cannot be called if no bins exist yet");
-
-    ASSERT(binEdges.size() == binValues.size() + 1);  //TODO convert these ASSERTs (similar ones in other methods) to exception
-    ASSERT(numOverflows == 0);
-
-    ASSERT(binEdges.back() < edges.front());
+    if (numOverflows != 0)
+        throw cRuntimeError(this, "appendBins() cannot be called if some observations have already been counted as overflows");
     for (size_t i = 0; i < edges.size() - 1; ++i)
-        ASSERT(edges[i] < edges[i + 1]);
+        if (edges[i] >= edges[i + 1])
+            throw cRuntimeError(this, "appendBins(): new edges must be in strictly increasing order");
+    if (!edges.empty() && binEdges.back() >= edges.front())
+        throw cRuntimeError(this, "appendBins(): new edges overlap with existing histogram range");
 
+    ASSERT(binEdges.size() == binValues.size() + 1); // histogram is sane
     binEdges.insert(binEdges.end(), edges.begin(), edges.end());
     binValues.insert(binValues.end(), edges.size(), 0.0);
 }
 
 void cHistogram::extendBinsTo(double value, double step)
 {
+    if (binEdges.size() == 0)
+        throw cRuntimeError(this, "extendBinsTo() cannot be called if no bins exist yet");
+    if (step <= 0)
+        throw cRuntimeError(this, "extendBinsTo(): step must be positive");
+
     ASSERT(binEdges.size() == binValues.size() + 1);
     ASSERT(binEdges.size() >= 2);
-    ASSERT(step > 0);
 
     // bins are inclusive on the left, and exclusive on the right
 
@@ -307,21 +400,21 @@ void cHistogram::extendBinsTo(double value, double step)
     }
 }
 
-void cHistogram::mergeBins(size_t groupSize)
+void cHistogram::mergeBins(int groupSize)
 {
-    if (binValues.size() < groupSize)
-        throw cRuntimeError(this, "Cannot merge bins with a group size larger than the number of bins");
+    if ((int)binValues.size() < groupSize)
+        throw cRuntimeError(this, "Cannot merge bins with a group size (%d) larger than the number of bins (%d)", groupSize, (int)binValues.size());
 
-    if (binValues.size() % groupSize != 0)
-        throw cRuntimeError(this, "Cannot merge bins; the number of bins is not divisible by the group size");
+    if ((int)binValues.size() % groupSize != 0)
+        throw cRuntimeError(this, "Cannot merge bins; the number of bins is not divisible by the group size");  //TODO remove this requirement? (leave to strategy if it wants that or not)
 
-    ASSERT(binEdges.size() == binValues.size() + 1);
+    ASSERT(binEdges.size() == binValues.size() + 1);  // histogram is sane
 
     size_t newNumBins = binValues.size() / groupSize;
 
     for (size_t i = 0; i < newNumBins; ++i) {
         double binValue = 0;
-        for (size_t j = 0; j < groupSize; ++j)
+        for (size_t j = 0; j < (size_t)groupSize; ++j)
             binValue += binValues[groupSize*i + j];
         binValues[i] = binValue;
         binEdges[i] = binEdges[groupSize*i];
@@ -334,7 +427,7 @@ void cHistogram::mergeBins(size_t groupSize)
 
 bool cHistogram::binsAlreadySetUp() const
 {
-    return strategy ? strategy->binsAlreadySetUp() : getNumBins() > 0;
+    return getNumBins() > 0;
 }
 
 void cHistogram::setUpBins()
@@ -362,19 +455,6 @@ void cHistogram::collectIntoHistogram(double value, double weight)
         binValues[index] += weight;
 }
 
-// Deprecated API:
-
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
-cHistogram::cHistogram(const char* name, int numCells) :
-        cHistogram(name)
-{
-    setNumCells(numCells);
-}
-
 cAutoRangeHistogramStrategy *cHistogram::getOrCreateAutoRangeStrategy() const
 {
     cHistogram *mutableThis = const_cast<cHistogram *>(this);
@@ -394,31 +474,18 @@ cAutoRangeHistogramStrategy *cHistogram::getOrCreateAutoRangeStrategy() const
         return strat;
     }
     else
-        throw cRuntimeError(this, "Cannot use legacy histogram setup methods when a different strategy has already been installed");
+        throw cRuntimeError(this, "Cannot use convenience histogram setup methods when a different strategy has already been installed");
 }
 
 void cHistogram::setMode(HistogramMode mode)
 {
-    auto stratMode = mode == MODE_INTEGERS ? cIHistogramStrategy::MODE_INTEGERS :
-                     mode == MODE_DOUBLES ? cIHistogramStrategy::MODE_REALS :
-                     cIHistogramStrategy::MODE_AUTO;
-
-    if (auto autoStrat = dynamic_cast<cAutoRangeHistogramStrategy *>(strategy))
-        return autoStrat->setMode(stratMode);
-    else if (auto fixedStrat = dynamic_cast<cFixedRangeHistogramStrategy *>(strategy))
-        return fixedStrat->setMode(stratMode);
-    else if (strategy == nullptr) {
-        auto strat = new cAutoRangeHistogramStrategy();
-        strat->setMode(stratMode);
-        setStrategy(strat);
-    } else
-        throw cRuntimeError(this, "setMode(): Cannot set histogram mode on installed strategy");
+    getOrCreateAutoRangeStrategy()->setMode(mode);
 }
 
 void cHistogram::setRange(double lower, double upper)
 {
-    getOrCreateAutoRangeStrategy()->setLo(lower);
-    getOrCreateAutoRangeStrategy()->setHi(upper);
+    getOrCreateAutoRangeStrategy()->setRangeLo(lower);
+    getOrCreateAutoRangeStrategy()->setRangeHi(upper);
     getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
 }
 
@@ -433,7 +500,7 @@ void cHistogram::setRangeAuto(int numPrecollect, double rangeExtensionFactor)
 void cHistogram::setRangeAutoLower(double upper, int numPrecollect, double rangeExtensionFactor)
 {
     auto strat = getOrCreateAutoRangeStrategy();
-    strat->setHi(upper);
+    strat->setRangeHi(upper);
     strat->setNumToPrecollect(numPrecollect);
     strat->setRangeExtensionFactor(rangeExtensionFactor);
     getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
@@ -442,7 +509,7 @@ void cHistogram::setRangeAutoLower(double upper, int numPrecollect, double range
 void cHistogram::setRangeAutoUpper(double lower, int numPrecollect, double rangeExtensionFactor)
 {
     auto strat = getOrCreateAutoRangeStrategy();
-    strat->setLo(lower);
+    strat->setRangeLo(lower);
     strat->setNumToPrecollect(numPrecollect);
     strat->setRangeExtensionFactor(rangeExtensionFactor);
     getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
@@ -453,40 +520,26 @@ void cHistogram::setNumPrecollectedValues(int numPrecollect)
     getOrCreateAutoRangeStrategy()->setNumToPrecollect(numPrecollect);
 }
 
-int cHistogram::getNumPrecollectedValues() const
-{
-    return getOrCreateAutoRangeStrategy()->getNumToPrecollect();
-}
-
 void cHistogram::setRangeExtensionFactor(double rangeExtensionFactor)
 {
     getOrCreateAutoRangeStrategy()->setRangeExtensionFactor(rangeExtensionFactor);
 }
 
-double cHistogram::getRangeExtensionFactor() const
+void cHistogram::setAutoExtend(bool autoExtend)
 {
-    return getOrCreateAutoRangeStrategy()->getRangeExtensionFactor();
+    getOrCreateAutoRangeStrategy()->setAutoExtend(autoExtend);
 }
 
-void cHistogram::setNumCells(int numCells)
+void cHistogram::setNumBins(int numBins)
 {
-    getOrCreateAutoRangeStrategy()->setNumBins(numCells);
+    getOrCreateAutoRangeStrategy()->setNumBins(numBins);
     getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
 }
 
-void cHistogram::setCellSize(double d)
+void cHistogram::setBinSize(double d)
 {
     getOrCreateAutoRangeStrategy()->setBinSize(d);
     getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
 }
-
-double cHistogram::getCellSize() const
-{
-    return getOrCreateAutoRangeStrategy()->getBinSize();
-}
-
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 
 }  // namespace omnetpp

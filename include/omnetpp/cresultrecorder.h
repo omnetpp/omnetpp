@@ -47,7 +47,8 @@ class cProperty;
  * @brief Abstract base class for result recorders.
  *
  * @see Register_ResultRecorder()
- * @ingroup SimSupport
+ *
+ * @ingroup Statistics
  */
 class SIM_API cResultRecorder : public cResultListener
 {

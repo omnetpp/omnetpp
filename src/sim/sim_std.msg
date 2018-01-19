@@ -40,6 +40,7 @@ namespace omnetpp {
 #define cF cFigure
 Register_Enum(cPar::Type,         (cPar::BOOL, cPar::DOUBLE, cPar::LONG, cPar::STRING, cPar::XML));
 Register_Enum(cGate::Type,        (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
+Register_Enum(cHistogram::HistogramMode, (cHistogram::MODE_INTEGERS, cHistogram::MODE_REALS, cHistogram::MODE_AUTO));
 Register_Enum(cFigure::LineStyle, (cF::LINE_SOLID, cF::LINE_DOTTED, cF::LINE_DASHED));
 Register_Enum(cFigure::CapStyle,  (cF::CAP_BUTT, cF::CAP_SQUARE, cF::CAP_ROUND));
 Register_Enum(cFigure::JoinStyle, (cF::JOIN_BEVEL, cF::JOIN_MITER, cF::JOIN_ROUND));
@@ -85,6 +86,7 @@ namespace omnetpp;
 
 enum cPar::Type;
 enum cGate::Type;
+enum cHistogram::HistogramMode;
 enum cFigure::LineStyle;
 enum cFigure::CapStyle;
 enum cFigure::JoinStyle;
@@ -639,6 +641,58 @@ class cHistogram extends cDensityEstBase
     @existingClass;
     @overwritePreviousDefinition;
     @descriptor(false);
+    cIHistogramStrategy *strategy @group(histogram) @hint("Determines when and how bins are created");
+}
+
+class cIHistogramStrategy extends cObject 
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+}
+
+class cFixedRangeHistogramStrategy extends cIHistogramStrategy 
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+    double hi;
+    double lo;
+    int mode @enum(HistogramMode);
+    double binSize;
+    bool autoExtend;
+}
+
+class cPrecollectionBasedHistogramStrategy extends cIHistogramStrategy 
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+    int numToPrecollect;
+}
+
+class cDefaultHistogramStrategy extends cPrecollectionBasedHistogramStrategy 
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+}
+
+class cAutoRangeHistogramStrategy extends cPrecollectionBasedHistogramStrategy
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+    double binSize @hint("Requested bin size");
+    bool binSizeRounding;
+    double rangeHi;
+    double rangeLo;
+    int mode @enum(HistogramMode);
+    int numBins @hint("Desired number of bins");
+    double rangeExtensionFactor;
+    bool autoExtend;
+    bool binMerging;
+    //TODO int maxNumBins
 }
 
 class cPrecollectionBasedDensityEst extends cDensityEstBase

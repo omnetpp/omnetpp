@@ -61,7 +61,7 @@ namespace omnetpp {
  *    - cModule and cSimpleModule represent modules in the simulation.
  *      The user implements new modules by subclassing cSimpleModule and
  *      overriding its handleMessage() or activity() member function.
- *    - cChannel and subclasses encapulate properties of connections between modules
+ *    - cChannel and subclasses encapsulate properties of connections between modules
  *    - cMessage represents events, and also messages sent among modules
  *    - cPar represents parameters of modules and channels
  *    - cGate represents module gates (attachment points of connections)
@@ -76,9 +76,9 @@ namespace omnetpp {
  *
  * Central classes are:
  *    - cObject and cOwnedObject are the base classes for most \opp classes
- *    - cSimulation stores the network with its mudules and channels,
+ *    - cSimulation stores the network with its modules and channels,
  *      the future events set, and the event scheduler.
- *    - cEnvir represents the runtume environment or user interface of the
+ *    - cEnvir represents the runtime environment or user interface of the
  *      simulation kernel and simulations.
  */
 
@@ -114,7 +114,7 @@ namespace omnetpp {
  * normal, truncated  normal, gamma, beta, Erlang, Weibull, Bernoulli,
  * binomial, geometric, Poisson, and more.
  *
- * Generators come in two flavours: as plain functions (taking an RNG
+ * Generators come in two flavors: as plain functions (taking an RNG
  * and the parameters of the distribution as arguments), and as classes
  * that subclass cRandom and encapsulate both the RNG and the parameters
  * of the distribution.
@@ -138,43 +138,38 @@ namespace omnetpp {
 /**
  * @defgroup Statistics  Statistical Result Collection
  *
- * @brief \opp provides a variety of statistical classes. There are basic
- * classes which compute basic statistics like mean and standard deviation,
- * some classes deal with density estimation, and other classes support
- * automatic detection of the end of a transient, and automatic detection
- * of accuracy of collected statistics.
+ * @brief The primary way of recording statistics from simulations
+ * is by means of signals and declared statistics, i.e. using @statistic
+ * properties in NED files. However, the simulation library also provides
+ * classes in case programmatic result collection is needed.
  *
- * The two main abstract base classes are cStatistic and cDensityEstBase.
- * Most other classes are mostly polymorphic on these two, which means
- * most functionality in subclasses is available via virtual functions
- * defined in cStatistic and cDensityEstBase.
+ * Scalar values can be recorded in the output scalar file with the
+ * recordScalar() method of the module or channel. To collect statistic
+ * summaries (mean, stddev, etc.) or histograms, use the cStdDev and
+ * cHistogram classes. Their contents can be recorded into the output
+ * scalar file with recordStatistic() method of the module or channel,
+ * or with the record() method of the statistic object itself.
+ * To record output vectors (time series data), use the cOutVector class.
  *
- * The classes are:
- *    - cOutVector is used to record vector simulation results (an output
- *      vector, containing (time, value) pairs) to file
- *    - cStdDev keeps mean, standard deviation, minimum and maximum value etc.
- *    - cWeightedStdDev is similar to cStdDev, but accepts weighted observations.
- *      cWeightedStdDev can be used for example to calculate time average.
- *      It is the only weighted statistics class.
- *    - cLongHistogram and cDoubleHistogram are descendants of cStdDev and
- *      also keep an approximation of the distribution of the observations
- *      using equidistant (equal-sized) bin histograms.
- *    - cVarHistogram implements a histogram where bins do not need to be
- *      the same size. You can manually add the bin (bin) boundaries,
- *      or alternatively, automatically have a partitioning created where
- *      each bin has the same number of observations (or as close to that
- *      as possible).
+ * @statistic-based result recording is also extensible, via the
+ * cResultFilter and cResultRecorder classes.
+ *
+ * All result collection methods eventually delegate to "record" methods
+ * in cEnvir, i.e. the actual recording is decoupled from the result
+ * collection classes and can be changed without changing model code.
+ *
+ * The central classes are:
+ *    - cStdDev computes statistics like (unweighted and weighted) mean,
+ *      standard deviation, minimum and maximum value.
+ *    - cHistogram is a generic histogram class. Bin creation can be
+ *      customized via various histogram strategy classes like e.g.
+ *      cAutoRangeHistogramStrategy.
  *    - cPSquare is a class that uses the P<sup>2</sup> algorithm by Jain
  *      and Chlamtac. The algorithm calculates quantiles without storing
  *      the observations.
- *    - cKSplit uses a novel, experimental method, based on an adaptive
- *      histogram-like algorithm.
- *
- * Transient and result accuracy detection classes:
- *   - cTDExpandingWindows is a transient detection algorithm which uses
- *     the sliding window approach.
- *   - cADByStddev is a result accuracy detection algorithm which
- *     works by checking the standard deviation of the observations
+ *    - cOutVector provides a way to record output vectors from the simulation.
+ *    - cResultFilter and cResultRecorder are base classes for result
+ *      filters and result recorders.
  *
  * Some other classes closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their

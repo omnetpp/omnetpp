@@ -14,86 +14,152 @@
 *--------------------------------------------------------------*/
 
 #include "omnetpp/chistogramstrategy.h"
-#include "omnetpp/clog.h"
-#include <iomanip>
 
 namespace omnetpp {
 
-// TODO: print histogram name in error messages
-
-void cIHistogramStrategy::init(cHistogram *hist)
+void cIHistogramStrategy::setHistogram(cHistogram *hist)
 {
     if (hist->getCount() > 0)
-        throw cRuntimeError(this, "Cannot initialize the histogram strategy with a non-empty histogram");
+        throw cRuntimeError(hist, "%s: Cannot initialize the histogram strategy with a non-empty histogram", getClassName());
     this->hist = hist;
 }
 
 //----
 
-void cFixedRangeHistogramStrategy::createBins()
+void cFixedRangeHistogramStrategy::copy(const cFixedRangeHistogramStrategy& other)
+{
+    lo = other.lo;
+    hi = other.hi;
+    binSize = other.binSize;
+    mode = other.mode;
+}
+
+cFixedRangeHistogramStrategy& cFixedRangeHistogramStrategy::operator=(const cFixedRangeHistogramStrategy& other)
+{
+    cIHistogramStrategy::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void cFixedRangeHistogramStrategy::setUpBins()
 {
     // validate parameters
-    if (mode == MODE_AUTO)
-        throw cRuntimeError(this, "Mode cannot be MODE_AUTO");
+    if (mode == cHistogram::MODE_AUTO)
+        throw cRuntimeError(hist, "%s: Mode cannot be cHistogram::MODE_AUTO", getClassName());
     if (binSize <= 0)
-        throw cRuntimeError(this, "Requested bin size must be positive");
-    if (!std::isfinite(lo) || !std::isfinite(hi) || lo>=hi)
-        throw cRuntimeError(this, "Invalid range (bounds must be finite and lo < hi)");
-    if (mode == MODE_INTEGERS) {
+        throw cRuntimeError(hist, "%s: Requested bin size must be positive", getClassName());
+    if (!std::isfinite(lo) || !std::isfinite(hi) || lo >= hi)
+        throw cRuntimeError(hist, "%s: Invalid range (bounds must be finite and lo < hi)", getClassName());
+    if (mode == cHistogram::MODE_INTEGERS) {
         if (binSize != std::floor(binSize) || lo != std::floor(lo) || hi != std::floor(hi))
-            throw cRuntimeError(this, "Bin size and range bounds must be integers");
+            throw cRuntimeError(hist, "%s: Bin size and range bounds must be integers", getClassName());
         double numBins = (hi-lo) / binSize;
         if (numBins != std::floor(numBins))
-            throw cRuntimeError(this, "Cannot make equal-sized bins (bin size does not divide histogram range)");
+            throw cRuntimeError(hist, "%s: Cannot make equal-sized bins (bin size does not divide histogram range)", getClassName());
     }
 
     // set up bins
     hist->createUniformBins(lo, hi, binSize);
 }
 
-//----
-
 void cFixedRangeHistogramStrategy::collect(double value)
 {
-    if (hist->getCount() == 1)
-        createBins();
+    if (!hist->binsAlreadySetUp())
+        setUpBins();
     ASSERT(hist->getNumBins() > 0);
+    if (autoExtend)
+        hist->extendBinsTo(value, binSize);
     hist->collectIntoHistogram(value);
 }
 
 void cFixedRangeHistogramStrategy::collectWeighted(double value, double weight)
 {
-    if (hist->getCount() == 1)
-        createBins();
+    if (!hist->binsAlreadySetUp())
+        setUpBins();
     ASSERT(hist->getNumBins() > 0);
+    if (autoExtend)
+        hist->extendBinsTo(value, binSize);
     hist->collectIntoHistogram(value, weight);
 }
 
 //----
 
+void cPrecollectionBasedHistogramStrategy::copy(const cPrecollectionBasedHistogramStrategy& other)
+{
+    inPrecollection = other.inPrecollection;
+    numToPrecollect = other.numToPrecollect;
+    values = other.values;
+    weights = other.weights;
+}
+
+cPrecollectionBasedHistogramStrategy& cPrecollectionBasedHistogramStrategy::operator=(const cPrecollectionBasedHistogramStrategy& other)
+{
+    cIHistogramStrategy::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void cPrecollectionBasedHistogramStrategy::precollect(double value, double weight)
+{
+    ASSERT(inPrecollection);
+    if (!values.empty() && value == values.front()) // prevent degenerate case of the first value being repeated numToPrecollect times
+        weights.front() += weight;
+    else {
+        values.push_back(value);
+        weights.push_back(weight);
+    }
+}
+
 void cPrecollectionBasedHistogramStrategy::moveValuesIntoHistogram()
 {
-    if (!hist->isWeighted())
-        for (double value : values)
-            hist->collectIntoHistogram(value);
-    else
-        for (size_t i = 0; i < values.size(); i++)
-            hist->collectIntoHistogram(values[i], weights[i]);
-
+    size_t numValues = values.size();
+    for (size_t i = 0; i < numValues; i++)
+        hist->collectIntoHistogram(values[i], weights[i]);
     values.clear();
     weights.clear();
 }
 
-bool cPrecollectionBasedHistogramStrategy::binsAlreadySetUp() const
+void cPrecollectionBasedHistogramStrategy::setUpBins()
 {
-    return hist && hist->getNumBins() > 0 && values.empty();
+    createBins();
+    moveValuesIntoHistogram();
+}
+
+void cPrecollectionBasedHistogramStrategy::clear()
+{
+    inPrecollection = true;
+    values.clear();
+    weights.clear();
 }
 
 //----
 
+void cDefaultHistogramStrategy::copy(const cDefaultHistogramStrategy& other)
+{
+    rangeExtensionFactor = other.rangeExtensionFactor;
+    binSize = other.binSize;
+    desiredNumBins = other.desiredNumBins;
+    mode = other.mode;
+}
+
+cDefaultHistogramStrategy& cDefaultHistogramStrategy::operator=(const cDefaultHistogramStrategy& other)
+{
+    cPrecollectionBasedHistogramStrategy::operator=(other);
+    copy(other);
+    return *this;
+}
+
 void cDefaultHistogramStrategy::collect(double value)
 {
-    if (hist->getNumBins() > 0) {
+    if (inPrecollection) {
+        precollect(value);
+        if (values.size() == numToPrecollect) {
+            createBins();
+            moveValuesIntoHistogram();
+            inPrecollection = false;
+        }
+    }
+    else {
         hist->extendBinsTo(value, binSize);
         hist->collectIntoHistogram(value);
         if (hist->getNumBins() >= 2 * desiredNumBins) {
@@ -103,35 +169,25 @@ void cDefaultHistogramStrategy::collect(double value)
             binSize *= 2.0;
         }
     }
-    else {
-        values.push_back(value);
-        if (values.size() == numToPrecollect) {
-            createBins();
-            ASSERT(hist->getNumBins() > 0);
-            moveValuesIntoHistogram();
-        }
-    }
 }
 
 void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
 {
-    if (hist->getNumBins() > 0) {
+    if (inPrecollection) {
+        precollect(value, weight);
+        if (values.size() == numToPrecollect) {
+            createBins();
+            moveValuesIntoHistogram();
+        }
+    }
+    else {
         hist->extendBinsTo(value, binSize);
         hist->collectIntoHistogram(value, weight);
         if (hist->getNumBins() >= 2 * desiredNumBins) {
             if (hist->getNumBins() % 2 == 1)
-                            hist->extendBinsTo(hist->getBinEdges().back(), binSize);
+                hist->extendBinsTo(hist->getBinEdges().back(), binSize);
             hist->mergeBins(2);
             binSize *= 2.0;
-        }
-    }
-    else {
-        values.push_back(value);
-        weights.push_back(weight);
-        if (values.size() == numToPrecollect) {
-            createBins();
-            ASSERT(hist->getNumBins() > 0);
-            moveValuesIntoHistogram();
         }
     }
 }
@@ -172,7 +228,7 @@ void cDefaultHistogramStrategy::createBins()
     // determine mode (integers or reals) from precollected observations
     HistogramMode mode = this->mode;
 
-    if (mode == MODE_AUTO) {
+    if (mode == cHistogram::MODE_AUTO) {
         bool allIntegers = true;
         bool allZeroes = true;
         for (size_t i = 0; i < values.size(); i++) {
@@ -182,7 +238,7 @@ void cDefaultHistogramStrategy::createBins()
                 allZeroes = false;
         }
 
-        mode = (!empty && allIntegers && !allZeroes) ? MODE_INTEGERS : MODE_REALS;
+        mode = (!empty && allIntegers && !allZeroes) ? cHistogram::MODE_INTEGERS : cHistogram::MODE_REALS;
     }
 
     // compute histogram
@@ -206,7 +262,7 @@ void cDefaultHistogramStrategy::createBins()
 
     binSize = computeBinSize(rangeMin, rangeMax);
 
-    if (mode == MODE_INTEGERS)
+    if (mode == cHistogram::MODE_INTEGERS)
         binSize = ceil(binSize);
 
     rangeMin = rangeMin - std::fmod(rangeMin, binSize);
@@ -215,6 +271,8 @@ void cDefaultHistogramStrategy::createBins()
     this->binSize = binSize;
 
     hist->createUniformBins(rangeMin, rangeMax, binSize);
+
+    ASSERT(hist->getNumBins() >  0);
 }
 
 double cDefaultHistogramStrategy::computeBinSize(double& rangeMin, double& rangeMax)
@@ -231,28 +289,37 @@ double cDefaultHistogramStrategy::computeBinSize(double& rangeMin, double& range
 
 //----
 
+void cAutoRangeHistogramStrategy::copy(const cAutoRangeHistogramStrategy& other)
+{
+    lo = other.lo;
+    hi = other.hi;
+    rangeExtensionFactor = other.rangeExtensionFactor;
+    desiredNumBins = other.desiredNumBins;
+    binSize = other.binSize;
+    mode = other.mode;
+    binSizeRounding = other.binSizeRounding;
+    autoExtend = other.autoExtend;
+    binMerging = other.binMerging;
+}
+
+cAutoRangeHistogramStrategy& cAutoRangeHistogramStrategy::operator=(const cAutoRangeHistogramStrategy& other)
+{
+    cPrecollectionBasedHistogramStrategy::operator=(other);
+    copy(other);
+    return *this;
+}
+
 void cAutoRangeHistogramStrategy::collect(double value)
 {
-    if (inPrecollection) {
-        values.push_back(value);
-        if (values.size() >= numToPrecollect) {
-            createBins();
-            ASSERT(hist->getNumBins() > 0);
-            moveValuesIntoHistogram();
-            inPrecollection = false;
-        }
-    }
-    else {
-        hist->collectIntoHistogram(value);
-    }
+    collectWeighted(value, 1.0);
 }
 
 void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (inPrecollection) {
-        values.push_back(value);
-        weights.push_back(weight);
-        if (values.size() >= numToPrecollect) {
+        precollect(value, weight);
+        bool needPrecollection = (mode == cHistogram::MODE_AUTO) || std::isnan(lo) || std::isnan(hi);
+        if (!needPrecollection || values.size() >= numToPrecollect) {
             createBins();
             ASSERT(hist->getNumBins() > 0);
             moveValuesIntoHistogram();
@@ -260,7 +327,11 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
         }
     }
     else {
+        if (autoExtend)
+            hist->extendBinsTo(value, binSize);
         hist->collectIntoHistogram(value, weight);
+        if (binMerging && desiredNumBins > 0 && hist->getNumBins() >= 2*desiredNumBins)
+            mergeBins();
     }
 }
 
@@ -270,7 +341,7 @@ void cAutoRangeHistogramStrategy::createBins()
 
     // determine mode (integers or reals) from precollected observations
     HistogramMode mode = this->mode;
-    if (mode == MODE_AUTO) {
+    if (mode == cHistogram::MODE_AUTO) {
         bool allIntegers = true;
         bool allZeroes = true;
         for (size_t i = 0; i < values.size(); i++) {
@@ -280,10 +351,10 @@ void cAutoRangeHistogramStrategy::createBins()
                 allZeroes = false;
         }
 
-        mode = (!empty && allIntegers && !allZeroes) ? MODE_INTEGERS : MODE_REALS;
+        mode = (!empty && allIntegers && !allZeroes) ? cHistogram::MODE_INTEGERS : cHistogram::MODE_REALS;
     }
 
-    // compute histogram
+    // compute range from the range of the observations
     double rangeMin = lo, rangeMax = hi;
     bool hasLo = !std::isnan(lo);
     bool hasHi = !std::isnan(hi);
@@ -315,120 +386,84 @@ void cAutoRangeHistogramStrategy::createBins()
             rangeMax = lo + (maxValue - lo) * rangeExtensionFactor;
     }
     else {
+        if (lo >= hi)
+            throw cRuntimeError(hist, "%s: Invalid range specified, must be lo < hi", getClassName());
         rangeMin = lo;
         rangeMax = hi;
     }
 
-    double binSize = (mode == MODE_REALS) ?
-            computeDoubleBinSize(rangeMin, rangeMax) :
-            computeIntegerBinSize(rangeMin, rangeMax);
+    if (mode == cHistogram::MODE_INTEGERS) {
+        rangeMin = floor(rangeMin);
+        rangeMax = ceil(rangeMax);
+    }
 
-    if (binSizeRounding) {
-        binSize = roundToOneTwoFive(binSize);
-        if (binSize == 0)
-            binSize = 1;
-        rangeMin = rangeMin - std::fmod(rangeMin, binSize);
-        rangeMax = rangeMax - std::fmod(rangeMax, binSize);
+    // determine bin size
+    if (!std::isnan(requestedBinSize)) {
+        binSize = requestedBinSize;
+    }
+    else {
+        int approxNumBins = desiredNumBins == -1 ? PREFERRED_NUM_BINS : desiredNumBins;
+        double approxBinSize = (rangeMax - rangeMin) / approxNumBins;
+        binSize = (mode == cHistogram::MODE_INTEGERS) ? ceil(approxBinSize) : approxBinSize;
+
+        if (binSizeRounding) {
+            binSize = roundToOneTwoFive(binSize);
+            if (binSize == 0)
+                binSize = 1;
+            rangeMin = rangeMin - std::fmod(rangeMin, binSize);
+            rangeMax = rangeMax - std::fmod(rangeMax, binSize);
+        }
+    }
+    ASSERT(binSize > 0);
+
+    // adjust range to be a multiple of binSize, especially for the MODE_INTEGERS case
+    int numBins = desiredNumBins > 0 ? desiredNumBins : (int)ceil((rangeMax - rangeMin) / binSize);
+    ASSERT(numBins > 0);
+
+    double newRange = binSize * numBins;
+    if (!hasLo && !hasHi) {
+        double rangeDiff = newRange - (rangeMax - rangeMin);
+        rangeMin -= (mode == cHistogram::MODE_INTEGERS) ? floor(rangeDiff / 2) : rangeDiff / 2;
+        rangeMax = rangeMin + newRange;
+    }
+    else if (hasHi) {
+        rangeMin = rangeMax - newRange;
+    }
+    else if (hasLo) {
+        rangeMax = rangeMin + newRange;
+    }
+    else {
+        //TODO check consistency, esp. in the integer case?
     }
 
     hist->createUniformBins(rangeMin, rangeMax, binSize);
+
+    ASSERT(hist->getNumBins() > 0);
 }
 
-double cAutoRangeHistogramStrategy::computeDoubleBinSize(double& rangeMin, double& rangeMax)
+void cAutoRangeHistogramStrategy::mergeBins() //TODO employ this in Fixed and Default strategies too?
 {
-    int numBins = this->numBins;
-    if (numBins == -1)
-        numBins = 30;  // to allow merging every 2, 3, 5, 6 adjacent bins during post-processing
-    return (rangeMax - rangeMin) / numBins;
+    int numBins = hist->getNumBins();
+    int groupSize = (numBins + desiredNumBins-1) / desiredNumBins;
+
+    // create more bins to get a multiple of groupSize
+    if (numBins % groupSize != 0) {
+        int numBinsToAdd = groupSize - numBins % groupSize;
+        std::vector<double> newEdges;
+        double lastEdge = hist->getBinEdge(numBins);
+        for (int i = 0; i < numBinsToAdd; i++)
+            newEdges.push_back(lastEdge + (i+1)*binSize);
+        hist->appendBins(newEdges);
+    }
+
+    hist->mergeBins(groupSize);
 }
 
-#define COMPLAINT    "Cannot set up bins to satisfy constraints"
-
-double cAutoRangeHistogramStrategy::computeIntegerBinSize(double& rangeMin, double& rangeMax)
+void cAutoRangeHistogramStrategy::clear()
 {
-    // set up the missing ones of: rangeMin, rangeMax, numBins, binSize;
-    // throw error if not everything can be set up consistently
-
-    // binsize is double but we want to calculate with integers here
-    long binSize = -1;  //TODO (long)this->binSize;
-
-    // convert range limits to integers
-    rangeMin = floor(rangeMin);
-    rangeMax = ceil(rangeMax);
-
-    bool hasLo = !std::isnan(lo);
-    bool hasHi = !std::isnan(hi);
-
-    if (hasLo && hasHi) {
-        long range = (long)(rangeMax - rangeMin);  //TODO double?
-
-        if (numBins > 0 && binSize > 0) {
-            if (numBins * binSize != range)
-                throw cRuntimeError(this, COMPLAINT ": numBins*binSize != rangeMax-rangeMin");
-        }
-        else if (binSize > 0) {
-            if (range % binSize != 0)
-                throw cRuntimeError(this, COMPLAINT ": specified range is not a multiple of binSize");
-            numBins = range / binSize;
-        }
-        else if (numBins > 0) {
-            if (range % numBins != 0)
-                throw cRuntimeError(this, COMPLAINT ": specified range is not a multiple of numBins");
-            binSize = range / numBins;
-        }
-        else {
-            int minCellsize = (int)ceil(range / 200.0);
-            int maxCellsize = (int)ceil(range / 10.0);
-            for (binSize = minCellsize; binSize <= maxCellsize; binSize++)
-                if (range % binSize == 0)
-                    break;
-
-            if (binSize > maxCellsize)
-                throw cRuntimeError(this, COMPLAINT ": Specified range is too large, and cannot divide it to 10..200 equal-sized bins");
-            numBins = range / binSize;
-        }
-    }
-    else {
-        // non-fixed range
-        if (numBins > 0 && binSize > 0) {
-            // both given; numBins*binSize will determine the range
-        }
-        else if (numBins > 0) {
-            // numBins given ==> choose binSize
-            binSize = (long)ceil((rangeMax - rangeMin) / numBins);
-        }
-        else if (binSize > 0) {
-            // binSize given ==> choose numBins
-            numBins = (int)ceil((rangeMax - rangeMin) / binSize);
-        }
-        else {
-            // neither given, choose both
-            double range = rangeMax - rangeMin;
-            binSize = (long)ceil(range / 200.0);  // for range<=200, binSize==1
-            numBins = (int)ceil(range / binSize);
-        }
-
-        // NOTE: HERE WE APPARENTLY OVERWRITE rangeMin/rangeMax, so result of previous computation only applies to DOUBLES!!!
-
-        // adjust range to be binSize*numBins
-        double newRange = binSize * numBins;
-        double rangeDiff = newRange - (rangeMax - rangeMin);
-
-        if (!hasLo && !hasHi) {
-            rangeMin -= floor(rangeDiff / 2);
-            rangeMax = rangeMin + newRange;
-        }
-        else if (hasHi) {
-            rangeMin = rangeMax - newRange;
-        }
-        else if (hasLo) {
-            rangeMax = rangeMin + newRange;
-        }
-    }
-    return binSize;
+    cPrecollectionBasedHistogramStrategy::clear();
+    binSize = NAN;
 }
-
-#undef COMPLAINT
 
 }  // namespace omnetpp
 

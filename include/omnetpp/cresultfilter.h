@@ -51,7 +51,8 @@ class cProperty;
  * Result filters do not record anything -- that is left to result recorders.
  *
  * @see Register_ResultFilter()
- * @ingroup SimSupport
+ *
+ * @ingroup Statistics
  */
 class SIM_API cResultFilter : public cResultListener
 {

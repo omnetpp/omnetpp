@@ -13,11 +13,11 @@ static void dumpBins(const cHistogram& hist)
 
 %activity:
 
-cHistogram hist("reals", new cFixedRangeHistogramStrategy(-1.5, 1.5, 0.5, cIHistogramStrategy::MODE_REALS));
+cHistogram hist("reals", new cFixedRangeHistogramStrategy(-1.5, 1.5, 0.5, cHistogram::MODE_REALS));
 hist.collect(0);
 dumpBins(hist);
 
-cHistogram hist2("integers", new cFixedRangeHistogramStrategy(-10, 10, 2, cIHistogramStrategy::MODE_INTEGERS));
+cHistogram hist2("integers", new cFixedRangeHistogramStrategy(-10, 10, 2, cHistogram::MODE_INTEGERS));
 hist2.collect(0);
 dumpBins(hist2);
 

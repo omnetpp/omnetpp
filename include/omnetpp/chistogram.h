@@ -24,14 +24,73 @@ class cIHistogramStrategy;
 class cAutoRangeHistogramStrategy;
 
 /**
- * @brief A
+ * @brief Generic histogram class, capable of representing both unweighted and
+ * weighted distributions. Histogram data are stored are as n+1 bin edges and
+ * n bin values, both being double-precision floating point values. Upper and
+ * lower outliers are kept both as counts and as sum of weights.
  *
- * TODO explan strategy
+ * cHistogram is able to generate random numbers from the stored distribution,
+ * and also supports save/load the histogram data in a file.
+ *
+ * Bins can be set up directly using methods such as setBinEdges() or
+ * createUniformBins(), but it is often more practical to automate it by letting
+ * a <i>histogram strategy</i> do it. Histogram strategies are objects that
+ * encapsulate the job of setting up and managing histogram bins. For example,
+ * histogram strategies may employ a precollection phase to get an estimate of
+ * the distribution for laying out the bins. Strategies are also capable of
+ * extending the histogram range later by adding new bins as needed, or merging
+ * adjacent bins to reduce their count. Strategies that create non-uniform
+ * (e.g. equi-probable) bins are also possible to implement. Histogram
+ * strategies subclass from cIHistogramStrategy.
+ *
+ * The default constructor of cHistogram installs a default histogram strategy
+ * whih was designed to provide a good quality histogram for arbitrary
+ * distributions, without manual configuration. It employs precollection
+ * and also auto-extends the histogram at runtime.
+ *
+ * Custom behavior can be achieved by setting up and installing an appropriate
+ * strategy class, such as cFixedRangeHistogramStrategy or cAutoRangeHistogramStrategy.
+ * There are also convenience methods such as setRange() and setNumBins()
+ * that internally use cAutoRangeHistogramStrategy.
+ *
+ * Examples:
+ *
+ * Automatic mode:
+ *
+ * \code
+ * cHistogram histogram("histogram");
+ * \endcode
+ *
+ * Setting up a 50-bin histogram on the range [0,100) with 30 bins:
+ *
+ * \code
+ * cAutoRangeHistogramStrategy *strategy = new cAutoRangeHistogramStrategy();
+ * strategy->setRange(0, 100);
+ * strategy->setumBins(30);
+ * strategy->setMode(cHistogram::MODE_INTEGERS);
+ * cHistogram histogram("histogram", strategy);
+ * \endcode
+ *
+ * The same effect using convenience methods:
+ *
+ * \code
+ * cHistogram histogram("histogram");
+ * histogram.setRange(0, 100);
+ * histogram.setumBins(30);
+ * histogram.setMode(cHistogram::MODE_INTEGERS);
+ * \endcode
  *
  * @ingroup Statistics
  */
 class SIM_API cHistogram : public cDensityEstBase
 {
+  public:
+    /**
+     * Histogram mode. In INTEGERS mode, bin edges are whole numbers; in REALS mode
+     * they can be real numbers.
+     */
+    enum HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_REALS, MODE_DOUBLES /*deprecated*/ = MODE_REALS};
+
   protected:
     cIHistogramStrategy *strategy = nullptr; // owned
 
@@ -42,8 +101,8 @@ class SIM_API cHistogram : public cDensityEstBase
     double underflowSumWeights = 0, overflowSumWeights = 0; // weighted sum
 
   public:
-    // INTERNAL, only for cIHistogramSetupStrategy implementations!
-    // Directly collects the value into the existing bins, without delegating to the setupStrategy.
+    // INTERNAL, only for cIHistogramSetupStrategy implementations.
+    // Directly collects the value into the existing bins, without delegating to the strategy object
     virtual void collectIntoHistogram(double value, double weight=1);
     void dump() const; // for debugging
 
@@ -56,15 +115,23 @@ class SIM_API cHistogram : public cDensityEstBase
     //@{
 
     /**
-     * Constructor. Installs a cDefaultHistogramStrategy. To create a histogram without a strategy object,
-     * use the other constructor and pass nullptr for the 'strategy' parameter.
+     * Constructor. Installs a cDefaultHistogramStrategy. To create a histogram
+     * without a strategy object, use the other constructor and pass nullptr
+     * for the 'strategy' parameter.
      */
     explicit cHistogram(const char *name=nullptr, bool weighted=false);
 
     /**
-     * Constructor.
+     * Constructor that allows one to install a histogram strategy on the
+     * histogram. It is also legal to pass nullptr as strategy.
      */
     explicit cHistogram(const char *name, cIHistogramStrategy *strategy, bool weighted=false);
+
+    /**
+     * This convenience constructor installs a cAutoRangeHistogramStrategy
+     * on the histogram, and sets the desired number of bins on it.
+     */
+    explicit cHistogram(const char *name, int numBins);
 
     /**
      * Copy constructor.
@@ -111,7 +178,8 @@ class SIM_API cHistogram : public cDensityEstBase
     //@{
 
     /**
-     * Collects one observation.
+     * Collects one observation. Delegates to the strategy object if there is
+     * one installed.
      */
     virtual void collect(double value) override;
     using cDensityEstBase::collect;
@@ -119,7 +187,8 @@ class SIM_API cHistogram : public cDensityEstBase
     /**
      * Collects one observation with a given weight. The weight must not be
      * negative. (Zero-weight observations are allowed, but will not affect
-     * mean and stddev, nor the bin values.)
+     * mean and stddev, nor the bin values.) This methods delegates to the strategy
+     * object if there is one installed.
      */
     virtual void collectWeighted(double value, double weight) override;
     using cDensityEstBase::collectWeighted;
@@ -217,24 +286,22 @@ class SIM_API cHistogram : public cDensityEstBase
     virtual void extendBinsTo(double value, double step);
 
     /**
-     * TODO not half! TODO also work if #bins in not a multiple; assumes uniform bins
-     * Cuts the number of bins in half, by merging each consecutive pair of bins into one.
-     * Can only be called if there are at least two bins, and the number of bins is even.
-     *
-     * If there are an odd number of bins, you can use extendBinsTo(getBinEdges().back(), binSize)
-     * to append empty bins before calling this function.
+     * Reduces the number of bins by merging each 'groupSize' consecutive bins into one.
+     * The number of bins must be a multiple of 'groupSize'. If that is not the case,
+     * extendBinsTo() or similar methods may be used to create extra empty bins
+     * before calling this function.
      */
-    virtual void mergeBins(size_t groupSize);
+    virtual void mergeBins(int groupSize);
 
     /**
      * Returns the bin edges of the histogram. There is always one more edge than bin,
-     * except when the histogram has not been set up yet, in which case there is zero of both.
+     * except when the histogram has not been set up yet, in which case both are zero.
      */
     const std::vector<double>& getBinEdges() const {return binEdges;} // one more than values
 
     /**
      * Returns the bin values of the histogram. There is always one less bin than edge,
-     * except when the histogram has not been set up yet, in which case there is zero of both.
+     * except when the histogram has not been set up yet, in which case both are zero.
      */
     const std::vector<double>& getBinValues() const {return binValues;}
 
@@ -274,22 +341,88 @@ class SIM_API cHistogram : public cDensityEstBase
     virtual int64_t getNumOverflows() const override { return numOverflows; }
     //@}
 
-    /** @name Legacy API. */
+    /** @name cAutoRangeHistogramStrategy-based convenience API. */
     //@{
-    enum _OPPDEPRECATED HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
-    cHistogram(const char *name, int numCells);
-    _OPPDEPRECATED virtual void setMode(HistogramMode mode);
-    _OPPDEPRECATED virtual void setRange(double lower, double upper);
+    /**
+     * Sets the histogram mode: MODE_AUTO, MODE_INTEGERS or MODE_DOUBLES.
+     * Cannot be called when the bins have been set up already.
+     * This method internally installs (or uses an already installed)
+     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     */
+    virtual void setMode(HistogramMode mode);
+
+    /**
+     * Sets the histogram range explicitly to [lower, upper]. Use NAN for unspecified.
+     * This method internally installs (or uses an already installed)
+     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     */
+    virtual void setRange(double lower, double upper);
+
+    /**
+     * Sets the number of observations to collect before setting up histogram bins.
+     * This method internally installs (or uses an already installed)
+     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     */
+    virtual void setNumPrecollectedValues(int numPrecollect);
+
+    /**
+     * Sets the factor by which the range of the precollected observations
+     * is multiplied for determining the range of the histogram bins.
+     * This method internally installs (or uses an already installed)
+     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     */
+    virtual void setRangeExtensionFactor(double rangeExtensionFactor);
+
+    /**
+     * When set to true, observations that fall outside of the histogram range
+     * will cause the histogram to be extended with new bins, instead of being
+     * collected as outliers.
+     * This method internally installs (or uses an already installed)
+     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     */
+    virtual void setAutoExtend(bool autoExtend);
+
+    /**
+     * Sets the preferred number of bins. Cannot be called when the bins have been
+     * set up already. This method internally installs (or uses an already installed)
+     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     */
+    virtual void setNumBins(int numCells);
+
+    /**
+     * Sets the bin size. Cannot be called when the bins have been set up already.
+     * This method internally installs (or uses an already installed)
+     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     */
+    virtual void setBinSize(double d);
+
+    /**
+     * Deprecated method. Use the combination of setNumPrecollectedValues() and
+     * setRangeExtensionFactor() instead.
+     */
     _OPPDEPRECATED virtual void setRangeAuto(int numPrecollect=100, double rangeExtensionFactor=2.0);
+
+    /**
+     * Deprecated method. Use the combination of setRange(NAN, upper),
+     * setNumPrecollectedValues() and setRangeExtensionFactor() instead.
+     */
     _OPPDEPRECATED virtual void setRangeAutoLower(double upper, int numPrecollect=100, double rangeExtensionFactor=2.0);
+
+    /**
+     * Deprecated method. Use the combination of setRange(lower, NAN),
+     * setNumPrecollectedValues() and setRangeExtensionFactor() instead.
+     */
     _OPPDEPRECATED virtual void setRangeAutoUpper(double lower, int numPrecollect=100, double rangeExtensionFactor=2.0);
-    _OPPDEPRECATED virtual void setNumPrecollectedValues(int numPrecollect);
-    _OPPDEPRECATED virtual int getNumPrecollectedValues() const;
-    _OPPDEPRECATED virtual void setRangeExtensionFactor(double rangeExtensionFactor);
-    _OPPDEPRECATED virtual double getRangeExtensionFactor() const;
-    _OPPDEPRECATED virtual void setNumCells(int numCells);
-    _OPPDEPRECATED virtual void setCellSize(double d);
-    _OPPDEPRECATED virtual double getCellSize() const;
+
+    /**
+     * Deprecated method, use setNumBins() instead.
+     */
+    _OPPDEPRECATED virtual void setNumCells(int numCells) final {setNumBins(numCells);}
+
+    /**
+     * Deprecated method, use setBinSize() instead.
+     */
+    _OPPDEPRECATED virtual void setCellSize(double d) final {setBinSize(d);}
     //@}
 };
 

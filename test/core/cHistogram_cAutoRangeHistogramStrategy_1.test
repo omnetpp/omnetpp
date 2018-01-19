@@ -20,13 +20,13 @@ static void collectAndDump(cRNG* rng, cHistogram& hist)
 
 %activity:
 
-cHistogram hist1("fixed", new cAutoRangeHistogramStrategy(-1.5, 1.5, 10, cIHistogramStrategy::MODE_REALS));
-cHistogram hist2("auto1", new cAutoRangeHistogramStrategy(NAN, 150, 10, cIHistogramStrategy::MODE_REALS));
-cHistogram hist3("auto2", new cAutoRangeHistogramStrategy(-1.5, NAN, 10, cIHistogramStrategy::MODE_REALS));
+cHistogram hist1("fixed", new cAutoRangeHistogramStrategy(-1.5, 1.5, 10, cHistogram::MODE_REALS));
+cHistogram hist2("auto1", new cAutoRangeHistogramStrategy(NAN, 150, 10, cHistogram::MODE_REALS));
+cHistogram hist3("auto2", new cAutoRangeHistogramStrategy(-1.5, NAN, 10, cHistogram::MODE_REALS));
 
-cHistogram hist4("fixed_i", new cAutoRangeHistogramStrategy(-2, 2, 2, cIHistogramStrategy::MODE_INTEGERS));
-cHistogram hist5("auto1_i", new cAutoRangeHistogramStrategy(NAN, 200, 10, cIHistogramStrategy::MODE_INTEGERS));
-cHistogram hist6("auto2_i", new cAutoRangeHistogramStrategy(-2, NAN, 10, cIHistogramStrategy::MODE_INTEGERS));
+cHistogram hist4("fixed_i", new cAutoRangeHistogramStrategy(-2, 2, 2, cHistogram::MODE_INTEGERS));
+cHistogram hist5("auto1_i", new cAutoRangeHistogramStrategy(NAN, 200, 10, cHistogram::MODE_INTEGERS));
+cHistogram hist6("auto2_i", new cAutoRangeHistogramStrategy(-2, NAN, 10, cHistogram::MODE_INTEGERS));
 
 collectAndDump(getRNG(0), hist1);
 collectAndDump(getRNG(0), hist2);
