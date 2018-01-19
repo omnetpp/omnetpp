@@ -98,7 +98,7 @@ class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
 /**
  * TODO
  */
-class cGenericHistogramStrategy : public cPrecollectionBasedHistogramStrategy
+class cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStrategy
 {
   private:
     double rangeExtensionFactor = 1.5;
@@ -112,7 +112,7 @@ class cGenericHistogramStrategy : public cPrecollectionBasedHistogramStrategy
     double computeIntegerBinSize(double& rangeMin, double& rangeMax);
 
   public:
-    cGenericHistogramStrategy(int desiredNumBins=30, HistogramMode mode=MODE_AUTO) : desiredNumBins(desiredNumBins), mode(mode) {}
+    cDefaultHistogramStrategy(int desiredNumBins=30, HistogramMode mode=MODE_AUTO) : desiredNumBins(desiredNumBins), mode(mode) {}
 
     double getBinSize() const {return binSize;}
     HistogramMode getMode() const {return mode;}

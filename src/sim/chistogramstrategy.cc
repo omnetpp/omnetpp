@@ -91,7 +91,7 @@ bool cPrecollectionBasedHistogramStrategy::binsAlreadySetUp() const
 
 //----
 
-void cGenericHistogramStrategy::collect(double value)
+void cDefaultHistogramStrategy::collect(double value)
 {
     if (hist->getNumBins() > 0) {
         hist->extendBinsTo(value, binSize);
@@ -113,7 +113,7 @@ void cGenericHistogramStrategy::collect(double value)
     }
 }
 
-void cGenericHistogramStrategy::collectWeighted(double value, double weight)
+void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (hist->getNumBins() > 0) {
         hist->extendBinsTo(value, binSize);
@@ -165,7 +165,7 @@ static double roundToOneTwoFive(double x)
     return result;
 }
 
-void cGenericHistogramStrategy::createBins()
+void cDefaultHistogramStrategy::createBins()
 {
     bool empty = hist->getCount() == 0;
 
@@ -217,7 +217,7 @@ void cGenericHistogramStrategy::createBins()
     hist->createUniformBins(rangeMin, rangeMax, binSize);
 }
 
-double cGenericHistogramStrategy::computeBinSize(double& rangeMin, double& rangeMax)
+double cDefaultHistogramStrategy::computeBinSize(double& rangeMin, double& rangeMax)
 {
     int numBins = this->desiredNumBins;
     if (numBins == -1)

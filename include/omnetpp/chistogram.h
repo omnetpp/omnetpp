@@ -56,7 +56,7 @@ class SIM_API cHistogram : public cDensityEstBase
     //@{
 
     /**
-     * Constructor. Installs GenericStrategy. To create a histogram without a strategy object,
+     * Constructor. Installs a cDefaultHistogramStrategy. To create a histogram without a strategy object,
      * use the other constructor and pass nullptr for the 'strategy' parameter.
      */
     explicit cHistogram(const char *name=nullptr, bool weighted=false);

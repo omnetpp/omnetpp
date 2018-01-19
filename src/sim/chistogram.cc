@@ -48,7 +48,7 @@ void cHistogram::dump() const
 
 
 cHistogram::cHistogram(const char *name, bool weighted)
-    : cHistogram(name, new cGenericHistogramStrategy, weighted)
+    : cHistogram(name, new cDefaultHistogramStrategy, weighted)
 {
 }
 
@@ -387,7 +387,7 @@ cAutoRangeHistogramStrategy *cHistogram::getOrCreateAutoRangeStrategy() const
         mutableThis->setStrategy(strat);
         return strat;
     }
-    else if (dynamic_cast<cGenericHistogramStrategy *>(strategy) != nullptr) {
+    else if (dynamic_cast<cDefaultHistogramStrategy *>(strategy) != nullptr) {
         // silently replacing the default strategy if still empty
         auto strat = new cAutoRangeHistogramStrategy();
         mutableThis->setStrategy(strat);
