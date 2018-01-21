@@ -122,10 +122,12 @@ void cObject::dropAndDelete(cOwnedObject *obj)
 
 void cObject::parsimPack(cCommBuffer *buffer) const
 {
+    throw cRuntimeError(E_CANTPACK);
 }
 
 void cObject::parsimUnpack(cCommBuffer *buffer)
 {
+    throw cRuntimeError(E_CANTPACK);
 }
 
 void cObject::copyNotSupported() const

@@ -224,12 +224,14 @@ class SIM_API cObject
      */
     //@{
     /**
-     * Serializes the object into a buffer.
+     * Serializes the object into a buffer. This default implementation throws
+     * an exception ("packing not implemented").
      */
     virtual void parsimPack(cCommBuffer *buffer) const;
 
     /**
-     * Deserializes the object from a buffer.
+     * Deserializes the object from a buffer. This default implementation just
+     * throws an exception ("packing not implemented").
      */
     virtual void parsimUnpack(cCommBuffer *buffer);
     //@}
