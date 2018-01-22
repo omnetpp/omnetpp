@@ -296,6 +296,7 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 #include "omnetpp/cstlwatch.h"
 #include "omnetpp/clcg32.h"
 #include "omnetpp/cmersennetwister.h"
+#include "omnetpp/chistogram.h"
 #include "omnetpp/clegacyhistogram.h"
 #include "omnetpp/cvarhist.h"
 #include "omnetpp/cksplit.h"
@@ -354,6 +355,8 @@ void _sim_dummy_func()
     fsm.str();
     cOutVector ov;
     ov.str();
+    cHistogram h;
+    h.draw();
     cLegacyHistogram lh;
     lh.draw();
 #ifdef USE_OMNETPP4x_FINGERPRINTS

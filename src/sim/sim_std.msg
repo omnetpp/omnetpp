@@ -631,6 +631,14 @@ class cDensityEstBase::Cell
     @opaque;
 }
 
+class cHistogram extends cDensityEstBase
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(false);
+    bool isTransformed @getter(isTransformed) @group(histogram) @hint("If false, the object is still collecting initial observations to be used for laying out histogram cells");
+}
+
 class cPrecollectionBasedDensityEst extends cDensityEstBase
 {
     @existingClass;
