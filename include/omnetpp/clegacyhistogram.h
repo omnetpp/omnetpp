@@ -98,7 +98,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult() override;
+    virtual void clear() override;
 
     /**
      * Transforms the table of pre-collected values into an internal

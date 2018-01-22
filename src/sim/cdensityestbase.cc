@@ -284,9 +284,9 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
     }
 }
 
-void cPrecollectionBasedDensityEst::clearResult()
+void cPrecollectionBasedDensityEst::clear()
 {
-    cDensityEstBase::clearResult();
+    cDensityEstBase::clear();
 
     transformed = false;
     rangeMode = RANGE_AUTO;

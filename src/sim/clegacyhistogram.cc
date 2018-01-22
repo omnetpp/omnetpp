@@ -109,9 +109,9 @@ void cLegacyHistogramBase::doMergeBinValues(const cPrecollectionBasedDensityEst 
         cellv[i] += other->getBinValue(i);
 }
 
-void cLegacyHistogramBase::clearResult()
+void cLegacyHistogramBase::clear()
 {
-    cPrecollectionBasedDensityEst::clearResult();
+    cPrecollectionBasedDensityEst::clear();
 
     delete[] cellv;
     cellv = nullptr;

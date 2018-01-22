@@ -103,7 +103,7 @@ void cHistogram::collectWeighted(double value, double weight)
 
 void cHistogram::clear()
 {
-    cDensityEstBase::clearResult();
+    cDensityEstBase::clear();
 
     binEdges.clear();
     binValues.clear();

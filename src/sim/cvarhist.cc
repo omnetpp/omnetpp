@@ -340,9 +340,9 @@ void cVarHistogram::collectWeightedIntoHistogram(double value, double weight)
     ASSERT(false); // weighted case is unsupported
 }
 
-void cVarHistogram::clearResult()
+void cVarHistogram::clear()
 {
-    cLegacyHistogramBase::clearResult();
+    cLegacyHistogramBase::clear();
 
     delete[] cellLowerBounds;
     cellLowerBounds = nullptr;

@@ -364,7 +364,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult() override;
+    virtual void clear() override;
 
     /**
      * Writes the contents of the object into a text file.

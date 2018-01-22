@@ -62,7 +62,7 @@ Register_Class(cWeightedStdDev);
 
 cStdDev::cStdDev(const char *s, bool weighted) : cStatistic(s), weighted(weighted)
 {
-    clearResult();
+    clear();
 }
 
 std::string cStdDev::str() const
@@ -233,7 +233,7 @@ double cStdDev::getStddev() const
     return sqrt(getVariance());
 }
 
-void cStdDev::clearResult()
+void cStdDev::clear()
 {
     numValues = 0;
     sumWeights = 0.0;

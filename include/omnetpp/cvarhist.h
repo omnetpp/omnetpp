@@ -128,7 +128,7 @@ class _OPPDEPRECATED SIM_API cVarHistogram : public cLegacyHistogramBase
     /**
      * Clears the results collected so far.
      */
-    virtual void clearResult() override;
+    virtual void clear() override;
 
     /**
      * Sets up the bins using the precollected observations.

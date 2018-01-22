@@ -127,7 +127,7 @@ class SIM_API cHistogram : public cDensityEstBase
     /**
      * Clears the results collected so far.
      */
-    virtual void clear();
+    virtual void clear() override;
 
     /**
      * Returns a random number from the distribution represented by the histogram.

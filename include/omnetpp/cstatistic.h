@@ -136,7 +136,7 @@ class SIM_API cStatistic : public cRandom
      * This function should be redefined in derived classes to clear
      * the results collected so far.
      */
-    virtual void clearResult() = 0;
+    virtual void clear() = 0;
     //@}
 
     /** @name Statistics of collected data. */
@@ -290,6 +290,11 @@ class SIM_API cStatistic : public cRandom
      * Deprecated method, please use draw() to obtain a random number from the collected data.
      */
     _OPPDEPRECATED virtual double random() const final {return draw();}
+
+    /**
+     * Deprecated method, please use clear() instead.
+     */
+    _OPPDEPRECATED virtual void clearResult() final {clear();}
     //@}
 };
 
