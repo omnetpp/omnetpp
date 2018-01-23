@@ -56,7 +56,7 @@ void cHistogram::copy(const cHistogram& other)
 {
     delete strategy;
     strategy = (cIHistogramStrategy *)other.strategy->dup();
-    strategy->hist = this; // not calling init(), that would fail if not empty
+    strategy->hist = this; // not calling setHistogram(), that would fail if not empty
 
     binEdges = other.binEdges;
     binValues = other.binValues;
@@ -269,7 +269,7 @@ void cHistogram::merge(const cStatistic *stat)
         if (edge > binEdges.back())
             edgesToAppend.push_back(edge);
     }
-    prependBins(edgesToPrepend);
+    prependBins(edgesToPrepend);  //TODO this can only be done if numOverFlows/underflows are zero! (or extra cells can be merged into overflows/undefrlows)
     appendBins(edgesToAppend);
 
 
@@ -327,7 +327,7 @@ void cHistogram::createUniformBins(double lo, double hi, double step)
     if (step <= 0)
         throw cRuntimeError(this, "createUniformBins(): Step size must be positive");
 
-    int numBins = std::ceil((hi - lo) * (1 - 1e-12) / step); // the * (1 - 1e-12) is to counteract precision error accumulation
+    int numBins = std::ceil((hi - lo) * (1 - 1e-10) / step); // the * (1 - 1e-10) is to counteract precision error accumulation
 
     std::vector<double> binEdges;
     binEdges.reserve(numBins);
@@ -402,11 +402,8 @@ void cHistogram::extendBinsTo(double value, double step)
 
 void cHistogram::mergeBins(int groupSize)
 {
-    if ((int)binValues.size() < groupSize)
-        throw cRuntimeError(this, "Cannot merge bins with a group size (%d) larger than the number of bins (%d)", groupSize, (int)binValues.size());
-
-    if ((int)binValues.size() % groupSize != 0)
-        throw cRuntimeError(this, "Cannot merge bins; the number of bins is not divisible by the group size");  //TODO remove this requirement? (leave to strategy if it wants that or not)
+    if (groupSize <= 0)
+        throw cRuntimeError(this, "mergeBins(): groupSize must be positive");
 
     ASSERT(binEdges.size() == binValues.size() + 1);  // histogram is sane
 
@@ -414,7 +411,7 @@ void cHistogram::mergeBins(int groupSize)
 
     for (size_t i = 0; i < newNumBins; ++i) {
         double binValue = 0;
-        for (size_t j = 0; j < (size_t)groupSize; ++j)
+        for (int j = 0; j < groupSize; ++j) //TODO modulo
             binValue += binValues[groupSize*i + j];
         binValues[i] = binValue;
         binEdges[i] = binEdges[groupSize*i];
@@ -432,8 +429,12 @@ bool cHistogram::binsAlreadySetUp() const
 
 void cHistogram::setUpBins()
 {
-    if (strategy)
-        strategy->setUpBins();
+    if (!strategy)
+        throw cRuntimeError(this, "setUpBins(): No histogram strategy installed");
+    if (binsAlreadySetUp())
+        throw cRuntimeError(this, "setUpBins(): Bins already set up");
+    strategy->setUpBins();
+    ASSERT(getNumBins() > 0);
 }
 
 void cHistogram::collectIntoHistogram(double value, double weight)

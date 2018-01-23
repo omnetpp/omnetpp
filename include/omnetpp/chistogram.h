@@ -25,12 +25,12 @@ class cAutoRangeHistogramStrategy;
 
 /**
  * @brief Generic histogram class, capable of representing both unweighted and
- * weighted distributions. Histogram data are stored are as n+1 bin edges and
+ * weighted distributions. Histogram data are stored as n+1 bin edges and
  * n bin values, both being double-precision floating point values. Upper and
  * lower outliers are kept both as counts and as sum of weights.
  *
  * cHistogram is able to generate random numbers from the stored distribution,
- * and also supports save/load the histogram data in a file.
+ * and also supports save/load of the histogram data in a file.
  *
  * Bins can be set up directly using methods such as setBinEdges() or
  * createUniformBins(), but it is often more practical to automate it by letting
@@ -44,7 +44,7 @@ class cAutoRangeHistogramStrategy;
  * strategies subclass from cIHistogramStrategy.
  *
  * The default constructor of cHistogram installs a default histogram strategy
- * whih was designed to provide a good quality histogram for arbitrary
+ * which was designed to provide a good quality histogram for arbitrary
  * distributions, without manual configuration. It employs precollection
  * and also auto-extends the histogram at runtime.
  *
@@ -61,12 +61,12 @@ class cAutoRangeHistogramStrategy;
  * cHistogram histogram("histogram");
  * \endcode
  *
- * Setting up a 50-bin histogram on the range [0,100) with 30 bins:
+ * Setting up a 50-bin histogram on the range [0,100):
  *
  * \code
  * cAutoRangeHistogramStrategy *strategy = new cAutoRangeHistogramStrategy();
  * strategy->setRange(0, 100);
- * strategy->setumBins(30);
+ * strategy->setumBins(50);
  * strategy->setMode(cHistogram::MODE_INTEGERS);
  * cHistogram histogram("histogram", strategy);
  * \endcode
@@ -76,7 +76,7 @@ class cAutoRangeHistogramStrategy;
  * \code
  * cHistogram histogram("histogram");
  * histogram.setRange(0, 100);
- * histogram.setumBins(30);
+ * histogram.setumBins(50);
  * histogram.setMode(cHistogram::MODE_INTEGERS);
  * \endcode
  *
@@ -234,7 +234,8 @@ class SIM_API cHistogram : public cDensityEstBase
     cIHistogramStrategy *getStrategy() const {return strategy;}
 
     /**
-     * Returns true if histogram is already available. See setUpBins().
+     * Returns true if histogram bins are already available. (Bins are not yet
+     * available in the precollection phase.) See setUpBins().
      */
     virtual bool binsAlreadySetUp() const override;
 

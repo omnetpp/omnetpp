@@ -13,9 +13,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "omnetpp/regmacros.h"
 #include "omnetpp/chistogramstrategy.h"
 
 namespace omnetpp {
+
+//TODO
+//Register_Class(cFixedRangeHistogramStrategy);
+//Register_Class(cDefaultHistogramStrategy);
+//Register_Class(cAutoRangeHistogramStrategy);
 
 void cIHistogramStrategy::setHistogram(cHistogram *hist)
 {
@@ -43,6 +49,8 @@ cFixedRangeHistogramStrategy& cFixedRangeHistogramStrategy::operator=(const cFix
 
 void cFixedRangeHistogramStrategy::setUpBins()
 {
+    //TODO assert all params are not NAN
+
     // validate parameters
     if (mode == cHistogram::MODE_AUTO)
         throw cRuntimeError(hist, "%s: Mode cannot be cHistogram::MODE_AUTO", getClassName());
@@ -68,7 +76,7 @@ void cFixedRangeHistogramStrategy::collect(double value)
         setUpBins();
     ASSERT(hist->getNumBins() > 0);
     if (autoExtend)
-        hist->extendBinsTo(value, binSize);
+        hist->extendBinsTo(value, binSize); //TODO extra arg: maxNumBins as protection
     hist->collectIntoHistogram(value);
 }
 
@@ -223,7 +231,7 @@ static double roundToOneTwoFive(double x)
 
 void cDefaultHistogramStrategy::createBins()
 {
-    bool empty = hist->getCount() == 0;
+    bool empty = values.empty();
 
     // determine mode (integers or reals) from precollected observations
     HistogramMode mode = this->mode;
@@ -318,7 +326,7 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (inPrecollection) {
         precollect(value, weight);
-        bool needPrecollection = (mode == cHistogram::MODE_AUTO) || std::isnan(lo) || std::isnan(hi);
+        bool needPrecollection = (mode == cHistogram::MODE_AUTO) || std::isnan(lo) || std::isnan(hi); // if true, we precollect the first value and immediately set up the bins
         if (!needPrecollection || values.size() >= numToPrecollect) {
             createBins();
             ASSERT(hist->getNumBins() > 0);
@@ -337,7 +345,7 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
 
 void cAutoRangeHistogramStrategy::createBins()
 {
-    bool empty = hist->getCount() == 0;
+    bool empty = hist->getCount() <= 1;
 
     // determine mode (integers or reals) from precollected observations
     HistogramMode mode = this->mode;
@@ -355,6 +363,8 @@ void cAutoRangeHistogramStrategy::createBins()
     }
 
     // compute range from the range of the observations
+
+    //TODO instead: take extended range, then replace its lower/upper endpoint with lo/hi, whichever is given; then fix up result so that lower<upper
     double rangeMin = lo, rangeMax = hi;
     bool hasLo = !std::isnan(lo);
     bool hasHi = !std::isnan(hi);
@@ -369,19 +379,19 @@ void cAutoRangeHistogramStrategy::createBins()
             r = (maxValue - minValue) * rangeExtensionFactor;
         }
         if (r == 0)
-            r = 1.0;  // warning?
+            r = 1.0;
         rangeMin = c - r / 2;
         rangeMax = c + r / 2;
     }
     else if (hasHi && !hasLo) {
         if (hi <= minValue)
-            rangeMin = hi - 1.0;  // warning?
+            rangeMin = hi - 1.0;
         else
             rangeMin = rangeMax - (rangeMax - minValue) * rangeExtensionFactor;
     }
     else if (hasLo && !hasHi) {
         if (lo >= maxValue)
-            rangeMax = lo + 1.0;  // warning?
+            rangeMax = lo + 1.0;
         else
             rangeMax = lo + (maxValue - lo) * rangeExtensionFactor;
     }
@@ -402,7 +412,7 @@ void cAutoRangeHistogramStrategy::createBins()
         binSize = requestedBinSize;
     }
     else {
-        int approxNumBins = desiredNumBins == -1 ? PREFERRED_NUM_BINS : desiredNumBins;
+        int approxNumBins = desiredNumBins == -1 ? DEFAULT_NUM_BINS : desiredNumBins;
         double approxBinSize = (rangeMax - rangeMin) / approxNumBins;
         binSize = (mode == cHistogram::MODE_INTEGERS) ? ceil(approxBinSize) : approxBinSize;
 
@@ -410,8 +420,10 @@ void cAutoRangeHistogramStrategy::createBins()
             binSize = roundToOneTwoFive(binSize);
             if (binSize == 0)
                 binSize = 1;
-            rangeMin = rangeMin - std::fmod(rangeMin, binSize);
+            rangeMin = rangeMin - std::fmod(rangeMin, binSize); // snap
             rangeMax = rangeMax - std::fmod(rangeMax, binSize);
+            if (rangeMin >= rangeMax)
+                rangeMax = rangeMin + 1;
         }
     }
     ASSERT(binSize > 0);

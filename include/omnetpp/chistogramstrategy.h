@@ -26,6 +26,7 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
+//TODO override getOwner()?
 class SIM_API cIHistogramStrategy : public cObject
 {
     friend class cHistogram;
@@ -102,10 +103,10 @@ class SIM_API cIHistogramStrategy : public cObject
 class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
 {
   protected:
-    double lo;
-    double hi;
-    double binSize;
-    HistogramMode mode;  // may not be AUTO
+    double lo = NAN;
+    double hi = NAN;
+    double binSize = NAN;
+    HistogramMode mode = cHistogram::MODE_REALS; // may not be AUTO
     bool autoExtend = false;
 
   private:
@@ -114,7 +115,8 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
   public:
     /** @name Constructors, copying. */
     //@{
-    cFixedRangeHistogramStrategy(double lo, double hi, double binSize=1, HistogramMode mode=cHistogram::MODE_REALS) : //TODO why binSize is not NAN?
+    cFixedRangeHistogramStrategy() {}
+    cFixedRangeHistogramStrategy(double lo, double hi, double binSize, HistogramMode mode=cHistogram::MODE_REALS) :
         lo(lo), hi(hi), binSize(binSize), mode(mode) {}
     cFixedRangeHistogramStrategy(const cFixedRangeHistogramStrategy& other): cIHistogramStrategy(other) {copy(other);}
     cFixedRangeHistogramStrategy& operator=(const cFixedRangeHistogramStrategy& other);
@@ -254,13 +256,13 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
 class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramStrategy
 {
   private:
-    const int PREFERRED_NUM_BINS = 30; // to allow merging every 2, 3, 5, 6 adjacent bins during post-processing
+    const int DEFAULT_NUM_BINS = 30; // to allow merging every 2, 3, 5, 6 adjacent bins during post-processing
     double lo = NAN;  // set NaN for unspecified
     double hi = NAN;  // set NaN for unspecified
     double rangeExtensionFactor = 1.5;
     int desiredNumBins = -1;
-    double requestedBinSize = NAN;
-    double binSize = NAN; // actual bin size
+    double requestedBinSize = NAN; // user-given
+    double binSize = NAN; // actual (computed)
     HistogramMode mode = cHistogram::MODE_AUTO;
     bool binSizeRounding = true;
     bool autoExtend = true;
@@ -277,7 +279,7 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
     /** @name Constructors, copying. */
     //@{
     // lo, hi: specify NaN for either or both or neither!
-    explicit cAutoRangeHistogramStrategy(double lo=NAN, double hi=NAN, int numBins=-1, HistogramMode mode=cHistogram::MODE_AUTO) :
+    explicit cAutoRangeHistogramStrategy(double lo=NAN, double hi=NAN, int numBins=-1, HistogramMode mode=cHistogram::MODE_AUTO) :  //TODO remove numBins from ctor?
         lo(lo), hi(hi), desiredNumBins(numBins), mode(mode) {}
     cAutoRangeHistogramStrategy(const cAutoRangeHistogramStrategy& other): cPrecollectionBasedHistogramStrategy(other) {copy(other);}
     cAutoRangeHistogramStrategy& operator=(const cAutoRangeHistogramStrategy& other);
@@ -286,6 +288,7 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
 
     /** @name Configuring. */
     //@{
+    //TODO all params are hints!! rename???
     double getBinSize() const {return requestedBinSize;}
     void setBinSize(double binSize) {this->requestedBinSize = binSize;}
     bool getBinSizeRounding() const {return binSizeRounding;}

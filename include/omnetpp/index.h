@@ -141,17 +141,17 @@ namespace omnetpp {
  * @brief The primary way of recording statistics from simulations
  * is by means of signals and declared statistics, i.e. using @statistic
  * properties in NED files. However, the simulation library also provides
- * classes in case programmatic result collection is needed.
+ * some classes in case programmatic result collection is needed.
  *
  * Scalar values can be recorded in the output scalar file with the
  * recordScalar() method of the module or channel. To collect statistic
  * summaries (mean, stddev, etc.) or histograms, use the cStdDev and
  * cHistogram classes. Their contents can be recorded into the output
- * scalar file with recordStatistic() method of the module or channel,
+ * scalar file with the recordStatistic() method of the module or channel,
  * or with the record() method of the statistic object itself.
  * To record output vectors (time series data), use the cOutVector class.
  *
- * @statistic-based result recording is also extensible, via the
+ * Declarative (@statistic-based) result recording is also extensible, via the
  * cResultFilter and cResultRecorder classes.
  *
  * All result collection methods eventually delegate to "record" methods
