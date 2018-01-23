@@ -47,9 +47,11 @@ class TestClass extends cObject
 Foo aFoo;
 Foo bFoo;
 Foo cFoo;
+Foo dFoo;
 Bar aBar("aBar");
 Bar bBar("bBar");
 Bar cBar("cBar");
+Bar dBar("dBar");
 
 // create and fill a test object
 TestClass x;
@@ -57,26 +59,44 @@ TestClass x;
 x.insertFooVec(aFoo);
 x.insertFooVec(cFoo);
 x.insertFooVec(1, bFoo);
+x.insertFooVec(dFoo);
+x.setFooVecArraySize(3);
+x.setFooVecArraySize(5);
 
 x.insertFooPtrVec(&aFoo);
 x.insertFooPtrVec(&cFoo);
 x.insertFooPtrVec(1, &bFoo);
+x.insertFooPtrVec(&dFoo);
+x.setFooPtrVecArraySize(3);
+x.setFooPtrVecArraySize(5);
 
 x.insertOwnedFooPtrVec(new Foo());
 x.insertOwnedFooPtrVec(new Foo());
 x.insertOwnedFooPtrVec(1, new Foo());
+x.insertOwnedFooPtrVec(new Foo());
+x.setOwnedFooPtrVecArraySize(3);
+x.setOwnedFooPtrVecArraySize(5);
 
 x.insertBarVec(aBar);
 x.insertBarVec(cBar);
 x.insertBarVec(1, bBar);
+x.insertBarVec(dBar);
+x.setBarVecArraySize(3);
+x.setBarVecArraySize(5);
 
 x.insertBarPtrVec(&aBar);
 x.insertBarPtrVec(&cBar);
 x.insertBarPtrVec(1, &bBar);
+x.insertBarPtrVec(&dBar);
+x.setBarPtrVecArraySize(3);
+x.setBarPtrVecArraySize(5);
 
 x.insertOwnedBarPtrVec(new Bar("bar1"));
 x.insertOwnedBarPtrVec(new Bar("bar3"));
 x.insertOwnedBarPtrVec(1, new Bar("bar2"));
+x.insertOwnedBarPtrVec(new Bar("bar4"));
+x.setOwnedBarPtrVecArraySize(3);
+x.setOwnedBarPtrVecArraySize(5);
 
 // now the actual test: copy constructor, op=, destructor (implicit)
 

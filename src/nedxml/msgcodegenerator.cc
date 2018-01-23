@@ -817,6 +817,13 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             }
             if (!field.isPointer && field.iscOwnedObject)
                 CC << forEachIndex(field) << "\n" << "        drop(&" << varElem(field) << ");\n";
+            if (field.isPointer && field.isOwnedPointer) {
+                CC << "    for (" << field.sizeType << " i = newSize; i < " << field.sizeVar << "; i++)\n";
+                if (field.iscOwnedObject)
+                    CC << "        dropAndDelete(" << field.var << "[i]);\n";
+                else
+                    CC << "        delete " << field.var << "[i];\n";
+            }
             CC << "    delete [] " << var(field) << ";\n";
             CC << "    " << var(field) << " = " << field.var << "2;\n";
             CC << "    " << field.sizeVar << " = newSize;\n";
