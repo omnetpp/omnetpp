@@ -205,10 +205,19 @@ QString HistogramInspector::generalInfo()
     cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
     if (!d->binsAlreadySetUp())
         return QString("(collecting initial values, N=%1)").arg(QString::number(d->getCount()));
-    else
-        return QString("Histogram: (%1...%2)  N=%3  #bins=%4").arg(
+    else if (!d->isWeighted())
+        return QString("Histogram: [%1...%2)  N=%3  #bins=%4  Outliers: lower=%5 upper=%6").arg(
                 QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
-                QString::number(d->getCount()), QString::number(d->getNumBins()));
+                QString::number(d->getCount()), QString::number(d->getNumBins()),
+                QString::number(d->getNumUnderflows()), QString::number(d->getNumOverflows())
+                );
+    else
+        return QString("Histogram: [%1...%2)  N=%3  W=%4  #bins=%5  Outliers: lower=%6 (%7) upper=%8 (%9)").arg(
+                QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
+                QString::number(d->getSumWeights()), QString::number(d->getCount()), QString::number(d->getNumBins()),
+                QString::number(d->getUnderflowSumWeights()), QString::number(d->getNumUnderflows()),
+                QString::number(d->getOverflowSumWeights()), QString::number(d->getNumOverflows())
+                );
 }
 
 void HistogramInspector::onShowCellInfo(int bin)
@@ -224,12 +233,13 @@ void HistogramInspector::onShowCellInfo(int bin)
     }
 
     cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
-    double count = d->getBinValue(bin);
-    double cell_lower = d->getBinEdge(bin);
-    double cell_upper = d->getBinEdge(bin+1);
-    QString text = "Cell #%1:  [%2...%3)  n=%4  PDF=%5";
-    text = text.arg(QString::number(bin), QString::number(cell_lower), QString::number(cell_upper),
-                QString::number(count), QString::number(count / (double)(d->getCount()) / (cell_upper-cell_lower)));
+    double binValue = d->getBinValue(bin);
+    double lowerEdge = d->getBinEdge(bin);
+    double upperEdge = d->getBinEdge(bin+1);
+    QString text = "Bin #%1:  [%2...%3)  w=%4  PDF=%5";
+    text = text.arg(QString::number(bin), QString::number(lowerEdge),
+                    QString::number(upperEdge), QString::number(binValue),
+                    QString::number(binValue / d->getWeightedSum() / (upperEdge-lowerEdge)));
 
     statusBar->showMessage(text);
 }

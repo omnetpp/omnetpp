@@ -153,17 +153,14 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cAbstractHis
         return;
 
     // draw the histogram
-    int prevLeftX = mapXToView(distr->getBinEdge(0));
     for (int bin = 0; bin < distr->getNumBins(); bin++) {
         // calculate height
         double y = type == SHOW_PDF ? distr->getBinPDF(bin) : distr->getBinValue(bin);
-
-        // draw rectangle
-        int width = std::max(1, mapXToView(distr->getBinEdge(bin+1)) - prevLeftX);
-        if (y < minY) {
-            prevLeftX += width;
+        if (y < minY)
             continue;
-        }
+
+        int left = mapXToView(distr->getBinEdge(bin));
+        int width = std::max(1, mapXToView(distr->getBinEdge(bin+1)) - left);
 
         int rectMinY = std::max(0, mapYToView(y));
         // if minY == y then diagram frame hide the 1 pixel high rectangle
@@ -181,11 +178,10 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cAbstractHis
         else
             pen.setColor(HISTOGRAM_COLOR);
 
-        QGraphicsRectItem *item = new QGraphicsRectItem(QRectF(prevLeftX, rectMinY, width, height), gridItem->getDiagramFrame());
+        QGraphicsRectItem *item = new QGraphicsRectItem(QRectF(left, rectMinY, width, height), gridItem->getDiagramFrame());
         item->setData(0, bin);
         item->setPen(pen);
         item->setBrush(brush);
-        prevLeftX += width;
     }
 
     showInfo(mapFromGlobal(QCursor::pos()));
