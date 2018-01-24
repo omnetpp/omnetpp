@@ -62,6 +62,7 @@ fclose(f);
 %postrun-command: diff pass1.txt pass2.txt
 
 %contains: pass1.txt
+
 #
 # (omnetpp::cLongHistogram) Test.LongHistogram
 #
@@ -218,13 +219,13 @@ fclose(f);
 0 0	 #= sumweights_underflow, sum_weights_overflow
 100	 #= num_firstvals
 0	 #= firstvals[] exists
-19	 #= num_cells
-24	 #= gridv_size
-18	 #= rootgrid
-18	 #= lastgrid
+13	 #= num_cells
+16	 #= gridv_size
+11	 #= rootgrid
+12	 #= lastgrid
 1	 #= gridv_exists
 # grid 1
-18	 #= parent
+11	 #= parent
 0	 #= reldepth
 999	 #= total
 0	 #= mother
@@ -246,95 +247,58 @@ fclose(f);
 2	 #= reldepth
 356	 #= total
 0	 #= mother
--7 -8	 #= cells[0], cells[1]
+-8 -9	 #= cells[0], cells[1]
 # grid 5
 3	 #= parent
 2	 #= reldepth
 365	 #= total
 0	 #= mother
--9 -15	 #= cells[0], cells[1]
+-7 50	 #= cells[0], cells[1]
 # grid 6
 2	 #= parent
 2	 #= reldepth
 265	 #= total
-0	 #= mother
--13 -10	 #= cells[0], cells[1]
+23	 #= mother
+53 -10	 #= cells[0], cells[1]
 # grid 7
-4	 #= parent
-3	 #= reldepth
-236	 #= total
-0	 #= mother
--11 -14	 #= cells[0], cells[1]
-# grid 8
-4	 #= parent
-3	 #= reldepth
-120	 #= total
-16	 #= mother
-60 44	 #= cells[0], cells[1]
-# grid 9
 5	 #= parent
 3	 #= reldepth
 315	 #= total
-26	 #= mother
--12 -16	 #= cells[0], cells[1]
+40	 #= mother
+-12 108	 #= cells[0], cells[1]
+# grid 8
+4	 #= parent
+3	 #= reldepth
+236	 #= total
+40	 #= mother
+106 90	 #= cells[0], cells[1]
+# grid 9
+4	 #= parent
+3	 #= reldepth
+120	 #= total
+40	 #= mother
+46 34	 #= cells[0], cells[1]
 # grid 10
 6	 #= parent
 3	 #= reldepth
-205	 #= total
-16	 #= mother
-53 -17	 #= cells[0], cells[1]
+189	 #= total
+40	 #= mother
+43 106	 #= cells[0], cells[1]
 # grid 11
-7	 #= parent
-4	 #= reldepth
-126	 #= total
-32	 #= mother
-58 36	 #= cells[0], cells[1]
-# grid 12
-9	 #= parent
-4	 #= reldepth
-174	 #= total
-32	 #= mother
-86 56	 #= cells[0], cells[1]
-# grid 13
-6	 #= parent
-3	 #= reldepth
-60	 #= total
-16	 #= mother
-28 16	 #= cells[0], cells[1]
-# grid 14
-7	 #= parent
-4	 #= reldepth
-110	 #= total
-32	 #= mother
-40 38	 #= cells[0], cells[1]
-# grid 15
-5	 #= parent
-3	 #= reldepth
-50	 #= total
-16	 #= mother
-30 4	 #= cells[0], cells[1]
-# grid 16
-9	 #= parent
-4	 #= reldepth
-115	 #= total
-32	 #= mother
-52 31	 #= cells[0], cells[1]
-# grid 17
-10	 #= parent
-4	 #= reldepth
-136	 #= total
-32	 #= mother
-46 58	 #= cells[0], cells[1]
-# grid 18
 0	 #= parent
 -1	 #= reldepth
 1000	 #= total
 0	 #= mother
 -1 1	 #= cells[0], cells[1]
-
-
+# grid 12
+7	 #= parent
+4	 #= reldepth
+167	 #= total
+160	 #= mother
+4 3	 #= cells[0], cells[1]
 
 %contains: pass2.txt
+
 #
 # (omnetpp::cLongHistogram) Test.LongHistogram
 #
@@ -491,13 +455,13 @@ fclose(f);
 0 0	 #= sumweights_underflow, sum_weights_overflow
 100	 #= num_firstvals
 0	 #= firstvals[] exists
-19	 #= num_cells
-24	 #= gridv_size
-18	 #= rootgrid
-18	 #= lastgrid
+13	 #= num_cells
+16	 #= gridv_size
+11	 #= rootgrid
+12	 #= lastgrid
 1	 #= gridv_exists
 # grid 1
-18	 #= parent
+11	 #= parent
 0	 #= reldepth
 999	 #= total
 0	 #= mother
@@ -519,89 +483,52 @@ fclose(f);
 2	 #= reldepth
 356	 #= total
 0	 #= mother
--7 -8	 #= cells[0], cells[1]
+-8 -9	 #= cells[0], cells[1]
 # grid 5
 3	 #= parent
 2	 #= reldepth
 365	 #= total
 0	 #= mother
--9 -15	 #= cells[0], cells[1]
+-7 50	 #= cells[0], cells[1]
 # grid 6
 2	 #= parent
 2	 #= reldepth
 265	 #= total
-0	 #= mother
--13 -10	 #= cells[0], cells[1]
+23	 #= mother
+53 -10	 #= cells[0], cells[1]
 # grid 7
-4	 #= parent
-3	 #= reldepth
-236	 #= total
-0	 #= mother
--11 -14	 #= cells[0], cells[1]
-# grid 8
-4	 #= parent
-3	 #= reldepth
-120	 #= total
-16	 #= mother
-60 44	 #= cells[0], cells[1]
-# grid 9
 5	 #= parent
 3	 #= reldepth
 315	 #= total
-26	 #= mother
--12 -16	 #= cells[0], cells[1]
+40	 #= mother
+-12 108	 #= cells[0], cells[1]
+# grid 8
+4	 #= parent
+3	 #= reldepth
+236	 #= total
+40	 #= mother
+106 90	 #= cells[0], cells[1]
+# grid 9
+4	 #= parent
+3	 #= reldepth
+120	 #= total
+40	 #= mother
+46 34	 #= cells[0], cells[1]
 # grid 10
 6	 #= parent
 3	 #= reldepth
-205	 #= total
-16	 #= mother
-53 -17	 #= cells[0], cells[1]
+189	 #= total
+40	 #= mother
+43 106	 #= cells[0], cells[1]
 # grid 11
-7	 #= parent
-4	 #= reldepth
-126	 #= total
-32	 #= mother
-58 36	 #= cells[0], cells[1]
-# grid 12
-9	 #= parent
-4	 #= reldepth
-174	 #= total
-32	 #= mother
-86 56	 #= cells[0], cells[1]
-# grid 13
-6	 #= parent
-3	 #= reldepth
-60	 #= total
-16	 #= mother
-28 16	 #= cells[0], cells[1]
-# grid 14
-7	 #= parent
-4	 #= reldepth
-110	 #= total
-32	 #= mother
-40 38	 #= cells[0], cells[1]
-# grid 15
-5	 #= parent
-3	 #= reldepth
-50	 #= total
-16	 #= mother
-30 4	 #= cells[0], cells[1]
-# grid 16
-9	 #= parent
-4	 #= reldepth
-115	 #= total
-32	 #= mother
-52 31	 #= cells[0], cells[1]
-# grid 17
-10	 #= parent
-4	 #= reldepth
-136	 #= total
-32	 #= mother
-46 58	 #= cells[0], cells[1]
-# grid 18
 0	 #= parent
 -1	 #= reldepth
 1000	 #= total
 0	 #= mother
 -1 1	 #= cells[0], cells[1]
-
+# grid 12
+7	 #= parent
+4	 #= reldepth
+167	 #= total
+160	 #= mother
+4 3	 #= cells[0], cells[1]

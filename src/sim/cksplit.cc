@@ -44,7 +44,7 @@ Register_Class(cKSplit);
 //----
 // Cell division criteria - they are used to decide whether a cell should be split.
 
-double critdata_default[] = {20, 4, 2};
+double critdata_default[] = {20, 10, 2};
 
 int critfunc_const(const cKSplit&, cKSplit::Grid& g, int i, double *c)
 {
@@ -57,7 +57,7 @@ int critfunc_depth(const cKSplit& ks, cKSplit::Grid& g, int i, double *c)
     return g.cells[i] >= c[1] * pow(c[2], depth);
 }
 
-double divdata_default[] = {0.5};
+double divdata_default[] = {0.0}; // force even distributions
 
 double divfunc_const(const cKSplit&, cKSplit::Grid&, double, double *d)
 {
