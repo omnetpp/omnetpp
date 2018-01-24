@@ -917,7 +917,7 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
             CC << "    if (k >= " << field.sizeVar << ") throw omnetpp::cRuntimeError(\"Array of size " << field.arraySize << " indexed by %lu\", (unsigned long)k);\n";
             CC << maybe_handleChange_line;
             CC << "    " << field.sizeType << " newSize = " << field.sizeVar << " - 1;\n";
-            CC << "    " << field.dataType << " *" << field.var << "2 = new " << field.dataType << "[newSize];\n";
+            CC << "    " << field.dataType << " *" << field.var << "2 = (newSize == 0) ? nullptr : new " << field.dataType << "[newSize];\n";
             CC << "    " << field.sizeType << " i;\n";
             CC << "    for (i = 0; i < k; i++)\n";
             CC << "        " << field.var << "2[i] = " << var(field) << "[i];\n";
