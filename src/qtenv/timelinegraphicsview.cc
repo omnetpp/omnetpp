@@ -363,7 +363,7 @@ void TimeLineGraphicsView::paintMessages(QVector<cMessage *> messages, bool want
 
             if (row < numRows) {
                 QBrush brush(Qt::SolidPattern);
-                QColor color = Qt::GlobalColor::black;
+                QColor color = palette().color(QPalette::Text);
                 color.setAlpha(isHighlighted ? 255 : 40);
                 brush.setColor(color);
 

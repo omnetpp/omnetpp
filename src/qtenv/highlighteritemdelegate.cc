@@ -72,8 +72,7 @@ void HighlighterItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
         HighlightRange range = index.data(Qt::UserRole).value<HighlightRange>();
         f.start = range.start;
         f.length = range.length;
-        f.format.setForeground(QBrush(QColor(0, 0, 255)));
-        // f.format.setFontWeight(QFont::Bold); // - just causes complications everywhere (elision, editor width, etc.)
+        f.format.setForeground(option.palette.brush(group, QPalette::Link));
         formats.append(f);
     }
 

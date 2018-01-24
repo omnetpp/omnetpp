@@ -364,7 +364,7 @@ QList<EventEntryLinesProvider::TabStop> EventEntryLinesProvider::getTabStops(Log
     QList<TabStop> tabStops;
     if (entry->banner) {
         if (lineIndex == 0) {  // it's a banner, or if no component, an info line
-            tabStops.append(TabStop(0, QColor(entry->componentId <= 0 ? "green" : "blue")));
+            tabStops.append(TabStop(0, QColor(entry->componentId <= 0 ? "green" : "royalblue")));
             return tabStops;
         }
         lineIndex--;
