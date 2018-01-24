@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_CHISTOGRAM_H
 #define __OMNETPP_CHISTOGRAM_H
 
+#include <climits>
 #include "cdensityestbase.h"
 
 namespace omnetpp {
@@ -89,7 +90,7 @@ class SIM_API cHistogram : public cDensityEstBase
      * Histogram mode. In INTEGERS mode, bin edges are whole numbers; in REALS mode
      * they can be real numbers.
      */
-    enum HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_REALS, MODE_DOUBLES /*deprecated*/ = MODE_REALS};
+    enum HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_REALS, MODE_DOUBLES /*deprecated*/ = MODE_REALS};  //TODO call plain Mode?
 
   protected:
     cIHistogramStrategy *strategy = nullptr; // owned
@@ -280,11 +281,13 @@ class SIM_API cHistogram : public cDensityEstBase
     /**
      * Makes sure that 'value' will falls in the range covered by the bins, by
      * potentially extending the histogram with some bins of width 'step'.
-     * If 'value' is already in the range of the existing bins, the function
-     * does nothing. This can only be used if there is at least one bin already,
-     * and there are no over- or underflows. 'step' must be positive.
+     * Creation of new bins stops when either the total number of bins reaches
+     * 'maxNumBins', or 'value' is covered by the histogram. If 'value' is already
+     * in the range of the existing bins, the function does nothing.
+     * This method may only be called when there are no over- or underflows.
+     * 'step' must be positive.
      */
-    virtual void extendBinsTo(double value, double step);
+    virtual void extendBinsTo(double value, double step, int maxNumBins=INT_MAX);
 
     /**
      * Reduces the number of bins by merging each 'groupSize' consecutive bins into one.

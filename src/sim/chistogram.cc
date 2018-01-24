@@ -17,12 +17,17 @@
 #include <omnetpp/chistogram.h>
 #include "omnetpp/chistogramstrategy.h"
 #include "omnetpp/distrib.h"
+#include "omnetpp/regmacros.h"
+#include "omnetpp/onstartup.h"
+#include "omnetpp/globals.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
 #endif
 
 namespace omnetpp {
+
+Register_Class(cHistogram);
 
 cHistogram::cHistogram(const char *name, bool weighted)
     : cHistogram(name, new cDefaultHistogramStrategy, weighted)
@@ -260,23 +265,12 @@ void cHistogram::merge(const cStatistic *stat)
     // merge the base class
     cDensityEstBase::merge(other);
 
-    // prepend/append extra bins
-    std::vector<double> edgesToPrepend, edgesToAppend;
-    for (int i = 0; i < other->getNumBins()+1; i++) {
-        double edge = other->getBinEdge(i);
-        if (edge < binEdges.front())
-            edgesToPrepend.push_back(edge);
-        if (edge > binEdges.back())
-            edgesToAppend.push_back(edge);
-    }
-    prependBins(edgesToPrepend);  //TODO this can only be done if numOverFlows/underflows are zero! (or extra cells can be merged into overflows/undefrlows)
-    appendBins(edgesToAppend);
-
+    // Note: The current check is too strict: if other's bins can be obtained by splitting
+    // our bins (i.e. our bin edges are a subset of other's bin edges), that would also be OK.
 
     // check bin edges
-    //TODO current check is too strict: if other's bins can be obtained by splitting our bins (i.e. our bin edges are a subset of other's bin edges), that's also OK
     if (getNumBins() != other->getNumBins())
-        throw cRuntimeError(this, "Cannot merge (%s)%s: Different number of histogram bins (%d vs %d)",
+        throw cRuntimeError(this, "Cannot merge (%s)%s: Different number of histogram bins (%d vs. %d)",
                 other->getClassName(), other->getFullPath().c_str(), getNumBins(), other->getNumBins());
     int n = getNumBins();
     for (int i = 0; i <= n; i++)
@@ -373,28 +367,30 @@ void cHistogram::appendBins(const std::vector<double>& edges)
     binValues.insert(binValues.end(), edges.size(), 0.0);
 }
 
-void cHistogram::extendBinsTo(double value, double step)
+void cHistogram::extendBinsTo(double value, double step, int maxNumBins)
 {
     if (binEdges.size() == 0)
         throw cRuntimeError(this, "extendBinsTo() cannot be called if no bins exist yet");
     if (step <= 0)
         throw cRuntimeError(this, "extendBinsTo(): step must be positive");
 
+    // if there are under or overflows, we don't know how to divide the under/overflows between the new bin(s), and the new under/overflow
+    if (value < binEdges.front() && numUnderflows > 0)
+        throw cRuntimeError(this, "extendBinsTo(): cannot extend the histogram in the downward direction, because some observations have already been counted as underflows (numUnderflows > 0)");
+    if (value >= binEdges.back() && numOverflows > 0)
+        throw cRuntimeError(this, "extendBinsTo(): cannot extend the histogram in the upward direction, because some observations have already been counted as overflows (numOverflows > 0)");
+
     ASSERT(binEdges.size() == binValues.size() + 1);
     ASSERT(binEdges.size() >= 2);
 
     // bins are inclusive on the left, and exclusive on the right
 
-    while (value < binEdges.front()) {
-        ASSERT(numUnderflows == 0); // how would we divide the underflows between the new bin(s), and the new underflow?
-
+    while (value < binEdges.front() && (int)binValues.size() < maxNumBins) {
         binEdges.insert(binEdges.begin(), binEdges.front() - step);
         binValues.insert(binValues.begin(), 0);
     }
 
-    while (value >= binEdges.back()) {
-        ASSERT(numOverflows == 0); // how would we divide the overflows between the new bin(s), and the new overflow?
-
+    while (value >= binEdges.back() && (int)binValues.size() < maxNumBins) {
         binEdges.push_back(binEdges.back() + step);
         binValues.push_back(0);
     }
@@ -407,11 +403,13 @@ void cHistogram::mergeBins(int groupSize)
 
     ASSERT(binEdges.size() == binValues.size() + 1);  // histogram is sane
 
-    size_t newNumBins = binValues.size() / groupSize;
+    int numBins = (int)binValues.size();
+    int newNumBins = (numBins + groupSize -1) / groupSize;  // round up
 
-    for (size_t i = 0; i < newNumBins; ++i) {
+    for (int i = 0; i < newNumBins; ++i) {
+        int count = std::min(groupSize, numBins - groupSize*i);
         double binValue = 0;
-        for (int j = 0; j < groupSize; ++j) //TODO modulo
+        for (int j = 0; j < count; ++j)
             binValue += binValues[groupSize*i + j];
         binValues[i] = binValue;
         binEdges[i] = binEdges[groupSize*i];
@@ -485,9 +483,8 @@ void cHistogram::setMode(HistogramMode mode)
 
 void cHistogram::setRange(double lower, double upper)
 {
-    getOrCreateAutoRangeStrategy()->setRangeLo(lower);
-    getOrCreateAutoRangeStrategy()->setRangeHi(upper);
-    getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
+    getOrCreateAutoRangeStrategy()->setRangeLoHint(lower);
+    getOrCreateAutoRangeStrategy()->setRangeHiHint(upper);
 }
 
 void cHistogram::setRangeAuto(int numPrecollect, double rangeExtensionFactor)
@@ -495,25 +492,22 @@ void cHistogram::setRangeAuto(int numPrecollect, double rangeExtensionFactor)
     auto strat = getOrCreateAutoRangeStrategy();
     strat->setNumToPrecollect(numPrecollect);
     strat->setRangeExtensionFactor(rangeExtensionFactor);
-    getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
 }
 
 void cHistogram::setRangeAutoLower(double upper, int numPrecollect, double rangeExtensionFactor)
 {
     auto strat = getOrCreateAutoRangeStrategy();
-    strat->setRangeHi(upper);
+    strat->setRangeHiHint(upper);
     strat->setNumToPrecollect(numPrecollect);
     strat->setRangeExtensionFactor(rangeExtensionFactor);
-    getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
 }
 
 void cHistogram::setRangeAutoUpper(double lower, int numPrecollect, double rangeExtensionFactor)
 {
     auto strat = getOrCreateAutoRangeStrategy();
-    strat->setRangeLo(lower);
+    strat->setRangeLoHint(lower);
     strat->setNumToPrecollect(numPrecollect);
     strat->setRangeExtensionFactor(rangeExtensionFactor);
-    getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
 }
 
 void cHistogram::setNumPrecollectedValues(int numPrecollect)
@@ -533,14 +527,12 @@ void cHistogram::setAutoExtend(bool autoExtend)
 
 void cHistogram::setNumBins(int numBins)
 {
-    getOrCreateAutoRangeStrategy()->setNumBins(numBins);
-    getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
+    getOrCreateAutoRangeStrategy()->setNumBinsHint(numBins);
 }
 
 void cHistogram::setBinSize(double d)
 {
-    getOrCreateAutoRangeStrategy()->setBinSize(d);
-    getOrCreateAutoRangeStrategy()->setBinSizeRounding(false);
+    getOrCreateAutoRangeStrategy()->setBinSizeHint(d);
 }
 
 }  // namespace omnetpp
