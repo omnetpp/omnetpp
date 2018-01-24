@@ -194,10 +194,11 @@ class _OPPDEPRECATED SIM_API cLegacyHistogramBase : public cPrecollectionBasedDe
 class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
 {
   public:
-    enum HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
+    enum Mode {MODE_AUTO, MODE_INTEGERS, MODE_DOUBLES};
+    typedef Mode HistogramMode;
 
   protected:
-    HistogramMode mode;
+    Mode mode;
     double cellSize;  // cell (bin) size; <=0 if unset
 
   private:
@@ -220,7 +221,7 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
     /**
      * Constructor.
      */
-    explicit cLegacyHistogram(const char *name=nullptr, int numcells=-1, HistogramMode mode=MODE_AUTO, bool weighted=false);
+    explicit cLegacyHistogram(const char *name=nullptr, int numcells=-1, Mode mode=MODE_AUTO, bool weighted=false);
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
@@ -317,13 +318,13 @@ class _OPPDEPRECATED SIM_API cLegacyHistogram : public cLegacyHistogramBase
      * Sets the histogram mode: MODE_AUTO, MODE_INTEGERS or MODE_DOUBLES.
      * Cannot be called when the bins have been set up already.
      */
-    virtual void setMode(HistogramMode mode);
+    virtual void setMode(Mode mode);
 
     /**
      * Returns the histogram mode, which is MODE_AUTO, MODE_INTEGERS or
      * MODE_DOUBLES.
      */
-    virtual HistogramMode getMode() const {return mode;}
+    virtual Mode getMode() const {return mode;}
 
     /**
      * Sets the bin size. Cannot be called when the bins have been

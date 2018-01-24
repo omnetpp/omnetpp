@@ -182,7 +182,7 @@ void cLegacyHistogramBase::setNumCells(int numcells)
 
 //----
 
-cLegacyHistogram::cLegacyHistogram(const char *name, int numcells, HistogramMode mode, bool weighted) :
+cLegacyHistogram::cLegacyHistogram(const char *name, int numcells, Mode mode, bool weighted) :
     cLegacyHistogramBase(name, numcells, weighted)
 {
     cellSize = 0;
@@ -224,7 +224,7 @@ cLegacyHistogram& cLegacyHistogram::operator=(const cLegacyHistogram& res)
     return *this;
 }
 
-void cLegacyHistogram::setMode(HistogramMode mode)
+void cLegacyHistogram::setMode(Mode mode)
 {
     if (binsAlreadySetUp())
         throw cRuntimeError(this, "setMode() cannot be called when bins have been set up already");

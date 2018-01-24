@@ -42,7 +42,7 @@ cHistogram::cHistogram(const char *name, cIHistogramStrategy *strategy, bool wei
 
 cHistogram::cHistogram(const char *name, int numBins) : cHistogram(name)
 {
-    setNumBins(numBins);
+    setNumBinsHint(numBins);
 }
 
 cHistogram& cHistogram::operator=(const cHistogram& other)
@@ -476,15 +476,14 @@ cAutoRangeHistogramStrategy *cHistogram::getOrCreateAutoRangeStrategy() const
         throw cRuntimeError(this, "Cannot use convenience histogram setup methods when a different strategy has already been installed");
 }
 
-void cHistogram::setMode(HistogramMode mode)
+void cHistogram::setMode(Mode mode)
 {
     getOrCreateAutoRangeStrategy()->setMode(mode);
 }
 
 void cHistogram::setRange(double lower, double upper)
 {
-    getOrCreateAutoRangeStrategy()->setRangeLoHint(lower);
-    getOrCreateAutoRangeStrategy()->setRangeHiHint(upper);
+    getOrCreateAutoRangeStrategy()->setRangeHint(lower, upper);
 }
 
 void cHistogram::setRangeAuto(int numPrecollect, double rangeExtensionFactor)
@@ -497,7 +496,7 @@ void cHistogram::setRangeAuto(int numPrecollect, double rangeExtensionFactor)
 void cHistogram::setRangeAutoLower(double upper, int numPrecollect, double rangeExtensionFactor)
 {
     auto strat = getOrCreateAutoRangeStrategy();
-    strat->setRangeHiHint(upper);
+    strat->setRangeHint(NAN, upper);
     strat->setNumToPrecollect(numPrecollect);
     strat->setRangeExtensionFactor(rangeExtensionFactor);
 }
@@ -505,7 +504,7 @@ void cHistogram::setRangeAutoLower(double upper, int numPrecollect, double range
 void cHistogram::setRangeAutoUpper(double lower, int numPrecollect, double rangeExtensionFactor)
 {
     auto strat = getOrCreateAutoRangeStrategy();
-    strat->setRangeLoHint(lower);
+    strat->setRangeHint(lower, NAN);
     strat->setNumToPrecollect(numPrecollect);
     strat->setRangeExtensionFactor(rangeExtensionFactor);
 }
@@ -525,12 +524,12 @@ void cHistogram::setAutoExtend(bool autoExtend)
     getOrCreateAutoRangeStrategy()->setAutoExtend(autoExtend);
 }
 
-void cHistogram::setNumBins(int numBins)
+void cHistogram::setNumBinsHint(int numBins)
 {
     getOrCreateAutoRangeStrategy()->setNumBinsHint(numBins);
 }
 
-void cHistogram::setBinSize(double d)
+void cHistogram::setBinSizeHint(double d)
 {
     getOrCreateAutoRangeStrategy()->setBinSizeHint(d);
 }

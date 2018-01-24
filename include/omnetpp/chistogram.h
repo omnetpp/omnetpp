@@ -90,7 +90,8 @@ class SIM_API cHistogram : public cDensityEstBase
      * Histogram mode. In INTEGERS mode, bin edges are whole numbers; in REALS mode
      * they can be real numbers.
      */
-    enum HistogramMode {MODE_AUTO, MODE_INTEGERS, MODE_REALS, MODE_DOUBLES /*deprecated*/ = MODE_REALS};  //TODO call plain Mode?
+    enum Mode {MODE_AUTO, MODE_INTEGERS, MODE_REALS, MODE_DOUBLES /*deprecated*/ = MODE_REALS};
+    _OPPDEPRECATED typedef Mode HistogramMode;
 
   protected:
     cIHistogramStrategy *strategy = nullptr; // owned
@@ -353,12 +354,13 @@ class SIM_API cHistogram : public cDensityEstBase
      * This method internally installs (or uses an already installed)
      * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
      */
-    virtual void setMode(HistogramMode mode);
+    virtual void setMode(Mode mode);
 
     /**
-     * Sets the histogram range explicitly to [lower, upper]. Use NAN for unspecified.
-     * This method internally installs (or uses an already installed)
-     * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
+     * Sets the histogram range explicitly to [lower, upper). Use NAN to leave
+     * either or both values unspecified. This method internally installs
+     * (or uses an already installed) cAutoRangeHistogramStrategy on the
+     * histogram, and configures it accordingly.
      */
     virtual void setRange(double lower, double upper);
 
@@ -391,14 +393,14 @@ class SIM_API cHistogram : public cDensityEstBase
      * set up already. This method internally installs (or uses an already installed)
      * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
      */
-    virtual void setNumBins(int numCells);
+    virtual void setNumBinsHint(int numCells);
 
     /**
-     * Sets the bin size. Cannot be called when the bins have been set up already.
-     * This method internally installs (or uses an already installed)
+     * Sets the preferred bin size. Cannot be called when the bins have been
+     * set up already. This method internally installs (or uses an already installed)
      * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
      */
-    virtual void setBinSize(double d);
+    virtual void setBinSizeHint(double d);
 
     /**
      * Deprecated method. Use the combination of setNumPrecollectedValues() and
@@ -421,12 +423,12 @@ class SIM_API cHistogram : public cDensityEstBase
     /**
      * Deprecated method, use setNumBins() instead.
      */
-    _OPPDEPRECATED virtual void setNumCells(int numCells) final {setNumBins(numCells);}
+    _OPPDEPRECATED virtual void setNumCells(int numCells) final {setNumBinsHint(numCells);}
 
     /**
      * Deprecated method, use setBinSize() instead.
      */
-    _OPPDEPRECATED virtual void setCellSize(double d) final {setBinSize(d);}
+    _OPPDEPRECATED virtual void setCellSize(double d) final {setBinSizeHint(d);}
     //@}
 };
 

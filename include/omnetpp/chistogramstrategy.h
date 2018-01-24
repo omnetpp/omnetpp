@@ -26,12 +26,11 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
-//TODO override getOwner()?
 class SIM_API cIHistogramStrategy : public cObject
 {
     friend class cHistogram;
   public:
-    typedef enum cHistogram::HistogramMode HistogramMode;
+    typedef enum cHistogram::Mode Mode;
 
   protected:
     cHistogram *hist = nullptr; // backreference to "owner"
@@ -92,11 +91,14 @@ class SIM_API cIHistogramStrategy : public cObject
 
 /**
  * @brief Histogram strategy that sets up uniform bins over a predetermined
- * interval. The bin size and histogram mode (integers or reals) can
- * also be configured. This strategy does not use precollection.
+ * interval. The number of bins and the histogram mode (integers or reals)
+ * also need to be configured. This strategy does not use precollection,
+ * as all input for setting up the bins must be explicitly provided by
+ * the user.
  *
- * Auto-extending the histogram with new bins during collection is optional;
- * it is turned off by default.
+ * Bins are set up when the first value is collected, and never change afterwards.
+ * If you need a histogram strategy that supports dynamically extending the
+ * histogram with new bins, consider using cAutoRangeUpperLimitstogramStrategy.
  *
  * @ingroup Statistics
  */
@@ -105,9 +107,9 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
   protected:
     double lo = NAN;
     double hi = NAN;
-    double binSize = NAN;
-    HistogramMode mode = cHistogram::MODE_REALS; // may not be AUTO
-    bool autoExtend = false;
+    int numBins = -1;
+    Mode mode = cHistogram::MODE_REALS; // may not be AUTO
+    double binSize = NAN; // computed
 
   private:
     void copy(const cFixedRangeHistogramStrategy& other);
@@ -115,9 +117,9 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
   public:
     /** @name Constructors, copying. */
     //@{
-    cFixedRangeHistogramStrategy() {}
-    cFixedRangeHistogramStrategy(double lo, double hi, double binSize, HistogramMode mode=cHistogram::MODE_REALS) :
-        lo(lo), hi(hi), binSize(binSize), mode(mode) {}
+    cFixedRangeHistogramStrategy() {} // must be configured using setter methods
+    cFixedRangeHistogramStrategy(double lo, double hi, int numBins, Mode mode=cHistogram::MODE_REALS) :
+        lo(lo), hi(hi), numBins(numBins), mode(mode) {}
     cFixedRangeHistogramStrategy(const cFixedRangeHistogramStrategy& other): cIHistogramStrategy(other) {copy(other);}
     cFixedRangeHistogramStrategy& operator=(const cFixedRangeHistogramStrategy& other);
     virtual cFixedRangeHistogramStrategy *dup() const override {return new cFixedRangeHistogramStrategy(*this);}
@@ -125,16 +127,15 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
 
     /** @name Configuring. */
     //@{
-    double getHi() const {return hi;}
-    void setHi(double hi) {this->hi = hi;}
-    double getLo() const {return lo;}
-    void setLo(double lo) {this->lo = lo;}
-    HistogramMode getMode() const {return mode;}
-    void setMode(HistogramMode mode) {this->mode = mode;}
-    double getBinSize() const {return binSize;}
-    void setBinSize(double binSize) {this->binSize = binSize;}
-    void setAutoExtend(bool enable) {this->autoExtend = enable;}
-    bool getAutoExtend() const {return autoExtend;}
+    void setRange(double lo, double hi) {this->lo = lo; this->hi = hi;}
+    double getUpperLimit() const {return hi;}
+    void setUpperLimit(double hi) {this->hi = hi;}
+    double getLowerLimit() const {return lo;}
+    void setLowerLimit(double lo) {this->lo = lo;}
+    Mode getMode() const {return mode;}
+    void setMode(Mode mode) {this->mode = mode;}
+    double getBinSize() const {return numBins;}
+    void setBinSize(double binSize) {this->numBins = binSize;}
     //@}
 
     /** @name Redefined cIHistogramStrategy methods */
@@ -148,7 +149,7 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
 
 /**
  * @brief Base class for histogram strategies that employ a precollection phase
- * in order to get information for setting up the bins. This class provides
+ * in order to gather input for setting up the bins. This class provides
  * storage for the precollected values.
  *
  * @ingroup Statistics
@@ -191,28 +192,40 @@ class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
 };
 
 /**
- * @brief The histogram strategy used in the default setup of cHistogram.
- * This strategy should be able to provide a good quality histogram for
- * practical distributions without requiring manual configuration.
+ * @brief The histogram strategy creates uniform bins, and it is used in
+ * the default setup of cHistogram. This strategy is meant to provide a good
+ * quality histogram without requiring manual configuration for practical
+ * distributions.
  *
- * This strategy uses the following techniques: precollection; bin size rounding
- * (to 1, 2 or 5 times powers of ten); auto-extension by adding bins if needed;
- * merging of adjacent bins to reduce bin count if needed.
+ * This strategy uses precollection to gather input information about the
+ * distribution before setting up the bins. Precollection is used to determine
+ * the initial histogram range and the histogram mode (integers vs. reals).
+ * In integers mode, bin edges will be whole numbers.
+ *
+ * To keep up with distributions that change over time, this histogram strategy
+ * can auto-extend the histogram range by adding new bins as needed. It also
+ * performs bin merging when necessary, to keep the number of bins reasonably low.
  *
  * @ingroup Statistics
  */
 class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStrategy
 {
   private:
+    static const int DEFAULT_NUM_BINS = 60; // a number with many divisors
     double rangeExtensionFactor = 1.5;
     double binSize = NAN;
     int desiredNumBins;
-    HistogramMode mode = cHistogram::MODE_AUTO;
+    Mode mode = cHistogram::MODE_AUTO;
+    bool autoExtend = true;
+    bool binMerging = true;
+    int maxNumBins = 1000;
 
   protected:
     virtual void createBins() override;
     double computeBinSize(double& rangeMin, double& rangeMax);
     double computeIntegerBinSize(double& rangeMin, double& rangeMax);
+    virtual void extendBinsTo(double value);
+    virtual void reduceNumBinsTo(int numBins);
 
   private:
     void copy(const cDefaultHistogramStrategy& other);
@@ -220,10 +233,16 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
   public:
     /** @name Constructors, copying. */
     //@{
-    explicit cDefaultHistogramStrategy(int desiredNumBins=30, HistogramMode mode=cHistogram::MODE_AUTO) : desiredNumBins(desiredNumBins), mode(mode) {}  //TODO more bins by default? (60)
+    explicit cDefaultHistogramStrategy(int desiredNumBins=DEFAULT_NUM_BINS, Mode mode=cHistogram::MODE_AUTO) : desiredNumBins(desiredNumBins), mode(mode) {}
     cDefaultHistogramStrategy(const cDefaultHistogramStrategy& other): cPrecollectionBasedHistogramStrategy(other) {copy(other);}
     cDefaultHistogramStrategy& operator=(const cDefaultHistogramStrategy& other);
     virtual cDefaultHistogramStrategy *dup() const override {return new cDefaultHistogramStrategy(*this);}
+    //@}
+
+    /** @name Configuring. */
+    //@{
+    int getNumBinsHint() const {return desiredNumBins;}
+    void setNumBinsHint(int numBins) {this->desiredNumBins = numBins;}
     //@}
 
     /** @name Redefined cIHistogramStrategy methods. */
@@ -235,42 +254,59 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
 };
 
 /**
- * @brief A generic precollection-based histogram strategy that yields a good
- * quality histogram for practical distributions. This strategy is very
- * configurable, and uses the following techniques: precollection; bin size
- * rounding (to 1, 2 or 5 times powers of ten); auto-extension by adding bins
- * if needed; merging of adjacent bins to reduce bin count if needed.
+ * @brief A generic, very configurable histogram strategy that is meant to provide
+ * a good quality histogram for practical distributions, and creates uniform bins.
+ * This strategy uses precollection to gather input information about the
+ * distribution before setting up the bins.
  *
- * It is possible to explicitly set any of the following values (and the rest
- * will be chosen or computed automatically): number of bins; bin size;
- * number of observations to precollect; range extension factor; range lower
- * edge; range upper edge. Especially in INTEGERS mode, if the bins cannot be
- * set up to satisfy all explicitly given constraints (for example, if the
- * explicitly specified range is not an integer multiple of the explicitly
- * specified bin size), an error will be thrown.
+ * Several parameters and constraints can be specified for setting up the bins:
+ * range lower and/or upper endpoint, bin size, number of bins, mode (integers
+ * or reals), and whether bin size rounding is to be used. If bin size rounding
+ * is turned on, a bin size of the form {1|2|5}*10^n is chosen, i.e. a power of ten,
+ * or two or five times a power of ten. When both endpoints of the range are
+ * left unspecified, the histogram range is derived by taking the range of the
+ * precollected observations and extending it symmetrically by a range extension
+ * factor. If one of the endpoints is specified by the user, that value is used
+ * instead of he computed one. The number of observations to precollect as well
+ * as the range extension factor can be configured. If the histogram mode
+ * (integers vs. reals) is left unspecified, it will be determined by examining
+ * the precollected values. In integers mode, bin edges will be whole numbers.
+ * If the histogram range and mode are all specified by the user, the
+ * precollection phase is skipped.
  *
+ * If there are inconsistent or conflicting settings, e.g. an explicitly given
+ * histogram range is not multiple of the bin size in integers mode, the bin
+ * setup algorithm will do "best effort" to set up the histogram instead of
+ * stopping with an exception.
+ *
+ * This histogram strategy can auto-extend the histogram range by adding new
+ * bins at either end. One can also set up an upper limit to the number of
+ * histogram bins to prevent it from growing indefinitely. Bin merging can
+ * also be enabled: it will cause every two (or N) adjacent bins to be
+ * merged to reduce the number of bins if their number grows too high.
+ *
+ * @ingroup Statistics
  */
-// note: when constraints are overdetermined, "best effort" will be made to satisfy them:
-// at least as numBins bins created; histogram range to include the [lo,hi) interval, etc.
-//TODO do not precollect if range and mode are fully specified!
 class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramStrategy
 {
   private:
-    const int DEFAULT_NUM_BINS = 30; // to allow merging every 2, 3, 5, 6 adjacent bins during post-processing
-    double lo = NAN;  // set NaN for unspecified
-    double hi = NAN;  // set NaN for unspecified
+    static const int DEFAULT_NUM_BINS = 60; // a number with many divisors
+    double lo = NAN;  // range lower limit; use NaN for unspecified
+    double hi = NAN;  // range upper limit; use NaN for unspecified
     double rangeExtensionFactor = 1.5;
     int desiredNumBins = -1;
     double requestedBinSize = NAN; // user-given
     double binSize = NAN; // actual (computed)
-    HistogramMode mode = cHistogram::MODE_AUTO;
+    Mode mode = cHistogram::MODE_AUTO;
     bool binSizeRounding = true;
     bool autoExtend = true;
-    bool binMerging = true; // TODO maybe add maxNumBins instead of this flag? i.e. when #bins exceeds maxNumBins, call mergeBins() with appropriate "n" -- prevents binSize getting multiplied by 2^n
+    bool binMerging = true;
+    int maxNumBins = 1000;
 
   protected:
     virtual void createBins() override;
-    virtual void mergeBins();
+    virtual void extendBinsTo(double value);
+    virtual void reduceNumBinsTo(int numBins);
 
   private:
     void copy(const cAutoRangeHistogramStrategy& other);
@@ -278,9 +314,8 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
   public:
     /** @name Constructors, copying. */
     //@{
-    // lo, hi: specify NaN for either or both or neither!
-    explicit cAutoRangeHistogramStrategy(double lo=NAN, double hi=NAN, int numBins=-1, HistogramMode mode=cHistogram::MODE_AUTO) :  //TODO remove numBins from ctor?
-        lo(lo), hi(hi), desiredNumBins(numBins), mode(mode) {}
+    explicit cAutoRangeHistogramStrategy(Mode mode=cHistogram::MODE_AUTO) : mode(mode) {}
+    explicit cAutoRangeHistogramStrategy(int numBins, Mode mode=cHistogram::MODE_AUTO) : desiredNumBins(numBins), mode(mode) {}
     cAutoRangeHistogramStrategy(const cAutoRangeHistogramStrategy& other): cPrecollectionBasedHistogramStrategy(other) {copy(other);}
     cAutoRangeHistogramStrategy& operator=(const cAutoRangeHistogramStrategy& other);
     virtual cAutoRangeHistogramStrategy *dup() const override {return new cAutoRangeHistogramStrategy(*this);}
@@ -288,26 +323,27 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
 
     /** @name Configuring. */
     //@{
-    //TODO all params are hints!! rename???
-    double getBinSize() const {return requestedBinSize;}
-    void setBinSize(double binSize) {this->requestedBinSize = binSize;}
-    bool getBinSizeRounding() const {return binSizeRounding;}
-    void setBinSizeRounding(bool binSizeRounding) {this->binSizeRounding = binSizeRounding;}
-    void setRange(double lo, double hi) {this->lo = lo; this->hi = hi;}
-    double getRangeHi() const {return hi;}
-    void setRangeHi(double hi) {this->hi = hi;}
-    double getRangeLo() const {return lo;}
-    void setRangeLo(double lo) {this->lo = lo;}
-    HistogramMode getMode() const {return mode;}
-    void setMode(HistogramMode mode) {this->mode = mode;}
-    int getNumBins() const {return desiredNumBins;}
-    void setNumBins(int numBins) {this->desiredNumBins = numBins;}
+    void setRangeHint(double lo, double hi) {this->lo = lo; this->hi = hi;}  ///< Use NAN to leave either value unspecified.
+    double getUpperLimitHint() const {return hi;}
+    void setUpperLimitHint(double hi) {this->hi = hi;}
+    double getLowerLimitHint() const {return lo;}
+    void setLowerLimitHint(double lo) {this->lo = lo;}
     double getRangeExtensionFactor() const {return rangeExtensionFactor;}
     void setRangeExtensionFactor(double rangeExtensionFactor) {this->rangeExtensionFactor = rangeExtensionFactor;}
+    Mode getMode() const {return mode;}
+    void setMode(Mode mode) {this->mode = mode;}
+    double getBinSizeHint() const {return requestedBinSize;}
+    void setBinSizeHint(double binSize) {this->requestedBinSize = binSize;}
+    bool getBinSizeRounding() const {return binSizeRounding;}
+    void setBinSizeRounding(bool binSizeRounding) {this->binSizeRounding = binSizeRounding;}
+    int getNumBinsHint() const {return desiredNumBins;}
+    void setNumBinsHint(int numBins) {this->desiredNumBins = numBins;}
     void setAutoExtend(bool enable) {this->autoExtend = enable;}
     bool getAutoExtend() const {return autoExtend;}
     void setBinMerging(bool enable) {this->binMerging = enable;}
     bool getBinMerging() const {return binMerging;}
+    int getMaxNumBins() const {return maxNumBins;}
+    void setMaxNumBins(int numBins) {this->maxNumBins = numBins;}
     //@}
 
     /** @name Redefined cIHistogramStrategy methods. */
