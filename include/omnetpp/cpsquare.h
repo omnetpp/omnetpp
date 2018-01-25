@@ -42,6 +42,7 @@ class SIM_API cPSquare : public cDensityEstBase
 
   protected:
     void copy(const cPSquare& other);
+    void ensureStrictlyIncreasingEdges();
 
   public:
     /** @name Constructors, destructor, assignment. */

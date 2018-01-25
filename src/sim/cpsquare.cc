@@ -249,12 +249,30 @@ int cPSquare::getNumBins() const
 
 double cPSquare::getBinEdge(int k) const
 {
+    if (k == 0)
+        const_cast<cPSquare*>(this)->ensureStrictlyIncreasingEdges();
+
     return q[k+1];
 }
 
 double cPSquare::getBinValue(int k) const
 {
     return n[k+2] - n[k+1] + (k == 0);
+}
+
+inline double nextAfter(double x)
+{
+    return std::nextafter(x, x+1 /*up*/);
+}
+
+void cPSquare::ensureStrictlyIncreasingEdges()
+{
+    // P^2 sometimes creates equal bin edges (e.g. when the distribution is a single constant value)
+    // but the getBinEdge() contract promises strictly increasing edges. Tweak bin edges a little to make
+    // them strictly increasing.
+    for (int i = 1; i <= getNumBins(); i++)
+        if (q[i+1] <= q[i])
+            q[i+1] = nextAfter(q[i]);
 }
 
 void cPSquare::saveToFile(FILE *f) const
