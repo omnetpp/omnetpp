@@ -28,7 +28,7 @@ PREFER_CLANG=yes
 # C++ exceptions (throw/catch) are used together)!
 #
 #CFLAGS_DEBUG='-g -Wall'
-#CFLAGS_RELEASE='-O3 -march=native -mtune=native -DNDEBUG=1'
+#CFLAGS_RELEASE='-O3 -DNDEBUG=1'
 
 # C++ specific compiler flags. OMNeT++ requires at least -std=c++11 (default), but
 # -std=c++14 should work, too.

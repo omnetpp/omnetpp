@@ -5,6 +5,17 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 5.3 Preview 3 (January 2018)
+------------------------------------
+
+Highlights:
+
+  - build: 'match=native' and 'mtune=native' compiler options are no longer used
+    by default for a release build because on certain CPUs this caused rounding
+    differences so simulations may run on a different trajectory depending on
+    the actual CPU used.
+
+
 OMNeT++ 5.3 Preview 2 (January 2018)
 ------------------------------------
 

@@ -2237,7 +2237,7 @@ LIB_PREFIX="lib"
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
-CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -march=native -mtune=native -DNDEBUG=1}
+CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$(basename \$@).d}
 CXXFLAGS=${CXXFLAGS:- -std=c++11}
