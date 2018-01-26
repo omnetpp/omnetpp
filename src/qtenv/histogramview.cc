@@ -27,8 +27,10 @@
 // unused? static const int VERT_TEXT_DISTANCE = 5;
 static const int MARGIN = 10;
 static const QColor HISTOGRAM_COLOR("#1D3B9C");
+static const QColor OUTLIERS_COLOR("#4D1B7C");
 static const QColor HIGHLIGHT_FILL_COLOR("#7792EB");
-static const QColor HIGHLIGHT_LINE_COLOR("#F4D286");
+static const QColor HIGHLIGHT_LINE_COLOR("#943246");
+static const QColor HIGHLIGHT_OUTLIERS_COLOR("#7D3B9C");
 
 namespace omnetpp {
 namespace qtenv {
@@ -81,10 +83,12 @@ void HistogramView::leaveEvent(QEvent *)
 void HistogramView::showInfo(QPoint mousePos)
 {
     if (actual) {
+        bool isOutliers = actual->data(1).toBool();
+        QColor color = isOutliers ? OUTLIERS_COLOR : HISTOGRAM_COLOR;
         if (drawingStyle == DRAW_FILLED)
-            actual->setBrush(HISTOGRAM_COLOR);
+            actual->setBrush(color);
         else {
-            actual->setPen(HISTOGRAM_COLOR);
+            actual->setPen(color);
             actual->setZValue(0);
         }
         actual = nullptr;
@@ -96,10 +100,12 @@ void HistogramView::showInfo(QPoint mousePos)
             if (rect == gridItem->getDiagramFrame())
                 continue;
 
+            bool isOutliers = rect->data(1).toBool();
+
             if (drawingStyle == DRAW_FILLED)
-                rect->setBrush(HIGHLIGHT_FILL_COLOR);
+                rect->setBrush(isOutliers ? HIGHLIGHT_OUTLIERS_COLOR : HIGHLIGHT_FILL_COLOR);
             else {
-                rect->setPen(HIGHLIGHT_LINE_COLOR);
+                rect->setPen(isOutliers ? HIGHLIGHT_OUTLIERS_COLOR : HIGHLIGHT_LINE_COLOR);
                 rect->setZValue(1);
             }
             bin = rect->data(0).toInt();
@@ -111,7 +117,7 @@ void HistogramView::showInfo(QPoint mousePos)
     emit showCellInfo(bin);
 }
 
-void HistogramView::drawBin(ChartType type, DrawingStyle drawingStyle, int binIndex, double leftEdge, double rightEdge, double value, double pdfValue)
+void HistogramView::drawBin(ChartType type, DrawingStyle drawingStyle, int binIndex, bool isOutliers, double leftEdge, double rightEdge, double value, double pdfValue)
 {
     int left = mapXToView(leftEdge);
     int width = std::max(1, mapXToView(rightEdge) - left);
@@ -127,15 +133,17 @@ void HistogramView::drawBin(ChartType type, DrawingStyle drawingStyle, int binIn
 
     QBrush brush;
     QPen pen;
+    QColor color = isOutliers ? OUTLIERS_COLOR : HISTOGRAM_COLOR;
     if (drawingStyle == DRAW_FILLED) {
-        brush = HISTOGRAM_COLOR;
+        brush = color;
         pen = Qt::NoPen;
     }
     else
-        pen.setColor(HISTOGRAM_COLOR);
+        pen.setColor(color);
 
     QGraphicsRectItem *item = new QGraphicsRectItem(QRectF(left, rectMinY, width, height), gridItem->getDiagramFrame());
     item->setData(0, binIndex);
+    item->setData(1, isOutliers);
     item->setPen(pen);
     item->setBrush(brush);
 }
@@ -184,19 +192,19 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cAbstractHis
     if (distr->getNumUnderflows()) {
         double leftEdge = distr->getMin();
         double rightEdge = distr->getBinEdge(0);
-        drawBin(type, drawingStyle, -1, leftEdge, rightEdge, distr->getUnderflowSumWeights(), distr->getUnderflowSumWeights() / distr->getSumWeights() / (rightEdge - leftEdge));
+        drawBin(type, drawingStyle, -1, true, leftEdge, rightEdge, distr->getUnderflowSumWeights(), distr->getUnderflowSumWeights() / distr->getSumWeights() / (rightEdge - leftEdge));
     }
 
     int numBins = distr->getNumBins();
 
     // draw the histogram
     for (int bin = 0; bin < numBins; bin++)
-        drawBin(type, drawingStyle, bin, distr->getBinEdge(bin), distr->getBinEdge(bin+1), distr->getBinValue(bin), distr->getBinPDF(bin));
+        drawBin(type, drawingStyle, bin, false, distr->getBinEdge(bin), distr->getBinEdge(bin+1), distr->getBinValue(bin), distr->getBinPDF(bin));
 
     if (distr->getNumOverflows()) {
         double leftEdge = distr->getBinEdge(numBins);
         double rightEdge = distr->getMax();
-        drawBin(type, drawingStyle, numBins, leftEdge, rightEdge, distr->getOverflowSumWeights(), distr->getOverflowSumWeights() / distr->getSumWeights() / (rightEdge - leftEdge));
+        drawBin(type, drawingStyle, numBins, true, leftEdge, rightEdge, distr->getOverflowSumWeights(), distr->getOverflowSumWeights() / distr->getSumWeights() / (rightEdge - leftEdge));
     }
 
     showInfo(mapFromGlobal(QCursor::pos()));

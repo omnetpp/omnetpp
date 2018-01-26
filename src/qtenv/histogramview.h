@@ -47,7 +47,7 @@ class HistogramView : public QGraphicsView
 
     void showInfo(QPoint mousePos);
 
-    void drawBin(ChartType type, DrawingStyle drawingStyle, int binIndex, double leftEdge, double rightEdge, double value, double pdfValue);
+    void drawBin(ChartType type, DrawingStyle drawingStyle, int binIndex, bool isOutliers, double leftEdge, double rightEdge, double value, double pdfValue);
 
   signals:
     void showCellInfo(int bin);
