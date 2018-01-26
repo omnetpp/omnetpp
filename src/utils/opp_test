@@ -581,7 +581,7 @@ Supported .test file entry types:
 
             if 'testprog(1)' in self.values:
                 cmdline = self.values['testprog(1)'] + " " +myargs+" "+(" ".join(self.args.extraargs))
-                runscript += cmdline + " $*\n"
+                runscript += cmdline + ' "$@"\n'
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
             else:
                 testprogwithpath = os.path.join(self.args.workdir, self.args.testprogram)
@@ -590,7 +590,7 @@ Supported .test file entry types:
                 if (not os.access(testprogwithpath, os.X_OK)):   #FIXME check it on Windows/Mac
                     fail("test program '" + testprogwithpath + "' is not executable\n")
                 cmdline = os.path.join("..",self.args.testprogram)+" -u Cmdenv "+myargs+" "+(" ".join(self.args.extraargs))+" "+inifilenames
-                runscript += cmdline + " \$*\n"
+                runscript += cmdline + ' "$@"\n'
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
 
         # check exitcode
