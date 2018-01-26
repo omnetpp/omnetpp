@@ -227,18 +227,42 @@ void HistogramInspector::onShowCellInfo(int bin)
         return;
     }
 
-    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
-
-    if (bin == -1 || bin == d->getNumBins()) {
+    if (bin == INT_MIN) {
+        // no bin selected
         statusBar->showMessage(generalInfo());
         return;
     }
 
-    double binValue = d->getBinValue(bin);
-    double lowerEdge = d->getBinEdge(bin);
-    double upperEdge = d->getBinEdge(bin+1);
-    QString text = "Bin #%1:  [%2...%3)  w=%4  PDF=%5";
-    text = text.arg(QString::number(bin), QString::number(lowerEdge),
+    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
+
+    QString binName;
+    double binValue;
+    double lowerEdge;
+    double upperEdge;
+
+    if (bin == -1) {
+        // underflows
+        binName = "Underflows";
+        binValue = d->getUnderflowSumWeights();
+        lowerEdge = d->getMin();
+        upperEdge = d->getBinEdge(0);
+    }
+    if (bin == d->getNumBins()) {
+        // overflows
+        binName = "Overflows";
+        binValue = d->getUnderflowSumWeights();
+        lowerEdge = d->getBinEdge(d->getNumBins());
+        upperEdge = d->getMax();
+    } else {
+        // regular histogram bin
+        binName = QString("Bin #%1").arg(QString::number(bin));
+        binValue = d->getBinValue(bin);
+        lowerEdge = d->getBinEdge(bin);
+        upperEdge = d->getBinEdge(bin+1);
+    }
+
+    QString text = "%1:  [%2...%3)  w=%4  PDF=%5";
+    text = text.arg(binName, QString::number(lowerEdge),
                     QString::number(upperEdge), QString::number(binValue),
                     QString::number(binValue / d->getWeightedSum() / (upperEdge-lowerEdge)));
 

@@ -90,7 +90,7 @@ void HistogramView::showInfo(QPoint mousePos)
         actual = nullptr;
     }
 
-    int bin = -1;
+    int bin = INT_MIN; // special value for "no bin", -1 is used for underflows
     for (QGraphicsItem *item : items(mousePos))
         if (QGraphicsRectItem *rect = dynamic_cast<QGraphicsRectItem *>(item)) {
             if (rect == gridItem->getDiagramFrame())
