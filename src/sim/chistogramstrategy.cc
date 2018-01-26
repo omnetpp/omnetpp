@@ -143,8 +143,11 @@ void cDefaultHistogramStrategy::copy(const cDefaultHistogramStrategy& other)
 {
     rangeExtensionFactor = other.rangeExtensionFactor;
     binSize = other.binSize;
-    desiredNumBins = other.desiredNumBins;
+    numBinsHint = other.numBinsHint;
+    targetNumBins = other.targetNumBins;
     mode = other.mode;
+    autoExtend = other.autoExtend;
+    binMerging =other.binMerging;
     maxNumBins = other.maxNumBins;
 }
 
@@ -208,6 +211,8 @@ static double roundToOneTwoFive(double x)
 
 void cDefaultHistogramStrategy::createBins()
 {
+    targetNumBins = numBinsHint == -1 ? DEFAULT_NUM_BINS : numBinsHint;
+
     if (values.empty()) {
         this->binSize = 1;
         hist->createUniformBins(0, 1, binSize);
@@ -250,8 +255,8 @@ void cDefaultHistogramStrategy::createBins()
     if (mode == cHistogram::MODE_INTEGERS)
         binSize = ceil(binSize);
 
-    rangeMin = rangeMin - std::fmod(rangeMin, binSize);
-    rangeMax = rangeMax - std::fmod(rangeMax, binSize);
+    rangeMin = binSize * std::floor(rangeMin / binSize); // snap
+    rangeMax = binSize * std::ceil(rangeMax / binSize);
 
     this->binSize = binSize;
 
@@ -270,14 +275,9 @@ void cDefaultHistogramStrategy::createBins()
 
 double cDefaultHistogramStrategy::computeBinSize(double& rangeMin, double& rangeMax)
 {
-    int numBins = this->desiredNumBins;
-    if (numBins == -1)
-        numBins = DEFAULT_NUM_BINS;
-    double bs = (rangeMax - rangeMin) / numBins;
-
-    bs = roundToOneTwoFive(bs);
-
-    return bs;
+    double binSize = (rangeMax - rangeMin) / targetNumBins;
+    binSize = roundToOneTwoFive(binSize);
+    return binSize;
 }
 
 void cDefaultHistogramStrategy::extendBinsTo(double value)
@@ -293,8 +293,8 @@ void cDefaultHistogramStrategy::extendBinsTo(double value)
 
     if (binMerging) {
         hist->extendBinsTo(value, binSize);
-        if (hist->getNumBins() > (desiredNumBins*3)/2)
-            reduceNumBinsTo(desiredNumBins);
+        if (hist->getNumBins() > (targetNumBins*3)/2)
+            reduceNumBinsTo(targetNumBins);
     }
     else
         hist->extendBinsTo(value, binSize, maxNumBins);
@@ -327,7 +327,8 @@ void cAutoRangeHistogramStrategy::copy(const cAutoRangeHistogramStrategy& other)
     lo = other.lo;
     hi = other.hi;
     rangeExtensionFactor = other.rangeExtensionFactor;
-    desiredNumBins = other.desiredNumBins;
+    numBinsHint = other.numBinsHint;
+    targetNumBins = other.targetNumBins;
     binSize = other.binSize;
     mode = other.mode;
     binSizeRounding = other.binSizeRounding;
@@ -368,6 +369,8 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
 
 void cAutoRangeHistogramStrategy::createBins()
 {
+    targetNumBins = numBinsHint == -1 ? DEFAULT_NUM_BINS : numBinsHint;
+
     // determine mode (integers or reals) from precollected observations
     Mode mode = this->mode;
     if (mode == cHistogram::MODE_AUTO) {
@@ -420,16 +423,15 @@ void cAutoRangeHistogramStrategy::createBins()
         binSize = requestedBinSize;
     }
     else {
-        int approxNumBins = desiredNumBins == -1 ? DEFAULT_NUM_BINS : desiredNumBins;
-        double approxBinSize = (rangeMax - rangeMin) / approxNumBins;
+        double approxBinSize = (rangeMax - rangeMin) / targetNumBins;
         binSize = (mode == cHistogram::MODE_INTEGERS) ? ceil(approxBinSize) : approxBinSize;
 
         if (binSizeRounding) {
             binSize = roundToOneTwoFive(binSize);
             if (binSize == 0)
                 binSize = 1;
-            rangeMin = rangeMin - std::fmod(rangeMin, binSize); // snap
-            rangeMax = rangeMax - std::fmod(rangeMax, binSize);
+            rangeMin = binSize * std::floor(rangeMin / binSize); // snap
+            rangeMax = binSize * std::ceil(rangeMax / binSize);
             if (rangeMin >= rangeMax)
                 rangeMax = rangeMin + 1;
         }
@@ -437,23 +439,25 @@ void cAutoRangeHistogramStrategy::createBins()
     ASSERT(binSize > 0);
 
     // adjust range to be a multiple of binSize, especially for the MODE_INTEGERS case
-    int numBins = desiredNumBins > 0 ? desiredNumBins : (int)ceil((rangeMax - rangeMin) / binSize);
+    int numBins = numBinsHint > 0 ? numBinsHint : (int)ceil((rangeMax - rangeMin) / binSize);
     ASSERT(numBins > 0);
 
     double newRange = binSize * numBins;
     if (!hasLo && !hasHi) {
         double rangeDiff = newRange - (rangeMax - rangeMin);
         rangeMin -= (mode == cHistogram::MODE_INTEGERS) ? floor(rangeDiff / 2) : rangeDiff / 2;
+        if (!hasLo && rangeMin < 0 && hist->getCount() > 0 && hist->getMin() >= 0 && hist->getMax() > 0)
+             rangeMin = 0; // do not go into negative unless warranted by the collected data
         rangeMax = rangeMin + newRange;
     }
-    else if (hasHi) {
+    else if (!hasLo) {
         rangeMin = rangeMax - newRange;
     }
-    else if (hasLo) {
+    else if (!hasHi) {
         rangeMax = rangeMin + newRange;
     }
     else {
-        //TODO check consistency, esp. in the integer case?
+        // we have both
     }
 
     // set up the histogram
@@ -476,15 +480,13 @@ void cAutoRangeHistogramStrategy::extendBinsTo(double value)
     bool isOverflow = value >= hist->getBinEdges().back();
     if (!isUnderflow && !isOverflow)
         return; // nothing to do
-    if (isUnderflow && hist->getNumUnderflows() > 0)
+    if (isUnderflow && (hist->getNumUnderflows() > 0 || !std::isnan(lo)))
         return; // cannot extend
-    if (isOverflow && hist->getNumOverflows() > 0)
+    if (isOverflow &&  (hist->getNumOverflows() > 0 || !std::isnan(hi)))
         return; // cannot extend
 
     if (binMerging) {
         hist->extendBinsTo(value, binSize);
-
-        int targetNumBins = desiredNumBins > 0 ? desiredNumBins : DEFAULT_NUM_BINS;
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
     }

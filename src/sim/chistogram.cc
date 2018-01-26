@@ -30,7 +30,12 @@ namespace omnetpp {
 Register_Class(cHistogram);
 
 cHistogram::cHistogram(const char *name, bool weighted)
-    : cHistogram(name, new cDefaultHistogramStrategy, weighted)
+    : cHistogram(name, new cDefaultHistogramStrategy(), weighted)
+{
+}
+
+cHistogram::cHistogram(const char *name, int numBinsHint, bool weighted)
+    : cHistogram(name, new cDefaultHistogramStrategy(numBinsHint), weighted)
 {
 }
 
@@ -38,11 +43,6 @@ cHistogram::cHistogram(const char *name, cIHistogramStrategy *strategy, bool wei
     : cDensityEstBase(name, weighted)
 {
     setStrategy(strategy);
-}
-
-cHistogram::cHistogram(const char *name, int numBins) : cHistogram(name)
-{
-    setNumBinsHint(numBins);
 }
 
 cHistogram& cHistogram::operator=(const cHistogram& other)
@@ -327,8 +327,12 @@ void cHistogram::createUniformBins(double lo, double hi, double step)
     binEdges.reserve(numBins);
 
     // single multiplication instead of repeated addition to try to avoid error accumulation
-    for (int i = 0; i <= numBins; ++i) // less-or-equal because we need one more edge than bin
-        binEdges.push_back(lo + i * step);
+    for (int i = 0; i <= numBins; ++i) { // less-or-equal because we need one more edge than bin
+        double edge = lo + i * step;
+        if (std::abs(edge) < step * 1e-10) // work around double imprecision when we are very close to zero
+            edge = 0;
+        binEdges.push_back(edge);
+    }
 
     setBinEdges(binEdges);
 }
@@ -466,9 +470,12 @@ cAutoRangeHistogramStrategy *cHistogram::getOrCreateAutoRangeStrategy() const
         mutableThis->setStrategy(strat);
         return strat;
     }
-    else if (dynamic_cast<cDefaultHistogramStrategy *>(strategy) != nullptr) {
-        // silently replacing the default strategy if still empty
+    else if (const auto *defaultStrat = dynamic_cast<const cDefaultHistogramStrategy *>(strategy)) {
+        // silently replace the default strategy
+        int numBins = defaultStrat->getNumBinsHint();
         auto strat = new cAutoRangeHistogramStrategy();
+        if (numBins != -1)
+            strat->setNumBinsHint(numBins);
         mutableThis->setStrategy(strat);
         return strat;
     }

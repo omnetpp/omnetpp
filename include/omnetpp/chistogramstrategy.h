@@ -214,7 +214,8 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
     static const int DEFAULT_NUM_BINS = 60; // a number with many divisors
     double rangeExtensionFactor = 1.5;
     double binSize = NAN;
-    int desiredNumBins;
+    int numBinsHint = -1;
+    int targetNumBins = DEFAULT_NUM_BINS;
     Mode mode = cHistogram::MODE_AUTO;
     bool autoExtend = true;
     bool binMerging = true;
@@ -233,7 +234,7 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
   public:
     /** @name Constructors, copying. */
     //@{
-    explicit cDefaultHistogramStrategy(int desiredNumBins=DEFAULT_NUM_BINS, Mode mode=cHistogram::MODE_AUTO) : desiredNumBins(desiredNumBins), mode(mode) {}
+    explicit cDefaultHistogramStrategy(int numBinsHint=-1, Mode mode=cHistogram::MODE_AUTO) : numBinsHint(numBinsHint), mode(mode) {}
     cDefaultHistogramStrategy(const cDefaultHistogramStrategy& other): cPrecollectionBasedHistogramStrategy(other) {copy(other);}
     cDefaultHistogramStrategy& operator=(const cDefaultHistogramStrategy& other);
     virtual cDefaultHistogramStrategy *dup() const override {return new cDefaultHistogramStrategy(*this);}
@@ -241,8 +242,8 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
 
     /** @name Configuring. */
     //@{
-    int getNumBinsHint() const {return desiredNumBins;}
-    void setNumBinsHint(int numBins) {this->desiredNumBins = numBins;}
+    int getNumBinsHint() const {return numBinsHint;}
+    void setNumBinsHint(int numBins) {this->numBinsHint = numBins;}
     //@}
 
     /** @name Redefined cIHistogramStrategy methods. */
@@ -294,7 +295,8 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
     double lo = NAN;  // range lower limit; use NaN for unspecified
     double hi = NAN;  // range upper limit; use NaN for unspecified
     double rangeExtensionFactor = 1.5;
-    int desiredNumBins = -1;
+    int numBinsHint = -1;
+    int targetNumBins = DEFAULT_NUM_BINS;
     double requestedBinSize = NAN; // user-given
     double binSize = NAN; // actual (computed)
     Mode mode = cHistogram::MODE_AUTO;
@@ -315,7 +317,7 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
     /** @name Constructors, copying. */
     //@{
     explicit cAutoRangeHistogramStrategy(Mode mode=cHistogram::MODE_AUTO) : mode(mode) {}
-    explicit cAutoRangeHistogramStrategy(int numBins, Mode mode=cHistogram::MODE_AUTO) : desiredNumBins(numBins), mode(mode) {}
+    explicit cAutoRangeHistogramStrategy(int numBins, Mode mode=cHistogram::MODE_AUTO) : numBinsHint(numBins), mode(mode) {}
     cAutoRangeHistogramStrategy(const cAutoRangeHistogramStrategy& other): cPrecollectionBasedHistogramStrategy(other) {copy(other);}
     cAutoRangeHistogramStrategy& operator=(const cAutoRangeHistogramStrategy& other);
     virtual cAutoRangeHistogramStrategy *dup() const override {return new cAutoRangeHistogramStrategy(*this);}
@@ -336,8 +338,8 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
     void setBinSizeHint(double binSize) {this->requestedBinSize = binSize;}
     bool getBinSizeRounding() const {return binSizeRounding;}
     void setBinSizeRounding(bool binSizeRounding) {this->binSizeRounding = binSizeRounding;}
-    int getNumBinsHint() const {return desiredNumBins;}
-    void setNumBinsHint(int numBins) {this->desiredNumBins = numBins;}
+    int getNumBinsHint() const {return numBinsHint;}
+    void setNumBinsHint(int numBins) {this->numBinsHint = numBins;}
     void setAutoExtend(bool enable) {this->autoExtend = enable;}
     bool getAutoExtend() const {return autoExtend;}
     void setBinMerging(bool enable) {this->binMerging = enable;}
