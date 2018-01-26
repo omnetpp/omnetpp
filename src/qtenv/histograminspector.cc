@@ -172,6 +172,21 @@ double HistogramInspector::maxY()
             maxY = y;
     }
 
+    double underflowY = distr->getUnderflowSumWeights();
+    double overflowY = distr->getOverflowSumWeights();
+
+    if (chartType == HistogramView::SHOW_PDF) {
+        if (distr->getNumUnderflows())
+            underflowY = underflowY / distr->getSumWeights() / (distr->getBinEdge(0) - distr->getMin());
+        if (distr->getNumOverflows())
+            overflowY = overflowY / distr->getSumWeights() / (distr->getMax() - distr->getBinEdge(distr->getNumBins()));
+    }
+
+    if (underflowY > maxY)
+        maxY = underflowY;
+    if (overflowY > maxY)
+        maxY = overflowY;
+
     return maxY;
 }
 
