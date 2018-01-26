@@ -55,7 +55,7 @@ double cDensityEstBase::getPDF(double x) const
         return 0;
 
     if (x < getBinEdge(0))
-        return getUnderflowSumWeights() / (getBinEdge(0) - getMin());
+        return getUnderflowSumWeights() / getSumWeights() / (getBinEdge(0) - getMin());
 
     int numBins = getNumBins();
 
@@ -65,11 +65,11 @@ double cDensityEstBase::getPDF(double x) const
         double upperEdge = getBinEdge(i + 1);
 
         if (x < upperEdge)
-            return getBinValue(i) / (upperEdge-lowerEdge);
+            return getBinValue(i) / getSumWeights() / (upperEdge-lowerEdge);
     }
 
     if (x < getMax())
-        return getOverflowSumWeights() / (getMax() - getBinEdge(numBins));
+        return getOverflowSumWeights() / getSumWeights() / (getMax() - getBinEdge(numBins));
 
     return 0;
 }
@@ -81,7 +81,7 @@ double cDensityEstBase::getCDF(double x) const
         return 0;
 
     if (x < getBinEdge(0))
-        return getUnderflowSumWeights() * ((x - getMin()) / (getBinEdge(0) - getMin()));
+        return getUnderflowSumWeights() * ((x - getMin()) / getSumWeights() / (getBinEdge(0) - getMin()));
 
     int numBins = getNumBins();
 
@@ -91,11 +91,11 @@ double cDensityEstBase::getCDF(double x) const
         double upperEdge = getBinEdge(i + 1);
 
         if (x < upperEdge)
-            return getBinValue(i) * ((x - lowerEdge) / (upperEdge - lowerEdge));
+            return getBinValue(i) * ((x - lowerEdge) / getSumWeights() / (upperEdge - lowerEdge));
     }
 
     if (x < getMax())
-        return getOverflowSumWeights() * ((x - getBinEdge(numBins)) / (getMax() - getBinEdge(numBins)));
+        return getOverflowSumWeights() * ((x - getBinEdge(numBins)) / getSumWeights() / (getMax() - getBinEdge(numBins)));
 
     return 1;
 }
@@ -114,7 +114,7 @@ double cDensityEstBase::getBinPDF(int k) const
     if (numValues == 0)
         return 0.0;
     double binSize = getBinEdge(k+1) - getBinEdge(k);
-    return binSize == 0 ? 0.0 : getBinValue(k) / binSize / getCount();
+    return binSize == 0 ? 0.0 : getBinValue(k) / binSize / getSumWeights();
 }
 
 
