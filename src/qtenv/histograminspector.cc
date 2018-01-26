@@ -239,6 +239,7 @@ void HistogramInspector::onShowCellInfo(int bin)
     double binValue;
     double lowerEdge;
     double upperEdge;
+    QString binValueText;
 
     if (bin == -1) {
         // underflows
@@ -246,13 +247,21 @@ void HistogramInspector::onShowCellInfo(int bin)
         binValue = d->getUnderflowSumWeights();
         lowerEdge = d->getMin();
         upperEdge = d->getBinEdge(0);
+        if (d->isWeighted())
+            binValueText = QString("w=%1 (%2)").arg(QString::number(binValue), QString::number(d->getNumUnderflows()));
+        else
+            binValueText = QString("w=%1").arg(QString::number(binValue));
     }
     else if (bin == d->getNumBins()) {
         // overflows
         binName = "Overflows";
-        binValue = d->getUnderflowSumWeights();
+        binValue = d->getOverflowSumWeights();
         lowerEdge = d->getBinEdge(d->getNumBins());
         upperEdge = d->getMax();
+        if (d->isWeighted())
+            binValueText = QString("w=%1 (%2)").arg(QString::number(binValue), QString::number(d->getNumOverflows()));
+        else
+            binValueText = QString("w=%1").arg(QString::number(binValue));
     }
     else {
         // regular histogram bin
@@ -260,12 +269,12 @@ void HistogramInspector::onShowCellInfo(int bin)
         binValue = d->getBinValue(bin);
         lowerEdge = d->getBinEdge(bin);
         upperEdge = d->getBinEdge(bin+1);
+        binValueText = "w=" + QString::number(binValue);
     }
 
-    QString text = "%1:  [%2...%3)  w=%4  PDF=%5";
-    text = text.arg(binName, QString::number(lowerEdge),
-                    QString::number(upperEdge), QString::number(binValue),
-                    QString::number(binValue / d->getWeightedSum() / (upperEdge-lowerEdge)));
+    QString text = QString("%1:  [%2...%3)  %4  PDF=%5").arg(binName, QString::number(lowerEdge),
+                    QString::number(upperEdge), binValueText,
+                    QString::number(binValue / d->getSumWeights() / (upperEdge-lowerEdge)));
 
     statusBar->showMessage(text);
 }
