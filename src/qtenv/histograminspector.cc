@@ -120,8 +120,8 @@ void HistogramInspector::refresh()
         isMinXAutoscaled = isPDFMinXAutoscaled;
         minYVal = pdfMinY;
         maxYVal = isPDFMaxYAutoscaled ? maxY() : pdfMaxY;
-        minXVal = isPDFMinXAutoscaled ? distr->getBinEdge(0) : pdfMinX;
-        maxXVal = isPDFMaxXAutoscaled ? distr->getBinEdge(distr->getNumBins()) : pdfMaxX;
+        minXVal = isPDFMinXAutoscaled ? (distr->getNumUnderflows() > 0 ? distr->getMin() : distr->getBinEdge(0)) : pdfMinX;
+        maxXVal = isPDFMaxXAutoscaled ? (distr->getNumOverflows() > 0 ? distr->getMax() : distr->getBinEdge(distr->getNumBins())) : pdfMaxX;
     }
     else {
         isMinYAutoscaled = isCountsMinYAutoscaled;
@@ -130,8 +130,8 @@ void HistogramInspector::refresh()
         isMinXAutoscaled = isCountsMinXAutoscaled;
         minYVal = countsMinY;
         maxYVal = isCountsMaxYAutoscaled ? maxY() : countsMaxY;
-        minXVal = isCountsMinXAutoscaled ? distr->getBinEdge(0) : countsMinX;
-        maxXVal = isCountsMaxXAutoscaled ? distr->getBinEdge(distr->getNumBins()) : countsMaxX;
+        minXVal = isCountsMinXAutoscaled ? (distr->getNumUnderflows() > 0 ? distr->getMin() : distr->getBinEdge(0)) : countsMinX;
+        maxXVal = isCountsMaxXAutoscaled ? (distr->getNumOverflows() > 0 ? distr->getMax() : distr->getBinEdge(distr->getNumBins())) : countsMaxX;
     }
 
     if (minXVal >= maxXVal)
@@ -227,12 +227,13 @@ void HistogramInspector::onShowCellInfo(int bin)
         return;
     }
 
-    if (bin == -1) {
+    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
+
+    if (bin == -1 || bin == d->getNumBins()) {
         statusBar->showMessage(generalInfo());
         return;
     }
 
-    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
     double binValue = d->getBinValue(bin);
     double lowerEdge = d->getBinEdge(bin);
     double upperEdge = d->getBinEdge(bin+1);

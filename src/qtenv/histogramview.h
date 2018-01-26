@@ -46,7 +46,8 @@ class HistogramView : public QGraphicsView
     int mapYToView(const double y) const;
 
     void showInfo(QPoint mousePos);
-    void getCellInfo(char *buf, int bin);
+
+    void drawBin(ChartType type, DrawingStyle drawingStyle, int binIndex, double leftEdge, double rightEdge, double value, double pdfValue);
 
   signals:
     void showCellInfo(int bin);
