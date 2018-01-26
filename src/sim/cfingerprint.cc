@@ -23,6 +23,7 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/crng.h"
 #include "omnetpp/cstatistic.h"
+#include "omnetpp/cdensityestbase.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
@@ -330,19 +331,29 @@ void cSingleFingerprintCalculator::addScalarResult(const cComponent *component, 
     }
 }
 
-void cSingleFingerprintCalculator::addStatisticResult(const cComponent *component, const char *name, const cStatistic *value)
+void cSingleFingerprintCalculator::addStatisticResult(const cComponent *component, const char *name, const cStatistic *statistic)
 {
     if (addStatisticResults) {
         MatchableObject matchableComponent(component);
         if (moduleMatcher == nullptr || moduleMatcher->matches(&matchableComponent)) {
-            MatchableObject matchableResult(value);
+            MatchableObject matchableResult(statistic);
             if (resultMatcher == nullptr || resultMatcher->matches(&matchableResult)) {
-                hasher->add(value->getCount());
-                hasher->add(value->getSum());
-                hasher->add(value->getMin());
-                hasher->add(value->getMax());
-                hasher->add(value->getMean());
-                hasher->add(value->getStddev());
+                hasher->add(statistic->getSumWeights());
+                hasher->add(statistic->getWeightedSum());
+                hasher->add(statistic->getMin());
+                hasher->add(statistic->getMax());
+                hasher->add(statistic->getMean());
+                hasher->add(statistic->getStddev());
+                if (const cDensityEstBase *histogram = dynamic_cast<const cDensityEstBase*>(statistic)) {
+                    hasher->add(histogram->getUnderflowSumWeights());
+                    hasher->add(histogram->getOverflowSumWeights());
+                    int numBins = histogram->getNumBins();
+                    for (int i = 0; i < numBins; i++) {
+                        hasher->add(histogram->getBinEdge(i));
+                        hasher->add(histogram->getBinValue(i));
+                    }
+                    hasher->add(histogram->getBinEdge(numBins));
+                }
             }
         }
     }
