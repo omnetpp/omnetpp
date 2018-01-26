@@ -247,13 +247,14 @@ void HistogramInspector::onShowCellInfo(int bin)
         lowerEdge = d->getMin();
         upperEdge = d->getBinEdge(0);
     }
-    if (bin == d->getNumBins()) {
+    else if (bin == d->getNumBins()) {
         // overflows
         binName = "Overflows";
         binValue = d->getUnderflowSumWeights();
         lowerEdge = d->getBinEdge(d->getNumBins());
         upperEdge = d->getMax();
-    } else {
+    }
+    else {
         // regular histogram bin
         binName = QString("Bin #%1").arg(QString::number(bin));
         binValue = d->getBinValue(bin);
