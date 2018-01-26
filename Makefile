@@ -39,6 +39,12 @@ clean: clean-samples
 cleanall: cleanall-samples
 endif
 
+# Test if the test directory exists and add dependencies to build it, too
+ifneq ($(wildcard test),)
+clean: clean-tests
+cleanall: cleanall-tests
+endif
+
 #=====================================================================
 #
 # Includes and basic checks
@@ -74,7 +80,7 @@ systemc: sim
 endif
 endif
 
-.PHONY: check-env cleanall makefiles clean apis docu tests all allmodes \
+.PHONY: check-env cleanall cleanall-samples makefiles clean apis docu tests all allmodes \
         components base ui uilibs samples common layout eventlog scave nedxml sim \
         envir cmdenv tkenv qtenv utils systemc
 #
@@ -177,8 +183,10 @@ clean:
 	$(Q)for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 	$(Q)-rm -f $(OMNETPP_BIN_DIR)/*
+
+clean-tests: makefiles
+	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
 clean-samples: makefiles
 	$(Q)for i in $(SAMPLES) ""; do \
@@ -191,9 +199,11 @@ cleanall:
 	$(Q)for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 # bin should be removed last because opp_configfilepath (in bin directory) is needed to clean
 	$(Q)-rm -rf $(OMNETPP_BIN_DIR)/*
+
+cleanall-tests: makefiles
+	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
 cleanall-samples: makefiles
 	$(Q)for i in $(SAMPLES) ""; do \

@@ -38,7 +38,7 @@ std::string Tester::makeString(int length)
 void Tester::initialize()
 {
     cCanvas *canvas = getParentModule()->getCanvas();
-    int n = par("numFigures").longValue();
+    int n = par("numFigures");
 
     light = new cRectangleFigure("light");
     light->setZIndex(-2);
@@ -59,8 +59,8 @@ void Tester::initialize()
             figure = new cTextFigure(("figure-" + std::to_string(i)).c_str());
 
         figure->setAnchor(cFigure::ANCHOR_W);
-        figure->setText(makeString(par("textLength").longValue()).c_str());
-        figure->setFont(cFigure::Font("Arial", par("fontSize").longValue()));
+        figure->setText(makeString(par("textLength")).c_str());
+        figure->setFont(cFigure::Font("Arial", par("fontSize")));
         figure->setPosition(cFigure::Point(100, 50 + (73*i) % 400));
         figure->setHalo(par("haloEnabled").boolValue());
         canvas->addFigure(figure);
@@ -80,8 +80,8 @@ void Tester::handleMessage(cMessage *msg)
     static int darkIndex = 0;
     static int lightIndex = 0;
 
-    figures[i % figures.size()]->setText(makeString(par("textLength").longValue()).c_str());
-    //figures[i % figures.size()]->setFont(cFigure::Font("Arial", par("fontSize").longValue()));
+    figures[i % figures.size()]->setText(makeString(par("textLength")).c_str());
+    //figures[i % figures.size()]->setFont(cFigure::Font("Arial", par("fontSize")));
 
     if ((i % 100) == 0) {
         dark->setFilled(true);
