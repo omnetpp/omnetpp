@@ -7,7 +7,7 @@ Test case 1: start with all scalar results enabled
 
 static void dumpBins(const cHistogram& hist)
 {
-    for (size_t i = 0; i <= hist.getNumBins(); ++i)
+    for (int i = 0; i <= hist.getNumBins(); ++i)
         EV << hist.getBinEdge(i) << " ";
 
     EV << std::endl;

@@ -209,7 +209,7 @@ scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=23
+histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
 $ scavetool -a <files>
@@ -219,9 +219,9 @@ configname      General
 datetime        xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
-iterationvarsf  
-measurement     
+iterationvars
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      0
@@ -236,9 +236,9 @@ configname      General
 datetime        xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
-iterationvarsf  
-measurement     
+iterationvars
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      1
@@ -290,7 +290,7 @@ scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=23
+histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
 $ scavetool --list-runattrs <files>
@@ -300,9 +300,9 @@ configname      General
 datetime        xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
-iterationvarsf  
-measurement     
+iterationvars
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      0
@@ -317,9 +317,9 @@ configname      General
 datetime        xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
-iterationvarsf  
-measurement     
+iterationvars
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      1
@@ -450,7 +450,7 @@ scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=23
+histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
 $ scavetool -a -p <files>
@@ -460,9 +460,9 @@ configname      General
 datetime        xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
-iterationvarsf  
-measurement     
+iterationvars
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      0
@@ -477,9 +477,9 @@ configname      General
 datetime        xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
-iterationvarsf  
-measurement     
+iterationvars
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      1
@@ -557,7 +557,7 @@ scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
 vector      Test.node  foo:vector     0      100    19.65  13  27
 statistics  Test.node  foo:stats      100    19.65  13     27
-histogram   Test.node  foo:histogram  100    19.65  13     27  23
+histogram   Test.node  foo:histogram  100    19.65  13     27  24
 
 ------------------------
 $ scavetool -l -b <files>
@@ -575,7 +575,7 @@ scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
 vector      Test.node  foo:vector     0      100    19.65  13  27
 statistics  Test.node  foo:stats      100    19.65  13     27
-histogram   Test.node  foo:histogram  100    19.65  13     27  23
+histogram   Test.node  foo:histogram  100    19.65  13     27  24
 
 ------------------------
 $ scavetool -l --grep-friendly <files>
@@ -589,7 +589,7 @@ General-1-xxxx  scalar      Test.node  foo:mean       19.65
 General-1-xxxx  scalar      Test.node  foo:last       19
 General-1-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
-General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=23
+General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
 $ scavetool -l -g <files>
@@ -603,7 +603,7 @@ General-1-xxxx  scalar      Test.node  foo:mean       19.65
 General-1-xxxx  scalar      Test.node  foo:last       19
 General-1-xxxx  vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 General-1-xxxx  statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
-General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=23
+General-1-xxxx  histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
 $ scavetool -n --per-run -g <files>
@@ -655,7 +655,7 @@ scalar	Test.node	foo:mean	19.65
 scalar	Test.node	foo:last	19
 vector	Test.node	foo:vector	vectorId=0	count=100	mean=19.65	min=13	max=27
 statistics	Test.node	foo:stats	count=100	mean=19.65	min=13	max=27
-histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=23
+histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=24
 
 ------------------------
 $ scavetool -l --grep-friendly --tabs <files>
@@ -669,7 +669,7 @@ General-1-xxxx	scalar	Test.node	foo:mean	19.65
 General-1-xxxx	scalar	Test.node	foo:last	19
 General-1-xxxx	vector	Test.node	foo:vector	vectorId=0	count=100	mean=19.65	min=13	max=27
 General-1-xxxx	statistics	Test.node	foo:stats	count=100	mean=19.65	min=13	max=27
-General-1-xxxx	histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=23
+General-1-xxxx	histogram	Test.node	foo:histogram	count=100	mean=19.65	min=13	max=27	#bins=24
 
 ------------------------
 $ scavetool -l --add-fields-as-scalars <files>
@@ -711,7 +711,7 @@ scalar      Test.node  foo:histogram:max     27
 scalar      Test.node  foo:histogram:sum     1965
 vector      Test.node  foo:vector            vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats             count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=23
+histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
 $ scavetool -l -w <files>
@@ -753,7 +753,7 @@ scalar      Test.node  foo:histogram:max     27
 scalar      Test.node  foo:histogram:sum     1965
 vector      Test.node  foo:vector            vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats             count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=23
+histogram   Test.node  foo:histogram         count=100   mean=19.65  min=13      max=27  #bins=24
 
 ------------------------
 $ scavetool -r --rundisplay runnumber <files>

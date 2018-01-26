@@ -90,6 +90,7 @@ bin	13	1
 bin	14	1
 bin	15	1
 bin	16	0
+bin	17	0
 scalar Test.node rec:2*mean 25
 attr source tenToFifteen
 scalar Test.node flt:count+100 106

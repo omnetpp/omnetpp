@@ -16,14 +16,14 @@ static void dumpBins(const cHistogram& hist)
 
 %activity:
 
-cHistogram hist("hist", new cFixedRangeHistogramStrategy(40, 60));
+cHistogram hist("hist", new cFixedRangeHistogramStrategy(40, 60, 20));
 
 for (int i = 0; i < 1000000; i++)
     hist.collect(normal(50, 10));
 
 dumpBins(hist);
 
-cHistogram hist2("hist2", new cFixedRangeHistogramStrategy(40, 60));
+cHistogram hist2("hist2", new cFixedRangeHistogramStrategy(40, 60, 20));
 
 for (int i = 0; i < 1000000; i++)
     hist2.collect(hist.draw());

@@ -23,13 +23,13 @@ sd.collect(2);  print(sd);
 sd.collect(1);  print(sd);
 EV << "-" << endl;
 
-sd.clearResult(); print(sd);
+sd.clear();       print(sd);
 sd.collect(5);    print(sd);
 sd.collect(5);    print(sd);
 sd.collect(5);    print(sd);
 EV << "-" << endl;
 
-sd.clearResult();  print(sd);
+sd.clear();        print(sd);
 sd.collect(1.23);  print(sd);
 sd.collect(4.52);  print(sd);
 sd.collect(-3.64); print(sd);

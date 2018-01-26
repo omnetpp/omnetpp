@@ -3,7 +3,7 @@ Test histogram saving and loading.
 
 %activity:
 
-cHistogram hist("hist", new cFixedRangeHistogramStrategy(40, 60));
+cHistogram hist("hist", new cFixedRangeHistogramStrategy(40, 60, 20));
 
 for (int i=0; i<200; i++)
     hist.collect(normal(50, 10));

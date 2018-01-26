@@ -173,7 +173,7 @@ scalar      Test.node  foo:mean       19.65
 scalar      Test.node  foo:last       19
 vector      Test.node  foo:vector     vectorId=0  count=100   mean=19.65  min=13  max=27
 statistics  Test.node  foo:stats      count=100   mean=19.65  min=13      max=27
-histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=23
+histogram   Test.node  foo:histogram  count=100   mean=19.65  min=13      max=27  #bins=24
 
 ---------------------------------------------------------------
 $ scavetool export <files>

@@ -45,20 +45,20 @@ ia.setRangeAuto(FIRSTVALS, RANGEEXT);
 iau.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
 ial.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
 
-ifn.setNumBins(5);  ifn.setRange(10, 20);
-ian.setNumBins(5);  ian.setRangeAuto(FIRSTVALS, RANGEEXT);
-iaun.setNumBins(5); iaun.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
-ialn.setNumBins(5); ialn.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
+ifn.setNumBinsHint(5);  ifn.setRange(10, 20);
+ian.setNumBinsHint(5);  ian.setRangeAuto(FIRSTVALS, RANGEEXT);
+iaun.setNumBinsHint(5); iaun.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
+ialn.setNumBinsHint(5); ialn.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
 
 df_.setRange(10, 20); df_.setMode(cHistogram::MODE_DOUBLES); // mode is not auto-selected, because transform happens immediately (FIXME is that good?)
 da.setRangeAuto(FIRSTVALS, RANGEEXT);
 dau.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
 dal.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
 
-dfn.setNumBins(5);  dfn.setRange(10, 20);
-dan.setNumBins(5);  dan.setRangeAuto(FIRSTVALS, RANGEEXT);
-daun.setNumBins(5); daun.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
-daln.setNumBins(5); daln.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
+dfn.setNumBinsHint(5);  dfn.setRange(10, 20);
+dan.setNumBinsHint(5);  dan.setRangeAuto(FIRSTVALS, RANGEEXT);
+daun.setNumBinsHint(5); daun.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
+daln.setNumBinsHint(5); daln.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
 
 cDensityEstBase *h[] = {
   &if_, &ia, &iau, &ial,
@@ -74,7 +74,7 @@ int nih = 9;  // first 9 histograms collect integers, the rest collect doubles
 
 for (int i=0; i<FIRSTVALS+10; i++)
 {
-    if (i==0 || i==1 || i==FIRSTVALS-1 || i==FIRSTVALS || i==FIRSTVALS+5) {
+    if (i==0 || i==1 || i==FIRSTVALS-1 || i==FIRSTVALS+5) {
         // print range
         EV << i << " observations:\n";
         for (int k=0; k<nh; k++) {
@@ -133,7 +133,7 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[19]         double-psquare:  0 cells, DBL_MIN..DBL_MIN
 
 1 observations:
- h[0]               int-fixed: collecting
+ h[0]               int-fixed: 10 cells, 10..20
  h[1]                int-auto: collecting
  h[2]           int-autoupper: collecting
  h[3]           int-autolower: collecting
@@ -142,7 +142,7 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[6]     int-autoupper-5cell: collecting
  h[7]     int-autolower-5cell: collecting
  h[8]        int-varhist-auto: collecting
- h[9]            double-fixed: collecting
+ h[9]            double-fixed: 50 cells, 10..20
  h[10]            double-auto: collecting
  h[11]       double-autoupper: collecting
  h[12]       double-autolower: collecting
@@ -155,7 +155,7 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[19]         double-psquare:  0 cells, 15..15
 
 99 observations:
- h[0]               int-fixed: collecting
+ h[0]               int-fixed: 10 cells, 10..20
  h[1]                int-auto: collecting
  h[2]           int-autoupper: collecting
  h[3]           int-autolower: collecting
@@ -164,7 +164,7 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[6]     int-autoupper-5cell: collecting
  h[7]     int-autolower-5cell: collecting
  h[8]        int-varhist-auto: collecting
- h[9]            double-fixed: collecting
+ h[9]            double-fixed: 50 cells, 10..20
  h[10]            double-auto: collecting
  h[11]       double-autoupper: collecting
  h[12]       double-autolower: collecting
@@ -176,46 +176,24 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[18]     double-ksplit-auto: collecting
  h[19]         double-psquare: 10 cells, 15..16.9
 
-100 observations:
- h[0]               int-fixed: 10 cells, 10..20
- h[1]                int-auto: 29 cells, 0..29
- h[2]           int-autoupper: 21 cells, 10..31
- h[3]           int-autolower: 23 cells, -3..20
- h[4]         int-fixed-5cell:  5 cells, 10..20
- h[5]          int-auto-5cell:  5 cells, 0..30
- h[6]     int-autoupper-5cell:  5 cells, 10..35
- h[7]     int-autolower-5cell:  5 cells, -5..20
- h[8]        int-varhist-auto: 11 cells, 5..24
- h[9]            double-fixed: 30 cells, 10..20
- h[10]            double-auto: 30 cells, 14.525..17.375
- h[11]       double-autoupper: 30 cells, 10..20.35
- h[12]       double-autolower: 30 cells, 12.5..20
- h[13]     double-fixed-5cell:  5 cells, 10..20
- h[14]      double-auto-5cell:  5 cells, 14.525..17.375
- h[15] double-autoupper-5cell:  5 cells, 10..20.35
- h[16] double-autolower-5cell:  5 cells, 12.5..20
- h[17]    double-varhist-auto: 11 cells, 15..16.9
- h[18]     double-ksplit-auto:  9 cells, 14.05..17.85
- h[19]         double-psquare: 10 cells, 15..16.9
-
 105 observations:
  h[0]               int-fixed: 10 cells, 10..20
  h[1]                int-auto: 29 cells, 0..29
- h[2]           int-autoupper: 21 cells, 10..31
- h[3]           int-autolower: 23 cells, -3..20
+ h[2]           int-autoupper: 19 cells, 10..29
+ h[3]           int-autolower: 20 cells, 0..20
  h[4]         int-fixed-5cell:  5 cells, 10..20
- h[5]          int-auto-5cell:  5 cells, 0..30
+ h[5]          int-auto-5cell:  5 cells, 3..28
  h[6]     int-autoupper-5cell:  5 cells, 10..35
  h[7]     int-autolower-5cell:  5 cells, -5..20
  h[8]        int-varhist-auto: 11 cells, 5..24
- h[9]            double-fixed: 30 cells, 10..20
- h[10]            double-auto: 30 cells, 14.525..17.375
- h[11]       double-autoupper: 30 cells, 10..20.35
- h[12]       double-autolower: 30 cells, 12.5..20
+ h[9]            double-fixed: 50 cells, 10..20
+ h[10]            double-auto: 59 cells, 14.475..17.425
+ h[11]       double-autoupper: 75 cells, 10..17.5
+ h[12]       double-autolower: 55 cells, 14.5..20
  h[13]     double-fixed-5cell:  5 cells, 10..20
- h[14]      double-auto-5cell:  5 cells, 14.525..17.375
- h[15] double-autoupper-5cell:  5 cells, 10..20.35
- h[16] double-autolower-5cell:  5 cells, 12.5..20
+ h[14]      double-auto-5cell:  5 cells, 14.75..17.25
+ h[15] double-autoupper-5cell:  7 cells, 10..17
+ h[16] double-autolower-5cell:  5 cells, 15..20
  h[17]    double-varhist-auto: 11 cells, 15..16.9
  h[18]     double-ksplit-auto:  9 cells, 14.05..17.85
  h[19]         double-psquare: 10 cells, 15..16.9
