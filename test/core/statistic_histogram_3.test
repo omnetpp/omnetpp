@@ -1,0 +1,95 @@
+%description:
+Test that "histogram", "psquare" and "ksplit" recorders recognize
+the "numBins" or "timeWeighted" attributes.
+
+%file: test.ned
+
+simple Node extends testlib.StatNode
+{
+    @statistic[hist_5bins](source=foo; record=histogram; numBins=5);
+    @statistic[p2_5bins](source=foo; record=psquare; numBins=5);
+    @statistic[hist_timeweighted](source=foo; record=histogram; timeWeighted=true);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%contains: results/General-#0.sca
+statistic Test.node hist_5bins:histogram
+field count 100
+field mean 19.84
+field stddev 3.1549864332417
+field min 12
+field max 28
+field sum 1984
+field sqrsum 40348
+attr numBins 5
+attr source foo
+bin	-inf	0
+bin	5	0
+bin	10	7
+bin	15	33
+bin	20	56
+bin	25	4
+bin	30	0
+bin	35	0
+statistic Test.node p2_5bins:psquare
+field count 100
+field mean 19.84
+field stddev 3.1549864332417
+field min 12
+field max 28
+field sum 1984
+field sqrsum 40348
+attr numBins 5
+attr source foo
+bin	-inf	0
+bin	12	21
+bin	17.682083210538	20
+bin	19.539724834428	20
+bin	20.867861811792	20
+bin	22.230938408858	19
+bin	28	0
+statistic Test.node hist_timeweighted:histogram
+field count 100
+field mean -nan
+field stddev -nan
+field min 12
+field max 28
+field weights 0
+field weightedSum 0
+field sqrSumWeights 0
+field weightedSqrSum 0
+attr source foo
+attr timeWeighted true
+bin	-inf	0
+bin	8	0
+bin	9	0
+bin	10	0
+bin	11	0
+bin	12	0
+bin	13	0
+bin	14	0
+bin	15	0
+bin	16	0
+bin	17	0
+bin	18	0
+bin	19	0
+bin	20	0
+bin	21	0
+bin	22	0
+bin	23	0
+bin	24	0
+bin	25	0
+bin	26	0
+bin	27	0
+bin	28	0
+bin	29	0
+bin	30	0
+bin	31	0
+bin	32	0
+
+
