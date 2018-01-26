@@ -40,14 +40,14 @@ cHistogram::cHistogram(const char *name, int numBinsHint, bool weighted)
 }
 
 cHistogram::cHistogram(const char *name, cIHistogramStrategy *strategy, bool weighted)
-    : cDensityEstBase(name, weighted)
+    : cAbstractHistogram(name, weighted)
 {
     setStrategy(strategy);
 }
 
 cHistogram& cHistogram::operator=(const cHistogram& other)
 {
-    cDensityEstBase::operator=(other);
+    cAbstractHistogram::operator=(other);
     copy(other);
     return *this;
 }
@@ -86,7 +86,7 @@ void cHistogram::parsimPack(cCommBuffer *buffer) const
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimPack(buffer);
+    cAbstractHistogram::parsimPack(buffer);
 
     buffer->pack(binEdges.size());
     for (double binEdge : binEdges)
@@ -111,7 +111,7 @@ void cHistogram::parsimUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimUnpack(buffer);
+    cAbstractHistogram::parsimUnpack(buffer);
 
     size_t n;
     buffer->unpack(n);
@@ -136,7 +136,7 @@ void cHistogram::parsimUnpack(cCommBuffer *buffer)
 
 void cHistogram::collect(double value)
 {
-    cDensityEstBase::collect(value);
+    cAbstractHistogram::collect(value);
 
     if (strategy != nullptr)
         strategy->collect(value);
@@ -146,7 +146,7 @@ void cHistogram::collect(double value)
 
 void cHistogram::collectWeighted(double value, double weight)
 {
-    cDensityEstBase::collectWeighted(value, weight);
+    cAbstractHistogram::collectWeighted(value, weight);
 
     if (strategy != nullptr)
         strategy->collectWeighted(value, weight);
@@ -156,7 +156,7 @@ void cHistogram::collectWeighted(double value, double weight)
 
 void cHistogram::clear()
 {
-    cDensityEstBase::clear();
+    cAbstractHistogram::clear();
 
     if (strategy != nullptr)
         strategy->clear();
@@ -199,7 +199,7 @@ void cHistogram::saveToFile(FILE *f) const
 {
     ASSERT((binEdges.empty() && binValues.empty()) || (binEdges.size() == binValues.size() + 1));
 
-    cDensityEstBase::saveToFile(f);
+    cAbstractHistogram::saveToFile(f);
 
     fprintf(f, "%" PRId64 "\t #= num_underflows\n", numUnderflows);
     fprintf(f, "%" PRId64 "\t #= num_overflows\n", numOverflows);
@@ -227,7 +227,7 @@ void cHistogram::loadFromFile(FILE *f)
 
     clear();
 
-    cDensityEstBase::loadFromFile(f);
+    cAbstractHistogram::loadFromFile(f);
 
     freadvarsf(f, "%" SCNd64 "\t #= num_underflows", &numUnderflows);
     freadvarsf(f, "%" SCNd64 "\t #= num_overflows", &numOverflows);
@@ -254,16 +254,16 @@ void cHistogram::loadFromFile(FILE *f)
 
 void cHistogram::merge(const cStatistic *stat)
 {
-    const cDensityEstBase *other = dynamic_cast<const cDensityEstBase *>(stat);
+    const cAbstractHistogram *other = dynamic_cast<const cAbstractHistogram *>(stat);
     if (other == nullptr)
-        throw cRuntimeError(this, "merge(): Cannot merge non-cDensityEstBase statistics (%s)%s into a histogram",  stat->getClassName(), stat->getFullPath().c_str());
+        throw cRuntimeError(this, "merge(): Cannot merge non-cAbstractHistogram statistics (%s)%s into a histogram",  stat->getClassName(), stat->getFullPath().c_str());
     if (!other->binsAlreadySetUp())
         throw cRuntimeError(this, "merge(): Object (%s)%s does not have histogram bins set up yet", other->getClassName(), other->getFullPath().c_str());
     if (!binsAlreadySetUp())
         throw cRuntimeError(this, "merge(): No histogram bins set up yet (try setUpBins())");
 
     // merge the base class
-    cDensityEstBase::merge(other);
+    cAbstractHistogram::merge(other);
 
     // Note: The current check is too strict: if other's bins can be obtained by splitting
     // our bins (i.e. our bin edges are a subset of other's bin edges), that would also be OK.

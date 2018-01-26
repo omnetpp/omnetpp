@@ -57,7 +57,7 @@ inline std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
     return os << "\"" << d.str() << "\"";
 }
 
-inline std::ostream& operator<<(std::ostream& os, const cDensityEstBase::Bin& bin) {
+inline std::ostream& operator<<(std::ostream& os, const cAbstractHistogram::Bin& bin) {
     return os << "[" << bin.lower << ", " << bin.upper << ")  ==>  " << bin.value << " (" << bin.relativeFreq << ")";
 }
 
@@ -614,7 +614,7 @@ class cWeightedStdDev extends cStdDev
     @descriptor(readonly);
 }
 
-class cDensityEstBase extends cStdDev
+class cAbstractHistogram extends cStdDev
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -625,10 +625,10 @@ class cDensityEstBase extends cStdDev
     double underflowSumWeights  @group(histogram) @hint("Total weight of observations above the last histogram bin");
     double overflowSumWeights @group(histogram) @hint("Total weight of observations above the last histogram bin");
     int numBins @group(histogram) @hint("Number of bins in the histogram");
-    cDensityEstBase::Bin binInfo[] @getter(internalGetBinInfo) @sizeGetter(getNumBins) @group(histogram) @hint("Histogram bin bounds, observation count in the bin, and density estimate in the bin");
+    cAbstractHistogram::Bin binInfo[] @getter(internalGetBinInfo) @sizeGetter(getNumBins) @group(histogram) @hint("Histogram bin bounds, observation count in the bin, and density estimate in the bin");
 }
 
-class cDensityEstBase::Bin
+class cAbstractHistogram::Bin
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -636,7 +636,7 @@ class cDensityEstBase::Bin
     @descriptor(false);
 }
 
-class cHistogram extends cDensityEstBase
+class cHistogram extends cAbstractHistogram
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -689,7 +689,7 @@ class cAutoRangeHistogramStrategy extends cPrecollectionBasedHistogramStrategy
     int maxNumBins;
 }
 
-class cPrecollectionBasedDensityEst extends cDensityEstBase
+class cPrecollectionBasedDensityEst extends cAbstractHistogram
 {
     @existingClass;
     @overwritePreviousDefinition;
@@ -738,7 +738,7 @@ class cKSplit extends cPrecollectionBasedDensityEst
     @descriptor(readonly);
 }
 
-class cPSquare extends cDensityEstBase
+class cPSquare extends cAbstractHistogram
 {
     @existingClass;
     @overwritePreviousDefinition;

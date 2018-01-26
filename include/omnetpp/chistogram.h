@@ -17,7 +17,7 @@
 #define __OMNETPP_CHISTOGRAM_H
 
 #include <climits>
-#include "cdensityestbase.h"
+#include "cabstracthistogram.h"
 
 namespace omnetpp {
 
@@ -83,7 +83,7 @@ class cAutoRangeHistogramStrategy;
  *
  * @ingroup Statistics
  */
-class SIM_API cHistogram : public cDensityEstBase
+class SIM_API cHistogram : public cAbstractHistogram
 {
   public:
     /**
@@ -138,7 +138,7 @@ class SIM_API cHistogram : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cHistogram(const cHistogram& other): cDensityEstBase(other) {copy(other);}
+    cHistogram(const cHistogram& other): cAbstractHistogram(other) {copy(other);}
 
     /**
      * Assignment operator. The name member is not copied;
@@ -184,7 +184,7 @@ class SIM_API cHistogram : public cDensityEstBase
      * one installed.
      */
     virtual void collect(double value) override;
-    using cDensityEstBase::collect;
+    using cAbstractHistogram::collect;
 
     /**
      * Collects one observation with a given weight. The weight must not be
@@ -193,7 +193,7 @@ class SIM_API cHistogram : public cDensityEstBase
      * object if there is one installed.
      */
     virtual void collectWeighted(double value, double weight) override;
-    using cDensityEstBase::collectWeighted;
+    using cAbstractHistogram::collectWeighted;
 
     /**
      * Clears the results collected so far.

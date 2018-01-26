@@ -16,7 +16,7 @@
 
 #include "histogramview.h"
 #include <QMouseEvent>
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "chartgriditem.h"
 #include <QDebug>
 
@@ -135,7 +135,7 @@ void HistogramView::setMaxY(const double maxY)
     gridItem->setMaxY(maxY);
 }
 
-void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cDensityEstBase *distr)
+void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cAbstractHistogram *distr)
 {
     this->drawingStyle = drawingStyle;
     actual = nullptr;

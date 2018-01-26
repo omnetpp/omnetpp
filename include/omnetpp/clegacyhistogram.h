@@ -17,7 +17,7 @@
 #define __OMNETPP_CLEGACYHISTOGRAM_H
 
 #include <cmath>
-#include "cdensityestbase.h"
+#include "cabstracthistogram.h"
 
 #if defined(__clang__) || defined(__GNUC__)
 #pragma GCC diagnostic push

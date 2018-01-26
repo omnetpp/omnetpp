@@ -16,7 +16,7 @@
 
 #include <cstring>
 #include <cmath>
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "tkenv.h"
 #include "tklib.h"
 #include "inspectorfactory.h"
@@ -32,7 +32,7 @@ class HistogramInspectorFactory : public InspectorFactory
   public:
     HistogramInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override { return dynamic_cast<cDensityEstBase *>(obj) != nullptr; }
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cAbstractHistogram *>(obj) != nullptr; }
     int getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
     Inspector *createInspector() override { return new HistogramInspector(this); }
@@ -71,7 +71,7 @@ void HistogramInspector::refresh()
         return;
     }
 
-    cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
+    cAbstractHistogram *distr = static_cast<cAbstractHistogram *>(object);
 
     char buf[80];
     generalInfo(buf);
@@ -140,7 +140,7 @@ void HistogramInspector::refresh()
 
 void HistogramInspector::generalInfo(char *buf)
 {
-    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
+    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
     if (!d->binsAlreadySetUp())
         sprintf(buf, "(collecting initial values, N=%ld)", d->getCount());
     else
@@ -153,7 +153,7 @@ void HistogramInspector::generalInfo(char *buf)
 
 void HistogramInspector::getCellInfo(char *buf, int bin)
 {
-    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
+    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
     double count = d->getBinValue(bin);
     double cell_lower = d->getBinEdge(bin);
     double cell_upper = d->getBinEdge(bin+1);

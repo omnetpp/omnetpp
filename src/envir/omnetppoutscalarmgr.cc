@@ -29,7 +29,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cstatistic.h"
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/ccomponenttype.h"
 #include "envirbase.h"
 #include "omnetppoutscalarmgr.h"
@@ -170,7 +170,7 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
         stats = Statistics::makeWeighted(statistic->getCount(), statistic->getMin(), statistic->getMax(), statistic->getSumWeights(), statistic->getWeightedSum(), statistic->getSqrSumWeights(), statistic->getWeightedSqrSum());
 
     bool savedAsHistogram = false;
-    if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {
+    if (cAbstractHistogram *histogram = dynamic_cast<cAbstractHistogram *>(statistic)) {
         // check that recording the histogram is enabled
         bool binsEnabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
         if (binsEnabled) {

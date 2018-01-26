@@ -49,7 +49,7 @@
 #include "omnetpp/cchannel.h"
 #include "omnetpp/coutvector.h"
 #include "omnetpp/cstatistic.h"
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cdisplaystring.h"
 #include "cmddefs.h"

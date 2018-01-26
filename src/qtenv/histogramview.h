@@ -21,7 +21,7 @@
 
 namespace omnetpp {
 
-class cDensityEstBase;
+class cAbstractHistogram;
 
 namespace qtenv {
 
@@ -59,7 +59,7 @@ class HistogramView : public QGraphicsView
 
   public:
     HistogramView(QGraphicsScene *scene, QWidget *parent = nullptr);
-    void draw(ChartType type, DrawingStyle drawingStyle, cDensityEstBase *distr);
+    void draw(ChartType type, DrawingStyle drawingStyle, cAbstractHistogram *distr);
 
     void setMinX(const double minX);
     void setMaxX(const double maxX);

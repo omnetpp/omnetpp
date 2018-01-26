@@ -40,14 +40,14 @@ using std::endl;
 
 Register_Class(cPSquare);
 
-cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
+cPSquare::cPSquare(const cPSquare& r) : cAbstractHistogram(r)
 {
     n = nullptr;
     q = nullptr;
     copy(r);
 }
 
-cPSquare::cPSquare(const char *name, int bins) : cDensityEstBase(name)
+cPSquare::cPSquare(const char *name, int bins) : cAbstractHistogram(name)
 {
     numBins = bins;
     numObs = 0;
@@ -71,7 +71,7 @@ void cPSquare::parsimPack(cCommBuffer *buffer) const
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimPack(buffer);
+    cAbstractHistogram::parsimPack(buffer);
 
     buffer->pack(numBins);
     buffer->pack(numObs);
@@ -88,7 +88,7 @@ void cPSquare::parsimUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimUnpack(buffer);
+    cAbstractHistogram::parsimUnpack(buffer);
 
     buffer->unpack(numBins);
     buffer->unpack(numObs);
@@ -123,14 +123,14 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
 {
     if (this == &res)
         return *this;
-    cDensityEstBase::operator=(res);
+    cAbstractHistogram::operator=(res);
     copy(res);
     return *this;
 }
 
 void cPSquare::collect(double val)
 {
-    cDensityEstBase::collect(val);
+    cAbstractHistogram::collect(val);
 
     numObs++;  // an extra observation is added
 
@@ -277,7 +277,7 @@ void cPSquare::ensureStrictlyIncreasingEdges()
 
 void cPSquare::saveToFile(FILE *f) const
 {
-    cDensityEstBase::saveToFile(f);
+    cAbstractHistogram::saveToFile(f);
 
     fprintf(f, "%u\t #= numbins\n", numBins);
     fprintf(f, "%ld\t #= numobs\n", numObs);
@@ -294,7 +294,7 @@ void cPSquare::saveToFile(FILE *f) const
 
 void cPSquare::loadFromFile(FILE *f)
 {
-    cDensityEstBase::loadFromFile(f);
+    cAbstractHistogram::loadFromFile(f);
 
     freadvarsf(f, "%u\t #= numbins", &numBins);
     freadvarsf(f, "%ld\t #= numobs", &numObs);

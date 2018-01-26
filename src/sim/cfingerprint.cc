@@ -23,7 +23,7 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/crng.h"
 #include "omnetpp/cstatistic.h"
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
@@ -344,7 +344,7 @@ void cSingleFingerprintCalculator::addStatisticResult(const cComponent *componen
                 hasher->add(statistic->getMax());
                 hasher->add(statistic->getMean());
                 hasher->add(statistic->getStddev());
-                if (const cDensityEstBase *histogram = dynamic_cast<const cDensityEstBase*>(statistic)) {
+                if (const cAbstractHistogram *histogram = dynamic_cast<const cAbstractHistogram*>(statistic)) {
                     hasher->add(histogram->getUnderflowSumWeights());
                     hasher->add(histogram->getOverflowSumWeights());
                     int numBins = histogram->getNumBins();

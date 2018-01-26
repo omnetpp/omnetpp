@@ -22,7 +22,7 @@
 #include <sstream>
 #include <algorithm>
 #include "omnetpp/globals.h"
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/cexception.h"
 
 #ifdef WITH_PARSIM
@@ -34,7 +34,7 @@ using namespace std;
 namespace omnetpp {
 
 
-cDensityEstBase::Bin cDensityEstBase::getBinInfo(int k) const
+cAbstractHistogram::Bin cAbstractHistogram::getBinInfo(int k) const
 {
     if (k < 0 || k >= getNumBins())
         return Bin();
@@ -46,7 +46,7 @@ cDensityEstBase::Bin cDensityEstBase::getBinInfo(int k) const
     return c;
 }
 
-double cDensityEstBase::getPDF(double x) const
+double cAbstractHistogram::getPDF(double x) const
 {
     if (!binsAlreadySetUp())
         throw cRuntimeError(this, "");
@@ -75,7 +75,7 @@ double cDensityEstBase::getPDF(double x) const
 }
 
 
-double cDensityEstBase::getCDF(double x) const
+double cAbstractHistogram::getCDF(double x) const
 {
     if (x < getMin())
         return 0;
@@ -101,7 +101,7 @@ double cDensityEstBase::getCDF(double x) const
 }
 
 
-const cDensityEstBase::Bin& cDensityEstBase::internalGetBinInfo(int k) const
+const cAbstractHistogram::Bin& cAbstractHistogram::internalGetBinInfo(int k) const
 {
     // only for use in sim_std.msg (each call overwrites the static buffer!)
     static Bin buf;
@@ -109,7 +109,7 @@ const cDensityEstBase::Bin& cDensityEstBase::internalGetBinInfo(int k) const
     return buf;
 }
 
-double cDensityEstBase::getBinPDF(int k) const
+double cAbstractHistogram::getBinPDF(int k) const
 {
     if (numValues == 0)
         return 0.0;
@@ -120,7 +120,7 @@ double cDensityEstBase::getBinPDF(int k) const
 
 //----
 
-cPrecollectionBasedDensityEst::cPrecollectionBasedDensityEst(const char *name, bool weighted) : cDensityEstBase(name, weighted)
+cPrecollectionBasedDensityEst::cPrecollectionBasedDensityEst(const char *name, bool weighted) : cAbstractHistogram(name, weighted)
 {
     rangeMode = RANGE_AUTO;
     numPrecollected = 100;
@@ -144,7 +144,7 @@ void cPrecollectionBasedDensityEst::parsimPack(cCommBuffer *buffer) const
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimPack(buffer);
+    cAbstractHistogram::parsimPack(buffer);
 
     buffer->pack(rangeMin);
     buffer->pack(rangeMax);
@@ -169,7 +169,7 @@ void cPrecollectionBasedDensityEst::parsimUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this, E_NOPARSIM);
 #else
-    cDensityEstBase::parsimUnpack(buffer);
+    cAbstractHistogram::parsimUnpack(buffer);
 
     buffer->unpack(rangeMin);
     buffer->unpack(rangeMax);
@@ -232,7 +232,7 @@ void cPrecollectionBasedDensityEst::copy(const cPrecollectionBasedDensityEst& re
 
 cPrecollectionBasedDensityEst& cPrecollectionBasedDensityEst::operator=(const cPrecollectionBasedDensityEst& res)
 {
-    cDensityEstBase::operator=(res);
+    cAbstractHistogram::operator=(res);
     copy(res);
     return *this;
 }
@@ -256,7 +256,7 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
     }
     else {
         // merge the base class
-        cDensityEstBase::merge(otherd);
+        cAbstractHistogram::merge(otherd);
 
         // force this object to set up the bins as well
         if (!binsAlreadySetUp())
@@ -285,7 +285,7 @@ void cPrecollectionBasedDensityEst::merge(const cStatistic *other)
 
 void cPrecollectionBasedDensityEst::clear()
 {
-    cDensityEstBase::clear();
+    cAbstractHistogram::clear();
 
     transformed = false;
     rangeMode = RANGE_AUTO;
@@ -437,7 +437,7 @@ void cPrecollectionBasedDensityEst::collect(double value)
     if (!binsAlreadySetUp() && rangeMode == RANGE_FIXED)
         setUpBins();
 
-    cDensityEstBase::collect(value);
+    cAbstractHistogram::collect(value);
 
     if (!binsAlreadySetUp()) {
         ASSERT(precollectedValues);
@@ -456,7 +456,7 @@ void cPrecollectionBasedDensityEst::collectWeighted(double value, double weight)
     if (!binsAlreadySetUp() && rangeMode == RANGE_FIXED)
         setUpBins();
 
-    cDensityEstBase::collectWeighted(value, weight);
+    cAbstractHistogram::collectWeighted(value, weight);
 
     if (!binsAlreadySetUp()) {
         ASSERT(precollectedValues);
@@ -488,7 +488,7 @@ void cPrecollectionBasedDensityEst::plotline(ostream& os, const char *pref, doub
 
 void cPrecollectionBasedDensityEst::saveToFile(FILE *f) const
 {
-    cDensityEstBase::saveToFile(f);
+    cAbstractHistogram::saveToFile(f);
 
     fprintf(f, "%d\t #= transformed\n", transformed);
     fprintf(f, "%d\t #= range_mode\n", rangeMode);
@@ -514,7 +514,7 @@ void cPrecollectionBasedDensityEst::saveToFile(FILE *f) const
 
 void cPrecollectionBasedDensityEst::loadFromFile(FILE *f)
 {
-    cDensityEstBase::loadFromFile(f);
+    cAbstractHistogram::loadFromFile(f);
 
     int tmp;
     freadvarsf(f, "%d\t #= transformed", &tmp); transformed = tmp;

@@ -20,7 +20,7 @@
 #include <QStatusBar>
 #include <QToolBar>
 #include <QMenu>
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "qtenv.h"
 #include "inspectorfactory.h"
 #include "histograminspector.h"
@@ -41,7 +41,7 @@ class HistogramInspectorFactory : public InspectorFactory
   public:
     HistogramInspectorFactory(const char *name) : InspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) override { return dynamic_cast<cDensityEstBase *>(obj) != nullptr; }
+    bool supportsObject(cObject *obj) override { return dynamic_cast<cAbstractHistogram *>(obj) != nullptr; }
     InspectorType getInspectorType() override { return INSP_GRAPHICAL; }
     double getQualityAsDefault(cObject *object) override { return 3.0; }
     Inspector *createInspector(QWidget *parent, bool isTopLevel) override { return new HistogramInspector(parent, isTopLevel, this); }
@@ -104,7 +104,7 @@ void HistogramInspector::refresh()
         return;
     }
 
-    cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
+    cAbstractHistogram *distr = static_cast<cAbstractHistogram *>(object);
     statusBar->showMessage(generalInfo());
 
     // can we draw anything at all?
@@ -164,7 +164,7 @@ double HistogramInspector::maxY()
 {
     // determine maximum height (will be used for y scaling)
     double maxY = -1.0;  // a good start because all y values are >=0
-    cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
+    cAbstractHistogram *distr = static_cast<cAbstractHistogram *>(object);
     for (int bin = 0; bin < distr->getNumBins(); bin++) {
         // calculate height
         double y = chartType == HistogramView::SHOW_PDF ? distr->getBinPDF(bin) : distr->getBinValue(bin);
@@ -202,7 +202,7 @@ void HistogramInspector::xRangeCorrection(double& minX, double& maxX, bool isMin
 
 QString HistogramInspector::generalInfo()
 {
-    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
+    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
     if (!d->binsAlreadySetUp())
         return QString("(collecting initial values, N=%1)").arg(QString::number(d->getCount()));
     else
@@ -223,7 +223,7 @@ void HistogramInspector::onShowCellInfo(int bin)
         return;
     }
 
-    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
+    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
     double count = d->getBinValue(bin);
     double cell_lower = d->getBinEdge(bin);
     double cell_upper = d->getBinEdge(bin+1);

@@ -1,5 +1,5 @@
 //==========================================================================
-//  CDENSITYESTBASE.H - part of
+//  CABSTRACTHISTOGRAM.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CDENSITYESTBASE_H
-#define __OMNETPP_CDENSITYESTBASE_H
+#ifndef __OMNETPP_CABSTRACTHISTOGRAM_H
+#define __OMNETPP_CABSTRACTHISTOGRAM_H
 
 #include "cstddev.h"
 
@@ -22,10 +22,8 @@ namespace omnetpp {
 
 /**
  * @brief Interface and base class for histogram-like density estimation classes.
- *
- * TODO
  */
-class SIM_API cDensityEstBase : public cStdDev
+class SIM_API cAbstractHistogram : public cStdDev
 {
   public:
     /**
@@ -42,7 +40,7 @@ class SIM_API cDensityEstBase : public cStdDev
     };
 
   private:
-    void copy(const cDensityEstBase& other) {}
+    void copy(const cAbstractHistogram& other) {}
 
   public:
     // internal, for use in sim_std.msg; note: each call overwrites the previous value!
@@ -55,22 +53,22 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {}
+    cAbstractHistogram(const cAbstractHistogram& other) : cStdDev(other) {}
 
     /**
      * Constructor.
      */
-    explicit cDensityEstBase(const char *name=nullptr, bool weighted=false) : cStdDev(name, weighted) {}
+    explicit cAbstractHistogram(const char *name=nullptr, bool weighted=false) : cStdDev(name, weighted) {}
 
     /**
      * Destructor.
      */
-    virtual ~cDensityEstBase() {};
+    virtual ~cAbstractHistogram() {};
 
     /**
      * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
      */
-    cDensityEstBase& operator=(const cDensityEstBase& res) {
+    cAbstractHistogram& operator=(const cAbstractHistogram& res) {
         if (this == &res)
            return *this;
        cStdDev::operator=(res);
@@ -208,10 +206,13 @@ class SIM_API cDensityEstBase : public cStdDev
      * Deprecated, use getBinInfo() instead.
      */
     _OPPDEPRECATED virtual Bin getCellInfo(int k) const final {return getBinInfo(k);}
-
     //@}
-
 };
+
+/**
+ * DEPRECATED CLASS, use cAbstractHistogram instead.
+ */
+_OPPDEPRECATED typedef cAbstractHistogram cDensityEstBase;
 
 
 /**
@@ -246,7 +247,7 @@ class SIM_API cDensityEstBase : public cStdDev
  *
  * @ingroup Statistics
  */
-class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
+class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
 {
   public:
     /**
@@ -294,7 +295,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cPrecollectionBasedDensityEst(const cPrecollectionBasedDensityEst& other) : cDensityEstBase(other) {precollectedValues=nullptr; precollectedWeights=nullptr; copy(other);}
+    cPrecollectionBasedDensityEst(const cPrecollectionBasedDensityEst& other) : cAbstractHistogram(other) {precollectedValues=nullptr; precollectedWeights=nullptr; copy(other);}
 
     /**
      * Constructor.

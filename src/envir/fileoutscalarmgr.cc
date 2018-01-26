@@ -29,7 +29,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cstatistic.h"
-#include "omnetpp/cdensityestbase.h"
+#include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/ccomponenttype.h"
 #include "envirbase.h"
 #include "fileoutscalarmgr.h"
@@ -233,7 +233,7 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
             check(fprintf(f, "attr %s %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
 
-    if (cDensityEstBase *histogram = dynamic_cast<cDensityEstBase *>(statistic)) {
+    if (cAbstractHistogram *histogram = dynamic_cast<cAbstractHistogram *>(statistic)) {
         // check that recording histogram bins is enabled
         bool binsEnabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), CFGID_BIN_RECORDING);
         if (binsEnabled) {

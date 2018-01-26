@@ -18,7 +18,7 @@
 #ifndef __OMNETPP_CPSQUARE_H
 #define __OMNETPP_CPSQUARE_H
 
-#include "cdensityestbase.h"
+#include "cabstracthistogram.h"
 
 namespace omnetpp {
 
@@ -32,7 +32,7 @@ namespace omnetpp {
  *
  * @ingroup Statistics
  */
-class SIM_API cPSquare : public cDensityEstBase
+class SIM_API cPSquare : public cAbstractHistogram
 {
   protected:
     int numBins;       // number of bins

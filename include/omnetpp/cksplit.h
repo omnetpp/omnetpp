@@ -19,7 +19,7 @@
 #ifndef __OMNETPP_CKSPLIT_H
 #define __OMNETPP_CKSPLIT_H
 
-#include "cdensityestbase.h"
+#include "cabstracthistogram.h"
 
 namespace omnetpp {
 
