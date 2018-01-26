@@ -3,10 +3,6 @@ Histogram demo
 
 A demo for the density estimation/histogram classes.
 
-Demonstrates:
- - collecting observations into statistics objects
- - saving statistics objects to file and restoring them
-
 About the model
 
 The network consists of a single module. It goes into a loop to generate
@@ -23,23 +19,10 @@ window, after opening the "Histograms" and "local-objects" nodes.)
 
 The following classes are demonstrated:
 
-* cDoubleHistogram
-A histogram with equidistant cells. Cell boundaries are real numbers
-(doubles). In the default scenario of this demo, the lower histogram bound
-is zero, and the upper bound is estimated from the first n (by default 50)
-observations.
-
-* cLongHistogram
-A histogram with equidistant cells. Cell boundaries are integers. Histogram
-bounds are set up similarly to cDoubleHistogram.
-
-* cVarHistogram
-A histogram with arbitrary cells. Cell boundaries can be set up manually
-(via the addBinBound() member function of the C++ class), but it is also
-possible to have them set them up automatically based on the first n
-observations such that each cell contains approximately the same number
-of observations. (Cell boundaries don't change afterwards.) The latter method
-is used in this demo.
+* cHistogram
+A generic histogram class. The algorithm for laying out the bins is
+encapsulated into a "strategy" class. This demo shows several histogram
+stategies.
 
 * cPSquare
 Implementation of the P^2 (P-square) algorithm from Jain and Chlamtac.
@@ -52,5 +35,4 @@ An adaptive histogram structure which splits those cells that receive
 "too many" observations (this is defined by a split criterion), thus
 "refining the resolution" at (or "zooming in" on) the interesting parts
 of the distribution.
-
 
