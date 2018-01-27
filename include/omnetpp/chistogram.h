@@ -201,11 +201,6 @@ class SIM_API cHistogram : public cAbstractHistogram
     virtual void clear() override;
 
     /**
-     * Returns a random number from the distribution represented by the histogram.
-     */
-    virtual double draw() const override;
-
-    /**
      * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *f) const override;

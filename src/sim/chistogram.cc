@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <omnetpp/chistogram.h>
 #include "omnetpp/chistogramstrategy.h"
-#include "omnetpp/distrib.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/globals.h"
@@ -169,30 +168,6 @@ void cHistogram::clear()
 
     underflowSumWeights = 0;
     overflowSumWeights = 0;
-}
-
-double cHistogram::draw() const
-{
-    double binValueSum = getSumWeights();
-    double rand = uniform(getRNG(), 0, binValueSum);
-
-    if (rand < getUnderflowSumWeights())
-        return uniform(getRNG(), getMin(), getBinEdge(0));
-
-    rand -= getUnderflowSumWeights();
-
-    // selecting a bin, each with a probability proportional to its value
-    for (int i = 0; i < getNumBins(); ++i) {
-        double binValue = getBinValue(i);
-        if (rand < binValue)
-            // we can't do better than uniform within a single bin
-            return uniform(getRNG(), getBinEdge(i), getBinEdge(i + 1));
-        else
-            // we're not yet at the selected bin yet
-            rand -= binValue;
-    }
-
-    return uniform(getRNG(), getBinEdge(getNumBins()), getMax());
 }
 
 void cHistogram::saveToFile(FILE *f) const

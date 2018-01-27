@@ -145,7 +145,7 @@ class SIM_API cAbstractHistogram : public cStdDev
     virtual Bin getBinInfo(int k) const;
     //@}
 
-    /** @name Density and cumulated density approximation functions. */
+    /** @name Density and cumulated density approximation functions, random number generation. */
     //@{
 
     /**
@@ -157,6 +157,11 @@ class SIM_API cAbstractHistogram : public cStdDev
      * Returns the estimated value of the Cumulative Density Function at a given x.
      */
     virtual double getCDF(double x) const;
+
+    /**
+     * Returns a random number from the distribution represented by the histogram.
+     */
+    virtual double draw() const override;
     //@}
 
     /** @name Methods deprecated due to renaming. */

@@ -266,24 +266,9 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     virtual double getBinValue(int k) const override;
 
     /**
-     * Returns the value of the Probability Density Function at a given x.
-     */
-    virtual double getPDF(double x) const override;
-
-    /**
-     * Returns the value of the Cumulated Density Function at a given x.
-     */
-    virtual double getCDF(double x) const override;
-
-    /**
      * Merging is not supported by this class. This method throws an error.
      */
     virtual void merge(const cStatistic *other) override;
-
-    /**
-     * Generates a random number based on the collected data.
-     */
-    virtual double draw() const override;
 
     /**
      * Writes the contents of the object into a text file.

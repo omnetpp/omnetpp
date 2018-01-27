@@ -24,6 +24,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cabstracthistogram.h"
 #include "omnetpp/cexception.h"
+#include "omnetpp/distrib.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -74,7 +75,6 @@ double cAbstractHistogram::getPDF(double x) const
     return 0;
 }
 
-
 double cAbstractHistogram::getCDF(double x) const
 {
     if (x < getMin())
@@ -100,7 +100,6 @@ double cAbstractHistogram::getCDF(double x) const
     return 1;
 }
 
-
 const cAbstractHistogram::Bin& cAbstractHistogram::internalGetBinInfo(int k) const
 {
     // only for use in sim_std.msg (each call overwrites the static buffer!)
@@ -117,6 +116,29 @@ double cAbstractHistogram::getBinPDF(int k) const
     return binSize == 0 ? 0.0 : getBinValue(k) / binSize / getSumWeights();
 }
 
+double cAbstractHistogram::draw() const
+{
+    double binValueSum = getSumWeights();
+    double rand = uniform(getRNG(), 0, binValueSum);
+
+    if (rand < getUnderflowSumWeights())
+        return uniform(getRNG(), getMin(), getBinEdge(0));
+
+    rand -= getUnderflowSumWeights();
+
+    // selecting a bin, each with a probability proportional to its value
+    for (int i = 0; i < getNumBins(); ++i) {
+        double binValue = getBinValue(i);
+        if (rand < binValue)
+            // we can't do better than uniform within a single bin
+            return uniform(getRNG(), getBinEdge(i), getBinEdge(i + 1));
+        else
+            // we're not yet at the selected bin yet
+            rand -= binValue;
+    }
+
+    return uniform(getRNG(), getBinEdge(getNumBins()), getMax());
+}
 
 //----
 
