@@ -85,7 +85,7 @@ class SIM_API cAbstractHistogram : public cStdDev
     virtual bool binsAlreadySetUp() const = 0;
 
     /**
-     * Sets up histogram bins, possible based on data collected during a
+     * Sets up histogram bins, possibly based on data collected during a
      * precollection phase.
      */
     virtual void setUpBins() = 0;
@@ -97,7 +97,7 @@ class SIM_API cAbstractHistogram : public cStdDev
 
     /**
      * Returns the kth histogram bin edge. Legal values for k are 0 through
-     * getNumBins(), that is, there's one more edge the number of bins.
+     * getNumBins(), that is, there's one more edge than the number of bins.
      * getBinEdge(0) returns the lower bound of the first bin, and
      * getBinEdge(getNumBins()) returns the upper bound of the last bin.
      * The lower bound is inclusive, the upper bound is exclusive.

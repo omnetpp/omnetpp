@@ -265,6 +265,7 @@ void cDefaultHistogramStrategy::createBins()
     // auto-extending now is needed, otherwise collectIntoHistogram() will
     // create underflows/overflows and we'll run into problems later when
     // new observations will try to further extend the histogram
+    // TODO: do we really need the next two lines? (unless rangeExtensionFactor < 1.0?)
     extendBinsTo(hist->getMin());
     extendBinsTo(hist->getMax());
 
@@ -428,11 +429,11 @@ void cAutoRangeHistogramStrategy::createBins()
 
         if (binSizeRounding) {
             binSize = roundToOneTwoFive(binSize);
-            if (binSize == 0)
+            if (binSize == 0) // TODO: binSize > 0 always? assert?
                 binSize = 1;
             rangeMin = binSize * std::floor(rangeMin / binSize); // snap
             rangeMax = binSize * std::ceil(rangeMax / binSize);
-            if (rangeMin >= rangeMax)
+            if (rangeMin >= rangeMax) // TODO: rangeMin < rangeMax always, see code above? assert?
                 rangeMax = rangeMin + 1;
         }
     }

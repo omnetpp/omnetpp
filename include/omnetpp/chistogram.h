@@ -67,7 +67,7 @@ class cAutoRangeHistogramStrategy;
  * \code
  * cAutoRangeHistogramStrategy *strategy = new cAutoRangeHistogramStrategy();
  * strategy->setRange(0, 100);
- * strategy->setumBins(50);
+ * strategy->setNumBins(50);
  * strategy->setMode(cHistogram::MODE_INTEGERS);
  * cHistogram histogram("histogram", strategy);
  * \endcode
@@ -77,7 +77,7 @@ class cAutoRangeHistogramStrategy;
  * \code
  * cHistogram histogram("histogram");
  * histogram.setRange(0, 100);
- * histogram.setumBins(50);
+ * histogram.setNumBins(50);
  * histogram.setMode(cHistogram::MODE_INTEGERS);
  * \endcode
  *
@@ -275,7 +275,7 @@ class SIM_API cHistogram : public cAbstractHistogram
     virtual void appendBins(const std::vector<double>& edges);
 
     /**
-     * Makes sure that 'value' will falls in the range covered by the bins, by
+     * Makes sure that 'value' will fall in the range covered by the bins, by
      * potentially extending the histogram with some bins of width 'step'.
      * Creation of new bins stops when either the total number of bins reaches
      * 'maxNumBins', or 'value' is covered by the histogram. If 'value' is already

@@ -268,7 +268,7 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
  * left unspecified, the histogram range is derived by taking the range of the
  * precollected observations and extending it symmetrically by a range extension
  * factor. If one of the endpoints is specified by the user, that value is used
- * instead of he computed one. The number of observations to precollect as well
+ * instead of the computed one. The number of observations to precollect as well
  * as the range extension factor can be configured. If the histogram mode
  * (integers vs. reals) is left unspecified, it will be determined by examining
  * the precollected values. In integers mode, bin edges will be whole numbers.
