@@ -1,3 +1,26 @@
+2017-02-10  Andras Varga
+
+	sim: cMessage: remove experimental "tags" API
+
+2018-01-12  Andras Varga
+
+	bump OMNETPP_BUILDNUM
+
+2018-01-09  Andras Varga
+
+	sim: cDynamicExpression: added support for intpar_t computations;
+	intquantity; integer exponentiation
+
+2017-12-14  Andras Varga
+
+	sim: cNedValue: added INT type
+
+2018-01-04  Andras Varga
+
+	sim: cPar/cParImpl INT-releated refinements
+
+----------- lines above this marker have been added from git log -----------
+
 2017-12-15  Attila Torok
 
 	* cEnvir: Add getZoomLevel(). Access to the zoom level in the GUI
@@ -52,7 +75,6 @@
 	unchecked cast from intpar_t to int, so overflows go undetected. In the
 	second case, the compiler will generate a call to cPar's operator int()
 	which performs overflow check.
-
 
 2017-12-12  Andras Varga
 

@@ -1,3 +1,9 @@
+2018-01-09  Andras Varga
+
+	* omnetpp.ini: cast from double to int now required explicit cast (int())
+
+	* NED files: fix: use int instead of double for parameters like width/height
+
 2017-12-12  Andras Varga
 
 	* Follow cPar longValue()->intValue() rename

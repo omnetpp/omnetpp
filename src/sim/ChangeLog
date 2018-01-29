@@ -1,3 +1,41 @@
+2017-02-10  Andras Varga
+
+	* cMessage: remove experimental "tags" API
+
+2018-01-12  Andras Varga
+
+	* NED functions int() and double() now preserve the unit
+
+2018-01-09  Andras Varga
+
+	* cNedFunction: added "intquantity" (integer with a measurement unit)
+	to the list of type available in NED function signatures.
+
+	* cDynamicExpression: The evaluation stack now stores integer values
+	as intpar_t (practically int64_t), and operations on integers are now
+	computed using integer arithmetic. Before, the stack represented all
+	numbers using "double", and integers >= 2^52-1 in absolute value
+	could only be represented using precision loss.
+
+	If one operand is floating point and the other is integer, the integer
+	one is promoted to double.
+
+	The guideline is that implicit precision loss should be avoided.
+	Therefore, casting a double to integer now requires the use of the
+	int() operator (thus making the loss of the fractional part explicit.)
+	Integers are implictly cast to double; however, if the double cannot
+	represent the given integer value precisely, an error will be raised.
+	The double() operator can be used suppress that error and allow the
+	computation to proceed with precision loss.
+
+2017-12-14  Andras Varga
+
+	* cNedValue: added INT type
+
+2018-01-04  Andras Varga
+
+	* cPar/cParImpl INT-releated refinements
+
 2017-12-18  Attila Torok
 
 	* gettime.cc: Added opp_get_monotonic_clock_nsecs().
@@ -17,7 +55,7 @@
 
 2017-09-11  Zoltan Bojthe
 
-	* cPacket: Check that the length of the packet to be encapsulated is 
+	* cPacket: Check that the length of the packet to be encapsulated is
 	nonnegative.
 
 2016-11-18  Zoltan Bojthe
@@ -32,7 +70,7 @@
 
 2017-12-09  Andras Varga
 
-	* Reslt recorders: Added the "psquare" and "ksplit" recorders. They are 
+	* Reslt recorders: Added the "psquare" and "ksplit" recorders. They are
 	useful for recording histogram information from a variable whose distribution
 	is not known in advance, and might change over time. Internally they rely
 	on the cPSquare and cKSplit classes, respectively.

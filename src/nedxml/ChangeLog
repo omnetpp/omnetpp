@@ -1,3 +1,19 @@
+2018-01-24  Zoltan Bojthe
+
+	* Message compiler: fix: eraseFoo(i): set array variable to nullptr
+	instead of "new FooType[0]"
+
+2018-01-23  Zoltan Bojthe
+
+	* Message compiler: fix memory leak in generated setFieldArraySize()
+	of owned pointer arrays: when size was reduced, dropped elements were
+	not deleted.
+
+2018-01-19  Zoltan Bojthe
+
+	* Message compiler: fix generated copy(): use @clone and dup() as
+	appropriate.
+
 2017-12-14  Andras Varga
 
 	* A complete overhaul of the message compiler and related functionality,
@@ -5,7 +21,7 @@
 	See summary below.
 
 	This release contains experimental features which can be enabled with
-    the --msg6 option. This experimental mode makes non-backward-compatible
+	the --msg6 option. This experimental mode makes non-backward-compatible
 	changes to the MSG language. These features were motivated by the needs
 	of INET 4.
 

@@ -1,3 +1,7 @@
+2018-01-09  Andras Varga
+
+	* omnetpp.ini: fix: use intuniform() instead of uniform() for "priority" parameters
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------
