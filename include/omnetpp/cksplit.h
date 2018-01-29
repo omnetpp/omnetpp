@@ -26,7 +26,18 @@ namespace omnetpp {
 
 /**
  * @brief Implements k-split, an adaptive histogram-like density estimation
- * algorithm.
+ * algorithm. During result collection, k-split will dynamically subdivide
+ * "busy" bins (ones that collect a large number of observations), thereby
+ * refining the resolution of the histogram where needed.
+ *
+ * The histogram produced by k-split will be an approximation, because the
+ * algorithm has no information on to divide up observations collected
+ * into a bin before it was split. Nevertheless, for stationary distributions,
+ * k-split usually produces a superior estimate of the distribution than
+ * uniform-bin histograms. If the distribution changes over time, and
+ * especially if it shows a distinct (increasing or decreasing) trend,
+ * k-split's estimate often contains artifacts that are not part of the input
+ * distribution.
  *
  * @ingroup Statistics
  * @see Iterator Grid
@@ -45,9 +56,9 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     {
       int parent;      ///< index of parent grid
       int reldepth;    ///< depth = (reldepth - rootgrid's reldepth)
-      long total;      ///< sum of cells & all subgrids (also includes 'mother')
-      int mother;      ///< observations 'inherited' from mother cell
-      int cells[K];    ///< cell values
+      double total;    ///< sum of cells & all subgrids (also includes 'mother')
+      double mother;   ///< observations 'inherited' from mother cell
+      double cells[K]; ///< cell values (sum of weights); if negative: subgrid indices (!!!)
     };
 
     /**
@@ -160,10 +171,10 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     void createRootGrid();
 
     // internal:
-    void newRootGrids(double x);
+    void newRootGrids(double value, double weight);
 
     // internal:
-    void insertIntoGrids(double x, int enable_splits);
+    void insertIntoGrids(double value, double weight, int enableSplits);
 
     // internal:
     void splitCell(int grid, int cell);
@@ -185,14 +196,14 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
     //@{
 
     /**
+     * Constructor.
+     */
+    explicit cKSplit(const char *name=nullptr, bool weighted=false);
+
+    /**
      * Copy constructor.
      */
     cKSplit(const cKSplit& r);
-
-    /**
-     * Constructor.
-     */
-    explicit cKSplit(const char *name=nullptr);
 
     /**
      * Destructor.

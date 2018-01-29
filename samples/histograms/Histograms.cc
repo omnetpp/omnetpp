@@ -93,10 +93,11 @@ void Histograms::addHistogram(const char *name, cIHistogramStrategy *strategy)
 void Histograms::createStatisticObjects()
 {
     if (!weighted) {
-        statisticObjects.push_back(new cKSplit("ksplit-default"));
         statisticObjects.push_back(new cPSquare("psquare-default"));
         statisticObjects.push_back(new cPSquare("psquare bins=100", 100));
     }
+
+    statisticObjects.push_back(new cKSplit("ksplit-default", weighted));
 
     addHistogram("Default", new cDefaultHistogramStrategy());
     addHistogram("Default bins=5", new cDefaultHistogramStrategy(5));
@@ -108,9 +109,9 @@ void Histograms::createStatisticObjects()
 
     addHistogram("AutoRange default", new cAutoRangeHistogramStrategy());
     addHistogram("AutoRange bins=5", new cAutoRangeHistogramStrategy(5));
-    addHistogram("AutoRange bins=100", new cAutoRangeHistogramStrategy(100));
+    addHistogram("AutoRange bins=500", new cAutoRangeHistogramStrategy(500));
     addHistogram("AutoRange bins=5, integers", new cAutoRangeHistogramStrategy(5, cHistogram::MODE_INTEGERS));
-    addHistogram("AutoRange bins=100, integers", new cAutoRangeHistogramStrategy(100, cHistogram::MODE_INTEGERS));
+    addHistogram("AutoRange bins=500, integers", new cAutoRangeHistogramStrategy(500, cHistogram::MODE_INTEGERS));
 
     addHistogram("AutoRange [0,100)", AutoRangeStrategyBuilder().setRange(0, 100).get());
     addHistogram("AutoRange [10,auto)", AutoRangeStrategyBuilder().setRange(10, NAN).get());
@@ -127,7 +128,6 @@ void Histograms::createStatisticObjects()
 
     addHistogram("AutoRange numBins=1", AutoRangeStrategyBuilder().setNumBins(1).get());
     addHistogram("AutoRange numBins=1 autoExtend=false", AutoRangeStrategyBuilder().setNumBins(1).setAutoExtend(false).get());
-    addHistogram("AutoRange numBins=100", AutoRangeStrategyBuilder().setNumBins(100).get());
 
     addHistogram("AutoRange [10,20) numBins=1 autoExtend=false)", AutoRangeStrategyBuilder().setRange(10,20).setNumBins(1).setAutoExtend(false).get());
 }

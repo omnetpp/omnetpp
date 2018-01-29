@@ -40,9 +40,9 @@ namespace omnetpp {
 
 Register_Class(cKSplit);
 
-
-//----
 // Cell division criteria - they are used to decide whether a cell should be split.
+
+//TODO potential improvement: after a split, if one bin never gathers new observations, assume it's outside the distribution! (pdf=1)
 
 double critdata_default[] = {20, 10, 2};
 
@@ -54,7 +54,8 @@ int critfunc_const(const cKSplit&, cKSplit::Grid& g, int i, double *c)
 int critfunc_depth(const cKSplit& ks, cKSplit::Grid& g, int i, double *c)
 {
     int depth = g.reldepth - ks.getRootGrid().reldepth;
-    return g.cells[i] >= c[1] * pow(c[2], depth);
+    double averageWeight = ks.isWeighted() ? ks.getSumWeights() /ks.getCount() : 1;
+    return g.cells[i] >= averageWeight * c[1] * pow(c[2], depth);
 }
 
 double divdata_default[] = {0.0}; // force even distributions
@@ -80,7 +81,7 @@ cKSplit::cKSplit(const cKSplit& r) : cPrecollectionBasedDensityEst(r)
     copy(r);
 }
 
-cKSplit::cKSplit(const char *name) : cPrecollectionBasedDensityEst(name)
+cKSplit::cKSplit(const char *name, bool weighted) : cPrecollectionBasedDensityEst(name, weighted)
 {
     if (K < 2 || (K > 2 && K != 2 * (int)(K / 2) + 1))
         throw cRuntimeError("cKSplit: K must be 2 or a >=3 odd number");
@@ -175,7 +176,7 @@ void cKSplit::resetGrids(int grid)
 {
     Grid *g = &(gridv[grid]);
     g->total = g->mother = 0;
-    for (int & cell : g->cells) {
+    for (double& cell : g->cells) {
         if (cell < 0)
             resetGrids(-cell);
         else
@@ -195,8 +196,6 @@ void cKSplit::doMergeBinValues(const cPrecollectionBasedDensityEst *other)
 
 void cKSplit::setUpBins()
 {
-    ASSERT(!weighted);
-
     if (binsAlreadySetUp())
         throw cRuntimeError(this, "setUpBins(): Histogram bins already set up");
 
@@ -208,15 +207,25 @@ void cKSplit::setUpBins()
     // insert observations again, with cell splits disabled now.
 
     for (int i = 0; i < numValues; i++)
-        collectIntoHistogram(precollectedValues[i]);
+        if (!weighted)
+            collectIntoHistogram(precollectedValues[i]);
+        else
+            collectWeightedIntoHistogram(precollectedValues[i], precollectedWeights[i]);
 
     resetGrids(rootGridIndex);
 
     for (int i = 0; i < numValues; i++)
-        insertIntoGrids(precollectedValues[i], false);
+        if (!weighted)
+            insertIntoGrids(precollectedValues[i], 1.0, false);
+        else
+            insertIntoGrids(precollectedValues[i], precollectedWeights[i], false);
 
     delete[] precollectedValues;
     precollectedValues = nullptr;
+    if (weighted) {
+        delete[] precollectedWeights;
+        precollectedWeights = nullptr;
+    }
 
     transformed = true;
 }
@@ -234,33 +243,33 @@ void cKSplit::createRootGrid()
     gridv[1].reldepth = 0;
     gridv[1].total = 0;
     gridv[1].mother = 0;
-    for (int & cell : gridv[1].cells)
+    for (double& cell : gridv[1].cells)
         cell = 0;
 }
 
-void cKSplit::collectIntoHistogram(double x)
+void cKSplit::collectIntoHistogram(double value)
 {
-    // see if x fits into current range and act accordingly
-    if (x >= rangeMin && x < rangeMax)
-        insertIntoGrids(x, true);
-    else if (rangeExtEnabled)
-        newRootGrids(x);
-    else if (x < rangeMin) {
-        numUnderflows++;
-        underflowSumWeights += 1;
-    }
-    else if (x >= rangeMax) {
-        numOverflows++;
-        overflowSumWeights += 1;
-    }
+    collectWeightedIntoHistogram(value, 1.0);
 }
 
 void cKSplit::collectWeightedIntoHistogram(double value, double weight)
 {
-    ASSERT(false); // weighted case is unsupported
+    // see if x fits into current range and act accordingly
+    if (value >= rangeMin && value < rangeMax)
+        insertIntoGrids(value, weight, true);
+    else if (rangeExtEnabled)
+        newRootGrids(value, weight);
+    else if (value < rangeMin) {
+        numUnderflows++;
+        underflowSumWeights += weight;
+    }
+    else if (value >= rangeMax) {
+        numOverflows++;
+        overflowSumWeights += weight;
+    }
 }
 
-void cKSplit::insertIntoGrids(double x, int enable_splits)
+void cKSplit::insertIntoGrids(double value, double weight, int enableSplits)
 {
     int i;
 
@@ -276,7 +285,7 @@ void cKSplit::insertIntoGrids(double x, int enable_splits)
         gridv[location].total++;
 
         // calc. the cell in which the new observation falls
-        i = (int)((x - gridmin) / cellsize);
+        i = (int)((value - gridmin) / cellsize);
 
         // guard against rounding errors
         if (i < 0)
@@ -297,7 +306,7 @@ void cKSplit::insertIntoGrids(double x, int enable_splits)
     }
 
     // arrived at gridv[location].cells[i] -- possibly split this cell
-    if (enable_splits && critFunc(*this, gridv[location], i, critData)) {
+    if (enableSplits && critFunc(*this, gridv[location], i, critData)) {
         splitCell(location, i);
 
         // go down to new subgrid and insert the observation there
@@ -311,7 +320,7 @@ void cKSplit::insertIntoGrids(double x, int enable_splits)
 
         gridv[location].total++;
 
-        i = (int)((x - gridmin) / cellsize);
+        i = (int)((value - gridmin) / cellsize);
 
         if (i < 0)
             i = 0;
@@ -320,7 +329,7 @@ void cKSplit::insertIntoGrids(double x, int enable_splits)
     }
 
     // increment cell value
-    gridv[location].cells[i]++;
+    gridv[location].cells[i] += weight;
 }
 
 void cKSplit::splitCell(int grid, int cell)
@@ -345,7 +354,7 @@ void cKSplit::splitCell(int grid, int cell)
     subg.reldepth = g.reldepth+1;
     subg.mother = g.cells[cell];
     subg.total = subg.mother;
-    for (int & cell : subg.cells)
+    for (double& cell : subg.cells)
         cell = 0;
 
     g.cells[cell] = -(lastGridIndex+1);
@@ -368,7 +377,7 @@ void cKSplit::distributeMotherObservations(int grid)
 
 #endif
 
-void cKSplit::newRootGrids(double x)
+void cKSplit::newRootGrids(double value, double weight)
 {
     // new "supergrid" has to be inserted until it includes x
     for (;;) {
@@ -387,12 +396,12 @@ void cKSplit::newRootGrids(double x)
         gridv[rootGridIndex].reldepth = gridv[old_rootgrid].reldepth-1;
         gridv[rootGridIndex].total = gridv[old_rootgrid].total;
         gridv[rootGridIndex].mother = 0;
-        for (int & cell : gridv[rootGridIndex].cells)
+        for (double& cell : gridv[rootGridIndex].cells)
             cell = 0;
 
         double gridsize = rangeMax - rangeMin;
         if (K == 2) {
-            if (x < rangeMin) {
+            if (value < rangeMin) {
                 gridv[rootGridIndex].cells[1] = -old_rootgrid;
                 rangeMin -= gridsize;
             }
@@ -408,18 +417,18 @@ void cKSplit::newRootGrids(double x)
             rangeMax += (K-1) / 2.0 * gridsize;
         }
 
-        if (x >= rangeMin && x < rangeMax)
+        if (value >= rangeMin && value < rangeMax)
             break;
     }
 
     // now, insert x into new root grid
 
     // calc. in which cell x falls
-    int i = (int)(K * (x - rangeMin) / (rangeMax - rangeMin));
+    int i = (int)(K * (value - rangeMin) / (rangeMax - rangeMin));
 
     // if it falls in the old root grid, we have to correct it
     if (i == (K-1) / 2) {
-        if (x > (rangeMax - rangeMin) / 2)
+        if (value > (rangeMax - rangeMin) / 2)
             i++;
         else
             i--;
@@ -546,7 +555,6 @@ void cKSplit::iteratorToCell(int cell_nr) const
     else if (cell_nr < iter->getCellNumber())
         while (cell_nr != iter->getCellNumber())
             (*iter)--;
-
 }
 
 int cKSplit::getNumBins() const
@@ -589,14 +597,14 @@ void cKSplit::saveToFile(FILE *f) const
             fprintf(f, "# grid %d\n", i);
             fprintf(f, "%d\t #= parent\n", gridv[i].parent);
             fprintf(f, "%d\t #= reldepth\n", gridv[i].reldepth);
-            fprintf(f, "%ld\t #= total\n", gridv[i].total);
-            fprintf(f, "%d\t #= mother\n", gridv[i].mother);
+            fprintf(f, "%lg\t #= total\n", gridv[i].total);
+            fprintf(f, "%lg\t #= mother\n", gridv[i].mother);
             if (K == 2)
-                fprintf(f, "%d %d\t #= cells[0], cells[1]\n", gridv[i].cells[0], gridv[i].cells[1]);
+                fprintf(f, "%lg %lg\t #= cells[0], cells[1]\n", gridv[i].cells[0], gridv[i].cells[1]);
             else {
                 fprintf(f, "#= cells[]\n");
-                for (int cell : gridv[i].cells)
-                    fprintf(f, " %d\n", cell);
+                for (double cell : gridv[i].cells)
+                    fprintf(f, " %lg\n", cell);
             }
         }
     }
@@ -621,14 +629,15 @@ void cKSplit::loadFromFile(FILE *f)
         for (int i = 1; i <= lastGridIndex; i++) {
             freadvarsf(f, "%d\t #= parent", &gridv[i].parent);
             freadvarsf(f, "%d\t #= reldepth", &gridv[i].reldepth);
-            freadvarsf(f, "%ld\t #= total", &gridv[i].total);
-            freadvarsf(f, "%d\t #= mother", &gridv[i].mother);
+            freadvarsf(f, "%lg\t #= total", &gridv[i].total);
+            freadvarsf(f, "%lg\t #= mother", &gridv[i].mother);
             if (K == 2)
-                freadvarsf(f, "%d %d\t #= cells[0], cells[1]", gridv[i].cells + 0, gridv[i].cells+1);
+                freadvarsf(f, "%lg %lg\t #= cells[0], cells[1]", gridv[i].cells + 0, gridv[i].cells+1);
             else {
                 freadvarsf(f, "#= cells[]");
-                for (int j = 0; j < K; j++)
-                    freadvarsf(f, " %d", gridv[i].cells + j);
+                for (double& cell : gridv[i].cells)
+                    freadvarsf(f, " %lg", &cell);
+
             }
         }
     }
