@@ -16,6 +16,8 @@
 #ifndef __OMNETPP_CMESSAGEPRINTER_H
 #define __OMNETPP_CMESSAGEPRINTER_H
 
+#include <set>
+#include <vector>
 #include "cownedobject.h"
 
 namespace omnetpp {
@@ -47,6 +49,14 @@ class SIM_API cMessagePrinter : public cNoncopyableOwnedObject
 {
     public:
         /**
+         * Options for printing
+         */
+        struct Options {
+            std::set<std::string> enabledTags;
+        };
+
+    public:
+        /**
          * Constructor
          */
         cMessagePrinter() {}
@@ -67,10 +77,37 @@ class SIM_API cMessagePrinter : public cNoncopyableOwnedObject
         virtual int getScoreFor(cMessage *msg) const = 0;
 
         /**
-         * Print a single-line text about the message object into the given
-         * output stream.
+         * Returns the tags supported by this printer.
+         *
+         * @note These are normally presented to the user on the graphical
+         * interfaces unmodified, and there are no constraints on the format
+         * or content of the tags, so for example using "Show 'Details' column"
+         * is preferred to using "col_details".
          */
-        virtual void printMessage(std::ostream& os, cMessage *msg) const = 0;
+        virtual std::set<std::string> getSupportedTags() const {return {};}
+
+        /**
+         * Returns the list of tags that this printer recommends to enable by default.
+         * The result must only contain tags that are also returned by "getSupportedTags()".
+         */
+        virtual std::set<std::string> getDefaultEnabledTags() const {return {};}
+
+        /**
+         * Returns column names for the specified options.
+         * The options parameter should never be nullptr.
+         * The list of enabled tags in "options" may contain tags not known or
+         * supported by this printer. Those should be silently ignored.
+         */
+        virtual std::vector<std::string> getColumnNames(const Options *options) const {(void)options; return {};}
+
+        /**
+         * Print a single-line text about the message object into the given
+         * output stream. Use Tab characters to separate columns.
+         * Splitting the text into more or fewer columns than returned by
+         * getColumnNames is allowed, but being consistent with those is
+         * highly recommended. The options parameter should never be nullptr.
+         */
+        virtual void printMessage(std::ostream& os, cMessage *msg, const Options *options) const = 0;
 };
 
 /**
@@ -86,7 +123,12 @@ class SIM_API cDefaultMessagePrinter : public cMessagePrinter
         cDefaultMessagePrinter() {}
         virtual ~cDefaultMessagePrinter() {}
         virtual int getScoreFor(cMessage *msg) const override;
-        virtual void printMessage(std::ostream& os, cMessage *msg) const override;
+
+        virtual std::set<std::string> getSupportedTags() const override;
+        virtual std::set<std::string> getDefaultEnabledTags() const override;
+        virtual std::vector<std::string> getColumnNames(const Options *options) const override;
+
+        virtual void printMessage(std::ostream& os, cMessage *msg, const Options *options) const override;
 };
 
 }  // namespace omnetpp
