@@ -58,7 +58,7 @@ void cFixedRangeHistogramStrategy::setUpBins()
     if (numBins <= 0)
         throw cRuntimeError(hist, "%s: Number of bins must be positive", getClassName());
 
-    binSize = (hi-lo) / numBins;
+    double binSize = (hi-lo) / numBins;
 
     if (mode == cHistogram::MODE_INTEGERS) {
         if (lo != std::floor(lo) || hi != std::floor(hi))
@@ -250,15 +250,13 @@ void cDefaultHistogramStrategy::createBins()
     if (rangeMin < 0 && minValue >= 0 && maxValue > 0)
         rangeMin = 0; // do not go into negative unless warranted by the collected data
 
-    double binSize = computeBinSize(rangeMin, rangeMax);
-
+    binSize = (rangeMax - rangeMin) / targetNumBins;
+    binSize = roundToOneTwoFive(binSize);
     if (mode == cHistogram::MODE_INTEGERS)
         binSize = ceil(binSize);
 
     rangeMin = binSize * std::floor(rangeMin / binSize); // snap
     rangeMax = binSize * std::ceil(rangeMax / binSize);
-
-    this->binSize = binSize;
 
     hist->createUniformBins(rangeMin, rangeMax, binSize);
 
@@ -272,13 +270,6 @@ void cDefaultHistogramStrategy::createBins()
     ASSERT(hist->getBinEdges().front() <= hist->getMin());
     ASSERT(hist->getBinEdges().back() > hist->getMax());
     ASSERT(hist->getNumBins() >  0);
-}
-
-double cDefaultHistogramStrategy::computeBinSize(double& rangeMin, double& rangeMax)
-{
-    double binSize = (rangeMax - rangeMin) / targetNumBins;
-    binSize = roundToOneTwoFive(binSize);
-    return binSize;
 }
 
 void cDefaultHistogramStrategy::extendBinsTo(double value)
@@ -330,11 +321,13 @@ void cAutoRangeHistogramStrategy::copy(const cAutoRangeHistogramStrategy& other)
     rangeExtensionFactor = other.rangeExtensionFactor;
     numBinsHint = other.numBinsHint;
     targetNumBins = other.targetNumBins;
+    requestedBinSize = other.requestedBinSize;
     binSize = other.binSize;
     mode = other.mode;
     binSizeRounding = other.binSizeRounding;
     autoExtend = other.autoExtend;
     binMerging = other.binMerging;
+    maxNumBins = other.maxNumBins;
 }
 
 cAutoRangeHistogramStrategy& cAutoRangeHistogramStrategy::operator=(const cAutoRangeHistogramStrategy& other)

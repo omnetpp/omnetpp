@@ -109,7 +109,6 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
     double hi = NAN;
     int numBins = -1;
     Mode mode = cHistogram::MODE_REALS; // may not be AUTO
-    double binSize = NAN; // computed
 
   private:
     void copy(const cFixedRangeHistogramStrategy& other);
@@ -223,8 +222,6 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
 
   protected:
     virtual void createBins() override;
-    double computeBinSize(double& rangeMin, double& rangeMax);
-    double computeIntegerBinSize(double& rangeMin, double& rangeMax);
     virtual void extendBinsTo(double value);
     virtual void reduceNumBinsTo(int numBins);
 
