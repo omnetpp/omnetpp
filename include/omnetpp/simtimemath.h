@@ -117,6 +117,17 @@ inline const SimTime fmod(const SimTime& x, const SimTime& y)
     return SimTime().setRaw(x.raw() % y.raw());
 }
 
+/**
+ * @brief Precise division of an integer and a simulation time.
+ *
+ * The result is returned as an integer part (in the return value) and
+ * a fraction (in the fractionNumerator, fractionDenominator output
+ * parameters).
+ *
+ * @see div()
+ */
+SIM_API int64_t preciseDiv(int64_t x, const SimTime& y, int64_t& fractionNumerator, int64_t& fractionDenominator);
+
 }  // namespace omnetpp
 
 #endif

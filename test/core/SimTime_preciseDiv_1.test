@@ -1,0 +1,74 @@
+%description:
+SimTime: check preciseDiv(int64_i, Simtime)
+
+%global:
+
+static void test(int64_t x, SimTime t)
+{
+    EV << "preciseDiv(" << x << ", " << t << ")";
+
+    int64_t num, denom;
+    int64_t intres;
+    try {
+        intres = preciseDiv(x, t, num, denom);
+    } catch (std::exception& e) {
+        EV << " ==> " << e.what() << endl;
+        return;
+    }
+
+    double dblres = intres + num/(double)denom;
+
+    EV << " = " << intres;
+    if (num != 0)
+        EV << " " << num << "/" << denom << ", ~" << dblres;
+    EV << endl;
+}
+
+%activity:
+
+test(1, SIMTIME_ZERO);
+
+test(1, SimTime(1,SIMTIME_S));
+test(1, SimTime(1,SIMTIME_MS));
+test(1, SimTime(1,SIMTIME_US));
+test(1, SimTime(1,SIMTIME_NS));
+
+test(-1, SimTime(1,SIMTIME_MS));
+test(1, SimTime(-1,SIMTIME_MS));
+test(-1, SimTime(-1,SIMTIME_MS));
+
+test(500, SimTime(1000,SIMTIME_S));
+test(99, SimTime(1000,SIMTIME_S));
+test(1, SimTime(1000,SIMTIME_S));
+test(1, SimTime(999,SIMTIME_S));
+test(5, SimTime(999,SIMTIME_US));
+
+test(1, SimTime(5,SIMTIME_MS));
+test(1, SimTime(3,SIMTIME_MS));
+
+test(-1, SimTime(3,SIMTIME_MS));
+test(1, SimTime(-3,SIMTIME_MS));
+test(-1, SimTime(-3,SIMTIME_MS));
+
+EV << ".\n";
+
+%contains: stdout
+preciseDiv(1, 0) ==> previseDiv(): division by zero
+preciseDiv(1, 1) = 1
+preciseDiv(1, 0.001) = 1000
+preciseDiv(1, 0.000001) = 1000000
+preciseDiv(1, 0.000000001) = 1000000000
+preciseDiv(-1, 0.001) = -1000
+preciseDiv(1, -0.001) = -1000
+preciseDiv(-1, -0.001) = 1000
+preciseDiv(500, 1000) = 0 1/2, ~0.5
+preciseDiv(99, 1000) = 0 99/1000, ~0.099
+preciseDiv(1, 1000) = 0 1/1000, ~0.001
+preciseDiv(1, 999) = 0 1/999, ~0.001001
+preciseDiv(5, 0.000999) = 5005 5/999, ~5005.01
+preciseDiv(1, 0.005) = 200
+preciseDiv(1, 0.003) = 333 1/3, ~333.333
+preciseDiv(-1, 0.003) = -333 -1/3, ~-333.333
+preciseDiv(1, -0.003) = -333 -1/3, ~-333.333
+preciseDiv(-1, -0.003) = 333 1/3, ~333.333
+.
