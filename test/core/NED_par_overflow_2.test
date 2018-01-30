@@ -18,5 +18,5 @@ EV << ".\n";
 %exitcode: 1
 
 %contains-regex: stderr
-Integer overflow casting 9300000000000000000\.0+ to a smaller or unsigned integer type
+Overflow casting 9300000000000000000\.0+ to the target integer type
 

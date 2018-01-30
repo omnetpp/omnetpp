@@ -142,7 +142,7 @@ static void errorBadArgType(cNedFunction *self, int index, cNedValue::Type expec
     const char *note = (expected == cNedValue::INT && actual.getType() == cNedValue::DOUBLE) ?
             " (note: no implicit conversion from double to int)" : "";
     const char *expectedTypeName = (expected == cNedValue::DOUBLE) ? "double or int" :  cNedValue::getTypeName(expected);
-    throw cRuntimeError("%(): %s expected for argument %d, got %s%s",
+    throw cRuntimeError("%s(): %s expected for argument %d, got %s%s",
             self->getName(), expectedTypeName, index, cNedValue::getTypeName(actual.getType()), note);
 }
 

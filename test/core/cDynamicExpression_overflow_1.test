@@ -1,0 +1,79 @@
+%description:
+Test integer overflow in NED expressions (they are implemented with
+cDynamicExpression).
+
+%global:
+
+void test(const char *expr)
+{
+    std::string result;
+    try {
+        cDynamicExpression e;
+        e.parse(expr);
+        cNedValue v = e.evaluate(cSimulation::getActiveSimulation()->getContextModule());
+        result = v.str();
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    EV << expr << " ==> " << result << "\n";
+}
+
+void test(const char *s1, const std::string& s2, const char *s3)
+{
+    test((std::string(s1) + " " + s2 + " " + s3).c_str());
+}
+
+%activity:
+// large integer constants
+test("1234567890123456789"); // OK
+test("12345678901234567890"); // error (overflow)
+test("12345678901234567890123"); // error (overflow)
+test("9223372036854775807"); // 2^63-1, int64_max
+test("-9223372036854775807"); // -2^63-1, int64_min+1
+test("-9223372036854775808"); // -2^63, int64_min --> should be OK, but oh well...
+
+// integer overflow
+test("9223372036854775806 + 1"); // ok
+test("9223372036854775807 + 1"); // error (overflow)
+test("-9223372036854775807 - 1"); // ok
+test("-9223372036854775807 - 2"); // error (overflow)
+test("0 - (-9223372036854775807-1)"); // error (overflow)
+test("2147483648 * 4294967295"); // ok
+test("2147483648 * 4294967296"); // error (overflow)
+test("2^61"); // ok
+test("2^62"); // ok
+test("2^63"); // error (overflow)
+test("2^64"); // error (overflow)
+
+// overflow in cast to double
+test("int(9.22e18)"); // ok
+test("int(-9.22e18)"); // ok
+test("int(9.23e18)"); // error (overflow)
+test("int(-9.23e18)"); // error (overflow)
+
+EV << ".\n";
+
+%contains: stdout
+1234567890123456789 ==> 1234567890123456789
+12345678901234567890 ==> Cannot represent "12345678901234567890" in the target integer type
+12345678901234567890123 ==> Cannot represent "12345678901234567890123" in the target integer type
+9223372036854775807 ==> 9223372036854775807
+-9223372036854775807 ==> -9223372036854775807
+-9223372036854775808 ==> Cannot represent "9223372036854775808" in the target integer type
+9223372036854775806 + 1 ==> 9223372036854775807
+9223372036854775807 + 1 ==> operator "+": Integer overflow adding 9223372036854775807 and 1, try converting to doubles
+-9223372036854775807 - 1 ==> -9223372036854775808
+-9223372036854775807 - 2 ==> operator "-": Integer overflow adding -9223372036854775807 and -2, try converting to doubles
+0 - (-9223372036854775807-1) ==> operator "-": Integer overflow: cannot subtract -MAXINT
+2147483648 * 4294967295 ==> 9223372034707292160
+2147483648 * 4294967296 ==> operator "*": Integer overflow multiplying 2147483648 and 4294967296, try converting to doubles
+2^61 ==> 2305843009213693952
+2^62 ==> 4611686018427387904
+2^63 ==> operator "^": Integer overflow multiplying 2147483648 and 4294967296, try converting to doubles
+2^64 ==> operator "^": Integer overflow multiplying 4294967296 and 4294967296, try converting to doubles
+int(9.22e18) ==> 9220000000000000000
+int(-9.22e18) ==> -9220000000000000000
+int(9.23e18) ==> Overflow casting 9230000000000000000.000000 to the target integer type
+int(-9.23e18) ==> Overflow casting -9230000000000000000.000000 to the target integer type
+.
+

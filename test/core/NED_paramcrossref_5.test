@@ -11,7 +11,7 @@ network Test
 {
     parameters:
         int a = b;
-        int b = uniform(0,1000);
+        int b = intuniform(0,1000);
     submodules:
         dump: Dump;
 }

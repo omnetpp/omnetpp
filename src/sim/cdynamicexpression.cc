@@ -398,19 +398,28 @@ inline intpar_t safeMul(intpar_t a, intpar_t b)
         throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
     return res;
 #else
-    return a * b;  // unchecked
+    const intpar_t int32max = std::numeric_limits<int32_t>::max();
+    if ((a & ~int32max) == 0 && (b & ~int32max) == 0)
+        return a * b;
+    intpar_t res = a * b;
+    if (res / a != b)
+        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
+    return res;
 #endif
 }
 
 inline intpar_t intPow(intpar_t base, intpar_t exp)
 {
     ASSERT(exp >= 0);
-    int result = 1;
-    while (exp)
-    {
+    if (exp == 0)
+        return 1;
+    intpar_t result = 1;
+    while (true) {
         if (exp & 1)
             result = safeMul(result, base);
         exp >>= 1;
+        if (exp == 0)
+            break;
         base = safeMul(base, base);
     }
     return result;
@@ -468,14 +477,14 @@ static void errorNumericArgsExpected(const cNedValue& actual1, const cNedValue& 
 
 static void errorIntegerArgExpected(const cNedValue& actual)
 {
-    const char *hint = actual.getType() == cNedValue::DOUBLE ? ", use int() to cast from double" : "";
+    const char *hint = actual.getType() == cNedValue::DOUBLE ? " (note: no implicit conversion from double to int)" : "";
     throw cRuntimeError("Integer argument expected, got %s%s", cNEDValue::getTypeName(actual.getType()), hint);
 }
 
 static void errorIntegerArgsExpected(const cNedValue& actual1, const cNedValue& actual2)
 {
     bool hasDouble = actual1.getType() == cNedValue::DOUBLE || actual2.getType() == cNedValue::DOUBLE;
-    const char *hint = hasDouble ? ", use int() to cast from double" : "";
+    const char *hint = hasDouble ? " (note: no implicit conversion from double to int)" : "";
     throw cRuntimeError("Integer argument expected, got %s and %s%s", cNEDValue::getTypeName(actual1.getType()), cNEDValue::getTypeName(actual2.getType()), hint);
 }
 

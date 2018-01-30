@@ -1,0 +1,98 @@
+%description:
+Test double <-> int conversion in NED expressions (they are implemented
+with cDynamicExpression).
+
+%global:
+
+void test(const char *expr)
+{
+    std::string result;
+    try {
+        cDynamicExpression e;
+        e.parse(expr);
+        cNedValue v = e.evaluate(cSimulation::getActiveSimulation()->getContextModule());
+        result = v.str();
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    EV << expr << " ==> " << result << "\n";
+}
+
+void test(const char *s1, const std::string& s2, const char *s3)
+{
+    test((std::string(s1) + " " + s2 + " " + s3).c_str());
+}
+
+%activity:
+// no implicit double-to-int cast --> error
+test("~3.0");
+test("1.0 & 3");
+test("1 & 3.0");
+test("1.0 | 3");
+test("1 | 3.0");
+test("1.0 # 3");
+test("1 # 3.0");
+test("1 << 1.0");
+test("1.0 << 1");
+test("1 >> 1.0");
+test("1.0 >> 1");
+test("intuniform(1.0, 3)");
+test("intuniform(1, 3.0)");
+EV << endl;
+
+// using int() to convert from double
+test("int(3.0)");
+test("int(3.1)");
+test("int(3.9)");
+test("int(-3.1)");
+test("int(-3.9)");
+test("int(9.5e18)"); // error: overflow
+test("int(-9.5e18)"); // error: overflow
+EV << endl;
+
+// int-to-double conversion is implicit
+test("3.14 + 1");
+test("3.14 + 1234567890123456");
+test("3.14 + 12345678901234567"); // error: precision loss (does not fit into double's 52-bit mantissa)
+test("3.14 - 12345678901234567"); // error: precision loss (does not fit into double's 52-bit mantissa)
+EV << endl;
+
+// using double() to force conversion, ignoring possible precision loss
+test("double(1234567890123456789)");
+test("double(-1234567890123456789)");
+
+EV << ".\n";
+
+%contains: stdout
+~3.0 ==> operator "~": Integer argument expected, got double (note: no implicit conversion from double to int)
+1.0 & 3 ==> operator "&": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
+1 & 3.0 ==> operator "&": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
+1.0 | 3 ==> operator "|": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
+1 | 3.0 ==> operator "|": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
+1.0 # 3 ==> operator "#": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
+1 # 3.0 ==> operator "#": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
+1 << 1.0 ==> operator "<<": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
+1.0 << 1 ==> operator "<<": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
+1 >> 1.0 ==> operator ">>": Integer argument expected, got integer and double (note: no implicit conversion from double to int)
+1.0 >> 1 ==> operator ">>": Integer argument expected, got double and integer (note: no implicit conversion from double to int)
+intuniform(1.0, 3) ==> intuniform(): integer expected for argument 0, got double (note: no implicit conversion from double to int)
+intuniform(1, 3.0) ==> intuniform(): integer expected for argument 1, got double (note: no implicit conversion from double to int)
+
+int(3.0) ==> 3
+int(3.1) ==> 3
+int(3.9) ==> 3
+int(-3.1) ==> -4
+int(-3.9) ==> -4
+int(9.5e18) ==> Overflow casting 9500000000000000000.000000 to the target integer type
+int(-9.5e18) ==> Overflow casting -9500000000000000000.000000 to the target integer type
+
+3.14 + 1 ==> 4.14
+3.14 + 1234567890123456 ==> 1.23457e+15
+3.14 + 12345678901234567 ==> operator "+": Integer 12345678901234567 too large, conversion to double would incur precision loss (hint: if this occurs in NED or ini, use the double() operator to suppress this error)
+3.14 - 12345678901234567 ==> operator "-": Integer -12345678901234567 too large, conversion to double would incur precision loss (hint: if this occurs in NED or ini, use the double() operator to suppress this error)
+
+double(1234567890123456789) ==> 1.23457e+18
+double(-1234567890123456789) ==> -1.23457e+18
+.
+
+
