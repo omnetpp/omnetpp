@@ -363,6 +363,11 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
 
 void cAutoRangeHistogramStrategy::createBins()
 {
+    if (!std::isnan(requestedBinSize) && requestedBinSize <= 0)
+        throw cRuntimeError(hist, "%s: Negative or zero bin size requested", getClassName());
+    if (numBinsHint != -1 && numBinsHint <= 0)
+        throw cRuntimeError(hist, "%s: Negative or zero bins requested", getClassName());
+
     targetNumBins = numBinsHint == -1 ? DEFAULT_NUM_BINS : numBinsHint;
 
     // determine mode (integers or reals) from precollected observations
@@ -422,12 +427,10 @@ void cAutoRangeHistogramStrategy::createBins()
 
         if (binSizeRounding) {
             binSize = roundToOneTwoFive(binSize);
-            if (binSize == 0) // TODO: binSize > 0 always? assert?
-                binSize = 1;
+            ASSERT(binSize > 0);
             rangeMin = binSize * std::floor(rangeMin / binSize); // snap
             rangeMax = binSize * std::ceil(rangeMax / binSize);
-            if (rangeMin >= rangeMax) // TODO: rangeMin < rangeMax always, see code above? assert?
-                rangeMax = rangeMin + 1;
+            ASSERT(rangeMin < rangeMax);
         }
     }
     ASSERT(binSize > 0);
