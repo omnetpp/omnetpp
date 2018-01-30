@@ -241,7 +241,6 @@ class SIM_API cParImpl : public cNamedObject
 
     /**
      * Returns value as an integer. The cParImpl type must be INT.
-     * Note: There is intentionally no implicit conversion from DOUBLE.
      * Note: Implicit conversion from DOUBLE is intentionally missing.
      */
     virtual intpar_t intValue(cComponent *context) const = 0;

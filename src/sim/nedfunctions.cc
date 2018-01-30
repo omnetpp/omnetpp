@@ -627,7 +627,7 @@ DEF(nedf_pareto_shifted,
 DEF(nedf_intuniform,
     "int intuniform(intquantity a, intquantity b, int rng?)",
     "random/discrete",
-    "Returns a random number from the Intuniform distribution",
+    "Returns a random integer uniformly distributed over [a, b]",
 {
     int rng = argc == 3 ? (int)argv[2] : 0;
     if (opp_strcmp(argv[0].getUnit(), argv[1].getUnit()) != 0)

@@ -191,22 +191,27 @@ const char *cDynamicExpression::Elem::getOpName(OpType op)
         case DIV: return "/";
         case MOD: return "%";
         case POW: return "^";
+        case NEG: return "!";
         case EQ: return "==";
         case NE: return "!=";
         case LT: return "<";
         case GT: return ">";
         case LE: return "<=";
         case GE: return ">=";
+        case IIF: return "?:";
         case AND: return "&&";
         case OR: return "||";
         case XOR: return "##";
+        case NOT: return "!";
         case BIN_AND: return "&";
         case BIN_OR: return "|";
         case BIN_XOR: return "#";
+        case BIN_NOT: return "~";
         case LSHIFT: return "<<";
         case RSHIFT: return ">>";
         default: return "<unknown operator>";
     }
+
 }
 
 std::string cDynamicExpression::Elem::str() const
@@ -678,14 +683,17 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                             throw cRuntimeError(E_ESTKUFLOW);
                         switch (e.op) {
                             case SUB:
-                                // negate second argument, then fall through to double
+                                // negate second argument, then fall through to addition
                                 if (stk[tos].type == cNedValue::DOUBLE)
                                     stk[tos].dbl = -stk[tos].dbl;
-                                else if (stk[tos].type == cNedValue::INT)
-                                    stk[tos].intv = -stk[tos].intv; //TODO error for -MAXINT
+                                else if (stk[tos].type == cNedValue::INT) {
+                                    if (stk[tos].intv == std::numeric_limits<intpar_t>::min())
+                                        throw cRuntimeError("Integer overflow: cannot subtract -MAXINT");
+                                    stk[tos].intv = -stk[tos].intv;
+                                }
                                 else
                                     errorNumericArgExpected(stk[tos]);
-                                /* no break -- TODO use [[fallthrough]] once we go for C++17 */
+                                // [[fallthrough]]
 
                             case ADD:
                                 // numeric addition or string concatenation
@@ -889,7 +897,7 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                     }
                 }
                 catch (std::exception& ex) {
-                    std::string msg = std::string(Elem::getOpName(e.op)) + ": " + ex.what();
+                    std::string msg = e.str() + ": " + ex.what();
                     throw cRuntimeError(msg.c_str());
                 }
                 break;

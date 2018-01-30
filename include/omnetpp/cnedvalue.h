@@ -74,7 +74,7 @@ class SIM_API cNedValue
 #endif
     [[noreturn]] void cannotCastError(Type t) const;
 
-    void convertToDouble() {if (type==INT) {type=DOUBLE; dbl=intv;} else if (type!=DOUBLE) cannotCastError(DOUBLE);}
+    void convertToDouble();
 
   public:
     /** @name Constructors */
