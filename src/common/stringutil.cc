@@ -245,7 +245,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
                 fmt += 2;
             }
             else {
-                throw opp_runtime_error("opp_vsscanf: Unsupported format '%s'", fmt);
+                throw opp_runtime_error("opp_vsscanf: Unsupported format \"%s\"", fmt);
             }
         }
         else if (opp_isspace(*fmt)) {
@@ -257,7 +257,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             return k;
         }
         else {
-            throw opp_runtime_error("opp_vsscanf: Unexpected char in format string '%s'", fmt);
+            throw opp_runtime_error("opp_vsscanf: Unexpected char in format string \"%s\"", fmt);
         }
     }
 }
@@ -728,7 +728,7 @@ inline void check_garbage_after_int(const char *endptr, const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("'%s' is not a valid unsigned integer", s);
+        throw opp_runtime_error("Cannot parse \"%s\" as an unsigned integer", s);
 }
 
 inline bool ishex(const char *s)
@@ -752,7 +752,7 @@ long opp_strtol(const char *s, char **endptr)
     errno = 0;
     long d = strtol(s, endptr, ishex(s) ? 16 : 10);
     if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
-        throw opp_runtime_error("Overflow converting '%s' to long", s);
+        throw opp_runtime_error("Cannot represent \"%s\" in the target integer type", s);
     return d;
 }
 
@@ -770,7 +770,7 @@ unsigned long opp_strtoul(const char *s, char **endptr)
     errno = 0;
     unsigned long d = strtoul(s, endptr, ishex(s) ? 16 : 10);
     if (d == ULONG_MAX && errno == ERANGE)
-        throw opp_runtime_error("Overflow converting '%s' to unsigned long", s);
+        throw opp_runtime_error("Cannot represent \"%s\" in the target integer type", s);
     return d;
 }
 
@@ -788,7 +788,7 @@ long long opp_strtoll(const char *s, char **endptr)
     errno = 0;
     long long d = strtoll(s, endptr, ishex(s) ? 16 : 10);
     if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
-        throw opp_runtime_error("Overflow converting '%s' to long long", s);
+        throw opp_runtime_error("Cannot represent \"%s\" in the target integer type", s);
     return d;
 }
 
@@ -806,7 +806,7 @@ unsigned long long opp_strtoull(const char *s, char **endptr)
     errno = 0;
     unsigned long long d = strtoull(s, endptr, ishex(s) ? 16 : 10);
     if (d == ULONG_MAX && errno == ERANGE)
-        throw opp_runtime_error("Overflow converting '%s' to unsigned long long", s);
+        throw opp_runtime_error("Cannot represent \"%s\" in the target integer type", s);
     return d;
 }
 
@@ -823,7 +823,7 @@ double opp_strtod(const char *s, char **endptr)
     setlocale(LC_NUMERIC, "C");
     double d = strtod(s, endptr);
     if (d == -HUGE_VAL || d == HUGE_VAL)
-        throw opp_runtime_error("Overflow converting '%s' to double", s);
+        throw opp_runtime_error("Cannot represent \"%s\" in double", s);
     return d;
 }
 
@@ -835,7 +835,7 @@ double opp_atof(const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("'%s' is not a valid double value", s);
+        throw opp_runtime_error("Cannot parse \"%s\" as a real number", s);
     return d;
 }
 

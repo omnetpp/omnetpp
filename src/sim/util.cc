@@ -41,12 +41,12 @@ namespace omnetpp {
 
 void intCastError(const std::string& num, const char *errmsg)
 {
-    throw cRuntimeError(errmsg ? errmsg : "Integer overflow casting %s to a smaller or unsigned integer type", num.c_str());
+    throw cRuntimeError(errmsg ? errmsg : "Overflow casting %s to the target integer type", num.c_str());
 }
 
 void intCastError(const std::string& num, const cObject *context, const char *errmsg)
 {
-    throw cRuntimeError(context, errmsg ? errmsg : "Integer overflow casting %s to a smaller or unsigned integer type", num.c_str());
+    throw cRuntimeError(context, errmsg ? errmsg : "Overflow casting %s to the target integer type", num.c_str());
 }
 
 char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
