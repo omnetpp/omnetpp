@@ -128,6 +128,7 @@ void cPrecollectionBasedHistogramStrategy::setUpBins()
 {
     createBins();
     moveValuesIntoHistogram();
+    inPrecollection = false;
 }
 
 void cPrecollectionBasedHistogramStrategy::clear()
@@ -167,11 +168,8 @@ void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (inPrecollection) {
         precollect(value, weight);
-        if (values.size() == numToPrecollect) {
-            createBins();
-            moveValuesIntoHistogram();
-            inPrecollection = false;
-        }
+        if (values.size() == numToPrecollect)
+            setUpBins();
     }
     else {
         if (autoExtend)
@@ -347,12 +345,8 @@ void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
     if (inPrecollection) {
         precollect(value, weight);
         bool needPrecollection = (mode == cHistogram::MODE_AUTO) || std::isnan(lo) || std::isnan(hi); // if true, we precollect the first value and immediately set up the bins
-        if (!needPrecollection || values.size() >= numToPrecollect) {
-            createBins();
-            ASSERT(hist->getNumBins() > 0);
-            moveValuesIntoHistogram();
-            inPrecollection = false;
-        }
+        if (!needPrecollection || values.size() >= numToPrecollect)
+            setUpBins();
     }
     else {
         if (autoExtend)
