@@ -383,7 +383,7 @@ inline intpar_t safeAdd(intpar_t a, intpar_t b)
 #ifdef __GNUC__  // and compatibles like clang
     intpar_t res;
     if (__builtin_add_overflow(a, b, &res))
-        throw cRuntimeError("Integer overflow adding %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
+        throw cRuntimeError("Integer overflow adding %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);
     return res;
 #else
     return a + b;  // unchecked
@@ -395,7 +395,7 @@ inline intpar_t safeMul(intpar_t a, intpar_t b)
 #ifdef __GNUC__  // and compatibles like clang
     intpar_t res;
     if ( __builtin_mul_overflow(a, b, &res))
-        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
+        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);
     return res;
 #else
     const intpar_t int32max = std::numeric_limits<int32_t>::max();
@@ -403,7 +403,7 @@ inline intpar_t safeMul(intpar_t a, intpar_t b)
         return a * b;
     intpar_t res = a * b;
     if (res / a != b)
-        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
+        throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);
     return res;
 #endif
 }
@@ -413,16 +413,21 @@ inline intpar_t intPow(intpar_t base, intpar_t exp)
     ASSERT(exp >= 0);
     if (exp == 0)
         return 1;
-    intpar_t result = 1;
-    while (true) {
-        if (exp & 1)
-            result = safeMul(result, base);
-        exp >>= 1;
-        if (exp == 0)
-            break;
-        base = safeMul(base, base);
+    try {
+        intpar_t result = 1;
+        while (true) {
+            if (exp & 1)
+                result = safeMul(result, base);
+            exp >>= 1;
+            if (exp == 0)
+                break;
+            base = safeMul(base, base);
+        }
+        return result;
     }
-    return result;
+    catch (const cRuntimeError& e) {
+        throw cRuntimeError("Overflow during integer exponentiation, try casting operands to double");
+    }
 }
 
 void cDynamicExpression::bringToCommonTypeAndUnit(cNedValue& a, cNedValue& b) const
@@ -780,9 +785,11 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                                 break;
 
                             case POW:
-                                if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT && stk[tos].intv >= 0) {  // both ints, 0 or positive exponent -> integer power-of
+                                if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT) {  // both ints -> integer power-of
                                     if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
                                         errorDimlessArgsExpected(stk[tos-1], stk[tos]);
+                                    if (stk[tos].intv < 0)
+                                        throw cRuntimeError("Negative exponent in integer exponentiation, cast operands to double to allow it");
                                     stk[tos-1].intv = intPow(stk[tos-1].intv, stk[tos].intv);
                                 }
                                 else {

@@ -24,7 +24,6 @@ void test(const char *s1, const std::string& s2, const char *s3)
 }
 
 %activity:
-// left-shift, normal usage
 test("2^0");
 test("2^1");
 test("2^2");
@@ -43,14 +42,19 @@ test("2^32");
 test("2^60");
 test("2^61");
 test("2^62");
+test("2^63");
 
+// negative exponent
 test("2^-1");
 test("2^-2");
 
+// negative base
 test("-2^0");
 test("-2^1");
 test("-2^2");
 test("-2^3");
+test("-2^63");
+test("-2^64");
 
 EV << ".\n";
 
@@ -73,13 +77,14 @@ EV << ".\n";
 2^60 ==> 1152921504606846976
 2^61 ==> 2305843009213693952
 2^62 ==> 4611686018427387904
-2^-1 ==> 0.5
-2^-2 ==> 0.25
+2^63 ==> operator "^": Overflow during integer exponentiation, try casting operands to double
+2^-1 ==> operator "^": Negative exponent in integer exponentiation, cast operands to double to allow it
+2^-2 ==> operator "^": Negative exponent in integer exponentiation, cast operands to double to allow it
 -2^0 ==> 1
 -2^1 ==> -2
 -2^2 ==> 4
 -2^3 ==> -8
+-2^63 ==> -9223372036854775808
+-2^64 ==> operator "^": Overflow during integer exponentiation, try casting operands to double
 .
-
-
 
