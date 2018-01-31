@@ -199,10 +199,10 @@ class cComponent extends cDefaultList
     @descriptor(readonly);
     bool isModule @getter(isModule) @group(fields) @hint("Whether this component is a module or a channel");
     cComponentType *componentType @group(fields) @hint("The object that represents the type declaration for this component");
-    cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("Parameters");
-    cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("Properties");
-    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @toString(.str()) @group(parameters, gates) @hint("Signal listener lists");
-    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @toString(->str()) @group(parameters, gates) @hint("Statistical results collected in this component");
+    cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint("NED parameters");
+    cProperty *properties_[] @label(properties) @getter(->getProperties()->get(i)) @sizeGetter(->getProperties()->getNumProperties()) @group(parameters, gates) @hint("NED properties");
+    cComponent::SignalListenerList listenedSignals[] @getter(getListenerList) @sizeGetter(getSignalTableSize) @toString(.str()) @group(signals, statistics) @hint("Signal listener lists");
+    cResultRecorder *results[] @getter(->getResultRecorders()[i]) @sizeGetter(->getResultRecorders().size()) @toString(->str()) @group(signals, statistics) @hint("Statistical results collected in this component");
 }
 
 class cChannel extends cComponent
@@ -1542,6 +1542,20 @@ class StatsRecorder extends StatisticsRecorder
 }
 
 class HistogramRecorder extends StatisticsRecorder
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(readonly);
+}
+
+class KSplitRecorder extends StatisticsRecorder
+{
+    @existingClass;
+    @overwritePreviousDefinition;
+    @descriptor(readonly);
+}
+
+class PSquareRecorder extends StatisticsRecorder
 {
     @existingClass;
     @overwritePreviousDefinition;
