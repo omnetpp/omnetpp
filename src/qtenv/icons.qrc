@@ -91,5 +91,6 @@
         <file alias="camera">icons/tools/camera.png</file>
         <file alias="recordvideo">icons/tools/recordvideo.png</file>
         <file alias="rebuild">icons/tools/rebuild.png</file>
+        <file alias="setupbins">icons/tools/setupbins.png</file>
     </qresource>
 </RCC>

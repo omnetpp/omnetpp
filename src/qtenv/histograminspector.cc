@@ -77,10 +77,14 @@ HistogramInspector::HistogramInspector(QWidget *parent, bool isTopLevel, Inspect
     QToolBar *toolBar = new QToolBar();
     addTopLevelToolBarActions(toolBar);
 
+    toolBar->addSeparator();
+    setUpBinsAction = toolBar->addAction(QIcon(":/tools/setupbins"), "Set bins up now", this, SLOT(onSetUpBinsClicked()));
+
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(toolBar);
     layout->addWidget(view);
     layout->addWidget(statusBar);
+
 
     layout->setContentsMargins(0, 0, 1, 1);
 
@@ -106,6 +110,7 @@ void HistogramInspector::refresh()
 
     cAbstractHistogram *distr = static_cast<cAbstractHistogram *>(object);
     statusBar->showMessage(generalInfo());
+    setUpBinsAction->setEnabled(!distr->binsAlreadySetUp());
 
     // can we draw anything at all?
     if (!distr->binsAlreadySetUp() || distr->getNumBins() == 0)
@@ -424,6 +429,15 @@ void HistogramInspector::onOptionsTriggered()
 void HistogramInspector::onApplyButtonClicked()
 {
     setConfig();
+}
+
+void HistogramInspector::onSetUpBinsClicked()
+{
+    cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
+    if (d && !d->binsAlreadySetUp()) {
+        d->setUpBins();
+        refresh();
+    }
 }
 
 }  // namespace qtenv

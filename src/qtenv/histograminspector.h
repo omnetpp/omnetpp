@@ -35,6 +35,7 @@ class QTENV_API HistogramInspector : public Inspector
   protected:
     HistogramView *view;
     QStatusBar *statusBar;
+    QAction *setUpBinsAction;
     HistogramInspectorConfigDialog *configDialog;
     HistogramView::ChartType chartType;
     HistogramView::DrawingStyle drawingStyle;
@@ -65,6 +66,7 @@ class QTENV_API HistogramInspector : public Inspector
     void onShowPDF();
     void onOptionsTriggered();
     void onApplyButtonClicked();
+    void onSetUpBinsClicked();
 };
 
 }  // namespace qtenv
