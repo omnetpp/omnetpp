@@ -852,17 +852,17 @@ void OsgViewer::wheelEvent(QWheelEvent *event)
     // use pixelDelta?
     accum += event->angleDelta();
 
+    double t = getTimestamp(event);
+
     // 120 represents 15 degrees, which is "one step" on most mice
     // see the Qt docs for details
 
-    double t = getTimestamp(event);
-
     while (accum.y() >= 120) {
-        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_UP, t);
+        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_DOWN, t);
         accum.ry() -= 120;
     }
     while (accum.y() <= -120) {
-        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_DOWN, t);
+        getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_UP, t);
         accum.ry() += 120;
     }
 
