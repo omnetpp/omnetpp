@@ -1,3 +1,8 @@
+2018-01-27  Andras Varga
+
+	* Rewritten to better demonstrate the new histogram class and
+	histogram strategies.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------
@@ -145,4 +150,3 @@
 	* ------ omnetpp-2.0b3 released ------
 
 	* standardized indentation of source files
-	

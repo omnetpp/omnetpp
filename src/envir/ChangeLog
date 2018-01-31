@@ -1,3 +1,7 @@
+2018-01-26  Andras Varga
+
+	* Follow histogram API changes.
+
 2017-01-16  Andras Varga
 
 	* Replace gettimeofday() occurrences with opp_get_monotonic_clock_usecs(),

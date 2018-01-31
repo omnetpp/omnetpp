@@ -1,25 +1,137 @@
+2018-01-31  Andras Varga
+
+	* Make statistic recorders "findable" from Qtenv:
+
+	- make cResultListener subclass from public cObject
+	- cComponent: forEachChild() to recurse into listeners that are cObjects
+	- StatisticsRecorder: forEachChild() to recurse into stored cStatistic
+	- StatisticsRecorder: take ownership of cStatistic (it can, since it is
+	  now cObject)
+	- cResultRecorder: override getName() and getFullPath()
+
+2018-01-29  Andras Varga
+
+	* cKSplit: Support weighted case. Note: the split threshold is now
+	scaled with the average weight.
+
+2018-01-27  Andras Varga
+
+	* draw() method implementation moved from cHistogram to cAbstractHistogram,
+	so that cPSquare and cKSplit can use it too.
+
+2018-01-26  Andras Varga
+
+	* Renamed cDensityEstBase to cAbstractHistogram. (Compatibility typedef added.)
+
+2018-01-25  Andras Varga
+
+	* cPSquare: fix: force strictly increasing bin edges
+
+2018-01-21  Andras Varga
+
+	* cObject: default parsimPack/parsimUnpack implementations to throw
+	E_CANTPACK exception
+
+2018-01-24  Andras Varga
+
+	* Renamed several methods in cStatistic and subclasses:
+
+	- cHistogram::HistogramMode -> cHistogram::Mode
+	- getWeights() -> getSumWeights()
+	- collect2() ->	collectWeighted()
+	- transform() -> setUpBins()
+	- isTransformed() -> binsAlreadySetUp()
+	- clearResult() -> clear()
+	- getNumCells() -> getNumBins()
+	- getBasepoint(k) -> getBinEdge(k)
+	- getCellValue(k) -> getBinValue(k)
+	- getCellInfo(k) -> getBinInfo(k)
+	- getCellPDF(k) -> getBinPDF(k)
+	- getUnderflowCell() -> getNumUnderflows()
+	- getOverflowCell() -> getNumOverflows()
+
+	Old names are still available as deprecated methods.
+
+2018-01-22  Andras Varga, Attila Torok
+
+	* Added new cHistogram, and cHistogramStrategy classes.
+
+	Motivation: There were too many histogram classes that really only
+	differred in the way histogram bins are stored and set up initially:
+	cHistogram, cLongHistogram, cDoubleHistogram, cVarHistogram.
+
+	It is better to use composition instead of inheritance, and express bin
+	layouting as a histogram setup strategy into separate (polymorphic)
+	class.
+
+	To simplify code, merge all histogram classes (cHistogramBase,
+	cHistogram, cVarHistogram, cLongHistogram, cDoubleHistogram) into one,
+	cHistogram, which explicitly stores the bin breaks as a double array.
+
+	The only difference between them is the setup policy, which can be
+	factored out to separate class. cVarhistogram can now be just another
+	setup policy. The precollectedValues array also becomes internal matter
+	of respective setup polici(es).
+
+2018-01-18  Andras Varga
+
+	* Refactoring: precollection factored out of cDensityEstBase into a
+	separate cPrecollectionBasedDensityEst base class.
+
+2018-01-15  Andras Varga
+
+	* Existing cHistogram class renamed to cLegacyHistogram, to make room
+	for new implementation while retaining old class for users who rely
+	on its exact behavior.
+
+2017-07-19  Andras Varga
+
+	* Removed transient detection and result accuracy detection classes
+
 2017-02-10  Andras Varga
 
-	sim: cMessage: remove experimental "tags" API
-
-2018-01-12  Andras Varga
-
-	bump OMNETPP_BUILDNUM
+	* cMessage: remove experimental "tags" API
 
 2018-01-09  Andras Varga
 
-	sim: cDynamicExpression: added support for intpar_t computations;
-	intquantity; integer exponentiation
+	* cDynamicExpression: added support to perform computations in integers:
+
+	- Integers are represented as intpar_t.
+	- Integers with units are now possible. When adding integer quantities
+	  with different units, care is taken so that the result can be
+	  represented in integer without precision loss. E.g. 1km-1m results
+	  in 999m (and not 0.999km or 0km).
+	- Arithmetic operations (+,-,*,%,^): if both arguments are integers,
+	  computation is performed using integer arithmetic and result is integer;
+	  if one is integer and the other is double, the integer one is promoted
+	  to double.
+	- Division: always performed in double and the result is also double.
+	- Shift operators (<<,>>): requires integer arguments. Arbitrary integers
+	  are accepted as 2nd argument; negative values cause shifting in the
+	  opposite direction.
+	- Exponentiation (^): if both arguments are integers, it performs
+	  precise computation using integer multiplications, and negative
+	  exponent causes an error.
+	- Integer overflows are reported as errors.
+	- There is no implicit conversion from double to integer, as it incurs
+	  precision loss. Use the int() operator to cast.
+	- Conversion from integer to double is implicit, as long as the double
+	  can represent the integer precisely (practically for <= 52-bit
+	  integers). If the implicit conversion would cause precision loss,
+	  it is reported as an error. Use the double() operator to ignore the
+	  precision loss.
+
+	* NED functions (Register_NED_Function()): Added support for integers
+	with measurement unit: use "intquantity" as type in the function
+	signature.
 
 2017-12-14  Andras Varga
 
-	sim: cNedValue: added INT type
+	* cNedValue: added INT type
 
 2018-01-04  Andras Varga
 
-	sim: cPar/cParImpl INT-releated refinements
-
------------ lines above this marker have been added from git log -----------
+	* cPar/cParImpl: INT-related refinements
 
 2017-12-15  Attila Torok
 

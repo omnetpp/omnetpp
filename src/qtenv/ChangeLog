@@ -1,3 +1,17 @@
+
+2018-01-26  TÖRÖK Attila
+
+	* HistogramInspector: Visualize outlier bins (drawn with a different
+	color than normal bins), and show info about them.
+
+2018-01-24  Attila Torok
+
+	* HistogramInspector: Fixes (weighted mode, rendering of subpixel-wide cells)
+
+2018-01-26  Andras Varga
+
+	* Follow histogram API changes.
+
 2018-01-04  Andras Varga
 
 	* Follow cPar INT-related changes

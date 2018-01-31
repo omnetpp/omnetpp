@@ -1,3 +1,7 @@
+2018-01-26  Andras Varga
+
+	* Follow recent histogram API changes
+
 2017-12-15  Attila Torok
 
 	* Follow cEnvir change: Add dummy implementation for getZoomLevel()

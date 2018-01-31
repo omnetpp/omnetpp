@@ -1,3 +1,8 @@
+2018-01-17  Andras Varga
+
+	* Simulation model to use plain cHistogram instead of deprecated
+	DoubleHistogram/cLongHistogram
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------
@@ -57,4 +62,3 @@
 2009-01-12  Andras Varga
 
 	* Initial version
-

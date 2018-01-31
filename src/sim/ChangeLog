@@ -1,3 +1,32 @@
+2018-01-31  Andras Varga
+
+	* Make statistic recorders "findable" from Qtenv
+
+	- make cResultListener subclass from public cObject
+	- cComponent: forEachChild() to recurse into listeners that are cObjects
+	- StatisticsRecorder: forEachChild() to recurse into stored cStatistic
+	- StatisticsRecorder: take ownership of cStatistic (it can, since it is now cObject)
+	- cResultRecorder: override getName() and getFullPath()
+
+2018-01-31  Andras Varga
+
+	* cModule: fix: forEachChild() skipped cComponent base class
+
+2018-01-31  Andras Varga
+
+	* sim_std.msg: Refinements
+	- KSplitRecorder, PSquareRecorder were missing
+	- listenedSignals[], results[]: changed @group to "signals,statistics".
+
+2018-01-15 .. 01.29  Andras Varga
+
+	* Implemented new cHistogram, histogram strategy classes, and implemented
+	histogram API changes. See include/omnetpp/ChangeLog.
+
+2017-07-19  Andras Varga
+
+	* Removed transient detection and result accuracy detection classes
+
 2017-02-10  Andras Varga
 
 	* cMessage: remove experimental "tags" API
