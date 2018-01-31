@@ -146,7 +146,7 @@ void cModule::forEachChild(cVisitor *v)
     for (GateIterator it(this); !it.end(); ++it)
         v->visit(*it);
 
-    cDefaultList::forEachChild(v);
+    cComponent::forEachChild(v);
 }
 
 void cModule::setNameAndIndex(const char *s, int i, int n)
