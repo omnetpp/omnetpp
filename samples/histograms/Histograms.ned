@@ -19,6 +19,8 @@ simple Histograms
 {
     parameters:
         @isNetwork;
+        @signal[unweightedValue](type=double);
+        @statistic[unweightedValue](record=vector,histogram,ksplit,psquare);
         int count = default(-1); // -1 for none
         bool weighted = default(false);
         volatile double variable; // source of random numbers

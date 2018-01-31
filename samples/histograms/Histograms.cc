@@ -22,6 +22,7 @@ class Histograms : public cSimpleModule
     std::vector<cAbstractHistogram*> statisticObjects;
     cOutVector valuesVector;
     cOutVector weightsVector;
+    simsignal_t unweightedValueSignal;
   protected:
     void addHistogram(const char *name, cIHistogramStrategy *strategy);
     void createStatisticObjects();
@@ -44,6 +45,8 @@ void Histograms::initialize()
     weighted = par("weighted");
 
     createStatisticObjects();
+
+    unweightedValueSignal = registerSignal("unweightedValue");
 
     EV << "Created " << statisticObjects.size() << " statistics objects.\n\n";
 
@@ -152,6 +155,7 @@ void Histograms::handleMessage(cMessage *msg)
         EV << "collecting value=" << value << endl;
 
         valuesVector.record(value);
+        emit(unweightedValueSignal, value);
 
         for (auto *statistic : statisticObjects)
             statistic->collect(value);
@@ -163,6 +167,7 @@ void Histograms::handleMessage(cMessage *msg)
 
         valuesVector.record(value);
         weightsVector.record(weight);
+        emit(unweightedValueSignal, value);
 
         for (auto *statistic : statisticObjects)
             statistic->collectWeighted(value, weight);
