@@ -319,14 +319,20 @@ StatisticsRecorder::StatisticsRecorder()
 
 StatisticsRecorder::~StatisticsRecorder()
 {
-    delete statistic;
+    dropAndDelete(statistic);
 }
 
-void StatisticsRecorder::setStatistic(cStatistic* stat)
+void StatisticsRecorder::forEachChild(cVisitor *v)
+{
+    v->visit(statistic);
+    cNumericResultRecorder::forEachChild(v);
+}
+
+void StatisticsRecorder::setStatistic(cStatistic *stat)
 {
     ASSERT(statistic == nullptr);
     statistic = stat;
-    statistic->removeFromOwnershipTree();
+    take(statistic);
 }
 
 void StatisticsRecorder::collect(simtime_t_cref t, double value, cObject *details)
@@ -375,7 +381,7 @@ void StatsRecorder::init(cComponent *component, const char *statsName, const cha
 {
     StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
     bool weighted = getBoolAttr(getStatisticAttributes(), "timeWeighted", false);
-    setStatistic(new cStdDev(nullptr, weighted));
+    setStatistic(new cStdDev("statistic", weighted));
 }
 
 void HistogramRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
@@ -386,9 +392,9 @@ void HistogramRecorder::init(cComponent *component, const char *statsName, const
     bool weighted = getBoolAttr(getStatisticAttributes(), "timeWeighted", false);
     int numBins = getIntAttr(getStatisticAttributes(), "numBins", -1);
     if (numBins == -1)
-        setStatistic(new cHistogram(nullptr, weighted));
+        setStatistic(new cHistogram("histogram", weighted));
     else
-        setStatistic(new cHistogram(nullptr, numBins, weighted));
+        setStatistic(new cHistogram("histogram", numBins, weighted));
 }
 
 void PSquareRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
@@ -399,9 +405,9 @@ void PSquareRecorder::init(cComponent *component, const char *statsName, const c
         throw cRuntimeError("%s: cPSquare does not support weighted statistics", getClassName());
     int numBins = getIntAttr(getStatisticAttributes(), "numBins", -1);
     if (numBins == -1)
-        setStatistic(new cPSquare());
+        setStatistic(new cPSquare("psquare"));
     else
-        setStatistic(new cPSquare(nullptr, numBins));
+        setStatistic(new cPSquare("psquare", numBins));
 }
 
 void KSplitRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
@@ -410,7 +416,7 @@ void KSplitRecorder::init(cComponent *component, const char *statsName, const ch
     bool weighted = getBoolAttr(getStatisticAttributes(), "timeWeighted", false);
     if (weighted)
         throw cRuntimeError("%s: cKSplit does not support weighted statistics", getClassName());
-    setStatistic(new cKSplit());
+    setStatistic(new cKSplit("ksplit"));
 }
 
 //---

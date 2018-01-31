@@ -68,6 +68,13 @@ cResultFilter::~cResultFilter()
     delete[] delegates;
 }
 
+void cResultFilter::forEachChild(cVisitor *v)
+{
+    for (int i = 0; delegates[i]; i++)
+        v->visit(delegates[i]);
+    cResultListener::forEachChild(v);
+}
+
 void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details)
 {
     for (int i = 0; delegates[i]; i++)

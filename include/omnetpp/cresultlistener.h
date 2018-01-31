@@ -18,6 +18,7 @@
 
 #include "simkerneldefs.h"
 #include "clistener.h"
+#include "cobject.h"
 
 namespace omnetpp {
 
@@ -30,7 +31,7 @@ class cComponent;
  *
  * @ingroup SimSupport
  */
-class SIM_API cResultListener : public cIListener
+class SIM_API cResultListener : public cObject, public cIListener
 {
         friend class cResultFilter;
     protected:
@@ -62,18 +63,6 @@ class SIM_API cResultListener : public cIListener
         virtual void unsubscribedFrom(cComponent *component, simsignal_t signalID) override;
         virtual void finish(cComponent *component, simsignal_t signalID) override;
 
-    public:
-        /**
-         * Returns the (fully qualified) class name. This method is implemented
-         * using typeid (C++ RTTI), and it does not need to be overridden in
-         * subclasses.
-         */
-        virtual const char *getClassName() const;
-
-        /**
-         * Return information about the object on a single line
-         */
-        virtual std::string str() const;
 };
 
 }  // namespace omnetpp

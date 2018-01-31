@@ -76,6 +76,8 @@ class SIM_API cResultRecorder : public cResultListener
          */
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs=nullptr);
         virtual ~cResultRecorder() {delete manualAttrs;}
+        virtual const char *getName() const override {return getStatisticName();}
+        virtual std::string getFullPath() const override {return getComponent()->getFullPath() + "." + getResultName();}
         virtual cComponent *getComponent() const {return component;}
         virtual const char *getStatisticName() const {return statisticName;}
         virtual const char *getRecordingMode() const {return recordingMode;}

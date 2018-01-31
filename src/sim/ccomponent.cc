@@ -99,6 +99,16 @@ void cComponent::forEachChild(cVisitor *v)
     for (int i = 0; i < numPars; i++)
         v->visit(&parArray[i]);
 
+    if (signalTable) {
+        int n = signalTable->size();
+        for (int i = 0; i < n; i++) {
+            cIListener **listeners = (*signalTable)[i].listeners;
+            for (int j = 0; listeners[j]; j++)
+                if (cObject *listenerObj = dynamic_cast<cObject*>(listeners[j]))
+                    v->visit(listenerObj);
+        }
+    }
+
     cDefaultList::forEachChild(v);
 }
 

@@ -27,15 +27,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 
 
-const char *cResultListener::getClassName() const
-{
-    return opp_typename(typeid(*this));
-}
-
-std::string cResultListener::str() const
-{
-    return "";
-}
 
 void cResultListener::subscribedTo(cResultFilter *prev)
 {

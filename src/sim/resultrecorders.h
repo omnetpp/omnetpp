@@ -215,6 +215,7 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
+        virtual void forEachChild(cVisitor *v) override;
     public:
         StatisticsRecorder();
         ~StatisticsRecorder();
