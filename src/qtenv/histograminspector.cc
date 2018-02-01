@@ -224,7 +224,10 @@ QString HistogramInspector::generalInfo()
 {
     cAbstractHistogram *d = static_cast<cAbstractHistogram *>(object);
     if (!d->binsAlreadySetUp())
-        return QString("(collecting initial values, N=%1)").arg(QString::number(d->getCount()));
+        return QString("Collecting initial values, N=%1  [%2, %3]").arg(
+                QString::number(d->getCount()),
+                QString::number(d->getMin()), QString::number(d->getMax())
+                );
     else if (!d->isWeighted())
         return QString("Histogram: [%1...%2)  N=%3  #bins=%4  Outliers: lower=%5 upper=%6").arg(
                 QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
@@ -234,7 +237,7 @@ QString HistogramInspector::generalInfo()
     else
         return QString("Histogram: [%1...%2)  N=%3  W=%4  #bins=%5  Outliers: lower=%6 (%7) upper=%8 (%9)").arg(
                 QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
-                QString::number(d->getSumWeights()), QString::number(d->getCount()), QString::number(d->getNumBins()),
+                QString::number(d->getCount()), QString::number(d->getSumWeights()), QString::number(d->getNumBins()),
                 QString::number(d->getUnderflowSumWeights()), QString::number(d->getNumUnderflows()),
                 QString::number(d->getOverflowSumWeights()), QString::number(d->getNumOverflows())
                 );
