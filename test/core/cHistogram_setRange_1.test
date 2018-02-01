@@ -156,22 +156,22 @@ for (int i=0; i<FIRSTVALS+10; i++)
 
 99 observations:
  h[0]               int-fixed: 10 cells, 10..20
- h[1]                int-auto: collecting
- h[2]           int-autoupper: collecting
- h[3]           int-autolower: collecting
- h[4]         int-fixed-5cell: collecting
- h[5]          int-auto-5cell: collecting
- h[6]     int-autoupper-5cell: collecting
- h[7]     int-autolower-5cell: collecting
+ h[1]                int-auto: 29 cells, 0..29
+ h[2]           int-autoupper: 19 cells, 10..29
+ h[3]           int-autolower: 20 cells, 0..20
+ h[4]         int-fixed-5cell:  5 cells, 10..20
+ h[5]          int-auto-5cell:  5 cells, 3..28
+ h[6]     int-autoupper-5cell:  5 cells, 10..35
+ h[7]     int-autolower-5cell:  5 cells, -5..20
  h[8]        int-varhist-auto: collecting
  h[9]            double-fixed: 50 cells, 10..20
- h[10]            double-auto: collecting
- h[11]       double-autoupper: collecting
- h[12]       double-autolower: collecting
- h[13]     double-fixed-5cell: collecting
- h[14]      double-auto-5cell: collecting
- h[15] double-autoupper-5cell: collecting
- h[16] double-autolower-5cell: collecting
+ h[10]            double-auto: 59 cells, 14.475..17.425
+ h[11]       double-autoupper: 75 cells, 10..17.5
+ h[12]       double-autolower: 55 cells, 14.5..20
+ h[13]     double-fixed-5cell:  5 cells, 10..20
+ h[14]      double-auto-5cell:  5 cells, 14.75..17.25
+ h[15] double-autoupper-5cell:  7 cells, 10..17
+ h[16] double-autolower-5cell:  5 cells, 15..20
  h[17]    double-varhist-auto: collecting
  h[18]     double-ksplit-auto: collecting
  h[19]         double-psquare: 10 cells, 15..16.9
