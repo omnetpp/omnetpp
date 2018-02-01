@@ -93,6 +93,10 @@ void cPrecollectionBasedHistogramStrategy::copy(const cPrecollectionBasedHistogr
 {
     inPrecollection = other.inPrecollection;
     numToPrecollect = other.numToPrecollect;
+    numToCollate = other.numToCollate;
+    lastRange = other.lastRange;
+    rangeUnchangedCounter = other.rangeUnchangedCounter;
+    rangeUnchangedThreshold = other.rangeUnchangedThreshold;
     values = other.values;
     weights = other.weights;
 }
@@ -104,15 +108,38 @@ cPrecollectionBasedHistogramStrategy& cPrecollectionBasedHistogramStrategy::oper
     return *this;
 }
 
-void cPrecollectionBasedHistogramStrategy::precollect(double value, double weight)
+bool cPrecollectionBasedHistogramStrategy::precollect(double value, double weight)
 {
+    // precollect value
     ASSERT(inPrecollection);
-    if (!values.empty() && value == values.front()) // prevent degenerate case of the first value being repeated numToPrecollect times
-        weights.front() += weight;
+    if (value == std::floor(value)) {
+        size_t searchLimit = std::min((size_t)numToCollate, values.size());
+        size_t i;
+        for (i = 0; i < searchLimit; i++)
+            if (values[i] == value)
+                break;
+        if (i < searchLimit)
+            weights[i] += weight;
+        else {
+            values.push_back(value);
+            weights.push_back(weight);
+        }
+    }
     else {
         values.push_back(value);
         weights.push_back(weight);
     }
+
+    // decide when to stop precollection
+    double range = hist->getMax() - hist->getMin();
+    if (lastRange == range)
+        rangeUnchangedCounter++;
+    else {
+        lastRange = range;
+        rangeUnchangedCounter = 0;
+    }
+    bool over = rangeUnchangedCounter >= rangeUnchangedThreshold || values.size() > numToPrecollect;
+    return over;
 }
 
 void cPrecollectionBasedHistogramStrategy::moveValuesIntoHistogram()
@@ -134,6 +161,8 @@ void cPrecollectionBasedHistogramStrategy::setUpBins()
 void cPrecollectionBasedHistogramStrategy::clear()
 {
     inPrecollection = true;
+    lastRange = NAN;
+    rangeUnchangedCounter = 0;
     values.clear();
     weights.clear();
 }
@@ -167,8 +196,7 @@ void cDefaultHistogramStrategy::collect(double value)
 void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (inPrecollection) {
-        precollect(value, weight);
-        if (values.size() == numToPrecollect)
+        if (precollect(value, weight))
             setUpBins();
     }
     else {
@@ -343,9 +371,9 @@ void cAutoRangeHistogramStrategy::collect(double value)
 void cAutoRangeHistogramStrategy::collectWeighted(double value, double weight)
 {
     if (inPrecollection) {
-        precollect(value, weight);
         bool needPrecollection = (mode == cHistogram::MODE_AUTO) || std::isnan(lo) || std::isnan(hi); // if true, we precollect the first value and immediately set up the bins
-        if (!needPrecollection || values.size() >= numToPrecollect)
+        bool precollectionOver = precollect(value, weight);
+        if (!needPrecollection || precollectionOver)
             setUpBins();
     }
     else {

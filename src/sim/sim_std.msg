@@ -664,6 +664,8 @@ class cPrecollectionBasedHistogramStrategy extends cIHistogramStrategy
     @existingClass;
     @overwritePreviousDefinition;
     int numToPrecollect;
+    int numToCollate;
+    int rangeUnchangedThreshold;
 }
 
 class cDefaultHistogramStrategy extends cPrecollectionBasedHistogramStrategy 

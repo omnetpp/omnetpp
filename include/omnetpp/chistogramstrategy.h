@@ -149,7 +149,8 @@ class SIM_API cFixedRangeHistogramStrategy : public cIHistogramStrategy
 /**
  * @brief Base class for histogram strategies that employ a precollection phase
  * in order to gather input for setting up the bins. This class provides
- * storage for the precollected values.
+ * storage for the precollected values, and also a built-in algorithm for
+ * deciding when to stop precollection.
  *
  * @ingroup Statistics
  */
@@ -157,13 +158,17 @@ class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
 {
   protected:
     bool inPrecollection = true;
-    size_t numToPrecollect = 100;
+    size_t numToPrecollect = 1000;
+    size_t numToCollate = 10;
+    double lastRange = NAN;
+    int rangeUnchangedCounter = 0;
+    int rangeUnchangedThreshold = 50;
     std::vector<double> values;
     std::vector<double> weights; // same size as values[]
 
   protected:
     virtual void moveValuesIntoHistogram();
-    virtual void precollect(double value, double weight=1.0);
+    virtual bool precollect(double value, double weight=1.0); // true: precollection over
     virtual void createBins() = 0;
 
   private:
@@ -181,6 +186,10 @@ class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
     //@{
     int getNumToPrecollect() const {return numToPrecollect;}
     void setNumToPrecollect(int numToPrecollect) {this->numToPrecollect = numToPrecollect;}
+    int getNumToCollate() const {return numToCollate;}
+    void setNumToCollate(int numToCollate) {this->numToCollate = numToCollate;}
+    int getRangeUnchangedThreshold() const {return rangeUnchangedThreshold;}
+    void setRangeUnchangedThreshold(int threshold) {this->rangeUnchangedThreshold = threshold;}
     //@}
 
     /** @name Redefined cIHistogramStrategy methods */
