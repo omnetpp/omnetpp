@@ -10,8 +10,38 @@ OMNeT++ 5.3 Preview 3 (January 2018)
 
 Highlights:
 
+  - Evaluation of NED expressions now uses integer arithmetic when operands
+    are integers. Conversions that incur precision loss should now be explicit:
+    converting a double to integer requires the int() cast; also, converting
+    an int to double will raise an error if there is actual precision loss,
+    and you can suppress that error by explicit double() cast. There are many
+    smaller-scale changes related to this change -- see include/omnetpp/ChangeLog
+    for details.
+
+  - cHistogram has been replaced with new implementation. (The old one is still
+    available under the name cLegacyHistogram.) The new cHistogram is more
+    general (supports arbitrary bins), more configurable, and produces much
+    higher quality histograms even in the default setup due to newly introduced
+    techniques such as adaptive precollection, bin size rounding and bin edge
+    snapping, auto-extension with new bins, bin merging to keep the number of
+    bins optimal, etc. Histogram operation can be customized via histogram
+    strategy classes (cIHistogramStrategy); several histogram strategies are
+    provided.
+
+  - In recording histograms with @statistic, the number of bins can be specified
+    by adding numBins=nn: @statistic[x](record=histogram;numBins=100). The actual
+    number of bins produced might slightly differ, due to auto-extension and
+    bn merging during result collection.
+
+  - Qtenv: histogram visualization has been improved. For example, the lower/upper
+    outliers are now displayed as two extra bins, and setting up the bins while
+    in the precollection phase can be forced from the GUI.
+
+  - Qtenv: histogram result objects are easier to locate on the GUI, and are now
+    also found by the Find/Inspect dialog.
+
   - build: 'match=native' and 'mtune=native' compiler options are no longer used
-    by default for a release build because on certain CPUs this caused rounding
+    by default for a release build, because on certain CPUs this caused rounding
     differences so simulations may run on a different trajectory depending on
     the actual CPU used.
 
