@@ -20,6 +20,30 @@ def fail(msg):
     print(progname + ": Error: {}".format(msg), file=sys.stderr)
     sys.exit(1)
 
+def compressOneDiff(tmpDiff, maxLines):
+    if len(tmpDiff) <= 2 * maxLines + 3:
+        return tmpDiff
+    pre = tmpDiff[0][0]
+    return tmpDiff[:maxLines] \
+            + [ pre + ".\n", pre + ". <hidden lines>\n", pre + ".\n"] \
+            + tmpDiff[-maxLines:]
+
+def compressDiff(diff):
+    maxLines = 3
+    tmpDiff = []
+    prevStart = ''
+    for line in diff:
+        if prevStart == line[0:2]:
+            tmpDiff.append(line)
+        else:
+            for l in compressOneDiff(tmpDiff, maxLines):
+                yield l
+            prevStart = line[0:2]
+            tmpDiff = [line]
+
+    for l in compressOneDiff(tmpDiff, maxLines):
+        yield l
+
 
 # from net: do not change order of attributes
 class OppFormatter(argparse.RawDescriptionHelpFormatter):
@@ -757,6 +781,7 @@ Supported .test file entry types:
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
 
                         diff = difflib.ndiff(pattern.splitlines(True), txt.splitlines(True))
+                        diff = compressDiff(diff)
                         difftxt = ''.join(diff)
 
                         if (len(difftxt) <= 8192):
