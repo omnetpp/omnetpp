@@ -44,6 +44,23 @@ def compressDiff(diff):
     for l in compressOneDiff(tmpDiff, maxLines):
         yield l
 
+def colorDiff(diff):
+    for line in diff:
+        if line.startswith('+ '):
+            yield '\033[0;32m' + line + "\033[0;0m"     # GREEN
+        elif line.startswith('+.'):
+            yield "\033[2;32m" + line + "\033[0;0m"     # dark green
+        elif line.startswith('- '):
+            yield "\033[1;31m" + line + "\033[0;0m"     # RED
+        elif line.startswith('^ '):
+            yield "\033[1;34m" + line + "\033[0;0m"     # BLUE
+        elif line.startswith('? '):
+            yield "\033[1;33m" + line + "\033[0;0m"     # YELLOW
+        elif line.startswith(' .'):
+            yield "\033[2;37m" + line + "\033[0;0m"     # dark white
+        else:
+            yield line
+
 
 # from net: do not change order of attributes
 class OppFormatter(argparse.RawDescriptionHelpFormatter):
@@ -782,6 +799,7 @@ Supported .test file entry types:
 
                         diff = difflib.ndiff(pattern.splitlines(True), txt.splitlines(True))
                         diff = compressDiff(diff)
+                        diff = colorDiff(diff)
                         difftxt = ''.join(diff)
 
                         if (len(difftxt) <= 8192):
