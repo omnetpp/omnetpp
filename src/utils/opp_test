@@ -757,8 +757,9 @@ Supported .test file entry types:
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
 
 
-                        diff = difflib.ndiff(pattern.splitlines(), txt.splitlines())
-                        difftxt = '\n'.join(diff)
+                        diff = difflib.ndiff(['{0}\n'.format(element) for element in pattern.splitlines()],
+                                             ['{0}\n'.format(element) for element in txt.splitlines()])
+                        difftxt = ''.join(diff)
 
 
                         if (len(difftxt) <= 8192):
