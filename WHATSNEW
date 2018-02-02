@@ -40,6 +40,11 @@ Highlights:
   - Qtenv: histogram result objects are easier to locate on the GUI, and are now
     also found by the Find/Inspect dialog.
 
+  - Tkenv: The Tcl/Tk based runtime interface is now deprecated and turned off by
+    default. It will be removed in future OMNeT++ versions. You can still enable it
+    in configure.user by setting WITH_TKENV = yes, but we strongly suggest using
+    Qtenv instead.
+
   - build: 'march=native' and 'mtune=native' compiler options are no longer used
     by default for a release build, because on certain CPUs this caused rounding
     differences so simulations ran on a different trajectory depending on the 

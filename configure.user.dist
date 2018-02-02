@@ -41,8 +41,9 @@ PREFER_CLANG=yes
 
 #
 # Set to "yes" to enable the Tcl/Tk based graphical runtime environment (Tkenv)
+# Note: Tkenv is deprecated. Please, use Qtenv instead.
 #
-WITH_TKENV=yes
+WITH_TKENV=no
 
 #
 # Set to "yes" to enable the Qt based graphical runtime environment (Qtenv)

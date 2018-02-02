@@ -189,7 +189,7 @@ DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
 PREFER_QTENV=${PREFER_QTENV:-yes}
 WITH_QTENV=${WITH_QTENV:-yes}
-WITH_TKENV=${WITH_TKENV:-yes}
+WITH_TKENV=${WITH_TKENV:-no}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-opp_nedtool}
 SMC=${SMC:-opp_smc}
@@ -1337,27 +1337,28 @@ fi
 # Check if TCL_LIBRARY is set.
 #----------------------
 
-if test "$WITH_TKENV" != "yes"; then
+if test "$WITH_TKENV" = "yes"; then
 
     cat << EOT
 
-$OMNETPP_PRODUCT was configured with \$WITH_TKENV = no. The Tcl/Tk based graphical
-runtime environment (Tkenv) will not be available.
+$OMNETPP_PRODUCT was configured with \$WITH_TKENV = yes. The Tcl/Tk based graphical
+runtime environment (Tkenv) is DEPRECATED. We strongly suggest using Qtenv instead.
 EOT
 
-elif test "$PLATFORM" = "macosx"; then
-    :
-elif test -z "$TCL_LIBRARY"; then
-    : # not a problem -- if TCL_LIBRARY was needed, testing tclsh and wish would have failed already
-elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
+  if test "$PLATFORM" = "macosx"; then
+      :
+  elif test -z "$TCL_LIBRARY"; then
+      : # not a problem -- if TCL_LIBRARY was needed, testing tclsh and wish would have failed already
+  elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
 
-    cat 1>&2 << EOT
+     cat 1>&2 << EOT
 
 WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
 init.tcl or tclConfig.sh file in that directory. (TCL_LIBRARY usually points
 to /usr/lib/tcl8.5)
 EOT
 
+  fi
 fi
 
 #--------------
