@@ -244,7 +244,7 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
             double d = UnitConversion::parseQuantity(node->getValue(), unit);
             bool isInteger = (d == floor(d)) && d >= std::numeric_limits<intpar_t>::min() && d <= std::numeric_limits<intpar_t>::max(); // note: it would be slightly better to try parsing it in integer in the first place
             if (isInteger)
-                elems[pos++] = (int64_t)d;
+                elems[pos++] = (intpar_t)d;
             else
                 elems[pos++] = d;
             elems[pos-1].setUnit(unit.c_str());

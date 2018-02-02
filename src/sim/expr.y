@@ -301,7 +301,7 @@ boolliteral
 
 numliteral
         : INTCONSTANT
-                { *e++ = opp_atol($1); delete [] $1; }
+                { *e++ = (intpar_t)opp_atoll($1); delete [] $1; }
         | REALCONSTANT
                 { *e++ = opp_atof($1); delete [] $1; }
         | quantity
@@ -310,7 +310,7 @@ numliteral
                   double d = parseQuantity($1, unit);
                   bool isInteger = (d == floor(d)) && d >= std::numeric_limits<intpar_t>::min() && d <= std::numeric_limits<intpar_t>::max(); // note: it would be slightly better to try parsing it in integer in the first place
                   if (isInteger)
-                      *e++ = (int64_t)d;
+                      *e++ = (intpar_t)d;
                   else
                       *e++ = d;
                   if (!unit.empty())
