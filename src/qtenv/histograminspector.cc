@@ -177,19 +177,21 @@ double HistogramInspector::maxY()
             maxY = y;
     }
 
-    double underflowY = distr->getUnderflowSumWeights();
-    double overflowY = distr->getOverflowSumWeights();
+    double underflowY;
+    double overflowY;
 
     if (chartType == HistogramView::SHOW_PDF) {
-        if (distr->getNumUnderflows())
-            underflowY = underflowY / distr->getSumWeights() / (distr->getBinEdge(0) - distr->getMin());
-        if (distr->getNumOverflows())
-            overflowY = overflowY / distr->getSumWeights() / (distr->getMax() - distr->getBinEdge(distr->getNumBins()));
+        underflowY = distr->getUnderflowSumWeights() / distr->getSumWeights() / (distr->getBinEdge(0) - distr->getMin());
+        overflowY = distr->getOverflowSumWeights() / distr->getSumWeights() / (distr->getMax() - distr->getBinEdge(distr->getNumBins()));
+    }
+    else {
+         underflowY = distr->getUnderflowSumWeights();
+         overflowY = distr->getOverflowSumWeights();
     }
 
-    if (underflowY > maxY)
+    if (std::isfinite(underflowY) && underflowY > maxY)
         maxY = underflowY;
-    if (overflowY > maxY)
+    if (std::isfinite(overflowY) && overflowY > maxY)
         maxY = overflowY;
 
     return maxY;
