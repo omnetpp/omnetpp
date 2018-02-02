@@ -17,6 +17,8 @@ network Test
         node: Node;
 }
 
+%subst: /-nan/nan/
+
 %contains: results/General-#0.sca
 statistic Test.node hist_5bins:histogram
 field count 100
@@ -55,8 +57,8 @@ bin	22.230938408858	19
 bin	28	0
 statistic Test.node hist_timeweighted:histogram
 field count 100
-field mean -nan
-field stddev -nan
+field mean nan
+field stddev nan
 field min 12
 field max 28
 field weights 0
