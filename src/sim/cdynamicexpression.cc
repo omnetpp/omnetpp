@@ -913,8 +913,7 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                     }
                 }
                 catch (std::exception& ex) {
-                    std::string msg = e.str() + ": " + ex.what();
-                    throw cRuntimeError(msg.c_str());
+                    throw cRuntimeError("%s: %s", e.str().c_str(), ex.what());
                 }
                 break;
 
