@@ -229,10 +229,20 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
                 s += n;
                 fmt += 3;
             }
+            else if (fmt[1] == 'l' && fmt[2] == 'l' && fmt[3] == 'd') {
+                k += sscanf(s, "%lld%n", va_arg(va, long long *), &n);
+                s += n;
+                fmt += 4;
+            }
             else if (fmt[1] == 'l' && fmt[2] == 'u') {
                 k += sscanf(s, "%lu%n", va_arg(va, unsigned long *), &n);
                 s += n;
                 fmt += 3;
+            }
+            else if (fmt[1] == 'l' && fmt[2] == 'l' && fmt[3] == 'u') {
+                k += sscanf(s, "%llu%n", va_arg(va, unsigned long long *), &n);
+                s += n;
+                fmt += 4;
             }
             else if (fmt[1] == 'l' && fmt[2] == 'g') {
                 k += sscanf(s, "%lg%n", va_arg(va, double *), &n);
@@ -787,7 +797,7 @@ long long opp_strtoll(const char *s, char **endptr)
     skip_whitespace(s);
     errno = 0;
     long long d = strtoll(s, endptr, ishex(s) ? 16 : 10);
-    if ((d == LONG_MAX || d == LONG_MIN) && errno == ERANGE)
+    if ((d == LLONG_MAX || d == LLONG_MIN) && errno == ERANGE)
         throw opp_runtime_error("Cannot represent \"%s\" in the target integer type", s);
     return d;
 }
@@ -805,7 +815,7 @@ unsigned long long opp_strtoull(const char *s, char **endptr)
     skip_whitespace(s);
     errno = 0;
     unsigned long long d = strtoull(s, endptr, ishex(s) ? 16 : 10);
-    if (d == ULONG_MAX && errno == ERANGE)
+    if (d == ULLONG_MAX && errno == ERANGE)
         throw opp_runtime_error("Cannot represent \"%s\" in the target integer type", s);
     return d;
 }
