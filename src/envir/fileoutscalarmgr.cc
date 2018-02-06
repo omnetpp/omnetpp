@@ -71,6 +71,10 @@ void cFileOutputScalarManager::openFile()
     f = fopen(fname.c_str(), "a");
     if (f == nullptr)
         throw cRuntimeError("Cannot open output scalar file '%s'", fname.c_str());
+
+    // Seek to the end of the file. This is needed because on Windows ftell() returns 0 even after
+    // opening the file in append mode. On other systems ftell() correctly points to the end of the file.
+    opp_fseek(f, 0, SEEK_END);  
 }
 
 void cFileOutputScalarManager::closeFile()
