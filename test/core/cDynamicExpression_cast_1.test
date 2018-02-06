@@ -63,6 +63,8 @@ test("double(-1234567890123456789)");
 
 EV << ".\n";
 
+%subst: /e\+0(\d\d)/e+\1/
+
 %contains: stdout
 ~3.0 ==> operator "~": Integer argument expected, got double (note: no implicit conversion from double to int)
 1.0 & 3 ==> operator "&": Integer argument expected, got double and integer (note: no implicit conversion from double to int)

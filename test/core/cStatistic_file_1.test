@@ -61,6 +61,8 @@ fclose(f);
 
 %postrun-command: diff pass1.txt pass2.txt
 
+%subst: /e\+0(\d\d)/e+\1/
+
 %contains: pass1.txt
 
 #

@@ -139,7 +139,7 @@ run x -o out-v2.csv --verbose
 # Crude check: verify that the exported files are well-formed
 #
 echo ===============================================================
-files=$(echo *.sca *.vec | sort)
+files=$(ls *.sca *.vec -1 | sort -d)
 for f in $files; do
   echo '$ scavetool' $f
   scavetool $f 2>&1 || echo ERROR
@@ -303,18 +303,18 @@ Exported 4 scalars, 2 vectors, 2 statistics, 2 histograms
 ===============================================================
 $ scavetool out-Foppsca.sca
 runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
-$ scavetool out-Fsqlsca.sca
-runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
-$ scavetool out.sca
-runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
 $ scavetool out-Foppvec.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
+$ scavetool out-Fsqlsca.sca
+runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
 $ scavetool out-Fsqlvec.vec
 runs: 2   scalars: 0  vectors: 2  statistics: 0  histograms: 0
 $ scavetool out-k1.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
 $ scavetool out-k2.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
+$ scavetool out.sca
+runs: 2   scalars: 4  vectors: 0  statistics: 2  histograms: 2
 $ scavetool out.vec
 runs: 1   scalars: 0  vectors: 1  statistics: 0  histograms: 0
 .
