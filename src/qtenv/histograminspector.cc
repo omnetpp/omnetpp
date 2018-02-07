@@ -229,13 +229,13 @@ QString HistogramInspector::generalInfo()
                 QString::number(d->getMin()), QString::number(d->getMax())
                 );
     else if (!d->isWeighted())
-        return QString("Histogram: [%1...%2)  N=%3  #bins=%4  Outliers: lower=%5 upper=%6").arg(
+        return QString("Histogram: [%1, %2)  N=%3  #bins=%4  Outliers: lower=%5 upper=%6").arg(
                 QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
                 QString::number(d->getCount()), QString::number(d->getNumBins()),
                 QString::number(d->getNumUnderflows()), QString::number(d->getNumOverflows())
                 );
     else
-        return QString("Histogram: [%1...%2)  N=%3  W=%4  #bins=%5  Outliers: lower=%6 (%7) upper=%8 (%9)").arg(
+        return QString("Histogram: [%1, %2)  N=%3  W=%4  #bins=%5  Outliers: lower=%6 (%7) upper=%8 (%9)").arg(
                 QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
                 QString::number(d->getCount()), QString::number(d->getSumWeights()), QString::number(d->getNumBins()),
                 QString::number(d->getUnderflowSumWeights()), QString::number(d->getNumUnderflows()),
@@ -295,7 +295,7 @@ void HistogramInspector::onShowCellInfo(int bin)
         binValueText = "w=" + QString::number(binValue);
     }
 
-    QString text = QString("%1:  [%2...%3)  %4  PDF=%5").arg(binName, QString::number(lowerEdge),
+    QString text = QString("%1:  [%2, %3)  %4  PDF=%5").arg(binName, QString::number(lowerEdge),
                     QString::number(upperEdge), binValueText,
                     QString::number(binValue / d->getSumWeights() / (upperEdge-lowerEdge)));
 
