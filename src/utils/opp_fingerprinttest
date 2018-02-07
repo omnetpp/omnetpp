@@ -282,7 +282,7 @@ class SimulationTestCase(unittest.TestCase):
         env = os.environ
 #        env['CPUPROFILE'] = resultdir+"/cpuprofile"
 #        env['CPUPROFILE_FREQUENCY'] = "1000"
-        process = subprocess.Popen(["sh","-c",command], shell=True, cwd=workingdir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
+        process = subprocess.Popen(command, shell=True, cwd=workingdir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
         out = process.communicate()[0]
         out = re.sub("\r", "", out.decode('utf-8'))
         return (process.returncode, out)
