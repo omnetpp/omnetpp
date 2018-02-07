@@ -86,7 +86,6 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual std::string gets(const char *prompt, const char *defaultReply) override;
      virtual bool idle() override;
      virtual unsigned getExtraStackForEnvir() const override;
-     virtual void debug(const char *fmt,...);
 
      virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override;
      virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override;

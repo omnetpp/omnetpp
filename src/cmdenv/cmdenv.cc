@@ -649,26 +649,6 @@ bool Cmdenv::askYesNo(const char *question)
     }
 }
 
-void Cmdenv::debug(const char *fmt, ...) //FIXME apparently only for HTTP
-{
-    if (!logging)
-        return;
-
-    time_t rawtime = time(nullptr);
-    tm time = *localtime(&rawtime);
-
-    char timestamp[16];
-    strftime(timestamp, 16, "%H:%M:%S", &time);
-
-    ::fprintf(logStream, "[%s event #%" PRId64 "] ", timestamp, getSimulation()->getEventNumber());
-
-    va_list va;
-    va_start(va, fmt);
-    ::vfprintf(logStream, fmt, va);
-    va_end(va);
-    ::fflush(logStream);  // needed for sensible output in the IDE console
-}
-
 bool Cmdenv::idle()
 {
     return sigintReceived;
