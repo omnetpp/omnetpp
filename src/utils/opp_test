@@ -188,17 +188,16 @@ cmdenv-log-prefix = ""
     # args: command, work-directory, stdout-file, stderr-file
     # return: exit code, or -1 if program crashed
     def exec_program(self, cmd, wdir, outfile, errfile):
-        cmd = re.sub(r"'", "'\\''", cmd) # s|'|'\\''|g;  # quote due to potential nested apostrophes
-        do = self.args.shell+" -c 'cd "+wdir+" && "+cmd+"' >\""+os.path.join(wdir, outfile)+"\" 2>\""+os.path.join(wdir, errfile)+"\""
-        self.lprint(2, "  running: "+do)
-        status = os.system(do)
+#        cmd = re.sub(r"'", "'\\''", cmd) # s|'|'\\''|g;  # quote due to potential nested apostrophes
+        do = [ self.args.shell , "-c", "cd "+wdir+" && "+cmd]
+        self.lprint(2, "  running: "+" ".join(do))
+        myout = open(os.path.join(wdir, outfile), "w")
+        myerr = open(os.path.join(wdir, errfile), "w")
+        status = subprocess.call(do, stdout=myout, stderr=myerr)
+        myout.close()
+        myerr.close()
         self.lprint(2, "  returned status = {}".format(status))
-        if (status == 0):
-            return 0;
-        elif status % 256 != 0:
-            return -1;
-        else:
-            return status / 256;
+        return status;
 
 
     def parse_testfile(self, testfilename):
@@ -439,8 +438,8 @@ Supported .test file entry types:
                             help='working directory (defaults to "%(default)s")',
                             )
         self.parser.add_argument('-s', '--shell', action='store',
-                            default='/bin/sh',
-                            help='shell to use to run test program (not used on windows)',
+                            default='sh',
+                            help='shell to use to run test program',
                             )
         self.parser.add_argument('-p', '--program', action='store', dest='testprogram',
                             default='',
@@ -585,18 +584,19 @@ Supported .test file entry types:
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
             else:
                 testprogwithpath = os.path.join(self.args.workdir, self.args.testprogram)
-                if (not os.path.exists(testprogwithpath)):
+                if (not os.path.exists(testprogwithpath) and not os.path.exists(testprogwithpath+".exe")):
                     fail("test program '" + testprogwithpath + "' not found\n")
-                if (not os.access(testprogwithpath, os.X_OK)):   #FIXME check it on Windows/Mac
+                if (not os.access(testprogwithpath, os.X_OK) and not os.access(testprogwithpath+".exe", os.X_OK)):
                     fail("test program '" + testprogwithpath + "' is not executable\n")
                 cmdline = os.path.join("..",self.args.testprogram)+" -u Cmdenv "+myargs+" "+(" ".join(self.args.extraargs))+" "+inifilenames
                 runscript += cmdline + ' "$@"\n'
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
 
         # check exitcode
-            if (exitcode == -1):
+            if (exitcode == 127):
                 self.testunresolved(testfilename, "could not execute test program")
                 return;
+
             exitCodeFail = True
             insteadOf = ''
 
@@ -612,6 +612,8 @@ Supported .test file entry types:
                     insteadOf = " instead of " + self.values['exitcode(1)']
             elif (exitcode == 0):
                 exitCodeFail = False
+            else:
+                pass
 
             if exitCodeFail:
                 self.testfailed(testfilename, "test program returned exit code {}{}".format(exitcode, insteadOf))
@@ -641,11 +643,11 @@ Supported .test file entry types:
 
         runfile = os.path.join(self.args.workdir, self.testname,"run")
         self.writefile(runfile, runscript)
-        os.chmod(runfile, 0755) # make it executable
+        os.chmod(runfile, 0o755) # make it executable
 
         retestfile = os.path.join(self.args.workdir, self.testname,"retest")
         self.writefile(retestfile, "#! /bin/sh\ncd ../.. && ./runtest "+testfilename+"\n")
-        os.chmod(retestfile, 0755) # make it executable
+        os.chmod(retestfile, 0o755) # make it executable
 
         # check output files
         for key,value in self.values.items():

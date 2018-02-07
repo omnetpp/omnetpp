@@ -282,7 +282,7 @@ class SimulationTestCase(unittest.TestCase):
         env = os.environ
 #        env['CPUPROFILE'] = resultdir+"/cpuprofile"
 #        env['CPUPROFILE_FREQUENCY'] = "1000"
-        process = subprocess.Popen(command, shell=True, cwd=workingdir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
+        process = subprocess.Popen(["sh","-c",command], shell=True, cwd=workingdir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
         out = process.communicate()[0]
         out = re.sub("\r", "", out.decode('utf-8'))
         return (process.returncode, out)
@@ -337,7 +337,7 @@ class FingerprintTestCase(SimulationTestCase):
             # note: fingerprint mismatch is technically NOT an error in 4.2 or before! (exitcode==0)
             self.storeExitcodeCallback(result.exitcode)
             if result.exitcode != 0:
-                raise Exception("runtime error:" + result.errormsg)
+                raise Exception("runtime error ("+str(result.exitcode)+"):" + result.errormsg)
             elif result.cpuTimeLimitReached:
                 raise Exception("cpu time limit exceeded")
             elif result.simulatedTime == 0 and self.simtimelimit != '0s':
