@@ -107,6 +107,7 @@ class SIM_API cHistogram : public cAbstractHistogram
     // Directly collects the value into the existing bins, without delegating to the strategy object
     virtual void collectIntoHistogram(double value, double weight=1);
     void dump() const; // for debugging
+    void assertSanity();
 
   private:
     void copy(const cHistogram& other);

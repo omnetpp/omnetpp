@@ -178,6 +178,10 @@ void Histograms::handleMessage(cMessage *msg)
 
 void Histograms::finish()
 {
+    for (auto *statistic : statisticObjects)
+        if (auto *histogram = dynamic_cast<cHistogram*>(statistic))
+            histogram->assertSanity();
+
     cAbstractHistogram *stat = statisticObjects.front();
     EV << "Bins in " << stat->getName() << ":\n";
     for (int i = 0; i < stat->getNumBins(); i++) {

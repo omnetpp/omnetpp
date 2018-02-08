@@ -80,6 +80,30 @@ void cHistogram::dump() const
     std::cout << " |" << binEdges.back() << " " << overflowSumWeights << std::endl;
 }
 
+void cHistogram::assertSanity()
+{
+#ifndef NDEBUG
+    if (binEdges.empty()) {
+        ASSERT(numOverflows==0 && numUnderflows==0);
+        ASSERT(overflowSumWeights==0 && underflowSumWeights==0);
+        ASSERT(binValues.empty());
+    }
+    else {
+        ASSERT(binValues.size() >= 1);
+        ASSERT(binEdges.size() == binValues.size()+1);
+        double prevEdge = NAN;
+        for (double edge : binEdges) {
+            ASSERT(std::isnan(prevEdge) || prevEdge < edge);
+            prevEdge = edge;
+        }
+        double sumBinWeights = underflowSumWeights + overflowSumWeights;
+        for (double value : binValues)
+            sumBinWeights += value;
+        ASSERT((sumBinWeights==0 && getSumWeights()==0) || fabs(sumBinWeights/getSumWeights()-1) < 1e-10);
+    }
+#endif
+}
+
 void cHistogram::parsimPack(cCommBuffer *buffer) const
 {
 #ifndef WITH_PARSIM
