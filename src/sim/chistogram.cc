@@ -379,6 +379,8 @@ void cHistogram::mergeBins(int groupSize)
 {
     if (groupSize <= 0)
         throw cRuntimeError(this, "mergeBins(): groupSize must be positive");
+    if (groupSize == 1)
+        return; // nothing to do
 
     ASSERT(binEdges.size() == binValues.size() + 1);  // histogram is sane
 

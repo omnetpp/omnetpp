@@ -300,8 +300,10 @@ void cDefaultHistogramStrategy::createBins()
 
 void cDefaultHistogramStrategy::extendBinsTo(double value)
 {
-    bool isUnderflow = value < hist->getBinEdges().front();
-    bool isOverflow = value >= hist->getBinEdges().back();
+    double firstEdge = hist->getBinEdges().front();
+    double lastEdge = hist->getBinEdges().back();
+    bool isUnderflow = (value < firstEdge);
+    bool isOverflow = (value >= lastEdge);
     if (!isUnderflow && !isOverflow)
         return; // nothing to do
     if (isUnderflow && hist->getNumUnderflows() > 0)
@@ -310,6 +312,11 @@ void cDefaultHistogramStrategy::extendBinsTo(double value)
         return; // cannot extend
 
     if (binMerging) {
+        double range = lastEdge - firstEdge;
+        double newRange = std::max(value, lastEdge) - std::min(value, firstEdge);
+        double newApproxBinSize = newRange / targetNumBins;
+        if (newApproxBinSize >= range)
+            mergeAllBinsIntoOne(newApproxBinSize);
         hist->extendBinsTo(value, binSize);
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
@@ -336,6 +343,42 @@ void cDefaultHistogramStrategy::reduceNumBinsTo(int numBinsLimit)
 
     hist->mergeBins(groupSize);
     binSize *= groupSize;
+}
+
+void cDefaultHistogramStrategy::mergeAllBinsIntoOne(double newApproxBinSize)
+{
+    // merge the whole existing histogram into a single bin of the given size (approximately)
+    double firstEdge = hist->getBinEdges().front();
+    double lastEdge = hist->getBinEdges().back();
+    double range = lastEdge - firstEdge;
+
+    // determine new bin size (round, and >=range)
+    double newBinSize = roundToOneTwoFive(newApproxBinSize);
+    if (newBinSize < range)
+        newBinSize = newBinSize * std::ceil(range / newBinSize);
+
+    // compute new histogram range
+    double newFirstEdge = firstEdge;
+    double newLastEdge = lastEdge;
+    if (hist->getNumUnderflows() == 0 && hist->getNumOverflows() == 0) {
+        newFirstEdge = newBinSize * std::floor(newFirstEdge / newBinSize); // snap
+        newLastEdge = newBinSize * std::ceil(newLastEdge / newBinSize); // snap
+        newBinSize = newLastEdge - newFirstEdge;
+    }
+    else if (hist->getNumUnderflows() == 0)
+        newFirstEdge = newLastEdge - newBinSize;
+    else if (hist->getNumOverflows() == 0)
+        newLastEdge = newFirstEdge + newBinSize;
+    else
+        ; // cannot extend range
+
+    hist->mergeBins(hist->getNumBins());
+    if (newFirstEdge != firstEdge)
+        hist->prependBins(std::vector<double> { newFirstEdge });
+    if (newLastEdge != lastEdge)
+        hist->appendBins(std::vector<double> { newLastEdge });
+    hist->mergeBins(hist->getNumBins());
+    binSize = newBinSize;
 }
 
 //----
@@ -495,8 +538,10 @@ void cAutoRangeHistogramStrategy::createBins()
 
 void cAutoRangeHistogramStrategy::extendBinsTo(double value)
 {
-    bool isUnderflow = value < hist->getBinEdges().front();
-    bool isOverflow = value >= hist->getBinEdges().back();
+    double firstEdge = hist->getBinEdges().front();
+    double lastEdge = hist->getBinEdges().back();
+    bool isUnderflow = value < firstEdge;
+    bool isOverflow = value >= lastEdge;
     if (!isUnderflow && !isOverflow)
         return; // nothing to do
     if (isUnderflow && (hist->getNumUnderflows() > 0 || !std::isnan(lo)))
@@ -505,6 +550,11 @@ void cAutoRangeHistogramStrategy::extendBinsTo(double value)
         return; // cannot extend
 
     if (binMerging) {
+        double range = lastEdge - firstEdge;
+        double newRange = std::max(value, lastEdge) - std::min(value, firstEdge);
+        double newApproxBinSize = newRange / targetNumBins;
+        if (newApproxBinSize >= range)
+            mergeAllBinsIntoOne(newApproxBinSize);
         hist->extendBinsTo(value, binSize);
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
@@ -531,6 +581,42 @@ void cAutoRangeHistogramStrategy::reduceNumBinsTo(int numBinsLimit)
 
     hist->mergeBins(groupSize);
     binSize *= groupSize;
+}
+
+void cAutoRangeHistogramStrategy::mergeAllBinsIntoOne(double newApproxBinSize)
+{
+    // merge the whole existing histogram into a single bin of the given size (approximately)
+    double firstEdge = hist->getBinEdges().front();
+    double lastEdge = hist->getBinEdges().back();
+    double range = lastEdge - firstEdge;
+
+    // determine new bin size (round, and >=range)
+    double newBinSize = roundToOneTwoFive(newApproxBinSize);
+    if (newBinSize < range)
+        newBinSize = newBinSize * std::ceil(range / newBinSize);
+
+    // compute new histogram range
+    double newFirstEdge = firstEdge;
+    double newLastEdge = lastEdge;
+    if (hist->getNumUnderflows() == 0 && hist->getNumOverflows() == 0) {
+        newFirstEdge = newBinSize * std::floor(newFirstEdge / newBinSize); // snap
+        newLastEdge = newBinSize * std::ceil(newLastEdge / newBinSize); // snap
+        newBinSize = newLastEdge - newFirstEdge;
+    }
+    else if (hist->getNumUnderflows() == 0)
+        newFirstEdge = newLastEdge - newBinSize;
+    else if (hist->getNumOverflows() == 0)
+        newLastEdge = newFirstEdge + newBinSize;
+    else
+        ; // cannot extend range
+
+    hist->mergeBins(hist->getNumBins());
+    if (newFirstEdge != firstEdge)
+        hist->prependBins(std::vector<double> { newFirstEdge });
+    if (newLastEdge != lastEdge)
+        hist->appendBins(std::vector<double> { newLastEdge });
+    hist->mergeBins(hist->getNumBins());
+    binSize = newBinSize;
 }
 
 void cAutoRangeHistogramStrategy::clear()

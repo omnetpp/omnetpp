@@ -1,7 +1,9 @@
 # workingdir,                        cmdLine,                                          simtimelimit, fingerprint,expected value,tags
 /test/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,                100s,         0833-e76b/rsz,PASS,
 /test/histograms/,                ./histograms -f omnetpp.ini -c DriftingNormal -r 0,         100s,         06b8-4319/rsz,PASS,
-/test/histograms/,                ./histograms -f omnetpp.ini -c RareExtremeValues -r 0,      100s,         3f34-b279/rsz,PASS,
+/test/histograms/,                ./histograms -f omnetpp.ini -c RareExtremeValues -r 0,      100s,         5412-67dc/rsz,PASS,
+/test/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue1 -r 0,100s,         c5f4-0c19/rsz,PASS,
+/test/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue2 -r 0,100s,         1102-fbc1/rsz,PASS,
 /test/histograms/,                ./histograms -f omnetpp.ini -c Empty -r 0,                  100s,         8d37-84e3/rsz,PASS,
 /test/histograms/,                ./histograms -f omnetpp.ini -c OneObservation -r 0,         100s,         1d3b-7aae/rsz,PASS,
 /test/histograms/,                ./histograms -f omnetpp.ini -c TwoObservations -r 0,        100s,         ab1f-a2e1/rsz,PASS,

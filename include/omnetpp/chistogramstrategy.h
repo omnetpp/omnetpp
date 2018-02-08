@@ -233,6 +233,7 @@ class SIM_API cDefaultHistogramStrategy : public cPrecollectionBasedHistogramStr
     virtual void createBins() override;
     virtual void extendBinsTo(double value);
     virtual void reduceNumBinsTo(int numBins);
+    virtual void mergeAllBinsIntoOne(double newApproxBinSize);
 
   private:
     void copy(const cDefaultHistogramStrategy& other);
@@ -315,6 +316,7 @@ class SIM_API cAutoRangeHistogramStrategy : public cPrecollectionBasedHistogramS
     virtual void createBins() override;
     virtual void extendBinsTo(double value);
     virtual void reduceNumBinsTo(int numBins);
+    virtual void mergeAllBinsIntoOne(double newApproxBinSize);
 
   private:
     void copy(const cAutoRangeHistogramStrategy& other);
