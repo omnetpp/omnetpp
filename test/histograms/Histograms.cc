@@ -129,7 +129,7 @@ void Histograms::createStatisticObjects()
     addHistogram("AutoRange autoExtend=false", AutoRangeStrategyBuilder().setAutoExtend(false).get());
     addHistogram("AutoRange autoExtend=true, binMerging=false", AutoRangeStrategyBuilder().setAutoExtend(true, false).get());
 
-    addHistogram("AutoRange numBins=1", AutoRangeStrategyBuilder().setNumBins(1).get());
+    //addHistogram("AutoRange numBins=1", AutoRangeStrategyBuilder().setNumBins(1).get());
     addHistogram("AutoRange numBins=1 autoExtend=false", AutoRangeStrategyBuilder().setNumBins(1).setAutoExtend(false).get());
 
     addHistogram("AutoRange [10,20) numBins=1 autoExtend=false)", AutoRangeStrategyBuilder().setRange(10,20).setNumBins(1).setAutoExtend(false).get());
