@@ -81,6 +81,8 @@ class SIM_API cNedValue
     //@{
     cNedValue()  {type=UNDEF;}
     cNedValue(bool b)  {set(b);}
+    cNedValue(int l)  {set((intpar_t)l);}
+    cNedValue(int l, const char *unit)  {set((intpar_t)l, unit);}
     cNedValue(intpar_t l)  {set(l);}
     cNedValue(intpar_t l, const char *unit)  {set(l, unit);}
     cNedValue(double d)  {set(d);}
@@ -175,6 +177,14 @@ class SIM_API cNedValue
      * duration of the simulation (see related class comment).
      */
     void set(intpar_t l, const char *unit=nullptr) {type=INT; intv=l; this->unit=unit;}
+
+    /**
+     * Sets the value to the given integer value and measurement unit (optional).
+     * The unit string pointer is expected to stay valid during the entire
+     * duration of the simulation (see related class comment).
+     * This is a convenience method that delegates to the intpar_t version.
+     */
+    void set(int l, const char *unit=nullptr) {set((intpar_t)l, unit);}
 
     /**
      * Sets the value to the given double value and measurement unit (optional).
