@@ -208,9 +208,41 @@ void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
 
 static double roundToPowerOfTen(double x)
 {
+/*  The function implements the following code using loops because
+    the pow() and log10() functions behave slightly differently on
+    MinGW returning different results for the same input on Linux vs. Windows.
+
     return x == 0 ? 0
           : x > 0 ? std::pow(10.0, std::round(std::log10(x)))
           :        -std::pow(10.0, std::round(std::log10(-x)));
+*/
+    if (x == 0.0)
+        return 0.0;
+
+    bool negative = false;
+    if (x < 0.0) {
+        negative = true;
+        x = -x;
+    }
+
+    // between the lower and upper bounds the returned result should be 1.0
+    const double round_boundary_upper = 3.162277660168379522787063251598738133907;   // pow(10, 0.5)
+    const double round_boundary_lower = 0.3162277660168379522787063251598738133907;  // pow(10, 0.5) / 10
+    double result = 1.0;
+    // count how many times x should be divided/multiplied by 10 to get it between the lower and upper bounds
+    if (x > round_boundary_upper) {
+        while (x > round_boundary_upper) {
+            x /= 10.0;
+            result *= 10.0;
+        }
+    } else {
+        while (x <= round_boundary_lower) {
+            x *= 10.0;
+            result /= 10.0;
+        }
+    }
+
+    return negative ? -result : result;
 }
 
 static double roundToOneTwoFive(double x)
