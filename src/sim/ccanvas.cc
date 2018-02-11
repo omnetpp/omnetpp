@@ -3560,6 +3560,8 @@ cFigure *cCanvas::createFigure(const char *type) const
     if (it != figureFactories.end())
         factory = it->second;
     else {
+        if (opp_isempty(type))
+            throw cRuntimeError("Figure type not specified");
         auto it = figureTypes.find(type);
         if (it == figureTypes.end())
             throw cRuntimeError("Figure type '%s' not found (Register_Figure() missing?)", type);
