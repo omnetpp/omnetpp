@@ -509,8 +509,14 @@ QVariant FieldNode::computeData(int role)
         fieldName = label;
 
     // it is a simple value (not an array, but may be compound - like color or transform)
-    if (!isArray && !isCObject)
-        fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
+    if (!isArray && !isCObject) {
+        try {
+            fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
+        }
+        catch (cRuntimeError& e) {
+            fieldValue = QString("<!> Error: ") + e.what();
+        }
+    }
 
     if (!isArray && isCObject) {
         if (objectCasted) {
@@ -764,7 +770,13 @@ QVariant ArrayElementNode::computeData(int role)
     }
     else if (containingDesc->getFieldIsCompound(fieldIndex)) {
         const char *fieldType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, arrayIndex);
-        std::string fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex);
+        std::string fieldValue;
+        try {
+            fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex);
+        }
+        catch (cRuntimeError& e) {
+            fieldValue = std::string("<!> Error: ") + e.what();
+        }
 
         if (fieldType && fieldType[0])
             info += QString("(") + stripNamespace(fieldType) + ")";
@@ -776,7 +788,12 @@ QVariant ArrayElementNode::computeData(int role)
         }
     }
     else {
-        value = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex).c_str();
+        try {
+            value = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex).c_str();
+        }
+        catch (cRuntimeError& e) {
+            value = QString("<!> Error: ") + e.what();
+        }
     }
 
     QString editable = containingDesc->getFieldIsEditable(fieldIndex) ? " [...]" : "";
