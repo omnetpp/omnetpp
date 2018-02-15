@@ -34,6 +34,7 @@
     #include <osgEarthUtil/SkyNode>
 #endif
 #include <osgEarth/MapNode>
+#include <osgEarth/NodeUtils>
 #include <osgEarthUtil/EarthManipulator>
 #endif
 
