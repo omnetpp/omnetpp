@@ -56,14 +56,14 @@ void GroundStation::initialize(int stage)
         mapNode = osgEarth::MapNode::findMapNode(scene);
 
         // build up the node representing this module
-        // an ObjectLocatorNode allows positioning a model using world coordinates
-        locatorNode = new osgEarth::Util::ObjectLocatorNode(mapNode->getMap());
+        // a GeoTransform allows positioning a model using world coordinates
+        geoTransform = new osgEarth::GeoTransform();
 
         auto modelNode = osgDB::readNodeFile(modelURL);
 
-        locatorNode->getOrCreateStateSet()->setAttributeAndModes(
+        geoTransform->getOrCreateStateSet()->setAttributeAndModes(
           new osg::Program(), osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
-        locatorNode->getOrCreateStateSet()->setMode(
+        geoTransform->getOrCreateStateSet()->setMode(
                           GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
 
         // scale and rotate the model if necessary
@@ -73,7 +73,7 @@ void GroundStation::initialize(int stage)
         auto objectNode = new cObjectOsgNode(this);
         pat->addChild(objectNode);
         objectNode->addChild(modelNode);
-        locatorNode->addChild(pat);
+        geoTransform->addChild(pat);
 
         // set the name label if the color is specified
         if (!labelColor.empty()) {
@@ -82,11 +82,11 @@ void GroundStation::initialize(int stage)
             labelStyle.getOrCreate<TextSymbol>()->declutter() = true;
             labelStyle.getOrCreate<TextSymbol>()->pixelOffset() = osg::Vec2s(0,40);
             labelStyle.getOrCreate<TextSymbol>()->fill()->color() = osgEarth::Color(labelColor);
-            locatorNode->addChild(new LabelNode(par("label"), labelStyle));
+            geoTransform->addChild(new LabelNode(par("label"), labelStyle));
         }
 
         // add the locator node to the scene
-        mapNode->addChild(locatorNode);
+        mapNode->addChild(geoTransform);
 
         // position the nodes, so we will see them at correct position right after initialization
         refreshVisuals();
@@ -97,7 +97,7 @@ void GroundStation::initialize(int stage)
 
 void GroundStation::refreshVisuals()
 {
-    locatorNode->getLocator()->setPosition(osg::Vec3d(longitude, latitude, altitude));
+    geoTransform->setPosition(osgEarth::GeoPoint(mapNode->getMapSRS(), longitude, latitude, altitude));
 }
 
 void GroundStation::handleMessage(cMessage *msg)

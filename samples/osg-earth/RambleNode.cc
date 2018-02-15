@@ -47,7 +47,7 @@ void RambleNode::initialize(int stage)
     case 1:
         // creating the transmission bubble
         transmissionNode = new osg::PositionAttitudeTransform; // we will scale using this node
-        locatorNode->addChild(transmissionNode);
+        geoTransform->addChild(transmissionNode);
 
         osg::ref_ptr<osg::Geode> geode = new osg::Geode;
         transmissionNode->addChild(geode);

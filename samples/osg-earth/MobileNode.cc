@@ -56,8 +56,12 @@ void MobileNode::initialize(int stage)
         mapNode = osgEarth::MapNode::findMapNode(scene);
 
         // build up the node representing this module
-        // an ObjectLocatorNode allows positioning a model using world coordinates
-        locatorNode = new osgEarth::Util::ObjectLocatorNode(mapNode->getMap());
+        // a GeoTransform allows positioning a model using world coordinates
+        geoTransform = new osgEarth::GeoTransform();
+        localTransform = new osg::PositionAttitudeTransform();
+
+        geoTransform->addChild(localTransform);
+
         auto modelNode = osgDB::readNodeFile(modelURL);
         if (!modelNode)
             throw cRuntimeError("Model file \"%s\" not found", modelURL.c_str());
@@ -80,7 +84,7 @@ void MobileNode::initialize(int stage)
 
         auto objectNode = new cObjectOsgNode(this);  // make the node selectable in Qtenv
         objectNode->addChild(modelNode);
-        locatorNode->addChild(objectNode);
+        localTransform->addChild(objectNode);
 
         // set the name label if the color is specified
         if (!labelColor.empty()) {
@@ -89,7 +93,7 @@ void MobileNode::initialize(int stage)
             labelStyle.getOrCreate<TextSymbol>()->declutter() = true;
             labelStyle.getOrCreate<TextSymbol>()->pixelOffset() = osg::Vec2s(0,50);
             labelStyle.getOrCreate<TextSymbol>()->fill()->color() = osgEarth::Color(labelColor);
-            locatorNode->addChild(new LabelNode(getFullName(), labelStyle));
+            localTransform->addChild(new LabelNode(getFullName(), labelStyle));
         }
 
         // create a node showing the transmission range
@@ -114,7 +118,7 @@ void MobileNode::initialize(int stage)
         }
 
         // add the locator node to the scene
-        mapNode->getModelLayerGroup()->addChild(locatorNode);
+        mapNode->getModelLayerGroup()->addChild(geoTransform);
 
         // this will make the animation smoother, and the playback speed slider effective
         getParentModule()->getCanvas()->setAnimationSpeed(10, this);
@@ -134,8 +138,8 @@ void MobileNode::refreshDisplay() const
     double latitude = getLatitude();
 
     // update the 3D position of the model node
-    locatorNode->getLocator()->setPosition(osg::Vec3d(longitude, latitude, 1.5));  // set altitude mode instead of fixed altitude
-    locatorNode->getLocator()->setOrientation(osg::Vec3d(modelheading, 0, 0));
+    geoTransform->setPosition(osgEarth::GeoPoint(geoSRS, longitude, latitude, 1.5));  // set altitude mode instead of fixed altitude
+    localTransform->setAttitude(osg::Quat(-modelheading * M_PI / 180, osg::Vec3d(0, 0, 1)));
 
     // re-position the range indicator node
     if (showTxRange)

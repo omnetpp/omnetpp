@@ -11,7 +11,6 @@
 
 #include "ChannelController.h"
 
-#include <osgEarthUtil/ObjectLocator>
 #include <osgEarthUtil/LinearLineOfSight>
 #include <osgUtil/UpdateVisitor>
 #include <osg/ValueObject>

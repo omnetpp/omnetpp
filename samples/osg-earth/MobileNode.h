@@ -12,10 +12,11 @@
 
 #include <omnetpp.h>
 
+#include <osg/PositionAttitudeTransform>
 #include <osgEarth/MapNode>
+#include <osgEarth/GeoTransform>
 #include <osgEarthAnnotation/CircleNode>
 #include <osgEarthAnnotation/FeatureNode>
-#include <osgEarthUtil/ObjectLocator>
 
 #include "OsgEarthScene.h"
 
@@ -55,7 +56,9 @@ class MobileNode : public cSimpleModule, public IMobileNode
     // the node containing the osgEarth data
     osg::observer_ptr<osgEarth::MapNode> mapNode = nullptr;
     // osgEarth node for 3D visualization
-    osg::ref_ptr<osgEarth::Util::ObjectLocatorNode> locatorNode = nullptr;
+    osg::ref_ptr<osgEarth::GeoTransform> geoTransform = nullptr;
+    // osg node for orientation
+    osg::ref_ptr<osg::PositionAttitudeTransform> localTransform = nullptr;
     // range indicator node
     osg::ref_ptr<osgEarth::Annotation::CircleNode> rangeNode = nullptr;
     // trail annotation

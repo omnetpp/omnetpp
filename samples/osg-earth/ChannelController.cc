@@ -11,7 +11,6 @@
 #include "ChannelController.h"
 
 #include <osg/PositionAttitudeTransform>
-#include <osgEarthUtil/ObjectLocator>
 
 
 using namespace osgEarth;

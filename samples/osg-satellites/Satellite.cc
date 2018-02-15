@@ -93,8 +93,8 @@ void Satellite::initialize(int stage)
         mapNode = osgEarth::MapNode::findMapNode(scene);
 
         // build up the node representing this module
-        // an ObjectLocatorNode allows positioning a model using world coordinates
-        locatorNode = new osgEarth::Util::ObjectLocatorNode(mapNode->getMap());
+        // a GeoTransform allows positioning a model using world coordinates
+        geoTransform = new osgEarth::GeoTransform();
 
         auto modelNode = osgDB::readNodeFile(modelURL);
 
@@ -110,7 +110,7 @@ void Satellite::initialize(int stage)
         auto objectNode = new cObjectOsgNode(this);
         pat->addChild(objectNode);
         objectNode->addChild(modelNode);
-        locatorNode->addChild(pat);
+        geoTransform->addChild(pat);
 
         // set the name label if the color is specified
         if (!labelColor.empty()) {
@@ -119,11 +119,11 @@ void Satellite::initialize(int stage)
             labelStyle.getOrCreate<TextSymbol>()->declutter() = true;
             labelStyle.getOrCreate<TextSymbol>()->pixelOffset() = osg::Vec2s(0,50);
             labelStyle.getOrCreate<TextSymbol>()->fill()->color() = osgEarth::Color(labelColor);
-            locatorNode->addChild(new LabelNode(getFullName(), labelStyle));
+            geoTransform->addChild(new LabelNode(getFullName(), labelStyle));
         }
 
         // add the locator node to the scene
-        scene->asGroup()->addChild(locatorNode);
+        scene->asGroup()->addChild(geoTransform);
 
         // making the orbit circle
         std::string orbitColor = par("orbitColor");
@@ -182,7 +182,7 @@ void Satellite::initialize(int stage)
             auto depth = new osg::Depth;
             depth->setWriteMask(false);
             coneGeode->getOrCreateStateSet()->setAttributeAndModes(depth, osg::StateAttribute::ON);
-            locatorNode->addChild(coneGeode);
+            geoTransform->addChild(coneGeode);
         }
     }
 }
@@ -201,8 +201,8 @@ void Satellite::updatePosition()
         pos = getPositionAtPhase(phase);
 
         osg::Vec3d v;
-        mapNode->getMap()->getSRS()->transformFromWorld(pos, v);
-        locatorNode->getLocator()->setPosition(v);
+        mapNode->getMapSRS()->transformFromWorld(pos, v);
+        geoTransform->setPosition(osgEarth::GeoPoint(mapNode->getMapSRS(), v));
 
         lastPositionUpdateTime = t;
     }

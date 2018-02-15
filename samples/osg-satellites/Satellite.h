@@ -14,9 +14,9 @@
 #include "OsgEarthScene.h"
 
 #include <osgEarth/MapNode>
+#include <osgEarth/GeoTransform>
 #include <osgEarthAnnotation/CircleNode>
 #include <osgEarthAnnotation/FeatureNode>
-#include <osgEarthUtil/ObjectLocator>
 
 using namespace omnetpp;
 
@@ -35,7 +35,7 @@ class Satellite : public cSimpleModule
     // the node containing the osgEarth data
     osg::observer_ptr<osgEarth::MapNode> mapNode = nullptr;
     // osgEarth node for 3D visualization
-    osgEarth::Util::ObjectLocatorNode *locatorNode = nullptr;
+    osgEarth::GeoTransform *geoTransform = nullptr;
 
     const double mu = 398600.4418; // "geocentric gravitational constant" - source: wikipedia, units: km^3 / s^2
     const double earthRadius = 6371; // in km
@@ -49,7 +49,7 @@ class Satellite : public cSimpleModule
     simtime_t lastPositionUpdateTime = -1;
 
   public:
-    osg::Node *getLocatorNode() { return locatorNode; };
+    osg::Node *getLocatorNode() { return geoTransform; };
     void updatePosition();
 
   protected:
