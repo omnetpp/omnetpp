@@ -556,6 +556,12 @@ void Qtenv::doRun()
         static int argc = 1;
         static char arg[] = { 'Q', 't', 'e', 'n', 'v', '\0' };
         static char *argv[] = { arg, nullptr };
+
+        QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
+        #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
+            QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+        #endif
+
         app = new QApplication(argc, argv);
 
 #ifdef Q_OS_MAC
