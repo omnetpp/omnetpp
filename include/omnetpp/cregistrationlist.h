@@ -43,6 +43,8 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
     StringObjectMap fullnameMap;  // for lookup by getFullName()
 
   public:
+    typedef std::vector<cOwnedObject *>::iterator iterator;
+
     cRegistrationList(const char *name) : cNamedObject(name, false) {}
     virtual ~cRegistrationList();
 
@@ -51,6 +53,17 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
     virtual std::string str() const override;
     virtual void forEachChild(cVisitor *v) override;
     //@}
+
+
+    /**
+     * Returns an iterator referring to the first element.
+     */
+    iterator begin() {return vec.begin();}
+
+    /**
+     * Returns an iterator referring to the past-the-end element.
+     */
+    iterator end() {return vec.end();}
 
     /**
      * Adds an object to the container.
@@ -110,7 +123,11 @@ class SIM_API cGlobalRegistrationList
     ~cGlobalRegistrationList();
     cRegistrationList *getInstance();
     void clear();
+
+    cRegistrationList::iterator begin() {return getInstance()->begin();}
+    cRegistrationList::iterator end() {return getInstance()->end();}
 };
+
 
 }  // namespace omnetpp
 
