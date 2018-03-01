@@ -422,6 +422,16 @@ ChartTickDecimal ChartTickDecimal::ceil(int precision) const
 
 ChartTickDecimal& ChartTickDecimal::operator+=(ChartTickDecimal inc)
 {
+    if (inc.mantissa == 0)
+        return *this;
+
+    if (mantissa == 0) {
+        mantissa = inc.mantissa;
+        exponent = inc.exponent;
+        normalize();
+        return *this;
+    }
+
     match(*this, inc);
     mantissa += inc.mantissa;
     normalize();

@@ -654,7 +654,17 @@ std::vector<std::pair<ChartTickDecimal, bool>> getLinearTicks(double start, doub
 
     std::vector<std::pair<ChartTickDecimal, bool>> ticks;
     for (ChartTickDecimal current = bdStart; current <= bdEnd; current += delta) {
-        bool isMajorTick = current.multipleOf(majorTickDelta);
+        bool isMajorTick = false;
+        try {
+             isMajorTick = current.multipleOf(majorTickDelta);
+        } catch (opp_runtime_error &) {
+            // This is a very rare case - it only used to occur in test/histograms,
+            // in the UnexpectedExtremeValue1 config, at about event #1000. It is
+            // now believed to be fixed in multipleOf(). But just to be safe,
+            // we ignore this error, since we don't really care if some ticks
+            // here and there that should be major, aren't. If we don't catch it
+            // here, it would terminate the simulation - which would be unfortunate.
+        }
         ticks.push_back(std::pair<ChartTickDecimal, bool>(current, isMajorTick));
     }
 
