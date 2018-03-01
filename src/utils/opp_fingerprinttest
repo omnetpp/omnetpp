@@ -337,7 +337,7 @@ class FingerprintTestCase(SimulationTestCase):
             # note: fingerprint mismatch is technically NOT an error in 4.2 or before! (exitcode==0)
             self.storeExitcodeCallback(result.exitcode)
             if result.exitcode != 0:
-                raise Exception("runtime error ("+str(result.exitcode)+"):" + result.errormsg)
+                raise Exception("runtime error with exitcode="+str(result.exitcode)+": " + result.errormsg)
             elif result.cpuTimeLimitReached:
                 raise Exception("cpu time limit exceeded")
             elif result.simulatedTime == 0 and self.simtimelimit != '0s':
@@ -510,13 +510,10 @@ class SimulationTextTestResult(ThreadedTestResult):
             self.addExpectedError(test, err)
         else:
             super(SimulationTextTestResult, self).addError(test, err)
-            self.errors[-1] = (test, err[1])  # super class method inserts stack trace; we don't need that, so overwrite it
+            errmsg = err[1]
+            self.errors[-1] = (test, errmsg)  # super class method inserts stack trace; we don't need that, so overwrite it
             if self.showAll:
-                (cause, detail) = self._splitMsg(err[1])
-                self.stream.write(": ERROR (should be %s) (%s)\n" % (test.expectedResult, cause))
-                if detail:
-                    self.stream.write(detail)
-                    self.stream.write("\n")
+                self.stream.write(": ERROR (should be %s): %s\n" % (test.expectedResult, errmsg))
             elif self.dots:
                 self.stream.write('E')
                 self.stream.flush()
@@ -528,7 +525,6 @@ class SimulationTextTestResult(ThreadedTestResult):
         self._mirrorOutput = True
         self.expectedErrors[-1] = (test, err[1])  # super class method inserts stack trace; we don't need that, so overwrite it
         if self.showAll:
-            (cause, detail) = self._splitMsg(err[1])
             self.stream.write(": ERROR (expected)\n")
         elif self.dots:
             self.stream.write('e')
@@ -540,13 +536,10 @@ class SimulationTextTestResult(ThreadedTestResult):
             self.addExpectedFailure(test, err)
         else:
             super(SimulationTextTestResult, self).addFailure(test, err)
-            self.failures[-1] = (test, err[1])  # super class method inserts stack trace; we don't need that, so overwrite it
+            errmsg = err[1]
+            self.failures[-1] = (test, errmsg)  # super class method inserts stack trace; we don't need that, so overwrite it
             if self.showAll:
-                (cause, detail) = self._splitMsg(err[1])
-                self.stream.write(": FAIL (should be %s) (%s)\n" % (test.expectedResult, cause))
-                if detail:
-                    self.stream.write(detail)
-                    self.stream.write("\n")
+                self.stream.write(": FAIL (should be %s): %s\n" % (test.expectedResult, errmsg))
             elif self.dots:
                 self.stream.write('F')
                 self.stream.flush()
@@ -597,21 +590,13 @@ class SimulationTextTestResult(ThreadedTestResult):
         if errors:
             self.stream.write("%s:\n" % flavour)
         for test, err in errors:
-            self.stream.write("  %s (%s)\n" % (self.getDescription(test), self._splitMsg(err)[0]))
+            self.stream.write("  %s (%s)\n" % (self.getDescription(test), err))
 
     def printUnexpectedSuccessList(self, flavour, errors):
         if errors:
             self.stream.write("%s:\n" % flavour)
         for test in errors:
             self.stream.write("  %s\n" % (self.getDescription(test)))
-
-    def _splitMsg(self, msg):
-        cause = str(msg)
-        detail = None
-        if cause.count(': '):
-            (cause, detail) = cause.split(': ',1)
-        return (cause, detail)
-
 
 def _iif(cond,t,f):
     return t if cond else f
