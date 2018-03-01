@@ -70,8 +70,8 @@ for (int i=0; i<5; i++)
 }
 EV << ".\n";
 
-%subst: /e\+00+/e+0/
-%subst: /6e\+0+23/6e\+23/
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
 
 %contains: stdout
 '' ==> ERROR: Syntax error parsing quantity '': Must begin with a number

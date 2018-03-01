@@ -98,6 +98,9 @@ writeDoc(writer);
 
 EV << ".\n";
 
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
+
 %contains: stdout
 OPTIONS:  precision: 14  indentSize: 4  trueString: true  falseString: false  nanString: null  infString: "inf"  negInfString: "-inf"
 {
