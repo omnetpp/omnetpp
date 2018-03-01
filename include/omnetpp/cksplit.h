@@ -19,7 +19,7 @@
 #ifndef __OMNETPP_CKSPLIT_H
 #define __OMNETPP_CKSPLIT_H
 
-#include "cabstracthistogram.h"
+#include "cprecolldensityest.h"
 
 namespace omnetpp {
 

@@ -90,6 +90,7 @@
 #include "omnetpp/cqueue.h"
 #include "omnetpp/cpacket.h"
 #include "omnetpp/cpacketqueue.h"
+#include "omnetpp/cprecolldensityest.h"
 #include "omnetpp/crandom.h"
 #include "omnetpp/cresultfilter.h"
 #include "omnetpp/cresultlistener.h"
