@@ -16,6 +16,7 @@
 
 #include "textviewerwidget.h"
 #include "textviewerproviders.h"
+#include "qtutil.h"
 #include <QPainter>
 #include <QStringList>
 #include <QDebug>
@@ -30,6 +31,26 @@
 
 namespace omnetpp {
 namespace qtenv {
+
+/*
+// custom generated:
+static std::vector<QColor> terminalPalette = {
+    // dark palette, 30-37 for FG, 40-47 for BG
+    "#000000", "#730909", "#097309", "#737309", "#090973", "#730973", "#097373", "#bfbfbf",
+    // bright palette, 90-97 for FG, 100-107 for BG
+    "#404040", "#f47272", "#72f472", "#f4f472", "#7272f4", "#f472f4", "#72f4f4", "#ffffff"
+};
+*/
+
+
+// VGA:
+static std::vector<QColor> terminalPalette = {
+    // dark palette, 30-37 for FG, 40-47 for BG
+    "#000000", "#AA0000", "#00AA00", "#AA5500", "#0000AA", "#AA00AA", "#00AAAA", "#AAAAAA",
+    // bright palette, 90-97 for FG, 100-107 for BG
+    "#555555", "#FF5555", "#55FF55", "#FFFF55", "#5555FF", "#FF55FF", "#55FFFF", "#FFFFFF"
+};
+
 
 TextViewerWidget::TextViewerWidget(QWidget *parent)
     : QAbstractScrollArea(parent)
@@ -145,8 +166,6 @@ QFont TextViewerWidget::getMonospaceFont()
 
 void TextViewerWidget::setFont(QFont font)
 {
-    linePartOffsetCache.clear();
-
     this->font = font;
     auto metrics = QFontMetrics(font, viewport());
 
@@ -316,89 +335,129 @@ int TextViewerWidget::getNumVisibleLines(int height)
     return (height + lineSpacing - 1) / lineSpacing;
 }
 
-int TextViewerWidget::getLinePartOffset(const QFontMetrics& metrics, int lineIndex, int partIndex)
-{
-    int cacheKey = lineIndex * 100 + partIndex;
-
-    if (linePartOffsetCache.count(cacheKey))
-        return linePartOffsetCache[cacheKey];
-
-    auto tabStops = content->getTabStops(lineIndex);
-    auto line = content->getLineText(lineIndex);
-
-    int offset = horizontalMargin;
-    for (int i = 0; i < tabStops.size(); ++i) {
-        bool last = (i == tabStops.size() - 1);
-        QString part = line.mid(tabStops[i].atCharacter, last ? -1 : (tabStops[i+1].atCharacter - tabStops[i].atCharacter));
-        // the + lineHeight is needed because in this function the y coordinate is the baseline
-        int partX = std::max(offset, header->sectionPosition(i));
-        if (partIndex == i)
-            return linePartOffsetCache[cacheKey] = partX;
-        offset = partX + metrics.width(part);
-    }
-
-    throw std::runtime_error("partIndex out of bounds");
-}
-
 int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineIndex, int columnIndex)
 {
-    auto tabStops = content->getTabStops(lineIndex);
     auto line = content->getLineText(lineIndex);
 
-    int tabIndex = tabStops.size()-1;
+    const QChar *const textStart = line.unicode();
+    const QChar *textPointer = line.unicode();
 
-    while (tabIndex > 0 && tabStops[tabIndex].atCharacter > columnIndex)
-        --tabIndex;
+    int inColumn = 0;
+    int x = horizontalMargin;
 
-    tabIndex = clip(0, tabStops.size()-1, tabIndex);
+    if (columnIndex == 0)
+        return x;
 
-    int offset = getLinePartOffset(metrics, lineIndex, tabIndex);
+    while (*textPointer != 0) {
+        textPointer = skipEscapeSequences(textPointer);
+        if (*textPointer == '\t') {
+            // this is a tab, so let's jump forward to the next header segment position
+            ++inColumn;
+            int sectionPosition = header->sectionPosition(inColumn); // TODO range check
 
-    int from = tabStops[tabIndex].atCharacter;
-    int n = columnIndex - tabStops[tabIndex].atCharacter;
-    QString lineMid = line.mid(from, n);
-    offset += metrics.width(lineMid);
+            x = std::max(sectionPosition, x);
 
-    return offset;
+            ++textPointer;
+        }
+        else {
+            // this is regular text, see how many characters until we hit a
+            // tab, an escape sequence, or the end of the string, and print
+            // the text before that
+
+            const QChar *start = textPointer;
+
+            while (*textPointer != '\t' && *textPointer != '\x1b' && *textPointer != 0)
+                ++textPointer;
+
+            if ((textPointer - textStart) >= columnIndex) {
+                QString text(start, columnIndex - (start - textStart));
+                x += metrics.width(text);
+                break;
+            }
+
+            QString text(start, textPointer - start);
+            if (*textPointer == '\t')
+                text += ' '; // print the tab as a space
+            x += metrics.width(text);
+        }
+    }
+
+    return x;
 }
 
 Pos TextViewerWidget::getLineColumnAt(int x, int y)
 {
     int lineIndex = (verticalScrollOffset + y) / lineSpacing;
     lineIndex = clip(0, content->getLineCount()-1, lineIndex);
+    return getColumnInLineAt(x, lineIndex);
+}
 
-    QString line = content->getLineText(lineIndex);
-    auto tabStops = content->getTabStops(lineIndex);
-
+Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
+{
+    auto line = content->getLineText(lineIndex);
     auto metrics = QFontMetrics(font, viewport());
 
-    int tabIndex;
-    int offset = 0;
+    const QChar *const textStart = line.unicode();
+    const QChar *textPointer = line.unicode();
+    int curX = horizontalMargin - horizontalScrollOffset + metrics.averageCharWidth()/2;
 
-    x += horizontalScrollOffset;
+    int inColumn = 0;
+    int numVisibleChars = 0;
 
-    for (tabIndex = tabStops.size() - 1; tabIndex > 0; --tabIndex) {  // not checking the 0., if we got there, we must certainly stop
-        offset = getLinePartOffset(metrics, lineIndex, tabIndex);
+    Pos result(-1, -1);
 
-        if (offset <= x)
-            break;
-    }
-    // just to be safe
-    tabIndex = clip(0, tabStops.size()-1, tabIndex);
+    while (*textPointer != 0) {
+        textPointer = skipEscapeSequences(textPointer);
+        if (*textPointer == '\t') {
+            // this is a tab, so let's jump forward to the next header segment position
+            ++inColumn;
+            int sectionPosition = header->sectionPosition(inColumn); // TODO range check
+            if (curX < sectionPosition)
+                curX = sectionPosition;
+            ++textPointer;
 
-    offset = getLinePartOffset(metrics, lineIndex, tabIndex);
+            ++numVisibleChars;
+        }
+        else {
+            // this is regular text, see how many characters until we hit a
+            // tab, an escape sequence, or the end of the string, and print
+            // the text before that
 
-    QString part = line.mid(tabStops[tabIndex].atCharacter, (tabIndex == tabStops.size() -1) ? -1 : (tabStops[tabIndex+1].atCharacter - tabStops[tabIndex].atCharacter));
-    int column = part.length();
+            const QChar *start = textPointer;
 
-    for (int i = 0; i < part.length(); i++) {
-        if (offset + metrics.width(part, i+1) >= x) {
-            column = i;
-            break;
+            while (*textPointer != '\t' && *textPointer != '\x1b' && *textPointer != 0)
+                ++textPointer;
+
+            int len = textPointer - start;
+            QString text(start, len);
+
+            if (*textPointer == '\t')
+                text += ' ';
+
+            int width = metrics.width(text);
+
+            if (curX + width >= x) {
+                for (int i = 0; i <= len; ++i) {
+                    int subWidth = metrics.width(text, i);
+                    if (curX + subWidth >= x) {
+                        result = Pos(lineIndex, start - textStart + i);
+                        break;
+                    }
+                }
+                if (result == Pos(-1, -1))
+                    result = Pos(lineIndex, start - textStart + len);
+                break;
+            }
+
+            curX += width;
+
+            numVisibleChars += len;
         }
     }
 
-    return Pos(lineIndex, column + tabStops[tabIndex].atCharacter);
+    if (result == Pos(-1, -1))
+        result = Pos(lineIndex, line.length());
+    return result;
 }
 
 void TextViewerWidget::setContentProvider(TextViewerContentProvider *newContent)
@@ -465,32 +524,44 @@ void TextViewerWidget::setColumnWidths(const QList<QVariant>& widths)
 
 void TextViewerWidget::doLineUp(bool select)
 {
+    int x = getLineColumnOffset(QFontMetrics(font, viewport()), caretLineIndex, caretColumn);
+
     caretLineIndex = std::max(0, caretLineIndex-1);
-    if (!select)
-        clearSelection();
     if (caretLineIndex <= getTopLineIndex())
         followContentEnd = false;
+    caretColumn = getColumnInLineAt(x - horizontalScrollOffset, caretLineIndex).column;
+
+    if (!select)
+        clearSelection();
+
     emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doLineDown(bool select)
 {
+    int x = getLineColumnOffset(QFontMetrics(font, viewport()), caretLineIndex, caretColumn);
+
     caretLineIndex = clip(0, content->getLineCount()-1, caretLineIndex+1);
-    if (!select)
-        clearSelection();
     if (caretLineIndex == content->getLineCount() - 1)
         followContentEnd = true;
+    caretColumn = getColumnInLineAt(x - horizontalScrollOffset, caretLineIndex).column;
+
+    if (!select)
+        clearSelection();
+
     emit caretMoved(caretLineIndex, caretColumn);
 }
 
 void TextViewerWidget::doCursorPrevious(bool select)
 {
-    caretColumn = std::min(caretColumn, content->getLineText(caretLineIndex).length());
+    auto text = content->getLineText(caretLineIndex);
+
+    caretColumn = std::min(caretColumn, text.length());
     if (caretColumn > 0)
-        caretColumn--;
+         caretColumn = mapColumnToUnformatted(text.unicode(), mapColumnToFormatted(text.unicode(), caretColumn)-1);
     else if (caretLineIndex > 0) {
         caretLineIndex--;
-        caretColumn = content->getLineText(caretLineIndex).length();
+        caretColumn = text.length();
     }
     if (!select)
         clearSelection();
@@ -499,8 +570,10 @@ void TextViewerWidget::doCursorPrevious(bool select)
 
 void TextViewerWidget::doCursorNext(bool select)
 {
-    if (caretColumn < content->getLineText(caretLineIndex).length())
-        caretColumn++;
+    auto text = content->getLineText(caretLineIndex);
+
+    if (caretColumn < text.length())
+         caretColumn = mapColumnToUnformatted(text.unicode(), mapColumnToFormatted(text.unicode(), caretColumn)+1);
     else if (caretLineIndex < content->getLineCount()-1) {
         caretLineIndex++;
         caretColumn = 0;
@@ -555,7 +628,7 @@ void TextViewerWidget::doLineEnd(bool select)
 void TextViewerWidget::doWordPrevious(bool select)
 {
     QString line = content->getLineText(caretLineIndex);
-    int pos = caretColumn;
+    int pos = mapColumnToFormatted(line.unicode(), caretColumn);
     if (pos == 0) {
         // go to end of previous line
         if (caretLineIndex > 0) {
@@ -564,12 +637,14 @@ void TextViewerWidget::doWordPrevious(bool select)
         }
     }
     else {
+        QString unformattedLine = stripFormatting(line);
+
         // go to start of current or previous word
-        while (pos > 0 && (pos >= line.length() || !isWordChar(line.at(pos))))
+        while (pos > 0 && (pos >= unformattedLine.length() || !isWordChar(unformattedLine.at(pos))))
             pos--;
-        while (pos > 0 && isWordChar(line.at(pos-1)))
+        while (pos > 0 && isWordChar(unformattedLine.at(pos-1)))
             pos--;
-        caretColumn = pos;
+        caretColumn = mapColumnToUnformatted(line.unicode(), pos);
     }
     if (!select)
         clearSelection();
@@ -591,8 +666,6 @@ void TextViewerWidget::doWordNext(bool select)
         // go to end of current or next word
         pos++;  // move at least one character
         while (pos < line.length() && isWordChar(line.at(pos)))
-            pos++;
-        while (pos < line.length() && !isWordChar(line.at(pos)))
             pos++;
         caretColumn = pos;
     }
@@ -674,6 +747,26 @@ QString TextViewerWidget::getSelectedText()
     return text;
 }
 
+QString TextViewerWidget::getSelectedTextUnformatted()
+{
+    QString text;
+
+    Pos start = getSelectionStart();
+    Pos end = getSelectionEnd();
+
+    if (start.line == end.line) {
+        text = stripFormatting(content->getLineText(start.line).mid(start.column, end.column - start.column));
+    }
+    else {
+        text = stripFormatting(content->getLineText(start.line).mid(start.column).trimmed()) + "\n";
+        for (int l = start.line + 1; l < end.line; ++l)
+            text += stripFormatting(content->getLineText(l).trimmed()) + "\n";
+        text += stripFormatting(content->getLineText(end.line).left(end.column).trimmed());
+    }
+
+    return text;
+}
+
 int TextViewerWidget::clip(int lower, int upper, int x)
 {
     if (x < lower)
@@ -686,6 +779,78 @@ int TextViewerWidget::clip(int lower, int upper, int x)
 bool TextViewerWidget::isWordChar(QChar ch)
 {
     return ch.isLetterOrNumber() || ch == '_' || ch == '@';
+}
+
+int TextViewerWidget::mapColumnToFormatted(const QChar *textPointer, int unformattedColumn)
+{
+    if (unformattedColumn == 0)
+        return 0;
+
+    const QChar *const textStart = textPointer;
+
+    int formattedColumn = 0;
+
+    while (*textPointer != 0) {
+        // '\t' is not a special case here
+        if (*textPointer == '\x1b') {
+            // skip to the end of the scape sequence
+            while (*textPointer != 0 && *textPointer != 'm')
+                ++textPointer;
+
+            // and finally skip the end as well
+            if (*textPointer == 'm')
+                ++textPointer;
+        }
+        else {
+            // this is regular text, see how many characters until we hit an
+            // escape sequence, or the end of the string
+
+            while (*textPointer != '\x1b' && *textPointer != 0) {
+                if ((textPointer - textStart) >= unformattedColumn)
+                    return formattedColumn;
+                ++textPointer;
+                ++formattedColumn;
+            }
+        }
+    }
+
+    return formattedColumn;
+}
+
+int TextViewerWidget::mapColumnToUnformatted(const QChar *textPointer, int formattedColumn)
+{
+    if (formattedColumn == 0)
+        return 0;
+
+    const QChar *const textStart = textPointer;
+
+    int formattedChars = 0;
+
+    while (*textPointer != 0) {
+        // '\t' is not a special case here
+        if (*textPointer == '\x1b') {
+            // skip to the end of the scape sequence
+            while (*textPointer != 0 && *textPointer != 'm')
+                ++textPointer;
+
+            // and finally skip the end as well
+            if (*textPointer == 'm')
+                ++textPointer;
+        }
+        else {
+            // this is regular text, see how many characters until we hit an
+            // escape sequence, or the end of the string
+
+            while (*textPointer != '\x1b' && *textPointer != 0) {
+                if (formattedChars >= formattedColumn)
+                    return textPointer - textStart;
+                ++textPointer;
+                ++formattedChars;
+            }
+        }
+    }
+
+    return textPointer - textStart;
 }
 
 void TextViewerWidget::resizeEvent(QResizeEvent *event)
@@ -742,88 +907,255 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
     painter.setBrush(palette().color(QPalette::AlternateBase));
     painter.drawRect(0, highlightY, contentsRect().width(), lineSpacing);
 
+    Pos selectionStart = getSelectionStart();
+    Pos selectionEnd = getSelectionEnd();
+
     // draw the lines
-    for (int y = startY; y < r.y()+r.height() && lineIndex < numLines; y += lineSpacing)
-        drawLine(painter, lineIndex++, x, y);
+    for (int y = startY; y < r.y() + r.height() && lineIndex < numLines; ++lineIndex, y += lineSpacing) {
+        if (selectionStart.line > lineIndex || selectionEnd.line < lineIndex || selectionStart == selectionEnd)
+            // this line is entirely unselected (the last term means that there is no selection at all)
+            drawLine(painter, lineIndex, x, y, false);
+        else if (selectionStart.line < lineIndex && selectionEnd.line > lineIndex)
+            // this line is entirely selected
+            drawLine(painter, lineIndex, x, y, true);
+        else {
+            // this line is partially selected; either just a part of it is selected,
+            // or this is the first or last, partially selected line of a multi-line selection
+
+            int left = 0;
+            int right = viewport()->width();
+
+            // TODO we could avoid these two getLineColumnOffset calls if we
+            // returned the two positions from the drawLine method, where we
+            // have to process the whole line anyway
+            if (selectionStart.line == lineIndex)
+                left = getLineColumnOffset(painter.fontMetrics(), lineIndex, selectionStart.column);
+
+            if (selectionEnd.line == lineIndex)
+                right = getLineColumnOffset(painter.fontMetrics(), lineIndex, selectionEnd.column);
+
+            drawLine(painter, lineIndex, x, y, false);
+
+            painter.save();
+            auto metrics = painter.fontMetrics();
+
+            painter.setClipRect(left - horizontalScrollOffset, y,
+                                right - left, std::max(lineSpacing+1, metrics.leading() + metrics.ascent() + metrics.underlinePos() + metrics.lineWidth()));
+            drawLine(painter, lineIndex, x, y, true);
+            painter.restore();
+        }
+    }
 }
 
-void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y)
+int readInt(const QChar *&textPointer) {
+    int result = 0;
+    while (*textPointer >= '0' && *textPointer <= '9') {
+        result = result * 10 + (textPointer->unicode() - '0');
+        ++textPointer;
+    }
+    if (*textPointer == ';')
+        ++textPointer;
+    return result;
+}
+
+static void readColor(const QChar *&textPointer, QColor& color) {
+    int format = readInt(textPointer);
+
+    if (format == 2) {
+        int r = readInt(textPointer);
+        int g = readInt(textPointer);
+        int b = readInt(textPointer);
+
+        color.setRgb(r, g, b);
+    }
+    else if (format == 5) {
+        int n = readInt(textPointer);
+        if (n < 16)
+            // the 16 basic (normal and bright) terminal colors
+            color = terminalPalette[n];
+        else if (n < 232) {
+            // A 6x6x6 RGB cube: 16 + 36 * r + 6 * g + b
+            n -= 16;
+
+            int r = n / 36;
+            int g = (n / 6) % 6;
+            int b = n % 6;
+
+            // I don't know why, but this is used by xterm, on Wikipedia, etc...
+            // instead of a simple linear scale. To be honest, it looks better too.
+            if (r > 0) r = 95 + (r-1)*40;
+            if (g > 0) g = 95 + (g-1)*40;
+            if (b > 0) b = 95 + (b-1)*40;
+
+            color.setRgb(r, g, b);
+        }
+        else {
+            // 24 steps of grayscale from 232 to 255
+            n -= 232;
+            color.setRgbF(n / 23.0, n / 23.0, n / 23.0);
+        }
+    }
+}
+
+static void performSgrControlSequence(const QChar *&textPointer, const QFont &defaultFont, QColor &fgColor, QColor &bgColor, QFont &font)
+{
+    // "\x1b[m"
+    // "\x1b[34m"
+    // "\x1b[34;92m"
+    // "\x1b[34;;92m"
+    // "\x1b[34;92;0;;34;41;;;m"
+
+    ASSERT(*textPointer == '\x1b');
+
+    ++textPointer;
+
+    if (*textPointer != '[')
+        return;
+
+    ++textPointer;
+
+    while (*textPointer != 0 && *textPointer != 'm') {
+        int action = readInt(textPointer);
+
+        if (action >= 30 && action <= 37)
+            fgColor = terminalPalette[action-30];
+        else if (action == 38)
+            readColor(textPointer, fgColor); // 5;n or 2;r;g;b
+        else if (action == 39)
+            fgColor = QColor();
+        else if (action >= 40 && action <= 47)
+            bgColor = terminalPalette[action-40];
+        else if (action == 48)
+            readColor(textPointer, bgColor); // 5;n or 2;r;g;b
+        else if (action == 49)
+            bgColor = QColor();
+        else if (action >= 90 && action <= 97)
+            fgColor = terminalPalette[action-90 + 8];
+        else if (action >= 100 && action <= 107)
+            bgColor = terminalPalette[action-100 + 8];
+        else if (action == 0) {
+            bgColor = QColor();
+            fgColor = QColor();
+            font = defaultFont;
+        }
+        else if (action == 1)
+            // Here 1 only sets "bold", but not "high intensity" (or "light color")
+            // because there is an other way to set "light color", with the
+            // codes 90..97 and 100..107, but there is no other way to set "bold".
+            // And we prefer to keep bold and light independent.
+            font.setBold(true);
+        else if (action == 3)
+            font.setItalic(true);
+        else if (action == 4)
+            font.setUnderline(true);
+        else if (action == 22)
+            // The "bold off" code would be more consistent if it was 21,
+            // but xterm interprets it as underlined (supposed to be double
+            // underline), but 22 works as bold off there as well.
+            // To remain a but more compatible, we follow xterm.
+            font.setBold(false);
+        else if (action == 23)
+            font.setItalic(false);
+        else if (action == 24)
+            font.setUnderline(false);
+    }
+
+    if (*textPointer == 'm')
+        ++textPointer;
+}
+
+static int paintText(const QChar *start, int length, QPainter& painter, const QFontMetrics& metrics, int x, int y, int extendXTo, const QColor& fgColor, const QColor& bgColor, const QFont& font)
+{
+    painter.setFont(font);
+
+    QString text(start, length);
+    if (start[length] == '\t')
+        text += ' ';
+
+    int width = metrics.width(text);
+
+    // background if needed
+    if (bgColor.isValid()) {
+        // a simple metrics.width(segmentText) is not enough here, we might need to extend
+        // the bg to the next tab stop
+        QRect bgRect(x+1, y, std::max(width, extendXTo - x), metrics.lineSpacing());
+        painter.fillRect(bgRect, bgColor);
+    }
+
+    // text
+    painter.setPen(fgColor);
+    painter.drawText(x, y + metrics.ascent(), text);
+
+    return width;
+}
+
+void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, bool asSelected)
 {
     // draw the line in the specified color
     QString line = content->getLineText(lineIndex).trimmed();  // removing the new line character
-    auto tabStops = content->getTabStops(lineIndex);
-    if (tabStops.empty()) {
-        // so the model can give an empty list, but we will still have something to work with
-        tabStops.append(TabStop(0, foregroundColor));
-    }
 
-    painter.setFont(font);
+    QFont curFont = font;
+
+    painter.setFont(curFont);
     QFontMetrics metrics = painter.fontMetrics();
 
-    for (int partIndex = 0; partIndex < tabStops.size(); ++partIndex) {
-        drawLinePart(painter, metrics, line, tabStops, lineIndex, partIndex, y);
-    }
-    painter.setPen(foregroundColor);
-}
+    QString lineText = content->getLineText(lineIndex).trimmed();
 
-void TextViewerWidget::drawLinePart(QPainter& painter, const QFontMetrics& metrics, const QString& line, const QList<TabStop>& tabStops, int lineIndex, int partIndex, int y)
-{
-    bool last = (partIndex == tabStops.size() - 1);
-    const TabStop& tabStop = tabStops[partIndex];
-    int nextTabStopAt = last ? line.length() : tabStops[partIndex + 1].atCharacter;
-    QString part = line.mid(tabStop.atCharacter, nextTabStopAt - tabStop.atCharacter);
+    const QChar *textPointer = lineText.unicode();
 
-    QPoint partPosition(getLinePartOffset(metrics, lineIndex, partIndex) - horizontalScrollOffset, y + baseline);
+    int inColumn = 0;
 
-    painter.setPen(tabStop.color);
-    painter.drawText(partPosition, part);
+    QColor curBgColor = QColor(), curFgColor = foregroundColor;
 
-    // if there is selection, draw it
-    if (selectionAnchorLineIndex != caretLineIndex || selectionAnchorColumn != caretColumn) {
-        Pos selStart = getSelectionStart();
-        Pos selEnd = getSelectionEnd();
+    while (*textPointer != 0) {
+        if (*textPointer == '\t') {
+            // this is a tab, so let's jump forward to the next header segment position
+            ++inColumn;
+            int sectionPosition = header->sectionPosition(inColumn); // TODO range check
+            if (x < sectionPosition)
+                x = sectionPosition;
+            ++textPointer;
+        }
+        else if (*textPointer == '\x1b') {
+            // this is an escape sequence, handled separately
+            performSgrControlSequence(textPointer, font, curFgColor, curBgColor, curFont);
 
-        // if lineIndex is in the selected region, redraw the selected part
-        if (lineIndex >= selStart.line && lineIndex <= selEnd.line) {
-            int startColumn = (lineIndex == selStart.line) ? clip(tabStop.atCharacter, nextTabStopAt, selStart.column) : tabStop.atCharacter;
-            int endColumn = (lineIndex == selEnd.line) ? clip(tabStop.atCharacter, nextTabStopAt, selEnd.column) : nextTabStopAt;
+            if (!curFgColor.isValid())
+                curFgColor = foregroundColor;
+        }
+        else {
+            // this is regular text, see how many characters until we hit a
+            // tab, an escape sequence, or the end of the string, and print
+            // the text before that
 
-            if (startColumn != endColumn || last) {
-                int startColOffset = getLineColumnOffset(metrics, lineIndex, startColumn);
-                int endColOffset = getLineColumnOffset(metrics, lineIndex, endColumn);
-                QRect selectionRect(startColOffset - horizontalScrollOffset, y, endColOffset - startColOffset, lineSpacing);
+            const QChar *start = textPointer;
 
-                // If the selection does not end in the current line, and we are painting the last part,
-                // then we should paint the selection background to the very end of the viewport.
-                if (lineIndex < selEnd.line && last)
-                    selectionRect.setRight(viewport()->width());
+            while (*textPointer != '\t' && *textPointer != '\x1b' && *textPointer != 0)
+                ++textPointer;
 
-                if (selectionRect.isValid()) {
-                    painter.setBrush(selectionBackgroundColor);
-                    painter.setPen(selectionForegroundColor);
-                    painter.fillRect(selectionRect, selectionBackgroundColor);
-
-                    // We have to draw the whole linePart again - not just the selected text - and
-                    // clip it to the selected area, because tabs are expanded based on where the
-                    // text drawing was started, and it was not matching up the unselected text
-                    // "underneath", when only the selected part was drawn again.
-                    painter.save();
-                    painter.setClipRect(selectionRect);
-                    painter.drawText(partPosition, part);
-                    painter.restore();
-
-                    painter.setBackground(backgroundColor);
-                    painter.setPen(foregroundColor);
-                }
+            // we ignore any coloring here, but keep the font as in the formatting
+            if (asSelected) {
+                curBgColor = selectionBackgroundColor;
+                curFgColor = selectionForegroundColor;
             }
+            int extendXTo = 0;
+            if (*skipEscapeSequences(textPointer) == '\t')
+                extendXTo = header->sectionPosition(inColumn+1); // TODO range check
+
+            int width = paintText(start, textPointer - start, painter, metrics, x, y, extendXTo, curFgColor, curBgColor, curFont);
+
+            x += width;
         }
     }
 
     if (lineIndex == caretLineIndex && caretShown && hasFocus()) {
         // draw caret
-        painter.setPen(foregroundColor);
+        painter.save();
+        painter.setPen(Qt::white);
         int caretX = getLineColumnOffset(metrics, lineIndex, caretColumn) - horizontalScrollOffset;
+        painter.setCompositionMode(QPainter::CompositionMode_Exclusion);
         painter.drawLine(caretX, y, caretX, y + lineSpacing-1);
+        painter.restore();
     }
 }
 
@@ -1090,8 +1422,6 @@ void TextViewerWidget::updateScrollbars()
 
 void TextViewerWidget::handleContentChange()
 {
-    linePartOffsetCache.clear();
-
     ASSERT2(content->getLineCount() > 0, "content must be at least one line");
 
     // adjust caret and selection line index
@@ -1117,6 +1447,9 @@ void TextViewerWidget::handleContentChange()
     updateScrollbars();
 
     viewport()->update();
+
+    auto headers = content->getHeaders();
+    headerModel->setHorizontalHeaderLabels(headers);
 
     contentChangedFlag = false;
 }
@@ -1187,7 +1520,6 @@ void TextViewerWidget::onCaretBlinkTimer()
 
 void TextViewerWidget::onHeaderSectionResized(int logicalIndex, int oldSize, int newSize)
 {
-    linePartOffsetCache.clear();
     updateScrollbars();
     viewport()->update();
 }
@@ -1195,6 +1527,10 @@ void TextViewerWidget::onHeaderSectionResized(int logicalIndex, int oldSize, int
 void TextViewerWidget::copySelection()
 {
     QApplication::clipboard()->setText(getSelectedText());
+}
+void TextViewerWidget::copySelectionUnformatted()
+{
+    QApplication::clipboard()->setText(getSelectedTextUnformatted());
 }
 
 void TextViewerWidget::onContentChanged()
@@ -1256,11 +1592,6 @@ bool Pos::operator==(const Pos& other)
 bool Pos::operator!=(const Pos& other)
 {
     return (line != other.line) || (column != other.column);
-}
-
-TextViewerWidget::TabStop::TabStop(int at, const QColor& col)
-    : atCharacter(at), color(col)
-{
 }
 
 }  // namespace qtenv

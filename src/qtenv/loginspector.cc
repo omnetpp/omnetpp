@@ -106,6 +106,12 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     connect(findAgainReverseAction, SIGNAL(triggered()), this, SLOT(findAgainReverse()));
     addAction(findAgainReverseAction);
 
+    QAction *copySelectionUnformattedAction = new QAction(this);
+    // we do this opposite of the usual: Hold shift to copy _formatted_ text
+    copySelectionUnformattedAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_C);
+    connect(copySelectionUnformattedAction, SIGNAL(triggered()), textWidget, SLOT(copySelection()));
+    addAction(copySelectionUnformattedAction);
+
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
     setMode(LOG);
@@ -138,7 +144,6 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         addTopLevelToolBarActions(toolBar);
 
         toolBar->addSeparator();
-
         addOwnActions(toolBar);
 
         toolBar->addSeparator();
@@ -175,8 +180,8 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
 
 void LogInspector::addOwnActions(QToolBar *toolBar)
 {
-    toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)",
-                       textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
+    toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)\nUse Ctrl+Shift+C to include formatting",
+                       textWidget, SLOT(copySelectionUnformatted()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
     toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
                        this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
     if (isTopLevel()) // looks like we don't need this in embedded mode, for whatever reason...
@@ -429,7 +434,7 @@ void LogInspector::saveContent()
     QTextStream out(&file);
 
     for (int i = 0; i < lineNumber; ++i)
-        out << contentProvider->getLineText(i);
+        out << stripFormatting(contentProvider->getLineText(i));
 
     file.close();
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());

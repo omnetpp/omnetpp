@@ -47,7 +47,8 @@ FileEditor::FileEditor(QWidget *parent) :
 
     copySelectionAction = new QAction(QIcon(":/tools/copy"), "&Copy", this);
     copySelectionAction->setToolTip("Copy selected text to clipboard");
-    copySelectionAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+    // we do this opposite of the usual: Hold shift to copy _formatted_ text
+    copySelectionAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
     connect(copySelectionAction, SIGNAL(triggered(bool)), ui->plainTextEdit, SLOT(copy()));
     addAction(copySelectionAction);
 

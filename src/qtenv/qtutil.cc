@@ -671,7 +671,23 @@ std::vector<std::pair<ChartTickDecimal, bool>> getLinearTicks(double start, doub
     return ticks;
 }
 
-QString stripFormatting(const QString &input)
+
+const QChar *skipEscapeSequences(const QChar *start)
+{
+    while (*start != 0) {
+        if (*start == '\x1b') {
+            ++start;
+            while (*start != 0 && *start != 'm')
+                ++start;
+            if (*start == 'm')
+                ++start;
+        } else
+            break;
+    }
+    return start;
+}
+
+QString stripFormatting(const QString& input)
 {
     QString output;
     output.reserve(input.length());
@@ -679,17 +695,10 @@ QString stripFormatting(const QString &input)
     const QChar *textPointer = input.unicode();
 
     while (*textPointer != 0) {
-        if (*textPointer == '\x1b') {
-            // entering an
-            while (*textPointer != 0 && *textPointer != 'm')
-                ++textPointer;
-            if (*textPointer == 'm')
-                ++textPointer;
-        } else {
-            while (*textPointer != 0 && *textPointer != '\x1b') {
-                output += *textPointer;
-                ++textPointer;
-            }
+        textPointer = skipEscapeSequences(textPointer);
+        while (*textPointer != 0 && *textPointer != '\x1b') {
+            output += *textPointer;
+            ++textPointer;
         }
     }
 

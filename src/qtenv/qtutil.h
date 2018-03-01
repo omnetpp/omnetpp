@@ -92,8 +92,8 @@ const char *getObjectFullTypeName(cObject *object);
 
 QTENV_API QString makeObjectTooltip(cObject *obj);
 
+const QChar *skipEscapeSequences(const QChar *start);
 QString stripFormatting(const QString& input);
-
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);

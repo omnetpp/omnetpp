@@ -96,7 +96,6 @@ void ModuleOutputContentProvider::refresh()
 void ModuleOutputContentProvider::invalidateIndex()
 {
     lineCache.clear();
-    tabStopCache.clear();
     lineCount = -1;
     entryStartLineNumbers.clear();
 }
@@ -122,7 +121,7 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
     int numDiscarded = logBuffer->getNumEntriesDiscarded();
     if (numDiscarded > 0) {
         if (lineIndex == 0)
-            return QString("[Partial history, %1 earlier entries already discarded]").arg(numDiscarded);
+            return QString("\x1b[31m[Partial history, %1 earlier entries already discarded]\x1b[0m").arg(numDiscarded);
         --lineIndex;
     }
 
@@ -137,38 +136,10 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
     Q_ASSERT(!filter || filter->matches(eventEntry));
 
-    return lineCache[lineIndex] = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
-}
-
-QList<ModuleOutputContentProvider::TabStop> ModuleOutputContentProvider::getTabStops(int lineIndex)
-{
-    if (!isIndexValid())
-        rebuildIndex();
-
-    QList<TabStop> tabStops;
-
-    int numDiscarded = logBuffer->getNumEntriesDiscarded();
-    if (numDiscarded > 0) {
-        if (lineIndex == 0) {
-            tabStops.append(TabStop(0, QColor("red")));
-            return tabStops;
-        }
-        --lineIndex;
-    }
-
-    Q_ASSERT(lineIndex >= 0 && lineIndex < lineCount);
-    if (lineIndex == lineCount-1) {  // empty last line
-        tabStops.append(TabStop(0, QColor()));
-        return tabStops;
-    }
-
-    if (tabStopCache.count(lineIndex) > 0)
-        return tabStopCache[lineIndex];
-
-    int entryIndex = getIndexOfEntryAt(lineIndex);
-    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
-    Q_ASSERT(!filter || filter->matches(eventEntry));
-    return tabStopCache[lineIndex] = linesProvider->getTabStops(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
+    auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
+    while (lineText.endsWith('\n'))
+        lineText.chop(1);
+    return lineCache[lineIndex] = lineText;
 }
 
 bool ModuleOutputContentProvider::showHeaders()
@@ -299,18 +270,6 @@ QString StringTextViewerContentProvider::getLineText(int lineIndex)
     return lines[lineIndex];
 }
 
-QList<StringTextViewerContentProvider::TabStop> StringTextViewerContentProvider::getTabStops(int lineIndex)
-{
-    static QColor colors[] = {
-        QColor("red"), QColor("green"), QColor("blue"), QColor("black")
-    };
-    QList<TabStop> tabStops;
-    for (int i = 0; i < 5; ++i)
-        tabStops.append(TabStop(5*i, colors[(lineIndex + i) % 4]));
-
-    return tabStops;
-}
-
 bool StringTextViewerContentProvider::showHeaders()
 {
     return true;
@@ -367,8 +326,8 @@ int EventEntryLinesProvider::getNumLines(LogBuffer::Entry *entry)
 QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
 {
     if (entry->banner) {
-        if (lineIndex == 0)
-            return entry->banner;
+        if (lineIndex == 0) // it's an event banner, or if no component, an info line
+            return (entry->componentId <= 0 ? "\x1b[32m" : "\x1b[94m") + QString(entry->banner) + "\x1b[0m";
         else
             lineIndex--;
     }
@@ -378,44 +337,21 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
 
         QString text;
         if (line.prefix) {
+            text += "\x1b[37m";
             text += line.prefix;
+            text += "\x1b[0m";
         }
 
+        // TODO: This still prints the context component path twice for some reason,
+        // like in the initialization phaseof samples/routing. There is a mismatch
+        // between the stored [context]Component IDs and the stored/formatted texts.
         if (entry->componentId != line.contextComponentId && line.contextComponentId != 0)
             text += (componentHistory->getComponentFullPath(line.contextComponentId)+": ").c_str();
 
-        if (entry->lines[lineIndex].line) {
+        if (entry->lines[lineIndex].line)
             text += entry->lines[lineIndex].line;
-        }
+
         return text;
-    }
-
-    throw std::runtime_error("Log entry line index out of bounds");
-}
-
-QList<EventEntryLinesProvider::TabStop> EventEntryLinesProvider::getTabStops(LogBuffer::Entry *entry, int lineIndex)
-{
-    QList<TabStop> tabStops;
-    if (entry->banner) {
-        if (lineIndex == 0) {  // it's a banner, or if no component, an info line
-            tabStops.append(TabStop(0, QColor(entry->componentId <= 0 ? "green" : "royalblue")));
-            return tabStops;
-        }
-        lineIndex--;
-    }
-
-    if (lineIndex < (int)entry->lines.size()) {
-        tabStops.append(TabStop(0, QColor("dimgray")));
-        LogBuffer::Line& line = entry->lines[lineIndex];
-
-        int prefixLength = line.prefix ? strlen(line.prefix) : 0;
-
-        if (entry->componentId != line.contextComponentId && line.contextComponentId != 0)
-            prefixLength += (componentHistory->getComponentFullPath(line.contextComponentId)+": ").length();
-
-        tabStops.append(TabStop(prefixLength, QColor("black")));
-
-        return tabStops;
     }
 
     throw std::runtime_error("Log entry line index out of bounds");
@@ -558,11 +494,9 @@ QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::M
 int EventEntryMessageLinesProvider::getNumLines(LogBuffer::Entry *entry)
 {
     int n = 0;
-    for (auto& msgSend : entry->msgs) {
-        if (isMatchingMessageSend(msgSend)) {
+    for (auto& msgSend : entry->msgs)
+        if (isMatchingMessageSend(msgSend))
             ++n;
-        }
-    }
     return n;
 }
 
@@ -573,59 +507,30 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
 
     QString eventNumber = QString::number(entry->eventNumber);
 
-    QString text = QString("#%1 %2 %3 %4 ").arg(
+    QString text = QString(
+                "\x1b[37m" // gray
+                "#%1\t%2\t" // first and second arg, and tabs
+                "\x1b[32m" // green
+                "%3\t" //
+                "\x1b[31m" // red
+                "%4\t"
+                "\x1b[0m" // reset
+                ).arg(
                 eventNumber, entry->simtime.str().c_str(),
                 getRelevantHopsString(messageSend), msg->getName());
 
     cMessagePrinter *printer = chooseMessagePrinter(msg);
     std::stringstream os;
+
+    // TODO try-catch
     if (printer)
         printer->printMessage(os, msg, messagePrinterOptions);
     else
         os << "[no message printer for this object]";
 
-    text += QString(os.str().c_str()).replace('\t', ' ');
+    text += QString(os.str().c_str());
 
     return text;
-}
-
-QList<EventEntryMessageLinesProvider::TabStop> EventEntryMessageLinesProvider::getTabStops(LogBuffer::Entry *entry, int lineIndex)
-{
-    LogBuffer::MessageSend& messageSend = messageSendForLineIndex(entry, lineIndex);
-
-    QList<TabStop> tabStops;
-    int column = 0;
-
-    tabStops.append(TabStop(column, QColor("dimgray")));
-    column += 1 + QString::number(entry->eventNumber).length() + 1;
-
-    tabStops.append(TabStop(column, QColor("dimgray")));
-    column += entry->simtime.str().length() + 1;
-
-    tabStops.append(TabStop(column, QColor("green")));
-    column += getRelevantHopsString(messageSend).length() + 1;
-
-    tabStops.append(TabStop(column, QColor("brown")));
-    column += strlen(messageSend.msg->getName()) + 1;
-
-    cMessagePrinter *printer = chooseMessagePrinter(messageSend.msg);
-    std::stringstream os;
-    if (printer)
-        printer->printMessage(os, messageSend.msg, messagePrinterOptions);
-    else
-        os << "[no message printer for this object]";
-
-    QString info = os.str().c_str();
-
-    int tabIndex = 0;
-    while (true) {
-        tabStops.append(TabStop(column + tabIndex, QColor("black")));
-        tabIndex = info.indexOf('\t', tabIndex) + 1;
-        if (tabIndex <= 0)
-            break;
-    }
-
-    return tabStops;
 }
 
 ModulePathsEventEntryFilter::ModulePathsEventEntryFilter(const QStringList& moduleFullPaths, ComponentHistory *componentHistory)

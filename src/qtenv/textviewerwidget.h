@@ -50,6 +50,12 @@ public:
 };
 
 
+// XXX: KNOWN ISSUES: There are some glitches with caret placement
+// and selection painting with fonts that change the width of
+// characters when they are set to bold/italic/underlined.
+// Most sane monospace fonts should be fine in any combination.
+// Also, with small (or normal) font sizes, the underline is
+// covered by the selection background of the line below.
 class QTENV_API TextViewerWidget : public QAbstractScrollArea
 {
     Q_OBJECT
@@ -64,14 +70,6 @@ public:
     };
 
     Q_DECLARE_FLAGS(FindOptions, FindOption)
-
-    struct TabStop {
-        int atCharacter;
-        QColor color;
-        TabStop(int at, const QColor &col);
-    };
-
-    std::map<int, int> linePartOffsetCache;
 
 protected:
     enum ScrollDirection {
@@ -139,11 +137,13 @@ protected:
     void selectAll();
     void clearSelection();
     QString getSelectedText();
+    QString getSelectedTextUnformatted();
 
 
     static int clip(int lower, int upper, int x);
     static bool isWordChar(QChar ch);
-
+    static int mapColumnToFormatted(const QChar *textPointer, int unformattedColumn);
+    static int mapColumnToUnformatted(const QChar *textPointer, int formattedColumn);
 
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
@@ -160,8 +160,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-    void drawLine(QPainter &painter, int lineIndex, int x, int y);
-    void drawLinePart(QPainter &painter, const QFontMetrics &metrics, const QString &line, const QList<TabStop> &tabStops, int lineIndex, int partIndex, int y);
+    void drawLine(QPainter &painter, int lineIndex, int x, int y, bool asSelected);
 
 
     /**
@@ -193,6 +192,7 @@ protected slots:
     void onCaretBlinkTimer();
     void onHeaderSectionResized(int logicalIndex, int oldSize, int newSize);
     void copySelection();
+    void copySelectionUnformatted();
 
 public slots:
     // This is the signal handler, but only sets a flag for
@@ -247,11 +247,10 @@ public:
     int getNumVisibleLines() { return getNumVisibleLines(viewport()->height()); }
     int getNumVisibleLines(int height);
 
-    // measured from the left edge of the viewport (includes margin, header positions, but not scrolling!)
-    int getLinePartOffset(const QFontMetrics &metrics, int lineIndex, int partIndex);
     // the x coordinate of a column in a given line, not including scrolling
     int getLineColumnOffset(const QFontMetrics &metrics, int lineIndex, int columnIndex);
     Pos getLineColumnAt(int x, int y);
+    Pos getColumnInLineAt(int x, int lineIndex);
 };
 
 

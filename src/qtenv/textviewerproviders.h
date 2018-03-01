@@ -44,7 +44,6 @@ class QTENV_API TextViewerContentProvider : public QObject {
     Q_OBJECT
 
 public:
-    using TabStop = TextViewerWidget::TabStop;
 
     /**
      * Return the number of lines. It should never return zero. It is recommended
@@ -63,8 +62,6 @@ public:
      * @return the line text without delimiters
      */
     virtual QString getLineText(int lineIndex) = 0;
-
-    virtual QList<TabStop> getTabStops(int lineIndex) = 0;
 
     virtual bool showHeaders() = 0;
     virtual QStringList getHeaders() = 0;
@@ -101,7 +98,6 @@ public:
 
     int getLineCount() override;
     QString getLineText(int lineIndex) override;
-    QList<TabStop> getTabStops(int lineIndex) override;
     bool showHeaders() override;
     QStringList getHeaders() override;
 };
@@ -121,10 +117,8 @@ public:
     AbstractEventEntryLinesProvider(int inspectedComponentId, const std::set<int>& excludedComponents, ComponentHistory *componentHistory)
         : inspectedComponentId(inspectedComponentId), excludedComponents(excludedComponents), componentHistory(componentHistory) { }
 
-    using TabStop = TextViewerWidget::TabStop;
     virtual int getNumLines(LogBuffer::Entry *entry) = 0;
     virtual QString getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
-    virtual QList<TabStop> getTabStops(LogBuffer::Entry *entry, int lineIndex) = 0;
 };
 
 
@@ -139,7 +133,6 @@ public:
 
     int getNumLines(LogBuffer::Entry *entry) override;
     QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
-    virtual QList<TabStop> getTabStops(LogBuffer::Entry *entry, int lineIndex) override;
 };
 
 class QTENV_API EventEntryMessageLinesProvider : public AbstractEventEntryLinesProvider {
@@ -162,7 +155,6 @@ public:
 
     int getNumLines(LogBuffer::Entry *entry) override;
     QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
-    virtual QList<TabStop> getTabStops(LogBuffer::Entry *entry, int lineIndex) override;
 };
 
 
@@ -201,7 +193,6 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     int lineCount = 1; // the empty line, the "earlier history discarded" is added over this
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
     std::map<int, QString> lineCache;
-    std::map<int, QList<TabStop>> tabStopCache;
 
 public:
     ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);
@@ -220,7 +211,6 @@ public:
 
     int getLineCount() override;
     QString getLineText(int lineIndex) override;
-    QList<TabStop> getTabStops(int lineIndex) override;
     bool showHeaders() override;
     QStringList getHeaders() override;
     void *getUserData(int lineIndex) override;
