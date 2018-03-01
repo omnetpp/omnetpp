@@ -27,7 +27,6 @@
 namespace omnetpp {
 namespace qtenv {
 
-class StringTextViewerContentProvider;
 class ModuleOutputContentProvider;
 
 class QTENV_API LogInspector : public Inspector
@@ -38,7 +37,9 @@ class QTENV_API LogInspector : public Inspector
       QAction *fastRunUntilAction;
 
       QToolBar *createToolbar(bool isTopLevel);
-      void addModeActions(QToolBar *toolBar);
+      void addOwnActions(QToolBar *toolBar);
+
+      QStringList gatherAllMessagePrinterTags();
 
    private slots:
       void runUntil();
@@ -53,11 +54,15 @@ class QTENV_API LogInspector : public Inspector
       static const QString PREF_MODE;
       static const QString PREF_EXCLUDED_MODULES;
       static const QString PREF_SAVE_FILENAME;
+      static const QString PREF_MESSAGEPRINTER_TAGS;
 
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
       TextViewerWidget *textWidget;
+      ModuleOutputContentProvider *contentProvider;
+
       std::set<int> excludedModuleIds;
+      cMessagePrinter::Options messagePrinterOptions;
       Mode mode;
 
       bool isMatchingComponent(int componentId);
@@ -68,6 +73,8 @@ class QTENV_API LogInspector : public Inspector
 
       QAction *toMessagesModeAction;
       QAction *toLogModeAction;
+
+      QAction *configureMessagePrinterAction;
 
       QSize sizeHint() const override { return QSize(700, 300); }
 
@@ -80,6 +87,8 @@ signals:
       void findAgainReverse(); // same, but in the other direction (with shift)
 
       void onFilterButton();
+      void onMessagePrinterTagsButton();
+
       // displays the selected message in the object inspector if in messages mode
       void onCaretMoved(int lineIndex, int column);
       void onRightClicked(QPoint globalPos, int lineIndex, int column);
@@ -92,6 +101,9 @@ signals:
 
       void saveExcludedModules();
       void restoreExcludedModules();
+
+      void saveMessagePrinterOptions();
+      void restoreMessagePrinterOptions();
 
       void saveContent();
 

@@ -671,6 +671,31 @@ std::vector<std::pair<ChartTickDecimal, bool>> getLinearTicks(double start, doub
     return ticks;
 }
 
+QString stripFormatting(const QString &input)
+{
+    QString output;
+    output.reserve(input.length());
+
+    const QChar *textPointer = input.unicode();
+
+    while (*textPointer != 0) {
+        if (*textPointer == '\x1b') {
+            // entering an
+            while (*textPointer != 0 && *textPointer != 'm')
+                ++textPointer;
+            if (*textPointer == 'm')
+                ++textPointer;
+        } else {
+            while (*textPointer != 0 && *textPointer != '\x1b') {
+                output += *textPointer;
+                ++textPointer;
+            }
+        }
+    }
+
+    return output;
+}
+
 
 } // namespace qtenv
 } // namespace omnetpp

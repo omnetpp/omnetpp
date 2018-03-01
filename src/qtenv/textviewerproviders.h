@@ -119,8 +119,7 @@ protected:
 
 public:
     AbstractEventEntryLinesProvider(int inspectedComponentId, const std::set<int>& excludedComponents, ComponentHistory *componentHistory)
-        : inspectedComponentId(inspectedComponentId), excludedComponents(excludedComponents), componentHistory(componentHistory) {
-    }
+        : inspectedComponentId(inspectedComponentId), excludedComponents(excludedComponents), componentHistory(componentHistory) { }
 
     using TabStop = TextViewerWidget::TabStop;
     virtual int getNumLines(LogBuffer::Entry *entry) = 0;
@@ -145,7 +144,10 @@ public:
 
 class QTENV_API EventEntryMessageLinesProvider : public AbstractEventEntryLinesProvider {
 protected:
+
     static cMessagePrinter *chooseMessagePrinter(cMessage *msg);
+
+    const cMessagePrinter::Options *messagePrinterOptions;
 
     bool isMatchingMessageSend(const LogBuffer::MessageSend& msgSend);
     std::vector<int> findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend, bool *lastHopIncluded = nullptr);
@@ -154,7 +156,9 @@ protected:
     QString getRelevantHopsString(const LogBuffer::MessageSend &msg);
 
 public:
-    using AbstractEventEntryLinesProvider::AbstractEventEntryLinesProvider;
+
+    EventEntryMessageLinesProvider(int inspectedComponentId, const std::set<int>& excludedComponents, ComponentHistory *componentHistory, const cMessagePrinter::Options *messagePrinterOptions)
+        : AbstractEventEntryLinesProvider(inspectedComponentId, excludedComponents, componentHistory), messagePrinterOptions(messagePrinterOptions) { }
 
     int getNumLines(LogBuffer::Entry *entry) override;
     QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
@@ -189,6 +193,9 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     AbstractEventEntryLinesProvider *linesProvider;
 
     std::set<int> excludedModuleIds;
+    const cMessagePrinter::Options *messagePrinterOptions;
+
+    QStringList gatherEnabledColumnNames();
 
     // cached data
     int lineCount = 1; // the empty line, the "earlier history discarded" is added over this
@@ -197,7 +204,7 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     std::map<int, QList<TabStop>> tabStopCache;
 
 public:
-    ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode);
+    ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);
 
     LogBuffer *getLogBuffer() { return logBuffer; }
     ComponentHistory *getComponentHistory() { return componentHistory; }

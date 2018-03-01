@@ -117,7 +117,8 @@ SOURCES += mainwindow.cc \
     exponentialspinbox.cc \
     genericobjecttreenodes.cc \
     highlighteritemdelegate.cc \
-    iosgviewer.cc
+    iosgviewer.cc \
+    messageprintertagsdialog.cc
 
 HEADERS += mainwindow.h \
     arrow.h \
@@ -185,7 +186,8 @@ HEADERS += mainwindow.h \
     exponentialspinbox.h \
     genericobjecttreenodes.h \
     highlighteritemdelegate.h \
-    iosgviewer.h
+    iosgviewer.h \
+    messageprintertagsdialog.h
 
 # include path is relative to the current build directory (e.g. out/src/gcc-debug/qtenv)
 INCLUDEPATH += ../../../../src ../../../../include 
@@ -206,7 +208,8 @@ FORMS += mainwindow.ui \
     animationcontrollerdialog.ui \
     findobjectsdialog.ui \
     outputvectorinspectorconfigdialog.ui \
-    histograminspectorconfigdialog.ui
+    histograminspectorconfigdialog.ui \
+    messageprintertagsdialog.ui
 
 RESOURCES += \
     icons.qrc

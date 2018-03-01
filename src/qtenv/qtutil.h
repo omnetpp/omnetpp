@@ -92,6 +92,9 @@ const char *getObjectFullTypeName(cObject *object);
 
 QTENV_API QString makeObjectTooltip(cObject *obj);
 
+QString stripFormatting(const QString& input);
+
+
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);
 

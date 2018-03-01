@@ -15,22 +15,53 @@
 *--------------------------------------------------------------*/
 
 #include "textviewerproviders.h"
+#include "common/stlutil.h"
 #include "qtenv.h"
 #include <QDebug>
 
 namespace omnetpp {
 namespace qtenv {
 
-ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode)
+QStringList ModuleOutputContentProvider::gatherEnabledColumnNames()
+{
+    // TODO: only collect headers from message printers actually in use
+    // - maybe even to the extent of updating it while scrolling vertically,
+    // so only the headers of message printers selected for messages that
+    // are actually on the screen in any given moment are shown
+    std::vector<std::string> columns;
+
+    for (auto mp : messagePrinters) {
+        cMessagePrinter *printer = static_cast<cMessagePrinter *>(mp);
+
+        auto curColumns = printer->getColumnNames(messagePrinterOptions);
+
+        if (columns.size() < curColumns.size())
+            columns.resize(curColumns.size());
+
+        for (size_t i = 0; i < curColumns.size(); ++i) {
+            if (!columns[i].empty())
+                columns[i] += " / ";
+            columns[i] += curColumns[i];
+        }
+    }
+
+    QStringList result;
+    for (auto c : columns)
+        result << c.c_str();
+    return result;
+}
+
+ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions)
     : logBuffer(qtenv->getLogBuffer()),
-    mode(mode),
-    componentHistory(qtenv->getComponentHistory()),
-    inspectedComponent(inspectedComponent)
+      mode(mode),
+      componentHistory(qtenv->getComponentHistory()),
+      inspectedComponent(inspectedComponent),
+      messagePrinterOptions(messagePrinterOptions)
 {
     int componentId = inspectedComponent ? inspectedComponent->getId() : -1;
 
     if (mode == LogInspector::MESSAGES)
-        linesProvider = new EventEntryMessageLinesProvider(componentId, excludedModuleIds, componentHistory);
+        linesProvider = new EventEntryMessageLinesProvider(componentId, excludedModuleIds, componentHistory, messagePrinterOptions);
     else
         linesProvider = new EventEntryLinesProvider(componentId, excludedModuleIds, componentHistory);
 
@@ -154,7 +185,10 @@ QStringList ModuleOutputContentProvider::getHeaders()
             result << "prefix" << "line";
             break;
         case LogInspector::MESSAGES:
-            result << "Event#" << "Time" << "Relevant Hops" << "Name" << "Info";
+            result << "Event#" << "Time" << "Relevant Hops" << "Name";
+
+            result += gatherEnabledColumnNames();
+
             for (int i = 1; i < 10; ++i)
                 result << "";
             break;
@@ -392,6 +426,7 @@ cMessagePrinter *EventEntryMessageLinesProvider::chooseMessagePrinter(cMessage *
     cRegistrationList *instance = messagePrinters.getInstance();
     cMessagePrinter *bestPrinter = nullptr;
     int bestScore = 0;
+
     for (int i = 0; i < (int)instance->size(); i++) {
         cMessagePrinter *printer = (cMessagePrinter *)instance->get(i);
         int score = printer->getScoreFor(msg);
@@ -400,6 +435,7 @@ cMessagePrinter *EventEntryMessageLinesProvider::chooseMessagePrinter(cMessage *
             bestScore = score;
         }
     }
+
     return bestPrinter;
 }
 
@@ -475,14 +511,14 @@ QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::M
         result = "---->";
     else {
         bool first = true;
-        for (int i = 0; i < (int)hops.size(); ++i) {
+        for (size_t i = 0; i < hops.size(); ++i) {
             QString hopName = componentHistory->getComponentFullName(hops[i]);
 
             if (hops[i] == inspectedComponentId) {
                 if (i == 0) {
                     result += "---> ";
                     continue;
-                } else if (i == (int)hops.size() - 1) {
+                } else if (i == hops.size() - 1) {
                     result += " --->";
                     continue;
                 }
@@ -537,18 +573,14 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
 
     QString eventNumber = QString::number(entry->eventNumber);
 
-    QString text = "#" + eventNumber + " ";
-    text += entry->simtime.str().c_str();
-    text += " ";
-    text += getRelevantHopsString(messageSend);
-    text += " ";
-    text += msg->getName();
-    text += " ";
+    QString text = QString("#%1 %2 %3 %4 ").arg(
+                eventNumber, entry->simtime.str().c_str(),
+                getRelevantHopsString(messageSend), msg->getName());
 
     cMessagePrinter *printer = chooseMessagePrinter(msg);
     std::stringstream os;
     if (printer)
-        printer->printMessage(os, msg);
+        printer->printMessage(os, msg, messagePrinterOptions);
     else
         os << "[no message printer for this object]";
 
@@ -579,7 +611,7 @@ QList<EventEntryMessageLinesProvider::TabStop> EventEntryMessageLinesProvider::g
     cMessagePrinter *printer = chooseMessagePrinter(messageSend.msg);
     std::stringstream os;
     if (printer)
-        printer->printMessage(os, messageSend.msg);
+        printer->printMessage(os, messageSend.msg, messagePrinterOptions);
     else
         os << "[no message printer for this object]";
 

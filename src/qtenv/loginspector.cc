@@ -29,6 +29,7 @@
 #include <QMenu>
 
 #include "common/stringtokenizer.h"
+#include "common/stlutil.h"
 #include "loginspector.h"
 #include "qtenv.h"
 #include "qtutil.h"
@@ -37,6 +38,7 @@
 #include "inspectorfactory.h"
 #include "logfinddialog.h"
 #include "logfilterdialog.h"
+#include "messageprintertagsdialog.h"
 #include "textviewerproviders.h"
 
 using namespace omnetpp::common;
@@ -125,6 +127,7 @@ const QString LogInspector::PREF_COLUMNWIDTHS = "columnwidths";
 const QString LogInspector::PREF_MODE = "mode";
 const QString LogInspector::PREF_EXCLUDED_MODULES = "excluded-modules";
 const QString LogInspector::PREF_SAVE_FILENAME = "savefilename";
+const QString LogInspector::PREF_MESSAGEPRINTER_TAGS = "messageprinter-tags";
 
 QToolBar *LogInspector::createToolbar(bool isTopLevel)
 {
@@ -135,17 +138,8 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         addTopLevelToolBarActions(toolBar);
 
         toolBar->addSeparator();
-        toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)",
-                           textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
-        toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
-                           this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
-        toolBar->addAction(QIcon(":/tools/save"), "Save window contents to file",
-                           this, SLOT(saveContent()));
-        toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
-                           this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
 
-        toolBar->addSeparator();
-        addModeActions(toolBar);
+        addOwnActions(toolBar);
 
         toolBar->addSeparator();
         runUntilAction = toolBar->addAction(QIcon(":/tools/mrun"), "Run until next event in this module", this,
@@ -166,14 +160,7 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         toolBar->addWidget(stretch);
     }
     else {
-        toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)",
-                           textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
-        toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
-                           this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
-        toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
-                           this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
-
-        addModeActions(toolBar);
+        addOwnActions(toolBar);
 
         textWidget->setToolBar(toolBar);
     }
@@ -186,8 +173,23 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
 //    runUntilAction->setChecked(isSunken);
 //}
 
-void LogInspector::addModeActions(QToolBar *toolBar)
+void LogInspector::addOwnActions(QToolBar *toolBar)
 {
+    toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)",
+                       textWidget, SLOT(copySelection()))->setShortcut(Qt::ControlModifier + Qt::Key_C);
+    toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
+                       this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    if (isTopLevel()) // looks like we don't need this in embedded mode, for whatever reason...
+        toolBar->addAction(QIcon(":/tools/save"), "Save window contents to file",
+                           this, SLOT(saveContent()));
+    toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
+                       this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
+    configureMessagePrinterAction
+            = toolBar->addAction(QIcon(":/tools/config"), "Configure message display",
+                                 this, SLOT(onMessagePrinterTagsButton()));
+
+    toolBar->addSeparator();
+
     toMessagesModeAction = new QAction(toolBar);
     toMessagesModeAction->setCheckable(true);
     toMessagesModeAction->setIcon(QIcon(":/tools/pkheader"));
@@ -203,6 +205,24 @@ void LogInspector::addModeActions(QToolBar *toolBar)
     toolBar->addAction(toLogModeAction);
 }
 
+QStringList LogInspector::gatherAllMessagePrinterTags()
+{
+    std::set<std::string> allTags;
+
+    for (auto mp : messagePrinters) {
+        cMessagePrinter *printer = static_cast<cMessagePrinter *>(mp);
+
+        auto curTags = printer->getSupportedTags();
+        for (auto t : curTags)
+            allTags.insert(t);
+    }
+
+    QStringList result;
+    for (auto c : allTags)
+        result << c.c_str();
+    return result;
+}
+
 void LogInspector::setMode(Mode mode)
 {
     if (this->mode == MESSAGES)
@@ -210,14 +230,17 @@ void LogInspector::setMode(Mode mode)
 
     toLogModeAction->setChecked(mode == LOG);
     toMessagesModeAction->setChecked(mode == MESSAGES);
-    auto provider = new ModuleOutputContentProvider(getQtenv(), dynamic_cast<cComponent *>(object), mode);
-    provider->setExcludedModuleIds(excludedModuleIds);
-    textWidget->setContentProvider(provider);
+
+    contentProvider = new ModuleOutputContentProvider(getQtenv(), dynamic_cast<cComponent *>(object), mode, &messagePrinterOptions);
+    contentProvider->setExcludedModuleIds(excludedModuleIds);
+    textWidget->setContentProvider(contentProvider);
 
     this->mode = mode;
 
     if (mode == MESSAGES)
         restoreColumnWidths();
+
+    configureMessagePrinterAction->setEnabled(mode == MESSAGES);
 
     setPref(PREF_MODE, mode);
 }
@@ -228,6 +251,7 @@ void LogInspector::doSetObject(cObject *obj)
     excludedModuleIds.clear();
     setMode((Mode)getPref(PREF_MODE, getMode()).toInt());
     restoreExcludedModules();
+    restoreMessagePrinterOptions();
 }
 
 void LogInspector::runUntil()
@@ -272,10 +296,21 @@ void LogInspector::onFilterButton()
         LogFilterDialog dialog(this, module, excludedModuleIds);
         if (dialog.exec() == QDialog::Accepted) {
             excludedModuleIds = dialog.getExcludedModuleIds();
-            if (auto provider = dynamic_cast<ModuleOutputContentProvider *>(textWidget->getContentProvider()))
-                provider->setExcludedModuleIds(excludedModuleIds);
+            contentProvider->setExcludedModuleIds(excludedModuleIds);
             saveExcludedModules();
-            textWidget->onContentChanged();
+        }
+    }
+}
+
+void LogInspector::onMessagePrinterTagsButton()
+{
+    if (cModule *module = dynamic_cast<cModule *>(object)) {
+
+        MessagePrinterTagsDialog dialog(this, gatherAllMessagePrinterTags(), &messagePrinterOptions);
+        if (dialog.exec() == QDialog::Accepted) {
+            messagePrinterOptions.enabledTags = dialog.getEnabledTags();
+            contentProvider->refresh();
+            saveMessagePrinterOptions();
         }
     }
 }
@@ -346,8 +381,38 @@ void LogInspector::restoreExcludedModules()
     for (auto path : excludedModules)
         if (auto mod = getSimulation()->getModuleByPath(path.toUtf8()))
             excludedModuleIds.insert(mod->getId());
-    if (auto provider = dynamic_cast<ModuleOutputContentProvider *>(textWidget->getContentProvider()))
-        provider->setExcludedModuleIds(excludedModuleIds);
+    contentProvider->setExcludedModuleIds(excludedModuleIds);
+}
+
+void LogInspector::saveMessagePrinterOptions()
+{
+    QStringList messagePrinterTags;
+    for (auto tag : messagePrinterOptions.enabledTags)
+        messagePrinterTags.append(tag.c_str());
+    setPref(PREF_MESSAGEPRINTER_TAGS, messagePrinterTags);
+}
+
+void LogInspector::restoreMessagePrinterOptions()
+{
+    messagePrinterOptions.enabledTags.clear();
+    QVariant pref = getPref(PREF_MESSAGEPRINTER_TAGS, QVariant());
+
+    if (pref.isValid()) {
+        QStringList messagePrinterTags = pref.toStringList();
+
+        for (auto tag : messagePrinterTags)
+            messagePrinterOptions.enabledTags.insert(tag.toStdString());
+    }
+    else {
+        // there was no preference saved, so we construct a "factory default"
+        for (auto mp : messagePrinters) {
+            auto printer = static_cast<cMessagePrinter *>(mp);
+            auto defaultTags = printer->getDefaultEnabledTags();
+
+            for (auto t : defaultTags)
+                messagePrinterOptions.enabledTags.insert(t);
+        }
+    }
 }
 
 void LogInspector::saveContent()
@@ -355,7 +420,7 @@ void LogInspector::saveContent()
     QString fileName = getPref(PREF_SAVE_FILENAME, "omnetpp.out").toString();
     fileName = QFileDialog::getSaveFileName(this, "Save Log Window Contents", fileName, "Log files (*.out);;All files (*)");
 
-    int lineNumber = textWidget->getContentProvider()->getLineCount();
+    int lineNumber = contentProvider->getLineCount();
 
     QFile file(fileName);
     if (fileName.isEmpty() || !file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -364,7 +429,7 @@ void LogInspector::saveContent()
     QTextStream out(&file);
 
     for (int i = 0; i < lineNumber; ++i)
-        out << textWidget->getContentProvider()->getLineText(i);
+        out << contentProvider->getLineText(i);
 
     file.close();
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());

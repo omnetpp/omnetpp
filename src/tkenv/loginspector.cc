@@ -501,8 +501,11 @@ void LogInspector::printMessage(const LogBuffer::Entry *entry, int msgIndex, int
     // add packet info and newline
     cMessagePrinter *printer = chooseMessagePrinter(msg);
     std::stringstream os2;
-    if (printer)
-        printer->printMessage(os2, msg);
+    if (printer) {
+        cMessagePrinter::Options options;
+        options.enabledTags = printer->getDefaultEnabledTags();
+        printer->printMessage(os2, msg, &options);
+    }
     else
         os2 << "[no message printer for this object]";
     os2 << "\n";
