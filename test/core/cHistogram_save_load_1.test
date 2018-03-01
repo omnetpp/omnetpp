@@ -28,8 +28,6 @@ fclose(f3);
 0	 #= weighted
 9947.06	 #= sum
 515689	 #= sum_squared_vals
-42	 #= num_underflows
-32	 #= num_overflows
 42	 #= underflow
 32	 #= overflow
 20	 #= num_bins
@@ -83,8 +81,6 @@ fclose(f3);
 0	 #= weighted
 9947.06	 #= sum
 515689	 #= sum_squared_vals
-42	 #= num_underflows
-32	 #= num_overflows
 42	 #= underflow
 32	 #= overflow
 20	 #= num_bins

@@ -338,12 +338,12 @@ void cDefaultHistogramStrategy::extendBinsTo(double value)
     bool isOverflow = (value >= lastEdge);
     if (!isUnderflow && !isOverflow)
         return; // nothing to do
-    if (isUnderflow && hist->getNumUnderflows() > 0)
+    if (isUnderflow && hist->getUnderflowSumWeights() > 0)
         return; // cannot extend
-    if (isOverflow && hist->getNumOverflows() > 0)
+    if (isOverflow && hist->getOverflowSumWeights() > 0)
         return; // cannot extend
 
-    if (binMerging) {
+    if (binMerging) {  //TODO remove the possibility to turn off binMerging!
         double range = lastEdge - firstEdge;
         double newRange = std::max(value, lastEdge) - std::min(value, firstEdge);
         double newApproxBinSize = newRange / targetNumBins;
@@ -392,12 +392,12 @@ void cDefaultHistogramStrategy::mergeAllBinsIntoOne(double newApproxBinSize)
     // compute new histogram range
     double newFirstEdge = firstEdge;
     double newLastEdge = lastEdge;
-    if (hist->getNumUnderflows() == 0 && hist->getNumOverflows() == 0) {
+    if (hist->getUnderflowSumWeights() == 0 && hist->getOverflowSumWeights() == 0) {  // TODO this is always TRUE in our case! as binMerging cannot be turned off
         newFirstEdge = newBinSize * std::floor(newFirstEdge / newBinSize); // snap
         newLastEdge = newBinSize * std::ceil(newLastEdge / newBinSize); // snap
         newBinSize = newLastEdge - newFirstEdge;
     }
-    else if (hist->getNumUnderflows() == 0)
+    else if (hist->getUnderflowSumWeights() == 0)
         newFirstEdge = newLastEdge - newBinSize;
     else if (hist->getNumOverflows() == 0)
         newLastEdge = newFirstEdge + newBinSize;
@@ -576,9 +576,9 @@ void cAutoRangeHistogramStrategy::extendBinsTo(double value)
     bool isOverflow = value >= lastEdge;
     if (!isUnderflow && !isOverflow)
         return; // nothing to do
-    if (isUnderflow && (hist->getNumUnderflows() > 0 || !std::isnan(lo)))
+    if (isUnderflow && (hist->getUnderflowSumWeights() > 0 || !std::isnan(lo)))
         return; // cannot extend
-    if (isOverflow &&  (hist->getNumOverflows() > 0 || !std::isnan(hi)))
+    if (isOverflow &&  (hist->getOverflowSumWeights() > 0 || !std::isnan(hi)))
         return; // cannot extend
 
     if (binMerging) {
@@ -630,12 +630,13 @@ void cAutoRangeHistogramStrategy::mergeAllBinsIntoOne(double newApproxBinSize)
     // compute new histogram range
     double newFirstEdge = firstEdge;
     double newLastEdge = lastEdge;
-    if (hist->getNumUnderflows() == 0 && hist->getNumOverflows() == 0) {
+    //TODO the following code ignores lo and hi!!!
+    if (hist->getUnderflowSumWeights() == 0 && hist->getOverflowSumWeights() == 0) {
         newFirstEdge = newBinSize * std::floor(newFirstEdge / newBinSize); // snap
         newLastEdge = newBinSize * std::ceil(newLastEdge / newBinSize); // snap
         newBinSize = newLastEdge - newFirstEdge;
     }
-    else if (hist->getNumUnderflows() == 0)
+    else if (hist->getUnderflowSumWeights() == 0)
         newFirstEdge = newLastEdge - newBinSize;
     else if (hist->getNumOverflows() == 0)
         newLastEdge = newFirstEdge + newBinSize;

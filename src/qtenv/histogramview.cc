@@ -189,7 +189,7 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cAbstractHis
     if (maxY < 0)
         return;
 
-    if (distr->getNumUnderflows()) {
+    if (distr->getUnderflowSumWeights() > 0) {
         double leftEdge = distr->getMin();
         double rightEdge = distr->getBinEdge(0);
         drawBin(type, drawingStyle, -1, true, leftEdge, rightEdge, distr->getUnderflowSumWeights(), distr->getUnderflowSumWeights() / distr->getSumWeights() / (rightEdge - leftEdge));
@@ -201,7 +201,7 @@ void HistogramView::draw(ChartType type, DrawingStyle drawingStyle, cAbstractHis
     for (int bin = 0; bin < numBins; bin++)
         drawBin(type, drawingStyle, bin, false, distr->getBinEdge(bin), distr->getBinEdge(bin+1), distr->getBinValue(bin), distr->getBinPDF(bin));
 
-    if (distr->getNumOverflows()) {
+    if (distr->getOverflowSumWeights() > 0) {
         double leftEdge = distr->getBinEdge(numBins);
         double rightEdge = distr->getMax();
         drawBin(type, drawingStyle, numBins, true, leftEdge, rightEdge, distr->getOverflowSumWeights(), distr->getOverflowSumWeights() / distr->getSumWeights() / (rightEdge - leftEdge));

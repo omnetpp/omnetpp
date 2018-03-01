@@ -125,8 +125,8 @@ void HistogramInspector::refresh()
         isMinXAutoscaled = isPDFMinXAutoscaled;
         minYVal = pdfMinY;
         maxYVal = isPDFMaxYAutoscaled ? maxY() : pdfMaxY;
-        minXVal = isPDFMinXAutoscaled ? (distr->getNumUnderflows() > 0 ? distr->getMin() : distr->getBinEdge(0)) : pdfMinX;
-        maxXVal = isPDFMaxXAutoscaled ? (distr->getNumOverflows() > 0 ? distr->getMax() : distr->getBinEdge(distr->getNumBins())) : pdfMaxX;
+        minXVal = isPDFMinXAutoscaled ? (distr->getUnderflowSumWeights() > 0 ? distr->getMin() : distr->getBinEdge(0)) : pdfMinX;
+        maxXVal = isPDFMaxXAutoscaled ? (distr->getOverflowSumWeights() > 0 ? distr->getMax() : distr->getBinEdge(distr->getNumBins())) : pdfMaxX;
     }
     else {
         isMinYAutoscaled = isCountsMinYAutoscaled;
@@ -135,8 +135,8 @@ void HistogramInspector::refresh()
         isMinXAutoscaled = isCountsMinXAutoscaled;
         minYVal = countsMinY;
         maxYVal = isCountsMaxYAutoscaled ? maxY() : countsMaxY;
-        minXVal = isCountsMinXAutoscaled ? (distr->getNumUnderflows() > 0 ? distr->getMin() : distr->getBinEdge(0)) : countsMinX;
-        maxXVal = isCountsMaxXAutoscaled ? (distr->getNumOverflows() > 0 ? distr->getMax() : distr->getBinEdge(distr->getNumBins())) : countsMaxX;
+        minXVal = isCountsMinXAutoscaled ? (distr->getUnderflowSumWeights() > 0 ? distr->getMin() : distr->getBinEdge(0)) : countsMinX;
+        maxXVal = isCountsMaxXAutoscaled ? (distr->getOverflowSumWeights() > 0 ? distr->getMax() : distr->getBinEdge(distr->getNumBins())) : countsMaxX;
     }
 
     if (minXVal >= maxXVal)
@@ -237,11 +237,10 @@ QString HistogramInspector::generalInfo()
                 QString::number(d->getNumUnderflows()), QString::number(d->getNumOverflows())
                 );
     else
-        return QString("Histogram: [%1, %2)  N=%3  W=%4  #bins=%5  Outliers: lower=%6 (%7) upper=%8 (%9)").arg(
+        return QString("Histogram: [%1, %2)  N=%3  W=%4  #bins=%5  Outliers: lower=%6 upper=%7").arg(
                 QString::number(d->getBinEdge(0)), QString::number(d->getBinEdge(d->getNumBins())),
                 QString::number(d->getCount()), QString::number(d->getSumWeights()), QString::number(d->getNumBins()),
-                QString::number(d->getUnderflowSumWeights()), QString::number(d->getNumUnderflows()),
-                QString::number(d->getOverflowSumWeights()), QString::number(d->getNumOverflows())
+                QString::number(d->getUnderflowSumWeights()), QString::number(d->getOverflowSumWeights())
                 );
 }
 
@@ -272,10 +271,7 @@ void HistogramInspector::onShowCellInfo(int bin)
         binValue = d->getUnderflowSumWeights();
         lowerEdge = d->getMin();
         upperEdge = d->getBinEdge(0);
-        if (d->isWeighted())
-            binValueText = QString("w=%1 (%2)").arg(QString::number(binValue), QString::number(d->getNumUnderflows()));
-        else
-            binValueText = QString("w=%1").arg(QString::number(binValue));
+        binValueText = QString("w=%1").arg(QString::number(binValue));
     }
     else if (bin == d->getNumBins()) {
         // overflows
@@ -283,10 +279,7 @@ void HistogramInspector::onShowCellInfo(int bin)
         binValue = d->getOverflowSumWeights();
         lowerEdge = d->getBinEdge(d->getNumBins());
         upperEdge = d->getMax();
-        if (d->isWeighted())
-            binValueText = QString("w=%1 (%2)").arg(QString::number(binValue), QString::number(d->getNumOverflows()));
-        else
-            binValueText = QString("w=%1").arg(QString::number(binValue));
+        binValueText = QString("w=%1").arg(QString::number(binValue));
     }
     else {
         // regular histogram bin

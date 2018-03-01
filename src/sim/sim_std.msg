@@ -620,8 +620,6 @@ class cAbstractHistogram extends cStdDev
     @overwritePreviousDefinition;
     @descriptor(readonly);
     bool binsAlreadySetUp @getter(binsAlreadySetUp) @group(histogram) @hint("If false, the object is still collecting initial observations to gather information for laying out histogram bins");
-    int64_t numUnderflows @group(histogram) @hint("Number of observations below the first histogram bin");
-    int64_t numOverflows @group(histogram) @hint("Number of observations above the last histogram bin");
     double underflowSumWeights  @group(histogram) @hint("Total weight of observations above the last histogram bin");
     double overflowSumWeights @group(histogram) @hint("Total weight of observations above the last histogram bin");
     int numBins @group(histogram) @hint("Number of bins in the histogram");

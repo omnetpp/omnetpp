@@ -181,10 +181,10 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
             int n = histogram->getNumBins();
             if (n > 0) {
                 bins.reserveBins(n+2);
-                bins.addBin(MinusInfinity, histogram->getNumUnderflows());
+                bins.addBin(MinusInfinity, histogram->getUnderflowSumWeights());
                 for (int i = 0; i < n; i++)
                     bins.addBin(histogram->getBinEdge(i), histogram->getBinValue(i));
-                bins.addBin(histogram->getBinEdge(n), histogram->getNumOverflows());
+                bins.addBin(histogram->getBinEdge(n), histogram->getOverflowSumWeights());
                 writer.recordHistogram(componentFullPath, name, stats, bins, convertMap(attributes));
                 savedAsHistogram = true;
             }

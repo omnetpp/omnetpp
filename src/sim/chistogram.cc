@@ -64,10 +64,6 @@ void cHistogram::copy(const cHistogram& other)
 
     binEdges = other.binEdges;
     binValues = other.binValues;
-
-    numUnderflows = other.numUnderflows;
-    numOverflows = other.numOverflows;
-
     underflowSumWeights = other.underflowSumWeights;
     overflowSumWeights = other.overflowSumWeights;
 }
@@ -84,7 +80,6 @@ void cHistogram::assertSanity()
 {
 #ifndef NDEBUG
     if (binEdges.empty()) {
-        ASSERT(numOverflows==0 && numUnderflows==0);
         ASSERT(overflowSumWeights==0 && underflowSumWeights==0);
         ASSERT(binValues.empty());
     }
@@ -119,8 +114,6 @@ void cHistogram::parsimPack(cCommBuffer *buffer) const
     for (double binValue : binValues)
         buffer->pack(binValue);
 
-    buffer->pack(numUnderflows);
-    buffer->pack(numOverflows);
     buffer->pack(underflowSumWeights);
     buffer->pack(overflowSumWeights);
 
@@ -147,8 +140,6 @@ void cHistogram::parsimUnpack(cCommBuffer *buffer)
     for (size_t i = 0; i < n; n++)
         buffer->unpack(binValues[i]);
 
-    buffer->unpack(numUnderflows);
-    buffer->unpack(numOverflows);
     buffer->unpack(underflowSumWeights);
     buffer->unpack(overflowSumWeights);
 
@@ -177,6 +168,20 @@ void cHistogram::collectWeighted(double value, double weight)
         collectIntoHistogram(value, weight);
 }
 
+int64_t cHistogram::getNumUnderflows() const
+{
+    if (isWeighted())
+        throw cRuntimeError(this, "Underflow count is unavailable for weighted statistics");
+    return (int64_t)underflowSumWeights;
+}
+
+int64_t cHistogram::getNumOverflows() const
+{
+    if (isWeighted())
+        throw cRuntimeError(this, "Overflow count is unavailable for weighted statistics");
+    return (int64_t)overflowSumWeights;
+}
+
 void cHistogram::clear()
 {
     cAbstractHistogram::clear();
@@ -186,10 +191,6 @@ void cHistogram::clear()
 
     binEdges.clear();
     binValues.clear();
-
-    numUnderflows = 0;
-    numOverflows = 0;
-
     underflowSumWeights = 0;
     overflowSumWeights = 0;
 }
@@ -199,9 +200,6 @@ void cHistogram::saveToFile(FILE *f) const
     ASSERT((binEdges.empty() && binValues.empty()) || (binEdges.size() == binValues.size() + 1));
 
     cAbstractHistogram::saveToFile(f);
-
-    fprintf(f, "%" PRId64 "\t #= num_underflows\n", numUnderflows);
-    fprintf(f, "%" PRId64 "\t #= num_overflows\n", numOverflows);
 
     fprintf(f, "%g\t #= underflow\n", underflowSumWeights);
     fprintf(f, "%g\t #= overflow\n", overflowSumWeights);
@@ -227,9 +225,6 @@ void cHistogram::loadFromFile(FILE *f)
     clear();
 
     cAbstractHistogram::loadFromFile(f);
-
-    freadvarsf(f, "%" SCNd64 "\t #= num_underflows", &numUnderflows);
-    freadvarsf(f, "%" SCNd64 "\t #= num_overflows", &numOverflows);
 
     freadvarsf(f, "%lg\t #= underflow", &underflowSumWeights);
     freadvarsf(f, "%lg\t #= overflow", &overflowSumWeights);
@@ -276,9 +271,7 @@ void cHistogram::merge(const cStatistic *stat)
         if (getBinEdge(i) != other->getBinEdge(i))
             throw cRuntimeError(this, "Cannot merge (%s)%s: Histogram bins are not aligned", other->getClassName(), other->getFullPath().c_str());
 
-    // merge underflow/overflow bins
-    numUnderflows += other->getNumUnderflows();
-    numOverflows += other->getNumOverflows();
+    // merge underflow/overflow "bins"
     underflowSumWeights += other->getUnderflowSumWeights();
     overflowSumWeights += other->getOverflowSumWeights();
 
@@ -340,7 +333,7 @@ void cHistogram::prependBins(const std::vector<double>& edges)
 {
     if (binEdges.size() == 0)
         throw cRuntimeError(this, "prependBins() cannot be called if no bins exist yet");
-    if (numUnderflows != 0)
+    if (underflowSumWeights != 0)
         throw cRuntimeError(this, "prependBins() cannot be called if some observations have already been counted as underflows");
     for (size_t i = 0; i < edges.size() - 1; ++i)
         if (edges[i] >= edges[i + 1])
@@ -357,7 +350,7 @@ void cHistogram::appendBins(const std::vector<double>& edges)
 {
     if (binEdges.size() == 0)
         throw cRuntimeError(this, "appendBins() cannot be called if no bins exist yet");
-    if (numOverflows != 0)
+    if (overflowSumWeights != 0)
         throw cRuntimeError(this, "appendBins() cannot be called if some observations have already been counted as overflows");
     for (size_t i = 0; i < edges.size() - 1; ++i)
         if (edges[i] >= edges[i + 1])
@@ -378,9 +371,9 @@ void cHistogram::extendBinsTo(double value, double step, int maxNumBins)
         throw cRuntimeError(this, "extendBinsTo(): step must be positive");
 
     // if there are under or overflows, we don't know how to divide the under/overflows between the new bin(s), and the new under/overflow
-    if (value < binEdges.front() && numUnderflows > 0)
+    if (value < binEdges.front() && underflowSumWeights != 0)
         throw cRuntimeError(this, "extendBinsTo(): cannot extend the histogram in the downward direction, because some observations have already been counted as underflows (numUnderflows > 0)");
-    if (value >= binEdges.back() && numOverflows > 0)
+    if (value >= binEdges.back() && overflowSumWeights != 0)
         throw cRuntimeError(this, "extendBinsTo(): cannot extend the histogram in the upward direction, because some observations have already been counted as overflows (numOverflows > 0)");
 
     ASSERT(binEdges.size() == binValues.size() + 1);
@@ -447,14 +440,10 @@ void cHistogram::collectIntoHistogram(double value, double weight)
 
     auto it = std::upper_bound(binEdges.begin(), binEdges.end(), value);
     int index = it - binEdges.begin() - 1;
-    if (index == -1) {
+    if (index == -1)
         underflowSumWeights += weight;
-        ++numUnderflows;
-    }
-    else if (index == (int)binValues.size()) {
+    else if (index == (int)binValues.size())
         overflowSumWeights += weight;
-        ++numOverflows;
-    }
     else
         binValues[index] += weight;
 }

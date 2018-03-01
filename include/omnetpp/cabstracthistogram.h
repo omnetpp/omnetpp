@@ -105,7 +105,8 @@ class SIM_API cAbstractHistogram : public cStdDev
     virtual double getBinEdge(int k) const = 0;
 
     /**
-     * Returns the number of observations that fell into the kth histogram bin.
+     * Returns the total weight of the observations in the k'th bin of the histogram.
+     * (In the unweighted case, every observation is regarded as having the weight 1.0.)
      */
     virtual double getBinValue(int k) const = 0;
 

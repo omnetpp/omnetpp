@@ -98,9 +98,7 @@ class SIM_API cHistogram : public cAbstractHistogram
 
     std::vector<double> binEdges;
     std::vector<double> binValues; // one less than bin edges
-
-    int64_t numUnderflows = 0, numOverflows = 0;
-    double underflowSumWeights = 0, overflowSumWeights = 0; // weighted sum
+    double underflowSumWeights = 0, overflowSumWeights = 0;
 
   public:
     // INTERNAL, only for cIHistogramSetupStrategy implementations.
@@ -309,37 +307,42 @@ class SIM_API cHistogram : public cAbstractHistogram
     /**
      * Returns the number of bins in the histogram.
      */
-    int getNumBins() const override {return binValues.size();}
+    virtual int getNumBins() const override {return binValues.size();}
 
     /**
      * Returns the k'th bin edge of the histogram. The k'th bin is delimited by the edge k and k+1.
      */
-    double getBinEdge(int k) const override {return binEdges.at(k);}
+    virtual double getBinEdge(int k) const override {return binEdges.at(k);}
 
     /**
-     * Returns the value of the k'th bin of the histogram.
+     * Returns the total weight of the observations in the k'th bin of the histogram.
+     * (In the unweighted case, every observation is regarded as having the weight 1.0.)
      */
-    double getBinValue(int k) const override {return binValues.at(k);}
+    virtual double getBinValue(int k) const override {return binValues.at(k);}
 
     /**
-     * Returns the weighted sum of the underflown values.
+     * Returns the total weight of the observations that were under the histogram range.
      */
-    double getUnderflowSumWeights() const override {return underflowSumWeights;}
+    virtual double getUnderflowSumWeights() const override {return underflowSumWeights;}
 
     /**
-     * Returns the weighted sum of the overflown values.
+     * Returns the total weight of the observations that were above the histogram range.
      */
-    double getOverflowSumWeights() const override {return overflowSumWeights;}
+    virtual double getOverflowSumWeights() const override {return overflowSumWeights;}
 
     /**
-     * Returns the number of underflown values, without regard to their weights.
+     * Returns the number of observations that were under the histogram range.
+     * This value is only collected for unweighted statistics, i.e. it is an
+     * error to call this method on a weighted histogram.
      */
-    virtual int64_t getNumUnderflows() const override { return numUnderflows; }
+    virtual int64_t getNumUnderflows() const override;
 
     /**
-     * Returns the number of overflown values, without regard to their weights.
+     * Returns the number of observations that were under the histogram range.
+     * This value is only collected for unweighted statistics, i.e. it is an
+     * error to call this method on a weighted histogram.
      */
-    virtual int64_t getNumOverflows() const override { return numOverflows; }
+    virtual int64_t getNumOverflows() const override;
     //@}
 
     /** @name cAutoRangeHistogramStrategy-based convenience API. */
