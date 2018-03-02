@@ -32,7 +32,7 @@ To install the required packages, type in the terminal:
       java doxygen graphviz webkitgtk
 
 To use 3D visualization support in Qtenv, you should install
-OpenSceneGraph 3.2 and osgEarth 2.5 or later (recommended):
+OpenSceneGraph 3.2 or later and osgEarth 2.7 or later (recommended):
 
   $ sudo dnf install OpenSceneGraph-devel osgearth-devel
 

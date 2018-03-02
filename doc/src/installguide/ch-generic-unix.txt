@@ -44,7 +44,7 @@ OpenJDK, version 8.0 or later::
 Qt 5.4 or later::
   Required by the Qtenv simulation runtime environment.
   You need the 'devel' packages that include header files as well.
-OpenSceneGraph (3.2+) and osgEarth (2.5+)::
+OpenSceneGraph (3.2+) and osgEarth (2.7+)::
   These packages will enable 3D visualization in Qtenv.
   You need the 'devel' packages that include header files as well.
 

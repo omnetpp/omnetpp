@@ -32,7 +32,7 @@ To install the required packages, type in the terminal:
       java-1_8_0-openjdk doxygen graphviz libwebkitgtk-3_0-0
 
 To use 3D visualization support in Qtenv  (recommended), you should
-install the OpenSceneGraph-devel (3.2) and osgEarth-devel (2.5 or later) packages.
+install the OpenSceneGraph-devel (3.2 or later) and osgEarth-devel (2.7 or later) packages.
 These packages are not available from the official RedHat repository so you
 may need to get them from different sources (e.g. rpmfind.net).
 

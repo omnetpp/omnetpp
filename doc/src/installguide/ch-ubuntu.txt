@@ -42,9 +42,14 @@ To install the required packages, type in the terminal:
        zlib1g-dev default-jre doxygen graphviz libwebkitgtk-3.0-0
 
 To use Qtenv with 3D visualization support, install the development packages
-for OpenSceneGraph (3.2) and the osgEarth (2.5 or later) packages (You may
-need to enable the 'Universe' software repository in Sotware Sources):
+for OpenSceneGraph (3.2 or later) and the osgEarth (2.7 or later) packages. (You
+may need to enable the 'Universe' software repository in Software Sources. In
+case of Ubuntu 16.04 (Xenial), you have to add the `ubuntugis/ppa` repository
+manually to your software sources, because Xenial contains only osgEarth 2.5 which
+is too old.):
 
+  $ sudo add-apt-repository ppa:ubuntugis/ppa
+  $ sudo apt-get update
   $ sudo apt-get install libopenscenegraph-dev \
        openscenegraph-plugin-osgearth libosgearth-dev
 
