@@ -804,18 +804,34 @@ fi # WITH_QTENV
 # Detecting OpenSceneGraph (libopenscenegraph-dev)
 # and osgEarth (openscenegraph-plugin-osgearth and libosgearth-dev)
 #-----------------------------
+OSG_VERSIONCHECK_CODE=$(cat <<-EOT
+#if OSG_VERSION_LESS_THAN(3, 2, 0)
+  #error Requires OpenSceneGraph 3.2 or later
+#else
+  osgGetVersion();
+#endif
+EOT
+)
+OSGEARTH_VERSIONCHECK_CODE=$(cat <<-EOT
+#if OSGEARTH_VERSION_LESS_THAN(2, 7, 0)
+  #error Requires osgEarth 2.7 or later
+#else
+  osgEarthGetVersion();
+#endif
+EOT
+)
 if test "$WITH_OSG" = "yes"; then
   OSG_LIBS=${OSG_LIBS:-"-losg -losgDB -losgGA -losgViewer -losgUtil -lOpenThreads"}
-  OPP_CHECK_LIB(OpenSceneGraph, osg/Version, osgGetVersion(), $CFLAGS $CFLAGS_ARCH $OSG_CFLAGS $CFLAGS_TOOLS_MACOSX, $LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSG_LIBS, osg_ok)
+  OPP_CHECK_LIB(OpenSceneGraph, osg/Version, $OSG_VERSIONCHECK_CODE, $CFLAGS $CFLAGS_ARCH $OSG_CFLAGS $CFLAGS_TOOLS_MACOSX, $LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSG_LIBS, osg_ok)
   if test $osg_ok = no; then
-    AC_MSG_ERROR([Cannot find OpenSceneGraph - 3D view in Qtenv will not be available. Set WITH_OSG=no in configure.user to disable this feature or install the development package for OpenSceneGraph.])
+    AC_MSG_ERROR([Cannot find OpenSceneGraph 3.2 or later - 3D view in Qtenv will not be available. Set WITH_OSG=no in configure.user to disable this feature or install the development package for OpenSceneGraph.])
   else
       # detect osgEarth, too
       if test "$WITH_OSGEARTH" = "yes"; then
         OSGEARTH_LIBS=${OSGEARTH_LIBS:-"-losgEarth -losgEarthUtil"}
-        OPP_CHECK_LIB(osgEarth, osgEarth/Version, osgEarthGetVersion(), $CFLAGS $CFLAGS_ARCH $OSGEARTH_CFLAGS $CFLAGS_TOOLS_MACOSX, $LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSGEARTH_LIBS, osgearth_ok)
+        OPP_CHECK_LIB(osgEarth, osgEarth/Version, $OSGEARTH_VERSIONCHECK_CODE, $CFLAGS $CFLAGS_ARCH $OSGEARTH_CFLAGS $CFLAGS_TOOLS_MACOSX, $LDFLAGS_ARCH $LDFLAGS_TOOLS_MACOSX $OSGEARTH_LIBS, osgearth_ok)
         if test $osgearth_ok = no; then
-          AC_MSG_ERROR([Cannot find osgEarth. Set WITH_OSGEARTH=no in configure.user to disable this feature or install osgEarth.])
+          AC_MSG_ERROR([Cannot find osgEarth 2.7 or later. Set WITH_OSGEARTH=no in configure.user to disable this feature or install an up to date version of osgEarth.])
         fi
       fi # WITH_OSGEARTH
   fi
