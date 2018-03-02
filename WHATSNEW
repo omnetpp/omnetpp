@@ -5,6 +5,17 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 5.3 Preview 4 (March 2018)
+----------------------------------
+
+Highlights:
+
+  - Updated toolchain on Windows (clang 5.0.1, gcc 7.3, gdb 8, osgEarth 2.7)
+  - Updated toolchain on macOS (OpenSceneGraph 3.2.3, osgEarth 2.7)
+  - OMNeT++ now requires osgEarth 2.7 or later (check the Install Guide for
+    further instructions how to upgrade osgEarth.)
+
+
 OMNeT++ 5.3 Preview 3 (February 2018)
 -------------------------------------
 
