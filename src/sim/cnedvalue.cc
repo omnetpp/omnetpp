@@ -105,9 +105,13 @@ void cNedValue::convertToDouble()
 
 //TODO these should be in some utils.cc file
 
+#ifndef __has_builtin
+  #define __has_builtin(x) 0  // Compatibility for compilers without the __has_builtin macro
+#endif
+
 inline intpar_t safeMul(intpar_t a, intpar_t b)
 {
-#ifdef __GNUC__  // and compatibles like clang
+#if __has_builtin(__builtin_mul_overflow) || (defined(__GNUC__) && !defined(__clang__))
     intpar_t res;
     if ( __builtin_mul_overflow(a, b, &res))
         throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try converting to doubles", (int64_t)a, (int64_t)b);
