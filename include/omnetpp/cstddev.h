@@ -129,7 +129,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Returns the number of values collected, regardless of their weights.
      */
-    virtual long getCount() const override  {return numValues;}
+    virtual int64_t getCount() const override  {return numValues;}
 
     /**
      * Returns the sum of the observations. The sum is only collected

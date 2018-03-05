@@ -22,7 +22,7 @@ namespace omnetpp {
 
 /**
  * @brief Interface for histogram strategy classes. Histogram strategies
- * encapsulate the task of setting up an managing the bins in a cHistogram.
+ * encapsulate the task of setting up and managing the bins in a cHistogram.
  *
  * @ingroup Statistics
  */
@@ -98,7 +98,7 @@ class SIM_API cIHistogramStrategy : public cObject
  *
  * Bins are set up when the first value is collected, and never change afterwards.
  * If you need a histogram strategy that supports dynamically extending the
- * histogram with new bins, consider using cAutoRangeUpperLimitstogramStrategy.
+ * histogram with new bins, consider using cAutoRangeHistogramStrategy.
  *
  * @ingroup Statistics
  */
@@ -200,10 +200,9 @@ class SIM_API cPrecollectionBasedHistogramStrategy : public cIHistogramStrategy
 };
 
 /**
- * @brief The histogram strategy creates uniform bins, and it is used in
- * the default setup of cHistogram. This strategy is meant to provide a good
- * quality histogram without requiring manual configuration for practical
- * distributions.
+ * @brief A strategy class used by the default setup of cHistogram. It is
+ * meant to provide a good quality uniform-bin histogram without requiring
+ * manual configuration.
  *
  * This strategy uses precollection to gather input information about the
  * distribution before setting up the bins. Precollection is used to determine

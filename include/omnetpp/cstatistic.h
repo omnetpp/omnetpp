@@ -145,7 +145,7 @@ class SIM_API cStatistic : public cRandom
     /**
      * Returns the number of the observations, regardless of their weights.
      */
-    virtual long getCount() const = 0;
+    virtual int64_t getCount() const = 0;
 
     /**
      * Returns the sum of the values. Not available for weighted statistics.
