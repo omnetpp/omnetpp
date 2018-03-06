@@ -300,7 +300,7 @@ method:
 const char *getDisplayString() const;
 \end{cpp}
 
-Since {\opp} version 5.1, \cclass{cPacket}'s default \ffunc{getDisplayString()} 
+Since {\opp} version 5.1, \cclass{cPacket}'s default \ffunc{getDisplayString()}
 implementation is such so that a packet ``inherits'' the display string of its
 encapsulated packet, provided it has one. Thus, in the model of a network stack,
 the appearance of e.g. an application layer packet will be preserved even
@@ -577,13 +577,13 @@ checks for the object's existence and obtains a pointer to it:
 
 \begin{cpp}
 // sender:
-cLongHistogram *histogram = new cLongHistogram("histogram");
+cHistogram *histogram = new cHistogram("histogram");
 msg->addObject(histogram);
 
 // receiver:
 if (msg->hasObject("histogram")) {
    cObject *obj = msg->getObject("histogram");
-   cLongHistogram *histogram = check_and_cast<cLongHistogram *>(obj);
+   cHistogram *histogram = check_and_cast<cHistogram *>(obj);
    ...
 }
 \end{cpp}

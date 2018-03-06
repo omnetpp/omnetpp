@@ -7,11 +7,8 @@ digraph g {
         edge [dir = "back"];
 
         cStatistic -> cStdDev;
-        cStdDev -> cWeightedStdDev;
-        cStdDev -> cDensityEstBase;
-        cDensityEstBase -> cLongHistogram [label="..."];
-        cDensityEstBase -> cDoubleHistogram [label="..."];
-        cDensityEstBase -> cVarHistogram [label="..."];
-        cDensityEstBase -> cPSquare [label="..."];
-        cDensityEstBase -> cKSplit [label="..."];
+        cStdDev -> cAbstractHistogram;
+        cAbstractHistogram -> cHistogram;
+        cAbstractHistogram -> cPSquare [label="(...)"];
+        cAbstractHistogram -> cKSplit [label="(...)"];
 }

@@ -153,13 +153,13 @@
        sodipodi:linespacing="125%"
        id="text4178"
        y="17.8337"
-       x="85.829987"
+       x="88.212509"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333359px;line-height:125%;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        xml:space="preserve"><tspan
          id="tspan4180"
          y="17.8337"
-         x="85.829987"
-         sodipodi:role="line">N+1</tspan></text>
+         x="88.212509"
+         sodipodi:role="line">N</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333359px;line-height:125%;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -181,7 +181,7 @@
          sodipodi:role="line"
          x="17.452141"
          y="-0.79296631"
-         id="tspan4872-6">cell 0</tspan></text>
+         id="tspan4872-6">bin 0</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text4208"
@@ -192,7 +192,7 @@
          id="tspan4210"
          y="-10.388523"
          x="32.69212"
-         sodipodi:role="line">cell 1</tspan></text>
+         sodipodi:role="line">bin 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333359px;line-height:125%;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -203,18 +203,18 @@
          sodipodi:role="line"
          x="47.932148"
          y="-7.0018559"
-         id="tspan4214">cell 2</tspan></text>
+         id="tspan4214">bin 2</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text4216"
        y="12.189258"
-       x="77.847755"
+       x="75.946518"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333359px;line-height:125%;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        xml:space="preserve"><tspan
          id="tspan4218"
          y="12.189258"
-         x="77.847755"
-         sodipodi:role="line">cell N</tspan></text>
+         x="75.946518"
+         sodipodi:role="line">bin N-1</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text4230"
@@ -229,14 +229,14 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333359px;line-height:125%;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="73.412186"
+       x="71.718849"
        y="17.8337"
        id="text4234"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         x="73.412186"
+         x="71.718849"
          y="17.8337"
-         id="tspan4236">N</tspan></text>
+         id="tspan4236">N-1</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333359px;line-height:125%;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"

@@ -68,12 +68,10 @@ the additional possibilities accessible.
 With this approach, scalar and statistics results are collected in class
 variables inside modules, then recorded in the finalization phase via
 \ffunc{recordScalar()} calls. Vectors are recorded using
-\cclass{cOutVector} objects. To record more details, like the
-minimum/maximum value or the standard deviation, \cclass{cStdDev} and
-\cclass{cWeightedStdDev} can be used, and for recording the distribution
-there are histogram and other distribution estimation classes
-(\cclass{cDoubleHistogram}, \cclass{cLongHistogram}, \cclass{cPSquare},
-\cclass{cKSplit}, and others). These classes are described in sections
+\cclass{cOutVector} objects. Use \cclass{cStdDev} to record summary statistics
+like mean, standard deviation, minimum/maximum, and histogram-like classes
+(\cclass{cHistogram}, \cclass{cPSquare}, \cclass{cKSplit}) to record the
+distribution. These classes are described in sections
 \ref{sec:sim-lib:statistics} and \ref{sec:sim-lib:result-recording}.
 Recording of individual vectors, scalars and statistics can be enabled or
 disabled via the configuration (ini file), and it is also the place to set
@@ -915,5 +913,4 @@ scaling. The plot can be exported in various image formats.
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
-
 

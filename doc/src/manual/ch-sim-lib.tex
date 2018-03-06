@@ -806,11 +806,9 @@ double normal(cRNG *rng, double mean, double stddev);
 \label{sec:sim-lib:random-numbers-from-histograms}
 
 One can also specify a distribution as a histogram\index{distribution!as histogram}.
-The \cclass{cLongHistogram}, \cclass{cDoubleHistogram},
-\cclass{cVarHistogram}, \cclass{cKSplit} or \cclass{cPSquare} classes are
-there to generate random numbers from equi\-dis\-tant-cell or
-equiprobable-cell histograms.  This feature is documented later, with the
-statistical classes.
+The \cclass{cHistogram}, \cclass{cKSplit} and \cclass{cPSquare} classes
+can be used to generate random numbers from histograms. This feature is
+documented later, with the statistical classes.
 
 \subsection{Adding New Distributions}
 \label{sec:sim-lib:adding-new-distributions}
@@ -1549,41 +1547,33 @@ EV << expr.matches(&cMatchableString("something else")) << endl; // -> false
 \end{cpp}
 
 
-
-\section{Statistics and Distribution Estimation}
+\section{Collecting Summary Statistics and Histograms}
 \label{sec:sim-lib:statistics}
 
-\subsection{cStatistic and Descendants}
-\label{sec:sim-lib:cstatistic-and-descendants}
-
 There are several statistic and result collection classes:
-\cclass{cStdDev}, \cclass{cWeightedStdDev}, \cclass{Long\-Histogram},
-\cclass{cDoubleHistogram}, \cclass{cVarHistogram}, \cclass{cPSquare} and
+\cclass{cStdDev}, \cclass{cHistogram}, \cclass{cPSquare} and
 \cclass{cKSplit}. They are all derived from the abstract base class
-\cclass{cStatistic}.
+\cclass{cStatistic}; histogram-like classes derive from 
+\cclass{cAbstractHistogram}.\footnote{Earlier versions of {\opp} had more
+statistical classes: \cclass{cWeightedStdDev}, \cclass{cLong\-Histogram},
+\cclass{cDouble\-Histogram}, \cclass{cVarHistogram}. The functionality
+of these classes have been consolidated into \cclass{cStdDev} and
+\cclass{cHistogram}.}
 
 \begin{itemize}
-  \item \cclass{cStdDev} keeps the count, mean, standard
-    deviation, minimum and maximum value etc of the observations.
-  \item \cclass{cWeightedStdDev} is similar to \cclass{cStdDev}, but
-    accepts weighted observations. \cclass{cWeightedStdDev} can be used
-    for example to calculate time average. It is the only weighted
-    statistics class.
-  \item \cclass{cLongHistogram} and \cclass{cDoubleHistogram} are
-    descendants of \cclass{cStdDev} and also keep an approximation of
-    the distribution of the observations using equidistant
-    (equal-sized) cell histograms\index{histogram!equal-sized}.
-  \item \cclass{cVarHistogram} implements a histogram where cells do not
-    need to be the same size. One can manually add the cell (bin)
-    boundaries, or alternatively, automatically have a partitioning
-    created where each bin has the same number of observations (or as
-    close to that as possible).
+  \item \cclass{cStdDev} keeps summary statistics (mean, standard deviation,
+    range) of weighted or unweighted observations. 
+  \item \cclass{cHistogram} is for collecting observations into a histogram.
+    \cclass{cHistogram} is highly configurable, suports adding/removing/merging bins
+    dynamically, and can produce a good histogram from most distributions
+    without requiring manual configuration.
   \item \cclass{cPSquare} is a class that uses the $P^{2}$ algorithm
     described in \cite{JCh85}. The algorithm calculates quantiles without
     storing the observations; one can also think of it as a histogram
     with equiprobable cells\index{histogram!equiprobable-cells}.
-  \item \cclass{cKSplit} uses a novel, experimental method, based on an
-    adaptive histogram-like algorithm.
+  \item \cclass{cKSplit} is adaptive histogram-like algorithm
+    which performs dynamic subdivision of the bins to refine resolution
+    at the bulk of the distribution.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -1593,158 +1583,307 @@ There are several statistic and result collection classes:
   \end{center}
 \end{figure}
 
-\subsubsection{Basic Usage}
-\label{sec:sim-lib:cstatistic-basic-usage}
+All classes use the \ttt{double} type for representing observations,
+and compute all metrics in the same data type (except the observation
+count, which is \ttt{int64\_t}.)
 
-One can insert an observation into a statistic object with the
-\ffunc{collect()} function. \cclass{cStdDev} has the following methods for
-getting statistics from the object: \ffunc{getCount()}, \ffunc{getMin()},
-\ffunc{getMax()}, \ffunc{getMean()}, \ffunc{getStddev()}, \ffunc{getVariance()},
-\ffunc{getSum()}, \ffunc{getSqrSum()} with the obvious meanings. An example
-usage for \cclass{cStdDev}:
+For weighted statistics, weights are also \ttt{double}s. Being able to
+handle non-integer weights is important because weighted statistics
+are often used for computing time averages, e.g. average queue length
+or average channel utilization. 
+
+\subsection{cStdDev}
+\label{sec:sim-lib:cstatistic-and-descendants}
+
+The \cclass{cStdDev} class is meant to collect summary statistics of
+observations. If you also need to compute a histogram, use \cclass{cHistogram}
+(or \cclass{cKSplit}/\cclass{cPSquare}) instead, because those classes 
+already include the functionality of \cclass{cStdDev}.
+
+\cclass{cStdDev} can collect unweighted or weighted statistics. This needs
+to be decided in the constructor call, and cannot be changed later. 
+Specify \ttt{true} as the second argument for weighted statistics.
+ 
+\begin{cpp}
+cStdDev unweighted("packetDelay");  // unweighted
+cStdDev weighted("queueLength", true); // weighted
+\end{cpp}
+ 
+Observations are added to the statistics by using the \ffunc{collect()}
+or the \ffunc{collectweighted()} methods. The latter takes two parameters,
+the value and the weight.
 
 \begin{cpp}
-cStdDev stat("stat");
+for (double value : values)
+    unweighted.collect(value);
 
-for (int i = 0; i < 10; i++)
-  stat.collect(normal(0,1));
+for (double value : values2) {
+    double weight = ...
+    weighted.collectWeighted(value, weight);
+}
+\end{cpp}
 
-long numSamples = stat.getCount();
-double smallest = stat.getMin(),
-       largest = stat.getMax();
-double mean = stat.getMean(),
-       standardDeviation = stat.getStddev(),
-       variance = stat.getVariance();
+Statistics can be obtained from the object with the following methods: 
+\ffunc{getCount()}, \ffunc{getMin()}, \ffunc{getMax()}, \ffunc{getMean()}, 
+\ffunc{getStddev()}, \ffunc{getVariance()}.
+
+There are two getter methods that only work for unweighted statistics:
+\ffunc{getSum()} and \ffunc{getSqrSum()}. Plain (unweighted) sum and 
+sum of squares are not computed for weighted observations, and it is
+an error to call these methods in the weighted case.
+
+Other getter methods are primarily meant for weighted statistics:
+\ffunc{getSumWeights()}, \ffunc{getWeightedSum()}, 
+\ffunc{getSqrSumWeights()}, \ffunc{getWeightedSqrSum()}.
+When called on unweighted statistics, these methods simply
+assume a weight of 1.0 for all observations.
+
+An example:
+
+\begin{cpp}
+EV << "count = " << unweighted.getCount() << endl;
+EV << "mean = " << unweighted.getMean() << end;
+EV << "stddev = " << unweighted.getStddev() << end;
+EV << "min = " << unweighted.getMin() << end;
+EV << "max = " << unweighted.getMax() << end;
 \end{cpp}
 
 
 
-\subsection{Distribution Estimation}
-\label{sec:sim-lib:distribution-estimation-classes}
+\subsection{cHistogram}
+\label{sec:sim-lib:histograms}
 
-\subsubsection{Initialization and Usage}
-\label{sec:sim-lib:histograms-initialization-and-usage}
-
-% TBD this has to be rewritten at some point... maybe take over examples from Doxygen doc.
-
-The distribution estimation\index{distribution!estimation} classes
-(\cclass{cLongHistogram}, \cclass{cDoubleHistogram}, \cclass{cVarHistogram},
-\cclass{cPSquare} and \cclass{cKSplit}) are derived from
-\cclass{cDensityEstBase}. Distribution estimation classes (except for
-\cclass{cPSquare}) assume that the observations are within a range.
-One may specify the range explicitly (based on some a-priori information
-about the distribution), or let the object precollect a number of
-observations and determine the range from them.
-
-The following member functions exist for setting up the range
-and to specify how many observations should be used for automatically
-determining the range (these methods are part of \cclass{cDensityEstBase}):
-
-\begin{cpp}
-setRange(lowerBound, upperBound);
-setRangeAuto(numPrecollect, rangeExtFactor);
-setRangeAutoLower(upperBound, numPrecollect, rangeExtensionFactor);
-setRangeAutoUpper(lowerBound, numPrecollect, rangeExtensionFactor);
-\end{cpp}
-
-\begin{cpp}
-setNumPrecollectedValues(numPrecollect);
-\end{cpp}
-
-The following example creates a histogram with 20 cells and automatic
-range estimation\index{histogram!range estimation}:
-
-\begin{cpp}
-cDoubleHistogram histogram("histogram", 20);
-histogram.setRangeAuto(100,1.5);
-\end{cpp}
-
-Here, 20 is the number of cells (not including the underflow/overflow
-cells, see later), and 100 is the number of observations to be
-collected before setting up the cells. 1.5 is the range extension
-factor. It means that the actual range of the initial observations
-will be expanded 1.5 times and this expanded range will be used to lay
-out the cells. This method increases the chance that further
-observations fall in one of the cells and not outside the histogram
-range.
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includesvg{figures/simlib-histogramrange}
-    \caption{Setting up a histogram's range using \ffunc{setRangeAuto()}}
-  \end{center}
-\end{figure}
-
-The \ffunc{isTransformed()} function returns \textit{true} when the cells have
-already been set up. One can force range estimation and setting
-up the cells by calling the \ffunc{transform()} function.
-
-The observations that fall outside the histogram range will be counted
-as underflows and overflows. The number of underflows and overflows
-are returned by the \ffunc{getUnderflowCell()} and \ffunc{getOverflowCell()}
-member functions.
+\cclass{cHistogram} is able to represent both uniform and non-uniform
+bin histograms, and supports both weighted and unweighted observations.
+The histogram can be modified dynamically: it can be extended with new bins,
+and adjacent bins can be merged. In addition to the bin values (which mean
+count in the unweighted case, and sum of weights in the weighted case),
+the histogram object also keeps the number (or sum of weights) of the 
+lower and upper outliers (``underflows'' and ``overflows''.) 
 
 \begin{figure}[htbp]
   \begin{center}
     \includesvg{figures/simlib-histogramsetup}
-    \caption{Histogram structure after setting up the cells}
+    \caption{Histograms keep track of outliers as well}
   \end{center}
 \end{figure}
 
-One exception is the \cclass{cPSquare} class that implements the $P^{2}$
-algorithm: it does not use automatic range estimation. The $P^{2}$
-algorithm operates by adaptively shifting cell boundaries as observations
-arrive, thus, it needs no fixed histogram range. The \ttt{setRange...()}
-methods throw an error in \cclass{cPSquare}, and \ffunc{isTransformed()}
-always returns \ttt{true}. \cclass{cPSquare} only needs the number of cells
-given in, for example in the constructor:
+Setting up and managing the bins based on the collected observations
+is usually delegated to a strategy object. However, for most
+use cases, histogram strategies is not something the user needs
+to be concerned with. The default constructor of \cclass{cHistogram}
+sets up the histogram with a default strategy that usually produces
+a good quality histogram without requiring manual configuration or a-priori 
+knowledge about the distribution. For special use cases, there are
+other histogram strategies, and it is also possible to write new ones. 
+
+\subsubsection{Creating a Histogram}
+
+\cclass{cHistogram} has several constructors variants. Like with 
+\cclass{cStdDev}, it needs to be decided in the constructor call
+by a boolean argument whether the histogram should collect 
+unweighted (\ttt{false}) or weighted (\ttt{true}) statistics;
+the default is unweighted. Another argument is a number of bins
+hint. (The actual number of bins produced might slightly differ,
+due to dynamic range extensions and bin merging performed by
+some strategies.)
 
 \begin{cpp}
-cPSquare psquare("interarrival-times", 20);
+cHistogram unweighted1("packetDelay");  // unweighted
+cHistogram unweighted2("packetDelay", 10);  // unweighted, with ~10 bins
+cHistogram weighted1("queueLength", true); // weighted
+cHistogram weighted2("queueLength", 10, true); // weighted, with ~10 bins
 \end{cpp}
 
-Afterwards, a \cclass{cPSquare} can be used with the same member functions
-as a histogram.
+It is also possible to provide a strategy object in a constructor call.
+(The strategy object may also be set later though, using \ffunc{setStrategy()}.
+It must be called before the first observation is collected.)
+
+\begin{cpp}
+cHistogram autoRangeHist("queueLength", new cAutoRangeHistogramStrategy());
+\end{cpp}
+
+This constructor can also be used to create a histogram without a strategy
+object, which is useful if you want to set up the histogram bins manually.
+
+\begin{cpp}
+cHistogram hist("queueLength", nullptr, true); // weighted, no strategy
+\end{cpp}
+
+\cclass{cHistogram} also has methods where you can provide constraints
+and hints for setting up the bins: \ffunc{setMode()}, \ffunc{setRange()},
+\ffunc{setRangeExtensionFactor()}, \ffunc{setAutoExtend()}, 
+\ffunc{setNumBinsHint()}, \ffunc{setBinSizeHint()}. These methods
+delegate to similar methods of \cclass{cAutoRangeHistogramStrategy}.
 
 
-\subsubsection{Querying Histogram Cells}
-\label{sec:sim-lib:querying-histogram-cells}
+\subsubsection{Collecting Observations}
 
-There are three member functions to explicitly return cell boundaries
-and the number of observations in each cell. \ffunc{getNumCells()} returns
-the number of cells, \ffunc[getBasepoint()]{getBasepoint(int k)} returns the
-\textit{k}th base point, \ffunc[getCellValue()]{getCellValue(int k)} returns the
-number of observations in cell \textit{k}, and
-\ffunc[getCellPDF()]{getCellPDF(int k)} returns the PDF value in the cell
-(i.e. between \ffunc[getBasepoint()]{getBasepoint(k)} and
-\ffunc[getBasepoint()]{getBasepoint(k+1)}).
-The \ffunc[getCellInfo()]{getCellInfo(k)} method returns multiple data
-(cell bounds, counter, relative frequency) packed together in a struct.
-These functions work for all histogram types, plus \cclass{cPSquare}
-and \cclass{cKSplit}.
+Observations are added to the histogram in the same way as with \cclass{cStdDev}:
+using the \ffunc{collect()} and \ffunc{collectWeighted()} methods. 
+
+\subsubsection{Querying the Bins}
+
+Histogram bins can be accessed with three member functions: 
+\ffunc{getNumBins()} returns the number of bins, 
+\ffunc[getBinEdge()]{getBinEdge(int k)} returns the \textit{k}th bin edge, 
+\ffunc[getBinValue()]{getBinValue(int k)} returns the count or sum of weights in bin \textit{k},
+and \ffunc[getBinPDF()]{getBinPDF(int k)} returns the PDF value in the bin 
+(i.e. between \ffunc[getBinEdge()]{getBinEdge(k)} and \ffunc[getBinEdge()]{getBinEdge(k+1)}).
+The \ffunc[getBinInfo()]{getBinInfo(k)} method returns multiple bin data
+(edges, value, relative frequency) packed together in a struct.
+Four other methods, \ffunc{getUnderflowSumWeights()}, \ffunc{getOverflowSumWeights()}, 
+\ffunc{getNumUnderflows()}, \ffunc{getNumOverflows()}, provide access to
+the outliers.  
+
+These functions, being defined on \cclass{cHistogramBase}, are not only
+available on \cclass{cHistogram} but also for \cclass{cPSquare} and \cclass{cKSplit}.
+
+For \cclass{cHistogram}, bin edges and bin values can also be accessed 
+as a vector of \texttt{double}s, using the \ffunc{getBinEdges()} and 
+\ffunc{getBinValues()} methods. 
 
 \begin{figure}[htbp]
   \begin{center}
     \includesvg{figures/simlib-histogramcells}
-    \caption{Base points and histogram cells}
+    \caption{Bin edges and bins of an $N$-bin histogram}
   \end{center}
 \end{figure}
 
 An example:
 
 \begin{cpp}
-long n = histogram.getCount();
-for (int i = 0; i < histogram.getNumCells(); i++) {
-  double cellWidth = histogram.getBasepoint(i+1)-histogram.getBasepoint(i);
-  int count = histogram.getCellValue(i);
-  double pdf = histogram.getCellPDF(i);
-  //...
+EV << "[" << hist.getMin() << "," << hist.getBinEdge(0) << "): " 
+   << hist.getUnderflowSumWeights() << endl;
+int numBins = hist.getNumBins();
+for (int i = 0; i < numBins; i++) {
+  EV << "[" << hist.getBinEdge(i) << "," << hist.getBinEdge(i+1) << "): " 
+     << hist.getBinValue(i) << endl;
 }
+EV << "[" << hist.getBinEdge(numBins) << "," << hist.getMax() << "]: " 
+   << hist.getOverflowSumWeights() << endl;
 \end{cpp}
 
 The \ffunc[getPDF()]{getPDF(x)} and \ffunc[getCDF()]{getCDF(x)} member functions
 return the value of the Probability Density Function and the Cumulated
 Density Function at a given \textit{x}, respectively.
+
+Note that bins many not be immediately available during observation
+collection, because some histogram strategies use precollection
+to gather information about the distribution before setting up the bins.
+Use \ffunc{binsAlreadySetUp()} to figure out whether bins are
+set up already. Setting up the bins can be forced with the
+\ffunc{setupBins()} method. 
+
+
+\subsubsection{Setting Up and Managing the Bins}
+
+The \cclass{cHistogram} class has several methods for creating and 
+manipulating bins. These methods are primarily intended to be called
+from strategy classes, but are also useful if you want to manage
+the bins manually, i.e. without a strategy class.
+
+For setting up the bins, you can either use \ffunc{createUniformBins()} 
+with the range (lo, hi) and the step size as parameters, or specify 
+all bin edges explicitly in a vector of \ttt{double}s to \ffunc{setBinEdges()}.
+
+When the bins have already been set up, the histogram can be extended
+with new bins down or up using the \ffunc{prependBins()} and \ffunc{appendBins()}
+methods that take a list of new bin edges to add. There is also an 
+\ffunc{extendBinsTo()} method that extends the histogram with equal-sized
+bins at either end to make sure that a supplied value falls into the 
+histogram range. Of course, extending the histogram is only possible
+if there are no outliers in that direction. (The positions of the 
+outliers is not preserved, so it is not known how many would fall in
+each of the newly created bins.) 
+
+If the histogram has too many bins, adjacent ones (pairs, triplets, 
+or groups of size $n$) can be merged, using the \ffunc{mergeBins()}
+method.
+
+Example code which sets up a histogram with uniform bins:
+
+\begin{cpp}
+cHistogram hist("queueLength", nullptr); // create w/o strategy object
+hist.createUniformBins(0, 100, 10); // 10 bins over (0,100)
+\end{cpp}
+
+The following code achieves the same, but uses \ffunc{setBinEdges()}:
+
+\begin{cpp}
+std::vector<double> edges = {0,10,20,30,40,50,60,70,80,90,100}; // C++11
+cHistogram hist("queueLength", nullptr);
+hist.setBinEdges(edges);
+\end{cpp}
+
+
+\subsubsection{Strategy Concept}
+
+Histogram strategies subclass from \cclass{cIHistogramStrategy}, and are
+responsible for setting up and managing the bins.
+
+A \ffunc{cHistogram} is created with a \cclass{cDefaultHistogramStrategy}
+by default, which works well in most cases. Other \ffunc{cHistogram} 
+constructors allow passing in an arbitrary histogram strategy. 
+
+The \ffunc{collect()} and \ffunc{collectWeighted()} methods of a 
+\ffunc{cHistogram} delegate to similar methods of the strategy
+object, which in turn decides when and how to set up the bins,
+and how to manage the bins later. (Setting up the bins may be 
+postponed until a few observations have been collected, in order to
+gather more information for it.) The histogram strategy
+uses public histogram methods like \ffunc{createUniformBins()}
+to create and manage the bins.
+ 
+\subsubsection{Available Histogram Strategies}
+
+The following histogram strategy classes exist.
+
+\cclass{cFixedRangeHistogramStrategy} sets up uniform bins over 
+a predetermined interval. The number of bins and the histogram mode 
+(integers or reals) also need to be configured. This strategy does 
+not use precollection, as all input for setting up the bins must be
+explicitly provided by the user.
+
+\cclass{cDefaultHistogramStrategy} is used by the default setup of \cclass{cHistogram}.
+This strategy uses precollection to gather input information about the
+distribution before setting up the bins. Precollection is used to determine
+the initial histogram range and the histogram mode (integers vs. reals).
+In integers mode, bin edges will be whole numbers.
+
+To keep up with distributions that change over time, this histogram strategy
+can auto-extend the histogram range by adding new bins as needed. It also
+performs bin merging when necessary, to keep the number of bins reasonably low.
+
+\cclass{cAutoRangeHistogramStrategy} is a generic, very configurable histogram 
+strategy which creates uniform bins, and creates good quality histograms 
+for practical distributions. This strategy uses precollection.
+
+Several parameters and constraints can be specified for setting up the bins:
+range lower and/or upper endpoint, bin size, number of bins, mode (integers
+or reals), and whether bin size rounding is to be used. If bin size rounding
+is turned on, a bin size of the form ${1|2|5}*10^n$ is chosen, i.e. a power of ten,
+or two or five times a power of ten. When both endpoints of the range are
+left unspecified, the histogram range is derived by taking the range of the
+precollected observations and extending it symmetrically by a range extension
+factor. If one of the endpoints is specified by the user, that value is used
+instead of the computed one. The number of observations to precollect as well
+as the range extension factor can be configured. If the histogram mode
+(integers vs. reals) is left unspecified, it will be determined by examining
+the precollected values. In integers mode, bin edges will be whole numbers.
+If the histogram range and mode are all specified by the user, the
+precollection phase is skipped.
+
+If there are inconsistent or conflicting settings, e.g. an explicitly given
+histogram range is not multiple of the bin size in integers mode, the bin
+setup algorithm will do "best effort" to set up the histogram instead of
+stopping with an exception.
+
+This histogram strategy can auto-extend the histogram range by adding new
+bins at either end. One can also set up an upper limit to the number of
+histogram bins to prevent it from growing indefinitely. Bin merging can
+also be enabled: it will cause every two (or N) adjacent bins to be
+merged to reduce the number of bins if their number grows too high.
 
 
 \subsubsection{Random Number Generation from Distributions}
@@ -1758,16 +1897,6 @@ object:
 double rnd = histogram.random();
 \end{cpp}
 
-\cclass{cStdDev} assumes normal distribution.
-
-The \cclass{cPar} object stores the pointer to the histogram (or $P^{2}$ object),
-and whenever it is asked for the value, calls the histogram object's \ffunc{random()}
-function:
-
-\begin{cpp}
-double rnd = (double)rndPar; // random number from the cPSquare
-\end{cpp}
-
 
 \subsubsection{Storing and Loading Distributions}
 \label{sec:sim-lib:storing-and-loading-distributions}
@@ -1775,11 +1904,11 @@ double rnd = (double)rndPar; // random number from the cPSquare
 The statistic classes have \ffunc{loadFromFile()} member functions
 that read the histogram data from a text file. If you need a custom
 distribution\index{distribution!custom} that cannot be written (or it
-is inefficient) as a C function, you can describe it in histogram form
+is inefficient) as a C++ function, you can describe it in histogram form
 stored in a text file, and use a histogram object with
 \ffunc{loadFromFile()}.
 
-You can also use \ffunc{saveToFile()}that writes out the distribution
+You can also use \ffunc{saveToFile()} that writes out the distribution
 collected by the histogram object:
 
 \begin{cpp}
@@ -1787,63 +1916,41 @@ FILE *f = fopen("histogram.dat","w");
 histogram.saveToFile(f); // save the distribution
 fclose(f);
 
-cDoubleHistogram hist2("Hist-from-file");
+cHistogram restored;
 FILE *f2 = fopen("histogram.dat","r");
-hist2.loadFromFile(f2); // load stored distribution
+restored.loadFromFile(f2); // load stored distribution
 fclose(f2);
 \end{cpp}
 
 
-\subsubsection{Histogram with Custom Cells}
-\label{sec:sim-lib:histogram-with-custom-cells}
+\subsection{cPSquare}
+\label{sec:sim-lib:psquare}
 
+The \cclass{cPSquare} class implements the $P^{2}$ algorithm
+described in \cite{JCh85}. $P^{2}$ is a heuristic algorithm 
+for dynamic calculation of the median and other quantiles. 
+The estimates are produced dynamically as the observations arrive. 
+The observations are not stored; therefore, the algorithm has 
+a very small and fixed storage requirement regardless of 
+the number of observations. The $P^{2}$ algorithm operates 
+by adaptively shifting bin edges as observations arrive.
 
-The \cclass{cVarHistogram} class can be used to create
-histograms with arbitrary (non-equidistant) cells.
-It can operate in two modes:
-
-\begin{itemize}
-  \item \textit{manual}, where you specify cell boundaries explicitly
-     before starting collecting
-  \item \textit{automatic}, where \ffunc{transform()} will set up the cells
-     after collecting a certain number of initial observations. The cells
-     will be set up so that as far as possible, an equal number of observations
-     fall into each cell (equi-probable cells).
-\end{itemize}
-
-Modes are selected with a \textit{transform-type} parameter:
-\begin{itemize}
-  \item \ttt{HIST\_TR\_NO\_TRANSFORM}: no transformation; uses bin boundaries
-    previously defined by \ffunc{addBinBound()}
-  \item \ttt{HIST\_TR\_AUTO\_EPC\_DBL}: automatically creates equiprobable cells
-  \item \ttt{HIST\_TR\_AUTO\_EPC\_INT}: like the above, but for integers
-\end{itemize}
-
-Creating an object:
+\cclass{cPSquare} only needs the number of cells, for example 
+in the constructor:
 
 \begin{cpp}
-cVarHistogram(const char *s=nullptr,
-              int numcells=11,
-              int transformtype=HIST_TR_AUTO_EPC_DBL);
+cPSquare psquare("endToEndDelay", 20);
 \end{cpp}
 
-Manually adding a cell boundary:
-
-\begin{cpp}
-void addBinBound(double x);
-\end{cpp}
-
-Rangemin and rangemax is chosen after collecting the
-\texttt{numPrecollect} initial observations. One cannot add cell
-boundaries when the histogram has already been transformed.
+Afterwards, observations can be added and the resulting histogram
+can be queried with the same \cclass{cAbstractHistogram} methods 
+as with \cclass{cHistogram}. 
 
 
-
-
-\subsection{The k-split Algorithm}
+\subsection{cKSplit}
 \label{sec:sim-lib:ksplit}
 
-\subsubsection{Purpose}
+\subsubsection{Motivation}
 \label{sec:sim-lib:ksplit-purpose}
 
 The \textit{k}-split algorithm is an on-line distribution
@@ -1858,7 +1965,7 @@ distributions\index{distribution!multi-dimensional}, but here we deal
 with the one-dimensional version only.
 
 
-\subsubsection{The Algorithm}
+\subsubsection{The k-split Algorithm}
 \label{sec:sim-lib:ksplit-algorithm}
 
 The \textit{k-split} algorithm is an adaptive histogram-type estimate which
@@ -1974,7 +2081,7 @@ the \cclass{cKSplit} class.
 \label{sec:sim-lib:cksplit-class}
 
 The \cclass{cKSplit} class is an implementation of the \textit{k-split}
-method. It is a subclass of \cclass{cDensityEstBase}, so configuring,
+method. It is a subclass of \cclass{cAbstractHistogram}, so configuring,
 adding observations and querying histogram cells is done the same way as
 with other histogram classes.
 
@@ -1990,91 +2097,9 @@ directly, via methods like \ffunc{getTreeDepth()}, \ffunc{getRootGrid()},
 \ffunc{getGrid(i)}, and others.
 
 
-\subsection{Transient Detection and Result Accuracy}
-\label{sec:sim-lib:transient-detection-and-result-accuracy}
-
-In many simulations, only the steady state performance (i.e.
-the performance after the system has reached a stable state)
-is of interest. The initial part of the simulation is called
-the transient period. After the model has entered steady state,
-simulation must proceed until enough statistical data has been
-collected to compute a result with the required accuracy.
-
-
-Detection of the end of the transient period and a certain result
-accuracy is supported by {\opp}. The user can attach transient
-detection\index{transient detection} and result accuracy\index{result
-  accuracy} objects to a result object (\cclass{cStatistic}'s
-descendants). The transient detection and result accuracy objects will
-perform the specific algorithms on the data fed into the result object and
-determine if the transient period is over or the result accuracy has been
-reached.
-
-The base classes for classes implementing specific transient
-detection and result accuracy detection algorithms are:
-\begin{itemize}
-\item \cclass{cTransientDetection}: base class for transient detection
-\item \cclass{cAccuracyDetection}: base class for result accuracy detection
-\end{itemize}
-
-
-\subsubsection{Basic Usage}
-\label{sec:sim-lib:transient-detection-basic-usage}
-
-%
-% TBD comments
-%
-
-Attaching detection objects to a \cclass{cStatistic} and getting pointers
-to the attached objects:
-
-\begin{cpp}
-setTransientDetectionObject(cTransientDetection *object);
-setAccuracyDetectionObject(cAccuracyDetection *object);
-cTransientDetection *getTransientDetectionObject();
-cAccuracyDetection *getAccuracyDetectionObject();
-\end{cpp}
-
-
-Detecting the end of the period:
-\begin{itemize}
-\item polling the \ffunc{detect()} function of the object
-\item installing a post-detect function
-\end{itemize}
-
-
-\subsubsection{Transient Detection}
-\label{sec:sim-lib:transient-detection}
-
-Currently one transient detection\index{transient detection} algorithm
-is implemented, i.e. there is one class derived from
-\cclass{cTransientDetection}. The \cclass{cTDExpandingWindows} class
-uses the sliding window approach with two windows, and checks the
-difference of the two averages to see if the transient period is over.
-
-\begin{cpp}
-void setParameters(int reps=3,
-                   int minw=4,
-                   double wind=1.3,
-                   double acc=0.3);
-\end{cpp}
-
-\subsubsection{Accuracy Detection}
-\label{sec:sim-lib:accuracy-detection}
-
-
-Currently one accuracy detection\index{accuracy detection} algorithm
-is implemented, i.e.  there is one class derived from
-\cclass{cAccuracyDetection}. The algorithm implemented in the
-\cclass{cADByStddev} class is: divide the standard deviation by the
-square of the number of values and check if this is small enough.
-
-\begin{cpp}
-void setParameters(double acc=0.1, int reps=3);
-\end{cpp}
-
-
-
+% \subsection{The P$^2$ Algorithm}
+% \label{sec:sim-lib:psquare}
+% TODO
 
 \section{Recording Simulation Results}
 \label{sec:sim-lib:result-recording}
@@ -2140,7 +2165,7 @@ The format and processing of output vector files is described in section
 
 You can configure output vectors from \ffilename{omnetpp.ini}:
 you can disable individual vectors, or limit recording to certain
-simulation time intervals (see sections 
+simulation time intervals (see sections
 \ref{sec:ana-sim:disabling-result-items},
 \ref{sec:ana-sim:vector-recording-intervals}).
 
