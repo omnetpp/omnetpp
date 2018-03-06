@@ -236,6 +236,12 @@ class SIM_API HistogramRecorder : public StatisticsRecorder
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
 };
 
+class SIM_API TimeWeightedHistogramRecorder : public StatisticsRecorder
+{
+    public:
+        virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
+};
+
 class SIM_API PSquareRecorder : public StatisticsRecorder
 {
     public:

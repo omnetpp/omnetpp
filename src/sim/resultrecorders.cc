@@ -39,6 +39,7 @@ Register_ResultRecorder("avg", AverageRecorder);
 Register_ResultRecorder("timeavg", TimeAverageRecorder);
 Register_ResultRecorder("stats", StatsRecorder);
 Register_ResultRecorder("histogram", HistogramRecorder);
+Register_ResultRecorder("timeWeightedHistogram", TimeWeightedHistogramRecorder);
 Register_ResultRecorder("psquare", PSquareRecorder);
 Register_ResultRecorder("ksplit", KSplitRecorder);
 
@@ -395,6 +396,18 @@ void HistogramRecorder::init(cComponent *component, const char *statsName, const
         setStatistic(new cHistogram("histogram", weighted));
     else
         setStatistic(new cHistogram("histogram", numBins, weighted));
+}
+
+void TimeWeightedHistogramRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
+{
+    StatisticsRecorder::init(component, statsName, recordingMode, attrsProperty, manualAttrs);
+
+    omnetpp::opp_string_map attrs = getStatisticAttributes();
+    int numBins = getIntAttr(getStatisticAttributes(), "numBins", -1);
+    if (numBins == -1)
+        setStatistic(new cHistogram("histogram", true));
+    else
+        setStatistic(new cHistogram("histogram", numBins, true));
 }
 
 void PSquareRecorder::init(cComponent *component, const char *statsName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs)
