@@ -72,7 +72,9 @@ AnimationControllerDialog::AnimationControllerDialog(QWidget *parent) :
     });
 
     connect(ui->playbackSpeedSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-            duc, &DisplayUpdateController::setPlaybackSpeed);
+            [this](double value) {
+        duc->setPlaybackSpeed(value, getSelectedProfile());
+    });
 
     connect(ui->profileComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(displayControlValues()));
 }
@@ -128,11 +130,25 @@ void AnimationControllerDialog::displayMetrics()
 {
     auto env = getQtenv();
 
+    double animSpeed = duc->getAnimationSpeed();
+    double simSpeed = duc->getCurrentSimulationSpeed();
+
     ui->currentFpsValueLabel->setText(QString::number(duc->getCurrentFps(), 'f', 0));
     ui->animationTimeValueLabel->setText(QString::number(duc->getAnimationTime(), 'f', 2));
+    ui->simulationSpeedValueLabel->setText(QString::number(simSpeed, 'g', 4));
     ui->holdTimeValueLabel->setText(QString::number(env->getRemainingAnimationHoldTime(), 'f', 2));
-    ui->animationSpeedValueLabel->setText(QString::number(duc->getAnimationSpeed(), 'g', 2));
+    ui->animationSpeedValueLabel->setText(animSpeed == 0.0 ? "not set" : QString::number(animSpeed, 'g', 4));
     ui->refreshDisplayCountValueLabel->setText(QString::number(env->getRefreshDisplayCount()));
+
+    ui->animationSpeedLabel->setStyleSheet(animSpeed == 0.0 ? "color: red" : "");
+    ui->animationSpeedValueLabel->setStyleSheet(animSpeed == 0.0 ? "color: red" : "");
+
+    double expectedSimSpeed = animSpeed * duc->getPlaybackSpeed();
+    bool simSpeedMismatch = animSpeed != 0.0 && !duc->effectiveAnimationSpeedRecentlyChanged()
+            && (simSpeed < expectedSimSpeed * 0.9 || simSpeed > expectedSimSpeed * 1.1);
+
+    ui->simulationSpeedLabel->setStyleSheet(simSpeedMismatch ? "color: red" : "");
+    ui->simulationSpeedValueLabel->setStyleSheet(simSpeedMismatch ? "color: red" : "");
 }
 
 void AnimationControllerDialog::displayControlValues()

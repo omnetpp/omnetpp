@@ -44,7 +44,7 @@
       <string>Control</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2" columnstretch="3,2">
-      <item row="4" column="1">
+      <item row="2" column="1">
        <widget class="omnetpp::qtenv::ExponentialSpinBox" name="minSpeedSpinBox">
         <property name="toolTip">
          <string>Enforce minimum animation speed: overrides speed requested by the model.</string>
@@ -66,47 +66,50 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="minSpeedLabel">
         <property name="text">
          <string>Min animation speed:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="0" column="1">
        <widget class="QComboBox" name="profileComboBox">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="playbackSpeedLabel">
         <property name="text">
          <string>Playback speed:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="maxSpeedLabel">
         <property name="text">
          <string>Max animation speed:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="1" column="1">
        <widget class="omnetpp::qtenv::ExponentialSpinBox" name="playbackSpeedSpinBox">
         <property name="toolTip">
          <string>Corresponds to speed slider on the toolbar.</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::UpDownArrows</enum>
         </property>
         <property name="correctionMode">
          <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
@@ -119,7 +122,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="3" column="1">
        <widget class="omnetpp::qtenv::ExponentialSpinBox" name="maxSpeedSpinBox">
         <property name="toolTip">
          <string>Enforce maximum animation speed: overrides speed requested by the model.</string>
@@ -141,17 +144,17 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="0" column="0">
        <widget class="QLabel" name="profileLabel">
         <property name="text">
          <string>Profile:</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="0" colspan="2">
+      <item row="4" column="0" colspan="2">
        <widget class="QLabel" name="noteLabel">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -172,66 +175,8 @@
      <property name="title">
       <string>Current Readings</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout" columnstretch="3,2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="animationSpeedLabel">
-        <property name="text">
-         <string>Animation speed:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="animationSpeedValueLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="animationTimeLabel">
-        <property name="text">
-         <string>Animation time:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="animationTimeValueLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="holdLabel">
-        <property name="text">
-         <string>Hold time:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="holdTimeValueLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="refreshDisplayCountLabel">
-        <property name="text">
-         <string>Num. refreshDisplay() calls:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="3,0">
+      <item row="6" column="1">
        <widget class="QLabel" name="refreshDisplayCountValueLabel">
         <property name="text">
          <string/>
@@ -241,14 +186,55 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="0" column="1">
+       <widget class="QLabel" name="animationTimeValueLabel">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="animationSpeedValueLabel">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="animationSpeedLabel">
+        <property name="text">
+         <string>Animation speed:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="simulationSpeedLabel">
+        <property name="text">
+         <string>Simulation speed:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="refreshDisplayCountLabel">
+        <property name="text">
+         <string>Num. refreshDisplay() calls:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
        <widget class="QLabel" name="currentFpsLabel">
         <property name="text">
          <string>Frames per sec:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="7" column="1">
        <widget class="QLabel" name="currentFpsValueLabel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -256,6 +242,40 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="simulationSpeedValueLabel">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="animationTimeLabel">
+        <property name="text">
+         <string>Animation time:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="holdTimeLabel">
+        <property name="text">
+         <string>Hold time:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="holdTimeValueLabel">
         <property name="text">
          <string/>
         </property>

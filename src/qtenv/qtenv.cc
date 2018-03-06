@@ -716,7 +716,8 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 {
     ASSERT(simulationState == SIM_NEW || simulationState == SIM_READY);
 
-    runMode = mode;
+    setSimulationRunMode(mode);
+
     runUntil.time = until_time;
     runUntil.eventNumber = until_eventnum;
     runUntil.msg = until_msg;
@@ -726,6 +727,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     stopSimulationFlag = false;
     simulationState = SIM_RUNNING;
     // if there's some animating to do before the event, only do that if stepping.
+
     doNextEventInStep = displayUpdateController->rightBeforeEvent();
 
     updateStatusDisplay();
@@ -880,21 +882,22 @@ bool Qtenv::doRunSimulation()
         }
         firstevent = false;
 
+        ASSERT(simTime() <= event->getArrivalTime());
+        sim->setSimTime(event->getArrivalTime());
+
         animating = (runMode == RUNMODE_NORMAL || runMode == RUNMODE_STEP) || untilmodule_reached;
 
         speedometer.addEvent(sim->getSimTime());
 
         doNextEventInStep = false;
 
-        ASSERT(simTime() <= event->getArrivalTime());
         // do a simulation step
         sim->executeEvent(event);
+
         inspectorsFresh = false;
 
-        if (animating) {
-            callRefreshInspectors();
+        if (animating)
             performAnimations();
-        }
 
         messageAnimator->setMarkedModule(sim->guessNextModule());
 
@@ -1626,7 +1629,9 @@ bool Qtenv::idle()
     // process UI events
     eState origsimstate = simulationState;
     simulationState = SIM_BUSY;
-    QApplication::processEvents();
+
+    displayUpdateController->idle();
+
     simulationState = origsimstate;
 
     return stopSimulationFlag;
@@ -1663,7 +1668,7 @@ void Qtenv::simulationEvent(cEvent *event)
     if (loggingEnabled)
         addEventToLog(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
 
-    displayUpdateController->simulationEvent(event);
+    displayUpdateController->simulationEvent();
 
     if (animating && opt->animationEnabled) {
         if (event->isMessage()) {

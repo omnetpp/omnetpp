@@ -43,17 +43,19 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
     if (!sim->guessNextEvent())
         return true;
 
-    if (!animationTimer.isValid())
-        animationTimer.start();
+    ASSERT(currentTimes.simTime <= simTime());
+    advanceToSimTime(currentTimes, simTime());
 
     while (!qtenv->getStopSimulationFlag()) {
         if (runMode == RUNMODE_EXPRESS)
             return true;
 
-        if (paused) {
+        if (isPaused()) {
             QApplication::processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents, 100);
+            lastGuiUpdateAt = stopwatch.getElapsedSecondsNoLoss();
             continue;
         }
+        ASSERT(stopwatch.isRunning());
 
         if (recordingVideo) {
             bool reached = renderUntilNextEvent(onlyHold);
@@ -62,124 +64,109 @@ bool DisplayUpdateController::animateUntilNextEvent(bool onlyHold)
             else {
                 if (qtenv->getStopSimulationFlag() || onlyHold)
                     return false;
-                animationTimer.restart();
             }
         }
+
+        // so the fresh animations can begin, and we get an updated animSpeed / holdTime
+        msgAnim->updateAnimations();
 
         double animationSpeed = getAnimationSpeed();
-        double lastStepAt = std::max(lastFrameAt, lastEventAt);
-
-        double nextFrameAt = lastFrameAt + 1.0 / targetFps;
-        double nextEventAt;
-
-        if (animationSpeed == 0)
-            nextEventAt = now;
-        else {
-            if (runMode == RUNMODE_FAST) {
-                double eventdelta = (sim->guessNextSimtime() - lastExecutedEvent).dbl() / (animationSpeed * currentProfile->playbackSpeed);
-                nextEventAt = lastEventAt + eventdelta;
-            }
-            else {
-                double eventdelta = (sim->guessNextSimtime() - simTime()).dbl() / (animationSpeed * currentProfile->playbackSpeed);
-                nextEventAt = now + eventdelta;
-            }
-        }
-
-        now += animationTimer.nsecsElapsed() / 1.0e9;
-        animationTimer.restart();
-
-        now = std::max(now, std::max(lastEventAt, lastFrameAt));
-
-        double nextStepAt = std::min(nextFrameAt, nextEventAt);
-
-        if (nextStepAt > (now + 0.001)) {
-            QApplication::processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents,
-                                        (nextStepAt - now) * 1000);
-            continue;
-        }
-
         double holdTime = qtenv->getRemainingAnimationHoldTime();
-        if ((holdTime > 0 || msgAnim->isHoldActive())
-                && runMode != RUNMODE_FAST) { // we are on a hold, simTime is paused
-            animationTime += std::min(std::max(0.0, holdTime), (now - lastStepAt) * currentProfile->playbackSpeed);
-            adjustFrameRate(renderFrame(false));
 
-            lastEventAt += now - lastFrameAt; // dragging this marker with us, so we can keep a correct pace when the hold ends
-            lastEventAt = std::min(now, lastEventAt);
+        bool inHold = (holdTime > 0 || msgAnim->isHoldActive()) && runMode != RUNMODE_FAST;
+
+        if (animationSpeed == 0 && !inHold) {
+            // this is the old "event - frame - event - frame - event - frame" behavior
+            if (runMode == RUNMODE_NORMAL)
+                renderFrame(false);
+
+            // except in FAST mode we don't have to do a frame after every event
+            if (runMode == RUNMODE_FAST) {
+                double timeSinceFrame = stopwatch.getElapsedSecondsNoLoss() - lastFrameAt;
+                double timeSinceUpdate = stopwatch.getElapsedSecondsNoLoss() - lastGuiUpdateAt;
+                if (timeSinceFrame > (1.0/minFrameRate))
+                    renderFrame(false);
+                else if (timeSinceUpdate > (1.0/minGuiUpdateRate)) {
+                    QApplication::processEvents();
+                    lastGuiUpdateAt = stopwatch.getElapsedSecondsNoLoss();
+                }
+            }
+
+            return true;
+        }
+
+        // is it time to do the next event?
+
+        const double maxDeficit = 1.0 / minFrameRate; // in real seconds
+
+        TimeTriplet nextTimes(currentTimes);
+        double deficit = 0;
+
+        if (inHold) { // we are on a hold, simTime is paused
+            nextTimes.realTime = stopwatch.getElapsedSeconds();
+            double realDt = nextTimes.realTime - currentTimes.realTime;
+            nextTimes.animationTime = currentTimes.animationTime + realDt * currentProfile->playbackSpeed;
         }
         else {
             if (onlyHold)
                 return true;
+            deficit = advanceToRealTimeLimited(nextTimes, stopwatch.getElapsedSeconds(), sim->guessNextSimtime());
+        }
 
-            if (animationSpeed == 0 && runMode != RUNMODE_FAST) {
-                sim->setSimTime(sim->guessNextSimtime());
+        currentTimes = nextTimes;
+        sim->setSimTime(currentTimes.simTime);
+
+        if (deficit > 0) {
+            if (deficit > maxDeficit) {
+                // we can't keep up, let's give up on some time...
+                stopwatch.rewind(maxDeficit);
                 renderFrame(false);
-                return true; // to get the old behaviour back
-            }
-
-            if (nextEventAt <= nextFrameAt || nextEventAt <= now) { // the time has come to execute the next event
-                // TODO: compute the real animation delta time for the actual currentEvent->arrivalTime() - simTime delta
-                //animationTime += animDeltaTime;
-
-                // let's set to time there already
-                sim->setSimTime(sim->guessNextSimtime());
-
-                // but even before letting the event happen, we still have to churn out a frame
-                if (nextEventAt > nextFrameAt)
-                    adjustFrameRate(renderFrame(false));
-                return true;
             }
             else {
-                // this is the case when the event is far away, and we have time to animate peacefully
-                animationTime += (now - lastStepAt) * currentProfile->playbackSpeed;
-
-                ASSERT2(now >= lastStepAt, ("now is " + QString::number(now) + ", lastStepAt is " + QString::number(lastStepAt)).toStdString().c_str());
-
-                double simtimeplus = (now - lastStepAt) * animationSpeed * currentProfile->playbackSpeed;
-
-                auto nextSt = simTime() + simtimeplus;
-                auto nextGuess = sim->guessNextSimtime();
-
-                if (nextGuess >= SIMTIME_ZERO && nextSt > nextGuess)
-                    nextSt = nextGuess;
-
-                sim->setSimTime(nextSt);
-
-                adjustFrameRate(renderFrame(false));
+                double timeSinceFrame = stopwatch.getElapsedSecondsNoLoss() - lastFrameAt;
+                double timeSinceUpdate = stopwatch.getElapsedSecondsNoLoss() - lastGuiUpdateAt;
+                // if the deficit hovers between 0 and maxDeficit for a long time
+                // (this happens when the playback speed is just about where the
+                // computer can still barely handle it without skipping)
+                // we must still do some frames (or at least process Qt events)
+                if (timeSinceFrame > maxDeficit)
+                    renderFrame(false);
+                else if (timeSinceUpdate > (1.0/minGuiUpdateRate)) {
+                    QApplication::processEvents();
+                    lastGuiUpdateAt = stopwatch.getElapsedSecondsNoLoss();
+                }
             }
+            return true;
         }
+
+        renderFrame(false);
     }
 
     return false;
 }
 
-void DisplayUpdateController::setTargetFps(double fps)
-{
-    targetFps = clip(currentProfile->minFps, fps, currentProfile->maxFps);
-}
-
 DisplayUpdateController::DisplayUpdateController()
 {
-    animationTimer.restart();
-    setTargetFps(maxPossibleFps * currentProfile->targetAnimationCpuUsage);
-
     runProfile.load("run");
     fastProfile.load("fast");
 }
 
 double DisplayUpdateController::getAnimationSpeed() const
 {
-    double animSpeed = msgAnim->getAnimationSpeed();
-    double modelSpeed = qtenv->computeModelAnimationSpeedRequest();
+    // animation speed requests come from the model and the internal message animator
+    double msgAnimSpeed = msgAnim->getAnimationSpeed();
+    double modelAnimSpeed = qtenv->computeModelAnimationSpeedRequest();
 
-    if (modelSpeed == 0.0)
-        modelSpeed = animSpeed;
+    // if any of them is 0 (which means not in effect)
+    if (modelAnimSpeed == 0.0)
+        modelAnimSpeed = msgAnimSpeed;
 
-    if (animSpeed == 0.0)
-        animSpeed = modelSpeed;
+    if (msgAnimSpeed == 0.0)
+        msgAnimSpeed = modelAnimSpeed;
 
-    double computedSpeed = std::min(animSpeed, modelSpeed);
+    double computedSpeed = std::min(msgAnimSpeed, modelAnimSpeed);
 
+    // enforcing the two limits, given they are set (not NaNs)
     double minSpeed = currentProfile->minAnimationSpeed;
     double maxSpeed = currentProfile->maxAnimationSpeed;
 
@@ -194,8 +181,7 @@ double DisplayUpdateController::getAnimationSpeed() const
 
 double DisplayUpdateController::getAnimationHoldEndTime() const
 {
-    return std::max(msgAnim->getAnimationHoldEndTime(),
-            qtenv->computeModelHoldEndTime());
+    return std::max(msgAnim->getAnimationHoldEndTime(), qtenv->computeModelHoldEndTime());
 }
 
 void DisplayUpdateController::setRunMode(RunMode value)
@@ -203,6 +189,11 @@ void DisplayUpdateController::setRunMode(RunMode value)
     auto oldMode = runMode;
     runMode = value;
     currentProfile = &runProfile;
+
+    ASSERT(isPaused() == !stopwatch.isRunning());
+
+    if (isPaused())
+        resume();
 
     switch (runMode) {
         case RUNMODE_STEP:
@@ -214,11 +205,10 @@ void DisplayUpdateController::setRunMode(RunMode value)
             break;
         case RUNMODE_NOT_RUNNING:
             msgAnim->clearDeliveries();
+            pause();
             // fallthrough
         case RUNMODE_EXPRESS:
             // express clears all animations anyway
-            currentFps = 0;
-            animationTimer.invalidate();
             break;
         case RUNMODE_NORMAL:
             // nothing to do
@@ -231,14 +221,29 @@ void DisplayUpdateController::setRunMode(RunMode value)
     emit playbackSpeedChanged(getPlaybackSpeed());
 }
 
+// this is mostly (maybe even only...) called when the cSocketRTScheduler is used
+void DisplayUpdateController::idle()
+{
+    advanceToRealTimeLimited(currentTimes, stopwatch.getElapsedSeconds(), simTime());
+
+    renderFrame(false); // seems a bit out of place
+}
+
+void DisplayUpdateController::simulationEvent()
+{
+    if (!getQtenv()->isExpressMode())
+        advanceToRealTimeLimited(currentTimes, stopwatch.getElapsedSeconds(), simTime());
+}
+
 void DisplayUpdateController::skipHold()
 {
-    animationTime = std::max(animationTime, getAnimationHoldEndTime());
+    currentTimes.animationTime = std::max(currentTimes.animationTime, getAnimationHoldEndTime());
 }
 
 void DisplayUpdateController::skipToNextEvent()
 {
     skipHold();
+
     simtime_t nextGuess = sim->guessNextSimtime();
     if (nextGuess > simTime()) // is -1 if no more events...
         sim->setSimTime(nextGuess);
@@ -250,20 +255,8 @@ void DisplayUpdateController::skipToNextEvent()
 bool DisplayUpdateController::rightBeforeEvent()
 {
     return !msgAnim->isHoldActive()
-            && qtenv->computeModelHoldEndTime() <= animationTime
-            && simTime() == sim->guessNextSimtime();
-}
-
-void DisplayUpdateController::startVideoRecording()
-{
-    animationTimer.restart();
-    recordingVideo = true;
-}
-
-void DisplayUpdateController::stopVideoRecording()
-{
-    animationTimer.restart();
-    recordingVideo = false;
+            && qtenv->computeModelHoldEndTime() <= currentTimes.animationTime
+            /*&& simTime() == sim->guessNextSimtime()*/;
 }
 
 bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
@@ -283,15 +276,15 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
         if (!recordingVideo)
             return false;
 
-        if (paused) {
+        if (isPaused()) {
             QApplication::processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents, 100);
+            lastGuiUpdateAt = stopwatch.getElapsedSecondsNoLoss();
             continue;
         }
 
         double holdTime = qtenv->getRemainingAnimationHoldTime();
 
         if (holdTime > 0 || msgAnim->isHoldActive()) { // we are on a hold, simTime is paused
-            animationTime += frameDelta; // TODO account for the cases where there is less hold left than frameDelta
             renderFrame(true);
         }
         else {
@@ -303,14 +296,17 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
             if (animationSpeed == 0) {
                 sim->setSimTime(sim->guessNextSimtime());
                 if (runMode == RUNMODE_FAST) {
-                    if (animationTimer.elapsed() >= 1000.0 / targetFps) {
-                        animationTime += frameDelta;
+                    double timeSinceFrame = stopwatch.getElapsedSecondsNoLoss() - lastFrameAt;
+                    double timeSinceUpdate = stopwatch.getElapsedSecondsNoLoss() - lastGuiUpdateAt;
+                    if (timeSinceFrame > (1.0/minFrameRate)) {
                         lastRecordedFrame = simTime();
                         renderFrame(true);
-                        animationTimer.restart();
+                    }
+                    else if (timeSinceUpdate > (1.0/minGuiUpdateRate)) {
+                        QApplication::processEvents();
+                        lastGuiUpdateAt = stopwatch.getElapsedSecondsNoLoss();
                     }
                 } else {
-                    animationTime += frameDelta;
                     lastRecordedFrame = simTime();
                     renderFrame(true);
                 }
@@ -341,18 +337,77 @@ bool DisplayUpdateController::renderUntilNextEvent(bool onlyHold)
                 return true;
             }
             else {
-                // this is the case when the event is far away, and we have time to animate peacefully
-                animationTime += frameDelta;
                 ASSERT(nextFrame >= simTime()); // this became a bit redundant, but can't hurt
                 sim->setSimTime(nextFrame);
                 renderFrame(true);
                 lastRecordedFrame = nextFrame;
-                animationTimer.restart();
             }
         }
     }
 
     return false;
+}
+
+void DisplayUpdateController::advanceToSimTime(TimeTriplet &triplet, SimTime simTarget)
+{
+    ASSERT(simTarget >= triplet.simTime);
+
+    SimTime simDt = simTarget - triplet.simTime;
+
+    double animSpeed = getAnimationSpeed();
+
+    double animDt = (animSpeed == 0) ? 0 : simDt.dbl() / animSpeed;
+
+    triplet.simTime += simDt;
+    triplet.animationTime += animDt;
+
+    ASSERT(triplet.simTime == simTarget);
+}
+
+double DisplayUpdateController::advanceToRealTimeLimited(TimeTriplet &triplet, double realTarget, SimTime simLimit)
+{
+    ASSERT(triplet.realTime <= realTarget);
+    ASSERT(triplet.simTime <= simLimit);
+
+    SimTime simResidual = SimTime::ZERO;
+
+    double animSpeed = getAnimationSpeed();
+
+    double realDt = realTarget - triplet.realTime;
+    double animDt = realDt * currentProfile->playbackSpeed;
+
+    SimTime simDt;
+    SimTime newSim;
+
+    try {
+        simDt = animDt * animSpeed;
+        newSim = triplet.simTime + simDt;
+    }
+    catch (cRuntimeError&) {
+        simDt = SimTime::getMaxTime();
+        newSim = SimTime::getMaxTime();
+    }
+
+    if (newSim > simLimit) {
+        simResidual = newSim - simLimit;
+        newSim = simLimit;
+
+        simDt = newSim - triplet.simTime;
+
+        if (animSpeed > 0) {
+            animDt = simDt.dbl() / animSpeed;
+            realDt = animDt / currentProfile->playbackSpeed;
+        }
+    }
+
+    triplet.simTime += simDt;
+    triplet.animationTime += animDt;
+    triplet.realTime += realDt;
+
+    ASSERT(triplet.simTime <= simLimit);
+    ASSERT(simResidual >= 0);
+    double factor = animSpeed * currentProfile->playbackSpeed;
+    return simResidual.dbl() / (factor == 0 ? 1.0 : factor);
 }
 
 void DisplayUpdateController::recordFrame()
@@ -435,39 +490,42 @@ void DisplayUpdateController::setPlaybackSpeed(double speed)
     emit playbackSpeedChanged(speed);
 }
 
-void DisplayUpdateController::simulationEvent(cEvent *event)
+void DisplayUpdateController::setPlaybackSpeed(double speed, RunModeProfile *profile)
 {
-    lastExecutedEvent = event->getArrivalTime();
-    lastEventAt = now + animationTimer.nsecsElapsed() / 10.0e9;
+    ASSERT(profile == &runProfile || profile == &fastProfile);
+
+    profile->setPlaybackSpeed(speed);
+
+    if (profile == currentProfile) {
+        if (dialog) {
+            dialog->displayControlValues();
+            dialog->displayMetrics();
+        }
+
+        emit playbackSpeedChanged(speed);
+    }
 }
 
 void DisplayUpdateController::reset()
 {
-    animationTimer.restart();
-
     currentProfile = &runProfile;
-    setTargetFps(maxPossibleFps * currentProfile->targetAnimationCpuUsage);
 
     runMode = RUNMODE_NOT_RUNNING;
 
-    animationTime = 0; // this is The Animation Time
-
-    currentFps = targetFps;
-    maxPossibleFps = currentProfile->maxFps;
-
-    fpsMemory = 0.0;
-
     videoFps = 30; // the framerate of the recorded video
 
-    now = 0; // this is a "real time" stopwatch, only incremented if the simulation is not stopped
+    currentTimes = TimeTriplet();
 
-    lastFrameAt = 0; // these are in realTime (calculated from "now")
-    lastEventAt = 0;
-
-    lastExecutedEvent = SIMTIME_ZERO; // this is used to compute the adaptive nonlinear mapping
+    stopwatch.reset();
+    pausedCount = 0;
+    pause();
 
     recordingVideo = false; // a simple state variable
 
+    lastIntervalAt = 0;
+    lastFrameAt = 0;
+    lastGuiUpdateAt = 0;
+    frameTimes.clear();
     frameCount = 0; // this will be the sequence number of the next recorded frame
     lastRecordedFrame = -SimTime::getMaxTime(); // used in rendering mode, this stores the last SimTime we recorded, incremented by constant amounts
 
@@ -486,13 +544,14 @@ DisplayUpdateController::~DisplayUpdateController()
     fastProfile.save("fast");
 }
 
-double DisplayUpdateController::renderFrame(bool record)
+void DisplayUpdateController::renderFrame(bool record)
 {
-    if (runMode != RUNMODE_STEP)
-        qtenv->getSpeedometer().beginNewInterval();
+    const double now = stopwatch.getElapsedSecondsNoLoss();
 
-    double frameDelta = frameTimer.isValid() ? (frameTimer.nsecsElapsed() / 1.0e9) : 0;
-    frameTimer.restart();
+    if (runMode != RUNMODE_STEP && lastIntervalAt < now - 0.1) {
+        qtenv->getSpeedometer().beginNewInterval();
+        lastIntervalAt = now;
+    }
 
     if (dialog)
         dialog->displayMetrics();
@@ -502,41 +561,70 @@ double DisplayUpdateController::renderFrame(bool record)
     qtenv->updateSimtimeDisplay();
     qtenv->updateStatusDisplay();
 
-    qtenv->callRefreshDisplay();
-    qtenv->refreshInspectors();
     // We have to call the "unsafe" versions (without exception handling) here,
     // because we are in the simulation event loop, we have to let that handle it.
+    qtenv->callRefreshDisplay();
+    qtenv->refreshInspectors();
 
     QApplication::processEvents();
 
+    lastGuiUpdateAt = now;
     lastFrameAt = now;
+
+
+    double holdTime = qtenv->getRemainingAnimationHoldTime();
+    bool inHold = (holdTime > 0 || msgAnim->isHoldActive()) && runMode != RUNMODE_FAST;
+
+    frameTimes.push_back(TimeTriplet(now, getAnimationTime(), simTime(),
+                                      inHold ? 0 : (getAnimationSpeed() * getPlaybackSpeed())));
+    const int maxNumFrameTimes = 10;
+    const int minNumFrameTimes = 5;
+    const double frameTimeRetirement = 0.5; // seconds
+    while (frameTimes.size() > maxNumFrameTimes ||
+           ((frameTimes.size() > minNumFrameTimes) && (now - frameTimes.front().realTime) > frameTimeRetirement))
+        frameTimes.pop_front();
 
     if (record)
         recordFrame();
-
-    double frameTime = frameTimer.nsecsElapsed() / 1.0e9;
-
-    maxPossibleFps = fpsMemory * maxPossibleFps + (1-fpsMemory) * (1.0/frameTime);
-
-    double totalTime = frameDelta + frameTime;
-    currentFps = fpsMemory * currentFps + (1-fpsMemory) * (1.0/totalTime);
-
-    frameTimer.restart();
-    return frameTime;
 }
 
-void DisplayUpdateController::adjustFrameRate(float frameTime)
+double DisplayUpdateController::getCurrentFps() const
 {
-    setTargetFps(targetFps * fpsMemory + ((1.0 / frameTime) * currentProfile->targetAnimationCpuUsage) * (1-fpsMemory));
+    if (frameTimes.size() < 2)
+        return 0;
+
+    return (frameTimes.size()-1.0) / (frameTimes.back().realTime - frameTimes.front().realTime);
+}
+
+double DisplayUpdateController::getCurrentSimulationSpeed() const
+{
+    if (frameTimes.size() < 2)
+        return 0;
+
+    SimTime simSecs = (frameTimes.back().simTime - frameTimes.front().simTime);
+    double secs = (frameTimes.back().realTime - frameTimes.front().realTime);
+
+    return simSecs.dbl() / secs;
+}
+
+bool DisplayUpdateController::effectiveAnimationSpeedRecentlyChanged() const
+{
+    if (frameTimes.size() < 2)
+        return true;
+
+    double currEffAnimSpeed = getAnimationSpeed() * getPlaybackSpeed();
+
+    for (size_t i = 0; i < frameTimes.size(); ++i)
+        if (frameTimes[i].effectiveAnimationSpeed != currEffAnimSpeed)
+            return true;
+
+    return false;
 }
 
 void RunModeProfile::save(const QString &prefix)
 {
     auto qtenv = getQtenv();
 
-    qtenv->setPref("RunModeProfiles/" + prefix + "-target-cpu-usage", targetAnimationCpuUsage);
-    qtenv->setPref("RunModeProfiles/" + prefix + "-min-fps", minFps);
-    qtenv->setPref("RunModeProfiles/" + prefix + "-max-fps", maxFps);
     qtenv->setPref("RunModeProfiles/" + prefix + "-playback-speed", playbackSpeed);
     qtenv->setPref("RunModeProfiles/" + prefix + "-min-playback-speed", minPlaybackSpeed);
     qtenv->setPref("RunModeProfiles/" + prefix + "-max-playback-speed", maxPlaybackSpeed);
@@ -548,9 +636,6 @@ void RunModeProfile::load(const QString &prefix)
 {
     auto qtenv = getQtenv();
 
-    targetAnimationCpuUsage = qtenv->getPref("RunModeProfiles/" + prefix + "-target-cpu-usage", targetAnimationCpuUsage).toDouble();
-    minFps = qtenv->getPref("RunModeProfiles/" + prefix + "-min-fps", minFps).toDouble();
-    maxFps = qtenv->getPref("RunModeProfiles/" + prefix + "-max-fps", maxFps).toDouble();
     playbackSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-playback-speed", playbackSpeed).toDouble();
     minPlaybackSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-min-playback-speed", minPlaybackSpeed).toDouble();
     maxPlaybackSpeed = qtenv->getPref("RunModeProfiles/" + prefix + "-max-playback-speed", maxPlaybackSpeed).toDouble();
