@@ -1649,7 +1649,6 @@ EV << "max = " << unweighted.getMax() << end;
 \end{cpp}
 
 
-
 \subsection{cHistogram}
 \label{sec:sim-lib:histograms}
 
@@ -1678,6 +1677,7 @@ knowledge about the distribution. For special use cases, there are
 other histogram strategies, and it is also possible to write new ones. 
 
 \subsubsection{Creating a Histogram}
+\label{sec:sim-lib:creating-a-histogram}
 
 \cclass{cHistogram} has several constructors variants. Like with 
 \cclass{cStdDev}, it needs to be decided in the constructor call
@@ -1718,11 +1718,13 @@ delegate to similar methods of \cclass{cAutoRangeHistogramStrategy}.
 
 
 \subsubsection{Collecting Observations}
+\label{sec:sim-lib:collecting-observations}
 
 Observations are added to the histogram in the same way as with \cclass{cStdDev}:
 using the \ffunc{collect()} and \ffunc{collectWeighted()} methods. 
 
 \subsubsection{Querying the Bins}
+\label{sec:sim-lib:querying-bins}
 
 Histogram bins can be accessed with three member functions: 
 \ffunc{getNumBins()} returns the number of bins, 
@@ -1777,6 +1779,7 @@ set up already. Setting up the bins can be forced with the
 
 
 \subsubsection{Setting Up and Managing the Bins}
+\label{sec:sim-lib:setting-up-bins}
 
 The \cclass{cHistogram} class has several methods for creating and 
 manipulating bins. These methods are primarily intended to be called
@@ -1818,6 +1821,7 @@ hist.setBinEdges(edges);
 
 
 \subsubsection{Strategy Concept}
+\label{sec:sim-lib:histogram-strategy-concept}
 
 Histogram strategies subclass from \cclass{cIHistogramStrategy}, and are
 responsible for setting up and managing the bins.
@@ -1836,6 +1840,7 @@ uses public histogram methods like \ffunc{createUniformBins()}
 to create and manage the bins.
  
 \subsubsection{Available Histogram Strategies}
+\label{sec:sim-lib:available-histogram-strategies}
 
 The following histogram strategy classes exist.
 
