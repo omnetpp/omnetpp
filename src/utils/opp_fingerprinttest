@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # Fingerprint-based regression test tool
 #
@@ -16,6 +16,7 @@
 # Authors: Andras Varga, Zoltan Bojthe
 #
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import argparse
 import copy
 import csv
@@ -80,7 +81,7 @@ class FingerprintTestCaseGenerator():
     def parseSimulationsTable(self, csvFile):
         simulations = []
         f = open(csvFile, 'rb')
-        csvReader = csv.reader(self.commentRemover(f), delimiter=',', quotechar='"', skipinitialspace=True)
+        csvReader = csv.reader(self.commentRemover(f), delimiter=str(','), quotechar=str('"'), skipinitialspace=True)
         for fields in csvReader:
             if len(fields) == 0:
                 pass        # empty line
@@ -318,7 +319,7 @@ class FingerprintTestCase(SimulationTestCase):
         # Check if the command line does not contain executable name (starts with an option i.e. - char)
         # and use the executable name from the command line.
         # Otherwise, assume the first word as the name of the executable.
-        (exeName, progArgs) = (executable, self.cmdLine) if (self.cmdLine.startswith("-")) else self.cmdLine.split(maxsplit=1)
+        (exeName, progArgs) = (executable, self.cmdLine) if (self.cmdLine.startswith("-")) else self.cmdLine.split(None, 1)
 
         command =  (exeName+"_dbg" if debug else exeName) + " -u Cmdenv " + progArgs + \
             _iif(self.simtimelimit != "", " --sim-time-limit=" + self.simtimelimit, "") + \
@@ -373,6 +374,8 @@ class ThreadSafeIter:
     def __next__(self):
         with self.lock:
             return next(self.it)
+
+    next = __next__  # for python 2 compatibility
 
 
 
@@ -490,7 +493,7 @@ class SimulationTextTestResult(ThreadedTestResult):
     def startTest(self, test):
         super(SimulationTextTestResult, self).startTest(test)
         if self.showAll:
-            self.stream.write(self.getDescription(test))
+            self.stream.write(""+self.getDescription(test))  # NOTE: the empty "" string is needed here for python2/3 compatibility (unicode vs. str) - can be removed if only python3 is used
             self.stream.write(" ... ")
             self.stream.flush()
 
@@ -602,7 +605,10 @@ def _iif(cond,t,f):
     return t if cond else f
 
 def ensure_dir(f):
-    os.makedirs(f, exist_ok=True)
+    try:
+        os.makedirs(f)
+    except:
+        pass # do nothing if already exist
 
 if __name__ == "__main__":
     defaultNumThreads = multiprocessing.cpu_count()
