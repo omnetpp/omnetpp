@@ -3644,6 +3644,12 @@ void cCanvas::setAnimationSpeed(double animationSpeed, const cObject *source)
         animationSpeedMap[source] = animationSpeed;
 }
 
+double cCanvas::getAnimationSpeed(const cObject *source)
+{
+    std::map<const cObject*,double>::const_iterator it = animationSpeedMap.find(source);
+    return it == animationSpeedMap.end() ? 0 : it->second;
+}
+
 void cCanvas::holdSimulationFor(double animationTimeDelta)
 {
     double t = getEnvir()->getAnimationTime() + animationTimeDelta;

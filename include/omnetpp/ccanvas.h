@@ -3129,39 +3129,48 @@ class SIM_API cCanvas : public cOwnedObject
         /** @name Animation. */
         //@{
         /**
-         * Stores an animation speed request associated with the given source
+         * Sets the preferred animation speed associated with the given source
          * object. Specify zero or a negative speed value to clear (withdraw)
-         * the animation speed request.
+         * a previously set animation speed request. The source object only
+         * serves as a key to allow clients register several animation speed
+         * requests with the option to later update and clear any of them.
          *
-         * Animation speed is the speed at which animation time progresses
-         * compared to simulation time (outside "hold" intervals where the
-         * simulation does not progress). Animation speed requests might be
-         * updated at any time during simulation.
-         *
-         * It is up to the runtime GUI how much it will respect the setting,
-         * and how it will derive the global animation speed from multiple
-         * animation speed requests coming from different sources.
+         * The UI of the simulation will take these requests into account when
+         * determining the speed used for actual animation. (For example, the
+         * UI may take the minimum of the requested animation speeds across all
+         * currently viewed canvases, or it may ignore the requests and use an
+         * interactively given animation speed.)
          *
          * @see cEnvir::getAnimationSpeed(), cEnvir::getAnimationTime()
          */
         virtual void setAnimationSpeed(double animationSpeed, const cObject *source);
 
         /**
+         * Returns the animation speed request associated with the given
+         * source object, or 0 if none exists.
+         */
+        virtual double getAnimationSpeed(const cObject *source);
+
+        /**
          * Requests a "hold" interval of the given length, starting at the
-         * current animation time. Simulation is suspended (simulation time
-         * does not progress, and no events are processed) during a hold
-         * interval, thus it can be used to animate actions that take zero
-         * simulation time.
+         * current animation time. During a hold interval, only animation
+         * takes place, but simulation time does not progress and no events
+         * are processed. Hold intervals are intended for animating actions
+         * that take zero simulation time.
          *
          * If a hold request is issued when there is one already in progress,
          * the current hold will be extended as needed to incorporate the
-         * request.
+         * request. A hold request cannot be cancelled or shrunk.
+         *
+         * When rendering (i.e. inside refreshDisplay()), use
+         * <tt>getEnvir()->getRemainingAnimationHoldTime()</tt> or
+         * <tt>getEnvir()->getAnimationTime()</tt> to query the
+         * progress of the animation.
          *
          * @see cEnvir::getRemainingAnimationHoldTime(), cEnvir::getAnimationTime()
          */
         virtual void holdSimulationFor(double animationTimeDelta);
         //@}
-
 };
 
 }  // namespace omnetpp
