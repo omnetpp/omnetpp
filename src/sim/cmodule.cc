@@ -140,9 +140,6 @@ void cModule::releaseListeners()
 
 void cModule::forEachChild(cVisitor *v)
 {
-    for (int i = 0; i < numPars; i++)
-        v->visit(&parArray[i]);
-
     for (GateIterator it(this); !it.end(); ++it)
         v->visit(*it);
 
