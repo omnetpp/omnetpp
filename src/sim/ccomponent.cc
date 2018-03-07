@@ -105,9 +105,8 @@ void cComponent::forEachChild(cVisitor *v)
             cIListener **listeners = (*signalTable)[i].listeners;
             for (int j = 0; listeners[j]; j++)
                 if (cObject *listenerObj = dynamic_cast<cObject*>(listeners[j]))
-                    // Avoid self-visiting -> infinite recursion -> stack overflow when a cComponent
-                    // is also an IListener and listens to a signal of its own (like inet::Ppp)
-                    if (listenerObj != this)
+                    if (listenerObj != this && // avoid self-visiting (module hooked on itself as listener)
+                            (listenerObj->getOwner() == nullptr || listenerObj->getOwner() != this)) // skip objects belonging elsewhere, e.g. other modules as listeners
                         v->visit(listenerObj);
         }
     }
