@@ -1,5 +1,5 @@
 
-all: test_anim test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_builds
+all: test_anim test_common test_core test_envir test_makemake test_featuretool test_fingerprint test_histograms
 
 test_anim:
 	cd anim && make
