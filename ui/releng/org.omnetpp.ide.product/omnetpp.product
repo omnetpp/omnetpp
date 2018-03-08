@@ -16,7 +16,10 @@
    <launcherArgs>
       <programArgs>-name
 &quot;OMNeT++ IDE&quot;
+--launcher.appendVmargs
       </programArgs>
+      <vmArgs>--add-modules=ALL-SYSTEM
+      </vmArgs>
    </launcherArgs>
 
    <windowImages i16="../../org.omnetpp.main/icons/logo16.png" i32="../../org.omnetpp.main/icons/logo32.png" i48="../../org.omnetpp.main/icons/logo48.png" i64="../../org.omnetpp.main/icons/logo64.png" i128="../../org.omnetpp.main/icons/logo128.png" i256="../../org.omnetpp.main/icons/logo256.png"/>
@@ -29,7 +32,6 @@
    <launcher name="omnetpp">
       <linux icon="../../org.omnetpp.main/icons/logo.xpm"/>
       <macosx icon="../../org.omnetpp.main/icons/logo.icns"/>
-      <solaris/>
       <win useIco="true">
          <ico path="../../org.omnetpp.main/icons/logo.ico"/>
          <bmp/>
