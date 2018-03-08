@@ -19,6 +19,7 @@
 #define __OMNETPP_ENVIR_FILEOUTPUTSCALARMGR_H
 
 #include <cstdio>
+#include <cstdint>
 #include "omnetpp/envirext.h"
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"
@@ -45,7 +46,7 @@ class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
     void closeFile();
     void initialize();
     void check(int fprintfResult);
-    void writeStatisticField(const char *name, long value);
+    void writeStatisticField(const char *name, int64_t value);
     void writeStatisticField(const char *name, double value);
     void recordNumericIterationVariableAsScalar(const char *name, const char *value); // i.e. write *if* numeric
 

@@ -255,9 +255,9 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     }
 }
 
-void cFileOutputScalarManager::writeStatisticField(const char *name, long value)
+void cFileOutputScalarManager::writeStatisticField(const char *name, int64_t value)
 {
-    check(fprintf(f, "field %s %ld\n", QUOTE(name), value));
+    check(fprintf(f, "field %s %" PRId64 "\n", QUOTE(name), value));
 }
 
 void cFileOutputScalarManager::writeStatisticField(const char *name, double value)
