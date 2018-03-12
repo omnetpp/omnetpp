@@ -947,7 +947,8 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
     }
 }
 
-int readInt(const QChar *&textPointer) {
+static int readInt(const QChar *&textPointer)
+{
     int result = 0;
     while (*textPointer >= '0' && *textPointer <= '9') {
         result = result * 10 + (textPointer->unicode() - '0');
@@ -958,7 +959,8 @@ int readInt(const QChar *&textPointer) {
     return result;
 }
 
-static void readColor(const QChar *&textPointer, QColor& color) {
+static void readColor(const QChar *&textPointer, QColor& color)
+{
     int format = readInt(textPointer);
 
     if (format == 2) {

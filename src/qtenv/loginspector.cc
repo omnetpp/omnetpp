@@ -309,14 +309,11 @@ void LogInspector::onFilterButton()
 
 void LogInspector::onMessagePrinterTagsButton()
 {
-    if (cModule *module = dynamic_cast<cModule *>(object)) {
-
-        MessagePrinterTagsDialog dialog(this, gatherAllMessagePrinterTags(), &messagePrinterOptions);
-        if (dialog.exec() == QDialog::Accepted) {
-            messagePrinterOptions.enabledTags = dialog.getEnabledTags();
-            contentProvider->refresh();
-            saveMessagePrinterOptions();
-        }
+    MessagePrinterTagsDialog dialog(this, gatherAllMessagePrinterTags(), &messagePrinterOptions);
+    if (dialog.exec() == QDialog::Accepted) {
+        messagePrinterOptions.enabledTags = dialog.getEnabledTags();
+        contentProvider->refresh();
+        saveMessagePrinterOptions();
     }
 }
 
