@@ -411,7 +411,7 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
         if (*textPointer == '\t') {
             // this is a tab, so let's jump forward to the next header segment position
             ++inColumn;
-            int sectionPosition = header->sectionPosition(inColumn); // TODO range check
+            int sectionPosition = header->sectionPosition(inColumn) - horizontalScrollOffset; // TODO range check
             if (curX < sectionPosition)
                 curX = sectionPosition;
             ++textPointer;
@@ -923,7 +923,7 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
             // or this is the first or last, partially selected line of a multi-line selection
 
             int left = 0;
-            int right = viewport()->width();
+            int right = viewport()->width() + horizontalScrollOffset;
 
             // TODO we could avoid these two getLineColumnOffset calls if we
             // returned the two positions from the drawLine method, where we
@@ -1113,7 +1113,7 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
         if (*textPointer == '\t') {
             // this is a tab, so let's jump forward to the next header segment position
             ++inColumn;
-            int sectionPosition = header->sectionPosition(inColumn); // TODO range check
+            int sectionPosition = header->sectionPosition(inColumn) - horizontalScrollOffset; // TODO range check
             if (x < sectionPosition)
                 x = sectionPosition;
             ++textPointer;
