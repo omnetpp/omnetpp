@@ -16,6 +16,7 @@
 
 #include <cstring>
 #include <cmath>
+#include "omnetpp/cpacket.h"
 #include "omnetpp/cregistrationlist.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
@@ -40,6 +41,7 @@
 
 #define emit
 
+using namespace omnetpp;
 using namespace omnetpp::common;
 
 namespace omnetpp {
@@ -434,7 +436,14 @@ void GenericObjectInspector::doSetObject(cObject *obj)
     bool isContainerLike = contains(containerTypes, std::string(getObjectBaseClass(obj)));
     auto defaultMode = isContainerLike ? Mode::CHILDREN : Mode::GROUPED;
 
-    doSetMode((Mode)getPref(PREF_MODE, (int)defaultMode).toInt());
+    Mode mode = (Mode)getPref(PREF_MODE, (int)defaultMode).toInt();
+
+    bool isPacket = dynamic_cast<cPacket *>(obj);
+    if (!isPacket && mode == Mode::PACKET)
+        mode = defaultMode;
+    toPacketModeAction->setEnabled(isPacket);
+
+    doSetMode(mode);
     recreateModel();
 
     expandNodes(expanded);
