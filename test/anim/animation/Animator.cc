@@ -28,9 +28,13 @@ void Animator::handleMessage(cMessage* msg)
 {
     double eventInterArrivalTime = par("eventInterArrivalTime");
     double eventProcessingTime = par("eventProcessingTime");
+    double handleMessageHoldTime = par("handleMessageHoldTime");
 
     usleep(eventProcessingTime * 1000000);
+
     scheduleAt(simTime() + eventInterArrivalTime, msg);
+
+    getParentModule()->getCanvas()->holdSimulationFor(handleMessageHoldTime);
 }
 
 void Animator::refreshDisplay() const
@@ -51,4 +55,7 @@ void Animator::refreshDisplay() const
     y = 300 + std::sin(st/10) * 200;
 
     oval3->setBounds(cFigure::Rectangle(x-10, y-10, 20, 20));
+
+    double refreshDisplayHoldTime = par("refreshDisplayHoldTime");
+    getParentModule()->getCanvas()->holdSimulationFor(refreshDisplayHoldTime);
 }
