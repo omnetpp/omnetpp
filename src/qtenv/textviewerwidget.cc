@@ -170,7 +170,8 @@ void TextViewerWidget::setFont(QFont font)
     auto metrics = QFontMetrics(font, viewport());
 
     baseline = metrics.leading() + metrics.ascent();
-    lineSpacing = metrics.lineSpacing();
+    // This way the underline is not obscured when the line below is selected: (and the 'g' letters look better)
+    lineSpacing = metrics.lineSpacing() + metrics.underlinePos();
     averageCharWidth = metrics.averageCharWidth();
 
     isMonospaceFont = QFontInfo(font).fixedPitch();
@@ -923,8 +924,7 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
             painter.save();
             auto metrics = painter.fontMetrics();
 
-            painter.setClipRect(left - horizontalScrollOffset, y,
-                                right - left, std::max(lineSpacing+1, metrics.leading() + metrics.ascent() + metrics.underlinePos() + metrics.lineWidth()));
+            painter.setClipRect(left - horizontalScrollOffset, y, right - left, lineSpacing);
             drawLine(painter, lineIndex, x, y, true);
             painter.restore();
         }
@@ -1055,21 +1055,15 @@ static void performSgrControlSequence(const QChar *&textPointer, const QFont &de
         ++textPointer;
 }
 
-static int paintText(const QChar *start, int length, QPainter& painter, const QFontMetrics& metrics, int x, int y, int extendXTo, const QColor& fgColor, const QColor& bgColor, const QFont& font)
+int TextViewerWidget::paintText(const QString& text, QPainter& painter, const QFontMetrics& metrics, int x, int y, const QColor& fgColor, const QColor& bgColor, const QFont& font)
 {
     painter.setFont(font);
-
-    QString text(start, length);
-    if (start[length] == '\t')
-        text += ' ';
 
     int width = metrics.width(text);
 
     // background if needed
     if (bgColor.isValid()) {
-        // a simple metrics.width(segmentText) is not enough here, we might need to extend
-        // the bg to the next tab stop
-        QRect bgRect(x+1, y, std::max(width, extendXTo - x), metrics.lineSpacing());
+        QRect bgRect(x+1, y, width, lineSpacing);
         painter.fillRect(bgRect, bgColor);
     }
 
@@ -1103,6 +1097,13 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
             // this is a tab, so let's jump forward to the next header segment position
             ++inColumn;
             int sectionPosition = header->sectionPosition(inColumn) - horizontalScrollOffset; // TODO range check
+
+            // background if needed
+            if (curBgColor.isValid()) {
+                QRect bgRect(x+1, y, sectionPosition - x, lineSpacing);
+                painter.fillRect(bgRect, asSelected ? selectionBackgroundColor : curBgColor);
+            }
+
             if (x < sectionPosition)
                 x = sectionPosition;
             ++textPointer;
@@ -1129,11 +1130,13 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
                 curBgColor = selectionBackgroundColor;
                 curFgColor = selectionForegroundColor;
             }
-            int extendXTo = 0;
-            if (*skipEscapeSequences(textPointer) == '\t')
-                extendXTo = header->sectionPosition(inColumn+1); // TODO range check
 
-            int width = paintText(start, textPointer - start, painter, metrics, x, y, extendXTo, curFgColor, curBgColor, curFont);
+            QString text(start, textPointer - start);
+
+            if (*textPointer == '\t')
+                text += ' '; // draw the tab as one space
+
+            int width = paintText(text, painter, metrics, x, y, curFgColor, curBgColor, curFont);
 
             x += width;
         }

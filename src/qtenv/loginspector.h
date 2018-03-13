@@ -59,7 +59,7 @@ class QTENV_API LogInspector : public Inspector
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
       TextViewerWidget *textWidget;
-      ModuleOutputContentProvider *contentProvider;
+      ModuleOutputContentProvider *contentProvider; // owned by textWidget
 
       std::set<int> excludedModuleIds;
       cMessagePrinter::Options messagePrinterOptions;

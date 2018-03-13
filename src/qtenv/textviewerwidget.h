@@ -54,8 +54,8 @@ public:
 // and selection painting with fonts that change the width of
 // characters when they are set to bold/italic/underlined.
 // Most sane monospace fonts should be fine in any combination.
-// Also, with small (or normal) font sizes, the underline is
-// covered by the selection background of the line below.
+// Additionally, if there are multiple tab characters one after
+// another, either all of them are selected, or none of them are.
 class QTENV_API TextViewerWidget : public QAbstractScrollArea
 {
     Q_OBJECT
@@ -160,6 +160,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
+    int paintText(const QString& text, QPainter& painter, const QFontMetrics& metrics, int x, int y, const QColor& fgColor, const QColor& bgColor, const QFont& font);
     void drawLine(QPainter &painter, int lineIndex, int x, int y, bool asSelected);
 
 
