@@ -792,25 +792,17 @@ int TextViewerWidget::mapColumnToFormatted(const QChar *textPointer, int unforma
 
     while (*textPointer != 0) {
         // '\t' is not a special case here
-        if (*textPointer == '\x1b') {
-            // skip to the end of the scape sequence
-            while (*textPointer != 0 && *textPointer != 'm')
-                ++textPointer;
 
-            // and finally skip the end as well
-            if (*textPointer == 'm')
-                ++textPointer;
-        }
-        else {
-            // this is regular text, see how many characters until we hit an
-            // escape sequence, or the end of the string
+        textPointer = skipEscapeSequences(textPointer);
 
-            while (*textPointer != '\x1b' && *textPointer != 0) {
-                if ((textPointer - textStart) >= unformattedColumn)
-                    return formattedColumn;
-                ++textPointer;
-                ++formattedColumn;
-            }
+        // this is regular text, see how many characters until we hit an
+        // escape sequence, or the end of the string
+
+        while (*textPointer != '\x1b' && *textPointer != 0) {
+            if ((textPointer - textStart) >= unformattedColumn)
+                return formattedColumn;
+            ++textPointer;
+            ++formattedColumn;
         }
     }
 
@@ -828,25 +820,17 @@ int TextViewerWidget::mapColumnToUnformatted(const QChar *textPointer, int forma
 
     while (*textPointer != 0) {
         // '\t' is not a special case here
-        if (*textPointer == '\x1b') {
-            // skip to the end of the scape sequence
-            while (*textPointer != 0 && *textPointer != 'm')
-                ++textPointer;
 
-            // and finally skip the end as well
-            if (*textPointer == 'm')
-                ++textPointer;
-        }
-        else {
-            // this is regular text, see how many characters until we hit an
-            // escape sequence, or the end of the string
+        textPointer = skipEscapeSequences(textPointer);
 
-            while (*textPointer != '\x1b' && *textPointer != 0) {
-                if (formattedChars >= formattedColumn)
-                    return textPointer - textStart;
-                ++textPointer;
-                ++formattedChars;
-            }
+        // this is regular text, see how many characters until we hit an
+        // escape sequence, or the end of the string
+
+        while (*textPointer != '\x1b' && *textPointer != 0) {
+            if (formattedChars >= formattedColumn)
+                return textPointer - textStart;
+            ++textPointer;
+            ++formattedChars;
         }
     }
 
@@ -956,6 +940,7 @@ static int readInt(const QChar *&textPointer)
     }
     if (*textPointer == ';')
         ++textPointer;
+
     return result;
 }
 
@@ -1012,11 +997,15 @@ static void performSgrControlSequence(const QChar *&textPointer, const QFont &de
     ++textPointer;
 
     if (*textPointer != '[')
-        return;
+        return; // invalid format, terminate processing
 
     ++textPointer;
 
     while (*textPointer != 0 && *textPointer != 'm') {
+
+        if (!(*textPointer == ';' || *textPointer == 'm' || (*textPointer >= '0' && *textPointer <= '9')))
+            break; // invalid sequence, act as if it ended here
+
         int action = readInt(textPointer);
 
         if (action >= 30 && action <= 37)

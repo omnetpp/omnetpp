@@ -677,8 +677,17 @@ const QChar *skipEscapeSequences(const QChar *start)
     while (*start != 0) {
         if (*start == '\x1b') {
             ++start;
-            while (*start != 0 && *start != 'm')
+
+            if (*start != '[')
+                break; // invalid format, ending the control sequence here
+
+            ++start;
+
+            while (*start != 0 && *start != 'm') {
+                if (*start != ';' && (*start < '0' || *start > '9'))
+                    break; // invalid sequence, act as if it ended here
                 ++start;
+            }
             if (*start == 'm')
                 ++start;
         } else
