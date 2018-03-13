@@ -19,12 +19,13 @@
 
 Define_Module(Tester);
 
-// TODO: "reset" sequences, format combinations, INVALID SEQUENCES, interaction with tabs
+// TODO: "reset" sequences, format combinations, interaction with tabs, perhaps more invalid control sequence variants
 void Tester::initialize()
 {
     msg = new cMessage("selfMsg");
     scheduleAt(0, msg);
 
+    // TODO: should not assume that the default BG is white(ish), and the default FG is black(ish) - consider dark UI themes
     EV_INFO << "Testing the normal and bright foreground palette:" << std::endl;
 
     for (int i = 30; i <= 37; ++i)
@@ -100,6 +101,21 @@ void Tester::initialize()
     }
 
     EV_INFO << "\x1b[0m" << std::endl;
+
+    EV_INFO << "Invalid sequences:" << std::endl;
+
+    EV_INFO << "  Missing terminator: \x1b[32 Rest of the line." << std::endl;
+    EV_INFO << "  Not square bracket: \x1b{34 Rest of the line." << std::endl;
+    EV_INFO << "  Wrong format: \x1b\x1b[32mm Rest of the line." << std::endl;
+    EV_INFO << "  Invalid character: \x1b[34;-5;1m Rest of the line." << std::endl;
+    EV_INFO << "  Unsupported argument: \x1b[20m Rest of the line." << std::endl;
+
+    EV_INFO << "  Unsupported color format: \x1b[38;3;213;221m Rest of the line." << std::endl;
+    EV_INFO << "  Missing 8-bit color argument: \x1b[38;5m Rest of the line." << std::endl;
+    EV_INFO << "  No RGB color arguments: \x1b[38;2m Rest of the line." << std::endl;
+    EV_INFO << "  Not enough RGB color arguments: \x1b[38;2;34;56m Rest of the line." << std::endl;
+
+    EV_INFO << "Rainbow scroller: (start the simulation and turn off event banner printing for the best effect)" << std::endl;
 }
 
 static void printLetterWithColor(char letter, int r, int g, int b)
