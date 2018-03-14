@@ -36,11 +36,17 @@ class circular_buffer
 
     private:
         void grow() {
+            ASSERT(cbhead == cbtail); // here it means full, not empty
+
             int newsize = 2*cbsize;
             T *newcb = new T[newsize];
-            memcpy(newcb, cb, cbsize*sizeof(T));
+
+            memcpy(newcb, cb + cbhead, (cbsize - cbhead)*sizeof(T));
+            memcpy(newcb + (cbsize - cbhead), cb, cbtail*sizeof(T));
+
             delete[] cb;
             cb = newcb;
+
             cbhead = 0;
             cbtail = cbsize;
             cbsize = newsize;
@@ -85,7 +91,7 @@ class circular_buffer
             return cbhead == cbtail;
         }
         void clear() {
-            cbhead = cbtail;
+            cbhead = cbtail = 0;
         }
 };
 
