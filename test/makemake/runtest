@@ -27,7 +27,7 @@ for i in * ""; do
 done
 
 echo Build...
-opp_makemake -f -r --nolink && $MAKE || failure BUILD
+opp_makemake -f -r --nolink --out ../out && $MAKE || failure BUILD
 
 # Run the tests
 echo
