@@ -1,5 +1,56 @@
+2018-03-14  Attila Torok
 
-2018-01-26  TÖRÖK Attila
+	* Fix circular_buffer::grow(). One memcpy is not enough.
+	This caused shuffled log output when the simulation was run for a while,
+	then the network was rebuilt, then run again for a bit longer.
+
+2018-03-06  Attila Torok
+
+	* Entirely new animation algorithm in DisplayUpdateController.
+
+	* Animation Parameters dialog: If there is no animation speed,
+	  display "not set" instead of 0.
+
+	* Animation Parameters dialog: Display current simulation speed.
+	  It is colored red if the simulation cannot keep up with the
+	  requested animation speed (simulationSpeed < animationSpeed *
+	  playbackSpeed, by some margin)
+
+2018-03-01  Attila Torok
+
+	* Log Viewer: added support for ANSI control sequences: bold/italic/
+	underline on/off, foreground/background color (16-color palette,
+	256-color palette, RGB), reset foreground/background color, reset all.
+
+2018-03-01  Attila Torok
+
+	* Generic Object Inspector: Use the new cMessagePrinter Options API,
+	add config dialog.
+
+2018-03-12  Attila Torok
+
+	* Generic Object Inspector: Disable packet mode if the inspected object
+	is not cPacket.
+
+2018-01-10  Levente Mészáros
+
+	* Generic Object Inspector: Don't call getDynamicTypeString for fields with
+	nullptr value. This fixes the std::bad_typeid exceptions when clicking
+	on previous messages in the LogInspector in some INET simulations.
+
+2018-02-15  Attila Torok
+
+	* OSG: Add missing include to fix build with newer osgEarth versions.
+
+2018-02-13  Attila Torok
+
+	* Generic Object Inspector: Catch cRuntimeErrors thrown by getFieldValueAsString()
+
+2018-03-01  Attila Torok
+
+	* HistogramInspector: More fixes (tick drawing with large values)
+
+2018-01-26  Attila Torok
 
 	* HistogramInspector: Visualize outlier bins (drawn with a different
 	color than normal bins), and show info about them.

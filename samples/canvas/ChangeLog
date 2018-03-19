@@ -1,3 +1,8 @@
+2017-06-20  Attila Torok
+
+	* Added smooth animation with CarAnimator::refreshDisplay().
+	And set an animation speed request that makes it look okay.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------

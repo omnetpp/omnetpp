@@ -1,3 +1,18 @@
+2018-03-07  Rudolf Hornig
+
+	* opp_fingerprint, opp_runall: switch to Python 2, as macOS has no
+	Python in its default installation
+
+2018-03-01  Andras Varga
+
+	* opp_fingerprinttest: fix: error messages from the simulation did
+	not appear. Only "<!> Error" was printed, but not the actual error
+	message.
+
+2018-02-08  Rudolf Hornig
+
+	* opp_test, opp_fingerprinttest: made to work on Windows
+
 2018-01-26  Zoltan Bojthe
 
 	* opp_test: fixed argument passing in runscript: $* replaced to "$@"

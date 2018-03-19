@@ -1,3 +1,29 @@
+2018-03-01  Attila Torok
+
+	* c[Global]RegistrationList: Add begin() and end() methods for easier
+	iteration.
+
+2018-01-29  Andras Varga
+
+	* cMessagePrinter: API was extended with tags and column names
+
+2018-03-07  Andras Varga
+
+	* cCanvas: added getAnimationSpeed(); better documentation for
+	setAnimationSpeed() and holdSimulationFor()
+
+2018-03-05  Andras Varga
+
+	* cStatistic: fix return type of getCount() (long -> int64_t)
+
+2018-03-01  Andras Varga
+
+	* cHistogram: Do not keep numOverflows/numUnderflows for weighted statistics
+
+2018-02-09  Rudolf Hornig
+
+	* cNedValue: added convenience method with int signature
+
 2018-01-31  Andras Varga
 
 	* Make statistic recorders "findable" from Qtenv:

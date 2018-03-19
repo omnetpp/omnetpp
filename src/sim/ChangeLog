@@ -1,3 +1,51 @@
+2018-03-01  Attila Torok
+
+	* Update cDefaultMessagePrinter to use the new API.
+
+2018-03-07  Andras Varga
+
+	* cCanvas: added getAnimationSpeed(); better documentation for
+	setAnimationSpeed() and holdSimulationFor()
+
+2018-03-07  Andras Varga
+
+	* Fix: forEachChild(): do not go into listeners which are not owned.
+	If a module was hooked as a listener on another module, it was also
+	listed in the child list (among parameters, gates and local objects)
+	which was kind of weird.
+
+2018-03-07  Andras Varga
+
+	* Fix: cPars were visited both from cModule's and
+	cComponent's forEachChild()
+
+2018-03-06  Andras Varga
+
+	* Result recorders: Added "timeWeightedHistogram" recorder
+
+2018-03-01  Andras Varga
+
+	* cHistogram: Do not keep numOverflows/numUnderflows for weighted statistics,
+	only sums of weights.
+
+2018-02-11  Andras Varga
+
+	* cCanvas: Proper error message if "type=" is missing from @figure.
+
+2018-02-08  Andras Varga
+
+	* cDefault/AutoHistogramStrategy: fix std::bad_alloc on collecting an
+	extremely large value.
+
+2018-02-03  Andras Varga
+
+	* cDynamicExpression: fix: wrong display of errors with operator "%".
+	("%" was misinterpreted by cRuntimeError as format argument.)
+
+2018-02-02  Attila Torok
+
+	* Fix potential stack overflow in cComponent::forEachChild().
+
 2018-01-31  Andras Varga
 
 	* Make statistic recorders "findable" from Qtenv

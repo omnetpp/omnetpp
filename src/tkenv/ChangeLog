@@ -1,3 +1,13 @@
+2018-03-14  Attila Torok
+
+	* Fix circular_buffer::grow(). One memcpy is not enough.
+	This caused shuffled log output when the simulation was run for a while,
+	then the network was rebuilt, then run again for a bit longer.
+
+2018-03-01  Attila Torok
+
+	* Use the new cMessagePrinter Options API
+
 2018-01-26  Andras Varga
 
 	* Follow recent histogram API changes.

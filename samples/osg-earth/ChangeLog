@@ -1,3 +1,14 @@
+2018-01-29  Pal Sipos
+
+	* Replace and add new level 2 offline map tiles. Fixes black screen
+	with osgEarth 2.5.0.
+
+2018-02-15  Attila Torok
+
+	* Switch from ObjectLocator to GeoTransform. The former was removed
+	after osgEarth 2.8, and the latter has been around for quite some
+	time now.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------

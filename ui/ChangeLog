@@ -1,3 +1,8 @@
+2018-03-08  Rudolf Hornig
+
+	* Fix: added --add-modules vm argument to eclipse.ini to be compatible
+	with JDK 9
+
 2017-11-22  Rudolf Hornig
 
 	* Makefile generator: follow opp_makemake change: generate dependency

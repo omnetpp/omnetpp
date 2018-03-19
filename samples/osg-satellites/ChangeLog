@@ -1,3 +1,9 @@
+2018-02-15  TÖRÖK Attila
+
+	* Switch from ObjectLocator to GeoTransform. The former was removed
+	after osgEarth 2.8, and the latter has been around for quite some
+	time now.
+
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
 2017-09-18  ------ omnetpp-5.2 released ------
