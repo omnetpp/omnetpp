@@ -395,8 +395,8 @@ void ModuleInspector::refreshLayout()
     layouter->setSeed(layoutSeed);
 
     // background size
-    int sx = resolveLongDispStrArg(ds.getTagArg("bgb", 0), parentModule, 0);
-    int sy = resolveLongDispStrArg(ds.getTagArg("bgb", 1), parentModule, 0);
+    int sx = resolveDoubleDispStrArg(ds.getTagArg("bgb", 0), parentModule, 0);
+    int sy = resolveDoubleDispStrArg(ds.getTagArg("bgb", 1), parentModule, 0);
     int border = 30;
     if (sx != 0 && sx < 2*border)
         border = sx/2;
