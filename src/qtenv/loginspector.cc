@@ -431,7 +431,7 @@ void LogInspector::saveContent()
     QTextStream out(&file);
 
     for (int i = 0; i < lineNumber; ++i)
-        out << stripFormatting(contentProvider->getLineText(i));
+        out << stripFormatting(contentProvider->getLineText(i)) << '\n';
 
     file.close();
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());
