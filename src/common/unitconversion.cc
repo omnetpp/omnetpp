@@ -339,10 +339,6 @@ double UnitConversion::convertUnit(double value, const char *unit, const char *t
     if (std::isnan(value) && opp_isempty(unit))
         return value;
 
-    // if value is zero, unit may be omitted (if target unit is linear, e.g. not for dB) --TODO remove this in 6.0
-    if (value == 0 && opp_isempty(unit) && !opp_isempty(targetUnit) && isLinearUnit(targetUnit))
-        return 0;
-
     // if only one unit is given, that's an error
     if (opp_isempty(unit) || opp_isempty(targetUnit))
         cannotConvert(unit, targetUnit);
