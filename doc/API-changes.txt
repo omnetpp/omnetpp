@@ -26,7 +26,7 @@ OMNeT++ 5.2
 
 (!)     Figure classes: zIndex is now additive: the effective zIndex is the sum
         of the zIndex values of the figure and all its ancestors up to the root
-        figure. This provides more flexibility,	as the figure tree is no longer
+        figure. This provides more flexibility, as the figure tree is no longer
         constrained by stacking order.
 
 (+)     cFigure: added getEffectiveZIndex().
@@ -35,11 +35,11 @@ OMNeT++ 5.2
         elements that are not affected by zooming.
 
 (+)     cStddev: added support for weighted statistics. To make a weighted
-	cStddev, pass weighted=true in the constructor. The weighted-ness of
-	an cStddev instance cannot be changed afterwards. getMean() and
-	getStddev() now return the weighted mean / stddev if the object is
-	weighted. Note: getSum() and getSqrSum() are not available when
-	collectecting weighted statistics (they throw an exception).
+        cStddev, pass weighted=true in the constructor. The weighted-ness of
+        an cStddev instance cannot be changed afterwards. getMean() and
+        getStddev() now return the weighted mean / stddev if the object is
+        weighted. Note: getSum() and getSqrSum() are not available when
+        collectecting weighted statistics (they throw an exception).
 
 (-)     Deprecated cWeightedStddev, use cStddev with the weighted=true setting
         instead. Temorarily, cWeightedStddev has been reimplemented as a
@@ -49,27 +49,27 @@ OMNeT++ 5.2
         available, due to the deprecated cWeightedStddev class having been
         temporarily reimplemented as a trivial subclass of cStddev.
 
-(+)	Histogram classes: added support for weighted statistics to histogram
-	classes (cHistogramBase and subclasses: cHistogram, cVarHistogram,
-	cLongHistogram, cDoubleHistogram). Pass weighted=true to the constructor
-	to create weighted versions. To support weighted histograms, the
-	data type of bin values were changed from int to double; they now
+(+)     Histogram classes: added support for weighted statistics to histogram
+        classes (cHistogramBase and subclasses: cHistogram, cVarHistogram,
+        cLongHistogram, cDoubleHistogram). Pass weighted=true to the constructor
+        to create weighted versions. To support weighted histograms, the
+        data type of bin values were changed from int to double; they now
         store sum of weights instead of observation counts. The unweighted case
         is treated simply as a special case of weighted where all weights are 1.0.
 
-(+)	New cDensityEstBase methods: getUnderflowSumWeights(), getOverflowSumWeights().
+(+)     New cDensityEstBase methods: getUnderflowSumWeights(), getOverflowSumWeights().
         They return sum of weights for observations that are outside the histogram
         range. Note: the slightly misnamed getUnderflowCell()/getOverflowCell()
         methods that return overflow/underflow counts are still available.
 
 (i)     cOsgCanvas: Refactoring necessary for allowing the OSG Viewer to be factored
-	out from Qtenv into as separate support library, loaded on demand at runtime.
-	The simulation kernel kernel (and cOsgCanvas) now does NOT depend on the
-	OSG libraries: does not include OSG header files at all, and does not
-	reference any symbols in the OSG libraries. cOsgCanvas now treats
-	osg::Node* as opaque pointers, no attempt is made to dereference it.
-	cOsgCanvas now performs osg::Node reference counting via cEnvir's new
-	refOsgNode()/unrefOsgNode() methods instead of Node's methods.
+        out from Qtenv into as separate support library, loaded on demand at runtime.
+        The simulation kernel kernel (and cOsgCanvas) now does NOT depend on the
+        OSG libraries: does not include OSG header files at all, and does not
+        reference any symbols in the OSG libraries. cOsgCanvas now treats
+        osg::Node* as opaque pointers, no attempt is made to dereference it.
+        cOsgCanvas now performs osg::Node reference counting via cEnvir's new
+        refOsgNode()/unrefOsgNode() methods instead of Node's methods.
 
 (+)     cModule::getOsgCanvas() is now always available (never throws "No OSG"
         exception). This is a direct consequence of the change above.
