@@ -3719,21 +3719,25 @@ exporting, all without having to resort to a command line interface.
 \subsubsection{Placing Objects on a Map}
 \label{sec:graphics:osgearth-placing-objects}
 
-To easily position a part of the scene together on a given geographical location,
-an \cclass{osgEarth::Util::ObjectLocatorNode} is of great help. It can take
-traditional longitude/latitude/altitude coordinates and orientation in the form
-of Euler angles. It creates a simple Cartesian coordinate system on the given
-location, in which all of its children can be positioned painlessly, without
-having to worry about further coordinate transformations between linear and
-spherical systems:
+To easily position a part of the scene together on a given geographical
+location, an \cclass{osgEarth::GeoTransform} is of great help. It takes
+geographical coordinates (longitude/latitude/altitude), and creates a simple
+Cartesian coordinate system centered on the given location, in which all of
+its children can be positioned painlessly, without having to worry about
+further coordinate transformations between Cartesian and geographic systems.
+To move and orient the children within this local system,
+\cclass{osg::PositionAttitudeTransform} can be used.
 
 \begin{cpp}
-objectLocatorNode *locatorNode =
-    new osgEarth::Util::ObjectLocatorNode(mapNode->getMap());
-locatorNode->addChild(objectNode);
-mapNode->getModelLayerGroup()->addChild(locatorNode);
-locatorNode->getLocator()->setPosition(osg::Vec3d(longitude, latitude, altitude));
-locatorNode->getLocator()->setOrientation(osg::Vec3d(heading, 0, 0));
+osgEarth::GeoTransform *geoTransform = new osgEarth::GeoTransform();
+osg::PositionAttitudeTransform *localTransform = new osg::PositionAttitudeTransform();
+
+mapNode->getModelLayerGroup()->addChild(geoTransform);
+geoTransform->addChild(localTransform);
+localTransform->addChild(objectNode);
+
+geoTransform->setPosition(osgEarth::GeoPoint(mapNode->getMapSRS(), longitude, latitude, altitude));
+localTransform->setAttitude(osg::Quat(heading, osg::Vec3d(0, 0, 1)));
 \end{cpp}
 
 \subsubsection{Adding Annotations on a Map}
