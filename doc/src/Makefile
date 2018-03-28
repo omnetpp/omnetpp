@@ -6,7 +6,7 @@ DOXYGEN=doxygen
 #
 # Targets
 #
-all: apis do-tictoc-tutorial do-manual do-userguide do-ide-overview do-ide-customization-guide do-installguide do-ide-developers-guide
+all: apis do-manual do-userguide do-ide-overview do-ide-customization-guide do-installguide do-ide-developers-guide
 
 apis: api nedxml-api parsim-api
 
@@ -37,18 +37,14 @@ do-ide-developers-guide:
 do-ide-overview:
 	cd ide-overview && $(MAKE)
 
-do-tictoc-tutorial:
-	cd tictoc-tutorial && $(MAKE)
-
 do-queues-tutorial:
 	cd queues-tutorial && $(MAKE)
 
 clean:
-	rm -rf ../api ../nedxml-api ../parsim-api ../tictoc-tutorial ../manual ../userguide ../installguide ../ide-customization-guide ../ide-overview ../*.pdf
+	rm -rf ../api ../nedxml-api ../parsim-api ../manual ../userguide ../installguide ../ide-customization-guide ../ide-overview ../*.pdf
 	cd manual && $(MAKE) clean
 	cd userguide && $(MAKE) clean
 	cd installguide && $(MAKE) clean
 	cd ide-customization-guide && $(MAKE) clean
 	cd ide-developersguide && $(MAKE) clean
 	cd ide-overview && $(MAKE) clean
-	cd tictoc-tutorial && $(MAKE) clean

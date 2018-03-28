@@ -9,7 +9,7 @@
       </topic>
       <topic href="content/ide-overview/ide-overview.html" label="An Overview of the OMNeT++ IDE">
       </topic>
-      <topic href="content/tictoc-tutorial/index.html" label="Tic-Toc Tutorial">
+      <topic href="https://docs.omnetpp.org/tutorials" label="Tutorials">
       </topic>
       <!-- samples.html removed because "workspace:" links don't work in it!
       <topic href="content/samples/samples.html" label="The OMNeT++ Programming Examples">

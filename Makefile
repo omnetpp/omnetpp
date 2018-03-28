@@ -231,7 +231,6 @@ copy-ui-docu:
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/api
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
-	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/tictoc-tutorial
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-overview
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide
 	$(Q)rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide
@@ -239,7 +238,6 @@ copy-ui-docu:
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/api $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/manual/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/userguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
-	$(Q)cp -r $(OMNETPP_DOC_DIR)/tictoc-tutorial $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/ide-overview $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/ide-customization-guide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-customization-guide
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/ide-developersguide/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/ide-developersguide
