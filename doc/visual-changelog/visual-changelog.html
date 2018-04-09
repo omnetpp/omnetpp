@@ -11,6 +11,64 @@
   </style>
 <body>
 
+    <h1>What's New in OMNeT++/OMNEST 5.3</h1>
+
+    <h2>Qtenv</h2>
+
+    <table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+    <tbody>
+
+    <tr><td><p align="right"><b>Enhanced Histogram Inspectors</b></p></td>
+    <td><p>Histogram inspector windows now show the lower and upper
+        outliers as extra bins (gray). Setting up the bins while
+        in the precollection phase can be forced from the toolbar.
+    </p>
+    <img width="500" src="images/53-qtenv-histogram.png" border="0"><br>
+    </td></tr>
+
+    <tr><td><p align="right"><b>Improved Message Printer API</b></p></td>
+        <td><p>The Message Printer API was enhanced to allow the Message Log window
+            to display info in multiple columns.
+        </p>
+        <img width="700" src="images/53-qtenv-message-printer.png" border="0"><br>
+    </td></tr>
+
+    <tr><td><p align="right"><b>Message Printer Configuration</b></p></td>
+        <td><p>Columns in the Message Log window and other options
+            can be turned on/off using a new configuration dialog.
+        </p>
+        <img width="300" src="images/53-qtenv-message-printer-config.png" border="0"><br>
+    </td></tr>
+
+    <tr><td><p align="right"><b>ANSI Control Sequence Support</b></p></td>
+        <td><p> Qtenv now supports ANSI control sequences for text styling:
+                foreground/background color, and bold/italic/underline text.
+                Styling is supported in both Message History view and Log view.
+        </p>
+        <img width="500" src="images/53-qtenv-logformatting.png" border="0"><br>
+    </td></tr>
+
+    <tr><td><p align="right"><b>Inspector Packet Mode</b></p></td>
+        <td><p>The Object Inspector has a new mode called Packet mode. Packet mode
+            only shows fields that are considered packet content. You can mark fields
+            as packet content by adding the <tt>@packetData</tt> property to the field in the
+            message file.
+        </p>
+        <img width="600" src="images/53-qtenv-packet-mode-inspector.png" border="0"><br>
+    </td></tr>
+
+    <tr><td><p align="right"><b>Improved Animation</b></p></td>
+        <td><p> The controller for smooth animation has been rewritten. The new algorithm is now able
+                to scale linearly, as long as the simulation can keep up.
+                The usability of the Animation Parameters dialog has also been improved: now it also
+                displays the current simulation speed. The speed display is colored red if the
+                simulation cannot keep up with the requested animation speed.
+        </p>
+        <img width="250" src="images/53-qtenv-animcontrols.png" border="0"><br>
+    </td></tr>
+</tbody></table>
+
+
 <h1>What's New in OMNeT++/OMNEST 5.2</h1>
 
 <h2>Qtenv</h2>
