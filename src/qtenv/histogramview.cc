@@ -27,10 +27,10 @@
 // unused? static const int VERT_TEXT_DISTANCE = 5;
 static const int MARGIN = 10;
 static const QColor HISTOGRAM_COLOR("#1D3B9C");
-static const QColor OUTLIERS_COLOR("#4D1B7C");
+static const QColor OUTLIERS_COLOR("#A0A0A0");
 static const QColor HIGHLIGHT_FILL_COLOR("#7792EB");
 static const QColor HIGHLIGHT_LINE_COLOR("#943246");
-static const QColor HIGHLIGHT_OUTLIERS_COLOR("#7D3B9C");
+static const QColor HIGHLIGHT_OUTLIERS_COLOR("#C0C0C0");
 
 namespace omnetpp {
 namespace qtenv {
