@@ -615,8 +615,8 @@ class SIM_API cEnvir
      * Returns the current animation speed. It is usually computed as the
      * minimum of the animation speeds of visible canvases, unless the user
      * interactively overrides it in the UI, for example imposes a lower limit.
-     * The method may return 0 if the simulation is running under Cmdenv or
-     * another non-graphical user interface.
+     * The method returns 0 if there is currently no animation speed, or the
+     * simulation is running under Cmdenv or another non-graphical user interface.
      *
      * @see cCanvas::setAnimationSpeed()
      */
