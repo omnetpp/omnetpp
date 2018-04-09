@@ -13,8 +13,8 @@
 //
 packet Packet
 {
-    int srcAddr;
-    int destAddr;
-    int hopCount;
+    int srcAddr @packetData;
+    int destAddr @packetData;
+    int hopCount @packetData;
 }
 
