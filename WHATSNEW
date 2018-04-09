@@ -74,12 +74,9 @@ Qtenv:
     simulation cannot keep up with the requested animation speed.
 
   - Histogram inspector: visualize outlier bins (drawn with a different
-    color than normal bins), and show info about them. Fix numeric overflow
-    when large numbers (>= 2^64) are shown.
-
-  - Histogram visualization has been improved. For example, the lower/upper
-    outliers are now displayed as two extra bins, and setting up the bins while
+    color than normal bins), and show info about them. Setting up the bins while
     in the precollection phase can be forced from the GUI.
+    Fix numeric overflow when large numbers (>= 2^64) are shown.
 
   - Histogram result objects are easier to locate on the GUI, and are now
     also found by the Find/Inspect dialog.

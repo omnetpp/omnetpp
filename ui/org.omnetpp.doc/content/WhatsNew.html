@@ -693,9 +693,10 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.</p
   </li>
   <li>
   <p>
-  Histogram visualization has been improved. For example, the lower/upper
-      outliers are now displayed as two extra bins, and setting up the bins while
-      in the precollection phase can be forced from the GUI.
+  Histogram inspector: visualize outlier bins (drawn with a different
+    color than normal bins), and show info about them. Setting up the bins while
+    in the precollection phase can be forced from the GUI.
+    Fix numeric overflow when large numbers (>= 2^64) are shown.
   </p>
   </li>
   <li>
