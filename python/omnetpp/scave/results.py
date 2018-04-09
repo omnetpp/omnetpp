@@ -55,7 +55,12 @@ def _guarded_result_query_func(func):
 
 
 def get_serial():
-    # TODO documentation
+    """
+    Returns an integer that is incremented every time the set of loaded results
+    change, typically as a result of the IDE loading, reloading or unloading
+    a scalar or vector result file. The serial can be used for invalidating
+    cached intermediate results when their input changes.
+    """
     return impl.get_serial()
 
 

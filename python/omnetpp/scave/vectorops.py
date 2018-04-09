@@ -86,6 +86,10 @@ def compute(dataframe, operation, *args, **kwargs):
 
 
 def vector_aggregator(df, function='average'):
+    """
+    Aggregates several vectors into a single one, aggregating the
+    y values at the same time coordinate with the specified function.
+    """
     vectimes = df['vectime']
     vecvalues = df['vecvalue']
 
@@ -162,6 +166,10 @@ def vector_aggregator(df, function='average'):
 
 
 def vector_merger(df):
+    """
+    Merges several series into a single one, maintaining increasing
+    time order in the output.
+    """
     vectimes = df['vectime']
     vecvalues = df['vecvalue']
 
@@ -219,6 +227,9 @@ def vector_merger(df):
 
 
 def vector_mean(r):
+    """
+    Computes mean on (0,t): yout[k] = sum(y[i], i=0..k) / (k+1).
+    """
     v = r['vecvalue']
     r['vecvalue'] = np.cumsum(v) / np.arange(1, len(v) + 1)
     if "title" in r:
@@ -227,6 +238,9 @@ def vector_mean(r):
 
 
 def vector_sum(r):
+    """
+    Sums up values: yout[k] = sum(y[i], i=0..k)
+    """
     r['vecvalue'] = np.cumsum(r['vecvalue'])
     if "title" in r:
         r['title'] = 'Cumulative sum of ' + r['title']
@@ -234,6 +248,9 @@ def vector_sum(r):
 
 
 def vector_add(r, c):
+    """
+    Adds a constant to the input: yout[k] = y[k] + c
+    """
     v = r['vecvalue']
     r['vecvalue'] = v + c
     if "title" in r:
@@ -242,6 +259,13 @@ def vector_add(r, c):
 
 
 def vector_compare(r, threshold, less=None, equal=None, greater=None):
+    """
+    Compares value against a threshold, and optionally replaces it with a constant.
+    yout[k] = if y[k] < threshold and less != None then less;
+         else if y[k] == threshold and equal != None then equal;
+         else if y[k] > threshold and greater != None then greater;
+         else y[k]
+    """
     v = r['vecvalue']
 
     if less is not None:
@@ -264,22 +288,28 @@ def vector_compare(r, threshold, less=None, equal=None, greater=None):
     return r
 
 
-def vector_crop(r, from_time, to_time):
+def vector_crop(r, t1, t2):
+    """
+    Discards values outside the [t1, t2] interval
+    """
     t = r['vectime']
     v = r['vecvalue']
 
-    from_index = np.searchsorted(t, from_time, 'left')
-    to_index = np.searchsorted(t, to_time, 'right')
+    from_index = np.searchsorted(t, t1, 'left')
+    to_index = np.searchsorted(t, t2, 'right')
 
     r['vectime'] = t[from_index:to_index]
     r['vecvalue'] = v[from_index:to_index]
 
     if "title" in r:
-        r['title'] = r['title'] + " from {}s to {}s".format(from_time, to_time)
+        r['title'] = r['title'] + " on [{}s,{}s]".format(t1, t2)
     return r
 
 
 def vector_difference(r):
+    """
+    Subtracts the previous value from every value: yout[k] = y[k] - y[k-1]
+    """
     v = r['vecvalue']
 
     r['vecvalue'] = v - np.concatenate([np.array([0]), v[:-1]])
@@ -290,6 +320,10 @@ def vector_difference(r):
 
 
 def vector_diffquot(r):
+    """
+    Calculates the difference quotient of every value and the subsequent one:
+    yout[k] = (y[k+1]-y[k]) / (t[k+1]-t[k])
+    """
     t = r['vectime']
     v = r['vecvalue']
 
@@ -305,6 +339,9 @@ def vector_diffquot(r):
 
 
 def vector_divide_by(r, a):
+    """
+    Divides input by a constant: yout[k] = y[k] / a
+    """
     v = r['vecvalue']
     r['vecvalue'] = v / a
     if "title" in r:
@@ -313,6 +350,9 @@ def vector_divide_by(r, a):
 
 
 def vector_divtime(r):
+    """
+    Divides input by the current time: yout[k] = y[k] / t[k]
+    """
     t = r['vectime']
     v = r['vecvalue']
     r['vecvalue'] = v / t
@@ -354,6 +394,9 @@ def _integrate_helper(t, v, interpolation):
 
 
 def vector_integrate(r, interpolation='sample-hold'):
+    """
+    Integrates the input as a step function (sample-hold or backward-sample-hold) or with linear interpolation
+    """
     t = r['vectime']
     v = r['vecvalue']
 
@@ -367,6 +410,9 @@ def vector_integrate(r, interpolation='sample-hold'):
 
 
 def vector_lineartrend(r, a):
+    """
+    Adds a linear component to input series: yout[k] = y[k] + a * t[k]
+    """
     t = r['vectime']
     v = r['vecvalue']
 
@@ -378,6 +424,9 @@ def vector_lineartrend(r, a):
 
 
 def vector_modulo(r, m):
+    """
+    Computes input modulo a constant: yout[k] = y[k] % m
+    """
     v = r['vecvalue']
     r['vecvalue'] = np.remainder(v, m)
     if "title" in r:
@@ -386,6 +435,10 @@ def vector_modulo(r, m):
 
 
 def vector_movingavg(r, alpha):
+    """
+    Applies the exponentially weighted moving average filter:
+    yout[k] = yout[k-1] + alpha * (y[k]-yout[k-1])
+    """
     v = r['vecvalue']
     s = pd.Series(v, dtype=np.dtype('f8'))
     r['vecvalue'] = s.ewm(alpha=alpha).mean().values
@@ -395,6 +448,9 @@ def vector_movingavg(r, alpha):
 
 
 def vector_multiply_by(r, a):
+    """
+    Multiplies input by a constant: yout[k] = a * y[k]
+    """
     v = r['vecvalue']
     r['vecvalue'] = v * a
     if "title" in r:
@@ -403,6 +459,9 @@ def vector_multiply_by(r, a):
 
 
 def vector_removerepeats(r):
+    """
+    Removes repeated y values
+    """
     t = r['vectime']
     v = r['vecvalue']
 
@@ -418,6 +477,10 @@ def vector_removerepeats(r):
 
 
 def vector_slidingwinavg(r, window_size):
+    """
+    Replaces every value with the mean of values in the window:
+    yout[k] = sum(y[i], i=(k-winsize+1)..k) / winsize
+    """
     v = r['vecvalue']
     s = pd.Series(v, dtype=np.dtype('f8'))
     r['vecvalue'] = s.rolling(window_size).mean().values
@@ -427,6 +490,9 @@ def vector_slidingwinavg(r, window_size):
 
 
 def vector_subtractfirstval(r):
+    """
+    Subtract the first value from every subsequent values: yout[k] = y[k] - y[0]
+    """
     v = r['vecvalue']
     r['vecvalue'] = v - v[0]
     if "title" in r:
@@ -435,6 +501,9 @@ def vector_subtractfirstval(r):
 
 
 def vector_timeavg(r, interpolation):
+    """
+    Calculates the time average of the input (integral divided by time)
+    """
     # TODO: add "auto" - where we choose interpolation based on interpolationmode and enum
     t = r['vectime']
     v = r['vecvalue']
@@ -453,6 +522,10 @@ def vector_timeavg(r, interpolation):
 
 
 def vector_timediff(r):
+    """
+    Subtracts the previous value's timestamp from every timestamp:
+    tout[k] = t[k] - t[k-1]
+    """
     t = r['vectime']
 
     r['vecvalue'] = np.concatenate([np.array([0]), t[1:] - t[:-1]])
@@ -463,6 +536,9 @@ def vector_timediff(r):
 
 
 def vector_timeshift(r, dt):
+    """
+    Shifts the input series in time by a constant: tout[k] = t[k] + dt
+    """
     t = r['vectime']
 
     r['vectime'] = t + dt
@@ -473,16 +549,24 @@ def vector_timeshift(r, dt):
 
 
 def vector_timetoserial(r):
+    """
+    Replaces time values with their index: tout[k] = k
+    """
     t = r['vectime']
 
     r['vectime'] = np.arange(0, len(t))
 
     if "title" in r:
-        r['title'] = r['title'] + " timetoserial"
+        r['title'] = r['title'] + " sequence"
     return r
 
 
 def vector_timewinavg(r, window_size=1):
+    """
+    Calculates time average: replaces input values in every 'windowSize' interval with their mean:
+    tout[k] = k * winSize,
+    yout[k] = average of y values in the [(k-1)*winSize, k*winSize) interval
+    """
     t = r['vectime']
     v = r['vecvalue']
 
@@ -500,6 +584,10 @@ def vector_timewinavg(r, window_size=1):
 
 
 def vector_winavg(r, window_size=10):
+    """
+    Calculates batched average: replaces every 'winsize' input values
+    with their mean. Time is the time of the first value in the batch.
+    """
     window_size = int(window_size)
     t = r['vectime']
     v = r['vecvalue']

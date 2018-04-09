@@ -1,3 +1,10 @@
+"""
+A collection of utility function for data manipulation and plotting, built
+on top of Pandas data frames and the `chart` and `plot` packages from `omnetpp.scave`.
+Functions in this module have been written largely to the needs of the
+chart templates that ship with the IDE.
+"""
+
 from omnetpp.scave import chart, plot
 import math
 import numpy as np
@@ -21,6 +28,11 @@ def confidence_interval(alpha, data):
     return st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
 
 def split(s, sep=','):
+    """
+    Split a string with the given separator (by default with comma), trim
+    the surrounding whitespace from the items, and return the result as a
+    list. Return an empty list for an empty or all-whitespace input string.
+    """
     parts = s.split(sep)
     parts = [p.strip() for p in parts]
     if parts == ['']:
@@ -28,7 +40,6 @@ def split(s, sep=','):
     return parts
 
 def extract_label_columns(df, preferred_legend_column="title"):
-
     """
     Utility function to make a reasonable guess as to which column of
     the given DataFrame is most suitable to act as a chart title and
