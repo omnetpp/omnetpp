@@ -21,8 +21,13 @@ The following packages are required for @OMNETPP@ to work:
 
 build-essential, GNU make, gcc, g\++, bison (2.4+), flex, perl::
   These packages are needed for compiling @OMNETPP@ and simulation models,
-  and also for certain @OMNETPP@ tools to work. Some C++ compilers
-  other than g++, for example the Intel compiler, will also be accepted.
+  and also for certain @OMNETPP@ tools to work. C++ compilers other than
+  g++, will also be accepted.
+
+[NOTE]
+=====================================================
+You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+=====================================================
 
 The following packages are strongly recommended, because their absence
 results in severe feature loss:
@@ -44,7 +49,7 @@ OpenJDK, version 8.0 or later::
 Qt 5.4 or later::
   Required by the Qtenv simulation runtime environment.
   You need the 'devel' packages that include header files as well.
-OpenSceneGraph (3.2+) and osgEarth (2.7+)::
+  OpenSceneGraph (3.2+) and osgEarth (2.7+)::
   These packages will enable 3D visualization in Qtenv.
   You need the 'devel' packages that include header files as well.
 
@@ -64,10 +69,10 @@ Akaroa::
   from the project's website.
 
 Pcap::
-   Allows simulation models to capture and transmit network packets bypassing
-   the operating system's protocol stack. It is not used directly by @OMNETPP@,
-   but @OMNETPP@ detects the necessary compiler and linker options for models
-   in case they need it.
+  The optional Pcap library allows simulation models to capture and
+  transmit network packets bypassing the operating system's protocol stack.
+  It is not used directly by @OMNETPP@, but models may need it to support
+  network emulation.
 
 The exact names of these packages may differ across distributions.
 

@@ -12,7 +12,7 @@ The following Red Hat release is covered:
 
 It was tested on the following architectures:
 
-* Intel 32-bit and 64-bit
+* Intel 64-bit
 
 === Opening a Terminal
 
@@ -62,6 +62,13 @@ When in doubt, use `module avail` to display the list of available
 modules. If you need MPI in every session, you may add the `module load`
 command to your startup script (`.bashrc`).`
 
+
+==== PCAP
+
+The optional Pcap library allows simulation models to capture and
+transmit network packets bypassing the operating system's protocol stack.
+It is not used directly by @OMNETPP@, but models may need it to support
+network emulation.
 
 ==== Graphical Installation
 

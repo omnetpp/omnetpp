@@ -31,6 +31,11 @@ To install the required packages, type in the terminal:
       tcl-devel tk-devel libqt5-qtbase-devel libxml2-devel zlib-devel \
       java-1_8_0-openjdk doxygen graphviz libwebkitgtk-3_0-0
 
+[NOTE]
+=====================================================
+You may opt to use clang and clang++ instead of the gcc and g++ compilers.
+=====================================================
+
 To use 3D visualization support in Qtenv  (recommended), you should
 install the OpenSceneGraph-devel (3.2 or later) and osgEarth-devel (2.7 or later) packages.
 These packages are not available from the official RedHat repository so you
@@ -45,6 +50,13 @@ Note that 'openmpi' will not be available by default, first you need to
 log out and log in again, or source your `.profile` script:
 
   $ . ~/.profile
+
+==== PCAP
+
+The optional Pcap library allows simulation models to capture and
+transmit network packets bypassing the operating system's protocol stack.
+It is not used directly by @OMNETPP@, but models may need it to support
+network emulation.
 
 ==== Graphical Installation
 

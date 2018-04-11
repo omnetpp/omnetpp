@@ -297,8 +297,8 @@ automatically detected if you installed it to the default location.
 
 The optional Pcap library allows simulation models to capture and
 transmit network packets bypassing the operating system's protocol stack.
-It is not used directly by @OMNETPP@, but @OMNETPP@ detects the necessary
-compiler and linker options for models in case they need it.
+It is not used directly by @OMNETPP@, but models may need it to support
+network emulation.
 
 ifdef::OMNEST[]
 

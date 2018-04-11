@@ -69,6 +69,14 @@ At the confirmation questions ('Do you want to continue? [Y/N]'), answer 'Y'.
 
 image::pictures/terminal-package-install.png[title="Command-Line Package Installation",align="center",scaledwidth="75%"]
 
+==== PCAP
+
+The optional Pcap library allows simulation models to capture and
+transmit network packets bypassing the operating system's protocol stack.
+It is not used directly by @OMNETPP@, but models may need it to support
+network emulation.
+
+  $ sudo apt-get install libpcap-dev
 
 ==== Graphical Installation
 
