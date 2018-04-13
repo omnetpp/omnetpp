@@ -641,12 +641,12 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     @descriptor(false);
     @fromString((namespaceName::typeName)string2enum($, "namespaceName::typeName"));
     @toString(enum2string($, "namespaceName::typeName"));
-    @defaultValue(((namespaceName::typeName)-1));
+    @defaultValue(static_cast<namespaceName::typeName>(-1));
  */
     classInfo.dataTypeBase = classInfo.qname;
     classInfo.fromString = str("(") + classInfo.qname + ")string2enum($, \"" + classInfo.qname + "\")";
     classInfo.toString = str("enum2string($, \"") + classInfo.qname + "\")";
-    classInfo.defaultValue = str("((") + classInfo.qname + ")-1)";
+    classInfo.defaultValue = str("static_cast<") + classInfo.qname + ">(-1)";
 
     // determine base class
     if (classInfo.extendsName != "")
