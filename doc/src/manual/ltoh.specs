@@ -11,10 +11,7 @@ author  := Russell W. Quong
 login   := quong
 email   := quong@best.com
 url     := http://www.best.com/~quong
-htmlfile_spec := $BASE.htm
-
-# Don't monkey with (don't change) the following variable.
-# It sets how much debugging information is printed out.
+htmlfile_spec := $BASE.html
 =***= warnlevel := 6
 
 # The general structure of a specification is
