@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
 
 # Copyright (c) 1996, 1997      Russell Quong.
 #
@@ -1202,7 +1202,7 @@ sub formatmath ()
       # this is probably not a math formula...
       return "\$$txt\$" unless ($txt =~ /[]a-zA-Z0-9\)}]$/);
 
-      print "  math: \$$txt\$ --> ";
+      my $origtxt = $txt;
 
       # convert greek letters
       $txt =~ s!\\(Alpha|Beta|Gamma|Delta|Epsilon|Zeta|Eta|Theta|Iota|Kappa|Lambda|Mu|Nu|Xi|Omicron|Pi|Rho|Sigma|Tau|Upsilon|Phi|Chi|Psi|Omega|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|omicron|pi|rho|sigmaf|sigma|tau|upsilon|phi|chi|psi|omega)!&$1;!g;
@@ -1236,9 +1236,10 @@ sub formatmath ()
       $txt =~ s!\^\{(.*?)}!<sup>$1</sup>!g;
       $txt =~ s!\_\{(.*?)}!<sub>$1</sub>!g;
 
-      print "<i>$txt</i>\n";
+      $txt = "<i>$txt</i>";
 
-      return "<i>$txt</i>";
+      warning(8, "  {} Math: \$$origtxt\$ ==> $txt");
+      return $txt;
 }
 
 sub final_cleanup {

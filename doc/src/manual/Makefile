@@ -1,59 +1,13 @@
-#PERL=$(TOOLS_DIR)\perl\bin\perl.exe
 PERL=perl
-
 INKSCAPE=inkscape
 DOT=dot
 TEMPLATE=omnetpp
 VERSION=5.x
 
-TITLE=Simulation Manual
-
-# --- generating pdf ---
-
-# *** IMPORTANT! ***
-# The order of files below must MATCH the order they are included in usman.tex,
-# otherwise the chapter numbering will differ in the PDF and HTML versions!!!
-#
-TEXCHAPTERS = \
-	 ch-introduction.tex \
-	 ch-overview.tex \
-	 ch-ned-lang.tex \
-	 ch-simple-modules.tex \
-	 ch-messages.tex \
-	 ch-message-definitions.tex \
-	 ch-sim-lib.tex \
-	 ch-graphics.tex \
-	 ch-build-sim-progs.tex \
-	 ch-config-sim.tex \
-	 ch-run-sim.tex \
-	 ch-ana-sim.tex \
-	 ch-eventlog.tex \
-	 ch-neddoc.tex \
-	 ch-testing.tex \
-	 ch-parallel-exec.tex \
-	 ch-plugin-exts.tex \
-	 ch-embedding.tex \
-	 appendix-ned-ref.tex \
-	 appendix-ned-grammar.tex \
-	 appendix-ned-dtd.tex \
-	 appendix-ned-functions.tex \
-	 appendix-msg-grammar.tex \
-	 appendix-display-strings.tex \
-	 appendix-figure-definitions.tex \
-	 appendix-config-options.tex \
-	 appendix-result-file-formats.tex \
-	 appendix-eventlog-file-format.tex
-
-ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
-HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
-
+ALLTEX = $(wildcard *.tex)
 DOTPICS = $(wildcard figures/*.dot)
 SVGPICS = $(wildcard figures/*.svg) $(DOTPICS:.dot=.svg)
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
-
-# an imperfect attempt to filter out less important warnings...
-# LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
-LOGFILTER =
 
 .PHONY : pdf html eclipse
 
@@ -62,11 +16,11 @@ default: pdf html eclipse
 include ../cover/cover.makefrag
 
 pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
-	pdflatex usman.tex $(LOGFILTER)
+	pdflatex usman.tex
 	bibtex usman
 	makeindex usman
-	pdflatex usman.tex $(LOGFILTER)
-	pdflatex usman.tex $(LOGFILTER)
+	pdflatex usman.tex
+	pdflatex usman.tex
 	qpdf usman.pdf --pages cover.pdf ../cover/copyright.pdf usman.pdf 3-z -- ../../SimulationManual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
@@ -78,7 +32,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 
 # --- generating html ---
 
-.SUFFIXES : .tex .bbl .htm .svg .dot
+.SUFFIXES : .bbl .svg .dot
 
 #usman-bibl.bbl : usman.bbl
 #       copy usman.bbl usman-bibl.bbl
@@ -91,17 +45,15 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover
 
 .bbl.htm:
 	cp $< `echo $< | sed 's|\.bbl|.tex|'`
-	$(PERL) ltoh.pl `echo $< | sed 's|\.bbl|.tex|'`
+	$(PERL) ltoh `echo $< | sed 's|\.bbl|.tex|'`
 	mv $@l $@
 	rm  `echo $< | sed 's|\.bbl|.tex|'`
 
-.tex.htm: ltoh.specs ltoh.pl
-	$(PERL) ltoh.pl $<
-
-eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
-	cat $(HTMCHAPTERS) > usman.tmp
-	$(PERL) prephtml2 --split --template eclipse.thtml --opp_version $(VERSION) usman.tmp
-	rm usman.tmp
+eclipse : $(ALLTEX) $(SVGPICS) eclipse.thtml prephtml ltoh ltoh.specs
+	CHAPTERS=$$(grep '\include{' usman.tex | sed 's/\\include{//;s/}/.tex/' | sed '/^title\.tex/d') && cat $$CHAPTERS > tmp.tex
+	$(PERL) ltoh tmp.tex
+	$(PERL) prephtml --split --template eclipse.thtml --productversion $(VERSION) --outfilenamebase usman tmp.html
+	rm tmp.html
 	rm -rf eclipse
 	mkdir eclipse
 	mv *.html toc.xml eclipse
@@ -110,10 +62,11 @@ eclipse : $(HTMCHAPTERS) $(SVGPICS) eclipse.thtml prephtml2 ltoh.specs ltoh.pl
 	cp figures/*.svg eclipse
 	cp figures/*.png eclipse
 
-html : $(HTMCHAPTERS) $(SVGPICS) $(TEMPLATE).thtml prephtml2 ltoh.specs ltoh.pl
-	cat $(HTMCHAPTERS) > usman.tmp
-	$(PERL) prephtml2 --template $(TEMPLATE).thtml --opp_version $(VERSION) usman.tmp
-	rm usman.tmp
+html : $(ALLTEX) $(SVGPICS) $(TEMPLATE).thtml prephtml ltoh ltoh.specs
+	CHAPTERS=$$(grep '\include{' usman.tex | sed 's/\\include{//;s/}/.tex/' | sed '/^title\.tex/d') && cat $$CHAPTERS > tmp.tex
+	$(PERL) ltoh tmp.tex
+	$(PERL) prephtml --template $(TEMPLATE).thtml --productversion $(VERSION) --outfilenamebase usman tmp.html
+	rm tmp.html
 	rm -rf ../../manual
 	mkdir ../../manual
 	cp usman.html ../../manual/index.html
@@ -130,3 +83,4 @@ clean:
 	rm -f figures/*.pdf
 	rm -f `ls figures/*.svg | sed 's/svg$$/png/'`
 	rm -f `ls figures/*.dot | sed 's/dot$$/svg/'`
+
