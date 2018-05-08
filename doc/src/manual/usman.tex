@@ -12,7 +12,9 @@
 %%\usepackage{sans}
 %%\usepackage{chancery}
 
+\usepackage[svgnames]{xcolor}	% for color text support
 \usepackage[T1]{fontenc}
+\usepackage[11pt]{moresize}
 \usepackage{setspace}
 \usepackage{ifpdf}
 \usepackage{verbatim}   % for the comment environment
@@ -50,7 +52,6 @@
 
 %% for navigation in dvi files, only needed by old teTeX versions
 %%\usepackage{srcltx}
-
 
 %% try this for spell checking: cat ess2002.tex | ispell -l -t -a | sort | uniq | more
 
@@ -186,12 +187,23 @@
     morecomment=[l]{\#},
     morestring=[b]",
 }
+\lstdefinelanguage{pseudocode} {
+    morekeywords={if,then,else,otherwise,whenever,while},
+    sensitive=true,
+    morecomment=[l]{//},
+    morestring=[b]",
+    mathescape=true,
+}
 
 %% thick ruler on the left; also, designate backtick as LaTeX escape character
 %% (e.g. \opp needs to be written as `\opp` inside listing blocks)
 \lstset{
     escapechar=`,
     basicstyle=\ttfamily,
+    identifierstyle=\color{Black},
+    stringstyle=\color{DarkBlue},
+    commentstyle=\color{SeaGreen},
+    keywordstyle=\bfseries\color{Purple},
     showstringspaces=false,
     frame=leftline,
     framesep=10pt,
@@ -205,6 +217,8 @@
 \definecolor{IniRulerColor}{rgb}{0.9,0.9,0.2}  % pale yellow
 \definecolor{FileListingRulerColor}{rgb}{0.85,0.85,0.85}  % grey
 %\definecolor{CommandLineRulerColor}{rgb}{0.9,0.9,0.2}
+\definecolor{PseudoCodeRulerColor}{rgb}{0.0,1.0,1.0}  % cyan
+\definecolor{XMLRulerColor}{rgb}{0.8,0.8,1.0}  % pale blue
 
 %% See listings.pdf,pp39
 \lstnewenvironment{ned}
@@ -244,6 +258,8 @@
 
 \newcommand{\new}{$^{New!}$}
 \newcommand{\changed}{$^{Changed!}$}
+
+\newcommand{\program}{\textbf}
 
 \newcommand{\includepng}{\includegraphics}
 \newcommand{\includesvg}{\includegraphics}
