@@ -466,8 +466,8 @@ sub handle_specification {
         if ($from =~ s/(\\begin\{[^\}]+\})(.+)/$1/ ) {
             fyi(7, "Stripped begin\{...\} args: $arr[2] --> $from");
         }
-    } elsif ($from =~ /(\\[A-Za-z_]+)([^A-Za-z_].*)/ ) {
-        $from =~ s/(\\[A-Za-z_]+)([^A-Za-z_].*)/$1/;
+    } elsif ($from =~ /(\\[A-Za-z_]+\*?)([^A-Za-z_*].*)/ ) {  # note: allow '*' at the end of the command name, as in \section*{}
+        $from =~ s/(\\[A-Za-z_]+\*?)([^A-Za-z_*].*)/$1/;
         fyi(7, "Stripped args: $arr[2] --> $from");
     }
 
@@ -626,7 +626,8 @@ sub do_comment_verbatim {
         }
 
         # attempt math formatting. --Andras Varga
-        $line =~ s/\$([^\n]+?)\$/formatmath($1)/gse;
+        $line =~ s!\$\$([^\n]+?)\$\$!"<center>" . formatmath($1,0) . "</center>"!gse;
+        $line =~ s/\$([^\n]+?)\$/formatmath($1,1)/gse;
 
         if ($skip == $true) {
             $line = "";
@@ -1017,7 +1018,7 @@ sub mark_delims {
                 $dsp ++;
                 $dcount ++;
 
-                if ( $frag =~ /(\\[\w]+)\{$/) {
+                if ( $frag =~ /(\\[\w]+\*?)\{$/) {
                     warning(8, "mark:  id2comm{$id} = $1");
                     $id2comm{$id} = $1;
                 } else {
@@ -1059,7 +1060,7 @@ sub do_simple_latex_defs {
         }
         warning(8, "do_simple_brace_comms($line)");
 
-        if ($line =~ /\[:([0-9]+):/) {
+        if ($line =~ /\[:([0-9]+):/) { # opening brace, escaped
             $id = $1;
             $comm = $id2comm{$id};
             warning(8, "    id2comm{$id} is $id2comm{$id}");
@@ -1083,7 +1084,7 @@ sub do_simple_latex_defs {
                 }
             }
         }
-        if ($line =~ /:([0-9]+):\]/) {
+        if ($line =~ /:([0-9]+):\]/) { # closing brace, escaped
             $id = $1;
             $comm = $id2comm{$id};
             if ($comm ne "_:NULL_COMMAND:_") {
@@ -1196,37 +1197,51 @@ sub do_complicated_latex_defs {
 #
 sub formatmath ()
 {
+      # TODO use MathJax, https://www.mathjax.org/ instead!!!
+      
       my $txt = shift @_;
+      my $isinline = shift @_;
+      
+      warning(8, "formatmath($txt)");
 
-      # ugly heuristics: last character should be letter, number, ], ) or }, otherwise
+      # ugly heuristics: last character should be letter, number, ], ), | or }, otherwise
       # this is probably not a math formula...
-      return "\$$txt\$" unless ($txt =~ /[]a-zA-Z0-9\)}]$/);
+      if ($isinline) {
+          return "\$$txt\$" unless ($txt =~ /[]a-zA-Z0-9\)|}]$/);
+      }
 
       my $origtxt = $txt;
 
       # convert greek letters
-      $txt =~ s!\\(Alpha|Beta|Gamma|Delta|Epsilon|Zeta|Eta|Theta|Iota|Kappa|Lambda|Mu|Nu|Xi|Omicron|Pi|Rho|Sigma|Tau|Upsilon|Phi|Chi|Psi|Omega|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|omicron|pi|rho|sigmaf|sigma|tau|upsilon|phi|chi|psi|omega)!&$1;!g;
+      $txt =~ s!\\(Alpha|Beta|Gamma|Delta|Epsilon|Zeta|Eta|Theta|Iota|Kappa|Lambda|Mu|Nu|Xi|Omicron|Pi|Rho|Sigma|Tau|Upsilon|Phi|Chi|Psi|Omega|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|omicron|pi|rho|sigmaf|sigma|tau|upsilon|phi|chi|psi|omega)\b!&$1;!g;
 
       # convert \tilde{n}, N, a, A (other letters don't have tilde versions in HTML)
       $txt =~ s!\\tilde\{(n|N|a|A)}!&$1tilde;!g;
 
+      # convert \bar{n}
+      $txt =~ s!\\bar\{(.+?)}!$1&#772!g;
+
       # convert \in
-      $txt =~ s!\\in! is in !g;
+      $txt =~ s!\\in\b! is in !g;
+      $txt =~ s!\\infty\b!&#8734;!g;
+      $txt =~ s!\\to\b!&#8594;!g;
+
+      $txt =~ s!\\sqrt\{(.*?)}!sqrt($1)!g;
 
       # convert some arrows
-      $txt =~ s!\\leftarrow!<--!g;
-      $txt =~ s!\\Leftarrow!<==!g;
-      $txt =~ s!\\rightarrow!-->!g;
-      $txt =~ s!\\Rightarrow!==>!g;
-      $txt =~ s!\\leftrightarrow!<-->!g;
-      $txt =~ s!\\Leftrightarrow!<==>!g;
+      $txt =~ s!\\leftarrow\b!<--!g;
+      $txt =~ s!\\Leftarrow\b!<==!g;
+      $txt =~ s!\\rightarrow\b!-->!g;
+      $txt =~ s!\\Rightarrow\b!==>!g;
+      $txt =~ s!\\leftrightarrow\b!<-->!g;
+      $txt =~ s!\\Leftrightarrow\b!<==>!g;
 
-      $txt =~ s!\\longleftarrow!<---!g;
-      $txt =~ s!\\Longleftarrow!<===!g;
-      $txt =~ s!\\longrightarrow!--->!g;
-      $txt =~ s!\\Longrightarrow!===>!g;
-      $txt =~ s!\\longleftrightarrow!<--->!g;
-      $txt =~ s!\\Longleftrightarrow!<===>!g;
+      $txt =~ s!\\longleftarrow\b!<---!g;
+      $txt =~ s!\\Longleftarrow\b!<===!g;
+      $txt =~ s!\\longrightarrow\b!--->!g;
+      $txt =~ s!\\Longrightarrow\b!===>!g;
+      $txt =~ s!\\longleftrightarrow\b!<--->!g;
+      $txt =~ s!\\Longleftrightarrow\b!<===>!g;
 
       # convert ^ and _ without braces
       $txt =~ s!\^([a-zA-Z0-9]+)!<sup>$1</sup>!g;
