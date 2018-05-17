@@ -1,0 +1,41 @@
+%description:
+Check that inheritance can overwrite a submodule's default typename
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IFoo {}
+module DefaultFoo like IFoo {}
+module SpecialFoo like IFoo {}
+
+module Bar
+{ 
+    submodules: 
+        foo: <default("DefaultFoo")> like IFoo;
+}
+
+module ExtBar extends Bar { 
+    parameters: 
+        foo.typename = default("SpecialFoo"); // must take effect
+}
+
+network Test
+{
+    submodules:
+        bar: ExtBar;
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.bar: ExtBar {
+            submodules:
+                module Test.bar.foo: SpecialFoo {
+                }
+        }
+}
+
