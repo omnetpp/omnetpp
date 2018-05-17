@@ -1544,7 +1544,8 @@ void EnvirBase::setupRNGMapping(cComponent *component)
                 // not a numeric constant, try parsing it as an expression
                 cDynamicExpression expr;
                 expr.parse(value);
-                cNedValue tmp = expr.evaluate(component);
+                cExpression::Context context(component);
+                cNedValue tmp = expr.evaluate(&context);
                 if (!tmp.isNumeric())
                     throw opp_runtime_error("Numeric constant or expression expected");
                 physRng = tmp;

@@ -30,7 +30,7 @@ class ModuleIndex : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return "index";}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'L';}
-    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -49,7 +49,7 @@ class ParameterRef : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return paramName.c_str();}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return '*';}
-    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -69,7 +69,7 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return paramName.c_str();}
     virtual const char *getArgTypes() const override {return withModuleIndex ? "L" : "";}
     virtual char getReturnType() const override {return '*';}
-    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -98,7 +98,7 @@ class LoopVar : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return varName.c_str();}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'L';}
-    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
@@ -118,16 +118,16 @@ class Sizeof : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return ident.c_str();}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'L';}
-    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs) override;
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };
 
 /*XXX TODO
-static cNedValue getSizeofIdent(cComponent *context, cNedValue args[], int numargs);
-static cNedValue getSizeofGate(cComponent *context, cNedValue args[], int numargs);
-static cNedValue getSizeofParentModuleGate(cComponent *context, cNedValue args[], int numargs);
-static cNedValue getSizeofSiblingModuleGate(cComponent *context, cNedValue args[], int numargs);
-static cNedValue getSizeofIndexedSiblingModuleGate(cComponent *context, cNedValue args[], int numargs);
+static cNedValue getSizeofIdent(Context *context, cNedValue args[], int numargs);
+static cNedValue getSizeofGate(Context *context, cNedValue args[], int numargs);
+static cNedValue getSizeofParentModuleGate(Context *context, cNedValue args[], int numargs);
+static cNedValue getSizeofSiblingModuleGate(Context *context, cNedValue args[], int numargs);
+static cNedValue getSizeofIndexedSiblingModuleGate(Context *context, cNedValue args[], int numargs);
 
 class Sizeof : public Functor
 {
@@ -138,7 +138,7 @@ class Sizeof : public Functor
   public:
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return 'L';}
-    virtual cNedValue evaluate(cComponent *context, cNedValue args[], int numargs);
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs) {return "index";}
 };
 */

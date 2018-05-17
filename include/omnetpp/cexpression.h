@@ -33,6 +33,17 @@ class cXMLElement;
 class SIM_API cExpression : public cObject
 {
   public:
+    /**
+     * @brief Contextual information for evaluating the expression.
+     */
+    class SIM_API Context : public cObject
+    {
+      public:
+        explicit Context(cComponent *component) : component(component) {}
+        cComponent *component = nullptr;
+    };
+
+  public:
     /** @name Constructors, destructor, assignment. */
     //@{
 
@@ -86,39 +97,39 @@ class SIM_API cExpression : public cObject
     /**
      * Evaluate the expression and return the result in a cNedValue.
      */
-    virtual cNedValue evaluate(cComponent *context=nullptr) const = 0;
+    virtual cNedValue evaluate(Context *context=nullptr) const = 0;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue(cComponent *context=nullptr) = 0;
+    virtual bool boolValue(Context *context=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to intpar_t if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual intpar_t intValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
+    virtual intpar_t intValue(Context *context=nullptr, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual double doubleValue(cComponent *context=nullptr, const char *expectedUnit=nullptr) = 0;
+    virtual double doubleValue(Context *context=nullptr, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue(cComponent *context=nullptr) = 0;
+    virtual std::string stringValue(Context *context=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to an XML tree if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual cXMLElement *xmlValue(cComponent *context=nullptr) = 0;
+    virtual cXMLElement *xmlValue(Context *context=nullptr) = 0;
     //@}
 
     /** @name Miscellaneous utility functions. */
@@ -147,7 +158,7 @@ class SIM_API cExpression : public cObject
      * Evaluates const subexpressions, and replaces them with their values.
      * See cDynamicExpression::Elem::CONSTSUBEXPR.
      */
-    virtual void evaluateConstSubexpressions(cComponent *context) = 0;
+    virtual void evaluateConstSubexpressions(Context *context) = 0;
     //@}
 };
 

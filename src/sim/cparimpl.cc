@@ -91,14 +91,15 @@ void cParImpl::setUnit(const char *s)
     unitp = unitStringPool.get(s);
 }
 
-cNedValue cParImpl::evaluate(cExpression *expr, cComponent *context) const
+cNedValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
 {
     static int depth;
     try {
         depth++;
         if (depth >= 5)
             throw cRuntimeError("Evaluation nesting too deep (circular parameter references?)");
-        cNedValue ret = expr->evaluate(context);
+        cExpression::Context context(contextComponent);
+        cNedValue ret = expr->evaluate(&context);
         depth--;
         return ret;
     }
@@ -114,11 +115,13 @@ bool cParImpl::containsConstSubexpressions() const
     return expr == nullptr ? false : expr->containsConstSubexpressions();
 }
 
-void cParImpl::evaluateConstSubexpressions(cComponent *context)
+void cParImpl::evaluateConstSubexpressions(cComponent *contextComponent)
 {
     cExpression *expr = getExpression();
-    if (expr)
-        expr->evaluateConstSubexpressions(context);
+    if (expr) {
+        cExpression::Context context(contextComponent);
+        expr->evaluateConstSubexpressions(&context);
+    }
 }
 
 int cParImpl::compare(const cParImpl *other) const

@@ -327,36 +327,36 @@ bool cDynamicExpression::containsConstSubexpressions() const
     return false;
 }
 
-void cDynamicExpression::evaluateConstSubexpressions(cComponent *context)
+void cDynamicExpression::evaluateConstSubexpressions(Context *context)
 {
     throw cRuntimeError(this, "Const subexpressions not yet implemented");  // TODO implement
 }
 
-bool cDynamicExpression::boolValue(cComponent *context)
+bool cDynamicExpression::boolValue(Context *context)
 {
     cNedValue v = evaluate(context);
     return v.boolValue();
 }
 
-intpar_t cDynamicExpression::intValue(cComponent *context, const char *expectedUnit)
+intpar_t cDynamicExpression::intValue(Context *context, const char *expectedUnit)
 {
     cNedValue v = evaluate(context);
     return expectedUnit == nullptr ? v.intValue() : (intpar_t)v.doubleValueInUnit(expectedUnit);
 }
 
-double cDynamicExpression::doubleValue(cComponent *context, const char *expectedUnit)
+double cDynamicExpression::doubleValue(Context *context, const char *expectedUnit)
 {
     cNedValue v = evaluate(context);
     return expectedUnit == nullptr ? v.doubleValue() : v.doubleValueInUnit(expectedUnit);
 }
 
-std::string cDynamicExpression::stringValue(cComponent *context)
+std::string cDynamicExpression::stringValue(Context *context)
 {
     cNedValue v = evaluate(context);
     return v.stringValue();
 }
 
-cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
+cXMLElement *cDynamicExpression::xmlValue(Context *context)
 {
     cNedValue v = evaluate(context);
     return v.xmlValue();
@@ -513,7 +513,7 @@ static const int stksize = 20;
 static cNedValue _stk[stksize];
 static bool _stkinuse = false;
 
-cNedValue cDynamicExpression::evaluate(cComponent *context) const
+cNedValue cDynamicExpression::evaluate(Context *context) const
 {
     // use static _stk[] if possible, or allocate another one if that's in use.
     // Note: this will be reentrant but NOT thread safe
@@ -625,7 +625,7 @@ cNedValue cDynamicExpression::evaluate(cComponent *context) const
                 if (argPos < 0)
                     throw cRuntimeError(E_ESTKUFLOW);
                 // note: args checking is left to the function itself
-                stk[argPos] = e.nf.f->invoke(context, stk+argPos, numArgs);
+                stk[argPos] = e.nf.f->invoke(context ? context->component : nullptr, stk+argPos, numArgs);
                 tos = argPos;
                 break;
             }
