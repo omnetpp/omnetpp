@@ -41,6 +41,12 @@ cNedLoader *cNedLoader::inst;
 
 EXECUTE_ON_SHUTDOWN(cNedLoader::clear());
 
+cNedLoader::~cNedLoader()
+{
+    for (auto it : cachedExpresssions)
+        delete it.second;
+}
+
 cNedLoader *cNedLoader::getInstance()
 {
     if (!inst) {
@@ -78,6 +84,16 @@ cNedDeclaration *cNedLoader::getDecl(const char *qname) const
     cNedDeclaration *decl = dynamic_cast<cNedDeclaration *>(NedResourceCache::getDecl(qname));
     ASSERT(decl);
     return decl;
+}
+
+cDynamicExpression *cNedLoader::getCompiledExpression(ExpressionElement *exprNode, bool inSubcomponentScope)
+{
+    auto it = cachedExpresssions.find(exprNode);
+    if (it != cachedExpresssions.end())
+        return it->second;
+    cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
+    cachedExpresssions[exprNode] = e;
+    return e;
 }
 
 }  // namespace omnetpp

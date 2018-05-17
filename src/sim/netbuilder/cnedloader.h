@@ -18,6 +18,7 @@
 #ifndef __OMNETPP_CNEDLOADER_H
 #define __OMNETPP_CNEDLOADER_H
 
+#include <map>
 #include "nedxml/nedresourcecache.h"
 #include "omnetpp/simkerneldefs.h"
 #include "cneddeclaration.h"
@@ -39,6 +40,9 @@ class SIM_API cNedLoader : public NedResourceCache
     // the singleton instance
     static cNedLoader *inst;
 
+    // expression cache
+    std::map<ExpressionElement*, cDynamicExpression*> cachedExpresssions;
+
   protected:
     // constructor is protected, because we want only one instance
     cNedLoader()  {}
@@ -47,6 +51,8 @@ class SIM_API cNedLoader : public NedResourceCache
     virtual void registerNedType(const char *qname, bool isInnerType, NedElement *node) override;
 
   public:
+    virtual ~cNedLoader();
+
     /** Access to the singleton instance */
     static cNedLoader *getInstance();
 
@@ -55,6 +61,9 @@ class SIM_API cNedLoader : public NedResourceCache
 
     /** Redefined to make return type more specific. */
     virtual cNedDeclaration *getDecl(const char *qname) const override;
+
+    /** Compile NED expression to a cDynamicExpression, and cache it */
+    virtual cDynamicExpression *getCompiledExpression(ExpressionElement *exprNode, bool inSubcomponentScope);
 };
 
 }  // namespace omnetpp

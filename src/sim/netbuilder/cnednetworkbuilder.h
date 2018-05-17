@@ -114,10 +114,13 @@ class SIM_API cNedNetworkBuilder
     cChannelType *findAndCheckChannelType(const char *channelTypeName, cModule *modp);
     cChannelType *findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp);
     ExpressionElement *findExpression(NedElement *node, const char *exprname);
-    cParImpl *getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope);
-    long evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
-    bool evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
-    std::string evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
+    cDynamicExpression *getOrCreateExpression(ExpressionElement *exprNode, bool inSubcomponentScope);
+    long evaluateAsLong(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope);
+    bool evaluateAsBool(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope);
+    std::string evaluateAsString(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope);
+    long evaluateAsLong(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope);
+    bool evaluateAsBool(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope);
+    std::string evaluateAsString(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope);
 
   public:
     /** Constructor */

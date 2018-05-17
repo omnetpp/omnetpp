@@ -1076,7 +1076,7 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         }
     }
     else {
-        // first, try to use expression betweeen angle braces from the NED file
+        // first, try to use expression between angle braces from the NED file
         if (!conn->getIsDefault()) {
             if (!opp_isempty(conn->getLikeExpr()))
                 return parentmodp->par(conn->getLikeExpr()).stringValue();
@@ -1112,7 +1112,7 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         if (!defaultDeepConnTypeName.empty())
             return defaultDeepConnTypeName;
 
-        // last, use default(expression) betweeen angle braces from the NED file
+        // last, use default(expression) between angle braces from the NED file
         if (conn->getIsDefault()) {
             if (!opp_isempty(conn->getLikeExpr()))
                 return parentmodp->par(conn->getLikeExpr()).stringValue();
@@ -1204,25 +1204,34 @@ ExpressionElement *cNedNetworkBuilder::findExpression(NedElement *node, const ch
     return nullptr;
 }
 
-cParImpl *cNedNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope)
+cDynamicExpression *cNedNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, bool inSubcomponentScope)
 {
-    cParImpl *p = currentDecl->getSharedParImplFor(exprNode);
-    if (!p) {
-        cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-        p = cParImpl::createWithType(type);
-        cExpressionBuilder::setExpression(p, e);
-        p->setUnit(unit);
-
-        currentDecl->putSharedParImplFor(exprNode, p);
-    }
-    return p;
+    return cNedLoader::getInstance()->getCompiledExpression(exprNode, inSubcomponentScope);
 }
 
-long cNedNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
+long cNedNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope)
+{
+    cExpression::Context context(contextComponent);
+    return evaluateAsLong(exprNode, &context, inSubcomponentScope);
+}
+
+bool cNedNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope)
+{
+    cExpression::Context context(contextComponent);
+    return evaluateAsBool(exprNode, &context, inSubcomponentScope);
+}
+
+std::string cNedNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *contextComponent, bool inSubcomponentScope)
+{
+    cExpression::Context context(contextComponent);
+    return evaluateAsString(exprNode, &context, inSubcomponentScope);
+}
+
+long cNedNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope)
 {
     try {
-        cParImpl *p = getOrCreateExpression(exprNode, cPar::INT, nullptr, inSubcomponentScope);
-        return p->intValue(context);
+        cDynamicExpression *expr = getOrCreateExpression(exprNode, inSubcomponentScope);
+        return expr->intValue(context);
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, exprNode);
@@ -1230,11 +1239,11 @@ long cNedNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent 
     }
 }
 
-bool cNedNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
+bool cNedNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope)
 {
     try {
-        cParImpl *p = getOrCreateExpression(exprNode, cPar::BOOL, nullptr, inSubcomponentScope);
-        return p->boolValue(context);
+        cDynamicExpression *expr = getOrCreateExpression(exprNode, inSubcomponentScope);
+        return expr->boolValue(context);
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, exprNode);
@@ -1242,11 +1251,11 @@ bool cNedNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent 
     }
 }
 
-std::string cNedNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
+std::string cNedNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cExpression::Context *context, bool inSubcomponentScope)
 {
     try {
-        cParImpl *p = getOrCreateExpression(exprNode, cPar::STRING, nullptr, inSubcomponentScope);
-        return p->stdstringValue(context);
+        cDynamicExpression *expr = getOrCreateExpression(exprNode, inSubcomponentScope);
+        return expr->stringValue(context);
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, exprNode);
