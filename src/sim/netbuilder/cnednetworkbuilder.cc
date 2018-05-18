@@ -731,24 +731,27 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
             if (omnetpp::opp_strcmp(prop->getName(), "dynamic") == 0 && ASTNodeUtil::propertyAsBool(prop) == true)
                 return;
 
-
-    // handle conditional submodule
-    ConditionElement *condition = submod->getFirstConditionChild();
-    if (condition) {
-        ExpressionElement *conditionExpr = findExpression(condition, "condition");
-        if (conditionExpr && evaluateAsBool(conditionExpr, compoundModule, false) == false)
-            return;
-    }
-
-    // create submodule
+    // find vector size expression
     const char *submodName = submod->getName();
     bool usesLike = !opp_isempty(submod->getLikeType());
     ExpressionElement *vectorSizeExpr = findExpression(submod, "vector-size");
 
+    // create submodule
     if (!vectorSizeExpr) {
         cModuleType *submodType;
         try {
             std::string submodTypeName = getSubmoduleTypeName(compoundModule, submod);
+
+            // handle conditional submodule
+            ConditionElement *condition = submod->getFirstConditionChild();
+            if (condition) {
+                ExpressionElement *conditionExpr = findExpression(condition, "condition");
+                ASSERT(conditionExpr);
+                NedExpressionContext context(compoundModule, NedExpressionContext::SUBMODULE_CONDITION, submodTypeName.c_str());
+                if (evaluateAsBool(conditionExpr, &context, false) == false)
+                    return;
+            }
+
             submodType = usesLike ?
                 findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), compoundModule, submodName) :
                 findAndCheckModuleType(submodTypeName.c_str(), compoundModule, submodName);
@@ -766,6 +769,18 @@ void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement 
         setupSubmoduleGateVectors(submodp, submod);
     }
     else {
+        // handle conditional submodule vector
+        ConditionElement *condition = submod->getFirstConditionChild();
+        if (condition) {
+            ExpressionElement *conditionExpr = findExpression(condition, "condition");
+            ASSERT(conditionExpr);
+            // note: "typename" may NOT occur in vector submodules' condition, because type is
+            // per-element, and we want to evaluate the condition only once for the whole vector
+            NedExpressionContext context(compoundModule, NedExpressionContext::SUBMODULE_ARRAY_CONDITION, nullptr);
+            if (evaluateAsBool(conditionExpr, &context, false) == false)
+                return;
+        }
+
         // note: we don't try to resolve moduleType if vector size is zero
         int vectorsize = (int)evaluateAsLong(vectorSizeExpr, compoundModule, false);
         ModulePtrVector& v = submodMap[submodName];

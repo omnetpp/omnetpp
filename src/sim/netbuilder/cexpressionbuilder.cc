@@ -162,6 +162,9 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             throw cRuntimeError("'index' operator is only supported in submodule parameters");
         elems[pos++] = new ModuleIndex();
     }
+    else if (!strcmp(funcname, "typename")) {
+        elems[pos++] = new Typename();
+    }
     else if (!strcmp(funcname, "const")) {
         throw cRuntimeError("'const' operator is not yet supported");  // TBD
     }

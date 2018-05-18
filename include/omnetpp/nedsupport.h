@@ -22,6 +22,16 @@ namespace omnetpp {
 
 namespace nedsupport {
 
+class NedExpressionContext : public cExpression::Context
+{
+  public:
+    enum ExpressionRole { SUBMODULE_CONDITION, SUBMODULE_ARRAY_CONDITION, OTHER };
+    explicit NedExpressionContext(cComponent *component, ExpressionRole role, const char *computedTypename) :
+            cExpression::Context(component), role(role), computedTypename(computedTypename) {}
+    ExpressionRole role;
+    const char *computedTypename;
+};
+
 class ModuleIndex : public cDynamicExpression::Functor
 {
   public:
@@ -30,6 +40,18 @@ class ModuleIndex : public cDynamicExpression::Functor
     virtual const char *getFullName() const override {return "index";}
     virtual const char *getArgTypes() const override {return "";}
     virtual char getReturnType() const override {return 'L';}
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
+    virtual std::string str(std::string args[], int numargs) override;
+};
+
+class Typename : public cDynamicExpression::Functor
+{
+  public:
+    Typename();
+    Typename *dup() const override {return new Typename();}
+    virtual const char *getFullName() const override {return "typename";}
+    virtual const char *getArgTypes() const override {return "";}
+    virtual char getReturnType() const override {return 'S';}
     virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
     virtual std::string str(std::string args[], int numargs) override;
 };

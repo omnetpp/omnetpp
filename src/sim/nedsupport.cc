@@ -52,6 +52,31 @@ std::string ModuleIndex::str(std::string args[], int numargs)
 
 //----
 
+Typename::Typename()
+{
+}
+
+cNedValue Typename::evaluate(Context *context, cNedValue args[], int numargs)
+{
+    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
+    NedExpressionContext *nedContext = dynamic_cast<NedExpressionContext*>(context);
+    if (!nedContext)
+        return context->component->getNedTypeName();
+    switch(nedContext->role) {
+        case NedExpressionContext::SUBMODULE_CONDITION: return nedContext->computedTypename;
+        case NedExpressionContext::SUBMODULE_ARRAY_CONDITION: throw cRuntimeError("typename is not allowed in the condition of a submodule vector");
+        default: return context->component->getNedTypeName();
+    }
+
+}
+
+std::string Typename::str(std::string args[], int numargs)
+{
+    return "typename";
+}
+
+//----
+
 ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool explicitKeyword)
 {
     this->paramName = paramName;
