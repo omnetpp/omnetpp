@@ -80,7 +80,7 @@ class SIM_API cNedNetworkBuilder
     std::vector<std::string> findTypeWithInterface(const char *nedTypeName, const char *interfaceQName);
 
     std::string getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index = -1);
-    std::string getSubmoduleOrChannelTypeNameFromDeepAssignments(cModule *modp, const std::string& submodOrChannelKey, bool& outIsDefault);
+    bool getSubmoduleOrChannelTypeNameFromDeepAssignments(cModule *modp, const std::string& submodOrChannelKey, std::string& outTypeName, bool& outIsDefault);
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
     void doAddParametersAndGatesTo(cComponent *component, cNedDeclaration *decl);
     void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalContext);

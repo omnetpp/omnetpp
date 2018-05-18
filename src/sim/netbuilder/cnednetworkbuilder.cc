@@ -607,27 +607,24 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
             submodFullName += opp_stringf("[%d]", index);
 
         // then, use **.typename from NED deep param assignments
-        std::string defaultDeepSubmodTypeName;
-        bool deepSubmodTypeNameIsDefault;
-        std::string submodTypeName = getSubmoduleOrChannelTypeNameFromDeepAssignments(modp, submodFullName, deepSubmodTypeNameIsDefault);
-        if (!submodTypeName.empty()) {
-            if (!deepSubmodTypeNameIsDefault)
-                return submodTypeName;
-            else
-                defaultDeepSubmodTypeName = submodTypeName;
-        }
+        std::string submodTypeName;
+        bool isDefault;
+        bool typenameFound = getSubmoduleOrChannelTypeNameFromDeepAssignments(modp, submodFullName, submodTypeName, isDefault);
+        if (typenameFound && !isDefault)
+            return submodTypeName;
 
         // then, use **.typename option in the configuration if exists
         std::string key = modp->getFullPath() + "." + submodName;
         if (index != -1)
             key = opp_stringf("%s[%d]", key.c_str(), index);
-        submodTypeName = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
-        if (!submodTypeName.empty())
-            return submodTypeName;
+        const char *NOTFOUNDVALUE = "\x1";
+        std::string configTypename = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME, NOTFOUNDVALUE);
+        if (configTypename != NOTFOUNDVALUE)
+            return configTypename;
 
-        // then, use **.typename=default() expressions from NED deep param assignments
-        if (!defaultDeepSubmodTypeName.empty())
-            return defaultDeepSubmodTypeName;
+        // then, use the **.typename=default(expression) value from NED deep param assignments
+        if (typenameFound)
+            return submodTypeName;
 
         // last, use default(expression) between angle braces from the NED file
         if (submod->getIsDefault()) {
@@ -641,7 +638,7 @@ std::string cNedNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
     }
 }
 
-std::string cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModule *modp, const std::string& submodOrChannelKey, bool& outIsDefault)
+bool cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModule *modp, const std::string& submodOrChannelKey, std::string& outTypeName, bool& outIsDefault)
 {
     // strategy: go up the parent chain, and find patterns that match "<submodfullname>.typename".
     // we return the first (innermost) non-"default()" value, or the last (outermost) "default()" value
@@ -661,7 +658,8 @@ std::string cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments
     const char *nedTypeName = modp->getNedTypeName();
     cNedDeclaration *decl = cNedLoader::getInstance()->getDecl(nedTypeName);
 
-    std::string defaultTypeName;
+    bool found = false;
+    outTypeName = "";
     outIsDefault = false;
 
     for (cComponent *mod = modp; true;  /**/) {
@@ -675,11 +673,11 @@ std::string cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments
                         // return the value if it's not enclosed in 'default()', otherwise remember it
                         ExpressionElement *typeNameExpr = findExpression(patterns[j].patternNode, "value");
                         if (typeNameExpr) {
-                            std::string typeName = evaluateAsString(typeNameExpr, mod, false);
+                            outTypeName = evaluateAsString(typeNameExpr, mod, false);
                             if (patterns[j].patternNode->getIsDefault())
-                                defaultTypeName = typeName;
+                                found = true;
                             else
-                                return typeName;
+                                return true;
                         }
                     }
                 }
@@ -703,11 +701,11 @@ std::string cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments
                         // return the value if it's not enclosed in 'default()', otherwise remember it
                         ExpressionElement *typeNameExpr = findExpression(submodPatterns[j].patternNode, "value");
                         if (typeNameExpr) {
-                            std::string typeName = evaluateAsString(typeNameExpr, mod, true);
+                            outTypeName = evaluateAsString(typeNameExpr, mod, true);
                             if (submodPatterns[j].patternNode->getIsDefault())
-                                defaultTypeName = typeName;
+                                found = true;
                             else
-                                return typeName;
+                                return true;
                         }
                     }
                 }
@@ -721,7 +719,7 @@ std::string cNedNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments
     }
 
     outIsDefault = true;
-    return defaultTypeName;
+    return found;
 }
 
 void cNedNetworkBuilder::addSubmodule(cModule *compoundModule, SubmoduleElement *submod)
@@ -1092,25 +1090,22 @@ std::string cNedNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         channelKey += std::string(srcGate->getFullName()) + "." + channelName;
 
         // then, use **.typename from NED deep param assignments (using channelKey above)
-        std::string defaultDeepConnTypeName;
-        bool deepConnTypeNameIsDefault;
-        std::string connTypeName = getSubmoduleOrChannelTypeNameFromDeepAssignments(parentmodp, channelKey, deepConnTypeNameIsDefault);
-        if (!connTypeName.empty()) {
-            if (!deepConnTypeNameIsDefault)
-                return connTypeName;
-            else
-                defaultDeepConnTypeName = connTypeName;
-        }
+        std::string connTypeName;
+        bool isDefault;
+        bool typenameFound = getSubmoduleOrChannelTypeNameFromDeepAssignments(parentmodp, channelKey, connTypeName, isDefault);
+        if (typenameFound && !isDefault)
+            return connTypeName;
 
         // then, use **.typename option in the configuration if exists
         std::string key = srcGate->getFullPath() + "." + channelName;
-        std::string channelTypeName = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
-        if (!channelTypeName.empty())
-            return channelTypeName;
+        const char *NOTFOUNDVALUE = "\x1";
+        std::string configTypename = getEnvir()->getConfig()->getAsString(key.c_str(), CFGID_TYPENAME, NOTFOUNDVALUE);
+        if (configTypename != NOTFOUNDVALUE)
+            return configTypename;
 
         // then, use default() expression from NED deep param assignments
-        if (!defaultDeepConnTypeName.empty())
-            return defaultDeepConnTypeName;
+        if (typenameFound)
+            return connTypeName;
 
         // last, use default(expression) between angle braces from the NED file
         if (conn->getIsDefault()) {
