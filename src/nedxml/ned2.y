@@ -1604,7 +1604,7 @@ expr
 
 simple_expr
         : identifier
-        | special_expr
+        | operator
         | literal
         ;
 
@@ -1625,13 +1625,15 @@ identifier
                 { if (np->getParseExpressionsFlag()) $$ = createIdent(np, @6, @1, $3); }
         ;
 
-special_expr
+operator
         : INDEX_
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "index"); }
         | INDEX_ '(' ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "index"); }
         | SIZEOF '(' identifier ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "sizeof", $3); }
+        | TYPENAME
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "typename"); }
         ;
 
 literal

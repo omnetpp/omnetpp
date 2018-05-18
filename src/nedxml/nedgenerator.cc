@@ -836,8 +836,8 @@ void NedGenerator::doOperator(OperatorElement *node, const char *indent, bool is
 
 void NedGenerator::doFunction(FunctionElement *node, const char *indent, bool islast, const char *)
 {
-    if (!strcmp(node->getName(), "index")) {
-        OUT << node->getName();  // 'index' doesn't need parentheses
+    if (!strcmp(node->getName(), "index") || !strcmp(node->getName(), "typename")) {
+        OUT << node->getName();  // 'index' and 'typename' don't need parentheses
         return;
     }
 

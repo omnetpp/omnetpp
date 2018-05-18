@@ -480,6 +480,21 @@ void NedSyntaxValidator::validateElement(FunctionElement *node)
             errors->addError(node, "'index' is not allowed here");
         return;
     }
+    else if (!strcmp(func, "typename")) {
+        if (args != 0)
+            errors->addError(node, "Operator 'typename' does not take arguments");
+
+        // containing expression
+        ASTNode *parent = node->getParent();
+        while (parent && parent->getTagCode() != NED_EXPRESSION)
+            parent = parent->getParent();
+        ASTNode *expr = parent;
+
+        // typename is not allowed in the like-expression which defines the type
+        if (!strcmp(expr->getAttribute("target"), "like-expr"))
+            errors->addError(node, "'typename' may not occur in a type name expression");
+        return;
+    }
     else if (!strcmp(func, "sizeof")) {
         if (args != 1)
             errors->addError(node, "Operator 'sizeof' takes one argument");
