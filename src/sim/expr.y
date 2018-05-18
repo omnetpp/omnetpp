@@ -257,24 +257,24 @@ funcname
 
 identifier
         : NAME
-                { *e++ = new NedSupport::ParameterRef($1, true, false); delete [] $1; }
+                { *e++ = new nedsupport::ParameterRef($1, true, false); delete [] $1; }
         | THIS_ '.' NAME
-                { *e++ = new NedSupport::ParameterRef($3, false, true); delete [] $3; }
+                { *e++ = new nedsupport::ParameterRef($3, false, true); delete [] $3; }
         | NAME '.' NAME
-                { *e++ = new NedSupport::SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
+                { *e++ = new nedsupport::SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
         | NAME '[' expression ']' '.' NAME
-                { *e++ = new NedSupport::SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
+                { *e++ = new nedsupport::SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
         ;
 
 special_expr
         : INDEX_
-                { *e++ = new NedSupport::ModuleIndex(); }
+                { *e++ = new nedsupport::ModuleIndex(); }
         | INDEX_ '(' ')'
-                { *e++ = new NedSupport::ModuleIndex(); }
+                { *e++ = new nedsupport::ModuleIndex(); }
         | SIZEOF_ '(' NAME ')'
-                { *e++ = new NedSupport::Sizeof($3, true, false); delete [] $3; }
+                { *e++ = new nedsupport::Sizeof($3, true, false); delete [] $3; }
         | SIZEOF_ '(' THIS_ '.' NAME ')'
-                { *e++ = new NedSupport::Sizeof($5, false, false); delete [] $5; }
+                { *e++ = new nedsupport::Sizeof($5, false, false); delete [] $5; }
         | SIZEOF_ '(' NAME '.' NAME ')'
                 { delete [] $3; delete [] $5; yyerror("sizeof(submodule.gate) notation not supported here"); }
         | SIZEOF_ '(' NAME '[' expression ']' '.' NAME ')'

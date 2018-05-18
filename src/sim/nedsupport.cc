@@ -30,7 +30,7 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
-namespace NedSupport {
+namespace nedsupport {
 
 ModuleIndex::ModuleIndex()
 {

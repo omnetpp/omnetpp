@@ -32,6 +32,7 @@
 #include "nedxml/errorstore.h"
 
 using namespace omnetpp::common;
+using namespace omnetpp::nedsupport;
 
 namespace omnetpp {
 
@@ -159,7 +160,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
     if (!strcmp(funcname, "index")) {
         if (!inSubcomponentScope)
             throw cRuntimeError("'index' operator is only supported in submodule parameters");
-        elems[pos++] = new NedSupport::ModuleIndex();
+        elems[pos++] = new ModuleIndex();
     }
     else if (!strcmp(funcname, "const")) {
         throw cRuntimeError("'const' operator is not yet supported");  // TBD
@@ -176,9 +177,9 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         // if it's sizeof(parentModuleGateVector) or sizeof(submoduleVector),
         // we don't have to do it at runtime in the Sizeof functor class.
         if (opp_isempty(modulename))
-            elems[pos++] = new NedSupport::Sizeof(ident, inSubcomponentScope, false);
+            elems[pos++] = new Sizeof(ident, inSubcomponentScope, false);
         else if (strcmp(modulename, "this") == 0)
-            elems[pos++] = new NedSupport::Sizeof(ident, false, true);
+            elems[pos++] = new Sizeof(ident, false, true);
         else
             throw cRuntimeError("sizeof(module.ident) is not yet supported");  // TBD
     }
@@ -204,8 +205,8 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
 
 bool cExpressionBuilder::isLoopVar(const char *parname)
 {
-    const char **varNames = NedSupport::LoopVar::getVarNames();
-    int n = NedSupport::LoopVar::getNumVars();
+    const char **varNames = LoopVar::getVarNames();
+    int n = LoopVar::getNumVars();
     for (int i = 0; i < n; i++)
         if (strcmp(varNames[i], parname) == 0)
             return true;
@@ -222,13 +223,13 @@ void cExpressionBuilder::doIdent(IdentElement *node)
         doNode(node->getFirstChild());  // push module index
 
     if (opp_isempty(modulename) && isLoopVar(parname))
-        elems[pos++] = new NedSupport::LoopVar(parname);
+        elems[pos++] = new LoopVar(parname);
     else if (opp_isempty(modulename))
-        elems[pos++] = new NedSupport::ParameterRef(parname, inSubcomponentScope, false);
+        elems[pos++] = new ParameterRef(parname, inSubcomponentScope, false);
     else if (strcmp(modulename, "this") == 0)
-        elems[pos++] = new NedSupport::ParameterRef(parname, false, true);
+        elems[pos++] = new ParameterRef(parname, false, true);
     else
-        elems[pos++] = new NedSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
+        elems[pos++] = new SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
 }
 
 void cExpressionBuilder::doLiteral(LiteralElement *node)

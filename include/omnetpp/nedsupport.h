@@ -20,7 +20,7 @@
 
 namespace omnetpp {
 
-namespace NedSupport {
+namespace nedsupport {
 
 class ModuleIndex : public cDynamicExpression::Functor
 {

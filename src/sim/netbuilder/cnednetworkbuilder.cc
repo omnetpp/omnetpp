@@ -50,6 +50,7 @@
 #include "cexpressionbuilder.h"
 
 using namespace omnetpp::common;
+using namespace omnetpp::nedsupport;
 
 namespace omnetpp {
 
@@ -818,7 +819,7 @@ void cNedNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NedElemen
     // and execute the LoopElement and ConditionElement children recursively to get
     // nested loops etc, then after (inside) the last one create the connection(s)
     // themselves, which is (are) then parent of the LoopNode/ConditionNode.
-    NedSupport::LoopVar::reset();
+    LoopVar::reset();
     doConnOrConnGroupBody(modp, connOrConnGroup, connOrConnGroup->getFirstChild());
 }
 
@@ -853,13 +854,13 @@ void cNedNetworkBuilder::doLoopOrCondition(cModule *modp, NedElement *loopOrCond
         long end = evaluateAsLong(findExpression(loop, "to-value"), modp, false);
 
         // do loop
-        long& i = NedSupport::LoopVar::pushVar(loop->getParamName());
+        long& i = LoopVar::pushVar(loop->getParamName());
         for (i = start; i <= end; i++) {
             // do the body of the "if": either further "for"'s and "if"'s, or
             // the connection(group) itself that we are children of.
             doConnOrConnGroupBody(modp, loopOrCondition->getParent(), loopOrCondition->getNextSibling());
         }
-        NedSupport::LoopVar::popVar();
+        LoopVar::popVar();
     }
     else {
         ASSERT(false);
