@@ -1,0 +1,29 @@
+%description:
+Check that typename is rejected in a vector submodule condition
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IFoo {}
+module DefaultFoo like IFoo {}
+module SpecialFoo like IFoo {}
+
+network Test
+{
+    parameters:
+        foo.typename = "";
+    submodules:
+        foo[3]: <default("DefaultFoo")> like IFoo if typename!="";
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%exitcode: 1
+
+%contains: stderr
+typename is not allowed in the condition of a submodule vector

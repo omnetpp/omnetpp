@@ -1,0 +1,36 @@
+%description:
+Check that typename is accepted in a submodule condition
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IFoo {}
+module DefaultFoo like IFoo {}
+module SpecialFoo like IFoo {}
+
+network Test
+{
+    parameters:
+        foo1.typename = "";
+        foo2.typename = "";
+    submodules:
+        foo1: <> like IFoo if typename!="";
+        foo2: <default("DefaultFoo")> like IFoo if typename!="";
+        foo3: <default("DefaultFoo")> like IFoo if typename!="";
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.foo3: DefaultFoo {
+        }
+}

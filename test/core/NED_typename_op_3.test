@@ -1,0 +1,38 @@
+%description:
+Check that typename is also available when module already exists
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IFoo {}
+module Foo like IFoo { parameters: string tname; }
+module Bar { parameters: string tname; }
+
+network Test
+{
+    submodules:
+        foo: <default("Foo")> like IFoo { tname = "this is a " + typename; };
+        bar: Bar { tname = "this is a " + typename; };
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.foo: Foo {
+            parameters:
+                tname = "this is a Foo"
+        }
+        module Test.bar: Bar {
+            parameters:
+                tname = "this is a Bar"
+        }
+}
