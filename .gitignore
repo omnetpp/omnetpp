@@ -111,6 +111,8 @@ Thumbs.db
 /test/eventlog/result/
 /test/eventlog/elog/generated/
 /test/eventlog/elog/filtered/
+/test/fingerprint/results/
+/test/msgc/results/
 /test/stress/results/
 /test/build/_buildlog
 /test/anim/*/Makefile
