@@ -1,0 +1,83 @@
+%description:
+Test NED exists() operator on submodule arrays
+
+%file: test.ned
+import testlib.Dump;
+
+module Node { gates: output o[]; input i[]; connections allowunconnected: }
+module Params { parameters: bool existentExists; bool zerosizeExists; bool nonexistentExists; }
+
+network Test
+{
+    parameters:
+        // test exists() in param assignment (should cause error, but for now it just returns false)
+        bool existentExists = exists(existent);
+        bool zerosizeExists = exists(zerosize);
+        bool nonexistentExists = exists(nonexistent);
+    
+    submodules:
+        existent[1]: Node if true;
+        zerosize[0]: Node if true;
+        nonexistent[1]: Node if false;
+        
+        // test exists() in submodule condition
+        ifExistent: Node if exists(existent);
+        ifZerosizeExists: Node if exists(zerosize);
+        ifNonexistent: Node if exists(nonexistent);
+
+        // test exists() in submodule param assignment
+        params: Params {
+            existentExists = exists(existent);
+            zerosizeExists = exists(zerosize);
+            nonexistentExists = exists(nonexistent);
+        }
+
+        a: Node;
+        b: Node;
+        dump: Dump;
+
+    connections allowunconnected:
+       // test exists() in connection "if" condition
+       a.o++ --> { delay = 1s; } --> b.i++ if exists(existent);
+       a.o++ --> { delay = 2s; } --> b.i++ if exists(zerosize);
+       a.o++ --> { delay = 3s; } --> b.i++ if exists(nonexistent);
+
+       // test exists() in channel param assignment
+       a.o++ --> { delay = exists(existent) ? 10s : 0s; } --> b.i++;
+       a.o++ --> { delay = exists(zerosize) ? 0s : 20s; } --> b.i++;
+       a.o++ --> { delay = exists(nonexistent) ? 0s : 30s; } --> b.i++;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        existentExists = false
+        zerosizeExists = false
+        nonexistentExists = false
+    submodules:
+        module Test.existent[0]: Node {
+        }
+        module Test.ifExistent: Node {
+        }
+        module Test.params: Params {
+            parameters:
+                existentExists = true
+                zerosizeExists = false
+                nonexistentExists = false
+        }
+        module Test.a: Node {
+            gates:
+                o[0]: --> b.i[0], (ned.DelayChannel)channel disabled=false delay=1s
+                o[1]: --> b.i[1], (ned.DelayChannel)channel disabled=false delay=10s
+                o[2]: --> b.i[2], (ned.DelayChannel)channel disabled=false delay=20s
+                o[3]: --> b.i[3], (ned.DelayChannel)channel disabled=false delay=30s
+        }
+        module Test.b: Node {
+            gates:
+                i[0]: <-- a.o[0], (ned.DelayChannel)channel disabled=false delay=1s
+                i[1]: <-- a.o[1], (ned.DelayChannel)channel disabled=false delay=10s
+                i[2]: <-- a.o[2], (ned.DelayChannel)channel disabled=false delay=20s
+                i[3]: <-- a.o[3], (ned.DelayChannel)channel disabled=false delay=30s
+        }
+}

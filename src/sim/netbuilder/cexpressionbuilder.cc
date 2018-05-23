@@ -162,6 +162,13 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             throw cRuntimeError("'index' operator is only supported in submodule parameters");
         elems[pos++] = new ModuleIndex();
     }
+    else if (!strcmp(funcname, "exists")) {
+        // operands are in a child "ident" node
+        IdentElement *identnode = node->getFirstIdentChild();
+        ASSERT(identnode);
+        const char *ident = identnode->getName();
+        elems[pos++] = new Exists(ident, inSubcomponentScope);
+    }
     else if (!strcmp(funcname, "typename")) {
         elems[pos++] = new Typename();
     }

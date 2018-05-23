@@ -52,6 +52,33 @@ std::string ModuleIndex::str(std::string args[], int numargs)
 
 //----
 
+Exists::Exists(const char *ident, bool ofParent)
+{
+    this->ident = ident;
+    this->ofParent = ofParent;
+}
+
+
+cNedValue Exists::evaluate(Context *context, cNedValue args[], int numargs)
+{
+    ASSERT(numargs == 0 && context != nullptr && context->component != nullptr);
+    cModule *module = ofParent ? context->component->getParentModule() : dynamic_cast<cModule *>(context->component);
+    if (!module)
+        throw cRuntimeError(context->component, E_ENOPARENT);
+
+    // Find ident among submodules. If there's no such submodule, it may be that such
+    // submodule vector never existed, or can be that it's zero size -- we cannot tell
+    bool exists = module->getSubmodule(ident.c_str()) || module->getSubmodule(ident.c_str(), 0);
+    return exists;
+}
+
+std::string Exists::str(std::string args[], int numargs)
+{
+    return std::string("exists(") + ident + ")";
+}
+
+//----
+
 Typename::Typename()
 {
 }

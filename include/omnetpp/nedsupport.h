@@ -44,6 +44,20 @@ class ModuleIndex : public cDynamicExpression::Functor
     virtual std::string str(std::string args[], int numargs) override;
 };
 
+class Exists : public cDynamicExpression::Functor
+{
+    std::string ident;
+    bool ofParent;
+  public:
+    Exists(const char *ident, bool ofParent);
+    Exists *dup() const override {return new Exists(ident.c_str(), ofParent);}
+    virtual const char *getFullName() const override {return "exists";}
+    virtual const char *getArgTypes() const override {return "";}
+    virtual char getReturnType() const override {return 'B';}
+    virtual cNedValue evaluate(Context *context, cNedValue args[], int numargs) override;
+    virtual std::string str(std::string args[], int numargs) override;
+};
+
 class Typename : public cDynamicExpression::Functor
 {
   public:

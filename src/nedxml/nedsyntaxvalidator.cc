@@ -480,6 +480,16 @@ void NedSyntaxValidator::validateElement(FunctionElement *node)
             errors->addError(node, "'index' is not allowed here");
         return;
     }
+    else if (!strcmp(func, "exists")) {
+        if (args != 1)
+            errors->addError(node, "Operator 'exists' takes one argument");
+        // else if (node->getFirstChild()->getTagCode()!=NED_IDENT)
+        //    errors->addError(node, "Argument of operator 'exists' should be an identifier");
+        else {
+            // TBD further check it's a submodule name
+        }
+        return;
+    }
     else if (!strcmp(func, "typename")) {
         if (args != 0)
             errors->addError(node, "Operator 'typename' does not take arguments");

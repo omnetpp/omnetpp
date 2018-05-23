@@ -131,6 +131,7 @@ using namespace omnetpp::nedxml;
 "const"                  { countChars(); return CONST_; }
 "sizeof"                 { countChars(); return SIZEOF; }
 "index"                  { countChars(); return INDEX_; }
+"exists"                 { countChars(); return EXISTS; }
 "typename"               { countChars(); return TYPENAME; }
 "xmldoc"                 { countChars(); return XMLDOC; }
 

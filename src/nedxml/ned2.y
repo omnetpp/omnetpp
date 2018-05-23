@@ -26,7 +26,7 @@
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token TRUE_ FALSE_ THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ TYPENAME XMLDOC
+%token TRUE_ FALSE_ THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME PROPNAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -1630,6 +1630,8 @@ operator
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "index"); }
         | INDEX_ '(' ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "index"); }
+        | EXISTS '(' identifier ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "exists", $3); }
         | SIZEOF '(' identifier ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(np, "sizeof", $3); }
         | TYPENAME
