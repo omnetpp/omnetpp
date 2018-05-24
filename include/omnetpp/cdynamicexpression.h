@@ -296,6 +296,13 @@ class SIM_API cDynamicExpression : public cExpression
      * throw an error if conversion from that type is not supported.
      */
     virtual cXMLElement *xmlValue(Context *context) override;
+
+    using cExpression::evaluate;
+    using cExpression::boolValue;
+    using cExpression::intValue;
+    using cExpression::doubleValue;
+    using cExpression::stringValue;
+    using cExpression::xmlValue;
     //@}
 
     /** @name Miscellaneous utility functions. */

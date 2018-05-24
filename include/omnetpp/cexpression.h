@@ -91,45 +91,94 @@ class SIM_API cExpression : public cObject
     virtual void parsimUnpack(cCommBuffer *buffer) override  {throw cRuntimeError(this, E_CANTPACK);}
     //@}
 
-    /** @name Getter functions. Note that overloaded conversion operators also exist. */
+    /** @name Evaluator methods. */
     //@{
-
     /**
      * Evaluate the expression and return the result in a cNedValue.
+     * The context parameter cannot be nullptr.
      */
-    virtual cNedValue evaluate(Context *context=nullptr) const = 0;
+    virtual cNedValue evaluate(Context *context) const = 0;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue(Context *context=nullptr) = 0;
+    virtual bool boolValue(Context *context) = 0;
 
     /**
      * Evaluate the expression and convert the result to intpar_t if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual intpar_t intValue(Context *context=nullptr, const char *expectedUnit=nullptr) = 0;
+    virtual intpar_t intValue(Context *context, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual double doubleValue(Context *context=nullptr, const char *expectedUnit=nullptr) = 0;
+    virtual double doubleValue(Context *context, const char *expectedUnit=nullptr) = 0;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue(Context *context=nullptr) = 0;
+    virtual std::string stringValue(Context *context) = 0;
 
     /**
      * Evaluate the expression and convert the result to an XML tree if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual cXMLElement *xmlValue(Context *context=nullptr) = 0;
+    virtual cXMLElement *xmlValue(Context *context) = 0;
+
+    /**
+     * Evaluate the expression and return the result in a cNedValue.
+     * This method creates a Context from contextComponent, and delegates
+     * to evaluate(Context*).
+     */
+    virtual cNedValue evaluate(cComponent *contextComponent=nullptr) const;
+
+    /**
+     * Evaluate the expression and convert the result to bool if possible;
+     * throw an error if conversion from that type is not supported.
+     * This method creates a Context from contextComponent, and delegates
+     * to boolValue(Context*).
+     */
+    virtual bool boolValue(cComponent *contextComponent=nullptr);
+
+    /**
+     * Evaluate the expression and convert the result to intpar_t if possible;
+     * throw an error if conversion from that type is not supported.
+     * Also throws an error if the actual unit does not match the expected unit.
+     * This method creates a Context from contextComponent, and delegates
+     * to intValue(Context*,const char*).
+     */
+    virtual intpar_t intValue(cComponent *contextComponent=nullptr, const char *expectedUnit=nullptr);
+
+    /**
+     * Evaluate the expression and convert the result to double if possible;
+     * throw an error if conversion from that type is not supported.
+     * Also throws an error if the actual unit does not match the expected unit.
+     * This method creates a Context from contextComponent, and delegates
+     * to doubleValue(Context*,const char*).
+     */
+    virtual double doubleValue(cComponent* contextComponent=nullptr, const char *expectedUnit=nullptr);
+
+    /**
+     * Evaluate the expression and convert the result to string if possible;
+     * throw an error if conversion from that type is not supported.
+     * This method creates a Context from contextComponent, and delegates
+     * to stringValue(Context*).
+     */
+    virtual std::string stringValue(cComponent *contextComponent=nullptr);
+
+    /**
+     * Evaluate the expression and convert the result to an XML tree if possible;
+     * throw an error if conversion from that type is not supported.
+     * This method creates a Context from contextComponent, and delegates
+     * to xmlValue(Context*).
+     */
+    virtual cXMLElement *xmlValue(cComponent *contextComponent=nullptr);
     //@}
 
     /** @name Miscellaneous utility functions. */

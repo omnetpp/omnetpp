@@ -515,6 +515,9 @@ static bool _stkinuse = false;
 
 cNedValue cDynamicExpression::evaluate(Context *context) const
 {
+    if (!context)
+        throw cRuntimeError("cDynamicExpression::evaluate(): context cannot be nullptr");
+
     // use static _stk[] if possible, or allocate another one if that's in use.
     // Note: this will be reentrant but NOT thread safe
     cNedValue *stk;
