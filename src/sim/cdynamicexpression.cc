@@ -507,6 +507,13 @@ static void errorDimlessArgsExpected(const cNedValue& actual1, const cNedValue& 
     throw cRuntimeError("Dimensionless argument expected, got %s and %s", actual1.str().c_str(), actual2.str().c_str());
 }
 
+void cDynamicExpression::ensureNoLogarithmicUnit(const cNedValue& v)
+{
+    ASSERT(v.type == cNedValue::INT || v.type == cNedValue::DOUBLE);
+    if (!opp_isempty(v.unit) && !UnitConversion::isLinearUnit(v.unit))
+        throw cRuntimeError("Refusing to perform computations involving quantities with nonlinear units (%s)", v.str().c_str());
+}
+
 
 // we have a static stack to avoid new[] and call to cNedValue ctor stksize times
 static const int stksize = 20;
@@ -663,10 +670,14 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
                             throw cRuntimeError(E_ESTKUFLOW);
                         switch (e.op) {
                             case NEG:
-                                if (stk[tos].type == cNedValue::INT)
+                                if (stk[tos].type == cNedValue::INT) {
+                                    ensureNoLogarithmicUnit(stk[tos]);
                                     stk[tos].intv = -stk[tos].intv;
-                                else if (stk[tos].type == cNedValue::DOUBLE)
+                                }
+                                else if (stk[tos].type == cNedValue::DOUBLE) {
+                                    ensureNoLogarithmicUnit(stk[tos]);
                                     stk[tos].dbl = -stk[tos].dbl;
+                                }
                                 else
                                     errorNumericArgExpected(stk[tos]);
                                 break;
@@ -719,6 +730,8 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
                             case ADD:
                                 // numeric addition or string concatenation
                                 if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT) {  // both ints -> integer addition
+                                    ensureNoLogarithmicUnit(stk[tos]);
+                                    ensureNoLogarithmicUnit(stk[tos-1]);
                                     bringToCommonTypeAndUnit(stk[tos], stk[tos-1]);
                                     if (stk[tos].type == cNedValue::INT)
                                         stk[tos-1].intv = safeAdd(stk[tos-1].intv, stk[tos].intv);
@@ -726,9 +739,9 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
                                         stk[tos-1].dbl = stk[tos-1].dbl + stk[tos].dbl;
                                 }
                                 else if (stk[tos-1].type == cNedValue::DOUBLE || stk[tos].type == cNedValue::DOUBLE) { // at least one is double -> double addition
-                                    stk[tos-1].convertToDouble();
-                                    stk[tos].convertToDouble();
-                                    stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].unit, stk[tos-1].unit);
+                                    ensureNoLogarithmicUnit(stk[tos]);
+                                    ensureNoLogarithmicUnit(stk[tos-1]);
+                                    bringToCommonTypeAndUnit(stk[tos], stk[tos-1]);
                                     stk[tos-1].dbl = stk[tos-1].dbl + stk[tos].dbl;
                                 }
                                 else if (stk[tos-1].type == cNedValue::STRING && stk[tos].type == cNedValue::STRING)
@@ -742,6 +755,8 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
                                 if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT) {  // both are integers -> integer multiplication
                                     if (!opp_isempty(stk[tos].unit) && !opp_isempty(stk[tos-1].unit))
                                         throw cRuntimeError("Multiplying two quantities with units is not supported");
+                                    ensureNoLogarithmicUnit(stk[tos]);
+                                    ensureNoLogarithmicUnit(stk[tos-1]);
                                     stk[tos-1].intv = safeMul(stk[tos-1].intv, stk[tos].intv);
                                     if (opp_isempty(stk[tos-1].unit))
                                         stk[tos-1].unit = stk[tos].unit;
@@ -749,6 +764,8 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
                                 else if (stk[tos-1].type == cNedValue::DOUBLE || stk[tos].type == cNedValue::DOUBLE) { // at least one is double -> double multiplication
                                     if (!opp_isempty(stk[tos].unit) && !opp_isempty(stk[tos-1].unit))
                                         throw cRuntimeError("Multiplying two quantities with units is not supported");
+                                    ensureNoLogarithmicUnit(stk[tos]);
+                                    ensureNoLogarithmicUnit(stk[tos-1]);
                                     stk[tos-1].convertToDouble();
                                     stk[tos].convertToDouble();
                                     stk[tos-1].dbl = stk[tos-1].dbl * stk[tos].dbl;
@@ -765,6 +782,8 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
                                 // for now we only support num/num, unit/num, plus and unit/unit only if the two units are convertible
                                 stk[tos-1].convertToDouble();
                                 stk[tos].convertToDouble();
+                                ensureNoLogarithmicUnit(stk[tos]);
+                                ensureNoLogarithmicUnit(stk[tos-1]);
                                 if (!opp_isempty(stk[tos].unit))
                                     stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].unit, stk[tos-1].unit);
                                 stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;
@@ -775,11 +794,15 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
 
                             case MOD:
                                 if (stk[tos-1].type == cNedValue::INT && stk[tos].type == cNedValue::INT) {  // both ints -> integer modulo
+                                    ensureNoLogarithmicUnit(stk[tos]);
+                                    ensureNoLogarithmicUnit(stk[tos-1]);
                                     if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))
                                         errorDimlessArgsExpected(stk[tos-1], stk[tos]);
                                     stk[tos-1].intv = stk[tos-1].intv % stk[tos].intv;  //TODO result differs from fmod's result for negative numbers
                                 }
                                 else if (stk[tos-1].type == cNedValue::DOUBLE || stk[tos].type == cNedValue::DOUBLE) { // at least one is double -> double modulo
+                                    ensureNoLogarithmicUnit(stk[tos]);
+                                    ensureNoLogarithmicUnit(stk[tos-1]);
                                     stk[tos-1].convertToDouble();
                                     stk[tos].convertToDouble();
                                     if (!opp_isempty(stk[tos].unit) || !opp_isempty(stk[tos-1].unit))

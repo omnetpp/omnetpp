@@ -207,6 +207,7 @@ class SIM_API cDynamicExpression : public cExpression
   private:
     void copy(const cDynamicExpression& other);
     void bringToCommonTypeAndUnit(cNedValue& a, cNedValue& b) const;
+    static void ensureNoLogarithmicUnit(const cNedValue& v);
 
   public:
     /** @name Constructors, destructor, assignment. */

@@ -1,0 +1,41 @@
+%description:
+Negative test case for nonlinear units in NED.
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        double p1 @unit(dBm) = 3*10dBm; // error: refuse to perform operations on logarithmic units
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity() override;
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+   EV << "This should not be printed: " << par("p1").doubleValue() << "\n";
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains-regex: stderr
+Refusing to perform computations involving quantities with nonlinear units \(10dBm\), at .*test\.ned:6
+
