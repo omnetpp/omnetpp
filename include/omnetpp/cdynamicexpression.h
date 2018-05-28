@@ -270,32 +270,32 @@ class SIM_API cDynamicExpression : public cExpression
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual bool boolValue(Context *context) override;
+    virtual bool boolValue(Context *context) const override;
 
     /**
      * Evaluate the expression and convert the result to intpar_t if possible;
      * throw an error if conversion from that type is not supported, or
      * the value of out of the range of intpar_t.
      */
-    virtual intpar_t intValue(Context *context, const char *expectedUnit=nullptr) override;
+    virtual intpar_t intValue(Context *context, const char *expectedUnit=nullptr) const override;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(Context *context, const char *expectedUnit=nullptr) override;
+    virtual double doubleValue(Context *context, const char *expectedUnit=nullptr) const override;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual std::string stringValue(Context *context) override;
+    virtual std::string stringValue(Context *context) const override;
 
     /**
      * Evaluate the expression and convert the result to an XML tree if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual cXMLElement *xmlValue(Context *context) override;
+    virtual cXMLElement *xmlValue(Context *context) const override;
 
     using cExpression::evaluate;
     using cExpression::boolValue;

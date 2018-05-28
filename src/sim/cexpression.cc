@@ -27,31 +27,31 @@ cNedValue cExpression::evaluate(cComponent *contextComponent) const
     return evaluate(&context);
 }
 
-bool cExpression::boolValue(cComponent *contextComponent)
+bool cExpression::boolValue(cComponent *contextComponent) const
 {
     Context context(contextComponent);
     return boolValue(&context);
 }
 
-intpar_t cExpression::intValue(cComponent *contextComponent, const char *expectedUnit)
+intpar_t cExpression::intValue(cComponent *contextComponent, const char *expectedUnit) const
 {
     Context context(contextComponent);
     return intValue(&context);
 }
 
-double cExpression::doubleValue(cComponent *contextComponent, const char *expectedUnit)
+double cExpression::doubleValue(cComponent *contextComponent, const char *expectedUnit) const
 {
     Context context(contextComponent);
     return doubleValue(&context);
 }
 
-std::string cExpression::stringValue(cComponent *contextComponent)
+std::string cExpression::stringValue(cComponent *contextComponent) const
 {
     Context context(contextComponent);
     return stringValue(&context);
 }
 
-cXMLElement *cExpression::xmlValue(cComponent *contextComponent)
+cXMLElement *cExpression::xmlValue(cComponent *contextComponent) const
 {
     Context context(contextComponent);
     return xmlValue(&context);

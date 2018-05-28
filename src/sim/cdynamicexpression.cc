@@ -332,31 +332,31 @@ void cDynamicExpression::evaluateConstSubexpressions(Context *context)
     throw cRuntimeError(this, "Const subexpressions not yet implemented");  // TODO implement
 }
 
-bool cDynamicExpression::boolValue(Context *context)
+bool cDynamicExpression::boolValue(Context *context) const
 {
     cNedValue v = evaluate(context);
     return v.boolValue();
 }
 
-intpar_t cDynamicExpression::intValue(Context *context, const char *expectedUnit)
+intpar_t cDynamicExpression::intValue(Context *context, const char *expectedUnit) const
 {
     cNedValue v = evaluate(context);
     return expectedUnit == nullptr ? v.intValue() : (intpar_t)v.doubleValueInUnit(expectedUnit);
 }
 
-double cDynamicExpression::doubleValue(Context *context, const char *expectedUnit)
+double cDynamicExpression::doubleValue(Context *context, const char *expectedUnit) const
 {
     cNedValue v = evaluate(context);
     return expectedUnit == nullptr ? v.doubleValue() : v.doubleValueInUnit(expectedUnit);
 }
 
-std::string cDynamicExpression::stringValue(Context *context)
+std::string cDynamicExpression::stringValue(Context *context) const
 {
     cNedValue v = evaluate(context);
     return v.stringValue();
 }
 
-cXMLElement *cDynamicExpression::xmlValue(Context *context)
+cXMLElement *cDynamicExpression::xmlValue(Context *context) const
 {
     cNedValue v = evaluate(context);
     return v.xmlValue();
