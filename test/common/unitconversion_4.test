@@ -1,0 +1,43 @@
+%description:
+Tests some units in UnitConversion
+
+%includes:
+#include <common/unitconversion.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void convert(double d, const char *unit, const char *targetUnit)
+{
+    try {
+        double res = UnitConversion::convertUnit(d, unit, targetUnit);
+        EV << d << unit << " = " << res << targetUnit;
+
+        double d2 = UnitConversion::convertUnit(res, targetUnit, unit);
+        EV << " (= " << d2 << unit << ")";
+        if (fabs(d2-d)/d > 1e-9)
+            EV << "  Error in reverse conversion";
+        EV << endl;
+    } catch (std::exception& e) {
+        EV << d << unit << " to " << targetUnit << " ==> ERROR: " << e.what() << endl;
+    }
+}
+
+%activity:
+
+#define P(d,u,tu) convert(d, #u, #tu)
+#define __   EV << endl;
+
+P(1, rad, deg);
+P(2, rad, deg);
+
+EV << ".\n";
+
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
+
+%contains: stdout
+1rad = 57.2958deg (= 1rad)
+2rad = 114.592deg (= 2rad)
+.
+

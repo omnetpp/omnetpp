@@ -67,6 +67,8 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "Mb",    1e6, _, "b",    "megabit" },
     { "Gb",    1e9, _, "b",    "gigabit" },
     { "Tb",   1e12, _, "b",    "terabit" },
+    { "rad",   1,   _, "rad",  "radian"  },
+    { "deg",M_PI/180,_,"rad",  "degree" },
     { "m",       1, _, "m",    "meter" },
     { "mm",   1e-3, _, "m",    "millimeter" },
     { "cm",   1e-2, _, "m",    "centimeter" },
