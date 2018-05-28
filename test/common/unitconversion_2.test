@@ -1,0 +1,201 @@
+%description:
+Tests logarithmic units in UnitConversion
+
+%includes:
+#include <common/unitconversion.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void convert(double d, const char *unit, const char *targetUnit)
+{
+    try {
+        double res = UnitConversion::convertUnit(d, unit, targetUnit);
+        EV << d << unit << " = " << res << targetUnit;
+
+        double d2 = UnitConversion::convertUnit(res, targetUnit, unit);
+        EV << " (= " << d2 << unit << ")";
+        if (fabs(d2-d)/d > 1e-9)
+            EV << "  Error in reverse conversion";
+        EV << endl;
+    } catch (std::exception& e) {
+        EV << d << unit << " to " << targetUnit << " ==> ERROR: " << e.what() << endl;
+    }
+}
+
+%activity:
+
+#define P(d,u,tu) convert(d, #u, #tu)
+#define __   EV << endl;
+
+P(-10,dBm, mW);
+P(0,  dBm, mW);
+P(10, dBm, mW);
+P(20, dBm, mW);
+P(30, dBm, mW);
+P(33, dBm, mW);
+__
+
+P(0,  mW, dBm);
+P(-1, mW, dBm);
+P(1,  mW, A);
+__
+
+P(-10,dBm, W);
+P(0,  dBm, W);
+P(10, dBm, W);
+P(20, dBm, W);
+P(30, dBm, W);
+P(33, dBm, W);
+__
+
+P(-10,dBW, mW);
+P(0,  dBW, mW);
+P(10, dBW, mW);
+P(20, dBW, mW);
+__
+
+P(0,  dBW, dBm);
+P(10, dBW, dBm);
+
+EV << "\n============\n\n";
+
+P(0,  dBV, V);
+P(10, dBV, V);
+P(20, dBV, V);
+P(30, dBV, V);
+__
+
+P(0,  dBmV, mV);
+P(10, dBmV, mV);
+P(20, dBmV, mV);
+P(30, dBmV, mV);
+__
+
+P(0,  dBmV, V);
+P(10, dBmV, V);
+P(20, dBmV, V);
+P(30, dBmV, V);
+__
+
+P(0,  dBV, mV);
+P(10, dBV, mV);
+P(20, dBV, mV);
+P(30, dBV, mV);
+__
+
+P(0,  dBV, dBmV);
+P(10, dBV, dBmV);
+
+EV << "\n============\n\n";
+
+P(0,  dBA, A);
+P(10, dBA, A);
+P(20, dBA, A);
+P(30, dBA, A);
+__
+
+P(0,  dBmA, mA);
+P(10, dBmA, mA);
+P(20, dBmA, mA);
+P(30, dBmA, mA);
+__
+
+P(0,  dBmA, A);
+P(10, dBmA, A);
+P(20, dBmA, A);
+P(30, dBmA, A);
+__
+
+P(0,  dBA, mA);
+P(10, dBA, mA);
+P(20, dBA, mA);
+P(30, dBA, mA);
+__
+
+P(0,  dBA, dBmA);
+P(10, dBA, dBmA);
+
+EV << ".\n";
+
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
+
+%contains: stdout
+-10dBm = 0.1mW (= -10dBm)
+0dBm = 1mW (= 0dBm)
+10dBm = 10mW (= 10dBm)
+20dBm = 100mW (= 20dBm)
+30dBm = 1000mW (= 30dBm)
+33dBm = 1995.26mW (= 33dBm)
+
+0mW = -infdBm (= 0mW)
+-1mW to dBm ==> ERROR: Cannot convert unit 'mW' (milliwatt) to 'dBm' (decibel-milliwatt)
+1mW to A ==> ERROR: Cannot convert unit 'mW' (milliwatt) to 'A' (ampere)
+
+-10dBm = 0.0001W (= -10dBm)
+0dBm = 0.001W (= 0dBm)
+10dBm = 0.01W (= 10dBm)
+20dBm = 0.1W (= 20dBm)
+30dBm = 1W (= 30dBm)
+33dBm = 1.99526W (= 33dBm)
+
+-10dBW = 100mW (= -10dBW)
+0dBW = 1000mW (= 0dBW)
+10dBW = 10000mW (= 10dBW)
+20dBW = 100000mW (= 20dBW)
+
+0dBW = 30dBm (= 0dBW)
+10dBW = 40dBm (= 10dBW)
+
+============
+
+0dBV = 1V (= 0dBV)
+10dBV = 3.16228V (= 10dBV)
+20dBV = 10V (= 20dBV)
+30dBV = 31.6228V (= 30dBV)
+
+0dBmV = 1mV (= 0dBmV)
+10dBmV = 3.16228mV (= 10dBmV)
+20dBmV = 10mV (= 20dBmV)
+30dBmV = 31.6228mV (= 30dBmV)
+
+0dBmV = 0.001V (= 0dBmV)
+10dBmV = 0.00316228V (= 10dBmV)
+20dBmV = 0.01V (= 20dBmV)
+30dBmV = 0.0316228V (= 30dBmV)
+
+0dBV = 1000mV (= 0dBV)
+10dBV = 3162.28mV (= 10dBV)
+20dBV = 10000mV (= 20dBV)
+30dBV = 31622.8mV (= 30dBV)
+
+0dBV = 60dBmV (= 0dBV)
+10dBV = 70dBmV (= 10dBV)
+
+============
+
+0dBA = 1A (= 0dBA)
+10dBA = 3.16228A (= 10dBA)
+20dBA = 10A (= 20dBA)
+30dBA = 31.6228A (= 30dBA)
+
+0dBmA = 1mA (= 0dBmA)
+10dBmA = 3.16228mA (= 10dBmA)
+20dBmA = 10mA (= 20dBmA)
+30dBmA = 31.6228mA (= 30dBmA)
+
+0dBmA = 0.001A (= 0dBmA)
+10dBmA = 0.00316228A (= 10dBmA)
+20dBmA = 0.01A (= 20dBmA)
+30dBmA = 0.0316228A (= 30dBmA)
+
+0dBA = 1000mA (= 0dBA)
+10dBA = 3162.28mA (= 10dBA)
+20dBA = 10000mA (= 20dBA)
+30dBA = 31622.8mA (= 30dBA)
+
+0dBA = 60dBmA (= 0dBA)
+10dBA = 70dBmA (= 10dBA)
+.
+

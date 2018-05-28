@@ -1,0 +1,93 @@
+%description:
+Tests units of data storage in UnitConversion
+
+%includes:
+#include <common/unitconversion.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void convert(double d, const char *unit, const char *targetUnit)
+{
+    try {
+        double res = UnitConversion::convertUnit(d, unit, targetUnit);
+        EV << d << unit << " = " << res << targetUnit;
+
+        double d2 = UnitConversion::convertUnit(res, targetUnit, unit);
+        EV << " (= " << d2 << unit << ")";
+        if (fabs(d2-d)/d > 1e-9)
+            EV << "  Error in reverse conversion";
+        EV << endl;
+    } catch (std::exception& e) {
+        EV << d << unit << " to " << targetUnit << " ==> ERROR: " << e.what() << endl;
+    }
+}
+
+%activity:
+
+#define P(d,u,tu) convert(d, #u, #tu)
+#define __   EV << endl;
+
+P(1, KiB, B);
+P(1, MiB, B);
+P(1, GiB, B);
+P(1, TiB, B);
+__
+
+P(1, kB, B);
+P(1, MB, B);
+P(1, GB, B);
+P(1, TB, B);
+__
+
+P(1, Kib, b);
+P(1, Mib, b);
+P(1, Gib, b);
+P(1, Tib, b);
+__
+
+P(1, kb, b);
+P(1, Mb, b);
+P(1, Gb, b);
+P(1, Tb, b);
+__
+
+P(1, B, b);
+P(1, MiB, b);
+P(1, MiB, Mib);
+P(1, MiB, Kib);
+P(1, MiB, kb);
+
+EV << ".\n";
+
+%subst: /e\+0(\d\d)/e+$1/
+%subst: /e\-0(\d\d)/e-$1/
+
+%contains: stdout
+1KiB = 1024B (= 1KiB)
+1MiB = 1.04858e+06B (= 1MiB)
+1GiB = 1.07374e+09B (= 1GiB)
+1TiB = 1.09951e+12B (= 1TiB)
+
+1kB = 1000B (= 1kB)
+1MB = 1e+06B (= 1MB)
+1GB = 1e+09B (= 1GB)
+1TB = 1e+12B (= 1TB)
+
+1Kib = 1024b (= 1Kib)
+1Mib = 1.04858e+06b (= 1Mib)
+1Gib = 1.07374e+09b (= 1Gib)
+1Tib = 1.09951e+12b (= 1Tib)
+
+1kb = 1000b (= 1kb)
+1Mb = 1e+06b (= 1Mb)
+1Gb = 1e+09b (= 1Gb)
+1Tb = 1e+12b (= 1Tb)
+
+1B = 8b (= 1B)
+1MiB = 8.38861e+06b (= 1MiB)
+1MiB = 8Mib (= 1MiB)
+1MiB = 8192Kib (= 1MiB)
+1MiB = 8388.61kb (= 1MiB)
+.
+

@@ -308,15 +308,15 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
     if (wantAll || !strcmp(category, "units")) {
         processed = true;
         if (verbose) {
-            out << "Recognized physical units (note: other units can be used as well, only\n";
+            out << "Recognized measurement units (note: other units can be used as well, only\n";
             out << "no automatic conversion will be available for them):\n";
         }
         std::vector<const char *> units = UnitConversion::getAllUnits();
         for (auto u : units) {
             const char *bu = UnitConversion::getBaseUnit(u);
             out << "  " << u << "\t" << UnitConversion::getLongName(u);
-            if (omnetpp::opp_strcmp(u, bu) != 0)
-                out << "\t" << UnitConversion::convertUnit(1, u, bu) << bu;
+            if (opp_strcmp(u, bu) != 0)
+                out << "\t" << UnitConversion::getConversionDescription(u);
             out << "\n";
         }
         out << "\n";

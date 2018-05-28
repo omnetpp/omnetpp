@@ -31,13 +31,19 @@ namespace common {
 class COMMON_API UnitConversion
 {
   protected:
-    struct UnitDesc { const char *unit; double mult; const char *baseUnit; const char *longName; };
+    enum Mapping { LINEAR, LOG10 };
+    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; };
     static UnitDesc unitTable[];
 
   protected:
     static UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
+    static double convertToBase(double value, UnitDesc *unitDesc);
+    static double convertFromBase(double value, UnitDesc *unitDesc);
+    static double tryConvert(double d, UnitDesc *unitDesc, UnitDesc *targetUnitDesc);
+    static void cannotConvert(const char *unit, const char *targetUnit);
+    static double tryGetConversionFactor(UnitDesc *unitDesc, UnitDesc *targetUnitDesc);
 
   private:
     // all methods are static, no reason to instantiate
@@ -82,7 +88,13 @@ class COMMON_API UnitConversion
     static std::string getUnitDescription(const char *unit);
 
     /**
-     * Returns 0.0 if conversion is not possible (unrelated or unrecognized units).
+     * Returns a short string describing the conversion between the unit and its base unit.
+     */
+    static std::string getConversionDescription(const char *unit);
+
+    /**
+     * Returns 0.0 if conversion is not possible (unrelated or unrecognized units)
+     * or if it the relationship is nonlinear (such as between dBW and W).
      */
     static double getConversionFactor(const char *sourceUnit, const char *targetUnit);
 
@@ -103,6 +115,12 @@ class COMMON_API UnitConversion
      * See getAllUnits().
      */
     static const char *getBaseUnit(const char *unit);
+
+    /**
+     * Returns true if the given unit is linear (e.g. W and KiB), and false 
+     * if not (dBm, dbW). Unknown (custom) units are assumed to be linear.
+     */
+    static bool isLinearUnit(const char *unit);
 
     /**
      * Produces the list of all recognized units, with their short names.
