@@ -36,13 +36,13 @@ bool cExpression::boolValue(cComponent *contextComponent) const
 intpar_t cExpression::intValue(cComponent *contextComponent, const char *expectedUnit) const
 {
     Context context(contextComponent);
-    return intValue(&context);
+    return intValue(&context, expectedUnit);
 }
 
 double cExpression::doubleValue(cComponent *contextComponent, const char *expectedUnit) const
 {
     Context context(contextComponent);
-    return doubleValue(&context);
+    return doubleValue(&context, expectedUnit);
 }
 
 std::string cExpression::stringValue(cComponent *contextComponent) const
