@@ -26,7 +26,8 @@
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token TRUE_ FALSE_ THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
+%token TRUE_ FALSE_ NAN_ INF_ 
+%token THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ EXISTS TYPENAME XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME PROPNAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -1665,7 +1666,7 @@ boolliteral
 numliteral
         : INTCONSTANT
                 { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_INT, @1, @1); }
-        | REALCONSTANT
+        | realconstant_ext
                 { if (np->getParseExpressionsFlag()) $$ = createLiteral(np, LIT_DOUBLE, @1, @1); }
         | quantity
                 { if (np->getParseExpressionsFlag()) $$ = createQuantityLiteral(np, @1); }
@@ -1673,9 +1674,15 @@ numliteral
 
 quantity
         : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
+        | quantity realconstant_ext NAME
         | INTCONSTANT NAME
-        | REALCONSTANT NAME
+        | realconstant_ext NAME
+        ;
+
+realconstant_ext
+        : REALCONSTANT
+        | INF_
+        | NAN_
         ;
 
 opt_semicolon

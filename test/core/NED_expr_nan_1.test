@@ -1,0 +1,60 @@
+%description:
+Test parsing of "nan" and "inf" in NED
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        double p1 = nan;
+        double p2 = inf;
+        double p3 = -inf;
+        double p4 @unit(s) = nan s;
+        double p5 @unit(s) = inf ms;
+        double p6 @unit(s) = -inf ns;
+
+        double p7 = 1+inf;
+        double p8 = -inf+inf;
+        double p9 = 2*nan;
+
+        double p10 @unit(s) = 1s + inf s;
+        double p11 @unit(s) = -inf s + inf ms;
+        double p12 @unit(s) = 2*nan s;
+
+        bool b1 = 1+inf == 1/0.0;
+        bool b2 = 1+nan == nan;
+        bool b3 = nan == nan;
+
+        bool b4 = 1s + inf ms == 1s/0.0;
+        bool b5 = nan s == nan;
+
+    submodules:
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        p1 = nan
+        p2 = inf
+        p3 = -inf
+        p4 @unit(s) = nan s
+        p5 @unit(s) = inf s
+        p6 @unit(s) = -inf s
+        p7 = inf
+        p8 = nan
+        p9 = nan
+        p10 @unit(s) = inf s
+        p11 @unit(s) = nan s
+        p12 @unit(s) = nan s
+        b1 = true
+        b2 = false
+        b3 = false
+        b4 = true
+        b5 = false
+    submodules:
+}
+

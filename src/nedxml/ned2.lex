@@ -125,6 +125,8 @@ using namespace omnetpp::nedxml;
 
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }
+"nan"                    { countChars(); return NAN_; }
+"inf"                    { countChars(); return INF_; }
 "this"                   { countChars(); return THIS_; }
 "default"                { countChars(); return DEFAULT; }
 "ask"                    { countChars(); return ASK; }

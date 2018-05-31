@@ -20,6 +20,9 @@
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/cdynamicexpression.h"
 #include "omnetpp/ccomponent.h"
+#include "common/stringutil.h"
+
+using namespace omnetpp::common;
 
 namespace omnetpp {
 
@@ -166,12 +169,13 @@ std::string cDoubleParImpl::str() const
         return expr->str();
     else {
         char buf[32];
-        sprintf(buf, "%g", val);
+        opp_dtoa(buf, "%g", val);
+        if (!std::isfinite(val))
+            strcat(buf, " ");
         const char *unit = getUnit();
-        if (!unit)
-            return buf;
-        else
-            return std::string(buf) + unit;
+        if (!opp_isempty(unit))
+            strcat(buf, unit);
+        return buf;
     }
 }
 

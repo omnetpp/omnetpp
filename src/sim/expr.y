@@ -19,7 +19,8 @@
 
 /* Reserved words */
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE
-%token TRUE_ FALSE_ THIS_ ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ EXISTS TYPENAME XMLDOC_
+%token TRUE_ FALSE_ NAN_ INF_
+%token THIS_ ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ EXISTS TYPENAME XMLDOC_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
@@ -312,6 +313,10 @@ numliteral
                 { *e++ = (intpar_t)opp_atoll($1); delete [] $1; }
         | REALCONSTANT
                 { *e++ = opp_atof($1); delete [] $1; }
+        | NAN_
+                { *e++ = std::nan(""); }
+        | INF_
+                { *e++ = 1/0.0; }
         | quantity
                 {
                   std::string unit;
@@ -332,10 +337,18 @@ quantity
                 { $$ = expryyconcat($1,$2,$3); }
         | quantity REALCONSTANT NAME
                 { $$ = expryyconcat($1,$2,$3); }
+        | quantity NAN_ NAME
+                { $$ = expryyconcat($1,omnetpp::opp_strdup("nan"),$3); }
+        | quantity INF_ NAME
+                { $$ = expryyconcat($1,omnetpp::opp_strdup("inf"),$3); }
         | INTCONSTANT NAME
                 { $$ = expryyconcat($1,$2); }
         | REALCONSTANT NAME
                 { $$ = expryyconcat($1,$2); }
+        | NAN_ NAME
+                { $$ = expryyconcat(omnetpp::opp_strdup("nan"),$2); }
+        | INF_ NAME
+                { $$ = expryyconcat(omnetpp::opp_strdup("inf"),$2); }
         ;
 
 %%

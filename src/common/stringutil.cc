@@ -837,7 +837,7 @@ double opp_strtod(const char *s, char **endptr)
 {
     setlocale(LC_NUMERIC, "C");
     double d = strtod(s, endptr);
-    if (d == -HUGE_VAL || d == HUGE_VAL)
+    if ((d == -HUGE_VAL || d == HUGE_VAL) && errno==ERANGE)
         throw opp_runtime_error("Cannot represent \"%s\" in double", s);
     return d;
 }

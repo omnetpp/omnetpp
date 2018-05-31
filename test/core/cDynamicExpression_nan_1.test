@@ -1,0 +1,86 @@
+%description:
+Test nan/inf with cDynamicExpression.
+
+%global:
+
+void test(const char *expr)
+{
+    cDynamicExpression e;
+    std::string result;
+    try {
+        e.parse(expr);
+        cNedValue v = e.evaluate();
+        result = v.str();
+    } catch (std::exception& ex) {
+        result = ex.what();
+    }
+    EV << expr << " ==> " << result << "\n";
+}
+
+void test(const char *s1, const std::string& s2, const char *s3)
+{
+    test((std::string(s1) + " " + s2 + " " + s3).c_str());
+}
+
+%activity:
+// constants
+test("nan");
+test("inf");
+test("-inf");
+
+// ...with unit
+test("nan s");
+test("inf ms");
+test("-inf ns");
+EV << "\n";
+
+// some operators
+test("1+inf");
+test("-inf+inf");
+test("2*nan");
+EV << "\n";
+
+// ...with unit
+test("1s + inf s");
+test("-inf s + inf ms");
+test("2*nan s");
+EV << "\n";
+
+// comparison
+test("1+inf == 1/0.0");
+test("1+nan == nan");
+test("nan == nan");
+EV << "\n";
+
+// ...with unit
+test("1s + inf ms == 1s/0.0");
+test("nan s == nan");
+
+EV << ".\n";
+
+%subst: /4\.294\d*e\+0*9/_maxlong_/
+%subst: /1\.844\d*e\+0*19/_maxlong_/
+
+%contains: stdout
+nan ==> nan
+inf ==> inf
+-inf ==> -inf
+nan s ==> nan s
+inf ms ==> inf ms
+-inf ns ==> -inf ns
+
+1+inf ==> inf
+-inf+inf ==> nan
+2*nan ==> nan
+
+1s + inf s ==> inf s
+-inf s + inf ms ==> nan s
+2*nan s ==> nan s
+
+1+inf == 1/0.0 ==> true
+1+nan == nan ==> false
+nan == nan ==> false
+
+1s + inf ms == 1s/0.0 ==> true
+nan s == nan ==> false
+.

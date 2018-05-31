@@ -204,7 +204,13 @@ std::string cNedValue::str() const
     switch (type) {
         case BOOL: return bl ? "true" : "false";
         case INT: sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit)); return buf;
-        case DOUBLE: sprintf(buf, "%g%s", dbl, opp_nulltoempty(unit)); return buf;
+        case DOUBLE:
+            opp_dtoa(buf, "%g", dbl);
+            if (!std::isfinite(dbl))
+                strcat(buf, " ");
+            if (!opp_isempty(unit))
+                strcat(buf, unit);
+            return buf;
         case STRING: return opp_quotestr(s);
         case XML: return xml->str();
         default: throw cRuntimeError("Internal error: Invalid cNedValue type");

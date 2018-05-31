@@ -80,6 +80,8 @@ static std::string extendbuf;
 
 "true"                   { countChars(); return TRUE_; }
 "false"                  { countChars(); return FALSE_; }
+"nan"                    { countChars(); return NAN_; }
+"inf"                    { countChars(); return INF_; }
 "this"                   { countChars(); return THIS_; }
 "default"                { countChars(); return DEFAULT_; }
 "ask"                    { countChars(); return ASK_; }
