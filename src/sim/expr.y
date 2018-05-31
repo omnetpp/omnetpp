@@ -19,7 +19,7 @@
 
 /* Reserved words */
 %token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE
-%token TRUE_ FALSE_ THIS_ ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ XMLDOC_
+%token TRUE_ FALSE_ THIS_ ASK_ DEFAULT_ CONST_ SIZEOF_ INDEX_ EXISTS TYPENAME XMLDOC_
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT
@@ -87,8 +87,8 @@ LineColumn xpos, xprevpos;
 #include "omnetpp/nedsupport.h"
 
 using namespace omnetpp;
-
 using namespace omnetpp::common;
+using namespace omnetpp::nedsupport;
 
 static cDynamicExpression::Elem *e;
 
@@ -164,11 +164,15 @@ expr
                 { *e++ = cDynamicExpression::MOD; }
         | expr '^' expr
                 { *e++ = cDynamicExpression::POW; }
-
         | '-' expr
                 %prec UMIN_
-                { *e++ = cDynamicExpression::NEG; }
-
+                {
+                   cDynamicExpression::Elem& last = *(e-1);
+                   if (last.isNumericConstant())
+                       last.negate();
+                   else
+                       *e++ = cDynamicExpression::NEG;
+                }
         | expr EQ_ expr
                 { *e++ = cDynamicExpression::EQ; }
         | expr NE_ expr
@@ -250,35 +254,39 @@ simple_expr
 funcname
         : NAME
         | XMLDOC_
-                { $$ = omnetpp::opp_strdup("xmldoc"); }
+                { $$ = common::opp_strdup("xmldoc"); }
         | XMLTYPE
-                { $$ = omnetpp::opp_strdup("xml"); }
+                { $$ = common::opp_strdup("xml"); }
         ;
 
 identifier
         : NAME
-                { *e++ = new nedsupport::ParameterRef($1, true, false); delete [] $1; }
+                { *e++ = new ParameterRef($1, true, false); delete [] $1; }
         | THIS_ '.' NAME
-                { *e++ = new nedsupport::ParameterRef($3, false, true); delete [] $3; }
+                { *e++ = new ParameterRef($3, false, true); delete [] $3; }
         | NAME '.' NAME
-                { *e++ = new nedsupport::SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
+                { *e++ = new SiblingModuleParameterRef($1, $3, true, false); delete [] $1; delete [] $3; }
         | NAME '[' expression ']' '.' NAME
-                { *e++ = new nedsupport::SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
+                { *e++ = new SiblingModuleParameterRef($1, $6, true, true); delete [] $1; delete [] $6; }
         ;
 
-special_expr
+special_expr   //TODO rename like in ned2!
         : INDEX_
-                { *e++ = new nedsupport::ModuleIndex(); }
+                { *e++ = new ModuleIndex(); }
         | INDEX_ '(' ')'
-                { *e++ = new nedsupport::ModuleIndex(); }
+                { *e++ = new ModuleIndex(); }
+        | EXISTS '(' NAME ')'
+                { *e++ = new Exists($3, true); delete [] $3; }
         | SIZEOF_ '(' NAME ')'
-                { *e++ = new nedsupport::Sizeof($3, true, false); delete [] $3; }
+                { *e++ = new Sizeof($3, true, false); delete [] $3; }
         | SIZEOF_ '(' THIS_ '.' NAME ')'
-                { *e++ = new nedsupport::Sizeof($5, false, false); delete [] $5; }
+                { *e++ = new Sizeof($5, false, false); delete [] $5; }
         | SIZEOF_ '(' NAME '.' NAME ')'
                 { delete [] $3; delete [] $5; yyerror("sizeof(submodule.gate) notation not supported here"); }
         | SIZEOF_ '(' NAME '[' expression ']' '.' NAME ')'
                 { delete [] $3; delete [] $8; yyerror("sizeof(submodule[index].gate) notation not supported here"); }
+        | TYPENAME
+                { *e++ = new Typename(); }
         ;
 
 literal

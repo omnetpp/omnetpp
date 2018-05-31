@@ -60,7 +60,7 @@ LiteralElement *createLiteral(ParseContext *np, int type, YYLoc valuepos, YYLoc 
 LiteralElement *createLiteral(ParseContext *np, int type, const char *value, const char *text);
 LiteralElement *createStringLiteral(ParseContext *np, YYLoc textpos);
 LiteralElement *createQuantityLiteral(ParseContext *np, YYLoc textpos);
-ASTNode *unaryMinus(ParseContext *np, ASTNode *node);
+ASTNode *prependMinusSign(ParseContext *np, ASTNode *node);
 
 void addOptionalExpression(ParseContext *np, ASTNode *elem, const char *attrname, YYLoc exprpos, ASTNode *expr);
 void addExpression(ParseContext *np, ASTNode *elem, const char *attrname, YYLoc exprpos, ASTNode *expr);

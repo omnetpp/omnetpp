@@ -60,7 +60,7 @@ class SIM_API cDynamicExpression : public cExpression
     class SIM_API Elem
     {
       friend class cDynamicExpression;
-      private:
+      public:
         // Types:
         //  - bool
         //  - intpar_t
@@ -73,8 +73,10 @@ class SIM_API cDynamicExpression : public cExpression
         //  - math operator (+-*/%^...)
         //  - constant subexpression
         //
-        enum Type {UNDEF, BOOL, INT, DBL, STR, XML, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
+        enum Type {UNDEF, BOOL, INT, DBL, STR, XML, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR};
+      private:
         static cStringPool stringPool;
+        Type type;
         union {
             bool b;
             struct {intpar_t i; const char *unit;} i;
@@ -165,6 +167,51 @@ class SIM_API cDynamicExpression : public cExpression
          * Constant subexpression.
          */
         void operator=(cExpression* expr);
+
+        /** Returns the element type */
+        Type getType() const {return type;}
+
+        /** Returns true if the element is a numeric constant (type INT or DBL). */
+        bool isNumericConstant() const {return type==INT || type==DBL;}
+
+        /** Negates the element. It must be a numeric constant (type INT or DBL). */
+        void negate();
+
+        /** Returns the value if the element is a boolean constant (type BOOL). */
+        bool getBoolConstant() const {ASSERT(type==BOOL); return b;}
+
+        /** Returns the value if the element is an integer constant (type INT). */
+        intpar_t getIntConstant() const {ASSERT(type==INT); return i.i;}
+
+        /** Returns the value if the element is a double constant (type DBL). */
+        double getDoubleConstant() const {ASSERT(type==DBL); return d.d;}
+
+        /** Returns the unit if the element is a numeric constant (type INT or DBL). */
+        const char *getUnit() const {return (type==INT) ? i.unit : (type==DBL) ? d.unit : nullptr;}
+
+        /** Returns the value if the element is a string constant (type STR). */
+        const char *getStringConstant() const {ASSERT(type==STR); return s;}
+
+        /** Returns the value if the element is an XML element (type XML). */
+        cXMLElement *getXMLElement() const {ASSERT(type==XML); return x;}
+
+        /** Returns the function pointer if the element is a math function (type MATHFUNC). */
+        cNedMathFunction *getMathFunction() const {ASSERT(type==MATHFUNC); return f;}
+
+        /** Returns the function pointer if the element is a NED function (type NEDFUNC). */
+        cNedFunction *getNedFunction() const {ASSERT(type==NEDFUNC); return nf.f;}
+
+        /** Returns the argument count if the element is a NED function (type NEDFUNC). */
+        int getNedFunctionNumArgs() const {ASSERT(type==NEDFUNC); return nf.argc;}
+
+        /** Returns the functor pointer if the element is a functor (type FUNCTOR). */
+        Functor *getFunctor() const {ASSERT(type==FUNCTOR); return fu;}
+
+        /** Returns the operation if the element is an operation (type OP). */
+        OpType getOperation() const {ASSERT(type==OP); return op;}
+
+        /** Returns the subexpression if the element is a NED function (type CONSTSUBEXPR). */
+        cExpression *getConstSubexpression() const {ASSERT(type==CONSTSUBEXPR); return constExpr;}
 
         /**
          * For cDynamicExpression::compare()

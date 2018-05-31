@@ -86,6 +86,8 @@ static std::string extendbuf;
 "const"                  { countChars(); return CONST_; }
 "sizeof"                 { countChars(); return SIZEOF_; }
 "index"                  { countChars(); return INDEX_; }
+"exists"                 { countChars(); return EXISTS; }
+"typename"               { countChars(); return TYPENAME; }
 "xmldoc"                 { countChars(); return XMLDOC_; }
 
 {L}({L}|{D})*            { countChars(); yylval = opp_strdup(yytext); return NAME; }

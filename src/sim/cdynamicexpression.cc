@@ -160,6 +160,15 @@ void cDynamicExpression::Elem::setUnit(const char *s)
     }
 }
 
+void cDynamicExpression::Elem::negate()
+{
+    switch(type) {
+    case INT: i.i = -i.i; break;
+    case DBL: d.d = -d.d; break;
+    default: throw cRuntimeError("Cannot negate this Elem type");
+    }
+}
+
 int cDynamicExpression::Elem::compare(const Elem& other) const
 {
     if (type != other.type)
@@ -191,7 +200,7 @@ const char *cDynamicExpression::Elem::getOpName(OpType op)
         case DIV: return "/";
         case MOD: return "%";
         case POW: return "^";
-        case NEG: return "!";
+        case NEG: return "-";
         case EQ: return "==";
         case NE: return "!=";
         case LT: return "<";

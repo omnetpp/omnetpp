@@ -1524,10 +1524,16 @@ expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "%", $1, $3); }
         | expr '^' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "^", $1, $3); }
-
         | '-' expr
                 %prec UMIN
-                { if (np->getParseExpressionsFlag()) $$ = unaryMinus(np, $2); }
+                { 
+                  if (np->getParseExpressionsFlag()) {
+                      if ($2->getTagCode() == NED_LITERAL)
+                          $$ = prependMinusSign(np, $2); 
+                      else
+                          $$ = createOperator(np, "-", $2);
+                  }
+                }
 
         | expr EQ expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator(np, "==", $1, $3); }

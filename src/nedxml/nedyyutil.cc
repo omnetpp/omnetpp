@@ -379,31 +379,27 @@ LiteralElement *createQuantityLiteral(ParseContext *np, YYLoc textpos)
     return c;
 }
 
-ASTNode *unaryMinus(ParseContext *np, ASTNode *node)
+ASTNode *prependMinusSign(ParseContext *np, ASTNode *node)
 {
-    // if not a constant, must apply unary minus operator
-    if (node->getTagCode() != NED_LITERAL)
-        return createOperator(np, "-", node);
+    Assert(node->getTagCode() == NED_LITERAL);
 
-    LiteralElement *constNode = (LiteralElement *)node;
+    LiteralElement *literalNode = (LiteralElement *)node;
 
-    if (constNode->getType() == LIT_QUANTITY)
-        return createOperator(np, "-", node);
-
-    // only int and real constants can be negative, string, bool, etc cannot
-    if (constNode->getType() != LIT_INT && constNode->getType() != LIT_DOUBLE) {
+    // only numeric constants can be negative, string, bool, etc. cannot
+    int type = literalNode->getType();
+    if (type != LIT_INT && type != LIT_DOUBLE && type != LIT_QUANTITY) {
         char msg[140];
-        sprintf(msg, "unary minus not accepted before '%.100s'", constNode->getValue());
+        sprintf(msg, "unary minus not accepted before '%.100s'", literalNode->getValue());
         np->error(msg, pos.li);
         return node;
     }
 
     // prepend the constant with a '-'
-    char *buf = new char[strlen(constNode->getValue())+2];
+    char *buf = new char[strlen(literalNode->getValue())+2];
     buf[0] = '-';
-    strcpy(buf+1, constNode->getValue());
-    constNode->setValue(buf);
-    constNode->setText(buf);  // for int and double literals, text and value are the same string
+    strcpy(buf+1, literalNode->getValue());
+    literalNode->setValue(buf);
+    literalNode->setText(buf);  // for numeric constants, text and value are the same string
     delete[] buf;
 
     return node;
