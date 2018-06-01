@@ -310,8 +310,10 @@ COMMON_API char *opp_ltoa(char *buf, long d);
 COMMON_API char *opp_i64toa(char *buf, int64_t d);
 
 /**
- * Prints the d double into the given buffer with the given printf format (e.g. "%g"),
- * then returns the buffer pointer.
+ * Prints the d double into the given buffer, then returns the buffer pointer.
+ * If d is finite, the given printf format is used (e.g. "%g"), otherwise
+ * it prints "inf", "-inf" or "nan". (Note that printf's handling of NaN and
+ * infinity is platform-dependent, e.g. MSVC produces "1.#QNAN" and "1.#INF".)
  */
 COMMON_API char *opp_dtoa(char *buf, const char *format, double d);
 
