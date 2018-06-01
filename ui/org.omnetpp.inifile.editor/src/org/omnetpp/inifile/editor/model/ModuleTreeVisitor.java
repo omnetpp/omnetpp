@@ -14,9 +14,11 @@ import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.IModuleTreeVisitor;
 import org.omnetpp.ned.core.ParamUtil;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
-import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Module tree visitor for collecting module parameters and properties.
@@ -140,56 +142,43 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
         // get module type expression
         String likeExpr = element.getLikeExpr();
 
-        //XXX this code is a near duplicate of one in InifileUtils
-
-        // note: the following lookup order is based on src/sim/netbuilder code, namely cNEDNetworkBuilder::getSubmoduleTypeName()
-
         // first, try to use expression between angle braces from the NED file
         if (!element.getIsDefault() && StringUtils.isNotEmpty(likeExpr)) {
             return evaluateLikeExpr(likeExpr);
         }
 
-        // then, use **.typename from NED deep param assignments
-        // XXX this is not implemented yet
+        // then try **.typename assignments in NED and ini files. 
+        // We pretend as if "typename" was a parameter of the module in question,
+        // so we can useParamCollector.resolveParameter() for it. 
+        ParamElementEx fakeParamDecl = (ParamElementEx) NedElementFactoryEx.getInstance().createElement(INedElement.NED_PARAM, null);
+        fakeParamDecl.setName("typename");
+        fakeParamDecl.setType(INedElement.NED_PARTYPE_STRING);
+        List<ParamResolution> paramResolutions = new ArrayList<>();
+        String fullPath = StringUtils.join(fullPathStack, ".") + "." + ParamUtil.getParamPathElementName(element);
+        elementPath.push(element);
+        typeInfoPath.push(null);
+        ParamCollector.resolveParameter(paramResolutions, fullPath, typeInfoPath, elementPath, sectionChain, doc, fakeParamDecl);
+        elementPath.pop();
+        typeInfoPath.pop();
 
-        // then, use **.typename option in the configuration if exists
-        if (sectionChain != null) {
-            String fullPath = StringUtils.join(fullPathStack, ".");
-            String name = "channel";  // unless it's a submodule:
-            if (element instanceof SubmoduleElement) {
-                name = ((SubmoduleElement)element).getName();
-                if (!StringUtils.isEmpty(((SubmoduleElement)element).getVectorSize()))
-                    name += "[*]";
-            }
-            String key = fullPath + "." + name + "." + ConfigRegistry.TYPENAME;
-            List<SectionKey> sectionKeys = InifileUtils.lookupParameter(key, false, sectionChain, doc);
-
-            // prefer the one with all asterisk indices, "[*]"
-            SectionKey chosenKey = null;
-            for (SectionKey sectionKey : sectionKeys)
-                if (ParamUtil.isTotalParamAssignment(sectionKey.key))
-                    chosenKey = sectionKey;
-            if (chosenKey == null && !sectionKeys.isEmpty())
-                chosenKey = sectionKeys.get(0);
-            if (chosenKey != null) {
-                // we only understand if there's a string constant there
-                String value = doc.getValue(chosenKey.section, chosenKey.key);
-                try {
-                    return Common.parseQuotedString(value);
+        if (!paramResolutions.isEmpty()) {
+            ParamResolution paramResolution = paramResolutions.get(0);
+            if (paramResolution.type != ParamResolution.ParamResolutionType.UNASSIGNED) {
+                String value = InifileUtils.getParamValue(paramResolution, doc);
+                if (!StringUtils.isEmpty(value) && value.charAt(0) == '"') {
+                    try {
+                        return Common.parseQuotedString(value); 
+                    } catch (RuntimeException e) { }
                 }
-                catch (RuntimeException e) {
-                    return null; // it is something we don't understand
-                }
+                return null; // we found a typename assignment, but cannot evaluate it
             }
         }
 
-        // then, use **.typename=default() expressions from NED deep param assignments
-        // XXX this is not implemented yet
+        // as last resort, try to use default() expression between angle braces from the NED file
+        if (!StringUtils.isEmpty(likeExpr))
+            return evaluateLikeExpr(likeExpr);
 
-        // last, use default(expression) between angle braces from the NED file
-        if (StringUtils.isEmpty(likeExpr))
-            return null; // cannot happen (<default()> is not an accepted NED syntax)
-        return evaluateLikeExpr(likeExpr);
+        return null;
     }
 
     protected String evaluateLikeExpr(String likeExpr) {

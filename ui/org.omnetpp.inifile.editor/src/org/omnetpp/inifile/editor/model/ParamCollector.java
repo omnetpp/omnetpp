@@ -156,12 +156,13 @@ public class ParamCollector {
             activeSection = sectionChain[0];
 
             // TODO: avoid calling lookupParameter twice
-            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), false, sectionChain, doc);
+            String paramPath = fullPath + "." + paramDeclaration.getName();
+            sectionKeys = InifileUtils.lookupParameter(paramPath, false, sectionChain, doc);
 
             for (SectionKey sectionKey : sectionKeys)
                 hasIniTotalAssignment |= ParamUtil.isTotalParamAssignment(sectionKey.key);
 
-            sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), hasNedDefaultAssignment, sectionChain, doc);
+            sectionKeys = InifileUtils.lookupParameter(paramPath, hasNedDefaultAssignment, sectionChain, doc);
         }
 
         // process non default parameter assignments from NED

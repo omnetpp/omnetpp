@@ -146,7 +146,9 @@ public class ParamUtil {
 
                 Map<String, ParamElementEx> paramAssignments = null;
 
-                if (element == null)
+                if (typeInfo == null)
+                    paramAssignments = new HashMap<>();
+                else if (element == null)
                     paramAssignments = typeInfo.getParamAssignments();
                 else if (element instanceof SubmoduleElementEx)
                     paramAssignments = ((SubmoduleElementEx)element).getParamAssignments(typeInfo);
