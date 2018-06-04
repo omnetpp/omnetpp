@@ -166,8 +166,12 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
 void GenericObjectInspector::recreateModel()
 {
-    // the proxyModel doesn't need to be recreated
     GenericObjectTreeModel *newSourceModel;
+
+    // The following two lines are a workaround for a crash introduced in Qt 5.11.
+    // Before that, it worked fine without this. But it's not a big deal...
+    delete proxyModel;
+    proxyModel = new PropertyFilteredGenericObjectTreeModel(this);
 
     if (mode == Mode::PACKET) {
         newSourceModel = new GenericObjectTreeModel(object, Mode::FLAT, this);
