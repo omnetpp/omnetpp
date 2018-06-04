@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.omnetpp.ide</groupId>
     <artifactId>org.omnetpp.ide.root</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
+    <version>5.4.0-SNAPSHOT</version>
   </parent>
   <groupId>org.omnetpp.ide</groupId>
   <artifactId>org.omnetpp.ide.nativelibs.win32.x86</artifactId>
-  <version>5.3.0-SNAPSHOT</version>
+  <version>5.4.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 
   <build>
