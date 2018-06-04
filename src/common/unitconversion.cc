@@ -147,6 +147,8 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 
 bool UnitConversion::readNumber(const char *& s, double& number)
 {
+    const char *str = s;
+
     while (opp_isspace(*s))
         s++;
 
@@ -157,8 +159,11 @@ bool UnitConversion::readNumber(const char *& s, double& number)
     if (s == endp)
         return false;  // no number read
     if (errno == ERANGE)
-        throw opp_runtime_error("Overflow or underflow during conversion of '%s'", s);
+        throw opp_runtime_error("Overflow or underflow during conversion of '%s'", str);
     s = endp;
+
+    if (opp_isalpha(*(s-1)) && opp_isalpha(*s))
+        throw opp_runtime_error("Syntax error parsing quantity '%s': Space required after nan/inf", str);
 
     while (opp_isspace(*s))
         s++;
