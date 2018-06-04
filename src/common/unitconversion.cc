@@ -106,14 +106,16 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "mAs",  1e-3, _, "C",    "milliampere-second" },
     { "Ah",   3600, _, "C",    "ampere-hour" },
     { "mAh",   3.6, _, "C",    "milliampere-hour" },
+    { "ratio",   1, _, "ratio","ratio" },
     // logarithmic
     { "dBW",    10, LOG10, "W",  "decibel-watt" },  // y = 10*log10(x)
     { "dBm",    10, LOG10, "mW", "decibel-milliwatt" },
+    { "dBmW",   10, LOG10, "mW", "decibel-milliwatt" },
     { "dBV",    20, LOG10, "V",  "decibel-volt" },
     { "dBmV",   20, LOG10, "mV", "decibel-millivolt" },
     { "dBA",    20, LOG10, "A",  "decibel-ampere" },
     { "dBmA",   20, LOG10, "mA", "decibel-milliampere" },
-    { "dB",     20, LOG10, "rt", "ratio" },
+    { "dB",     20, LOG10, "ratio", "decibel" },
     { nullptr,  0,  _, nullptr, nullptr }
 #undef _
 };
