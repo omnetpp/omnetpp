@@ -348,39 +348,46 @@ public class NedValidator extends AbstractNedValidatorEx {
         // structural, not checked by the DTD
 
         // parameter definitions
-        String parname = node.getName();
         if (node.getType()!=NED_PARTYPE_NONE) {
             // check definitions: allowed here at all?
+            String paramName = node.getName();
             if (submoduleNode!=null) {
-                errors.addError(node, "'"+parname+"': new parameters can only be defined on a module type, but not per submodule");
+                errors.addError(node, "'"+paramName+"': new parameters can only be defined on a module type, but not per submodule");
                 return;
             }
             if (connectionElement!=null) {
-                errors.addError(node, "'"+parname+"': new channel parameters can only be defined on a channel type, but not per connection");
+                errors.addError(node, "'"+paramName+"': new channel parameters can only be defined on a channel type, but not per connection");
                 return;
             }
 
             // param must NOT exist yet
-            if (members.containsKey(parname)) {
-                errors.addError(node, "'"+parname+"': already defined at "+members.get(parname).getSourceLocation()); // and may not be a parameter at all...
+            if (members.containsKey(paramName)) {
+                errors.addError(node, "'"+paramName+"': already defined at "+members.get(paramName).getSourceLocation()); // and may not be a parameter at all...
                 return;
             }
-            members.put(parname, node);
+            members.put(paramName, node);
         }
 
+        String paramPattern = node.getName();
+        String paramName = paramPattern.replaceFirst("^.*\\.", "");
+        boolean isTypenameAssignment = paramName.equals("typename");
+
         // check assignments: the param must exist already, find definition
-        if (submoduleNode!=null) {
+        if (isTypenameAssignment) {
+            //TODO validate: check whether "foo.typename" or such thing makes sense here (e.g. a submodule foo exists and has parametric type)
+        }
+        else if (submoduleNode!=null) {
             // inside a submodule's definition
             if (submoduleType==null) {
                 errors.addError(node, "cannot assign parameters of a submodule of unknown type");
                 return;
             }
 
-            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(submoduleNode, parname, contextProject);
+            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(submoduleNode, paramPattern, contextProject);
             ParamElementEx paramDeclaration = (ParamElementEx)result[0];
 
             if (paramDeclaration == null) {
-                String message = "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter";
+                String message = "'"+paramPattern+"': no such parameter";
 
                 if (node.getIsPattern())
                     errors.addWarning(node, message);
@@ -389,7 +396,9 @@ public class NedValidator extends AbstractNedValidatorEx {
 
                 return;
             }
-            else validateParamAssignment(result, (ParamElementEx)node, paramDeclaration);
+            else {
+                validateParamAssignment(result, (ParamElementEx)node, paramDeclaration);
+            }
         }
         else if (connectionElement!=null) {
             // inside a connection's channel spec
@@ -398,18 +407,18 @@ public class NedValidator extends AbstractNedValidatorEx {
                 return;
             }
 
-            if (connectionType.getParamDeclarations().get(parname) == null) {
-                errors.addError(node, "'"+parname+"': type '"+connectionType.getName()+"' has no such parameter");
+            if (connectionType.getParamDeclarations().get(paramPattern) == null) {
+                errors.addError(node, "'"+paramPattern+"': no such parameter");
                 return;
             }
         }
         else {
-            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(componentNode.getNedTypeInfo(), parname, contextProject);
+            Object[] result = ParamUtil.findMatchingParamDeclarationRecursively(componentNode.getNedTypeInfo(), paramPattern, contextProject);
             ParamElementEx paramDeclaration = (ParamElementEx)result[0];
 
             // global "parameters" section of type
             if (paramDeclaration == null) {
-                String message = "'"+parname+"': undefined parameter";
+                String message = "'"+paramPattern+"': no such parameter";
 
                 if (node.getIsPattern())
                     errors.addWarning(node, message);
@@ -418,7 +427,9 @@ public class NedValidator extends AbstractNedValidatorEx {
 
                 return;
             }
-            else validateParamAssignment(result, (ParamElementEx)node, paramDeclaration);
+            else {
+                validateParamAssignment(result, (ParamElementEx)node, paramDeclaration);
+            }
         }
 
         //XXX: check expression matches type in the declaration
