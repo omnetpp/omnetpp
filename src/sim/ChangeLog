@@ -1,3 +1,53 @@
+2018-06-04  Andras Varga
+
+	* cComponent::forEachChild: eliminate a source of pontential infinite recursion
+
+2018-05-31  Andras Varga
+
+	* cDynamicExpressio: recognize "nan" and "inf" as numeric constants
+
+2018-05-24  Attila Torok
+
+	* Fix build with GCC versions prior to 5.x.
+
+	These versions didn't yet have __has_builtin, nor __builtin_*_overflow,
+	so don't assume they did.
+
+2018-05-28  Andras Varga
+
+	* cDynamicExpression: no not allow operations w/ logarithmic units,
+	to rule out issues that would have little practical benefit in solving.
+
+2018-05-23  Andras Varga
+
+	* Implemented the NED "exists" operator 
+
+2018-05-18  Andras Varga
+
+	* Implemented "typename" in submodule "if" and other expressions
+
+	Note: typename is not allowed in a submodule VECTOR's condition, because
+	type is elementwise, and we want the condition to apply to the vector as
+	a whole (we don't want to allow "holes" in the submodule vector)
+
+2018-05-18  Andras Varga
+
+	* cNedNetworkBuilder: fix: allow empty typename value to be used
+
+2018-05-17  Andras Varga
+
+	* cNedNetworkBuilder: use cDynamicExpression not cParImpl for
+	build-time expression evaluation
+
+2018-05-17  Andras Varga
+
+	* cDynamicExpression: allow extra information to be passed for
+	evaluation
+
+2018-05-18  Andras Varga
+
+	* Renamed namespace NedSupport to all-lowercase
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2018-03-01  Attila Torok

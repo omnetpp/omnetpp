@@ -1,3 +1,35 @@
+2018-05-31  Andras Varga
+
+	* UnitConversion: allow casting nan to any unit
+
+2018-06-01  Andras Varga
+
+	* opp_dtoa(): print inf and nan in platform-independent way
+
+2018-05-28  Andras Varga
+
+	* UnitConversion: allow bit<->byte conversion
+
+	* UnitConversion: added logarithmic units:
+	 - dBW (decibel-watt)
+	 - dBm (decibel-milliwatt)
+	 - dBV (decibel-volt)
+	 - dBmV (decibel-millivolt)
+	 - dBA (decibel-ampere)
+	 - dBmA (decibel-milliampere)
+ 	 - dB (decibel) <--> ratio
+
+2018-05-24  Andras Varga
+
+	* UnitConversion: added some less commonly used units:
+	 - binary and decimal multiples of bit: Kib (kibibit),
+	   Mib (mebibit), Gib (gibibit), Tib (tebibit), kb (kilobit)
+       Mb (megabit), etc.
+     - uW, nW, pW, fW (microwatt, etc.)
+     - THz (terahertz)
+     - kmps (kilometer/sec)
+	 - deg, rad
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2018-02-06  Rudolf Hornig

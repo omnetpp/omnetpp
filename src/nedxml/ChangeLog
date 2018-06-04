@@ -1,3 +1,17 @@
+2018-05-31  Andras Varga
+
+	* NED: Introduced "nan" and "inf" as keywords for numeric constants
+
+2018-05-23  Andras Varga
+
+	* NED: Added "exists" operator. Syntax: exists(<submodulename>)
+
+2018-05-18  Andras Varga
+
+	* NED: Allow 'typename' in expressions. Motivation: we want to be able 
+	to write:
+	 foo: <> like IFoo if typename!=""
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2018-01-24  Zoltan Bojthe

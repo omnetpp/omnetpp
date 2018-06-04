@@ -1,3 +1,21 @@
+2018-05-31  Andras Varga
+
+	* cDynamicExpression::Elem: added lots of getter methods
+
+2018-05-28  Andras Varga
+
+	* cExpression: boolValue() etc methods made const
+
+2018-05-17  Andras Varga
+
+	* cDynamicExpression: allow extra information to be passed for
+	evaluation: cComponent* arg replaced with Context*. Compatibility
+	methods exist.
+	
+2018-05-18  Andras Varga
+
+	* Renamed namespace NedSupport to all-lowercase
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2018-03-01  Attila Torok

@@ -1,3 +1,40 @@
+2018-06-04  Andras Varga
+
+	ChangeLogs tagged for 5.3
+
+	Better late than never.
+
+2018-05-23  Andras Varga
+
+	ned, sim: added "exists" operator
+
+	exists(<submodulename>)
+
+2018-05-18  Andras Varga
+
+	sim: implement "typename" in submodule "if" and other expressions
+
+	Note: typename is not allowed in a submodule VECTOR's condition, because
+	type is elementwise, and we want the condition to apply to the vector as
+	a whole (we don't want to allow "holes" in the submodule vector)
+
+2018-05-18  Andras Varga
+
+	sim: cNedNetworkBuilder: fix: allow empty typename value to be used
+
+	Before, empty string meant "no value specified here", and search went on.
+
+2018-05-17  Andras Varga
+
+	sim: cNedNetworkBuilder: use cDynamicExpression not cParImpl for
+	build-time expression evaluation
+
+2018-05-18  Andras Varga
+
+	sim: renamed namespace NedSupport to all-lowercase
+
+----------- lines above this marker have been added from git log -----------
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2017-11-26  Andras Varga

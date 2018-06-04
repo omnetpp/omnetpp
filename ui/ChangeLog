@@ -1,3 +1,11 @@
+2018-06-04  Andras Varga
+
+	* Fix: do not report "undefined parameter" for typename assignments in NED
+
+2018-06-01  Andras Varga
+
+	* Fix: inifile analysis fix: typename deep assignments in NED were ignored
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2018-03-08  Rudolf Hornig
