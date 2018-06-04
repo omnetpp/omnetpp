@@ -1,3 +1,5 @@
+2018-06-04  ------ omnetpp-5.3 released ------
+
 2017-06-20  Attila Torok
 
 	* Added smooth animation with CarAnimator::refreshDisplay().
