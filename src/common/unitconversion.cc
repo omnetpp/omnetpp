@@ -344,13 +344,13 @@ double UnitConversion::convertUnit(double value, const char *unit, const char *t
 
     // convert
     double res = tryConvert(value, unitDesc, targetUnitDesc);
-    if (std::isnan(res))
+    if (std::isnan(res) && !std::isnan(value))
         cannotConvert(unit, targetUnit);
     return res;
 }
 
 void UnitConversion::cannotConvert(const char *unit, const char *targetUnit)
-{    
+{
     throw opp_runtime_error("Cannot convert unit %s to %s",
             (opp_isempty(unit) ? "none" : getUnitDescription(unit).c_str()),
             (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()));
