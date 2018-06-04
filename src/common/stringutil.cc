@@ -683,12 +683,12 @@ char *opp_i64toa(char *buf, int64_t d)
 
 char *opp_dtoa(char *buf, const char *format, double d)
 {
-	if (std::isfinite(d))
-		sprintf(buf, format, d);
-	else if (std::isinf(d))
-		strcpy(buf, d<0 ? "-inf" : "inf");
-	else // must be nan
-		strcpy(buf, "nan");
+    if (std::isfinite(d))
+        sprintf(buf, format, d);
+    else if (std::isinf(d))
+        strcpy(buf, d<0 ? "-inf" : "inf");
+    else // must be nan
+        strcpy(buf, "nan");
     return buf;
 }
 

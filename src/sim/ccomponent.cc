@@ -105,8 +105,12 @@ void cComponent::forEachChild(cVisitor *v)
             cIListener **listeners = (*signalTable)[i].listeners;
             for (int j = 0; listeners[j]; j++)
                 if (cObject *listenerObj = dynamic_cast<cObject*>(listeners[j]))
-                    if (listenerObj != this && // avoid self-visiting (module hooked on itself as listener)
-                            (listenerObj->getOwner() == nullptr || listenerObj->getOwner() != this)) // skip objects belonging elsewhere, e.g. other modules as listeners
+                    // Filter the objects we recurse into, to avoid infinite recursion and double-visiting:
+                    // 1. avoid self-visiting (module hooked on itself as listener)
+                    // 2. only visit owner-less objects (objects owned by others can cause infinite recursion
+                    // as they are visited from their parents too; objects owned by this module may already
+                    // be visited from this module via another place.)
+                    if (listenerObj != this && listenerObj->getOwner() == nullptr)
                         v->visit(listenerObj);
         }
     }
