@@ -74,8 +74,6 @@ class SIM_API cNedValue
 #endif
     [[noreturn]] void cannotCastError(Type t) const;
 
-    void convertToDouble();
-
   public:
     /** @name Constructors */
     //@{
@@ -223,6 +221,12 @@ class SIM_API cNedValue
      * @see doubleValueInUnit()
      */
     void convertTo(const char *unit);
+
+    /**
+     * If this value is of type INT, converts it into DOUBLE; has no effect if
+     * it is already a DOUBLE; and throws an error otherwise.
+     */
+    void convertToDouble();
 
     /**
      * Sets the value to the given string value. The string itself will be
