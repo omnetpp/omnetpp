@@ -110,7 +110,8 @@ std::string cMessage::str() const
     simtime_t t = getArrivalTime();
     if (t > getSimulation()->getSimTime()) {
         // if it arrived in the past, dt is usually unimportant, don't print it
-        out << "at t=" << t << ", in dt=" << (t - getSimulation()->getSimTime()) << "; ";
+        simtime_t dt = t - getSimulation()->getSimTime();
+        out << "at t=" << t << ", in dt=" << dt.ustr() << "; ";
     }
 
 #define MODNAME(modp)    ((modp) ? (modp)->getFullPath().c_str() : deletedstr)

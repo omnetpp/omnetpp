@@ -53,7 +53,7 @@ class @TESTNAME@::SomePacket {
     short schedulingPriority = 0
     cObject *targetObject = nullptr
     bool isScheduled = false
-    simtime_t arrivalTime = 0
+    simtime_t arrivalTime = 0s
     long id = 1
     long treeId = 1
     short kind = 99
@@ -61,9 +61,9 @@ class @TESTNAME@::SomePacket {
     cObject *controlInfo = nullptr
     cArray *parList = nullptr
     bool isSelfMessage = true
-    simtime_t creationTime = 0
-    simtime_t sendingTime = 0
-    simtime_t timestamp = 0
+    simtime_t creationTime = 0s
+    simtime_t sendingTime = 0s
+    simtime_t timestamp = 0s
     int senderModuleId = -1
     int senderGateId = -1
     cModule *senderModule = nullptr
