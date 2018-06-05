@@ -15,6 +15,8 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,20 +34,26 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.internal.ui.DebugUIMessages;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -55,8 +63,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.progress.IProgressService;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -274,12 +284,49 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             }
 
             if (lc != null)
-                DebugUIPlugin.buildAndLaunch(lc, mode, new NullProgressMonitor());
+                buildAndLaunch(mode, lc);
         }
         catch (CoreException e) {
             LaunchPlugin.logError(e);
             ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error",
                     "Error launching simulation for '" + resource.getFullPath() +"'", e.getStatus());
+        }
+    }
+
+    protected void buildAndLaunch(String mode, ILaunchConfiguration lc) {
+        final ILaunchConfiguration finalLc = lc;
+        IWorkbench workbench = DebugUIPlugin.getDefault().getWorkbench();
+        IProgressService progressService = workbench.getProgressService();
+        final IRunnableWithProgress runnable = new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException {
+                /* Setup progress monitor
+                 * - Waiting for jobs to finish (2)
+                 * - Build & launch (98) */
+                monitor.beginTask(MessageFormat.format(DebugUIMessages.DebugUIPlugin_25, new Object[] {finalLc.getName()}), 100);
+
+                try {
+                    final IJobManager jobManager = Job.getJobManager();
+                    jobManager.join(ResourcesPlugin.FAMILY_MANUAL_BUILD, new SubProgressMonitor(monitor, 1));
+                    jobManager.join(ResourcesPlugin.FAMILY_AUTO_BUILD, new SubProgressMonitor(monitor, 1));
+                }
+                catch (InterruptedException e) {/* continue*/}
+                if (!monitor.isCanceled()) {
+                    try {
+                        DebugUIPlugin.buildAndLaunch(finalLc, mode, new SubProgressMonitor(monitor, 98));
+                    }
+                    catch (CoreException e) {
+                        throw new InvocationTargetException(e);
+                    }
+                }
+            }
+        };
+        try {
+            progressService.busyCursorWhile(runnable);
+        }
+        catch (InterruptedException e) {}
+        catch (InvocationTargetException e2) {
+            DebugUIPlugin.errorDialog(DebugUIPlugin.getShell(), DebugUIMessages.DebugUITools_Error_1, DebugUIMessages.DebugUITools_Exception_occurred_during_launch_2, e2); //
         }
     }
 
