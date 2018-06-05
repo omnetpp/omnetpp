@@ -1812,6 +1812,8 @@ public class PropertiesDialog extends TrayDialog {
         // background preview
         if (bgPreviewFigure != null) {
             INedElement e = elements[elements.length-1]; // the primary selection in the editor (black handles)
+            IProject project = e.getSelfOrEnclosingTypeElement().getNedTypeInfo().getProject();
+
             // set fallback display string
             DisplayString fallbackDisplayString = getFallbackDisplayString(e);
 
@@ -1821,7 +1823,7 @@ public class PropertiesDialog extends TrayDialog {
 
             updatePreviewDisplayString(displayString);
 
-            bgPreviewFigure.setDisplayString(displayString, scale, iconScale);
+            bgPreviewFigure.setDisplayString(displayString, scale, iconScale, project);
             Dimension compoundModuleSize = displayString.getCompoundSize().toPixels(scale);
             if (compoundModuleSize.height == -1)
                 compoundModuleSize.height = 200;

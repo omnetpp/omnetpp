@@ -212,7 +212,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         // set an initial display string, otherwise bad things (NPE, red background, etc) will happen
         // due to poor CompoundModuleFigure defaults if a HTTP error occurs before we set the proper
         // display string in refreshVisuals()
-        compoundModuleFigure.setDisplayString(new DisplayString(""), scale, iconScale);
+        compoundModuleFigure.setDisplayString(new DisplayString(""), scale, iconScale, null);
 
         // work around slightly odd default behavior of scrollPane (scrollbars don't appear immediately when you shrink the window)
         scrollPane.addLayoutListener(new LayoutListener.Stub() {
@@ -559,7 +559,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     protected void refreshVisuals() throws CommunicationException {
         cModule parentModule = (cModule) object;
-        compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule), scale, iconScale);
+        compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule), scale, iconScale, null);
 
         // refresh submodules
         for (cModule submodule : submodules.keySet()) {

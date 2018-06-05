@@ -7,6 +7,7 @@
 
 package org.omnetpp.figures;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.ConnectionLayer;
@@ -278,7 +279,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
     /**
      * Adjusts the figure properties using a displayString object
      */
-    public void setDisplayString(IDisplayString dps, float scale, float iconScale) {
+    public void setDisplayString(IDisplayString dps, float scale, float iconScale, IProject project) {
         // Optimization: do not change anything if the display string has not changed
         int cumulativeHashCode = dps.cumulativeHashCode();
         if (lastScale == scale && lastIconScale == iconScale && lastCumulativeHashCode != 0 && cumulativeHashCode == lastCumulativeHashCode)
@@ -289,7 +290,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
         this.lastIconScale = iconScale;
 
         // background color and image
-        Image backgroundImage = ImageFactory.global().getImage(dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
+        Image backgroundImage = ImageFactory.of(project).getImage(dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
         String imageArrangementStr = dps.getAsString(IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT);
         setBackground(
                 backgroundImage,
