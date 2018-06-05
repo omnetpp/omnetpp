@@ -89,6 +89,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "THz",  1e12, _, "Hz",   "terahertz" },
     { "kg",      1, _, "kg",   "kilogram" },
     { "g",    1e-3, _, "kg",   "gram" },
+    { "K",      1, _,  "K",    "kelvin" },
     { "J",       1, _, "J",    "joule" },
     { "kJ",    1e3, _, "J",    "kilojoule" },
     { "MJ",    1e6, _, "J",    "megajoule" },
@@ -98,6 +99,10 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "A",       1, _, "A",    "ampere" },
     { "mA",   1e-3, _, "A",    "milliampere" },
     { "uA",   1e-6, _, "A",    "microampere" },
+    { "Ohm",     1, _, "Ohm",  "ohm"},
+    { "mOhm", 1e-3, _, "Ohm",  "milliohm"},
+    { "kOhm",  1e3, _, "Ohm",  "kiloohm"},
+    { "MOhm",  1e6, _, "Ohm",  "megaohm"},
     { "mps",     1, _, "mps",  "meter/sec" },
     { "kmps",  1e3, _, "mps",  "kilometer/sec" },
     { "kmph",1/3.6, _, "mps",  "kilometer/hour" },
@@ -107,6 +112,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "Ah",   3600, _, "C",    "ampere-hour" },
     { "mAh",   3.6, _, "C",    "milliampere-hour" },
     { "ratio",   1, _, "ratio","ratio" },
+    { "pct",  0.01, _, "ratio","percent" },
     // logarithmic
     { "dBW",    10, LOG10, "W",  "decibel-watt" },  // y = 10*log10(x)
     { "dBm",    10, LOG10, "mW", "decibel-milliwatt" },

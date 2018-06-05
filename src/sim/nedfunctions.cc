@@ -68,6 +68,114 @@ Define_NED_Math_Function3(log, 1,   "math", "Natural logarithm; see standard C f
 Define_NED_Math_Function3(log10, 1, "math", "Base-10 logarithm; see standard C function of the same name")
 
 
+static cNedValue toUnit(const char *targetUnit, cComponent *contextComponent, cNedValue argv[], int argc)
+{
+    if (argv[0].getUnit() == nullptr)
+        argv[0].setUnit(targetUnit);
+    else {
+        argv[0].convertToDouble();
+        argv[0].convertTo(targetUnit);
+    }
+    return argv[0];
+}
+
+#define DEFU(UNIT, LONGNAME) \
+        cNedValue nedf_ ## UNIT(cComponent *context, cNedValue argv[], int argc) { return toUnit(#UNIT, context, argv, argc); } \
+        Define_NED_Function2(nedf_ ## UNIT, \
+            "quantity " #UNIT "(quantity x)", \
+            "units/conversion", \
+            "Converts to " #UNIT " (" LONGNAME ") from a compatible unit or a dimensionless number.");
+
+// note: currently unit conversion functions must be registered one-by-one because
+// there is no way to pass the target unit into a generic function like toUnit().
+DEFU(s, "second")
+DEFU(d, "day")
+DEFU(h, "hour")
+DEFU(ms, "millisecond")
+DEFU(us, "microsecond")
+DEFU(ns, "nanosecond")
+DEFU(ps, "picosecond")
+DEFU(fs, "femtosecond")
+DEFU(as, "attosecond")
+DEFU(bps, "bit/sec")
+DEFU(kbps, "kilobit/sec")
+DEFU(Mbps, "megabit/sec")
+DEFU(Gbps, "gigabit/sec")
+DEFU(Tbps, "terabit/sec")
+DEFU(B, "byte")
+DEFU(KiB, "kibibyte")
+DEFU(MiB, "mebibyte")
+DEFU(GiB, "gibibyte")
+DEFU(TiB, "tebibyte")
+DEFU(kB, "kilobyte")
+DEFU(MB, "megabyte")
+DEFU(GB, "gigabyte")
+DEFU(TB, "terabyte")
+DEFU(b, "bit")
+DEFU(Kib, "kibibit")
+DEFU(Mib, "mebibit")
+DEFU(Gib, "gibibit")
+DEFU(Tib, "tebibit")
+DEFU(kb, "kilobit")
+DEFU(Mb, "megabit")
+DEFU(Gb, "gigabit")
+DEFU(Tb, "terabit")
+DEFU(rad, "radian")
+DEFU(deg, "degree")
+DEFU(m, "meter")
+DEFU(mm, "millimeter")
+DEFU(cm, "centimeter")
+DEFU(km, "kilometer")
+DEFU(W, "watt")
+DEFU(mW, "milliwatt")
+DEFU(uW, "microwatt")
+DEFU(nW, "nanowatt")
+DEFU(pW, "picowatt")
+DEFU(fW, "femtowatt")
+DEFU(kW, "kilowatt")
+DEFU(MW, "megawatt")
+DEFU(GW, "gigawatt")
+DEFU(Hz, "hertz")
+DEFU(kHz, "kilohertz")
+DEFU(MHz, "megahertz")
+DEFU(GHz, "gigahertz")
+DEFU(THz, "terahertz")
+DEFU(kg, "kilogram")
+DEFU(g, "gram")
+DEFU(K, "kelvin")
+DEFU(J, "joule")
+DEFU(kJ, "kilojoule")
+DEFU(MJ, "megajoule")
+DEFU(V, "volt")
+DEFU(kV, "kilovolt")
+DEFU(mV, "millivolt")
+DEFU(A, "ampere")
+DEFU(mA, "milliampere")
+DEFU(uA, "microampere")
+DEFU(mps, "meter/sec")
+DEFU(kmps, "kilometer/sec")
+DEFU(kmph, "kilometer/hour")
+DEFU(Ohm, "ohm")
+DEFU(mOhm, "milliohm")
+DEFU(kOhm, "kiloohm")
+DEFU(MOhm, "megaohm")
+DEFU(C, "coulomb")
+DEFU(As, "ampere-second")
+DEFU(mAs, "milliampere-second")
+DEFU(Ah, "ampere-hour")
+DEFU(mAh, "milliampere-hour")
+DEFU(ratio, "ratio")
+DEFU(pct, "percent")
+DEFU(dBW, "decibel-watt")
+DEFU(dBm, "decibel-milliwatt")
+DEFU(dBmW, "decibel-milliwatt")
+DEFU(dBV, "decibel-volt")
+DEFU(dBmV, "decibel-millivolt")
+DEFU(dBA, "decibel-ampere")
+DEFU(dBmA, "decibel-milliampere")
+DEFU(dB, "decibel")
+
+
 DEF(nedf_fabs,
     "quantity fabs(quantity x)",
     "math",

@@ -20,6 +20,8 @@ void test(const char *expr)
 #define P(expr)  test(#expr)
 
 %activity:
+P( W(150mW));
+
 P( min(3, 2));
 P( min(3m, 2m));
 P( min(3m, 2km));
@@ -158,6 +160,16 @@ P( string(false));
 P( string(13));
 P( string(4.72));
 P( string(-4.72));
+EV << "\n";
+
+P( s(0.5));
+P( ms(0.5s));
+P( W(0.15));
+P( W(150mW));
+P( W(0dBm));
+P( dBm(10W));
+P( ratio(-10dB));
+P( ratio(0dB));
 EV << ".\n";
 
 %contains: stdout
@@ -278,5 +290,14 @@ string(false) ==> "false"
 string(13) ==> "13"
 string(4.72) ==> "4.72"
 string(-4.72) ==> "-4.72"
+
+s(0.5) ==> 0.5s
+ms(0.5s) ==> 500ms
+W(0.15) ==> 0.15W
+W(150mW) ==> 0.15W
+W(0dBm) ==> 0.001W
+dBm(10W) ==> 40dBm
+ratio(-10dB) ==> 0.316228ratio
+ratio(0dB) ==> 1ratio
 .
 
