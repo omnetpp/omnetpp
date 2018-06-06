@@ -63,7 +63,7 @@ class Runall:
 
 		runNumbers = self.resolveRunNumbers(opts.simProgArgs)
 
-		batchSize = opts.batchsize if opts.batchsize != None else min(5, math.ceil(len(runNumbers) / opts.jobs))
+		batchSize = opts.batchsize if opts.batchsize != None else min(5, int(math.ceil(len(runNumbers) / opts.jobs)))
 		self.chatter("batch size: " + str(batchSize))
 		makefileContent = self.createMakefileContent(opts.simProgArgs, runNumbers, batchSize)
 
