@@ -483,7 +483,7 @@ void ForceDirectedGraphLayouter::executePreEmbedding()
 
 void ForceDirectedGraphLayouter::execute()
 {
-    if (hasMovableNode) {
+    if (hasMovableNode || hasAnchoredNode) {
         calculateExpectedMeasures();
         setParameters();
 
