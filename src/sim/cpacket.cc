@@ -59,52 +59,28 @@ cPacket::~cPacket()
 #endif
 }
 
-std::string cPacket::str() const  //FIXME revise
+inline void printLen(std::stringstream &out, int64_t bits)
 {
-//    if (tomod<0)
-//        return std::string("(new msg)");
+    if ((bits & 7) == 0)
+        out << bits/8 << "B";
+    else
+        out << bits << "b";
+}
 
+std::string cPacket::str() const
+{
     std::stringstream out;
-//    const char *deletedstr = "<deleted module>";
-//
-//    if (delivd > simTime())
-//    {
-//        // if it arrived in the past, dt is usually unimportant, don't print it
-//        out << "at t=" << delivd << ", in dt=" << (delivd - simTime()) << "; ";
-//    }
-//
-//#define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
-//    if (getKind()==MK_STARTER)
-//    {
-//        cModule *tomodp = getSimulation()->getModule(tomod);
-//        out << "starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
-//    }
-//    else if (getKind()==MK_TIMEOUT)
-//    {
-//        cModule *tomodp = getSimulation()->getModule(tomod);
-//        out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
-//    }
-//    else if (frommod==tomod)
-//    {
-//        cModule *tomodp = getSimulation()->getModule(tomod);
-//        out << "selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
-//    }
-//    else
-//    {
-//        cModule *frommodp = getSimulation()->getModule(frommod);
-//        cModule *tomodp = getSimulation()->getModule(tomod);
-//        out << "src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
-//        out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
-//    }
-//#undef MODNAME
-//
-//    if (encapmsg)
-//        // #ifdef REFCOUNTING const_cast<cPacket *>(this)->_detachEncapMsg();  // see _detachEncapMsg() comment why this might be needed
-//        out << "  encapsulates: (" << encapmsg->getClassName() << ")" << encapmsg->getFullName();
-//
-//    if (ctrlp)
-//        out << "  control info: (" << ctrlp->getClassName() << ") " << ctrlp->getFullName() << "\n";
-//
+    out << "len="; printLen(out, getBitLength());
+    if (duration != SimTime::ZERO)
+        out << " duration=" << duration.ustr();
+    if (encapsulatedPacket) {
+        out << " (encapsulates ";
+        printLen(out, encapsulatedPacket->getBitLength());
+        // or: << encapsulatedPacket->getClassName() << ")" << encapsulatedPacket->getFullName() << ")"; -- but that might be too long
+        out << ")";
+    }
+    out << " ";
+    out << cMessage::str();
     return out.str();
 }
 
