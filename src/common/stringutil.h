@@ -319,7 +319,7 @@ COMMON_API char *opp_dtoa(char *buf, const char *format, double d);
 
 /**
  * Utility function to convert a 64-bit fixed point number into a string
- * buffer. scaleexp must be in the -18..0 range, and the buffer must be
+ * buffer. scaleexp must be in the -18..18 range, and the buffer must be
  * at least 64 bytes long. A pointer to the result string will be
  * returned. A pointer to the terminating '\\0' will be returned in endp.
  *

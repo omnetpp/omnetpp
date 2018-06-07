@@ -694,7 +694,8 @@ char *opp_dtoa(char *buf, const char *format, double d)
 
 char *opp_ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
 {
-    Assert(scaleexp <= 0 && scaleexp >= -18);
+    if (scaleexp < -18 || scaleexp > 18)
+        throw opp_runtime_error("opp_ttoa(): scaleexp=%d out of accepted range [-18,18]", scaleexp);
 
     // prepare for conversion
     endp = buf + 63;  //19+19+5 should be enough, but play it safe
@@ -710,6 +711,12 @@ char *opp_ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
     if (!negative)
         t = -t;  // make t negative! otherwise we can't handle INT64_MIN (as it has no positive equivalent)
 
+    while (scaleexp > 0) {
+        *--s = '0';
+        scaleexp--;
+    }
+    char *mark = s;
+
     bool skipzeros = true;
     int decimalplace = scaleexp;
     do {
@@ -718,7 +725,7 @@ char *opp_ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
 
         if (skipzeros && (digit != 0 || decimalplace >= 0))
             skipzeros = false;
-        if (decimalplace++ == 0 && s != endp)
+        if (decimalplace++ == 0 && s != mark)
             *--s = '.';
         if (!skipzeros)
             *--s = '0' + digit;
