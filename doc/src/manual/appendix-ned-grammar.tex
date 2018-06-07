@@ -679,7 +679,7 @@ expr
 
 simple\_expr
         : identifier
-        | special\_expr
+        | operator
         | literal
         ;
 
@@ -696,10 +696,12 @@ identifier
         | NAME '[' expr ']' '.' NAME
         ;
 
-special\_expr
+operator
         : INDEX
         | INDEX '(' ')'
+        | EXISTS '(' identifier ')'
         | SIZEOF '(' identifier ')'
+        | TYPENAME
         ;
 
 literal
@@ -719,15 +721,21 @@ boolliteral
 
 numliteral
         : INTCONSTANT
-        | REALCONSTANT
+        | realconstant\_ext
         | quantity
         ;
 
 quantity
         : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
+        | quantity realconstant\_ext NAME
         | INTCONSTANT NAME
-        | REALCONSTANT NAME
+        | realconstant\_ext NAME
+        ;
+
+realconstant\_ext
+        : REALCONSTANT
+        | INF
+        | NAN
         ;
 
 opt\_semicolon

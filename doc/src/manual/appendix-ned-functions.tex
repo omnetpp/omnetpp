@@ -12,10 +12,10 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \label{sec:ned-functions:category-conversion}
 
 \begin{description}
-\item[double]: \ttt{double double(any x)} \\
-    Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error.
-\item[int]: \ttt{int int(any x)} \\
-    Converts x to an integer (C++ long), and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error.
+\item[double]: \ttt{quantity double(any x)} \\
+    Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error. Units are preserved.
+\item[int]: \ttt{intquantity int(any x)} \\
+    Converts x to int, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error. Units are preserved.
 \item[string]: \ttt{string string(any x)} \\
     Converts x to string, and returns the result.
 
@@ -138,8 +138,8 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
     Returns a random number from the Binomial distribution
 \item[geometric]: \ttt{int geometric(double p, int rng?)} \\
     Returns a random number from the Geometric distribution
-\item[intuniform]: \ttt{int intuniform(int a, int b, int rng?)} \\
-    Returns a random number from the Intuniform distribution
+\item[intuniform]: \ttt{int intuniform(intquantity a, intquantity b, int rng?)} \\
+    Returns a random integer uniformly distributed over [a, b]
 \item[negbinomial]: \ttt{int negbinomial(int n, double p, int rng?)} \\
     Returns a random number from the Negbinomial distribution
 \item[poisson]: \ttt{int poisson(double lambda, int rng?)} \\
@@ -204,6 +204,31 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
     Returns the unit of the given quantity.
 
 \end{description}
+
+\section{Category "units/conversion":}
+\label{sec:ned-functions:category-units-conversion}
+
+\begin{description}
+\item[A]: \ttt{quantity A(quantity x)} \\
+    Converts to A (ampere) from a compatible unit or a dimensionless number.
+\item[Ah]: \ttt{quantity Ah(quantity x)} \\
+    Converts to Ah (ampere-hour) from a compatible unit or a dimensionless number.
+\item[As]: \ttt{quantity As(quantity x)} \\
+    Converts to As (ampere-second) from a compatible unit or a dimensionless number.
+\item[B]: \ttt{quantity B(quantity x)} \\
+    Converts to B (byte) from a compatible unit or a dimensionless number.
+\item[C]: \ttt{quantity C(quantity x)} \\
+    Converts to C (coulomb) from a compatible unit or a dimensionless number.
+\item[GB]: \ttt{quantity GB(quantity x)} \\
+    Converts to GB (gigabyte) from a compatible unit or a dimensionless number.
+\item[GHz]: \ttt{quantity GHz(quantity x)} \\
+    Converts to GHz (gigahertz) from a compatible unit or a dimensionless number.
+\item[etc.]
+\end{description}
+
+A similar NED function exists for all registered measurement units.
+Units are listed in section \ref{sec:ned-ref:units}.
+
 
 \section{Category "xml":}
 \label{sec:ned-functions:category-xml}
