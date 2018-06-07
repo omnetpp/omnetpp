@@ -1,3 +1,22 @@
+2018-06-06  Andras Varga
+
+	* cPacket: refined str() method
+
+2018-06-05  Andras Varga
+
+	* Use SimTime's new ustr() where appropriate: in cClassDescriptor for 
+	displaying simtime_t fields; in cEvent's and cMessage's str() for dt.
+
+2018-06-07  Andras Varga
+
+	* SimTime: implemented ustr()
+
+2018-06-05  Andras Varga
+
+	* Register each measurement unit as a NED function as well. They
+	accept dimensionless numbers and quantities with a compatible unit
+	as well. E.g. the expressions mW(2*100) and mW(0.2W) both result in 200mW.
+
 2018-06-04  Andras Varga
 
 	* cComponent::forEachChild: eliminate a source of pontential infinite recursion
@@ -20,7 +39,7 @@
 
 2018-05-23  Andras Varga
 
-	* Implemented the NED "exists" operator 
+	* Implemented the NED "exists" operator
 
 2018-05-18  Andras Varga
 

@@ -1,3 +1,18 @@
+2018-06-06  Attila Torok
+
+	* opp_runall: Fix batch size calculation (float -> int). [reported by
+	Florian Kauer]
+
+	See https://groups.google.com/d/msg/omnetpp/MmgDHyU9YrQ/kXAtGY43BAAJ
+
+	Quote:
+
+	In opp_runall (of version 5.3) the batchSize calculation might result in
+	a floating point type, e.g. if len(runNumbers) = 13 and opts.jobs = 4.
+	While math.ceil rounds the result, it is still of floating point type and
+	thus leads to an error when using this value in the chunks method as
+	argument to range ("integer step argument expected, got float").
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2018-03-07  Rudolf Hornig

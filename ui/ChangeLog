@@ -1,10 +1,20 @@
+2018-06-05  Attila Torok
+
+	* Launcher: fix: The IDE sometimes started build in the UI thread,
+	locking up the UI for the time of the build, potentially for several
+	minutes.
+
+2018-06-05  Attila Torok
+
+	* Fix "unknown" image as module background in the graphical NED	editor.
+
 2018-06-04  Andras Varga
 
 	* Fix: do not report "undefined parameter" for typename assignments in NED
 
 2018-06-01  Andras Varga
 
-	* Fix: inifile analysis fix: typename deep assignments in NED were ignored
+	* Fix: inifile analysis: typename deep assignments in NED were ignored
 
 2018-06-04  ------ omnetpp-5.3 released ------
 

@@ -1,3 +1,11 @@
+2018-06-07  Andras Varga
+
+	* SimTime: added ustr()
+
+2018-06-05  Andras Varga
+
+	* cNedValue: convertToDouble() made public
+
 2018-05-31  Andras Varga
 
 	* cDynamicExpression::Elem: added lots of getter methods
@@ -11,7 +19,7 @@
 	* cDynamicExpression: allow extra information to be passed for
 	evaluation: cComponent* arg replaced with Context*. Compatibility
 	methods exist.
-	
+
 2018-05-18  Andras Varga
 
 	* Renamed namespace NedSupport to all-lowercase

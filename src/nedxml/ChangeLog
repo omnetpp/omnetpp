@@ -1,3 +1,7 @@
+2018-04-13  Zoltan Bojthe
+
+	* Message compiler: use static_cast instead of old style c-cast
+
 2018-05-31  Andras Varga
 
 	* NED: Introduced "nan" and "inf" as keywords for numeric constants
@@ -8,7 +12,7 @@
 
 2018-05-18  Andras Varga
 
-	* NED: Allow 'typename' in expressions. Motivation: we want to be able 
+	* NED: Allow 'typename' in expressions. Motivation: we want to be able
 	to write:
 	 foo: <> like IFoo if typename!=""
 

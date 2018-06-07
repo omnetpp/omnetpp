@@ -1,3 +1,16 @@
+2018-06-06  Attila Torok
+
+	* Fix "Advanced" layouter not doing anything with only anchored
+	nodes.
+
+	In one example network, the samples/routing/RandomMesh, there are only
+	anchored "nodes" (submodules) - no fixed and no independently movable
+	nodes - since the whole network is one matrix with undefined position. In
+	this network, when the "Advanced" layouter way selected, none of the
+	submodules got a position after layouting. This was most likely never
+	tested because the auto selection chooses the simple layouter in this
+	simulation.
+
 2018-06-04  ------ omnetpp-5.3 released ------
 
 2017-12-08  ------ omnetpp-5.2.1 released ------
