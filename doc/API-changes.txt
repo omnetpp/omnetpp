@@ -21,6 +21,24 @@ Legend:
 (i)     information
 
 
+OMNeT++ 5.4
+~~~~~~~~~~~
+
+(+)     SimTime: added ustr()
+
+(+)     cNedValue: convertToDouble() made public
+
+(!)     cExpression, cDynamicExpression: evaluate(), boolValue(), intValue()
+        and other evaluator methods now internally delegate to similar
+        functions that take a Context *context pointer instead of cComponent *.
+
+(!)     cEnvir: attachDebugger() replaced with ensureDebugger()
+
+(!)     NedSupport namespace renamed to lowercase (nedsupport) for consistency
+
+(+)     nedsupport: added Exists and Typename classes
+
+
 OMNeT++ 5.3
 ~~~~~~~~~~~
 
