@@ -38,6 +38,8 @@ const SimTime SimTime::ZERO;
 #define MAX_POWER_OF_TEN  18
 static int64_t powersOfTen[MAX_POWER_OF_TEN+1];
 
+static const char *unitNames[] = { "s", "ms", "us", "ns", "ps", "fs", "as" };
+
 static void fillPowersOfTen()
 {
     int64_t power = 1;
@@ -217,6 +219,37 @@ char *SimTime::ttoa(char *buf, int64_t t, int scaleexp, char *& endp)
     return opp_ttoa(buf, t, scaleexp, endp);
 }
 
+std::string SimTime::ustr() const
+{
+    if (t == 0)
+        return "0s";
+
+    // compute ~abs(t)
+    int64_t tt = t;
+    if (tt < 0) {
+        tt = -tt;
+        if (tt < 0)
+            tt = -(tt+1);
+    }
+
+    // determine unit to print in (seconds and smaller units are considered)
+    int unitExp = 0;
+    while (unitExp > -18 /*scaleexp*/ && tt < powersOfTen[-scaleexp+unitExp])
+        unitExp -= 3;
+    return ustr((SimTimeUnit)unitExp);
+}
+
+std::string SimTime::ustr(SimTimeUnit unit) const
+{
+    int unitExp = (int)unit;
+    char buf[80];
+    char *endp;
+    const char *result = opp_ttoa(buf, t, scaleexp-unitExp, endp);
+    strcpy(endp, unitNames[-unitExp/3]);
+    return result;
+}
+
+
 std::string SimTime::format(int prec, const char *decimalSep, const char *digitSep, bool addUnits, const char *beforeUnit, const char *afterUnit) const
 {
     ASSERT(scaleexp <= 0 && scaleexp >= -18);
@@ -246,14 +279,13 @@ std::string SimTime::format(int prec, const char *decimalSep, const char *digitS
     if ((endDecimal % 3) != 0 && (addUnits || digitSep))
         endDecimal = 3*((endDecimal-2)/3); // make it multiple of 3
 
-    const char *units[] = { "s", "ms", "us", "ns", "ps", "fs", "as" };
 
     for (int decimalPlace = startDecimal; decimalPlace >= endDecimal; decimalPlace--) {
         int index = (scaleexp + numDigits - 1) - decimalPlace;
         out << ((index < 0 || index >= numDigits) ? '0' : digits[index]);
         if (decimalPlace % 3 == 0) {
             if (addUnits && decimalPlace <= 0 && decimalPlace >= -18) {
-                out << beforeUnit << units[-decimalPlace/3] << afterUnit;
+                out << beforeUnit << unitNames[-decimalPlace/3] << afterUnit;
             }
             else if (decimalPlace == 0) {
                 if (endDecimal < 0)

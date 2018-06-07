@@ -344,18 +344,36 @@ class SIM_API SimTime
     void split(SimTimeUnit unit, int64_t& outValue, SimTime& outRemainder) const;
 
     /**
-     * Converts to string.
+     * Converts the time to a numeric string. The number expresses the simulation
+     * time precisely (including all significant digits), in seconds.
+     * The measurement unit (seconds) is not part of the string.
      */
     std::string str() const {char buf[64]; return str(buf);}
 
     /**
-     * Converts to a string. Use this variant over str() where performance is
-     * critical. The result is placed somewhere in the given buffer (pointer
-     * is returned), but for performance reasons, not necessarily at the buffer's
-     * beginning. Please read the documentation of ttoa() for the minimum
-     * required buffer size.
+     * Converts to a string in the same way as str() does. Use this variant
+     * over str() where performance is critical. The result is placed somewhere
+     * in the given buffer (pointer is returned), but for performance reasons,
+     * not necessarily at the buffer's beginning. Please read the documentation
+     * of ttoa() for the minimum required buffer size.
      */
     char *str(char *buf) const {char *endp; return SimTime::ttoa(buf, t, getScaleExp(), endp);}
+
+    /**
+     * Converts the time to a numeric string with unit in the same format as
+     * ustr(SimTimeUnit) does, but chooses the time unit automatically.
+     * The function tries to choose the "natural" time unit, e.g. 0.0033 is
+     * returned as "3.3ms".
+     */
+    std::string ustr() const;
+
+    /**
+     * Converts the time to a numeric string in the given time unit. The unit can
+     * be "s", "ms", "us", "ns", "ps", "fs", or "as". The result represents
+     * the simulation time precisely (includes all significant digits), and the
+     * unit is appended.
+     */
+    std::string ustr(SimTimeUnit unit) const;
 
     /**
      * Returns the underlying 64-bit integer.
