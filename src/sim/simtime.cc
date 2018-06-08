@@ -209,9 +209,64 @@ const SimTime& SimTime::operator/=(const cPar& p)
     }
 }
 
+static int64_t gcd(int64_t a, int64_t b)
+{
+    while (b != 0) {
+        int64_t tmp = a % b;
+        a = b;
+        b = tmp;
+    }
+    return a;
+}
+
+double operator/(long long x, const SimTime& y)
+{
+    // Try to compute it precisely, as x * 10^scaleexp / y.raw().
+    //
+    // Pitfall: (x * 10^scaleexp) might overflow. We can mitigate that trying
+    // to simplify the fraction by dividing both numerator and denominator by their GCD.
+    // If numerator still overflows, perform computation in double.
+    // If denominator becomes 1, return numerator cast to double.
+    // Otherwise perform division using double arithmetic, and return the result.
+
+    int64_t num1 = x;
+    int64_t num2 = powersOfTen[-SimTime::scaleexp];
+    int64_t denom = y.t;
+
+    int64_t num = num1*num2;
+    if (num / num2 != num1) { // overflow, try simplification
+        if (denom == 0)
+            return (double)num1 * (double)num2 / double(denom);
+        int64_t gcd1 = gcd(num1, denom);
+        num1 /= gcd1; denom /= gcd1;
+
+        int64_t gcd2 = gcd(num2, denom);
+        num2 /= gcd2; denom /= gcd2;
+
+        num = num1*num2;
+        if (num / num2 != num1) // still overflow, fall back to double
+            return (double)num1 * (double)num2 / double(denom);
+    }
+
+    return (denom == 1) ? (double)num : (double)num / (double)denom;
+}
+
+double operator/(unsigned long long x, const SimTime& y)
+{
+    // delegate to the signed version if we can, otherwise compute in double
+    if (x <= std::numeric_limits<long long>::max())
+        return (long long)x / y;
+    else
+        return (double)x * (double)powersOfTen[-SimTime::scaleexp] / double(y.t);
+}
+
 double operator/(const cPar& p, const SimTime& x)
 {
-    return p.doubleValue() / x.dbl();
+    switch (p.getType()) {
+        case cPar::INT: return p.intValue() / x;
+        case cPar::DOUBLE: return p.doubleValue() / x;
+        default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
+    }
 }
 
 char *SimTime::ttoa(char *buf, int64_t t, int scaleexp, char *& endp)

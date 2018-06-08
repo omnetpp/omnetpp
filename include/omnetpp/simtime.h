@@ -271,14 +271,14 @@ class SIM_API SimTime
     friend double operator/(const SimTime& x, const SimTime& y) { return (double)x.raw() / (double)y.raw(); }
 
     friend double operator/(double x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(short x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(int x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(long x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(long long x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(unsigned short x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(unsigned int x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(unsigned long x, const SimTime& y) { return x / y.dbl(); }
-    friend double operator/(unsigned long long x, const SimTime& y) { return x / y.dbl(); }
+    friend double operator/(short x, const SimTime& y) { return (long long)x / y; }
+    friend double operator/(int x, const SimTime& y) { return (long long)x / y; }
+    friend double operator/(long x, const SimTime& y) { return (long long)x / y; }
+    friend double operator/(long long x, const SimTime& y);
+    friend double operator/(unsigned short x, const SimTime& y) { return (unsigned long long)x / y; }
+    friend double operator/(unsigned int x, const SimTime& y) { return (unsigned long long)x / y; }
+    friend double operator/(unsigned long x, const SimTime& y) { return (unsigned long long)x / y; }
+    friend double operator/(unsigned long long x, const SimTime& y);
     friend double operator/(const cPar& p, const SimTime& x);
     //@}
 

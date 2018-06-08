@@ -1,0 +1,66 @@
+%description:
+SimTime: check operator/(<some-integer-type>, Simtime)
+
+%global:
+
+// make protected SimTime::resetScale() accessible via subclassing
+class SimTimeExt : SimTime {
+  public: static void reset() {resetScale();}
+};
+
+static void test(long long num, int scaleExp, int64_t raw) 
+{
+    SimTimeExt::reset();
+    SimTime::setScaleExp(scaleExp);
+
+    SimTime time;
+    time.setRaw(raw);
+
+    double res = num / time;
+
+    if (time == SIMTIME_ZERO) {
+        if (num == 0 && std::isnan(res))
+            return; // OK
+        if (num > 0 && res == 1.0/0.0)
+            return; // OK
+        if (num < 0 && res == -1.0/0.0)
+            return; // OK
+        EV << "WRONG RESULT: " << num << " / " << time << " = " << res << "\n";
+        throw cRuntimeError("WRONG RESULT!"); // should not happen
+    }
+
+    if (res != num / time.dbl())
+        EV << "DIFFERS FROM DBL RESULT: " << num << " / " << time << " = " << res << "\n";
+
+    if (time.dbl() * res != num) {
+        double relativeError = (time.dbl() * res - num) / num;
+        if (fabs(relativeError) < 0.01) 
+            EV << "IMPRECISION: " << num << " / " << time << " = " << res << "\n";
+        else {
+            EV << "WRONG RESULT: " << num << " / " << time << " = " << res << "\n";
+            throw cRuntimeError("WRONG RESULT!"); // should not happen
+        }
+    }
+}
+
+%activity:
+
+std::vector<long long> numbers = { 0, 1, 5, 6, 10, 17, 100, 7895776, 7895777, 1000000000LL, 1LL<<62, (1LL<<62)+1 };
+std::vector<int64_t> rawValues = { 0, 1, 5, 6, 10, 17, 100, 7895776, 7895777, 1000000000LL, 1LL<<62, (1LL<<62)+1 };
+
+for (long long num : numbers) {
+    for (int scaleExp = -18; scaleExp <= 0; scaleExp++) {
+        for (int64_t raw : rawValues) {
+            test(num, scaleExp, raw);
+            test(num, scaleExp, -raw);
+            test(-num, scaleExp, raw);
+            test(-num, scaleExp, -raw);
+        }
+    }
+}
+
+EV << ".\n";
+
+%not-contains: stdout
+WRONG RESULT
+
