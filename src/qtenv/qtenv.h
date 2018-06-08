@@ -263,6 +263,8 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual void unrefOsgNode(osg::Node *scene) override;
       virtual bool idle() override;
 
+      virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
+
       // with Qtenv, activity() modules need extra stack
       virtual unsigned getExtraStackForEnvir() const override;
 

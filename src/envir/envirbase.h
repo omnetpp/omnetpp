@@ -61,6 +61,17 @@ class SignalSource;
 // maximum length of string passed in Enter_Method() (longer strings will be truncated)
 #define MAX_METHODCALL 1024
 
+enum class DebuggerAttachmentPermission {
+    PERMITTED,
+    DENIED,
+    CANT_DETECT
+};
+
+enum class DebuggerPresence {
+    NOT_PRESENT,
+    PRESENT,
+    CANT_DETECT
+};
 
 struct ENVIR_API EnvirOptions
 {
@@ -157,6 +168,10 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     Stopwatch stopwatch;
 
     simtime_t simulatedTime;  // sim. time after finishing simulation
+
+  public:
+
+    bool attachDebuggerOnErrors = false;
 
   protected:
     virtual std::ostream& err();
@@ -260,10 +275,11 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual int getParsimProcId() const override;
     virtual int getParsimNumPartitions() const override;
     virtual unsigned long getUniqueNumber() override;
-    virtual void attachDebugger() override;
     virtual void refOsgNode(osg::Node *scene) override {}
     virtual void unrefOsgNode(osg::Node *scene) override {}
     virtual bool idle() override;
+
+    virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
 
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener) override;
     virtual void removeLifecycleListener(cISimulationLifecycleListener *listener) override;
@@ -271,6 +287,11 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     //@}
 
   protected:
+
+    virtual DebuggerPresence detectDebugger();
+    virtual DebuggerAttachmentPermission debuggerAttachmentPermitted();
+    virtual void attachDebugger();
+
     // functions added locally
     virtual bool simulationRequired();
     virtual bool setup();  // does not throw; returns true if OK to go on

@@ -85,9 +85,8 @@ class SIM_API cEnvir
     // connectionDeleted(), displayStringChanged().
     bool suppressNotifications;
 
-    // Internal flags. When set, cRuntimeError constructor executes a debug trap/launches debugger
-    bool debugOnErrors;
-    bool attachDebuggerOnErrors;
+    // Debugging. When set, cRuntimeError constructor executes a debug trap/launches debugger
+    bool debugOnErrors = false;
 
   public:
     /** @name Constructor, destructor. */
@@ -807,10 +806,21 @@ class SIM_API cEnvir
     virtual bool idle() = 0;
 
     /**
-     * Starts an external debugger program and attaches it to this process.
+     * Starts an external debugger program and attaches it to this process,
+     * if no already attached debugger is detected.
      * The command line to start the debugger can be configured.
+     *
+     * The error parameter points to the exception that is the reason a
+     * debugger is needed. If there is no error, just a simple request
+     * for debugging, it is nullptr.
+     *
+     * Returns true if a debugger was already attached, or one could be
+     * started and attached successfully.
+     * Returns false if a debugger was not already attached and could
+     * not be started, or the user chose not to start and attach one.
      */
-    virtual void attachDebugger() = 0;
+    virtual bool ensureDebugger(cRuntimeError *error = nullptr) = 0;
+
     //@}
 
     /** @name Lifecycle listeners */

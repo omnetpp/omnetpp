@@ -44,7 +44,7 @@ namespace omnetpp {
 #ifdef NDEBUG
 #define DEBUG_TRAP_IF_REQUESTED    /*no-op*/
 #else
-#define DEBUG_TRAP_IF_REQUESTED    { if (getSimulation()->trapOnNextEvent) { getSimulation()->trapOnNextEvent = false; DEBUG_TRAP; } }
+#define DEBUG_TRAP_IF_REQUESTED    { if (getSimulation()->trapOnNextEvent) { getSimulation()->trapOnNextEvent = false; if (getEnvir()->ensureDebugger()) DEBUG_TRAP; } }
 #endif
 
 bool cSimpleModule::stackCleanupRequested;

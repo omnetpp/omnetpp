@@ -28,8 +28,6 @@ namespace omnetpp {
 cEnvir::cEnvir()
 {
     loggingEnabled = true;
-    debugOnErrors = false;
-    attachDebuggerOnErrors = false;
     suppressNotifications = false;  //FIXME set to true when not needed!
 }
 

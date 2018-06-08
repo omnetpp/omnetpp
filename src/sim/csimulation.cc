@@ -66,7 +66,7 @@ void printAllObjects();
 #ifdef NDEBUG
 #define DEBUG_TRAP_IF_REQUESTED    /*no-op*/
 #else
-#define DEBUG_TRAP_IF_REQUESTED    { if (trapOnNextEvent) { trapOnNextEvent = false; DEBUG_TRAP; } }
+#define DEBUG_TRAP_IF_REQUESTED    { if (trapOnNextEvent) { trapOnNextEvent = false; if (getEnvir()->ensureDebugger()) DEBUG_TRAP; } }
 #endif
 
 /**
@@ -831,7 +831,7 @@ class StaticEnv : public cEnvir
     virtual bool idle() override  { return false; }
     virtual void refOsgNode(osg::Node *scene) override {}
     virtual void unrefOsgNode(osg::Node *scene) override {}
-    virtual void attachDebugger() override {}
+    virtual bool ensureDebugger(cRuntimeError *) override { return false; }
 
     virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight) override {unsupported();}
     virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent) override {unsupported();}

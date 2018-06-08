@@ -281,11 +281,15 @@ class SIM_API cTerminationException : public cException
  */
 class SIM_API cRuntimeError : public cException
 {
+  public:
+    // internal
+    bool displayed = false;
   protected:
     // internal
-    void breakIntoDebuggerIfRequested();
+    void notifyEnvir();
 
   public:
+
     /**
      * Error is identified by an error code, and the message comes from a
      * string table. The error string may expect printf-like arguments

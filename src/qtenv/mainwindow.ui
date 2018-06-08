@@ -314,6 +314,7 @@ Total number of messages created since start of the simulation</string>
     <addaction name="actionRunUntil"/>
     <addaction name="separator"/>
     <addaction name="actionDebugNextEvent"/>
+    <addaction name="actionDebugOnErrors"/>
     <addaction name="separator"/>
     <addaction name="actionStop"/>
     <addaction name="separator"/>
@@ -826,6 +827,17 @@ Total number of messages created since start of the simulation</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionDebugOnErrors">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Debug On Errors</string>
+   </property>
+   <property name="toolTip">
+    <string>Break into the debugger upon runtime errors</string>
    </property>
   </action>
  </widget>

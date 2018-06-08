@@ -222,7 +222,7 @@ cRuntimeError::cRuntimeError(ErrorCodeInt errorcode...)
     va_start(va, errorcode);
     init(nullptr, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
     va_end(va);
-    breakIntoDebuggerIfRequested();
+    notifyEnvir();
 }
 
 cRuntimeError::cRuntimeError(const char *msgformat...)
@@ -231,7 +231,7 @@ cRuntimeError::cRuntimeError(const char *msgformat...)
     va_start(va, msgformat);
     init(nullptr, E_CUSTOM, msgformat, va);
     va_end(va);
-    breakIntoDebuggerIfRequested();
+    notifyEnvir();
 }
 
 cRuntimeError::cRuntimeError(const cObject *where, ErrorCodeInt errorcode...)
@@ -240,7 +240,7 @@ cRuntimeError::cRuntimeError(const cObject *where, ErrorCodeInt errorcode...)
     va_start(va, errorcode);
     init(where, (ErrorCode)errorcode, cErrorMessages::get((ErrorCode)errorcode), va);
     va_end(va);
-    breakIntoDebuggerIfRequested();
+    notifyEnvir();
 }
 
 cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
@@ -250,46 +250,13 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
     init(where, E_CUSTOM, msgformat, va);
     va_end(va);
 
-    breakIntoDebuggerIfRequested();
+    notifyEnvir();
 }
 
-void cRuntimeError::breakIntoDebuggerIfRequested()
+void cRuntimeError::notifyEnvir()
 {
-    if (getEnvir()->attachDebuggerOnErrors) {
-        getEnvir()->attachDebugger();
-    }
-    else if (getEnvir()->debugOnErrors) {
-#ifdef NDEBUG
-        printf("\n[Warning: Program was compiled without debug info, ignoring debug-on-error=true setting.]\n");
-#else
-        printf("\n"
-               "RUNTIME ERROR. A cRuntimeError exception is about to be thrown, and you\n"
-               "requested (by setting debug-on-errors=true in the ini file) that errors\n"
-               "abort execution and break into the debugger.\n\n"
-#ifdef _MSC_VER
-                "If you see a [Debug] button on the Windows crash dialog and you have\n"
-                "just-in-time debugging enabled, select it to get into the Visual Studio\n"
-                "debugger. Otherwise, you should already have attached to this process from\n"
-                "Visual Studio. Once in the debugger, see you can browse to the context of\n"
-                "the error in the \"Call stack\" debug view.\n\n"
-#else
-                "You should now probably be running the simulation under gdb or another\n"
-                "debugger. The simulation kernel will now raise a SIGINT signal which will\n"
-                "get you into the debugger. If you are not running under a debugger, you can\n"
-                "still use the core dump for post-mortem debugging. Once in the debugger,\n"
-                "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
-                "runtime error.\n\n"
-#endif
-                );
-
-        printf("<!> %s\n", getFormattedMessage().c_str());
-        printf("\nTRAPPING on the exception above, due to a debug-on-errors=true configuration option. Is your debugger ready?\n");
-        fflush(stdout);
-
-        // cause debugger interrupt or signal
-        DEBUG_TRAP;
-#endif
-    }
+    if (getEnvir()->debugOnErrors && getEnvir()->ensureDebugger(this))
+        DEBUG_TRAP; // YOUR CODE IS A FEW FRAMES UP ON THE CALL STACK
 }
 
 }  // namespace omnetpp

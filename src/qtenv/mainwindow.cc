@@ -147,6 +147,8 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
             this, &MainWindow::updateSpeedSlider);
 
     adjustSize();
+
+    ui->actionDebugOnErrors->setChecked(getQtenv()->debugOnErrors);
 }
 
 MainWindow::~MainWindow()
@@ -995,16 +997,17 @@ void MainWindow::on_actionDebugNextEvent_triggered()
     else {
         if (!networkReady())
             return;
-        int ans = QMessageBox::warning(this, tr("Confirm"),
-                    tr("Trigger debugger breakpoint for the next simulation event?\nNote: If you are not running under a debugger, this will likely result in a crash."),
-                    QMessageBox::Ok | QMessageBox::Cancel);
-        if (ans == QMessageBox::Ok) {
-            setGuiForRunmode(RUNMODE_STEP);
-            getSimulation()->requestTrapOnNextEvent();
-            on_actionOneStep_triggered();
-            setGuiForRunmode(RUNMODE_NOT_RUNNING);
-        }
+
+        setGuiForRunmode(RUNMODE_STEP);
+        getSimulation()->requestTrapOnNextEvent();
+        on_actionOneStep_triggered();
+        setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
+}
+
+void MainWindow::on_actionDebugOnErrors_triggered(bool checked)
+{
+    getQtenv()->debugOnErrors = checked;
 }
 
 void MainWindow::on_actionEventlogRecording_triggered()

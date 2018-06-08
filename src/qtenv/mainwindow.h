@@ -98,6 +98,7 @@ public slots:
     void on_actionExpressRun_triggered() { runSimulation(RUNMODE_EXPRESS); }
     void on_actionRunUntil_triggered();
     void on_actionDebugNextEvent_triggered();
+    void on_actionDebugOnErrors_triggered(bool checked);
     void on_actionStop_triggered();
 
     void on_actionQuit_triggered() { close(); }

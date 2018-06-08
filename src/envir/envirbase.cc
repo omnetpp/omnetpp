@@ -19,6 +19,7 @@
 #include <cassert>
 #include <csignal>
 #include <fstream>
+#include <sstream>
 #include <set>
 #include <algorithm>
 #include "common/stringtokenizer.h"
@@ -63,6 +64,19 @@
 #include "valueiterator.h"
 #include "xmldoccache.h"
 
+#ifdef __APPLE__
+// these are needed for debugger detection
+#include <stdbool.h>
+
+// these are for the alternative method - using ptrace
+// #include <sys/types.h>
+// #include <unistd.h>
+// #include <sys/sysctl.h>
+
+#include <mach/task.h>
+#include <mach/mach_init.h>
+#endif
+
 #ifdef WITH_PARSIM
 #include "omnetpp/cparsimcomm.h"
 #include "sim/parsim/cparsimpartition.h"
@@ -85,7 +99,7 @@
 #if defined _WIN32
 #define DEFAULT_DEBUGGER_COMMAND    "start gdb --pid=%u"
 #elif defined __APPLE__
-#define DEFAULT_DEBUGGER_COMMAND    "XTerm -e 'gdb --pid=%u' &"  // looks like we cannot launch XCode like that
+#define DEFAULT_DEBUGGER_COMMAND    "xterm -e 'lldb --attach-pid %u' &"  // looks like we cannot launch XCode like that
 #else /* Linux, *BSD and other: assume Nemiver is available and installed */
 #define DEFAULT_DEBUGGER_COMMAND    "nemiver --attach=%u &"
 #endif
@@ -127,16 +141,16 @@ Register_PerRunConfigOption(CFGID_OUTPUTVECTORMANAGER_CLASS, "outputvectormanage
 Register_PerRunConfigOption(CFGID_OUTPUTSCALARMANAGER_CLASS, "outputscalarmanager-class", CFG_STRING, DEFAULT_OUTPUTSCALARMANAGER_CLASS, "Part of the Envir plugin mechanism: selects the output scalar manager class to be used to record data passed to recordScalar(). The class has to implement the `cIOutputScalarManager` interface.");
 Register_PerRunConfigOption(CFGID_SNAPSHOTMANAGER_CLASS, "snapshotmanager-class", CFG_STRING, "omnetpp::envir::FileSnapshotManager", "Part of the Envir plugin mechanism: selects the class to handle streams to which snapshot() writes its output. The class has to implement the `cISnapshotManager` interface.");
 Register_PerRunConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
-Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "", "A semicolon-separated list of directories that contain module icons and other resources. This list with be concatenated with `OMNETPP_IMAGE_PATH`.");
+Register_GlobalConfigOption(CFGID_IMAGE_PATH, "image-path", CFG_PATH, "", "A semicolon-separated list of directories that contain module icons and other resources. This list will be concatenated with `OMNETPP_IMAGE_PATH`.");
 Register_GlobalConfigOption(CFGID_FNAME_APPEND_HOST, "fname-append-host", CFG_BOOL, nullptr, "Turning it on will cause the host name and process Id to be appended to the names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially useful with distributed simulation. The default value is true if parallel simulation is enabled, false otherwise.");
 Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "false", "When set to true, runtime errors will cause the simulation program to break into the C++ debugger (if the simulation is running under one, or just-in-time debugging is activated). Once in the debugger, you can view the stack trace or examine variables.");
 Register_GlobalConfigOption(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigOption(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "DEPRECATED in favor of simtime-resolution. Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
 Register_GlobalConfigOption(CFGID_SIMTIME_RESOLUTION, "simtime-resolution", CFG_CUSTOM, "ps", "Sets the resolution for the 64-bit fixed-point simulation time representation. Accepted values are: second-or-smaller time units (`s`, `ms`, `us`, `ns`, `ps`, `fs` or as), power-of-ten multiples of such units (e.g. 100ms), and base-10 scale exponents in the -18..0 range. The maximum representable simulation time depends on the resolution. The default is picosecond resolution, which offers a range of ~110 days.");
 Register_GlobalConfigOption(CFGID_NED_PATH, "ned-path", CFG_PATH, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via a command-line option or the NEDPATH environment variable.");
-Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-on-startup", CFG_BOOL, "false", "When set to true, the simulation program will launch an external debugger attached to it, allowing you to set breakpoints before proceeding. The debugger command is configurable.  Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
-Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched, allowing you to perform just-in-time debugging on the simulation process. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
-Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, DEFAULT_DEBUGGER_COMMAND, "Command line to launch the debugger. It must contain exactly one percent sign, as `%u`, which will be replaced by the PID of this process. The command must not block (i.e. it should end in `&` on Unix-like systems).");
+Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_STARTUP, "debugger-attach-on-startup", CFG_BOOL, "false", "When set to true, the simulation program will launch an external debugger attached to it (if not already present), allowing you to set breakpoints before proceeding. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
+Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_ON_ERROR, "debugger-attach-on-error", CFG_BOOL, "false", "When set to true, runtime errors and crashes will trigger an external debugger to be launched (if not already present), allowing you to perform just-in-time debugging on the simulation process. The debugger command is configurable. Note that debugging (i.e. attaching to) a non-child process needs to be explicitly enabled on some systems, e.g. Ubuntu.");
+Register_GlobalConfigOption(CFGID_DEBUGGER_ATTACH_COMMAND, "debugger-attach-command", CFG_STRING, nullptr, "Command line to launch the debugger. It must contain exactly one percent sign, as `%u`, which will be replaced by the PID of this process. The command must not block (i.e. it should end in `&` on Unix-like systems). Default on this platform: `" DEFAULT_DEBUGGER_COMMAND "`. This default can be overridden with the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
 Register_GlobalConfigOptionU(CFGID_DEBUGGER_ATTACH_WAIT_TIME, "debugger-attach-wait-time", "s", "20s", "An interval to wait after launching the external debugger, to give the debugger time to start up and attach to the simulation process.");
 
 Register_PerRunConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
@@ -332,7 +346,7 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
-    if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP))
+    if (cfg->getAsBool(CFGID_DEBUGGER_ATTACH_ON_STARTUP) && detectDebugger() != DebuggerPresence::PRESENT)
         attachDebugger();
 
     if (simulationRequired()) {
@@ -1656,14 +1670,16 @@ unsigned long EnvirBase::getUniqueNumber()
 
 std::string EnvirBase::makeDebuggerCommand()
 {
-    std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND);
+    const char *cmdDefault = opp_emptytodefault(getenv("OMNETPP_DEBUGGER_COMMAND"), DEFAULT_DEBUGGER_COMMAND);
+    std::string cmd = getConfig()->getAsString(CFGID_DEBUGGER_ATTACH_COMMAND, cmdDefault);
+
     if (cmd == "") {
-        err() << "Cannot start debugger: no debugger configured" << endl;
+        alert("Cannot start debugger: no debugger configured");
         return "";
     }
     size_t pos = cmd.find('%');
     if (pos == std::string::npos || cmd.rfind('%') != pos || cmd[pos+1] != 'u') {
-        err() << "Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign" << endl;
+        alert("Cannot start debugger: debugger attach command must contain '%u' and no additional percent sign");
         return "";
     }
     pid_t pid = getpid();
@@ -1674,11 +1690,19 @@ void EnvirBase::attachDebugger()
 {
     // launch debugger
     std::string cmd = makeDebuggerCommand();
-    if (cmd == "")
-        return;  // no suitable debugger command
+    if (cmd == "") {
+        alert("No suitable debugger command!");
+        return;
+    }
 
     out << "Starting debugger: " << cmd << endl;
-    system(cmd.c_str());
+    int returncode = system(cmd.c_str());
+
+    if (returncode != 0) {
+        std::string errormsg = "Debugger command '" + cmd + "' returned error.";
+        alert(errormsg.c_str());
+        return;
+    }
 
     out << "Waiting for the debugger to start up and attach to us; note that "
            "for the latter to work, some systems (e.g. Ubuntu) require debugging "
@@ -1687,13 +1711,169 @@ void EnvirBase::attachDebugger()
     // hold for a while to allow debugger to start up and attach to us
     int secondsToWait = (int)ceil(getConfig()->getAsDouble(CFGID_DEBUGGER_ATTACH_WAIT_TIME));
     time_t startTime = time(nullptr);
-    while (time(nullptr)-startTime < secondsToWait)
-        for (int i=0; i<1000; i++); // DEBUGGER ATTACHED -- YOUR CODE IS A FEW FRAMES UP ON THE CALL STACK
+    while (time(nullptr)-startTime < secondsToWait && detectDebugger() != DebuggerPresence::PRESENT)
+        for (int i=0; i<100000000; i++); // DEBUGGER ATTACHED -- PLEASE CONTINUE EXECUTION TO REACH THE BREAKPOINT
+
+    if (detectDebugger() == DebuggerPresence::NOT_PRESENT)
+        alert("Debugger did not attach in time.");
+}
+
+bool EnvirBase::ensureDebugger(cRuntimeError *error)
+{
+    if (error == nullptr || attachDebuggerOnErrors) {
+        if (detectDebugger() == DebuggerPresence::NOT_PRESENT)
+            attachDebugger();
+        return detectDebugger() != DebuggerPresence::NOT_PRESENT;
+    }
+    else {
+
+#ifdef NDEBUG
+       printf("\n[Warning: Program was compiled without debug info, you might not be able to debug.]\n");
+#endif
+
+   printf("\n"
+          "RUNTIME ERROR. A cRuntimeError exception is about to be thrown, and you\n"
+          "requested (by setting debug-on-errors=true in the ini file) that errors\n"
+          "abort execution and break into the debugger.\n\n"
+#ifdef _MSC_VER
+           "If you see a [Debug] button on the Windows crash dialog and you have\n"
+           "just-in-time debugging enabled, select it to get into the Visual Studio\n"
+           "debugger. Otherwise, you should already have attached to this process from\n"
+           "Visual Studio. Once in the debugger, see you can browse to the context of\n"
+           "the error in the \"Call stack\" debug view.\n\n"
+#else
+           "You should now probably be running the simulation under gdb or another\n"
+           "debugger. The simulation kernel will now raise a SIGINT signal which will\n"
+           "get you into the debugger. If you are not running under a debugger, you can\n"
+           "still use the core dump for post-mortem debugging. Once in the debugger,\n"
+           "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
+           "runtime error.\n\n"
+
+       );
+
+       printf("<!> %s\n", error->getFormattedMessage().c_str());
+       printf("\nTRAPPING on the exception above, due to a debug-on-errors=true configuration option. Is your debugger ready?\n");
+       fflush(stdout);
+
+       return true;
+#endif
+    }
+
+    return false;
+}
+
+DebuggerPresence EnvirBase::detectDebugger()
+{
+#ifdef _WIN32
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx
+    return IsDebuggerPresent() ? DebuggerPresence::PRESENT : DebuggerPresence::NOT_PRESENT;
+#elif defined(__APPLE__)
+    /*
+    // This is the "official" method, described here:
+    // https://developer.apple.com/library/content/qa/qa1361/_index.html
+    int                 junk;
+    int                 mib[4];
+    struct kinfo_proc   info;
+    size_t              size;
+
+    // Initialize the flags so that, if sysctl fails for some bizarre
+    // reason, we get a predictable result.
+
+    info.kp_proc.p_flag = 0;
+
+    // Initialize mib, which tells sysctl the info we want, in this case
+    // we're looking for information about a specific process ID.
+
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PID;
+    mib[3] = getpid();
+
+    // Call sysctl.
+
+    size = sizeof(info);
+    junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+    if (junk != 0)
+        return DebuggerPresence::CANT_DETECT;
+
+    // We're being debugged if the P_TRACED flag is set.
+
+    return ( (info.kp_proc.p_flag & P_TRACED) != 0 ) ? DebuggerPresence::PRESENT : DebuggerPresence::NOT_PRESENT;
+    */
+
+    // This one is supposed to be better.
+    // https://zgcoder.net/ramblings/osx-debugger-detection.html
+
+    mach_msg_type_number_t count = 0;
+    exception_mask_t masks[EXC_TYPES_COUNT];
+    mach_port_t ports[EXC_TYPES_COUNT];
+    exception_behavior_t behaviors[EXC_TYPES_COUNT];
+    thread_state_flavor_t flavors[EXC_TYPES_COUNT];
+    exception_mask_t mask = EXC_MASK_ALL & ~(EXC_MASK_RESOURCE | EXC_MASK_GUARD);
+
+    kern_return_t result = task_get_exception_ports(mach_task_self(), mask, masks, &count, ports, behaviors, flavors);
+
+    if (result != KERN_SUCCESS)
+        return DebuggerPresence::CANT_DETECT;
+
+    for (mach_msg_type_number_t portIndex = 0; portIndex < count; portIndex++)
+        if (MACH_PORT_VALID(ports[portIndex]))
+            return DebuggerPresence::PRESENT;
+
+    return DebuggerPresence::NOT_PRESENT;
+
+#else
+
+    // Assume that we are on GNU/Linux, and have a procfs.
+    // If not, in the worst case, the file can't be opened, and we return CANT_DETECT.
+
+    // https://stackoverflow.com/questions/3596781/how-to-detect-if-the-current-process-is-being-run-by-gdb/24969863#24969863
+
+    std::ifstream input("/proc/self/status");
+
+    if (!input.good())
+        return DebuggerPresence::CANT_DETECT;
+
+    for (std::string line; getline(input, line); ) {
+        std::stringstream ss(line);
+        std::string info;
+        ss >> info;
+
+        if (info.substr(0, 9) == "TracerPid") {
+            int value;
+            ss >> value;
+            return value == 0 ? DebuggerPresence::NOT_PRESENT : DebuggerPresence::PRESENT;
+        }
+    }
+
+    return DebuggerPresence::CANT_DETECT;
+#endif
+}
+
+DebuggerAttachmentPermission EnvirBase::debuggerAttachmentPermitted()
+{
+#if defined(__APPLE__) || defined(_WIN32)
+    return DebuggerAttachmentPermission::CANT_DETECT; // we don't know of anything that would block debugger attachment on these platforms
+#else
+    // we assume we are on GNU/Linux
+    // https://askubuntu.com/questions/41629/after-upgrade-gdb-wont-attach-to-process
+    std::ifstream fs("/proc/sys/kernel/yama/ptrace_scope");
+
+    int scope;
+    fs >> scope;
+
+    if (!fs.good())
+        return DebuggerAttachmentPermission::CANT_DETECT; // can't detect
+
+    return scope == 0 // if it's not zero, non-child debugging is blocked
+            ? DebuggerAttachmentPermission::PERMITTED
+            : DebuggerAttachmentPermission::DENIED;
+#endif
 }
 
 void EnvirBase::crashHandler(int)
 {
-    cSimulation::getActiveEnvir()->attachDebugger();
+    ((EnvirBase*)cSimulation::getActiveEnvir())->attachDebugger();
 }
 
 std::string EnvirBase::getFormattedMessage(std::exception& ex)

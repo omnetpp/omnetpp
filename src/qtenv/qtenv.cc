@@ -728,7 +728,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     simulationState = SIM_RUNNING;
     // if there's some animating to do before the event, only do that if stepping.
 
-    doNextEventInStep = displayUpdateController->rightBeforeEvent();
+    doNextEventInStep = getSimulation()->isTrapOnNextEventRequested() || displayUpdateController->rightBeforeEvent();
 
     updateStatusDisplay();
     QApplication::processEvents();
@@ -1460,8 +1460,11 @@ void Qtenv::displayException(std::exception& ex)
         logBuffer.addInfo(txt.c_str());
     }
 
-    // pop up dialog
-    confirm(ERROR, getFormattedMessage(ex).c_str());
+    if (cRuntimeError *runtimeError = dynamic_cast<cRuntimeError*>(&ex)) {
+        // pop up dialog if not already displayed
+        if (!runtimeError->displayed)
+            confirm(ERROR, getFormattedMessage(ex).c_str());
+    }
 }
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
@@ -1635,6 +1638,76 @@ bool Qtenv::idle()
     simulationState = origsimstate;
 
     return stopSimulationFlag;
+}
+
+bool Qtenv::ensureDebugger(cRuntimeError *error)
+{
+    bool debuggerPresent = detectDebugger() == DebuggerPresence::PRESENT;
+
+    QString title;
+    QString message;
+
+    if (error) {
+        title = "Runtime Error";
+        message = QString("A runtime error occurred:\n\n") +
+                error->getFormattedMessage().c_str();
+        error->displayed = true;
+
+        if (debuggerPresent)
+            message += "\n\nDebug now?";
+    }
+    else if (!debuggerPresent) {
+        title = "Debugging Requested";
+        message = "You requested debugging.";
+    }
+
+    if (!debuggerPresent) {
+        std::string debuggerCommand = makeDebuggerCommand();
+        if (!debuggerCommand.empty())
+            message += QString("\n\nLaunch a debugger with the following command?\n\n") + debuggerCommand.c_str();
+    }
+
+    QMessageBox messageBox(QMessageBox::Icon::Critical, title, message, QMessageBox::NoButton, getMainWindow());
+
+    QPushButton *acceptButton;
+
+    if (debuggerPresent)
+        acceptButton = messageBox.addButton("Break into debugger", QMessageBox::AcceptRole);
+    else {
+        acceptButton = messageBox.addButton("Launch debugger then break", QMessageBox::AcceptRole);
+        messageBox.addButton("Just break (likely crash)", QMessageBox::DestructiveRole);
+    }
+
+    messageBox.addButton(error ? "Ignore" : "Cancel", QMessageBox::RejectRole);
+
+    messageBox.setDefaultButton(acceptButton);
+
+    QMessageBox::ButtonRole clickedRole = QMessageBox::AcceptRole;
+
+    if (!message.isEmpty()) {
+        messageBox.exec();
+        clickedRole = messageBox.buttonRole(messageBox.clickedButton());
+    }
+
+    if (clickedRole == QMessageBox::RejectRole)
+        return false; // the user doesn't want to debug now
+    else if (debuggerPresent || clickedRole == QMessageBox::DestructiveRole)
+        return true; // either we can safely TRAP, or the user told us to do it (even if we didn't detect a debugger)
+    else if (debuggerAttachmentPermitted() != DebuggerAttachmentPermission::DENIED)
+        attachDebugger();
+    else { // no debugger, and can't attach either
+        QMessageBox(QMessageBox::Icon::Critical, "Debugger Attachment Blocked",
+                    "No attached debugger was detected, and your current system setup does not "
+                    "permit attaching a debugger to a non-child process.\nStart your simulation "
+                    "in a debugger, or see this for how to allow on-demand attachment:\n\n"
+                    "https://askubuntu.com/questions/41629/after-upgrade-gdb-wont-attach-to-process/41656#41656",
+                    QMessageBox::StandardButton::Close, getMainWindow()).exec();
+
+        // The user might have allowed attachment and attached a debugger
+        // while the dialog was up, so let's check again.
+    }
+
+    return detectDebugger() != DebuggerPresence::NOT_PRESENT;
 }
 
 void Qtenv::objectDeleted(cObject *object)
