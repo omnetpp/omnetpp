@@ -792,7 +792,8 @@ cNedValue cDynamicExpression::evaluate(Context *context) const
                                 stk[tos-1].convertToDouble();
                                 stk[tos].convertToDouble();
                                 ensureNoLogarithmicUnit(stk[tos]);
-                                ensureNoLogarithmicUnit(stk[tos-1]);
+                                if (stk[tos].dbl != 0)  // allow "0dB/0" as nan for compatibility with INET 3.x
+                                    ensureNoLogarithmicUnit(stk[tos-1]);
                                 if (!opp_isempty(stk[tos].unit))
                                     stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].unit, stk[tos-1].unit);
                                 stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;

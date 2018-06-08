@@ -30,6 +30,15 @@ network Test
         bool b4 = 1s + inf ms == 1s/0.0;
         bool b5 = nan s == nan;
 
+        // old-style nan and inf, found in INET-3.x
+        double n1 @unit(dB) = 0dB/0;
+        double n2 @unit(dB) = 1dB/0;
+        double n3 @unit(dB) = -1dB/0;
+
+        double n4 @unit(W) = 0W/0;
+        double n5 @unit(W) = 1W/0;
+        double n6 @unit(W) = -1W/0;
+
     submodules:
         dump: Dump;
 }
@@ -55,6 +64,12 @@ module Test: Test {
         b3 = false
         b4 = true
         b5 = false
+        n1 @unit(dB) = nan dB
+        n2 @unit(dB) = inf dB
+        n3 @unit(dB) = -inf dB
+        n4 @unit(W) = nan W
+        n5 @unit(W) = inf W
+        n6 @unit(W) = -inf W
     submodules:
 }
 
