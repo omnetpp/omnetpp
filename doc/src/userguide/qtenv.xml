@@ -203,6 +203,14 @@
         </para>
       </sect3>
       <sect3>
+        <title>Debug On Errors</title>
+        <para> This menu item allows you to change the value of the [[debug-on-errors]] configuration
+          variable on the fly. This is useful if you forgot to set this option before starting the
+          simulation, but would like to debug a runtime error. The state of this menu item is reset
+          to the value of [[debug-on-errors]] every time Qtenv is started.
+        </para>
+      </sect3>
+      <sect3>
         <title>Recording an Event Log</title>
         <para> The &Omnetpp; simulation kernel allows you to record event related information into a file
           which later can be used to analyze the simulation run using the ``Sequence Chart'' tool in
@@ -213,21 +221,6 @@
           does not result in exactly the same eventlog file. In the former case, all steps of setting up
           the network, such as module creations, are recorded as they happen; while for the latter,
           Qtenv has to "fake" a chain of steps that would result in the current state of the simulation.
-        </para>
-      </sect3>
-      <sect3>
-        <title>Conclude Simulation</title>
-        <para> This function finalizes the simulation by invoking the user-supplied [[finish()]]
-          member functions on all module and channel objects in the simulation. The customary
-          implementation of [[finish()]] is to record summary statistics. The simulation cannot
-          be continued afterwards.
-        </para>
-      </sect3>
-      <sect3>
-        <title>Rebuild Network</title>
-        <para> Rebuilds the simulation by deleting the current network and setting it up again.
-          Improperly written simulations often crash when ``Rebuild Network'' is invoked; this is
-          usually due to incorrectly written destructors in module classes.
         </para>
       </sect3>
       <sect3>
@@ -247,6 +240,21 @@
           access to more information, and has more control over the process than external
           tools.
         </note>
+      </sect3>
+      <sect3>
+        <title>Conclude Simulation</title>
+        <para> This function finalizes the simulation by invoking the user-supplied [[finish()]]
+          member functions on all module and channel objects in the simulation. The customary
+          implementation of [[finish()]] is to record summary statistics. The simulation cannot
+          be continued afterwards.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Rebuild Network</title>
+        <para> Rebuilds the simulation by deleting the current network and setting it up again.
+          Improperly written simulations often crash when ``Rebuild Network'' is invoked; this is
+          usually due to incorrectly written destructors in module classes.
+        </para>
       </sect3>
     </sect2>
     <sect2>
@@ -991,6 +999,12 @@
           and subdirectory names become part of the icon name; for example, if an [[images/]] directory
           is listed, the file [[images/misc/foo.png]] will be registered as icon [[misc/foo]].
           PNG, JPG and GIF files are accepted.</listitem>
+        <listitem>[[OMNETPP_DEBUGGER_COMMAND]]: When set, overrides the factory default for the command
+          used to launch the just-in-time debugger ([[debugger-attach-command]]). It must contain '%u'
+          (which will be substituted with the process ID of the simulation), and must not contain any
+          additional '%' characters. Since the command has to return immediately, on Linux and macOS
+          it is recommended that it ends with an ampersand ('&amp;'). Settings on the command line
+          or in an [[.ini]] file take precedence over this environment variable.</listitem>
       </itemizedlist>
     </sect2>
     <sect2>
