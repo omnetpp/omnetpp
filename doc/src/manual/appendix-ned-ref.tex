@@ -37,8 +37,8 @@ NED file authors have to take care that no reserved words are used as identifier
 The reserved words of the NED language are:
 
 \ttt{allowunconnected bool channel channelinterface connections const
-default double extends false for gates if import index inout input int like
-module moduleinterface network output package parameters property simple
+default double extends false for gates if import index inf inout input int like
+module moduleinterface nan network output package parameters property simple
 sizeof string submodules this true typename types volatile xml xmldoc}
 
 
@@ -78,6 +78,9 @@ are recognized: \ttt{{\textbackslash}b}, \ttt{{\textbackslash}f},
 Numeric constants are accepted in the usual decimal, hexadecimal (\ttt{0x} prefix)
 and scientific notations. Octal numbers are not accepted (numbers that start
 with the \ttt{0} digit are interpreted as decimal.)
+
+\fkeyword{nan}, \fkeyword{inf} and \ttt{-}\fkeyword{inf} mean the floating-point
+not-a-number, positive infinity and negative infinity values, respectively.
 
 \subsubsection{Quantity Constants}
 \label{sec:ned-ref:quantity-constants}
@@ -1641,6 +1644,10 @@ of the model. Expressions can use built-in and user-defined functions as well.
 New NED functions can be defined in C++; see section \ref{sec:sim-lib:defining-ned-functions}.
 \end{note}
 
+\subsection{Constants}
+\label{sec:ned-ref:constants}
+
+See section \ref{sec:ned-ref:literals}.
 
 \subsection{Operators}
 \label{sec:ned-ref:operators}
@@ -1728,13 +1735,19 @@ For division, dividing two numbers with units is only supported if the two
 units are convertible (i.e. the result will be dimensionless). Dividing
 a dimensionless number with a number with unit is not supported.
 
-
+Operations involving quantities with logarithmic units (dB, dBW, etc.)
+are not supported now, except for comparison. (The reason is that such
+operations would be easy to misinterpret. For example, it is not obvious
+whether \ttt{10dB+10dB} (3.16+3.16) should evaluate to 20dB (=10.0)
+or to 16.02dB (=2*3.16=6.32), considering that such quantities would
+often be hidden behind parameter names where the unit is not obvious.) 
+ 
 \subsection{Referencing Parameters and Loop Variables}
 \label{sec:ned-ref:referencing-parameters-and-loop-variables}
 
 Identifiers in expressions occurring \textit{anywhere} in component definitions
 are interpreted as referring to parameters of the given component. For example,
-identifiers inside submodule bodies refer to the parameters of the compound
+identifiers inside submodule bodies refer to the parameters of the \textit{compound}
 module.
 
 Expressions may also refer to parameters of submodules defined earlier
@@ -1748,11 +1761,43 @@ a previously defined loop variable, then it is understood as referring to
 the loop variable.
 
 
+\subsection{The \fkeyword{typename} Operator}
+\label{sec:ned-ref:typename-operator}
+
+The \fkeyword{typename} operator returns the NED type name as a string.
+If it occurs inside a component definition but outside a submodule or channel
+block, it returns the type name of the component being defined. If it occurs
+inside a submodule or channel block, it returns the type name of that submodule
+or channel.
+
+The \fkeyword{typename} may also occur in the \fkeyword{if} condition of a
+(scalar) submodule or connection. In such cases, it evaluates to the \textit{would-be}
+type name of the submodule or condition. This allows for conditional
+instantiation of parametric-type submodules, controlled from a 
+\fkeyword{typename} assignment. (For example, by using the \ttt{if typename!=""}
+condition, one allows the submodule to be omitted by configuring \ttt{typename=""}
+for it. 
+
+\fkeyword{typename} is not allowed in a submodule vector's \fkeyword{if} condition.
+The reason is that the condition applies to the vector as a whole, while type
+is per-element.
+
+
 \subsection{The \fkeyword{index} Operator}
 \label{sec:ned-ref:index-operator}
 
 The \fkeyword{index} operator is only allowed in a vector submodule's body,
 and yields the index of the submodule instance.
+
+
+\subsection{The \fkeyword{exists()} Operator}
+\label{sec:ned-ref:exists-operator}
+
+The \fkeyword{exists()} operator takes one identifier as argument, and it 
+is only accepted in compound module definitions. The identifier must name
+a previously defined submodule, which will typically be a conditional submodule.
+The operator returns \fkeyword{true} if given submodule exists (has been created), 
+and \fkeyword{false} otherwise.
 
 
 \subsection{The \fkeyword{sizeof()} Operator}

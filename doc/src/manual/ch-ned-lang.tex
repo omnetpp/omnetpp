@@ -1397,9 +1397,8 @@ module Host
 }
 \end{ned}
 
-The condition is less useful with submodule vectors, as one could also
-use a zero vector size.
-
+Note that with submodule vectors, setting zero vector size can be used as an 
+alternative to the \fkeyword{if} condition. 
 
 \section{Connections}
 \label{sec:ned-lang:connections}
@@ -1918,7 +1917,73 @@ module Node
 }
 \end{ned}
 
+\subsection{Conditional Parametric Submodules}
+\label{sec:ned-lang:conditional-parametric-submodules}
 
+When creating reusable compound modules, it is often useful to be able to make a
+parametric submodule also optional. One solution is to let the user define the
+submodule type with a string parameter, and not create the module when the
+parameter is set to the empty string. Like this:
+
+\begin{ned}
+module Node
+{
+    parameters:
+        string tcpType = default("Tcp");
+    submodules:
+        tcp: <tcpType> like ITcp if tcpType!="";
+}
+\end{ned}
+
+However, this pattern, when used extensively, can lead to a large number of 
+string parameters. Luckily, it is also possible to achieve the same effect
+with \fkeyword{typename}, without using extra parameters:
+
+\begin{ned}
+module Node
+{
+    submodules:
+        tcp: <default("Tcp")> like ITcp if typename!="";
+}
+\end{ned}
+
+The \fkeyword{typename} operator in a submodule's \fkeyword{if} condition
+evaluates to the would-be type of the submodule. By using the \ttt{typename!=""}
+condition, we can let the user eliminate the \ttt{tcp} submodule by setting its
+typename to the empty string. For example, in a network that uses the above NED
+type, typename pattern assignments could look like this:
+
+\begin{ned}
+network Network
+{
+    parameters:
+        node1.tcp.typename = "TcpExt"; // let node1 use a custom TCP
+        node2.tcp.typename = ""; // no TCP in node2
+    submodules:
+        node1: Node;
+        node2: Node;
+}
+\end{ned}
+
+Note that this trick does not work with submodule vectors. The reason is that
+the condition applies to the vector as a whole, while type is per-element.
+ 
+It is often also useful to be able to check, e.g. in the connections section,
+whether a conditional submodule has been created or not. This can be done with
+the \fkeyword{exists()} operator. An example:
+
+\begin{ned}
+module Node
+{
+        ...
+    connections:
+        ip.tcpOut --> tcp.ipIn if exists(ip) && exists(tcp);
+}
+\end{ned}
+
+Limitation: \fkeyword{exists()} may only be used \textit{after} the submodule's
+occurrence in the compound module.
+ 
 
 
 
