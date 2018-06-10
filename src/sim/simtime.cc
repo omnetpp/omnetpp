@@ -253,11 +253,12 @@ double operator/(long long x, const SimTime& y)
 
 double operator/(unsigned long long x, const SimTime& y)
 {
-    // delegate to the signed version if we can, otherwise compute in double
     if (x <= std::numeric_limits<long long>::max())
-        return (long long)x / y;
+        return operator/((long long)x, y);
+    else if ((x&1) == 0 || x+1 == 0)
+        return 2.0 * operator/((long long)(x/2), y);
     else
-        return (double)x * (double)powersOfTen[-SimTime::scaleexp] / double(y.t);
+        return 2.0 * operator/((long long)(x/2+1), y); // round up x/2 (unless it's maxint, see x+1==0 condition above)
 }
 
 double operator/(const cPar& p, const SimTime& x)
