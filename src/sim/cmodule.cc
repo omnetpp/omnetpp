@@ -80,29 +80,24 @@ cModule::cModule()
 
 cModule::~cModule()
 {
+    // ensure we are invoked from deleteModule()
+    if (componentId !=-1 && (flags&FL_DELETING) == 0) {
+        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
+        getEnvir()->alert(cRuntimeError(this, "Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING").getFormattedMessage().c_str());
+        abort();
+    }
+
     // release listeners in the whole subtree first. This mostly eliminates
     // the need for explicit unsubscribe() calls in module destructors.
     releaseListeners();
 
-    // notify envir while module object still exists (more or less)
+    // notify envir while module object (or rather, its remains) still exist
     EVCB.moduleDeleted(this);
 
     // delete submodules
     for (SubmoduleIterator it(this); !it.end(); ) {
         cModule *submodule = *it;
         ++it;
-        if (submodule == (cModule *)getSimulation()->getContextModule()) {
-            // NOTE: subclass destructors will not be called, but the simulation will stop anyway
-            throw cRuntimeError("Cannot delete a compound module from one of its submodules!");
-            // The reason is that deleteModule() of the currently executing
-            // module does not return -- for obvious reasons (we would
-            // execute with an already deallocated stack etc).
-            // Thus the deletion of the current module would remain unfinished.
-            // A solution could be to skip deletion of that very module at first,
-            // and delete it only when everything else is deleted.
-            // However, this would be clumsy and ugly to implement so
-            // I'd rather wait until the real need for it emerges... --VA
-        }
         submodule->deleteModule();
     }
 
@@ -1200,12 +1195,20 @@ void cModule::doBuildInside()
 
 void cModule::deleteModule()
 {
-    // check this module doesn't contain the executing module somehow
-    for (cModule *module = getSimulation()->getContextModule(); module; module = module->getParentModule())
-        if (module == this)
-            throw cRuntimeError(this, "It is not supported to delete a module that contains "
-                                      "the currently executing simple module");
+    if (getSimulation()->getSimulationStage() != CTX_CLEANUP) {
+        if (getSystemModule() == this)
+            throw cRuntimeError(this, "deleteModule(): It is not allowed to delete the system module during simulation");
+        if (!initialized())
+            throw cRuntimeError(this, "deleteModule(): A module cannot be deleted before it has been initialized");
+    }
 
+    // If a coroutine wants to delete itself (maybe as part of a module subtree),
+    // that has to be handled from another coroutine, e.g. from the main one.
+    // Control is passed there by throwing an exception that gets transferred
+    // to the main coroutine by activate(), and handled in cSimulation.
+    cSimpleModule *activeModule = getSimulation()->getActivityModule();
+    if (activeModule != nullptr && this->containsModule(activeModule))
+        throw cDeleteModuleException(this);
 
     // notify pre-change listeners
     if (hasListeners(PRE_MODEL_CHANGE)) {
@@ -1217,6 +1220,7 @@ void cModule::deleteModule()
     cModule *parent = getParentModule();
     if (!parent || !parent->hasListeners(POST_MODEL_CHANGE)) {
         // no listeners, just do it
+        setFlag(cComponent::FL_DELETING, true);
         delete this;
     }
     else {
@@ -1231,6 +1235,7 @@ void cModule::deleteModule()
         tmp.vectorSize = getVectorSize();
         tmp.index = getIndex();
 
+        setFlag(cComponent::FL_DELETING, true);
         delete this;
 
         parent->emit(POST_MODEL_CHANGE, &tmp);

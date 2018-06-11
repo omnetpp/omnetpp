@@ -125,9 +125,11 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
 cSimulation::~cSimulation()
 {
-    if (this == activeSimulation)
-        // NOTE: subclass destructors will not be called, but the simulation will stop anyway
-        throw cRuntimeError(this, "Cannot delete the active simulation manager object");
+    if (this == activeSimulation) {
+        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
+        getEnvir()->alert(cRuntimeError(this, "Cannot delete the active simulation manager object, ABORTING").getFormattedMessage().c_str());
+        abort();
+    }
 
     deleteNetwork();
 
@@ -617,7 +619,7 @@ void cSimulation::executeEvent(cEvent *event)
     }
     catch (cDeleteModuleException& e) {
         setGlobalContext();
-        module->deleteModule();
+        e.getModuleToDelete()->deleteModule();
     }
     catch (cException&) {
         // restore global context before throwing the exception further

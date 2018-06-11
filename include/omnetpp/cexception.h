@@ -27,6 +27,7 @@ namespace omnetpp {
 
 class cObject;
 class cComponent;
+class cModule;
 
 /**
  * This type exists purely for technical reasons: Occurrences of this type on the code
@@ -332,30 +333,38 @@ class SIM_API cRuntimeError : public cException
 };
 
 /**
- * @brief Thrown from cSimpleModule::deleteModule() when the current module is
+ * @brief Thrown from deleteModule() when the active activity() module is
  * about to be deleted, in order to exit that module immediately.
  *
  * @ingroup Internals
  */
 class SIM_API cDeleteModuleException : public cException
 {
+  protected:
+    cModule *toDelete;
+
   public:
     /**
      * Default ctor.
      */
-    cDeleteModuleException() : cException() {}
+    cDeleteModuleException(cModule *toDelete) : cException(), toDelete(toDelete) {}
 
     /**
      * We unfortunately need to copy exception objects when handing them back
      * from an activity().
      */
-    cDeleteModuleException(const cDeleteModuleException& e) : cException(e) {}
+    cDeleteModuleException(const cDeleteModuleException& e) : cException(e), toDelete(e.toDelete) {}
 
     /**
      * Virtual copy constructor. We unfortunately need to copy exception objects
      * when handing them back from an activity().
      */
     virtual cDeleteModuleException *dup() const override {return new cDeleteModuleException(*this);}
+
+    /**
+     * Returns the module to delete.
+     */
+    virtual cModule *getModuleToDelete() const {return toDelete;}
 
     /**
      * This exception type does not represent an error condition.

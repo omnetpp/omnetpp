@@ -50,8 +50,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     friend class cComponentDescriptor; // listener lists, etc
     friend class cComponent__SignalListenerListDescriptor;  // sim_std.msg
     friend class cPar; // needs to call handleParameterChange()
-    friend class cChannel; // allow it to access FL_INITIALIZED and releaseLocalListeners()
-    friend class cModule; // allow it to access FL_INITIALIZED, releaseLocalListeners() and repairSignalFlags()
+    friend class cChannel; // allow access to FL_INITIALIZED, FL_DELETING and releaseLocalListeners()
+    friend class cModule; // allow access to FL_INITIALIZED, FL_DELETING, releaseLocalListeners() and repairSignalFlags()
+    friend class cSimpleModule; // allow access to FL_INITIALIZED, FL_DELETING, releaseLocalListeners() and repairSignalFlags()
     friend class cGate;   // because of repairSignalFlags()
     friend class cSimulation; // sets componentId
     friend class cResultListener; // invalidateCachedResultRecorderLists()
