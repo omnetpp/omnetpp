@@ -1,3 +1,5 @@
+2018-06-11  ------ omnetpp-5.4 released ------
+
 2018-06-08  Attila Torok
 
 	* EnvirBase: implemented ensureDebugger() which replaces attachDebugger().

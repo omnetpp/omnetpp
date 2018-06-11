@@ -1,3 +1,5 @@
+2018-06-11  ------ omnetpp-5.4 released ------
+
 2018-06-05  Attila Torok
 
 	* Launcher: fix: The IDE sometimes started build in the UI thread,
