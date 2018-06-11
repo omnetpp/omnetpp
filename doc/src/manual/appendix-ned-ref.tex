@@ -1691,10 +1691,10 @@ An integer or double value may have an associated measurement unit (\ttt{s}, \tt
 Double-to-integer conversions require explicit cast using the \ttt{int()} function,
 there is no implicit conversion.
 
-Integer-to-double converson is implicit. However, a runtime error will be raised 
+Integer-to-double converson is implicit. However, a runtime error will be raised
 if there is precision loss during the conversion, i.e. the integer is so large
 that it cannot be precisely represented in a double. That error can be suppressed
-by using an explicit cast (\ttt{double()}. 
+by using an explicit cast (\ttt{double()}.
 
 There is no implicit conversion between boolean and numeric types, so \ttt{0}
 is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym
@@ -1703,7 +1703,7 @@ for \fkeyword{true}.
 There is also no conversion between string and numeric types, so e.g. \ttt{"foo"+5}
 is illegal. There are functions for converting a number to string and vice versa.
 
-Bitwise operators expect integer arguments. 
+Bitwise operators expect integer arguments.
 
 \begin{note}
 Integers are represented with 64-bit signed integers (\ttt{int64\_t} in C++).
@@ -1736,12 +1736,12 @@ units are convertible (i.e. the result will be dimensionless). Dividing
 a dimensionless number with a number with unit is not supported.
 
 Operations involving quantities with logarithmic units (dB, dBW, etc.)
-are not supported now, except for comparison. (The reason is that such
+are not supported, except for comparisons. (The reason is that such
 operations would be easy to misinterpret. For example, it is not obvious
 whether \ttt{10dB+10dB} (3.16+3.16) should evaluate to 20dB (=10.0)
 or to 16.02dB (=2*3.16=6.32), considering that such quantities would
-often be hidden behind parameter names where the unit is not obvious.) 
- 
+often be hidden behind parameter names where the unit is not obvious.)
+
 \subsection{Referencing Parameters and Loop Variables}
 \label{sec:ned-ref:referencing-parameters-and-loop-variables}
 
@@ -1773,10 +1773,10 @@ or channel.
 The \fkeyword{typename} may also occur in the \fkeyword{if} condition of a
 (scalar) submodule or connection. In such cases, it evaluates to the \textit{would-be}
 type name of the submodule or condition. This allows for conditional
-instantiation of parametric-type submodules, controlled from a 
+instantiation of parametric-type submodules, controlled from a
 \fkeyword{typename} assignment. (For example, by using the \ttt{if typename!=""}
 condition, one allows the submodule to be omitted by configuring \ttt{typename=""}
-for it. 
+for it.
 
 \fkeyword{typename} is not allowed in a submodule vector's \fkeyword{if} condition.
 The reason is that the condition applies to the vector as a whole, while type
@@ -1793,10 +1793,10 @@ and yields the index of the submodule instance.
 \subsection{The \fkeyword{exists()} Operator}
 \label{sec:ned-ref:exists-operator}
 
-The \fkeyword{exists()} operator takes one identifier as argument, and it 
+The \fkeyword{exists()} operator takes one identifier as argument, and it
 is only accepted in compound module definitions. The identifier must name
 a previously defined submodule, which will typically be a conditional submodule.
-The operator returns \fkeyword{true} if given submodule exists (has been created), 
+The operator returns \fkeyword{true} if given submodule exists (has been created),
 and \fkeyword{false} otherwise.
 
 
