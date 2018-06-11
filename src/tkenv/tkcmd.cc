@@ -308,7 +308,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_reducealpha",         imageReduceAlpha_cmd   },   // args: <image> <alphathreshold>
    { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
    // end of list
-   { nullptr, },
+   { nullptr,                   nullptr },
 };
 
 //=================================================================
