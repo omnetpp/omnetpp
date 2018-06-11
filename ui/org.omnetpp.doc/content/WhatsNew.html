@@ -579,6 +579,133 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.</p
 </div>
 
 <div class="sect1">
+  <h2 id="_omnet_5_4_june_2018">OMNeT++ 5.4 (June 2018)</h2>
+  <div class="sectionbody">
+  <div class="paragraph"><p>This release contains last-minute features and improvements, mostly motivated
+  by the upcoming INET 4 release. Highlights are the typename and exists()
+  operators in NED; nan and inf keywords in NED; support for logarithmic units
+  like dB, dBW, dBm, dBV, dBmV. Qtenv has also gained much more powerful
+  just-in-time debugging capabilities than before.</p></div>
+  <div class="paragraph"><p>Details follow.</p></div>
+  <div class="paragraph"><p>NED:</p></div>
+  <div class="ulist"><ul>
+  <li>
+  <p>
+  Allow 'typename' in expressions. Motivation: we want to be able to write:
+       foo: &lt;&gt; like IFoo if typename!=""
+  </p>
+  </li>
+  <li>
+  <p>
+  Added the "exists" operator. Syntax: exists(&lt;submodulename&gt;)
+  </p>
+  </li>
+  <li>
+  <p>
+  Introduced "nan" and "inf" as keywords for numeric constants
+  </p>
+  </li>
+  </ul></div>
+  <div class="paragraph"><p>Core:</p></div>
+  <div class="ulist"><ul>
+  <li>
+  <p>
+  SimTime now has a new method named ustr() that prints the time in an
+      appropriate unit. It is now used in cClassDescriptor for displaying
+      simtime_t fields and at a few other places.
+  </p>
+  </li>
+  <li>
+  <p>
+  SimTime: more precise computation for integer-SimTime division.
+  </p>
+  </li>
+  <li>
+  <p>
+  Measurement units are now available as NED functions as well. They
+      accept dimensionless numbers and quantities with a compatible unit.
+      E.g. the expressions mW(2*100) and mW(0.2W) both result in 200mW.
+  </p>
+  </li>
+  <li>
+  <p>
+  New measurement units: K, Ohm, mOhm, kOhm, MOhm, uW, nW, pW, fW,
+      THz, kmps, binary and decimal multiples of bit (Kib, Mib, Gib,
+      Tib, kb, Mb); deg, rad; pct (percent), ratio.
+  </p>
+  </li>
+  <li>
+  <p>
+  Support for logarithmic units: dBW, dBm, dBV, dBmV, dBA, dBmA, dB.
+      Conversion between logarithmic and corresponding linear units (W vs. dBW)
+      is supported. Conversion between bit and byte (and multiples) is
+      also supported.
+  </p>
+  </li>
+  <li>
+  <p>
+  cPacket: refined str() method
+  </p>
+  </li>
+  <li>
+  <p>
+  Several smaller improvements.
+  </p>
+  </li>
+  </ul></div>
+  <div class="paragraph"><p>Qtenv:</p></div>
+  <div class="ulist"><ul>
+  <li>
+  <p>
+  Debug-on-error functionality can now be turned on interactively, via the
+      Simulate -&gt; Debug on Errors menu item.
+  </p>
+  </li>
+  <li>
+  <p>
+  When an error occurs and debug-on-error is enabled, Qtenv now offers to
+      launch and attach an external debugger unless the simulation program is
+      already being debugged. The same applies to the Debug Next Event
+      functionality. External debuggers can be configured with the
+      debugger-attach-command configuration key, and can also be overridden
+      with the OMNETPP_DEBUGGER_COMMAND environment variable.
+  </p>
+  </li>
+  <li>
+  <p>
+  Workaround for a crash with Qt 5.11.
+  </p>
+  </li>
+  </ul></div>
+  <div class="paragraph"><p>IDE:</p></div>
+  <div class="ulist"><ul>
+  <li>
+  <p>
+  Launcher: fix: The IDE sometimes started build in the UI thread,
+      locking up the UI for the time of the build, potentially for several
+      minutes.
+  </p>
+  </li>
+  <li>
+  <p>
+  Fixed "unknown" image as module background in the graphical NED editor.
+  </p>
+  </li>
+  <li>
+  <p>
+  Fix: do not report "undefined parameter" for typename assignments in NED
+  </p>
+  </li>
+  <li>
+  <p>
+  Fix: inifile analysis: typename deep assignments in NED were ignored
+  </p>
+  </li>
+  </ul></div>
+  </div>
+  </div>
+
+<div class="sect1">
   <h2 id="_omnet_5_3_april_2018">OMNeT++ 5.3 (April 2018)</h2>
   <div class="sectionbody">
   <div class="paragraph"><p>Highlights of this release are an improved message compiler (required for INET 4),
