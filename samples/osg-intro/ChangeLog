@@ -1,4 +1,4 @@
-2018-06-04  ------ omnetpp-5.3 released ------
+2018-04-11  ------ omnetpp-5.3 released ------
 
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
@@ -24,7 +24,7 @@
 
 2015-11-30  Rudolf Hornig
 
-	* omnetpp.ini: osg-intro has now several configurations. 3D model loading 
+	* omnetpp.ini: osg-intro has now several configurations. 3D model loading
 	and different terrain modes/projections are demonstrated
 
 2015-11-30  Rudolf Hornig

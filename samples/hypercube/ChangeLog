@@ -1,4 +1,4 @@
-2018-06-04  ------ omnetpp-5.3 released ------
+2018-04-11  ------ omnetpp-5.3 released ------
 
 2017-12-08  ------ omnetpp-5.2.1 released ------
 
@@ -149,4 +149,4 @@
 	* HC prefix added to Generator and Sink modules
 
 	* standardized indentation of source files
-	
+
