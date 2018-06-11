@@ -100,7 +100,7 @@ class COMMON_API PushDir
     std::string olddir;
   public:
     PushDir(const char *changetodir);
-    ~PushDir();
+    ~PushDir() noexcept(false);
 };
 
 } // namespace common

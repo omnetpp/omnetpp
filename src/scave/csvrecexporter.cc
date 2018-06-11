@@ -335,7 +335,7 @@ void CsvRecordsExporter::writeAsString(const std::vector<double>& data, int star
     std::ostream& out = csv.out();
     csv.beginRaw();
     out << "\"";
-    for (size_t i = startIndex; i < endIndex; i++) { // endIndex is exclusive
+    for (int i = startIndex; i < endIndex; i++) { // endIndex is exclusive
         if (i != 0)
             out << " ";
         csv.writeRawDouble(data[i]);

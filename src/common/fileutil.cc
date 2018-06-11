@@ -268,7 +268,7 @@ PushDir::PushDir(const char *changetodir)
     olddir = buf;
 }
 
-PushDir::~PushDir()
+PushDir::~PushDir() noexcept(false)
 {
     if (!olddir.empty()) {
         if (chdir(olddir.c_str()))
