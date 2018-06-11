@@ -122,7 +122,8 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     explicit cChannel(const char *name=nullptr);
 
     /**
-     * Destructor.
+     * Destructor. Note: it is not allowed delete channel objects directly,
+     * only via cGate's disconnect() and reconnectWith() methods.
      */
     virtual ~cChannel();
     //@}

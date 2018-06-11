@@ -395,7 +395,10 @@ void cGate::disconnect()
     }
 
     // delete channel object
-    dropAndDelete(oldchannelp);
+    if (oldchannelp) {
+        oldchannelp->setFlag(cComponent::FL_DELETING, true);
+        dropAndDelete(oldchannelp);
+    }
 }
 
 void cGate::checkChannels() const

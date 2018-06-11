@@ -189,22 +189,25 @@ cSimpleModule::cSimpleModule(unsigned stackSize)
 
 cSimpleModule::~cSimpleModule()
 {
-    if (getSimulation()->getContext() == this)
-        // NOTE: subclass destructors will not be called, but the simulation will stop anyway
-        throw cRuntimeError(this, "Cannot delete itself, only via deleteModule()");
+    // ensure we are invoked from deleteModule()
+    if (componentId !=-1 && (flags&FL_DELETING) == 0) {
+        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
+        getEnvir()->alert(cRuntimeError(this, "Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING").getFormattedMessage().c_str());
+        abort();
+    }
 
     if (usesActivity()) {
         // clean up user's objects on coroutine stack by forcing an exception inside the coroutine
         if ((flags & FL_STACKALREADYUNWOUND) == 0) {
-            //FIXME: check this is OK for brand new modules too (no transferTo() yet)
             stackCleanupRequested = true;
-            afterCleanupTransferTo = getSimulation()->getActivityModule();
-            ASSERT(!afterCleanupTransferTo || afterCleanupTransferTo->usesActivity());
+            cSimpleModule *currentActivityModule = getSimulation()->getActivityModule();
+            assert(this != currentActivityModule); // ensured by deleteModule()
+            afterCleanupTransferTo = currentActivityModule;
             getSimulation()->transferTo(this);
             stackCleanupRequested = false;
         }
 
-        // delete timeoutmsg if not currently scheduled (then it'll be deleted by message queue)
+        // delete timeoutMessage unless it is currently scheduled (if it is, it will be discarded by the scheduler or the FES later)
         if (timeoutMessage && !timeoutMessage->isScheduled())
             delete timeoutMessage;
 
@@ -283,23 +286,6 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
     // delegate to base class for doing the same for submodules
     cModule::scheduleStart(t);
-}
-
-void cSimpleModule::deleteModule()
-{
-    // if a coroutine wants to delete itself, that has to be handled from
-    // another coroutine (i.e. from main). Control is passed there by
-    // throwing an exception that gets transferred to the main coroutine
-    // by activate(), and handled in cSimulation::transferTo().
-    // execution must be immediately suspended in activity() and handleMessage()
-    // if deleteModule() is called (i.e. we are deleting ourselves)
-    // the exception will be handled in the executeEvent loop and the module
-    // will be deleted from the globalContext
-    if (getSimulation()->getContextModule() == this)
-        throw cDeleteModuleException();
-
-    // else fall back to the base class implementation
-    cModule::deleteModule();
 }
 
 #define TRY(code, msgprefix)    try { code; } catch (cRuntimeError& e) { e.prependMessage(msgprefix); throw; }

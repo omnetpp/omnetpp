@@ -414,7 +414,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule();
 
     /**
-     * Destructor.
+     * Destructor. Note: it is not allowed delete modules directly, only via
+     * the deleteModule() method.
      */
     virtual ~cModule();
     //@}
@@ -867,9 +868,21 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void scheduleStart(simtime_t t);
 
     /**
-     * Deletes the module and recursively all its submodules. This method
-     * has to be used if a simple module wants to delete itself
-     * (<tt>delete this</tt> is not allowed.)
+     * Deletes the module and recursively all its submodules.
+     *
+     * A running module can also delete itself. When an activity()-based
+     * simple module deletes itself from within its activity(), the
+     * deleteModule() call will not return (it throws an exception which
+     * gets caught by the simulation kernel, and the simulation kernel
+     * will delete the module).
+     *
+     * When a handleMessage()-based module deletes itself, the deleteModule()
+     * returns normally -- then, of course, the code should not try to
+     * access data members or functions of the deleted module, and should
+     * return as soon as possible.
+     *
+     * It is not allowed to delete the system module. Also, a module cannot
+     * be deleted while its initialization is in progress.
      */
     virtual void deleteModule();
 

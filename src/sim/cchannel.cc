@@ -50,6 +50,12 @@ cChannel::cChannel(const char *name) : cComponent(name)
 
 cChannel::~cChannel()
 {
+    if (componentId !=-1 && (flags&FL_DELETING) == 0) {
+        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
+        getEnvir()->alert(cRuntimeError(this, "Fatal: Direct deletion of a channel object is illegal, use cGate's disconnect() or reconnectWith() instead; ABORTING").getFormattedMessage().c_str());
+        abort();
+    }
+
     releaseLocalListeners();
 }
 
