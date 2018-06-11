@@ -290,7 +290,7 @@ std::string SimTime::ustr() const
 
     // determine unit to print in (seconds and smaller units are considered)
     int unitExp = 0;
-    while (unitExp > -18 /*scaleexp*/ && tt < powersOfTen[-scaleexp+unitExp])
+    while (unitExp > scaleexp && tt < powersOfTen[-scaleexp+unitExp])
         unitExp -= 3;
     return ustr((SimTimeUnit)unitExp);
 }
