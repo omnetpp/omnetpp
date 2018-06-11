@@ -1,10 +1,19 @@
+2018-06-08  Attila Torok
+
+	* cRuntimeError: refactoring related to cEnvir "attach to debugger" changes:
+	breakIntoDebuggerIfRequested() replaced by notifyEnvir().
+
+	* cSimpleModule, cSimulation: in DEBUG_TRAP_IF_REQUESTED, call
+	getEnvir()->ensureDebugger() before DEBUG_TRAP, to allow Envir
+	launch an external debugger before executing the trap.
+
 2018-06-06  Andras Varga
 
 	* cPacket: refined str() method
 
 2018-06-05  Andras Varga
 
-	* Use SimTime's new ustr() where appropriate: in cClassDescriptor for 
+	* Use SimTime's new ustr() where appropriate: in cClassDescriptor for
 	displaying simtime_t fields; in cEvent's and cMessage's str() for dt.
 
 2018-06-07  Andras Varga

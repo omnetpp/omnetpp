@@ -1,3 +1,8 @@
+2018-06-08  Attila Torok
+
+	* cEnvir: attachDebugger() replaced by ensureDebugger(), with slightly
+	different semantics; removed attachDebuggerOnErrors flag.
+
 2018-06-07  Andras Varga
 
 	* SimTime: added ustr()
