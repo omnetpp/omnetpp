@@ -316,7 +316,7 @@ void Qtenv::storeInspectors(bool closeThem)
         if (insp->isToplevelInspector()) {
             cObject *obj = insp->getObject();
 
-            if (!obj)
+            if (!obj || obj->getFullPath().empty())
                 continue;
 
             localPrefs->beginGroup(QString("Inspector-") + QString::number(index));
