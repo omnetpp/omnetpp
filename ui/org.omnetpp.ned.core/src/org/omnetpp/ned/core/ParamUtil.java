@@ -8,6 +8,7 @@ import java.util.Stack;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IProject;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -293,12 +294,16 @@ public class ParamUtil {
         }
 
         public String resolveLikeType(ISubmoduleOrConnection element) {
-//            // note: we can only make a local decision here; we also ignore getIsDefault()
-//            String expr = element.getLikeExpr();
-//            if (expr.length() > 0 && expr.charAt(0)=='"')
-//                return expr.substring(1, expr.length()-1); //FIXME proper unquoting!!!
-//            else if (expr.startsWith("firstAvailable("))
-//                return "FIXME TODO";
+            // note: we can only make a local decision here; we also ignore getIsDefault()
+            String expr = element.getLikeExpr();
+            if (expr.length() > 0 && expr.charAt(0)=='"') {
+                try {
+                    return Common.parseQuotedString(expr);
+                }
+                catch (RuntimeException e) {
+                    return null;
+                }
+            }
             return null;
         }
 
