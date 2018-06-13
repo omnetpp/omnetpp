@@ -207,10 +207,16 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
             if (StringUtils.isEmpty(extendsName))
                 break;
             currentComponent = getResolver().lookupNedType(extendsName, currentComponent.getNedElement().getParentLookupContext());
-            if (currentComponent == null || currentComponent.getNedElement().getTagCode() != thisTagCode)
+            if (currentComponent == null || !areInheritanceCompatibleTagCodes(currentComponent.getNedElement().getTagCode(), thisTagCode))
                 break;
         }
         return result;
+    }
+
+    static boolean areInheritanceCompatibleTagCodes(int tagCode1, int tagCode2) {
+        return (tagCode1 == tagCode2) || 
+                (tagCode1 == NED_SIMPLE_MODULE && tagCode2 == NED_COMPOUND_MODULE) || 
+                (tagCode1 == NED_COMPOUND_MODULE && tagCode2 == NED_SIMPLE_MODULE);
     }
 
     protected Set<INedTypeElement> resolveInterfaces() {
