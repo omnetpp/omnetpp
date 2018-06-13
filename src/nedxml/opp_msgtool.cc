@@ -646,7 +646,7 @@ int main(int argc, char **argv)
                 fprintf(stderr, "opp_msgtool: not found: %s\n", argv[i]);
                 return 1;
             }
-            for (int i = 0; i < filelist.size(); i++)
+            for (size_t i = 0; i < filelist.size(); i++)
                 if (!processFile(filelist[i].c_str(), errors))
                     return 1;
 
