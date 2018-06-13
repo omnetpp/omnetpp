@@ -133,7 +133,7 @@ fieldpattern
 void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, const char *pattern,
                                    bool dottedpath, bool fullstring, bool casesensitive)
 {
-    MatchExpressionLexer *lexer = new MatchExpressionLexer(pattern);
+    MatchExpressionLexer lexer(pattern);
 
     // store options
     MatchExpressionParserState state;
@@ -141,7 +141,7 @@ void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, co
     state.dottedpath = dottedpath;
     state.fullstring = fullstring;
     state.casesensitive = casesensitive;
-    state.lexer = lexer;
+    state.lexer = &lexer;
 
     // parse
     yyparse(&state);
