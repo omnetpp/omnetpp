@@ -1748,7 +1748,7 @@ bool EnvirBase::ensureDebugger(cRuntimeError *error)
            "still use the core dump for post-mortem debugging. Once in the debugger,\n"
            "view the call stack (in gdb: \"bt\" command) to see the context of the\n"
            "runtime error.\n\n"
-
+#endif
        );
 
        printf("<!> %s\n", error->getFormattedMessage().c_str());
@@ -1756,7 +1756,6 @@ bool EnvirBase::ensureDebugger(cRuntimeError *error)
        fflush(stdout);
 
        return true;
-#endif
     }
 
     return false;

@@ -393,7 +393,7 @@ inline intpar_t shift(intpar_t a, intpar_t b)
 
 inline intpar_t safeAdd(intpar_t a, intpar_t b)
 {
-#if __has_builtin(__builtin_add_overflow) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
+#if (__has_builtin(__builtin_add_overflow) && !defined(__c2__)) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
     intpar_t res;
     if (__builtin_add_overflow(a, b, &res))
         throw cRuntimeError("Integer overflow adding %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);
@@ -405,7 +405,7 @@ inline intpar_t safeAdd(intpar_t a, intpar_t b)
 
 inline intpar_t safeMul(intpar_t a, intpar_t b)
 {
-#if __has_builtin(__builtin_mul_overflow) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
+#if (__has_builtin(__builtin_mul_overflow) && !defined(__c2__)) || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 5)
     intpar_t res;
     if (__builtin_mul_overflow(a, b, &res))
         throw cRuntimeError("Integer overflow multiplying %" PRId64 " and %" PRId64 ", try casting operands to double", (int64_t)a, (int64_t)b);

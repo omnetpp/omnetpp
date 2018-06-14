@@ -13,6 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <algorithm>
 #include "omnetpp/regmacros.h"
 #include "omnetpp/onstartup.h"
 #include "omnetpp/globals.h"
