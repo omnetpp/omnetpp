@@ -808,6 +808,10 @@ Supported .test file entry types:
             for testfilename in self.args.filenames:
                 self.testcase_generatesources(testfilename)
 
+        self.num_pass = 0
+        self.num_fail = 0
+        self.num_unresolved = 0
+
         #
         # run tests
         #
@@ -816,10 +820,6 @@ Supported .test file entry types:
                 print(progname+": running tests using "+self.args.testprogram+"...")
             if self.args.mode == 'check':
                 print(progname+": checking existing output files...")
-
-            self.num_pass = 0
-            self.num_fail = 0
-            self.num_unresolved = 0
 
             self.reason = {}
             self.result = {}
@@ -837,8 +837,11 @@ Supported .test file entry types:
             if (self.num_unresolved > 0):
                 self.lprint(1, "UNRESOLVED tests: " + ' '.join(self.unresolved_tests))
 
+        return 0 if (self.num_fail == 0 and self.num_unresolved == 0) else 2
+
 
 #####################################################
 tool = OppTest()
-tool.run()
+exitcode = tool.run()
 
+sys.exit(exitcode)
