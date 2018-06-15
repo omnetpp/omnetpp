@@ -1857,7 +1857,7 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va2, silent);
     va_end(va2);
 
-    if (animating && opt->animateMethodCalls) {
+    if (animating && opt->animateMethodCalls && messageAnimator) {
         static char methodText[MAX_METHODCALL];
         vsnprintf(methodText, MAX_METHODCALL, opp_nulltoempty(methodFmt), va);
         methodText[MAX_METHODCALL-1] = '\0';
@@ -1870,7 +1870,7 @@ void Qtenv::componentMethodEnd()
 {
     EnvirBase::componentMethodEnd();
 
-    if (animating && opt->animateMethodCalls)
+    if (animating && opt->animateMethodCalls && messageAnimator)
         messageAnimator->methodcallEnd();
 }
 
