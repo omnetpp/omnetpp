@@ -181,7 +181,7 @@ static void generateDependencies(const char *depsfile, const char *fname, const 
         mkPath(directoryOf(depsfile).c_str());
         fileStream.open(depsfile);
         if (fileStream.fail())
-            throw opp_runtime_error("could not open '%s' for write", depsfile);
+            throw opp_runtime_error("Could not open '%s' for write", depsfile);
     }
 
     out << outfname << " " << outhdrfname << " :";
@@ -195,7 +195,7 @@ static void generateDependencies(const char *depsfile, const char *fname, const 
             out << dep << ":\n";
     }
     if (!out)
-        throw opp_runtime_error("error writing dependencies to '%s'", depsfile);
+        throw opp_runtime_error("Error writing dependencies to '%s'", depsfile);
     if (useFileOutput)
         fileStream.close();
 }
@@ -294,8 +294,12 @@ static bool processFile(const char *fname, ErrorStore *errors)
                 if (opt_inplace && !renameFileToBAK(outfname))
                     return false;
                 ofstream out(outfname);
+                if (out.fail())
+                    throw opp_runtime_error("Cannot open '%s' for write", outfname);
                 generateXML(out, tree, opt_srcloc);
                 out.close();
+                if (!out)
+                    throw opp_runtime_error("Error writing '%s'", outfname);
             }
             else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES || tree->getTagCode() == MSG_MSG_FILE))
             {
@@ -317,16 +321,24 @@ static bool processFile(const char *fname, ErrorStore *errors)
                     if (opt_inplace && !renameFileToBAK(outfname))
                         return false;
                     ofstream out(outfname);
+                    if (out.fail())
+                        throw opp_runtime_error("Cannot open '%s' for write", outfname);
                     generateMsg(out, child);
                     out.close();
+                    if (!out)
+                        throw opp_runtime_error("Error writing '%s'", outfname);
                 }
             }
             else if (opt_gensrc) {
                 if (opt_inplace && !renameFileToBAK(outfname))
                     return false;
                 ofstream out(outfname);
+                if (out.fail())
+                    throw opp_runtime_error("Cannot open '%s' for write", outfname);
                 generateMsg(out, tree);
                 out.close();
+                if (!out)
+                    throw opp_runtime_error("Error writing '%s'", outfname);
             }
             else {
                 if (opt_legacymode) {
@@ -665,6 +677,8 @@ int main(int argc, char **argv)
             outfname = "out_m.cc";
 
         ofstream out(outfname);
+        if (out.fail())
+            throw opp_runtime_error("Cannot open '%s' for write", outfname);
 
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
@@ -673,6 +687,8 @@ int main(int argc, char **argv)
         else
             return 1;  // mergeoutput with C++ output not supported
         out.close();
+        if (!out)
+            throw opp_runtime_error("Error writing '%s'", outfname);
 
         delete outputtree;
 

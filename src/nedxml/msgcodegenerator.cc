@@ -67,14 +67,24 @@ void MsgCodeGenerator::openFiles(const char *hFile, const char *ccFile)
 {
     hFilename = hFile;
     ccFilename = ccFile;
+
     hStream.open(hFile);
+    if (hStream.fail())
+        throw opp_runtime_error("Cannot open '%s' for write", hFile);
+
     ccStream.open(ccFile);
+    if (ccStream.fail())
+        throw opp_runtime_error("Cannot open '%s' for write", ccFile);
 }
 
 void MsgCodeGenerator::closeFiles()
 {
     hStream.close();
     ccStream.close();
+    if (!hStream)
+        throw opp_runtime_error("Could not write '%s'", hFilename.c_str());
+    if (!ccStream)
+        throw opp_runtime_error("Could not write '%s'", ccFilename.c_str());
 }
 
 void MsgCodeGenerator::deleteFiles()

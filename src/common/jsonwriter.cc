@@ -38,8 +38,8 @@ void JsonWriter::reset()
 void JsonWriter::open(const char *filename, std::ios::openmode mode)
 {
     fileStream.open(filename, mode);
-    if (!fileStream.is_open())
-        throw opp_runtime_error("cannot open '%s' for write", filename);
+    if (fileStream.fail())
+        throw opp_runtime_error("Cannot open '%s' for write", filename);
     outp = &fileStream;
     reset();
 }
@@ -48,6 +48,8 @@ void JsonWriter::close()
 {
     Assert(outp == &fileStream);
     fileStream.close();
+    if (!fileStream)
+        throw opp_runtime_error("Error writing JSON file");
 }
 
 std::ostream& JsonWriter::out()

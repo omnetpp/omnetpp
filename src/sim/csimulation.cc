@@ -209,7 +209,7 @@ void cSimulation::snapshot(cObject *object, const char *label)
 
     os << "</snapshot>\n";
 
-    bool success = !os.fail();
+    bool success = os.good();
     getEnvir()->releaseStreamForSnapshot(&os);
     if (!success)
         throw cRuntimeError("Could not write snapshot");

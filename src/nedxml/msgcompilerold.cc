@@ -225,6 +225,10 @@ void MsgCompilerOld::generate(MsgFileElement *fileElement, const char *hFile, co
     ccFilename = ccFile;
     std::ofstream hStream(hFile);
     std::ofstream ccStream(ccFile);
+    if (hStream.fail())
+        throw opp_runtime_error("Cannot open '%s' for write", hFile);
+    if (ccStream.fail())
+        throw opp_runtime_error("Cannot open '%s' for write", ccFile);
     hOutp = &hStream;
     ccOutp = &ccStream;
     generate(fileElement);

@@ -33,8 +33,8 @@ CsvWriter::~CsvWriter()
 void CsvWriter::open(const char *filename, std::ios::openmode mode)
 {
     fileStream.open(filename, mode);
-    if (!fileStream.is_open())
-        throw opp_runtime_error("cannot open '%s' for write", filename);
+    if (fileStream.fail())
+        throw opp_runtime_error("Cannot open '%s' for write", filename);
     outp = &fileStream;
     lineNumber = columnNumber = 0;
 }
@@ -43,6 +43,8 @@ void CsvWriter::close()
 {
     Assert(outp == &fileStream);
     fileStream.close();
+    if (!fileStream)
+        throw opp_runtime_error("Error writing CSV file");
 }
 
 std::ostream& CsvWriter::out()
