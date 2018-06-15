@@ -178,8 +178,9 @@ static void generateDependencies(const char *depsfile, const char *fname, const 
     bool useFileOutput = !opp_isempty(depsfile) && strcmp(depsfile, "-") != 0;
     std::ostream& out = useFileOutput ? fileStream : std::cout;
     if (useFileOutput) {
+        mkPath(directoryOf(depsfile).c_str());
         fileStream.open(depsfile);
-        if (fileStream.bad())
+        if (fileStream.fail())
             throw opp_runtime_error("could not open '%s' for write", depsfile);
     }
 
@@ -193,7 +194,7 @@ static void generateDependencies(const char *depsfile, const char *fname, const 
         for (const std::string& dep : dependencies)
             out << dep << ":\n";
     }
-    if (out.bad())
+    if (!out)
         throw opp_runtime_error("error writing dependencies to '%s'", depsfile);
     if (useFileOutput)
         fileStream.close();
@@ -354,7 +355,7 @@ static bool processFile(const char *fname, ErrorStore *errors)
         }
     }
     catch (std::exception& e) {
-        fprintf(stderr, "opp_msgtool: internal error: %s\n", e.what());
+        fprintf(stderr, "opp_msgtool: error: %s\n", e.what());
         delete tree;
         return false;
     }

@@ -204,8 +204,9 @@ void generateDependencies(const char *depsfile, const char *fname, const char *o
     bool useFileOutput = !opp_isempty(depsfile) && strcmp(depsfile, "-") != 0;
     std::ostream& out = useFileOutput ? fileStream : std::cout;
     if (useFileOutput) {
+        mkPath(directoryOf(depsfile).c_str());
         fileStream.open(depsfile);
-        if (fileStream.bad())
+        if (fileStream.fail())
             throw opp_runtime_error("could not open '%s' for write", depsfile);
     }
 
@@ -219,7 +220,7 @@ void generateDependencies(const char *depsfile, const char *fname, const char *o
         for (const std::string& dep : dependencies)
             out << dep << ":\n";
     }
-    if (out.bad())
+    if (!out)
         throw opp_runtime_error("error writing dependencies to '%s'", depsfile);
     if (useFileOutput)
         fileStream.close();
@@ -418,7 +419,7 @@ bool processFile(const char *fname, ErrorStore *errors)
         }
     }
     catch (std::exception& e) {
-        fprintf(stderr, "opp_nedtool: internal error: %s\n", e.what());
+        fprintf(stderr, "opp_nedtool: error: %s\n", e.what());
         delete tree;
         return false;
     }
