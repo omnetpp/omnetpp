@@ -1062,38 +1062,6 @@ static bool visit(SectionGraph& graph, SectionGraphNode& node)
 
 void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 {
-    const char *obsoleteSections[] = {
-        "Parameters", "Cmdenv", "Tkenv", "OutVectors", "Partitioning", "DisplayStrings", nullptr
-    };
-    const char *cmdenvNames[] = {
-        "autoflush", "event-banner-details", "event-banners", "express-mode",
-        "message-trace", "module-messages", "output-file", "performance-display",
-        "runs-to-execute", "status-frequency", nullptr
-    };
-    const char *tkenvNames[] = {
-        "anim-methodcalls", "animation-enabled", "animation-msgclassnames",
-        "animation-msgcolors", "animation-msgnames", "animation-speed",
-        "default-run", "expressmode-autoupdate", "methodcalls-delay",
-        "next-event-markers", "penguin-mode", "plugin-path", "print-banners",
-        "senddirect-arrows", "show-bubbles", "show-layouting", "slowexec-delay",
-        "update-freq-express", "update-freq-fast", "use-mainwindow",
-        "use-new-layouter", nullptr
-    };
-
-    // warn for obsolete section names and config keys
-    for (int i = 0; i < ini->getNumSections(); i++) {
-        const char *section = ini->getSectionName(i);
-        if (findInArray(section, obsoleteSections) != -1)
-            throw cRuntimeError("Obsolete section name [%s] found, please convert the ini file to 4.x format", section);
-
-        int numEntries = ini->getNumEntries(i);
-        for (int j = 0; j < numEntries; j++) {
-            const char *key = ini->getEntry(i, j).getKey();
-            if (findInArray(key, cmdenvNames) != -1 || findInArray(key, tkenvNames) != -1)
-                throw cRuntimeError("Obsolete configuration option %s= found, please convert the ini file to 4.x format", key);
-        }
-    }
-
     // check section names
     std::set<std::string> configNames;
     for (int i = 0; i < ini->getNumSections(); i++) {
@@ -1177,8 +1145,6 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, suffix.c_str()))
                         continue;
                     if (!e || !e->isPerObject()) {
-                        if (suffix == "type-name")
-                            throw cRuntimeError("Configuration option 'type-name' has been renamed to 'typename', please update key '%s' in the ini file", key);
                         throw cRuntimeError("Unknown per-object configuration option '%s' in %s", suffix.c_str(), key);
                     }
                 }
