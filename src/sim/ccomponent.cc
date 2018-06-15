@@ -320,15 +320,23 @@ void cComponent::recordParametersAsScalars()
         if (getEnvir()->getConfig()->getAsBool(par(i).getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false)) {
             //TODO the following checks should probably produce a WARNING not an error;
             //TODO also, the values should probably be recorded as "param" in the scalar file
-            if (par(i).getType() == cPar::BOOL)  // note: a bool is not considered to be numeric
+            switch(par(i).getType()) {
+            case cPar::BOOL:
                 recordScalar(par(i).getName(), par(i).boolValue());
-            else if (par(i).isNumeric()) {
+                break;
+            case cPar::INT:
+                if (par(i).isVolatile() && (par(i).intValue() != par(i).intValue() || par(i).intValue() != par(i).intValue()))  // crude check for random variates
+                    throw cRuntimeError(this, "Refusing to record volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar: Recorded value would likely be a meaningless random number", par(i).getName());
+                recordScalar(par(i).getName(), par(i).intValue());
+                break;
+            case cPar::DOUBLE:
                 if (par(i).isVolatile() && (par(i).doubleValue() != par(i).doubleValue() || par(i).doubleValue() != par(i).doubleValue()))  // crude check for random variates
                     throw cRuntimeError(this, "Refusing to record volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar: Recorded value would likely be a meaningless random number", par(i).getName());
                 recordScalar(par(i).getName(), par(i).doubleValue());
-            }
-            else
+                break;
+            default:
                 throw cRuntimeError(this, "Cannot record non-numeric parameter '%s' as an output scalar", par(i).getName());
+            }
         }
     }
 }

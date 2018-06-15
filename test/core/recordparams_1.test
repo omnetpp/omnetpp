@@ -1,0 +1,26 @@
+%description:
+param-record-as-scalar basic test.
+
+%file: test.ned
+
+network Test
+{
+    parameters:
+        bool bt = true;
+        bool bf = false;
+        int i = 4;
+        double d = 123.45;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+output-scalar-file = test.sca
+**.param-record-as-scalar = true
+
+%contains: test.sca
+scalar Test bt 1
+scalar Test bf 0
+scalar Test i 4
+scalar Test d 123.45
