@@ -41,7 +41,7 @@ namespace envir {
 
 // XXX error messages (exceptions) should contain file/line info!
 // XXX make sure quoting "$\{" works!
-// TODO optimize storage (now keys with wildcard suffix are stored multiple times, in several suffix groups)
+// TODO optimize storage (now keys with wildcard suffix are stored multiple times, in several bins)
 
 Register_GlobalConfigOption(CFGID_SECTIONBASEDCONFIG_CONFIGREADER_CLASS, "sectionbasedconfig-configreader-class", CFG_STRING, "", "When `configuration-class=SectionBasedConfiguration`: selects the configuration reader C++ class, which must subclass from `cConfigurationReader`.");
 Register_PerRunConfigOption(CFGID_DESCRIPTION, "description", CFG_STRING, nullptr, "Descriptive name for the given simulation configuration. Descriptions get displayed in the run selection dialog.");
@@ -156,8 +156,8 @@ void SectionBasedConfiguration::clear()
     activeRunNumber = 0;
     entries.clear();
     config.clear();
-    suffixGroups.clear();
-    wildcardSuffixGroup.entries.clear();
+    suffixBins.clear();
+    wildcardSuffixBin.entries.clear();
     variables.clear();
 }
 
@@ -343,7 +343,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     }
 
     // walk the list of fallback sections, and add entries to our tables
-    // (config[] and params[]). Meanwhile, substitute the iteration values.
+    // (config[] and suffixBins[]). Meanwhile, substitute the iteration values.
     // Note: entries added first will have precedence over those added later.
     for (auto & e : commandLineOptions) {
         std::string value = substituteVariables(e.getValue());
@@ -892,35 +892,35 @@ void SectionBasedConfiguration::addEntry(const Entry& entry)
             entry2.fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
         entry2.suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : nullptr;
 
-        // find which group it should go into
+        // find which bin it should go into
         if (!suffixContainsWildcards) {
-            // no wildcard in suffix (=group name)
-            if (suffixGroups.find(suffix) == suffixGroups.end()) {
-                // suffix group not yet exists, create it
-                SuffixGroup& group = suffixGroups[suffix];
+            // no wildcard in suffix (=bin name)
+            if (suffixBins.find(suffix) == suffixBins.end()) {
+                // suffix bin not yet exists, create it
+                SuffixBin& bin = suffixBins[suffix];
 
-                // initialize group with matching wildcard keys seen so far
-                for (auto & wildcardEntry : wildcardSuffixGroup.entries)
+                // initialize bin with matching wildcard keys seen so far
+                for (auto & wildcardEntry : wildcardSuffixBin.entries)
                     if (wildcardEntry.suffixPattern->matches(suffix.c_str()))
-                        group.entries.push_back(wildcardEntry);
+                        bin.entries.push_back(wildcardEntry);
             }
-            suffixGroups[suffix].entries.push_back(entry2);
+            suffixBins[suffix].entries.push_back(entry2);
         }
         else {
-            // suffix contains wildcards: we need to add it to all existing suffix groups it matches
+            // suffix contains wildcards: we need to add it to all existing suffix bins it matches
             // Note: if suffix also contains a hyphen, that's actually illegal (per-object
             // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
             // but causes no harm, because getPerObjectConfigEntry() won't look into the
-            // wildcard group
-            wildcardSuffixGroup.entries.push_back(entry2);
-            for (auto & suffixGroup : suffixGroups)
-                if (entry2.suffixPattern->matches(suffixGroup.first.c_str()))
-                    (suffixGroup.second).entries.push_back(entry2);
+            // wildcard bin
+            wildcardSuffixBin.entries.push_back(entry2);
+            for (auto & suffixBin : suffixBins)
+                if (entry2.suffixPattern->matches(suffixBin.first.c_str()))
+                    (suffixBin.second).entries.push_back(entry2);
         }
     }
 }
 
-void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName)
+void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerName, std::string& outBinName)
 {
     std::string tmp = key;
 
@@ -931,23 +931,23 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
         // complicated special case: there's a "**" after the last dot
         // (or there's no dot at all). Examples: "**baz", "net.**.foo**",
         // "net.**.foo**bar**baz"
-        // Problem with this: are "foo" and "bar" part of the paramname (=group)
+        // Problem with this: are "foo" and "bar" part of the paramname (=bin)
         // or the module name (=owner)? Can be either way. Only feasible solution
         // is to force matching of the full path (modulepath.paramname) against
-        // the full pattern. Group name can be "*" plus segment of the pattern
-        // after the last "**". (For example, for "net.**foo**bar", the group name
+        // the full pattern. Bin name can be "*" plus segment of the pattern
+        // after the last "**". (For example, for "net.**foo**bar", the bin name
         // will be "*bar".)
 
         // find last "**"
         while (doubleAsterisk && strstr(doubleAsterisk+1, "**"))
             doubleAsterisk = strstr(doubleAsterisk+1, "**");
         outOwnerName = "";  // empty owner means "do fullPath match"
-        outGroupName = !doubleAsterisk ? "*" : doubleAsterisk+1;
+        outBinName = !doubleAsterisk ? "*" : doubleAsterisk+1;
     }
     else {
-        // normal case: group is the part after the last dot
+        // normal case: bin is the part after the last dot
         outOwnerName.assign(key, lastDotPos - key);
-        outGroupName.assign(lastDotPos+1);
+        outBinName.assign(lastDotPos+1);
     }
 }
 
@@ -1227,12 +1227,12 @@ const char *SectionBasedConfiguration::getParameterValue(const char *moduleFullP
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(const char *moduleFullPath, const char *paramName, bool hasDefaultValue) const
 {
-    // look up which group; paramName serves as suffix (ie. group name)
-    std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.find(paramName);
-    const SuffixGroup *group = it == suffixGroups.end() ? &wildcardSuffixGroup : &it->second;
+    // look up which bin; paramName serves as suffix (ie. bin name)
+    std::map<std::string, SuffixBin>::const_iterator it = suffixBins.find(paramName);
+    const SuffixBin *bin = it == suffixBins.end() ? &wildcardSuffixBin : &it->second;
 
-    // find first match in the group
-    for (const auto & entry : group->entries) {
+    // find first match in the bin
+    for (const auto & entry : bin->entries) {
         if (entryMatches(entry, moduleFullPath, paramName))
             if (hasDefaultValue || entry.value != "default")
                 return entry;
@@ -1285,17 +1285,17 @@ const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objec
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const
 {
-    // look up which group; keySuffix serves as group name
+    // look up which bin; keySuffix serves as bin name
     // Note: we do not accept wildcards in the config key's name (ie. "**.record-*" is invalid),
-    // so we ignore the wildcard group.
-    std::map<std::string, SuffixGroup>::const_iterator it = suffixGroups.find(keySuffix);
-    if (it == suffixGroups.end())
-        return nullEntry;  // no such group
+    // so we ignore the wildcard bin.
+    std::map<std::string, SuffixBin>::const_iterator it = suffixBins.find(keySuffix);
+    if (it == suffixBins.end())
+        return nullEntry;  // no such bin
 
-    const SuffixGroup *suffixGroup = &it->second;
+    const SuffixBin *suffixBin = &it->second;
 
-    // find first match in the group
-    for (const auto & entry : suffixGroup->entries) {
+    // find first match in the bin
+    for (const auto & entry : suffixBin->entries) {
         if (entryMatches(entry, objectFullPath, keySuffix))
             return entry;  // found value
     }
@@ -1318,17 +1318,17 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
     if (!anyObject && PatternMatcher::containsWildcards(objectFullPathPattern))
         throw cRuntimeError("getMatchingPerObjectConfigKeys: Invalid objectFullPath parameter: The only wildcard pattern accepted is '**'");
 
-    // check all suffix groups whose name matches the pattern
+    // check all suffix bins whose name matches the pattern
     PatternMatcher suffixMatcher(keySuffixPattern, true, true, true);
-    for (const auto & suffixGroup : suffixGroups) {
-        const char *suffix = suffixGroup.first.c_str();
+    for (const auto & suffixBin : suffixBins) {
+        const char *suffix = suffixBin.first.c_str();
         if (suffixMatcher.matches(suffix)) {
-            // find all matching entries from this suffix group.
+            // find all matching entries from this suffix bin.
             // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=nullptr);
             // there we'd have to determine whether two *patterns* match. We resolve this
             // by checking whether one pattern matches the other one as string, and vica versa.
-            const SuffixGroup& group = suffixGroup.second;
-            for (const auto & entry : group.entries) {
+            const SuffixBin& bin = suffixBin.second;
+            for (const auto & entry : bin.entries) {
                 if ((anyObject || entry.ownerPattern->matches(objectFullPathPattern))
                     &&
                     (entry.suffixPattern == nullptr ||
@@ -1355,15 +1355,15 @@ void SectionBasedConfiguration::dump() const
     for (const auto & it : config)
         printf("  %s = %s\n", it.first.c_str(), it.second.value.c_str());
 
-    for (const auto & suffixGroup : suffixGroups) {
-        const std::string& suffix = suffixGroup.first;
-        const SuffixGroup& group = suffixGroup.second;
-        printf("Suffix Group %s:\n", suffix.c_str());
-        for (const auto & entry : group.entries)
+    for (const auto & suffixBin : suffixBins) {
+        const std::string& suffix = suffixBin.first;
+        const SuffixBin& bin = suffixBin.second;
+        printf("Suffix Bin %s:\n", suffix.c_str());
+        for (const auto & entry : bin.entries)
             printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
     }
-    printf("Wildcard Suffix Group:\n");
-    for (const auto & entry : wildcardSuffixGroup.entries)
+    printf("Wildcard Suffix Bin:\n");
+    for (const auto & entry : wildcardSuffixBin.entries)
         printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
 }
 

@@ -70,7 +70,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     class MatchableEntry : public Entry {
       public:
         PatternMatcher *ownerPattern; // key without the suffix
-        PatternMatcher *suffixPattern; // only filled in when this is a wildcard group
+        PatternMatcher *suffixPattern; // only filled in when this is a wildcard bin
         PatternMatcher *fullPathPattern; // when present, match against this instead of ownerPattern & suffixPattern
 
         MatchableEntry(const Entry& e) : Entry(e) {ownerPattern = suffixPattern = fullPathPattern = nullptr;}
@@ -95,31 +95,31 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // Some explanation. Basically we could just store all entries in order,
     // and when a param fullPath etc comes in, just match it against all entries
     // linearly. However, we optimize on this: the parameter names in the keys
-    // rarely contain wildcards, so if we group all entries by parameter
-    // name, we can find the right group by just one map lookup, thereby significantly
+    // rarely contain wildcards, so if we sort the entries into bins by parameter
+    // name, we can find the right bin by just one map lookup, thereby significantly
     // reducing the number of entries to match against. For example,
     // if the parameter "Net.host[1].radio.power" comes in, we only match it
-    // against the group which contains the keys ending in ".power" (e.g.
+    // against the bin which contains the keys ending in ".power" (e.g.
     // "**.server.radio.power", "**.host[0].**.power", etc).
     // If there is an entry which contains a wildcard in the parameter name part,
-    // that unfortunately has to be added to all suffix groups.
+    // that unfortunately has to be added to all bins.
     //
     // Examples:
     // Parameter keys:
-    //   **.host[*].address  ==> goes into the "address" suffix group; ownerPattern="**.host[*]"
-    //   **.host[*].addr*    ==> goes into the wildcard suffix group; ownerPattern="**.host[*]", suffixPattern="addr*"
-    //   **.address          ==> goes into the "address" suffix group; ownerPattern="**"
-    //   **.addr*            ==> goes into the wildcard suffix group; ownerPattern="**"
-    //   **                  ==> goes into the wildcard suffix group as "*"; ownerPattern="**"
-    //   **.**               ==> goes into the wildcard suffix group as "*"; ownerPattern="**"
-    //   **-*                ==> goes into the wildcard suffix group as "*-*"; ownerPattern="**"
-    //   **-**               ==> goes into the wildcard suffix group as "*-*"(?); ownerPattern="**"
+    //   **.host[*].address  ==> goes into the "address" bin; ownerPattern="**.host[*]"
+    //   **.host[*].addr*    ==> goes into the wildcard bin; ownerPattern="**.host[*]", suffixPattern="addr*"
+    //   **.address          ==> goes into the "address" bin; ownerPattern="**"
+    //   **.addr*            ==> goes into the wildcard bin; ownerPattern="**"
+    //   **                  ==> goes into the wildcard bin as "*"; ownerPattern="**"
+    //   **.**               ==> goes into the wildcard bin as "*"; ownerPattern="**"
+    //   **-*                ==> goes into the wildcard bin as "*-*"; ownerPattern="**"
+    //   **-**               ==> goes into the wildcard bin as "*-*"(?); ownerPattern="**"
     //
     // Per-object config keys:
-    //   **.tcp.eedVector.record-interval ==> goes into the "record-interval" suffix group; ownerPattern="**.tcp.eedVector"
-    //   **.tcp.eedVector.record-*"       ==> goes into the wildcard suffix group; ownerPattern="**.tcp.eedVector", suffixPattern="record-*"
+    //   **.tcp.eedVector.record-interval ==> goes into the "record-interval" bin; ownerPattern="**.tcp.eedVector"
+    //   **.tcp.eedVector.record-*"       ==> goes into the wildcard bin; ownerPattern="**.tcp.eedVector", suffixPattern="record-*"
     //
-    struct SuffixGroup {
+    struct SuffixBin {
         std::vector<MatchableEntry> entries;
     };
 
@@ -141,8 +141,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
     std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
     std::map<std::string,Entry> config; // config entries (i.e. keys not containing a dot or wildcard)
-    std::map<std::string,SuffixGroup> suffixGroups;
-    SuffixGroup wildcardSuffixGroup;
+    std::map<std::string,SuffixBin> suffixBins;  // bins for each non-wildcard suffix
+    SuffixBin wildcardSuffixBin; // bin for entries that contain wildcards
 
     // predefined variables (${configname} etc) and iteration variables
     StringMap variables;  // varName-to-value map
@@ -166,7 +166,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     std::vector<int> computeSectionChain(int sectionId) const;
     std::vector<int> getBaseConfigIds(int sectionId) const;
     void addEntry(const Entry& entry);
-    static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName);
+    static void splitKey(const char *key, std::string& outOwnerName, std::string& outBinName);
     static bool entryMatches(const MatchableEntry& entry, const char *moduleFullPath, const char *paramName);
     std::vector<Scenario::IterationVariable> collectIterationVariables(const std::vector<int>& sectionChain, StringMap& outLocationToNameMap) const;
     static void parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPos);
