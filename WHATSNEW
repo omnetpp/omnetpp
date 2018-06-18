@@ -5,6 +5,13 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+
+OMNeT++ 5.4.1 (June 2018)
+-------------------------
+
+This release contains minor fixes. See the individual ChangeLogs for details.
+
+
 OMNeT++ 5.4 (June 2018)
 -----------------------
 
