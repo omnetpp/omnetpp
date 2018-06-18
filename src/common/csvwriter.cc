@@ -26,8 +26,7 @@ namespace common {
 
 CsvWriter::~CsvWriter()
 {
-    if (outp == &fileStream)
-        close();
+    // note: no close() because it could throw! and std::ofstream closes automatically anyway
 }
 
 void CsvWriter::open(const char *filename, std::ios::openmode mode)

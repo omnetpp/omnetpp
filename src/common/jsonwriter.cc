@@ -25,8 +25,7 @@ namespace common {
 
 JsonWriter::~JsonWriter()
 {
-    if (outp == &fileStream)
-        close();
+    // note: no close() because it could throw! and std::ofstream closes automatically anyway
 }
 
 void JsonWriter::reset()
