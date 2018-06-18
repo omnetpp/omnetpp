@@ -4,7 +4,7 @@ How to build the manual
 On Ubuntu (Debian)
 ==================
 
-sudo apt-get install graphviz inkscape texlive texlive-latex-extra pdftk
+sudo apt-get install graphviz inkscape texlive texlive-latex-extra qpdf
 
 On Windows
 ==========
