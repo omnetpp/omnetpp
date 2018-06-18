@@ -1,3 +1,7 @@
+2018-06-14  Rudolf Hornig
+
+	* Envirbase: fix unbalanced #endif
+
 2018-06-11  ------ omnetpp-5.4 released ------
 
 2018-06-08  Attila Torok
@@ -8,14 +12,14 @@
 	debugger in that case. Also, when launching a debugger is needed, it checks
 	beforehand that external debuggers are permitted to debug this process.
 
-    * attach-on-startup now detects the debugger before launching one
+	* attach-on-startup now detects the debugger before launching one
 
 	* debug command (debugger-attach-command config option) can now be
 	overridden by the OMNETPP_DEBUGGER_COMMAND env. var.
 
 	* Use lldb as default debugger on macOS - gdb is not codesigned.
 
-    * Adjust description of debugging-related config options.
+	* Adjust description of debugging-related config options.
 
 2018-04-11  ------ omnetpp-5.3 released ------
 

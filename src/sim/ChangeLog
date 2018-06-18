@@ -1,3 +1,16 @@
+2018-06-15  Andras Varga
+
+	* cComponent: fix "cannot cast to double" error when recording "int"
+	parameters as scalars
+
+2018-06-15  Andras Varga
+
+	* Check for write errors when using std::ofstream
+
+2018-06-14  Rudolf Hornig
+
+	* Fix build with clang/c2 compiler (__has_builtin-related issue)
+
 2018-06-11  ------ omnetpp-5.4 released ------
 
 2018-06-08  Attila Torok

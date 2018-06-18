@@ -1,3 +1,11 @@
+2018-06-15  Andras Varga
+
+	* Check for write errors when using std::ofstream
+
+2018-06-13  Andras Varga
+
+	* MatchExpression: MatchExpressionLexer was leaked in parsePattern()
+
 2018-06-11  ------ omnetpp-5.4 released ------
 
 2018-06-07  Andras Varga

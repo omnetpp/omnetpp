@@ -1,3 +1,17 @@
+2018-06-12  Attila Torok
+
+	* Do not store inspector windows for objects with empty full path.
+	This caused an enormous number of inspector windows to be opened after an
+	inspector for an inet::RouteEntry (IIRC) - which has no name or owner, so
+	its fullPath is "" - was open previously, was stored. Because of this,
+	the next time Qtenv was started, the 'stored inspector' matched every
+	single inet::RouteEntry instance created anywhere, so an inspector for
+	all of them was opened. It took a long time to close them all.
+
+2018-06-15  Attila Torok
+
+	* Fix crash when animating method call at shutdown
+
 2018-06-11  ------ omnetpp-5.4 released ------
 
 2018-06-08  Attila Torok

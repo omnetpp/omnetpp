@@ -1,3 +1,13 @@
+2018-06-13  Andras Varga
+
+	* NED: fix: when a compound module extends a simple module, references to
+	the base module's gates and parameters were reported as errors ("unknown
+	gate", etc.)
+
+2018-06-13  Levente Mészáros
+
+	* NED editor: Solved unused deep parameter assignment in NED file analysis
+
 2018-06-11  ------ omnetpp-5.4 released ------
 
 2018-06-05  Attila Torok

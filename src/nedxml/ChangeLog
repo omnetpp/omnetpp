@@ -1,3 +1,15 @@
+2018-06-13  Attila Torok
+
+	* Silence some minor warnings (-Wsign-compare, -Wformat).
+
+2018-06-15  Andras Varga
+
+	* Msg compiler: fix: check for write errors when using std::ofstream
+
+2018-06-15  Andras Varga
+
+	* opp_msgtool: fix: no error if depsfile cound not be created
+
 2018-06-11  ------ omnetpp-5.4 released ------
 
 2018-04-13  Zoltan Bojthe
