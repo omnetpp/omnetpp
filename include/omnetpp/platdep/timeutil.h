@@ -21,7 +21,7 @@
 #ifndef __OMNETPP_PLATDEP_TIMEUTIL_H
 #define __OMNETPP_PLATDEP_TIMEUTIL_H
 
-#include <stdint.h> // int64_t
+#include <cstdint> // int64_t
 #include <ctime>  // localtime()
 #include <cstdio> // sprintf()
 #include <cmath>  // modf()

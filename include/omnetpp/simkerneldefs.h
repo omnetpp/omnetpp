@@ -19,7 +19,7 @@
 #include <cstddef>
 #include <cfloat>
 #include <cmath>
-#include <stdint.h>  // <cstdint> is C++11
+#include <cstdint>
 #include "platdep/platdefs.h"
 
 // OMNeT++ version, (major<<8)|minor

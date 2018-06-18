@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_PLATMISC_H
 #define __OMNETPP_PLATMISC_H
 
-#include <stdint.h>  // int64_t
+#include <cstdint>  // int64_t
 #include <cinttypes> // PRId64
 #include "platdefs.h"
 

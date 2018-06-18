@@ -17,8 +17,8 @@
 #define __OMNETPP_INTLIMITS_H
 
 //
-// MIN/MAX macros for integral types, copied from <stdint.h>.
-// Note that we need to define them ourselves, because if <stdint.h>
+// MIN/MAX macros for integral types, copied from <cstdint>.
+// Note that we need to define them ourselves, because if <cstdint>
 // is first included without __STDC_LIMIT_MACROS somewhere, these macros
 // remain unavailable and nothing can be done about it anymore.
 // Brilliant design from the C standards commitee.
