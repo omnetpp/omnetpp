@@ -348,7 +348,7 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 OpenSim Ltd.\n"
+"eventlogtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 OpenSim Ltd.\n"
 "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
 "\n"
 "Usage:\n"

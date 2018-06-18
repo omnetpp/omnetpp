@@ -123,7 +123,7 @@ int setupUserInterface(int argc, char *argv[])
 
         verbose = !args.optionGiven('s');  // "not silent"
         if (verbose) {
-            std::cout << OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2017 Andras Varga, OpenSim Ltd." << endl;
+            std::cout << OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2018 Andras Varga, OpenSim Ltd." << endl;
             std::cout << "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION << endl;
             std::cout << "See the license for distribution terms and warranty disclaimer" << endl;
             std::cout << endl;

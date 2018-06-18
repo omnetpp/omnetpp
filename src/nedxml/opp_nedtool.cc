@@ -92,7 +92,7 @@ FilesElement *outputtree;
 void printUsage()
 {
     fprintf(stderr,
-       "opp_nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2017 Andras Varga, OpenSim Ltd.\n"
+       "opp_nedtool -- part of " OMNETPP_PRODUCT ", (C) 2006-2018 Andras Varga, OpenSim Ltd.\n"
        "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
        "Usage: opp_nedtool [options] <file1> <file2> ...\n"
