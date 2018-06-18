@@ -1,3 +1,5 @@
+2018-06-18  ------ omnetpp-5.4.1 released ------
+
 2018-06-13  Andras Varga
 
 	* NED: fix: when a compound module extends a simple module, references to

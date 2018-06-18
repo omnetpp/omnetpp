@@ -1,3 +1,5 @@
+2018-06-18  ------ omnetpp-5.4.1 released ------
+
 2018-06-15  Andras Varga
 
 	* Check for write errors when using std::ofstream

@@ -1,3 +1,5 @@
+2018-06-18  ------ omnetpp-5.4.1 released ------
+
 2018-06-15  Attila Torok
 
 	* opp_test: Return non-zero if there were any failed or unresolved tests.

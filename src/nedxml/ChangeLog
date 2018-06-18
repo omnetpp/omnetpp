@@ -1,3 +1,5 @@
+2018-06-18  ------ omnetpp-5.4.1 released ------
+
 2018-06-13  Attila Torok
 
 	* Silence some minor warnings (-Wsign-compare, -Wformat).
