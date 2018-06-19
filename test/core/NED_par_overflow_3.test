@@ -1,0 +1,34 @@
+%description:
+Test for bug #1025
+
+Setting an int module variable to 2GiB in NED results in a zero value in C++.
+This happens probably due to int conversion somewhere down the road.
+
+Steps To Reproduce:
+
+module Foo {
+    int size @unit(B) = 2GiB;
+}
+
+void Foo::initialize() {
+    int64_t size = par("size");
+}
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        int size @unit(B) = 2GiB;
+}
+
+%activity:
+int64_t size = par("size");
+EV << "size=" << size << endl;
+EV << ".\n";
+
+%contains: stdout
+size=2147483648
+.
+
