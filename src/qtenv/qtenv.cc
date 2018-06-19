@@ -1460,11 +1460,13 @@ void Qtenv::displayException(std::exception& ex)
         logBuffer.addInfo(txt.c_str());
     }
 
-    if (cRuntimeError *runtimeError = dynamic_cast<cRuntimeError*>(&ex)) {
-        // pop up dialog if not already displayed
-        if (!runtimeError->displayed)
-            confirm(ERROR, getFormattedMessage(ex).c_str());
-    }
+    if (cRuntimeError *runtimeError = dynamic_cast<cRuntimeError*>(&ex))
+        // do not pop up dialog if this error was already displayed
+        // (by the dialog that asks the user if they want a debugger)
+        if (runtimeError->displayed)
+            return;
+
+    confirm(ERROR, getFormattedMessage(ex).c_str());
 }
 
 void Qtenv::componentInitBegin(cComponent *component, int stage)
