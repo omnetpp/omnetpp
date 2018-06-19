@@ -169,7 +169,8 @@ void GenericObjectInspector::recreateModel()
     GenericObjectTreeModel *newSourceModel;
 
     // The following two lines are a workaround for a crash introduced in Qt 5.11.
-    // Before that, it worked fine without this. But it's not a big deal...
+    // See: QTBUG-44962, QTBUG-67948, QTBUG-68427. These were fixed in 5.11.1, so
+    // 5.11 is the only affected version. But let's keep this here, it's not a big deal...
     delete proxyModel;
     proxyModel = new PropertyFilteredGenericObjectTreeModel(this);
 
