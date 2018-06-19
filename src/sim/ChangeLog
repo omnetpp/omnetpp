@@ -24,6 +24,13 @@
 	getEnvir()->ensureDebugger() before DEBUG_TRAP, to allow Envir
 	launch an external debugger before executing the trap.
 
+2018-06-08  Andras Varga
+
+	* SimTime: more precise computation for integer/SimTime division.
+	We try to compute it using integer arithmetic as long as possible,
+	and only fall back to floating-point (double) division when the
+	result is not an integer.
+
 2018-06-06  Andras Varga
 
 	* cPacket: refined str() method
