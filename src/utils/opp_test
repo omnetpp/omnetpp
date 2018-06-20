@@ -164,7 +164,7 @@ cmdenv-log-prefix = ""
                 infile = open(filename, 'r')
                 oldbody = infile.read()
                 infile.close()
-            except IOError as e:
+            except (IOError, OSError) as e:
                 fail("Cannot read file `{}': ({})".format(filename, e))
 
             if (body == oldbody):   #FIXME check it on Windows/Mac
@@ -181,7 +181,7 @@ cmdenv-log-prefix = ""
                 file = open(filename, 'w')
                 file.write(body)
                 file.close()
-            except IOError as e:
+            except (IOError, OSError) as e:
                 fail("I/O error while writing the `{}' file: ({})".format(filename, e))
 
 
@@ -216,7 +216,7 @@ cmdenv-log-prefix = ""
         # read test file
         try:
             testfile = open(testfilename, 'r')
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("can't open `{}' file: {}".format(testfilename, e))
 
         body = ''
@@ -455,7 +455,7 @@ Supported .test file entry types:
     def print_tail(self, label, fname):
         try:
             f = open(fname, 'r')
-        except IOError as e:
+        except (IOError, OSError) as e:
             print("cannot open {} file: {}".format(fname, e))
             return;
 
@@ -668,7 +668,7 @@ Supported .test file entry types:
                     for line in f:
                         txt += re.sub(r'[ \t]*[\r\n]+$', '', line) + "\n"
                     f.close()
-                except IOError as e:
+                except (IOError, OSError) as e:
                     self.testunresolved(testfilename, "cannot read test case output file `{}: {}".format(infname, e))
                     return
 

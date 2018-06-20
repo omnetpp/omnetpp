@@ -238,7 +238,7 @@ root directory where the following files are present:
         # read features xml file
         try:
             featurefile = open(FEATURESFILE, 'r')
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("can't open {} file: {}".format(FEATURESFILE, e))
 
         try:
@@ -277,7 +277,7 @@ root directory where the following files are present:
 
         try:
             nedfoldersfile = open(NEDFOLDERSFILE, 'r')
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("can't open {} file: {}".format(NEDFOLDERSFILE, e))
 
         try:
@@ -301,7 +301,7 @@ root directory where the following files are present:
                     prefix = self.getPrefixFromPackageNedFile(nedfilename)
                     self.nedfolders.append(NedFolder(line, path, prefix, ord))
             nedfoldersfile.close()
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("error occurred when reading the {} file: {}".format(NEDFOLDERSFILE, e))
 
     ############################
@@ -316,7 +316,7 @@ root directory where the following files are present:
                         if m:
                             prefix = m.group(1)
                             return prefix
-            except IOError as e:
+            except (IOError, OSError) as e:
                 fail("error reading {}: {}".format(nedfilename, e))
         return ''
 
@@ -331,7 +331,7 @@ root directory where the following files are present:
 
         try:
             nedexclusionsfile = open(NEDEXCLUSIONSFILE, 'r')
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail(".nedexclusions file error: {}".format(e))
 
         check = re.compile(r'^([a-zA-Z0-9_]+\.)*[a-zA-Z0-9_]+$')
@@ -351,7 +351,7 @@ root directory where the following files are present:
                 else:
                     self.nedfoldersExcluded.append(line)
             nedexclusionsfile.close()
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("I/O error while reading the {} file: ({})".format(NEDEXCLUSIONSFILE, e))
 
 
@@ -362,7 +362,7 @@ root directory where the following files are present:
             for nf in sorted(self.nedfoldersExcluded):
                 nedexclusionsfile.write("%s\n" % (nf))
             nedexclusionsfile.close()
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("I/O error while writing the {} file: ({})".format(NEDEXCLUSIONSFILE, e))
 
 
@@ -379,7 +379,7 @@ root directory where the following files are present:
             fsFile = open(FEATURESTATEFILE, 'w')
             DOMTree.writexml(fsFile, addindent="    ", newl="\n")
             fsFile.close()
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("error occurred when writing {} file: {}".format(FEATURESTATEFILE, e))
 
 
@@ -403,7 +403,7 @@ root directory where the following files are present:
         else:
             try:
                 fsFile = open(FEATURESTATEFILE, 'r')
-            except IOError as e:
+            except (IOError, OSError) as e:
                 fail("I/O error while reading the {} file: {}".format(FEATURESTATEFILE, e))
 
             if os.stat(FEATURESTATEFILE).st_size == 0:
@@ -795,7 +795,7 @@ root directory where the following files are present:
         self.createParser()
         try:
             self.args = self.parser.parse_args()
-        except IOError as e:
+        except (IOError, OSError) as e:
             fail("{}".format(e))
 
         self.autoFixingMode = (self.args.command != "validate")

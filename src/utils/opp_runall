@@ -86,7 +86,7 @@ class Runall:
 		try:
 			opts = parser.parse_args()
 			self.verbose = opts.verbose
-		except IOError as e:
+		except (IOError, OSError) as e:
 			fail(e)
 		if not opts.simProgArgs:
 			parser.print_help()
@@ -105,7 +105,7 @@ class Runall:
 			self.chatter("changing into directory: " + directory)
 			try:
 				os.chdir(directory)
-			except IOError as e:
+			except (IOError, OSError) as e:
 				self.fail("Cannot change directory: " + str(e))
 
 	def resolveRunNumbers(self, simProgArgs):
@@ -115,7 +115,7 @@ class Runall:
 			output = subprocess.check_output(tmpArgs)
 		except subprocess.CalledProcessError as e:
 			self.fail(simProgArgs[0] + " [...] -q runnumbers returned nonzero exit status")
-		except IOError as e:
+		except (IOError, OSError) as e:
 			self.fail("Cannot execute " + simProgArgs[0] + " [...] -q runnumbers: " + str(e))
 
 		try:
@@ -203,7 +203,7 @@ all: $(TARGETS)
 			f = open(filename, "w")
 			f.write(content)
 			f.close()
-		except IOError as e:
+		except (IOError, OSError) as e:
 			self.fail("Cannot save makefile into " + filename + ": " + str(e))
 
 	def chatter(self, msg):
