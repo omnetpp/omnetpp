@@ -282,7 +282,7 @@ class SIM_API cHistogram : public cAbstractHistogram
      * This method may only be called when there are no over- or underflows.
      * 'step' must be positive.
      */
-    virtual void extendBinsTo(double value, double step, int maxNumBins=INT_MAX);
+    virtual void extendBinsTo(double value, double step, int maxNumBins=INT_MAX); // TODO: remove default value for maxNumBins
 
     /**
      * Reduces the number of bins by merging each 'groupSize' consecutive bins into one.

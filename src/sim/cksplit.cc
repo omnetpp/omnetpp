@@ -306,7 +306,12 @@ void cKSplit::insertIntoGrids(double value, double weight, int enableSplits)
     }
 
     // arrived at gridv[location].cells[i] -- possibly split this cell
-    if (enableSplits && critFunc(*this, gridv[location], i, critData)) {
+    // But do not split it if it is already too small (compared to the
+    // edge values themselves), otherwise we might get a 0 wide bin due
+    // to the limited precision of the `double` type, which is forbidden.
+    if (enableSplits && critFunc(*this, gridv[location], i, critData)
+            && (cellsize > std::max(std::abs(gridmin), std::abs(gridmax)) * 1e-12)) {
+
         splitCell(location, i);
 
         // go down to new subgrid and insert the observation there

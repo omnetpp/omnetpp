@@ -350,7 +350,7 @@ void cDefaultHistogramStrategy::extendBinsTo(double value)
         double newApproxBinSize = newRange / targetNumBins;
         if (newApproxBinSize >= range)
             mergeAllBinsIntoOne(newApproxBinSize);
-        hist->extendBinsTo(value, binSize);
+        hist->extendBinsTo(value, binSize, targetNumBins * 10); // the maxNumBins limit is just a last safeguard
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
     }
@@ -369,8 +369,14 @@ void cDefaultHistogramStrategy::reduceNumBinsTo(int numBinsLimit)
         int numBinsToAdd = groupSize - numBins % groupSize;
         std::vector<double> newEdges;
         double lastEdge = hist->getBinEdge(numBins);
-        for (int i = 0; i < numBinsToAdd; i++)
-            newEdges.push_back(lastEdge + (i+1)*binSize);
+        for (int i = 0; i < numBinsToAdd; i++) {
+            double newEdge = lastEdge + (i+1)*binSize;
+            // The condition below makes sure we won't add any consequential edges that
+            // are exactly equal, despite our best efforts to avoid this, due to the
+            // limited precision of the `double` type in some cases (big values, small binSize).
+            if (newEdge > lastEdge && (newEdges.empty() || newEdge > newEdges.back()))
+                newEdges.push_back(newEdge);
+        }
         hist->appendBins(newEdges);
     }
 
@@ -588,7 +594,7 @@ void cAutoRangeHistogramStrategy::extendBinsTo(double value)
         double newApproxBinSize = newRange / targetNumBins;
         if (newApproxBinSize >= range)
             mergeAllBinsIntoOne(newApproxBinSize);
-        hist->extendBinsTo(value, binSize);
+        hist->extendBinsTo(value, binSize, targetNumBins * 10); // the maxNumBins limit is just a last safeguard
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
     }
@@ -607,8 +613,14 @@ void cAutoRangeHistogramStrategy::reduceNumBinsTo(int numBinsLimit)
         int numBinsToAdd = groupSize - numBins % groupSize;
         std::vector<double> newEdges;
         double lastEdge = hist->getBinEdge(numBins);
-        for (int i = 0; i < numBinsToAdd; i++)
-            newEdges.push_back(lastEdge + (i+1)*binSize);
+        for (int i = 0; i < numBinsToAdd; i++) {
+            double newEdge = lastEdge + (i+1)*binSize;
+            // The condition below makes sure we won't add any consequential edges that
+            // are exactly equal, despite our best efforts to avoid this, due to the
+            // limited precision of the `double` type in some cases (big values, small binSize).
+            if (newEdge > lastEdge && (newEdges.empty() || newEdge > newEdges.back()))
+                newEdges.push_back(newEdge);
+        }
         hist->appendBins(newEdges);
     }
 
@@ -645,10 +657,10 @@ void cAutoRangeHistogramStrategy::mergeAllBinsIntoOne(double newApproxBinSize)
         ; // cannot extend range
 
     hist->mergeBins(hist->getNumBins());
-    if (newFirstEdge != firstEdge)
-        hist->prependBins(std::vector<double> { newFirstEdge });
-    if (newLastEdge != lastEdge)
-        hist->appendBins(std::vector<double> { newLastEdge });
+    if (newFirstEdge < firstEdge)
+        hist->prependBins({ newFirstEdge });
+    if (newLastEdge > lastEdge)
+        hist->appendBins({ newLastEdge });
     hist->mergeBins(hist->getNumBins());
     binSize = newBinSize;
 }

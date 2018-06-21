@@ -316,14 +316,20 @@ void cHistogram::createUniformBins(double lo, double hi, double step)
     int numBins = std::ceil((hi - lo) * (1 - 1e-10) / step); // the * (1 - 1e-10) is to counteract precision error accumulation
 
     std::vector<double> binEdges;
-    binEdges.reserve(numBins);
+    binEdges.reserve(numBins + 1);
 
     // single multiplication instead of repeated addition to try to avoid error accumulation
     for (int i = 0; i <= numBins; ++i) { // less-or-equal because we need one more edge than bin
         double edge = lo + i * step;
+
         if (std::abs(edge) < step * 1e-10) // work around double imprecision when we are very close to zero
             edge = 0;
-        binEdges.push_back(edge);
+
+        // When `lo` is huge, but `step` is tiny, we might actually get the exact same value for `edge`
+        // for a couple of iterations, and that would break the invariant of the bin edges being
+        // strictly increasing, causing assertion failures and infinite loops, so skip the repeated values.
+        if (binEdges.empty() || binEdges.back() != edge)
+            binEdges.push_back(edge);
     }
 
     setBinEdges(binEdges);
@@ -335,7 +341,7 @@ void cHistogram::prependBins(const std::vector<double>& edges)
         throw cRuntimeError(this, "prependBins() cannot be called if no bins exist yet");
     if (underflowSumWeights != 0)
         throw cRuntimeError(this, "prependBins() cannot be called if some observations have already been counted as underflows");
-    for (size_t i = 0; i < edges.size() - 1; ++i)
+    for (int i = 0; i < (int)edges.size() - 1; ++i)
         if (edges[i] >= edges[i + 1])
             throw cRuntimeError(this, "prependBins(): new edges must be in strictly increasing order");
     if (!edges.empty() && edges.back() >= binEdges.front())
@@ -352,7 +358,7 @@ void cHistogram::appendBins(const std::vector<double>& edges)
         throw cRuntimeError(this, "appendBins() cannot be called if no bins exist yet");
     if (overflowSumWeights != 0)
         throw cRuntimeError(this, "appendBins() cannot be called if some observations have already been counted as overflows");
-    for (size_t i = 0; i < edges.size() - 1; ++i)
+    for (int i = 0; i < (int)edges.size() - 1; ++i)
         if (edges[i] >= edges[i + 1])
             throw cRuntimeError(this, "appendBins(): new edges must be in strictly increasing order");
     if (!edges.empty() && binEdges.back() >= edges.front())
@@ -381,14 +387,32 @@ void cHistogram::extendBinsTo(double value, double step, int maxNumBins)
 
     // bins are inclusive on the left, and exclusive on the right
 
-    while (value < binEdges.front() && (int)binValues.size() < maxNumBins) {
-        binEdges.insert(binEdges.begin(), binEdges.front() - step);
-        binValues.insert(binValues.begin(), 0);
+    double originalLeftEdge = binEdges.front();
+
+    for (int i = 0; value < binEdges.front() && (int)binValues.size() < maxNumBins; ++i) {
+        double newEdge = originalLeftEdge - step * i;
+
+        // When `binEdges.front()` is huge, but `step` is tiny, `newEdge` might actually be exactly equal to
+        // `binEdges.front()`, and that would break the invariant of the bin edges being strictly increasing,
+        // causing assertion failures and infinite loops, so better skip the repeating edges.
+        if (newEdge != binEdges.front()) {
+            binEdges.insert(binEdges.begin(), newEdge);
+            binValues.insert(binValues.begin(), 0);
+        }
     }
 
-    while (value >= binEdges.back() && (int)binValues.size() < maxNumBins) {
-        binEdges.push_back(binEdges.back() + step);
-        binValues.push_back(0);
+    double originalRightEdge = binEdges.back();
+
+    for (int i = 0; value >= binEdges.back() && (int)binValues.size() < maxNumBins; ++i) {
+        double newEdge = originalRightEdge + step * i;
+
+        // When `binEdges.back()` is huge, but `step` is tiny, `newEdge` might actually be exactly equal to
+        // `binEdges.back()`, and that would break the invariant of the bin edges being strictly increasing,
+        // causing assertion failures and infinite loops, so better skip the repeating edges.
+        if (newEdge != binEdges.back()) {
+            binEdges.push_back(newEdge);
+            binValues.push_back(0);
+        }
     }
 }
 

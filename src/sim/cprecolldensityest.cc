@@ -301,6 +301,11 @@ void cPrecollectionBasedDensityEst::setNumPrecollectedValues(int numPrecoll)
     }
 }
 
+inline double fixupDelta(double delta, double base) {
+    ASSERT(delta > 0);
+    return std::max(fabs(base) * 1e-14, delta);
+}
+
 void cPrecollectionBasedDensityEst::setupRange()
 {
     //
@@ -318,6 +323,7 @@ void cPrecollectionBasedDensityEst::setupRange()
             }
             if (r == 0)
                 r = 1.0;  // warning?
+            r = fixupDelta(r, c);
             rangeMin = c - r / 2;
             rangeMax = c + r / 2;
             break;
@@ -326,14 +332,14 @@ void cPrecollectionBasedDensityEst::setupRange()
             if (rangeMax <= minValue)
                 rangeMin = rangeMax - 1.0;  // warning?
             else
-                rangeMin = rangeMax - (rangeMax - minValue) * rangeExtFactor;
+                rangeMin = rangeMax - fixupDelta((rangeMax - minValue) * rangeExtFactor, rangeMax);
             break;
 
         case RANGE_AUTOUPPER:
             if (rangeMin >= maxValue)
                 rangeMax = rangeMin + 1.0;  // warning?
             else
-                rangeMax = rangeMin + (maxValue - rangeMin) * rangeExtFactor;
+                rangeMax = rangeMin + fixupDelta((maxValue - rangeMin) * rangeExtFactor, rangeMin);
             break;
 
         case RANGE_FIXED:
