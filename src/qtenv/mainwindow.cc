@@ -1155,6 +1155,7 @@ void MainWindow::showFindObjectsDialog(cObject *obj)
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
     connect(this, SIGNAL(setNewNetwork()), dialog, SLOT(invalidate()));
+    connect(this, SIGNAL(closed()), dialog, SLOT(close()));
 }
 
 void MainWindow::on_actionLoadNedFile_triggered()
