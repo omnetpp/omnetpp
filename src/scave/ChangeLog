@@ -1,4 +1,8 @@
-2018-06-18  ------ omnetpp-5.4.1 released ------
+2018-06-20  ------ omnetpp-5.4.1 released ------
+
+2018-06-20  Rudolf Hornig
+
+	* Added opp_scavetool as an alias for scavetool
 
 2018-06-11  ------ omnetpp-5.4 released ------
 
