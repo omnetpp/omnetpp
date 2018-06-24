@@ -20,7 +20,7 @@ class Sink : public cSimpleModule
     simtime_t lastArrival;
 
     // statistics
-    cDoubleHistogram iaTimeHistogram;
+    cHistogram iaTimeHistogram;
     cOutVector arrivalsVector;
 
   protected:

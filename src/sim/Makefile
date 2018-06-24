@@ -36,8 +36,8 @@ OBJS_STD=\
     $O/ccanvas.o $O/ccoroutine.o $O/cdefaultlist.o $O/cabstracthistogram.o $O/cfutureeventset.o \
     $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cexpression.o $O/cenvir.o \
     $O/cenum.o $O/cevent.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o \
-    $O/chistogram.o $O/chistogramstrategy.o $O/clegacyhistogram.o \
-    $O/cksplit.o $O/clcg32.o $O/clistener.o $O/clog.o $O/cintparimpl.o $O/cmersennetwister.o \
+    $O/chistogram.o $O/chistogramstrategy.o $O/cksplit.o \
+    $O/clcg32.o $O/clistener.o $O/clog.o $O/cintparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cpacket.o $O/cmsgpar.o $O/cmodule.o $O/ceventheap.o $O/chasher.o $O/cfingerprint.o $O/ctimestampedvalue.o \
     $O/cmatchexpression.o $O/cpatternmatcher.o $O/cmessageprinter.o $O/cnullenvir.o $O/envirext.o \
     $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o $O/cosgcanvas.o \
@@ -45,7 +45,7 @@ OBJS_STD=\
     $O/cresultfilter.o $O/cresultlistener.o $O/cresultrecorder.o $O/clifecyclelistener.o \
     $O/cprecolldensityest.o $O/cpsquare.o $O/cqueue.o $O/cpacketqueue.o $O/cscheduler.o $O/csimplemodule.o \
     $O/csimulation.o $O/cstatistic.o $O/cstddev.o $O/cstlwatch.o $O/cstringparimpl.o \
-    $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctopology.o $O/cvarhist.o \
+    $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctopology.o \
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/lex.expryy.o $O/minixpath.o $O/onstartup.o \
     $O/simtime.o $O/task.o $O/util.o $O/gettime.o $O/expr.tab.o $O/nedsupport.o $O/sim_std_m.o \

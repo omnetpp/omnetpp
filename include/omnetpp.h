@@ -108,7 +108,6 @@
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/ctimestampedvalue.h"
 #include "omnetpp/ctopology.h"
-#include "omnetpp/cvarhist.h"
 #include "omnetpp/cvisitor.h"
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cxmlelement.h"

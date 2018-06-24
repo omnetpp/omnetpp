@@ -16,18 +16,14 @@ void ChartInspectorTester::activity()
 {
     int numCells = 10;
     cOutVector vector("vector");
-    cDoubleHistogram dblhist("DoubleHistogram", numCells);
-    cLongHistogram longhist("LongHistogram", numCells);
-    cVarHistogram varhist("VarHistogram", numCells, cVarHistogram::HIST_TR_AUTO_EPC_DBL);
+    cHistogram hist("Histogram");
     cPSquare psquare("PSquare", numCells);
     cKSplit ksplit("K-Split");
 
     while (true) {
         double value = par("value").doubleValue();
         vector.record(value);
-        dblhist.collect(value);
-        longhist.collect(value);
-        varhist.collect(value);
+        hist.collect(value);
         psquare.collect(value);
         ksplit.collect(value);
         wait(par("deltaT").doubleValue());

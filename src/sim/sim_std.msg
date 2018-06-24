@@ -696,41 +696,6 @@ class cPrecollectionBasedDensityEst extends cAbstractHistogram
     @descriptor(readonly);
 }
 
-class cLegacyHistogramBase extends cPrecollectionBasedDensityEst
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
-class cLegacyHistogram extends cLegacyHistogramBase
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
-class cVarHistogram extends cLegacyHistogramBase
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
-class cLongHistogram extends cLegacyHistogram
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
-class cDoubleHistogram extends cLegacyHistogram
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
 class cKSplit extends cPrecollectionBasedDensityEst
 {
     @existingClass;

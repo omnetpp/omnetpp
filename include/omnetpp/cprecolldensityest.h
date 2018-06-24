@@ -63,7 +63,7 @@ class SIM_API cPrecollectionBasedDensityEst : public cAbstractHistogram
         RANGE_AUTOLOWER, // like RANGE_AUTO, but upper limit is fixed
         RANGE_AUTOUPPER, // like RANGE_AUTO, but lower limit is fixed
         RANGE_FIXED,     // fixed range (lower, upper)
-        RANGE_NOTSET     // not set, but it is OK (cVarHistogram only)
+        RANGE_NOTSET     // not set, but it is OK (not used)
     };
 
   protected:

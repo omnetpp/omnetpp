@@ -6,11 +6,6 @@ cHistogram and various setRange() methods
 
 %activity:
 
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
 const int FIRSTVALS=100;
 const double RANGEEXT=1.5;
 
@@ -24,8 +19,6 @@ cHistogram ifn("int-fixed-5cell");
 cHistogram iaun("int-autoupper-5cell");
 cHistogram ialn("int-autolower-5cell");
 
-cVarHistogram iva("int-varhist-auto");
-
 cHistogram df_("double-fixed");
 cHistogram da ("double-auto");
 cHistogram dau("double-autoupper");
@@ -36,7 +29,6 @@ cHistogram dfn("double-fixed-5cell");
 cHistogram daun("double-autoupper-5cell");
 cHistogram daln("double-autolower-5cell");
 
-cVarHistogram dva("double-varhist-auto");
 cKSplit ksa("double-ksplit-auto");
 cPSquare psq("double-psquare");
 
@@ -63,14 +55,12 @@ daln.setNumBinsHint(5); daln.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
 cDensityEstBase *h[] = {
   &if_, &ia, &iau, &ial,
   &ifn, &ian, &iaun, &ialn,
-  &iva,
   &df_, &da, &dau, &dal,
   &dfn, &dan, &daun, &daln,
-  &dva,
   &ksa, &psq,
 };
 int nh = sizeof(h)/sizeof(cDensityEstBase*);
-int nih = 9;  // first 9 histograms collect integers, the rest collect doubles
+int nih = 8;  // first 8 histograms collect integers, the rest collect doubles
 
 for (int i=0; i<FIRSTVALS+10; i++)
 {
@@ -103,10 +93,6 @@ for (int i=0; i<FIRSTVALS+10; i++)
         h[k]->collect(doublevalue);
 }
 
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-
 %subst: /-1\.7[0-9]+e\+308/DBL_MIN/
 
 %contains: stdout
@@ -119,18 +105,16 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[5]          int-auto-5cell: collecting
  h[6]     int-autoupper-5cell: collecting
  h[7]     int-autolower-5cell: collecting
- h[8]        int-varhist-auto: collecting
- h[9]            double-fixed: collecting
- h[10]            double-auto: collecting
- h[11]       double-autoupper: collecting
- h[12]       double-autolower: collecting
- h[13]     double-fixed-5cell: collecting
- h[14]      double-auto-5cell: collecting
- h[15] double-autoupper-5cell: collecting
- h[16] double-autolower-5cell: collecting
- h[17]    double-varhist-auto: collecting
- h[18]     double-ksplit-auto: collecting
- h[19]         double-psquare:  0 cells, DBL_MIN..DBL_MIN
+ h[8]            double-fixed: collecting
+ h[9]             double-auto: collecting
+ h[10]       double-autoupper: collecting
+ h[11]       double-autolower: collecting
+ h[12]     double-fixed-5cell: collecting
+ h[13]      double-auto-5cell: collecting
+ h[14] double-autoupper-5cell: collecting
+ h[15] double-autolower-5cell: collecting
+ h[16]     double-ksplit-auto: collecting
+ h[17]         double-psquare:  0 cells, DBL_MIN..DBL_MIN
 
 1 observations:
  h[0]               int-fixed: 10 cells, 10..20
@@ -141,18 +125,16 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[5]          int-auto-5cell: collecting
  h[6]     int-autoupper-5cell: collecting
  h[7]     int-autolower-5cell: collecting
- h[8]        int-varhist-auto: collecting
- h[9]            double-fixed: 50 cells, 10..20
- h[10]            double-auto: collecting
- h[11]       double-autoupper: collecting
- h[12]       double-autolower: collecting
- h[13]     double-fixed-5cell: collecting
- h[14]      double-auto-5cell: collecting
- h[15] double-autoupper-5cell: collecting
- h[16] double-autolower-5cell: collecting
- h[17]    double-varhist-auto: collecting
- h[18]     double-ksplit-auto: collecting
- h[19]         double-psquare:  0 cells, 15..15
+ h[8]            double-fixed: 50 cells, 10..20
+ h[9]             double-auto: collecting
+ h[10]       double-autoupper: collecting
+ h[11]       double-autolower: collecting
+ h[12]     double-fixed-5cell: collecting
+ h[13]      double-auto-5cell: collecting
+ h[14] double-autoupper-5cell: collecting
+ h[15] double-autolower-5cell: collecting
+ h[16]     double-ksplit-auto: collecting
+ h[17]         double-psquare:  0 cells, 15..15
 
 99 observations:
  h[0]               int-fixed: 10 cells, 10..20
@@ -163,18 +145,16 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[5]          int-auto-5cell:  5 cells, 3..28
  h[6]     int-autoupper-5cell:  5 cells, 10..35
  h[7]     int-autolower-5cell:  5 cells, -5..20
- h[8]        int-varhist-auto: collecting
- h[9]            double-fixed: 50 cells, 10..20
- h[10]            double-auto: 59 cells, 14.475..17.425
- h[11]       double-autoupper: 75 cells, 10..17.5
- h[12]       double-autolower: 55 cells, 14.5..20
- h[13]     double-fixed-5cell:  5 cells, 10..20
- h[14]      double-auto-5cell:  5 cells, 14.75..17.25
- h[15] double-autoupper-5cell:  7 cells, 10..17
- h[16] double-autolower-5cell:  5 cells, 15..20
- h[17]    double-varhist-auto: collecting
- h[18]     double-ksplit-auto: collecting
- h[19]         double-psquare: 10 cells, 15..16.9
+ h[8]            double-fixed: 50 cells, 10..20
+ h[9]             double-auto: 59 cells, 14.475..17.425
+ h[10]       double-autoupper: 75 cells, 10..17.5
+ h[11]       double-autolower: 55 cells, 14.5..20
+ h[12]     double-fixed-5cell:  5 cells, 10..20
+ h[13]      double-auto-5cell:  5 cells, 14.75..17.25
+ h[14] double-autoupper-5cell:  7 cells, 10..17
+ h[15] double-autolower-5cell:  5 cells, 15..20
+ h[16]     double-ksplit-auto: collecting
+ h[17]         double-psquare: 10 cells, 15..16.9
 
 105 observations:
  h[0]               int-fixed: 10 cells, 10..20
@@ -185,16 +165,14 @@ for (int i=0; i<FIRSTVALS+10; i++)
  h[5]          int-auto-5cell:  5 cells, 3..28
  h[6]     int-autoupper-5cell:  5 cells, 10..35
  h[7]     int-autolower-5cell:  5 cells, -5..20
- h[8]        int-varhist-auto: 11 cells, 5..24
- h[9]            double-fixed: 50 cells, 10..20
- h[10]            double-auto: 59 cells, 14.475..17.425
- h[11]       double-autoupper: 75 cells, 10..17.5
- h[12]       double-autolower: 55 cells, 14.5..20
- h[13]     double-fixed-5cell:  5 cells, 10..20
- h[14]      double-auto-5cell:  5 cells, 14.75..17.25
- h[15] double-autoupper-5cell:  7 cells, 10..17
- h[16] double-autolower-5cell:  5 cells, 15..20
- h[17]    double-varhist-auto: 11 cells, 15..16.9
- h[18]     double-ksplit-auto:  6 cells, 14.05..17.85
- h[19]         double-psquare: 10 cells, 15..16.9
+ h[8]            double-fixed: 50 cells, 10..20
+ h[9]             double-auto: 59 cells, 14.475..17.425
+ h[10]       double-autoupper: 75 cells, 10..17.5
+ h[11]       double-autolower: 55 cells, 14.5..20
+ h[12]     double-fixed-5cell:  5 cells, 10..20
+ h[13]      double-auto-5cell:  5 cells, 14.75..17.25
+ h[14] double-autoupper-5cell:  7 cells, 10..17
+ h[15] double-autolower-5cell:  5 cells, 15..20
+ h[16]     double-ksplit-auto:  6 cells, 14.05..17.85
+ h[17]         double-psquare: 10 cells, 15..16.9
 

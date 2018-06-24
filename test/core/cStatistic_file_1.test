@@ -2,128 +2,174 @@
 Test saveToFile()/loadFromFile() for various histogram classes.
 
 %activity:
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
 int numCells = 10;
 int numFirstVals = 100;
 double rangeExtFactor = 1.3;
 
-cDoubleHistogram dblhist("DoubleHistogram", numCells);
-cLongHistogram longhist("LongHistogram", numCells);
-cVarHistogram varhist("VarHistogram", numCells, cVarHistogram::HIST_TR_AUTO_EPC_DBL);
+cHistogram hist("Histogram");
 cPSquare psquare("PSquare", numCells);
 cKSplit ksplit("K-Split");
-// NOTE: Something equivalent already exists for cHistogram.
 
-dblhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
-longhist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+hist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
 ksplit.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
 
 for (int i = 0; i < 1000; i++) {
 	double d = (intrand(2) == 0) ? exponential(30) : normal(80, 10);
-	longhist.collect(d);
-	dblhist.collect(d);
+	hist.collect(d);
 	psquare.collect(d);
 	ksplit.collect(d);
-	varhist.collect(d);
 }
 
 FILE *f = fopen("pass1.txt", "w");
-longhist.saveToFile(f);
-dblhist.saveToFile(f);
+hist.saveToFile(f);
 psquare.saveToFile(f);
-varhist.saveToFile(f);
 ksplit.saveToFile(f);
 fclose(f);
 
+hist.clear();
+hist.setStrategy(nullptr);
+
 f = fopen("pass1.txt", "r");
-longhist.loadFromFile(f);
-dblhist.loadFromFile(f);
+hist.loadFromFile(f);
 psquare.loadFromFile(f);
-varhist.loadFromFile(f);
 ksplit.loadFromFile(f);
 fclose(f);
 
 f = fopen("pass2.txt", "w");
-longhist.saveToFile(f);
-dblhist.saveToFile(f);
+hist.saveToFile(f);
 psquare.saveToFile(f);
-varhist.saveToFile(f);
 ksplit.saveToFile(f);
 fclose(f);
-
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 
 %postrun-command: diff pass1.txt pass2.txt
 
 %subst: /e\+0(\d\d)/e+\1/
 
 %contains: pass1.txt
-
 #
-# (omnetpp::cLongHistogram) Test.LongHistogram
-#
-1000	 #= num_vals
-0 217	 #= min, max
-0	 #= weighted
-55149	 #= sum
-4.16791e+06	 #= sum_squared_vals
-1	 #= transformed
-2	 #= range_mode
-1.3	 #= range_ext_factor
-0 160	 #= range
-0 1	 #= cell_under, cell_over
-0 1	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= num_cells
-1	 #= cellv[] exists
- 207
- 116
- 70
- 55
- 269
- 226
- 41
- 11
- 1
- 3
-16	 #= cellsize
-
-#
-# (omnetpp::cDoubleHistogram) Test.DoubleHistogram
+# (omnetpp::cHistogram) Test.Histogram
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
 0	 #= weighted
 55653.6	 #= sum
 4.22383e+06	 #= sum_squared_vals
-1	 #= transformed
-2	 #= range_mode
-1.3	 #= range_ext_factor
-0 151.771	 #= range
-0 1	 #= cell_under, cell_over
-0 1	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= num_cells
-1	 #= cellv[] exists
- 197
- 120
- 69
- 45
- 190
- 280
- 78
+0	 #= underflow
+0	 #= overflow
+55	 #= num_bins
+#= bin_edges
+ 0
+ 4
+ 8
  12
+ 16
+ 20
+ 24
+ 28
+ 32
+ 36
+ 40
+ 44
+ 48
+ 52
+ 56
+ 60
+ 64
+ 68
+ 72
+ 76
+ 80
+ 84
+ 88
+ 92
+ 96
+ 100
+ 104
+ 108
+ 112
+ 116
+ 120
+ 124
+ 128
+ 132
+ 136
+ 140
+ 144
+ 148
+ 152
+ 156
+ 160
+ 164
+ 168
+ 172
+ 176
+ 180
+ 184
+ 188
+ 192
+ 196
+ 200
+ 204
+ 208
+ 212
+ 216
+ 220
+#= bin_values
+ 59
+ 46
+ 49
+ 53
+ 36
+ 36
+ 27
+ 17
+ 23
+ 20
+ 15
+ 12
+ 9
+ 10
+ 16
+ 20
+ 41
+ 62
+ 73
+ 93
+ 73
+ 75
+ 50
+ 28
+ 19
+ 13
+ 6
+ 3
+ 5
+ 2
+ 0
  4
- 4
-15.1771	 #= cellsize
+ 0
+ 0
+ 0
+ 1
+ 2
+ 1
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 1
 
 #
 # (omnetpp::cPSquare) Test.PSquare
@@ -161,49 +207,6 @@ fclose(f);
  84.5245
  92.1503
  217.004
-
-#
-# (omnetpp::cVarHistogram) Test.VarHistogram
-#
-1000	 #= num_vals
-0.0415294 217.004	 #= min, max
-0	 #= weighted
-55653.6	 #= sum
-4.22383e+06	 #= sum_squared_vals
-1	 #= transformed
-4	 #= range_mode
-2	 #= range_ext_factor
-0.569057 116.747	 #= range
-6 9	 #= cell_under, cell_over
-6 9	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= num_cells
-1	 #= cellv[] exists
- 112
- 71
- 97
- 43
- 119
- 93
- 160
- 115
- 96
- 79
-1	 #= transform_type
-10	 #= max_num_cells
-1	 #= bin_bounds[] exists
- 0.569057
- 8.62231
- 14.6567
- 25.4766
- 33.0254
- 64.2744
- 71.5244
- 79.0794
- 85.6448
- 91.7368
- 116.747
 
 #
 # (omnetpp::cKSplit) Test.K-Split
@@ -300,66 +303,130 @@ fclose(f);
 4 3	 #= cells[0], cells[1]
 
 %contains: pass2.txt
-
 #
-# (omnetpp::cLongHistogram) Test.LongHistogram
-#
-1000	 #= num_vals
-0 217	 #= min, max
-0	 #= weighted
-55149	 #= sum
-4.16791e+06	 #= sum_squared_vals
-1	 #= transformed
-2	 #= range_mode
-1.3	 #= range_ext_factor
-0 160	 #= range
-0 1	 #= cell_under, cell_over
-0 1	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= num_cells
-1	 #= cellv[] exists
- 207
- 116
- 70
- 55
- 269
- 226
- 41
- 11
- 1
- 3
-16	 #= cellsize
-
-#
-# (omnetpp::cDoubleHistogram) Test.DoubleHistogram
+# (omnetpp::cHistogram) Test.Histogram
 #
 1000	 #= num_vals
 0.0415294 217.004	 #= min, max
 0	 #= weighted
 55653.6	 #= sum
 4.22383e+06	 #= sum_squared_vals
-1	 #= transformed
-2	 #= range_mode
-1.3	 #= range_ext_factor
-0 151.771	 #= range
-0 1	 #= cell_under, cell_over
-0 1	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= num_cells
-1	 #= cellv[] exists
- 197
- 120
- 69
- 45
- 190
- 280
- 78
+0	 #= underflow
+0	 #= overflow
+55	 #= num_bins
+#= bin_edges
+ 0
+ 4
+ 8
  12
+ 16
+ 20
+ 24
+ 28
+ 32
+ 36
+ 40
+ 44
+ 48
+ 52
+ 56
+ 60
+ 64
+ 68
+ 72
+ 76
+ 80
+ 84
+ 88
+ 92
+ 96
+ 100
+ 104
+ 108
+ 112
+ 116
+ 120
+ 124
+ 128
+ 132
+ 136
+ 140
+ 144
+ 148
+ 152
+ 156
+ 160
+ 164
+ 168
+ 172
+ 176
+ 180
+ 184
+ 188
+ 192
+ 196
+ 200
+ 204
+ 208
+ 212
+ 216
+ 220
+#= bin_values
+ 59
+ 46
+ 49
+ 53
+ 36
+ 36
+ 27
+ 17
+ 23
+ 20
+ 15
+ 12
+ 9
+ 10
+ 16
+ 20
+ 41
+ 62
+ 73
+ 93
+ 73
+ 75
+ 50
+ 28
+ 19
+ 13
+ 6
+ 3
+ 5
+ 2
+ 0
  4
- 4
-15.1771	 #= cellsize
+ 0
+ 0
+ 0
+ 1
+ 2
+ 1
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 1
 
 #
 # (omnetpp::cPSquare) Test.PSquare
@@ -397,49 +464,6 @@ fclose(f);
  84.5245
  92.1503
  217.004
-
-#
-# (omnetpp::cVarHistogram) Test.VarHistogram
-#
-1000	 #= num_vals
-0.0415294 217.004	 #= min, max
-0	 #= weighted
-55653.6	 #= sum
-4.22383e+06	 #= sum_squared_vals
-1	 #= transformed
-4	 #= range_mode
-2	 #= range_ext_factor
-0.569057 116.747	 #= range
-6 9	 #= cell_under, cell_over
-6 9	 #= sumweights_underflow, sum_weights_overflow
-100	 #= num_firstvals
-0	 #= firstvals[] exists
-10	 #= num_cells
-1	 #= cellv[] exists
- 112
- 71
- 97
- 43
- 119
- 93
- 160
- 115
- 96
- 79
-1	 #= transform_type
-10	 #= max_num_cells
-1	 #= bin_bounds[] exists
- 0.569057
- 8.62231
- 14.6567
- 25.4766
- 33.0254
- 64.2744
- 71.5244
- 79.0794
- 85.6448
- 91.7368
- 116.747
 
 #
 # (omnetpp::cKSplit) Test.K-Split
