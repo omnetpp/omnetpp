@@ -1,4 +1,17 @@
-2018-06-18  ------ omnetpp-5.4.1 released ------
+2018-06-25  ------ omnetpp-5.4.1 released ------
+
+2018-06-21  Attila Torok
+
+	*  cHistogram: Fix invalid bin edges in cHistogram when the range is too small.
+	In one specific case, when the histogram wanted to set up 70 uniform bins
+	on a very small range, but really far away from 0 (something like
+	1457683.667621 - 1457683.667623), we ran out of precision with the double
+	type. Some adjacent bin edges had the exact same value, resulting in failed
+	assertions, and infinite loops trying to consume infinite memory.
+
+2018-06-15  Andras Varga
+
+	* cSimulation: snapshot(): Check for write errors when using std::ofstream
 
 2018-06-15  Andras Varga
 

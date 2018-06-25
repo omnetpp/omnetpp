@@ -1,4 +1,13 @@
-2018-06-18  ------ omnetpp-5.4.1 released ------
+2018-06-25  ------ omnetpp-5.4.1 released ------
+
+2018-06-20  Zoltan Bojthe
+
+	* Fix: Python utils: handle the exception OSError in the same way as
+	IOError
+
+2018-06-15  Attila Torok
+
+	* opp_test: Return non-zero if there were any failed or unresolved tests.
 
 2018-06-15  Attila Torok
 

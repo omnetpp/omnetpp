@@ -1,4 +1,48 @@
-2018-06-18  ------ omnetpp-5.4.1 released ------
+2018-06-25  ------ omnetpp-5.4.1 released ------
+
+2018-06-13  Andras Varga
+
+	* NED: fix: in a "compound-extends-simple" situation, base was not
+	added to the inheritance chain
+
+	simple A {
+	   gates:
+	       inout g;
+	}
+
+	module B extends A {  // <---- despite this, internally B did NOT extend
+	A
+	}
+
+	module C {
+	   submodules:
+	       b1: B;
+	       b2: B;
+	   connections:
+	       b1.g <--> b2.g; // ERROR (bogus): gate 'g' not found in 'B'
+	}
+
+2018-06-13  Levente Mészáros
+
+	* NED editor: Solved unused deep parameter assignment in NED file
+	analysis.
+
+	moduleinterface IMac
+	{
+	}
+
+	module Mac like IMac
+	{
+	   parameters:
+	       int x;
+	}
+
+	module Test
+	{
+	   parameters: WARN-->     mac.x = 2;
+	   submodules:
+	       mac: <default("Mac")> like IMac;
+	}
 
 2018-06-13  Andras Varga
 

@@ -1,4 +1,17 @@
-2018-06-18  ------ omnetpp-5.4.1 released ------
+2018-06-25  ------ omnetpp-5.4.1 released ------
+
+2018-06-21  Attila Torok
+
+	* Close any "Find Objects" dialogs when the Main Window is closed.
+
+	This avoids a crash that happened because the deleted network components
+	caused the selection in the still open dialog to change, which tried to
+	propagate the change to the built-in object inspector, but that was
+	already deleted. I think.
+
+2018-06-19  Attila Torok
+
+	* Fix: The cTerminationException message dialog was not displayed.
 
 2018-06-12  Attila Torok
 

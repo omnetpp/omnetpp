@@ -1,4 +1,8 @@
-2018-06-18  ------ omnetpp-5.4.1 released ------
+2018-06-25  ------ omnetpp-5.4.1 released ------
+
+2018-06-18  Rudolf Hornig
+
+	* Replaced <stdint.h> with <cstdint>, as we now require C++11
 
 2018-06-11  ------ omnetpp-5.4 released ------
 
