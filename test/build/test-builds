@@ -20,7 +20,6 @@ export TEST_PROG="opp_run -h all"
 export WITH_NETBUILDER=yes
 export WITH_PARSIM=yes
 export SHARED_LIBS=yes
-export WITH_TKENV=yes
 export WITH_QTENV=yes
 export WITH_OSG=yes
 export WITH_SYSTEMC=no
@@ -93,7 +92,6 @@ compile_gcc() {
     $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_TKENV  "$WITH_TKENV" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
@@ -110,7 +108,6 @@ compile_gcc() {
     $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_TKENV  "$WITH_TKENV" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
@@ -127,7 +124,6 @@ compile_vc() {
     # tweak
     $TWEAKCONFIG setoradd configuser.vc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG setoradd configuser.vc WITH_TKENV  "$WITH_TKENV" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configuser.vc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
@@ -150,7 +146,6 @@ compile_clang() {
     $TWEAKCONFIG setoradd configure.user PREFER_CLANG "$PREFER_CLANG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_TKENV  "$WITH_TKENV" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG setoradd configure.user WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
@@ -168,7 +163,6 @@ compile_clang() {
     $TWEAKCONFIG assert Makefile.inc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
-    $TWEAKCONFIG assert Makefile.inc WITH_TKENV  "$WITH_TKENV" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_QTENV  "$WITH_QTENV" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_OSG  "$WITH_OSG" || failure $CFG
     $TWEAKCONFIG assert Makefile.inc WITH_SYSTEMC  "$WITH_SYSTEMC" || failure $CFG
@@ -231,7 +225,6 @@ CFG=default
 (compile)
 
 contains cParsimPartition yes
-contains "Tkenv : Tk-based legacy graphical user interface" yes
 contains "Cmdenv : command-line user interface" yes
 contains "Qtenv : Qt-based graphical user interface" yes
 
@@ -263,7 +256,6 @@ CFG=default_static
 (SHARED_LIBS=no compile)
 
 # the static build does not contain opp_run so we must use the aloha sample
-(TEST_PROG="samples/aloha/aloha -h all" contains "Tkenv : Tk-based legacy graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Qtenv : Qt-based graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "XMLPARSER=libxml" yes)

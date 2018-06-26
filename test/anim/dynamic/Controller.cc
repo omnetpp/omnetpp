@@ -40,7 +40,7 @@ void Controller::activity()
     wait(1);
 
     // create a module inside a compound module, then create a connection
-    // that spans hierarchy levels (illegal, but Tkenv should behave nicely)
+    // that spans hierarchy levels (illegal, but Qtenv should behave nicely)
     cModuleType *compoundType = cModuleType::find("Compound");
     cModule *compound = compoundType->createScheduleInit("compound1", getParentModule());
     getDisplayString().setTagArg("t", 0, "OPEN THE NEW COMPOUND MODULE BEFORE PROCEEDING!");

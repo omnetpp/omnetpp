@@ -8,6 +8,8 @@
 # Taking the screenshot is actually done by the plugins/screenshot.tcl
 # script that Tkenv automatically loads on startup.
 #
+# NOTE: TKENV REMOVED IN OMNET++ 6.0 -- THIS NEEDS TO BE PORTED TO QTENV?
+#
 
 configs="
 abilene
