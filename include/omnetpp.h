@@ -100,6 +100,7 @@
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cstatistic.h"
+#include "omnetpp/cstatisticbuilder.h"
 #include "omnetpp/cstddev.h"
 #include "omnetpp/cstlwatch.h"
 #include "omnetpp/cstringparimpl.h"
