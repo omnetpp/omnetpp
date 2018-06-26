@@ -488,8 +488,10 @@ void MainWindow::runSimulation(RunMode runMode)
         setRunUntilModule();
     }
     else {
-        if (!networkReady())
+        if (!networkReady()) {
+            setGuiForRunmode(RUNMODE_NOT_RUNNING);
             return;
+        }
         setGuiForRunmode(runMode);
         env->runSimulation(runMode);
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
@@ -542,8 +544,10 @@ void MainWindow::on_actionStop_triggered()
 void MainWindow::on_actionRunUntil_triggered()
 {
     // implements Simulate|Run until...
-    if (!networkReady())
+    if (!networkReady()) {
+        setGuiForRunmode(RunMode::RUNMODE_NOT_RUNNING);
         return;
+    }
 
     RunUntilDialog runUntilDialog;
     if (!runUntilDialog.exec()) {
