@@ -43,7 +43,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // maybe we should remove layout.invalidate() from the invalidate() method and call it ONLY if some
 // property has changed that requires the recalculation (e.g. submodule added/removed submodule size changed)
 // TODO implement ruler
-// TODO zoom info: maybe display unit too, e.g. like "1m=3.14px" -- but then in Tkenv/Qtenv too!
+// TODO zoom info: maybe display unit too, e.g. like "1m=3.14px" -- but then in Qtenv too!
 public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectableFigure {
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;

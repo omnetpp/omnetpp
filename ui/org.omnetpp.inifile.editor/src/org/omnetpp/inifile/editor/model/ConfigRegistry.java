@@ -738,23 +738,6 @@ public class ConfigRegistry {
         "Usage: " +
         "`<module-full-path>.<statistic-name>.statistic-recording=true/false`.\n" +
         "Example: `**.ping.roundTripTime.statistic-recording=false`");
-    public static final ConfigOption CFGID_TKENV_DEFAULT_CONFIG = addGlobalOption(
-        "tkenv-default-config", CFG_STRING, null,
-        "Specifies which config Tkenv should set up automatically on startup. The " +
-        "default is to ask the user.");
-    public static final ConfigOption CFGID_TKENV_DEFAULT_RUN = addGlobalOption(
-        "tkenv-default-run", CFG_INT, "0",
-        "Specifies which run (of the default config, see `tkenv-default-config`) " +
-        "Tkenv should set up automatically on startup. The default is to ask the " +
-        "user.");
-    public static final ConfigOption CFGID_TKENV_EXTRA_STACK = addGlobalOptionU(
-        "tkenv-extra-stack", "B", "48KiB",
-        "Specifies the extra amount of stack that is reserved for each `activity()` " +
-        "simple module when the simulation is run under Tkenv.");
-    public static final ConfigOption CFGID_TKENV_PLUGIN_PATH = addGlobalOption(
-        "tkenv-plugin-path", CFG_PATH, null,
-        "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files " +
-        "that get evaluated on startup.");
     public static final ConfigOption CFGID_TOTAL_STACK = addGlobalOptionU(
         "total-stack", "B", null,
         "Specifies the maximum memory for `activity()` simple module stacks. You " +
@@ -765,8 +748,8 @@ public class ConfigRegistry {
         "Specifies type for submodules and channels declared with 'like <>'.");
     public static final ConfigOption CFGID_USER_INTERFACE = addGlobalOption(
         "user-interface", CFG_STRING, null,
-        "Selects the user interface to be started. Possible values are Cmdenv, Tkenv " +
-        "and Qtenv. This option is normally left empty, as it is more convenient to " +
+        "Selects the user interface to be started. Possible values are Cmdenv and " +
+        "Qtenv. This option is normally left empty, as it is more convenient to " +
         "specify the user interface via a command-line option or the IDE's Run and " +
         "Debug dialogs. New user interfaces can be defined by subclassing " +
         "`cRunnableEnvir`.");

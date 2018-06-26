@@ -21,7 +21,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author rhornig, andras
  */
-//TODO figures and Tkenv/Qtenv should use EnumSpec as well!
+//TODO figures and Qtenv should use EnumSpec as well!
 public interface IDisplayString {
 
     /**

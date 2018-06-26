@@ -11,9 +11,8 @@
 {~nolink:}TARGET_DIR = .
 {~nolink:}
 {exe:}# User interface (uncomment one) (-u option)
-{exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LIBS)
+{exe:}{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 {exe:}{~cmdenv?#}USERIF_LIBS = $(CMDENV_LIBS)
-{exe:}{~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 {exe:}{~qtenv?#}USERIF_LIBS = $(QTENV_LIBS)
 {exe:}
 {sourcedirs:}# C++ include paths (with -I)

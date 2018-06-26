@@ -252,7 +252,7 @@ public class MakemakeOptionsPanel extends Composite {
         ((GridData)useFeatureLDFlagsCheckbox.getLayoutData()).horizontalSpan = 2;
         createLabel(linkGroup, "User interface libraries to link with:");
         userInterfaceCombo = new Combo(linkGroup, SWT.BORDER | SWT.READ_ONLY);
-        for (String i : new String[] {"All", "Tkenv", "Qtenv", "Cmdenv"}) // note: should be consistent with populate()!
+        for (String i : new String[] {"All", "Qtenv", "Cmdenv"}) // note: should be consistent with populate()!
             userInterfaceCombo.add(i);
         libsList = new FileListControl(linkPage, "Additional libraries to link with: (-l option)", BROWSE_NONE);
         Link pathsPageLink3 = createLink(linkPage, "NOTE: Library paths can be specified in the <A>Paths and Symbols</A> property page.");

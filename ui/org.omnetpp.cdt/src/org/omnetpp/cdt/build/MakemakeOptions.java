@@ -215,8 +215,8 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("-u") || arg.equals("--userinterface")) {
                 if (checkArg(argv, i)) {
                     userInterface = argv[++i].toUpperCase();
-                    if (!userInterface.equals("ALL") && !userInterface.equals("CMDENV") && !userInterface.equals("TKENV") && !userInterface.equals("QTENV"))
-                        addError("-u option: specify All, Cmdenv, Tkenv or Qtenv");
+                    if (!userInterface.equals("ALL") && !userInterface.equals("CMDENV") && !userInterface.equals("QTENV"))
+                        addError("-u option: specify All, Cmdenv or Qtenv");
                 }
             }
             else if (arg.equals("-i") || arg.equals("--includefragment")) {

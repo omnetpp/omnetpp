@@ -222,11 +222,6 @@ public interface IOmnetppLaunchConstants {
     public static final String UI_CMDENV = "Cmdenv";
 
     /**
-     * Value for OPP_USER_INTERFACE: launch the simulation program with -u Tkenv
-     */
-    public static final String UI_TKENV = "Tkenv";
-
-    /**
      * Value for OPP_USER_INTERFACE: launch the simulation program with -u Qtenv
      */
     public static final String UI_QTENV = "Qtenv";

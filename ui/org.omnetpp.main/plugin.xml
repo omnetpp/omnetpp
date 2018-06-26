@@ -255,13 +255,13 @@
             supportsArgument="true">
       </variable>
       <variable
-            description="Expands to the Tkenv image source path (workspace paths, separated by the platform's path separator)"
+            description="Expands to the OMNeT++ image path (workspace paths, separated by the platform's path separator)"
             name="opp_image_path"
             resolver="org.omnetpp.ide.variables.ImagePathResolver"
             supportsArgument="true">
       </variable>
       <variable
-            description="Expands to the Tkenv image source path (location paths, separated by the platform's path separator)"
+            description="Expands to the OMNeT++ image path (location paths, separated by the platform's path separator)"
             name="opp_image_path_loc"
             resolver="org.omnetpp.ide.variables.ImagePathResolver"
             supportsArgument="true">

@@ -125,7 +125,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     private String infoText = null;
     private Button fBrowseForBinaryButton;
 
-    private static final String CMDENV = "Cmdenv", QTENV = "Qtenv", TKENV = "Tkenv";
+    private static final String CMDENV = "Cmdenv", QTENV = "Qtenv";
 
     private SelectionAdapter defaultSelectionAdapter = new SelectionAdapter() {
         @Override
@@ -304,7 +304,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         Composite composite = SWTFactory.createGroup(parent, "Execution", 2, colSpan, GridData.FILL_HORIZONTAL);
 
         SWTFactory.createLabel(composite, "User interface:", 1);
-        fEnvirCombo = SWTFactory.createCombo(composite, SWT.BORDER, 1, GridData.FILL_HORIZONTAL, new String[] {QTENV, TKENV, CMDENV});
+        fEnvirCombo = SWTFactory.createCombo(composite, SWT.BORDER, 1, GridData.FILL_HORIZONTAL, new String[] {QTENV, CMDENV});
         fEnvirCombo.setToolTipText("User interface for the simulation. Leave empty to use ini file setting or the default.");
         fEnvirCombo.addModifyListener(new ModifyListener() {
             @Override
