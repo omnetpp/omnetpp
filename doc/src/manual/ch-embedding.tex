@@ -28,7 +28,7 @@ The blocks represent the following components:
     using plugin interfaces. Embedding {\opp} into applications\index{embedding}
     usually involves writing a custom \cclass{cEnvir} subclass (see sections
     \ref{sec:plugin-exts:user-interface} and \ref{sec:embedding:embedding}.)
-  \item \textbf{Cmdenv, Tkenv and Qtenv} are Envir-based libraries that contain
+  \item \textbf{Cmdenv, Qtenv} are Envir-based libraries that contain
     specific user interface implementations. A simulation program
     is linked with one or more of them; in the latter case, one of the UI libraries
     is chosen and instantiated either explicitly or automatically when the program starts.
@@ -75,7 +75,7 @@ each other:
     Sim when Sim asks for them. Sim writes output vectors via Envir,
     so one can redefine the output vector storing mechanism by changing Envir.
     Sim and its classes use Envir to print debug information.
-  \item \textbf{Envir $\Leftrightarrow$ Cmdenv/Tkenv/Qtenv}. Cmdenv, Tkenv and Qtenv
+  \item \textbf{Envir $\Leftrightarrow$ Cmdenv/Qtenv}. Cmdenv, and Qtenv
     are concrete user interface implementations. When a simulation program
     is started, the \ttt{main()} function (which is part of Envir) determines
     the appropriate user interface class, creates an instance and runs it.
@@ -90,7 +90,7 @@ This section discusses the issues of embedding the simulation kernel
 or a simulation model into a larger application. We assume that you
 do not just want to change one or two aspects of the simulator
 (such as , event scheduling or result recording) or create a new user interface
-such as Cmdenv or Tkenv -- if so, see chapter \ref{cha:plugin-exts}.
+similar to Cmdenv or Qtenv -- if so, see chapter \ref{cha:plugin-exts}.
 
 For the following section, we assume that you will write the embedding
 program from scratch, that is, starting from a \ffunc{main()} function.
@@ -523,7 +523,7 @@ while (sim->getSimTime() < limit) {
 }
 \end{cpp}
 
-Depending on the concrete scheduler class, the \ffunc{takeNextEvent()} 
+Depending on the concrete scheduler class, the \ffunc{takeNextEvent()}
 may return \ttt{nullptr} in certain cases. The default
 \cclass{cSequentialScheduler} never returns \ttt{nullptr}.
 

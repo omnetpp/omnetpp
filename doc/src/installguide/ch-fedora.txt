@@ -28,7 +28,7 @@ from the terminal, whichever you prefer.
 To install the required packages, type in the terminal:
 
   $ sudo dnf install make gcc gcc-c++ bison flex perl \
-      python2 tcl-devel tk-devel qt5-devel libxml2-devel \
+      python2 qt5-devel libxml2-devel \
       zlib-devel java doxygen graphviz webkitgtk
 
 To use 3D visualization support in Qtenv, you should install
@@ -72,7 +72,7 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* make, bison, gcc, gcc-c++, flex, perl, tcl-devel, tk-devel, qt5-devel, libxml2-devel,
+* make, bison, gcc, gcc-c++, flex, perl, qt5-devel, libxml2-devel,
 zlib-devel, webkitgtk, java, doxygen, graphviz, openmpi-devel, libpcap-devel,
 OpenSceneGraph-devel, osgearth-devel
 

@@ -25,7 +25,7 @@
     <para>
       The INI File Editor is a dual-mode editor. The configuration can be edited using
       forms and dialogs, or as plain text. Forms are organized around topics like general
-      setup, Cmdenv, Tkenv, output files, extensions and so on. The text editor provides
+      setup, Cmdenv, Qtenv, output files, extensions and so on. The text editor provides
       syntax highlighting and auto completion. Several views can display information, which is
       useful when editing INI files. For example you can see the errors in the current
       INI file or all the available module parameters in one view. You can easily

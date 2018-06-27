@@ -980,7 +980,7 @@
        style="font-size:1410.97705078px">Library</tspan></text>
   <text
      xml:space="preserve"
-     style="font-size:1667.51989746px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1667.51989746px;line-height:125%;font-family:Sans;-inkscape-font-specification:Sans;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none"
      x="24161.102"
      y="5214.2656"
      id="text5353-1-5-9"
@@ -989,21 +989,15 @@
        x="24161.102"
        y="5214.2656"
        id="tspan5357-5-8-0"><tspan
-   style="font-weight:bold;-inkscape-font-specification:Sans Bold"
+   style="font-weight:bold;-inkscape-font-specification:'Sans Bold'"
    id="tspan5805">Cmdenv</tspan>,</tspan><tspan
        sodipodi:role="line"
-       x="24426.537"
-       y="7298.6655"
-       id="tspan5795"><tspan
-   style="font-weight:bold;-inkscape-font-specification:Sans Bold"
-   id="tspan5807">Tkenv</tspan>, </tspan><tspan
-       sodipodi:role="line"
        x="24161.102"
-       y="9383.0654"
+       y="7298.6655"
        id="tspan5803">or</tspan><tspan
        sodipodi:role="line"
        x="24161.102"
-       y="11467.465"
+       y="9383.0654"
        id="tspan5799"
-       style="font-weight:bold;-inkscape-font-specification:Sans Bold">Qtenv</tspan></text>
+       style="font-weight:bold;-inkscape-font-specification:'Sans Bold'">Qtenv</tspan></text>
 </svg>

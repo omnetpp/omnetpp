@@ -615,7 +615,7 @@
             </listitem>
             <listitem>
               ``User interface libraries to link with'': If the makefile target is an executable, you may
-              specify which &Omnetpp; user interface libraries (Cmdenv, Tkenv, or both) should be linked
+              specify which &Omnetpp; user interface libraries (Cmdenv, Qtenv, or both) should be linked
               into the program.
               Makemake option: [[-u]]
             </listitem>

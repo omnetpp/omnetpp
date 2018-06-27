@@ -117,7 +117,7 @@
     <title>Simulation Launcher</title>
     <para>The &Omnetpp; IDE makes it possible to run simulations directly from the integrated environment. It
       is possible to run a simulation as a normal C/C++ application and perform C++ source-level debugging on
-      it. The user can also run it as a standalone application (under Tkenv or Cmdenv) or  run batches of simulations
+      it. The user can also run it as a standalone application (under Qtenv or Cmdenv) or  run batches of simulations
       where runs differ in module parameter settings or random number seeds (NOTE: an Eclipse-based runtime
       environment [“IDEEnv”] does not exist yet; it is planned for future releases).</para>
     <picture file="pictures/img12.png">The Run dialog showing a simulation launch

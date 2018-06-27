@@ -40,11 +40,6 @@ endif::OMNEST[]
   the network builder. (This is needed only if you are building your network with
   C++ API calls and you do not use the built-in NED language parser at all.)
 
-`WITH_TKENV=no`::
-  This will prevent the build system to link with Tcl/Tk libraries. Use this option
-  if your platform does not have a suitable Tcl/Tk package or you will run the simulation
-  only in command line mode. (i.e. You want to run @OMNETPP@ in a remote terminal session.)
-
 `WITH_QTENV=no`::
   This will prevent the build system to link with the Qt libraries. Use this option
   if your platform does not have a suitable Qt package or you will run the simulation
@@ -57,19 +52,6 @@ endif::OMNEST[]
 `WITH_OSGEARTH=no`::
     This will prevent the build system to use osgEarth which is used for 2D/3D
     mapping and visualization in Qtenv.
-
-`PREFER_QTENV=no`::
-  Use Tkenv as the default graphical runtime instead of Qtenv.
-
-`EMBED_TCL_CODE=no`::
-  Tcl/Tk is a script language and the source of the graphical
-  runtime environment is stored as `.tcl` files in the `src/tkenv` directory.
-  By default, these files are not used directly, but are embedded as string literals
-  in the executable file. Setting `EMBED_TCL_CODE=yes` allows you to move the
-  @OMNETPP@ installation without caring about the location of the `.tcl` files.
-  If you want to make changes to the Tcl code, you better switch off the embedding with
-  the `EMBED_TCL_CODE=no` option. This way you can make changes to the `.tcl`
-  files and see the changes immediately without recompiling the @OMNETPP@ libraries.
 
 `CFLAGS_[RELEASE/DEBUG]`::
   To change the compiler command line options the build process is using, you
@@ -119,17 +101,8 @@ The following environment variables are affected (in addition to `PATH`, which
 also needs to be adjusted):
 
 `OMNETPP_IMAGE_PATH`::
-  This variable contains the list of directories where Tkenv looks for icons.
+  This variable contains the list of directories where Qtenv looks for icons.
   Set it to point to the `images/` subdirectory of your @OMNETPP@ installation.
-
-`OMNETPP_TKENV_DIR`::
-  This variable points to the directory that contains the Tcl script parts
-  of Tkenv, which is by default the `src/tkenv/` subdirectory
-  of your @OMNETPP@ installation. Normally you don't need to set this variable,
-  because the Tkenv shared library contains all Tcl code compiled in as
-  string literals. However, if you compile @OMNETPP@ with the `EMBED_TCL_CODE=no`
-  setting and then you move the installation, then you need to set
-  `OMNETPP_TKENV_DIR`, otherwise Tkenv won't start.
 
 `LD_LIBRARY_PATH`::
   This variable contains the list of additional directories where shared

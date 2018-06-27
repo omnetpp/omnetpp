@@ -32,11 +32,6 @@ You may opt to use clang and clang++ instead of the gcc and g++ compilers.
 The following packages are strongly recommended, because their absence
 results in severe feature loss:
 
-Tcl/Tk 8.5 or later::
-  Required by the Tkenv simulation runtime environment.
-  You need the 'devel' packages that include the C header files as well.
-  It is also possible to compile @OMNETPP@ without Tcl/Tk (and Tkenv),
-  by setting then `WITH_TKENV=no` variable in configure.user.
 LibXML2 or Expat::
   Either one of these XML parsers are needed for @OMNETPP@ to be able
   to read XML files. The 'devel' packages (that include the header files)
@@ -82,45 +77,16 @@ If you have a distro unrelated to the ones covered in this Installation Guide,
 you need to figure out what is the established way of installing packages
 on your system, and what are the names of the packages you need.
 
-==== Tcl/Tk
+==== Qt
 
-Tcl/Tk may be present as separate packages (`tcl` and `tk`), or in one
-package (`tcltk`). The version number (e.g. 8.5) is usually part of the name
-in some form (`85`, `8.5`, etc). You will need the development packages, which
-are usually denoted with the `-dev` or `-devel` name suffix.
-
-Troubleshooting:
-
-If your platform does not have suitable Tcl/Tk and/or QT packages, you may still use @OMNETPP@
-to run simulations from the command line. To disable the graphical runtime environment
+If your platform does not have suitable Qt packages, you may still use @OMNETPP@
+to run simulations from the command line. To disable the Qtenv runtime environment,
 use:
 
-  $ ./configure WITH_TKENV=no WITH_QTENV=no
+  $ ./configure WITH_QTENV=no
 
-This will prevent the build system to link with Tcl/Tk or QT libraries. This is required also
+This will prevent the build system to link with Qt libraries. It is also recommended
 if you are installing @OMNETPP@ from a remote terminal session.
-
-By default, the `configure` script expects to find the Tcl/Tk libraries
-in the standard linker path (without any `-Ldirectory` linker option)
-and under the standard names (i.e. with the `-ltcl8.5` or `-ltcl85`
-linker option). If you have them in different places or under different
-names, you have to edit `configure.user` and explicitly set `TK_LIBS` there (see
-the Build Options chapter for further details).
-
-If you get the error 'no display and DISPLAY environment variable not set',
-then you're either not running X (the `wish` command, and thus `./configure` won't
-work just in the console) or you really need to set the `DISPLAY` variable
-(`export DISPLAY=:0.0` usually does it).
-
-If you get the error: 'Tcl_Init failed: Can't find a usable init.tcl...'
-
-The `TCL_LIBRARY` environment variable should point to the directory which
-contains `init.tcl`. That is, you probably want to put a line like
-
-  export TCL_LIBRARY=/usr/lib/tcl8.5
-
-into your `~/.bashrc`.
-
 
 ==== The Java Runtime
 
@@ -180,17 +146,6 @@ system. It writes the results into the `Makefile.inc` file, which will be
 read by the makefiles during the build process.
 
 image::pictures/terminal-configuration.png[title="Configuring @OMNETPP@",align="center",scaledwidth="75%"]
-
-
-Normally, the `configure` script needs to be running under the graphical
-environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
-via an ssh session, or there is some other reason why X is not running,
-the easiest way to work around the problem is to tell @OMNETPP@ to build
-without Tcl/Tk. To do that, use the command
-
-  $ ./configure WITH_TKENV=no WITH_QTENV=no
-
-instead of plain `./configure`.
 
 [NOTE]
 ===============================================================

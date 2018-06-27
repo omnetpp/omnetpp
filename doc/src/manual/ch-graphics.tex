@@ -26,13 +26,13 @@ model visualization:
     and anything that can be built by combining them and applying effects like
     rotation and scaling. Like display strings, figures can also be specified
     in NED files, but it is generally more useful to create and manipulate them
-    programmatically. Every module has its own default canvas, and extra canvases 
+    programmatically. Every module has its own default canvas, and extra canvases
     can also be created at runtime.
 
     \item \textit{3D visualization} of the simulation's virtual world is a
     third possiblity. {\opp}'s 3D visualization capabilities come from the
     open-source OpenSceneGraph library and its osgEarth extension. These
-    libraries build on top of OpenGL, and beyond basic graphics functionality 
+    libraries build on top of OpenGL, and beyond basic graphics functionality
     they also offer high-level capabilities, such as reading 3D model files
     directly from disk, or displaying maps, 3D terrain or Earth as a planet
     using online map and satellite imagery data sources.
@@ -62,7 +62,7 @@ before display updates when it was actually needed. In \textit{Express} mode,
 for example, Qtenv would only refresh the display once every second or so,
 with a large number of events processed between updates, so visualization
 code placed inside \ffunc{handleMessage()} could potentially waste a
-significant amount of CPU cycles. Also, visualization code embedded in 
+significant amount of CPU cycles. Also, visualization code embedded in
 \ffunc{handleMessage()} is not suitable for creating smooth animations.
 
 
@@ -70,7 +70,7 @@ significant amount of CPU cycles. Also, visualization code embedded in
 \label{sec:graphics:refreshdisplay-usage-and-semantics}
 
 Starting from {\opp} version 5.0, visualization code can be placed into a
-dedicated method. It is called much more economically, that is, exactly 
+dedicated method. It is called much more economically, that is, exactly
 as often as needed.
 
 This method is \ffunc{refreshDisplay()}, and is declared on
@@ -89,8 +89,8 @@ the GUI performs a display update. With some additional rules, that boils
 down to the following:
 
 \begin{enumerate}
-\item It is invoked only under graphical user interfaces, currently Qtenv
-     and Tkenv. It is never invoked under Cmdenv.
+\item It is invoked only under graphical user interfaces, currently Qtenv.
+     It is never invoked under Cmdenv.
 
 \item When invoked, it will be called on \textit{all} components of the
       simulation. It does not matter if a module has a graphical inspector
@@ -158,7 +158,7 @@ Overriding \ffunc{refreshDisplay()} has several advantages over putting the
 simulation code into \ffunc{handleMessage()}. The first one is clearly
 \textit{performance}. When running under Cmdenv,
 the runtime cost of visualization code is literally zero, and when running
-in \textit{Express} mode under Tkenv/Qtenv, it is practically zero because
+in \textit{Express} mode under Qtenv, it is practically zero because
 the cost of one update is amortized over several hundred thousand or
 million events.
 
@@ -180,7 +180,7 @@ and \ffunc{refreshDisplay()} allows one to completely separate the two.
 \label{sec:graphics:refreshdisplay-constness}
 
 Code in \ffunc{refreshDisplay()} should never alter the state of the
-simulation because that would destroy repeatability, due to the 
+simulation because that would destroy repeatability, due to the
 fact that the timing and frequency of \ffunc{refreshDisplay()}
 calls is completely unpredictable from the simulation model's point of view.
 The fact that the method is declared \ttt{const} gently encourages this behavior.
@@ -196,24 +196,24 @@ to allow \ffunc{refreshDisplay()} to change them.
 \subsection{Concepts}
 \label{sec:graphics:animation-concepts}
 
-Support for smooth custom animation allows models to visualize their operation 
-using sophisticated animations. The key idea is that the simulation model 
-is called back from the runtime GUI (Qtenv) repeatedly at a reasonable 
-``frame rate,'' allowing it to continually update the canvas (2D) and/or the 
-3D scene to produce fluid animations. Callback means that the 
+Support for smooth custom animation allows models to visualize their operation
+using sophisticated animations. The key idea is that the simulation model
+is called back from the runtime GUI (Qtenv) repeatedly at a reasonable
+``frame rate,'' allowing it to continually update the canvas (2D) and/or the
+3D scene to produce fluid animations. Callback means that the
 \ffunc{refreshDisplay()} methods of modules and figures are invoked.
 
 \ffunc{refreshDisplay()} knows the animation position from the simulation time
 and the \textit{animation time}, a variable also made accessible to the model.
-If you think about the animation as a movie, animation time is simply the 
-position in seconds in the movie. By default, the movie is played in Qtenv at normal (1x) 
+If you think about the animation as a movie, animation time is simply the
+position in seconds in the movie. By default, the movie is played in Qtenv at normal (1x)
 speed, and then animation time is simply the number of seconds since the
-start of the movie. The speed control slider in Qtenv's toolbar allows 
+start of the movie. The speed control slider in Qtenv's toolbar allows
 you to play it at higher (2x, 10x, etc.) and lower (0.5x, 0.1x, etc.)
 speeds; so if you play the movie at 2x speed, animation time will
 pass twice as fast as real time.
 
-When smooth animation is turned on (more about that later), simulation 
+When smooth animation is turned on (more about that later), simulation
 time progresses in the model (piecewise) linearly. The speed at which the simulation
 progresses in the movie is called \textit{animation speed}. Sticking to the
 movie analogy, when the simulation progresses in the movie 100 times
@@ -222,7 +222,7 @@ faster than animation time, animation speed is 100.
 Certain actions take zero simulation time, but we still want to animate
 them. Examples of such actions are the sending of a message over a zero-delay link,
 or a visualized C++ method call between two modules. When these animations play
-out, simulation is paused and simulation time stays constant 
+out, simulation is paused and simulation time stays constant
 until the animation is over. Such periods are called \textit{holds}.
 
 \subsection{Smooth vs. Traditional Animation}
@@ -233,7 +233,7 @@ need it. Smooth and traditonal, ``non-smooth'' animation in Qtenv are
 two distinct modes which operate very differently:
 
 \begin{itemize}
-  \item In \tbf{Traditional animation}, simulation events are essentially 
+  \item In \tbf{Traditional animation}, simulation events are essentially
     processed \textit{as fast as possible}, and meanwhile, \ffunc{refreshDisplay()}
     is called with some policy (e.g. once before/after each event, or at
     1s intervals real-time) to keep the displayed  graphics up to date.
@@ -246,7 +246,7 @@ The factor that decides which operation mode is active is the \textit{presence
 of an animation speed}. If there is no animation speed, traditional
 animation is performed; if there is one, smooth animation is done.
 
-The Qtenv GUI has a dialog (\textit{Animation Parameters}) which displays 
+The Qtenv GUI has a dialog (\textit{Animation Parameters}) which displays
 the current animation speed, among other things. This dialog allows the
 user to check at any time which operation mode is currently active.\footnote{
 Note that even during traditional animation, some built-in animation effects
@@ -258,28 +258,28 @@ is performed.}
 
 Different animation speeds may be appropriate for different animation effects.
 For example, when animating WiFi traffic where various time slots are on the microsecond scale,
-an animation speed on the order of $10^-5$ might be appropriate; when animating the 
+an animation speed on the order of $10^-5$ might be appropriate; when animating the
 movement of cars or pedestrians, an animation speed of $1$ is a reasonable choice.
 When several animations requiring different animation speeds occur in the same
 scene, one solution is to animate the scene using the lowest animation speed
 so that even the fastest actions can be visually followed by the human viewer.
- 
+
 The solution provided by {\opp} for the above problem is the following.
 Animation speed cannot be controlled explicitly, only requests may be submitted.
-Several parts of the models may request different animation speeds. 
-The effective animation speed is computed as the minimum of the animation 
-speeds of visible canvases, unless the user interactively overrides it in the UI, 
+Several parts of the models may request different animation speeds.
+The effective animation speed is computed as the minimum of the animation
+speeds of visible canvases, unless the user interactively overrides it in the UI,
 for example by imposing a lower or upper limit.
 
-An animation speed requests may be submitted using the \ffunc{setAnimationSpeed()} 
+An animation speed requests may be submitted using the \ffunc{setAnimationSpeed()}
 method of \cclass{cCanvas}.\footnote{The class that represents the canvas for
 2D graphics, see \ref{sec:graphics:creating-accessing-and-viewing-canvases} for more
-info.} The \ffunc{setAnimationSpeed()} method takes two arguments: 
+info.} The \ffunc{setAnimationSpeed()} method takes two arguments:
 the animation speed value (a \ttt{double}) and an object pointer (\ttt{cObject*})
 that identifies the part of the model that requests it. The second, object parameter
-is used as a key that allows the request to be updated or withdrawn later. 
-Typically, the pointer of the module that makes the request (i.e. \ttt{this}) is 
-used for that purpose. Calling \ffunc{setAnimationSpeed()} with zero animation 
+is used as a key that allows the request to be updated or withdrawn later.
+Typically, the pointer of the module that makes the request (i.e. \ttt{this}) is
+used for that purpose. Calling \ffunc{setAnimationSpeed()} with zero animation
 speed cancels the request.
 
 An example:
@@ -294,14 +294,14 @@ canvas->setAnimationSpeed(0, macModule); // cancel second request
 \end{cpp}
 
 In practice, built-in animation effects such as message sending animation
-also submit their own animation speed requests internally, so they also 
+also submit their own animation speed requests internally, so they also
 affect the effective animation speed chosen by Qtenv.
 
 The current effective animation speed can be obtained from the environment of the
-simulation (\cclass{cEnvir}, see chapter \ref{cha:embedding} for context): 
+simulation (\cclass{cEnvir}, see chapter \ref{cha:embedding} for context):
 
 \begin{cpp}
-double animSpeed = getEnvir()->getAnimationSpeed(); 
+double animSpeed = getEnvir()->getAnimationSpeed();
 \end{cpp}
 
 Animation time can be accessed like this:
@@ -310,7 +310,7 @@ Animation time can be accessed like this:
 double animTime = getEnvir()->getAnimationTime();
 \end{cpp}
 
-Animation time starts from zero, and monotonically increases with simulation 
+Animation time starts from zero, and monotonically increases with simulation
 time and also during ``holds''.
 
 
@@ -340,7 +340,7 @@ the hold, it should query and remember the animation time when issuing
 the hold request.
 
 If the code needs to know the animation time remaining until the end
-of the hold, it can use the \ffunc{getRemainingAnimationHoldTime()} 
+of the hold, it can use the \ffunc{getRemainingAnimationHoldTime()}
 method of \cclass{cEnvir}. Note that this is not necessarily the
 time remaining from its own hold request, because other parts of the
 simulation might extend the hold.
@@ -368,7 +368,7 @@ network->setBuiltinAnimationsAllowed(false);
 Display strings\index{display strings} are compact textual descriptions
 that specify the arrangement and appearance of the graphical
 representations of modules and connections in graphical user interfaces
-(currently Tkenv and Qtenv).
+(currently Qtenv).
 
 Display strings are usually specified in NED's \fprop{@display} property,
 but it is also possible to modify them programmatically at runtime.
@@ -616,8 +616,8 @@ The following example will place the module at the given position:
 
 \begin{note}
 Coordinates and distances in \ttt{p}, \ttt{b} or \ttt{r} tags need not
-be integers. Fractional numbers make sense because runtime GUIs (Tkenv,
-Qtenv) support zooming.
+be integers. Fractional numbers make sense because runtime GUIs like
+Qtenv support zooming.
 \end{note}
 
 If the submodule is a module vector, one can also specify in the \ttt{p}
@@ -817,7 +817,7 @@ Message display strings affect how messages are shown during animation.
 By default, they are displayed as a small filled circle, in one of
 8 basic colors (the color is determined as \textit{message kind modulo 8}),
 and with the message class and/or name displayed under it.
-The latter is configurable in the Options dialog of Tkenv and Qtenv,
+The latter is configurable in the Preferences dialog of Qtenv,
 and message kind dependent coloring can also be turned off there.
 
 \subsubsection{How to Specify}
@@ -961,12 +961,12 @@ Colorization works with both submodule and message icons.
 \label{sec:graphics:image-path}
 
 In the current {\opp} version, module icons are PNG or GIF files. The icons shipped
-with {\opp} are in the \ttt{images/} subdirectory. The IDE, Tkenv and Qtenv all
+with {\opp} are in the \ttt{images/} subdirectory. The IDE and Qtenv
 need the exact location of this directory to be able to load the icons.
 
 Icons are loaded from all directories in the \textit{image path},
 a semicolon-separated list of directories.
-The default image path is compiled into Tkenv and Qtenv with the value
+The default image path is compiled into Qtenv with the value
 \ttt{"\textit{<omnetpp>}/\-images;./images"}. This works fine (unless the
 {\opp} installation is moved), and the \ttt{./images} part also allows
 icons to be loaded from the \ttt{images/} subdirectory of the current
@@ -1053,7 +1053,7 @@ to preserve their relative positions.
 \begin{note}
 The positions of modules placed by the layouting algorithm are not
 available from simulation models. Think about it: what positions should
-{\opp} report if the model is run under Cmdenv, or under Tkenv/Qtenv but
+{\opp} report if the model is run under Cmdenv, or under Qtenv but
 the compound module was never opened in the GUI? The absence of explicit
 coordinates in the NED file conceptually means that the modeler
 \textit{doesn't care} about the position of that module.
@@ -1192,7 +1192,7 @@ The canvas is the 2D drawing API of {\opp}. Using the canvas, one can
 display lines, curves, polygons, images, text items and their combinations,
 using colors, transparency, geometric transformations, antialiasing and
 more. Drawings created with the canvas API can be viewed when the simulation
-is run under a graphical user interface (Tkenv or Qtenv).
+is run under a graphical user interface like Qtenv.
 
 Use cases for the canvas API include displaying textual annotations,
 status information, live statistics in the form of plots, charts, gauges,
@@ -1242,12 +1242,12 @@ objects, like so:
 cCanvas *canvas = new cCanvas("liveStatistics"); // arbitrary name string
 \end{cpp}
 
-To view the contents of these additional canvases in Tkenv or Qtenv, one
+To view the contents of these additional canvases in Qtenv, one
 needs to navigate to the canvas' owner object (which will usually be the
 module that created the canvas), view the list of objects it contains, and
 double-click the canvas in the list. Giving meaningful names to extra
 canvas objects like in the example above can simplify the process of
-locating them in the Tkenv/Qtenv GUI.
+locating them in the Qtenv GUI.
 
 
 \subsection{Figure Classes}
@@ -1270,9 +1270,9 @@ we'll look into how one can define new figure types.
 
 \begin{note}
 Figures are only data storage classes. The real drawing code is inside
-Tkenv/Qtenv; it might involve a parallel data structure, figure renderer
+Qtenv; it might involve a parallel data structure, figure renderer
 classes, etc. When the canvas is not viewed, corresponding objects in
-Tkenv/Qtenv do not exist. Therefore, data flow is largely one-directional --
+Qtenv do not exist. Therefore, data flow is largely one-directional --
 figures-to-GUI.
 \end{note}
 
@@ -1381,27 +1381,27 @@ textFigure->setText("Hello World!");
 
 The stacking order (a.k.a. Z-order) of figures is jointly determined by the
 child order and the \cclass{cFigure} attribute called Z-index, with
-the latter taking priority. Z-index is not used  directly, but an 
-\textit{effective Z-index} is computed instead, as the \textit{sum} 
+the latter taking priority. Z-index is not used  directly, but an
+\textit{effective Z-index} is computed instead, as the \textit{sum}
 of the Z-index values of the figure and all its ancestors up to the root figure.
 
 A figure with a larger effective Z-index will be displayed above figures with
 smaller effective Z-indices, regardless of their positions in the figure tree.
-Among figures whose effective Z-indices are equal, child order determines 
+Among figures whose effective Z-indices are equal, child order determines
 the stacking order. If two such figures are siblings, the one that occurs
 \textit{later} in the child list will be drawn above the other.
 For figures that are not siblings, the child order within the first
 common ancestor matters.
 
 % These two design decisions (the effective Z-index being computed as a sum
-% up to the root, and affecting the order among all figures not just among 
+% up to the root, and affecting the order among all figures not just among
 % siblings) result in significant flexibility.
 % As the Z-order of figures is no longer constrained by  order as the figure tree is no longer constrained by .
 
 There are several methods for managing stacking order:
 \ffunc{setZIndex()}, \ffunc{getZIndex()}, \ffunc{getEffectiveZIndex()},
-\ffunc{insertAbove()}, \ffunc{insertBelow()}, 
-\ffunc{isAbove()}, \ffunc{isBelow()}, 
+\ffunc{insertAbove()}, \ffunc{insertBelow()},
+\ffunc{isAbove()}, \ffunc{isBelow()},
 \ffunc{raiseAbove()}, \ffunc{lowerBelow()},
 \ffunc{raiseToTop()}, \ffunc{lowerToBottom()}.
 
@@ -1577,7 +1577,7 @@ not just the figure itself. The flag can be accessed via the
 
 Figures can also be assigned a number of textual tags. Tags do not directly
 affect rendering, but graphical user interfaces that display canvas
-content, namely Tkenv and Qtenv, offer functionality to interactively
+content, like Qtenv, offer functionality to interactively
 show/hide figures based on tags they contain. This GUI figure filter allows
 one to express conditions like \textit{"Show only figures that have tag
 \ttt{foo} or \ttt{bar}, but among them, hide those that also contain
@@ -1592,7 +1592,7 @@ string that contains the tags separated by spaces (a tag itself cannot
 contain a space.)
 
 Tags functionality, when used carefully, allows one to define "layers"
-that can be turned on/off from Tkenv/Qtenv.
+that can be turned on/off from Qtenv.
 
 %% TODO example
 
@@ -1603,7 +1603,7 @@ that can be turned on/off from Tkenv/Qtenv.
 \subsubsection{ Tooltip}
 \label{sec:graphics:figure-tooltip}
 
-Figures may be assigned a tooltip text using the \ffunc{setTooltip()} method. 
+Figures may be assigned a tooltip text using the \ffunc{setTooltip()} method.
 The tooltip is shown in the runtime GUI when one hovers with the mouse over the
 figure.
 
@@ -1616,7 +1616,7 @@ may correspond to a module that represents the mobile node
 in the simulation. Or, an inflating disc that represents a wireless
 signal may correspond to a message (\cclass{cMessage}) in the simulation.
 
-One can set the associated object on a figure using the 
+One can set the associated object on a figure using the
 \ffunc{setAssociatedObject()} method. The GUI can use this information
 provide a shortcut access to the associated object, for example select the
 object in an inspector when the user clicks the figure, or display
@@ -1625,10 +1625,10 @@ the object's tooltip over the figure if it does not have its own.
 \begin{caution}
 The object must exist (i.e. must not be deleted) while it is
 associated with the figure. When the object is deleted, the user
-is responsible for letting  the figure forget the pointer,  
+is responsible for letting  the figure forget the pointer,
 e.g. by a  \ttt{setAssociatedObject(nullptr)} call.
-\end{caution} 
-  
+\end{caution}
+
 
 \subsection{Specifying Positions, Colors, Fonts and Other Properties}
 \label{sec:graphics:figure-positions-colors-fonts-etc}
@@ -2351,12 +2351,12 @@ The font can be set with the \ffunc{setFont()} member function that takes
 size. Color can be set with \ffunc{setColor()}. The displayed text can
 also be partially transparent. This is controlled with the \ffunc{setOpacity()}
 member function that accepts an \ttt{double} in the $[0,1]$ range, $0$ meaning
-fully transparent (invisible), and $1$ meaning fully opaque. 
+fully transparent (invisible), and $1$ meaning fully opaque.
 
 It is also possible to have a partially transparent ``halo'' displayed around
 the text. The halo improves readability when the text is displayed over a
 background that has a similar color as the text, or when it overlaps with other
-text items. The halo can be turned on with \ffunc{setHalo()}. 
+text items. The halo can be turned on with \ffunc{setHalo()}.
 
 
 \subsubsection{cTextFigure}
@@ -2620,7 +2620,7 @@ The result:
 \cclass{cPanelFigure} is similar to \cclass{cGroupFigure} in that it is also
 intended for grouping its children and has no visual appearance of its own.
 However, it has a special behavior regarding transformations and especially zooming.
- 
+
 \cclass{cPanelFigure} sets up an axis-aligned, unscaled coordinate system for
 its children, canceling the effect of any transformation (scaling, rotation,
 etc.) inherited from ancestor figures. This allows for pixel-based positioning
@@ -2643,7 +2643,7 @@ creates a normal group figure as parent for the panel, and sets up a
 skewed coordinate system on it. A reference image is also added to it,
 in order to make the effect of skew visible. The panel figure is also
 added to it as a child. The panel contains an image (showing the same icon
-as the reference image), and a border around it. 
+as the reference image), and a border around it.
 
 \begin{cpp}
 cGroupFigure *layer = new cGroupFigure("parent");
@@ -2765,7 +2765,7 @@ The default implementation does nothing.
 
 Like \cclass{cModule}'s \ffunc{refreshDisplay()}, \cclass{cFigure}'s
 \ffunc{refreshDisplay()} is invoked only under graphical user interfaces
-(Qtenv/Tkenv), and right before display updates. However, it is only invoked for
+(Qtenv), and right before display updates. However, it is only invoked for
 figures on canvases that are currently displayed. This makes it possible for
 canvases that are never viewed to have zero refresh overhead.
 
@@ -2781,21 +2781,20 @@ other canvases, let alone change the state of the simulation.
 In rare cases it might be necessary to create figure types where the rendering
 is entirely custom, and not based on already existing figures. The
 difficulty arises from the point that figures are only data storage classes,
-actual drawing takes place in the GUI library such as Tkenv and Qtenv.
+actual drawing takes place in the GUI library such as Qtenv.
 Thus, in addition to writing the new figure class, one also needs to extend
-Tkenv and/or Qtenv with the corresponding rendering code.
-We won't go into full details on how to extend Tkenv/Qtenv here, just give
+Qtenv with the corresponding rendering code.
+We won't go into full details on how to extend Qtenv here, just give
 you a few pointers in case you need it.
 
-In both Tkenv and Qtenv, rendering is done with the help of figure renderer
+In Qtenv, rendering is done with the help of figure renderer
 classes that have a class hierarchy roughly parallel to the
 \cclass{cFigure} inheritance tree. The base classes are incidentally called
-\cclass{FigureRenderer}. How figure renderers do their job is different in
-Tkenv and Qtenv: in Tkenv, rendering occurs by creating and maintaining
-canvas items on a Tkpath canvas; on Qtenv, they create and manipulate
+\cclass{FigureRenderer}. How figure renderers do their job may be different in
+various graphical runtime interfaces; in Qtenv, they create and manipulate
 \cclass{QGraphicsItem}s on a \cclass{QGraphicsView}. To be able to render a
 new figure type, one needs to create the appropriate figure renderer
-classes for Tkenv, Qtenv, or both.
+classes for Qtenv.
 
 The names of the renderer classes are provided by the figures themselves,
 by their \ffunc{getRendererClassName()} methods. For example,
@@ -2805,7 +2804,7 @@ looks for a registered class named
 \ttt{omnetpp::qtenv::LineFigureRenderer}. If such class exists and is a
 Qtenv figure renderer (the appropriate \ttt{dynamic\_cast} succeeds), an
 instance of that class will be used to render the figure, otherwise an
-error message will be issued. Tkenv does something similar.
+error message will be issued.
 
 
 \section{3D Visualization}
@@ -2828,8 +2827,7 @@ or traffic intensity, and so on.
 
 In {\opp}, 3D visualization is completely distinct from display
 string-based and canvas-based visualization. The scene appears on a
-separate GUI area. Visualizing 3D scenes is currently only supported
-in Qtenv (i.e. it is unavailable in Tkenv.)
+separate GUI area.
 
 {\opp}'s 3D visualization is based on the open-source OpenSceneGraph
 and osgEarth libraries. These libraries offer high-level functionality,
@@ -3659,9 +3657,9 @@ Being able to use online map providers is very convenient, but it is
 often more desirable to use an offline map resource. Doing so not only makes
 the simulation usable without internet access, but also speeds up map
 loading and insulates the simulation against changes in the online environment
-(availablity, content and configuration changes of map servers). 
+(availablity, content and configuration changes of map servers).
 
-There are two ways map data may come from the local disk: caching, and 
+There are two ways map data may come from the local disk: caching, and
 using a self-contained offline map package. In this section we'll cover the
 latter, and show how you can create an offline map package from online sources,
 using the command line tool called \fprog{osgearth\_package}. The resulting
@@ -3670,7 +3668,7 @@ package, unlike map cache, will also be redistributable.
 Given the right arguments, \fprog{osgearth\_package} will download the tiles
 that make up the map, and arrange them in a fairly standardized, self-contained
 package. It will also create a corresponding \ttt{.earth} file that can be later
-used just like any other. 
+used just like any other.
 
 For example, the osg-earth sample simulation uses a tile package which has been
 created with a command similar to this one:
@@ -3708,7 +3706,7 @@ mode among others. Consult the documentation for details, or the short usage hel
 accessible with the \ttt{-h} switch.
 
 \begin{hint}
-There is also a GUI front-end for \fprog{osgearth\_package}, called 
+There is also a GUI front-end for \fprog{osgearth\_package}, called
 \fprog{osgearth\_package\_qt}. This tool provides an easy way to select
 the bounding rectangle on the actual map using the mouse, lets the user
 choose the input and output files and the export options, and performs the

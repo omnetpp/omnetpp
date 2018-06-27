@@ -33,8 +33,7 @@ The Simulation IDE is supported on the following platforms:
 Simulations can be run practically on any unix-like environment with
 a decent and fairly up-to-date C++ compiler, for example gcc 5.x. Certain
 @OMNETPP@ features (Qtenv, parallel simulation, XML support, etc.) depend
-on the availability of external libraries (Tcl/Tk, MPI, LibXML or Expat,
-etc.)
+on the availability of external libraries (Qt, MPI, LibXML, etc.)
 
 IDE platforms are restricted because the IDE relies on a native shared
 library, which we compile for the above platforms and distribute

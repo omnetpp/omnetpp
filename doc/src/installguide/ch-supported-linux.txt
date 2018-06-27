@@ -122,16 +122,6 @@ read by the makefiles during the build process.
 
 image::pictures/terminal-configuration.png[title="Configuring @OMNETPP@",align="center",scaledwidth="75%"]
 
-Normally, the `configure` script needs to be running under the graphical
-environment (X11) in order to test for `wish`, the Tcl/Tk shell. If you are logged in
-via an 'ssh' session, or there is some other reason why X is not running,
-the easiest way to work around the problem is to tell @OMNETPP@ to build
-without Tcl/Tk and Qtenv. To do that, use the command
-
-  $ ./configure WITH_TKENV=no WITH_QTENV=no
-
-instead of plain `./configure`.
-
 [NOTE]
 ===============================================================
 If there is an error during `configure`, the output may give hints about what
@@ -181,7 +171,7 @@ the dyna simulation is started by entering the following commands:
     $ cd samples/dyna
     $ ./dyna
 
-By default, the samples will run using the Tcl/Tk environment. You should see
+By default, the samples will run using the Qtenv environment. You should see
 nice gui windows and dialogs.
 
 

@@ -34,7 +34,7 @@ The 'Desktop Client' version does not contain development tools.
 To install the required packages, type in the terminal:
 
   $ su -c 'yum install make gcc gcc-c++ bison flex perl \
-      tcl-devel tk-devel qt-devel libxml2-devel zlib-devel \
+      qt-devel libxml2-devel zlib-devel \
       java doxygen graphviz openmpi-devel libpcap-devel'
 
 To use 3D visualization support in Qtenv  (recommended), you should
@@ -80,8 +80,8 @@ in front of the names, and pick the latest version of each package.
 
 The packages:
 
-* make gcc, gcc-c++, bison, flex, perl, tcl-devel, tk-devel, qt-devel,
-libxml2-devel, zlib-devel, make, java, doxygen, graphviz, openmpi-devel,
+* make gcc, gcc-c++, bison, flex, perl, qt-devel, libxml2-devel,
+zlib-devel, make, java, doxygen, graphviz, openmpi-devel,
 libpcap-devel
 
 Click 'Apply', then follow the instructions.

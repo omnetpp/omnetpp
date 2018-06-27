@@ -163,7 +163,7 @@
         </listitem>
         <listitem>
           <para> ``User interface'': You can specify which UI environment should be used during execution.
-            The dialog offers ``Cmdenv'' (command-line UI), ``Qtenv'' (Qt-based GUI), and ``Tkenv'' (legacy, Tk-based GUI).
+            The dialog offers ``Cmdenv'' (command-line UI) and ``Qtenv'' (Qt-based GUI).
             If you have a custom user interface, its name can also be specified here.
             Make sure that the code of the chosen UI library is available (linked into the executable/library
             or loaded dynamically).

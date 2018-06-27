@@ -256,7 +256,7 @@ Enum values need to be unique.
 
 The message compiler translates an enum into a normal C++ enum, plus
 creates an object which stores text representations of the constants. The
-latter makes it possible for Tkenv and Qtenv to display symbolic names.
+latter makes it possible for Qtenv to display symbolic names.
 
 If the enum to be associated with a field comes from a different message file,
 then the enum must be announced and its generated header file be included.
@@ -1152,11 +1152,11 @@ Some additional notes:
   \item \ttt{getBar(int k)} cannot be implemented in a straightforward way
      (\ttt{std::stack} does not support accessing elements by index).
      It could still be implemented in a less efficient way using STL iterators,
-     and efficiency does not seem to be major problem because only Tkenv
+     and efficiency does not seem to be major problem because only Qtenv
      is going to invoke this function.
   \item \ttt{setBar(int k, int x)} could not be implemented, but this
      is not particularly a problem. The exception will materialize in a
-     Tkenv error dialog when you try to change the field value.
+     Qtenv error dialog when you try to change the field value.
 \end{enumerate}
 
 
@@ -1347,7 +1347,7 @@ packet FooPacket extends NetworkPacket
 For each generated class and struct, the message compiler generates an
 associated descriptor class. The descriptor class carries ``reflection''
 information about the new class, and makes it possible to inspect message
-contents in Tkenv.
+contents in Qtenv.
 
 The descriptor class encapsulates virtually all information that the
 original message definition contains, and exposes it via member functions.
@@ -1357,7 +1357,7 @@ and setting a field's value in an instance of the class
 (\ffunc{getFieldAsString()}, \ffunc{setFieldAsString()}), for exploring the
 class hierarchy (\ffunc{getBaseClassDescriptor()}, etc.), for accessing
 class and field properties, and for similar tasks. When you inspect a
-message or packet in the simulation, Tkenv can uses the associated
+message or packet in the simulation, Qtenv can uses the associated
 descriptor class to extract and display the field values.
 
 The \fprop{@descriptor} class property can be used to control the generation
@@ -1368,7 +1368,7 @@ for the class at all.
 
 It is also possible to use (or abuse) the message compiler for generating a
 descriptor class for an existing class. (This can be useful for making your
-class inspectable in Tkenv.) To do that, write a message definition for
+class inspectable in Qtenv.) To do that, write a message definition for
 your existing class (for example, if it has \ttt{int getFoo()} and
 \ttt{setFoo(int)} methods, add an \ttt{int foo} field to the message
 definition), and mark it with \ttt{@existingClass(true)}. This will tell the

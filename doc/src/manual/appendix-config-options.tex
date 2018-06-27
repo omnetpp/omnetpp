@@ -653,23 +653,6 @@ with the \fopt{-h configdetails} option.
     together.\\Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<statistic-{\allowbreak}name>.{\allowbreak}statistic-{\allowbreak}recording={\allowbreak}true/{\allowbreak}false}.\\Example:
     \ttt{**.{\allowbreak}ping.{\allowbreak}round\-Trip\-Time.{\allowbreak}statistic-{\allowbreak}recording={\allowbreak}false}
-\item[tkenv-default-config] = \textit{<string>}\\
-    \textit{Global setting (applies to all simulation runs).}\\
-    Specifies which config Tkenv should set up automatically on startup. The
-    default is to ask the user.
-\item[tkenv-default-run] = \textit{<int>}, default: \ttt{0}\\
-    \textit{Global setting (applies to all simulation runs).}\\
-    Specifies which run (of the default config, see
-    \ttt{tkenv-{\allowbreak}default-{\allowbreak}config}) Tkenv should set up
-    automatically on startup. The default is to ask the user.
-\item[tkenv-extra-stack] = \textit{<double>}, unit=\ttt{B}, default: \ttt{48Ki\-B}\\
-    \textit{Global setting (applies to all simulation runs).}\\
-    Specifies the extra amount of stack that is reserved for each
-    \ttt{activity()} simple module when the simulation is run under Tkenv.
-\item[tkenv-plugin-path] = \textit{<path>}\\
-    \textit{Global setting (applies to all simulation runs).}\\
-    Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
-    that get evaluated on startup.
 \item[total-stack] = \textit{<double>}, unit=\ttt{B}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies the maximum memory for \ttt{activity()} simple module stacks. You
@@ -680,8 +663,8 @@ with the \fopt{-h configdetails} option.
     Specifies type for submodules and channels declared with 'like <>'.
 \item[user-interface] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
-    Selects the user interface to be started. Possible values are Cmdenv, Tkenv
-    and Qtenv. This option is normally left empty, as it is more convenient to
+    Selects the user interface to be started. Possible values are Cmdenv and
+    Qtenv. This option is normally left empty, as it is more convenient to
     specify the user interface via a command-line option or the IDE's Run and
     Debug dialogs. New user interfaces can be defined by subclassing
     \ttt{cRunnable\-Envir}.

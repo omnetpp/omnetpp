@@ -110,8 +110,7 @@ empty string. Actual storage for a name string and a \ffunc{setName()}
 method is provided by the class \cclass{cNamedObject}, which is also an
 (indirect) base class for most library classes. Thus, one can assign names
 to nearly all user-created objects. It it also recommended to do so, because
-a name makes an object easier to identify in graphical runtimes like Tkenv
-or Qtenv.
+a name makes an object easier to identify in graphical runtimes like Qtenv.
 
 By convention, the object name is the first argument to the constructor
 of every class, and it defaults to the empty string. To create an object with
@@ -165,7 +164,7 @@ EV << gate->getFullPath();  // prints "Queueing.classifier.out[3]"
 \end{cpp}
 
 The \ffunc{getFullName()} and \ffunc{getFullPath()} methods are
-extensively used in graphical runtime environments (Tkenv, Qtenv),
+extensively used in graphical runtime environments like Qtenv,
 and also when assembling runtime error messages.
 
 In contrast to \ffunc{getName()} and \ffunc{getFullName()} which return
@@ -282,10 +281,9 @@ statements using the {\opp} logging API.
 
 The exact way log messages are displayed to the user depends on the user interface.
 In the command-line user interface (Cmdenv\index{Cmdenv}), the log is simply
-written to the standard output. In the graphical user interfaces, Tkenv and Qtenv,
-the main window displays the log output of all modules by default. One can also
-open new output windows on a per module basis, these windows automatically filter
-for the log messages of the selected module.
+written to the standard output. In the Qtenv graphical user interface,
+the main window has an area for displaying the log output from the currently
+displayed compound module.
 
 \subsection{Log Levels}
 \label{sec:sim-lib:log-levels}
@@ -372,7 +370,7 @@ EV_TRACE << "routeUnicastPacket(" << packet << ");" << endl;
 It is not recommended to use plain \ffunc{printf()} or \ffunc{std::cout} for
 logging. Output from \fmac{EV\_INFO} and the other log macros can be controlled
 more easily from \ffilename{omnetpp.ini}, and it is more convenient to view
-using Tkenv or Qtenv.
+using Qtenv.
 \end{note}
 
 The above C++ macros work well from any C++ class, including {\opp} modules. In
@@ -1553,7 +1551,7 @@ EV << expr.matches(&cMatchableString("something else")) << endl; // -> false
 There are several statistic and result collection classes:
 \cclass{cStdDev}, \cclass{cHistogram}, \cclass{cPSquare} and
 \cclass{cKSplit}. They are all derived from the abstract base class
-\cclass{cStatistic}; histogram-like classes derive from 
+\cclass{cStatistic}; histogram-like classes derive from
 \cclass{cAbstractHistogram}.\footnote{Earlier versions of {\opp} had more
 statistical classes: \cclass{cWeightedStdDev}, \cclass{cLong\-Histogram},
 \cclass{cDouble\-Histogram}, \cclass{cVarHistogram}. The functionality
@@ -1562,7 +1560,7 @@ of these classes have been consolidated into \cclass{cStdDev} and
 
 \begin{itemize}
   \item \cclass{cStdDev} keeps summary statistics (mean, standard deviation,
-    range) of weighted or unweighted observations. 
+    range) of weighted or unweighted observations.
   \item \cclass{cHistogram} is for collecting observations into a histogram.
     \cclass{cHistogram} is highly configurable, suports adding/removing/merging bins
     dynamically, and can produce a good histogram from most distributions
@@ -1590,25 +1588,25 @@ count, which is \ttt{int64\_t}.)
 For weighted statistics, weights are also \ttt{double}s. Being able to
 handle non-integer weights is important because weighted statistics
 are often used for computing time averages, e.g. average queue length
-or average channel utilization. 
+or average channel utilization.
 
 \subsection{cStdDev}
 \label{sec:sim-lib:cstatistic-and-descendants}
 
 The \cclass{cStdDev} class is meant to collect summary statistics of
 observations. If you also need to compute a histogram, use \cclass{cHistogram}
-(or \cclass{cKSplit}/\cclass{cPSquare}) instead, because those classes 
+(or \cclass{cKSplit}/\cclass{cPSquare}) instead, because those classes
 already include the functionality of \cclass{cStdDev}.
 
 \cclass{cStdDev} can collect unweighted or weighted statistics. This needs
-to be decided in the constructor call, and cannot be changed later. 
+to be decided in the constructor call, and cannot be changed later.
 Specify \ttt{true} as the second argument for weighted statistics.
- 
+
 \begin{cpp}
 cStdDev unweighted("packetDelay");  // unweighted
 cStdDev weighted("queueLength", true); // weighted
 \end{cpp}
- 
+
 Observations are added to the statistics by using the \ffunc{collect()}
 or the \ffunc{collectweighted()} methods. The latter takes two parameters,
 the value and the weight.
@@ -1623,17 +1621,17 @@ for (double value : values2) {
 }
 \end{cpp}
 
-Statistics can be obtained from the object with the following methods: 
-\ffunc{getCount()}, \ffunc{getMin()}, \ffunc{getMax()}, \ffunc{getMean()}, 
+Statistics can be obtained from the object with the following methods:
+\ffunc{getCount()}, \ffunc{getMin()}, \ffunc{getMax()}, \ffunc{getMean()},
 \ffunc{getStddev()}, \ffunc{getVariance()}.
 
 There are two getter methods that only work for unweighted statistics:
-\ffunc{getSum()} and \ffunc{getSqrSum()}. Plain (unweighted) sum and 
+\ffunc{getSum()} and \ffunc{getSqrSum()}. Plain (unweighted) sum and
 sum of squares are not computed for weighted observations, and it is
 an error to call these methods in the weighted case.
 
 Other getter methods are primarily meant for weighted statistics:
-\ffunc{getSumWeights()}, \ffunc{getWeightedSum()}, 
+\ffunc{getSumWeights()}, \ffunc{getWeightedSum()},
 \ffunc{getSqrSumWeights()}, \ffunc{getWeightedSqrSum()}.
 When called on unweighted statistics, these methods simply
 assume a weight of 1.0 for all observations.
@@ -1657,8 +1655,8 @@ bin histograms, and supports both weighted and unweighted observations.
 The histogram can be modified dynamically: it can be extended with new bins,
 and adjacent bins can be merged. In addition to the bin values (which mean
 count in the unweighted case, and sum of weights in the weighted case),
-the histogram object also keeps the number (or sum of weights) of the 
-lower and upper outliers (``underflows'' and ``overflows''.) 
+the histogram object also keeps the number (or sum of weights) of the
+lower and upper outliers (``underflows'' and ``overflows''.)
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1672,16 +1670,16 @@ is usually delegated to a strategy object. However, for most
 use cases, histogram strategies is not something the user needs
 to be concerned with. The default constructor of \cclass{cHistogram}
 sets up the histogram with a default strategy that usually produces
-a good quality histogram without requiring manual configuration or a-priori 
+a good quality histogram without requiring manual configuration or a-priori
 knowledge about the distribution. For special use cases, there are
-other histogram strategies, and it is also possible to write new ones. 
+other histogram strategies, and it is also possible to write new ones.
 
 \subsubsection{Creating a Histogram}
 \label{sec:sim-lib:creating-a-histogram}
 
-\cclass{cHistogram} has several constructors variants. Like with 
+\cclass{cHistogram} has several constructors variants. Like with
 \cclass{cStdDev}, it needs to be decided in the constructor call
-by a boolean argument whether the histogram should collect 
+by a boolean argument whether the histogram should collect
 unweighted (\ttt{false}) or weighted (\ttt{true}) statistics;
 the default is unweighted. Another argument is a number of bins
 hint. (The actual number of bins produced might slightly differ,
@@ -1712,7 +1710,7 @@ cHistogram hist("queueLength", nullptr, true); // weighted, no strategy
 
 \cclass{cHistogram} also has methods where you can provide constraints
 and hints for setting up the bins: \ffunc{setMode()}, \ffunc{setRange()},
-\ffunc{setRangeExtensionFactor()}, \ffunc{setAutoExtend()}, 
+\ffunc{setRangeExtensionFactor()}, \ffunc{setAutoExtend()},
 \ffunc{setNumBinsHint()}, \ffunc{setBinSizeHint()}. These methods
 delegate to similar methods of \cclass{cAutoRangeHistogramStrategy}.
 
@@ -1721,29 +1719,29 @@ delegate to similar methods of \cclass{cAutoRangeHistogramStrategy}.
 \label{sec:sim-lib:collecting-observations}
 
 Observations are added to the histogram in the same way as with \cclass{cStdDev}:
-using the \ffunc{collect()} and \ffunc{collectWeighted()} methods. 
+using the \ffunc{collect()} and \ffunc{collectWeighted()} methods.
 
 \subsubsection{Querying the Bins}
 \label{sec:sim-lib:querying-bins}
 
-Histogram bins can be accessed with three member functions: 
-\ffunc{getNumBins()} returns the number of bins, 
-\ffunc[getBinEdge()]{getBinEdge(int k)} returns the \textit{k}th bin edge, 
+Histogram bins can be accessed with three member functions:
+\ffunc{getNumBins()} returns the number of bins,
+\ffunc[getBinEdge()]{getBinEdge(int k)} returns the \textit{k}th bin edge,
 \ffunc[getBinValue()]{getBinValue(int k)} returns the count or sum of weights in bin \textit{k},
-and \ffunc[getBinPDF()]{getBinPDF(int k)} returns the PDF value in the bin 
+and \ffunc[getBinPDF()]{getBinPDF(int k)} returns the PDF value in the bin
 (i.e. between \ffunc[getBinEdge()]{getBinEdge(k)} and \ffunc[getBinEdge()]{getBinEdge(k+1)}).
 The \ffunc[getBinInfo()]{getBinInfo(k)} method returns multiple bin data
 (edges, value, relative frequency) packed together in a struct.
-Four other methods, \ffunc{getUnderflowSumWeights()}, \ffunc{getOverflowSumWeights()}, 
+Four other methods, \ffunc{getUnderflowSumWeights()}, \ffunc{getOverflowSumWeights()},
 \ffunc{getNumUnderflows()}, \ffunc{getNumOverflows()}, provide access to
-the outliers.  
+the outliers.
 
 These functions, being defined on \cclass{cHistogramBase}, are not only
 available on \cclass{cHistogram} but also for \cclass{cPSquare} and \cclass{cKSplit}.
 
-For \cclass{cHistogram}, bin edges and bin values can also be accessed 
-as a vector of \texttt{double}s, using the \ffunc{getBinEdges()} and 
-\ffunc{getBinValues()} methods. 
+For \cclass{cHistogram}, bin edges and bin values can also be accessed
+as a vector of \texttt{double}s, using the \ffunc{getBinEdges()} and
+\ffunc{getBinValues()} methods.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1755,14 +1753,14 @@ as a vector of \texttt{double}s, using the \ffunc{getBinEdges()} and
 An example:
 
 \begin{cpp}
-EV << "[" << hist.getMin() << "," << hist.getBinEdge(0) << "): " 
+EV << "[" << hist.getMin() << "," << hist.getBinEdge(0) << "): "
    << hist.getUnderflowSumWeights() << endl;
 int numBins = hist.getNumBins();
 for (int i = 0; i < numBins; i++) {
-  EV << "[" << hist.getBinEdge(i) << "," << hist.getBinEdge(i+1) << "): " 
+  EV << "[" << hist.getBinEdge(i) << "," << hist.getBinEdge(i+1) << "): "
      << hist.getBinValue(i) << endl;
 }
-EV << "[" << hist.getBinEdge(numBins) << "," << hist.getMax() << "]: " 
+EV << "[" << hist.getBinEdge(numBins) << "," << hist.getMax() << "]: "
    << hist.getOverflowSumWeights() << endl;
 \end{cpp}
 
@@ -1775,32 +1773,32 @@ collection, because some histogram strategies use precollection
 to gather information about the distribution before setting up the bins.
 Use \ffunc{binsAlreadySetUp()} to figure out whether bins are
 set up already. Setting up the bins can be forced with the
-\ffunc{setupBins()} method. 
+\ffunc{setupBins()} method.
 
 
 \subsubsection{Setting Up and Managing the Bins}
 \label{sec:sim-lib:setting-up-bins}
 
-The \cclass{cHistogram} class has several methods for creating and 
+The \cclass{cHistogram} class has several methods for creating and
 manipulating bins. These methods are primarily intended to be called
 from strategy classes, but are also useful if you want to manage
 the bins manually, i.e. without a strategy class.
 
-For setting up the bins, you can either use \ffunc{createUniformBins()} 
-with the range (lo, hi) and the step size as parameters, or specify 
+For setting up the bins, you can either use \ffunc{createUniformBins()}
+with the range (lo, hi) and the step size as parameters, or specify
 all bin edges explicitly in a vector of \ttt{double}s to \ffunc{setBinEdges()}.
 
 When the bins have already been set up, the histogram can be extended
 with new bins down or up using the \ffunc{prependBins()} and \ffunc{appendBins()}
-methods that take a list of new bin edges to add. There is also an 
+methods that take a list of new bin edges to add. There is also an
 \ffunc{extendBinsTo()} method that extends the histogram with equal-sized
-bins at either end to make sure that a supplied value falls into the 
+bins at either end to make sure that a supplied value falls into the
 histogram range. Of course, extending the histogram is only possible
-if there are no outliers in that direction. (The positions of the 
+if there are no outliers in that direction. (The positions of the
 outliers is not preserved, so it is not known how many would fall in
-each of the newly created bins.) 
+each of the newly created bins.)
 
-If the histogram has too many bins, adjacent ones (pairs, triplets, 
+If the histogram has too many bins, adjacent ones (pairs, triplets,
 or groups of size $n$) can be merged, using the \ffunc{mergeBins()}
 method.
 
@@ -1827,26 +1825,26 @@ Histogram strategies subclass from \cclass{cIHistogramStrategy}, and are
 responsible for setting up and managing the bins.
 
 A \ffunc{cHistogram} is created with a \cclass{cDefaultHistogramStrategy}
-by default, which works well in most cases. Other \ffunc{cHistogram} 
-constructors allow passing in an arbitrary histogram strategy. 
+by default, which works well in most cases. Other \ffunc{cHistogram}
+constructors allow passing in an arbitrary histogram strategy.
 
-The \ffunc{collect()} and \ffunc{collectWeighted()} methods of a 
+The \ffunc{collect()} and \ffunc{collectWeighted()} methods of a
 \ffunc{cHistogram} delegate to similar methods of the strategy
 object, which in turn decides when and how to set up the bins,
-and how to manage the bins later. (Setting up the bins may be 
+and how to manage the bins later. (Setting up the bins may be
 postponed until a few observations have been collected, in order to
 gather more information for it.) The histogram strategy
 uses public histogram methods like \ffunc{createUniformBins()}
 to create and manage the bins.
- 
+
 \subsubsection{Available Histogram Strategies}
 \label{sec:sim-lib:available-histogram-strategies}
 
 The following histogram strategy classes exist.
 
-\cclass{cFixedRangeHistogramStrategy} sets up uniform bins over 
-a predetermined interval. The number of bins and the histogram mode 
-(integers or reals) also need to be configured. This strategy does 
+\cclass{cFixedRangeHistogramStrategy} sets up uniform bins over
+a predetermined interval. The number of bins and the histogram mode
+(integers or reals) also need to be configured. This strategy does
 not use precollection, as all input for setting up the bins must be
 explicitly provided by the user.
 
@@ -1861,12 +1859,12 @@ can auto-extend the histogram range by adding new bins as needed. It also
 performs bin merging when necessary, to keep the number of bins reasonably low.
 
 \cclass{cAutoRangeHistogramStrategy} is a generic, very configurable,
-precollection-based histogram strategy which creates uniform bins, and 
+precollection-based histogram strategy which creates uniform bins, and
 creates quality histograms for practical distributions.
 
-Several constraints and hints can be specified for setting up the bins: 
-range lower and/or upper endpoint, bin size, number of bins, 
-mode (integers vs. reals), and whether bin size rounding is to be used. 
+Several constraints and hints can be specified for setting up the bins:
+range lower and/or upper endpoint, bin size, number of bins,
+mode (integers vs. reals), and whether bin size rounding is to be used.
 
 This histogram strategy can auto-extend the histogram range by adding new
 bins at either end. One can also set up an upper limit to the number of
@@ -1916,15 +1914,15 @@ fclose(f2);
 \label{sec:sim-lib:psquare}
 
 The \cclass{cPSquare} class implements the $P^{2}$ algorithm
-described in \cite{JCh85}. $P^{2}$ is a heuristic algorithm 
-for dynamic calculation of the median and other quantiles. 
-The estimates are produced dynamically as the observations arrive. 
-The observations are not stored; therefore, the algorithm has 
-a very small and fixed storage requirement regardless of 
-the number of observations. The $P^{2}$ algorithm operates 
+described in \cite{JCh85}. $P^{2}$ is a heuristic algorithm
+for dynamic calculation of the median and other quantiles.
+The estimates are produced dynamically as the observations arrive.
+The observations are not stored; therefore, the algorithm has
+a very small and fixed storage requirement regardless of
+the number of observations. The $P^{2}$ algorithm operates
 by adaptively shifting bin edges as observations arrive.
 
-\cclass{cPSquare} only needs the number of cells, for example 
+\cclass{cPSquare} only needs the number of cells, for example
 in the constructor:
 
 \begin{cpp}
@@ -1932,8 +1930,8 @@ cPSquare psquare("endToEndDelay", 20);
 \end{cpp}
 
 Afterwards, observations can be added and the resulting histogram
-can be queried with the same \cclass{cAbstractHistogram} methods 
-as with \cclass{cHistogram}. 
+can be queried with the same \cclass{cAbstractHistogram} methods
+as with \cclass{cHistogram}.
 
 
 \subsection{cKSplit}
@@ -2160,7 +2158,7 @@ simulation time intervals (see sections
 
 If the output vector object is disabled or the simulation time is
 outside the specified interval, \ffunc{record()} doesn't write
-anything to the output file. However, if you have a Tkenv or Qtenv inspector
+anything to the output file. However, if you have a Qtenv inspector
 window open for the output vector object\index{output!vector object},
 the values will be displayed there, regardless of the state of the
 output vector object.
@@ -2247,13 +2245,13 @@ The format and processing of output vector files is described in chapter
 \label{sec:sim-lib:basic-watches}
 
 Unfortunately, variables of type \ttt{int}, \ttt{long}, \ttt{double}
-do not show up by default in Tkenv/Qtenv; neither do STL classes
+do not show up by default in Qtenv; neither do STL classes
 (\ttt{std::string}, \ttt{std::vector}, etc.) or your own structs and
 classes. This is because the simulation kernel, being a library, knows
 nothing about types and variables in your source code.
 
 {\opp} provides \fmac{WATCH()} and a set of other macros to
-allow variables to be inspectable in Tkenv/Qtenv and to be output into the snapshot
+allow variables to be inspectable in Qtenv and to be output into the snapshot
 file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
 \ffunc{initialize()} (to watch instance variables) or to the top of the
 \ffunc{activity()} function (to watch its local variables); the point being
@@ -2273,7 +2271,7 @@ Of course, members of classes and structs can also be watched:
 WATCH(config.maxRetries);
 \end{cpp}
 
-The Tkenv and Qtenv runtime environments let you inspect and also change
+The Qtenv runtime environment lets you inspect and also change
 the values of inspected variables.
 
 The \fmac{WATCH()} macro can be used with any type that has a
@@ -2423,7 +2421,7 @@ The arguments: label is a string that will appear in the output
 file; obj is the object whose inside is of interest. By default,
 the whole simulation (all modules etc) will be written out.
 
-If you run the simulation with Tkenv or Qtenv, you can also create a
+If you run the simulation with Qtenv, you can also create a
 snapshot from the menu.
 
 An example snapshot file (some abbreviations have been applied):
@@ -2553,8 +2551,8 @@ void FooModule::finish()
 
 The value includes the extra stack added by the user interface library
 (see \textit{extraStackforEnvir}\index{extraStackforEnvir} in
-envir/omnetapp.h), which is currently 8K for Cmdenv and at least 16K
-for Tkenv.
+envir/envirbase.h), which is currently 8K for Cmdenv and at least 80K
+for Qtenv.
   \footnote{The actual value is platform-dependent.}
 
 \ffunc{getStackUsage()} also works by checking the existence of predefined
@@ -3054,7 +3052,7 @@ be implemented:
         for each object it contains via pointer or as a data member;
         see the API Reference on \cclass{cObject} on how to implement
         \ttt{forEachChild()}. \ffunc{forEachChild()} makes it possible
-        for Tkenv and Qtenv to display the object tree, to perform searches on it, etc.
+        for Qtenv to display the object tree, to perform searches on it, etc.
         It is also used by \ffunc{snapshot()} and some other library functions.
 \end{itemize}
 
@@ -3063,8 +3061,7 @@ Implementation of the following methods is \textbf{recommended}:
 \begin{itemize}
   \item \textit{Object info,} \ffunc{str()}. The \ttt{str()} function
         should return a one-line string describing the object's contents or state.
-        The text returned by \ttt{str()} is displayed at several places in Tkenv
-        and Qtenv.
+        The text returned by \ttt{str()} is displayed at several places in Qtenv.
         \footnote{Until {\opp} version 5.1, \ffunc{str()} was called \ffunc{info()}.
         There was also a \ffunc{detailedInfo()} method that was removed in the
         same version for lack of real usefulness.}
@@ -3322,7 +3319,7 @@ Sim library (\ttt{include/}, \ttt{src/sim/}) can serve as further examples.
 
 {\opp} has a built-in ownership management mechanism which
 is used for sanity checks, and as part of the infrastructure
-supporting Tkenv/Qtenv inspectors.
+supporting Qtenv inspectors.
 
 Container classes like \cclass{cQueue} own the objects inserted
 into them, but this is not limited to objects inserted into a container:
@@ -3363,7 +3360,7 @@ serves other purposes in {\opp}:
     \item prevents certain types of programming errors, namely,
     those associated with wrong ownership handling.
 
-    \item enables Tkenv and Qtenv to display the list of simulation objects
+    \item enables Qtenv to display the list of simulation objects
     present within a simple module. This is extremely useful for finding
     memory leaks caused by forgetting to delete messages that are
     no longer needed.

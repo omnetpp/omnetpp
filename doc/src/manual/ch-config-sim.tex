@@ -211,7 +211,7 @@ $ aloha -c PureAloha
 \end{commandline}
 
 The simulation will then use the contents of the \ttt{[Config PureAloha]}
-section to set up the simulation. (Tkenv, of course, lets the user choose
+section to set up the simulation. (Qtenv, of course, lets the user choose
 the configuration from a dialog.)
 
 
@@ -514,7 +514,7 @@ exponential(0.6).
 
 How does it work? First of all, Cmdenv with the \fopt{-x} option will print
 how many simulation runs a given section expands to. (One should of course
-use Cmdenv for batch runs, not a GUI one like Tkenv or Qtenv.)
+use Cmdenv for batch runs, not a GUI one like Qtenv.)
 
 \begin{commandline}
 $ aloha -u Cmdenv -x AlohaStudy
@@ -1456,11 +1456,11 @@ modules it is set \fmac{LOGLEVEL\_OFF}.
 **.cmdenv-log-level = off
 \end{inifile}
 
-\subsection{Configuring Tkenv and Qtenv}
-\label{sec:config-sim:configuring-tkenv-and-qtenv}
+\subsection{Configuring Qtenv}
+\label{sec:config-sim:configuring-qtenv}
 
-The graphical user interfaces, Tkenv and Qtenv, provide their own configuration
-dialogs where the user can configure logging. These dialogs offer setting the
+The graphical user interface Qtenv provides its own configuration
+dialog where the user can configure logging. This dialog offers setting the
 global runtime log level and the log prefix format string. The per-component
 runtime log levels can be set from the context menu of components. As in Cmdenv,
 it's also possible to set the log levels to \ttt{off}, effectively disabling

@@ -140,15 +140,6 @@ The `configure` script detects installed software and configuration of your
 system. It writes the results into the `Makefile.inc` file, which will be
 read by the makefiles during the build process.
 
-Normally, the `configure` script needs to be running under the graphical
-environment in order to test for `wish`, the Tcl/Tk shell. If you are
-logged in via an ssh session or you want to compile @OMNETPP@ without Tcl/Tk
-and/or Qtenv, use the command
-
-  $ ./configure WITH_TKENV=no WITH_QTENV=no
-
-instead of plain `./configure`.
-
 [NOTE]
 ===============================================================
 If there is an error during `configure`, the output may give hints about what
@@ -275,15 +266,6 @@ project.
 The built libraries and programs are immediately copied
 to the `lib/` and `bin/` subdirectories.
 ===============================================================
-
-[NOTE]
-===============================================================
-The Tcl/Tk environment uses the native Aqua version of Tcl/Tk, so you
-will see native widgets. However, due to problems in the Tk/Aqua port,
-you may experience minor UI quirks. We recommend using Qtenv whenever
-it is possible.
-===============================================================
-
 
 === Additional Packages
 

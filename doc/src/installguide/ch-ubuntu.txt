@@ -38,7 +38,7 @@ Type in the terminal:
 To install the required packages, type in the terminal:
 
   $ sudo apt-get install build-essential gcc g++ bison flex perl \
-       python python3 qt5-default libqt5opengl5-dev tcl-dev tk-dev \
+       python python3 qt5-default libqt5opengl5-dev \
        libxml2-dev zlib1g-dev default-jre doxygen graphviz libwebkitgtk-1.0
 
 To use Qtenv with 3D visualization support, install the development packages
@@ -93,7 +93,7 @@ If the 'Mark additional required changes?' dialog comes up, choose the 'Mark' bu
 The packages:
 
 * required: build-essential, gcc, g++, bison, flex, perl, qt5-default,
-  tcl-dev, tk-dev, libxml2-dev, zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-3.0-0
+  libxml2-dev, zlib1g-dev, default-jre, doxygen, graphviz, libwebkitgtk-3.0-0
 * recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev,
   openmpi-bin, libopenmpi-dev
 

@@ -57,7 +57,7 @@ interfaces:
      This extension interface lets one replace \ffilename{omnetpp.ini}
      with some other implementation, for example a database.
    \item \textit{User interfaces}. When existing runtime user interfaces
-     (Cmdenv, Tkenv, Qtenv) don't suffice, one can create a new one,
+     (Cmdenv, Qtenv) don't suffice, one can create a new one,
      reusing the infrastructure provided by the common base of the three.
 \end{itemize}
 
@@ -119,12 +119,12 @@ The macro arguments are as follows:
 \begin{itemize}
   \item \textit{ID} is a C++ identifier that becomes the name of a global
         variable, a pointer to a \cclass{cConfigOption} object that the
-        macro creates. It lets you refer to the configuration option, 
-        e.g. when querying its value using \cclass{cConfiguration}'s member 
+        macro creates. It lets you refer to the configuration option,
+        e.g. when querying its value using \cclass{cConfiguration}'s member
         functions.
   \item \textit{NAME} is the name of the option (a string).
-  \item \textit{KIND} applies to per-object configuration options, and 
-        clarifies what kind of objects the option applies to. Its value 
+  \item \textit{KIND} applies to per-object configuration options, and
+        clarifies what kind of objects the option applies to. Its value
         must be one of: \ttt{KIND\_COMPONENT} (module or channel),
         \ttt{KIND\_CHANNEL}, \ttt{KIND\_MODULE} (simple or compound module),
         \ttt{KIND\_SIMPLE\_MODULE}, \ttt{KIND\_PARAMETER} (module or channel
@@ -587,7 +587,7 @@ Register_Class(DatabaseConfigurationReader);
 \label{sec:plugin-exts:user-interface}
 
 It is possible to extend {\opp} with a new user interface. The new
-user interface will have fully equal rights to Cmdenv, Tkenv and Qtenv;
+user interface will have fully equal rights to Cmdenv and Qtenv;
 that is, it can be activated by starting the simulation executable with the
 \fopt{-u} \textit{<name>} command-line or the \fconfig{user-interface}
 configuration option, it can be made the default user interface,
