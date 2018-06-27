@@ -6,4 +6,3 @@
 ifeq ($(PLATFORM),win32.x86_64)
 OMNETPP_LIBS += -lwsock32
 endif
-MSGC:=$(MSGC) --msg6
