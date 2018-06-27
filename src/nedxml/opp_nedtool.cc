@@ -31,16 +31,11 @@
 #include "common/ver.h"
 #include "errorstore.h"
 #include "omnetpp/platdep/platmisc.h"  // getcwd, chdir
-#include "msgcompiler.h"
-#include "msgcompilerold.h"
 #include "nedparser.h"
-#include "msgparser.h"
 #include "exception.h"
-#include "msgdtdvalidator.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
 #include "nedcrossvalidator.h"
-#include "msggenerator.h"
 #include "nedgenerator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
@@ -64,7 +59,6 @@ bool opt_gensrc = false;           // -n
 bool opt_validateonly = false;     // -v
 int opt_nextfiletype = UNKNOWN_FILE; // -T
 const char *opt_suffix = nullptr;  // -s
-const char *opt_hdrsuffix = nullptr; // -t
 bool opt_inplace = false;          // -k
 bool opt_unparsedexpr = false;     // -e
 bool opt_storesrc = false;         // -S
@@ -76,14 +70,6 @@ bool opt_verbose = false;          // -V
 const char *opt_outputfile = nullptr; // -o
 bool opt_here = false;             // -h
 bool opt_splitnedfiles = false;    // -u
-bool opt_legacymode = true;        // --msg4/--msg6
-std::vector<std::string> opt_importpath; // -I
-bool opt_generatedependencies = false; // -MD
-std::string opt_dependenciesfile;  // -MF
-bool opt_phonytargets = false;     // -MP
-
-// MSG specific option variables:
-MsgCompilerOptions msg_options;
 
 FilesElement *outputtree;
 
@@ -101,16 +87,14 @@ void printUsage()
        "specified, opp_nedtool generates C++ source.\n"
        "  -x: generate XML (you may need -y, -e and -p as well)\n"
        "  -n: generate source (NED or MSG; you may need -y and -e as well)\n"
-       "  -P: pretty-print and/or convert 3.x NED files to the current syntax;\n"
-       "      this is a shortcut for -n -k -y\n"
+       "  -P: pretty-print; this is a shortcut for -n -k -y\n"
        "  -v: no output (only validate input)\n"
        "  -m: output is a single file (out_n.* by default, see also -o)\n"
        "  -o <filename>: output file name (don't use when processing multiple files)\n"
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
-       "  -T xml/ned/msg/off: following files are XML, NED or MSG up to '-T off'\n"
        "  -s <suffix>: suffix for generated files\n"
-       "  -t <suffix>: when generating C++, suffix for generated header files\n"
+       "  -T xml/ned/off: following files are XML or NED up to '-T off'\n"
        "  -k: with -n: replace original file and create backup (.bak). If input is a\n"
        "      single XML file created by 'opp_nedtool -m -x': replace original NED files\n"
        "  -u: with -m or -k: split NED files to one NED component per file\n" //XXX refine help text
@@ -126,26 +110,6 @@ void printUsage()
        "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
        "      the current working directory. @@ listfiles can be put anywhere,\n"
        "      including /tmp -- effect only depends on the working directory.\n"
-       "Message (.msg) file specific options (deprecated, use opp_msgtool):\n"
-       "  -P <symbol>: add dllexport/dllimport symbol to class declarations; if symbol\n"
-       "      name ends in _API, boilerplate code to conditionally define\n"
-       "      it as OPP_DLLEXPORT/OPP_DLLIMPORT is also generated\n"
-       "  -MD: turn on dependency generation for message files; see also: -MF, -MP\n"
-       "  -MF <file>: save dependencies into the specified file; when absent,\n"
-       "      dependencies will be written to the standard output\n"
-       "  -MP: add a phony target for each dependency other than the main file,\n"
-       "      causing each to depend on nothing. These dummy rules work around errors\n"
-       "      make gives if you remove header files without updating the Makefile.\n"
-       "  -Xnc: do not generate the classes, only object descriptions\n"
-       "  -Xnd: do not generate object descriptions\n"
-       "  -Xns: do not generate setters in object descriptions\n"
-       "  --msg6: Activate support for imports and other experimental features.\n"
-       "      Message files using the new features are not backward compatible\n"
-       "      and they need to be updated. For further info see src/nedxml/ChangeLog.\n"
-       "      Hint: To activate, add a makefrag file to your project with the\n"
-       "      following content:\"MSGC:=$(MSGC) --msg6\"\n"
-       "  --msg4: The opposite of --msg6: Force OMNeT++ 4.x compatible message file\n"
-       "      processing.\n"
     );
 }
 
@@ -192,38 +156,10 @@ bool renameFileToBAK(const char *fname)
 
 void generateSource(std::ostream& out, ASTNode *node, ErrorStore *e, int contentType)
 {
+    //TODO
     switch (contentType) {
     case NED_FILE: generateNed(out, node); break;
-    case MSG_FILE: generateMsg(out, node); break;
     }
-}
-
-void generateDependencies(const char *depsfile, const char *fname, const char *outhdrfname, const char *outfname, const std::set<std::string>& dependencies)
-{
-    std::ofstream fileStream;
-    bool useFileOutput = !opp_isempty(depsfile) && strcmp(depsfile, "-") != 0;
-    std::ostream& out = useFileOutput ? fileStream : std::cout;
-    if (useFileOutput) {
-        mkPath(directoryOf(depsfile).c_str());
-        fileStream.open(depsfile);
-        if (fileStream.fail())
-            throw opp_runtime_error("Could not open '%s' for write", depsfile);
-    }
-
-    out << outfname << " " << outhdrfname << " :";
-    out << " \\\n\t" << fname;
-    for (const std::string& dep : dependencies)
-        out << " \\\n\t" << dep;
-    out << "\n";
-    if (opt_phonytargets) {
-        out << fname << ":\n";
-        for (const std::string& dep : dependencies)
-            out << dep << ":\n";
-    }
-    if (!out)
-        throw opp_runtime_error("Error writing dependencies to '%s'", depsfile);
-    if (useFileOutput)
-        fileStream.close();
 }
 
 bool processFile(const char *fname, ErrorStore *errors)
@@ -247,8 +183,10 @@ bool processFile(const char *fname, ErrorStore *errors)
                 ftype = NED_FILE;
         }
 
-        if (ftype == MSG_FILE)
-            fprintf(stdout, "opp_nedtool: %s: warning: use opp_msgtool for processing msg files\n", fname);
+        if (ftype == MSG_FILE) {
+            fprintf(stdout, "opp_nedtool: %s: error: use opp_msgtool for processing msg files\n", fname);
+            return false;
+        }
 
         // process input tree
         errors->clear();
@@ -261,21 +199,13 @@ bool processFile(const char *fname, ErrorStore *errors)
             parser.setStoreSource(opt_storesrc);
             tree = parser.parseNedFile(fname);
         }
-        else if (ftype == MSG_FILE) {
-            MsgParser parser(errors);
-            parser.setMsgNewSyntaxFlag(!opt_legacymode);
-            parser.setStoreSource(opt_storesrc);
-            tree = parser.parseMsgFile(fname);
-        }
         if (errors->containsError()) {
             delete tree;
             return false;
         }
 
         int contentType = (ftype==NED_FILE || ftype==MSG_FILE) ? ftype :
-                (tree->getTagCode()==NED_NED_FILE || tree->getFirstChildWithTag(NED_NED_FILE)!=nullptr) ? NED_FILE :
-                        (tree->getTagCode()==MSG_MSG_FILE || tree->getFirstChildWithTag(MSG_MSG_FILE)!=nullptr) ? MSG_FILE :
-                                UNKNOWN_FILE;
+                (tree->getTagCode()==NED_NED_FILE || tree->getFirstChildWithTag(NED_NED_FILE)!=nullptr) ? NED_FILE : UNKNOWN_FILE;
 
         // DTD validation and additional syntax validation
         if (contentType == NED_FILE) {
@@ -288,14 +218,6 @@ bool processFile(const char *fname, ErrorStore *errors)
 
             NedSyntaxValidator syntaxvalidator(!opt_unparsedexpr, errors);
             syntaxvalidator.validate(tree);
-            if (errors->containsError()) {
-                delete tree;
-                return false;
-            }
-        }
-        else if (contentType == MSG_FILE) {
-            MsgDtdValidator dtdvalidator(errors);
-            dtdvalidator.validate(tree);
             if (errors->containsError()) {
                 delete tree;
                 return false;
@@ -321,20 +243,15 @@ bool processFile(const char *fname, ErrorStore *errors)
             else {
                 // generate output file name
                 const char *suffix = opt_suffix;
-                const char *hdrsuffix = opt_hdrsuffix;
                 if (!suffix) {
                     if (opt_genxml)
-                        suffix = (ftype == MSG_FILE) ? "_m.xml" : "_n.xml";
+                        suffix = "_n.xml";
                     else if (opt_gensrc)
-                        suffix = (ftype == MSG_FILE) ? "_m.msg" : "_n.ned";
+                        suffix = "_n.ned";
                     else
-                        suffix = (ftype == MSG_FILE) ? "_m.cc" : "_n.cc";
-                }
-                if (!hdrsuffix) {
-                    hdrsuffix = "_m.h";
+                        ; //TODO ensure this cannot happen
                 }
                 createFileNameWithSuffix(outfname, fname, suffix);
-                createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
             }
 
             // TBD check output file for write errors!
@@ -349,11 +266,9 @@ bool processFile(const char *fname, ErrorStore *errors)
                 if (!out)
                     throw opp_runtime_error("Error writing '%s'", outfname);
             }
-            else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES ||
-                                                   tree->getTagCode() == NED_NED_FILE ||
-                                                   tree->getTagCode() == MSG_MSG_FILE))
+            else if (opt_inplace && opt_gensrc && (tree->getTagCode() == NED_FILES || tree->getTagCode() == NED_NED_FILE))
             {
-                if (tree->getTagCode() == NED_NED_FILE || tree->getTagCode() == MSG_MSG_FILE) {
+                if (tree->getTagCode() == NED_NED_FILE) {
                     // wrap the tree into a FilesElement
                     ASTNode *file = tree;
                     tree = new FilesElement();
@@ -367,8 +282,6 @@ bool processFile(const char *fname, ErrorStore *errors)
                     // extract file name
                     if (child->getTagCode() == NED_NED_FILE)
                         strcpy(outfname, ((NedFileElement *)child)->getFilename());
-                    else if (child->getTagCode() == MSG_MSG_FILE)
-                        strcpy(outfname, ((MsgFileElement *)child)->getFilename());
                     else
                         continue;  // if there's anything else, ignore it
 
@@ -397,32 +310,10 @@ bool processFile(const char *fname, ErrorStore *errors)
             }
             else {
                 Assert(!opt_gensrc && !opt_genxml);  // already handled above
-                if (ftype == MSG_FILE) {
-                    if (opt_legacymode) {
-                        // legacy (4.x) mode
-                        MsgCompilerOptionsOld options;
-                        options.exportDef = msg_options.exportDef;
-                        options.generateClasses = msg_options.generateClasses;
-                        options.generateDescriptors = msg_options.generateDescriptors;
-                        options.generateSettersInDescriptors = msg_options.generateSettersInDescriptors;
-                        MsgCompilerOld generator(errors, options);
-                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname);
-                    }
-                    else {
-                        msg_options.importPath = opt_importpath;
-                        MsgCompiler generator(msg_options, errors);
-                        std::set<std::string> dependencies;
-                        generator.generate(dynamic_cast<MsgFileElement *>(tree), outhdrfname, outfname, dependencies);
-                        if (opt_generatedependencies)
-                            generateDependencies(opt_dependenciesfile.c_str(), fname, outhdrfname, outfname, dependencies);
-                    }
-                }
-                else {
-                    fprintf(stderr, "opp_nedtool: generating C++ source from %s files is not supported\n",
-                            (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
-                    delete tree;
-                    return false;
-                }
+                fprintf(stderr, "opp_nedtool: generating C++ source from %s files is not supported\n",
+                        (ftype == NED_FILE ? "NED" : ftype == XML_FILE ? "XML" : "unknown"));
+                delete tree;
+                return false;
             }
             delete tree;
 
@@ -524,8 +415,6 @@ int main(int argc, char **argv)
     ErrorStore *errors = &errorstore;
     errors->setPrintToStderr(true);
 
-    bool msg4=false, msg6=false;
-
     // process options
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-x")) {
@@ -541,17 +430,6 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "-v")) {
             opt_validateonly = true;
-        }
-        else if (!strncmp(argv[i], "-I", 2)) {
-            const char *arg = argv[i]+2;
-            if (!*arg) {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
-                arg = argv[i];
-            }
-            opt_importpath.push_back(arg);
         }
         else if (!strncmp(argv[i], "-T", 2)) {
             const char *arg = argv[i]+2;
@@ -582,14 +460,6 @@ int main(int argc, char **argv)
                 return 1;
             }
             opt_suffix = argv[i];
-        }
-        else if (!strcmp(argv[i], "-t")) {
-            i++;
-            if (i == argc) {
-                fprintf(stderr, "opp_nedtool: unexpected end of arguments after -t\n");
-                return 1;
-            }
-            opt_hdrsuffix = argv[i];
         }
         else if (!strcmp(argv[i], "-k")) {
             opt_inplace = true;
@@ -629,61 +499,6 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "-h")) {
             opt_here = true;
-        }
-        else if (!strncmp(argv[i], "-P", 2)) {
-            if (argv[i][2])
-                msg_options.exportDef = argv[i]+2;
-            else {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
-                msg_options.exportDef = argv[i];
-            }
-        }
-        else if (!strcmp(argv[i], "--msg6")) {
-            opt_legacymode = false;
-            msg6 = true;
-        }
-        else if (!strcmp(argv[i], "--msg4")) {
-            opt_legacymode = true;
-            msg4 = true;
-        }
-        else if (!strcmp(argv[i], "-MD")) {
-            opt_generatedependencies = true;
-        }
-        else if (!strcmp(argv[i], "-MF")) {
-            if (++i == argc) {
-                fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
-                return 1;
-            }
-            opt_dependenciesfile = argv[i];
-        }
-        else if (!strcmp(argv[i], "-MP")) {
-            opt_phonytargets = true;
-        }
-        else if (!strncmp(argv[i], "-X", 2)) {
-            const char *arg = argv[i]+2;
-            if (!*arg) {
-                if (++i == argc) {
-                    fprintf(stderr, "opp_nedtool: unexpected end of arguments after %s\n", argv[i-1]);
-                    return 1;
-                }
-                arg = argv[i];
-            }
-            if (!strcmp(arg, "nc")) {
-                msg_options.generateClasses = false;
-            }
-            else if (!strcmp(arg, "nd")) {
-                msg_options.generateDescriptors = false;
-            }
-            else if (!strcmp(arg, "ns")) {
-                msg_options.generateSettersInDescriptors = false;
-            }
-            else {
-                fprintf(stderr, "opp_nedtool: unknown option -X %s\n", arg);
-                return 1;
-            }
         }
         else if (argv[i][0] == '-') {
             fprintf(stderr, "opp_nedtool: unknown option %s\n", argv[i]);
@@ -735,11 +550,6 @@ int main(int argc, char **argv)
 #endif
         }
 
-        if (msg4 && msg6) {
-            fprintf(stderr, "opp_nedtool: conflicting options: --msg4, --msg6\n");
-            return 1;
-        }
-
     }
 
     if (opt_mergeoutput) {
@@ -769,10 +579,9 @@ int main(int argc, char **argv)
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
         else if (opt_gensrc)
-            generateSource(out, outputtree, errors, NED_FILE /*TODO or MSG_FILE*/);
+            generateSource(out, outputtree, errors, NED_FILE);
         else
             return 1;  // mergeoutput with C++ output not supported
-        // generateCpp(out, cout, outputtree);
         out.close();
         if (!out)
             throw opp_runtime_error("Error writing '%s'", outfname);
