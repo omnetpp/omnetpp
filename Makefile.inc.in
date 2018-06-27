@@ -17,8 +17,6 @@ WITH_OSGEARTH ?= @WITH_OSGEARTH@
 WITH_NETBUILDER ?= @WITH_NETBUILDER@
 WITH_PARSIM ?= @WITH_PARSIM@
 WITH_SYSTEMC ?= @WITH_SYSTEMC@
-WITH_TKENV ?= @WITH_TKENV@
-EMBED_TCL_CODE ?= @EMBED_TCL_CODE@
 PREFER_SQLITE_RESULT_FILES ?= @PREFER_SQLITE_RESULT_FILES@
 
 #
@@ -40,7 +38,6 @@ OMNETPP_LIB_DIR = $(OMNETPP_ROOT)/lib$(OUTPUT_PREFIX)
 OMNETPP_OUT_DIR = $(OMNETPP_ROOT)/out$(OUTPUT_PREFIX)
 OMNETPP_SRC_DIR = $(OMNETPP_ROOT)/src
 OMNETPP_UTILS_DIR = $(OMNETPP_SRC_DIR)/utils
-OMNETPP_TKENV_DIR = $(OMNETPP_SRC_DIR)/tkenv
 OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
 OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
 OMNETPP_SAMPLES_DIR = $(OMNETPP_ROOT)/samples
@@ -149,8 +146,6 @@ RCC=@RCC@
 
 HAVE_DLOPEN = @HAVE_DLOPEN@
 SYS_LIBS = @SYS_LIBS@
-TK_CFLAGS = @TK_CFLAGS@
-TK_LIBS = @TK_LIBS@
 QT_CFLAGS = @QT_CFLAGS@
 QT_LIBS = @QT_LIBS@
 QTENV_LDFLAGS = @QTENV_LDFLAGS@
@@ -188,7 +183,6 @@ SHARED_LIB_SUFFIX = @SHARED_LIB_SUFFIX@
 #
 # omnetpp and system libraries linked with the simulations
 #
-TKENV_LIBS = $(LDFLAG_INCLUDE)_tkenv_lib $(AS_NEEDED_OFF) -lopptkenv$D -loppenvir$D -lopplayout$D
 QTENV_LIBS = $(LDFLAG_INCLUDE)_qtenv_lib $(AS_NEEDED_OFF) $(QTENV_LDFLAGS) -loppqtenv$D -loppenvir$D -lopplayout$D
 CMDENV_LIBS = $(LDFLAG_INCLUDE)_cmdenv_lib $(AS_NEEDED_OFF) -loppcmdenv$D -loppenvir$D
 ALL_ENV_LIBS = $(CMDENV_LIBS)
@@ -216,21 +210,6 @@ ifeq ($(WITH_QTENV),yes)
     endif
   endif
   ALL_ENV_LIBS += $(QTENV_LIBS)
-endif
-
-#
-# flags and libraries required for Ttenv
-#
-ifeq ($(WITH_TKENV),yes)
-  DEFINES += -DWITH_TKENV
-  # libraries required for static linking
-  ifneq ($(SHARED_LIBS),yes)
-    TKENV_LIBS += $(TK_LIBS) $(ZLIB_LIBS)
-    ifeq ($(PLATFORM),macosx)
-      TKENV_LIBS += -framework Carbon
-    endif
-  endif
-  ALL_ENV_LIBS += $(TKENV_LIBS)
 endif
 
 #

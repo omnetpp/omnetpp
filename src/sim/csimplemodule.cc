@@ -494,7 +494,7 @@ void cSimpleModule::sendDirect(cMessage *msg, simtime_t propagationDelay, simtim
     EVCB.messageSendDirect(msg, toGate, propagationDelay, duration);
     bool keepit = toGate->deliver(msg, simTime() + propagationDelay);
     if (!keepit)
-        delete msg;  //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
+        delete msg;  //TODO: tell Qtenv somehow that msg has been deleted, otherwise animation will crash
     else
         EVCB.endSend(msg);
 }

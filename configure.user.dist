@@ -40,20 +40,9 @@ PREFER_CLANG=yes
 #LDFLAGS=""
 
 #
-# Set to "yes" to enable the Tcl/Tk based graphical runtime environment (Tkenv)
-# Note: Tkenv is deprecated. Please, use Qtenv instead.
-#
-WITH_TKENV=no
-
-#
 # Set to "yes" to enable the Qt based graphical runtime environment (Qtenv)
 #
 WITH_QTENV=yes
-
-#
-# Set to "yes" to use Qtenv as the default graphical runtime environment (instead of Tkenv)
-#
-PREFER_QTENV=yes
 
 #
 # Set to "yes" to enable OpenSceneGraph and support in Qtenv
@@ -77,11 +66,11 @@ WITH_PARSIM=yes
 
 #
 # Set to "yes" to use SQLite as default file format for output vector and
-# output scalar files. As of version 5.1, SQLite support is an experimental 
+# output scalar files. As of version 5.1, SQLite support is an experimental
 # feature.
 #
 # To try SQLite result files without changing the default, add the following
-# lines into the omnetpp.ini files of your simulations (or specify the same 
+# lines into the omnetpp.ini files of your simulations (or specify the same
 # settings on the simulation command line, with the "--" prefix):
 #
 # outputvectormanager-class="omnetpp::envir::SqliteOutputVectorManager"
@@ -101,47 +90,6 @@ WITH_SYSTEMC=no
 # with "make SHARED_LIBS=no"
 #
 SHARED_LIBS=yes
-
-#
-# Compiler and linker options for Tcl/Tk
-#
-# You can explicitly tell 'configure' which compile switches (TK_CFLAGS)
-# and linker switches (TK_LIBS) are needed to build an application with Tcl/Tk.
-# Normally these settings are autodetected by 'configure', so you only need to
-# edit here if autodetection doesn't work.
-#
-# With gcc, settings typically look like this:
-#
-# exaple:TK_CFLAGS="-I/usr/local/include"
-# example:TK_LIBS="-L/usr/local/lib -ltk8.6 -ltcl8.6"
-#
-# /usr/local/include should be replaced with the directory where tcl.h and tk.h
-# live. If they are in two different directories, use two -I switches.
-#
-# /usr/local/lib should be replaced with the directory that contains the Tcl/Tk
-# library files (something like libtcl86.so, libtk8.6.a etc; search for libtcl*
-# and libtk* to find them.) The -l options contain the library names: the
-# library file names, with the leading 'lib' and trailing '.so*' or '.a*' cut
-# off. Sometimes you need to explicitly link with the X11 libraries too, in that
-# case add -lX11 to TK_LIBS.
-#
-# With MinGW I use the following:
-# Note that we are using the "bin" directory as the LIB dir.
-# i.e. directly linking to the DLLs instead of the importlibs in the "lib" directory.
-#
-#TK_CFLAGS="-I/c/Tools/Tcl-8.6.0/include"
-#TK_LIBS="-L/c/Tools/Tcl-8.6.0/bin -ltk84 -ltcl84"
-# or:
-#TK_CFLAGS="-I$MSYS/include/tcl8.6"
-#TK_LIBS="-L$MSYS/bin -ltk86 -ltcl86"
-
-#
-# It is possible to have the Tcl files embedded into the compiled OMNeT++
-# libraries and executables. This can be useful if you want to ship
-# self-contained standalone executables which do not rely on external
-# Tcl scripts. This option is available for Tkenv.
-#
-EMBED_TCL_CODE=yes
 
 #
 # Compiler and linker options for Qt
@@ -177,7 +125,7 @@ EMBED_TCL_CODE=yes
 #OSGEARTH_LIBS=
 
 #
-# ZLib is a compression library needed by libxml2 and Tkenv's png support.
+# ZLib is a compression library needed by libxml2.
 #
 # On MinGW we use the following (dynamically linking against the DLL)
 #

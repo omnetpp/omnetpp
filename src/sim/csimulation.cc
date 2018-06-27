@@ -637,7 +637,7 @@ void cSimulation::executeEvent(cEvent *event)
     // in takeNextEvent(), called right before the next executeEvent().
     // Simtime must NOT be updated here, because it would interfere with parallel
     // simulation (cIdealSimulationProtocol, etc) that relies on simTime()
-    // returning the time of the last executed event. If Tkenv wants to display
+    // returning the time of the last executed event. If Qtenv wants to display
     // the time of the next event, it should call guessNextSimtime().
 }
 
@@ -724,7 +724,7 @@ void cSimulation::insertEvent(cEvent *event)
  * A dummy implementation of cEnvir, only provided so that one
  * can use simulation library classes outside simulations, that is,
  * in programs that only link with the simulation library (<i>sim_std</i>)
- * and not with the <i>envir</i>, <i>cmdenv</i>, <i>tkenv</i>,
+ * and not with the <i>envir</i>, <i>cmdenv</i>, <i>qtenv</i>,
  * etc. libraries.
  *
  * Many simulation library classes make calls to <i>ev</i> methods,
@@ -737,7 +737,7 @@ void cSimulation::insertEvent(cEvent *event)
  * exception, so StaticEnv is only useful for the most basic usage scenarios.
  * For anything more complicated, <tt>evPtr</tt> must be set in <tt>main()</tt>
  * to point to a proper cEnvir implementation, like the Cmdenv or
- * Tkenv classes. (The <i>envir</i> library provides a <tt>main()</tt>
+ * Qtenv classes. (The <i>envir</i> library provides a <tt>main()</tt>
  * which does exactly that.)
  *
  * @ingroup Envir

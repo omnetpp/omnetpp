@@ -63,10 +63,6 @@ BASE=common layout eventlog scave nedxml sim envir cmdenv utils
 SAMPLES=aloha canvas cqn dyna embedding embedding2 fifo hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets osg-intro osg-earth osg-indoor osg-satellites
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
-ifeq "$(WITH_TKENV)" "yes"
-  BASE+= tkenv
-endif
-
 ifeq "$(WITH_QTENV)" "yes"
   BASE+= qtenv
 endif
@@ -82,7 +78,7 @@ endif
 
 .PHONY: check-env cleanall cleanall-samples makefiles clean apis docu tests all allmodes \
         components base ui uilibs samples common layout eventlog scave nedxml sim \
-        envir cmdenv tkenv qtenv utils systemc
+        envir cmdenv qtenv utils systemc
 #
 # Group targets.
 #
@@ -100,11 +96,11 @@ ui:
 uilibs: $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgtool, etc)
-common layout eventlog scave nedxml sim envir cmdenv tkenv qtenv systemc makefiles: utils
-layout eventlog scave nedxml sim envir cmdenv tkenv qtenv: common
+common layout eventlog scave nedxml sim envir cmdenv qtenv systemc makefiles: utils
+layout eventlog scave nedxml sim envir cmdenv qtenv: common
 envir : sim
-cmdenv tkenv qtenv: envir
-tkenv qtenv: layout
+cmdenv qtenv: envir
+qtenv: layout
 sim : nedxml common
 $(SAMPLES) : makefiles base
 $(BASE) : check-env

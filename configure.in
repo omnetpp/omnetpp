@@ -187,9 +187,7 @@ DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$(basename \$@).d}
 CXXFLAGS=${CXXFLAGS:- -std=c++11}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
-PREFER_QTENV=${PREFER_QTENV:-yes}
 WITH_QTENV=${WITH_QTENV:-yes}
-WITH_TKENV=${WITH_TKENV:-no}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-opp_nedtool}
 SMC=${SMC:-opp_smc}
@@ -321,13 +319,13 @@ else
 
         # If we are building on windows (native compile) we have to add the /usr/lib and
         # /usr/include directories as they are not added by default, but they are needed
-        # to properly find the Tcl/Tk, LibXML2 libraries.
+        # to properly find the LibXML2 libraries.
         if test "$cross_compiling" = no ; then
             CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
         fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # to the cross-compiled Xml libs here. They should NOT reside in the default
             # /usr/lib directory as that would interfere with the native build.
         ;;
     x86_64-*-mingw*)
@@ -359,13 +357,13 @@ else
 
             # If we are building on windows (native compile) we have to add the /usr/lib and
             # /usr/include directories as they are not added by default, but they are needed
-            # to properly find the Tcl/Tk, LibXML2 libraries.
+            # to properly find the LibXML2 libraries.
             if test "$cross_compiling" = no ; then
                 CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
                 LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
             fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # to the cross-compiled Xml libs here. They should NOT reside in the default
             # /usr/lib directory as that would interfere with the native build.
         fi
         ;;
@@ -838,93 +836,6 @@ if test "$WITH_OSG" = "yes"; then
 fi # WITH_OSG
 
 #----------------------
-# Check for Tcl/Tk.
-#----------------------
-if test "$WITH_TKENV" = "yes"; then
-   if test -d /usr/include/tcl8.6; then
-        TK_CFLAGS86=${TK_CFLAGS:-"-I/usr/include/tcl8.6"}
-   fi
-   if test -d /usr/include/tcl8.5; then
-        TK_CFLAGS85=${TK_CFLAGS:-"-I/usr/include/tcl8.5"}
-   fi
-
-   if test -n "$TK_LIBS"; then
-        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
-   elif test "$TOOLCHAIN_NAME" = "clangc2"; then
-        # check on clang/c2 toolchain
-        OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $CFLAGS_ARCH, $LDFLAGS_ARCH -ltk86 -ltcl86,
-                          tcltk_ok, TK_LIBS="-ltk86 -ltcl86" TK_CFLAGS="")
-   else
-        # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
-        OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $TK_CFLAGS86, -ltk8.6 -ltcl8.6,
-                          tcltk_ok, TK_LIBS="-ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86)
-        if test $tcltk_ok = no; then
-           OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS $TK_CFLAGS85, -ltk8.5 -ltcl8.5,
-                          tcltk_ok, TK_LIBS="-ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85)
-        fi
-        # look for X window libs and headers
-        if test $tcltk_ok = no; then
-            # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
-            AC_PATH_X
-            if test "$no_x" = "yes"; then
-                opp_x11inc=
-                opp_x11lib=
-            else
-               if test -n "$x_includes"; then
-                   opp_x11inc="-I$x_includes"
-               fi
-               if test -n "$x_libraries"; then
-                   opp_x11lib="-L$x_libraries -lX11"
-               fi
-            fi
-        fi
-        if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk86 -ltcl86,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86")
-        fi
-        if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.6, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS86, $opp_x11lib -ltk8.6 -ltcl8.6,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86")
-        fi
-        # check for 8.5
-        if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk85 -ltcl85,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85")
-        fi
-        if test $tcltk_ok = no; then
-            OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $CFLAGS $opp_x11inc $TK_CFLAGS85, $opp_x11lib -ltk8.5 -ltcl8.5,
-                          tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85")
-        fi
-    fi
-
-    if test $tcltk_ok = no; then
-        # try to give a hint in the error message about the problem
-        if test "$no_x" = "yes"; then
-            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
-        else
-            AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts. Version 8.6.0+ and devel package required. Check config.log for more info!])
-        fi
-    fi
-
-    # Check for wish.
-    AC_CHECK_PROGS(WISH, $WISH wish wish86 wish8.6 wish85 wish8.5, nope)
-    if test "$WISH" = nope; then
-       AC_MSG_ERROR([Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5)])
-    fi
-    if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
-        AC_MSG_ERROR([Cannot run wish (wish command "puts OK; exit" failed): maybe you are not running X or DISPLAY environment variable not set?])
-    fi
-    if echo 'catch {package require Tk 8.5; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-        AC_MSG_ERROR([wish command "package require Tk 8.5" failed: your Tcl/Tk installation is likely too old, version 8.5.0+ is required])
-    fi
-
-    # note: square brackets necessary otherwise M4 messes up the Tcl command
-    [tcl_library=`echo 'puts [info library]; exit' | $WISH`]
-
-    # if we got through until here, enable building of the following progs:
-fi # end of Tcl tests ($WITH_TKENV branch)
-
-#----------------------
 # Check for JRE
 #----------------------
 AC_CHECK_PROGS(JRE, $JRE java, nope)
@@ -1097,8 +1008,8 @@ else
     AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
-# zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
-if test $libxml_ok = yes -o $expat_ok = yes -o "$WITH_TKENV" = "yes" ; then
+# zlib is required by the XML parsers
+if test $libxml_ok = yes -o $expat_ok = yes ; then
     if test "$ZLIB_LIBS" = ""; then
         ZLIB_LIBS=-lz
     fi
@@ -1206,8 +1117,6 @@ AC_SUBST(EXE_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 
 AC_SUBST(HAVE_DLOPEN)
-AC_SUBST(TK_CFLAGS)
-AC_SUBST(TK_LIBS)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QTENV_LDFLAGS)
@@ -1232,10 +1141,8 @@ AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(JNILIBS_IF_POSSIBLE)
 
-AC_SUBST(EMBED_TCL_CODE)
 AC_SUBST(WITH_NETBUILDER)
 AC_SUBST(WITH_PARSIM)
-AC_SUBST(WITH_TKENV)
 AC_SUBST(WITH_QTENV)
 AC_SUBST(WITH_OSG)
 AC_SUBST(WITH_OSGEARTH)
@@ -1349,34 +1256,6 @@ EOT
 
 fi
 
-#----------------------
-# Check if TCL_LIBRARY is set.
-#----------------------
-
-if test "$WITH_TKENV" = "yes"; then
-
-    cat << EOT
-
-$OMNETPP_PRODUCT was configured with \$WITH_TKENV = yes. The Tcl/Tk based graphical
-runtime environment (Tkenv) is DEPRECATED. We strongly suggest using Qtenv instead.
-EOT
-
-  if test "$PLATFORM" = "macosx"; then
-      :
-  elif test -z "$TCL_LIBRARY"; then
-      : # not a problem -- if TCL_LIBRARY was needed, testing tclsh and wish would have failed already
-  elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
-
-     cat 1>&2 << EOT
-
-WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
-init.tcl or tclConfig.sh file in that directory. (TCL_LIBRARY usually points
-to /usr/lib/tcl8.5)
-EOT
-
-  fi
-fi
-
 #--------------
 # Qtenv warning
 #--------------
@@ -1384,7 +1263,7 @@ if test "$WITH_QTENV" != "yes"; then
 
     cat << EOT
 
-$OMNETPP_PRODUCT was configured with \$WITH_QTENV = no. The Qt based graphical
+$OMNETPP_PRODUCT was configured with \$WITH_QTENV = no. The Qt-based graphical
 runtime environment (Qtenv) will not be available.
 EOT
 

@@ -592,10 +592,8 @@ WITH_SYSTEMC
 WITH_OSGEARTH
 WITH_OSG
 WITH_QTENV
-WITH_TKENV
 WITH_PARSIM
 WITH_NETBUILDER
-EMBED_TCL_CODE
 JNILIBS_IF_POSSIBLE
 AKAROA_LIBS
 AKAROA_CFLAGS
@@ -616,8 +614,6 @@ OSG_CFLAGS
 QTENV_LDFLAGS
 QT_LIBS
 QT_CFLAGS
-TK_LIBS
-TK_CFLAGS
 HAVE_DLOPEN
 LIB_PREFIX
 EXE_SUFFIX
@@ -631,6 +627,7 @@ SHLIB_POSTPROCESS
 MKPATH
 LN
 MAKEDEPEND
+WISH
 STRIP
 DLLTOOL
 SHLIB_LD
@@ -662,9 +659,6 @@ MPICXX
 MPICPP
 PRIVATE_JRE
 JRE
-WISH
-CXXCPP
-XMKMF
 RCC
 UIC
 MOC
@@ -739,7 +733,6 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
-with_x
 '
       ac_precious_vars='build_alias
 host_alias
@@ -755,9 +748,7 @@ CCC
 YACC
 YFLAGS
 PERL
-SWIG
-XMKMF
-CXXCPP'
+SWIG'
 
 
 # Initialize some variables set by options.
@@ -1366,10 +1357,6 @@ _ACEOF
 
   cat <<\_ACEOF
 
-X features:
-  --x-includes=DIR    X include files are in DIR
-  --x-libraries=DIR   X library files are in DIR
-
 System types:
   --build=BUILD     configure for building on BUILD [guessed]
   --host=HOST       cross-compile to build programs to run on HOST [BUILD]
@@ -1379,11 +1366,6 @@ fi
 if test -n "$ac_init_help"; then
 
   cat <<\_ACEOF
-
-Optional Packages:
-  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
-  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-x                use the X Window System
 
 Some influential environment variables:
   CC          C compiler command
@@ -1403,8 +1385,6 @@ Some influential environment variables:
               default value of `-d' given by some make applications.
   PERL        The Perl interpreter
   SWIG        The Swig interface generator
-  XMKMF       Path to xmkmf, Makefile generator for X Window System
-  CXXCPP      C++ preprocessor
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -1674,43 +1654,6 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_cxx_check_func
-
-# ac_fn_cxx_try_cpp LINENO
-# ------------------------
-# Try to preprocess conftest.$ac_ext, and return whether this succeeded.
-ac_fn_cxx_try_cpp ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  if { { ac_try="$ac_cpp conftest.$ac_ext"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.err
-  ac_status=$?
-  if test -s conftest.err; then
-    grep -v '^ *+' conftest.err >conftest.er1
-    cat conftest.er1 >&5
-    mv -f conftest.er1 conftest.err
-  fi
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } > conftest.i && {
-	 test -z "$ac_cxx_preproc_warn_flag$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       }; then :
-  ac_retval=0
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-    ac_retval=1
-fi
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-  as_fn_set_status $ac_retval
-
-} # ac_fn_cxx_try_cpp
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -2243,9 +2186,7 @@ DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$(basename \$@).d}
 CXXFLAGS=${CXXFLAGS:- -std=c++11}
 DEFINES=${DEFINES:-}
 PREFER_CLANG=${PREFER_CLANG:-yes}
-PREFER_QTENV=${PREFER_QTENV:-yes}
 WITH_QTENV=${WITH_QTENV:-yes}
-WITH_TKENV=${WITH_TKENV:-no}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-opp_nedtool}
 SMC=${SMC:-opp_smc}
@@ -3357,13 +3298,13 @@ else
 
         # If we are building on windows (native compile) we have to add the /usr/lib and
         # /usr/include directories as they are not added by default, but they are needed
-        # to properly find the Tcl/Tk, LibXML2 libraries.
+        # to properly find the LibXML2 libraries.
         if test "$cross_compiling" = no ; then
             CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw32/include"
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw32/lib"
         fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # to the cross-compiled Xml libs here. They should NOT reside in the default
             # /usr/lib directory as that would interfere with the native build.
         ;;
     x86_64-*-mingw*)
@@ -3395,13 +3336,13 @@ else
 
             # If we are building on windows (native compile) we have to add the /usr/lib and
             # /usr/include directories as they are not added by default, but they are needed
-            # to properly find the Tcl/Tk, LibXML2 libraries.
+            # to properly find the LibXML2 libraries.
             if test "$cross_compiling" = no ; then
                 CFLAGS_ARCH="$CFLAGS_ARCH -isystem /usr/include -isystem /mingw64/include"
                 LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L/mingw64/lib"
             fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
-            # to the cross-compiled TckTk/Xml libs here. They should NOT reside in the default
+            # to the cross-compiled Xml libs here. They should NOT reside in the default
             # /usr/lib directory as that would interfere with the native build.
         fi
         ;;
@@ -4959,718 +4900,6 @@ rm -f core conftest.err conftest.$ac_objext \
 fi # WITH_OSG
 
 #----------------------
-# Check for Tcl/Tk.
-#----------------------
-if test "$WITH_TKENV" = "yes"; then
-   if test -d /usr/include/tcl8.6; then
-        TK_CFLAGS86=${TK_CFLAGS:-"-I/usr/include/tcl8.6"}
-   fi
-   if test -d /usr/include/tcl8.5; then
-        TK_CFLAGS85=${TK_CFLAGS:-"-I/usr/include/tcl8.5"}
-   fi
-
-   if test -n "$TK_LIBS"; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$TK_CFLAGS"
-   LIBS="$TK_LIBS"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$TK_LIBS\"" >&5
-$as_echo_n "checking for Tcl/Tk with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$TK_LIBS\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes;
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-   elif test "$TOOLCHAIN_NAME" = "clangc2"; then
-        # check on clang/c2 toolchain
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $CFLAGS_ARCH"
-   LIBS="$LDFLAGS_ARCH -ltk86 -ltcl86"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $CFLAGS_ARCH\" LIBS=\"$LDFLAGS_ARCH -ltk86 -ltcl86\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $CFLAGS_ARCH\" LIBS=\"$LDFLAGS_ARCH -ltk86 -ltcl86\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk86 -ltcl86" TK_CFLAGS=""
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-   else
-        # try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $TK_CFLAGS86"
-   LIBS="-ltk8.6 -ltcl8.6"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $TK_CFLAGS86\" LIBS=\"-ltk8.6 -ltcl8.6\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        if test $tcltk_ok = no; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $TK_CFLAGS85"
-   LIBS="-ltk8.5 -ltcl8.5"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $TK_CFLAGS85\" LIBS=\"-ltk8.5 -ltcl8.5\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
-        # look for X window libs and headers
-        if test $tcltk_ok = no; then
-            # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
-            ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking how to run the C++ preprocessor" >&5
-$as_echo_n "checking how to run the C++ preprocessor... " >&6; }
-if test -z "$CXXCPP"; then
-  if ${ac_cv_prog_CXXCPP+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-      # Double quotes because CXXCPP needs to be expanded
-    for CXXCPP in "$CXX -E" "/lib/cpp"
-    do
-      ac_preproc_ok=false
-for ac_cxx_preproc_warn_flag in '' yes
-do
-  # Use a header file that comes with gcc, so configuring glibc
-  # with a fresh cross-compiler works.
-  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-  # <limits.h> exists even on freestanding compilers.
-  # On the NeXT, cc -E runs the code through the compiler's parser,
-  # not just through cpp. "Syntax error" is here to catch this case.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-		     Syntax error
-_ACEOF
-if ac_fn_cxx_try_cpp "$LINENO"; then :
-
-else
-  # Broken: fails on valid input.
-continue
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-  # OK, works on sane cases.  Now check whether nonexistent headers
-  # can be detected and how.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <ac_nonexistent.h>
-_ACEOF
-if ac_fn_cxx_try_cpp "$LINENO"; then :
-  # Broken: success on invalid input.
-continue
-else
-  # Passes both tests.
-ac_preproc_ok=:
-break
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-done
-# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
-rm -f conftest.i conftest.err conftest.$ac_ext
-if $ac_preproc_ok; then :
-  break
-fi
-
-    done
-    ac_cv_prog_CXXCPP=$CXXCPP
-
-fi
-  CXXCPP=$ac_cv_prog_CXXCPP
-else
-  ac_cv_prog_CXXCPP=$CXXCPP
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $CXXCPP" >&5
-$as_echo "$CXXCPP" >&6; }
-ac_preproc_ok=false
-for ac_cxx_preproc_warn_flag in '' yes
-do
-  # Use a header file that comes with gcc, so configuring glibc
-  # with a fresh cross-compiler works.
-  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-  # <limits.h> exists even on freestanding compilers.
-  # On the NeXT, cc -E runs the code through the compiler's parser,
-  # not just through cpp. "Syntax error" is here to catch this case.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-		     Syntax error
-_ACEOF
-if ac_fn_cxx_try_cpp "$LINENO"; then :
-
-else
-  # Broken: fails on valid input.
-continue
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-  # OK, works on sane cases.  Now check whether nonexistent headers
-  # can be detected and how.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <ac_nonexistent.h>
-_ACEOF
-if ac_fn_cxx_try_cpp "$LINENO"; then :
-  # Broken: success on invalid input.
-continue
-else
-  # Passes both tests.
-ac_preproc_ok=:
-break
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-done
-# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
-rm -f conftest.i conftest.err conftest.$ac_ext
-if $ac_preproc_ok; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "C++ preprocessor \"$CXXCPP\" fails sanity check
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for X" >&5
-$as_echo_n "checking for X... " >&6; }
-
-
-# Check whether --with-x was given.
-if test "${with_x+set}" = set; then :
-  withval=$with_x;
-fi
-
-# $have_x is `yes', `no', `disabled', or empty when we do not yet know.
-if test "x$with_x" = xno; then
-  # The user explicitly disabled X.
-  have_x=disabled
-else
-  case $x_includes,$x_libraries in #(
-    *\'*) as_fn_error $? "cannot use X directory names containing '" "$LINENO" 5;; #(
-    *,NONE | NONE,*) if ${ac_cv_have_x+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  # One or both of the vars are not set, and there is no cached value.
-ac_x_includes=no ac_x_libraries=no
-rm -f -r conftest.dir
-if mkdir conftest.dir; then
-  cd conftest.dir
-  cat >Imakefile <<'_ACEOF'
-incroot:
-	@echo incroot='${INCROOT}'
-usrlibdir:
-	@echo usrlibdir='${USRLIBDIR}'
-libdir:
-	@echo libdir='${LIBDIR}'
-_ACEOF
-  if (export CC; ${XMKMF-xmkmf}) >/dev/null 2>/dev/null && test -f Makefile; then
-    # GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
-    for ac_var in incroot usrlibdir libdir; do
-      eval "ac_im_$ac_var=\`\${MAKE-make} $ac_var 2>/dev/null | sed -n 's/^$ac_var=//p'\`"
-    done
-    # Open Windows xmkmf reportedly sets LIBDIR instead of USRLIBDIR.
-    for ac_extension in a so sl dylib la dll; do
-      if test ! -f "$ac_im_usrlibdir/libX11.$ac_extension" &&
-	 test -f "$ac_im_libdir/libX11.$ac_extension"; then
-	ac_im_usrlibdir=$ac_im_libdir; break
-      fi
-    done
-    # Screen out bogus values from the imake configuration.  They are
-    # bogus both because they are the default anyway, and because
-    # using them would break gcc on systems where it needs fixed includes.
-    case $ac_im_incroot in
-	/usr/include) ac_x_includes= ;;
-	*) test -f "$ac_im_incroot/X11/Xos.h" && ac_x_includes=$ac_im_incroot;;
-    esac
-    case $ac_im_usrlibdir in
-	/usr/lib | /usr/lib64 | /lib | /lib64) ;;
-	*) test -d "$ac_im_usrlibdir" && ac_x_libraries=$ac_im_usrlibdir ;;
-    esac
-  fi
-  cd ..
-  rm -f -r conftest.dir
-fi
-
-# Standard set of common directories for X headers.
-# Check X11 before X11Rn because it is often a symlink to the current release.
-ac_x_header_dirs='
-/usr/X11/include
-/usr/X11R7/include
-/usr/X11R6/include
-/usr/X11R5/include
-/usr/X11R4/include
-
-/usr/include/X11
-/usr/include/X11R7
-/usr/include/X11R6
-/usr/include/X11R5
-/usr/include/X11R4
-
-/usr/local/X11/include
-/usr/local/X11R7/include
-/usr/local/X11R6/include
-/usr/local/X11R5/include
-/usr/local/X11R4/include
-
-/usr/local/include/X11
-/usr/local/include/X11R7
-/usr/local/include/X11R6
-/usr/local/include/X11R5
-/usr/local/include/X11R4
-
-/usr/X386/include
-/usr/x386/include
-/usr/XFree86/include/X11
-
-/usr/include
-/usr/local/include
-/usr/unsupported/include
-/usr/athena/include
-/usr/local/x11r5/include
-/usr/lpp/Xamples/include
-
-/usr/openwin/include
-/usr/openwin/share/include'
-
-if test "$ac_x_includes" = no; then
-  # Guess where to find include files, by looking for Xlib.h.
-  # First, try using that file with no special directory specified.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <X11/Xlib.h>
-_ACEOF
-if ac_fn_cxx_try_cpp "$LINENO"; then :
-  # We can compile using X headers with no special include directory.
-ac_x_includes=
-else
-  for ac_dir in $ac_x_header_dirs; do
-  if test -r "$ac_dir/X11/Xlib.h"; then
-    ac_x_includes=$ac_dir
-    break
-  fi
-done
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-fi # $ac_x_includes = no
-
-if test "$ac_x_libraries" = no; then
-  # Check for the libraries.
-  # See if we find them without any special options.
-  # Don't add to $LIBS permanently.
-  ac_save_LIBS=$LIBS
-  LIBS="-lX11 $LIBS"
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <X11/Xlib.h>
-int
-main ()
-{
-XrmInitialize ()
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  LIBS=$ac_save_LIBS
-# We can link X programs with no special library path.
-ac_x_libraries=
-else
-  LIBS=$ac_save_LIBS
-for ac_dir in `$as_echo "$ac_x_includes $ac_x_header_dirs" | sed s/include/lib/g`
-do
-  # Don't even attempt the hair of trying to link an X program!
-  for ac_extension in a so sl dylib la dll; do
-    if test -r "$ac_dir/libX11.$ac_extension"; then
-      ac_x_libraries=$ac_dir
-      break 2
-    fi
-  done
-done
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi # $ac_x_libraries = no
-
-case $ac_x_includes,$ac_x_libraries in #(
-  no,* | *,no | *\'*)
-    # Didn't find X, or a directory has "'" in its name.
-    ac_cv_have_x="have_x=no";; #(
-  *)
-    # Record where we found X for the cache.
-    ac_cv_have_x="have_x=yes\
-	ac_x_includes='$ac_x_includes'\
-	ac_x_libraries='$ac_x_libraries'"
-esac
-fi
-;; #(
-    *) have_x=yes;;
-  esac
-  eval "$ac_cv_have_x"
-fi # $with_x != no
-
-if test "$have_x" != yes; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_x" >&5
-$as_echo "$have_x" >&6; }
-  no_x=yes
-else
-  # If each of the values was on the command line, it overrides each guess.
-  test "x$x_includes" = xNONE && x_includes=$ac_x_includes
-  test "x$x_libraries" = xNONE && x_libraries=$ac_x_libraries
-  # Update the cache value to reflect the command line values.
-  ac_cv_have_x="have_x=yes\
-	ac_x_includes='$x_includes'\
-	ac_x_libraries='$x_libraries'"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: libraries $x_libraries, headers $x_includes" >&5
-$as_echo "libraries $x_libraries, headers $x_includes" >&6; }
-fi
-
-            if test "$no_x" = "yes"; then
-                opp_x11inc=
-                opp_x11lib=
-            else
-               if test -n "$x_includes"; then
-                   opp_x11inc="-I$x_includes"
-               fi
-               if test -n "$x_libraries"; then
-                   opp_x11lib="-L$x_libraries -lX11"
-               fi
-            fi
-        fi
-        if test $tcltk_ok = no; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS86"
-   LIBS="$opp_x11lib -ltk86 -ltcl86"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk86 -ltcl86\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
-        if test $tcltk_ok = no; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS86"
-   LIBS="$opp_x11lib -ltk8.6 -ltcl8.6"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.6 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS86\" LIBS=\"$opp_x11lib -ltk8.6 -ltcl8.6\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
-        # check for 8.5
-        if test $tcltk_ok = no; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS85"
-   LIBS="$opp_x11lib -ltk85 -ltcl85"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk85 -ltcl85\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
-        if test $tcltk_ok = no; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS $opp_x11inc $TK_CFLAGS85"
-   LIBS="$opp_x11lib -ltk8.5 -ltcl8.5"
-
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"" >&5
-$as_echo_n "checking for Tcl/Tk 8.5 with CFLAGS=\"$CFLAGS $opp_x11inc $TK_CFLAGS85\" LIBS=\"$opp_x11lib -ltk8.5 -ltcl8.5\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <tk.h>
-int
-main ()
-{
-Tk_MainLoop();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; tcltk_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-        fi
-    fi
-
-    if test $tcltk_ok = no; then
-        # try to give a hint in the error message about the problem
-        if test "$no_x" = "yes"; then
-            as_fn_error $? "Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!" "$LINENO" 5
-        else
-            as_fn_error $? "Tcl/Tk not found, needed for all GUI parts. Version 8.6.0+ and devel package required. Check config.log for more info!" "$LINENO" 5
-        fi
-    fi
-
-    # Check for wish.
-    for ac_prog in $WISH wish wish86 wish8.6 wish85 wish8.5
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_WISH+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$WISH"; then
-  ac_cv_prog_WISH="$WISH" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_WISH="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-WISH=$ac_cv_prog_WISH
-if test -n "$WISH"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $WISH" >&5
-$as_echo "$WISH" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$WISH" && break
-done
-test -n "$WISH" || WISH="nope"
-
-    if test "$WISH" = nope; then
-       as_fn_error $? "Cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish86 wish8.6 wish85 wish8.5)" "$LINENO" 5
-    fi
-    if echo 'puts OK; exit' | $WISH | grep OK >/dev/null; then :; else
-        as_fn_error $? "Cannot run wish (wish command \"puts OK; exit\" failed): maybe you are not running X or DISPLAY environment variable not set?" "$LINENO" 5
-    fi
-    if echo 'catch {package require Tk 8.5; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-        as_fn_error $? "wish command \"package require Tk 8.5\" failed: your Tcl/Tk installation is likely too old, version 8.5.0+ is required" "$LINENO" 5
-    fi
-
-    # note: square brackets necessary otherwise M4 messes up the Tcl command
-    tcl_library=`echo 'puts [info library]; exit' | $WISH`
-
-    # if we got through until here, enable building of the following progs:
-fi # end of Tcl tests ($WITH_TKENV branch)
-
-#----------------------
 # Check for JRE
 #----------------------
 for ac_prog in $JRE java
@@ -6493,8 +5722,8 @@ else
 $as_echo "$as_me: WARNING: No suitable XML parser found: no support for XML input" >&2;}
 fi
 
-# zlib is required by the XML parsers and also Tcl/Tk (and also the TkPNG package inside Tkenv)
-if test $libxml_ok = yes -o $expat_ok = yes -o "$WITH_TKENV" = "yes" ; then
+# zlib is required by the XML parsers
+if test $libxml_ok = yes -o $expat_ok = yes ; then
     if test "$ZLIB_LIBS" = ""; then
         ZLIB_LIBS=-lz
     fi
@@ -6678,10 +5907,6 @@ ac_config_files="$ac_config_files Makefile.inc src/qtenv/qtenv.pri"
 #----------------------
 # Substitutions.
 #----------------------
-
-
-
-
 
 
 
@@ -8031,34 +7256,6 @@ EOT
 
 fi
 
-#----------------------
-# Check if TCL_LIBRARY is set.
-#----------------------
-
-if test "$WITH_TKENV" = "yes"; then
-
-    cat << EOT
-
-$OMNETPP_PRODUCT was configured with \$WITH_TKENV = yes. The Tcl/Tk based graphical
-runtime environment (Tkenv) is DEPRECATED. We strongly suggest using Qtenv instead.
-EOT
-
-  if test "$PLATFORM" = "macosx"; then
-      :
-  elif test -z "$TCL_LIBRARY"; then
-      : # not a problem -- if TCL_LIBRARY was needed, testing tclsh and wish would have failed already
-  elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
-
-     cat 1>&2 << EOT
-
-WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
-init.tcl or tclConfig.sh file in that directory. (TCL_LIBRARY usually points
-to /usr/lib/tcl8.5)
-EOT
-
-  fi
-fi
-
 #--------------
 # Qtenv warning
 #--------------
@@ -8066,7 +7263,7 @@ if test "$WITH_QTENV" != "yes"; then
 
     cat << EOT
 
-$OMNETPP_PRODUCT was configured with \$WITH_QTENV = no. The Qt based graphical
+$OMNETPP_PRODUCT was configured with \$WITH_QTENV = no. The Qt-based graphical
 runtime environment (Qtenv) will not be available.
 EOT
 

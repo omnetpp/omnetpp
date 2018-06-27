@@ -307,7 +307,7 @@ class SIM_API cConfigurationEx : public cConfiguration
      * configuration should not be reported as errors even if they are not
      * declared using cConfigOptions. The list is space-separated, and items may
      * contain wildcards. Typically, this list will contain "cmdenv-*" when
-     * Cmdenv is unavailable (not linked in), "tkenv-*" when Tkenv is unavailable,
+     * Cmdenv is unavailable (not linked in), "qtenv-*" when Qtenv is unavailable,
      * etc, so that validate() does not report those keys in omnetpp.ini as errors.
      */
     virtual void validate(const char *ignorableConfigKeys=nullptr) const = 0;
