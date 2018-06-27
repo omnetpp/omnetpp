@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
+#include <algorithm>
 #include "omnetpp/globals.h"
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cksplit.h"
