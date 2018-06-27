@@ -205,6 +205,9 @@ void cDefaultHistogramStrategy::collectWeighted(double value, double weight)
             extendBinsTo(value);
         hist->collectIntoHistogram(value, weight);
     }
+
+    ASSERT(hist->getUnderflowSumWeights() == 0);
+    ASSERT(hist->getOverflowSumWeights() == 0);
 }
 
 static double roundToPowerOfTen(double x)
@@ -350,12 +353,15 @@ void cDefaultHistogramStrategy::extendBinsTo(double value)
         double newApproxBinSize = newRange / targetNumBins;
         if (newApproxBinSize >= range)
             mergeAllBinsIntoOne(newApproxBinSize);
-        hist->extendBinsTo(value, binSize, targetNumBins * 10); // the maxNumBins limit is just a last safeguard
+        hist->extendBinsTo(value, binSize);
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
     }
     else
         hist->extendBinsTo(value, binSize, maxNumBins);
+
+    ASSERT(hist->getBinEdges().front() <= value);
+    ASSERT(hist->getBinEdges().back() > value);
 }
 
 void cDefaultHistogramStrategy::reduceNumBinsTo(int numBinsLimit)
@@ -594,12 +600,15 @@ void cAutoRangeHistogramStrategy::extendBinsTo(double value)
         double newApproxBinSize = newRange / targetNumBins;
         if (newApproxBinSize >= range)
             mergeAllBinsIntoOne(newApproxBinSize);
-        hist->extendBinsTo(value, binSize, targetNumBins * 10); // the maxNumBins limit is just a last safeguard
+        hist->extendBinsTo(value, binSize);
         if (hist->getNumBins() > (targetNumBins*3)/2)
             reduceNumBinsTo(targetNumBins);
     }
     else
         hist->extendBinsTo(value, binSize, maxNumBins);
+
+    ASSERT(hist->getBinEdges().front() <= value);
+    ASSERT(hist->getBinEdges().back() > value);
 }
 
 void cAutoRangeHistogramStrategy::reduceNumBinsTo(int numBinsLimit)
