@@ -19,7 +19,7 @@
 #define __OMNETPP_STATISTICPARSING_H
 
 #include "common/expression.h"
-#include "sim/resultrecorders.h"
+#include "omnetpp/cresultrecorder.h"
 
 namespace omnetpp {
 

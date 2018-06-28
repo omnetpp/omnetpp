@@ -27,8 +27,9 @@
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cchannel.h"
-#include "sim/resultfilters.h"  // ExpressionFilter
-#include "sim/resultrecorders.h"  // ExpressionRecorder
+#include "omnetpp/resultfilters.h"  // ExpressionFilter
+#include "omnetpp/resultrecorders.h"  // ExpressionRecorder
+#include "sim/resultexpr.h"
 #include "args.h"
 #include "appreg.h"
 #include "envirutils.h"

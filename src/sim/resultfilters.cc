@@ -18,7 +18,8 @@
 #include "omnetpp/cpacket.h"  // PacketBytesFilter
 #include "omnetpp/cproperty.h"
 #include "omnetpp/checkandcast.h"
-#include "resultfilters.h"
+#include "omnetpp/resultfilters.h"
+#include "resultexpr.h"
 
 namespace omnetpp {
 
@@ -363,7 +364,7 @@ Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultF
 {
     Assert(0 <= index && index <= signalCount);
     prevFilters[index] = prevFilter;
-    lastInputValues[index] = NaN;
+    lastInputValues[index] = NAN;
     return new ValueVariable(this, &(lastInputValues[index]));
 }
 

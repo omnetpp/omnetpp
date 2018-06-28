@@ -29,8 +29,7 @@ cplusplus
 #  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-#include "resultfilters.h"
-#include "resultrecorders.h"
+#include "resultexpr.h"
 
 namespace omnetpp {
 
