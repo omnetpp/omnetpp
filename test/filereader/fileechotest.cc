@@ -25,6 +25,7 @@
 #endif
 
 using namespace omnetpp;
+using namespace omnetpp::common;
 
 void testFileEcho(const char *file, bool forward)
 {

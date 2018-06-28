@@ -26,6 +26,7 @@
 #endif
 
 using namespace omnetpp;
+using namespace omnetpp::common;
 
 int parseLineNumber(char *line)
 {

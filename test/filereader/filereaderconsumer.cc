@@ -20,6 +20,29 @@
 #include <omnetpp/platdep/timeutil.h>
 
 using namespace omnetpp;
+using namespace omnetpp::common;
+
+inline timeval timeval_add(const timeval& a, double b)
+{
+    double bInt;
+    double bFrac = modf(b, &bInt);
+    timeval res;
+    res.tv_sec = a.tv_sec + (long)bInt;
+    res.tv_usec = a.tv_usec + (long) std::floor(1000000.0*bFrac);
+    if (res.tv_usec > 1000000) {
+        res.tv_sec++;
+        res.tv_usec -= 1000000;
+    }
+    return res;
+}
+
+inline bool timeval_greater(const timeval& a, const timeval& b)
+{
+    if (a.tv_sec == b.tv_sec)
+        return a.tv_usec > b.tv_usec;
+    else
+        return (unsigned long)a.tv_sec > (unsigned long)b.tv_sec;
+}
 
 void runConsumer(const char *filename, double duration)
 {

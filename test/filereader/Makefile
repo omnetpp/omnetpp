@@ -6,10 +6,10 @@ include ../../Makefile.inc
 #
 # Local definitions
 #
-COPTS = $(CFLAGS) -I../../include -I../../src
+COPTS = $(CXXFLAGS) -I../../include -I../../src
 
 OBJS= filereaderconsumer.o filereaderproducer.o
-LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/liboppcommon$D$(SO_LIB_SUFFIX)
+LIBS= $(OMNETPP_LIB_DIR)/liboppcommon$D$(SO_LIB_SUFFIX)
 IMPLIBS= -L $(OMNETPP_LIB_DIR) -loppcommon$D
 
 EXECUTABLES = fileechotest$(EXE_SUFFIX) filereadertest$(EXE_SUFFIX) filereaderconsumer$(EXE_SUFFIX) filereaderproducer$(EXE_SUFFIX)

@@ -18,6 +18,13 @@
 #include <iostream>
 #include <omnetpp/platdep/timeutil.h>
 
+inline long timeval_diff_usec(const timeval& t2, const timeval& t1)
+{
+    long sec = t2.tv_sec - t1.tv_sec;
+    long usec = t2.tv_usec - t1.tv_usec;
+    return sec*1000000L + usec;
+}
+
 class MeasureTime
 {
     timeval start, end;
