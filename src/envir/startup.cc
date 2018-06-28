@@ -35,12 +35,8 @@
 #include "fsutils.h"
 #include "startup.h"
 #include "speedometer.h"
-#include "fileoutvectormgr.h"
-#include "fileoutscalarmgr.h"
 #include "filesnapshotmgr.h"
 #include "eventlogfilemgr.h"
-#include "indexedfileoutvectormgr.h"
-#include "fileoutvectormgr_merged.h"
 #include "akaroarng.h"
 #include "akoutvectormgr.h"
 #include "matchableobject.h"
@@ -285,10 +281,6 @@ void env_dummy_function()
     cRNG *rng = nullptr;
     exponential(rng, 1.0);
     Speedometer a;
-    cFileOutputScalarManager fosm;
-    cFileOutputVectorManager fovm;
-    cIndexedFileOutputVectorManager ifovm;
-    cFileOutputVectorManager_merged fovmm;
     OmnetppOutputScalarManager oosm;
     OmnetppOutputVectorManager oovm;
     SqliteOutputScalarManager sosm;
@@ -297,10 +289,6 @@ void env_dummy_function()
     MatchableObjectAdapter moa;
     EventlogFileManager elfm;
     (void)a;
-    (void)fosm;
-    (void)fovm;
-    (void)ifovm;
-    (void)fovmm;
     (void)oosm;
     (void)oovm;
     (void)sosm;

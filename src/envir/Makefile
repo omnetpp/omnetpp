@@ -50,12 +50,11 @@ IMPLIBS= -loppsim$D -loppnedxml$D -loppcommon$D $(XML_LIBS)
 
 OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/envirbase.o $O/fsutils.o \
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
-      $O/fileoutvectormgr.o $O/fileoutscalarmgr.o $O/filesnapshotmgr.o \
-      $O/indexedfileoutvectormgr.o $O/akoutvectormgr.o \
+      $O/filesnapshotmgr.o $O/akoutvectormgr.o \
       $O/speedometer.o $O/stopwatch.o $O/matchableobject.o $O/matchablefield.o \
       $O/akaroarng.o $O/xmldoccache.o $O/eventlogwriter.o $O/objectprinter.o \
       $O/eventlogfilemgr.o $O/resultfileutils.o $O/intervals.o \
-      $O/omnetppoutscalarmgr.o $O/omnetppoutvectormgr.o $O/fileoutvectormgr_merged.o \
+      $O/omnetppoutscalarmgr.o $O/omnetppoutvectormgr.o \
       $O/sqliteoutscalarmgr.o $O/sqliteoutvectormgr.o \
       $O/visitor.o $O/envirutils.o
 
