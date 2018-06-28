@@ -18,14 +18,10 @@
 #ifndef __OMNETPP_RESULTRECORDERS_H
 #define __OMNETPP_RESULTRECORDERS_H
 
-#include "common/expression.h"
+#include <cmath>  // INFINITY, NAN
 #include "omnetpp/cresultrecorder.h"
 
 namespace omnetpp {
-
-using omnetpp::common::NaN;
-using omnetpp::common::POSITIVE_INFINITY;
-using omnetpp::common::NEGATIVE_INFINITY;
 
 class cStatistic;
 
@@ -42,7 +38,7 @@ class SIM_API VectorRecorder : public cNumericResultRecorder
         virtual void subscribedTo(cResultFilter *prev) override;
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
     public:
-        VectorRecorder() {handle = nullptr; lastTime = 0; lastValue = NaN;}
+        VectorRecorder() {handle = nullptr; lastTime = 0; lastValue = NAN;}
         virtual ~VectorRecorder();
         virtual simtime_t getLastWriteTime() const {return lastTime;}
         virtual double getLastValue() const {return lastValue;}
@@ -83,7 +79,7 @@ class SIM_API LastValueRecorder : public cNumericResultRecorder
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
-        LastValueRecorder() {lastValue = NaN;}
+        LastValueRecorder() {lastValue = NAN;}
         double getLastValue() const {return lastValue;}
         virtual std::string str() const override;
 };
@@ -115,7 +111,7 @@ class SIM_API MeanRecorder : public cNumericResultRecorder
     protected:
         bool timeWeighted = false;
         long count = 0;
-        double lastValue = NaN;
+        double lastValue = NAN;
         simtime_t lastTime = SIMTIME_ZERO;
         double weightedSum = 0;
         simtime_t totalTime = SIMTIME_ZERO;
@@ -141,7 +137,7 @@ class SIM_API MinRecorder : public cNumericResultRecorder
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
-        MinRecorder() {min = POSITIVE_INFINITY;}
+        MinRecorder() {min = INFINITY;}
         double getMin() const {return min;}
         virtual std::string str() const override;
 };
@@ -158,7 +154,7 @@ class SIM_API MaxRecorder : public cNumericResultRecorder
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
         virtual void finish(cResultFilter *prev) override;
     public:
-        MaxRecorder() {max = NEGATIVE_INFINITY;}
+        MaxRecorder() {max = -INFINITY;}
         double getMax() const {return max;}
         virtual std::string str() const override;
 };
@@ -188,7 +184,7 @@ class SIM_API AverageRecorder : public cNumericResultRecorder
 class SIM_API TimeAverageRecorder : public cNumericResultRecorder
 {
     protected:
-        double lastValue = NaN;
+        double lastValue = NAN;
         simtime_t lastTime = SIMTIME_ZERO;
         double weightedSum = 0;
         simtime_t totalTime = SIMTIME_ZERO;
@@ -210,7 +206,7 @@ class SIM_API StatisticsRecorder : public cNumericResultRecorder
 {
     protected:
         cStatistic *statistic = nullptr;
-        double lastValue = NaN;
+        double lastValue = NAN;
         simtime_t lastTime = SIMTIME_ZERO;
     protected:
         virtual void collect(simtime_t_cref t, double value, cObject *details) override;
@@ -254,35 +250,6 @@ class SIM_API KSplitRecorder : public StatisticsRecorder
         virtual void init(cComponent *component, const char *statisticName, const char *recordingMode, cProperty *attrsProperty, opp_string_map *manualAttrs) override;
 };
 
-/**
- * @brief Result recorder that remembers the last value of a signal,
- * and in finish() it evaluates an expression and saves the result.
- */
-//TODO: this is in fact UnaryExpressionRecorder, we also need NaryExpressionRecorder (like filters)
-class SIM_API ExpressionRecorder : public cNumericResultRecorder
-{
-    public:
-        typedef omnetpp::common::Expression Expression;
-    protected:
-        Expression expr;
-    public:
-        double lastInputValue; // internal, only public for technical reasons
-    protected:
-        virtual void collect(simtime_t_cref t, double value, cObject *details) override {lastInputValue = value;}
-        virtual void finish(cResultFilter *prev) override;
-    public:
-        // internal methods, only public for technical reasons
-        virtual Expression::Functor *makeValueVariable();
-        virtual Expression::Functor *makeTimeVariable();
-    public:
-        ExpressionRecorder() {lastInputValue=NaN;}
-        virtual Expression& getExpression() {return expr;}
-        double getLastInputValue() const {return lastInputValue;}
-        double getCurrentValue() const;
-        virtual std::string str() const override;
-};
-
 }  // namespace omnetpp
 
 #endif
-

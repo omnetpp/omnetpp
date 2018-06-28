@@ -18,17 +18,13 @@
 #ifndef __OMNETPP_RESULTFILTERS_H
 #define __OMNETPP_RESULTFILTERS_H
 
-#include "common/expression.h"
+#include <cmath>  // INFINITY, NAN
 #include "omnetpp/simkerneldefs.h"
 #include "omnetpp/cresultfilter.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cstatistic.h"
 
 namespace omnetpp {
-
-using omnetpp::common::NaN;
-using omnetpp::common::POSITIVE_INFINITY;
-using omnetpp::common::NEGATIVE_INFINITY;
 
 class SIM_API WarmupPeriodFilter : public cResultFilter
 {
@@ -150,7 +146,7 @@ class SIM_API MeanFilter : public cNumericResultFilter
     protected:
         bool timeWeighted = false;
         long count = 0;
-        double lastValue = NaN;
+        double lastValue = NAN;
         simtime_t lastTime = SIMTIME_ZERO;
         double weightedSum = 0;
         simtime_t totalTime = SIMTIME_ZERO;
@@ -174,7 +170,7 @@ class SIM_API MinFilter : public cNumericResultFilter
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
-        MinFilter() {min = POSITIVE_INFINITY;}
+        MinFilter() {min = INFINITY;}
         double getMin() const {return min;}
         virtual std::string str() const override;
 };
@@ -190,7 +186,7 @@ class SIM_API MaxFilter : public cNumericResultFilter
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override;
     public:
-        MaxFilter() {max = NEGATIVE_INFINITY;}
+        MaxFilter() {max = -INFINITY;}
         double getMax() const {return max;}
         virtual std::string str() const override;
 };
@@ -219,7 +215,7 @@ class SIM_API AverageFilter : public cNumericResultFilter
 class SIM_API TimeAverageFilter : public cNumericResultFilter
 {
     protected:
-        double lastValue = NaN;
+        double lastValue = NAN;
         simtime_t lastTime = SIMTIME_ZERO;
         double weightedSum = 0;
         simtime_t totalTime = SIMTIME_ZERO;
@@ -241,98 +237,9 @@ class SIM_API RemoveRepeatsFilter : public cNumericResultFilter
     protected:
         virtual bool process(simtime_t& t, double& value, cObject *details) override {bool repeated = (value==prev); prev = value; return !repeated;}
     public:
-        RemoveRepeatsFilter() {prev = NaN;}
+        RemoveRepeatsFilter() {prev = NAN;}
         double getLastValue() const {return prev;}
         virtual std::string str() const override;
-};
-
-class SIM_API ExpressionFilter : public cNumericResultFilter
-{
-    public:
-        typedef omnetpp::common::Expression Expression;
-    protected:
-        class ValueVariable : public Expression::Variable
-        {
-          private:
-            ExpressionFilter *owner;
-            double *currentValue;
-          public:
-            ValueVariable(ExpressionFilter *owner, double *currentValue) {this->owner = owner; this->currentValue = currentValue;}
-            virtual Functor *dup() const override {return new ValueVariable(owner, currentValue);}
-            virtual const char *getName() const override {return "<signalvalue>";}
-            virtual char getReturnType() const override {return Expression::Value::DBL;}
-            virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return *currentValue;}
-        };
-        //XXX currently unused
-        class TimeVariable : public Expression::Variable
-        {
-          private:
-            ExpressionFilter *owner;
-          public:
-            TimeVariable(ExpressionFilter *filter) {owner = filter;}
-            virtual Functor *dup() const override {return new TimeVariable(owner);}
-            virtual const char *getName() const override {return "<signaltime>";}
-            virtual char getReturnType() const override {return Expression::Value::DBL;}
-            virtual Expression::Value evaluate(Expression::Value args[], int numargs) override {return SIMTIME_DBL(owner->lastTimestamp);}
-        };
-
-    protected:
-        Expression expr;
-        simtime_t lastTimestamp;
-        double lastOutputValue;
-    protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override {lastTimestamp = t; value = expr.doubleValue(); return true;}
-    public:
-        // internal methods, only public for technical reasons
-        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) {throw cRuntimeError("constant expression cannot have variables");};
-        virtual Expression::Functor *makeTimeVariable() {return new TimeVariable(this);} // XXX: unused
-    public:
-        ExpressionFilter() : lastTimestamp(SIMTIME_ZERO), lastOutputValue(NaN) {}
-        Expression& getExpression() {return expr;}
-        simtime_t getLastTimestamp() const {return lastTimestamp;}
-        double getLastValue() const {return lastOutputValue;}
-        virtual std::string str() const override;
-};
-
-/**
- * @brief Result filter that computes an expression from a single input.
- */
-class SIM_API UnaryExpressionFilter : public ExpressionFilter
-{
-    protected:
-        double lastInputValue;
-    protected:
-        virtual bool process(simtime_t& t, double& value, cObject *details) override;
-    public:
-        // internal method, only public for technical reasons
-        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override {ASSERT(index == 0); return new ValueVariable(this, &lastInputValue);}
-    public:
-        UnaryExpressionFilter() : lastInputValue(NaN) {}
-        double getLastInputValue() const {return lastInputValue;}
-};
-
-/**
- * @brief Result filter that computes an expression from multiple inputs.
- */
-class SIM_API NaryExpressionFilter : public ExpressionFilter
-{
-    protected:
-        int signalCount;
-        cResultFilter **prevFilters;
-        double *lastInputValues;
-    protected:
-        using ExpressionFilter::process;
-        virtual Expression::Functor *makeValueVariable(int index, cResultFilter *prevFilter) override;
-        virtual void subscribedTo(cResultFilter *prev) override {}
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, bool b, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d, cObject *details) override;
-        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override;
-        virtual bool process(cResultFilter *prev, simtime_t& t, double& value);
-    public:
-        NaryExpressionFilter(int signalCount) {this->signalCount = signalCount; prevFilters = new cResultFilter*[signalCount]; lastInputValues = new double[signalCount];}
-        virtual ~NaryExpressionFilter() {delete [] prevFilters; delete [] lastInputValues; }
 };
 
 /**
@@ -378,5 +285,3 @@ class SIM_API SumPerDurationFilter : public cNumericResultFilter
 }  // namespace omnetpp
 
 #endif
-
-

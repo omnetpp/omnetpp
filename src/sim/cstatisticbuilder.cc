@@ -18,10 +18,10 @@
 #include "omnetpp/cstatisticbuilder.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
+#include "omnetpp/resultfilters.h"
 #include "common/stringtokenizer.h"
 #include "common/stringutil.h"
 #include "common/opp_ctype.h"
-#include "resultfilters.h"
 #include "statisticparsing.h"
 
 namespace omnetpp {

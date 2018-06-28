@@ -18,8 +18,8 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cstatisticbuilder.h"  // for PROPKEY_STATISTIC_CHECKSIGNALS
-#include "sim/resultfilters.h"  // WarmupFilter, ExpressionFilter
-#include "sim/resultrecorders.h"  // ExpressionRecorder
+#include "omnetpp/resultfilters.h"  // WarmupFilter
+#include "resultexpr.h" // ExpressionFilter, ExpressionRecorder
 #include "statisticparsing.h"
 
 namespace omnetpp {

@@ -22,7 +22,8 @@
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cpsquare.h"
 #include "omnetpp/cksplit.h"
-#include "resultrecorders.h"
+#include "omnetpp/resultrecorders.h"
+#include "resultexpr.h"
 
 namespace omnetpp {
 

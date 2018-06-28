@@ -124,6 +124,8 @@
 #include "omnetpp/onstartup.h"
 #include "omnetpp/opp_string.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/resultfilters.h"
+#include "omnetpp/resultrecorders.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/nedsupport.h"
 #include "omnetpp/packing.h"
