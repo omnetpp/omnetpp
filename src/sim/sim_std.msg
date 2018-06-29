@@ -606,13 +606,6 @@ class cStdDev extends cStatistic
     @descriptor(readonly);
 }
 
-class cWeightedStdDev extends cStdDev
-{
-    @existingClass;
-    @overwritePreviousDefinition;
-    @descriptor(readonly);
-}
-
 class cAbstractHistogram extends cStdDev
 {
     @existingClass;

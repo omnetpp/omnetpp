@@ -215,11 +215,6 @@ class SIM_API cAbstractHistogram : public cStdDev
     //@}
 };
 
-/**
- * DEPRECATED CLASS, use cAbstractHistogram instead.
- */
-_OPPDEPRECATED typedef cAbstractHistogram cDensityEstBase;
-
 }  // namespace omnetpp
 
 

@@ -223,51 +223,6 @@ class SIM_API cStdDev : public cStatistic
     //@}
 };
 
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
-/**
- * @brief Statistics class to collect doubles and calculate weighted statistics
- * from them. One application is to calculate time average.
- *
- * DEPRECATED CLASS -- use cStddev in weighted mode instead.
- *
- * @ingroup Statistics
- */
-class _OPPDEPRECATED SIM_API cWeightedStdDev : public cStdDev
-{
-  public:
-    /** @name Constructors, destructor, assignment. */
-    //@{
-    /**
-     * Constructor.
-     */
-    explicit cWeightedStdDev(const char *name=nullptr) : cStdDev(name, true)  {}
-
-    /**
-     * Copy constructor.
-     */
-    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev(r) {}
-
-    /**
-     * Assignment operator. The name member is not copied; see cNamedObject's operator=() for more details.
-     */
-    cWeightedStdDev& operator=(const cWeightedStdDev& res) {cStdDev::operator=(res); return *this;}
-
-    /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
-     */
-    virtual cWeightedStdDev *dup() const override  {return new cWeightedStdDev(*this);}
-    //@}
-};
-
-#if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-
 }  // namespace omnetpp
 
 #endif

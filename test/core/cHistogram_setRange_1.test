@@ -52,14 +52,14 @@ dan.setNumBinsHint(5);  dan.setRangeAuto(FIRSTVALS, RANGEEXT);
 daun.setNumBinsHint(5); daun.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
 daln.setNumBinsHint(5); daln.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
 
-cDensityEstBase *h[] = {
+cAbstractHistogram *h[] = {
   &if_, &ia, &iau, &ial,
   &ifn, &ian, &iaun, &ialn,
   &df_, &da, &dau, &dal,
   &dfn, &dan, &daun, &daln,
   &ksa, &psq,
 };
-int nh = sizeof(h)/sizeof(cDensityEstBase*);
+int nh = sizeof(h)/sizeof(cAbstractHistogram*);
 int nih = 8;  // first 8 histograms collect integers, the rest collect doubles
 
 for (int i=0; i<FIRSTVALS+10; i++)
