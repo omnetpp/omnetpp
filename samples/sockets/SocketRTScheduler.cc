@@ -38,7 +38,7 @@ cSocketRTScheduler::~cSocketRTScheduler()
 {
 }
 
-std::string cSocketRTScheduler::info() const
+std::string cSocketRTScheduler::str() const
 {
     return "socket RT scheduler";
 }
