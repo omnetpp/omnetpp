@@ -91,7 +91,6 @@ class SIM_API cHistogram : public cAbstractHistogram
      * they can be real numbers.
      */
     enum Mode {MODE_AUTO, MODE_INTEGERS, MODE_REALS, MODE_DOUBLES /*deprecated*/ = MODE_REALS};
-    _OPPDEPRECATED typedef Mode HistogramMode;
 
   protected:
     cIHistogramStrategy *strategy = nullptr; // owned

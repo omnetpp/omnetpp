@@ -258,44 +258,6 @@ class SIM_API cStatistic : public cRandom
      */
     virtual void recordAs(const char *name, const char *unit=nullptr);
     //@}
-
-    /** @name Methods deprecated due to renaming. */
-    //@{
-    /**
-     * Please use getSumWeights() to obtain the sum of weights.
-     */
-    _OPPDEPRECATED virtual double getWeights() const final {return getSumWeights();}
-
-    /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(double value, double weight) final {collectWeighted(value, weight);}
-
-    /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(SimTime value, double weight) final {collectWeighted(value, weight);}
-
-    /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(double value, SimTime weight) final {collectWeighted(value, weight);}
-
-    /**
-     * Deprecated method, please use collectWeighted() instead.
-     */
-    _OPPDEPRECATED virtual void collect2(SimTime value, SimTime weight) final {collectWeighted(value, weight);}
-
-    /**
-     * Deprecated method, please use draw() to obtain a random number from the collected data.
-     */
-    _OPPDEPRECATED virtual double random() const final {return draw();}
-
-    /**
-     * Deprecated method, please use clear() instead.
-     */
-    _OPPDEPRECATED virtual void clearResult() final {clear();}
-    //@}
 };
 
 }  // namespace omnetpp
