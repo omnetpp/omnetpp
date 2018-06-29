@@ -283,16 +283,6 @@ class SIM_API cQueue : public cOwnedObject
     bool isEmpty() const {return getLength()==0;}
 
     /**
-     * DEPRECATED. Use getLength() instead.
-     */
-    _OPPDEPRECATED int length() const {return getLength();}
-
-    /**
-     * DEPRECATED. Use isEmpty() instead.
-     */
-    _OPPDEPRECATED bool empty() const {return isEmpty();}
-
-    /**
      * Returns the ith element in the queue, or nullptr if i is out of range.
      * get(0) returns the front element. This method performs linear
      * search.

@@ -219,11 +219,6 @@ class SIM_API cPar : public cObject
     cPar& setIntValue(intpar_t l);
 
     /**
-     * Compatibility method, delegates to setIntValue().
-     */
-    _OPPDEPRECATED cPar& setLongValue(intpar_t l) {return setIntValue(l);}
-
-    /**
      * Sets the value to the given double value.
      */
     cPar& setDoubleValue(double d);
@@ -283,11 +278,6 @@ class SIM_API cPar : public cObject
      * Note: Implicit conversion from DOUBLE is intentionally missing.
      */
     intpar_t intValue() const;
-
-    /**
-     * Compatibility method, delegates to intValue().
-     */
-    _OPPDEPRECATED intpar_t longValue() const {return intValue();}
 
     /**
      * Returns value as double. The cPar type must be DOUBLE.

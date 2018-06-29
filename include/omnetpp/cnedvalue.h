@@ -264,11 +264,6 @@ class SIM_API cNedValue
     intpar_t intValue() const;
 
     /**
-     * For compatibility; delegates to intValue().
-     */
-    _OPPDEPRECATED intpar_t longValue() const {return intValue();}
-
-    /**
      * Returns the numeric value as an integer converted to the given unit.
      * If the current unit cannot be converted to the given one, an error
      * will be thrown. The type must be DOUBLE or INT.

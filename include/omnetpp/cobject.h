@@ -155,16 +155,6 @@ class SIM_API cObject
     virtual std::string str() const;
 
     /**
-     * Deprecated, use str() instead. This method also delegates to str().
-     */
-    _OPPDEPRECATED virtual std::string info() const {return str();}
-
-    /**
-     * Deprecated. This method returns an empty string.
-     */
-    _OPPDEPRECATED virtual std::string detailedInfo() const {return "";}
-
-    /**
      * Should be redefined in subclasses to create an exact copy of this object.
      * The default implementation just throws an error, to indicate that
      * the method was not redefined.
