@@ -400,34 +400,6 @@ class SIM_API cHistogram : public cAbstractHistogram
      * cAutoRangeHistogramStrategy on the histogram, and configures it accordingly.
      */
     virtual void setBinSizeHint(double d);
-
-    /**
-     * Deprecated method. Use the combination of setNumPrecollectedValues() and
-     * setRangeExtensionFactor() instead.
-     */
-    _OPPDEPRECATED virtual void setRangeAuto(int numPrecollect=100, double rangeExtensionFactor=2.0);
-
-    /**
-     * Deprecated method. Use the combination of setRange(NAN, upper),
-     * setNumPrecollectedValues() and setRangeExtensionFactor() instead.
-     */
-    _OPPDEPRECATED virtual void setRangeAutoLower(double upper, int numPrecollect=100, double rangeExtensionFactor=2.0);
-
-    /**
-     * Deprecated method. Use the combination of setRange(lower, NAN),
-     * setNumPrecollectedValues() and setRangeExtensionFactor() instead.
-     */
-    _OPPDEPRECATED virtual void setRangeAutoUpper(double lower, int numPrecollect=100, double rangeExtensionFactor=2.0);
-
-    /**
-     * Deprecated method, use setNumBins() instead.
-     */
-    _OPPDEPRECATED virtual void setNumCells(int numCells) final {setNumBinsHint(numCells);}
-
-    /**
-     * Deprecated method, use setBinSize() instead.
-     */
-    _OPPDEPRECATED virtual void setCellSize(double d) final {setBinSizeHint(d);}
     //@}
 };
 

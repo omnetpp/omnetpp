@@ -4,6 +4,17 @@ cHistogram and various setRange() methods
 %includes:
 #include <iomanip>
 
+%global:
+static void setupRange(cHistogram& hist, double lower, double upper, int numToPrecollect=-1, double rangeExtFactor=-1)
+{
+    hist.setRange(lower, upper);
+    if (numToPrecollect > 0)
+        hist.setNumPrecollectedValues(numToPrecollect);
+    if (rangeExtFactor > 0)
+        hist.setRangeExtensionFactor(rangeExtFactor);
+}
+
+
 %activity:
 
 const int FIRSTVALS=100;
@@ -33,24 +44,24 @@ cKSplit ksa("double-ksplit-auto");
 cPSquare psq("double-psquare");
 
 if_.setRange(10, 20); if_.setMode(cHistogram::MODE_INTEGERS); // mode is not auto-selected, because transform happens immediately (FIXME is that good?)
-ia.setRangeAuto(FIRSTVALS, RANGEEXT);
-iau.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
-ial.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
+setupRange(ia, NAN, NAN, FIRSTVALS, RANGEEXT);
+setupRange(iau, 10, NAN, FIRSTVALS, RANGEEXT);
+setupRange(ial, NAN, 20, FIRSTVALS, RANGEEXT);
 
 ifn.setNumBinsHint(5);  ifn.setRange(10, 20);
-ian.setNumBinsHint(5);  ian.setRangeAuto(FIRSTVALS, RANGEEXT);
-iaun.setNumBinsHint(5); iaun.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
-ialn.setNumBinsHint(5); ialn.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
+ian.setNumBinsHint(5);  setupRange(ian, NAN, NAN, FIRSTVALS, RANGEEXT);
+iaun.setNumBinsHint(5); setupRange(iaun, 10, NAN, FIRSTVALS, RANGEEXT);
+ialn.setNumBinsHint(5); setupRange(ialn, NAN, 20, FIRSTVALS, RANGEEXT);
 
 df_.setRange(10, 20); df_.setMode(cHistogram::MODE_DOUBLES); // mode is not auto-selected, because transform happens immediately (FIXME is that good?)
-da.setRangeAuto(FIRSTVALS, RANGEEXT);
-dau.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
-dal.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
+setupRange(da, NAN, NAN, FIRSTVALS, RANGEEXT);
+setupRange(dau, 10, NAN, FIRSTVALS, RANGEEXT);
+setupRange(dal, NAN, 20, FIRSTVALS, RANGEEXT);
 
 dfn.setNumBinsHint(5);  dfn.setRange(10, 20);
-dan.setNumBinsHint(5);  dan.setRangeAuto(FIRSTVALS, RANGEEXT);
-daun.setNumBinsHint(5); daun.setRangeAutoUpper(10, FIRSTVALS, RANGEEXT);
-daln.setNumBinsHint(5); daln.setRangeAutoLower(20, FIRSTVALS, RANGEEXT);
+dan.setNumBinsHint(5);  setupRange(dan, NAN, NAN, FIRSTVALS, RANGEEXT);
+daun.setNumBinsHint(5); setupRange(daun, 10, NAN, FIRSTVALS, RANGEEXT);
+daln.setNumBinsHint(5); setupRange(daln, NAN, 20, FIRSTVALS, RANGEEXT);
 
 cAbstractHistogram *h[] = {
   &if_, &ia, &iau, &ial,

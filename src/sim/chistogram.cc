@@ -507,29 +507,6 @@ void cHistogram::setRange(double lower, double upper)
     getOrCreateAutoRangeStrategy()->setRangeHint(lower, upper);
 }
 
-void cHistogram::setRangeAuto(int numPrecollect, double rangeExtensionFactor)
-{
-    auto strat = getOrCreateAutoRangeStrategy();
-    strat->setNumToPrecollect(numPrecollect);
-    strat->setRangeExtensionFactor(rangeExtensionFactor);
-}
-
-void cHistogram::setRangeAutoLower(double upper, int numPrecollect, double rangeExtensionFactor)
-{
-    auto strat = getOrCreateAutoRangeStrategy();
-    strat->setRangeHint(NAN, upper);
-    strat->setNumToPrecollect(numPrecollect);
-    strat->setRangeExtensionFactor(rangeExtensionFactor);
-}
-
-void cHistogram::setRangeAutoUpper(double lower, int numPrecollect, double rangeExtensionFactor)
-{
-    auto strat = getOrCreateAutoRangeStrategy();
-    strat->setRangeHint(lower, NAN);
-    strat->setNumToPrecollect(numPrecollect);
-    strat->setRangeExtensionFactor(rangeExtensionFactor);
-}
-
 void cHistogram::setNumPrecollectedValues(int numPrecollect)
 {
     getOrCreateAutoRangeStrategy()->setNumToPrecollect(numPrecollect);

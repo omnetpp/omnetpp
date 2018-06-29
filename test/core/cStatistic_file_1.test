@@ -10,7 +10,7 @@ cHistogram hist("Histogram");
 cPSquare psquare("PSquare", numCells);
 cKSplit ksplit("K-Split");
 
-hist.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
+hist.setRange(0.0, NAN); hist.setNumPrecollectedValues(numFirstVals); hist.setRangeExtensionFactor(rangeExtFactor);
 ksplit.setRangeAutoUpper(0.0, numFirstVals, rangeExtFactor);
 
 for (int i = 0; i < 1000; i++) {
