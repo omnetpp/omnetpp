@@ -345,7 +345,6 @@ class SIM_API cFigure : public cOwnedObject
         // helpers for parse(cProperty*)
         static Point parsePoint(cProperty *property, const char *key, int index);
         static std::vector<Point> parsePoints(cProperty *property, const char *key);
-        _OPPDEPRECATED static Rectangle parseBounds(cProperty *property) {return parseBounds(property, Rectangle());} //TODO use parseBounds(property, getBounds()) instead
         static Rectangle parseBounds(cProperty *property, const Rectangle& defaults);
         static Transform parseTransform(cProperty *property, const char *key);
         static Font parseFont(cProperty *property, const char *key);
@@ -629,16 +628,6 @@ class SIM_API cFigure : public cOwnedObject
          * same Z-index.
          */
         virtual void addFigure(cFigure *figure, int pos);
-
-        /**
-         * DEPRECATED. Use figure->insertAbove(referenceFigure) instead.
-         */
-        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAbove(referenceFigure);}
-
-        /**
-         * DEPRECATED. Use figure->insertBelow(referenceFigure) instead.
-         */
-        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBelow(referenceFigure);}
 
         /**
          * Removes the given figure from the child list of this figure.
@@ -3026,16 +3015,6 @@ class SIM_API cCanvas : public cOwnedObject
          * same Z-index.
          */
         virtual void addFigure(cFigure *figure, int pos) {rootFigure->addFigure(figure, pos);}
-
-        /**
-         * DEPRECATED. Use cFigure::insertAbove() instead.
-         */
-        _OPPDEPRECATED void addFigureAbove(cFigure *figure, cFigure *referenceFigure) {figure->insertAbove(referenceFigure);}
-
-        /**
-         * DEPRECATED. Use cFigure::insertBelow() instead.
-         */
-        _OPPDEPRECATED void addFigureBelow(cFigure *figure, cFigure *referenceFigure) {figure->insertBelow(referenceFigure);}
 
         /**
          * Removes the given figure from the child list of the root figure.
