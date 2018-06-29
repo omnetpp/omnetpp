@@ -164,55 +164,6 @@ class SIM_API cAbstractHistogram : public cStdDev
      */
     virtual double draw() const override;
     //@}
-
-    /** @name Methods deprecated due to renaming. */
-    //@{
-
-    /**
-     * Deprecated, use binsAlreadySetUp() instead.
-     */
-    _OPPDEPRECATED virtual bool isTransformed() const final {return binsAlreadySetUp();}
-
-    /**
-     * Deprecated, use setUpBins() instead.
-     */
-    _OPPDEPRECATED virtual void transform() final {setUpBins();}
-
-    /**
-     * Deprecated, use getNumBins() instead.
-     */
-    _OPPDEPRECATED virtual int getNumCells() const final {return getNumBins();}
-
-    /**
-     * Deprecated, use getBinEdge() instead.
-     */
-    _OPPDEPRECATED virtual double getBasepoint(int k) const final {return getBinEdge(k);}
-
-    /**
-     * Deprecated, use getBinValue() instead.
-     */
-    _OPPDEPRECATED virtual double getCellValue(int k) const final {return getBinValue(k);}
-
-    /**
-     * Deprecated, use getBinPDF() instead.
-     */
-    _OPPDEPRECATED virtual double getCellPDF(int k) const final {return getBinPDF(k);}
-
-    /**
-     * Deprecated, use getNumUnderflows() instead.
-     */
-    _OPPDEPRECATED virtual int64_t getUnderflowCell() const final {return getNumUnderflows();}
-
-    /**
-     * Deprecated, use getNumUnderflows() instead.
-     */
-    _OPPDEPRECATED virtual int64_t getOverflowCell() const final {return getNumOverflows();}
-
-    /**
-     * Deprecated, use getBinInfo() instead.
-     */
-    _OPPDEPRECATED virtual Bin getCellInfo(int k) const final {return getBinInfo(k);}
-    //@}
 };
 
 }  // namespace omnetpp
