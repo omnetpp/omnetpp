@@ -80,11 +80,6 @@ class SIM_API cArray : public cOwnedObject
         cObject *operator*() const {return array->get(k);}
 
         /**
-         * DEPRECATED. Use the * operator to access the object the iterator is at.
-         */
-        _OPPDEPRECATED cObject *operator()() const {return operator*();}
-
-        /**
          * Returns true if the iterator has reached either end of the array.
          */
         bool end() const   {return k<0 || k>=array->size();}

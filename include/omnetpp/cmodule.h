@@ -94,11 +94,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
         cGate *operator*() const {cGate *result=current(); ASSERT(result||end()); return result;}
 
         /**
-         * DEPRECATED. Use the * operator to access the object the iterator is at.
-         */
-        _OPPDEPRECATED cGate *operator()() const {return operator*();}
-
-        /**
          * Returns true if the iterator reached the end of the list.
          */
         bool end() const;
@@ -154,11 +149,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * has reached the end of the list.
          */
         cModule *operator*() const {return p;}
-
-        /**
-         * DEPRECATED. Use the * operator to access the object the iterator is at.
-         */
-        _OPPDEPRECATED cModule *operator()() const {return operator*();}
 
         /**
          * Returns true if the iterator reached the end of the list.
@@ -240,11 +230,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
          * has reached the end of the list.
          */
         cChannel *operator*() const {return end() ? nullptr : channels[k];}
-
-        /**
-         * DEPRECATED. Use the * operator to access the object the iterator is at.
-         */
-        _OPPDEPRECATED cChannel *operator()() const {return operator*();}
 
         /**
          * Returns true if the iterator has reached the end.

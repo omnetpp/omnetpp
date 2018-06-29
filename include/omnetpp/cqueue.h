@@ -90,11 +90,6 @@ class SIM_API cQueue : public cOwnedObject
         cObject *operator*() const {return p ? p->obj : nullptr;}
 
         /**
-         * DEPRECATED. Use the * operator to access the object the iterator is at.
-         */
-        _OPPDEPRECATED cObject *operator()() const {return operator*();}
-
-        /**
          * Returns true if the iterator has reached either end of the queue.
          */
         bool end() const {return p == nullptr;}
