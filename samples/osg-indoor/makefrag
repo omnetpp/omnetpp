@@ -1,6 +1,6 @@
 # add required cflags and libraries for OpenSceneGraph and osgEarth
 ifeq ($(WITH_OSG),yes)
-OMNETPP_LIBS += $(OSG_LIBS) -losgDB $(OSGEARTH_LIBS)
+OMNETPP_LIBS += $(OSG_LIBS)
 endif
 ifeq ($(WITH_OSGEARTH),yes)
 OMNETPP_LIBS += $(OSGEARTH_LIBS)
