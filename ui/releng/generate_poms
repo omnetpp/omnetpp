@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn org.eclipse.tycho:tycho-pomgenerator-plugin:generate-poms -DgroupId=org.omnetpp -Dversion=5.1.0
+mvn org.eclipse.tycho:tycho-pomgenerator-plugin:generate-poms -DgroupId=org.omnetpp -Dversion=6.0.0

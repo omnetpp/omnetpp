@@ -2,22 +2,22 @@
 <feature
       id="org.omnetpp.ide"
       label="OMNeT++ IDE"
-      version="5.4.1.qualifier"
+      version="6.0.0.qualifier"
       provider-name="OpenSim Ltd."
       os="linux,macosx,win32"
       ws="cocoa,gtk,win32"
       arch="x86,x86_64">
 
    <requires>
-      <import feature="org.eclipse.platform" version="4.7.0.v20170612-1255" match="compatible"/>
-      <import feature="org.eclipse.cdt" version="9.3.0.201706122201" match="compatible"/>
-      <import feature="org.eclipse.emf.common" version="2.13.0.v20170609-0707" match="compatible"/>
-      <import feature="org.eclipse.emf.ecore" version="2.13.0.v20170609-0707" match="compatible"/>
-      <import feature="org.eclipse.emf.ecore.edit" version="2.9.0.v20170609-0928" match="compatible"/>
-      <import feature="org.eclipse.emf.edit" version="2.12.0.v20170609-0928" match="compatible"/>
+      <import feature="org.eclipse.cdt" version="9.5.0.201806170908" match="compatible"/>
+      <import feature="org.eclipse.emf.common" version="2.14.0.v20180527-1134" match="compatible"/>
+      <import feature="org.eclipse.gmf" version="1.12.0.201806010809" match="compatible"/>
+      <import feature="org.eclipse.emf.ecore" version="2.14.0.v20180529-1144" match="compatible"/>
+      <import feature="org.eclipse.emf.ecore.edit" version="2.10.0.v20180421-0731" match="compatible"/>
+      <import feature="org.eclipse.emf.edit" version="2.13.0.v20180421-1151" match="compatible"/>
       <import feature="org.eclipse.gef" version="3.11.0.201606061308" match="compatible"/>
-      <import feature="org.eclipse.gmf" version="1.11.0.201706061437" match="compatible"/>
-      <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.11.0.201706061437" match="compatible"/>
+      <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.12.0.201806010809" match="compatible"/>
+      <import feature="org.eclipse.platform" version="4.8.0.v20180611-0656" match="compatible"/>
    </requires>
 
    <plugin
