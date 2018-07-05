@@ -1233,8 +1233,8 @@ sub formatmath ()
       $txt =~ s!\_([a-zA-Z0-9]+)!<sub>$1</sub>!g;
 
       # convert ^{} and _{}
-      $txt =~ s!\^{(.*?)}!<sup>$1</sup>!g;
-      $txt =~ s!\_{(.*?)}!<sub>$1</sub>!g;
+      $txt =~ s!\^\{(.*?)}!<sup>$1</sup>!g;
+      $txt =~ s!\_\{(.*?)}!<sub>$1</sub>!g;
 
       print "<i>$txt</i>\n";
 
