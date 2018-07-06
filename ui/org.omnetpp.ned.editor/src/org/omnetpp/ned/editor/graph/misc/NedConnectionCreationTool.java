@@ -29,6 +29,14 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
 // CHECKME we can use ConnectionDragCreationTool for a dran'n drop type behavior
 public class NedConnectionCreationTool extends ConnectionCreationTool {
 
+    public NedConnectionCreationTool() {
+        // this is required only to override the cursors for the tool because the default cursors
+        // in GEF have the image data and mask data swapped (a bug in the GEF code)
+        // see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=467983
+        setDefaultCursor(NedSharedCursors.CURSOR_PLUG);
+        setDisabledCursor(NedSharedCursors.CURSOR_PLUG_NOT);
+    }
+
     // override the method to fix a GEF BUGFIX
     @Override
     protected boolean handleButtonDown(int button) {

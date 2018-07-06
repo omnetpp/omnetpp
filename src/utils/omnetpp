@@ -23,8 +23,6 @@ fi
 
 #set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
-# workaround for corruped maouse + missing tristate bitmaps: https://bugs.eclipse.org/bugs/show_bug.cgi?id=467983
-export SWT_GTK3=0
 # arguments needed to initially correctly show the default 'samples' workspace
 DEFAULT_WORKSPACE_ARGS="-vmargs -Dosgi.instance.area.default=$IDEDIR/../samples"
 

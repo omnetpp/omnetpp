@@ -476,7 +476,7 @@ public class PaletteManager {
         {
             @Override
             public Tool createTool() {
-                Tool tool = new CreationTool() {
+                CreationTool tool = new CreationTool() {
                     @Override
                     protected void handleFinished() {
                         super.handleFinished();
@@ -484,6 +484,10 @@ public class PaletteManager {
                     }
                 };
                 tool.setProperties(getToolProperties());
+                // this is required only to override the cursors for the tool because the default cursors
+                // in GEF have the image data and mask data swapped (a bug in the GEF code)
+                // see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=467983
+                tool.setDefaultCursor(NedSharedCursors.CURSOR_TREE_ADD);
                 return tool;
             }
         };

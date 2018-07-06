@@ -10,6 +10,7 @@ package org.omnetpp.ned.editor.graph.parts;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
@@ -19,11 +20,13 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.graphics.Cursor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.IProblemDecorationSupport;
 import org.omnetpp.figures.ITooltipTextProvider;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
+import org.omnetpp.ned.editor.graph.misc.NedSharedCursors;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedDirectEditPolicy;
@@ -53,6 +56,22 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
     protected void createEditPolicies() {
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
         installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, new NedDirectEditPolicy());
+    }
+
+    public DragTracker getDragTracker(Request request) {
+        // this is required only to override the cursors for the tool because the default cursors
+        // in GEF have the image data and mask data swapped (a bug in the GEF code)
+        // see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=467983
+        DragTracker tracker = new org.eclipse.gef.tools.DragEditPartsTracker(this) {
+            @Override
+            protected Cursor getDefaultCursor() {
+                if (isCloneActive())
+                    return NedSharedCursors.CURSOR_TREE_ADD;
+                return NedSharedCursors.CURSOR_TREE_MOVE;
+            }
+        };
+
+        return tracker;
     }
 
     /**
