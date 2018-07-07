@@ -79,29 +79,6 @@ OrderedKeyValueList ResultFileUtils::getConfigEntries()
     return result;
 }
 
-#ifdef CHECK
-#undef CHECK
-#endif
-#define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError("Cannot write result file '%s'", fname)
-
-void ResultFileUtils::writeRunData(FILE *f, const char *fname)
-{
-    // note: this method is only for the "legacy" result recorders
-    std::string runId = getRunId();
-    StringMap attributes = getRunAttributes();
-    StringMap itervars = getIterationVariables();
-    OrderedKeyValueList moduleParams = getParamAssignments();
-
-    CHECK(fprintf(f, "run %s\n", QUOTE(runId.c_str())));
-    for (auto& p : attributes)
-        CHECK(fprintf(f, "attr %s %s\n", p.first.c_str(), QUOTE(p.second.c_str())));
-    for (auto& p : itervars)
-        CHECK(fprintf(f, "itervar %s %s\n", p.first.c_str(), QUOTE(p.second.c_str())));
-    for (auto& p : moduleParams)
-        CHECK(fprintf(f, "param %s %s\n", p.first.c_str(), QUOTE(p.second.c_str())));
-    CHECK(fprintf(f, "\n"));
-}
-
 }  // namespace envir
 }  // namespace omnetpp
 
