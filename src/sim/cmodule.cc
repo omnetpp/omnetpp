@@ -1458,7 +1458,7 @@ void cModule::callFinish()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_FINISH);
     try {
-        recordParametersAsScalars();
+        recordParameters();
         //Enter_Method_Silent("finish()");
         finish();
         fireFinish();

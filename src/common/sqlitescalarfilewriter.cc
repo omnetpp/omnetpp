@@ -32,6 +32,7 @@ SqliteScalarFileWriter::SqliteScalarFileWriter()
     add_statistic_stmt = nullptr;
     add_statistic_attr_stmt = nullptr;
     add_statistic_bin_stmt = nullptr;
+    add_parameter_stmt = nullptr;
 
     commitFreq = 0;
     insertCount = 0;
@@ -86,6 +87,7 @@ void SqliteScalarFileWriter::close()
         finalizeStatement(add_statistic_stmt);
         finalizeStatement(add_statistic_attr_stmt);
         finalizeStatement(add_statistic_bin_stmt);
+        finalizeStatement(add_parameter_stmt);
 
         checkOK(sqlite3_exec(db, "COMMIT TRANSACTION;", nullptr, nullptr, nullptr));
         checkOK(sqlite3_exec(db, "PRAGMA journal_mode = DELETE;", nullptr, nullptr, nullptr));
@@ -106,6 +108,7 @@ void SqliteScalarFileWriter::cleanup()  // MUST NOT THROW
         finalizeStatement(add_statistic_stmt);
         finalizeStatement(add_statistic_attr_stmt);
         finalizeStatement(add_statistic_bin_stmt);
+        finalizeStatement(add_parameter_stmt);
 
         // note: no checkOK() because it would throw
         sqlite3_exec(db, "COMMIT TRANSACTION;", nullptr, nullptr, nullptr);
@@ -140,6 +143,7 @@ void SqliteScalarFileWriter::prepareStatements()
             ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
     prepareStatement(add_statistic_attr_stmt, "INSERT INTO statisticAttr (statId, attrName, attrValue) VALUES (?, ?, ?);");
     prepareStatement(add_statistic_bin_stmt, "INSERT INTO histogramBin (statId, lowerEdge, binValue) VALUES (?, ?, ?);");
+    prepareStatement(add_parameter_stmt, "INSERT INTO parameter (runId, moduleName, paramName, paramValue) VALUES (?, ?, ?, ?);");
 }
 
 void SqliteScalarFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& configEntries)
@@ -299,6 +303,26 @@ void SqliteScalarFileWriter::writeStatisticBin(sqlite_int64 statisticId, double 
     checkOK(sqlite3_bind_double(add_statistic_bin_stmt, 3, binValue));
     checkDone(sqlite3_step(add_statistic_bin_stmt));
     checkOK(sqlite3_clear_bindings(add_statistic_bin_stmt));
+}
+
+void SqliteScalarFileWriter::recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value)
+{
+    Assert(runId != -1); // ensure run data has been written out
+
+    // insert (code similar to recordScalar())
+    checkOK(sqlite3_reset(add_parameter_stmt));
+    checkOK(sqlite3_bind_int64(add_parameter_stmt, 1, runId));
+    checkOK(sqlite3_bind_text(add_parameter_stmt, 2, componentFullPath.c_str(), componentFullPath.size(), SQLITE_STATIC));
+    checkOK(sqlite3_bind_text(add_parameter_stmt, 3, name.c_str(), name.length(), SQLITE_STATIC));
+    checkOK(sqlite3_bind_text(add_parameter_stmt, 4, value.c_str(), value.length(), SQLITE_STATIC));
+    checkDone(sqlite3_step(add_parameter_stmt));
+    checkOK(sqlite3_clear_bindings(add_parameter_stmt));
+
+    // commit every once in a while
+    if (++insertCount >= commitFreq) {
+        insertCount = 0;
+        commitAndBeginNew();
+    }
 }
 
 void SqliteScalarFileWriter::commitAndBeginNew()

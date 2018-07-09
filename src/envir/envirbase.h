@@ -265,6 +265,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // output scalars
     virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
+    virtual void recordParameter(cPar *par) override;
 
     virtual void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty) override;
 

@@ -46,6 +46,7 @@ class COMMON_API SqliteScalarFileWriter
     sqlite3_stmt *add_statistic_stmt;
     sqlite3_stmt *add_statistic_attr_stmt;
     sqlite3_stmt *add_statistic_bin_stmt;
+    sqlite3_stmt *add_parameter_stmt;
 
     int commitFreq=100000; // we COMMIT after every commitFreq INSERT statements
     int insertCount;
@@ -81,6 +82,7 @@ class COMMON_API SqliteScalarFileWriter
     void recordScalar(const std::string& componentFullPath, const std::string& name, double value, const StringMap& attributes);
     void recordStatistic(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const StringMap& attributes);
     void recordHistogram(const std::string& componentFullPath, const std::string& name, const Statistics& statistic, const Histogram& bins, const StringMap& attributes);
+    void recordParameter(const std::string& componentFullPath, const std::string& name, const std::string& value);
     void flush();
 };
 

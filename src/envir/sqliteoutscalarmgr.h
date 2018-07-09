@@ -82,7 +82,7 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     /**
      * Records a double scalar result into the scalar result file.
      */
-    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=nullptr) override;
 
     /**
      * Records a histogram or statistic object into the scalar result file.
@@ -91,9 +91,14 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
     virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
 
     /**
+     * Records a component parameter into the scalar result file.
+     */
+    virtual void recordParameter(cPar *par) override;
+
+    /**
      * Returns the file name.
      */
-    const char *getFileName() const override;
+    virtual const char *getFileName() const override;
 
     /**
      * Calls fflush().

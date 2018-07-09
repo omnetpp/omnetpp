@@ -49,6 +49,7 @@ Register_GlobalConfigOption(CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "output-scalar-d
 // per-scalar options
 extern omnetpp::cConfigOption *CFGID_SCALAR_RECORDING;
 extern omnetpp::cConfigOption *CFGID_BIN_RECORDING;
+extern omnetpp::cConfigOption *CFGID_PARAM_RECORDING;
 
 Register_Class(SqliteOutputScalarManager);
 
@@ -184,6 +185,23 @@ void SqliteOutputScalarManager::recordStatistic(cComponent *component, const cha
 
     if (!savedAsHistogram)
         writer.recordStatistic(componentFullPath, name, stats, convertMap(attributes));
+}
+
+void SqliteOutputScalarManager::recordParameter(cPar *par)
+{
+    if (!initialized) {
+        initialized = true;
+        initialize();
+    }
+
+    if (isBad())
+        return;
+
+    std::string componentFullPath = par->getOwner()->getFullPath();
+    const char *name = par->getName();
+    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
+    if (enabled)
+        writer.recordParameter(componentFullPath, name, par->str());
 }
 
 const char *SqliteOutputScalarManager::getFileName() const

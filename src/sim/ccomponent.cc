@@ -314,31 +314,38 @@ std::string cComponent::resolveResourcePath(const char *fileName) const
     return getEnvir()->resolveResourcePath(fileName, getComponentType());
 }
 
-void cComponent::recordParametersAsScalars()
+void cComponent::recordParameters()
 {
     int n = getNumParams();
+    cEnvir *envir = getEnvir();
+    cConfiguration *config = envir->getConfig();
+
     for (int i = 0; i < n; i++) {
-        if (getEnvir()->getConfig()->getAsBool(par(i).getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false)) {
-            //TODO the following checks should probably produce a WARNING not an error;
-            //TODO also, the values should probably be recorded as "param" in the scalar file
-            switch(par(i).getType()) {
-            case cPar::BOOL:
-                recordScalar(par(i).getName(), par(i).boolValue());
-                break;
-            case cPar::INT:
-                if (par(i).isVolatile() && (par(i).intValue() != par(i).intValue() || par(i).intValue() != par(i).intValue()))  // crude check for random variates
-                    throw cRuntimeError(this, "Refusing to record volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar: Recorded value would likely be a meaningless random number", par(i).getName());
-                recordScalar(par(i).getName(), par(i).intValue());
-                break;
-            case cPar::DOUBLE:
-                if (par(i).isVolatile() && (par(i).doubleValue() != par(i).doubleValue() || par(i).doubleValue() != par(i).doubleValue()))  // crude check for random variates
-                    throw cRuntimeError(this, "Refusing to record volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar: Recorded value would likely be a meaningless random number", par(i).getName());
-                recordScalar(par(i).getName(), par(i).doubleValue());
-                break;
-            default:
-                throw cRuntimeError(this, "Cannot record non-numeric parameter '%s' as an output scalar", par(i).getName());
-            }
-        }
+        cPar *p = &par(i);
+        envir->recordParameter(p); // enablement is handled inside
+        if (config->getAsBool(p->getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
+            recordParameterAsScalar(p);
+    }
+}
+
+void cComponent::recordParameterAsScalar(cPar *par)
+{
+    switch(par->getType()) {
+    case cPar::BOOL:
+        recordScalar(par->getName(), par->boolValue());
+        break;
+    case cPar::INT:
+        if (par->isVolatile() && (par->intValue() != par->intValue() || par->intValue() != par->intValue()))  // crude check for random variates
+            throw cRuntimeError(this, "Refusing to record volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar: Recorded value would likely be a meaningless random number", par->getName());
+        recordScalar(par->getName(), par->intValue());
+        break;
+    case cPar::DOUBLE:
+        if (par->isVolatile() && (par->doubleValue() != par->doubleValue() || par->doubleValue() != par->doubleValue()))  // crude check for random variates
+            throw cRuntimeError(this, "Refusing to record volatile parameter '%s' that contains a non-constant value (probably a random variate) as an output scalar: Recorded value would likely be a meaningless random number", par->getName());
+        recordScalar(par->getName(), par->doubleValue());
+        break;
+    default:
+        throw cRuntimeError(this, "Cannot record non-numeric parameter '%s' as an output scalar", par->getName());
     }
 }
 

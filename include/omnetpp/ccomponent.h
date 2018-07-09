@@ -159,8 +159,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     // internal: reallocates paramv (size must be >= numparams)
     void reallocParamv(int size);
 
-    // internal: save parameters marked with "save-as-scalars=true"
-    virtual void recordParametersAsScalars();
+    // internal: save parameters
+    virtual void recordParameters();
+    virtual void recordParameterAsScalar(cPar *par);
 
     // internal: has finalizeParameters() been called?
     bool parametersFinalized() const {return flags&FL_PARAMSFINALIZED;}

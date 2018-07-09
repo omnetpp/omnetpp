@@ -92,6 +92,11 @@ class ENVIR_API OmnetppOutputScalarManager : public cIOutputScalarManager
     void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
 
     /**
+     * Records a component parameter into the scalar result file.
+     */
+    virtual void recordParameter(cPar *par) override;
+
+    /**
      * Returns the file name.
      */
     const char *getFileName() const override;

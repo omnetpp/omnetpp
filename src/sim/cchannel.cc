@@ -152,7 +152,7 @@ void cChannel::callFinish()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_FINISH);
     try {
-        recordParametersAsScalars();
+        recordParameters();
         finish();
         fireFinish();
     }

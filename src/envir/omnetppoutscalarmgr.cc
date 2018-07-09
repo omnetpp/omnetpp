@@ -51,6 +51,7 @@ extern omnetpp::cConfigOption *CFGID_OUTPUT_SCALAR_FILE_APPEND;
 // per-scalar options
 extern omnetpp::cConfigOption *CFGID_SCALAR_RECORDING;
 extern omnetpp::cConfigOption *CFGID_BIN_RECORDING;
+extern omnetpp::cConfigOption *CFGID_PARAM_RECORDING;
 
 Register_Class(OmnetppOutputScalarManager);
 
@@ -193,6 +194,23 @@ void OmnetppOutputScalarManager::recordStatistic(cComponent *component, const ch
 
     if (!savedAsHistogram)
         writer.recordStatistic(componentFullPath, name, stats, convertMap(attributes));
+}
+
+void OmnetppOutputScalarManager::recordParameter(cPar *par)
+{
+    if (!initialized) {
+        initialized = true;
+        initialize();
+    }
+
+    if (isBad())
+        return;
+
+    std::string componentFullPath = par->getOwner()->getFullPath();
+    const char *name = par->getName();
+    bool enabled = getEnvir()->getConfig()->getAsBool((componentFullPath+"."+name).c_str(), CFGID_PARAM_RECORDING);
+    if (enabled)
+        writer.recordParameter(componentFullPath, name, par->str());
 }
 
 const char *OmnetppOutputScalarManager::getFileName() const
