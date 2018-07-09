@@ -95,14 +95,14 @@ void OmnetppScalarFileWriter::writeStatisticFields(const Statistics& statistic)
         writeStatisticField("sqrsum", statistic.getSumSqr());
     }
     else {
-        writeStatisticField("weights", statistic.getSumWeights());
+        writeStatisticField("weights", statistic.getSumWeights()); //TODO sumWeights
         writeStatisticField("weightedSum", statistic.getWeightedSum());
         writeStatisticField("sqrSumWeights", statistic.getSumSquaredWeights());
         writeStatisticField("weightedSqrSum", statistic.getSumWeightedSquaredValues());
     }
 }
 
-void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments)
+void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& configEntries)
 {
     Assert(isOpen());
 
@@ -116,9 +116,9 @@ void OmnetppScalarFileWriter::beginRecordingForRun(const std::string& runName, c
     for (auto pair : itervars)
         check(fprintf(f, "itervar %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
 
-    // save run params
-    for (auto& pair : paramAssignments)
-        check(fprintf(f, "param %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
+    // save config entries
+    for (auto& pair : configEntries)
+        check(fprintf(f, "config %s %s\n", pair.first.c_str(), QUOTE(pair.second.c_str())));
 
     check(fprintf(f, "\n"));
 }

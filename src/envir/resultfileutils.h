@@ -35,7 +35,6 @@ class ResultFileUtils {
     static std::string getRunId();
     static StringMap getRunAttributes();
     static StringMap getIterationVariables();
-    static OrderedKeyValueList getParamAssignments();
     static OrderedKeyValueList getConfigEntries();
 };
 

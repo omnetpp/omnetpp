@@ -151,7 +151,7 @@ void SqliteVectorFileWriter::prepareStatements()
     prepareStatement(add_vector_data_stmt, "INSERT INTO vectorData (vectorId, eventNumber, simtimeRaw, value) VALUES (?, ?, ?, ?);");
 }
 
-void SqliteVectorFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& paramAssignments)
+void SqliteVectorFileWriter::beginRecordingForRun(const std::string& runName, int simtimeScaleExp, const StringMap& attributes, const StringMap& itervars, const OrderedKeyValueList& configEntries)
 {
     Assert(vectors.size() == 0);
     bufferedSamples = 0;
@@ -189,10 +189,10 @@ void SqliteVectorFileWriter::beginRecordingForRun(const std::string& runName, in
     }
     finalizeStatement(stmt);
 
-    // save param assignments
-    prepareStatement(stmt, "INSERT INTO runParam (runId, paramKey, paramValue, paramOrder) VALUES (?, ?, ?, ?);");
+    // save config entries
+    prepareStatement(stmt, "INSERT INTO runConfig (runId, configKey, configValue, configOrder) VALUES (?, ?, ?, ?);");
     int i = 0;
-    for (auto& p : paramAssignments) {
+    for (auto& p : configEntries) {
         checkOK(sqlite3_reset(stmt));
         checkOK(sqlite3_bind_int64(stmt, 1, runId));
         checkOK(sqlite3_bind_text(stmt, 2, p.first.c_str(), p.first.size(), SQLITE_STATIC));

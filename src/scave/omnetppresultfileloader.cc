@@ -364,7 +364,7 @@ void OmnetppResultFileLoader::loadVectorsFromIndex(const char *filename, ResultF
 
     runRef->attributes = index->run.attributes;
     runRef->itervars = index->run.itervars;
-    runRef->paramAssignments = index->run.paramAssignments;
+    runRef->configEntries = index->run.configEntries;
     FileRun *fileRunRef = resultFileManager->addFileRun(fileRef, runRef);
 
     const StringMap emptyAttrs;

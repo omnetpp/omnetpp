@@ -43,7 +43,7 @@ struct VectorFileIndex {
         int runNumber;
         StringMap attributes;
         StringMap itervars;
-        OrderedKeyValueList paramAssignments;
+        OrderedKeyValueList configEntries;
 
         RunData() : runNumber(0) {}
 

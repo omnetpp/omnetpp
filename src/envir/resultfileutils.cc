@@ -58,24 +58,13 @@ StringMap ResultFileUtils::getIterationVariables()
     return itervars;
 }
 
-
-OrderedKeyValueList ResultFileUtils::getParamAssignments()
-{
-    cConfigurationEx *cfg = getEnvir()->getConfigEx();
-    std::vector<const char *> params = cfg->getParameterKeyValuePairs();
-    OrderedKeyValueList result;
-    for (int i = 0; i < (int)params.size(); i += 2)
-        result.push_back(std::make_pair(params[i], params[i+1]));
-    return result;
-}
-
 OrderedKeyValueList ResultFileUtils::getConfigEntries()
 {
     cConfigurationEx *cfg = getEnvir()->getConfigEx();
-    std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
     OrderedKeyValueList result;
-    for (const char *key : keys)
-        result.push_back(std::make_pair(key, cfg->getConfigValue(key)));
+    std::vector<const char *> keysValues = cfg->getKeyValuePairs();
+    for (int i = 0; i < (int)keysValues.size(); i += 2)
+        result.push_back(std::make_pair(keysValues[i], keysValues[i+1]));
     return result;
 }
 

@@ -214,8 +214,8 @@ void CsvRecordsExporter::saveResultsAsRecords(ResultFileManager *manager, const 
             writeRunAttrRecord(run->getRunName(), "runattr", pair.first, pair.second, numColumns);
         for (auto pair : run->getIterationVariables())
             writeRunAttrRecord(run->getRunName(), "itervar", pair.first, pair.second, numColumns);
-        for (auto pair : run->getParamAssignments())
-            writeRunAttrRecord(run->getRunName(), "param", pair.first, pair.second, numColumns);
+        for (auto pair : run->getConfigEntries())
+            writeRunAttrRecord(run->getRunName(), "config", pair.first, pair.second, numColumns);
     }
     delete runList;
 

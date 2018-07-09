@@ -88,7 +88,7 @@ class SqliteOutputScalarManager : public cIOutputScalarManager
      * Records a histogram or statistic object into the scalar result file.
      * This operation may invoke the setUpBins() method on the histogram object.
      */
-    void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=nullptr) override;
 
     /**
      * Returns the file name.

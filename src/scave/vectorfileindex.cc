@@ -174,9 +174,15 @@ bool VectorFileIndex::RunData::parseLine(char **tokens, int numTokens, const cha
         itervars[tokens[1]] = tokens[2];
         return true;
     }
+    else if (tokens[0][0] == 'c' && strcmp(tokens[0], "config") == 0) {
+        CHECK(numTokens >= 3, "'config <key> <value>' expected");
+        configEntries.push_back(std::make_pair(tokens[1], tokens[2]));
+        return true;
+    }
     else if (tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0) {
+        // note: "param" is an obsolete, more restricted synonym of "config"
         CHECK(numTokens >= 3, "'param <namePattern> <value>' expected");
-        paramAssignments.push_back(std::make_pair(tokens[1], tokens[2]));
+        configEntries.push_back(std::make_pair(tokens[1], tokens[2]));
         return true;
     }
     else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0) {
@@ -199,8 +205,8 @@ void VectorFileIndex::RunData::writeToFile(FILE *file, const char *filename) con
         CHECK(fprintf(file, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     for (auto it = itervars.begin(); it != itervars.end(); ++it)
         CHECK(fprintf(file, "itervar %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
-    for (auto it = paramAssignments.begin(); it != paramAssignments.end(); ++it)
-        CHECK(fprintf(file, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
+    for (auto it = configEntries.begin(); it != configEntries.end(); ++it)
+        CHECK(fprintf(file, "config %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
     CHECK(fprintf(file, "\n"));
 }
 
