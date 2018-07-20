@@ -13,7 +13,9 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.ASTNode;
 import org.omnetpp.ned.engine.ErrorStore;
+import org.omnetpp.ned.engine.MsgAstNodeFactory;
 import org.omnetpp.ned.engine.MsgDtdValidator;
+import org.omnetpp.ned.engine.MsgGenerator;
 import org.omnetpp.ned.engine.MsgParser;
 import org.omnetpp.ned.engine.MsgTagCode;
 import org.omnetpp.ned.engine.NedAstNodeFactory;
@@ -44,13 +46,15 @@ public class NedTreeUtil {
      *
      * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well
      */
-    public static String generateNedSource(INedElement treeRoot, boolean keepSyntax) {
+    public static String generateSource(INedElement treeRoot, boolean keepSyntax) {
         // Debug.println(generateXmlFromPojoElementTree(treeRoot,""));
 
         ErrorStore errors = new ErrorStore();
         errors.setPrintToStderr(false); // turn it on for debugging
         ASTNode swigTree = pojo2swig(treeRoot);
-        String result = new NedGenerator().generate(swigTree, "");
+        String result = (treeRoot.getContainingNedFileElement() != null)
+                ? new NedGenerator().generate(swigTree, "")
+                : new MsgGenerator().generate(swigTree, "");
         // TODO check ErrorStore for conversion errors
         swigTree.delete();
         return result;
@@ -293,6 +297,7 @@ public class NedTreeUtil {
     }
 
     private static NedAstNodeFactory nedElementFactory = new NedAstNodeFactory();
+    private static MsgAstNodeFactory msgElementFactory = new MsgAstNodeFactory();
 
     /**
      * Converts a plain java NedElement tree to a native C++ (SWIG-wrapped) tree.
@@ -300,7 +305,9 @@ public class NedTreeUtil {
      */
     public static ASTNode pojo2swig(INedElement pojoNode) {
 
-        ASTNode swigNode = nedElementFactory.createElementWithTag(pojoNode.getTagCode());
+        ASTNode swigNode = (pojoNode.getContainingNedFileElement() != null)
+                              ? nedElementFactory.createElementWithTag(pojoNode.getTagCode())
+                              : msgElementFactory.createElementWithTag(pojoNode.getTagCode());
 
         // set the attributes
         for (int i = 0; i < pojoNode.getNumAttributes(); ++i) {

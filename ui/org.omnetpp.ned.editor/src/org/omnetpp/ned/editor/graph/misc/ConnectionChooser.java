@@ -287,7 +287,7 @@ public class ConnectionChooser {
     }
 
     private String getConnectionMenuItemText(ConnectionElement connection) {
-        return StringUtils.removeEnd(NedTreeUtil.generateNedSource(connection, false).trim(), ";");
+        return StringUtils.removeEnd(NedTreeUtil.generateSource(connection, false).trim(), ";");
     }
 
     private MenuItem createMenuItem(BlockingMenu menu, String text, Object data, Collection<String> labels) {

@@ -646,7 +646,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 
     public String getNedSource() {
         if (source == null)
-            source = NedTreeUtil.generateNedSource(this, true);
+            source = NedTreeUtil.generateSource(this, true);
 
         return source;
     }
