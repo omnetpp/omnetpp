@@ -402,6 +402,9 @@ $i = 1;
 foreach $element (@elements)
 {
     $elementclass = $elementclass{$element};
+    if ($enumname{$element} eq "NED_MSG_FILE") {  # message file tags start at 101
+        $i = 101;
+    }
     print JAVA "    public static final int $enumname{$element} = $i;\n";
     $i++;
 }

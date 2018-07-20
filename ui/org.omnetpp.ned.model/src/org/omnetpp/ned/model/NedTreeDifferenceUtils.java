@@ -250,14 +250,14 @@ class NedTreeDifferenceTest {
         INedElement target = original.deepDup();
         doRandomTreeChanges(target);
 
-        String targetNED = NedTreeUtil.generateNedSource(target, false);
+        String targetNED = NedTreeUtil.generateSource(target, false);
         String targetXML = NedTreeUtil.generateXmlFromPojoElementTree(target, "", false);
 
         NedTreeDifferenceUtils.Applier applier = new NedTreeDifferenceUtils.Applier();
         NedTreeDifferenceUtils.applyTreeDifferences(original, target, applier);
         applier.apply();
 
-        final String originalNED = NedTreeUtil.generateNedSource(original, false);
+        final String originalNED = NedTreeUtil.generateSource(original, false);
         final String originalXML = NedTreeUtil.generateXmlFromPojoElementTree(original, "", false);
 
         Debug.println("Original NED: " + originalNED);
