@@ -149,7 +149,11 @@ lex.msg2yy.cc: msg2.lex
 
 sim_std_msg.cc : ../sim/sim_std.msg
 	$(qecho) STRINGIFY: $<
-	$(Q)echo 'namespace omnetpp { namespace nedxml { const char *SIM_STD_DEFINITIONS = R"ENDMARK(' >$@
+	$(Q)echo '//' >$@
+	$(Q)echo '// THIS IS A GENERATED FILE, DO NOT EDIT!' >>$@
+	$(Q)echo '//' >>$@
+	$(Q)echo '' >>$@
+	$(Q)echo 'namespace omnetpp { namespace nedxml { const char *SIM_STD_DEFINITIONS = R"ENDMARK(' >>$@
 	$(Q)cat $< >>$@
 	$(Q)echo ')ENDMARK"; } }' >>$@
 
