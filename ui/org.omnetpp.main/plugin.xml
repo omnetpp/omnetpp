@@ -9,7 +9,6 @@
             application="org.eclipse.ui.ide.workbench"
             name="OMNeT++ IDE">
           <property name="appName" value="OMNeT++ IDE"/>
-          <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
           		value="Introduction to OMNeT++"/>
@@ -58,6 +57,10 @@
     <property
             name="cssTheme"
             value="org.eclipse.e4.ui.css.theme.e4_classic">
+    </property>
+    <property
+          name="preferenceCustomization"
+          value="plugin_customization.ini">
     </property>
 
     </product>

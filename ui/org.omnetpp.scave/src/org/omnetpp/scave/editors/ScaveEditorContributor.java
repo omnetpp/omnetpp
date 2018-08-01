@@ -445,16 +445,13 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     public void shareGlobalActions(IPage page, IActionBars actionBars) {
         if (!(page instanceof IPropertySheetPage)) {
             actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
+            actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
             actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), cutAction);
             actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
             actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
         }
         actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), undoAction);
         actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), redoAction);
-
-        // replace inherited deleteAction
-        if (!(page instanceof IPropertySheetPage))
-            actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), removeAction);
     }
 
     protected void addGlobalActions(IMenuManager menuManager) {

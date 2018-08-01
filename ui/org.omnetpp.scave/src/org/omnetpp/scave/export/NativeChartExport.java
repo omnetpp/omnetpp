@@ -37,6 +37,7 @@ public class NativeChartExport implements IChartExport {
                 private IChartView chartView;
 
                 public void run() {
+                    /*
                     chartView = ChartFactory.createChart(Display.getCurrent().getActiveShell(), chart, manager, new JobChangeAdapter() {
                         @Override
                         public void done(IJobChangeEvent event) {
@@ -55,6 +56,7 @@ public class NativeChartExport implements IChartExport {
                             }
                         }
                     });
+                    */
                 }
             });
         } finally {

@@ -213,7 +213,7 @@ public class ChartSheetPage extends FormEditorPage {
     }
 
     private void addChartUpdater(Chart chart, IChartView view) {
-        updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
+        //updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
     }
 
     private void removeChartUpdater(Chart chart) {
@@ -248,8 +248,10 @@ public class ChartSheetPage extends FormEditorPage {
     }
 
     private IChartView addChartView(final Chart chart) {
-        IChartView view = ChartFactory.createChart(chartsArea, chart, scaveEditor.getResultFileManager());
-        Assert.isNotNull(view);
+        /*IChartView view = ChartFactory.createChart(chartsArea, chart, scaveEditor.getResultFileManager());
+        Assert.isNotNull(view);*/
+        
+        IChartView view = null;
 
         Control viewControl = view.getCanvas();
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
