@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/resultfiles/aloha/*.vec"/>
+    <inputs name="/resultfiles/aloha/*.sca"/>
+    <inputs name="/resultfiles/routing/*.vec"/>
+    <inputs name="/resultfiles/routing/*.sca"/>
+  </inputs>
+  <charts>
+    <items xsi:type="scave:BarChart" name="scalars simple 1" script="chart.plotScalars([10, 13, 18, 20])">
+      <properties name="Legend.Display" value="false"/>
+    </items>
+    <items xsi:type="scave:BarChart" name="scalars simple 2" script="chart.plotScalars([10, 13, 18], labels=[&quot;a little&quot;, &quot;a bit more&quot;, &quot;quite a lot&quot;], row_label=&quot;amount of milk&quot;)"/>
+    <items xsi:type="scave:BarChart" name="scalars dataframe 1" script="df = pd.DataFrame(&#xA;    [[10, 30],&#xA;     [12, 34]],&#xA;    columns=[&quot;X&quot;, &quot;Y&quot;],&#xA;    index=[&quot;alpha&quot;, &quot;beta&quot;])&#xA;&#xA;print(df)&#xA;&#xA;chart.plotScalars(df)&#xA;"/>
+    <items xsi:type="scave:BarChart" name="scalars dataframe 2" script="df = pd.DataFrame(&#xA;    [[10, 300, 11, 320],&#xA;     [12, 345, 10, 305],&#xA;     [11, 325, 12, 348],&#xA;     [10, 302, 11, 370]],&#xA;    columns=pd.MultiIndex.from_product([[&quot;X&quot;, &quot;Y&quot;], [&quot;x&quot;, &quot;y&quot;]]),&#xA;    index=pd.MultiIndex.from_product([[&quot;A&quot;, &quot;B&quot;], [&quot;a&quot;, &quot;b&quot;]])&#xA;)&#xA;&#xA;print(df)&#xA;chart.plotScalars(df)&#xA;"/>
+    <items xsi:type="scave:BarChart" name="scalars dataframe 3" script="df = results.getScalars(&quot;name(rxBytes:sum) OR name(txBytes:sum)&quot;)&#xA;print(df)&#xA;chart.plotScalars(df)"/>
+    <items xsi:type="scave:BarChart" name="scalars dataframe 4" script="df = results.getScalars(&quot;name(rxBytes:sum) OR name(txBytes:sum)&quot;)&#xA;df = results.pivotScalars(df, columns=[&quot;name&quot;, &quot;replication&quot;], index=[&quot;module&quot;])&#xA;print(df)&#xA;chart.plotScalars(df)"/>
+    <items xsi:type="scave:LineChart" name="vectors simple 1" script="chart.plotVector(&quot;trend&quot;, [0, 1, 2, 3], [3,6,7,9])" lineNameFormat=""/>
+    <items xsi:type="scave:LineChart" name="vectors simple 2" script="chart.plotVector(&quot;trend&quot;, [0, 1, 2, 3], [3,6,7,9])&#xA;chart.plotVector(&quot;tronb&quot;, [0, 1, 2, 3], [4,8,7,3])&#xA;chart.plotVector(&quot;trang&quot;, [0, 1.5, 2.5, 3], [9,7,4,1])" lineNameFormat=""/>
+    <items xsi:type="scave:LineChart" name="vectors simple 3" script="data = [&#xA;&#x9;(&quot;apples&quot;, [2000, 2010, 2020], [300, 367, 341]),&#xA;&#x9;(&quot;oranges&quot;, [2002, 2014, 2019], [170, 190, 220]),&#xA;    (&quot;pears&quot;, [1999, 2003, 2014], [235, 340, 320])&#xA;]&#xA;&#xA;print(data)&#xA;&#xA;chart.plotVectors(data)" lineNameFormat="">
+      <properties name="X.Axis.Min" value="1990.0"/>
+      <properties name="X.Axis.Max" value="2030.0"/>
+    </items>
+    <items xsi:type="scave:LineChart" name="vectors dataframe 1" script="df = pd.DataFrame({&#xA;    &quot;N&quot;: [120, 161, 283],&#xA;    &quot;X&quot;: [300, 320, 345]&#xA;})&#xA;print(df)&#xA;chart.plotVectors(df)" lineNameFormat=""/>
+    <items xsi:type="scave:LineChart" name="vectors dataframe 2" script="df = pd.DataFrame({&#xA;    &quot;N&quot;: [120, 161, 283],&#xA;    &quot;Y&quot;: [300, 320, 345],&#xA;    &quot;time&quot;: [0.1, 0.2, 0.45]&#xA;})&#xA;print(df)&#xA;chart.plotVectors(df)" lineNameFormat=""/>
+    <items xsi:type="scave:LineChart" name="vectors dataframe 3" script="df = results.getVectors(&quot;name(hopCount:vector)&quot;)&#xA;&#xA;chart.plotVectors(df)" lineNameFormat=""/>
+    <items xsi:type="scave:LineChart" name="vectors dataframe 4" script="df = results.getVectors(&quot;name(rxBytes:vector) OR name(txBytes:vector)&quot;)&#xA;&#xA;df.vecvalue = df.vecvalue.apply(np.cumsum)&#xA;&#xA;print(df)&#xA;&#xA;chart.plotVectors(df)" lineNameFormat=""/>
+    <items xsi:type="scave:HistogramChart" name="histograms simple 1" script="chart.plotHistogram(label=&quot;IQ&quot;, edges=[80, 90, 100, 110, 120, 130], values=[2, 3, 7, 6, 4])"/>
+    <items xsi:type="scave:HistogramChart" name="histograms simple 2" script="chart.plotHistogram(&quot;A&quot;, [80, 90, 105, 118, 130], [2, 3, 7, 4])&#xA;chart.plotHistogram(&quot;B&quot;, [83, 97, 101, 110, 124, 137], [0.6, 0.8, 1.5, 1.1, 0.9])"/>
+    <items xsi:type="scave:HistogramChart" name="histograms simple 3" script="samples = np.random.normal(loc=42, scale=6.28, size=1000000)&#xA;&#xA;values, edges = np.histogram(samples, bins=64)&#xA;&#xA;print(edges)&#xA;print(values)&#xA;&#xA;chart.plotHistogram(&quot;bell&quot;, edges, values)"/>
+    <items xsi:type="scave:HistogramChart" name="histograms dataframe 1" script="df = results.getHistograms(&quot;name(collisionLength:histogram)&quot;)&#xA;&#xA;chart.plotHistograms(df)"/>
+    <items xsi:type="scave:BarChart" name="styling 1" script="df = pd.DataFrame(&#xA;    [[10, 30],&#xA;     [12, 34]],&#xA;    columns=[&quot;X&quot;, &quot;Y&quot;],&#xA;    index=[&quot;alpha&quot;, &quot;beta&quot;])&#xA;&#xA;print(df)&#xA;&#xA;chart.plotScalars(df)&#xA;&#xA;&#xA;chart.setProperty(&quot;Graph.Title&quot;, &quot;This is a nice chart!&quot;)&#xA;chart.setProperty(&quot;Plot.BackgroundColor&quot;, &quot;lightgreen&quot;)&#xA;chart.setProperty(&quot;Legend.Font&quot;, &quot;Arial-bold-18&quot;)">
+      <properties name="Graph.Title" value="Even though we have a title set here, this will be overridden by the script"/>
+      <properties name="Legend.Font" value="Arial-italic-12"/>
+    </items>
+    <items xsi:type="scave:BarChart" name="styling 2" script="df = pd.DataFrame(&#xA;    [[10, 30],&#xA;     [12, 34]],&#xA;    columns=[&quot;X&quot;, &quot;Y&quot;],&#xA;    index=[&quot;alpha&quot;, &quot;beta&quot;])&#xA;print(df)&#xA;chart.plotScalars(df)&#xA;&#xA;&#xA;chart.setProperty(&quot;Bar.Color/X&quot;, &quot;purple&quot;)&#xA;chart.setProperty(&quot;Bar.Color/Y&quot;, &quot;yellow&quot;)&#xA;&#xA;"/>
+    <items xsi:type="scave:BarChart" name="styling 3" script="df = pd.DataFrame(&#xA;    [[10, 30],&#xA;     [12, 34]],&#xA;    columns=[&quot;X&quot;, &quot;Y&quot;],&#xA;    index=[&quot;alpha&quot;, &quot;beta&quot;])&#xA;print(df)&#xA;chart.plotScalars(df)&#xA;&#xA;&#xA;chart.setProperties({&#xA;    &quot;Graph.Title&quot;: &quot;This is a nice chart!&quot;,&#xA;    &quot;Plot.BackgroundColor&quot;: &quot;lightgreen&quot;,&#xA;&#xA;    &quot;Bar.Color/X&quot;: &quot;purple&quot;,&#xA;    &quot;Bar.Color/Y&quot;: &quot;yellow&quot;&#xA;})&#xA;&#xA;&#xA;"/>
+    <items xsi:type="scave:BarChart" name="styling 4" script="df = pd.DataFrame(&#xA;    [[10, 30],&#xA;     [12, 34]],&#xA;    columns=[&quot;X&quot;, &quot;Y&quot;],&#xA;    index=[&quot;alpha&quot;, &quot;beta&quot;])&#xA;print(df)&#xA;chart.plotScalars(df)&#xA;&#xA;print(&quot;\nThese properties are set in the form:&quot;)&#xA;print(chart.getProperties())&#xA;&#xA;print(&quot;\nAnd these are all the defaults:&quot;)&#xA;print(chart.getDefaultProperties())&#xA;&#xA;effective = chart.getDefaultProperties()&#xA;effective.update(chart.getProperties())&#xA;&#xA;print(&quot;\nSo the effective set of properties (before the script is executed):&quot;)&#xA;&#xA;print(effective)&#xA;&#xA;print(&quot;\n\nBut of course these can be overridden from the script...&quot;)&#xA;&#xA;chart.setProperty(&quot;Plot.BackgroundColor&quot;, &quot;blue&quot;)&#xA;&#xA;# and you can reset anything to the default (overriding anything set in the dialog, or in the script up to this point)&#xA;# chart.setProperties(chart.getDefaultProperties())&#xA;">
+      <properties name="Graph.Title" value="A concise title"/>
+      <properties name="Axes.Grid" value="All"/>
+      <properties name="Legend.Font" value="Arial-regular-12"/>
+    </items>
+    <items xsi:type="scave:MatplotlibChart" name="importing 1" script="import simplechart"/>
+    <items xsi:type="scave:MatplotlibChart" name="importing 2" script="import charts&#xA;charts.chart_function()"/>
+    <items xsi:type="scave:BarChart" name="importing 3" script="import charts&#xA;charts.chart_function_native(results, chart)"/>
+    <items xsi:type="scave:MatplotlibChart" name="importing 4" script="from charts import scripts&#xA;&#xA;&#xA;import seaborn as sbs&#xA;sbs.set()&#xA;scripts[chart.getName()]()"/>
+    <items xsi:type="scave:BarChart" name="importing 5" script="from charts import scripts&#xA;&#xA;scripts[chart.getName()](results, chart)"/>
+  </charts>
+</scave:Analysis>
