@@ -13,6 +13,7 @@
     <repo.url>http://download.eclipse.org/releases/photon</repo.url>
     <update-repo.url>http://download.eclipse.org/eclipse/updates/4.8</update-repo.url>
     <cdt-repo.url>http://download.eclipse.org/tools/cdt/releases/9.5</cdt-repo.url>
+    <pydev-repo.url>http://www.pydev.org/updates</pydev-repo.url>
 <!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/photon/milestones</cdt-repo.url> -->
 <!--    <cdt-repo.url>http://download.eclipse.org/tools/cdt/builds/master/nightly</cdt-repo.url> -->
   </properties>
@@ -42,6 +43,11 @@
     <repository>
       <id>cdt</id>
       <url>${cdt-repo.url}</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>pydev</id>
+      <url>${pydev-repo.url}</url>
       <layout>p2</layout>
     </repository>
   </repositories>
