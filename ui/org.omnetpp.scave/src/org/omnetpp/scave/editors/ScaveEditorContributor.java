@@ -65,7 +65,6 @@ import org.omnetpp.scave.actions.GotoChartSheetDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.NewBarChartAction;
 import org.omnetpp.scave.actions.NewChartSheetAction;
-import org.omnetpp.scave.actions.NewDatasetAction;
 import org.omnetpp.scave.actions.NewLineChartAction;
 import org.omnetpp.scave.actions.NewScatterChartAction;
 import org.omnetpp.scave.actions.OpenChartAction;
@@ -77,7 +76,6 @@ import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
-import org.omnetpp.scave.views.DatasetView;
 
 /**
  * Editor contributor for ScaveEditor.
@@ -131,17 +129,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private ShowOutputVectorViewAction showOutputVectorViewAction;
     private Map<String,ExportDataAction> exportActions;
 
-    private IAction showDatasetViewAction = new Action("Show Dataset View") {
-        @Override
-        public void run() {
-            try {
-                getPage().showView(DatasetView.ID);
-            }
-            catch (PartInitException exception) {
-                ScavePlugin.logError(exception);
-            }
-        }
-    };
 
     protected IAction showPropertiesViewAction = new Action("Show Properties View") {
         @Override
@@ -453,7 +440,6 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     protected void addGlobalActions(IMenuManager menuManager) {
         menuManager.insertAfter("additions-end", new Separator("ui-actions"));
         menuManager.insertAfter("ui-actions", showPropertiesViewAction);
-        menuManager.insertAfter("ui-actions", showDatasetViewAction);
         refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());
         menuManager.insertAfter("ui-actions", refreshViewerAction);
     }

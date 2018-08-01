@@ -89,12 +89,6 @@
            icon="icons/full/eview16/outvector.png"
            id="org.omnetpp.scave.VectorBrowserView"
            name="Output Vector"/>
-     <view
-           category="org.omnetpp.views"
-           class="org.omnetpp.scave.views.DatasetView"
-           icon="icons/full/eview16/dataset.gif"
-           id="org.omnetpp.scave.DatasetView"
-           name="Dataset"/>
   </extension>
   <extension
         id="product"
@@ -150,12 +144,6 @@
             targetID="org.eclipse.ui.resourcePerspective">
          <view
                id="org.omnetpp.scave.VectorBrowserView"
-               relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView">
-         </view>
-         <view
-               id="org.omnetpp.scave.DatasetView"
-               minimized="false"
                relationship="stack"
                relative="org.eclipse.ui.views.ProblemView">
          </view>

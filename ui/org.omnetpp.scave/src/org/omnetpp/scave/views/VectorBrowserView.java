@@ -27,7 +27,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TableColumn;
@@ -174,7 +173,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 
             @Override
             public void partActivated(IWorkbenchPart part) {
-                if (part instanceof ScaveEditor || part instanceof DatasetView)
+                if (part instanceof ScaveEditor)
                     activePart = part;
             }
 
@@ -309,12 +308,12 @@ public class VectorBrowserView extends ViewWithMessagePart {
 //        });
     }
 
-    private static void runInUIThread(Runnable runnable) {
-        if (Display.getCurrent() == null)
-            Display.getDefault().asyncExec(runnable);
-        else
-            runnable.run();
-    }
+//    private static void runInUIThread(Runnable runnable) {
+//        if (Display.getCurrent() == null)
+//            Display.getDefault().asyncExec(runnable);
+//        else
+//            runnable.run();
+//    }
 
     public void setViewerInputOrMessage(ResultItemRef input, int serial, IStatus status) {
         final int severity = status.getSeverity();
