@@ -180,6 +180,11 @@ public class FolderItemProvider extends AnalysisItemItemProvider {
             (createChildParameter
                 (ScaveModelPackage.Literals.FOLDER__ITEMS,
                  ScaveModelFactory.eINSTANCE.createFolder()));
+
+        newChildDescriptors.add
+            (createChildParameter
+                (ScaveModelPackage.Literals.FOLDER__ITEMS,
+                 ScaveModelFactory.eINSTANCE.createMatplotlibChart()));
     }
 
 }

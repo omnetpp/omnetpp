@@ -32,7 +32,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
      */
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
         pkg.getAnalysisItem_Name(),
-        pkg.getChart_Input(),
+        pkg.getChart_Script(),
         pkg.getLineChart_LineNameFormat(),
         pkg.getChart_Properties(),
     };

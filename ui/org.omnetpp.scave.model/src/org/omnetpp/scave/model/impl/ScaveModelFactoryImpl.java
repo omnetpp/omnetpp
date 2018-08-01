@@ -69,6 +69,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
             case ScaveModelPackage.DATASET: return createDataset();
             case ScaveModelPackage.CHART_SHEET: return createChartSheet();
             case ScaveModelPackage.FOLDER: return createFolder();
+            case ScaveModelPackage.MATPLOTLIB_CHART: return createMatplotlibChart();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -222,6 +223,16 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
     public Folder createFolder() {
         FolderImpl folder = new FolderImpl();
         return folder;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public MatplotlibChart createMatplotlibChart() {
+        MatplotlibChartImpl matplotlibChart = new MatplotlibChartImpl();
+        return matplotlibChart;
     }
 
     /**

@@ -13,7 +13,7 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.Chart#getInput <em>Input</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.Chart#getScript <em>Script</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Chart#getProperties <em>Properties</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Chart#isTemporary <em>Temporary</em>}</li>
  * </ul>
@@ -24,30 +24,30 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface Chart extends AnalysisItem {
     /**
-     * Returns the value of the '<em><b>Input</b></em>' attribute.
+     * Returns the value of the '<em><b>Script</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>Input</em>' attribute isn't clear,
+     * If the meaning of the '<em>Script</em>' attribute isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * @return the value of the '<em>Input</em>' attribute.
-     * @see #setInput(String)
-     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Input()
+     * @return the value of the '<em>Script</em>' attribute.
+     * @see #setScript(String)
+     * @see org.omnetpp.scave.model.ScaveModelPackage#getChart_Script()
      * @model
      * @generated
      */
-    String getInput();
+    String getScript();
 
     /**
-     * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getInput <em>Input</em>}' attribute.
+     * Sets the value of the '{@link org.omnetpp.scave.model.Chart#getScript <em>Script</em>}' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @param value the new value of the '<em>Input</em>' attribute.
-     * @see #getInput()
+     * @param value the new value of the '<em>Script</em>' attribute.
+     * @see #getScript()
      * @generated
      */
-    void setInput(String value);
+    void setScript(String value);
 
     /**
      * Returns the value of the '<em><b>Properties</b></em>' containment reference list.

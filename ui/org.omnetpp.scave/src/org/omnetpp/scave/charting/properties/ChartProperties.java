@@ -30,6 +30,7 @@ import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -107,6 +108,8 @@ public class ChartProperties extends PropertySource {
             return new HistogramChartProperties(chart, properties, manager);
         else if (chart instanceof ScatterChart)
             return new ScatterChartProperties(chart, properties, manager);
+        else if (chart instanceof MatplotlibChart)
+            return new ChartProperties(chart, properties, manager);
         else
             ScavePlugin.logError(new IllegalArgumentException("chart type unrecognized"));
         return new ChartProperties(chart, properties, manager);

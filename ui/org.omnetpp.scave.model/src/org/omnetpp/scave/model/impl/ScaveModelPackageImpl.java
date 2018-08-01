@@ -7,9 +7,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.BarChart;
@@ -22,6 +20,7 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
@@ -132,6 +131,13 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * @generated
      */
     private EClass folderEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass matplotlibChartEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -314,7 +320,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getChart_Input() {
+    public EAttribute getChart_Script() {
         return (EAttribute)chartEClass.getEStructuralFeatures().get(0);
     }
 
@@ -557,6 +563,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * <!-- end-user-doc -->
      * @generated
      */
+    public EClass getMatplotlibChart() {
+        return matplotlibChartEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EEnum getResultType() {
         return resultTypeEEnum;
     }
@@ -606,7 +621,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         createEAttribute(analysisItemEClass, ANALYSIS_ITEM__NAME);
 
         chartEClass = createEClass(CHART);
-        createEAttribute(chartEClass, CHART__INPUT);
+        createEAttribute(chartEClass, CHART__SCRIPT);
         createEReference(chartEClass, CHART__PROPERTIES);
         createEAttribute(chartEClass, CHART__TEMPORARY);
 
@@ -641,6 +656,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
         folderEClass = createEClass(FOLDER);
         createEReference(folderEClass, FOLDER__ITEMS);
+
+        matplotlibChartEClass = createEClass(MATPLOTLIB_CHART);
 
         // Create enums
         resultTypeEEnum = createEEnum(RESULT_TYPE);
@@ -682,6 +699,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         datasetEClass.getESuperTypes().add(this.getAnalysisItem());
         chartSheetEClass.getESuperTypes().add(this.getAnalysisItem());
         folderEClass.getESuperTypes().add(this.getAnalysisItem());
+        matplotlibChartEClass.getESuperTypes().add(this.getChart());
 
         // Initialize classes and features; add operations and parameters
         initEClass(analysisEClass, Analysis.class, "Analysis", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -701,7 +719,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         initEAttribute(getAnalysisItem_Name(), ecorePackage.getEString(), "name", null, 0, 1, AnalysisItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(chartEClass, Chart.class, "Chart", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getChart_Input(), ecorePackage.getEString(), "input", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getChart_Script(), ecorePackage.getEString(), "script", null, 0, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEReference(getChart_Properties(), this.getProperty(), null, "properties", null, 0, -1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getChart_Temporary(), ecorePackage.getEBoolean(), "temporary", "false", 1, 1, Chart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -736,6 +754,8 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
         initEClass(folderEClass, Folder.class, "Folder", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getFolder_Items(), this.getAnalysisItem(), null, "items", null, 0, -1, Folder.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(matplotlibChartEClass, MatplotlibChart.class, "MatplotlibChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         // Initialize enums and add enum literals
         initEEnum(resultTypeEEnum, ResultType.class, "ResultType");

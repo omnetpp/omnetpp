@@ -82,7 +82,7 @@ public class ChartUpdater {
         // add/remove chart property
         if (notifier instanceof Chart && notifier == chart) {
             switch (notification.getFeatureID(Chart.class)) {
-            case ScaveModelPackage.CHART__INPUT:
+            case ScaveModelPackage.CHART__SCRIPT:
                 scheduleDatasetUpdate();
                 break;
             case ScaveModelPackage.CHART__PROPERTIES:

@@ -151,7 +151,7 @@ public class ScriptEngine {
         }
 
         IDList result = new IDList();
-        String inputString = StringUtils.nullToEmpty(chart.getInput());
+        String inputString = StringUtils.nullToEmpty(chart.getScript());
         for (String filter : inputString.split("\n")) { // each line is a filter expression (for now)
             if (!StringUtils.isBlank(filter)) {
                 IDList filtered = manager.filterIDList(pool, filter);
@@ -258,7 +258,7 @@ public class ScriptEngine {
     public static ScalarDataset createScalarDataset(BarChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
         checkReadLock(manager);
         try {
-            String script = StringUtils.nullToEmpty(chart.getInput());
+            String script = StringUtils.nullToEmpty(chart.getScript());
             ScriptCommand[] commands = ScriptParser.parseScript(script);
             ResultSet resultSet = evaluateScript(commands, manager, progressMonitor);
             if (progressMonitor != null && progressMonitor.isCanceled())
@@ -284,7 +284,7 @@ public class ScriptEngine {
         checkReadLock(manager);
 
         try {
-            String script = StringUtils.nullToEmpty(chart.getInput());
+            String script = StringUtils.nullToEmpty(chart.getScript());
             ScriptCommand[] commands = ScriptParser.parseScript(script);
             ResultSet resultSet = evaluateScript(commands, manager, progressMonitor);
 
@@ -316,7 +316,7 @@ public class ScriptEngine {
 
         checkReadLock(manager);
         try {
-            String script = StringUtils.nullToEmpty(chart.getInput());
+            String script = StringUtils.nullToEmpty(chart.getScript());
             ScriptCommand[] commands = ScriptParser.parseScript(script);
             ResultSet resultSet = evaluateScript(commands, manager, progressMonitor);
 
@@ -505,7 +505,7 @@ public class ScriptEngine {
     public static IHistogramDataset createHistogramDataset(HistogramChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
         checkReadLock(manager);
         try {
-            String script = StringUtils.nullToEmpty(chart.getInput());
+            String script = StringUtils.nullToEmpty(chart.getScript());
             ScriptCommand[] commands = ScriptParser.parseScript(script);
             ResultSet resultSet = evaluateScript(commands, manager, progressMonitor);
 

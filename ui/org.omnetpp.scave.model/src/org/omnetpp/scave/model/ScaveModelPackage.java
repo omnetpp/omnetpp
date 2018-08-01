@@ -225,13 +225,13 @@ public interface ScaveModelPackage extends EPackage {
     int CHART__NAME = ANALYSIS_ITEM__NAME;
 
     /**
-     * The feature id for the '<em><b>Input</b></em>' attribute.
+     * The feature id for the '<em><b>Script</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int CHART__INPUT = ANALYSIS_ITEM_FEATURE_COUNT + 0;
+    int CHART__SCRIPT = ANALYSIS_ITEM_FEATURE_COUNT + 0;
 
     /**
      * The feature id for the '<em><b>Properties</b></em>' containment reference list.
@@ -317,13 +317,13 @@ public interface ScaveModelPackage extends EPackage {
     int BAR_CHART__NAME = CHART__NAME;
 
     /**
-     * The feature id for the '<em><b>Input</b></em>' attribute.
+     * The feature id for the '<em><b>Script</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int BAR_CHART__INPUT = CHART__INPUT;
+    int BAR_CHART__SCRIPT = CHART__SCRIPT;
 
     /**
      * The feature id for the '<em><b>Properties</b></em>' containment reference list.
@@ -417,13 +417,13 @@ public interface ScaveModelPackage extends EPackage {
     int LINE_CHART__NAME = CHART__NAME;
 
     /**
-     * The feature id for the '<em><b>Input</b></em>' attribute.
+     * The feature id for the '<em><b>Script</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int LINE_CHART__INPUT = CHART__INPUT;
+    int LINE_CHART__SCRIPT = CHART__SCRIPT;
 
     /**
      * The feature id for the '<em><b>Properties</b></em>' containment reference list.
@@ -481,13 +481,13 @@ public interface ScaveModelPackage extends EPackage {
     int HISTOGRAM_CHART__NAME = CHART__NAME;
 
     /**
-     * The feature id for the '<em><b>Input</b></em>' attribute.
+     * The feature id for the '<em><b>Script</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int HISTOGRAM_CHART__INPUT = CHART__INPUT;
+    int HISTOGRAM_CHART__SCRIPT = CHART__SCRIPT;
 
     /**
      * The feature id for the '<em><b>Properties</b></em>' containment reference list.
@@ -536,13 +536,13 @@ public interface ScaveModelPackage extends EPackage {
     int SCATTER_CHART__NAME = CHART__NAME;
 
     /**
-     * The feature id for the '<em><b>Input</b></em>' attribute.
+     * The feature id for the '<em><b>Script</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int SCATTER_CHART__INPUT = CHART__INPUT;
+    int SCATTER_CHART__SCRIPT = CHART__SCRIPT;
 
     /**
      * The feature id for the '<em><b>Properties</b></em>' containment reference list.
@@ -728,6 +728,61 @@ public interface ScaveModelPackage extends EPackage {
     int FOLDER_FEATURE_COUNT = ANALYSIS_ITEM_FEATURE_COUNT + 1;
 
     /**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.MatplotlibChartImpl <em>Matplotlib Chart</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.MatplotlibChartImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getMatplotlibChart()
+     * @generated
+     */
+    int MATPLOTLIB_CHART = 14;
+
+    /**
+     * The feature id for the '<em><b>Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MATPLOTLIB_CHART__NAME = CHART__NAME;
+
+    /**
+     * The feature id for the '<em><b>Script</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MATPLOTLIB_CHART__SCRIPT = CHART__SCRIPT;
+
+    /**
+     * The feature id for the '<em><b>Properties</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MATPLOTLIB_CHART__PROPERTIES = CHART__PROPERTIES;
+
+    /**
+     * The feature id for the '<em><b>Temporary</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MATPLOTLIB_CHART__TEMPORARY = CHART__TEMPORARY;
+
+    /**
+     * The number of structural features of the '<em>Matplotlib Chart</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int MATPLOTLIB_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 0;
+
+    /**
      * The meta object id for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -735,7 +790,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
      * @generated
      */
-    int RESULT_TYPE = 14;
+    int RESULT_TYPE = 15;
 
 
     /**
@@ -865,15 +920,15 @@ public interface ScaveModelPackage extends EPackage {
     EClass getChart();
 
     /**
-     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#getInput <em>Input</em>}'.
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.Chart#getScript <em>Script</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Input</em>'.
-     * @see org.omnetpp.scave.model.Chart#getInput()
+     * @return the meta object for the attribute '<em>Script</em>'.
+     * @see org.omnetpp.scave.model.Chart#getScript()
      * @see #getChart()
      * @generated
      */
-    EAttribute getChart_Input();
+    EAttribute getChart_Script();
 
     /**
      * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.Chart#getProperties <em>Properties</em>}'.
@@ -1154,6 +1209,16 @@ public interface ScaveModelPackage extends EPackage {
     EReference getFolder_Items();
 
     /**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.MatplotlibChart <em>Matplotlib Chart</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Matplotlib Chart</em>'.
+     * @see org.omnetpp.scave.model.MatplotlibChart
+     * @generated
+     */
+    EClass getMatplotlibChart();
+
+    /**
      * Returns the meta object for enum '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -1294,12 +1359,12 @@ public interface ScaveModelPackage extends EPackage {
         EClass CHART = eINSTANCE.getChart();
 
         /**
-         * The meta object literal for the '<em><b>Input</b></em>' attribute feature.
+         * The meta object literal for the '<em><b>Script</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute CHART__INPUT = eINSTANCE.getChart_Input();
+        EAttribute CHART__SCRIPT = eINSTANCE.getChart_Script();
 
         /**
          * The meta object literal for the '<em><b>Properties</b></em>' containment reference list feature.
@@ -1524,6 +1589,16 @@ public interface ScaveModelPackage extends EPackage {
          * @generated
          */
         EReference FOLDER__ITEMS = eINSTANCE.getFolder_Items();
+
+        /**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.MatplotlibChartImpl <em>Matplotlib Chart</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.MatplotlibChartImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getMatplotlibChart()
+         * @generated
+         */
+        EClass MATPLOTLIB_CHART = eINSTANCE.getMatplotlibChart();
 
         /**
          * The meta object literal for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.

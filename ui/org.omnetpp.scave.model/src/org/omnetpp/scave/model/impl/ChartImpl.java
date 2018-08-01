@@ -29,7 +29,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getInput <em>Input</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getScript <em>Script</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#getProperties <em>Properties</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.ChartImpl#isTemporary <em>Temporary</em>}</li>
  * </ul>
@@ -38,24 +38,24 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     /**
-     * The default value of the '{@link #getInput() <em>Input</em>}' attribute.
+     * The default value of the '{@link #getScript() <em>Script</em>}' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #getInput()
+     * @see #getScript()
      * @generated
      * @ordered
      */
-    protected static final String INPUT_EDEFAULT = null;
+    protected static final String SCRIPT_EDEFAULT = null;
 
     /**
-     * The cached value of the '{@link #getInput() <em>Input</em>}' attribute.
+     * The cached value of the '{@link #getScript() <em>Script</em>}' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see #getInput()
+     * @see #getScript()
      * @generated
      * @ordered
      */
-    protected String input = INPUT_EDEFAULT;
+    protected String script = SCRIPT_EDEFAULT;
 
     /**
      * The cached value of the '{@link #getProperties() <em>Properties</em>}' containment reference list.
@@ -111,8 +111,8 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getInput() {
-        return input;
+    public String getScript() {
+        return script;
     }
 
     /**
@@ -120,11 +120,11 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setInput(String newInput) {
-        String oldInput = input;
-        input = newInput;
+    public void setScript(String newScript) {
+        String oldScript = script;
+        script = newScript;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__INPUT, oldInput, input));
+            eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__SCRIPT, oldScript, script));
     }
 
     /**
@@ -182,8 +182,8 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                return getInput();
+            case ScaveModelPackage.CHART__SCRIPT:
+                return getScript();
             case ScaveModelPackage.CHART__PROPERTIES:
                 return getProperties();
             case ScaveModelPackage.CHART__TEMPORARY:
@@ -201,8 +201,8 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                setInput((String)newValue);
+            case ScaveModelPackage.CHART__SCRIPT:
+                setScript((String)newValue);
                 return;
             case ScaveModelPackage.CHART__PROPERTIES:
                 getProperties().clear();
@@ -223,8 +223,8 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                setInput(INPUT_EDEFAULT);
+            case ScaveModelPackage.CHART__SCRIPT:
+                setScript(SCRIPT_EDEFAULT);
                 return;
             case ScaveModelPackage.CHART__PROPERTIES:
                 getProperties().clear();
@@ -244,8 +244,8 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
-            case ScaveModelPackage.CHART__INPUT:
-                return INPUT_EDEFAULT == null ? input != null : !INPUT_EDEFAULT.equals(input);
+            case ScaveModelPackage.CHART__SCRIPT:
+                return SCRIPT_EDEFAULT == null ? script != null : !SCRIPT_EDEFAULT.equals(script);
             case ScaveModelPackage.CHART__PROPERTIES:
                 return properties != null && !properties.isEmpty();
             case ScaveModelPackage.CHART__TEMPORARY:
@@ -264,8 +264,8 @@ public abstract class ChartImpl extends AnalysisItemImpl implements Chart {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());
-        result.append(" (input: ");
-        result.append(input);
+        result.append(" (script: ");
+        result.append(script);
         result.append(", temporary: ");
         result.append(temporary);
         result.append(')');

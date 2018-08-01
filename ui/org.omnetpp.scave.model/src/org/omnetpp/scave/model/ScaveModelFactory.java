@@ -130,6 +130,15 @@ public interface ScaveModelFactory extends EFactory {
     Folder createFolder();
 
     /**
+     * Returns a new object of class '<em>Matplotlib Chart</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Matplotlib Chart</em>'.
+     * @generated
+     */
+    MatplotlibChart createMatplotlibChart();
+
+    /**
      * Returns the package supported by this factory.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->

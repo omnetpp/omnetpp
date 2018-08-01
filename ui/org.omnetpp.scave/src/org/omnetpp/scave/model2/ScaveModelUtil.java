@@ -65,6 +65,7 @@ import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
@@ -118,6 +119,12 @@ public class ScaveModelUtil {
 
     public static HistogramChart createHistogramChart(String name) {
         HistogramChart chart = factory.createHistogramChart();
+        chart.setName(name);
+        return chart;
+    }
+
+    public static MatplotlibChart createMatplotlibChart(String name) {
+        MatplotlibChart chart = factory.createMatplotlibChart();
         chart.setName(name);
         return chart;
     }
@@ -243,12 +250,12 @@ public class ScaveModelUtil {
         CompoundCommand command = new CompoundCommand();
         for (AnalysisItem item : itemsToMove) {
             if (charts.getItems().indexOf(item) < index)
-                index--; // insertion element will shift up because we removed an item from before it in the list 
+                index--; // insertion element will shift up because we removed an item from before it in the list
             command.append(MoveCommand.create(domain, charts, pkg.getCharts_Items(), item, index));
         }
         domain.getCommandStack().execute(command);
     }
-    
+
     /**
      * Returns the analysis node of the specified resource.
      * It is assumed that the resource contains exactly one analysis node as
@@ -344,7 +351,7 @@ public class ScaveModelUtil {
         }
         return charts;
     }
-    
+
     public static boolean isInputsChange(Notification notification) {
         if (notification.isTouch())
             return false;

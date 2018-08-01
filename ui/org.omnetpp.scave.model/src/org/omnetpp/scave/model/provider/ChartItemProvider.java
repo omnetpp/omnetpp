@@ -45,26 +45,26 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
         if (itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
-            addInputPropertyDescriptor(object);
+            addScriptPropertyDescriptor(object);
             addTemporaryPropertyDescriptor(object);
         }
         return itemPropertyDescriptors;
     }
 
     /**
-     * This adds a property descriptor for the Input feature.
+     * This adds a property descriptor for the Script feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected void addInputPropertyDescriptor(Object object) {
+    protected void addScriptPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
                  getResourceLocator(),
-                 getString("_UI_Chart_input_feature"),
-                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_input_feature", "_UI_Chart_type"),
-                 ScaveModelPackage.Literals.CHART__INPUT,
+                 getString("_UI_Chart_script_feature"),
+                 getString("_UI_PropertyDescriptor_description", "_UI_Chart_script_feature", "_UI_Chart_type"),
+                 ScaveModelPackage.Literals.CHART__SCRIPT,
                  true,
                  false,
                  false,
@@ -143,7 +143,7 @@ public class ChartItemProvider extends AnalysisItemItemProvider {
         updateChildren(notification);
 
         switch (notification.getFeatureID(Chart.class)) {
-            case ScaveModelPackage.CHART__INPUT:
+            case ScaveModelPackage.CHART__SCRIPT:
             case ScaveModelPackage.CHART__PROPERTIES:
             case ScaveModelPackage.CHART__TEMPORARY:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));

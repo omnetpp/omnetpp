@@ -86,7 +86,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      */
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
         pkg.getAnalysisItem_Name(),
-        pkg.getChart_Input(),
+        pkg.getChart_Script(),
         pkg.getChart_Properties(),
     };
 
@@ -579,7 +579,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         switch (feature.getFeatureID()) {
         case ScaveModelPackage.CHART__NAME:
             return nameText.getText();
-        case ScaveModelPackage.CHART__INPUT:
+        case ScaveModelPackage.CHART__SCRIPT:
             return scriptText.getText();
         case ScaveModelPackage.CHART__PROPERTIES:
             ChartProperties newProps = ChartProperties.createPropertySource(chart, new ArrayList<Property>(), manager);
@@ -598,7 +598,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         case ScaveModelPackage.CHART__NAME:
             nameText.setText(value == null ? "" : (String)value);
             break;
-        case ScaveModelPackage.CHART__INPUT:
+        case ScaveModelPackage.CHART__SCRIPT:
             scriptText.setText(value == null ? "" : (String)value);
             break;
         case ScaveModelPackage.CHART__PROPERTIES:

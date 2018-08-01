@@ -348,6 +348,29 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
     }
 
     /**
+     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.MatplotlibChart} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected MatplotlibChartItemProvider matplotlibChartItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.omnetpp.scave.model.MatplotlibChart}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Adapter createMatplotlibChartAdapter() {
+        if (matplotlibChartItemProvider == null) {
+            matplotlibChartItemProvider = new MatplotlibChartItemProvider(this);
+        }
+
+        return matplotlibChartItemProvider;
+    }
+
+    /**
      * This returns the root adapter factory that contains this factory.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -458,6 +481,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
         if (datasetItemProvider != null) datasetItemProvider.dispose();
         if (chartSheetItemProvider != null) chartSheetItemProvider.dispose();
         if (folderItemProvider != null) folderItemProvider.dispose();
+        if (matplotlibChartItemProvider != null) matplotlibChartItemProvider.dispose();
     }
 
 }

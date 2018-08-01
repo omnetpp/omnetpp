@@ -192,6 +192,11 @@ public class ChartsItemProvider
             (createChildParameter
                 (ScaveModelPackage.Literals.CHARTS__ITEMS,
                  ScaveModelFactory.eINSTANCE.createFolder()));
+
+        newChildDescriptors.add
+            (createChildParameter
+                (ScaveModelPackage.Literals.CHARTS__ITEMS,
+                 ScaveModelFactory.eINSTANCE.createMatplotlibChart()));
     }
 
     /**

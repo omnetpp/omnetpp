@@ -111,7 +111,6 @@ public class ChartSheetItemProvider extends AnalysisItemItemProvider {
         if (childrenFeatures == null) {
             super.getChildrenFeatures(object);
             childrenFeatures.add(ScaveModelPackage.Literals.CHART_SHEET__CHARTS);
-            childrenFeatures.add(ScaveModelPackage.Literals.CHART_SHEET__PROPERTIES);
         }
         return childrenFeatures;
     }
@@ -178,10 +177,10 @@ public class ChartSheetItemProvider extends AnalysisItemItemProvider {
 
         switch (notification.getFeatureID(ChartSheet.class)) {
             case ScaveModelPackage.CHART_SHEET__TEMPORARY:
+            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
                 return;
             case ScaveModelPackage.CHART_SHEET__CHARTS:
-            case ScaveModelPackage.CHART_SHEET__PROPERTIES:
                 fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
                 return;
         }
@@ -198,11 +197,6 @@ public class ChartSheetItemProvider extends AnalysisItemItemProvider {
     @Override
     protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
-
-        newChildDescriptors.add
-            (createChildParameter
-                (ScaveModelPackage.Literals.CHART_SHEET__PROPERTIES,
-                 ScaveModelFactory.eINSTANCE.createProperty()));
     }
 
 }
