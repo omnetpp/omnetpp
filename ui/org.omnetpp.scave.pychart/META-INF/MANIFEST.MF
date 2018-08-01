@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Python Charting Support
+Bundle-SymbolicName: org.omnetpp.scave.pychart;singleton:=true
+Bundle-Version: 5.3.0.qualifier
+Bundle-ClassPath: .,
+ lib/py4j0.10.7.jar,
+ lib/pickle4.20.jar
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.omnetpp.scave.pychart.PyChartPlugin
+Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui.workbench,
+ org.eclipse.jface
+Export-Package: 
+ net.razorvine.examples,
+ net.razorvine.pickle,
+ net.razorvine.pickle.objects,
+ net.razorvine.pickle.test,
+ net.razorvine.pyro,
+ net.razorvine.pyro.serializer,
+ net.razorvine.pyro.test,
+ org.omnetpp.scave.pychart,
+ py4j,
+ py4j.commands,
+ py4j.model,
+ py4j.reflection
+Eclipse-BuddyPolicy: global
+Eclipse-BundleShape: dir

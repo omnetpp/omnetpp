@@ -3,7 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Scalar / Vector Chart
 Bundle-SymbolicName: org.omnetpp.scave;singleton:=true
 Bundle-Version: 6.0.0.qualifier
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/py4j0.10.6.jar,
+ lib/pickle4.20.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.scave.ScavePlugin
@@ -21,6 +23,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.forms,
  org.omnetpp.scave.model,
  org.omnetpp.scave.builder,
+ org.omnetpp.scave.pychart,
  org.omnetpp.ide.nativelibs,
  org.eclipse.draw2d,
  org.swtworkbench.xswt,
@@ -29,3 +32,4 @@ Export-Package: org.omnetpp.scave,
  org.omnetpp.scave.charting,
  org.omnetpp.scave.model2,
  org.omnetpp.scave.wizard
+Eclipse-BuddyPolicy: global

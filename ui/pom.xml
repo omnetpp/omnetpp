@@ -35,6 +35,7 @@
     <module>org.omnetpp.scave</module>
     <module>org.omnetpp.scave.builder</module>
     <module>org.omnetpp.scave.model</module>
+    <module>org.omnetpp.scave.pychart</module>
     <module>org.omnetpp.sequencechart</module>
     <module>org.swtworkbench.xswt</module>
     <module>org.visigoths.freemarker</module>
