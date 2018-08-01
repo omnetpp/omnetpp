@@ -42,8 +42,8 @@ import org.omnetpp.common.ui.FocusManager;
 import org.omnetpp.common.ui.LiveTable;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.actions.ClosePageAction;
-import org.omnetpp.scave.charting.ChartCanvas;
-import org.omnetpp.scave.charting.ChartFactory;
+import org.omnetpp.scave.charting.ChartViewer;
+import org.omnetpp.scave.charting.ChartViewerFactory;
 import org.omnetpp.scave.charting.ChartUpdater;
 import org.omnetpp.scave.charting.IChartView;
 import org.omnetpp.scave.charting.properties.ChartProperties;
@@ -284,8 +284,8 @@ public class ChartSheetPage extends ScaveEditorPage {
             }
         });
 
-        if (viewControl instanceof ChartCanvas)
-        setDisplayChartDetails((ChartCanvas)viewControl, ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS);
+        if (viewControl instanceof ChartViewer)
+        setDisplayChartDetails((ChartViewer)viewControl, ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS);
         return view;
     }
 
@@ -357,13 +357,13 @@ public class ChartSheetPage extends ScaveEditorPage {
     }
 
     @Override
-    public ChartCanvas getActiveChartCanvas() {
+    public ChartViewer getActiveChartViewer() {
         ISelection selection = chartsArea.getSelection();
         if (selection instanceof IStructuredSelection) {
             IStructuredSelection structuredSelection = (IStructuredSelection)selection;
             if (structuredSelection.size() == 1 &&
-                    structuredSelection.getFirstElement() instanceof ChartCanvas)
-                return (ChartCanvas)structuredSelection.getFirstElement();
+                    structuredSelection.getFirstElement() instanceof ChartViewer)
+                return (ChartViewer)structuredSelection.getFirstElement();
         }
         return null;
     }
@@ -371,7 +371,7 @@ public class ChartSheetPage extends ScaveEditorPage {
     protected void handleChildOrderChanged() {
         List<Chart> charts = new ArrayList<Chart>();
         for (Control child : chartsArea.getChildren()) {
-            if (child instanceof ChartCanvas) {
+            if (child instanceof ChartViewer) {
                 Chart chart = findChart(child);
                 if (chart != null)
                     charts.add(chart);
@@ -406,13 +406,13 @@ public class ChartSheetPage extends ScaveEditorPage {
         else if (ChartSheetProperties.PROP_DISPLAY_CHART_DETAILS.equals(name)) {
             boolean displayChartDetails = value == null ? ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS : Boolean.parseBoolean(value);
             for (Control child : chartsArea.getChildren())
-                if (child instanceof ChartCanvas)
-                    setDisplayChartDetails((ChartCanvas)child, displayChartDetails);
+                if (child instanceof ChartViewer)
+                    setDisplayChartDetails((ChartViewer)child, displayChartDetails);
             updateLayout();
         }
     }
 
-    private void setDisplayChartDetails(ChartCanvas chartCanvas, boolean displayChartDetails) {
+    private void setDisplayChartDetails(ChartViewer chartCanvas, boolean displayChartDetails) {
         chartCanvas.setDisplayTitle(displayChartDetails);
         chartCanvas.setDisplayLegendTooltip(displayChartDetails);
         chartCanvas.setDisplayAxesDetails(displayChartDetails);

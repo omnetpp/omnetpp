@@ -48,6 +48,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
@@ -72,7 +73,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
  *
  * @author tomi, andras
  */
-public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChartView {
+public abstract class ChartViewer extends ZoomableCachingCanvas implements IChartView {
 
     private static final boolean debug = false;
 
@@ -107,7 +108,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChar
     private int layoutDepth = 0; // how many layoutChart() calls are on the stack
     private IDataset dataset;
 
-    public ChartCanvas(Composite parent, int style) {
+    public ChartViewer(Composite parent, int style) {
         super(parent, style);
         setCaching(DEFAULT_CANVAS_CACHING);
         setBackground(backgroundColor);
@@ -601,5 +602,15 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChar
 
     public ZoomableCachingCanvas getCanvas() {
         return this;
+    }
+    
+
+    @Override
+    public Point computeSize(int wHint, int hHint) {
+        return new Point(800, 600);
+    }
+    @Override
+    public Point computeSize(int wHint, int hHint, boolean changed) {
+        return new Point(800, 600);
     }
 }

@@ -7,10 +7,11 @@
 
 package org.omnetpp.scave.actions;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartCanvas;
+import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -43,9 +44,11 @@ public class ZoomChartAction extends AbstractScaveAction {
         setImageDescriptor(ScavePlugin.getImageDescriptor(imageId));
     }
 
+
     @Override
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-        ChartCanvas canvas = scaveEditor.getActiveChartCanvas();
+        Assert.isTrue(isEnabled());
+        ChartViewer canvas = scaveEditor.getActiveChartViewer();
         if (canvas != null) {
             if (horizontally) {
                 if (zoomFactor == 0.0)
@@ -64,12 +67,13 @@ public class ZoomChartAction extends AbstractScaveAction {
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        ChartCanvas canvas = editor.getActiveChartCanvas();
+        ChartViewer canvas = editor.getActiveChartViewer();
         if (canvas != null) {
-            return zoomFactor > 1.0 && horizontally && canvas.getZoomX() < canvas.getMaxZoomX() ||
-                   zoomFactor > 1.0 && vertically && canvas.getZoomX() < canvas.getMaxZoomX() ||
+            boolean res = zoomFactor > 1.0 && horizontally && canvas.getZoomX() < canvas.getMaxZoomX() ||
+                   zoomFactor > 1.0 && vertically && canvas.getZoomY() < canvas.getMaxZoomY() ||
                    zoomFactor < 1.0 && horizontally && canvas.getMinZoomX() < canvas.getZoomX() ||
                    zoomFactor < 1.0 && vertically && canvas.getMinZoomY() < canvas.getZoomY();
+           return res;
         }
         return false;
     }

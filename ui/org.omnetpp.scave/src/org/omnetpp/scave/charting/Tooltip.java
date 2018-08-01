@@ -21,7 +21,7 @@ class Tooltip {
      *
      */
 
-    public Tooltip(final ChartCanvas canvas) {
+    public Tooltip(final ChartViewer canvas) {
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 400);
         hoverSupport.adapt(canvas, new IHoverInfoProvider() {

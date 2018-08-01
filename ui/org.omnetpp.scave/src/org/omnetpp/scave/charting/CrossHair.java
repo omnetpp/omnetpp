@@ -40,7 +40,7 @@ import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.scave.charting.VectorChart.LineProperties;
+import org.omnetpp.scave.charting.VectorChartViewer.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IAveragedXYDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueXYDataset;
@@ -63,7 +63,7 @@ class CrossHair {
     private static final int MAXCOUNT = 100;
     private static final int HALO = 3;
 
-    private final VectorChart chart;
+    private final VectorChartViewer chart;
 
     private boolean detailedTooltip = false; // turned on while hovering
 
@@ -84,10 +84,10 @@ class CrossHair {
         }
     }
 
-    public CrossHair(VectorChart chart) {
+    public CrossHair(VectorChartViewer chart) {
         this.chart = chart;
 
-        final VectorChart finalChart = chart;
+        final VectorChartViewer finalChart = chart;
         // add key listener to restore the cross cursor, after other cursor is turned off
         // (by ZoomableCanvasMouseSupport for example)
         chart.addKeyListener(new KeyAdapter() {
@@ -311,7 +311,7 @@ class CrossHair {
             double x = dataset.getX(series, index);
             if (dataset instanceof IAveragedXYDataset) {
                 Statistics xStat = ((IAveragedXYDataset)dataset).getXStatistics(series, index);
-                xConf = StatUtils.confidenceInterval(xStat, ChartCanvas.CONFIDENCE_LEVEL);
+                xConf = StatUtils.confidenceInterval(xStat, ChartViewer.CONFIDENCE_LEVEL);
             }
             xStr = (xp != null ? xp.toString() : chart.formatValue(x, xConf));
         }
@@ -320,7 +320,7 @@ class CrossHair {
             double y = dataset.getY(series, index);
             if (dataset instanceof IAveragedXYDataset) {
                 Statistics yStat = ((IAveragedXYDataset)dataset).getYStatistics(series, index);
-                yConf = StatUtils.confidenceInterval(yStat, ChartCanvas.CONFIDENCE_LEVEL);
+                yConf = StatUtils.confidenceInterval(yStat, ChartViewer.CONFIDENCE_LEVEL);
             }
             yStr = (yp != null ? yp.toString() : chart.formatValue(y, yConf));
         }

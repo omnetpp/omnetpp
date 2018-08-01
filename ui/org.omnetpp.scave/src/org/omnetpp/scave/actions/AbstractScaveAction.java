@@ -87,8 +87,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
         if (page==null) return;
         IEditorPart editor = page.getActiveEditor();
         boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
-        if (isEnabled()!=isApplicable)
-            setEnabled(isApplicable);
+        setEnabled(isApplicable);
     }
 
     /**
@@ -102,8 +101,7 @@ public abstract class AbstractScaveAction extends Action implements IScaveAction
             IEditorPart editor = page.getActiveEditor();
             ISelection selection = viewer != null ? viewer.getSelection() : page.getSelection();
             boolean isApplicable = editor instanceof ScaveEditor && selection instanceof IStructuredSelection && isApplicable((ScaveEditor)editor, (IStructuredSelection)selection);
-            if (isEnabled()!=isApplicable)
-                setEnabled(isApplicable);
+            setEnabled(isApplicable);
         }
     }
 

@@ -17,7 +17,7 @@ import org.omnetpp.common.canvas.LargeGraphics;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.scave.charting.VectorChart.LineProperties;
+import org.omnetpp.scave.charting.VectorChartViewer.LineProperties;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 
@@ -28,7 +28,7 @@ import org.omnetpp.scave.charting.dataset.VectorDataset;
  */
 public class VectorChartSelection implements IChartSelection {
 
-    private final VectorChart vectorChart;
+    private final VectorChartViewer vectorChart;
 
     // the series of the line within the chart's dataset
     private int series;
@@ -43,7 +43,7 @@ public class VectorChartSelection implements IChartSelection {
     private double x,y;
 
 
-    public VectorChartSelection(VectorChart vectorChart, CrossHair.DataPoint point) {
+    public VectorChartSelection(VectorChartViewer vectorChart, CrossHair.DataPoint point) {
         IXYDataset dataset = vectorChart.getDataset();
         this.vectorChart = vectorChart;
         this.series = point.series;

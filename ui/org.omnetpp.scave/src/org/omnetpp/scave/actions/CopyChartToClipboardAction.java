@@ -12,33 +12,46 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.ChartCanvas;
+import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.python.MatplotlibChartViewer;
 
 /**
  * Copy chart contents to the clipboard.
  */
 public class CopyChartToClipboardAction extends AbstractScaveAction {
     public CopyChartToClipboardAction() {
-        setText("Copy to Clipboard");
-        setToolTipText("Copy Chart to Clipboard");
+        setText("Copy Image to Clipboard");
+        setToolTipText("Copy Chart Image to Clipboard");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COPY));
     }
 
     @Override
     protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-        final ChartCanvas chart = editor.getActiveChartCanvas();
-        if (chart != null) {
+        final ChartViewer nativeChart = editor.getActiveChartViewer();
+
+        if (nativeChart != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
                 public void run() {
-                    chart.copyToClipboard();
+                    nativeChart.copyToClipboard();
                 }
             });
         }
+
+        final MatplotlibChartViewer matplotlibChart = editor.getActiveMatplotlibChartViewer();
+
+        if (matplotlibChart != null) {
+            BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+                public void run() {
+                    matplotlibChart.copyToClipboard();
+                }
+            });
+        }
+
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        return editor.getActiveChartCanvas() != null;
+        return editor.getActiveChartViewer() != null || editor.getActiveMatplotlibChartViewer() != null;
     }
 }

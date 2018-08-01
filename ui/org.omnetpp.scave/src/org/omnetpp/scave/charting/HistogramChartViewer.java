@@ -45,7 +45,7 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramBar;
 import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramDataType;
 
-public class HistogramChartCanvas extends ChartCanvas {
+public class HistogramChartViewer extends ChartViewer {
 
     private static final boolean debug = false;
 
@@ -60,7 +60,7 @@ public class HistogramChartCanvas extends ChartCanvas {
         RGB color;
     }
 
-    public HistogramChartCanvas(Composite parent, int style) {
+    public HistogramChartViewer(Composite parent, int style) {
         super(parent, style);
         plot = new HistogramPlot(this);
         new Tooltip(this);
@@ -97,7 +97,7 @@ public class HistogramChartCanvas extends ChartCanvas {
     @Override
     public void setProperty(String name, String value) {
         Assert.isLegal(name != null);
-        if (debug) Debug.println("HistogramChartCanvas.setProperty: "+name+"='"+value+"'");
+        if (debug) Debug.println("HistogramChartViewer.setProperty: "+name+"='"+value+"'");
 
         if (PROP_X_AXIS_TITLE.equals(name))
             setXAxisTitle(value);

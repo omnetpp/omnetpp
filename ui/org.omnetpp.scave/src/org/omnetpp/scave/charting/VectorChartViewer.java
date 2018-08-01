@@ -74,7 +74,7 @@ import org.omnetpp.scave.preferences.ScavePreferenceConstants;
 /**
  * Line chart.
  */
-public class VectorChart extends ChartCanvas {
+public class VectorChartViewer extends ChartViewer {
 
     private static final boolean debug = false;
 
@@ -252,7 +252,7 @@ public class VectorChart extends ChartCanvas {
         return LineType.Linear;
     }
 
-    public VectorChart(Composite parent, int style) {
+    public VectorChartViewer(Composite parent, int style) {
         super(parent, style);
         // important: add the CrossHair to the chart AFTER the ZoomableCanvasMouseSupport added
         crosshair = new CrossHair(this);
@@ -266,7 +266,7 @@ public class VectorChart extends ChartCanvas {
                 int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1, getOptimizedCoordinateMapper());
                 if (count > 0) {
                     CrossHair.DataPoint point = points.get(0);
-                    setSelection(new VectorChartSelection(VectorChart.this, point));
+                    setSelection(new VectorChartSelection(VectorChartViewer.this, point));
                 }
                 else
                     setSelection(null);

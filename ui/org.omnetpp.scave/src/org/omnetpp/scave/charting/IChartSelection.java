@@ -8,7 +8,7 @@
 package org.omnetpp.scave.charting;
 
 /**
- * Interface for representing the selection of a ChartCanvas.
+ * Interface for representing the selection of a ChartViewer.
  *
  * @author tomi
  */

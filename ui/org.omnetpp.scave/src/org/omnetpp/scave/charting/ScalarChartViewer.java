@@ -59,7 +59,7 @@ import org.omnetpp.scave.model2.StatUtils;
  *
  * @author tomi
  */
-public class ScalarChart extends ChartCanvas {
+public class ScalarChartViewer extends ChartViewer {
     private IScalarDataset dataset;
 
     private LinearAxis valueAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
@@ -75,7 +75,7 @@ public class ScalarChart extends ChartCanvas {
         // TODO selection on ScalarCharts
     }
 
-    public ScalarChart(Composite parent, int style) {
+    public ScalarChartViewer(Composite parent, int style) {
         super(parent, style);
         plot = new BarPlot(this);
         new Tooltip(this);
@@ -395,7 +395,7 @@ public class ScalarChart extends ChartCanvas {
                 double halfInterval = Double.NaN;
                 if (dataset instanceof IAveragedScalarDataset) {
                     Statistics stat = ((IAveragedScalarDataset)dataset).getStatistics(row, column);
-                    halfInterval = StatUtils.confidenceInterval(stat, ScalarChart.CONFIDENCE_LEVEL);
+                    halfInterval = StatUtils.confidenceInterval(stat, ScalarChartViewer.CONFIDENCE_LEVEL);
                 }
                 valueStr = formatValue(value, halfInterval);
             }

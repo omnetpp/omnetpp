@@ -12,7 +12,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.scave.charting.ChartCanvas;
+import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 /**
@@ -43,19 +43,15 @@ public class ChartMouseModeAction extends AbstractScaveAction {
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-        ChartCanvas canvas = scaveEditor.getActiveChartCanvas();
-        if (canvas != null) {
+        ChartViewer canvas = scaveEditor.getActiveChartViewer();
+        if (isChecked() && canvas != null) {
             canvas.setMouseMode(destMode);
-            this.setChecked(true);
-            scaveEditor.fakeSelectionChange(); // fire an update so that the other tool gets unchecked
         }
     }
 
     @Override
     protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-        ChartCanvas canvas = editor.getActiveChartCanvas();
-        if (canvas!=null)
-            setChecked(canvas.getMouseMode()==destMode); //FIXME we probably get invoked all too rarely for this to be useful...
-        return canvas!=null;
+        ChartViewer canvas = editor.getActiveChartViewer();
+        return canvas != null;
     }
 }
