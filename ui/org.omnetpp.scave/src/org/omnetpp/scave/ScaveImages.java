@@ -20,6 +20,8 @@ package org.omnetpp.scave;
  */
 public class ScaveImages {
     public static final String IMG_ETOOL16_APPLY = "icons/full/etool16/apply.png";
+    public static final String IMG_ETOOL16_AUTOREFRESH2 = "icons/full/etool16/autorefresh2.png";
+    public static final String IMG_ETOOL16_AUTOREFRESH = "icons/full/etool16/autorefresh.gif";
     public static final String IMG_ETOOL16_CHOOSETABLECOLUMN = "icons/full/etool16/choosetablecolumn.png";
     public static final String IMG_ETOOL16_CLOSE = "icons/full/etool16/close.png";
     public static final String IMG_ETOOL16_COLLAPSE = "icons/full/etool16/collapse.png";
@@ -41,8 +43,20 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_NEWHISTOGRAMCHART = "icons/full/etool16/newhistogramchart.png";
     public static final String IMG_ETOOL16_NEWINPUTFILE = "icons/full/etool16/newinputfile.png";
     public static final String IMG_ETOOL16_NEWLINECHART = "icons/full/etool16/newlinechart.png";
+    public static final String IMG_ETOOL16_NEWMATPLOTLIBCHART = "icons/full/etool16/newmatplotlibchart.png";
     public static final String IMG_ETOOL16_NEWSCATTERCHART = "icons/full/etool16/newscatterchart.png";
+    public static final String IMG_ETOOL16_PLOTMATPLOTLIB = "icons/full/etool16/plotmatplotlib.png";
     public static final String IMG_ETOOL16_PLOT = "icons/full/etool16/plot.png";
+    public static final String IMG_ETOOL16_PROPERTIES = "icons/full/etool16/properties.png";
+    public static final String IMG_ETOOL16_REFRESH2 = "icons/full/etool16/refresh2.png";
+    public static final String IMG_ETOOL16_REFRESHPLOT = "icons/full/etool16/refreshplot.png";
+    public static final String IMG_ETOOL16_SHOWBOTH = "icons/full/etool16/showboth.png";
+    public static final String IMG_ETOOL16_SHOWCHART = "icons/full/etool16/showchart.png";
+    public static final String IMG_ETOOL16_SHOWSCRIPT = "icons/full/etool16/showscript.png";
+    public static final String IMG_ETOOL16_SPLITTER2 = "icons/full/etool16/splitter2.png";
+    public static final String IMG_ETOOL16_SPLITTERLEFT = "icons/full/etool16/splitterleft.png";
+    public static final String IMG_ETOOL16_SPLITTER = "icons/full/etool16/splitter.png";
+    public static final String IMG_ETOOL16_SPLITTERRIGHT = "icons/full/etool16/splitterright.png";
     public static final String IMG_ETOOL16_TREELEVELS = "icons/full/etool16/treelevels.png";
     public static final String IMG_ETOOL16_VZOOMIN = "icons/full/etool16/vzoomin.png";
     public static final String IMG_ETOOL16_VZOOMOUT = "icons/full/etool16/vzoomout.png";
@@ -87,6 +101,7 @@ public class ScaveImages {
     public static final String IMG_OBJ_FOLDER = "icons/full/obj/folder.png";
     public static final String IMG_OBJ_HISTOGRAMCHART = "icons/full/obj/histogramchart.png";
     public static final String IMG_OBJ_LINECHART = "icons/full/obj/linechart.png";
+    public static final String IMG_OBJ_MATPLOTLIBCHART = "icons/full/obj/matplotlibchart.png";
     public static final String IMG_OBJ_SCATTERCHART = "icons/full/obj/scatterchart.png";
     public static final String IMG_WIZBAN_NEWSCAVEMODEL = "icons/full/wizban/NewScaveModel.gif";
     public static final String IMG_LOGO128 = "icons/logo128.png";
