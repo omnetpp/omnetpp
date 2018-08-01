@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNeT++ Scalar / Vector Chart
+Bundle-Name: OMNeT++ Analysis Tool
 Bundle-SymbolicName: org.omnetpp.scave;singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-ClassPath: .,
