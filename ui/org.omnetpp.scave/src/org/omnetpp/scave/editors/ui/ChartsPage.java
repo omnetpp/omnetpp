@@ -37,6 +37,7 @@ import org.omnetpp.scave.actions.NewBarChartAction;
 import org.omnetpp.scave.actions.NewChartSheetAction;
 import org.omnetpp.scave.actions.NewHistogramChartAction;
 import org.omnetpp.scave.actions.NewLineChartAction;
+import org.omnetpp.scave.actions.NewMatplotlibChartAction;
 import org.omnetpp.scave.actions.NewScatterChartAction;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
@@ -49,6 +50,7 @@ import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
@@ -90,7 +92,9 @@ public class ChartsPage extends FormEditorPage {
         addToToolbar(new NewLineChartAction(withEditDialog));
         addToToolbar(new NewScatterChartAction(withEditDialog));
         addToToolbar(new NewHistogramChartAction(withEditDialog));
-        addToToolbar(new NewChartSheetAction(withEditDialog));
+        // TODO: maybe add a separator here, too?
+        addToToolbar(new NewMatplotlibChartAction(withEditDialog));
+        //addToToolbar(new NewChartSheetAction(withEditDialog));
         addSeparatorToToolbar();
         addToToolbar(contributor.getEditAction());
         addToToolbar(contributor.getRemoveAction());
@@ -153,6 +157,8 @@ public class ChartsPage extends FormEditorPage {
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_SCATTERCHART);
                 else if (element instanceof HistogramChart)
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_HISTOGRAMCHART);
+                if (element instanceof MatplotlibChart)
+                    return ScavePlugin.getImage(ScaveImages.IMG_OBJ_MATPLOTLIBCHART);
                 else if (element instanceof Dataset)
                     return ScavePlugin.getImage(ScaveImages.IMG_OBJ_DATASET);
                 else if (element instanceof Folder)

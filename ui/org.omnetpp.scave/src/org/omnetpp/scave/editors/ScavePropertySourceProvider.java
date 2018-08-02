@@ -10,7 +10,6 @@ package org.omnetpp.scave.editors;
 import java.util.concurrent.Callable;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
@@ -18,10 +17,12 @@ import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartSheetProperties;
+import org.omnetpp.scave.charting.properties.MatplotlibChartProperties;
 import org.omnetpp.scave.charting.properties.VectorChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model2.ChartLine;
 import org.omnetpp.scave.model2.ResultFilePayload;
 import org.omnetpp.scave.model2.ResultItemRef;
@@ -48,6 +49,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
     public IPropertySource getPropertySource(final Object object) {
         if (object instanceof GenericTreeNode)
             return getPropertySource(((GenericTreeNode)object).getPayload());
+        else if (object instanceof MatplotlibChart)
+            return MatplotlibChartProperties.createPropertySource((MatplotlibChart)object, manager);
         else if (object instanceof Chart)
             return ChartProperties.createPropertySource((Chart)object, manager);
         else if (object instanceof ChartSheet)

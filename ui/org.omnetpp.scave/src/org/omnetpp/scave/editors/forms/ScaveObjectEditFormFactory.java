@@ -68,6 +68,7 @@ public class ScaveObjectEditFormFactory {
             return new LineChartEditForm((LineChart)object, formParameters, manager);
         else if (object instanceof HistogramChart)
             return new HistogramChartEditForm((HistogramChart)object, formParameters, manager);
+        // matplotlibchart doesn't have a specialized EditForm at the moment, simply uses ChartEditForm
         else if (object instanceof Chart)
             return new ChartEditForm((Chart)object, formParameters, manager);
         else if (object instanceof ChartSheet)

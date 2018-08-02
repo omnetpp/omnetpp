@@ -161,6 +161,7 @@ public class BrowseDataPage extends FormEditorPage {
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
         addSeparatorToToolbar();
         addToToolbar(contributor.getCreateTempChartAction());
+        addToToolbar(contributor.getCreateTempMatplotlibChartAction());
 
         // show/hide actions that are specific to tab pages
         tabFolder.addSelectionListener(new SelectionAdapter() {
@@ -186,6 +187,7 @@ public class BrowseDataPage extends FormEditorPage {
         ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
         if (editorContributor != null) {
             contextMenuManager.add(editorContributor.getCreateTempChartAction());
+            contextMenuManager.add(editorContributor.getCreateTempMatplotlibChartAction());
             contextMenuManager.add(new Separator());
             contextMenuManager.add(editorContributor.createExportMenu());
             contextMenuManager.add(editorContributor.getCopyToClipboardAction());

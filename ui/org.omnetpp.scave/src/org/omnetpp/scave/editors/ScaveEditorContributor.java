@@ -55,6 +55,7 @@ import org.omnetpp.scave.actions.ChartMouseModeAction;
 import org.omnetpp.scave.actions.CopyChartToClipboardAction;
 import org.omnetpp.scave.actions.CopyToClipboardAction;
 import org.omnetpp.scave.actions.CreateTempChartAction;
+import org.omnetpp.scave.actions.CreateTempMatplotlibChartAction;
 import org.omnetpp.scave.actions.EditAction;
 import org.omnetpp.scave.actions.EditInputFileAction;
 import org.omnetpp.scave.actions.ExportChartsAction;
@@ -64,8 +65,9 @@ import org.omnetpp.scave.actions.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.GotoChartSheetDefinitionAction;
 import org.omnetpp.scave.actions.IScaveAction;
 import org.omnetpp.scave.actions.NewBarChartAction;
-import org.omnetpp.scave.actions.NewChartSheetAction;
+import org.omnetpp.scave.actions.NewHistogramChartAction;
 import org.omnetpp.scave.actions.NewLineChartAction;
+import org.omnetpp.scave.actions.NewMatplotlibChartAction;
 import org.omnetpp.scave.actions.NewScatterChartAction;
 import org.omnetpp.scave.actions.OpenChartAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
@@ -124,6 +126,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private CopyToClipboardAction copyToClipboardAction;
     private ExportToSVGAction exportToSVGAction;
     private CreateTempChartAction createTempChartAction;
+    private CreateTempMatplotlibChartAction createTempMatplotlibChartAction;
     private SaveTempChartAction saveTempChartAction;
     private SaveTempChartSheetAction saveTempChartSheetAction;
     private ShowOutputVectorViewAction showOutputVectorViewAction;
@@ -209,6 +212,7 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         registerAction(page, copyToClipboardAction = new CopyToClipboardAction());
         registerAction(page, exportToSVGAction = new ExportToSVGAction());
         registerAction(page, createTempChartAction = new CreateTempChartAction());
+        registerAction(page, createTempMatplotlibChartAction = new CreateTempMatplotlibChartAction());
         registerAction(page, saveTempChartAction = new SaveTempChartAction());
         registerAction(page, saveTempChartSheetAction = new SaveTempChartSheetAction());
         registerAction(page, showOutputVectorViewAction = new ShowOutputVectorViewAction());
@@ -307,6 +311,10 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
 
     public CreateTempChartAction getCreateTempChartAction() {
         return createTempChartAction;
+    }
+
+    public CreateTempMatplotlibChartAction getCreateTempMatplotlibChartAction() {
+        return createTempMatplotlibChartAction;
     }
 
     public SaveTempChartAction getSaveTempChartAction() {
