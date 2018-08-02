@@ -11,11 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -38,16 +35,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
-import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.contentassist.ContentAssistUtil;
-import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
 import org.omnetpp.common.ui.StyledTextUndoRedoManager;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.assist.ScriptContentProposalProvider;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
@@ -56,11 +48,10 @@ import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.MatplotlibChart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ChartLine;
-import org.omnetpp.scave.model2.FilterHints;
-import org.omnetpp.scave.script.ScriptParser;
 
 /**
  * Edit form of charts.
@@ -71,6 +62,7 @@ import org.omnetpp.scave.script.ScriptParser;
  * @author tomi
  */
 // TODO use validator for font and number fields
+// TODO: split into super class containing only "Main" (for Matplotlib), and "NativeWidgetChartEditForm" to add the rest
 public class ChartEditForm extends BaseScaveObjectEditForm {
     public static final String TAB_MAIN = "Main";
     public static final String TAB_CHART = "Chart";
@@ -101,7 +93,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
     // controls
     private Text nameText;
     private StyledText scriptText;
-    private ScriptContentProposalProvider scriptContentProposalProvider;
+    //private ScriptContentProposalProvider scriptContentProposalProvider;
     protected Group optionsGroup;
     private Button antialiasCheckbox;
     private Button cachingCheckbox;
@@ -204,9 +196,12 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      */
     protected void populateTabFolder(TabFolder tabfolder) {
         createTab(TAB_MAIN, tabfolder, 1);
-        createTab(TAB_CHART, tabfolder, 1);
-        createTab(TAB_AXES, tabfolder, 2);
-        createTab(TAB_LEGEND, tabfolder, 1);
+
+        if (!(chart instanceof MatplotlibChart) ) {
+            createTab(TAB_CHART, tabfolder, 1);
+            createTab(TAB_AXES, tabfolder, 2);
+            createTab(TAB_LEGEND, tabfolder, 1);
+        }
     }
 
     /**
@@ -221,12 +216,12 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
             ((GridLayout)panel.getLayout()).numColumns = 2;
             nameText = createTextField("Chart name:", panel);
             nameText.setFocus();
-            scriptText = createMultilineTextField("Result selection script:", panel);
+            scriptText = createMultilineTextField("Chart script:", panel);
             ((GridLayout)panel.getLayout()).numColumns = 2;
             new StyledTextUndoRedoManager(scriptText);
-            scriptContentProposalProvider = new ScriptContentProposalProvider();
-            ContentAssistUtil.configureStyledText(scriptText, scriptContentProposalProvider);
-            scriptContentProposalProvider.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
+            //scriptContentProposalProvider = new ScriptContentProposalProvider();
+            //ContentAssistUtil.configureStyledText(scriptText, scriptContentProposalProvider);
+            //scriptContentProposalProvider.setFilterHints(new FilterHints(manager, manager.getAllItems(false)));
             scriptText.addModifyListener((e) -> fireChangeNotification());
         }
         else if (TAB_CHART.equals(name)) {
@@ -522,8 +517,8 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         imageLabel.setLayoutData(new GridData(16,16));
         Text text = new Text(panel, SWT.BORDER);
         text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        new ContentAssistCommandAdapter(text, new TextContentAdapter(), new ColorContentProposalProvider(),
-                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
+        /*new ContentAssistCommandAdapter(text, new TextContentAdapter(), new ColorContentProposalProvider(),
+                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);*/
         Button button = new Button(panel, SWT.NONE);
         button.setText("...");
         final ColorEdit colorField = new ColorEdit(text, imageLabel);
@@ -611,48 +606,35 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
         }
     }
 
-    @Override
-    public IStatus validate() {
-        try {
-            System.out.println("Validating script...");
-            String script = scriptText.getText();
-            ScriptParser.parseScript(script);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return new Status(IStatus.ERROR, ScavePlugin.PLUGIN_ID, e.getMessage());
-        }
-
-        return super.validate();
-    }
-
     /**
      * Sets the properties in <code>newProps</code> from the values of the controls.
      */
     protected void collectProperties(ChartProperties newProps) {
-        // Main
-        newProps.setAntialias(antialiasCheckbox.getSelection());
-        newProps.setCaching(cachingCheckbox.getSelection());
-        newProps.setBackgroundColor(backgroundColor.getText());
-        // Titles
-        newProps.setGraphTitle(graphTitleText.getText());
-        newProps.setGraphTitleFont(Converter.stringToFontdata(graphTitleFontText.getText()));
-        newProps.setXAxisTitle(xAxisTitleText.getText());
-        newProps.setYAxisTitle(yAxisTitleText.getText());
-        newProps.setAxisTitleFont(Converter.stringToFontdata(axisTitleFontText.getText()));
-        newProps.setLabelsFont(Converter.stringToFontdata(labelFontText.getText()));
-        newProps.setXLabelsRotate(Converter.stringToDouble(xLabelsRotateByCombo.getText()));
-        // Axes
-        newProps.setYAxisMin(Converter.stringToDouble(yAxisMinText.getText()));
-        newProps.setYAxisMax(Converter.stringToDouble(yAxisMaxText.getText()));
-        newProps.setYAxisLogarithmic(yAxisLogCheckbox.getSelection());
-        newProps.setXYGrid(resolveEnum(showGridCombo.getText(), ShowGrid.class));
-        // Legend
-        newProps.setDisplayLegend(displayLegendCheckbox.getSelection());
-        newProps.setLegendBorder(displayBorderCheckbox.getSelection());
-        newProps.setLegendFont(Converter.stringToFontdata(legendFontText.getText()));
-        newProps.setLegendPosition(resolveEnum(legendPositionCombo.getText(), LegendPosition.class));
-        newProps.setLegendAnchoring(resolveEnum(legendAnchorCombo.getText(), LegendAnchor.class));
+        if (!(chart instanceof MatplotlibChart)) {
+            // Main
+            newProps.setAntialias(antialiasCheckbox.getSelection());
+            newProps.setCaching(cachingCheckbox.getSelection());
+            newProps.setBackgroundColor(backgroundColor.getText());
+            // Titles
+            newProps.setGraphTitle(graphTitleText.getText());
+            newProps.setGraphTitleFont(Converter.stringToFontdata(graphTitleFontText.getText()));
+            newProps.setXAxisTitle(xAxisTitleText.getText());
+            newProps.setYAxisTitle(yAxisTitleText.getText());
+            newProps.setAxisTitleFont(Converter.stringToFontdata(axisTitleFontText.getText()));
+            newProps.setLabelsFont(Converter.stringToFontdata(labelFontText.getText()));
+            newProps.setXLabelsRotate(Converter.stringToDouble(xLabelsRotateByCombo.getText()));
+            // Axes
+            newProps.setYAxisMin(Converter.stringToDouble(yAxisMinText.getText()));
+            newProps.setYAxisMax(Converter.stringToDouble(yAxisMaxText.getText()));
+            newProps.setYAxisLogarithmic(yAxisLogCheckbox.getSelection());
+            newProps.setXYGrid(resolveEnum(showGridCombo.getText(), ShowGrid.class));
+            // Legend
+            newProps.setDisplayLegend(displayLegendCheckbox.getSelection());
+            newProps.setLegendBorder(displayBorderCheckbox.getSelection());
+            newProps.setLegendFont(Converter.stringToFontdata(legendFontText.getText()));
+            newProps.setLegendPosition(resolveEnum(legendPositionCombo.getText(), LegendPosition.class));
+            newProps.setLegendAnchoring(resolveEnum(legendAnchorCombo.getText(), LegendAnchor.class));
+        }
     }
 
     /**
@@ -679,30 +661,33 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      * @param props
      */
     protected void setProperties(ChartProperties props) {
-        // Main
-        antialiasCheckbox.setSelection(props.getAntialias());
-        cachingCheckbox.setSelection(props.getCaching());
-        backgroundColor.setText(props.getBackgroundColor());
-        // Titles
-        graphTitleText.setText(props.getGraphTitle());
-        graphTitleFontText.setText(asString(props.getGraphTitleFont()));
-        xAxisTitleText.setText(props.getXAxisTitle());
-        yAxisTitleText.setText(props.getYAxisTitle());
-        axisTitleFontText.setText(asString(props.getAxisTitleFont()));
-        labelFontText.setText(asString(props.getLabelsFont()));
-        xLabelsRotateByCombo.setText(StringUtils.defaultString(Converter.doubleToString(props.getXLabelsRotate())));
-        // Axes
-        yAxisMinText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMin())));
-        yAxisMaxText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMax())));
-        yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
-        showGridCombo.setText(props.getXYGrid().toString());
-        // Legend
-        displayLegendCheckbox.setSelection(props.getDisplayLegend());
-        displayBorderCheckbox.setSelection(props.getLegendBorder());
-        legendFontText.setText(asString(props.getLegendFont()));
-        legendPositionCombo.setText(props.getLegendPosition().toString());
-        legendAnchorCombo.setText(props.getLegendAnchoring().toString());
-        updateLegendPanelEnabled();
+        if (!(chart instanceof MatplotlibChart)) {
+            // Main
+            antialiasCheckbox.setSelection(props.getAntialias());
+            cachingCheckbox.setSelection(props.getCaching());
+            backgroundColor.setText(props.getBackgroundColor());
+            // Titles
+            graphTitleText.setText(props.getGraphTitle());
+            graphTitleFontText.setText(asString(props.getGraphTitleFont()));
+            xAxisTitleText.setText(props.getXAxisTitle());
+            yAxisTitleText.setText(props.getYAxisTitle());
+            axisTitleFontText.setText(asString(props.getAxisTitleFont()));
+            labelFontText.setText(asString(props.getLabelsFont()));
+            xLabelsRotateByCombo.setText(StringUtils.defaultString(Converter.integerToString(props.getXLabelsRotate().intValue())));
+
+            // Axes
+            yAxisMinText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMin())));
+            yAxisMaxText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMax())));
+            yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
+            showGridCombo.setText(props.getXYGrid().toString());
+            // Legend
+            displayLegendCheckbox.setSelection(props.getDisplayLegend());
+            displayBorderCheckbox.setSelection(props.getLegendBorder());
+            legendFontText.setText(asString(props.getLegendFont()));
+            legendPositionCombo.setText(props.getLegendPosition().toString());
+            legendAnchorCombo.setText(props.getLegendAnchoring().toString());
+            updateLegendPanelEnabled();
+        }
     }
 
     private static String asString(FontData fontData) {

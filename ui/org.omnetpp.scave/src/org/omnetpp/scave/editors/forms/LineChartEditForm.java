@@ -84,6 +84,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
     }
 
     protected void updateDataset(String formatString) {
+        /*
         xydataset = ScriptEngine.createVectorDataset((LineChart)chart, formatString, false, manager, null);  //TODO try-catch!!!
         Line[] lines = NO_LINES;
         if (xydataset != null) {
@@ -96,6 +97,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
         }
 
         setLines(lines);
+        */
     }
 
     @Override

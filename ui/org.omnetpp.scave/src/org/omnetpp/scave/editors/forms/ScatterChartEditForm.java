@@ -45,10 +45,10 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 
     private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
         pkg.getAnalysisItem_Name(),
-        pkg.getChart_Input(),
-        pkg.getScatterChart_XDataPattern(),
-        pkg.getScatterChart_IsoDataPattern(),
-        pkg.getScatterChart_AverageReplications(),
+        pkg.getChart_Script(),
+        //pkg.getScatterChart_XDataPattern(),
+        //pkg.getScatterChart_IsoDataPattern(),
+        //pkg.getScatterChart_AverageReplications(),
         pkg.getChart_Properties(),
     };
 
@@ -67,13 +67,15 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     public ScatterChartEditForm(ScatterChart chart, Map<String,Object> formParameters, ResultFileManager manager) {
         super(chart, formParameters, manager);
         updateDataset(null);
+        /*
         IDList idlist = ScriptEngine.getIDListFromDataset(manager, chart, ResultType.SCALAR_LITERAL);
         idlist.merge(ScriptEngine.getIDListFromDataset(manager, chart, ResultType.VECTOR_LITERAL));
         xData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, false);
-        isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);
+        isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);*/
     }
 
     protected void updateDataset(String formatString) {
+        /*
         Line[] lines = NO_LINES;
         try {
             xydataset = ScriptEngine.createScatterPlotDataset((ScatterChart)chart, manager, null);
@@ -91,6 +93,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
         }
 
         setLines(lines);
+        */
     }
 
 
@@ -107,7 +110,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     @Override
     protected void populateTabFolder(TabFolder tabfolder) {
         super.populateTabFolder(tabfolder);
-        createTab(TAB_CONTENT, tabfolder, 2);
+        //createTab(TAB_CONTENT, tabfolder, 2);
     }
 
     @Override
@@ -180,17 +183,22 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
     public Object getValue(EStructuralFeature feature) {
         switch (feature.getFeatureID()) {
         case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
-            int index = xModuleAndDataCombo.getSelectionIndex();
-            return index >= 0 ? xData[index].asFilterPattern() : null;
-        case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
-            List<String> patterns = new ArrayList<>();
-            for (TreeItem item : isoLineSelectionTreeItems) {
-                if (item.getChecked())
-                    patterns.add((String)item.getData());
+            if (xModuleAndDataCombo != null) {
+                int index = xModuleAndDataCombo.getSelectionIndex();
+                return index >= 0 ? xData[index].asFilterPattern() : null;
             }
-            return patterns;
+        case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
+            if (isoLineSelectionTreeItems != null) {
+                List<String> patterns = new ArrayList<>();
+                for (TreeItem item : isoLineSelectionTreeItems) {
+                    if (item.getChecked())
+                        patterns.add((String)item.getData());
+                }
+                return patterns;
+            }
         case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
-            return avgReplicationsCheckbox.getSelection();
+            if (avgReplicationsCheckbox != null)
+                return avgReplicationsCheckbox.getSelection();
         }
         return super.getValue(feature);
     }

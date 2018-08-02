@@ -72,10 +72,10 @@ public class BarChartEditForm extends ChartEditForm {
 
     private static final EStructuralFeature[] features = new EStructuralFeature[] {
         pkg.getAnalysisItem_Name(),
-        pkg.getChart_Input(),
-        pkg.getBarChart_GroupByFields(),
-        pkg.getBarChart_BarFields(),
-        pkg.getBarChart_AveragedFields(),
+        pkg.getChart_Script(),
+        //pkg.getBarChart_GroupByFields(),
+        //pkg.getBarChart_BarFields(),
+        //pkg.getBarChart_AveragedFields(),
         pkg.getChart_Properties(),
     };
 
@@ -105,7 +105,7 @@ public class BarChartEditForm extends ChartEditForm {
     @Override
     public void populateTabFolder(TabFolder tabfolder) {
         super.populateTabFolder(tabfolder);
-        createTab(TAB_CONTENT, tabfolder, 1);
+        //createTab(TAB_CONTENT, tabfolder, 1);
         createTab(TAB_BARS, tabfolder, 2);
     }
 
