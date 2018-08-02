@@ -8,17 +8,13 @@
 package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.properties.BasePropertySource;
 import org.omnetpp.common.properties.Property;
-import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.HistogramChart;
-import org.omnetpp.scave.script.ScriptEngine;
 
 public class HistogramChartProperties extends ChartProperties
 {
@@ -82,19 +78,7 @@ public class HistogramChartProperties extends ChartProperties
             description="Histogram plot properties.")
     public IPropertySource getHistogramProperties()
     {
-        IHistogramDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<IHistogramDataset>() {
-            public IHistogramDataset call() {
-                return ScriptEngine.createHistogramDataset((HistogramChart)chart, manager, null);
-            }
-        });
-
-        String[] keys = null;
-        if (dataset != null) {
-            keys = new String[dataset.getSeriesCount()];
-            for (int i= 0; i < keys.length; ++i)
-                keys[i] = dataset.getSeriesKey(i);
-        }
-        IPropertyDescriptor[] descriptors = createDescriptors(DEFAULT_HIST_PROPERTIES_ID, keys, keys);
+        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
         return new BasePropertySource(descriptors) {
             @Override public Object getPropertyValue(Object id) {
                 return new HistogramProperties(HistogramChartProperties.this,

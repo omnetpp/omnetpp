@@ -8,17 +8,13 @@
 package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.properties.BasePropertySource;
-import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.script.ScriptEngine;
 
 public class ScalarChartProperties extends ChartProperties
 {
@@ -69,17 +65,7 @@ public class ScalarChartProperties extends ChartProperties
     @org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars",
             description="Properties of individual bars. Default is applied to all properties not set individually.")
     public IPropertySource getBarProperties() {
-        ScalarDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<ScalarDataset>() {
-            public ScalarDataset call() throws Exception {
-                return ScriptEngine.createScalarDataset((BarChart)chart, manager, null);
-            }
-        });
-
-        String[] names = new String[dataset.getColumnCount()];
-        for (int i = 0; i < names.length; ++i)
-            names[i] = dataset.getColumnKey(i);
-
-        IPropertyDescriptor[] descriptors = createDescriptors(DEFAULT_BAR_PROPERTIES_ID, names, names);
+        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
         return new BasePropertySource(descriptors) {
             @Override
             public Object getPropertyValue(Object id) {

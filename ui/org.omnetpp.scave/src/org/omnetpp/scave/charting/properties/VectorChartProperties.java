@@ -8,16 +8,13 @@
 package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.properties.BasePropertySource;
-import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
-import org.omnetpp.scave.script.ScriptEngine;
 
 public class VectorChartProperties extends ChartProperties
 {
@@ -51,19 +48,7 @@ public class VectorChartProperties extends ChartProperties
             description="Properties of individual lines. Default is applied to all properties not set individually.")
     public IPropertySource getLineProperties()
     {
-        IXYDataset dataset = ResultFileManager.callWithReadLock(manager, new Callable<IXYDataset>() {
-            public IXYDataset call() {
-                return ScriptEngine.createXYDataset(chart, false, manager, null);
-            }
-        });
-
-        String[] keys = null;
-        if (dataset != null) {
-            keys = new String[dataset.getSeriesCount()];
-            for (int i= 0; i < keys.length; ++i)
-                keys[i] = dataset.getSeriesKey(i);
-        }
-        IPropertyDescriptor[] descriptors = createDescriptors(DEFAULT_LINE_PROPERTIES_ID, keys, keys);
+        IPropertyDescriptor[] descriptors = new IPropertyDescriptor[0];
         return new BasePropertySource(descriptors) {
             @Override public Object getPropertyValue(Object id) {
                 return new LineProperties(VectorChartProperties.this,
