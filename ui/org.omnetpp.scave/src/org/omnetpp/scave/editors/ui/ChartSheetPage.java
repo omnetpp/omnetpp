@@ -258,8 +258,8 @@ public class ChartSheetPage extends FormEditorPage {
         viewControl.setLayoutData(gridData);
         chartsArea.configureChild(viewControl);
         addChartUpdater(chart, view);
-        MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
-        viewControl.setMenu(menuManager.createContextMenu(viewControl));
+        //MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
+        //viewControl.setMenu(menuManager.createContextMenu(viewControl));
         // hide legend
         view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
 
