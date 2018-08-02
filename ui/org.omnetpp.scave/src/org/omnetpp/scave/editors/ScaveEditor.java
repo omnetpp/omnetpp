@@ -83,6 +83,8 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
@@ -107,10 +109,12 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -130,7 +134,6 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartViewer;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
-import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
 import org.omnetpp.scave.editors.ui.ChartsPage;
 import org.omnetpp.scave.editors.ui.FormEditorPage;
@@ -148,6 +151,8 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.IScaveEditorContext;
 import org.omnetpp.scave.model2.ResultItemRef;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
+import org.omnetpp.scave.pychart.PythonProcessPool;
+import org.omnetpp.scave.python.MatplotlibChartViewer;
 
 /**
  * OMNeT++ Analysis tool.
@@ -165,6 +170,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     private ChartsPage chartsPage;
 
     private Map<EObject,Control> closablePages = new LinkedHashMap<EObject,Control>();
+
+    PythonProcessPool processPool = new PythonProcessPool();
+
 
     /**
      * This keeps track of the editing domain that is used to track all changes to the model.
@@ -420,10 +428,14 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         setPartName(editorInput.getName());
         site.setSelectionProvider(this);
         site.getPage().addPartListener(partListener);
+
     }
 
     @Override
     public void dispose() {
+
+        processPool.dispose();
+
         if (tracker!=null) {
             ResourcesPlugin.getWorkspace().removeResourceChangeListener(tracker);
         }
@@ -628,6 +640,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
                 pageChangedByUser(newPageIndex);
             }
         });
+        tabfolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+            @Override
+            public void close(CTabFolderEvent event) {
+                saveState();
+            }
+        });
     }
 
     protected CTabFolder getTabFolder() {
@@ -787,6 +805,15 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return analysis;
     }
 
+
+    public File getAnfFileDirectory() {
+        IEditorInput input = getEditorInput();
+
+        IFile file = ((FileEditorInput)input).getFile();
+
+        return file.getLocation().removeLastSegments(1).toFile();
+    }
+
     /**
      * Opens a new editor page for the object, or switches to it if already opened.
      */
@@ -909,20 +936,28 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         FormEditorPage page = null;
 
         if (object instanceof Chart)
-            page = new ChartPage(getContainer(), this, (Chart)object);
+            try {
+                int index = openChartScriptEditor((Chart)object);
+                closablePages.put(object, getControl(index));
+                return index;
+            }
+            catch (PartInitException e) {
+                e.printStackTrace();
+                return -1;
+            }
         else if (object instanceof ChartSheet)
             page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
         else
             throw new IllegalArgumentException("Cannot create editor page for " + object);
 
-        int pageIndex = addClosableScaveEditorPage(page);
+        int pageIndex = addClosablePage(page);
         closablePages.put(object, page);
         return pageIndex;
     }
 
     @Override
     protected void pageClosed(Control control) {
-        Assert.isTrue(closablePages.containsValue(control));
+        //Assert.isTrue(closablePages.containsValue(control));
 
         // remove it from the map
         Iterator<Map.Entry<EObject,Control>> entries = closablePages.entrySet().iterator();
@@ -974,8 +1009,10 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         inputsPage.selectionChanged(selection);
         browseDataPage.selectionChanged(selection);
         chartsPage.selectionChanged(selection);
-        for (Control page : closablePages.values())
-            ((ScaveEditorPage)page).selectionChanged(selection);
+
+        /*
+            ((FormEditorPage)page).selectionChanged(selection);
+        */
     }
 
     class ScaveEditorContentOutlinePage extends ContentOutlinePage {
@@ -1163,8 +1200,8 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         int pageCount = getPageCount();
         for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
             Control control = getControl(pageIndex);
-            if (control instanceof ScaveEditorPage) {
-                ScaveEditorPage page = (ScaveEditorPage)control;
+            if (control instanceof FormEditorPage) {
+                FormEditorPage page = (FormEditorPage)control;
                 page.updatePage(notification);
             }
         }
@@ -1173,11 +1210,28 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     @Override
     protected void pageChange(int newPageIndex) {
         super.pageChange(newPageIndex);
-        Control page = getControl(newPageIndex);
-        if (page instanceof ScaveEditorPage) {
-            ((ScaveEditorPage)page).pageActivated();
-        }
 
+        IEditorPart editor = getEditor(newPageIndex);
+        if (editor != null) {
+            ITextEditor editorPart = ((ITextEditor)editor);
+
+            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.DELETE.getId(), editorPart.getAction(ActionFactory.DELETE.getId()));
+            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), editorPart.getAction(ActionFactory.SELECT_ALL.getId()));
+            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.COPY.getId(), editorPart.getAction(ActionFactory.COPY.getId()));
+            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.PASTE.getId(), editorPart.getAction(ActionFactory.PASTE.getId()));
+            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.CUT.getId(), editorPart.getAction(ActionFactory.CUT.getId()));
+            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.UNDO.getId(), editorPart.getAction(ActionFactory.UNDO.getId()));
+            getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.REDO.getId(), editorPart.getAction(ActionFactory.REDO.getId()));
+        }
+        else {
+            Control page = getControl(newPageIndex);
+
+            if (page instanceof FormEditorPage) {
+                ((FormEditorPage)page).pageActivated();
+
+                getActionBarContributor().shareGlobalActions(null /* this is not very nice */, getEditorSite().getActionBars());
+            }
+        }
         fakeSelectionChange();
     }
 
@@ -1216,7 +1270,12 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return null;
     }
 
-    ScaveEditorPage restorePage(String pageId) {
+    private String getPageId(ChartScriptEditor chartScriptEditor) {
+        Resource resource = chartScriptEditor.chart.eResource();
+        return resource != null ? resource.getURIFragment(chartScriptEditor.chart) : null;
+    }
+
+    FormEditorPage restorePage(String pageId) {
         if (pageId == null)
             return null;
         if (pageId.equals("Inputs")) {
@@ -1231,20 +1290,34 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             setActivePage(findPage(chartsPage));
             return chartsPage;
         }
-        else {
-            EObject object = null;
-            String uri = null;
-            Resource resource = null;
-            uri = pageId;
-            resource = getResource();
 
-            try {
-                if (resource != null && uri != null)
-                    object = resource.getEObject(uri);
-            } catch (Exception e) {}
+        return null;
+    }
 
-            if (object != null)
-                return open(object);
+    ChartScriptEditor restoreEditor(String pageId) {
+
+        if (pageId == null || pageId.equals("Inputs") || pageId.equals("BrowseData") || pageId.equals("Charts"))
+            return null;
+
+        EObject object = null;
+        String uri = null;
+        Resource resource = null;
+        uri = pageId;
+        resource = getResource();
+
+        try {
+            if (resource != null && uri != null)
+                object = resource.getEObject(uri);
+        } catch (Exception e) {}
+
+        if (object != null) {
+            open(object);
+            Control p = closablePages.get(object);
+            int pageIndex = findPage(p);
+            IEditorPart editor = getEditor(pageIndex);
+            if (editor instanceof ChartScriptEditor) {
+                return (ChartScriptEditor)editor;
+            }
         }
         return null;
     }
@@ -1252,7 +1325,7 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
     /*
      * Per input persistent state.
      */
-    private IFile getInputFile() {
+    public IFile getInputFile() {
         IEditorInput input = getEditorInput();
         if (input instanceof IFileEditorInput)
             return ((IFileEditorInput)input).getFile();
@@ -1260,13 +1333,48 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             return null;
     }
 
+    IMemento getMementoFor(ChartScriptEditor editor) {
+        IFile file = getInputFile();
+        if (file != null) {
+            try {
+                ScaveEditorMemento memento = new ScaveEditorMemento(file);
+                String editorPageId = getPageId(editor);
+                System.out.println("looking for: " + editorPageId);
+                for (IMemento pageMemento : memento.getChildren(PAGE)) {
+                    System.out.println("pageid:" + pageMemento.getString(PAGE_ID));
+                    String pageId = pageMemento.getString(PAGE_ID);
+                    if (pageId != null && pageId.equals(editorPageId))
+                        return pageMemento;
+                }
+            }
+            catch (CoreException e) {
+            }
+        }
+        return null;
+    }
+
     private void saveState(IMemento memento) {
         memento.putInteger(ACTIVE_PAGE, getActivePage());
         for (EObject openedObject : closablePages.keySet()) {
-            ScaveEditorPage page = closablePages.get(openedObject);
-            IMemento pageMemento = memento.createChild(PAGE);
-            pageMemento.putString(PAGE_ID, getPageId(page));
-            page.saveState(pageMemento);
+            Control p = closablePages.get(openedObject);
+            if (p instanceof FormEditorPage) {
+                FormEditorPage page = (FormEditorPage)p;
+                IMemento pageMemento = memento.createChild(PAGE);
+                pageMemento.putString(PAGE_ID, getPageId(page));
+                page.saveState(pageMemento);
+            }
+            else {
+                int pageIndex = findPage(p);
+                IEditorPart editor = getEditor(pageIndex);
+                if (editor instanceof ChartScriptEditor) {
+                    ChartScriptEditor chartScriptEditor = (ChartScriptEditor)editor;
+                    String pageId = getPageId(chartScriptEditor);
+                    IMemento pageMemento = memento.createChild(PAGE);
+                    pageMemento.putString(PAGE_ID, pageId);
+                    chartScriptEditor.saveState(pageMemento);
+                }
+            }
+
         }
     }
 
@@ -1274,9 +1382,13 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         for (IMemento pageMemento : memento.getChildren(PAGE)) {
             String pageId = pageMemento.getString(PAGE_ID);
             if (pageId != null) {
-                ScaveEditorPage page = restorePage(pageId);
-                    if (page != null)
-                        page.restoreState(pageMemento);
+                FormEditorPage page = restorePage(pageId);
+                if (page != null)
+                    page.restoreState(pageMemento);
+
+                ChartScriptEditor editor = restoreEditor(pageId);
+                if (editor != null)
+                    editor.restoreState(pageMemento);
             }
         }
         int activePage = memento.getInteger(ACTIVE_PAGE);
@@ -1652,4 +1764,56 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
         return true;
     }
 
+    public PythonProcessPool getPythonProcessPool() {
+        return processPool;
+    }
+
+
+    public int openChartScriptEditor(Chart chart) throws PartInitException {
+
+        ChartScriptEditor editor = new ChartScriptEditor(this, chart);
+
+        ChartScriptEditorInput input = new ChartScriptEditorInput(chart);
+
+        chart.eAdapters().add(new Adapter() {
+
+            @Override
+            public void notifyChanged(Notification notification) {
+                if (!editor.getDocument().get().equals(chart.getScript()))
+                    editor.getDocument().set(chart.getScript());
+            }
+
+            @Override
+            public void setTarget(Notifier newTarget) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public boolean isAdapterForType(Object type) {
+                System.out.println("IS ADAPTER FOR TYPE: " + type);
+                return false;
+            }
+
+            @Override
+            public Notifier getTarget() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        });
+
+        String pageTitle = ((chart.getName() != null && !chart.getName().equals("")) ? chart.getName() : "<unnamed>");
+        int index = addClosablePage(editor, input, pageTitle);
+
+        IMemento editorMemento = getMementoFor(editor);
+        if (editorMemento != null)
+            editor.restoreState(editorMemento);
+        else {
+            System.out.println("NO MEMENTO FOR YOU");
+        }
+
+        setActivePage(index);
+
+        return index;
+    }
 }

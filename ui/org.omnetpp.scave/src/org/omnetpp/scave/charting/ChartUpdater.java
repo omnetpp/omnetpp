@@ -13,6 +13,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -32,7 +33,9 @@ public class ChartUpdater {
     private static final int CHART_UPDATE_DELAY_MS = 200;
 
     private final Chart chart;
+    private final ChartScriptEditor editor;
     private final IChartView view;
+
     private final ResultFileManager manager;
     private final DelayedJob startUpdateJob = new DelayedJob(CHART_UPDATE_DELAY_MS) {
         @Override
@@ -41,8 +44,9 @@ public class ChartUpdater {
         }
     };
 
-    public ChartUpdater(Chart chart, IChartView view, ResultFileManager manager) {
+    public ChartUpdater(Chart chart, ChartScriptEditor editor, IChartView view, ResultFileManager manager) {
         this.chart = chart;
+        this.editor = editor;
         this.view = view;
         this.manager = manager;
     }
@@ -167,6 +171,6 @@ public class ChartUpdater {
      * Starts a job that recalculates chart contents.
      */
     public void updateDataset() {
-        ChartFactory.populateChart(view, chart, ChartUpdater.this.manager, null);
+        editor.refreshChart();
     }
 }
