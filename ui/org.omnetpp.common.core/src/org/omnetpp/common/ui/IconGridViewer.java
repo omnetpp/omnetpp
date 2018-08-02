@@ -146,7 +146,7 @@ public class IconGridViewer extends ContentViewer {
                 return;
             }
 
-            if (mouseButton == 1 && !ctrl && !selectionContainsPoint(mouseDownPos)) // note: allow multi-selection to be drag'n'dropped
+            if (!ctrl && !selectionContainsPoint(mouseDownPos)) // note: allow multi-selection to be drag'n'dropped
                 clearSelection();
             if (element != null) {
                 if (mouseButton == 1) {
