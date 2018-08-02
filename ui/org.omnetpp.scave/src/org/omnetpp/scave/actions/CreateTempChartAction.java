@@ -59,12 +59,37 @@ public class CreateTempChartAction extends AbstractScaveAction {
             @Override
             public Chart call() {
                 //String[] filterFields = new String[] { ResultItemField.FILE, RunAttribute.CONFIGNAME, RunAttribute.RUNNUMBER };
-                String[] filterFields = new String[] { ResultItemField.RUN };
-                String input = ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager);
+                String[] filterFields = new String[] { ResultItemField.FILE, ResultItemField.RUN, ResultItemField.MODULE, ResultItemField.NAME };
+
+                String typeName = type.getName();
+                typeName = typeName.substring(0, 1).toUpperCase() + typeName.substring(1) + "s";
+
+
+
+                StringBuilder inputBuilder = new StringBuilder();
+
+                inputBuilder.append("# This expression selects the results (you might be able to logically simplify it)\n");
+                inputBuilder.append("filter_expression = \"\"\"\n" + ScaveModelUtil.getIDListAsChartInput(idList, filterFields, manager) + "\"\"\"\n\n");
+
+                inputBuilder.append("# The data is returned as a Pandas DataFrame\n");
+                inputBuilder.append("df = results.get" + typeName + "(filter_expression)\n\n");
+
+                if (type == ResultType.SCALAR_LITERAL) {
+                    inputBuilder.append("# The scalars are transformed into a much simpler format\n");
+                    inputBuilder.append("df = results.pivotScalars(df, columns=[\"module\"], index=[\"name\", \"measurement\"])\n\n");
+                }
+
+                inputBuilder.append("# You can perform any transformations on the data here\n\n");
+
+                inputBuilder.append("# Finally, the results are plotted\n");
+                inputBuilder.append("chart.plot" + typeName + "(df)\n");
+
                 String name = "Chart" + (++counter);
                 String title = StringUtils.defaultIfEmpty(ScriptEngine.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), name);
+
+
                 Chart chart = ScaveModelUtil.createChart(name, title, type);
-                chart.setInput(input);
+                chart.setScript(inputBuilder.toString());
                 chart.setTemporary(true);
                 //TODO cache the IDs
                 // IDList cachedIDs = new IDList();

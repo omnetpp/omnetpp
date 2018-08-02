@@ -161,8 +161,8 @@ public class ScaveModelUtil {
         }
         return sb.toString();
     }
-    
-    
+
+
     public static void addInputFiles(EditingDomain domain, Analysis analysis, List<String> list) {
         ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
         ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
@@ -182,7 +182,7 @@ public class ScaveModelUtil {
         domain.getCommandStack().execute(command);
     }
 
-    private static String[] getFilterFieldsFor(String[] runidFields) {
+    public static String[] getFilterFieldsFor(String[] runidFields) {
         Assert.isNotNull(runidFields);
         int runidFieldCount = runidFields.length;
         String[] filterFields = new String[runidFieldCount+2];

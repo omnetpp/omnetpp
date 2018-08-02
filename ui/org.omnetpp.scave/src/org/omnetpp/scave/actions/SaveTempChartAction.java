@@ -12,9 +12,10 @@ import org.eclipse.emf.edit.command.AddCommand;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ChartScriptEditor;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.ChartPage;
-import org.omnetpp.scave.editors.ui.ScaveEditorPage;
+//import org.omnetpp.scave.editors.ui.ChartPage;
+import org.omnetpp.scave.editors.ui.FormEditorPage;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
@@ -101,10 +102,17 @@ public class SaveTempChartAction extends AbstractScaveAction {
         return getActiveTemporaryChart(editor) != null;
     }
 
-    private Chart getActiveTemporaryChart(ScaveEditor editor) {
-        ScaveEditorPage page = editor.getActiveEditorPage();
+    private Chart getActiveTemporaryChart(ScaveEditor scaveEditor) {
+        /*
+        FormEditorPage page = editor.getActiveEditorPage();
         if (page != null && page instanceof ChartPage) {
             Chart chart = ((ChartPage)page).getChart();
+            if (chart != null && chart.isTemporary())
+                return chart;
+        }*/
+        ChartScriptEditor editor = scaveEditor.getActiveChartScriptEditor();
+        if (editor != null) {
+            Chart chart = editor.getChart();
             if (chart != null && chart.isTemporary())
                 return chart;
         }

@@ -33,9 +33,9 @@ public class EditAction extends AbstractScaveAction {
      * Creates the action with an default title and icon, and without parameters.
      */
     public EditAction() {
-        setText("Edit...");
+        setText("Edit properties");
         setToolTipText("Edit Selected Item");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EDIT));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_PROPERTIES));
     }
 
     /**
