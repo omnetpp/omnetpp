@@ -114,8 +114,8 @@ class HistogramPlot {
 
         double width = maxX - minX;
         double height = maxY - minY;
-        minX = (minX>=0 ? 0 : minX-width/80);
-        maxX = (maxX<=0 ? 0 : maxX+width/80);
+        minX = minX - width/10;
+        maxX = maxX + width/10;
         //minY = (minY>=0 ? 0 : minY-height/3);
         //maxY = (maxY<=0 ? 0 : maxY+height/3); // not ok for logarithmic cdf where maxY=0.0
         maxY = maxY + height / 3;
