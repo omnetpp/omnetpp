@@ -78,6 +78,7 @@ import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.IChartView;
+import org.omnetpp.scave.python.KillPythonProcessAction;
 
 /**
  * Editor contributor for ScaveEditor.
@@ -132,6 +133,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
     private ShowOutputVectorViewAction showOutputVectorViewAction;
     private Map<String,ExportDataAction> exportActions;
 
+    // Python actions
+    private KillPythonProcessAction killAction;
 
     protected IAction showPropertiesViewAction = new Action("Show Properties View") {
         @Override
@@ -216,6 +219,8 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         registerAction(page, saveTempChartAction = new SaveTempChartAction());
         registerAction(page, saveTempChartSheetAction = new SaveTempChartSheetAction());
         registerAction(page, showOutputVectorViewAction = new ShowOutputVectorViewAction());
+
+        registerAction(page, killAction = new KillPythonProcessAction());
 
         super.init(bars, page);
 
@@ -336,6 +341,10 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         return redoRetargetAction;
     }
 
+    public KillPythonProcessAction getKillAction() {
+        return killAction;
+    }
+
     /**
      * Listen on zoom state changes of the chart.
      */
@@ -419,11 +428,14 @@ public class ScaveEditorContributor extends MultiPageEditorActionBarContributor 
         submenuManager.add(new NewBarChartAction(false));
         submenuManager.add(new NewLineChartAction(false));
         submenuManager.add(new NewScatterChartAction(false));
-        submenuManager.add(new NewDatasetAction(false));
-        submenuManager.add(new NewChartSheetAction(false));
+        submenuManager.add(new NewHistogramChartAction(false));
+        submenuManager.add(new NewMatplotlibChartAction(false));
+        //submenuManager.add(new NewDatasetAction(false));
+        //submenuManager.add(new NewChartSheetAction(false));
         menuManager.insertBefore("edit", submenuManager);
         menuManager.insertBefore("edit", openAction);
         menuManager.insertBefore("edit", editAction);
+        // menuManager.insertBefore("edit", new EditScriptAction());
 
         menuManager.insertAfter("additions-end", new Separator());
         menuManager.insertAfter("additions-end", createExportMenu());
