@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/resultfiles/PureAloha2-*.vec"/>
+    <inputs name="/resultfiles/PureAloha2-*.sca"/>
+  </inputs>
+  <charts>
+    <items xsi:type="scave:LineChart" name="Chart2" script="ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.server) AND name(serverChannelState:vector)&#xA;ADD vectors WHERE run(PureAloha2-0-20170320-11:14:54-11186) AND module(Aloha.host[6]) AND name(radioState:vector)&#xA;">
+      <properties name="Graph.Title" value="PureAloha2  #0"/>
+    </items>
+    <items xsi:type="scave:LineChart"/>
+    <items xsi:type="scave:PythonChart" name="pychart" script="import pandas as pd&#xA;import omnetpp as opp&#xA;&#xA;vectors = opp.getVectors(&quot;*&quot;)&#xA;&#xA;df = pd.DataFrame(vectors)&#xA;&#xA;for i,r in df.iterrows():&#xA;    plt.plot(r[&quot;valuesX&quot;],r[&quot;valuesY&quot;], drawstyle='steps-post', label=r[&quot;moduleName&quot;] + &quot;:&quot; + r[&quot;name&quot;])&#xA;plt.legend(loc=2)&#xA;plt.grid()&#xA;plt.show()">
+      <properties name="Legend.Display" value="false"/>
+    </items>
+  </charts>
+</scave:Analysis>
