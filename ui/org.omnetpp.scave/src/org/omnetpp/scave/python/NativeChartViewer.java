@@ -95,6 +95,10 @@ public class NativeChartViewer {
 
 
     public void runPythonScript(File workingDir, Runnable runAfterDone, IPy4JExceptionHandler runAfterError) {
+
+        if (chartView.isDisposed())
+            return;
+
         String script = chart.getScript();
 
         if (script == null || script.isEmpty()) {
