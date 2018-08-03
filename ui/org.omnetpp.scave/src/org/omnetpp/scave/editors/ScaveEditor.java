@@ -1222,6 +1222,9 @@ public class ScaveEditor extends MultiPageEditorPartExt implements IEditingDomai
             getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.CUT.getId(), editorPart.getAction(ActionFactory.CUT.getId()));
             getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.UNDO.getId(), editorPart.getAction(ActionFactory.UNDO.getId()));
             getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.REDO.getId(), editorPart.getAction(ActionFactory.REDO.getId()));
+
+            if (editor instanceof ChartScriptEditor)
+                ((ChartScriptEditor)editor).pageActivated();
         }
         else {
             Control page = getControl(newPageIndex);

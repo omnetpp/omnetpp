@@ -19,6 +19,7 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
@@ -694,5 +695,9 @@ public class ChartScriptEditor extends PyEdit {
         weights[0] = memento.getInteger("sashweight_left");
         weights[1] = memento.getInteger("sashweight_right");
         sashForm.setWeights(weights);
+    }
+
+    public void pageActivated() {
+        scaveEditor.setSelection(new StructuredSelection(chart));
     }
 }
